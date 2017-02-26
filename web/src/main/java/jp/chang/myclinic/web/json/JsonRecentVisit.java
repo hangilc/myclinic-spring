@@ -3,7 +3,11 @@ package jp.chang.myclinic.web.json;
 import jp.chang.myclinic.model.Visit;
 import jp.chang.myclinic.model.Patient;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class JsonRecentVisit {
+
+	@JsonProperty("patient_id")
 	private int patientId;
 
 	public int getPatientId(){
@@ -16,6 +20,7 @@ public class JsonRecentVisit {
 
 	private String lastName;
 
+	@JsonProperty("last_name")
 	public String getLastName(){
 		return lastName;
 	}
@@ -24,6 +29,7 @@ public class JsonRecentVisit {
 		this.lastName = lastName;
 	}
 
+	@JsonProperty("first_name")
 	private String firstName;
 
 	public String getFirstName(){
@@ -34,6 +40,7 @@ public class JsonRecentVisit {
 		this.firstName = firstName;
 	}
 
+	@JsonProperty("last_name_yomi")
 	private String lastNameYomi;
 
 	public String getLastNameYomi(){
@@ -44,6 +51,7 @@ public class JsonRecentVisit {
 		this.lastNameYomi = lastNameYomi;
 	}
 
+	@JsonProperty("first_name_yomi")
 	private String firstNameYomi;
 
 	public String getFirstNameYomi(){
@@ -54,6 +62,7 @@ public class JsonRecentVisit {
 		this.firstNameYomi = firstNameYomi;
 	}
 
+	@JsonProperty("visit_id")
 	public int visitId;
 
 	public int getVisitId(){

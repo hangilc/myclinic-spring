@@ -3,7 +3,11 @@ package jp.chang.myclinic.web.json;
 import jp.chang.myclinic.model.Patient;
 import java.sql.Date;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class JsonPatient {
+
+	@JsonProperty("patient_id")
 	private int patientId;
 
 	public int getPatientId(){
@@ -14,6 +18,7 @@ public class JsonPatient {
 		this.patientId = patientId;
 	}
 
+	@JsonProperty("last_name")
 	private String lastName;
 
 	public String getLastName(){
@@ -26,6 +31,7 @@ public class JsonPatient {
 
 	private String firstName;
 
+	@JsonProperty("first_name")
 	public String getFirstName(){
 		return firstName;
 	}
@@ -34,6 +40,7 @@ public class JsonPatient {
 		this.firstName = firstName;
 	}
 
+	@JsonProperty("last_name_yomi")
 	private String lastNameYomi;
 
 	public String getLastNameYomi(){
@@ -44,6 +51,7 @@ public class JsonPatient {
 		this.lastNameYomi = lastNameYomi;
 	}
 
+	@JsonProperty("first_name_yomi")
 	private String firstNameYomi;
 
 	public String getFirstNameYomi(){
@@ -64,6 +72,7 @@ public class JsonPatient {
 		this.sex = sex;
 	}
 
+	@JsonProperty("birth_day")
 	private Date birthday;
 
 	public Date getBirthday(){
@@ -102,6 +111,7 @@ public class JsonPatient {
 		json.setLastNameYomi(patient.getLastNameYomi());
 		json.setFirstNameYomi(patient.getFirstNameYomi());
 		json.setBirthday(patient.getBirthday());
+		json.setSex(patient.getSex());
 		json.setAddress(patient.getAddress());
 		json.setPhone(patient.getPhone());
 		return json;
