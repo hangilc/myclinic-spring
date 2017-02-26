@@ -10,6 +10,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.JoinColumn;
 import javax.persistence.FetchType;
 import javax.persistence.Transient;
+import javax.persistence.NamedEntityGraphs;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedAttributeNode;
+
 import java.sql.Timestamp;
 
 import org.hibernate.annotations.NotFound;
@@ -19,6 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NamedEntityGraphs({
+	@NamedEntityGraph(
+		name="patient",
+		attributeNodes={@NamedAttributeNode("patient")}
+	)
+})
 @Table(name="visit")
 public class Visit {
 	@Id
@@ -79,10 +89,10 @@ public class Visit {
 		this.shahokokuhoId = shahokokuhoId;
 	}
 	
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="shahokokuho_id", insertable=false, updatable=false)
-	@NotFound(action=NotFoundAction.IGNORE)
-	public Shahokokuho shahokokuho;
+	// @ManyToOne(fetch=FetchType.LAZY)
+	// @JoinColumn(name="shahokokuho_id", insertable=false, updatable=false)
+	// @NotFound(action=NotFoundAction.IGNORE)
+	// public Shahokokuho shahokokuho;
 
 	@Column(name="roujin_id")
 	private Integer roujinId;
@@ -95,10 +105,10 @@ public class Visit {
 		this.roujinId = roujinId;
 	}
 	
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="roujin_id", insertable=false, updatable=false)
-	@NotFound(action=NotFoundAction.IGNORE)
-	public Roujin roujin;
+	// @ManyToOne(fetch=FetchType.LAZY)
+	// @JoinColumn(name="roujin_id", insertable=false, updatable=false)
+	// @NotFound(action=NotFoundAction.IGNORE)
+	// public Roujin roujin;
 
 	@Column(name="koukikourei_id")
 	private Integer koukikoureiId;
@@ -111,10 +121,10 @@ public class Visit {
 		this.koukikoureiId = koukikoureiId;
 	}
 	
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="koukikourei_id", insertable=false, updatable=false)
-	@NotFound(action=NotFoundAction.IGNORE)
-	public Koukikourei koukikourei;
+	// @ManyToOne(fetch=FetchType.LAZY)
+	// @JoinColumn(name="koukikourei_id", insertable=false, updatable=false)
+	// @NotFound(action=NotFoundAction.IGNORE)
+	// public Koukikourei koukikourei;
 
 	@Column(name="kouhi_1_id")
 	private Integer kouhi1Id;
@@ -127,10 +137,10 @@ public class Visit {
 		this.kouhi1Id = kouhi1Id;
 	}
 
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="kouhi_1_id", insertable=false, updatable=false)
-	@NotFound(action=NotFoundAction.IGNORE)
-	public Kouhi kouhi1;
+	// @ManyToOne(fetch=FetchType.LAZY)
+	// @JoinColumn(name="kouhi_1_id", insertable=false, updatable=false)
+	// @NotFound(action=NotFoundAction.IGNORE)
+	// public Kouhi kouhi1;
 
 	@Column(name="kouhi_2_id")
 	private Integer kouhi2Id;
@@ -143,10 +153,10 @@ public class Visit {
 		this.kouhi2Id = kouhi2Id;
 	}
 
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="kouhi_2_id", insertable=false, updatable=false)
-	@NotFound(action=NotFoundAction.IGNORE)
-	public Kouhi kouhi2;
+	// @ManyToOne(fetch=FetchType.LAZY)
+	// @JoinColumn(name="kouhi_2_id", insertable=false, updatable=false)
+	// @NotFound(action=NotFoundAction.IGNORE)
+	// public Kouhi kouhi2;
 
 	@Column(name="kouhi_3_id")
 	private Integer kouhi3Id;
@@ -159,25 +169,25 @@ public class Visit {
 		this.kouhi3Id = kouhi3Id;
 	}
 
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="kouhi_3_id", insertable=false, updatable=false)
-	@NotFound(action=NotFoundAction.IGNORE)
-	public Kouhi kouhi3;
+	// @ManyToOne(fetch=FetchType.LAZY)
+	// @JoinColumn(name="kouhi_3_id", insertable=false, updatable=false)
+	// @NotFound(action=NotFoundAction.IGNORE)
+	// public Kouhi kouhi3;
 
-	@Transient
-	public ArrayList<Kouhi> getKouhiList(){
-		ArrayList<Kouhi> list = new ArrayList<>();
-		if( kouhi1Id > 0 ){
-			list.add(kouhi1);
-		}
-		if( kouhi2Id > 0 ){
-			list.add(kouhi2);
-		}
-		if( kouhi3Id > 0){
-			list.add(kouhi3);
-		}
-		return list;
-	}
+	// @Transient
+	// public ArrayList<Kouhi> getKouhiList(){
+	// 	ArrayList<Kouhi> list = new ArrayList<>();
+	// 	if( kouhi1Id > 0 ){
+	// 		list.add(kouhi1);
+	// 	}
+	// 	if( kouhi2Id > 0 ){
+	// 		list.add(kouhi2);
+	// 	}
+	// 	if( kouhi3Id > 0){
+	// 		list.add(kouhi3);
+	// 	}
+	// 	return list;
+	// }
 
 	@OneToMany(fetch=FetchType.LAZY, mappedBy="visit")
 	private List<Text> texts;

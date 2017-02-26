@@ -141,13 +141,6 @@ public class Application implements CommandLineRunner {
         	System.out.println(patient.toString());
         	Visit visit = visitRepository.findOne(2003);
         	System.out.println(visit);
-        	System.out.println(visit.shahokokuho);
-        	System.out.println(visit.koukikourei);
-        	System.out.println(visit.roujin);
-        	System.out.println(visit.kouhi1);
-        	System.out.println(visit.kouhi2);
-        	System.out.println(visit.kouhi3);
-        	System.out.println(visit.getKouhiList());
         	System.out.println(visit.getTexts());
         	Shahokokuho shahokokuho = shahokokuhoRepository.findOne(389);
         	System.out.println(shahokokuho.toString());
