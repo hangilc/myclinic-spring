@@ -12,6 +12,7 @@ import jp.chang.myclinic.web.json.JsonPatient;
 import jp.chang.myclinic.model.Patient;
 import jp.chang.myclinic.model.PatientRepository;
 
+
 @RestController
 @RequestMapping(value="/service", params="_q")
 public class PatientController {
@@ -19,6 +20,9 @@ public class PatientController {
 
 	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=get_patient", "patient_id"})
 	public JsonPatient getPatient(@RequestParam(value="patient_id") int patientId) {
+		if( patientId <= 0 ){
+			throw new HandlerException("invalid patient_id");
+		}
 		Patient patient = patientRepository.findOne(patientId);
 		JsonPatient json = JsonPatient.fromPatient(patient);
 		return json;
