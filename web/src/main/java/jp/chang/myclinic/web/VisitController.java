@@ -3,6 +3,7 @@ package jp.chang.myclinic.web;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 @RestController
 @RequestMapping(value="/service", params="_q")
+@Transactional(readOnly=true)
 public class VisitController {
 	@Autowired VisitRepository visitRepository;
 
@@ -43,5 +46,14 @@ public class VisitController {
 	public JsonVisit getVisit(@RequestParam(value="visit_id") int visitId){
 		Visit visit = visitRepository.findOne(visitId);
 		return JsonVisit.fromVisit(visit);
+	}
+
+	@RequestMapping(value="", method=RequestMethod.POST, params={"_q=enter_visit"})
+	@Transactional()
+	public Integer enterVisit(@RequestBody JsonVisit jsonVisit){
+		jsonVisit.setVisitId(null);
+		Visit visit = JsonVisit.toVisit(jsonVisit);
+		visitRepository.saveAndFlush(visit);
+		return visit.getVisitId();
 	}
 }

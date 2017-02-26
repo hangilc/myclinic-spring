@@ -2,7 +2,10 @@ package jp.chang.myclinic.web.json;
 
 import jp.chang.myclinic.model.Visit;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class JsonVisit {
@@ -30,14 +33,15 @@ public class JsonVisit {
 	}
 
 	@JsonProperty("v_datetime")
-	@JsonSerialize(using=TimestampSerializer.class)
-	private Timestamp visitedAt;
+	//@JsonSerialize(using=TimestampSerializer.class)
+	//@JsonDeserialize(using=TimestampDeserializer.class)
+	private String visitedAt;
 
-	public Timestamp getVisitedAt(){
+	public String getVisitedAt(){
 		return visitedAt;
 	}
 
-	public void setVisitedAt(Timestamp visitedAt){
+	public void setVisitedAt(String visitedAt){
 		this.visitedAt = visitedAt;
 	}
 
@@ -108,10 +112,11 @@ public class JsonVisit {
 	}
 
 	public static JsonVisit fromVisit(Visit visit){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		JsonVisit json = new JsonVisit();
 		json.setVisitId(visit.getVisitId());
 		json.setPatientId(visit.getPatientId());
-		json.setVisitedAt(visit.getVisitedAt());
+		json.setVisitedAt(visit.getVisitedAt().toLocalDateTime().format(formatter));
 		json.setShahokokuhoId(visit.getShahokokuhoId());
 		json.setKoukikoureiId(visit.getKoukikoureiId());
 		json.setRoujinId(visit.getRoujinId());
@@ -119,5 +124,20 @@ public class JsonVisit {
 		json.setKouhi2Id(visit.getKouhi2Id());
 		json.setKouhi3Id(visit.getKouhi3Id());
 		return json;
+	}
+
+	public static Visit toVisit(JsonVisit json){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		Visit visit = new Visit();
+		visit.setVisitId(json.getVisitId());
+		visit.setPatientId(json.getPatientId());
+		visit.setVisitedAt(Timestamp.valueOf(LocalDateTime.parse(json.getVisitedAt(), formatter)));
+		visit.setShahokokuhoId(json.getShahokokuhoId());
+		visit.setKoukikoureiId(json.getKoukikoureiId());
+		visit.setRoujinId(json.getRoujinId());
+		visit.setKouhi1Id(json.getKouhi1Id());
+		visit.setKouhi2Id(json.getKouhi2Id());
+		visit.setKouhi3Id(json.getKouhi3Id());
+		return visit;
 	}
 }
