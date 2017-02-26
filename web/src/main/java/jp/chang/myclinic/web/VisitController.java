@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import jp.chang.myclinic.web.json.JsonRecentVisit;
+import jp.chang.myclinic.web.json.JsonVisit;
 
 import jp.chang.myclinic.model.Visit;
 import jp.chang.myclinic.model.VisitRepository;
@@ -38,4 +39,9 @@ public class VisitController {
 		return ret;
 	}
 
+	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=get_visit", "visit_id"})
+	public JsonVisit getVisit(@RequestParam(value="visit_id") int visitId){
+		Visit visit = visitRepository.findOne(visitId);
+		return JsonVisit.fromVisit(visit);
+	}
 }
