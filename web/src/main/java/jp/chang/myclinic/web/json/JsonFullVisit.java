@@ -1,7 +1,6 @@
 package jp.chang.myclinic.web.json;
 
 import jp.chang.myclinic.model.Visit;
-import jp.chang.myclinic.model.Text;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -127,6 +126,18 @@ public class JsonFullVisit {
 	public void setDrugs(List<JsonFullDrug> drugs){
 		this.drugs = drugs;
 	}
+
+	@JsonProperty("shinryou_list")
+	private List<JsonFullShinryou> shinryouList;
+
+	public List<JsonFullShinryou> getShinryouList(){
+		return shinryouList;
+	}
+
+	public void setShinryouList(List<JsonFullShinryou> shinryouList){
+		this.shinryouList = shinryouList;
+	}
+
 
 	public static void stuff(JsonFullVisit dst, Visit src){
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

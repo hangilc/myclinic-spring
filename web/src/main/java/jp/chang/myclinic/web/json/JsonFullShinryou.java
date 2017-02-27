@@ -1,33 +1,38 @@
-package jp.chang.myclinic.model;
+package jp.chang.myclinic.web.json;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinColumn;
-import javax.persistence.FetchType;
-import javax.persistence.Transient;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import jp.chang.myclinic.model.Shinryou;
+import jp.chang.myclinic.model.ShinryouMaster;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.sql.Date;
-
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.math.BigDecimal;
 
-@Entity
-@Table(name="shinryoukoui_master_arch")
-@IdClass(ShinryouMasterId.class)
-public class ShinryouMaster {
+public class JsonFullShinryou {
 
-	@Id
+	@JsonProperty("shinryou_id")
+	private Integer shinryouId;
+
+	public Integer getShinryouId(){
+		return shinryouId;
+	}
+
+	public void setShinryouId(Integer shinryouId){
+		this.shinryouId = shinryouId;
+	}
+
+	@JsonProperty("visit_id")
+	private Integer visitId;
+
+	public Integer getVisitId(){
+		return visitId;
+	}
+
+	public void setVisitId(Integer visitId){
+		this.visitId = visitId;
+	}
+
 	private Integer shinryoucode;
 
 	public Integer getShinryoucode(){
@@ -38,8 +43,18 @@ public class ShinryouMaster {
 		this.shinryoucode = shinryoucode;
 	}
 
-	@Id
-	@Column(name="valid_from")
+	@JsonProperty("master_valid_from")
+	private Date masterValidFrom;
+
+	public Date getMasterValidFrom(){
+		return masterValidFrom;
+	}
+
+	public void setMasterValidFrom(Date masterValidFrom){
+		this.masterValidFrom = masterValidFrom;
+	}
+
+	@JsonProperty("valid_from")
 	private Date validFrom;
 
 	public Date getValidFrom(){
@@ -70,7 +85,7 @@ public class ShinryouMaster {
 		this.tensuu = tensuu;
 	}
 
-	@Column(name="tensuu_shikibetsu")
+	@JsonProperty("tensuu_shikibetsu")
 	private Character tensuuShikibetsu;
 
 	public Character getTensuuShikibetsu(){
@@ -131,7 +146,7 @@ public class ShinryouMaster {
 		this.roujintekiyou = roujintekiyou;
 	}
 
-	@Column(name="code_shou")
+	@JsonProperty("code_shou")
 	private Character codeShou;
 
 	public Character getCodeShou(){
@@ -142,7 +157,7 @@ public class ShinryouMaster {
 		this.codeShou = codeShou;
 	}
 
-	@Column(name="code_bu")
+	@JsonProperty("code_bu")
 	private String codeBu;
 
 	public String getCodeBu(){
@@ -153,7 +168,7 @@ public class ShinryouMaster {
 		this.codeBu = codeBu;
 	}
 
-	@Column(name="code_alpha")
+	@JsonProperty("code_alpha")
 	private Character codeAlpha;
 
 	public Character getCodeAlpha(){
@@ -164,7 +179,7 @@ public class ShinryouMaster {
 		this.codeAlpha = codeAlpha;
 	}
 
-	@Column(name="code_kubun")
+	@JsonProperty("code_kubun")
 	private String codeKubun;
 
 	public String getCodeKubun(){
@@ -175,7 +190,7 @@ public class ShinryouMaster {
 		this.codeKubun = codeKubun;
 	}
 
-	@Column(name="valid_upto")
+	@JsonProperty("valid_upto")
 	private Date validUpto;
 
 	public Date getValidUpto(){
@@ -186,24 +201,27 @@ public class ShinryouMaster {
 		this.validUpto = validUpto;
 	}
 
-	@Override
-	public String toString(){
-		return "ShinryouMaster[" +
-			"shinryoucode=" + shinryoucode + ", " +
-			"validFrom=" + validFrom + ", " +
-			"name=" + name + ", " +
-			"tensuu=" + tensuu + ", " +
-			"tensuuShikibetsu=" + tensuuShikibetsu + ", " +
-			"shuukeisaki=" + shuukeisaki + ", " +
-			"houkatsukensa=" + houkatsukensa + ", " +
-			"oushinkubun=" + oushinkubun + ", " +
-			"kensagroup=" + kensagroup + ", " +
-			"roujintekiyou=" + roujintekiyou + ", " +
-			"codeShou=" + codeShou + ", " +
-			"codeBu=" + codeBu + ", " +
-			"codeAlpha=" + codeAlpha + ", " +
-			"codeKubun=" + codeKubun + ", " +
-			"validUpto=" + validUpto +
-		"]";
+	public static JsonFullShinryou create(Shinryou src){
+		JsonFullShinryou dst = new JsonFullShinryou();
+		dst.setShinryouId(src.getShinryouId());
+		dst.setVisitId(src.getVisitId());
+		dst.setShinryoucode(src.getShinryoucode());
+		dst.setMasterValidFrom(src.getMasterValidFrom());
+		ShinryouMaster m = src.getMaster();
+		dst.setValidFrom(m.getValidFrom());
+		dst.setName(m.getName());
+		dst.setTensuu(m.getTensuu());
+		dst.setTensuuShikibetsu(m.getTensuuShikibetsu());
+		dst.setShuukeisaki(m.getShuukeisaki());
+		dst.setHoukatsukensa(m.getHoukatsukensa());
+		dst.setOushinkubun(m.getOushinkubun());
+		dst.setKensagroup(m.getKensagroup());
+		dst.setRoujintekiyou(m.getRoujintekiyou());
+		dst.setCodeShou(m.getCodeShou());
+		dst.setCodeBu(m.getCodeBu());
+		dst.setCodeAlpha(m.getCodeAlpha());
+		dst.setCodeKubun(m.getCodeKubun());
+		dst.setValidUpto(m.getValidUpto());
+		return dst;
 	}
 }

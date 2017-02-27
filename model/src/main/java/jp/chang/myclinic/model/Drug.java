@@ -11,9 +11,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.FetchType;
 import javax.persistence.Transient;
-import javax.persistence.NamedEntityGraphs;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedAttributeNode;
+// import javax.persistence.NamedEntityGraphs;
+// import javax.persistence.NamedEntityGraph;
+// import javax.persistence.NamedAttributeNode;
 
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
@@ -24,12 +24,6 @@ import java.math.BigDecimal;
 import java.sql.Date;
 
 @Entity
-@NamedEntityGraphs({
-	@NamedEntityGraph(
-		name="master",
-		attributeNodes={@NamedAttributeNode("master")}
-	)
-})
 @Table(name="visit_drug")
 public class Drug {
 

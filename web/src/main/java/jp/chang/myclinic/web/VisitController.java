@@ -13,6 +13,7 @@ import jp.chang.myclinic.web.json.JsonVisit;
 import jp.chang.myclinic.web.json.JsonFullVisit;
 import jp.chang.myclinic.web.json.JsonText;
 import jp.chang.myclinic.web.json.JsonFullDrug;
+import jp.chang.myclinic.web.json.JsonFullShinryou;
 
 import jp.chang.myclinic.model.Visit;
 import jp.chang.myclinic.model.VisitRepository;
@@ -20,6 +21,8 @@ import jp.chang.myclinic.model.Text;
 import jp.chang.myclinic.model.TextRepository;
 import jp.chang.myclinic.model.Drug;
 import jp.chang.myclinic.model.DrugRepository;
+import jp.chang.myclinic.model.Shinryou;
+import jp.chang.myclinic.model.ShinryouRepository;
 
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
@@ -39,6 +42,7 @@ public class VisitController {
 	@Autowired VisitRepository visitRepository;
 	@Autowired TextRepository textRepository;
 	@Autowired DrugRepository drugRepository;
+	@Autowired ShinryouRepository shinryouRepository;
 
 	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=recent_visits"})
 	public List<JsonRecentVisit> recentVisits() {
@@ -82,6 +86,11 @@ public class VisitController {
 			.map(JsonFullDrug::create)
 			.collect(Collectors.toList());
 		dst.setDrugs(jsonDrugs);
+		List<Shinryou> shinryouList = shinryouRepository.findByVisitIdWithMaster(visitId);
+		List<JsonFullShinryou> jsonShinryouList = shinryouList.stream()
+			.map(JsonFullShinryou::create)
+			.collect(Collectors.toList());
+		dst.setShinryouList(jsonShinryouList);
 		return dst;
 	}
 
