@@ -138,6 +138,16 @@ public class JsonFullVisit {
 		this.shinryouList = shinryouList;
 	}
 
+	private List<JsonFullConduct> conducts;
+
+	public List<JsonFullConduct> getConducts(){
+		return conducts;
+	}
+
+	public void setConducts(List<JsonFullConduct> conducts){
+		this.conducts = conducts;
+	}
+
 
 	public static void stuff(JsonFullVisit dst, Visit src){
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

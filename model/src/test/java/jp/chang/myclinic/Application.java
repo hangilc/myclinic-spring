@@ -162,8 +162,8 @@ public class Application implements CommandLineRunner {
         System.out.println(shinryouRepository.findOne(100).getMaster());
         System.out.println(kizaiMasterRepository.findOne(new KizaiMasterId(700150000, Date.valueOf(LocalDate.of(2008,4,1)))));
         System.out.println(conductRepository.findOne(100));
-        System.out.println(conductRepository.findOne(100).getGazouLabel());
-        System.out.println(conductRepository.findOne(102).getGazouLabel());
+        //System.out.println(conductRepository.findOne(100).getGazouLabel());
+        //System.out.println(conductRepository.findOne(102).getGazouLabel());
         System.out.println(conductDrugRepository.findOne(100));
         System.out.println(conductDrugRepository.findOne(100).getMaster());
         System.out.println(conductShinryouRepository.findOne(100));

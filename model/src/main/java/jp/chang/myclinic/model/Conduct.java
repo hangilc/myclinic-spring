@@ -71,18 +71,18 @@ public class Conduct {
 		this.kind = kind;
 	}
 
-	@OneToOne
-	@JoinColumn(name="id", insertable=false, updatable=false)
-	@NotFound(action=NotFoundAction.IGNORE)
-	private GazouLabel gazouLabel;
+	// @OneToOne
+	// @JoinColumn(name="id", insertable=false, updatable=false)
+	// @NotFound(action=NotFoundAction.IGNORE)
+	// private GazouLabel gazouLabel;
 
-	public GazouLabel getGazouLabel(){
-		return gazouLabel;
-	}
+	// public GazouLabel getGazouLabel(){
+	// 	return gazouLabel;
+	// }
 
-	public void setGazouLabel(GazouLabel gazouLabel){
-		this.gazouLabel = gazouLabel;
-	}
+	// public void setGazouLabel(GazouLabel gazouLabel){
+	// 	this.gazouLabel = gazouLabel;
+	// }
 
 	@Override
 	public String toString(){
