@@ -27,6 +27,14 @@ public class Text {
 	@Column(name="text_id")
 	private Integer textId;
 
+	public Integer getTextId(){
+		return textId;
+	}
+
+	public void setTextId(Integer textId){
+		this.textId = textId;
+	}
+
 	@Column(name="visit_id")
 	private Integer visitId;
 

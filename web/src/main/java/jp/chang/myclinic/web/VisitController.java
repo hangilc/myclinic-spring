@@ -10,11 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import jp.chang.myclinic.web.json.JsonRecentVisit;
 import jp.chang.myclinic.web.json.JsonVisit;
+import jp.chang.myclinic.web.json.JsonFullVisit;
+import jp.chang.myclinic.web.json.JsonText;
+import jp.chang.myclinic.web.json.JsonFullDrug;
 
 import jp.chang.myclinic.model.Visit;
 import jp.chang.myclinic.model.VisitRepository;
+import jp.chang.myclinic.model.Text;
+import jp.chang.myclinic.model.TextRepository;
+import jp.chang.myclinic.model.Drug;
+import jp.chang.myclinic.model.DrugRepository;
 
 import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -29,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly=true)
 public class VisitController {
 	@Autowired VisitRepository visitRepository;
+	@Autowired TextRepository textRepository;
+	@Autowired DrugRepository drugRepository;
 
 	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=recent_visits"})
 	public List<JsonRecentVisit> recentVisits() {
@@ -56,4 +66,23 @@ public class VisitController {
 		visitRepository.saveAndFlush(visit);
 		return visit.getVisitId();
 	}
+
+	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=get_full_visit", "visit_id"})
+	public JsonFullVisit getFullVisit(@RequestParam("visit_id") int visitId){
+		JsonFullVisit dst = new JsonFullVisit();
+		Visit visit = visitRepository.findOne(visitId);
+		JsonFullVisit.stuff(dst, visit);
+		List<Text> texts = textRepository.findAllByVisitId(visitId);
+		List<JsonText> jsonTexts = texts.stream()
+			.map(JsonText::fromText)
+			.collect(Collectors.toList());
+		dst.setTexts(jsonTexts);
+		List<Drug> drugs = drugRepository.findByVisitIdWithMaster(visitId);
+		List<JsonFullDrug> jsonDrugs = drugs.stream()
+			.map(JsonFullDrug::create)
+			.collect(Collectors.toList());
+		dst.setDrugs(jsonDrugs);
+		return dst;
+	}
+
 }
