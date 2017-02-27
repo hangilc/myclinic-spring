@@ -41,6 +41,17 @@ public class JsonFullConduct {
 		this.kind = kind;
 	}
 
+	@JsonProperty("gazou_label")
+	private String gazouLabel;
+
+	public String getGazouLabel(){
+		return gazouLabel;
+	}
+
+	public void setGazouLabel(String gazouLabel){
+		this.gazouLabel = gazouLabel;
+	}
+
 	public static JsonFullConduct create(Conduct conduct){
 		JsonFullConduct dst = new JsonFullConduct();
 		dst.setConductId(conduct.getConductId());

@@ -26,11 +26,14 @@ import jp.chang.myclinic.model.Shinryou;
 import jp.chang.myclinic.model.ShinryouRepository;
 import jp.chang.myclinic.model.Conduct;
 import jp.chang.myclinic.model.ConductRepository;
+import jp.chang.myclinic.model.GazouLabel;
+import jp.chang.myclinic.model.GazouLabelRepository;
 
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,6 +50,7 @@ public class VisitController {
 	@Autowired DrugRepository drugRepository;
 	@Autowired ShinryouRepository shinryouRepository;
 	@Autowired ConductRepository conductRepository;
+	@Autowired GazouLabelRepository gazouLabelRepository;
 
 	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=recent_visits"})
 	public List<JsonRecentVisit> recentVisits() {
@@ -99,6 +103,9 @@ public class VisitController {
 		List<JsonFullConduct> jsonConducts = conducts.stream()
 			.map(c -> {
 				JsonFullConduct jsonConduct = JsonFullConduct.create(c);
+				Optional<String> gazouLabel = gazouLabelRepository.findOneByConductId(c.getConductId())
+					.map(g -> g.getLabel());
+				jsonConduct.setGazouLabel(gazouLabel.orElse(""));
 				return jsonConduct;
 			})
 			.collect(Collectors.toList());
