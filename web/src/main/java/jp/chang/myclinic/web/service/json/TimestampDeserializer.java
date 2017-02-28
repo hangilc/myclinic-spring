@@ -1,4 +1,4 @@
-package jp.chang.myclinic.web.json;
+package jp.chang.myclinic.web.service.json;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.DeserializationContext;

@@ -1,4 +1,4 @@
-package jp.chang.myclinic.web;
+package jp.chang.myclinic.web.service;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import jp.chang.myclinic.web.json.JsonPatient;
+import jp.chang.myclinic.web.service.json.JsonPatient;
+import jp.chang.myclinic.web.HandlerException;
 
 import jp.chang.myclinic.model.Patient;
 import jp.chang.myclinic.model.PatientRepository;

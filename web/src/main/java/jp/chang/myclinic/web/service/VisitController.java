@@ -1,4 +1,4 @@
-package jp.chang.myclinic.web;
+package jp.chang.myclinic.web.service;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -8,16 +8,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import jp.chang.myclinic.web.json.JsonRecentVisit;
-import jp.chang.myclinic.web.json.JsonVisit;
-import jp.chang.myclinic.web.json.JsonFullVisit;
-import jp.chang.myclinic.web.json.JsonText;
-import jp.chang.myclinic.web.json.JsonFullDrug;
-import jp.chang.myclinic.web.json.JsonFullShinryou;
-import jp.chang.myclinic.web.json.JsonFullConduct;
-import jp.chang.myclinic.web.json.JsonFullConductShinryou;
-import jp.chang.myclinic.web.json.JsonFullConductDrug;
-import jp.chang.myclinic.web.json.JsonFullConductKizai;
+import jp.chang.myclinic.web.service.json.JsonRecentVisit;
+import jp.chang.myclinic.web.service.json.JsonVisit;
+import jp.chang.myclinic.web.service.json.JsonFullVisit;
+import jp.chang.myclinic.web.service.json.JsonText;
+import jp.chang.myclinic.web.service.json.JsonFullDrug;
+import jp.chang.myclinic.web.service.json.JsonFullShinryou;
+import jp.chang.myclinic.web.service.json.JsonFullConduct;
+import jp.chang.myclinic.web.service.json.JsonFullConductShinryou;
+import jp.chang.myclinic.web.service.json.JsonFullConductDrug;
+import jp.chang.myclinic.web.service.json.JsonFullConductKizai;
 
 import jp.chang.myclinic.model.Visit;
 import jp.chang.myclinic.model.VisitRepository;

@@ -1,4 +1,4 @@
-package jp.chang.myclinic.web.json;
+package jp.chang.myclinic.web.service.json;
 
 import jp.chang.myclinic.model.Shinryou;
 import jp.chang.myclinic.model.ShinryouMaster;
