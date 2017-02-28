@@ -52,6 +52,17 @@ public class JsonFullConduct {
 		this.gazouLabel = gazouLabel;
 	}
 
+	@JsonProperty("shinryou_list")
+	private List<JsonFullConductShinryou> shinryouList;
+
+	public List<JsonFullConductShinryou> getShinryouList(){
+		return shinryouList;
+	}
+
+	public void setShinryouList(List<JsonFullConductShinryou> shinryouList){
+		this.shinryouList = shinryouList;
+	}
+
 	public static JsonFullConduct create(Conduct conduct){
 		JsonFullConduct dst = new JsonFullConduct();
 		dst.setConductId(conduct.getConductId());

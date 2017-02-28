@@ -15,6 +15,7 @@ import jp.chang.myclinic.web.json.JsonText;
 import jp.chang.myclinic.web.json.JsonFullDrug;
 import jp.chang.myclinic.web.json.JsonFullShinryou;
 import jp.chang.myclinic.web.json.JsonFullConduct;
+import jp.chang.myclinic.web.json.JsonFullConductShinryou;
 
 import jp.chang.myclinic.model.Visit;
 import jp.chang.myclinic.model.VisitRepository;
@@ -28,6 +29,8 @@ import jp.chang.myclinic.model.Conduct;
 import jp.chang.myclinic.model.ConductRepository;
 import jp.chang.myclinic.model.GazouLabel;
 import jp.chang.myclinic.model.GazouLabelRepository;
+import jp.chang.myclinic.model.ConductShinryou;
+import jp.chang.myclinic.model.ConductShinryouRepository;
 
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
@@ -51,6 +54,7 @@ public class VisitController {
 	@Autowired ShinryouRepository shinryouRepository;
 	@Autowired ConductRepository conductRepository;
 	@Autowired GazouLabelRepository gazouLabelRepository;
+	@Autowired ConductShinryouRepository conductShinryouRepository;
 
 	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=recent_visits"})
 	public List<JsonRecentVisit> recentVisits() {
@@ -106,6 +110,11 @@ public class VisitController {
 				Optional<String> gazouLabel = gazouLabelRepository.findOneByConductId(c.getConductId())
 					.map(g -> g.getLabel());
 				jsonConduct.setGazouLabel(gazouLabel.orElse(""));
+				List<ConductShinryou> conductShinryouList = conductShinryouRepository.findByConductIdWithMaster(c.getConductId());
+				List<JsonFullConductShinryou> jsonConductShinryouList = conductShinryouList.stream()
+					.map(JsonFullConductShinryou::create)
+					.collect(Collectors.toList());
+				jsonConduct.setShinryouList(jsonConductShinryouList);
 				return jsonConduct;
 			})
 			.collect(Collectors.toList());
