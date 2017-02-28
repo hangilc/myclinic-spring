@@ -1,6 +1,6 @@
 package jp.chang.myclinic.web.json;
 
-import jp.chang.myclinic.model.Drug;
+import jp.chang.myclinic.model.ConductDrug;
 import jp.chang.myclinic.model.IyakuhinMaster;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.sql.Date;
@@ -9,31 +9,30 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.math.BigDecimal;
 
-public class JsonFullDrug {
+public class JsonFullConductDrug {
 
-	@JsonProperty("drug_id")
-	private Integer drugId;
+	@JsonProperty("id")
+	private Integer conductDrugId;
 
-	public Integer getDrugId(){
-		return drugId;
+	public Integer getConductDrugId(){
+		return conductDrugId;
 	}
 
-	public void setDrugId(Integer drugId){
-		this.drugId = drugId;
+	public void setConductDrugId(Integer conductDrugId){
+		this.conductDrugId = conductDrugId;
 	}
 
-	@JsonProperty("visit_id")
-	private Integer visitId;
+	@JsonProperty("visit_conduct_id")
+	private Integer conductId;
 
-	public Integer getVisitId(){
-		return visitId;
+	public Integer getConductId(){
+		return conductId;
 	}
 
-	public void setVisitId(Integer visitId){
-		this.visitId = visitId;
+	public void setConductId(Integer conductId){
+		this.conductId = conductId;
 	}
 
-	@JsonProperty("d_iyakuhincode")
 	private Integer iyakuhincode;
 
 	public Integer getIyakuhincode(){
@@ -44,73 +43,7 @@ public class JsonFullDrug {
 		this.iyakuhincode = iyakuhincode;
 	}
 
-	@JsonProperty("d_amount")
-	private BigDecimal amount;
-
-	public BigDecimal getAmount(){
-		return amount;
-	}
-
-	public void setAmount(BigDecimal amount){
-		this.amount = amount;
-	}
-
-	@JsonProperty("d_usage")
-	private String usage;
-
-	public String getUsage(){
-		return usage;
-	}
-
-	public void setUsage(String usage){
-		this.usage = usage;
-	}
-
-	@JsonProperty("d_days")
-	private Integer days;
-
-	public Integer getDays(){
-		return days;
-	}
-
-	public void setDays(Integer days){
-		this.days = days;
-	}
-
-	@JsonProperty("d_category")
-	private Integer category;
-
-	public Integer getCategory(){
-		return category;
-	}
-
-	public void setCategory(Integer category){
-		this.category = category;
-	}
-
-	@JsonProperty("d_shuukeisaki")
-	private Integer shuukeisaki;
-
-	public Integer getShuukeisaki(){
-		return shuukeisaki;
-	}
-
-	public void setShuukeisaki(Integer shuukeisaki){
-		this.shuukeisaki = shuukeisaki;
-	}
-
-	@JsonProperty("d_prescribed")
-	private Integer prescribed;
-
-	public Integer getPrescribed(){
-		return prescribed;
-	}
-
-	public void setPrescribed(Integer prescribed){
-		this.prescribed = prescribed;
-	}
-
-	@JsonProperty("d_master_valid_from")
+	@JsonProperty("master_valid_from")
 	private Date masterValidFrom;
 
 	public Date getMasterValidFrom(){
@@ -119,6 +52,16 @@ public class JsonFullDrug {
 
 	public void setMasterValidFrom(Date masterValidFrom){
 		this.masterValidFrom = masterValidFrom;
+	}
+
+	private BigDecimal amount;
+
+	public BigDecimal getAmount(){
+		return amount;
+	}
+
+	public void setAmount(BigDecimal amount){
+		this.amount = amount;
 	}
 
 	@JsonProperty("valid_from")
@@ -213,19 +156,14 @@ public class JsonFullDrug {
 		this.validUpto = validUpto;
 	}
 
-	public static JsonFullDrug create(Drug drug){
-		JsonFullDrug dst = new JsonFullDrug();
-		dst.setDrugId(drug.getDrugId());
-		dst.setVisitId(drug.getVisitId());
-		dst.setIyakuhincode(drug.getIyakuhincode());
-		dst.setAmount(drug.getAmount());
-		dst.setUsage(drug.getUsage());
-		dst.setDays(drug.getDays());
-		dst.setCategory(drug.getCategory());
-		dst.setShuukeisaki(drug.getShuukeisaki());
-		dst.setPrescribed(drug.getPrescribed());
-		dst.setMasterValidFrom(drug.getMasterValidFrom());
-		IyakuhinMaster m = drug.getMaster();
+	public static JsonFullConductDrug create(ConductDrug src){
+		JsonFullConductDrug dst = new JsonFullConductDrug();
+		dst.setConductDrugId(src.getConductDrugId());
+		dst.setConductId(src.getConductId());
+		dst.setIyakuhincode(src.getIyakuhincode());
+		dst.setAmount(src.getAmount());
+		dst.setMasterValidFrom(src.getMasterValidFrom());
+		IyakuhinMaster m = src.getMaster();
 		dst.setValidFrom(m.getValidFrom());
 		dst.setName(m.getName());
 		dst.setYomi(m.getYomi());

@@ -63,6 +63,16 @@ public class JsonFullConduct {
 		this.shinryouList = shinryouList;
 	}
 
+	private List<JsonFullConductDrug> drugs;
+
+	public List<JsonFullConductDrug> getDrugs(){
+		return drugs;
+	}
+
+	public void setDrugs(List<JsonFullConductDrug> arg){
+		this.drugs = arg;
+	}
+
 	public static JsonFullConduct create(Conduct conduct){
 		JsonFullConduct dst = new JsonFullConduct();
 		dst.setConductId(conduct.getConductId());

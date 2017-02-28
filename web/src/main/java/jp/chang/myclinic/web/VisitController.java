@@ -16,6 +16,7 @@ import jp.chang.myclinic.web.json.JsonFullDrug;
 import jp.chang.myclinic.web.json.JsonFullShinryou;
 import jp.chang.myclinic.web.json.JsonFullConduct;
 import jp.chang.myclinic.web.json.JsonFullConductShinryou;
+import jp.chang.myclinic.web.json.JsonFullConductDrug;
 
 import jp.chang.myclinic.model.Visit;
 import jp.chang.myclinic.model.VisitRepository;
@@ -31,6 +32,10 @@ import jp.chang.myclinic.model.GazouLabel;
 import jp.chang.myclinic.model.GazouLabelRepository;
 import jp.chang.myclinic.model.ConductShinryou;
 import jp.chang.myclinic.model.ConductShinryouRepository;
+import jp.chang.myclinic.model.ConductDrug;
+import jp.chang.myclinic.model.ConductDrugRepository;
+import jp.chang.myclinic.model.ConductKizai;
+import jp.chang.myclinic.model.ConductKizaiRepository;
 
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
@@ -55,6 +60,8 @@ public class VisitController {
 	@Autowired ConductRepository conductRepository;
 	@Autowired GazouLabelRepository gazouLabelRepository;
 	@Autowired ConductShinryouRepository conductShinryouRepository;
+	@Autowired ConductDrugRepository conductDrugRepository;
+	@Autowired ConductKizaiRepository conductKizaiRepository;
 
 	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=recent_visits"})
 	public List<JsonRecentVisit> recentVisits() {
@@ -115,6 +122,12 @@ public class VisitController {
 					.map(JsonFullConductShinryou::create)
 					.collect(Collectors.toList());
 				jsonConduct.setShinryouList(jsonConductShinryouList);
+				List<ConductDrug> conductDrugs = conductDrugRepository.findByConductIdWithMaster(c.getConductId());
+				List<JsonFullConductDrug> jsonConductDrugs = conductDrugs.stream()
+					.map(JsonFullConductDrug::create)
+					.collect(Collectors.toList());
+				jsonConduct.setDrugs(jsonConductDrugs);
+				
 				return jsonConduct;
 			})
 			.collect(Collectors.toList());

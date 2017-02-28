@@ -110,7 +110,7 @@ public class PrescExample {
 		return masterValidFrom;
 	}
 
-	public void setMasterValidFrom(Date mastervalidfrom){
+	public void setMasterValidFrom(Date masterValidFrom){
 		this.masterValidFrom = masterValidFrom;
 	}
 
