@@ -17,6 +17,7 @@ import jp.chang.myclinic.web.json.JsonFullShinryou;
 import jp.chang.myclinic.web.json.JsonFullConduct;
 import jp.chang.myclinic.web.json.JsonFullConductShinryou;
 import jp.chang.myclinic.web.json.JsonFullConductDrug;
+import jp.chang.myclinic.web.json.JsonFullConductKizai;
 
 import jp.chang.myclinic.model.Visit;
 import jp.chang.myclinic.model.VisitRepository;
@@ -127,7 +128,11 @@ public class VisitController {
 					.map(JsonFullConductDrug::create)
 					.collect(Collectors.toList());
 				jsonConduct.setDrugs(jsonConductDrugs);
-				
+				List<ConductKizai> conductKizaiList = conductKizaiRepository.findByConductIdWithMaster(c.getConductId());
+				List<JsonFullConductKizai> jsonConductKizaiList = conductKizaiList.stream()
+					.map(JsonFullConductKizai::create)
+					.collect(Collectors.toList());
+				jsonConduct.setKizaiList(jsonConductKizaiList);
 				return jsonConduct;
 			})
 			.collect(Collectors.toList());

@@ -73,6 +73,17 @@ public class JsonFullConduct {
 		this.drugs = arg;
 	}
 
+	@JsonProperty("kizai_list")
+	private List<JsonFullConductKizai> kizaiList;
+
+	public List<JsonFullConductKizai> getKizaiList(){
+		return kizaiList;
+	}
+
+	public void setKizaiList(List<JsonFullConductKizai> kizaiList){
+		this.kizaiList = kizaiList;
+	}
+
 	public static JsonFullConduct create(Conduct conduct){
 		JsonFullConduct dst = new JsonFullConduct();
 		dst.setConductId(conduct.getConductId());
