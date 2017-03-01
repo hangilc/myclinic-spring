@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Created by hangil on 2017/03/01.
  */
@@ -30,6 +32,11 @@ public class PharmaDrugController {
     public JsonPharmaDrug getPharmaDrug(@RequestParam("iyakuhincode") int iyakuhincode){
         PharmaDrug pharmaDrug = pharmaDrugRepository.findOne(iyakuhincode);
         return JsonPharmaDrug.fromPharmaDrug(pharmaDrug);
+    }
+
+    @RequestMapping(value="", method= RequestMethod.GET, params={"_q=search_pharma_drug", "text"})
+    public List<Integer> searchIyakuhincodeByName(@RequestParam("text") String text){
+        return pharmaDrugRepository.searchIyakuhincodeByName(text);
     }
 
 }
