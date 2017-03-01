@@ -46,6 +46,10 @@ public class ShoubyoumeiMaster {
 		return validFrom;
 	}
 
+	public void setValidFrom(Date validFrom) {
+		this.validFrom = validFrom;
+	}
+
 	private String name;
 
 	public String getName(){

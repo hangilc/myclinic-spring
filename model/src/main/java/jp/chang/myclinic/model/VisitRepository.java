@@ -12,4 +12,8 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 	@EntityGraph(attributePaths={"patient"})
 	@Query("select v from Visit v")
 	List<Visit> findAllWithPatient(Pageable pageable);
+
+	int countByPatientId(int patientId);
+
+	List<Visit> findByPatientId(int patientId, Pageable pageable);
 }

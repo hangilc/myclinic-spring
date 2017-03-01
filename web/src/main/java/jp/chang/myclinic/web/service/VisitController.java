@@ -95,6 +95,8 @@ public class VisitController {
 	public JsonFullVisit getFullVisit(@RequestParam("visit_id") int visitId){
 		JsonFullVisit dst = new JsonFullVisit();
 		Visit visit = visitRepository.findOne(visitId);
+		return extendVisit(visit);
+		/*
 		JsonFullVisit.stuff(dst, visit);
 		List<Text> texts = textRepository.findAllByVisitId(visitId);
 		List<JsonText> jsonTexts = texts.stream()
@@ -136,6 +138,70 @@ public class VisitController {
 				return jsonConduct;
 			})
 			.collect(Collectors.toList());
+		dst.setConducts(jsonConducts);
+		return dst;
+		*/
+	}
+
+	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=calc_visits", "patient_id"})
+	public int calcVisits(@RequestParam("patient_id") int patientId){
+		return visitRepository.countByPatientId(patientId);
+	}
+
+	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=list_full_visits", "patient_id", "offset", "n"})
+	public List<JsonFullVisit> listFullVisits(@RequestParam("patient_id") int patientId,
+											  @RequestParam("offset") int offset, @RequestParam("n") int n){
+		Pageable pageable = new PageRequest(offset/n, n, new Sort(Sort.Direction.DESC, "visitId"));
+		List<Visit> visits = visitRepository.findByPatientId(patientId, pageable);
+		return visits.stream()
+				.map(this::extendVisit)
+				.collect(Collectors.toList());
+	}
+
+	private JsonFullVisit extendVisit(Visit visit){
+		int visitId = visit.getVisitId();
+		JsonFullVisit dst = new JsonFullVisit();
+		JsonFullVisit.stuff(dst, visit);
+		List<Text> texts = textRepository.findAllByVisitId(visitId);
+		List<JsonText> jsonTexts = texts.stream()
+				.map(JsonText::fromText)
+				.collect(Collectors.toList());
+		dst.setTexts(jsonTexts);
+		List<Drug> drugs = drugRepository.findByVisitIdWithMaster(visitId);
+		List<JsonFullDrug> jsonDrugs = drugs.stream()
+				.map(JsonFullDrug::create)
+				.collect(Collectors.toList());
+		dst.setDrugs(jsonDrugs);
+		List<Shinryou> shinryouList = shinryouRepository.findByVisitIdWithMaster(visitId);
+		List<JsonFullShinryou> jsonShinryouList = shinryouList.stream()
+				.map(JsonFullShinryou::create)
+				.collect(Collectors.toList());
+		dst.setShinryouList(jsonShinryouList);
+		List<Conduct> conducts = conductRepository.findByVisitId(visitId);
+		List<JsonFullConduct> jsonConducts = conducts.stream()
+				.map(c -> {
+					JsonFullConduct jsonConduct = JsonFullConduct.create(c);
+					Optional<String> gazouLabel = gazouLabelRepository.findOneByConductId(c.getConductId())
+							.map(g -> g.getLabel());
+					jsonConduct.setGazouLabel(gazouLabel.orElse(""));
+					List<ConductShinryou> conductShinryouList = conductShinryouRepository.findByConductIdWithMaster(c.getConductId());
+					List<JsonFullConductShinryou> jsonConductShinryouList = conductShinryouList.stream()
+							.map(JsonFullConductShinryou::create)
+							.collect(Collectors.toList());
+					jsonConduct.setShinryouList(jsonConductShinryouList);
+					List<ConductDrug> conductDrugs = conductDrugRepository.findByConductIdWithMaster(c.getConductId());
+					List<JsonFullConductDrug> jsonConductDrugs = conductDrugs.stream()
+							.map(JsonFullConductDrug::create)
+							.collect(Collectors.toList());
+					jsonConduct.setDrugs(jsonConductDrugs);
+					List<ConductKizai> conductKizaiList = conductKizaiRepository.findByConductIdWithMaster(c.getConductId());
+					List<JsonFullConductKizai> jsonConductKizaiList = conductKizaiList.stream()
+							.map(JsonFullConductKizai::create)
+							.collect(Collectors.toList());
+					jsonConduct.setKizaiList(jsonConductKizaiList);
+					return jsonConduct;
+				})
+				.collect(Collectors.toList());
 		dst.setConducts(jsonConducts);
 		return dst;
 	}
