@@ -4,13 +4,11 @@ import jp.chang.myclinic.model.IyakuhinMaster;
 import jp.chang.myclinic.model.IyakuhinMasterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by hangil on 2017/03/01.
@@ -37,4 +35,22 @@ public class IyakuhinMasterController {
         }
     }
 
+    @RequestMapping(value="", method= RequestMethod.POST, params={"_q=batch_get_most_recent_iyakuhin_master"})
+    public List<IyakuhinMaster> batchGetMostRecentIyakuhinMaster(@RequestBody BodyIyakuhincodes body){
+        return body.getIyakuhincodes().stream()
+                .map(code -> iyakuhinMasterRepository.findTopByIyakuhincodeOrderByValidFromDesc(code))
+                .collect(Collectors.toList());
+    }
+}
+
+class BodyIyakuhincodes {
+    public List<Integer> getIyakuhincodes() {
+        return iyakuhincodes;
+    }
+
+    public void setIyakuhincodes(List<Integer> iyakuhincodes) {
+        this.iyakuhincodes = iyakuhincodes;
+    }
+
+    private List<Integer> iyakuhincodes;
 }
