@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -24,14 +23,14 @@ public class IyakuhinMasterController {
     IyakuhinMasterRepository iyakuhinMasterRepository;
 
     @RequestMapping(value="", method= RequestMethod.GET, params={"_q=search_most_recent_iyakuhin_master", "text"})
-    public List<IyakuhinMaster> searchMostRecentIyakuhinMaster(@RequestParam(value="text") String text){
+    public List<Integer> searchMostRecentIyakuhinMaster(@RequestParam(value="text") String text){
         text = text.trim();
         text = text.replace("\u3000", " "); // zenkaku space
         String[] words = text.split("\\s", 2);
         if( words.length == 1 ){
-            return iyakuhinMasterRepository.searchByName(text);
+            return iyakuhinMasterRepository.searchIyakuhincodeByName(text);
         } else {
-            return iyakuhinMasterRepository.searchByName(words[0], words[1]);
+            return iyakuhinMasterRepository.searchIyakuhincodeByName(words[0], words[1]);
         }
     }
 
