@@ -24,8 +24,17 @@ public class PharmaDrugController {
     @Transactional()
     public int enterPharmaDrug(@RequestBody JsonPharmaDrug jsonPharmaDrug){
         PharmaDrug pharmaDrug = JsonPharmaDrug.toPharmaDrug(jsonPharmaDrug);
+        pharmaDrug.setIyakuhincode((null));
         pharmaDrugRepository.save(pharmaDrug);
         return pharmaDrug.getIyakuhincode();
+    }
+
+    @RequestMapping(value="", method= RequestMethod.POST, params={"_q=update_pharma_drug"})
+    @Transactional()
+    public boolean updatePharmaDrug(@RequestBody JsonPharmaDrug jsonPharmaDrug){
+        PharmaDrug pharmaDrug = JsonPharmaDrug.toPharmaDrug(jsonPharmaDrug);
+        pharmaDrugRepository.save(pharmaDrug);
+        return true;
     }
 
     @RequestMapping(value="", method= RequestMethod.GET, params={"_q=get_pharma_drug", "iyakuhincode"})
