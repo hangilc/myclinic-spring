@@ -28,4 +28,5 @@ public class App implements CommandLineRunner {
 		Patient patient = patientRepository.findOne(198);
 		System.out.println(patient);
 	}
+
 }
