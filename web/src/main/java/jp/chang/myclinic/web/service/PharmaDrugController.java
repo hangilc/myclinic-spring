@@ -48,4 +48,25 @@ public class PharmaDrugController {
         return pharmaDrugRepository.searchIyakuhincodeByName(text);
     }
 
+    @RequestMapping(value="", method= RequestMethod.POST, params={"_q=delete_pharma_drug"})
+    @Transactional()
+    public boolean deletePharmaDrug(@RequestBody BodyIyakuhincode body){
+        int iyakuhincode = body.getIyakuhincode();
+        pharmaDrugRepository.delete(iyakuhincode);
+        return true;
+    }
+
+}
+
+class BodyIyakuhincode {
+    public int getIyakuhincode() {
+        return iyakuhincode;
+    }
+
+    public void setIyakuhincode(int iyakuhincode) {
+        this.iyakuhincode = iyakuhincode;
+    }
+
+    private int iyakuhincode;
+
 }
