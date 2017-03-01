@@ -1,4 +1,4 @@
-package jp.chang.myclinic.web.json;
+package jp.chang.myclinic.web.service.json;
 
 import jp.chang.myclinic.model.Drug;
 import jp.chang.myclinic.model.IyakuhinMaster;
@@ -117,7 +117,7 @@ public class JsonFullDrug {
 		return masterValidFrom;
 	}
 
-	public void setMasterValidFrom(Date mastervalidfrom){
+	public void setMasterValidFrom(Date masterValidFrom){
 		this.masterValidFrom = masterValidFrom;
 	}
 

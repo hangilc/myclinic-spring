@@ -1,6 +1,6 @@
-package jp.chang.myclinic.web.json;
+package jp.chang.myclinic.web.service.json;
 
-import jp.chang.myclinic.model.Shinryou;
+import jp.chang.myclinic.model.ConductShinryou;
 import jp.chang.myclinic.model.ShinryouMaster;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.sql.Date;
@@ -9,28 +9,28 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.math.BigDecimal;
 
-public class JsonFullShinryou {
+public class JsonFullConductShinryou {
 
-	@JsonProperty("shinryou_id")
-	private Integer shinryouId;
+	@JsonProperty("id")
+	private Integer conductShinryouId;
 
-	public Integer getShinryouId(){
-		return shinryouId;
+	public Integer getConductShinryouId(){
+		return conductShinryouId;
 	}
 
-	public void setShinryouId(Integer shinryouId){
-		this.shinryouId = shinryouId;
+	public void setConductShinryouId(Integer conductShinryouId){
+		this.conductShinryouId = conductShinryouId;
 	}
 
-	@JsonProperty("visit_id")
-	private Integer visitId;
+	@JsonProperty("visit_conduct_id")
+	private Integer conductId;
 
-	public Integer getVisitId(){
-		return visitId;
+	public Integer getConductId(){
+		return conductId;
 	}
 
-	public void setVisitId(Integer visitId){
-		this.visitId = visitId;
+	public void setConductId(Integer conductId){
+		this.conductId = conductId;
 	}
 
 	private Integer shinryoucode;
@@ -201,10 +201,10 @@ public class JsonFullShinryou {
 		this.validUpto = validUpto;
 	}
 
-	public static JsonFullShinryou create(Shinryou src){
-		JsonFullShinryou dst = new JsonFullShinryou();
-		dst.setShinryouId(src.getShinryouId());
-		dst.setVisitId(src.getVisitId());
+	public static JsonFullConductShinryou create(ConductShinryou src){
+		JsonFullConductShinryou dst = new JsonFullConductShinryou();
+		dst.setConductShinryouId(src.getConductShinryouId());
+		dst.setConductId(src.getConductId());
 		dst.setShinryoucode(src.getShinryoucode());
 		dst.setMasterValidFrom(src.getMasterValidFrom());
 		ShinryouMaster m = src.getMaster();
@@ -224,4 +224,5 @@ public class JsonFullShinryou {
 		dst.setValidUpto(m.getValidUpto());
 		return dst;
 	}
+
 }

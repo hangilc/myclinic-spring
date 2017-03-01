@@ -1,4 +1,4 @@
-package jp.chang.myclinic.web;
+package jp.chang.myclinic.web.service;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -8,13 +8,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import jp.chang.myclinic.web.json.JsonRecentVisit;
-import jp.chang.myclinic.web.json.JsonVisit;
-import jp.chang.myclinic.web.json.JsonFullVisit;
-import jp.chang.myclinic.web.json.JsonText;
-import jp.chang.myclinic.web.json.JsonFullDrug;
-import jp.chang.myclinic.web.json.JsonFullShinryou;
-import jp.chang.myclinic.web.json.JsonFullConduct;
+import jp.chang.myclinic.web.service.json.JsonRecentVisit;
+import jp.chang.myclinic.web.service.json.JsonVisit;
+import jp.chang.myclinic.web.service.json.JsonFullVisit;
+import jp.chang.myclinic.web.service.json.JsonText;
+import jp.chang.myclinic.web.service.json.JsonFullDrug;
+import jp.chang.myclinic.web.service.json.JsonFullShinryou;
+import jp.chang.myclinic.web.service.json.JsonFullConduct;
+import jp.chang.myclinic.web.service.json.JsonFullConductShinryou;
+import jp.chang.myclinic.web.service.json.JsonFullConductDrug;
+import jp.chang.myclinic.web.service.json.JsonFullConductKizai;
 
 import jp.chang.myclinic.model.Visit;
 import jp.chang.myclinic.model.VisitRepository;
@@ -28,6 +31,12 @@ import jp.chang.myclinic.model.Conduct;
 import jp.chang.myclinic.model.ConductRepository;
 import jp.chang.myclinic.model.GazouLabel;
 import jp.chang.myclinic.model.GazouLabelRepository;
+import jp.chang.myclinic.model.ConductShinryou;
+import jp.chang.myclinic.model.ConductShinryouRepository;
+import jp.chang.myclinic.model.ConductDrug;
+import jp.chang.myclinic.model.ConductDrugRepository;
+import jp.chang.myclinic.model.ConductKizai;
+import jp.chang.myclinic.model.ConductKizaiRepository;
 
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
@@ -51,6 +60,9 @@ public class VisitController {
 	@Autowired ShinryouRepository shinryouRepository;
 	@Autowired ConductRepository conductRepository;
 	@Autowired GazouLabelRepository gazouLabelRepository;
+	@Autowired ConductShinryouRepository conductShinryouRepository;
+	@Autowired ConductDrugRepository conductDrugRepository;
+	@Autowired ConductKizaiRepository conductKizaiRepository;
 
 	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=recent_visits"})
 	public List<JsonRecentVisit> recentVisits() {
@@ -106,6 +118,21 @@ public class VisitController {
 				Optional<String> gazouLabel = gazouLabelRepository.findOneByConductId(c.getConductId())
 					.map(g -> g.getLabel());
 				jsonConduct.setGazouLabel(gazouLabel.orElse(""));
+				List<ConductShinryou> conductShinryouList = conductShinryouRepository.findByConductIdWithMaster(c.getConductId());
+				List<JsonFullConductShinryou> jsonConductShinryouList = conductShinryouList.stream()
+					.map(JsonFullConductShinryou::create)
+					.collect(Collectors.toList());
+				jsonConduct.setShinryouList(jsonConductShinryouList);
+				List<ConductDrug> conductDrugs = conductDrugRepository.findByConductIdWithMaster(c.getConductId());
+				List<JsonFullConductDrug> jsonConductDrugs = conductDrugs.stream()
+					.map(JsonFullConductDrug::create)
+					.collect(Collectors.toList());
+				jsonConduct.setDrugs(jsonConductDrugs);
+				List<ConductKizai> conductKizaiList = conductKizaiRepository.findByConductIdWithMaster(c.getConductId());
+				List<JsonFullConductKizai> jsonConductKizaiList = conductKizaiList.stream()
+					.map(JsonFullConductKizai::create)
+					.collect(Collectors.toList());
+				jsonConduct.setKizaiList(jsonConductKizaiList);
 				return jsonConduct;
 			})
 			.collect(Collectors.toList());

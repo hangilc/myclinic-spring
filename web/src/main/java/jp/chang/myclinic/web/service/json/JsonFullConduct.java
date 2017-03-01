@@ -1,4 +1,4 @@
-package jp.chang.myclinic.web.json;
+package jp.chang.myclinic.web.service.json;
 
 import jp.chang.myclinic.model.Conduct;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -50,6 +50,38 @@ public class JsonFullConduct {
 
 	public void setGazouLabel(String gazouLabel){
 		this.gazouLabel = gazouLabel;
+	}
+
+	@JsonProperty("shinryou_list")
+	private List<JsonFullConductShinryou> shinryouList;
+
+	public List<JsonFullConductShinryou> getShinryouList(){
+		return shinryouList;
+	}
+
+	public void setShinryouList(List<JsonFullConductShinryou> shinryouList){
+		this.shinryouList = shinryouList;
+	}
+
+	private List<JsonFullConductDrug> drugs;
+
+	public List<JsonFullConductDrug> getDrugs(){
+		return drugs;
+	}
+
+	public void setDrugs(List<JsonFullConductDrug> arg){
+		this.drugs = arg;
+	}
+
+	@JsonProperty("kizai_list")
+	private List<JsonFullConductKizai> kizaiList;
+
+	public List<JsonFullConductKizai> getKizaiList(){
+		return kizaiList;
+	}
+
+	public void setKizaiList(List<JsonFullConductKizai> kizaiList){
+		this.kizaiList = kizaiList;
 	}
 
 	public static JsonFullConduct create(Conduct conduct){
