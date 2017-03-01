@@ -120,6 +120,7 @@ public class JsonFullDisease {
         this.validUpto = validUpto;
     }
 
+    @JsonProperty("adj_list")
     private List<JsonFullDiseaseAdj> adjList;
 
     public List<JsonFullDiseaseAdj> getAdjList() {

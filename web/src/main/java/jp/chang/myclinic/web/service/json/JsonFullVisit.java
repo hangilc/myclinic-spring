@@ -51,7 +51,17 @@ public class JsonFullVisit {
 	public void setShahokokuhoId(Integer shahokokuhoId){
 		this.shahokokuhoId = shahokokuhoId;
 	}
-	
+
+	private JsonShahokokuho shahokokuho;
+
+	public JsonShahokokuho getShahokokuho() {
+		return shahokokuho;
+	}
+
+	public void setShahokokuho(JsonShahokokuho shahokokuho) {
+		this.shahokokuho = shahokokuho;
+	}
+
 	@JsonProperty("roujin_id")
 	private Integer roujinId;
 
@@ -62,7 +72,17 @@ public class JsonFullVisit {
 	public void setRoujinId(Integer roujinId){
 		this.roujinId = roujinId;
 	}
-	
+
+	private JsonRoujin roujin;
+
+	public JsonRoujin getRoujin() {
+		return roujin;
+	}
+
+	public void setRoujin(JsonRoujin roujin) {
+		this.roujin = roujin;
+	}
+
 	@JsonProperty("koukikourei_id")
 	private Integer koukikoureiId;
 
@@ -73,7 +93,17 @@ public class JsonFullVisit {
 	public void setKoukikoureiId(Integer koukikoureiId){
 		this.koukikoureiId = koukikoureiId;
 	}
-	
+
+	private JsonKoukikourei koukikourei;
+
+	public JsonKoukikourei getKoukikourei() {
+		return koukikourei;
+	}
+
+	public void setKoukikourei(JsonKoukikourei koukikourei) {
+		this.koukikourei = koukikourei;
+	}
+
 	@JsonProperty("kouhi_1_id")
 	private Integer kouhi1Id;
 
@@ -105,6 +135,17 @@ public class JsonFullVisit {
 
 	public void setKouhi3Id(Integer kouhi3Id){
 		this.kouhi3Id = kouhi3Id;
+	}
+
+	@JsonProperty("kouhi_list")
+	private List<JsonKouhi> kouhiList;
+
+	public List<JsonKouhi> getKouhiList() {
+		return kouhiList;
+	}
+
+	public void setKouhiList(List<JsonKouhi> kouhiList) {
+		this.kouhiList = kouhiList;
 	}
 
 	private List<JsonText> texts;
