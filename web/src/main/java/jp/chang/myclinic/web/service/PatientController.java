@@ -1,5 +1,8 @@
 package jp.chang.myclinic.web.service;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +15,9 @@ import jp.chang.myclinic.web.HandlerException;
 
 import jp.chang.myclinic.model.Patient;
 import jp.chang.myclinic.model.PatientRepository;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -29,5 +35,21 @@ public class PatientController {
 		return json;
 	}
 
+	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=search_patient", "text"})
+	public List<JsonPatient> searchPatient(@RequestParam("text") String text){
+		text = text.trim();
+		text = text.replace("\u3000", " "); // zenkaku space
+		String[] words = text.split("\\s", 2);
+		Pageable pageable = new PageRequest(0, 100, new Sort(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi"));
+		List<Patient> patients;
+		if( words.length == 1 ){
+			patients = patientRepository.searchPatientByName(text, pageable);
+		} else {
+			patients = patientRepository.searchPatientByName(words[0], words[1], pageable);
+		}
+		return patients.stream()
+				.map(JsonPatient::fromPatient)
+				.collect(Collectors.toList());
+	}
 
 }
