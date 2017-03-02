@@ -13,6 +13,10 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 	@Query("select v from Visit v")
 	List<Visit> findAllWithPatient(Pageable pageable);
 
+	@EntityGraph(attributePaths={"patient"})
+	@Query("select v from Visit v where FUNCTION('date', v.visitedAt) = current_date")
+	List<Visit> findTodaysVisits(Pageable pageable);
+
 	int countByPatientId(int patientId);
 
 	List<Visit> findByPatientId(int patientId, Pageable pageable);

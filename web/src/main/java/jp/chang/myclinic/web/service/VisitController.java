@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.List;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,12 +52,24 @@ public class VisitController {
 	KouhiRepository kouhiRepository;
 
 	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=recent_visits"})
-	public List<JsonRecentVisit> recentVisits() {
+	public List<JsonSearchVisitResult> recentVisits() {
 		Pageable pageable = new PageRequest(0, 20, new Sort(Sort.Direction.DESC, "visitId"));
 		List<Visit> visits = visitRepository.findAllWithPatient(pageable);
-		List<JsonRecentVisit> ret = new ArrayList<>();
+		List<JsonSearchVisitResult> ret = new ArrayList<>();
 		for(Visit visit: visits){
-			JsonRecentVisit recentVisit = JsonRecentVisit.fromVisit(visit);
+			JsonSearchVisitResult recentVisit = JsonSearchVisitResult.fromVisit(visit);
+			ret.add(recentVisit);
+		}
+		return ret;
+	}
+
+	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=list_todays_visits"})
+	public List<JsonSearchVisitResult> listTodaysVisits(){
+		Pageable pageable = new PageRequest(0, 20, new Sort(Sort.Direction.DESC, "visitId"));
+		List<Visit> visits = visitRepository.findTodaysVisits(pageable);
+		List<JsonSearchVisitResult> ret = new ArrayList<>();
+		for(Visit visit: visits){
+			JsonSearchVisitResult recentVisit = JsonSearchVisitResult.fromVisit(visit);
 			ret.add(recentVisit);
 		}
 		return ret;

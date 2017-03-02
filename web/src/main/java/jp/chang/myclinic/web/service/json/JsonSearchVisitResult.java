@@ -5,7 +5,7 @@ import jp.chang.myclinic.model.Patient;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class JsonRecentVisit {
+public class JsonSearchVisitResult {
 
 	@JsonProperty("patient_id")
 	private int patientId;
@@ -73,9 +73,9 @@ public class JsonRecentVisit {
 		this.visitId = visitId;
 	}
 
-	public static JsonRecentVisit fromVisit(Visit visit){
+	public static JsonSearchVisitResult fromVisit(Visit visit){
 		Patient patient = visit.getPatient();
-		JsonRecentVisit json = new JsonRecentVisit();
+		JsonSearchVisitResult json = new JsonSearchVisitResult();
 		json.setPatientId(patient.getPatientId());
 		json.setLastName(patient.getLastName());
 		json.setFirstName(patient.getFirstName());
