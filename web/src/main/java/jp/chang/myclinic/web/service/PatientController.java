@@ -52,7 +52,4 @@ public class PatientController {
 				.collect(Collectors.toList());
 	}
 
-	// testing master-map
-	@Autowired MasterMap masterMap;
-
 }
