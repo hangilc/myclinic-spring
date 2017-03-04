@@ -31,8 +31,9 @@ public class MasterMapTest {
 
     @Test
     public void testLoadResouce() throws IOException {
+        MasterMap map = new MasterMap();
         Resource resource = resourceLoader.getResource("classpath:master-map.txt");
-        MasterMap map = MasterMap.createFromResource(resource);
+        map.loadResource(resource);
         // Y,611140694,2012-04-01,620098801 ロキソニン錠６０ｍｇ
         assertEquals("resolve loxonin", 620098801, map.resolveIyakuhinCode(611140694, LocalDate.of(2014, 4, 1)));
         // S,112009210,2010-04-01,112007410 再診

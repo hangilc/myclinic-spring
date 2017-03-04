@@ -34,9 +34,7 @@ public class MasterMap {
         return kizaiCodeMap.resolve(code, at);
     }
 
-    static MasterMap createFromResource(Resource resource) throws IOException {
-        MasterMap map = new MasterMap();
-
+    void loadResource(Resource resource) throws IOException {
         try (InputStream in = resource.getInputStream()) {
             Scanner scanner = new Scanner(in);
             while (scanner.hasNextLine()) {
@@ -45,11 +43,11 @@ public class MasterMap {
                 char kind = line.charAt(0);
                 CodeMap codeMap = null;
                 if (kind == 'Y') {
-                    codeMap = map.iyakuhinCodeMap;
+                    codeMap = iyakuhinCodeMap;
                 } else if (kind == 'S') {
-                    codeMap = map.shinryouCodeMap;
+                    codeMap = shinryouCodeMap;
                 } else if (kind == 'K') {
-                    codeMap = map.kizaiCodeMap;
+                    codeMap = kizaiCodeMap;
                 }
                 if (codeMap == null) {
                     if (kind == ';') {
@@ -62,10 +60,10 @@ public class MasterMap {
                 }
             }
             scanner.close();
-            map.iyakuhinCodeMap.sortByDate();
-            map.shinryouCodeMap.sortByDate();
-            map.kizaiCodeMap.sortByDate();
-            return map;
+            iyakuhinCodeMap.sortByDate();
+            shinryouCodeMap.sortByDate();
+            kizaiCodeMap.sortByDate();
         }
     }
+
 }
