@@ -5,6 +5,8 @@ import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.InputStream;
@@ -18,8 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class App 
 {
@@ -52,7 +54,9 @@ public class App
     	confirmArgs(args);
     	Arrays.stream(args).forEach(master -> {
     		MasterDownloadInfo info = downloadInfoMap.get(master);
-    		String file = info.name + ".zip";
+    		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
+    		String stamp = LocalDateTime.now().format(formatter);
+    		String file = info.name + "-" + stamp + ".zip";
     		download(info.text, file);
     	});
     }
