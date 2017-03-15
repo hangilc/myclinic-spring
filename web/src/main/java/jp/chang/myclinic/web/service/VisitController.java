@@ -1,5 +1,6 @@
 package jp.chang.myclinic.web.service;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jp.chang.myclinic.model.*;
 import jp.chang.myclinic.web.service.json.*;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.ResolverStyle;
 import java.util.stream.Collectors;
 import java.util.List;
 import java.util.ArrayList;
@@ -50,6 +57,8 @@ public class VisitController {
 	RoujinRepository roujinRepository;
 	@Autowired
 	KouhiRepository kouhiRepository;
+	@Autowired
+	WqueueRepository wqueueRepository;
 
 	@RequestMapping(value="", method=RequestMethod.GET, params={"_q=recent_visits"})
 	public List<JsonSearchVisitResult> recentVisits() {
@@ -111,6 +120,39 @@ public class VisitController {
 				.map(this::extendVisit)
 				.collect(Collectors.toList());
 	}
+
+	@RequestMapping(value="", method=RequestMethod.POST, params={"_q=start_visit"})
+	@Transactional()
+	public int startVisit(@RequestBody BodyStartVisit body){
+		Visit visit = new Visit();
+		visit.setVisitId(null);
+		visit.setPatientId(body.getPatientId());
+		visit.setVisitedAt(stringToTimestamp(body.getAt()));
+		Date atDate = Date.valueOf(body.getAt().substring(0, 10));
+		Optional<Shahokokuho> shahokokuho = shahokokuhoRepository.findAvailable(body.getPatientId(), atDate);
+		visit.setShahokokuhoId(shahokokuho.map(Shahokokuho::getShahokokuhoId).orElse(0));
+		Optional<Koukikourei> koukikourei = koukikoureiRepository.findAvailable(body.getPatientId(), atDate);
+		visit.setKoukikoureiId(koukikourei.map(Koukikourei::getKoukikoureiId).orElse(0));
+		Optional<Roujin> roujin = roujinRepository.findAvailable(body.getPatientId(), atDate);
+		visit.setRoujinId(roujin.map(Roujin::getRoujinId).orElse(0));
+		List<Kouhi> kouhiList = kouhiRepository.findAvailable(body.getPatientId(), atDate);
+		if( kouhiList.size() > 0 ){
+			visit.setKouhi1Id(kouhiList.get(0).getKouhiId());
+		}
+		if( kouhiList.size() > 1 ){
+			visit.setKouhi2Id(kouhiList.get(1).getKouhiId());
+		}
+		if( kouhiList.size() > 2 ){
+			visit.setKouhi3Id(kouhiList.get(2).getKouhiId());
+		}
+		visitRepository.save(visit);
+		Wqueue wqueue = new Wqueue();
+		wqueue.setVisitId(visit.getVisitId());
+		wqueue.setWaitState(WqueueState.WaitExam);
+		wqueueRepository.save(wqueue);
+		return visit.getVisitId();
+	}
+
 
 	private JsonFullVisit extendVisit(Visit visit){
 		int visitId = visit.getVisitId();
@@ -192,4 +234,38 @@ public class VisitController {
 		return dst;
 	}
 
+	LocalDateTime stringToLocalDateTime(String src){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		formatter.withResolverStyle(ResolverStyle.STRICT);
+		return LocalDateTime.parse(src, formatter);
+	}
+
+	Timestamp stringToTimestamp(String src){
+		return Timestamp.valueOf(stringToLocalDateTime(src));
+	}
+
+
+}
+
+class BodyStartVisit {
+	@JsonProperty("patient_id")
+	private int patientId;
+
+	public int getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(int patientId) {
+		this.patientId = patientId;
+	}
+
+	private String at;
+
+	public String getAt() {
+		return at;
+	}
+
+	public void setAt(String at) {
+		this.at = at;
+	}
 }

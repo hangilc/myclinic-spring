@@ -1,16 +1,6 @@
 package jp.chang.myclinic.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.FetchType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
 
@@ -38,16 +28,29 @@ public class Wqueue {
 	}
 
 	@Column(name="wait_state")
-	private Integer waitState;
+	@Enumerated(EnumType.ORDINAL)
+	private WqueueState waitState;
 
-	public Integer getWaitState(){
+	public WqueueState getWaitState(){
 		return waitState;
 	}
 
-	public void setWaitState(Integer waitState){
+	public void setWaitState(WqueueState waitState){
 		this.waitState = waitState;
 	}
-	
+
+	@OneToOne
+	@PrimaryKeyJoinColumn
+	private Visit visit;
+
+	public Visit getVisit() {
+		return visit;
+	}
+
+	public void setVisit(Visit visit) {
+		this.visit = visit;
+	}
+
 	@Override
 	public String toString(){
 		return "Charge[" +

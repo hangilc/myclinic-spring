@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class JsonVisit {
 
 	@JsonProperty("visit_id")
-	private Integer visitId;
+	private Integer visitId = null;
 
 	public Integer getVisitId(){
 		return visitId;
@@ -22,7 +22,7 @@ public class JsonVisit {
 	}
 
 	@JsonProperty("patient_id")
-	private Integer patientId;
+	private Integer patientId = 0;
 
 	public Integer getPatientId(){
 		return patientId;
@@ -33,8 +33,6 @@ public class JsonVisit {
 	}
 
 	@JsonProperty("v_datetime")
-	//@JsonSerialize(using=TimestampSerializer.class)
-	//@JsonDeserialize(using=TimestampDeserializer.class)
 	private String visitedAt;
 
 	public String getVisitedAt(){
@@ -46,7 +44,7 @@ public class JsonVisit {
 	}
 
 	@JsonProperty("shahokokuho_id")
-	private Integer shahokokuhoId;
+	private Integer shahokokuhoId = 0;
 
 	public Integer getShahokokuhoId(){
 		return shahokokuhoId;
@@ -57,7 +55,7 @@ public class JsonVisit {
 	}
 	
 	@JsonProperty("roujin_id")
-	private Integer roujinId;
+	private Integer roujinId = 0;
 
 	public Integer getRoujinId(){
 		return roujinId;
@@ -68,7 +66,7 @@ public class JsonVisit {
 	}
 	
 	@JsonProperty("koukikourei_id")
-	private Integer koukikoureiId;
+	private Integer koukikoureiId = 0;
 
 	public Integer getKoukikoureiId(){
 		return koukikoureiId;
@@ -79,7 +77,7 @@ public class JsonVisit {
 	}
 	
 	@JsonProperty("kouhi_1_id")
-	private Integer kouhi1Id;
+	private Integer kouhi1Id = 0;
 
 	public Integer getKouhi1Id(){
 		return kouhi1Id;
@@ -90,7 +88,7 @@ public class JsonVisit {
 	}
 
 	@JsonProperty("kouhi_2_id")
-	private Integer kouhi2Id;
+	private Integer kouhi2Id = 0;
 
 	public Integer getKouhi2Id(){
 		return kouhi2Id;
@@ -101,7 +99,7 @@ public class JsonVisit {
 	}
 
 	@JsonProperty("kouhi_3_id")
-	private Integer kouhi3Id;
+	private Integer kouhi3Id = 0;
 
 	public Integer getKouhi3Id(){
 		return kouhi3Id;
