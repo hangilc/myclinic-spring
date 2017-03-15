@@ -15,21 +15,42 @@ public class App
 {
     public static void main( String[] args ) throws IOException 
     {
-    	download();
-        System.out.println( "Hello World!" );
+    	//downloadShinryou();
+    	//downloadIyakuhin();
+    	//downloadKizai();
+    	//downloadShoubyoumei();
+    	downloadShuushokugo();
     }
 
-    private static void download() throws IOException {
+    private static void downloadShinryou() throws IOException {
+    	download("医科診療行為マスター", "s.zip");
+    }
+
+    private static void downloadIyakuhin() throws IOException {
+    	download("医薬品マスター", "y.zip");
+    }
+
+    private static void downloadKizai() throws IOException {
+    	download("特定器材マスター", "t.zip");
+    }
+
+    private static void downloadShoubyoumei() throws IOException {
+    	download("傷病名マスター", "b.zip");
+    }
+
+    private static void downloadShuushokugo() throws IOException {
+    	download("修飾語マスター", "z.zip");
+    }
+
+    private static void download(String anchorText, String filepath) throws IOException {
     	WebClient webClient = new WebClient();
     	HtmlPage page = webClient.getPage("http://www.iryohoken.go.jp/shinryohoshu/downloadMenu/");
-    	System.out.println("Loaded page");
-    	HtmlAnchor anchor = page.getAnchorByText("医薬品マスター");
+    	HtmlAnchor anchor = page.getAnchorByText(anchorText);
     	Page downloadPage = anchor.click();
     	WebResponse webResponse = downloadPage.getWebResponse();
     	InputStream in = webResponse.getContentAsStream();
-    	System.out.println(anchor);
     	String filename = "y.zip";
-    	OutputStream out = Files.newOutputStream(Paths.get(filename));
+    	OutputStream out = Files.newOutputStream(Paths.get(filepath));
     	byte[] buffer = new byte[1024];
     	int len = in.read(buffer);
     	while( len >= 0 ){

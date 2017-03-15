@@ -1,4 +1,5 @@
 target/
+[s,y,t,b,z].zip
 *.sublime-workspace
 *.sublime-project
 .idea
