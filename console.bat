@@ -1,2 +1,2 @@
-@set PATH=.\master-task\target\appassembler\bin;%PATH%
+@set PATH=.\master-download\target\appassembler\bin;%PATH%
 cmd /K
