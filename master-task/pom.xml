@@ -24,7 +24,11 @@
 		  <artifactId>htmlunit</artifactId>
 		  <version>2.25</version>
 		</dependency>
-    <dependency>
+		<dependency>
+		  <groupId>com.beust</groupId>
+		  <artifactId>jcommander</artifactId>
+		  <version>1.60</version>
+		</dependency>    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
@@ -40,6 +44,27 @@
   			<configuration>
   				<mainClass>jp.chang.myclinic.App</mainClass>
   			</configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <version>1.10</version>
+        <executions>
+        	<execution>
+        		<goals>
+        			<goal>assemble</goal>
+        		</goals>
+        		<phase>package</phase>
+        	</execution>
+        </executions>
+        <configuration>
+          <programs>
+            <program>
+              <mainClass>jp.chang.myclinic.App</mainClass>
+              <name>master</name>
+            </program>
+          </programs>
+        </configuration>
   		</plugin>
   	</plugins>
   </build>
