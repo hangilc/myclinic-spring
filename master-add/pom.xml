@@ -8,9 +8,9 @@
     <version>1.0.0-SNAPSHOT</version>
   </parent>
   <groupId>jp.chang.myclinic</groupId>
-  <artifactId>master-download</artifactId>
+  <artifactId>master-add</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>master-download</name>
+  <name>master-add</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,11 +19,6 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
   </properties>
   <dependencies>
-    <dependency>
-      <groupId>net.sourceforge.htmlunit</groupId>
-      <artifactId>htmlunit</artifactId>
-      <version>2.25</version>
-    </dependency>
     <dependency>
         <groupId>commons-cli</groupId>
         <artifactId>commons-cli</artifactId>
@@ -62,7 +57,7 @@
           <programs>
             <program>
               <mainClass>jp.chang.myclinic.App</mainClass>
-              <id>master-download</id>
+              <id>master-add</id>
             </program>
           </programs>
         </configuration>
