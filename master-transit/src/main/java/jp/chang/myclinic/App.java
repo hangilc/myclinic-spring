@@ -10,8 +10,9 @@ public class App
     public static void main( String[] args ) throws IOException
     {
     	ConsoleReader reader = new ConsoleReader();
-    	PrintWriter out = new PrintWriter(reader.getOutput());
-    	out.println("hello, world");
-    	out.flush();
+    	reader.getCursorBuffer().write("pqr");
+    	String line = reader.readLine(">");
+    	reader.println(line);
+    	reader.flush();
     }
 }
