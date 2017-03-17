@@ -8,11 +8,12 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>common</module>
-        <module>model</module>
-        <module>web</module>
-        <module>master-download</module>
-	    <module>master-add</module>
-	</modules>
+      <module>common</module>
+      <module>model</module>
+      <module>web</module>
+      <module>master-download</module>
+      <module>master-add</module>
+      <module>master-transit</module>
+  </modules>
 
 </project>
