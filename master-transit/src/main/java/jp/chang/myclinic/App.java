@@ -45,34 +45,34 @@ public class App implements CommandLineRunner {
     	// reader.flush();
     }
 
-    private List<IyakuhinMaster> searchIyakuhin(String[] texts){
-    	List<IyakuhinMaster> list = new ArrayList<>();
-    	String text = "%" + String.join("%", texts) + "%";
-    	jdbcTemplate.query("select * from iyakuhin_master_arch where " +
-    		" name like ? and valid_upto = '0000-00-00'",
-    		new Object[]{ text },
-    		(row, rowNum) -> new IyakuhinMaster(
-    			row.getInt("iyakuhincode"),
-    			row.getString("valid_from"),
-    			row.getString("name")
-    		)
-    	).forEach(master -> {
-    		list.add(master);
-    	});
-    	return list;
-    }
+    // private List<IyakuhinMaster> searchIyakuhin(String[] texts){
+    // 	List<IyakuhinMaster> list = new ArrayList<>();
+    // 	String text = "%" + String.join("%", texts) + "%";
+    // 	jdbcTemplate.query("select * from iyakuhin_master_arch where " +
+    // 		" name like ? and valid_upto = '0000-00-00'",
+    // 		new Object[]{ text },
+    // 		(row, rowNum) -> new IyakuhinMaster(
+    // 			row.getInt("iyakuhincode"),
+    // 			row.getString("valid_from"),
+    // 			row.getString("name")
+    // 		)
+    // 	).forEach(master -> {
+    // 		list.add(master);
+    // 	});
+    // 	return list;
+    // }
 }
 
-class IyakuhinMaster {
-	public int iyakuhincode;
-	public String validFrom;
-	public String name;
+// class IyakuhinMaster {
+// 	public int iyakuhincode;
+// 	public String validFrom;
+// 	public String name;
 
-	public IyakuhinMaster(){}
+// 	public IyakuhinMaster(){}
 
-	public IyakuhinMaster(int iyakuhincode, String validFrom, String name){
-		this.iyakuhincode = iyakuhincode;
-		this.validFrom = validFrom;
-		this.name = name;
-	}
-}
+// 	public IyakuhinMaster(int iyakuhincode, String validFrom, String name){
+// 		this.iyakuhincode = iyakuhincode;
+// 		this.validFrom = validFrom;
+// 		this.name = name;
+// 	}
+// }

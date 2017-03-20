@@ -11,7 +11,30 @@ class IyakuhinMenu extends Menu {
 	IyakuhinMenu(MainMenu mainMenu){
 		this.mainMenu = mainMenu;
 		commands = new ArrayList<Command>();
+		commands.add(new FromCommand());
 		commands.add(new CancelCommand());
+	}
+
+	private class FromCommand implements Command {
+		@Override
+		public String getName(){
+			return "from";
+		}
+
+		@Override
+		public String getDescription(){
+			return "chooses iyakuhin from which to transit";
+		}
+
+		@Override
+		public String getDetail(){
+			return "syntax: from";
+		}
+
+		@Override
+		public Menu exec(String arg){
+			return new IyakuhinFromMenu(IyakuhinMenu.this);
+		}
 	}
 
 	private class CancelCommand implements Command {
