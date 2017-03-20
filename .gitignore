@@ -5,7 +5,7 @@ masters/
 *.sublime-project
 .idea
 *.iml
-application.properties
+./application.properties
 
 
 
