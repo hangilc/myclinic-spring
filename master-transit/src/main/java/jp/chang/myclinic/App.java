@@ -6,8 +6,6 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.ArrayList;
 
-import jline.console.ConsoleReader;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,21 +23,26 @@ public class App implements CommandLineRunner {
     JdbcTemplate jdbcTemplate;
 
     public void run(String[] args) throws IOException {
-    	ConsoleReader reader = new ConsoleReader();
-    	PrintWriter out = new PrintWriter(reader.getOutput());
-    	String line;
-    	line = reader.readLine("Search old iyakuhin by name: ");
-    	String[] texts = new String[]{ line };
-    	List<IyakuhinMaster> selections = searchIyakuhin(texts);
-    	while( selections.size() > 20 ){
-    		break;
+        Menu menu = new MainMenu();
+        while( menu != null ){
+            menu = menu.exec();
+        }
 
-    	}
-    	for(int i=1;i<selections.size();i++){
-    		IyakuhinMaster m = selections.get(i-1);
-    		out.printf("%2d. %s\n", i, m.name);
-    	}
-    	reader.flush();
+    	// ConsoleReader reader = new ConsoleReader();
+    	// PrintWriter out = new PrintWriter(reader.getOutput());
+    	// String line;
+    	// line = reader.readLine("Search old iyakuhin by name: ");
+    	// String[] texts = new String[]{ line };
+    	// List<IyakuhinMaster> selections = searchIyakuhin(texts);
+    	// while( selections.size() > 20 ){
+    	// 	break;
+
+    	// }
+    	// for(int i=1;i<selections.size();i++){
+    	// 	IyakuhinMaster m = selections.get(i-1);
+    	// 	out.printf("%2d. %s\n", i, m.name);
+    	// }
+    	// reader.flush();
     }
 
     private List<IyakuhinMaster> searchIyakuhin(String[] texts){
