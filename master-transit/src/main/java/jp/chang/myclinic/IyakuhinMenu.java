@@ -14,6 +14,7 @@ class IyakuhinMenu extends Menu {
 		this.mainMenu = mainMenu;
 		commands = new ArrayList<Command>();
 		commands.add(new FromCommand());
+		commands.add(new ToCommand());
 		commands.add(new CancelCommand());
 	}
 
@@ -44,6 +45,28 @@ class IyakuhinMenu extends Menu {
 		@Override
 		public Menu exec(String arg){
 			return new IyakuhinFromMenu(IyakuhinMenu.this);
+		}
+	}
+
+	private class ToCommand implements Command {
+		@Override
+		public String getName(){
+			return "to";
+		}
+
+		@Override
+		public String getDescription(){
+			return "chooses iyakuhin to which to transit";
+		}
+
+		@Override
+		public String getDetail(){
+			return "syntax: to";
+		}
+
+		@Override
+		public Menu exec(String arg){
+			return new IyakuhinToMenu(IyakuhinMenu.this);
 		}
 	}
 
