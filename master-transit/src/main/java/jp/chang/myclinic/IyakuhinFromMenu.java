@@ -4,24 +4,23 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@Component
 class IyakuhinFromMenu extends Menu {
 
 	private IyakuhinMenu parentMenu;
 	private List<Command> commands;
-
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+	private List<IyakuhinMaster> selections;
+	private IyakuhinMaster selectedMaster;
 
 	IyakuhinFromMenu(IyakuhinMenu parentMenu){
 		this.parentMenu = parentMenu;
 		commands = new ArrayList<Command>();
 		commands.add(new SearchCommand());
+		commands.add(new SelectCommand());
+		commands.add(new DoneCommand());
 		commands.add(new CancelCommand());
+		selections = new ArrayList<IyakuhinMaster>();
 	}
 
 	private class SearchCommand implements Command {
@@ -49,11 +48,79 @@ class IyakuhinFromMenu extends Menu {
 			String[] texts = arg.split("(?U:\\s+)");
 			if( texts.length > 0 ){
 				List<IyakuhinMaster> list = searchIyakuhin(texts);
-				list.stream().forEach(m -> {
-					System.out.println(m.name);
-				});
+				selections.clear();
+				selections.addAll(list);
+				printSelections();
 			}
 			return IyakuhinFromMenu.this;
+		}
+
+		private void printSelections(){
+			for(int i=0;i<selections.size();i++){
+				IyakuhinMaster m = selections.get(i);
+				System.out.printf("%2d.%s\n", i+1, m.name);
+			}
+		}
+	}
+
+	private class SelectCommand implements Command {
+		@Override
+		public String getName(){
+			return "select";
+		}
+
+		@Override
+		public String getDescription(){
+			return "selects iyakuhin transit from";
+		}
+
+		@Override
+		public String getDetail(){
+			return "syntax: select number\n" +
+				"  number -- index number of searched iyakuhin";
+		}
+
+		@Override
+		public Menu exec(String arg){
+			try {
+				int index = Integer.parseInt(arg);
+				selectedMaster = selections.get(index-1);
+				printSelectedMaster();
+				return IyakuhinFromMenu.this;
+			} catch(NumberFormatException ex){
+				System.out.println("invalid number format");
+				return IyakuhinFromMenu.this;
+			} catch(IndexOutOfBoundsException ex){
+				System.out.println("invalid index number");
+				return IyakuhinFromMenu.this;
+			}
+		}
+	}
+
+	private class DoneCommand implements Command {
+		@Override
+		public String getName(){
+			return "done";
+		}
+
+		@Override
+		public String getDescription(){
+			return "accepts current selection";
+		}
+
+		@Override
+		public String getDetail(){
+			return "syntax: done\n";
+		}
+
+		@Override
+		public Menu exec(String arg){
+			if( selectedMaster == null ){
+				System.out.println("no master selected");
+				return IyakuhinFromMenu.this;
+			}
+			parentMenu.setMasterFrom(selectedMaster);
+			return parentMenu;
 		}
 	}
 
@@ -92,6 +159,7 @@ class IyakuhinFromMenu extends Menu {
     private List<IyakuhinMaster> searchIyakuhin(String[] texts){
     	List<IyakuhinMaster> list = new ArrayList<>();
     	String text = "%" + String.join("%", texts) + "%";
+    	JdbcTemplate jdbcTemplate = JdbcUtil.jdbcTemplate;
     	jdbcTemplate.query("select * from iyakuhin_master_arch where " +
     		" name like ? and valid_upto = '0000-00-00' limit 100",
     		new Object[]{ text },
@@ -104,6 +172,15 @@ class IyakuhinFromMenu extends Menu {
     		list.add(master);
     	});
     	return list;
+    }
+
+    private void printSelectedMaster(){
+    	if( selectedMaster != null ){
+    		IyakuhinMaster m = selectedMaster;
+    		System.out.printf("current from: %s (%d)\n", m.name, m.iyakuhincode);
+    	} else {
+    		System.out.println("no selection");
+    	}
     }
 
 }
