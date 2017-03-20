@@ -2,6 +2,12 @@ package jp.chang.myclinic;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
+import java.time.format.DateTimeParseException;
 
 class IyakuhinMenu extends Menu {
 
@@ -9,13 +15,16 @@ class IyakuhinMenu extends Menu {
 	private List<Command> commands;
 	private IyakuhinMaster masterFrom;
 	private IyakuhinMaster masterTo;
+	private String validFrom;
 
 	IyakuhinMenu(MainMenu mainMenu){
 		this.mainMenu = mainMenu;
 		commands = new ArrayList<Command>();
 		commands.add(new FromCommand());
 		commands.add(new ToCommand());
+		commands.add(new SetValidFromCommand());
 		commands.add(new CancelCommand());
+		validFrom = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 	}
 
 	void setMasterFrom(IyakuhinMaster masterFrom){
@@ -24,6 +33,10 @@ class IyakuhinMenu extends Menu {
 
 	void setMasterTo(IyakuhinMaster masterTo){
 		this.masterTo = masterTo;
+	}
+
+	private Menu currentMenu(){
+		return this;
 	}
 
 	private class FromCommand implements Command {
@@ -70,6 +83,42 @@ class IyakuhinMenu extends Menu {
 		}
 	}
 
+	private class SetValidFromCommand implements Command {
+		@Override
+		public String getName(){
+			return "set-valid-from";
+		}
+
+		@Override
+		public String getDescription(){
+			return "sets valid-from";
+		}
+
+		@Override
+		public String getDetail(){
+			return "syntax: set-valid-from at\n" +
+				"  at - date in YYYY-MM-DD format";
+		}
+
+		@Override
+		public Menu exec(String arg){
+			boolean matches = Pattern.matches("^\\d{4}-\\d{2}-\\d{2}$", arg);
+			if( matches ){
+				DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+				formatter = formatter.withResolverStyle(ResolverStyle.STRICT);
+				try {
+					LocalDate d = LocalDate.parse(arg, formatter);
+					validFrom = d.format(DateTimeFormatter.ISO_LOCAL_DATE);
+				} catch(DateTimeParseException ex){
+					System.out.println("inappropriate valid-from: " + arg);
+				}
+			} else {
+				System.out.println("invalid valid-from: " + arg);
+			}
+			return currentMenu();
+		}
+	}
+
 	private class CancelCommand implements Command {
 		@Override public String getName(){ return "cancel"; }
 		@Override public Menu exec(String arg){ return mainMenu; }
@@ -100,6 +149,7 @@ class IyakuhinMenu extends Menu {
 		} else {
 			System.out.printf("master-to: %s (%d)\n", masterTo.name, masterTo.iyakuhincode);
 		}
+		System.out.printf("valid-from: %s\n", validFrom);
 	}
 		
 }
