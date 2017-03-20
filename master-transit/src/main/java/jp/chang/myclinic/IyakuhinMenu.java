@@ -23,7 +23,9 @@ class IyakuhinMenu extends Menu {
 		commands.add(new FromCommand());
 		commands.add(new ToCommand());
 		commands.add(new SetValidFromCommand());
+		commands.add(new PrintCommand());
 		commands.add(new CancelCommand());
+		commands.add(new ReturnCommand());
 		validFrom = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
 	}
 
@@ -119,11 +121,49 @@ class IyakuhinMenu extends Menu {
 		}
 	}
 
+	private class PrintCommand implements Command {
+		@Override
+		public String getName(){
+			return "print";
+		}
+
+		@Override
+		public String getDescription(){
+			return "prints a line for master-map";
+		}
+
+		@Override
+		public String getDetail(){
+			return "syntax: print";
+		}
+
+		@Override
+		public Menu exec(String arg){
+			if( masterFrom == null ){
+				System.out.println("master-from is not selected");
+			} else if( masterTo == null ){
+				System.out.println("master-to is not selected");
+			} else {
+				System.out.printf("Y,%d,%s,%d %s -> %s\n",
+					masterFrom.iyakuhincode, validFrom, masterTo.iyakuhincode,
+					masterFrom.name, masterTo.name);
+			}
+			return currentMenu();
+		}
+	}
+
 	private class CancelCommand implements Command {
 		@Override public String getName(){ return "cancel"; }
 		@Override public Menu exec(String arg){ return mainMenu; }
 		@Override public String getDescription(){ return "cancels iyakuhin transit"; }
 		@Override public String getDetail(){ return "syntax: cancel"; }
+	}
+
+	private class ReturnCommand implements Command {
+		@Override public String getName(){ return "return"; }
+		@Override public Menu exec(String arg){ return mainMenu; }
+		@Override public String getDescription(){ return "returns to main menu"; }
+		@Override public String getDetail(){ return "syntax: return"; }
 	}
 
 	@Override
