@@ -174,6 +174,16 @@ abstract class IyakuhinSearchBase extends Menu {
 		return commands;
 	}
 
+	@Override
+	public void printMessage(){
+		IyakuhinMaster m = getCurrentSelection();
+    	if( m != null ){
+    		System.out.printf("current selection: %s (%d)\n", m.name, m.iyakuhincode);
+    	} else {
+    		System.out.println("current selection: (no selection)");
+    	}
+	}
+
     private List<IyakuhinMaster> searchIyakuhin(String[] texts){
     	List<IyakuhinMaster> list = new ArrayList<>();
     	String text = "%" + String.join("%", texts) + "%";

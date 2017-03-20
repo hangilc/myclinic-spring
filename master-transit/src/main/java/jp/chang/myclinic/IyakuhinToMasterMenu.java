@@ -16,16 +16,6 @@ class IyakuhinToMenu extends IyakuhinSearchBase {
 	}
 
 	@Override
-	public void printMessage(){
-		IyakuhinMaster m = getCurrentSelection();
-    	if( m != null ){
-    		System.out.printf("current master-to: %s (%d)\n", m.name, m.iyakuhincode);
-    	} else {
-    		System.out.println("current master-to: (no selection)");
-    	}
-	}
-
-	@Override
 	public Menu handleDone(IyakuhinMaster master){
 		parentMenu.setMasterTo(master);
 		return parentMenu;
