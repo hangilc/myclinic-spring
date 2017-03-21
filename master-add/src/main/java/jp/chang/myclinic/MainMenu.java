@@ -15,4 +15,26 @@ class MainMenu extends Menu {
 		commands.add(new Menu.ExitCommand());
 		return commands;
 	}
+
+	private static class IyakuhinMenu implements Command {
+		@Override
+		public String getName(){
+			return "iyakuhin";
+		}
+
+		@Override
+		public String getDescription(){
+			return "adds iyakuhin master";
+		}
+
+		@Override
+		public String getDetail(){
+			return "syntax: iyakuhin";
+		}
+
+		@Override
+		public Menu exec(String arg){
+			return null;
+		}
+	}
 }
