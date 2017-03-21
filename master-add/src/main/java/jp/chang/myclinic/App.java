@@ -24,10 +24,10 @@ public class App implements CommandLineRunner {
 
     public void run(String[] args) throws IOException {
         JdbcUtil.jdbcTemplate = jdbcTemplate;
-        // Menu menu = new MainMenu();
-        // while( menu != null ){
-        //     menu = menu.exec();
-        // }
+        Menu menu = new MainMenu();
+        while( menu != null ){
+            menu = menu.exec();
+        }
     }
 
 }

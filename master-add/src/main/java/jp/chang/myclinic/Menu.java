@@ -88,4 +88,26 @@ abstract class Menu {
 		}
 		System.out.println("unknown command: " + cmd);
 	}
+
+	static class ExitCommand implements Command {
+		@Override
+		public String getName(){
+			return "exit";
+		}
+
+		@Override
+		public String getDescription(){
+			return "exits the program";
+		}
+
+		@Override
+		public String getDetail(){
+			return "syntax: exit";
+		}
+
+		@Override
+		public Menu exec(String arg){
+			return null;
+		}
+	}
 }
