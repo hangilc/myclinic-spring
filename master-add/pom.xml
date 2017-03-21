@@ -3,9 +3,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>jp.chang.myclinic</groupId>
-    <artifactId>project</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>1.5.2.RELEASE</version>
+    <relativePath/>
   </parent>
   <groupId>jp.chang.myclinic</groupId>
   <artifactId>master-add</artifactId>
@@ -28,6 +29,15 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-csv</artifactId>
         <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.41</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
