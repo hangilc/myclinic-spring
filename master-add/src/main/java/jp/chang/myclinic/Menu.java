@@ -57,6 +57,9 @@ abstract class Menu {
 				return commands.get(i).exec(arg);
 			}
 		}
+		if( "abort".equals(cmd) ){
+			return null;
+		}
 		System.out.println("unknown command: " + cmd);
 		return this;
 	}

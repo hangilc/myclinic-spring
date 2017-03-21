@@ -12,11 +12,12 @@ class MainMenu extends Menu {
 	@Override
 	protected List<Command> getCommands(){
 		List<Command> commands = new ArrayList<>();
+		commands.add(new IyakuhinCommand());
 		commands.add(new Menu.ExitCommand());
 		return commands;
 	}
 
-	private static class IyakuhinMenu implements Command {
+	private static class IyakuhinCommand implements Command {
 		@Override
 		public String getName(){
 			return "iyakuhin";
@@ -34,7 +35,7 @@ class MainMenu extends Menu {
 
 		@Override
 		public Menu exec(String arg){
-			return null;
+			return new IyakuhinAddMenu();
 		}
 	}
 }
