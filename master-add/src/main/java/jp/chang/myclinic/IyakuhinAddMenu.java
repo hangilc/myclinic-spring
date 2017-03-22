@@ -9,16 +9,20 @@ import java.io.IOException;
 import org.apache.commons.csv.CSVRecord;
 import jp.chang.myclinic.master.MasterZipFinder;
 import jp.chang.myclinic.master.CSVSearcher;
+import jp.chang.myclinic.master.IyakuhinMasterCSV;
+import jp.chang.myclinic.master.CommonsCSVRow;
 
 class IyakuhinAddMenu extends Menu {
 
 	private Menu parentMenu;
 	private Path zipFilePath;
+	private List<IyakuhinMasterCSV> selections;
 
 	IyakuhinAddMenu(Menu parentMenu){
 		this.parentMenu = parentMenu;
 		Path masterDir = Paths.get(".");
 		zipFilePath = MasterZipFinder.findMasterZip(masterDir, MasterZipFinder.IYAKUHIN_PREFIX);
+		selections = new ArrayList<>();
 		System.out.println(zipFilePath);
 	}
 
@@ -41,7 +45,13 @@ class IyakuhinAddMenu extends Menu {
 				try{
 					String[] texts = arg.split("(?U:\\s)");
 					List<CSVRecord> records = CSVSearcher.searchCSV(texts, zipFilePath, MasterZipFinder.IYAKUHIN_PREFIX + ".csv", 5);
-					System.out.println(records);
+					selections.clear();
+					records.stream().forEach(rec -> {
+						CommonsCSVRow row = new CommonsCSVRow(rec);
+						IyakuhinMasterCSV master = new IyakuhinMasterCSV(row);
+						selections.add(master);
+					});
+					printSelections();
 				} catch(IOException ex){
 					ex.printStackTrace(System.out);
 				}
@@ -54,6 +64,13 @@ class IyakuhinAddMenu extends Menu {
 			arg -> parentMenu
 			));
 		return commands;
+	}
+
+	private void printSelections(){
+		for(int i=0;i<selections.size();i++){
+			IyakuhinMasterCSV master = selections.get(i);
+			System.out.printf("%2d.%s (%d)\n", i+1, master.name, master.iyakuhincode);
+		}
 	}
 
 }
