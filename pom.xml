@@ -25,35 +25,4 @@
     <module>master-map</module>
   </modules>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>appassembler-maven-plugin</artifactId>
-        <version>1.10</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>assemble</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-        </executions>
-        <configuration>
-          <platforms>
-            <platform>windows</platform>
-          </platforms>
-          <assembleDirectory>${project.parent.basedir}/programs</assembleDirectory>
-          <programs>
-            <program>
-              <mainClass>jp.chang.myclinic.AppMasterMap</mainClass>
-              <id>master-map</id>
-            </program>
-          </programs>
-          <repositoryName>${repository.name}</repositoryName>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>
