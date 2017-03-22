@@ -22,6 +22,7 @@
     <module>master-add</module>
     <module>master-transit</module>
     <module>master-map</module>
+    <module>master-app</module>
   </modules>
 
 </project>
