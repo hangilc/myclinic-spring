@@ -1,6 +1,6 @@
 target/
 *.zip
-masters/
+master-files/
 *.sublime-workspace
 *.sublime-project
 .idea
