@@ -53,27 +53,6 @@
           <repositoryName>${repository.name}</repositoryName>
         </configuration>
       </plugin>
-<!--       <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.0.2</version>
-        <executions>
-          <execution>
-            <id>copy-program</id>
-            <phase>install</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.parent.basedir}/programs/${repository.name}</outputDirectory>
-              <resources>          
-                <resource>
-                  <directory>${basedir}/target/appassembler/${repository.name}</directory>
-                </resource>
-              </resources>              
-            </configuration>            
-          </execution>
-        </executions>
-      </plugin> -->
     </plugins>
   </build>
 
