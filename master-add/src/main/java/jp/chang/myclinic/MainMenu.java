@@ -17,7 +17,7 @@ class MainMenu extends Menu {
 		return commands;
 	}
 
-	private static class IyakuhinCommand implements Command {
+	private class IyakuhinCommand implements Command {
 		@Override
 		public String getName(){
 			return "iyakuhin";
@@ -35,7 +35,7 @@ class MainMenu extends Menu {
 
 		@Override
 		public Menu exec(String arg){
-			return new IyakuhinAddMenu();
+			return new IyakuhinAddMenu(MainMenu.this);
 		}
 	}
 }
