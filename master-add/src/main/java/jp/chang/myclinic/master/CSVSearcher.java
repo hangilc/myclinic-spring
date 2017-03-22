@@ -36,7 +36,6 @@ public class CSVSearcher {
 			Path masterFile = fs.getPath(csvFileName);
 			try(BufferedReader reader = Files.newBufferedReader(masterFile, Charset.forName("MS932"))){
 				String expr = String.join(".*", texts);
-				System.out.println(expr);
 				Pattern pattern = Pattern.compile(expr);
 				return searchCSV(pattern, reader, oneBasedNameIndex);
 			}
