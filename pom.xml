@@ -1,19 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>jp.chang.myclinic</groupId>
-    <artifactId>project</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+  <groupId>jp.chang.myclinic</groupId>
+  <artifactId>project</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-    <modules>
-      <module>common</module>
-      <module>model</module>
-      <module>web</module>
-      <module>master-download</module>
-      <module>master-add</module>
-      <module>master-transit</module>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.8</java.version>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <repository.name>repo-master-map</repository.name>
+  </properties>
+
+  <modules>
+    <module>common</module>
+    <module>model</module>
+    <module>web</module>
+    <module>master-download</module>
+    <module>master-add</module>
+    <module>master-transit</module>
+    <module>master-map</module>
   </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <version>1.10</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>assemble</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <platforms>
+            <platform>windows</platform>
+          </platforms>
+          <assembleDirectory>${project.parent.basedir}/programs</assembleDirectory>
+          <programs>
+            <program>
+              <mainClass>jp.chang.myclinic.AppMasterMap</mainClass>
+              <id>master-map</id>
+            </program>
+          </programs>
+          <repositoryName>${repository.name}</repositoryName>
+        </configuration>
+      </plugin>
+<!--       <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.0.2</version>
+        <executions>
+          <execution>
+            <id>copy-program</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.parent.basedir}/programs/${repository.name}</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>${basedir}/target/appassembler/${repository.name}</directory>
+                </resource>
+              </resources>              
+            </configuration>            
+          </execution>
+        </executions>
+      </plugin> -->
+    </plugins>
+  </build>
 
 </project>

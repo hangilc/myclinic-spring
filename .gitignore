@@ -1,11 +1,12 @@
 target/
 *.zip
 master-files/
+programs/
 *.sublime-workspace
 *.sublime-project
 .idea
 *.iml
-./application.properties
+application.properties
 
 
 
