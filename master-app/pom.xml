@@ -39,7 +39,7 @@
           <repositoryName>repo-master</repositoryName>
           <programs>
             <program>
-              <mainClass>jp.chang.myclinic.AppMaster</mainClass>
+              <mainClass>jp.chang.myclinic.masterapp.AppMaster</mainClass>
               <id>master</id>
             </program>
           </programs>
