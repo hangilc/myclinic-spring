@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.util.List;
 
-abstract class Menu {
+abstract public class Menu {
 
 	static protected BufferedReader reader;
 

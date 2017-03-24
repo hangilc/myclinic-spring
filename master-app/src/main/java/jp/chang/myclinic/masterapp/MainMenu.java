@@ -3,7 +3,7 @@ package jp.chang.myclinic.masterapp;
 import java.util.List;
 import java.util.ArrayList;
 
-class MainMenu extends Menu {
+public class MainMenu extends Menu {
 
 	@Override
 	public String getPrompt(){

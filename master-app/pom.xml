@@ -44,7 +44,7 @@
           <repositoryName>repo-master</repositoryName>
           <programs>
             <program>
-              <mainClass>jp.chang.myclinic.masterapp.AppMaster</mainClass>
+              <mainClass>jp.chang.myclinic.MasterApplication</mainClass>
               <id>master</id>
             </program>
           </programs>
