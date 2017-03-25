@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import jp.chang.myclinic.master.MasterDownloader;
+import jp.chang.myclinic.master.download.MasterDownloader;
 
 class DownloadMenu extends Menu {
 
