@@ -19,7 +19,6 @@ public class Globals {
 				throw new UncheckedIOException(ex);
 			}
 		}
-		System.out.println(masterFilesDirectory.toAbsolutePath());
 	}
 
 	public static Path getMasterFilesDirectory(){
