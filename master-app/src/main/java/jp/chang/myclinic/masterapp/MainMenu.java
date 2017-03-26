@@ -23,6 +23,11 @@ public class MainMenu implements Menu {
 			"syntax: add",
 			(arg, env) -> new AddMasterMenu(this)
 		));
+		commands.add(Command.create("transit",
+			"adds master code transit",
+			"syntax: transit",
+			(arg, env) -> new TransitMenu(this)
+		));
 		commands.add(Command.create("exit",
 			"exits the program",
 			"syntax: exit",
