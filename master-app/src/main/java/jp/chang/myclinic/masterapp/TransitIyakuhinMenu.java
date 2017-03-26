@@ -2,6 +2,8 @@ package jp.chang.myclinic.masterapp;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
@@ -61,12 +63,37 @@ public class TransitIyakuhinMenu implements Menu {
 			"syntax: to",
 			(arg, env) -> new TransitIyakuhinToMenu(this, validFrom)
 		));
+		commands.add(Command.create("set-valid-from",
+			"sets valid-from",
+			new String[]{
+				"syntax: set-valid-from at",
+				"  at - date in YYYY-MM-DD format"
+			},
+			this::doSetValidFrom
+		));
 		commands.add(Command.create("return",
 			"returns to parent menu",
 			"syntax: return",
 			(arg, env) -> parentMenu
 		));
 		return commands;
+	}
+
+	private Menu doSetValidFrom(String arg, MenuExecEnv env){
+		boolean matches = Pattern.matches("^\\d{4}-\\d{2}-\\d{2}$", arg);
+		if( matches ){
+			DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+			formatter = formatter.withResolverStyle(ResolverStyle.STRICT);
+			try {
+				LocalDate d = LocalDate.parse(arg, formatter);
+				validFrom = d.format(DateTimeFormatter.ISO_LOCAL_DATE);
+			} catch(DateTimeParseException ex){
+				env.out.println("inappropriate valid-from: " + arg);
+			}
+		} else {
+			env.out.println("invalid valid-from: " + arg);
+		}
+		return this;
 	}
 
 }
