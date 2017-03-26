@@ -7,18 +7,30 @@ import jp.chang.myclinic.master.transit.IyakuhinMaster;
 
 public class TransitIyakuhinFromMenu implements Menu {
 
-	private Menu parentMenu;
+	private TransitIyakuhinMenu parentMenu;
+	private String validFrom;
 	private List<IyakuhinMaster> selections;
 	private IyakuhinMaster selectedMaster;
 
-	public TransitIyakuhinFromMenu(Menu parentMenu){
+	public TransitIyakuhinFromMenu(TransitIyakuhinMenu parentMenu, String validFrom){
 		this.parentMenu = parentMenu;
+		this.validFrom = validFrom;
 		selections = new ArrayList<IyakuhinMaster>();
 	}
 
 	@Override
 	public String getPrompt(){
 		return "transit-iyakuhin-from>";
+	}
+
+	@Override
+	public void printMessage(MenuExecEnv env){
+		IyakuhinMaster m = selectedMaster;
+    	if( m != null ){
+    		System.out.printf("current master-from: %s (%d)\n", m.name, m.iyakuhincode);
+    	} else {
+    		System.out.println("current master-from: (none)");
+    	}
 	}
 
 	@Override
@@ -34,6 +46,19 @@ public class TransitIyakuhinFromMenu implements Menu {
 				"          in that order are searched."
 			},
 			this::doSearch
+		));
+		commands.add(Command.create("select",
+			"selects master-from",
+			new String[]{
+				"syntax: select number",
+				"  number -- index number of searched iyakuhin"
+			},
+			this::doSelect
+		));
+		commands.add(Command.create("done",
+			"accepts the current selection as master-from",
+			"syntax: done",
+			this::doDone
 		));
 		commands.add(Command.create("return",
 			"returns to parent menu",
@@ -54,13 +79,38 @@ public class TransitIyakuhinFromMenu implements Menu {
 		return this;
 	}
 
+	private Menu doSelect(String arg, MenuExecEnv env){
+		try {
+			int index = Integer.parseInt(arg);
+			selectedMaster = selections.get(index-1);
+		} catch(NumberFormatException ex){
+			env.out.println("invalid number format");
+		} catch(IndexOutOfBoundsException ex){
+			env.out.println("invalid index number");
+		}
+		return this;
+	}
+
+	private Menu doDone(String arg, MenuExecEnv env){
+		if( selectedMaster == null ){
+			env.out.println("no master selected");
+			return this;
+		} else {
+			parentMenu.setMasterFrom(selectedMaster);
+			return parentMenu;
+		}
+	}
+
     private List<IyakuhinMaster> searchIyakuhin(String[] texts, MenuExecEnv env){
     	List<IyakuhinMaster> list = new ArrayList<>();
     	String text = "%" + String.join("%", texts) + "%";
     	JdbcTemplate jdbcTemplate = env.getJdbcTemplate();
     	jdbcTemplate.query("select * from iyakuhin_master_arch where " +
-    		" name like ? and valid_upto = '0000-00-00' limit 100",
-    		new Object[]{ text },
+    		" name like ? and " + 
+    		" valid_from <= ? and " +
+    		" (valid_upto = '0000-00-00' or ? <= valid_upto) " +
+    		" limit 100 ",
+    		new Object[]{ text, validFrom, validFrom },
     		(row, rowNum) -> new IyakuhinMaster(
     			row.getInt("iyakuhincode"),
     			row.getString("valid_from"),
