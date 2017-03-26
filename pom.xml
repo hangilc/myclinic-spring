@@ -20,6 +20,7 @@
     <!--<module>web</module> -->
     <module>master-map</module>
     <module>master-app</module>
+    <module>wia</module>
   </modules>
 
 </project>
