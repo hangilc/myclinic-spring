@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import jp.chang.myclinic.master.download.MasterDownloader;
 
-class DownloadMenu extends Menu {
+class DownloadMenu implements Menu {
 
 	private Menu parentMenu;
 
@@ -33,23 +33,23 @@ class DownloadMenu extends Menu {
 		commands.add(Command.create("return",
 			"returns to parent menu",
 			"syntax: return",
-			arg -> parentMenu
+			(arg, env) -> parentMenu
 		));
 		return commands;
 	}
 
-	private Menu downloadIyakuhin(String arg){
+	private Menu downloadIyakuhin(String arg, MenuExecEnv env){
 		MasterDownloader downloader = new MasterDownloader();
 		String ts = makeTimeStamp();
 		String name = "y-" + ts + ".zip";
-		Path dir = Globals.getMasterFilesDirectory();
+		Path dir = env.getMasterFilesDirectory();
 		Path file = dir.resolve(Paths.get(name));
 		try { 
 			downloader.downloadIyakuhin(file);
-			System.out.printf("Downloaded iyakuhin master as %s.\n", file);
+			env.out.printf("Downloaded iyakuhin master as %s.\n", file);
 		} catch(IOException ex){
-			ex.printStackTrace(System.out);
-			System.out.println("Failed to download iyakuhin master.");
+			ex.printStackTrace(env.out);
+			env.out.println("Failed to download iyakuhin master.");
 		}
 		return this;
 	}

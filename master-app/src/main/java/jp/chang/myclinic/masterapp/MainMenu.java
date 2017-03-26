@@ -3,7 +3,7 @@ package jp.chang.myclinic.masterapp;
 import java.util.List;
 import java.util.ArrayList;
 
-public class MainMenu extends Menu {
+public class MainMenu implements Menu {
 
 	@Override
 	public String getPrompt(){
@@ -16,12 +16,12 @@ public class MainMenu extends Menu {
 		commands.add(Command.create("download",
 			"downalods master files",
 			"syntax: download",
-			arg -> new DownloadMenu(this)
+			(arg, env) -> new DownloadMenu(this)
 		));
 		commands.add(Command.create("exit",
-			"exits this program",
+			"exits the program",
 			"syntax: exit",
-			arg -> null
+			(arg, env) -> null
 		));
 		return commands;
 	}

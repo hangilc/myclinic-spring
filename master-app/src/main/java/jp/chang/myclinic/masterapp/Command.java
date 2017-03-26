@@ -1,14 +1,15 @@
 package jp.chang.myclinic.masterapp;
 
 interface Command {
+
 	interface CommandExecutor {
-		Menu execute(String arg);
+		Menu execute(String arg, MenuExecEnv env);
 	}
 
 	String getName();
 	String getDescription();
 	String getDetail();
-	Menu exec(String arg);
+	Menu exec(String arg, MenuExecEnv env);
 
 	static Command create(String name, String description, String[] detailLines, CommandExecutor executor){
 		return new Command(){
@@ -28,8 +29,8 @@ interface Command {
 			}
 
 			@Override
-			public Menu exec(String arg){
-				return executor.execute(arg);
+			public Menu exec(String arg, MenuExecEnv env){
+				return executor.execute(arg, env);
 			}
 		};
 	}
