@@ -44,6 +44,10 @@ public class MenuExecEnv {
 
 	public String readLine(String prompt){
 		out.print(prompt);
+		return readLine();
+	}
+
+	public String readLine(){
 		try {
 			return reader.readLine();
 		} catch(IOException ex){
