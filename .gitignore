@@ -6,6 +6,7 @@ programs/
 *.sublime-project
 .idea
 *.iml
+*.log
 application.properties
 
 
