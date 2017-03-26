@@ -71,6 +71,11 @@ public class TransitIyakuhinMenu implements Menu {
 			},
 			this::doSetValidFrom
 		));
+		commands.add(Command.create("print",
+			"prints a line for master-map",
+			"syntax: print",
+			this::doPrint
+		));
 		commands.add(Command.create("return",
 			"returns to parent menu",
 			"syntax: return",
@@ -96,4 +101,16 @@ public class TransitIyakuhinMenu implements Menu {
 		return this;
 	}
 
+	private Menu doPrint(String arg, MenuExecEnv env){
+		if( masterFrom == null ){
+			env.out.println("master-from is not selected");
+		} else if( masterTo == null ){
+			env.out.println("master-to is not selected");
+		} else {
+			env.out.printf("Y,%d,%s,%d %s -> %s\n",
+				masterFrom.iyakuhincode, validFrom, masterTo.iyakuhincode,
+				masterFrom.name, masterTo.name);
+		}
+		return this;
+	}
 }
