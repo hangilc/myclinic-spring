@@ -52,9 +52,14 @@ public class TransitIyakuhinMenu implements Menu {
 	public List<Command> getCommands(){
 		List<Command> commands = new ArrayList<>();
 		commands.add(Command.create("from",
-			"selects a master from which to transit",
+			"selects a master-from (master entry from which to transit)",
 			"syntax: from",
 			(arg, env) -> new TransitIyakuhinFromMenu(this, validFrom)
+		));
+		commands.add(Command.create("to",
+			"selects a master-to (master entry to which to transit)",
+			"syntax: to",
+			(arg, env) -> new TransitIyakuhinToMenu(this, validFrom)
 		));
 		commands.add(Command.create("return",
 			"returns to parent menu",
