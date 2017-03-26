@@ -1,14 +1,16 @@
 package jp.chang.myclinic.masterapp;
 
 import org.springframework.stereotype.Component;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.PostConstruct;
 import java.io.PrintStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import javax.annotation.PostConstruct;
 
 @Component
 public class MenuExecEnv {
@@ -18,6 +20,16 @@ public class MenuExecEnv {
 	@Value("${myclinic.master-files-directory:master-files}")
 	private String masterFilesConfig;
 	private Path masterFilesDirectory;
+	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate){
+		this.jdbcTemplate = jdbcTemplate;
+	}
+
+	public JdbcTemplate getJdbcTemplate(){
+		return jdbcTemplate;
+	}
 
 	public MenuExecEnv(){
 		out = System.out;
