@@ -8,6 +8,7 @@ import java.util.List;
 public class MenuDriver {
 
 	private MenuExecEnv env;
+	private Menu topMenu;
 
 	@Autowired
 	public void setMenuExecEnv(MenuExecEnv env){
@@ -19,6 +20,7 @@ public class MenuDriver {
 	}
 
 	public void run(Menu menu){
+		topMenu = menu;
 		while( menu != null ){
 			menu.printMessage(env);
 			env.out.println("(Type 'help' for help.)");
@@ -37,25 +39,32 @@ public class MenuDriver {
 	}
 
 	private Menu doCommand(Menu menu, String cmd, String arg){
-		if( "help".equals(cmd) ){
-			if( arg == null || arg.isEmpty() ){
-				doHelp(menu);
-			} else {
-				doHelp(menu, arg);
-			}
-			return menu;
-		}
 		List<Command> commands = menu.getCommands();
 		for(int i=0;i<commands.size();i++){
 			if( cmd.equals(commands.get(i).getName()) ){
 				return commands.get(i).exec(arg, env);
 			}
 		}
-		if( "abort".equals(cmd) ){
-			return null;
+		switch(cmd){
+			case "help": {
+				if( arg == null || arg.isEmpty() ){
+					doHelp(menu);
+				} else {
+					doHelp(menu, arg);
+				}
+				return menu;
+			}
+			case "abort": {
+				return null;
+			}
+			case "top": {
+				return topMenu;
+			}
+			default: {
+				env.out.println("Unknown command: " + cmd);
+				return menu;
+			}
 		}
-		System.out.println("unknown command: " + cmd);
-		return menu;
 	}
 
 	private void doHelp(Menu menu){
