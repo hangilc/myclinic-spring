@@ -18,6 +18,11 @@ public class MainMenu implements Menu {
 			"syntax: download",
 			(arg, env) -> new DownloadMenu(this)
 		));
+		commands.add(Command.create("add",
+			"adds entry to master database",
+			"syntax: add",
+			(arg, env) -> new AddMasterMenu(this)
+		));
 		commands.add(Command.create("exit",
 			"exits the program",
 			"syntax: exit",
