@@ -46,7 +46,7 @@ import jp.chang.wia.Wia;
 import jp.chang.wia.WiaTypes.PROPID;
 import jp.chang.wia.WiaDataCallback;
 import jp.chang.wia.WiaDataCallbackImpl;
-import jp.chang.wia.DevMgr;
+import jp.chang.wia.WiaDevMgr;
 
 import jp.chang.wia.WindowsVersion;
 
@@ -66,9 +66,10 @@ public class App
         }
         String cmd = args[0];
         switch(cmd){
-            case "create-devmgr": {
-                DevMgr devMgr = DevMgr.create();
-                devMgr.close();
+            case "get-image": {
+                WiaDevMgr devMgr = Wia.createWiaDevMgr();
+                devMgr.ImageDlg();
+                devMgr.Release();
             }
         }
         // if( false ){

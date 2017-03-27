@@ -5,12 +5,14 @@ import com.sun.jna.Structure;
 import com.sun.jna.Callback;
 import com.sun.jna.WString;
 import com.sun.jna.ptr.PointerByReference;
+import com.sun.jna.platform.win32.Guid.GUID;
 import com.sun.jna.platform.win32.Guid.IID;
 import com.sun.jna.platform.win32.Guid.REFIID;
 import com.sun.jna.platform.win32.COM.IUnknown;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.platform.win32.WTypes.BSTR;
 import com.sun.jna.platform.win32.WinDef.HWND;
+import com.sun.jna.platform.win32.WinDef.LONG;
 import com.sun.jna.platform.win32.COM.IUnknown;
 
 import java.util.List;
@@ -21,5 +23,7 @@ public interface IWiaDevMgr extends IUnknown {
 
 	HRESULT EnumDeviceInfo(long flag, PointerByReference pp);
 	HRESULT CreateDevice(BSTR deviceID, PointerByReference pp);
+	HRESULT GetImageDlg(HWND hwndParent, LONG lDeviceType, LONG lFlagas, LONG lIntent,
+		IWiaItem pItemRoot, BSTR bstrFileName, GUID pguidFormat);
 }
 

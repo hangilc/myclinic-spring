@@ -25,6 +25,15 @@ public class Wia {
 			throw new RuntimeException("CoInitialize failed");
 		}
 	}
+
+    public static WiaDevMgr createWiaDevMgr(){
+        PointerByReference pp = new PointerByReference();
+        HRESULT hr = Ole32.INSTANCE.CoCreateInstance(WiaConsts.CLSID_WiaDevMgr2, null, 
+            CLSCTX_LOCAL_SERVER, IWiaDevMgr2.IID_IWiaDevMgr2, pp);
+        COMUtils.checkRC(hr);
+        WiaDevMgr wiaDevMgr = new WiaDevMgr(pp.getValue());
+        return wiaDevMgr;        
+    }
 	
 	public static List<Device> listDevices(){
         PointerByReference pp = new PointerByReference();
