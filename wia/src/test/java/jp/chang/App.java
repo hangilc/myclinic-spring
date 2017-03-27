@@ -46,6 +46,7 @@ import jp.chang.wia.Wia;
 import jp.chang.wia.WiaTypes.PROPID;
 import jp.chang.wia.WiaDataCallback;
 import jp.chang.wia.WiaDataCallbackImpl;
+import jp.chang.wia.DevMgr;
 
 import jp.chang.wia.WindowsVersion;
 
@@ -57,20 +58,33 @@ public class App
 
     public static void main( String[] args )
     {
-        if( false ){
-        	if( WindowsVersion.isXP() ){
-        		doXP();
-        	} else {
-        		doWin10();
-        	}
+        if( args.length == 0 ){
+            System.err.println("usage: App COMMAND");
+            System.err.println("COMMAND is one of");
+            System.err.println("create-devmgr");
+            System.exit(1);
         }
-        if( false ){
-            testWiaDataCallback();
+        String cmd = args[0];
+        switch(cmd){
+            case "create-devmgr": {
+                DevMgr devMgr = DevMgr.create();
+                devMgr.close();
+            }
         }
-        if( true ){
-            List<Wia.Device> devices = Wia.listDevices();
-            System.out.println(devices);
-        }
+        // if( false ){
+        // 	if( WindowsVersion.isXP() ){
+        // 		doXP();
+        // 	} else {
+        // 		doWin10();
+        // 	}
+        // }
+        // if( false ){
+        //     testWiaDataCallback();
+        // }
+        // if( true ){
+        //     List<Wia.Device> devices = Wia.listDevices();
+        //     System.out.println(devices);
+        // }
     }
 
     static void doWin10(){
