@@ -10,18 +10,20 @@ import com.sun.jna.platform.win32.Ole32;
 import com.sun.jna.platform.win32.Guid.CLSID;
 import com.sun.jna.platform.win32.Guid.IID;
 import com.sun.jna.platform.win32.Guid.REFIID;
+//import com.sun.jna.platform.win32.Guid.IID_NULL;
 import com.sun.jna.platform.win32.W32Errors;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
-import com.sun.jna.platform.win32.WTypes;
 import com.sun.jna.platform.win32.WTypes.BSTR;
 import com.sun.jna.platform.win32.WTypes.LPOLESTR;
 import com.sun.jna.platform.win32.WinDef.ULONG;
 import com.sun.jna.platform.win32.WinDef.LONG;
 import com.sun.jna.platform.win32.WinDef.DWORD;
+import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WTypes.VARTYPE;
 import com.sun.jna.platform.win32.Variant;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.COM.COMUtils;
+import com.sun.jna.platform.win32.Wincon;
 import com.sun.jna.platform.win32.WinError;
 
 import jp.chang.wia.IWiaDevMgr;
@@ -61,15 +63,36 @@ public class App
         if( args.length == 0 ){
             System.err.println("usage: App COMMAND");
             System.err.println("COMMAND is one of");
-            System.err.println("create-devmgr");
+            System.err.println("get-image");
             System.exit(1);
+        }
+        {
+            HRESULT hr = Ole32.INSTANCE.CoInitialize(null);
+            if( !(hr.equals(WinError.S_OK) || hr.equals(WinError.S_FALSE)) ){
+                throw new RuntimeException("CoInitialize failed");
+            }
         }
         String cmd = args[0];
         switch(cmd){
             case "get-image": {
                 WiaDevMgr devMgr = Wia.createWiaDevMgr();
-                devMgr.ImageDlg();
+                HWND hwnd = Kernel32.INSTANCE.GetConsoleWindow();
+                IID iidFormat = new IID();
+                HRESULT hr = devMgr.GetImageDlg(hwnd, 
+                    new LONG(WiaConsts.StiDeviceTypeScanner),
+                    new LONG(0),
+                    new LONG(WiaConsts.WIA_INTENT_NONE),
+                    null,
+                    new BSTR("image.bmp"),
+                    iidFormat
+                );
+                COMUtils.checkRC(hr);
                 devMgr.Release();
+                break;
+            }
+            default: {
+                System.err.println("unknown command: " + cmd);
+                System.exit(1);
             }
         }
         // if( false ){

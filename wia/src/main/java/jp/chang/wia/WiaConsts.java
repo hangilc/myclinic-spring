@@ -222,6 +222,15 @@ public class WiaConsts {
 	public static final GUID WiaImgFmt_JBIG      = defineGuid(0x41e8dd92,0x2f0a,0x43d4,0x86,0x36,0xf1,0x61,0x4b,0xa1,0x1e,0x46);
 	// #endif //#if (_WIN32_WINNT >= 0x0600)
 
+	public static final int StiDeviceTypeDefault          = 0;
+    public static final int StiDeviceTypeScanner          = 1;
+    public static final int StiDeviceTypeDigitalCamera    = 2;
+    public static final int StiDeviceTypeStreamingVideo   = 3;
+
+	public static final int WIA_SELECT_DEVICE_NODEFAULT        = 0x00000001;
+	public static final int WIA_DEVICE_DIALOG_SINGLE_IMAGE     = 0x00000002;
+	public static final int WIA_DEVICE_DIALOG_USE_COMMON_UI    = 0x00000004;
+
 	private static GUID defineGuid(int data1, int data2, int data3, int data4_0, int data4_1,
 		int data4_2, int data4_3, int data4_4, int data4_5, int data4_6, int data4_7){
 		GUID guid = new GUID();

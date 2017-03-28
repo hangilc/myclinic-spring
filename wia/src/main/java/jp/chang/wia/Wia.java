@@ -19,17 +19,17 @@ public class Wia {
 		public String description;
 	}
 
-	static {
-		HRESULT hr = Ole32.INSTANCE.CoInitialize(null);
-		if( !(hr.equals(WinError.S_OK) || hr.equals(WinError.S_FALSE)) ){
-			throw new RuntimeException("CoInitialize failed");
-		}
-	}
+	// static {
+	// 	HRESULT hr = Ole32.INSTANCE.CoInitialize(null);
+	// 	if( !(hr.equals(WinError.S_OK) || hr.equals(WinError.S_FALSE)) ){
+	// 		throw new RuntimeException("CoInitialize failed");
+	// 	}
+	// }
 
     public static WiaDevMgr createWiaDevMgr(){
         PointerByReference pp = new PointerByReference();
-        HRESULT hr = Ole32.INSTANCE.CoCreateInstance(WiaConsts.CLSID_WiaDevMgr2, null, 
-            CLSCTX_LOCAL_SERVER, IWiaDevMgr2.IID_IWiaDevMgr2, pp);
+        HRESULT hr = Ole32.INSTANCE.CoCreateInstance(WiaConsts.CLSID_WiaDevMgr, null, 
+            CLSCTX_LOCAL_SERVER, IWiaDevMgr.IID_IWiaDevMgr, pp);
         COMUtils.checkRC(hr);
         WiaDevMgr wiaDevMgr = new WiaDevMgr(pp.getValue());
         return wiaDevMgr;        
