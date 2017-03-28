@@ -10,7 +10,7 @@ import com.sun.jna.platform.win32.Ole32;
 import com.sun.jna.platform.win32.Guid.CLSID;
 import com.sun.jna.platform.win32.Guid.IID;
 import com.sun.jna.platform.win32.Guid.REFIID;
-//import com.sun.jna.platform.win32.Guid.IID_NULL;
+import static com.sun.jna.platform.win32.Guid.IID_NULL;
 import com.sun.jna.platform.win32.W32Errors;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.platform.win32.WTypes.BSTR;
@@ -77,7 +77,7 @@ public class App
             case "get-image": {
                 WiaDevMgr devMgr = Wia.createWiaDevMgr();
                 HWND hwnd = Kernel32.INSTANCE.GetConsoleWindow();
-                IID iidFormat = new IID();
+                IID iidFormat = new IID(IID_NULL);
                 HRESULT hr = devMgr.GetImageDlg(hwnd, 
                     new LONG(WiaConsts.StiDeviceTypeScanner),
                     new LONG(0),
