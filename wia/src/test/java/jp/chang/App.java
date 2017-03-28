@@ -83,11 +83,18 @@ public class App
                     new LONG(0),
                     new LONG(WiaConsts.WIA_INTENT_NONE),
                     null,
-                    new BSTR("image.bmp"),
+                    new BSTR("image.jpeg"),
                     iidFormat
                 );
                 COMUtils.checkRC(hr);
                 devMgr.Release();
+                break;
+            }
+            case "list-devices": {
+                List<Wia.Device> devices = Wia.listDevices();
+                devices.stream().forEach(dev -> {
+                    System.out.println(dev);
+                });
                 break;
             }
             default: {

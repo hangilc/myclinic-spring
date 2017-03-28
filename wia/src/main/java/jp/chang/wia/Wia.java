@@ -17,6 +17,15 @@ public class Wia {
 		public String deviceId;
 		public String name;
 		public String description;
+
+		@Override
+		public String toString(){
+			return "Wia.Device[" +
+				"deviceId:" + deviceId + ", " +
+				"name:" + name + ", " +
+				"description:" + description +
+			"]";
+		}
 	}
 
 	// static {
@@ -37,8 +46,8 @@ public class Wia {
 	
 	public static List<Device> listDevices(){
         PointerByReference pp = new PointerByReference();
-        HRESULT hr = Ole32.INSTANCE.CoCreateInstance(WiaConsts.CLSID_WiaDevMgr2, null, 
-            CLSCTX_LOCAL_SERVER, IWiaDevMgr2.IID_IWiaDevMgr2, pp);
+        HRESULT hr = Ole32.INSTANCE.CoCreateInstance(WiaConsts.CLSID_WiaDevMgr, null, 
+            CLSCTX_LOCAL_SERVER, IWiaDevMgr.IID_IWiaDevMgr, pp);
         COMUtils.checkRC(hr);
         WiaDevMgr wiaDevMgr = new WiaDevMgr(pp.getValue());
         hr = wiaDevMgr.EnumDeviceInfo(WiaConsts.WIA_DEVINFO_ENUM_LOCAL, pp);
@@ -51,7 +60,6 @@ public class Wia {
         	hr = wiaDevInfo.Next(new ULONG(1), storages, nFetched);
         	COMUtils.checkRC(hr);
         	if( nFetched.getValue() > 0 ){
-        		System.out.println("fetched");
         		WiaPropertyStorage.ByReference storage = storages[0];
         		storage.Release();
         	}
