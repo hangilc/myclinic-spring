@@ -18,6 +18,7 @@ import com.sun.jna.platform.win32.WTypes.LPOLESTR;
 import com.sun.jna.platform.win32.WinDef.ULONG;
 import com.sun.jna.platform.win32.WinDef.ULONGByReference;
 import com.sun.jna.platform.win32.WinDef.LONG;
+import com.sun.jna.platform.win32.WinDef.LONGByReference;
 import com.sun.jna.platform.win32.WinDef.DWORD;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WTypes.VARTYPE;
@@ -213,6 +214,64 @@ public class App
                 }
                 enumSTAT.Release();
                 storage.Release();
+                break;
+            }
+            case "scan": {
+                String deviceId = pickDevice();
+                WiaItem deviceItem = getDeviceWiaItem(deviceId);
+                HRESULT hr;
+                WiaItem wiaItem = null;
+                {
+                    PointerByReference pIEnumWiaItem = new PointerByReference();
+                    hr = deviceItem.EnumChildItems(pIEnumWiaItem);
+                    COMUtils.checkRC(hr);
+                    EnumWiaItem enumWiaItem = new EnumWiaItem(pIEnumWiaItem.getValue());
+                    WiaItem.ByReference[] items = new WiaItem.ByReference[4];
+                    ULONGByReference pFetched = new ULONGByReference();
+                    hr = enumWiaItem.Next(new ULONG(4), items, pFetched);
+                    int nFetched = pFetched.getValue().intValue();
+                    for(int i=0;i<nFetched;i++){
+                        WiaItem.ByReference item = items[i];
+                        LONGByReference pItemType = new LONGByReference();
+                        hr = item.GetItemType(pItemType);
+                        COMUtils.checkRC(hr);
+                        int itemType = pItemType.getValue().intValue();
+                        System.out.printf("ItemType: 0x%x\n", itemType);
+                        if( (itemType & WiaConsts.WiaItemTypeImage) != 0 && 
+                            (itemType & WiaConsts.WiaItemTypeFile) != 0 ){
+                            wiaItem = item;
+                        } else {
+                            item.Release();
+                        }
+                    }
+                    COMUtils.checkRC(hr);
+                    enumWiaItem.Release();
+                }
+                if( wiaItem == null ){
+                    break;
+                }
+                PointerByReference pWiaDataTransfer = new PointerByReference();
+                hr = wiaItem.QueryInterface(new REFIID(IWiaDataTransfer.IID_IWiaDataTransfer), pWiaDataTransfer);
+                COMUtils.checkRC(hr);
+                WiaDataTransfer transfer = new WiaDataTransfer(pWiaDataTransfer.getValue());
+                STGMEDIUM stgmedium = new STGMEDIUM();
+                stgmedium.tymed = new DWORD(WiaConsts.TYMED_FILE);
+                stgmedium.unionValue.setType(Pointer.class);
+                String fileName = System.getenv("HOME") + File.separator + "scan.bmp";
+                stgmedium.unionValue.pointer = new LPOLESTR(fileName).getPointer();
+                WiaDataCallback dataCallback = WiaDataCallbackImpl.create(new WiaDataCallbackImpl.BandedDataCallbackCallback(){
+                    @Override
+                    public HRESULT invoke(Pointer thisPointer, LONG lMessage, LONG lStatus, LONG lPercentComplete,
+                        LONG lOffset, LONG lLength, LONG lReserved, LONG lResLength, PointerByReference pbBuffer){
+                        System.out.printf("callback %d\n", lPercentComplete.intValue());
+                        return WinError.S_OK;
+                    };
+                });
+                hr = transfer.idtGetData(stgmedium, dataCallback);
+                COMUtils.checkRC(hr);
+                wiaItem.Release();
+                transfer.Release();
+                deviceItem.Release();
                 break;
             }
             default: {

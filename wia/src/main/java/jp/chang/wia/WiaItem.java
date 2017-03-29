@@ -9,6 +9,7 @@ import com.sun.jna.platform.win32.COM.Unknown;
 import com.sun.jna.platform.win32.COM.COMUtils;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.platform.win32.WinDef.LONG;
+import com.sun.jna.platform.win32.WinDef.LONGByReference;
 import com.sun.jna.platform.win32.WinDef.HWND;
 
 public class WiaItem extends Unknown implements IWiaItem {
@@ -22,23 +23,17 @@ public class WiaItem extends Unknown implements IWiaItem {
 	}
 
 	@Override
-	public int GetItemType(){
-		IntByReference intPtr = new IntByReference();
-		HRESULT hr = (HRESULT)_invokeNativeObject(3, new Object[]{
-			this.getPointer(), intPtr
+	public HRESULT GetItemType(LONGByReference pItemType){
+		return (HRESULT)_invokeNativeObject(3, new Object[]{
+			this.getPointer(), pItemType
 		}, HRESULT.class);
-		COMUtils.checkRC(hr);
-		return intPtr.getValue();
 	}
 
 	@Override
-	public EnumWiaItem EnumChildItems(){
-		PointerByReference ptr = new PointerByReference();
-		HRESULT hr = (HRESULT)_invokeNativeObject(5, new Object[]{
-			this.getPointer(), ptr
+	public HRESULT EnumChildItems(PointerByReference ppIEnumWiaItem){
+		return (HRESULT)_invokeNativeObject(5, new Object[]{
+			this.getPointer(), ppIEnumWiaItem
 		}, HRESULT.class);
-		COMUtils.checkRC(hr);
-		return new EnumWiaItem(ptr.getValue());
 	}
 
 	@Override
