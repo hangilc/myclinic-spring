@@ -12,14 +12,13 @@ import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.platform.win32.WTypes.BSTR;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinDef.LONG;
+import com.sun.jna.platform.win32.WinDef.ULONG;
+import com.sun.jna.platform.win32.WinDef.ULONGByReference;
 
 import java.util.List;
 import java.util.Arrays;
 
-public interface IWiaItem extends IUnknown {
+public interface IEnumSTATPROPSTG extends IUnknown {
 
-	int GetItemType();
-	EnumWiaItem EnumChildItems();
-	HRESULT DeviceDlg(HWND parent, LONG flags, LONG intent, 
-		IntByReference itemCount, PointerByReference items);
+	HRESULT Next(ULONG celt, STATPROPSTG[] rgelt, ULONGByReference pceltFetched);
 }

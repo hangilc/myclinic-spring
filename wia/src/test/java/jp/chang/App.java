@@ -16,6 +16,7 @@ import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.platform.win32.WTypes.BSTR;
 import com.sun.jna.platform.win32.WTypes.LPOLESTR;
 import com.sun.jna.platform.win32.WinDef.ULONG;
+import com.sun.jna.platform.win32.WinDef.ULONGByReference;
 import com.sun.jna.platform.win32.WinDef.LONG;
 import com.sun.jna.platform.win32.WinDef.DWORD;
 import com.sun.jna.platform.win32.WinDef.HWND;
@@ -49,6 +50,9 @@ import jp.chang.wia.WiaTypes.PROPID;
 import jp.chang.wia.WiaDataCallback;
 import jp.chang.wia.WiaDataCallbackImpl;
 import jp.chang.wia.WiaDevMgr;
+import jp.chang.wia.PropValue;
+import jp.chang.wia.EnumSTATPROPSTG;
+import jp.chang.wia.STATPROPSTG;
 
 import jp.chang.wia.WindowsVersion;
 
@@ -103,12 +107,109 @@ public class App
                 PointerByReference pp = new PointerByReference();
                 HRESULT hr = devMgr.SelectDeviceDlgID(hwnd, new LONG(WiaConsts.StiDeviceTypeScanner), 
                     new LONG(WiaConsts.WIA_SELECT_DEVICE_NODEFAULT), pp);
+                COMUtils.checkRC(hr);
                 BSTR bstr = new BSTR(pp.getValue());
                 System.out.println(bstr);
-                COMUtils.checkRC(hr);
                 devMgr.Release();
                 break;
-           }
+            }
+            case "create-device": {
+                WiaDevMgr devMgr = Wia.createWiaDevMgr();
+                HWND hwnd = Kernel32.INSTANCE.GetConsoleWindow();
+                PointerByReference pp = new PointerByReference();
+                HRESULT hr = devMgr.SelectDeviceDlgID(hwnd, new LONG(WiaConsts.StiDeviceTypeScanner), 
+                    new LONG(WiaConsts.WIA_SELECT_DEVICE_NODEFAULT), pp);
+                COMUtils.checkRC(hr);
+                BSTR bstr = new BSTR(pp.getValue());
+                hr = devMgr.CreateDevice(bstr, pp);
+                COMUtils.checkRC(hr);
+                WiaItem item = new WiaItem(pp.getValue());
+                System.out.println(item);
+                item.Release();
+                devMgr.Release();
+                break;
+            }
+            case "device-dialog": {
+                WiaDevMgr devMgr = Wia.createWiaDevMgr();
+                HWND hwnd = Kernel32.INSTANCE.GetConsoleWindow();
+                PointerByReference pp = new PointerByReference();
+                HRESULT hr = devMgr.SelectDeviceDlgID(hwnd, new LONG(WiaConsts.StiDeviceTypeScanner), 
+                    new LONG(WiaConsts.WIA_SELECT_DEVICE_NODEFAULT), pp);
+                COMUtils.checkRC(hr);
+                BSTR bstr = new BSTR(pp.getValue());
+                hr = devMgr.CreateDevice(bstr, pp);
+                COMUtils.checkRC(hr);
+                WiaItem item = new WiaItem(pp.getValue());
+                {
+                    IntByReference pCount = new IntByReference();
+                    PointerByReference ppItems = new PointerByReference();
+                    hr = item.DeviceDlg(hwnd, new LONG(0), new LONG(WiaConsts.WIA_INTENT_NONE),
+                        pCount, ppItems);
+                    COMUtils.checkRC(hr);
+                    int count = pCount.getValue();
+                    Pointer[] itemPointers = ppItems.getValue().getPointerArray(0, count);
+                    Pointer pItems = ppItems.getValue();
+                    for(int i=0;i<count;i++){
+                        WiaItem dlogItem = new WiaItem(itemPointers[i]);
+                        System.out.println(dlogItem);
+                        dlogItem.Release();
+                    }
+                }
+                item.Release();
+                devMgr.Release();
+                break;
+            }
+            case "properties": {
+                String deviceId = pickDevice();
+                WiaPropertyStorage storage = getPropertyStorage(deviceId);
+                if( storage == null ){
+                    System.out.println("cannot get storage");
+                    System.exit(1);
+                }
+                System.out.println(deviceId);
+                ULONGByReference pCount = new ULONGByReference();
+                HRESULT hr = storage.GetCount(pCount);
+                COMUtils.checkRC(hr);
+                int count = pCount.getValue().intValue();
+                System.out.println("count: " + count);
+                PointerByReference pEnum = new PointerByReference();
+                hr = storage.Enum(pEnum);
+                COMUtils.checkRC(hr);
+                EnumSTATPROPSTG enumSTAT = new EnumSTATPROPSTG(pEnum.getValue());
+                {
+                    STATPROPSTG stg = new STATPROPSTG();
+                    STATPROPSTG[] stages = (STATPROPSTG[])stg.toArray(3);
+                    ULONGByReference nFetched = new ULONGByReference();
+                    do{
+                        hr = enumSTAT.Next(new ULONG(3), stages, nFetched);
+                        COMUtils.checkRC(hr);
+                        int nn = nFetched.getValue().intValue();
+                        for(int i=0;i<nn;i++){
+                            System.out.printf("%s (%s): ", stages[i].lpwstrName.toString(), stages[i].propid);
+                            PropValue[] values = Wia.readProps(storage, new int[]{ stages[i].propid.intValue() });
+                            PropValue propValue = values[0];
+                            switch(propValue.getType()){
+                                case INT: {
+                                    System.out.printf("%d", propValue.getInt());
+                                    break;
+                                }
+                                case STRING: {
+                                    System.out.printf("%s", propValue.getString());
+                                    break;
+                                }
+                                default: {
+                                    System.out.printf("(unknown value)");
+                                    break;
+                                }
+                            }
+                            System.out.println();
+                        }
+                    } while(nFetched.getValue().intValue() == 3 );
+                }
+                enumSTAT.Release();
+                storage.Release();
+                break;
+            }
             default: {
                 System.err.println("unknown command: " + cmd);
                 System.exit(1);
@@ -128,6 +229,58 @@ public class App
         //     List<Wia.Device> devices = Wia.listDevices();
         //     System.out.println(devices);
         // }
+    }
+
+    static String pickDevice(){
+        WiaDevMgr devMgr = Wia.createWiaDevMgr();
+        HWND hwnd = Kernel32.INSTANCE.GetConsoleWindow();
+        PointerByReference pp = new PointerByReference();
+        HRESULT hr = devMgr.SelectDeviceDlgID(hwnd, new LONG(WiaConsts.StiDeviceTypeScanner), 
+            new LONG(WiaConsts.WIA_SELECT_DEVICE_NODEFAULT), pp);
+        COMUtils.checkRC(hr);
+        BSTR bstr = new BSTR(pp.getValue());
+        devMgr.Release();
+        return bstr.toString();
+    }
+
+    static WiaPropertyStorage getPropertyStorage(String deviceId){
+        WiaDevMgr wiaDevMgr = Wia.createWiaDevMgr();
+        PointerByReference pp = new PointerByReference();
+        HRESULT hr = wiaDevMgr.EnumDeviceInfo(WiaConsts.WIA_DEVINFO_ENUM_LOCAL, pp);
+        COMUtils.checkRC(hr);
+        EnumWIA_DEV_INFO wiaDevInfo = new EnumWIA_DEV_INFO(pp.getValue());
+        WiaPropertyStorage ret = new WiaPropertyStorage();
+        while(true){
+            WiaPropertyStorage.ByReference[] storages = new WiaPropertyStorage.ByReference[1];
+            IntByReference nFetched = new IntByReference();
+            hr = wiaDevInfo.Next(new ULONG(1), storages, nFetched);
+            COMUtils.checkRC(hr);
+            if( nFetched.getValue() > 0 ){
+                WiaPropertyStorage.ByReference storage = storages[0];
+                PropValue[] values = Wia.readProps(storage, new int[]{ WiaConsts.WIA_DIP_DEV_ID });
+                String id = values[0].getString();
+                if( deviceId.equals(id) ){
+                    ret = storage;
+                    break;
+                }
+                storage.Release();
+            }
+            if( hr.equals(WinError.S_FALSE) ){
+                break;
+            }
+        }
+        wiaDevInfo.Release();
+        wiaDevMgr.Release();
+        return ret;
+    }
+
+    static WiaItem getDeviceWiaItem(String deviceId){
+        WiaDevMgr devMgr = Wia.createWiaDevMgr();
+        PointerByReference pp = new PointerByReference();
+        HRESULT hr = devMgr.CreateDevice(new BSTR(deviceId), pp);
+        WiaItem item = new WiaItem(pp.getValue());
+        devMgr.Release();
+        return item;
     }
 
     static void doWin10(){

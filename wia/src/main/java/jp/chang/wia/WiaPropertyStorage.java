@@ -4,10 +4,12 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.Memory;
 import com.sun.jna.WString;
+import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.platform.win32.COM.Unknown;
 import com.sun.jna.platform.win32.COM.COMUtils;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.platform.win32.WinDef.ULONG;
+import com.sun.jna.platform.win32.WinDef.ULONGByReference;
 
 import com.sun.jna.NativeLong;
 
@@ -21,6 +23,20 @@ public class WiaPropertyStorage extends Unknown implements IWiaPropertyStorage {
 
 	public WiaPropertyStorage(Pointer pointer){
 		super(pointer);
+	}
+
+	@Override
+	public HRESULT GetCount(ULONGByReference pulNumProps){
+		return (HRESULT)_invokeNativeObject(16, new Object[]{
+			this.getPointer(), pulNumProps
+		}, HRESULT.class);
+	}
+
+	@Override
+	public HRESULT Enum(PointerByReference ppenum){
+		return (HRESULT)_invokeNativeObject(11, new Object[]{
+			this.getPointer(), ppenum
+		}, HRESULT.class);
 	}
 
 	@Override
