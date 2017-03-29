@@ -151,7 +151,12 @@ public class App
                     Pointer pItems = ppItems.getValue();
                     for(int i=0;i<count;i++){
                         WiaItem dlogItem = new WiaItem(itemPointers[i]);
-                        System.out.println(dlogItem);
+                        PointerByReference pStorage = new PointerByReference();
+                        hr = dlogItem.QueryInterface(new REFIID(IWiaPropertyStorage.IID_IWiaPropertyStorage), pStorage);
+                        COMUtils.checkRC(hr);
+                        WiaPropertyStorage dlogStorage = new WiaPropertyStorage(pStorage.getValue());
+                        printProperties(dlogStorage);
+                        dlogStorage.Release();
                         dlogItem.Release();
                     }
                 }
@@ -281,6 +286,44 @@ public class App
         WiaItem item = new WiaItem(pp.getValue());
         devMgr.Release();
         return item;
+    }
+
+    static void printProperties(WiaPropertyStorage storage){
+        PointerByReference pEnum = new PointerByReference();
+        HRESULT hr = storage.Enum(pEnum);
+        COMUtils.checkRC(hr);
+        EnumSTATPROPSTG enumSTAT = new EnumSTATPROPSTG(pEnum.getValue());
+        {
+            STATPROPSTG stg = new STATPROPSTG();
+            STATPROPSTG[] stages = (STATPROPSTG[])stg.toArray(3);
+            ULONGByReference nFetched = new ULONGByReference();
+            do{
+                hr = enumSTAT.Next(new ULONG(3), stages, nFetched);
+                COMUtils.checkRC(hr);
+                int nn = nFetched.getValue().intValue();
+                for(int i=0;i<nn;i++){
+                    System.out.printf("%s (%s): ", stages[i].lpwstrName, stages[i].propid);
+                    PropValue[] values = Wia.readProps(storage, new int[]{ stages[i].propid.intValue() });
+                    PropValue propValue = values[0];
+                    switch(propValue.getType()){
+                        case INT: {
+                            System.out.printf("%d", propValue.getInt());
+                            break;
+                        }
+                        case STRING: {
+                            System.out.printf("%s", propValue.getString());
+                            break;
+                        }
+                        default: {
+                            System.out.printf("(unknown value)");
+                            break;
+                        }
+                    }
+                    System.out.println();
+                }
+            } while(nFetched.getValue().intValue() == 3 );
+        }
+        enumSTAT.Release();
     }
 
     static void doWin10(){
