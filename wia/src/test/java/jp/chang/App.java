@@ -60,6 +60,9 @@ import jp.chang.wia.WindowsVersion;
 import java.io.File;
 import java.util.List;
 
+import java.awt.*;
+import javax.swing.*;
+
 public class App 
 {
 
@@ -274,25 +277,19 @@ public class App
                 deviceItem.Release();
                 break;
             }
+            case "swing": {
+                EventQueue.invokeLater(() -> {
+                    TopFrame topFrame = new TopFrame();
+                    topFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    topFrame.setVisible(true);
+                });
+                break;
+            }
             default: {
                 System.err.println("unknown command: " + cmd);
                 System.exit(1);
             }
         }
-        // if( false ){
-        // 	if( WindowsVersion.isXP() ){
-        // 		doXP();
-        // 	} else {
-        // 		doWin10();
-        // 	}
-        // }
-        // if( false ){
-        //     testWiaDataCallback();
-        // }
-        // if( true ){
-        //     List<Wia.Device> devices = Wia.listDevices();
-        //     System.out.println(devices);
-        // }
     }
 
     static String pickDevice(){
@@ -568,5 +565,14 @@ public class App
         System.out.println(cb.AddRef());
         System.out.println(cb.Release());
         System.out.println(cb.Release());
+    }
+}
+
+class TopFrame extends JFrame {
+    private static final int DEFAULT_WIDTH = 300;
+    private static final int DEFAULT_HEIGHT = 200;
+
+    public TopFrame(){
+        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 }
