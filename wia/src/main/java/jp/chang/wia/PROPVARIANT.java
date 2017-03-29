@@ -91,4 +91,59 @@ public class PROPVARIANT extends Structure {
 		return new BSTR(pointer);
 	}
 
+	public static class PropValueBase implements PropValue {
+		private PropValue.TYPE type;
+
+		public PropValueBase(PropValue.TYPE type){
+			this.type = type;
+		}
+
+		@Override
+		public PropValue.TYPE getType(){
+			return type;
+		}
+	}
+
+	public static class PropValueInt extends PropValueBase {
+		private int value;
+
+		public PropValueInt(int value){
+			super(PropValue.TYPE.INT);
+			this.value = value;
+		}
+
+		@Override
+		public int getInt(){
+			return value;
+		}
+	}
+
+	public static class PropValueString extends PropValueBase {
+		private String value;
+
+		public PropValueString(String value){
+			super(PropValue.TYPE.STRING);
+			this.value = value;
+		}
+
+		@Override
+		public String getString(){
+			return value;
+		}
+	}
+
+	public PropValue toPropValue(){
+		switch(getVt()){
+			case Variant.VT_I4: {
+				return new PropValueInt(value.lVal.intValue());
+			}
+			case Variant.VT_BSTR: {
+				return new PropValueString(getUnionBSTR().getValue());
+			}
+			default:{
+				return new PropValue(){};
+			}
+		}
+	}
+
 }

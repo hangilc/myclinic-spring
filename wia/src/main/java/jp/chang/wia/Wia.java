@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class Wia {
 
-	public class Device {
+	public static class Device {
 		public String deviceId;
 		public String name;
 		public String description;
@@ -61,6 +61,13 @@ public class Wia {
         	COMUtils.checkRC(hr);
         	if( nFetched.getValue() > 0 ){
         		WiaPropertyStorage.ByReference storage = storages[0];
+                PropValue[] values = readProps(storage, 
+                    new int[]{ WiaConsts.WIA_DIP_DEV_ID, WiaConsts.WIA_DIP_DEV_NAME, WiaConsts.WIA_DIP_DEV_DESC });
+                Device device = new Device();
+                device.deviceId = values[0].getString();
+                device.name = values[1].getString();
+                device.description = values[2].getString();
+                devices.add(device);
         		storage.Release();
         	}
         	if( hr.equals(WinError.S_FALSE) ){
@@ -71,4 +78,27 @@ public class Wia {
     	wiaDevMgr.Release();
         return devices;
 	}
+
+    public static PropValue[] readProps(WiaPropertyStorage storage, int[] propIds){
+        int n = propIds.length;
+        PROPSPEC spc = new PROPSPEC();
+        PROPSPEC[] specs = (PROPSPEC[])spc.toArray(n);
+        for(int i=0;i<n;i++){
+            PROPSPEC spec = specs[i];
+            spec.kind = new ULONG(PROPSPEC.PRSPEC_PROPID);
+            spec.value.setType(ULONG.class);
+            spec.value.propid = new ULONG(propIds[i]);
+        }
+        PROPVARIANT val = new PROPVARIANT();
+        PROPVARIANT[] values = (PROPVARIANT[])val.toArray(n);
+        HRESULT hr = storage.ReadMultiple(n, specs, values);
+        COMUtils.checkRC(hr);
+        PropValue[] retVals = new PropValue[n];
+        for(int i=0;i<n;i++){
+            retVals[i] = values[i].toPropValue();
+        }
+        hr = MyOle32.INSTANCE.FreePropVariantArray(new ULONG(n), values);
+        COMUtils.checkRC(hr);
+        return retVals;
+    }
 }

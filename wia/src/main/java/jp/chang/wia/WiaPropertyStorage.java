@@ -26,7 +26,7 @@ public class WiaPropertyStorage extends Unknown implements IWiaPropertyStorage {
 	@Override
 	public HRESULT ReadMultiple(int n, PROPSPEC[] propspecs, PROPVARIANT[] propvars){
 		HRESULT hr = (HRESULT)_invokeNativeObject(3, new Object[]{
-			this.getPointer(), n, propspecs, propvars
+			this.getPointer(), new ULONG(n), propspecs, propvars
 		}, HRESULT.class);
 		return hr;
 	}
