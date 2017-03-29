@@ -25,5 +25,6 @@ public interface IWiaDevMgr extends IUnknown {
 	HRESULT CreateDevice(BSTR deviceID, PointerByReference pp);
 	HRESULT GetImageDlg(HWND hwndParent, LONG lDeviceType, LONG lFlagas, LONG lIntent,
 		IWiaItem pItemRoot, BSTR bstrFileName, GUID pguidFormat);
+	HRESULT SelectDeviceDlgID(HWND hwndParent, LONG lDeviceType, LONG lFlags, PointerByReference pbstrDeviceID);
 }
 

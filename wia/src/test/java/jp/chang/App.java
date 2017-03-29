@@ -97,6 +97,18 @@ public class App
                 });
                 break;
             }
+            case "select-device": {
+                WiaDevMgr devMgr = Wia.createWiaDevMgr();
+                HWND hwnd = Kernel32.INSTANCE.GetConsoleWindow();
+                PointerByReference pp = new PointerByReference();
+                HRESULT hr = devMgr.SelectDeviceDlgID(hwnd, new LONG(WiaConsts.StiDeviceTypeScanner), 
+                    new LONG(WiaConsts.WIA_SELECT_DEVICE_NODEFAULT), pp);
+                BSTR bstr = new BSTR(pp.getValue());
+                System.out.println(bstr);
+                COMUtils.checkRC(hr);
+                devMgr.Release();
+                break;
+           }
             default: {
                 System.err.println("unknown command: " + cmd);
                 System.exit(1);

@@ -35,11 +35,18 @@ public class WiaDevMgr extends Unknown implements IWiaDevMgr {
 	}
 
 	@Override
+	public HRESULT SelectDeviceDlgID(HWND hwndParent, LONG lDeviceType, LONG lFlags, PointerByReference pbstrDeviceID){
+		return (HRESULT) this._invokeNativeObject(6,
+			new Object[]{ this.getPointer(), hwndParent, lDeviceType, lFlags, pbstrDeviceID }, HRESULT.class);
+	}
+
+	@Override
 	public HRESULT GetImageDlg(HWND hwndParent, LONG lDeviceType, LONG lFlags, LONG lIntent,
 		IWiaItem pItemRoot, BSTR bstrFileName, GUID pguidFormat){
 		return (HRESULT) this._invokeNativeObject(7,
 			new Object[]{ this.getPointer(), hwndParent, lDeviceType, lFlags,
 				lIntent, pItemRoot, bstrFileName, pguidFormat }, HRESULT.class);
 	}
+
 
 }
