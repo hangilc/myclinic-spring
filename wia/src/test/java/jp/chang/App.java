@@ -59,9 +59,11 @@ import jp.chang.wia.WindowsVersion;
 
 import java.io.File;
 import java.util.List;
+import java.nio.file.Path;
 
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.filechooser.*;
 
 public class App 
 {
@@ -279,6 +281,7 @@ public class App
             }
             case "swing": {
                 EventQueue.invokeLater(() -> {
+                    Wia.CoInitialize();
                     TopFrame topFrame = new TopFrame();
                     topFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     topFrame.setVisible(true);
@@ -576,8 +579,32 @@ class TopFrame extends JFrame {
         general.addActionListener(event -> {
             JFileChooser fc = new JFileChooser();
             fc.setDialogType(JFileChooser.SAVE_DIALOG);
+            FileNameExtensionFilter ext = new FileNameExtensionFilter("BMP Images", "bmp");
+            fc.setFileFilter(ext);
             int ret = fc.showOpenDialog(this);
-            System.out.println(ret);
+            if( ret != JFileChooser.APPROVE_OPTION){
+                return;
+            }
+            File file = fc.getSelectedFile();
+            Path path = file.toPath();
+            String fileName = path.getFileName().toString();
+            if( !fileName.endsWith(".bmp") ){
+                path = path.resolveSibling(fileName + ".bmp");
+            }
+            WiaDevMgr devMgr = Wia.createWiaDevMgr();
+            HWND hwnd = Kernel32.INSTANCE.GetConsoleWindow();
+            IID iidFormat = new IID(IID_NULL);
+            HRESULT hr = devMgr.GetImageDlg(hwnd, 
+                new LONG(WiaConsts.StiDeviceTypeScanner),
+                new LONG(0),
+                new LONG(WiaConsts.WIA_INTENT_NONE),
+                null,
+                new BSTR(path.toString()),
+                iidFormat
+            );
+            COMUtils.checkRC(hr);
+            devMgr.Release();
+            System.out.println("image saved as: " + path);
         });
         this.add(general);
         this.pack();
