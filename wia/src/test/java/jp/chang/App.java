@@ -569,10 +569,17 @@ public class App
 }
 
 class TopFrame extends JFrame {
-    private static final int DEFAULT_WIDTH = 300;
-    private static final int DEFAULT_HEIGHT = 200;
 
     public TopFrame(){
-        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        this.setLocationByPlatform(true);
+        JButton general = new JButton("一般書類");
+        general.addActionListener(event -> {
+            JFileChooser fc = new JFileChooser();
+            fc.setDialogType(JFileChooser.SAVE_DIALOG);
+            int ret = fc.showOpenDialog(this);
+            System.out.println(ret);
+        });
+        this.add(general);
+        this.pack();
     }
 }
