@@ -28,12 +28,12 @@ public class Wia {
 		}
 	}
 
-	// static {
-	// 	HRESULT hr = Ole32.INSTANCE.CoInitialize(null);
-	// 	if( !(hr.equals(WinError.S_OK) || hr.equals(WinError.S_FALSE)) ){
-	// 		throw new RuntimeException("CoInitialize failed");
-	// 	}
-	// }
+    public static void CoInitialize(){
+        HRESULT hr = Ole32.INSTANCE.CoInitialize(null);
+        if( !(hr.equals(WinError.S_OK) || hr.equals(WinError.S_FALSE)) ){
+         throw new RuntimeException("CoInitialize failed");
+        }
+    }
 
     public static WiaDevMgr createWiaDevMgr(){
         PointerByReference pp = new PointerByReference();

@@ -48,5 +48,4 @@ public class WiaDevMgr extends Unknown implements IWiaDevMgr {
 				lIntent, pItemRoot, bstrFileName, pguidFormat }, HRESULT.class);
 	}
 
-
 }

@@ -8,6 +8,9 @@ import com.sun.jna.platform.win32.COM.Unknown;
 import com.sun.jna.platform.win32.COM.COMUtils;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.platform.win32.WinDef.LONG;
+import com.sun.jna.platform.win32.WinDef.LONGByReference;
+import com.sun.jna.platform.win32.WinDef.ULONG;
+import com.sun.jna.platform.win32.WinDef.ULONGByReference;
 
 public class EnumWiaItem extends Unknown implements IEnumWiaItem {
 
@@ -18,7 +21,7 @@ public class EnumWiaItem extends Unknown implements IEnumWiaItem {
 	}
 
 	@Override
-	public HRESULT Next(int n, WiaItem.ByReference[] items, IntByReference nFetched){
+	public HRESULT Next(ULONG n, WiaItem.ByReference[] items, ULONGByReference nFetched){
 		HRESULT hr = (HRESULT)_invokeNativeObject(3, new Object[]{
 			this.getPointer(), n, items, nFetched
 		}, HRESULT.class);

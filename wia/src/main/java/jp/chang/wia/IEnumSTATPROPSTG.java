@@ -10,15 +10,15 @@ import com.sun.jna.platform.win32.Guid.REFIID;
 import com.sun.jna.platform.win32.COM.IUnknown;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.platform.win32.WTypes.BSTR;
+import com.sun.jna.platform.win32.WinDef.HWND;
+import com.sun.jna.platform.win32.WinDef.LONG;
 import com.sun.jna.platform.win32.WinDef.ULONG;
 import com.sun.jna.platform.win32.WinDef.ULONGByReference;
-import com.sun.jna.platform.win32.WinDef.HWND;
-import com.sun.jna.platform.win32.COM.IUnknown;
 
 import java.util.List;
 import java.util.Arrays;
 
-public interface IEnumWiaItem extends IUnknown {
+public interface IEnumSTATPROPSTG extends IUnknown {
 
-	HRESULT Next(ULONG n, WiaItem.ByReference[] items, ULONGByReference nFetched);
+	HRESULT Next(ULONG celt, STATPROPSTG[] rgelt, ULONGByReference pceltFetched);
 }
