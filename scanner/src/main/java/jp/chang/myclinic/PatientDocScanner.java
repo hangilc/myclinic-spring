@@ -28,6 +28,7 @@ public class PatientDocScanner extends JDialog {
 	private int numPages = 0;
 	private String timeStamp;
 	private Path saveDir;
+	private JLabel numPagesLabel;
 	private static DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
 
 	public PatientDocScanner(Frame owner, int patientId){
@@ -35,27 +36,42 @@ public class PatientDocScanner extends JDialog {
 		this.patientId = patientId;
 		this.timeStamp = makeTimeStamp();
 		this.saveDir = getSaveDir();
+		this.numPagesLabel = new JLabel(String.valueOf(numPages));
 		add(makeCenterPanel(), BorderLayout.CENTER);
 		add(makeCommandPanel(), BorderLayout.SOUTH);
 		pack();
 	}
 
-	private Component makeCenterPanel(){
+	private JComponent makeCenterPanel(){
 		JPanel panel = new JPanel();
 		panel.add(makeCenterPanelContent());
 		return panel;
 	}
 
-	private Component makeCenterPanelContent(){
+	private JComponent makeCenterPanelContent(){
 		JPanel panel = new JPanel();
 		BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.PAGE_AXIS);
 		panel.setLayout(boxLayout);
 		JLabel patientIdLabel = new JLabel("患者番号：" + patientId);
+		patientIdLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(patientIdLabel);
+		JComponent pagesPanel = makeScannedPagesPanel();
+		pagesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel.add(pagesPanel);
 		return panel;
 	}
 
-	private Component makeCommandPanel(){
+	private JComponent makeScannedPagesPanel(){
+		JPanel panel = new JPanel();
+		FlowLayout layout = new FlowLayout();
+		panel.setLayout(layout);
+		JLabel label = new JLabel("スキャンしたページ数：");
+		panel.add(label);
+		panel.add(numPagesLabel);
+		return panel;
+	}
+
+	private JComponent makeCommandPanel(){
 		JPanel panel = new JPanel();
 		JButton start = new JButton("スタート");
 		JButton finish = new JButton("終了");
@@ -89,7 +105,9 @@ public class PatientDocScanner extends JDialog {
 	}
 
 	private void doStart(ActionEvent event){
-
+		numPages += 1;
+		numPagesLabel.setText(String.valueOf(numPages));
+		pack();
 	}
 
 	private String makeTimeStamp(){
