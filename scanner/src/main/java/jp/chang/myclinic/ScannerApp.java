@@ -8,6 +8,14 @@ public class ScannerApp
 {
     public static void main( String[] args )
     {
+    	new ScannerApp(args).run();
+    }
+
+    private ScannerApp(String[] args){
+    	
+    }
+
+    private void run(){
         EventQueue.invokeLater(() -> {
         	Wia.CoInitialize();
         	MainFrame mainFrame = new MainFrame();
@@ -16,6 +24,8 @@ public class ScannerApp
         	mainFrame.setVisible(true);
         });
     }
+
+
 }
 
 
