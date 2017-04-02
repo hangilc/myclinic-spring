@@ -19,6 +19,7 @@
     <module>master-map</module>
     <module>master-app</module>
     <module>wia</module>
+    <module>scanner</module>
   </modules>
 
 </project>
