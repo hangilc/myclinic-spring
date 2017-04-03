@@ -153,7 +153,7 @@ public class PatientDocScanner extends JDialog {
         List<Wia.Device> devices = Wia.listDevices();
         WiaItem deviceItem = null;
         if( devices.size() == 0 ){
-            JOptionalPane.showMessageDialog(this, "接続された。スキャナーがみつかりません。");
+            JOptionPane.showMessageDialog(this, "接続された。スキャナーがみつかりません。");
             return;
         } else if( devices.size() == 1 ){
             deviceItem = getDeviceWiaItem(devices.get(0).deviceId);
@@ -166,32 +166,38 @@ public class PatientDocScanner extends JDialog {
         }
         WiaItem wiaItem = findScannerFile(deviceItem);
         if( wiaItem != null ){
-            String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, numPages+1);
-            Path savePath = saveDir.resolve(saveFileName);
-            PointerByReference pWiaDataTransfer = new PointerByReference();
-            HRESULT hr = wiaItem.QueryInterface(new REFIID(IWiaDataTransfer.IID_IWiaDataTransfer), pWiaDataTransfer);
-            COMUtils.checkRC(hr);
-            WiaDataTransfer transfer = new WiaDataTransfer(pWiaDataTransfer.getValue());
-            STGMEDIUM stgmedium = new STGMEDIUM();
-            stgmedium.tymed = new DWORD(WiaConsts.TYMED_FILE);
-            stgmedium.unionValue.setType(Pointer.class);
-            String fileName = savePath.toString();
-            stgmedium.unionValue.pointer = new LPOLESTR(fileName).getPointer();
-            WiaDataCallback dataCallback = WiaDataCallbackImpl.create(new WiaDataCallbackImpl.BandedDataCallbackCallback(){
-                @Override
-                public HRESULT invoke(Pointer thisPointer, LONG lMessage, LONG lStatus, LONG lPercentComplete,
-                    LONG lOffset, LONG lLength, LONG lReserved, LONG lResLength, PointerByReference pbBuffer){
-                    System.out.printf("callback %d\n", lPercentComplete.intValue());
-                    return WinError.S_OK;
-                };
-            });
-            hr = transfer.idtGetData(stgmedium, dataCallback);
-            COMUtils.checkRC(hr);
-            transfer.Release();
-            wiaItem.Release();
-            numPages += 1;
-            numPagesLabel.setText(String.valueOf(numPages));
-            pack();
+            {
+                ScanProgressDialog dialog = new ScanProgressDialog(this);
+                dialog.setLocationByPlatform(true);
+                dialog.setVisible(true);
+                //dialog.setVisible(true);
+            }
+            // String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, numPages+1);
+            // Path savePath = saveDir.resolve(saveFileName);
+            // PointerByReference pWiaDataTransfer = new PointerByReference();
+            // HRESULT hr = wiaItem.QueryInterface(new REFIID(IWiaDataTransfer.IID_IWiaDataTransfer), pWiaDataTransfer);
+            // COMUtils.checkRC(hr);
+            // WiaDataTransfer transfer = new WiaDataTransfer(pWiaDataTransfer.getValue());
+            // STGMEDIUM stgmedium = new STGMEDIUM();
+            // stgmedium.tymed = new DWORD(WiaConsts.TYMED_FILE);
+            // stgmedium.unionValue.setType(Pointer.class);
+            // String fileName = savePath.toString();
+            // stgmedium.unionValue.pointer = new LPOLESTR(fileName).getPointer();
+            // WiaDataCallback dataCallback = WiaDataCallbackImpl.create(new WiaDataCallbackImpl.BandedDataCallbackCallback(){
+            //     @Override
+            //     public HRESULT invoke(Pointer thisPointer, LONG lMessage, LONG lStatus, LONG lPercentComplete,
+            //         LONG lOffset, LONG lLength, LONG lReserved, LONG lResLength, PointerByReference pbBuffer){
+            //         System.out.printf("callback %d\n", lPercentComplete.intValue());
+            //         return WinError.S_OK;
+            //     };
+            // });
+            // hr = transfer.idtGetData(stgmedium, dataCallback);
+            // COMUtils.checkRC(hr);
+            // transfer.Release();
+            // wiaItem.Release();
+            // numPages += 1;
+            // numPagesLabel.setText(String.valueOf(numPages));
+            // pack();
         }
         deviceItem.Release();
     }
@@ -242,7 +248,6 @@ public class PatientDocScanner extends JDialog {
             hr = item.GetItemType(pItemType);
             COMUtils.checkRC(hr);
             int itemType = pItemType.getValue().intValue();
-            System.out.printf("ItemType: 0x%x\n", itemType);
             if( (itemType & WiaConsts.WiaItemTypeImage) != 0 && 
                 (itemType & WiaConsts.WiaItemTypeFile) != 0 ){
                 wiaItem = item;
