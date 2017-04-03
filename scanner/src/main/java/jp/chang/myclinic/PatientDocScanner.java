@@ -35,33 +35,32 @@ import com.sun.jna.platform.win32.COM.COMUtils;
 import com.sun.jna.platform.win32.Wincon;
 import com.sun.jna.platform.win32.WinError;
 
-import jp.chang.wia.*;
-// import jp.chang.wia.IWiaDevMgr;
-// import jp.chang.wia.WiaDevMgr;
-// import jp.chang.wia.IWiaDevMgr2;
-// import jp.chang.wia.WiaDevMgr2;
-// import jp.chang.wia.EnumWIA_DEV_INFO;
-// import jp.chang.wia.WiaPropertyStorage;
-// import jp.chang.wia.IWiaPropertyStorage;
-// import jp.chang.wia.WiaConsts;
-// import jp.chang.wia.PROPSPEC;
-// import jp.chang.wia.PROPVARIANT;
-// import jp.chang.wia.MyOle32;
-// import jp.chang.wia.WiaItem;
-// import jp.chang.wia.WiaItem2;
-// import jp.chang.wia.EnumWiaItem;
-// import jp.chang.wia.EnumWiaItem2;
-// import jp.chang.wia.IWiaDataTransfer;
-// import jp.chang.wia.WiaDataTransfer;
-// import jp.chang.wia.STGMEDIUM;
-// import jp.chang.wia.Wia;
-// import jp.chang.wia.WiaTypes.PROPID;
-// import jp.chang.wia.WiaDataCallback;
-// import jp.chang.wia.WiaDataCallbackImpl;
-// import jp.chang.wia.WiaDevMgr;
-// import jp.chang.wia.PropValue;
-// import jp.chang.wia.EnumSTATPROPSTG;
-// import jp.chang.wia.STATPROPSTG;
+import jp.chang.wia.IWiaDevMgr;
+import jp.chang.wia.WiaDevMgr;
+import jp.chang.wia.IWiaDevMgr2;
+import jp.chang.wia.WiaDevMgr2;
+import jp.chang.wia.EnumWIA_DEV_INFO;
+import jp.chang.wia.WiaPropertyStorage;
+import jp.chang.wia.IWiaPropertyStorage;
+import jp.chang.wia.WiaConsts;
+import jp.chang.wia.PROPSPEC;
+import jp.chang.wia.PROPVARIANT;
+import jp.chang.wia.MyOle32;
+import jp.chang.wia.WiaItem;
+import jp.chang.wia.WiaItem2;
+import jp.chang.wia.EnumWiaItem;
+import jp.chang.wia.EnumWiaItem2;
+import jp.chang.wia.IWiaDataTransfer;
+import jp.chang.wia.WiaDataTransfer;
+import jp.chang.wia.STGMEDIUM;
+import jp.chang.wia.Wia;
+import jp.chang.wia.WiaTypes.PROPID;
+import jp.chang.wia.WiaDataCallback;
+import jp.chang.wia.WiaDataCallbackImpl;
+import jp.chang.wia.WiaDevMgr;
+import jp.chang.wia.PropValue;
+import jp.chang.wia.EnumSTATPROPSTG;
+import jp.chang.wia.STATPROPSTG;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -70,105 +69,105 @@ import java.nio.file.Path;
 
 public class PatientDocScanner extends JDialog {
 
-	private int patientId;
-	private int numPages = 0;
-	private String timeStamp;
-	private Path saveDir;
-	private JLabel numPagesLabel;
-	private static DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
+    private int patientId;
+    private int numPages = 0;
+    private String timeStamp;
+    private Path saveDir;
+    private JLabel numPagesLabel;
+    private static DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
 
-	public PatientDocScanner(Frame owner, int patientId){
-		super(owner, "患者書類のスキャン", true);
-		this.patientId = patientId;
-		this.timeStamp = makeTimeStamp();
-		this.saveDir = getSaveDir();
-		this.numPagesLabel = new JLabel(String.valueOf(numPages));
-		add(makeCenterPanel(), BorderLayout.CENTER);
-		add(makeCommandPanel(), BorderLayout.SOUTH);
-		pack();
-	}
+    public PatientDocScanner(Frame owner, int patientId){
+        super(owner, "患者書類のスキャン", true);
+        this.patientId = patientId;
+        this.timeStamp = makeTimeStamp();
+        this.saveDir = getSaveDir();
+        this.numPagesLabel = new JLabel(String.valueOf(numPages));
+        add(makeCenterPanel(), BorderLayout.CENTER);
+        add(makeCommandPanel(), BorderLayout.SOUTH);
+        pack();
+    }
 
-	private JComponent makeCenterPanel(){
-		JPanel panel = new JPanel();
-		panel.add(makeCenterPanelContent());
-		return panel;
-	}
+    private JComponent makeCenterPanel(){
+        JPanel panel = new JPanel();
+        panel.add(makeCenterPanelContent());
+        return panel;
+    }
 
-	private JComponent makeCenterPanelContent(){
-		JPanel panel = new JPanel();
-		BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.PAGE_AXIS);
-		panel.setLayout(boxLayout);
-		JLabel patientIdLabel = new JLabel("患者番号：" + patientId);
-		patientIdLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel.add(patientIdLabel);
-		JComponent pagesPanel = makeScannedPagesPanel();
-		pagesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-		panel.add(pagesPanel);
-		return panel;
-	}
+    private JComponent makeCenterPanelContent(){
+        JPanel panel = new JPanel();
+        BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.PAGE_AXIS);
+        panel.setLayout(boxLayout);
+        JLabel patientIdLabel = new JLabel("患者番号：" + patientId);
+        patientIdLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(patientIdLabel);
+        JComponent pagesPanel = makeScannedPagesPanel();
+        pagesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(pagesPanel);
+        return panel;
+    }
 
-	private JComponent makeScannedPagesPanel(){
-		JPanel panel = new JPanel();
-		FlowLayout layout = new FlowLayout();
-		panel.setLayout(layout);
-		JLabel label = new JLabel("スキャンしたページ数：");
-		panel.add(label);
-		panel.add(numPagesLabel);
-		return panel;
-	}
+    private JComponent makeScannedPagesPanel(){
+        JPanel panel = new JPanel();
+        FlowLayout layout = new FlowLayout();
+        panel.setLayout(layout);
+        JLabel label = new JLabel("スキャンしたページ数：");
+        panel.add(label);
+        panel.add(numPagesLabel);
+        return panel;
+    }
 
-	private JComponent makeCommandPanel(){
-		JPanel panel = new JPanel();
-		JButton start = new JButton("スタート");
-		JButton finish = new JButton("終了");
-		int maxWidth = 0;
-		for(JButton btn: new JButton[]{start, finish}){
-			Dimension dim = btn.getPreferredSize();
-			if( dim.width > maxWidth ){
-				maxWidth = dim.width;
-			}
-		}
-		for(JButton btn: new JButton[]{start, finish}){
-			Dimension dim = btn.getPreferredSize();
-			dim.width = maxWidth;
-			btn.setPreferredSize(dim);
-		}
-		start.addActionListener(this::doStart);
-		finish.addActionListener(event -> {
-			dispose();
-		});
-		panel.add(start);
-		panel.add(finish);
-		return panel;
-	}
+    private JComponent makeCommandPanel(){
+        JPanel panel = new JPanel();
+        JButton start = new JButton("スタート");
+        JButton finish = new JButton("終了");
+        int maxWidth = 0;
+        for(JButton btn: new JButton[]{start, finish}){
+            Dimension dim = btn.getPreferredSize();
+            if( dim.width > maxWidth ){
+                maxWidth = dim.width;
+            }
+        }
+        for(JButton btn: new JButton[]{start, finish}){
+            Dimension dim = btn.getPreferredSize();
+            dim.width = maxWidth;
+            btn.setPreferredSize(dim);
+        }
+        start.addActionListener(this::doStart);
+        finish.addActionListener(event -> {
+            dispose();
+        });
+        panel.add(start);
+        panel.add(finish);
+        return panel;
+    }
 
-	private Path getSaveDir(){
-		Path path = ScannerProperties.INSTANCE.getSaveDir();
-		if( path == null ){
-			path = Paths.get(System.getProperty("user.dir"));
-		}
-		return path;
-	}
+    private Path getSaveDir(){
+        Path path = ScannerProperties.INSTANCE.getSaveDir();
+        if( path == null ){
+            path = Paths.get(System.getProperty("user.dir"));
+        }
+        return path;
+    }
 
-	private void doStart(ActionEvent event){
-		List<Wia.Device> devices = Wia.listDevices();
-		WiaItem deviceItem = null;
-		if( devices.size() == 0 ){
-			System.out.println("No scanner");
-			return;
-		} else if( devices.size() == 1 ){
-			deviceItem = getDeviceWiaItem(devices.get(0).deviceId);
-		} else {
-			String deviceName = pickDevice();
-			if( deviceName == null ){
-				return;
-			}
-			deviceItem = getDeviceWiaItem(deviceName);
-		}
-		WiaItem wiaItem = findScannerFile(deviceItem);
-		if( wiaItem != null ){
-			String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, numPages+1);
-			Path savePath = saveDir.resolve(saveFileName);
+    private void doStart(ActionEvent event){
+        List<Wia.Device> devices = Wia.listDevices();
+        WiaItem deviceItem = null;
+        if( devices.size() == 0 ){
+            JOptionalPane.showMessageDialog(this, "接続された。スキャナーがみつかりません。");
+            return;
+        } else if( devices.size() == 1 ){
+            deviceItem = getDeviceWiaItem(devices.get(0).deviceId);
+        } else {
+            String deviceName = pickDevice();
+            if( deviceName == null ){
+                return;
+            }
+            deviceItem = getDeviceWiaItem(deviceName);
+        }
+        WiaItem wiaItem = findScannerFile(deviceItem);
+        if( wiaItem != null ){
+            String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, numPages+1);
+            Path savePath = saveDir.resolve(saveFileName);
             PointerByReference pWiaDataTransfer = new PointerByReference();
             HRESULT hr = wiaItem.QueryInterface(new REFIID(IWiaDataTransfer.IID_IWiaDataTransfer), pWiaDataTransfer);
             COMUtils.checkRC(hr);
@@ -189,18 +188,18 @@ public class PatientDocScanner extends JDialog {
             hr = transfer.idtGetData(stgmedium, dataCallback);
             COMUtils.checkRC(hr);
             transfer.Release();
-			wiaItem.Release();
-			numPages += 1;
-			numPagesLabel.setText(String.valueOf(numPages));
-			pack();
-		}
-		deviceItem.Release();
-	}
+            wiaItem.Release();
+            numPages += 1;
+            numPagesLabel.setText(String.valueOf(numPages));
+            pack();
+        }
+        deviceItem.Release();
+    }
 
-	private String makeTimeStamp(){
-		LocalDateTime dt = LocalDateTime.now();
-		return dt.format(timeStampFormatter);
-	}
+    private String makeTimeStamp(){
+        LocalDateTime dt = LocalDateTime.now();
+        return dt.format(timeStampFormatter);
+    }
 
     private static WiaItem getDeviceWiaItem(String deviceId){
         WiaDevMgr devMgr = Wia.createWiaDevMgr();
@@ -219,16 +218,16 @@ public class PatientDocScanner extends JDialog {
             new LONG(WiaConsts.WIA_SELECT_DEVICE_NODEFAULT), pp);
         COMUtils.checkRC(hr);
         if( hr.equals(COMUtils.S_FALSE) ){
-        	return null;
+            return null;
         } else {
-	        BSTR bstr = new BSTR(pp.getValue());
-	        devMgr.Release();
-	        return bstr.toString();
-	    }
+            BSTR bstr = new BSTR(pp.getValue());
+            devMgr.Release();
+            return bstr.toString();
+        }
     }
 
     private static WiaItem findScannerFile(WiaItem deviceItem){
-    	WiaItem wiaItem = null;
+        WiaItem wiaItem = null;
         PointerByReference pIEnumWiaItem = new PointerByReference();
         HRESULT hr = deviceItem.EnumChildItems(pIEnumWiaItem);
         COMUtils.checkRC(hr);
@@ -253,7 +252,7 @@ public class PatientDocScanner extends JDialog {
         }
         COMUtils.checkRC(hr);
         enumWiaItem.Release();
-    	return wiaItem;
+        return wiaItem;
     }
 
 }
