@@ -167,10 +167,23 @@ public class PatientDocScanner extends JDialog {
         WiaItem wiaItem = findScannerFile(deviceItem);
         if( wiaItem != null ){
             {
-                ScanProgressDialog dialog = new ScanProgressDialog(this);
+                final ScanProgressDialog dialog = new ScanProgressDialog(this);
                 dialog.setLocationByPlatform(true);
+                new Thread(() -> {
+                	try{
+	                	for(int i=0;i<10;i++){
+	                		Thread.sleep(500);
+	                		System.out.println(i+1);
+	                		final int value = (i+1) * 10;
+	                		EventQueue.invokeLater(() -> {
+	                			dialog.setValue(value);
+	                		});
+	                	}
+	                } catch(Exception ex){
+
+	                }
+                }).start();
                 dialog.setVisible(true);
-                //dialog.setVisible(true);
             }
             // String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, numPages+1);
             // Path savePath = saveDir.resolve(saveFileName);

@@ -14,7 +14,6 @@ class ScanProgressDialog extends JDialog {
 		add(makeCentralPane(), BorderLayout.CENTER);
 		add(makeCommandPane(), BorderLayout.SOUTH);
 		pack();
-		EventQueue.invokeLater(this::run);
 	}
 
 	void start(){
