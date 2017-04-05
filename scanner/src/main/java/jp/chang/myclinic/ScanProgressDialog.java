@@ -13,6 +13,7 @@ class ScanProgressDialog extends JDialog {
 		super(owner, "スキャン実行中...", true);
 		add(makeCentralPane(), BorderLayout.CENTER);
 		add(makeCommandPane(), BorderLayout.SOUTH);
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		pack();
 	}
 

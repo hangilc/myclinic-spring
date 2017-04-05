@@ -190,14 +190,17 @@ public class PatientDocScanner extends JDialog {
 	                @Override
 	                public HRESULT invoke(Pointer thisPointer, LONG lMessage, LONG lStatus, LONG lPercentComplete,
 	                    LONG lOffset, LONG lLength, LONG lReserved, LONG lResLength, PointerByReference pbBuffer){
-	                	int pct = lPercentComplete.intValue();
-	                    System.out.printf("callback %d\n", pct);
 	                    if( dialog.isCanceled() ){
 	                    	return WinError.S_FALSE;
 	                    }
-	                    EventQueue.invokeLater(() -> {
-		                    dialog.setValue(pct);
-	                    });
+	                    int message = lMessage.intValue();
+	                    if( message == WiaConsts.IT_MSG_DATA || message == WiaConsts.IT_MSG_STATUS ){
+		                	int pct = lPercentComplete.intValue();
+		                    System.out.printf("callback %d\n", pct);
+		                    EventQueue.invokeLater(() -> {
+			                    dialog.setValue(pct);
+		                    });
+	                    }
 	                    return WinError.S_OK;
 	                };
 	            });

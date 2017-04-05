@@ -231,6 +231,15 @@ public class WiaConsts {
 	public static final int WIA_DEVICE_DIALOG_SINGLE_IMAGE     = 0x00000002;
 	public static final int WIA_DEVICE_DIALOG_USE_COMMON_UI    = 0x00000004;
 
+	public static final int IT_MSG_DATA_HEADER              = 0x0001;
+	public static final int IT_MSG_DATA                     = 0x0002;
+	public static final int IT_MSG_STATUS                   = 0x0003;
+	public static final int IT_MSG_TERMINATION              = 0x0004;
+	public static final int IT_MSG_NEW_PAGE                 = 0x0005;
+	public static final int IT_MSG_FILE_PREVIEW_DATA        = 0x0006;
+	public static final int IT_MSG_FILE_PREVIEW_DATA_HEADER = 0x0007;
+
+
 	private static GUID defineGuid(int data1, int data2, int data3, int data4_0, int data4_1,
 		int data4_2, int data4_3, int data4_4, int data4_5, int data4_6, int data4_7){
 		GUID guid = new GUID();
