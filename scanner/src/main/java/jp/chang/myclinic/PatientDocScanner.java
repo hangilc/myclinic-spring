@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 
@@ -75,19 +76,25 @@ import java.nio.file.Path;
 public class PatientDocScanner extends JDialog {
 
     private int patientId;
-    private int numPages = 0;
+    private int lastPageIndex;
     private String timeStamp;
     private Path saveDir;
     private JLabel numPagesLabel;
     private JLabel previewImageLabel;
+    private List<Path> savedPages;
+    private int previewIndex;
+    private JLabel previewStatusLabel;
     private static DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
 
     public PatientDocScanner(Frame owner, int patientId){
         super(owner, "患者書類のスキャン", true);
         this.patientId = patientId;
+        this.lastPageIndex = 0;
         this.timeStamp = makeTimeStamp();
         this.saveDir = getSaveDir();
-        this.numPagesLabel = new JLabel(String.valueOf(numPages));
+        this.savedPages = new ArrayList<Path>();
+        this.numPagesLabel = new JLabel(String.valueOf(savedPages.size()));
+        this.previewIndex = -1;
         add(makeCenterPanel(), BorderLayout.CENTER);
         add(makeCommandPanel(), BorderLayout.SOUTH);
         pack();
@@ -125,12 +132,56 @@ public class PatientDocScanner extends JDialog {
 
     private JComponent makePreviewPanel(){
     	JPanel panel = new JPanel();
+    	{
+    		BoxLayout layout = new BoxLayout(panel, BoxLayout.X_AXIS);
+    		panel.setLayout(layout);
+    	}
     	previewImageLabel = new JLabel("PREVIEW");
     	Dimension dim = new Dimension(210, 297);
     	previewImageLabel.setMinimumSize(dim);
     	previewImageLabel.setPreferredSize(dim);
     	previewImageLabel.setMaximumSize(dim);
     	panel.add(previewImageLabel);
+    	panel.add(makePreviewControlPanel());
+    	return panel;
+    }
+
+    private JComponent makePreviewControlPanel(){
+    	JPanel panel = new JPanel();
+    	{
+    		BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
+    		panel.setLayout(layout);
+    	}
+    	{
+    		previewStatusLabel = new JLabel("0/0");
+    		panel.add(previewStatusLabel);
+    	}
+    	{
+    		JPanel navPanel = new JPanel();
+    		{
+	    		BoxLayout layout = new BoxLayout(navPanel, BoxLayout.X_AXIS);
+	    		navPanel.setLayout(layout);
+    		}
+    		JButton prevButton = new JButton("前へ");
+    		prevButton.addActionListener(event -> {
+    			int index = previewIndex - 1;
+    			if( index >= 0 && index < savedPages.size() ){
+    				previewIndex = index;
+    				updatePreview();
+    			}
+    		});
+    		navPanel.add(prevButton);
+    		JButton nextButton = new JButton("次へ");
+    		nextButton.addActionListener(event -> {
+    			int index = previewIndex + 1;
+    			if( index >= 0 && index < savedPages.size() ){
+    				previewIndex = index;
+    				updatePreview();
+    			}
+    		});
+    		navPanel.add(nextButton);
+    		panel.add(navPanel);
+    	}
     	return panel;
     }
 
@@ -167,13 +218,22 @@ public class PatientDocScanner extends JDialog {
         return path;
     }
 
-    private void incNumPages(){
-    	numPages += 1;
-    	numPagesLabel.setText("" + numPages);
+    private void incLastPageIndex(){
+    	lastPageIndex += 1;
+    	numPagesLabel.setText("" + savedPages.size());
     	pack();
     }
 
-    private void setPreviewImage(Path path){
+    private void updatePreview(){
+    	updatePreviewImage();
+    	updatePreviewStatus();
+    }
+
+    private void updatePreviewImage(){
+    	if( previewIndex < 0 ){
+    		return;
+    	}
+    	Path path = savedPages.get(previewIndex);
     	BufferedImage origImg;
     	try{
 	    	origImg = ImageIO.read(path.toFile());
@@ -190,6 +250,14 @@ public class PatientDocScanner extends JDialog {
     	g.drawImage(origImg, 0, 0, dim.width, dim.height, null);
     	g.dispose();
     	previewImageLabel.setIcon(new ImageIcon(resizedImg));
+    }
+
+    private void updatePreviewStatus(){
+    	if( previewIndex < 0 ){
+    		previewStatusLabel.setText("0/0");
+    	} else {
+    		previewStatusLabel.setText((previewIndex + 1) + "/" + savedPages.size());
+    	}
     }
 
     private void doStart(ActionEvent event){
@@ -215,7 +283,7 @@ public class PatientDocScanner extends JDialog {
                 }
                 Wia.writeResolution(storage, 300);
                 storage.Release();
-	            String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, numPages+1);
+	            String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, lastPageIndex+1);
 	            Path savePath = saveDir.resolve(saveFileName);
 	            PointerByReference pWiaDataTransfer = new PointerByReference();
 	            HRESULT hr = scanWiaItem.QueryInterface(new REFIID(IWiaDataTransfer.IID_IWiaDataTransfer), pWiaDataTransfer);
@@ -251,9 +319,11 @@ public class PatientDocScanner extends JDialog {
 	            scanWiaItem.Release();
 	            if( !dialog.isCanceled() ){
 	            	final Path outPath = convertImage(savePath, "jpg");
+	            	savedPages.add(outPath);
+	            	previewIndex = savedPages.size() - 1;
 		            EventQueue.invokeLater(() -> {
-			            this.incNumPages();
-			            setPreviewImage(outPath);
+			            this.incLastPageIndex();
+			            updatePreviewImage();
 			            dialog.dispose();
 		            });
 		        } else {
