@@ -2,6 +2,7 @@ package jp.chang.myclinic;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import javax.imageio.ImageIO;
 
 import com.sun.jna.Native;
 import com.sun.jna.Memory;
@@ -212,6 +214,7 @@ public class PatientDocScanner extends JDialog {
 	            	dialog.dispose();
 	            });
 	            if( !dialog.isCanceled() ){
+	            	convertImage(savePath, "jpg");
 		            EventQueue.invokeLater(() -> {
 			            this.incNumPages();
 		            });
@@ -227,6 +230,22 @@ public class PatientDocScanner extends JDialog {
     		deviceItem.Release();
     	}).start();
     	dialog.setVisible(true);
+    }
+
+    private void convertImage(Path source, String format){
+    	try{
+	    	BufferedImage src = ImageIO.read(source.toFile());
+	    	String srcFileName = source.getFileName().toString();
+	    	String dstFileName = srcFileName.replaceFirst("\\.bmp$", "." + format);
+	    	Path output = source.resolveSibling(dstFileName);
+	    	System.out.println(output.toString());
+	    	boolean ok = ImageIO.write(src, format, output.toFile());
+	    	if( !ok ){
+	    		throw new RuntimeException("image conversion failed");
+	    	}
+	    } catch(IOException ex){
+	    	throw new UncheckedIOException(ex);
+	    }
     }
 
     private String resolveDeviceId(){
