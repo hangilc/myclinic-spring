@@ -150,6 +150,70 @@ public class PatientDocScanner extends JDialog {
     }
 
     private void doStart(ActionEvent event){
+    	String deviceId = resolveDeviceId();
+    	if( deviceId == null ){
+    		return;
+    	}
+        final ScanProgressDialog dialog = new ScanProgressDialog(this);
+        dialog.setLocationByPlatform(true);
+    	new Thread(() -> {
+    		Wia.CoInitialize();
+    		WiaItem deviceItem = getDeviceWiaItem(deviceId);
+    		if( deviceItem == null ){
+    			return;
+    		}
+        	WiaItem wiaItem = findScannerFile(deviceItem);
+        	if( wiaItem != null ){
+        		final WiaItem scanWiaItem = wiaItem;
+	            String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, numPages+1);
+	            Path savePath = saveDir.resolve(saveFileName);
+	            PointerByReference pWiaDataTransfer = new PointerByReference();
+	            HRESULT hr = scanWiaItem.QueryInterface(new REFIID(IWiaDataTransfer.IID_IWiaDataTransfer), pWiaDataTransfer);
+	            COMUtils.checkRC(hr);
+	            final WiaDataTransfer transfer = new WiaDataTransfer(pWiaDataTransfer.getValue());
+	            STGMEDIUM stgmedium = new STGMEDIUM();
+	            stgmedium.tymed = new DWORD(WiaConsts.TYMED_FILE);
+	            stgmedium.unionValue.setType(Pointer.class);
+	            String fileName = savePath.toString();
+	            stgmedium.unionValue.pointer = new LPOLESTR(fileName).getPointer();
+	            WiaDataCallback dataCallback = WiaDataCallbackImpl.create(new WiaDataCallbackImpl.BandedDataCallbackCallback(){
+	                @Override
+	                public HRESULT invoke(Pointer thisPointer, LONG lMessage, LONG lStatus, LONG lPercentComplete,
+	                    LONG lOffset, LONG lLength, LONG lReserved, LONG lResLength, PointerByReference pbBuffer){
+	                	int pct = lPercentComplete.intValue();
+	                    System.out.printf("callback %d\n", pct);
+	                    EventQueue.invokeLater(() -> {
+		                    dialog.setValue(pct);
+	                    });
+	                    return WinError.S_OK;
+	                };
+	            });
+	            hr = transfer.idtGetData(stgmedium, dataCallback);
+	            COMUtils.checkRC(hr);
+	            transfer.Release();
+	            scanWiaItem.Release();
+	            EventQueue.invokeLater(() -> {
+		            dialog.dispose();
+	            });
+        	}
+    		deviceItem.Release();
+    	}).start();
+    	dialog.setVisible(true);
+    }
+
+    private String resolveDeviceId(){
+        List<Wia.Device> devices = Wia.listDevices();
+    	if( devices.size() == 0 ){
+            JOptionPane.showMessageDialog(this, "接続された。スキャナーがみつかりません。");
+    		return null;
+    	} else if( devices.size() == 1 ){
+    		return devices.get(0).deviceId;
+    	} else {
+    		return pickDevice();
+    	}
+    }
+
+    private void doStartOrig(ActionEvent event){
         List<Wia.Device> devices = Wia.listDevices();
         WiaItem deviceItem = null;
         if( devices.size() == 0 ){
@@ -166,51 +230,64 @@ public class PatientDocScanner extends JDialog {
         }
         WiaItem wiaItem = findScannerFile(deviceItem);
         if( wiaItem != null ){
-            {
-                final ScanProgressDialog dialog = new ScanProgressDialog(this);
-                dialog.setLocationByPlatform(true);
-                new Thread(() -> {
-                	try{
-	                	for(int i=0;i<10;i++){
-	                		Thread.sleep(500);
-	                		System.out.println(i+1);
-	                		final int value = (i+1) * 10;
-	                		EventQueue.invokeLater(() -> {
-	                			dialog.setValue(value);
-	                		});
-	                	}
-	                } catch(Exception ex){
+            // {
+            //     final ScanProgressDialog dialog = new ScanProgressDialog(this);
+            //     dialog.setLocationByPlatform(true);
+            //     new Thread(() -> {
+            //     	try{
+	           //      	for(int i=0;i<10;i++){
+	           //      		Thread.sleep(500);
+	           //      		System.out.println(i+1);
+	           //      		final int value = (i+1) * 10;
+	           //      		EventQueue.invokeLater(() -> {
+	           //      			dialog.setValue(value);
+	           //      		});
+	           //      	}
+	           //      } catch(Exception ex){
 
-	                }
-                }).start();
-                dialog.setVisible(true);
-            }
-            // String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, numPages+1);
-            // Path savePath = saveDir.resolve(saveFileName);
-            // PointerByReference pWiaDataTransfer = new PointerByReference();
-            // HRESULT hr = wiaItem.QueryInterface(new REFIID(IWiaDataTransfer.IID_IWiaDataTransfer), pWiaDataTransfer);
-            // COMUtils.checkRC(hr);
-            // WiaDataTransfer transfer = new WiaDataTransfer(pWiaDataTransfer.getValue());
-            // STGMEDIUM stgmedium = new STGMEDIUM();
-            // stgmedium.tymed = new DWORD(WiaConsts.TYMED_FILE);
-            // stgmedium.unionValue.setType(Pointer.class);
-            // String fileName = savePath.toString();
-            // stgmedium.unionValue.pointer = new LPOLESTR(fileName).getPointer();
-            // WiaDataCallback dataCallback = WiaDataCallbackImpl.create(new WiaDataCallbackImpl.BandedDataCallbackCallback(){
-            //     @Override
-            //     public HRESULT invoke(Pointer thisPointer, LONG lMessage, LONG lStatus, LONG lPercentComplete,
-            //         LONG lOffset, LONG lLength, LONG lReserved, LONG lResLength, PointerByReference pbBuffer){
-            //         System.out.printf("callback %d\n", lPercentComplete.intValue());
-            //         return WinError.S_OK;
-            //     };
-            // });
-            // hr = transfer.idtGetData(stgmedium, dataCallback);
-            // COMUtils.checkRC(hr);
-            // transfer.Release();
-            // wiaItem.Release();
-            // numPages += 1;
-            // numPagesLabel.setText(String.valueOf(numPages));
-            // pack();
+	           //      }
+            //     }).start();
+            //     dialog.setVisible(true);
+            // }
+            final WiaItem scanWiaItem = wiaItem;
+            String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, numPages+1);
+            Path savePath = saveDir.resolve(saveFileName);
+            PointerByReference pWiaDataTransfer = new PointerByReference();
+            HRESULT hr = scanWiaItem.QueryInterface(new REFIID(IWiaDataTransfer.IID_IWiaDataTransfer), pWiaDataTransfer);
+            COMUtils.checkRC(hr);
+            final WiaDataTransfer transfer = new WiaDataTransfer(pWiaDataTransfer.getValue());
+            STGMEDIUM stgmedium = new STGMEDIUM();
+            stgmedium.tymed = new DWORD(WiaConsts.TYMED_FILE);
+            stgmedium.unionValue.setType(Pointer.class);
+            String fileName = savePath.toString();
+            stgmedium.unionValue.pointer = new LPOLESTR(fileName).getPointer();
+            final ScanProgressDialog dialog = new ScanProgressDialog(this);
+            dialog.setLocationByPlatform(true);
+            WiaDataCallback dataCallback = WiaDataCallbackImpl.create(new WiaDataCallbackImpl.BandedDataCallbackCallback(){
+                @Override
+                public HRESULT invoke(Pointer thisPointer, LONG lMessage, LONG lStatus, LONG lPercentComplete,
+                    LONG lOffset, LONG lLength, LONG lReserved, LONG lResLength, PointerByReference pbBuffer){
+                	int pct = lPercentComplete.intValue();
+                    System.out.printf("callback %d\n", pct);
+                    EventQueue.invokeLater(() -> {
+	                    dialog.setValue(lPercentComplete.intValue());
+                    });
+                    if( pct == 100 ){
+			            transfer.Release();
+			            scanWiaItem.Release();
+			            dialog.dispose();
+			            // numPages += 1;
+			            // numPagesLabel.setText(String.valueOf(numPages));
+			            // pack();
+                    }
+                    return WinError.S_OK;
+                };
+            });
+            EventQueue.invokeLater(() -> {
+	            HRESULT hrGetData = transfer.idtGetData(stgmedium, dataCallback);
+	            COMUtils.checkRC(hrGetData);
+            });
+            dialog.setVisible(true);
         }
         deviceItem.Release();
     }
