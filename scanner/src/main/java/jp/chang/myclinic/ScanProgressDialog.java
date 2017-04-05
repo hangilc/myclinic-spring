@@ -6,7 +6,7 @@ import javax.swing.*;
 
 class ScanProgressDialog extends JDialog {
 
-	private boolean done = false;
+	private boolean canceled = false;
 	private JProgressBar progressBar;
 
 	ScanProgressDialog(Dialog owner){
@@ -16,29 +16,8 @@ class ScanProgressDialog extends JDialog {
 		pack();
 	}
 
-	void start(){
-		setVisible(true);
-		System.out.println(1);
-		System.out.println(2);
-		System.out.println(3);
-	}
-
-	void run(){
-	    int value = 0;
-	    while( value < 100 ){
-	        try{
-	            Thread.sleep(500);
-	            value += 10;
-	            progressBar.setValue(value);
-	            System.out.println(value);
-	        } catch(InterruptedException ex){
-	            break;
-	        }
-	    }
-	}
-
-	boolean isDone(){
-		return done;
+	boolean isCanceled(){
+		return canceled;
 	}
 
 	void setValue(int value){
@@ -54,7 +33,7 @@ class ScanProgressDialog extends JDialog {
 		JPanel panel = new JPanel();
 		JButton cancel = new JButton("キャンセル");
 		cancel.addActionListener(event -> {
-			dispose();
+			canceled = true;
 		});
 		panel.add(cancel);
 		return panel;

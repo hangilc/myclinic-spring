@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -182,12 +185,16 @@ public class PatientDocScanner extends JDialog {
 	            stgmedium.unionValue.setType(Pointer.class);
 	            String fileName = savePath.toString();
 	            stgmedium.unionValue.pointer = new LPOLESTR(fileName).getPointer();
+	            final boolean[] isCanceled = new boolean[]{ false };
 	            WiaDataCallback dataCallback = WiaDataCallbackImpl.create(new WiaDataCallbackImpl.BandedDataCallbackCallback(){
 	                @Override
 	                public HRESULT invoke(Pointer thisPointer, LONG lMessage, LONG lStatus, LONG lPercentComplete,
 	                    LONG lOffset, LONG lLength, LONG lReserved, LONG lResLength, PointerByReference pbBuffer){
 	                	int pct = lPercentComplete.intValue();
 	                    System.out.printf("callback %d\n", pct);
+	                    if( dialog.isCanceled() ){
+	                    	return WinError.S_FALSE;
+	                    }
 	                    EventQueue.invokeLater(() -> {
 		                    dialog.setValue(pct);
 	                    });
@@ -199,9 +206,20 @@ public class PatientDocScanner extends JDialog {
 	            transfer.Release();
 	            scanWiaItem.Release();
 	            EventQueue.invokeLater(() -> {
-		            dialog.dispose();
-		            this.incNumPages();
+	            	dialog.dispose();
 	            });
+	            if( !dialog.isCanceled() ){
+		            EventQueue.invokeLater(() -> {
+			            this.incNumPages();
+		            });
+		        } else {
+		        	try{
+		        		System.out.println("Deleting: " + savePath);
+			        	Files.deleteIfExists(savePath);
+			        } catch(IOException ex){
+			        	throw new UncheckedIOException(ex);
+			        }
+		        }
         	}
     		deviceItem.Release();
     	}).start();
