@@ -217,9 +217,6 @@ public class PatientDocScanner extends JDialog {
 	            COMUtils.checkRC(hr);
 	            transfer.Release();
 	            scanWiaItem.Release();
-	            EventQueue.invokeLater(() -> {
-	            	dialog.dispose();
-	            });
 	            if( !dialog.isCanceled() ){
 	            	convertImage(savePath, "jpg");
 		            EventQueue.invokeLater(() -> {
@@ -233,6 +230,9 @@ public class PatientDocScanner extends JDialog {
 			        	throw new UncheckedIOException(ex);
 			        }
 		        }
+                EventQueue.invokeLater(() -> {
+                    dialog.dispose();
+                });
         	}
     		deviceItem.Release();
     	}).start();
@@ -250,6 +250,7 @@ public class PatientDocScanner extends JDialog {
 	    	if( !ok ){
 	    		throw new RuntimeException("image conversion failed");
 	    	}
+            Files.delete(source);
 	    } catch(IOException ex){
 	    	throw new UncheckedIOException(ex);
 	    }
