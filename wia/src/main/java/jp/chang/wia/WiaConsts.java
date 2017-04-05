@@ -142,6 +142,81 @@ public class WiaConsts {
 	public static final int WIA_IPA_SUPPRESS_PROPERTY_PAGE            = 4124; // 0x101c
 	public static final String WIA_IPA_SUPPRESS_PROPERTY_PAGE_STR     = "Suppress a property page";
 
+	public static final int WIA_IPC_THUMBNAIL                         = 5122; // 0x1402
+	public static final String WIA_IPC_THUMBNAIL_STR                  = "Thumbnail Data";
+
+	public static final int WIA_IPC_THUMB_WIDTH                       = 5123; // 0x1403
+	public static final String WIA_IPC_THUMB_WIDTH_STR                = "Thumbnail Width";
+
+	public static final int WIA_IPC_THUMB_HEIGHT                      = 5124; // 0x1404
+	public static final String WIA_IPC_THUMB_HEIGHT_STR               = "Thumbnail Height";
+
+	public static final int WIA_IPC_AUDIO_AVAILABLE                   = 5125; // 0x1405
+	public static final String WIA_IPC_AUDIO_AVAILABLE_STR            = "Audio Available";
+
+	public static final int WIA_IPC_AUDIO_DATA_FORMAT                 = 5126; // 0x1406
+	public static final String WIA_IPC_AUDIO_DATA_FORMAT_STR          = "Audio Format";
+
+	public static final int WIA_IPC_AUDIO_DATA                        = 5127; // 0x1407
+	public static final String WIA_IPC_AUDIO_DATA_STR                 = "Audio Data";
+
+	public static final int WIA_IPC_NUM_PICT_PER_ROW                  = 5128; // 0x1408
+	public static final String WIA_IPC_NUM_PICT_PER_ROW_STR           = "Pictures per Row";
+
+	public static final int WIA_IPC_SEQUENCE                          = 5129; // 0x1409
+	public static final String WIA_IPC_SEQUENCE_STR                   = "Sequence Number";
+
+	public static final int WIA_IPC_TIMEDELAY                         = 5130; // 0x140a
+	public static final String WIA_IPC_TIMEDELAY_STR                  = "Time Delay";
+
+	public static final int WIA_IPS_CUR_INTENT                        = 6146; // 0x1802
+	public static final String WIA_IPS_CUR_INTENT_STR                 = "Current Intent";
+
+	public static final int WIA_IPS_XRES                              = 6147; // 0x1803
+	public static final String WIA_IPS_XRES_STR                       = "Horizontal Resolution";
+
+	public static final int WIA_IPS_YRES                              = 6148; // 0x1804
+	public static final String WIA_IPS_YRES_STR                       = "Vertical Resolution";
+
+	public static final int WIA_IPS_XPOS                              = 6149; // 0x1805
+	public static final String WIA_IPS_XPOS_STR                       = "Horizontal Start Position";
+
+	public static final int WIA_IPS_YPOS                              = 6150; // 0x1806
+	public static final String WIA_IPS_YPOS_STR                       = "Vertical Start Position";
+
+	public static final int WIA_IPS_XEXTENT                           = 6151; // 0x1807
+	public static final String WIA_IPS_XEXTENT_STR                    = "Horizontal Extent";
+
+	public static final int WIA_IPS_YEXTENT                           = 6152; // 0x1808
+	public static final String WIA_IPS_YEXTENT_STR                    = "Vertical Extent";
+
+	public static final int WIA_IPS_PHOTOMETRIC_INTERP                = 6153; // 0x1809
+	public static final String WIA_IPS_PHOTOMETRIC_INTERP_STR         = "Photometric Interpretation";
+
+	public static final int WIA_IPS_BRIGHTNESS                        = 6154; // 0x180a
+	public static final String WIA_IPS_BRIGHTNESS_STR                 = "Brightness";
+
+	public static final int WIA_IPS_CONTRAST                          = 6155; // 0x180b
+	public static final String WIA_IPS_CONTRAST_STR                   = "Contrast";
+
+	public static final int WIA_IPS_ORIENTATION                       = 6156; // 0x180c
+	public static final String WIA_IPS_ORIENTATION_STR                = "Orientation";
+
+	public static final int WIA_IPS_ROTATION                          = 6157; // 0x180d
+	public static final String WIA_IPS_ROTATION_STR                   = "Rotation";
+
+	public static final int WIA_IPS_MIRROR                            = 6158; // 0x180e
+	public static final String WIA_IPS_MIRROR_STR                     = "Mirror";
+
+	public static final int WIA_IPS_THRESHOLD                         = 6159; // 0x180f
+	public static final String WIA_IPS_THRESHOLD_STR                  = "Threshold";
+
+	public static final int WIA_IPS_INVERT                            = 6160; // 0x1810
+	public static final String WIA_IPS_INVERT_STR                     = "Invert";
+
+	public static final int WIA_IPS_WARM_UP_TIME                      = 6161; // 0x1811
+	public static final String WIA_IPS_WARM_UP_TIME_STR               = "Lamp Warm up Time";
+
 	public static final int WIA_DIP_FIRST                    =    2;
 	public static final int WIA_IPA_FIRST                    = 4098;
 	public static final int WIA_DPF_FIRST                    = 3330;

@@ -1,15 +1,20 @@
 package jp.chang.wia;
 
 import com.sun.jna.platform.win32.COM.COMUtils;
+import com.sun.jna.platform.win32.Guid.REFIID;
 import com.sun.jna.platform.win32.Ole32;
+import com.sun.jna.platform.win32.Variant;
+import com.sun.jna.platform.win32.WinDef.LONG;
 import com.sun.jna.platform.win32.WinDef.ULONG;
 import com.sun.jna.platform.win32.WinError;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
+import com.sun.jna.platform.win32.WTypes.VARTYPE;
 import static com.sun.jna.platform.win32.WTypes.CLSCTX_LOCAL_SERVER;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Wia {
 
@@ -100,5 +105,48 @@ public class Wia {
         hr = MyOle32.INSTANCE.FreePropVariantArray(new ULONG(n), values);
         COMUtils.checkRC(hr);
         return retVals;
+    }
+
+    public static void writeResolution(WiaPropertyStorage storage, int dpi){
+    	PROPSPEC[] specs = (PROPSPEC[])new PROPSPEC().toArray(2);
+    	PROPVARIANT[] vals = (PROPVARIANT[])new PROPVARIANT().toArray(2);
+    	{
+    		PROPSPEC spec = specs[0];
+			spec.kind = new ULONG(PROPSPEC.PRSPEC_PROPID);
+			spec.value.setType(ULONG.class);
+			spec.value.propid = new ULONG(WiaConsts.WIA_IPS_XRES);
+    	}
+    	{
+    		PROPVARIANT val = vals[0];
+			val.vt = new VARTYPE(Variant.VT_I4);
+			val.value.lVal = new LONG(dpi);
+			val.value.setType(LONG.class);
+    	}
+    	{
+    		PROPSPEC spec = specs[1];
+			spec.kind = new ULONG(PROPSPEC.PRSPEC_PROPID);
+			spec.value.setType(ULONG.class);
+			spec.value.propid = new ULONG(WiaConsts.WIA_IPS_YRES);
+    	}
+    	{
+    		PROPVARIANT val = vals[1];
+			val.vt = new VARTYPE(Variant.VT_I4);
+			val.value.lVal = new LONG(dpi);
+			val.value.setType(LONG.class);
+    	}
+    	System.out.println("writing resolution");
+    	// specs[0] = new PROPSPEC(WiaConsts.WIA_IPS_XRES);
+    	// vals[0] = PROPVARIANT.create_VT_I4(dpi);
+    	// specs[1] = new PROPSPEC(WiaConsts.WIA_IPS_YRES);
+    	// vals[1] = PROPVARIANT.create_VT_I4(dpi);
+    	HRESULT hr = storage.WriteMultiple(new ULONG(2), specs, vals, new WiaTypes.PROPID(WiaConsts.WIA_RESERVED_FOR_NEW_PROPS));
+    	COMUtils.checkRC(hr);
+    }
+
+    public static WiaPropertyStorage getStorageForWiaItem(WiaItem item){
+        PointerByReference pStorage = new PointerByReference();
+        HRESULT hr = item.QueryInterface(new REFIID(IWiaPropertyStorage.IID_IWiaPropertyStorage), pStorage);
+        COMUtils.checkRC(hr);
+        return new WiaPropertyStorage(pStorage.getValue());
     }
 }

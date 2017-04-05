@@ -36,6 +36,18 @@ public class PROPSPEC extends Structure {
 
 	public PROPSPEC(){}
 
+	public PROPSPEC(int propid){
+		this.kind = new ULONG(PRSPEC_PROPID);
+		this.value.setType(ULONG.class);
+		this.value.propid = new ULONG(propid);
+	}
+
+	public PROPSPEC(String name){
+		this.kind = new ULONG(PRSPEC_LPWSTR);
+		this.value.setType(WString.class);
+		this.value.str = new WString(name);
+	}
+
 	public PROPSPEC(Pointer pointer){
 		super(pointer);
 	}

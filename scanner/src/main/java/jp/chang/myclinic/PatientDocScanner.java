@@ -176,6 +176,13 @@ public class PatientDocScanner extends JDialog {
         	WiaItem wiaItem = findScannerFile(deviceItem);
         	if( wiaItem != null ){
         		final WiaItem scanWiaItem = wiaItem;
+                WiaPropertyStorage storage = Wia.getStorageForWiaItem(scanWiaItem);
+                {
+                    PropValue[] pvals = Wia.readProps(storage, new int[]{ WiaConsts.WIA_IPS_XRES });
+                    System.out.println(pvals[0].getInt());
+                }
+                Wia.writeResolution(storage, 300);
+                storage.Release();
 	            String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, numPages+1);
 	            Path savePath = saveDir.resolve(saveFileName);
 	            PointerByReference pWiaDataTransfer = new PointerByReference();

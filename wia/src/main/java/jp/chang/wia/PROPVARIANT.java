@@ -63,6 +63,13 @@ public class PROPVARIANT extends Structure {
 		return variant;
 	}
 
+	public static PROPVARIANT create_VT_I4(int value){
+		PROPVARIANT variant = new PROPVARIANT();
+		variant.vt = new VARTYPE(Variant.VT_I4);
+		variant.value.lVal = new LONG(value);
+		return variant;
+	}
+
 	@Override
 	protected List<String> getFieldOrder(){
 		return Arrays.asList(new String[]{
