@@ -79,6 +79,7 @@ public class PatientDocScanner extends JDialog {
     private String timeStamp;
     private Path saveDir;
     private JLabel numPagesLabel;
+    private JLabel previewImageLabel;
     private static DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
 
     public PatientDocScanner(Frame owner, int patientId){
@@ -108,6 +109,7 @@ public class PatientDocScanner extends JDialog {
         JComponent pagesPanel = makeScannedPagesPanel();
         pagesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(pagesPanel);
+        panel.add(makePreviewPanel());
         return panel;
     }
 
@@ -119,6 +121,17 @@ public class PatientDocScanner extends JDialog {
         panel.add(label);
         panel.add(numPagesLabel);
         return panel;
+    }
+
+    private JComponent makePreviewPanel(){
+    	JPanel panel = new JPanel();
+    	previewImageLabel = new JLabel("PREVIEW");
+    	Dimension dim = new Dimension(210, 297);
+    	previewImageLabel.setMinimumSize(dim);
+    	previewImageLabel.setPreferredSize(dim);
+    	previewImageLabel.setMaximumSize(dim);
+    	panel.add(previewImageLabel);
+    	return panel;
     }
 
     private JComponent makeCommandPanel(){
@@ -158,6 +171,25 @@ public class PatientDocScanner extends JDialog {
     	numPages += 1;
     	numPagesLabel.setText("" + numPages);
     	pack();
+    }
+
+    private void setPreviewImage(Path path){
+    	BufferedImage origImg;
+    	try{
+	    	origImg = ImageIO.read(path.toFile());
+	    } catch(IOException ex){
+	    	throw new UncheckedIOException(ex);
+	    }
+    	int type = origImg.getType();
+    	if( type == 0 ){
+    		type = BufferedImage.TYPE_INT_ARGB;
+    	}
+    	Dimension dim = previewImageLabel.getSize(null);
+    	BufferedImage resizedImg = new BufferedImage(dim.width, dim.height, type);
+    	Graphics2D g = resizedImg.createGraphics();
+    	g.drawImage(origImg, 0, 0, dim.width, dim.height, null);
+    	g.dispose();
+    	previewImageLabel.setIcon(new ImageIcon(resizedImg));
     }
 
     private void doStart(ActionEvent event){
@@ -218,9 +250,11 @@ public class PatientDocScanner extends JDialog {
 	            transfer.Release();
 	            scanWiaItem.Release();
 	            if( !dialog.isCanceled() ){
-	            	convertImage(savePath, "jpg");
+	            	final Path outPath = convertImage(savePath, "jpg");
 		            EventQueue.invokeLater(() -> {
 			            this.incNumPages();
+			            setPreviewImage(outPath);
+			            dialog.dispose();
 		            });
 		        } else {
 		        	try{
@@ -229,17 +263,17 @@ public class PatientDocScanner extends JDialog {
 			        } catch(IOException ex){
 			        	throw new UncheckedIOException(ex);
 			        }
+			        EventQueue.invokeLater(() -> {
+			        	dialog.dispose();
+			        });
 		        }
-                EventQueue.invokeLater(() -> {
-                    dialog.dispose();
-                });
         	}
     		deviceItem.Release();
     	}).start();
     	dialog.setVisible(true);
     }
 
-    private void convertImage(Path source, String format){
+    private Path convertImage(Path source, String format){
     	try{
 	    	BufferedImage src = ImageIO.read(source.toFile());
 	    	String srcFileName = source.getFileName().toString();
@@ -251,6 +285,7 @@ public class PatientDocScanner extends JDialog {
 	    		throw new RuntimeException("image conversion failed");
 	    	}
             Files.delete(source);
+            return output;
 	    } catch(IOException ex){
 	    	throw new UncheckedIOException(ex);
 	    }
