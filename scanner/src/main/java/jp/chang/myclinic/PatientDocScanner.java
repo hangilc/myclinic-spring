@@ -275,16 +275,39 @@ public class PatientDocScanner extends JDialog {
     		}
         	WiaItem wiaItem = findScannerFile(deviceItem);
         	if( wiaItem != null ){
+                String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, lastPageIndex+1);
+                Path savePath = saveDir.resolve(saveFileName);
         		final WiaItem scanWiaItem = wiaItem;
                 WiaPropertyStorage storage = Wia.getStorageForWiaItem(scanWiaItem);
                 {
                     PropValue[] pvals = Wia.readProps(storage, new int[]{ WiaConsts.WIA_IPS_XRES });
                     System.out.println(pvals[0].getInt());
                 }
+                {
+                    PROPSPEC[] props = (PROPSPEC[])new PROPSPEC().toArray(2);
+                    PROPVARIANT[] variants = (PROPVARIANT[])new PROPVARIANT().toArray(2);
+                    props[0].kind = new ULONG(PROPSPEC.PRSPEC_PROPID);
+                    props[0].value.setType(ULONG.class);
+                    props[0].value.propid = new ULONG(WiaConsts.WIA_IPA_FORMAT);
+                    props[1].kind = new ULONG(PROPSPEC.PRSPEC_PROPID);
+                    props[1].value.setType(ULONG.class);
+                    props[1].value.propid = new ULONG(WiaConsts.WIA_IPA_TYMED);
+                    variants[0].vt = new VARTYPE(Variant.VT_CLSID);
+                    variants[0].value.setType(Pointer.class);
+                    variants[0].value.pointerValue = new CLSID(WiaConsts.WiaImgFmt_BMP).getPointer();
+                    variants[1].vt = new VARTYPE(Variant.VT_I4);
+                    variants[1].value.setType(LONG.class);
+                    variants[1].value.lVal = new LONG(WiaConsts.TYMED_FILE);
+                    PointerByReference pbr = new PointerByReference();
+                    HRESULT hr = wiaItem.QueryInterface(new REFIID(IWiaPropertyStorage.IID_IWiaPropertyStorage), pbr);
+                    COMUtils.checkRC(hr);
+                    WiaPropertyStorage propStorage = new WiaPropertyStorage(pbr.getValue());
+                    hr = storage.WriteMultiple(new ULONG(2), props, variants, 
+                        new PROPID(WiaConsts.WIA_RESERVED_FOR_NEW_PROPS));
+                    COMUtils.checkRC(hr);
+                }
                 Wia.writeResolution(storage, 300);
                 storage.Release();
-	            String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, lastPageIndex+1);
-	            Path savePath = saveDir.resolve(saveFileName);
 	            PointerByReference pWiaDataTransfer = new PointerByReference();
 	            HRESULT hr = scanWiaItem.QueryInterface(new REFIID(IWiaDataTransfer.IID_IWiaDataTransfer), pWiaDataTransfer);
 	            COMUtils.checkRC(hr);
