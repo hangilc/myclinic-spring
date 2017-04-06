@@ -13,6 +13,7 @@ import com.sun.jna.platform.win32.Guid.REFIID;
 import static com.sun.jna.platform.win32.Guid.IID_NULL;
 import com.sun.jna.platform.win32.W32Errors;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
+import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.platform.win32.WTypes.BSTR;
 import com.sun.jna.platform.win32.WTypes.LPOLESTR;
 import com.sun.jna.platform.win32.WinDef.ULONG;
@@ -27,6 +28,7 @@ import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.COM.COMUtils;
 import com.sun.jna.platform.win32.Wincon;
 import com.sun.jna.platform.win32.WinError;
+import com.sun.jna.platform.win32.BaseTSD.SIZE_T;
 
 import jp.chang.wia.IWiaDevMgr;
 import jp.chang.wia.WiaDevMgr;
@@ -54,6 +56,7 @@ import jp.chang.wia.WiaDevMgr;
 import jp.chang.wia.PropValue;
 import jp.chang.wia.EnumSTATPROPSTG;
 import jp.chang.wia.STATPROPSTG;
+import jp.chang.wia.MyKernel32;
 
 import jp.chang.wia.WindowsVersion;
 
@@ -254,6 +257,31 @@ public class App
                 }
                 if( wiaItem == null ){
                     break;
+                }
+                {
+                    System.out.printf("sizeof PROPVARIANT: %d\n", new PROPVARIANT().size());
+                    PROPSPEC[] props = (PROPSPEC[])new PROPSPEC().toArray(2);
+                    PROPVARIANT[] variants = (PROPVARIANT[])new PROPVARIANT().toArray(2);
+                    System.out.println(props[0]);
+                    props[0].kind = new ULONG(PROPSPEC.PRSPEC_PROPID);
+                    props[0].value.setType(ULONG.class);
+                    props[0].value.propid = new ULONG(WiaConsts.WIA_IPA_FORMAT);
+                    props[1].kind = new ULONG(PROPSPEC.PRSPEC_PROPID);
+                    props[1].value.setType(ULONG.class);
+                    props[1].value.propid = new ULONG(WiaConsts.WIA_IPA_TYMED);
+                    variants[0].vt = new VARTYPE(Variant.VT_CLSID);
+                    variants[0].value.setType(Pointer.class);
+                    variants[0].value.pointerValue = new CLSID(WiaConsts.WiaImgFmt_BMP).getPointer();
+                    variants[1].vt = new VARTYPE(Variant.VT_I4);
+                    variants[1].value.setType(LONG.class);
+                    variants[1].value.lVal = new LONG(WiaConsts.TYMED_FILE);
+                    PointerByReference pbr = new PointerByReference();
+                    hr = wiaItem.QueryInterface(new REFIID(IWiaPropertyStorage.IID_IWiaPropertyStorage), pbr);
+                    COMUtils.checkRC(hr);
+                    WiaPropertyStorage propStorage = new WiaPropertyStorage(pbr.getValue());
+                    hr = propStorage.WriteMultiple(new ULONG(2), props, variants, 
+                        new PROPID(WiaConsts.WIA_RESERVED_FOR_NEW_PROPS));
+                    COMUtils.checkRC(hr);
                 }
                 PointerByReference pWiaDataTransfer = new PointerByReference();
                 hr = wiaItem.QueryInterface(new REFIID(IWiaDataTransfer.IID_IWiaDataTransfer), pWiaDataTransfer);
