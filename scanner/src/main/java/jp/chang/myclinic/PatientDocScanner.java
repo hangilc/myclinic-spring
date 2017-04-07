@@ -267,6 +267,70 @@ public class PatientDocScanner extends JDialog {
     	}
         final ScanProgressDialog dialog = new ScanProgressDialog(this);
         dialog.setLocationByPlatform(true);
+        String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, lastPageIndex+1);
+        Path savePath = saveDir.resolve(saveFileName);
+		TaskScan task = new TaskScan(deviceId, savePath){
+			@Override
+			public void onFail(String message){
+				EventQueue.invokeLater(() -> {
+		            JOptionPane.showMessageDialog(PatientDocScanner.this, message);
+		            dialog.dispose();
+				});
+			}
+
+			@Override
+			public void onFinish(){
+				if( isCanceled() ){
+		        	try{
+		        		System.out.println("Deleting: " + savePath);
+			        	Files.deleteIfExists(savePath);
+			        } catch(IOException ex){
+			        	throw new UncheckedIOException(ex);
+			        }
+					EventQueue.invokeLater(() -> {
+						dialog.dispose();
+					});
+				} else{
+	            	final Path outPath = convertImage(savePath, "jpg");
+	            	savedPages.add(outPath);
+	            	previewIndex = savedPages.size() - 1;
+		            EventQueue.invokeLater(() -> {
+			            incLastPageIndex();
+			            updatePreviewImage();
+			            dialog.dispose();
+		            });
+				}
+			}
+
+			@Override
+			public void onProgress(int pct){
+				EventQueue.invokeLater(() -> {
+					dialog.setValue(pct);
+				});
+			}
+
+			@Override
+			public void onCallback(){
+				EventQueue.invokeLater(() -> {
+					if( dialog.isCanceled() ){
+						setCanceled(true);
+					}
+				});
+			}
+		};
+		Thread thread = new Thread(task);
+		thread.setDaemon(true);
+		thread.start();
+		dialog.setVisible(true);
+    }
+
+    private void doStartOrig(ActionEvent event){
+    	String deviceId = resolveDeviceId();
+    	if( deviceId == null ){
+    		return;
+    	}
+        final ScanProgressDialog dialog = new ScanProgressDialog(this);
+        dialog.setLocationByPlatform(true);
     	new Thread(() -> {
     		Wia.CoInitialize();
     		WiaItem deviceItem = getDeviceWiaItem(deviceId);
