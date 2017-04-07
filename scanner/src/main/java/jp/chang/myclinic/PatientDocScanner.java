@@ -296,7 +296,7 @@ public class PatientDocScanner extends JDialog {
 	            	previewIndex = savedPages.size() - 1;
 		            EventQueue.invokeLater(() -> {
 			            incLastPageIndex();
-			            updatePreviewImage();
+			            updatePreview();
 			            dialog.dispose();
 		            });
 				}
