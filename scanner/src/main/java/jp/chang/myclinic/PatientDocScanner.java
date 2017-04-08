@@ -79,12 +79,13 @@ public class PatientDocScanner extends JDialog {
     private int lastPageIndex;
     private String timeStamp;
     private Path saveDir;
-    private JLabel numPagesLabel;
+    //private JLabel numPagesLabel;
     private JLabel previewImageLabel;
     private List<Path> savedPages;
     private int previewIndex;
     private JLabel previewStatusLabel;
     private static DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
+    private PatientDocInfoPanel patientDocInfoPanel;
 
     public PatientDocScanner(Frame owner, int patientId){
         super(owner, "患者書類のスキャン", true);
@@ -93,8 +94,9 @@ public class PatientDocScanner extends JDialog {
         this.timeStamp = makeTimeStamp();
         this.saveDir = getSaveDir();
         this.savedPages = new ArrayList<Path>();
-        this.numPagesLabel = new JLabel(String.valueOf(savedPages.size()));
+        //this.numPagesLabel = new JLabel(String.valueOf(savedPages.size()));
         this.previewIndex = -1;
+        this.patientDocInfoPanel = new PatientDocInfoPanel(patientId);
         add(makeCenterPanel(), BorderLayout.CENTER);
         add(makeCommandPanel(), BorderLayout.SOUTH);
         pack();
@@ -110,23 +112,8 @@ public class PatientDocScanner extends JDialog {
         JPanel panel = new JPanel();
         BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.PAGE_AXIS);
         panel.setLayout(boxLayout);
-        JLabel patientIdLabel = new JLabel("患者番号：" + patientId);
-        patientIdLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(patientIdLabel);
-        JComponent pagesPanel = makeScannedPagesPanel();
-        pagesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(pagesPanel);
+        panel.add(patientDocInfoPanel);
         panel.add(makePreviewPanel());
-        return panel;
-    }
-
-    private JComponent makeScannedPagesPanel(){
-        JPanel panel = new JPanel();
-        FlowLayout layout = new FlowLayout();
-        panel.setLayout(layout);
-        JLabel label = new JLabel("スキャンしたページ数：");
-        panel.add(label);
-        panel.add(numPagesLabel);
         return panel;
     }
 
@@ -220,7 +207,8 @@ public class PatientDocScanner extends JDialog {
 
     private void incLastPageIndex(){
     	lastPageIndex += 1;
-    	numPagesLabel.setText("" + savedPages.size());
+    	//numPagesLabel.setText("" + savedPages.size());
+    	patientDocInfoPanel.updateTotalPages(savedPages.size());
     	pack();
     }
 
@@ -324,112 +312,6 @@ public class PatientDocScanner extends JDialog {
 		dialog.setVisible(true);
     }
 
-    private void doStartOrig(ActionEvent event){
-    	String deviceId = resolveDeviceId();
-    	if( deviceId == null ){
-    		return;
-    	}
-        final ScanProgressDialog dialog = new ScanProgressDialog(this);
-        dialog.setLocationByPlatform(true);
-    	new Thread(() -> {
-    		Wia.CoInitialize();
-    		WiaItem deviceItem = getDeviceWiaItem(deviceId);
-    		if( deviceItem == null ){
-    			return;
-    		}
-        	WiaItem wiaItem = findScannerFile(deviceItem);
-        	if( wiaItem != null ){
-                String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, lastPageIndex+1);
-                Path savePath = saveDir.resolve(saveFileName);
-        		final WiaItem scanWiaItem = wiaItem;
-                WiaPropertyStorage storage = Wia.getStorageForWiaItem(scanWiaItem);
-                {
-                    PropValue[] pvals = Wia.readProps(storage, new int[]{ WiaConsts.WIA_IPS_XRES });
-                    System.out.println(pvals[0].getInt());
-                }
-                {
-                    PROPSPEC[] props = (PROPSPEC[])new PROPSPEC().toArray(2);
-                    PROPVARIANT[] variants = (PROPVARIANT[])new PROPVARIANT().toArray(2);
-                    props[0].kind = new ULONG(PROPSPEC.PRSPEC_PROPID);
-                    props[0].value.setType(ULONG.class);
-                    props[0].value.propid = new ULONG(WiaConsts.WIA_IPA_FORMAT);
-                    props[1].kind = new ULONG(PROPSPEC.PRSPEC_PROPID);
-                    props[1].value.setType(ULONG.class);
-                    props[1].value.propid = new ULONG(WiaConsts.WIA_IPA_TYMED);
-                    variants[0].vt = new VARTYPE(Variant.VT_CLSID);
-                    variants[0].value.setType(Pointer.class);
-                    variants[0].value.pointerValue = new CLSID(WiaConsts.WiaImgFmt_BMP).getPointer();
-                    variants[1].vt = new VARTYPE(Variant.VT_I4);
-                    variants[1].value.setType(LONG.class);
-                    variants[1].value.lVal = new LONG(WiaConsts.TYMED_FILE);
-                    PointerByReference pbr = new PointerByReference();
-                    HRESULT hr = wiaItem.QueryInterface(new REFIID(IWiaPropertyStorage.IID_IWiaPropertyStorage), pbr);
-                    COMUtils.checkRC(hr);
-                    WiaPropertyStorage propStorage = new WiaPropertyStorage(pbr.getValue());
-                    hr = storage.WriteMultiple(new ULONG(2), props, variants, 
-                        new PROPID(WiaConsts.WIA_RESERVED_FOR_NEW_PROPS));
-                    COMUtils.checkRC(hr);
-                }
-                Wia.writeResolution(storage, 300);
-                storage.Release();
-	            PointerByReference pWiaDataTransfer = new PointerByReference();
-	            HRESULT hr = scanWiaItem.QueryInterface(new REFIID(IWiaDataTransfer.IID_IWiaDataTransfer), pWiaDataTransfer);
-	            COMUtils.checkRC(hr);
-	            final WiaDataTransfer transfer = new WiaDataTransfer(pWiaDataTransfer.getValue());
-	            STGMEDIUM stgmedium = new STGMEDIUM();
-	            stgmedium.tymed = new DWORD(WiaConsts.TYMED_FILE);
-	            stgmedium.unionValue.setType(Pointer.class);
-	            String fileName = savePath.toString();
-	            stgmedium.unionValue.pointer = new LPOLESTR(fileName).getPointer();
-	            final boolean[] isCanceled = new boolean[]{ false };
-	            WiaDataCallback dataCallback = WiaDataCallbackImpl.create(new WiaDataCallbackImpl.BandedDataCallbackCallback(){
-	                @Override
-	                public HRESULT invoke(Pointer thisPointer, LONG lMessage, LONG lStatus, LONG lPercentComplete,
-	                    LONG lOffset, LONG lLength, LONG lReserved, LONG lResLength, PointerByReference pbBuffer){
-	                    if( dialog.isCanceled() ){
-	                    	return WinError.S_FALSE;
-	                    }
-	                    int message = lMessage.intValue();
-	                    if( message == WiaConsts.IT_MSG_DATA || message == WiaConsts.IT_MSG_STATUS ){
-		                	int pct = lPercentComplete.intValue();
-		                    System.out.printf("callback %d\n", pct);
-		                    EventQueue.invokeLater(() -> {
-			                    dialog.setValue(pct);
-		                    });
-	                    }
-	                    return WinError.S_OK;
-	                };
-	            });
-	            hr = transfer.idtGetData(stgmedium, dataCallback);
-	            COMUtils.checkRC(hr);
-	            transfer.Release();
-	            scanWiaItem.Release();
-	            if( !dialog.isCanceled() ){
-	            	final Path outPath = convertImage(savePath, "jpg");
-	            	savedPages.add(outPath);
-	            	previewIndex = savedPages.size() - 1;
-		            EventQueue.invokeLater(() -> {
-			            this.incLastPageIndex();
-			            updatePreviewImage();
-			            dialog.dispose();
-		            });
-		        } else {
-		        	try{
-		        		System.out.println("Deleting: " + savePath);
-			        	Files.deleteIfExists(savePath);
-			        } catch(IOException ex){
-			        	throw new UncheckedIOException(ex);
-			        }
-			        EventQueue.invokeLater(() -> {
-			        	dialog.dispose();
-			        });
-		        }
-        	}
-    		deviceItem.Release();
-    	}).start();
-    	dialog.setVisible(true);
-    }
-
     private Path convertImage(Path source, String format){
     	try{
 	    	BufferedImage src = ImageIO.read(source.toFile());
@@ -456,7 +338,7 @@ public class PatientDocScanner extends JDialog {
     	} else if( devices.size() == 1 ){
     		return devices.get(0).deviceId;
     	} else {
-    		return pickDevice();
+    		return ScannerUtil.pickDevice();
     	}
     }
 
@@ -464,58 +346,4 @@ public class PatientDocScanner extends JDialog {
         LocalDateTime dt = LocalDateTime.now();
         return dt.format(timeStampFormatter);
     }
-
-    private static WiaItem getDeviceWiaItem(String deviceId){
-        WiaDevMgr devMgr = Wia.createWiaDevMgr();
-        PointerByReference pp = new PointerByReference();
-        HRESULT hr = devMgr.CreateDevice(new BSTR(deviceId), pp);
-        WiaItem item = new WiaItem(pp.getValue());
-        devMgr.Release();
-        return item;
-    }
-
-    private static String pickDevice(){
-        WiaDevMgr devMgr = Wia.createWiaDevMgr();
-        HWND hwnd = Kernel32.INSTANCE.GetConsoleWindow();
-        PointerByReference pp = new PointerByReference();
-        HRESULT hr = devMgr.SelectDeviceDlgID(hwnd, new LONG(WiaConsts.StiDeviceTypeScanner), 
-            new LONG(WiaConsts.WIA_SELECT_DEVICE_NODEFAULT), pp);
-        COMUtils.checkRC(hr);
-        if( hr.equals(COMUtils.S_FALSE) ){
-            return null;
-        } else {
-            BSTR bstr = new BSTR(pp.getValue());
-            devMgr.Release();
-            return bstr.toString();
-        }
-    }
-
-    private static WiaItem findScannerFile(WiaItem deviceItem){
-        WiaItem wiaItem = null;
-        PointerByReference pIEnumWiaItem = new PointerByReference();
-        HRESULT hr = deviceItem.EnumChildItems(pIEnumWiaItem);
-        COMUtils.checkRC(hr);
-        EnumWiaItem enumWiaItem = new EnumWiaItem(pIEnumWiaItem.getValue());
-        WiaItem.ByReference[] items = new WiaItem.ByReference[4];
-        ULONGByReference pFetched = new ULONGByReference();
-        hr = enumWiaItem.Next(new ULONG(4), items, pFetched);
-        int nFetched = pFetched.getValue().intValue();
-        for(int i=0;i<nFetched;i++){
-            WiaItem.ByReference item = items[i];
-            LONGByReference pItemType = new LONGByReference();
-            hr = item.GetItemType(pItemType);
-            COMUtils.checkRC(hr);
-            int itemType = pItemType.getValue().intValue();
-            if( (itemType & WiaConsts.WiaItemTypeImage) != 0 && 
-                (itemType & WiaConsts.WiaItemTypeFile) != 0 ){
-                wiaItem = item;
-            } else {
-                item.Release();
-            }
-        }
-        COMUtils.checkRC(hr);
-        enumWiaItem.Release();
-        return wiaItem;
-    }
-
 }
