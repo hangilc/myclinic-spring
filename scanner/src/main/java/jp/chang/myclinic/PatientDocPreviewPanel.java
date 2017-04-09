@@ -9,8 +9,13 @@ import java.nio.file.Path;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class PatientDocPreviewPanel extends JPanel {
 
+	private int currentIndex = -1;
+	private List<Path> savedPages = new ArrayList<>();
 	private JLabel previewImage = new JLabel();
 	private JPanel controlPanel = new JPanel();
 	private JLabel controlStatus = new JLabel();
@@ -24,15 +29,25 @@ class PatientDocPreviewPanel extends JPanel {
 		setLayout(layout);
 		initPreviewImage();
 		initControlPanel();
-		updatePreviewImage(null);
 		initNavPanel();
 		add(previewImage);
 		add(controlPanel);
+		update();
 	}
 
-	public void update(Path imagePath, int index, int total){
-		updatePreviewImage(imagePath);
-		updateControlStatus(index, total);
+	public void addPage(Path path){
+		savedPages.add(path);
+		currentIndex = savedPages.size() - 1;
+	}
+
+	public void update(){
+		updatePreviewImage();
+		updateControlStatus();
+		updateButtons();
+	}
+
+	public int getNumberOfPages(){
+		return savedPages.size();
 	}
 
 	private void initPreviewImage(){
@@ -46,7 +61,6 @@ class PatientDocPreviewPanel extends JPanel {
 		JPanel panel = controlPanel;
 		BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
 		panel.setLayout(layout);
-		updateControlStatus(0, 0);
 		panel.add(controlStatus);
 		panel.add(navPanel);
 	}
@@ -54,14 +68,31 @@ class PatientDocPreviewPanel extends JPanel {
 	private void initNavPanel(){
 		BoxLayout layout = new BoxLayout(navPanel, BoxLayout.X_AXIS);
 		navPanel.setLayout(layout);
+		navPrev.addActionListener(this::doPrev);
+		navNext.addActionListener(this::doNext);
 		navPanel.add(navPrev);
 		navPanel.add(navNext);
 	}
 
-	private void updatePreviewImage(Path path){
-		if( path == null ){
-			previewImage.setText("（空白）");
-		} else {
+	private void doPrev(ActionEvent event){
+		int index = currentIndex - 1;
+		if( index >= 0 && index < savedPages.size() ){
+			currentIndex = index;
+			update();
+		}
+	}
+
+	private void doNext(ActionEvent event){
+		int index = currentIndex + 1;
+		if( index >= 0 && index < savedPages.size() ){
+			currentIndex = index;
+			update();
+		}
+	}
+
+	private void updatePreviewImage(){
+		if( currentIndex >= 0 && currentIndex < savedPages.size() ){
+			Path path = savedPages.get(currentIndex);
 	    	BufferedImage origImg;
 	    	try{
 		    	origImg = ImageIO.read(path.toFile());
@@ -79,12 +110,19 @@ class PatientDocPreviewPanel extends JPanel {
 	    	g.drawImage(origImg, 0, 0, dim.width, dim.height, null);
 	    	g.dispose();
 	    	previewImage.setIcon(new ImageIcon(resizedImg));
+		} else {
+			previewImage.setText("（空白）");
 		}
 	}
 
-	private void updateControlStatus(int index, int total){
-		String label = String.format("%d/%d", index, total);
+	private void updateControlStatus(){
+		String label = String.format("%d/%d", currentIndex + 1, savedPages.size());
 		controlStatus.setText(label);
+	}
+
+	private void updateButtons(){
+		navPrev.setEnabled(currentIndex - 1 >= 0);
+		navNext.setEnabled(currentIndex + 1 < savedPages.size());
 	}
 
 }

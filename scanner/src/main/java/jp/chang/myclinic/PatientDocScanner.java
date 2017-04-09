@@ -79,9 +79,6 @@ public class PatientDocScanner extends JDialog {
     private int lastPageIndex;
     private String timeStamp;
     private Path saveDir;
-    private JLabel previewImageLabel;
-    private List<Path> savedPages;
-    private int previewIndex;
     private static DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
     private PatientDocInfoPanel patientDocInfoPanel;
     private PatientDocPreviewPanel patientDocPreviewPanel;
@@ -92,8 +89,6 @@ public class PatientDocScanner extends JDialog {
         this.lastPageIndex = 0;
         this.timeStamp = makeTimeStamp();
         this.saveDir = getSaveDir();
-        this.savedPages = new ArrayList<Path>();
-        this.previewIndex = -1;
         this.patientDocInfoPanel = new PatientDocInfoPanel(patientId);
         this.patientDocPreviewPanel = new PatientDocPreviewPanel();
         add(makeCenterPanel(), BorderLayout.CENTER);
@@ -149,14 +144,15 @@ public class PatientDocScanner extends JDialog {
         return path;
     }
 
-    private void incLastPageIndex(){
-    	lastPageIndex += 1;
-    	patientDocInfoPanel.updateTotalPages(savedPages.size());
+    private void addPage(Path path){
+        patientDocPreviewPanel.addPage(path);
+        patientDocPreviewPanel.update();
+        int pages = patientDocPreviewPanel.getNumberOfPages();
+        patientDocInfoPanel.updateTotalPages(pages);
     }
 
-    private void updatePreview(){
-    	Path path = previewIndex < 0 ? null : savedPages.get(previewIndex);
-    	patientDocPreviewPanel.update(path, previewIndex+1, savedPages.size());
+    private int getNextPageIndex(){
+        return patientDocPreviewPanel.getNumberOfPages() + 1;
     }
 
     private void doStart(ActionEvent event){
@@ -166,7 +162,7 @@ public class PatientDocScanner extends JDialog {
     	}
         final ScanProgressDialog dialog = new ScanProgressDialog(this);
         dialog.setLocationByPlatform(true);
-        String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, lastPageIndex+1);
+        String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, getNextPageIndex());
         Path savePath = saveDir.resolve(saveFileName);
 		TaskScan task = new TaskScan(deviceId, savePath){
 			@Override
@@ -191,11 +187,8 @@ public class PatientDocScanner extends JDialog {
 					});
 				} else{
 	            	final Path outPath = convertImage(savePath, "jpg");
-	            	savedPages.add(outPath);
-	            	previewIndex = savedPages.size() - 1;
 		            EventQueue.invokeLater(() -> {
-			            incLastPageIndex();
-			            updatePreview();
+                        addPage(outPath);
 			            dialog.dispose();
 		            });
 				}
