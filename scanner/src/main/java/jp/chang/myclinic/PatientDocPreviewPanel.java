@@ -98,6 +98,11 @@ class PatientDocPreviewPanel extends JPanel {
 				@Override
 				public void mouseClicked(MouseEvent ev){
 					if( currentIndex >= 0 && currentIndex < savedPages.size() ){
+						int result = JOptionPane.showConfirmDialog(null, "本当にこのページを再スキャンしますか？",
+							"再スキャンの確認", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
+						if( result != JOptionPane.OK_OPTION ){
+							return;
+						}
 						onRescan(savedPages.get(currentIndex));
 					}
 				}
