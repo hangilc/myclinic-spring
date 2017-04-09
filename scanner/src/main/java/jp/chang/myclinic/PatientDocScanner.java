@@ -96,6 +96,11 @@ public class PatientDocScanner extends JDialog {
             public void onRescan(Path path){
                 doRescan(path);
             }
+
+            @Override
+            public void onNumberOfPagesChanged(int pages){
+                patientDocInfoPanel.updateTotalPages(pages);
+            }
         };
         add(makeCenterPanel(), BorderLayout.CENTER);
         add(makeCommandPanel(), BorderLayout.SOUTH);
@@ -153,8 +158,6 @@ public class PatientDocScanner extends JDialog {
     private void addPage(Path path){
         patientDocPreviewPanel.addPage(path);
         patientDocPreviewPanel.update();
-        int pages = patientDocPreviewPanel.getNumberOfPages();
-        patientDocInfoPanel.updateTotalPages(pages);
     }
 
     private int getNextPageIndex(){
@@ -313,21 +316,6 @@ public class PatientDocScanner extends JDialog {
         String dstFileName = srcFileName.replaceFirst("\\.bmp$", "." + format);
         Path output = source.resolveSibling(dstFileName);
         return convertImage(source, format, output);
-    	// try{
-	    // 	BufferedImage src = ImageIO.read(source.toFile());
-	    // 	String srcFileName = source.getFileName().toString();
-	    // 	String dstFileName = srcFileName.replaceFirst("\\.bmp$", "." + format);
-	    // 	Path output = source.resolveSibling(dstFileName);
-	    // 	System.out.println(output.toString());
-	    // 	boolean ok = ImageIO.write(src, format, output.toFile());
-	    // 	if( !ok ){
-	    // 		throw new RuntimeException("image conversion failed");
-	    // 	}
-     //        Files.delete(source);
-     //        return output;
-	    // } catch(IOException ex){
-	    // 	throw new UncheckedIOException(ex);
-	    // }
     }
 
     private String resolveDeviceId(){

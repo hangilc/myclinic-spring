@@ -36,7 +36,7 @@ public class WiaDataCallbackImpl extends Structure {
 				IID iid = refid.getValue();
 				if( iid.equals(IUnknown.IID_IUNKNOWN) || iid.equals(IWiaDataCallback.IID_IWiaDataCallback) ){
 					ppvObject.setValue(thisPointer);
-					new WiaDataCallbackImpl(thisPointer).refCount += 1;
+					//new WiaDataCallbackImpl(thisPointer).refCount += 1;
 					return WinError.S_OK;
 				} else {
 					return new HRESULT(WinError.E_NOINTERFACE);
@@ -59,6 +59,7 @@ public class WiaDataCallbackImpl extends Structure {
 			public int invoke(Pointer thisPointer){
 				WiaDataCallbackImpl self = new WiaDataCallbackImpl(thisPointer);
 				self.read();
+				System.out.println("releasing: " + self.refCount);
 				self.refCount -= 1;
 				if( self.refCount == 0 ){
 					allocated.remove(thisPointer);
@@ -73,7 +74,7 @@ public class WiaDataCallbackImpl extends Structure {
 		WiaDataCallbackImpl wiaDataCallbackImpl = new WiaDataCallbackImpl();
 		wiaDataCallbackImpl.lpVtbl = new Vtbl.ByReference(lpVtbl.getPointer());
 		wiaDataCallbackImpl.lpVtbl.read();
-		wiaDataCallbackImpl.refCount = 1;
+		wiaDataCallbackImpl.refCount = 0;
 		wiaDataCallbackImpl.write();
 		allocated.add(wiaDataCallbackImpl.getPointer());
 		return new WiaDataCallback(wiaDataCallbackImpl.getPointer());
