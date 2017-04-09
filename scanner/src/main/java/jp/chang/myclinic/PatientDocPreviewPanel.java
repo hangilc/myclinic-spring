@@ -2,6 +2,8 @@ package jp.chang.myclinic;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
 
@@ -22,6 +24,7 @@ class PatientDocPreviewPanel extends JPanel {
 	private JPanel navPanel = new JPanel();
 	private JButton navPrev = new JButton("前へ");
 	private JButton navNext = new JButton("次へ");
+	private JLabel rescanLink = new JLabel("<html><font color='blue'><a><u>再スキャン</u></a></font></html>");
 
 	public PatientDocPreviewPanel(){
 		super();
@@ -50,6 +53,14 @@ class PatientDocPreviewPanel extends JPanel {
 		return savedPages.size();
 	}
 
+	public void onRescan(Path path){
+
+	}
+
+	public void reloadImage(){
+		updatePreviewImage();
+	}
+
 	private void initPreviewImage(){
     	Dimension dim = new Dimension(210, 297);
     	previewImage.setMinimumSize(dim);
@@ -61,17 +72,39 @@ class PatientDocPreviewPanel extends JPanel {
 		JPanel panel = controlPanel;
 		BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
 		panel.setLayout(layout);
+		controlStatus.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panel.add(Box.createVerticalGlue());
 		panel.add(controlStatus);
 		panel.add(navPanel);
+		panel.add(Box.createVerticalGlue());
 	}
 
 	private void initNavPanel(){
-		BoxLayout layout = new BoxLayout(navPanel, BoxLayout.X_AXIS);
+		BoxLayout layout = new BoxLayout(navPanel, BoxLayout.Y_AXIS);
 		navPanel.setLayout(layout);
-		navPrev.addActionListener(this::doPrev);
-		navNext.addActionListener(this::doNext);
-		navPanel.add(navPrev);
-		navPanel.add(navNext);
+		{
+			JPanel panel = new JPanel();
+			panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+			navPrev.addActionListener(this::doPrev);
+			navNext.addActionListener(this::doNext);
+			panel.add(navPrev);
+			panel.add(navNext);
+			navPanel.add(panel);
+		}
+		{
+			JPanel panel = new JPanel();
+			rescanLink.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			rescanLink.addMouseListener(new MouseAdapter(){
+				@Override
+				public void mouseClicked(MouseEvent ev){
+					if( currentIndex >= 0 && currentIndex < savedPages.size() ){
+						onRescan(savedPages.get(currentIndex));
+					}
+				}
+			});
+			panel.add(rescanLink);
+			navPanel.add(panel);
+		}
 	}
 
 	private void doPrev(ActionEvent event){
@@ -123,6 +156,7 @@ class PatientDocPreviewPanel extends JPanel {
 	private void updateButtons(){
 		navPrev.setEnabled(currentIndex - 1 >= 0);
 		navNext.setEnabled(currentIndex + 1 < savedPages.size());
+		rescanLink.setEnabled(currentIndex >= 0 && currentIndex < savedPages.size());
 	}
 
 }

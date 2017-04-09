@@ -68,17 +68,20 @@ public class ScannerUtil {
 
     public static String pickDevice(){
         WiaDevMgr devMgr = Wia.createWiaDevMgr();
-        HWND hwnd = Kernel32.INSTANCE.GetConsoleWindow();
-        PointerByReference pp = new PointerByReference();
-        HRESULT hr = devMgr.SelectDeviceDlgID(hwnd, new LONG(WiaConsts.StiDeviceTypeScanner), 
-            new LONG(WiaConsts.WIA_SELECT_DEVICE_NODEFAULT), pp);
-        COMUtils.checkRC(hr);
-        if( hr.equals(COMUtils.S_FALSE) ){
-            return null;
-        } else {
-            BSTR bstr = new BSTR(pp.getValue());
+        try{
+            HWND hwnd = Kernel32.INSTANCE.GetConsoleWindow();
+            PointerByReference pp = new PointerByReference();
+            HRESULT hr = devMgr.SelectDeviceDlgID(hwnd, new LONG(WiaConsts.StiDeviceTypeScanner), 
+                new LONG(WiaConsts.WIA_SELECT_DEVICE_NODEFAULT), pp);
+            COMUtils.checkRC(hr);
+            if( hr.equals(COMUtils.S_FALSE) ){
+                return null;
+            } else {
+                BSTR bstr = new BSTR(pp.getValue());
+                return bstr.toString();
+            }
+        } finally {
             devMgr.Release();
-            return bstr.toString();
         }
     }
 
