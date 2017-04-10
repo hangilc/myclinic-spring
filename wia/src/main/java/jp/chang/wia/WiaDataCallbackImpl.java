@@ -17,7 +17,12 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class WiaDataCallbackImpl extends Structure {
+
+	private static Logger logger = LoggerFactory.getLogger(WiaDataCallbackImpl.class);
 
 	public WiaDataCallbackImpl(){}
 
@@ -36,7 +41,8 @@ public class WiaDataCallbackImpl extends Structure {
 				IID iid = refid.getValue();
 				if( iid.equals(IUnknown.IID_IUNKNOWN) || iid.equals(IWiaDataCallback.IID_IWiaDataCallback) ){
 					ppvObject.setValue(thisPointer);
-					//new WiaDataCallbackImpl(thisPointer).refCount += 1;
+					new WiaDataCallbackImpl(thisPointer).refCount += 1;
+					logger.debug("QueryInterface called");
 					return WinError.S_OK;
 				} else {
 					return new HRESULT(WinError.E_NOINTERFACE);
@@ -48,7 +54,8 @@ public class WiaDataCallbackImpl extends Structure {
 			public int invoke(Pointer thisPointer){
 				WiaDataCallbackImpl self = new WiaDataCallbackImpl(thisPointer);
 				self.read();
-				System.out.printf("adding reference: %d\n", self.refCount);
+				//System.out.printf("adding reference: %d\n", self.refCount);
+				logger.debug("AddRef called with refCount {}", self.refCount);
 				self.refCount += 1;
 				self.write();
 				return self.refCount;
@@ -59,11 +66,13 @@ public class WiaDataCallbackImpl extends Structure {
 			public int invoke(Pointer thisPointer){
 				WiaDataCallbackImpl self = new WiaDataCallbackImpl(thisPointer);
 				self.read();
-				System.out.println("releasing: " + self.refCount);
+				//System.out.println("releasing: " + self.refCount);
+				logger.debug("Release called with refCount {}", self.refCount);
 				self.refCount -= 1;
 				if( self.refCount == 0 ){
 					allocated.remove(thisPointer);
-					System.out.printf("allocated: %d\n", allocated.size());
+					logger.debug("deallocated with remaining {}", allocated.size());
+					//System.out.printf("allocated: %d\n", allocated.size());
 				}
 				self.write();
 				return self.refCount;
