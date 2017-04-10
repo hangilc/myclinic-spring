@@ -302,6 +302,7 @@ public class App
                 });
                 hr = transfer.idtGetData(stgmedium, dataCallback);
                 COMUtils.checkRC(hr);
+                dataCallback.Release();
                 wiaItem.Release();
                 transfer.Release();
                 deviceItem.Release();
