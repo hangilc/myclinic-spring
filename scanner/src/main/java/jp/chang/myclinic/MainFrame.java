@@ -6,6 +6,7 @@ import javax.swing.*;
 public class MainFrame extends JFrame {
 
 	public MainFrame(){
+		setJMenuBar(makeMenuBar());
 		JPanel panel = new JPanel();
 		JButton patient = new JButton("患者書類");
 		JButton general = new JButton("一般書類");
@@ -42,4 +43,20 @@ public class MainFrame extends JFrame {
 		pack();
 	}
 
+	private JMenuBar makeMenuBar(){
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.add(makeFileMenu());
+		return menuBar;
+	}
+
+	private JMenu makeFileMenu(){
+		JMenu menu = new JMenu("ファイル");
+		JMenuItem item;
+		item = new JMenuItem("終了");
+		item.addActionListener(event -> {
+			System.exit(0);
+		});
+		menu.add(item);
+		return menu;
+	}
 }
