@@ -46,6 +46,7 @@ public class MainFrame extends JFrame {
 	private JMenuBar makeMenuBar(){
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(makeFileMenu());
+		menuBar.add(makeSettingMenu());
 		return menuBar;
 	}
 
@@ -55,6 +56,19 @@ public class MainFrame extends JFrame {
 		item = new JMenuItem("終了");
 		item.addActionListener(event -> {
 			System.exit(0);
+		});
+		menu.add(item);
+		return menu;
+	}
+
+	private JMenu makeSettingMenu(){
+		JMenu menu = new JMenu("設定");
+		JMenuItem item;
+		item = new JMenuItem("設定ファイル");
+		item.addActionListener(event -> {
+			SettingInfoDialog dialog = new SettingInfoDialog(this, "設定ファイル", true);
+			dialog.setLocationByPlatform(true);
+			dialog.setVisible(true);
 		});
 		menu.add(item);
 		return menu;
