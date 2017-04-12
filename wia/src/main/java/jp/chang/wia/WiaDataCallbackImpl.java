@@ -137,8 +137,6 @@ public class WiaDataCallbackImpl extends Structure {
 		lpVtbl.BandedDataCallbackCallback = callback;
 		lpVtbl.write();
 		WiaDataCallbackImpl wiaDataCallbackImpl = new WiaDataCallbackImpl();
-		// wiaDataCallbackImpl.lpVtbl = new Vtbl.ByReference(lpVtbl.getPointer());
-		// wiaDataCallbackImpl.lpVtbl.read();
 		wiaDataCallbackImpl.lpVtbl = lpVtbl;
 		wiaDataCallbackImpl.refCount = 1;
 		wiaDataCallbackImpl.write();
