@@ -15,9 +15,11 @@ class SettingInfoDialog extends JDialog {
 
 	private static class Setting {
 		public Path savingDir;
+		public int dip;
 
 		Setting(){
 			this.savingDir = ScannerSetting.INSTANCE.savingDir;
+			this.dip = ScannerSetting.INSTANCE.dip;
 		}
 	}
 
@@ -41,7 +43,8 @@ class SettingInfoDialog extends JDialog {
 
 	private void setupTable(){
 		JTable table = new JTable(new Object[][]{
-			{"保存フォルダー", new DirValue(setting.savingDir, path -> { setting.savingDir = path; })}
+			{"保存フォルダー", new DirValue(setting.savingDir, path -> { setting.savingDir = path; })},
+			{"解像度(dip)", new IntValue(setting.dip, ival -> { setting.dip = ival; })}
 		}, new Object[]{"キー", "値"}){
 			@Override
 			public boolean isCellEditable(int row, int col){
@@ -85,6 +88,7 @@ class SettingInfoDialog extends JDialog {
 	private void writeToGlobal(){
 		ScannerSetting global = ScannerSetting.INSTANCE;
 		global.savingDir = setting.savingDir;
+		global.dip = setting.dip;
 	}
 
 	private static abstract class Value {
@@ -162,6 +166,45 @@ class SettingInfoDialog extends JDialog {
 			} else {
 				Toolkit.getDefaultToolkit().beep();
 			}
+		}
+	}
+
+	private static class IntValue extends Value {
+		public interface ChangeHandler {
+			void handle(int ival);
+		}
+
+		private ChangeHandler handler;
+
+		IntValue(Integer ival, ChangeHandler handler){
+			super(ival);
+			this.handler = handler;
+		}
+
+		public int getInt(){
+			return (Integer)getValue();
+		}
+
+		public void setInt(Integer ival){
+			setValue(ival);
+		}
+
+		@Override
+		public Component getTableCellEditorComponent(AbstractCellEditor editor, JTable table, 
+			Object object, boolean isSelected, int row, int column){
+			JTextField textField = new JTextField(String.valueOf(getInt()));
+			textField.addActionListener(event -> {
+				String text = textField.getText();
+				try{
+					int ival = Integer.parseInt(text);
+					setInt(ival);
+					editor.stopCellEditing();
+					handler.handle(ival);
+				} catch(NumberFormatException ex){
+					Toolkit.getDefaultToolkit().beep();
+				}
+			});
+			return textField;
 		}
 	}
 

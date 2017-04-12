@@ -40,7 +40,7 @@ class TaskScan implements Runnable {
 	public TaskScan(String deviceId, Path savePath){
 		this.deviceId = deviceId;
 		this.savePath = savePath;
-		this.resolution = 300;
+		this.resolution = ScannerSetting.INSTANCE.dip;
 		this.canceled = false;
 	}
 
