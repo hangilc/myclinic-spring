@@ -148,11 +148,7 @@ public class PatientDocScanner extends JDialog {
     }
 
     private Path getSaveDir(){
-        Path path = ScannerSetting.INSTANCE.savingDir;
-        if( path == null ){
-            path = Paths.get(System.getProperty("user.dir"));
-        }
-        return path;
+        return ScannerSetting.INSTANCE.savingDir;
     }
 
     private void addPage(Path path){
