@@ -54,7 +54,7 @@ public class GeneralDocScanner extends JDialog {
 		JFileChooser jfc = new JFileChooser();
 		jfc.setDialogType(JFileChooser.SAVE_DIALOG);
 		{
-			Path savePath = ScannerProperties.INSTANCE.getSaveDir();
+			Path savePath = ScannerSetting.INSTANCE.savingDir;
 			if( savePath != null ){
 				jfc.setCurrentDirectory(savePath.toFile());
 			}
