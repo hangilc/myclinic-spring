@@ -129,24 +129,39 @@ class SettingInfoDialog extends JDialog {
 		}
 
 		@Override
-		public Component getTableCellEditorComponent(AbstractCellEditor editor, JTable table, Object object, boolean isSelected,
-			int row, int column){
+		public Component getTableCellEditorComponent(AbstractCellEditor editor, JTable table, 
+			Object object, boolean isSelected, int row, int column){
 			JPanel panel = new JPanel();
 			panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 			JTextField textField = new JTextField(getPath().toString());
 			textField.addActionListener(event -> {
 				String text = textField.getText();
 				Path newPath = Paths.get(text);
-				if( Files.exists(newPath) && Files.isDirectory(newPath) ){
-					setPath(newPath);
-					editor.stopCellEditing();
-					handler.handle(newPath);
-				} else {
-					Toolkit.getDefaultToolkit().beep();
+				changeCurrentPath(editor, newPath);
+			});
+			JButton browseButton = new JButton("参照");
+			browseButton.addActionListener(event -> {
+				JFileChooser jfc = new JFileChooser(getPath().toFile());
+				jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int ret = jfc.showDialog(table, "決定");
+				if( ret == JFileChooser.APPROVE_OPTION ){
+					changeCurrentPath(editor, jfc.getSelectedFile().toPath());
 				}
 			});
 			panel.add(textField);
+			panel.add(Box.createHorizontalStrut(2));
+			panel.add(browseButton);
 			return panel;
+		}
+
+		private void changeCurrentPath(AbstractCellEditor editor, Path newPath){
+			if( Files.exists(newPath) && Files.isDirectory(newPath) ){
+				setPath(newPath);
+				editor.stopCellEditing();
+				handler.handle(newPath);
+			} else {
+				Toolkit.getDefaultToolkit().beep();
+			}
 		}
 	}
 
