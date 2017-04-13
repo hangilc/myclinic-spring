@@ -20,6 +20,7 @@
     <module>master-app</module>
     <module>wia</module>
     <module>scanner</module>
+    <module>scanner-backup</module>
   </modules>
 
 </project>
