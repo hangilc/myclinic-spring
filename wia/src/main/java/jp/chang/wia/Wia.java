@@ -67,7 +67,21 @@ public class Wia {
         	if( nFetched.getValue() > 0 ){
         		WiaPropertyStorage.ByReference storage = storages[0];
                 PropValue[] values = readProps(storage, 
-                    new int[]{ WiaConsts.WIA_DIP_DEV_ID, WiaConsts.WIA_DIP_DEV_NAME, WiaConsts.WIA_DIP_DEV_DESC });
+                    new int[]{ 
+                        WiaConsts.WIA_DIP_DEV_ID, 
+                        WiaConsts.WIA_DIP_DEV_NAME, 
+                        WiaConsts.WIA_DIP_DEV_DESC,
+                        WiaConsts.WIA_DIP_DEV_TYPE
+                    }
+                );
+                System.out.printf("%d %s\n", values[3].getInt(), values[1].getString());
+                // if( values[3].getInt() == WiaConsts.StiDeviceTypeScanner ){
+                //     Device device = new Device();
+                //     device.deviceId = values[0].getString();
+                //     device.name = values[1].getString();
+                //     device.description = values[2].getString();
+                //     devices.add(device);
+                // }
                 Device device = new Device();
                 device.deviceId = values[0].getString();
                 device.name = values[1].getString();

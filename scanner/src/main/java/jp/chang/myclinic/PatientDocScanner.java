@@ -322,6 +322,9 @@ public class PatientDocScanner extends JDialog {
         } else if( devices.size() == 1 ){
             return devices.get(0).deviceId;
         } else {
+        	for(Wia.Device dev: devices){
+        		System.out.println(dev.name);
+        	}
             return ScannerUtil.pickDevice();
         }
     }

@@ -81,6 +81,10 @@ public class PROPVARIANT extends Structure {
 		return vt.intValue();
 	}
 
+	public LONG getUnionLONG(){
+		return (LONG)value.readField("lVal");
+	}
+
 	public Pointer getUnionPointer(){
 		return (Pointer)value.readField("pointerValue");
 	}
@@ -142,7 +146,7 @@ public class PROPVARIANT extends Structure {
 	public PropValue toPropValue(){
 		switch(getVt()){
 			case Variant.VT_I4: {
-				return new PropValueInt(value.lVal.intValue());
+				return new PropValueInt(getUnionLONG().intValue());
 			}
 			case Variant.VT_BSTR: {
 				return new PropValueString(getUnionBSTR().getValue());
