@@ -74,7 +74,7 @@ public class ScannerUtil {
             HRESULT hr = devMgr.SelectDeviceDlgID(hwnd, new LONG(WiaConsts.StiDeviceTypeScanner), 
                 new LONG(WiaConsts.WIA_SELECT_DEVICE_NODEFAULT), pp);
             COMUtils.checkRC(hr);
-            if( hr.equals(COMUtils.S_FALSE) ){
+            if( hr.intValue() == COMUtils.S_FALSE ){
                 return null;
             } else {
                 BSTR bstr = new BSTR(pp.getValue());
