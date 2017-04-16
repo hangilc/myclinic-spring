@@ -8,9 +8,44 @@ class MainFrame extends JFrame {
 
 	MainFrame(){
 		setTitle("受付");
+		setupNorth();
 		setupCenter();
 		setupSouth();
 		pack();
+	}
+
+	private void setupNorth(){
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+		JPanel upperBox = new JPanel();
+		upperBox.setLayout(new BoxLayout(upperBox, BoxLayout.LINE_AXIS));
+		JPanel lowerBox = new JPanel();
+		lowerBox.setLayout(new BoxLayout(lowerBox, BoxLayout.LINE_AXIS));
+		{
+			JButton newPatientButton = new JButton("新規患者");
+			JButton searchPatientButton = new JButton("患者検索");
+			JButton searchCashierButton = new JButton("会計検索");
+			JButton receiptButton = new JButton("領収証用紙");
+
+			upperBox.add(newPatientButton);
+			upperBox.add(Box.createHorizontalStrut(5));
+			upperBox.add(searchPatientButton);
+			upperBox.add(Box.createHorizontalStrut(5));
+			upperBox.add(searchCashierButton);
+			upperBox.add(Box.createHorizontalStrut(30));
+			upperBox.add(receiptButton);
+			upperBox.add(Box.createHorizontalGlue());
+		}
+		{
+			
+			lowerBox.add(new JLabel("患者番号"));
+			lowerBox.add(Box.createHorizontalGlue());
+		}
+		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		panel.add(upperBox);
+		panel.add(Box.createVerticalStrut(5));
+		panel.add(lowerBox);
+		add(panel, BorderLayout.NORTH);
 	}
 
 	private void setupCenter(){
