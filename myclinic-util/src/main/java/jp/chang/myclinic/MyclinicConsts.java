@@ -4,7 +4,7 @@ package jp.chang.myclinic;
  * Hello world!
  *
  */
-public class MyclinicUtil 
+public class MyclinicConsts 
 {
 	public static final int WqueueStateWaitExam = 0;
 	public static final int WqueueStateInExam = 1;
