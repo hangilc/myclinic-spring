@@ -2,6 +2,7 @@ package jp.chang.myclinic;
 
 import java.awt.*;
 import javax.swing.*;
+import jp.chang.myclinic.MyclinicConsts.WqueueState;
 
 class MainFrame extends JFrame {
 
@@ -13,8 +14,15 @@ class MainFrame extends JFrame {
 	}
 
 	private void setupCenter(){
-		WqueuePanel wqPanel = new WqueuePanel();
-		add(wqPanel, BorderLayout.CENTER);
+		WqueueList wqList = new WqueueList();
+		wqList.setPreferredSize(new Dimension(500, 300));
+		wqList.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+		add(wqList, BorderLayout.CENTER);
+		WqueueData[] list = new WqueueData[]{
+			new WqueueData(WqueueState.WaitExam, "WAITING EXAM PATIENT"),
+			new WqueueData(WqueueState.WaitCashier, "WAITING CASHIER PATIENT")
+		};
+		wqList.setListData(list);
 	}
 
 	private void setupSouth(){
