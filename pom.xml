@@ -22,6 +22,7 @@
     <module>scanner</module>
     <module>scanner-backup</module>
     <module>reception</module>
+    <module>myclinic-util</module>
   </modules>
 
 </project>
