@@ -21,6 +21,7 @@
     <module>wia</module>
     <module>scanner</module>
     <module>scanner-backup</module>
+    <module>reception</module>
   </modules>
 
 </project>
