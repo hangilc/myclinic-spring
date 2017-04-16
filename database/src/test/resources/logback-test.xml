@@ -1,0 +1,4 @@
+<configuration>
+	<logger name="org.springframework" level="error" />
+	<logger name="org.hibernate" level="error" />
+</configuration>
