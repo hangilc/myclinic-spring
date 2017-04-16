@@ -14,7 +14,7 @@
   </properties>
 
   <modules>
-    <module>model</module>
+    <!-- <module>model</module> -->
     <!--<module>web</module> -->
     <module>master-map</module>
     <module>master-app</module>
