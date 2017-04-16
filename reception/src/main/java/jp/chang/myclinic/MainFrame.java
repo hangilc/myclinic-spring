@@ -27,14 +27,38 @@ class MainFrame extends JFrame {
 
 	private void setupSouth(){
 		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-		JButton closeButton = new JButton("終了");
-		closeButton.addActionListener(event -> {
-			dispose();
-		});
+		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+		JPanel upperBox = new JPanel();
+		upperBox.setLayout(new BoxLayout(upperBox, BoxLayout.LINE_AXIS));
+		JPanel lowerBox = new JPanel();
+		lowerBox.setLayout(new BoxLayout(lowerBox, BoxLayout.LINE_AXIS));
+		{
+			JButton updateButton = new JButton("更新");
+			JButton cashierButton = new JButton("会計");
+			JButton unselectButton = new JButton("選択解除");
+			JButton deleteButton = new JButton("削除");
+
+			upperBox.add(updateButton);
+			upperBox.add(Box.createHorizontalStrut(5));
+			upperBox.add(cashierButton);
+			upperBox.add(Box.createHorizontalStrut(5));
+			upperBox.add(unselectButton);
+			upperBox.add(Box.createHorizontalStrut(5));
+			upperBox.add(deleteButton);
+			upperBox.add(Box.createHorizontalGlue());
+		}
+		{
+			JButton closeButton = new JButton("終了");
+			closeButton.addActionListener(event -> {
+				dispose();
+			});
+			lowerBox.add(closeButton);
+			lowerBox.add(Box.createHorizontalGlue());
+		}
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		panel.add(Box.createHorizontalGlue());
-		panel.add(closeButton);
+		panel.add(upperBox);
+		panel.add(Box.createVerticalStrut(5));
+		panel.add(lowerBox);
 		add(panel, BorderLayout.SOUTH);
 	}
 
