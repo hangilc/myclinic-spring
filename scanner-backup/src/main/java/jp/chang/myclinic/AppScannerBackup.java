@@ -10,6 +10,12 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.io.IOException;
 
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.ParseException;
+
 public class AppScannerBackup
 {
 	private static Pattern filePattern;
@@ -29,7 +35,18 @@ public class AppScannerBackup
 		}
 	}
 
-    public static void main( String[] args ) throws IOException {
+    private static CommandLine parseArgs(String[] args) throws ParseException {
+        Options options = new Options();
+        options.addOption("d", false, "delete original files after backup");
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = parser.parse(options, args);
+        return cmd;
+    }
+
+    public static void main( String[] args ) throws IOException, ParseException {
+        CommandLine cmd = parseArgs(args);
+        boolean deleteSource = cmd.hasOption("d");
+        args = cmd.getArgs();
     	if( args.length != 2 ){
     		System.out.println("Usage: scanner-backup src-dir dst-dir");
     		System.exit(1);
@@ -41,6 +58,12 @@ public class AppScannerBackup
     	for(ScannedFile scannedFile: srcFiles){
     		copyFile(scannedFile, dstDir);
     	}
+        if( deleteSource ){
+            for(ScannedFile scannedFile: srcFiles){
+                System.out.println("deleting fiel: " + scannedFile.path);
+                Files.delete(scannedFile.path);
+            }
+        }
     }
 
     static List<ScannedFile> listSrcFiles(Path srcDir) throws IOException {
