@@ -37,7 +37,8 @@ class MainFrame extends JFrame {
 			upperBox.add(Box.createHorizontalGlue());
 		}
 		{
-			JTextField patientIdField = new JTextField();
+			JTextField patientIdField = new JTextField(6);
+			patientIdField.setMaximumSize(patientIdField.getPreferredSize());
 			JButton registerButton = new JButton("診療受付");
 			JButton patientInfoButton = new JButton("患者情報");
 			lowerBox.add(new JLabel("患者番号"));
