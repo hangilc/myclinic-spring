@@ -37,8 +37,16 @@ class MainFrame extends JFrame {
 			upperBox.add(Box.createHorizontalGlue());
 		}
 		{
-			
+			JTextField patientIdField = new JTextField();
+			JButton registerButton = new JButton("診療受付");
+			JButton patientInfoButton = new JButton("患者情報");
 			lowerBox.add(new JLabel("患者番号"));
+			lowerBox.add(Box.createHorizontalStrut(5));
+			lowerBox.add(patientIdField);
+			lowerBox.add(Box.createHorizontalStrut(5));
+			lowerBox.add(registerButton);
+			lowerBox.add(Box.createHorizontalStrut(5));
+			lowerBox.add(patientInfoButton);
 			lowerBox.add(Box.createHorizontalGlue());
 		}
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
