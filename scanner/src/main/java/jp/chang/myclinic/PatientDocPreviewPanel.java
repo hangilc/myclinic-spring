@@ -16,6 +16,9 @@ import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 class PatientDocPreviewPanel extends JPanel {
 
 	private int currentIndex = -1;
@@ -28,6 +31,7 @@ class PatientDocPreviewPanel extends JPanel {
 	private JButton navNext = new JButton("次へ");
 	private JLabel rescanLink = new JLabel("<html><font color='blue'><a><u>再スキャン</u></a></font></html>");
 	private JLabel deleteLink = new JLabel("<html><font color='blue'><a><u>削除</u></a></font></html>");
+	private static Logger logger = LoggerFactory.getLogger(PatientDocPreviewPanel.class);
 
 	public PatientDocPreviewPanel(){
 		super();
@@ -145,7 +149,9 @@ class PatientDocPreviewPanel extends JPanel {
 							return;
 						}
 						try{
-							Files.delete(savedPages.get(currentIndex));
+							Path filePath = savedPages.get(currentIndex);
+							Files.delete(filePath);
+							logger.info("deleted scanned file {}", filePath);
 							savedPages.remove(currentIndex);
 							if( currentIndex >= savedPages.size() ){
 								currentIndex -= 1;

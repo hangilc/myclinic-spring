@@ -73,6 +73,9 @@ import java.time.format.DateTimeFormatter;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PatientDocScanner extends JDialog {
 
     private int patientId;
@@ -83,6 +86,7 @@ public class PatientDocScanner extends JDialog {
     private static DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
     private PatientDocInfoPanel patientDocInfoPanel;
     private PatientDocPreviewPanel patientDocPreviewPanel;
+    private static Logger logger = LoggerFactory.getLogger(PatientDocScanner.class);
 
     public PatientDocScanner(Frame owner, int patientId){
         super(owner, "患者書類のスキャン", true);
@@ -200,6 +204,7 @@ public class PatientDocScanner extends JDialog {
                     });
                 } else{
                     convertImage(savePath, "jpg", path);
+                    logger.info("rescanned file {}", savePath);
                     EventQueue.invokeLater(() -> {
                         patientDocPreviewPanel.reloadImage();
                         dialog.dispose();
@@ -263,6 +268,7 @@ public class PatientDocScanner extends JDialog {
 					});
 				} else{
 	            	final Path outPath = convertImage(savePath, "jpg");
+                    logger.info("scanned file {}", savePath);
 		            EventQueue.invokeLater(() -> {
                         addPage(outPath);
 			            dialog.dispose();
