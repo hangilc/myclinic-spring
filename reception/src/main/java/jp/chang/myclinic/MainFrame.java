@@ -2,9 +2,12 @@ package jp.chang.myclinic;
 
 import java.awt.*;
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import jp.chang.myclinic.MyclinicConsts.WqueueState;
 
 class MainFrame extends JFrame {
+
+	private NewPatientDialog newPatientDialog;
 
 	MainFrame(){
 		setTitle("受付");
@@ -26,6 +29,8 @@ class MainFrame extends JFrame {
 			JButton searchPatientButton = new JButton("患者検索");
 			JButton searchCashierButton = new JButton("会計検索");
 			JButton receiptButton = new JButton("領収証用紙");
+
+			newPatientButton.addActionListener(this::doNewPatient);
 
 			upperBox.add(newPatientButton);
 			upperBox.add(Box.createHorizontalStrut(5));
@@ -95,6 +100,7 @@ class MainFrame extends JFrame {
 			JButton closeButton = new JButton("終了");
 			closeButton.addActionListener(event -> {
 				dispose();
+				System.exit(0);
 			});
 			lowerBox.add(closeButton);
 			lowerBox.add(Box.createHorizontalGlue());
@@ -104,6 +110,13 @@ class MainFrame extends JFrame {
 		panel.add(Box.createVerticalStrut(5));
 		panel.add(lowerBox);
 		add(panel, BorderLayout.SOUTH);
+	}
+
+	private void doNewPatient(ActionEvent event){
+		if( newPatientDialog == null ){
+			newPatientDialog = new NewPatientDialog();
+		}
+		newPatientDialog.setVisible(true);
 	}
 
 }
