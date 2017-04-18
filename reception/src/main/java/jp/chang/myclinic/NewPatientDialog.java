@@ -17,7 +17,7 @@ class NewPatientDialog extends JDialog {
 		panel.setLayout(layout);
 		GridBagConstraints c = new GridBagConstraints();
 		c.insets = new Insets(0, 0, 0, 5);
-		c.anchor = GridBagConstraints.LINE_START;
+		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		c.gridx = 0;
 		c.gridy = 0;
 		panel.add(new JLabel("名前"), c);
@@ -96,6 +96,28 @@ class NewPatientDialog extends JDialog {
 			c.gridx = 2;
 			c.gridy = 2;
 			panel.add(box, c);		
+		}
+		{
+			JTextField addressField = new JTextField(30);
+			c.gridwidth = 2;
+			c.gridx = 1;
+			c.gridy = 3;
+			panel.add(addressField, c);
+			c.gridwidth = 1;
+		}
+		{
+			JTextField phoneField = new JTextField(15);
+			c.gridwidth = 1;
+			c.gridx = 2;
+			c.gridy = 4;
+			panel.add(phoneField, c);
+		}
+		{
+			NewPatientHoken hokenPanel = new NewPatientHoken();
+			c.gridwidth = 2;
+			c.gridx = 1;
+			c.gridy = 5;
+			panel.add(hokenPanel, c);
 		}
 		add(panel, BorderLayout.CENTER);
 	}
