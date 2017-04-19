@@ -166,6 +166,9 @@ public class PatientDocScanner extends JDialog {
 
     private void doRescan(Path path){
         String deviceId = resolveDeviceId();
+        if( deviceId == null ){
+        	return;
+        }
         Path savePath = null;
         try{
             savePath = File.createTempFile("rescan", ".bmp").toPath();
@@ -193,6 +196,9 @@ public class PatientDocScanner extends JDialog {
 
     private void doStart(ActionEvent event){
         String deviceId = resolveDeviceId();
+        if( deviceId == null ){
+        	return;
+        }
         String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, getNextPageIndex());
         Path savePath = saveDir.resolve(saveFileName);
         ScannerDialog dialog = new ScannerDialog(this, deviceId, savePath);
