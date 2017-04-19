@@ -17,12 +17,12 @@ class SettingInfoDialog extends JDialog {
 
 	private static class Setting {
 		public Path savingDir;
-		public int dip;
+		public int dpi;
 		public String defaultDevice;
 
 		Setting(){
 			this.savingDir = ScannerSetting.INSTANCE.savingDir;
-			this.dip = ScannerSetting.INSTANCE.dip;
+			this.dpi = ScannerSetting.INSTANCE.dpi;
 			this.defaultDevice = ScannerSetting.INSTANCE.defaultDevice;
 		}
 	}
@@ -48,7 +48,7 @@ class SettingInfoDialog extends JDialog {
 	private void setupTable(){
 		JTable table = new JTable(new Object[][]{
 			{"保存フォルダー", new DirValue(setting.savingDir, path -> { setting.savingDir = path; })},
-			{"解像度(dip)", new IntValue(setting.dip, ival -> { setting.dip = ival; })},
+			{"解像度(dpi)", new IntValue(setting.dpi, ival -> { setting.dpi = ival; })},
 			{"スキャナー", new DeviceValue(setting.defaultDevice, val -> { setting.defaultDevice = val; })}
 		}, new Object[]{"キー", "値"}){
 			@Override
@@ -93,7 +93,7 @@ class SettingInfoDialog extends JDialog {
 	private void writeToGlobal(){
 		ScannerSetting global = ScannerSetting.INSTANCE;
 		global.savingDir = setting.savingDir;
-		global.dip = setting.dip;
+		global.dpi = setting.dpi;
 		global.defaultDevice = setting.defaultDevice;
 	}
 

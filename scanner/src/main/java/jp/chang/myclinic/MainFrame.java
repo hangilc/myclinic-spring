@@ -64,15 +64,16 @@ public class MainFrame extends JFrame {
 	private JMenu makeSettingMenu(){
 		JMenu menu = new JMenu("設定");
 		JMenuItem item;
-		// item = new JMenuItem("設定ファイル");
-		// item.addActionListener(event -> {
-		// 	SettingInfoDialog dialog = new SettingInfoDialog(this, "設定ファイル", true);
-		// 	dialog.setLocationByPlatform(true);
-		// 	dialog.setVisible(true);
-		// });
 		item = new JMenuItem("保存フォルダー");
 		item.addActionListener(event -> {
 			ConfigSaveDirDialog dialog = new ConfigSaveDirDialog(this);
+			dialog.setLocationByPlatform(true);
+			dialog.setVisible(true);
+		});
+		menu.add(item);
+		item = new JMenuItem("DPI");
+		item.addActionListener(event -> {
+			ConfigDpiDialog dialog = new ConfigDpiDialog(this);
 			dialog.setLocationByPlatform(true);
 			dialog.setVisible(true);
 		});

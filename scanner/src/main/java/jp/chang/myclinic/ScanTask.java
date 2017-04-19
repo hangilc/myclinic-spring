@@ -50,7 +50,7 @@ class ScanTask implements Runnable {
 		this.dialog = dialog;
 		this.deviceId = deviceId;
 		this.savePath = savePath;
-		this.resolution = ScannerSetting.INSTANCE.dip;
+		this.resolution = ScannerSetting.INSTANCE.dpi;
 		this.canceled = false;
 	}
 
