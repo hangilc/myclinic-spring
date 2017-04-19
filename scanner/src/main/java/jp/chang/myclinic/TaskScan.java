@@ -30,12 +30,16 @@ import jp.chang.wia.WiaDevMgr;
 import jp.chang.wia.WiaItem;
 import jp.chang.wia.WiaPropertyStorage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 class TaskScan implements Runnable {
 
 	private String deviceId;
 	private Path savePath;
 	private int resolution;
 	private boolean canceled;
+	private static Logger logger = LoggerFactory.getLogger(TaskScan.class);
 
 	public TaskScan(String deviceId, Path savePath){
 		this.deviceId = deviceId;
@@ -84,16 +88,22 @@ class TaskScan implements Runnable {
 		                @Override
 		                public HRESULT invoke(Pointer thisPointer, LONG lMessage, LONG lStatus, LONG lPercentComplete,
 		                    LONG lOffset, LONG lLength, LONG lReserved, LONG lResLength, PointerByReference pbBuffer){
-		                    onCallback();
-		                    if( canceled ){
-		                    	return WinError.S_FALSE;
-		                    }
-		                    int message = lMessage.intValue();
-		                    if( message == WiaConsts.IT_MSG_DATA || message == WiaConsts.IT_MSG_STATUS ){
-			                	int pct = lPercentComplete.intValue();
-			                	onProgress(pct);
-		                    }
-		                    return WinError.S_OK;
+		                	try{
+			                    if( canceled ){
+			                    	return WinError.S_FALSE;
+			                    }
+			                    onCallback();
+			                    int message = lMessage.intValue();
+			                    if( message == WiaConsts.IT_MSG_DATA || message == WiaConsts.IT_MSG_STATUS ){
+				                	int pct = lPercentComplete.intValue();
+				                	onProgress(pct);
+			                    }
+			                    return WinError.S_OK;
+			                } catch(Exception ex){
+			                	logger.error("in invoke", ex);
+			                	setCanceled(true);
+			                	return WinError.S_FALSE;
+			                }
 		                };
 		            });
 		            hr = transfer.idtGetData(stgmedium, dataCallback);
@@ -105,7 +115,8 @@ class TaskScan implements Runnable {
 				deviceItem.Release();
 			}
 		} catch(Exception ex){
-			ex.printStackTrace(System.out);
+			setCanceled(true);
+			logger.error("", ex);
 			onFail(ex.toString());
 		}
 	}

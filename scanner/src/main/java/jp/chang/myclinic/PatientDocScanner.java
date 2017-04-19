@@ -235,67 +235,79 @@ public class PatientDocScanner extends JDialog {
     }
 
     private void doStart(ActionEvent event){
+        System.out.println("ENTER doStart");
         if( deviceId == null ){
         	deviceId = resolveDeviceId();
             if( deviceId == null ){
                 return;
             }
         }
-        final ScanProgressDialog dialog = new ScanProgressDialog(this);
-        dialog.setLocationByPlatform(true);
         String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, getNextPageIndex());
         Path savePath = saveDir.resolve(saveFileName);
-		TaskScan task = new TaskScan(deviceId, savePath){
-			@Override
-			public void onFail(String message){
-				EventQueue.invokeLater(() -> {
-		            JOptionPane.showMessageDialog(PatientDocScanner.this, message);
-		            dialog.dispose();
-				});
-			}
+        ScannerDialog dialog = new ScannerDialog(this, deviceId, savePath);
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
+        if( dialog.isCanceled() ){
+            System.out.println("dialog canceled");
+        } else {
+            System.out.println("dialog ended");
+        }
+  //       final ScanProgressDialog dialog = new ScanProgressDialog(this);
+  //       dialog.setLocationByPlatform(true);
+  //       String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, getNextPageIndex());
+  //       Path savePath = saveDir.resolve(saveFileName);
+		// TaskScan task = new TaskScan(deviceId, savePath){
+		// 	@Override
+		// 	public void onFail(String message){
+		// 		EventQueue.invokeLater(() -> {
+		//             JOptionPane.showMessageDialog(PatientDocScanner.this, message);
+		//             dialog.dispose();
+		// 		});
+		// 	}
 
-			@Override
-			public void onFinish(){
-				if( isCanceled() ){
-		        	try{
-		        		System.out.println("Deleting: " + savePath);
-			        	Files.deleteIfExists(savePath);
-			        } catch(IOException ex){
-			        	throw new UncheckedIOException(ex);
-			        }
-					EventQueue.invokeLater(() -> {
-						dialog.dispose();
-					});
-				} else{
-	            	final Path outPath = convertImage(savePath, "jpg");
-                    logger.info("scanned file {}", savePath);
-		            EventQueue.invokeLater(() -> {
-                        addPage(outPath);
-			            dialog.dispose();
-		            });
-				}
-			}
+		// 	@Override
+		// 	public void onFinish(){
+		// 		if( isCanceled() ){
+		//         	try{
+		//         		System.out.println("Deleting: " + savePath);
+		// 	        	Files.deleteIfExists(savePath);
+		// 	        } catch(IOException ex){
+		// 	        	throw new UncheckedIOException(ex);
+		// 	        }
+		// 			EventQueue.invokeLater(() -> {
+		// 				dialog.dispose();
+		// 			});
+		// 		} else{
+	 //            	final Path outPath = convertImage(savePath, "jpg");
+  //                   logger.info("scanned file {}", savePath);
+		//             EventQueue.invokeLater(() -> {
+  //                       addPage(outPath);
+		// 	            dialog.dispose();
+		//             });
+		// 		}
+		// 	}
 
-			@Override
-			public void onProgress(int pct){
-				EventQueue.invokeLater(() -> {
-					dialog.setValue(pct);
-				});
-			}
+		// 	@Override
+		// 	public void onProgress(int pct){
+		// 		EventQueue.invokeLater(() -> {
+		// 			dialog.setValue(pct);
+		// 		});
+		// 	}
 
-			@Override
-			public void onCallback(){
-				EventQueue.invokeLater(() -> {
-					if( dialog.isCanceled() ){
-						setCanceled(true);
-					}
-				});
-			}
-		};
-		Thread thread = new Thread(task);
-		thread.setDaemon(true);
-		thread.start();
-		dialog.setVisible(true);
+		// 	@Override
+		// 	public void onCallback(){
+		// 		EventQueue.invokeLater(() -> {
+  //                   if( dialog.isCanceled() ){
+  //                       setCanceled(true);
+  //                   }
+  //                   throw new RuntimeException("testing from onCallback");
+		// 		});
+		// 	}
+		// };
+		// Thread thread = new Thread(task);
+		// thread.setDaemon(true);
+		// thread.start();
+		// dialog.setVisible(true);
     }
 
      private static Path convertImage(Path source, String format, Path output){
