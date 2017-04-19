@@ -1,6 +1,8 @@
 package jp.chang.myclinic;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Files;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.COM.COMUtils;
@@ -116,6 +118,13 @@ class ScanTask implements Runnable {
             });
             hr = transfer.idtGetData(stgmedium, dataCallback);
             logger.info("idtGetData returned {}", hr);
+            if( canceled ){
+            	try{
+            		Files.deleteIfExists(savePath);
+            	} catch(IOException ex){
+            		logger.error("failed to delete file: {}", savePath, ex);
+            	}
+            }
             COMUtils.checkRC(hr);
 			reportSuccess();
 		} catch(Exception ex){

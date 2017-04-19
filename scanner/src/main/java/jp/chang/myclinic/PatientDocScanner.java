@@ -165,73 +165,43 @@ public class PatientDocScanner extends JDialog {
     }
 
     private void doRescan(Path path){
-        // if( deviceId == null ){
-        //     deviceId = resolveDeviceId();
-        //     if( deviceId == null ){
-        //         return;
+        if( deviceId == null ){
+            deviceId = resolveDeviceId();
+            if( deviceId == null ){
+                return;
+            }
+        }
+        Path savePath = null;
+        try{
+            savePath = File.createTempFile("rescan", ".bmp").toPath();
+        } catch(IOException ex) {
+            JOptionPane.showMessageDialog(this, "failed to create temporary file");
+            return;
+        }
+        ScannerDialog dialog = new ScannerDialog(this, deviceId, savePath);
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
+        if( !dialog.isCanceled() ){
+        //     logger.debug("dialog canceled");
+        //     try{
+        //         logger.debug("Deleting: {}", savePath);
+        //         Files.deleteIfExists(savePath);
+        //     } catch(IOException ex){
+        //         logger.error("Delete file failed", ex);
         //     }
-        // }
-        // final ScanProgressDialog dialog = new ScanProgressDialog(this);
-        // dialog.setLocationByPlatform(true);
-        // Path savePathTmp = null;
-        // try{
-        //     savePathTmp = File.createTempFile("rescan", ".bmp").toPath();
-        // } catch(IOException ex) {
-        //     JOptionPane.showMessageDialog(this, "failed to create temporary file");
-        //     return;
-        // }
-        // final Path savePath = savePathTmp;
-        // TaskScan task = new TaskScan(deviceId, savePath){
-        //     @Override
-        //     public void onFail(String message){
-        //         EventQueue.invokeLater(() -> {
-        //             JOptionPane.showMessageDialog(PatientDocScanner.this, message);
-        //             dialog.dispose();
-        //         });
-        //     }
-
-        //     @Override
-        //     public void onFinish(){
-        //         if( isCanceled() ){
-        //             try{
-        //                 System.out.println("Deleting: " + savePath);
-        //                 Files.deleteIfExists(savePath);
-        //             } catch(IOException ex){
-        //                 throw new UncheckedIOException(ex);
-        //             }
-        //             EventQueue.invokeLater(() -> {
-        //                 dialog.dispose();
-        //             });
-        //         } else{
-        //             convertImage(savePath, "jpg", path);
-        //             logger.info("rescanned file {}", savePath);
-        //             EventQueue.invokeLater(() -> {
-        //                 patientDocPreviewPanel.reloadImage();
-        //                 dialog.dispose();
-        //             });
-        //         }
-        //     }
-
-        //     @Override
-        //     public void onProgress(int pct){
-        //         EventQueue.invokeLater(() -> {
-        //             dialog.setValue(pct);
-        //         });
-        //     }
-
-        //     @Override
-        //     public void onCallback(){
-        //         EventQueue.invokeLater(() -> {
-        //             if( dialog.isCanceled() ){
-        //                 setCanceled(true);
-        //             }
-        //         });
-        //     }
-        // };
-        // Thread thread = new Thread(task);
-        // thread.setDaemon(true);
-        // thread.start();
-        // dialog.setVisible(true);        
+        // } else {
+            logger.debug("dialog ended");
+            try{
+                convertImage(savePath, "jpg", path);
+                logger.info("re-scanned file {}", path);
+            } catch(Exception ex){
+                JOptionPane.showMessageDialog(this, "画像コンバージョンに失敗しました。");
+                logger.error("convertImage failed", ex);
+            } catch(OutOfMemoryError e){
+                JOptionPane.showMessageDialog(this, "メモリー不足エラー");
+                logger.error("Out Of Memory");
+            }
+        }
     }
 
     private void doStart(ActionEvent event){
@@ -246,15 +216,15 @@ public class PatientDocScanner extends JDialog {
         ScannerDialog dialog = new ScannerDialog(this, deviceId, savePath);
         dialog.setLocationByPlatform(true);
         dialog.setVisible(true);
-        if( dialog.isCanceled() ){
-            logger.debug("dialog canceled");
-            try{
-                logger.debug("Deleting: {}", savePath);
-                Files.deleteIfExists(savePath);
-            } catch(IOException ex){
-                logger.error("Delete file failed", ex);
-            }
-        } else {
+        if( !dialog.isCanceled() ){
+        //     logger.debug("dialog canceled");
+        //     try{
+        //         logger.debug("Deleting: {}", savePath);
+        //         Files.deleteIfExists(savePath);
+        //     } catch(IOException ex){
+        //         logger.error("Delete file failed", ex);
+        //     }
+        // } else {
             logger.debug("dialog ended");
             try{
                 Path outPath = convertImage(savePath, "jpg");
@@ -263,6 +233,9 @@ public class PatientDocScanner extends JDialog {
             } catch(Exception ex){
                 JOptionPane.showMessageDialog(this, "画像コンバージョンに失敗しました。");
                 logger.error("convertImage failed", ex);
+            } catch(OutOfMemoryError e){
+                JOptionPane.showMessageDialog(this, "メモリー不足エラー");
+                logger.error("Out Of Memory");
             }
         }
     }

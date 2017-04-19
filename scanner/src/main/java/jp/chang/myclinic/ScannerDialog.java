@@ -11,12 +11,32 @@ import org.slf4j.LoggerFactory;
 class ScannerDialog extends JDialog {
 
 	private boolean canceled = true;
+	private JProgressBar progressBar;
 	private ScanTask task;
 	private static Logger logger = LoggerFactory.getLogger(ScannerDialog.class);
 
 	ScannerDialog(Dialog owner, String deviceId, Path savePath){
 		super(owner, "スキャン実行中", true);
 		this.task = new ScanTask(this, deviceId, savePath);
+		add(makeCentralPane(), BorderLayout.CENTER);
+		add(makeCommandPane(), BorderLayout.SOUTH);
+		pack();
+	}
+
+	private JComponent makeCentralPane(){
+		progressBar = new JProgressBar(0, 100);
+		return progressBar;
+	}
+
+	private JComponent makeCommandPane(){
+		JPanel panel = new JPanel();
+		JButton cancel = new JButton("キャンセル");
+		cancel.addActionListener(event -> {
+			setVisible(false);
+			dispose();
+		});
+		panel.add(cancel);
+		return panel;
 	}
 
 	public boolean isCanceled(){
@@ -54,7 +74,7 @@ class ScannerDialog extends JDialog {
 	}
 
 	public void onProgress(int percent){
-		System.out.println("PERCENT: " + percent);
+		progressBar.setValue(percent);
 	}
 
 }
