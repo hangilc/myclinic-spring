@@ -97,6 +97,7 @@ class ScanTask implements Runnable {
                     LONG lOffset, LONG lLength, LONG lReserved, LONG lResLength, PointerByReference pbBuffer){
                 	try{
 	                    if( canceled ){
+	                    	logger.debug("invoke returns S_FALSE");
 	                    	return WinError.S_FALSE;
 	                    }
 	                    int message = lMessage.intValue();
@@ -104,9 +105,11 @@ class ScanTask implements Runnable {
 		                	int pct = lPercentComplete.intValue();
 		                	reportProgress(pct);
 	                    }
+                    	logger.debug("invoke returns S_OK");
 	                    return WinError.S_OK;
 	                } catch(Exception ex){
 	                	reportError("スキャン中にエラーが発生しました(2)。", ex);
+                    	logger.debug("invoke returns S_FALSE");
 	                	return WinError.S_FALSE;
 	                }
                 };
@@ -120,19 +123,15 @@ class ScanTask implements Runnable {
 		} finally{
 			if( dataCallback != null ){
 				dataCallback.Release();
-				dataCallback = null;
 			}
 			if( wiaTransfer != null ){
 				wiaTransfer.Release();
-				wiaTransfer = null;
 			}
 			if( wiaItem != null ){
 				wiaItem.Release();
-				wiaItem = null;
 			}
 			if( deviceItem != null ){
 				deviceItem.Release();
-				deviceItem = null;
 			}
 		}
 	}
@@ -160,8 +159,10 @@ class ScanTask implements Runnable {
         WiaDevMgr devMgr = Wia.createWiaDevMgr();
         PointerByReference pp = new PointerByReference();
         HRESULT hr = devMgr.CreateDevice(new BSTR(deviceId), pp);
-        COMUtils.checkRC(hr);
-        WiaItem item = new WiaItem(pp.getValue());
+        WiaItem item = null;
+        if( hr.intValue() == COMUtils.S_OK ){
+        	item = new WiaItem(pp.getValue());
+        }
         devMgr.Release();
         return item;
     }
@@ -175,6 +176,7 @@ class ScanTask implements Runnable {
         WiaItem.ByReference[] items = new WiaItem.ByReference[4];
         ULONGByReference pFetched = new ULONGByReference();
         hr = enumWiaItem.Next(new ULONG(4), items, pFetched);
+        COMUtils.checkRC(hr);
         int nFetched = pFetched.getValue().intValue();
         for(int i=0;i<nFetched;i++){
             WiaItem.ByReference item = items[i];
@@ -190,7 +192,6 @@ class ScanTask implements Runnable {
                 item.Release();
             }
         }
-        COMUtils.checkRC(hr);
         enumWiaItem.Release();
         return wiaItem;
     }
