@@ -78,6 +78,13 @@ public class MainFrame extends JFrame {
 			dialog.setVisible(true);
 		});
 		menu.add(item);
+		item = new JMenuItem("スキャナーデバイス");
+		item.addActionListener(event -> {
+			ConfigDeviceDialog dialog = new ConfigDeviceDialog(this);
+			dialog.setLocationByPlatform(true);
+			dialog.setVisible(true);
+		});
+		menu.add(item);
 		return menu;
 	}
 }

@@ -7,14 +7,14 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ConfigDpiDialog extends JDialog {
+class ConfigDeviceDialog extends JDialog {
 
-	private int dpi = ScannerSetting.INSTANCE.dpi;
-	private JLabel dpiLabel = new JLabel(String.valueOf(dpi));
-	private Logger logger = LoggerFactory.getLogger(ConfigDpiDialog.class);
+	private String device = ScannerSetting.INSTANCE.defaultDevice;
+	private JLabel deviceLabel = new JLabel(device + " ");
+	private static Logger logger = LoggerFactory.getLogger(ConfigDeviceDialog.class);
 
-	ConfigDpiDialog(JFrame owner){
-		super(owner, "ＤＰＩの設定", true);
+	ConfigDeviceDialog(JFrame owner){
+		super(owner, "スキャナーデバイスの設定", true);
 		setupCenter();
 		setupSouth();
 		pack();
@@ -24,7 +24,7 @@ class ConfigDpiDialog extends JDialog {
 		JPanel panel = new JPanel();
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-		panel.add(dpiLabel);
+		panel.add(deviceLabel);
 		panel.add(Box.createVerticalStrut(5));
 		panel.add(centerCommand());
 		add(panel, BorderLayout.CENTER);
@@ -34,14 +34,9 @@ class ConfigDpiDialog extends JDialog {
 		JPanel panel = new JPanel();
 		JButton browseButton = new JButton("変更");
 		browseButton.addActionListener(event -> {
-			String input = JOptionPane.showInputDialog(this, "DPIの値の入力");
-			if( input != null ){
-				try{
-					int ival = Integer.parseInt(input);
-					changeDpi(ival);
-				} catch(NumberFormatException ex){
-					JOptionPane.showMessageDialog(this, "数値の入力が不適切です。");
-				}
+			String newVal = ScannerUtil.pickDevice();
+			if( newVal != null ){
+				changeDevice(newVal);
 			}
 		});
 		panel.add(browseButton);
@@ -49,9 +44,10 @@ class ConfigDpiDialog extends JDialog {
 		return panel;
 	}
 
-	private void changeDpi(int ival){
-		dpi = ival;
-		dpiLabel.setText(String.valueOf(dpi));
+	private void changeDevice(String newVal){
+		device = newVal;
+		deviceLabel.setText(device + " ");
+		pack();
 	}
 
 	private void setupSouth(){
@@ -63,7 +59,7 @@ class ConfigDpiDialog extends JDialog {
 		JButton enterButton = new JButton("決定");
 		JButton cancelButton = new JButton("キャンセル");
 		enterButton.addActionListener(event -> {
-			ScannerSetting.INSTANCE.dpi = dpi;
+			ScannerSetting.INSTANCE.defaultDevice = device;
 			if( saveCheckBox.isSelected() ){
 				try{
 					ScannerSetting.INSTANCE.saveToFile();
@@ -85,4 +81,5 @@ class ConfigDpiDialog extends JDialog {
 		panel.add(cancelButton);
 		add(panel, BorderLayout.SOUTH);
 	}
+
 }
