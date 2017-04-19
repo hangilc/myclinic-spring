@@ -165,77 +165,76 @@ public class PatientDocScanner extends JDialog {
     }
 
     private void doRescan(Path path){
-        if( deviceId == null ){
-            deviceId = resolveDeviceId();
-            if( deviceId == null ){
-                return;
-            }
-        }
-        final ScanProgressDialog dialog = new ScanProgressDialog(this);
-        dialog.setLocationByPlatform(true);
-        Path savePathTmp = null;
-        try{
-            savePathTmp = File.createTempFile("rescan", ".bmp").toPath();
-        } catch(IOException ex) {
-            JOptionPane.showMessageDialog(this, "failed to create temporary file");
-            return;
-        }
-        final Path savePath = savePathTmp;
-        TaskScan task = new TaskScan(deviceId, savePath){
-            @Override
-            public void onFail(String message){
-                EventQueue.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(PatientDocScanner.this, message);
-                    dialog.dispose();
-                });
-            }
+        // if( deviceId == null ){
+        //     deviceId = resolveDeviceId();
+        //     if( deviceId == null ){
+        //         return;
+        //     }
+        // }
+        // final ScanProgressDialog dialog = new ScanProgressDialog(this);
+        // dialog.setLocationByPlatform(true);
+        // Path savePathTmp = null;
+        // try{
+        //     savePathTmp = File.createTempFile("rescan", ".bmp").toPath();
+        // } catch(IOException ex) {
+        //     JOptionPane.showMessageDialog(this, "failed to create temporary file");
+        //     return;
+        // }
+        // final Path savePath = savePathTmp;
+        // TaskScan task = new TaskScan(deviceId, savePath){
+        //     @Override
+        //     public void onFail(String message){
+        //         EventQueue.invokeLater(() -> {
+        //             JOptionPane.showMessageDialog(PatientDocScanner.this, message);
+        //             dialog.dispose();
+        //         });
+        //     }
 
-            @Override
-            public void onFinish(){
-                if( isCanceled() ){
-                    try{
-                        System.out.println("Deleting: " + savePath);
-                        Files.deleteIfExists(savePath);
-                    } catch(IOException ex){
-                        throw new UncheckedIOException(ex);
-                    }
-                    EventQueue.invokeLater(() -> {
-                        dialog.dispose();
-                    });
-                } else{
-                    convertImage(savePath, "jpg", path);
-                    logger.info("rescanned file {}", savePath);
-                    EventQueue.invokeLater(() -> {
-                        patientDocPreviewPanel.reloadImage();
-                        dialog.dispose();
-                    });
-                }
-            }
+        //     @Override
+        //     public void onFinish(){
+        //         if( isCanceled() ){
+        //             try{
+        //                 System.out.println("Deleting: " + savePath);
+        //                 Files.deleteIfExists(savePath);
+        //             } catch(IOException ex){
+        //                 throw new UncheckedIOException(ex);
+        //             }
+        //             EventQueue.invokeLater(() -> {
+        //                 dialog.dispose();
+        //             });
+        //         } else{
+        //             convertImage(savePath, "jpg", path);
+        //             logger.info("rescanned file {}", savePath);
+        //             EventQueue.invokeLater(() -> {
+        //                 patientDocPreviewPanel.reloadImage();
+        //                 dialog.dispose();
+        //             });
+        //         }
+        //     }
 
-            @Override
-            public void onProgress(int pct){
-                EventQueue.invokeLater(() -> {
-                    dialog.setValue(pct);
-                });
-            }
+        //     @Override
+        //     public void onProgress(int pct){
+        //         EventQueue.invokeLater(() -> {
+        //             dialog.setValue(pct);
+        //         });
+        //     }
 
-            @Override
-            public void onCallback(){
-                EventQueue.invokeLater(() -> {
-                    if( dialog.isCanceled() ){
-                        setCanceled(true);
-                    }
-                });
-            }
-        };
-        Thread thread = new Thread(task);
-        thread.setDaemon(true);
-        thread.start();
-        dialog.setVisible(true);        
+        //     @Override
+        //     public void onCallback(){
+        //         EventQueue.invokeLater(() -> {
+        //             if( dialog.isCanceled() ){
+        //                 setCanceled(true);
+        //             }
+        //         });
+        //     }
+        // };
+        // Thread thread = new Thread(task);
+        // thread.setDaemon(true);
+        // thread.start();
+        // dialog.setVisible(true);        
     }
 
     private void doStart(ActionEvent event){
-        System.out.println("ENTER doStart");
         if( deviceId == null ){
         	deviceId = resolveDeviceId();
             if( deviceId == null ){
@@ -248,84 +247,38 @@ public class PatientDocScanner extends JDialog {
         dialog.setLocationByPlatform(true);
         dialog.setVisible(true);
         if( dialog.isCanceled() ){
-            System.out.println("dialog canceled");
-        } else {
-            System.out.println("dialog ended");
-        }
-  //       final ScanProgressDialog dialog = new ScanProgressDialog(this);
-  //       dialog.setLocationByPlatform(true);
-  //       String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, getNextPageIndex());
-  //       Path savePath = saveDir.resolve(saveFileName);
-		// TaskScan task = new TaskScan(deviceId, savePath){
-		// 	@Override
-		// 	public void onFail(String message){
-		// 		EventQueue.invokeLater(() -> {
-		//             JOptionPane.showMessageDialog(PatientDocScanner.this, message);
-		//             dialog.dispose();
-		// 		});
-		// 	}
-
-		// 	@Override
-		// 	public void onFinish(){
-		// 		if( isCanceled() ){
-		//         	try{
-		//         		System.out.println("Deleting: " + savePath);
-		// 	        	Files.deleteIfExists(savePath);
-		// 	        } catch(IOException ex){
-		// 	        	throw new UncheckedIOException(ex);
-		// 	        }
-		// 			EventQueue.invokeLater(() -> {
-		// 				dialog.dispose();
-		// 			});
-		// 		} else{
-	 //            	final Path outPath = convertImage(savePath, "jpg");
-  //                   logger.info("scanned file {}", savePath);
-		//             EventQueue.invokeLater(() -> {
-  //                       addPage(outPath);
-		// 	            dialog.dispose();
-		//             });
-		// 		}
-		// 	}
-
-		// 	@Override
-		// 	public void onProgress(int pct){
-		// 		EventQueue.invokeLater(() -> {
-		// 			dialog.setValue(pct);
-		// 		});
-		// 	}
-
-		// 	@Override
-		// 	public void onCallback(){
-		// 		EventQueue.invokeLater(() -> {
-  //                   if( dialog.isCanceled() ){
-  //                       setCanceled(true);
-  //                   }
-  //                   throw new RuntimeException("testing from onCallback");
-		// 		});
-		// 	}
-		// };
-		// Thread thread = new Thread(task);
-		// thread.setDaemon(true);
-		// thread.start();
-		// dialog.setVisible(true);
-    }
-
-     private static Path convertImage(Path source, String format, Path output){
-        try{
-            BufferedImage src = ImageIO.read(source.toFile());
-            System.out.println(output.toString());
-            boolean ok = ImageIO.write(src, format, output.toFile());
-            if( !ok ){
-                throw new RuntimeException("image conversion failed");
+            logger.debug("dialog canceled");
+            try{
+                logger.debug("Deleting: {}", savePath);
+                Files.deleteIfExists(savePath);
+            } catch(IOException ex){
+                logger.error("Delete file failed", ex);
             }
-            Files.delete(source);
-            return output;
-        } catch(IOException ex){
-            throw new UncheckedIOException(ex);
+        } else {
+            logger.debug("dialog ended");
+            try{
+                Path outPath = convertImage(savePath, "jpg");
+                addPage(outPath);
+                logger.info("scanned file {}", savePath);
+            } catch(Exception ex){
+                JOptionPane.showMessageDialog(this, "画像コンバージョンに失敗しました。");
+                logger.error("convertImage failed", ex);
+            }
         }
     }
 
-    private static Path convertImage(Path source, String format){
+    private static Path convertImage(Path source, String format, Path output) throws IOException {
+        BufferedImage src = ImageIO.read(source.toFile());
+        System.out.println(output.toString());
+        boolean ok = ImageIO.write(src, format, output.toFile());
+        if( !ok ){
+            throw new RuntimeException("image conversion failed");
+        }
+        Files.delete(source);
+        return output;
+    }
+
+    private static Path convertImage(Path source, String format) throws IOException {
         String srcFileName = source.getFileName().toString();
         String dstFileName = srcFileName.replaceFirst("\\.bmp$", "." + format);
         Path output = source.resolveSibling(dstFileName);
