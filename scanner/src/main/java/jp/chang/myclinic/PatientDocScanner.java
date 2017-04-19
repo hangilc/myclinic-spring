@@ -82,7 +82,7 @@ public class PatientDocScanner extends JDialog {
     private int lastPageIndex;
     private String timeStamp;
     private Path saveDir;
-    private String deviceId;
+    //private String deviceId;
     private static DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
     private PatientDocInfoPanel patientDocInfoPanel;
     private PatientDocPreviewPanel patientDocPreviewPanel;
@@ -165,12 +165,7 @@ public class PatientDocScanner extends JDialog {
     }
 
     private void doRescan(Path path){
-        if( deviceId == null ){
-            deviceId = resolveDeviceId();
-            if( deviceId == null ){
-                return;
-            }
-        }
+        String deviceId = resolveDeviceId();
         Path savePath = null;
         try{
             savePath = File.createTempFile("rescan", ".bmp").toPath();
@@ -182,14 +177,6 @@ public class PatientDocScanner extends JDialog {
         dialog.setLocationByPlatform(true);
         dialog.setVisible(true);
         if( !dialog.isCanceled() ){
-        //     logger.debug("dialog canceled");
-        //     try{
-        //         logger.debug("Deleting: {}", savePath);
-        //         Files.deleteIfExists(savePath);
-        //     } catch(IOException ex){
-        //         logger.error("Delete file failed", ex);
-        //     }
-        // } else {
             logger.debug("dialog ended");
             try{
                 convertImage(savePath, "jpg", path);
@@ -205,26 +192,13 @@ public class PatientDocScanner extends JDialog {
     }
 
     private void doStart(ActionEvent event){
-        if( deviceId == null ){
-        	deviceId = resolveDeviceId();
-            if( deviceId == null ){
-                return;
-            }
-        }
+        String deviceId = resolveDeviceId();
         String saveFileName = String.format("%d-%s-%02d.bmp", patientId, timeStamp, getNextPageIndex());
         Path savePath = saveDir.resolve(saveFileName);
         ScannerDialog dialog = new ScannerDialog(this, deviceId, savePath);
         dialog.setLocationByPlatform(true);
         dialog.setVisible(true);
         if( !dialog.isCanceled() ){
-        //     logger.debug("dialog canceled");
-        //     try{
-        //         logger.debug("Deleting: {}", savePath);
-        //         Files.deleteIfExists(savePath);
-        //     } catch(IOException ex){
-        //         logger.error("Delete file failed", ex);
-        //     }
-        // } else {
             logger.debug("dialog ended");
             try{
                 Path outPath = convertImage(savePath, "jpg");
@@ -259,6 +233,12 @@ public class PatientDocScanner extends JDialog {
     }
 
     private String resolveDeviceId(){
+        {
+            String deviceId = ScannerSetting.INSTANCE.defaultDevice;
+            if( !"".equals(deviceId) ){
+                return deviceId;
+            }
+        }
         List<Wia.Device> devices = Wia.listDevices();
         if( devices.size() == 0 ){
             JOptionPane.showMessageDialog(this, "接続された。スキャナーがみつかりません。");

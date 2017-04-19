@@ -32,6 +32,7 @@ class ConfigDeviceDialog extends JDialog {
 
 	private JComponent centerCommand(){
 		JPanel panel = new JPanel();
+		panel.setLayout(new FlowLayout());
 		JButton browseButton = new JButton("変更");
 		browseButton.addActionListener(event -> {
 			String newVal = ScannerUtil.pickDevice();
@@ -40,7 +41,11 @@ class ConfigDeviceDialog extends JDialog {
 			}
 		});
 		panel.add(browseButton);
-		panel.add(Box.createHorizontalGlue());
+		JButton clearButton = new JButton("クリア");
+		clearButton.addActionListener(event -> {
+			changeDevice("");
+		});
+		panel.add(clearButton);
 		return panel;
 	}
 
