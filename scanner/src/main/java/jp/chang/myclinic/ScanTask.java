@@ -44,7 +44,7 @@ class ScanTask implements Runnable {
 	private Path savePath;
 	private int resolution;
 	private boolean canceled;
-	private static Logger logger = LoggerFactory.getLogger(TaskScan.class);
+	private static Logger logger = LoggerFactory.getLogger(ScanTask.class);
 
 	public ScanTask(ScannerDialog dialog, String deviceId, Path savePath){
 		this.dialog = dialog;
