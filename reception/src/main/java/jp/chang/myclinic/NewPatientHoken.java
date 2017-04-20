@@ -6,8 +6,10 @@ import javax.swing.*;
 class NewPatientHoken extends JPanel {
 
 	private JList hokenList;
+	private JDialog owner;
 
-	NewPatientHoken(){
+	NewPatientHoken(JDialog owner){
+		this.owner = owner;
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 		add(makeUpperPanel());
 		add(Box.createVerticalStrut(5));
@@ -41,9 +43,14 @@ class NewPatientHoken extends JPanel {
 		{
 			upperBox.setLayout(new FlowLayout());
 			JButton enterShahoButton = new JButton("新規社保国保");
+			enterShahoButton.addActionListener(event -> {
+				ShahoKokuhoForm form = new ShahoKokuhoForm(owner);
+				form.setLocationByPlatform(true);
+				form.setVisible(true);
+			});
+			upperBox.add(enterShahoButton);
 			JButton enterKoukiButton = new JButton("新規後期高齢");
 			JButton enterKouhiButton = new JButton("新規公費負担");
-			upperBox.add(enterShahoButton);
 			upperBox.add(enterKoukiButton);
 			upperBox.add(enterKouhiButton);
 		}

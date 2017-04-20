@@ -115,6 +115,7 @@ class MainFrame extends JFrame {
 	private void doNewPatient(ActionEvent event){
 		if( newPatientDialog == null ){
 			newPatientDialog = new NewPatientDialog();
+			newPatientDialog.setLocationByPlatform(true);
 		}
 		newPatientDialog.setVisible(true);
 	}
