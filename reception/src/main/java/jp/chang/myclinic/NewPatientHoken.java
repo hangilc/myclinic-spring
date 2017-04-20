@@ -56,6 +56,11 @@ class NewPatientHoken extends JPanel {
 				form.setVisible(true);
 			});
 			JButton enterKouhiButton = new JButton("新規公費負担");
+			enterKouhiButton.addActionListener(event -> {
+				KouhiForm form = new KouhiForm(owner);
+				form.setLocationByPlatform(true);
+				form.setVisible(true);
+			});
 			upperBox.add(enterKoukiButton);
 			upperBox.add(enterKouhiButton);
 		}

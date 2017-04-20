@@ -3,10 +3,10 @@ package jp.chang.myclinic;
 import java.awt.*;
 import javax.swing.*;
 
-class KoukiKoureiForm extends JDialog {
+class KouhiForm extends JDialog {
 
-	KoukiKoureiForm(JDialog owner){
-		super(owner, "新規後期高齢入力", true);
+	KouhiForm(JDialog owner){
+		super(owner, "新規公費負担入力", true);
 		setupCenter();
 		setupSouth();
 		pack();
@@ -23,7 +23,7 @@ class KoukiKoureiForm extends JDialog {
 
 		c.gridy = 0;
 		c.gridx = 0;
-		panel.add(new JLabel("保険者番号"), c);
+		panel.add(new JLabel("負担者番号"), c);
 		c.gridx = 1;
 		{
 			JTextField hokenshaBangouField = new JTextField(6);
@@ -32,7 +32,7 @@ class KoukiKoureiForm extends JDialog {
 		
 		c.gridy = 1;
 		c.gridx = 0;
-		panel.add(new JLabel("被保険者番号"), c);
+		panel.add(new JLabel("受給者番号"), c);
 		c.gridx = 1;
 		{
 			JTextField hihokenshaBangou = new JTextField(6);
@@ -55,26 +55,6 @@ class KoukiKoureiForm extends JDialog {
 		{
 			DateInput validUptoInput = new DateInput(new String[]{"平成"});
 			panel.add(validUptoInput, c);
-		}
-
-		c.gridy = 4;
-		c.gridx = 0;
-		panel.add(new JLabel("負担割"), c);
-		c.gridx = 1;
-		{
-			JPanel box = new JPanel();
-			JRadioButton futan1wariButton = new JRadioButton("１割");
-			JRadioButton futan2wariButton = new JRadioButton("２割");
-			JRadioButton futan3wariButton = new JRadioButton("３割");
-			futan2wariButton.setSelected(true);
-			ButtonGroup futanGroup = new ButtonGroup();
-			futanGroup.add(futan1wariButton);
-			futanGroup.add(futan2wariButton);
-			futanGroup.add(futan3wariButton);
-			box.add(futan1wariButton);
-			box.add(futan2wariButton);
-			box.add(futan3wariButton);
-			panel.add(box, c);
 		}
 
 		add(panel, BorderLayout.CENTER);
