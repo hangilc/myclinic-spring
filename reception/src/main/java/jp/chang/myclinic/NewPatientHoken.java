@@ -50,6 +50,11 @@ class NewPatientHoken extends JPanel {
 			});
 			upperBox.add(enterShahoButton);
 			JButton enterKoukiButton = new JButton("新規後期高齢");
+			enterKoukiButton.addActionListener(event -> {
+				KoukiKoureiForm form = new KoukiKoureiForm(owner);
+				form.setLocationByPlatform(true);
+				form.setVisible(true);
+			});
 			JButton enterKouhiButton = new JButton("新規公費負担");
 			upperBox.add(enterKoukiButton);
 			upperBox.add(enterKouhiButton);
