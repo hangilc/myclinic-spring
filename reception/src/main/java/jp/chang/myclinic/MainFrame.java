@@ -26,11 +26,16 @@ class MainFrame extends JFrame {
 		lowerBox.setLayout(new BoxLayout(lowerBox, BoxLayout.LINE_AXIS));
 		{
 			JButton newPatientButton = new JButton("新規患者");
+			newPatientButton.addActionListener(this::doNewPatient);
 			JButton searchPatientButton = new JButton("患者検索");
+			searchPatientButton.addActionListener(event -> {
+				SearchPatientDialog dialog = new SearchPatientDialog(this);
+				dialog.setLocationByPlatform(true);
+				dialog.setVisible(true);
+			});
 			JButton searchCashierButton = new JButton("会計検索");
 			JButton receiptButton = new JButton("領収証用紙");
 
-			newPatientButton.addActionListener(this::doNewPatient);
 
 			upperBox.add(newPatientButton);
 			upperBox.add(Box.createHorizontalStrut(5));
