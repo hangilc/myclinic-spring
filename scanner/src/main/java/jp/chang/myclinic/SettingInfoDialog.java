@@ -1,6 +1,7 @@
 package jp.chang.myclinic;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.ChangeEvent;
@@ -10,16 +11,19 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.EventObject;
 
 class SettingInfoDialog extends JDialog {
 
 	private static class Setting {
 		public Path savingDir;
-		public int dip;
+		public int dpi;
+		public String defaultDevice;
 
 		Setting(){
 			this.savingDir = ScannerSetting.INSTANCE.savingDir;
-			this.dip = ScannerSetting.INSTANCE.dip;
+			this.dpi = ScannerSetting.INSTANCE.dpi;
+			this.defaultDevice = ScannerSetting.INSTANCE.defaultDevice;
 		}
 	}
 
@@ -44,7 +48,8 @@ class SettingInfoDialog extends JDialog {
 	private void setupTable(){
 		JTable table = new JTable(new Object[][]{
 			{"保存フォルダー", new DirValue(setting.savingDir, path -> { setting.savingDir = path; })},
-			{"解像度(dip)", new IntValue(setting.dip, ival -> { setting.dip = ival; })}
+			{"解像度(dpi)", new IntValue(setting.dpi, ival -> { setting.dpi = ival; })},
+			{"スキャナー", new DeviceValue(setting.defaultDevice, val -> { setting.defaultDevice = val; })}
 		}, new Object[]{"キー", "値"}){
 			@Override
 			public boolean isCellEditable(int row, int col){
@@ -52,7 +57,7 @@ class SettingInfoDialog extends JDialog {
 			}
 		};
 		System.out.println(table.getColumnClass(0));
-		table.setPreferredSize(new Dimension(400, 40));
+		table.setPreferredSize(new Dimension(400, 80));
 		table.setDefaultRenderer(Object.class, new Renderer());
 		table.setDefaultEditor(Object.class, new Editor());
 		add(table, BorderLayout.CENTER);
@@ -88,7 +93,8 @@ class SettingInfoDialog extends JDialog {
 	private void writeToGlobal(){
 		ScannerSetting global = ScannerSetting.INSTANCE;
 		global.savingDir = setting.savingDir;
-		global.dip = setting.dip;
+		global.dpi = setting.dpi;
+		global.defaultDevice = setting.defaultDevice;
 	}
 
 	private static abstract class Value {
@@ -110,6 +116,11 @@ class SettingInfoDialog extends JDialog {
 
 		abstract public Component getTableCellEditorComponent(AbstractCellEditor editor, JTable table, 
 			Object object, boolean isSelected, int row, int column);
+
+		public Component getTableCellEditorComponent(JTable table, Object object, boolean isSelected, int row, int column){
+			return new JLabel("Editor");
+		}
+
 	}
 
 	private static class DirValue extends Value {
@@ -208,12 +219,73 @@ class SettingInfoDialog extends JDialog {
 		}
 	}
 
+	private static class DeviceValue extends Value {
+		public interface ChangeHandler {
+			void handle(String val);
+		}
+
+		private ChangeHandler handler;
+
+		DeviceValue(String sval, ChangeHandler handler){
+			super(sval);
+			this.handler = handler;
+		}
+
+		public String getString(){
+			return (String)getValue();
+		}
+
+		public void setString(String sval){
+			setValue(sval);
+		}
+
+		@Override
+		public Component getTableCellEditorComponent(AbstractCellEditor editor, JTable table, 
+			Object object, boolean isSelected, int row, int column){
+			JPanel panel = new JPanel();
+			if( isSelected ){
+				panel.setBackground(table.getSelectionBackground());
+			} else {
+				panel.setBackground(table.getBackground());
+			}
+			panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+			JButton pickButton = new JButton("参照");
+			pickButton.addActionListener(event -> {
+				String device = ScannerUtil.pickDevice();
+				System.out.println(device);
+			});
+			panel.add(pickButton);
+			return panel;
+		}
+
+		@Override 
+		public Component getTableCellEditorComponent(JTable table, Object object, boolean isSelected, int row, int column){
+			JPanel panel = new JPanel();
+			if( isSelected ){
+				panel.setBackground(table.getSelectionBackground());
+			} else {
+				panel.setBackground(table.getBackground());
+			}
+			panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+			JButton pickButton = new JButton("参照");
+			// pickButton.addActionListener(event -> {
+			// 	String device = ScannerUtil.pickDevice();
+			// 	System.out.println(device);
+			// });
+			panel.add(pickButton);
+			return panel;
+		}
+	}
+
 	private static class Renderer extends DefaultTableCellRenderer {
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object object, boolean isSelected,
 			boolean hasFocus, int row, int column){
 			if( object instanceof Value ){
 				Value value = (Value)object;
+				if( isSelected ){
+					return value.getTableCellEditorComponent(table, value, isSelected, row, column);
+				}
 				return super.getTableCellRendererComponent(table, value.getValue(), isSelected, hasFocus, row, column);
 			} else  {
 				return super.getTableCellRendererComponent(table, object, isSelected, hasFocus, row, column);

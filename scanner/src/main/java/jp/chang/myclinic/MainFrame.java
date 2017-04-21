@@ -64,9 +64,23 @@ public class MainFrame extends JFrame {
 	private JMenu makeSettingMenu(){
 		JMenu menu = new JMenu("設定");
 		JMenuItem item;
-		item = new JMenuItem("設定ファイル");
+		item = new JMenuItem("保存フォルダー");
 		item.addActionListener(event -> {
-			SettingInfoDialog dialog = new SettingInfoDialog(this, "設定ファイル", true);
+			ConfigSaveDirDialog dialog = new ConfigSaveDirDialog(this);
+			dialog.setLocationByPlatform(true);
+			dialog.setVisible(true);
+		});
+		menu.add(item);
+		item = new JMenuItem("DPI");
+		item.addActionListener(event -> {
+			ConfigDpiDialog dialog = new ConfigDpiDialog(this);
+			dialog.setLocationByPlatform(true);
+			dialog.setVisible(true);
+		});
+		menu.add(item);
+		item = new JMenuItem("スキャナーデバイス");
+		item.addActionListener(event -> {
+			ConfigDeviceDialog dialog = new ConfigDeviceDialog(this);
 			dialog.setLocationByPlatform(true);
 			dialog.setVisible(true);
 		});
