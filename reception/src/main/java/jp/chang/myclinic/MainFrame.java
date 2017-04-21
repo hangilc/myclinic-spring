@@ -33,7 +33,12 @@ class MainFrame extends JFrame {
 				dialog.setLocationByPlatform(true);
 				dialog.setVisible(true);
 			});
-			JButton searchCashierButton = new JButton("会計検索");
+			JButton searchPaymentButton = new JButton("会計検索");
+			searchPaymentButton.addActionListener(event -> {
+				SearchPaymentDialog dialog = new SearchPaymentDialog(this);
+				dialog.setLocationByPlatform(true);
+				dialog.setVisible(true);
+			});
 			JButton receiptButton = new JButton("領収証用紙");
 
 
@@ -41,7 +46,7 @@ class MainFrame extends JFrame {
 			upperBox.add(Box.createHorizontalStrut(5));
 			upperBox.add(searchPatientButton);
 			upperBox.add(Box.createHorizontalStrut(5));
-			upperBox.add(searchCashierButton);
+			upperBox.add(searchPaymentButton);
 			upperBox.add(Box.createHorizontalStrut(30));
 			upperBox.add(receiptButton);
 			upperBox.add(Box.createHorizontalGlue());
