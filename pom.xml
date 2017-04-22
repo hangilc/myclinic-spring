@@ -25,6 +25,7 @@
     <module>myclinic-util</module>
     <module>database</module>
     <module>server</module>
+    <module>rest-api</module>
   </modules>
 
 </project>

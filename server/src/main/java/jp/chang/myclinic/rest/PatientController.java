@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import jp.chang.myclinic.db.PatientDB;
+import jp.chang.myclinic.db.Patient;
 import jp.chang.myclinic.db.PatientRepository;
 
 @RestController
@@ -18,9 +18,9 @@ public class PatientController {
 	private PatientRepository patientRepository;
 
 	@RequestMapping("{patientId}")
-	public PatientDB getPatient(@PathVariable Integer patientId){
-		PatientDB patient = patientRepository.findOne(patientId);
-		return patient;
+	public PatientJS getPatient(@PathVariable Integer patientId){
+		Patient patient = patientRepository.findOne(patientId);
+		return JsonMapper.toPatientJS(patient);
 	}
 
 }
