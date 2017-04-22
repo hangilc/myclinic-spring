@@ -19,6 +19,13 @@ public class JsonMapper {
 		return patientJS;
 	}
 
+	public static WqueueJS toWqueueJS(Wqueue wqueue){
+		WqueueJS js = new WqueueJS();
+		js.visitId = wqueue.getVistiId();
+		js.waitState = wqueue.getWaitState().ordinal();
+		return js;
+	}
+
 	private static String nullableDateToString(Date date){
 		if( date == null ){
 			return null;
