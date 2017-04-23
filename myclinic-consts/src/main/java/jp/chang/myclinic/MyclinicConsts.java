@@ -10,6 +10,74 @@ public class MyclinicConsts {
 	public static int WqueueStateWaitReExam = 4;
 	public static int WqueueStateWaitAppoint = 5;
     
+	public static int PharmaQueueStateWaitPack = 0;
+	public static int PharmaQueueStateInPack   = 1;
+	public static int PharmaQueueStatePackDone = 2;
+
+	public static String DiseaseEndReasonNotEnded = "N";
+	public static String DiseaseEndReasonCured = "C";
+	public static String DiseaseEndReasonStopped = "S";
+	public static String DiseaseEndReasonDead = "D";
+
+	public static int DrugCategoryNaifuku = 0;
+	public static int DrugCategoryTonpuku = 1;
+	public static int DrugCategoryGaiyou  = 2;
+
+	public static int ConductKindHikaChuusha = 0;
+	public static int ConductKindJoumyakuChuusha = 1;
+	public static int ConductKindOtherChuusha = 2;
+	public static int ConductKindGazou = 3;
+
+	public static int ZaikeiNaifuku = 1;
+	public static int ZaikeiOther = 3;
+	public static int ZaikeiChuusha = 4;
+	public static int ZaikeiGaiyou = 6;
+	public static int ZaikeiShikaYakuzai = 8;
+	public static int ZaikeiShikaTokutei = 9;
+
+	public static int SmallestPostfixShuushokugoCode = 8000;
+	public static int LargestPostfixShuushookugoCode = 8999;
+
+	public static String[] MeisaiSections = new String[]{
+	        "初・再診料", "医学管理等", "在宅医療", "検査", "画像診断",
+	        "投薬", "注射", "処置", "その他"       
+	    };
+
+	public static String SHUUKEI_SHOSHIN = "110";
+	public static String SHUUKEI_SAISHIN_SAISHIN = "120";
+	public static String SHUUKEI_SAISHIN_GAIRAIKANRI = "122";
+	public static String SHUUKEI_SAISHIN_JIKANGAI = "123";
+	public static String SHUUKEI_SAISHIN_KYUUJITSU = "124";
+	public static String SHUUKEI_SAISHIN_SHINYA = "125";
+	public static String SHUUKEI_SHIDO = "130";
+	public static String SHUUKEI_ZAITAKU = "140";
+	public static String SHUUKEI_TOYAKU_NAIFUKUTONPUKUCHOZAI = "210";
+	public static String SHUUKEI_TOYAKU_GAIYOCHOZAI = "230";
+	public static String SHUUKEI_TOYAKU_SHOHO = "250";
+	public static String SHUUKEI_TOYAKU_MADOKU = "260";
+	public static String SHUUKEI_TOYAKU_CHOKI = "270";
+	public static String SHUUKEI_CHUSHA_SEIBUTSUETC = "300";
+	public static String SHUUKEI_CHUSHA_HIKA = "311";
+	public static String SHUUKEI_CHUSHA_JOMYAKU = "321";
+	public static String SHUUKEI_CHUSHA_OTHERS = "331";
+	public static String SHUUKEI_SHOCHI = "400";
+	public static String SHUUKEI_SHUJUTSU_SHUJUTSU = "500";
+	public static String SHUUKEI_SHUJUTSU_YUKETSU = "502";
+	public static String SHUUKEI_MASUI = "540";
+	public static String SHUUKEI_KENSA = "600";
+	public static String SHUUKEI_GAZOSHINDAN = "700";
+	public static String SHUUKEI_OTHERS = "800";
+
+	public static String HOUKATSU_NONE = "00";
+	public static String HOUKATSU_KETSUEKIKAGAKU = "01";
+	public static String HOUKATSU_ENDOCRINE = "02";
+	public static String HOUKATSU_HEPATITIS = "03";
+	public static String HOUKATSU_TUMOR = "04";
+	public static String HOUKATSU_TUMORMISC = "05";
+	public static String HOUKATSU_COAGULO = "06";
+	public static String HOUKATSU_AUTOANTIBODY = "07";
+	public static String HOUKATSU_TOLERANCE = "08";
+
 }
 
 /*
