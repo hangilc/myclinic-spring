@@ -125,6 +125,14 @@ public class DbGateway {
 		return roujin.getRoujinId();
 	}
 	
+	public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at){
+		Sort sort = new Sort(Sort.Direction.DESC, "roujinId");
+		Date atDate = Date.valueOf(at);
+		try(Stream<Roujin> stream = roujinRepository.findAvailable(patientId, atDate, sort)){
+			return stream.map(mapper::toRoujinDTO).collect(Collectors.toList());
+		}
+	}
+
 	public int enterKouhi(KouhiDTO kouhiDTO){
 		Kouhi kouhi = mapper.fromKouhiDTO(kouhiDTO);
 		kouhi.setKouhiId(0);

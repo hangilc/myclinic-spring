@@ -14,6 +14,8 @@ import jp.chang.myclinic.db.DbGateway;
 import jp.chang.myclinic.dto.*;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/json")
@@ -26,6 +28,12 @@ public class RoujinController {
 	@RequestMapping(value="/enter-roujin", method=RequestMethod.POST)
 	public int enterRoujin(@RequestBody RoujinDTO roujinDTO){
 		return dbGateway.enterRoujin(roujinDTO);
+	}
+
+	@RequestMapping(value="/find-available-roujin", method=RequestMethod.GET)
+	public List<RoujinDTO> findAvailableRoujin(@RequestParam("patient-id") int patientId, @RequestParam("at") String atString){
+		LocalDate at = LocalDate.parse(atString, DateTimeFormatter.ISO_LOCAL_DATE);
+		return dbGateway.findAvailableRoujin(patientId, at);
 	}
 
 }
