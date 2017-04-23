@@ -38,17 +38,17 @@ public class Wqueue {
 		this.waitState = waitState;
 	}
 
-	// @OneToOne
-	// @PrimaryKeyJoinColumn
-	// private Visit visit;
+	@OneToOne
+	@PrimaryKeyJoinColumn
+	private Visit visit;
 
-	// public Visit getVisit() {
-	// 	return visit;
-	// }
+	public Visit getVisit() {
+		return visit;
+	}
 
-	// public void setVisit(Visit visit) {
-	// 	this.visit = visit;
-	// }
+	public void setVisit(Visit visit) {
+		this.visit = visit;
+	}
 
 	@Override
 	public String toString(){

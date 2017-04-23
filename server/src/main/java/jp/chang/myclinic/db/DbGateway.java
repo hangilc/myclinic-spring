@@ -30,8 +30,17 @@ public class DbGateway {
 			.map(wqueue -> {
 				WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
 				wqueueFullDTO.wqueue = mapper.toWqueueDTO(wqueue);
+				wqueueFullDTO.visit = mapper.toVisitDTO(wqueue.getVisit());
+				wqueueFullDTO.patient = mapper.toPatientDTO(wqueue.getVisit().getPatient());
 				return wqueueFullDTO;
 			})
 			.collect(Collectors.toList());
+	}
+
+	public int enterPatient(PatientDTO patientDTO){
+		Patient patient = mapper.fromPatientDTO(patientDTO);
+		patient.setPatientId(0);
+		patient = patientRepository.save(patient);
+		return patient.getPatientId();
 	}
 }

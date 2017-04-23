@@ -15,7 +15,7 @@ import jp.chang.myclinic.dto.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/json")
 @Transactional
 public class WqueueController {
 
