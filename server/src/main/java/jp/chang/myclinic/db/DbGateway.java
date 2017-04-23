@@ -23,6 +23,8 @@ public class DbGateway {
 	private ShahokokuhoRepository shahokokuhoRepository;
 	@Autowired
 	private KoukikoureiRepository koukikoureiRepository;
+	@Autowired
+	private RoujinRepository roujinRepository;
 
 	public PatientDTO getPatient(int patientId){
 		Patient patient = patientRepository.findOne(patientId);
@@ -61,4 +63,12 @@ public class DbGateway {
 		koukikourei = koukikoureiRepository.save(koukikourei);
 		return koukikourei.getKoukikoureiId();
 	}
+	
+	public int enterRoujin(RoujinDTO roujinDTO){
+		Roujin roujin = mapper.fromRoujinDTO(roujinDTO);
+		roujin.setRoujinId(0);
+		roujin = roujinRepository.save(roujin);
+		return roujin.getRoujinId();
+	}
+	
 }
