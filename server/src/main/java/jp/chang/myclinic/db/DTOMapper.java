@@ -175,6 +175,22 @@ public class DTOMapper {
 		return charge;
 	}
 
+	public PaymentDTO toPaymentDTO(Payment payment){
+		PaymentDTO paymentDTO = new PaymentDTO();
+		paymentDTO.visitId = payment.getVisitId();
+		paymentDTO.amount = payment.getAmount();
+		paymentDTO.paytime = timestampToString(payment.getPaytime());
+		return paymentDTO;
+	}
+
+	public Payment fromPaymentDTO(PaymentDTO paymentDTO){
+		Payment payment = new Payment();
+		payment.setVisitId(paymentDTO.visitId);
+		payment.setAmount(paymentDTO.amount);
+		payment.setPaytime(stringToTimestamp(paymentDTO.paytime));
+		return payment;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;
@@ -197,5 +213,10 @@ public class DTOMapper {
 	private String timestampToString(Timestamp ts){
 		LocalDateTime dt = ts.toLocalDateTime();
 		return dt.format(dateTimeFormatter);
+	}
+
+	private Timestamp stringToTimestamp(String str){
+		LocalDateTime dt = LocalDateTime.parse(str, dateTimeFormatter);
+		return Timestamp.valueOf(dt);
 	}
 }
