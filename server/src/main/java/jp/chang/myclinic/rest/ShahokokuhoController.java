@@ -31,7 +31,7 @@ public class ShahokokuhoController {
 	}
 
 	@RequestMapping(value="/find-available-shahokokuho", method=RequestMethod.GET)
-	public List<ShahokokuhoDTO> enterShahokokuho(@RequestParam("patient-id") int patientId, @RequestParam("at") String atString){
+	public List<ShahokokuhoDTO> findAvailableShahokokuho(@RequestParam("patient-id") int patientId, @RequestParam("at") String atString){
 		LocalDate at = LocalDate.parse(atString, DateTimeFormatter.ISO_LOCAL_DATE);
 		return dbGateway.findAvailableShahokokuho(patientId, at);
 	}
