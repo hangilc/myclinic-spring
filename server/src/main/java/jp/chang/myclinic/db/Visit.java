@@ -144,38 +144,38 @@ public class Visit {
 		this.kouhi3Id = kouhi3Id;
 	}
 
-	@OneToMany(fetch=FetchType.LAZY, mappedBy="visit")
-	private List<Text> texts;
+	// @OneToMany(fetch=FetchType.LAZY, mappedBy="visit")
+	// private List<Text> texts;
 
-	public List<Text> getTexts(){
-		return texts;
-	}
+	// public List<Text> getTexts(){
+	// 	return texts;
+	// }
 
-	public void setTexts(List<Text> texts){
-		this.texts = texts;
-	}
+	// public void setTexts(List<Text> texts){
+	// 	this.texts = texts;
+	// }
 
-	@OneToMany(fetch=FetchType.LAZY, mappedBy="visit")
-	private List<Drug> drugs;
+	// @OneToMany(fetch=FetchType.LAZY, mappedBy="visit")
+	// private List<Drug> drugs;
 
-	public List<Drug> getDrugs(){
-		return drugs;
-	}
+	// public List<Drug> getDrugs(){
+	// 	return drugs;
+	// }
 
-	public void setDrugs(List<Drug> drugs){
-		this.drugs = drugs;
-	}
+	// public void setDrugs(List<Drug> drugs){
+	// 	this.drugs = drugs;
+	// }
 
-	@OneToMany(fetch=FetchType.LAZY, mappedBy="visit")
-	private List<Shinryou> shinryouList;
+	// @OneToMany(fetch=FetchType.LAZY, mappedBy="visit")
+	// private List<Shinryou> shinryouList;
 
-	public List<Shinryou> getShinryouList(){
-		return shinryouList;
-	}
+	// public List<Shinryou> getShinryouList(){
+	// 	return shinryouList;
+	// }
 
-	public void setShinryouList(List<Shinryou> shinryouList){
-		this.shinryouList = shinryouList;
-	}
+	// public void setShinryouList(List<Shinryou> shinryouList){
+	// 	this.shinryouList = shinryouList;
+	// }
 
 	@Override
 	public String toString(){

@@ -1,10 +1,11 @@
 package jp.chang.myclinic.db;
 
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 
 import java.sql.Date;
-import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface RoujinRepository extends CrudRepository<Roujin, Integer> {
 
@@ -12,6 +13,6 @@ public interface RoujinRepository extends CrudRepository<Roujin, Integer> {
             " h.validFrom <= ?2 and " +
             " (h.validUpto = '0000-00-00' or h.validUpto >= ?2) "
     )
-    Optional<Roujin> findAvailable(int patientId, Date at);
+    Stream<Roujin> findAvailable(int patientId, Date at, Sort sort);
 
 }

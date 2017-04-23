@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.math.BigDecimal;
 
 @Entity
+@IdClass(PaymentId.class)
 @Table(name="visit_payment")
 public class Payment {
 
@@ -47,6 +49,7 @@ public class Payment {
 		this.amount = amount;
 	}
 	
+	@Id
 	private Timestamp paytime;
 
 	public Timestamp getPaytime(){

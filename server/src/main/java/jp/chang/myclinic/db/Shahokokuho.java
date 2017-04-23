@@ -35,7 +35,7 @@ public class Shahokokuho {
 	private Date validFrom;
 
 	@Column(name="valid_upto")
-	private Date validUpto;
+	private String validUpto;
 
 	public Integer getShahokokuhoId(){
 		return shahokokuhoId;
@@ -101,11 +101,11 @@ public class Shahokokuho {
 		this.validFrom = validFrom;
 	}
 
-	public Date getValidUpto(){
+	public String getValidUpto(){
 		return validUpto;
 	}
 
-	public void setValidUpto(Date validUpto){
+	public void setValidUpto(String validUpto){
 		this.validUpto = validUpto;
 	}
 
