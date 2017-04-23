@@ -34,4 +34,24 @@ public class PatientController {
 		return dbGateway.enterPatient(patient);
 	}
 
+	@RequestMapping(value="/search-patient-by-last-name", method=RequestMethod.GET)
+	public List<PatientDTO> searchPatientByLastName(@RequestParam("text") String text){
+		return dbGateway.searchPatientByLastName(text);
+	}
+
+	@RequestMapping(value="/search-patient-by-first-name", method=RequestMethod.GET)
+	public List<PatientDTO> searchPatientByFirstName(@RequestParam("text") String text){
+		return dbGateway.searchPatientByFirstName(text);
+	}
+
+	@RequestMapping(value="/search-patient-by-last-name-yomi", method=RequestMethod.GET)
+	public List<PatientDTO> searchPatientByLastNameYomi(@RequestParam("text") String text){
+		return dbGateway.searchPatientByLastNameYomi(text);
+	}
+
+	@RequestMapping(value="/search-patient-by-first-name-yomi", method=RequestMethod.GET)
+	public List<PatientDTO> searchPatientByFirstNameYomi(@RequestParam("text") String text){
+		return dbGateway.searchPatientByFirstNameYomi(text);
+	}
+
 }
