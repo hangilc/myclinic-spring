@@ -91,6 +91,30 @@ public class DTOMapper {
 		return shahokokuho;
 	}
 
+	public KoukikoureiDTO toKoukikoureiDTO(Koukikourei koukikourei){
+		KoukikoureiDTO koukikoureiDTO = new KoukikoureiDTO();
+		koukikoureiDTO.koukikoureiId = koukikourei.getKoukikoureiId();
+		koukikoureiDTO.patientId = koukikourei.getPatientId();
+		koukikoureiDTO.hokenshaBangou = koukikourei.getHokenshaBangou();
+		koukikoureiDTO.hihokenshaBangou = koukikourei.getHihokenshaBangou();
+		koukikoureiDTO.futanWari = koukikourei.getFutanWari();
+		koukikoureiDTO.validFrom = koukikourei.getValidFrom().toString();
+		koukikoureiDTO.validUpto = koukikourei.getValidUpto();
+		return koukikoureiDTO;
+	}
+
+	public Koukikourei fromKoukikoureiDTO(KoukikoureiDTO koukikoureiDTO){
+		Koukikourei koukikourei = new Koukikourei();
+		koukikourei.setKoukikoureiId(koukikoureiDTO.koukikoureiId);
+		koukikourei.setPatientId(koukikoureiDTO.patientId);
+		koukikourei.setHokenshaBangou(koukikoureiDTO.hokenshaBangou);
+		koukikourei.setHihokenshaBangou(koukikoureiDTO.hihokenshaBangou);
+		koukikourei.setFutanWari(koukikoureiDTO.futanWari);
+		koukikourei.setValidFrom(stringToDate(koukikoureiDTO.validFrom));
+		koukikourei.setValidUpto(koukikoureiDTO.validUpto);
+		return koukikourei;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;

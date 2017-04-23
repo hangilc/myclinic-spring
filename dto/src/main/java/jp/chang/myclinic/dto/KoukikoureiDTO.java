@@ -1,6 +1,6 @@
 package jp.chang.myclinic.dto;
 
-public class Koukikourei {
+public class KoukikoureiDTO {
 	public int koukikoureiId;
 	public int patientId;
 	public String hokenshaBangou;

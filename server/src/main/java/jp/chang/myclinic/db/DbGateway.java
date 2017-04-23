@@ -21,6 +21,8 @@ public class DbGateway {
 	private WqueueRepository wqueueRepository;
 	@Autowired
 	private ShahokokuhoRepository shahokokuhoRepository;
+	@Autowired
+	private KoukikoureiRepository koukikoureiRepository;
 
 	public PatientDTO getPatient(int patientId){
 		Patient patient = patientRepository.findOne(patientId);
@@ -51,5 +53,12 @@ public class DbGateway {
 		shahokokuho.setShahokokuhoId(0);
 		shahokokuho = shahokokuhoRepository.save(shahokokuho);
 		return shahokokuho.getShahokokuhoId();
+	}
+
+	public int enterKoukikourei(KoukikoureiDTO koukikoureiDTO){
+		Koukikourei koukikourei = mapper.fromKoukikoureiDTO(koukikoureiDTO);
+		koukikourei.setKoukikoureiId(0);
+		koukikourei = koukikoureiRepository.save(koukikourei);
+		return koukikourei.getKoukikoureiId();
 	}
 }
