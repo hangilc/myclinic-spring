@@ -19,6 +19,8 @@ public class DbGateway {
 	private PatientRepository patientRepository;
 	@Autowired
 	private WqueueRepository wqueueRepository;
+	@Autowired
+	private ShahokokuhoRepository shahokokuhoRepository;
 
 	public PatientDTO getPatient(int patientId){
 		Patient patient = patientRepository.findOne(patientId);
@@ -42,5 +44,12 @@ public class DbGateway {
 		patient.setPatientId(0);
 		patient = patientRepository.save(patient);
 		return patient.getPatientId();
+	}
+
+	public int enterShahokokuho(ShahokokuhoDTO shahokokuhoDTO){
+		Shahokokuho shahokokuho = mapper.fromShahokokuhoDTO(shahokokuhoDTO);
+		shahokokuho.setShahokokuhoId(0);
+		shahokokuho = shahokokuhoRepository.save(shahokokuho);
+		return shahokokuho.getShahokokuhoId();
 	}
 }

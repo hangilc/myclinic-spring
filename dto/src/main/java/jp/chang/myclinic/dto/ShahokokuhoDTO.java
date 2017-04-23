@@ -1,6 +1,6 @@
 package jp.chang.myclinic.dto;
 
-public class Shahokokuho {
+public class ShahokokuhoDTO {
 	public int shahokokuhoId;
 	public int patientId;
 	public int hokenshaBangou;

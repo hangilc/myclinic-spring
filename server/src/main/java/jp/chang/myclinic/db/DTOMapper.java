@@ -63,6 +63,34 @@ public class DTOMapper {
 		return visitDTO;
 	}
 
+	public ShahokokuhoDTO toShahokokuhoDTO(Shahokokuho shahokokuho){
+		ShahokokuhoDTO shahokokuhoDTO = new ShahokokuhoDTO();
+		shahokokuhoDTO.shahokokuhoId = shahokokuho.getShahokokuhoId();
+		shahokokuhoDTO.patientId = shahokokuho.getPatientId();
+		shahokokuhoDTO.hokenshaBangou = shahokokuho.getHokenshaBangou();
+		shahokokuhoDTO.hihokenshaBangou = shahokokuho.getHihokenshaBangou();
+		shahokokuhoDTO.hihokenshaKigou= shahokokuho.getHihokenshaKigou();
+		shahokokuhoDTO.honnin = shahokokuho.getHonnin();
+		shahokokuhoDTO.kourei = shahokokuho.getKourei();
+		shahokokuhoDTO.validFrom = shahokokuho.getValidFrom().toString();
+		shahokokuhoDTO.validUpto = shahokokuho.getValidUpto();
+		return shahokokuhoDTO;
+	}
+
+	public Shahokokuho fromShahokokuhoDTO(ShahokokuhoDTO shahokokuhoDTO){
+		Shahokokuho shahokokuho = new Shahokokuho();
+		shahokokuho.setShahokokuhoId(shahokokuhoDTO.shahokokuhoId);
+		shahokokuho.setPatientId(shahokokuhoDTO.patientId);
+		shahokokuho.setHokenshaBangou(shahokokuhoDTO.hokenshaBangou);
+		shahokokuho.setHihokenshaBangou(shahokokuhoDTO.hihokenshaBangou);
+		shahokokuho.setHihokenshaKigou(shahokokuhoDTO.hihokenshaKigou);
+		shahokokuho.setHonnin(shahokokuhoDTO.honnin);
+		shahokokuho.setKourei(shahokokuhoDTO.kourei);
+		shahokokuho.setValidFrom(stringToDate(shahokokuhoDTO.validFrom));
+		shahokokuho.setValidUpto(shahokokuhoDTO.validUpto);
+		return shahokokuho;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;
