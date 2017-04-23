@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.time.LocalDate;
+import java.sql.Date;
 
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
@@ -91,6 +93,14 @@ public class DbGateway {
 		shahokokuho.setShahokokuhoId(0);
 		shahokokuho = shahokokuhoRepository.save(shahokokuho);
 		return shahokokuho.getShahokokuhoId();
+	}
+
+	public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at){
+		Sort sort = new Sort(Sort.Direction.DESC, "shahokokuhoId");
+		Date atDate = Date.valueOf(at);
+		try(Stream<Shahokokuho> stream = shahokokuhoRepository.findAvailable(patientId, atDate, sort)){
+			return stream.map(mapper::toShahokokuhoDTO).collect(Collectors.toList());
+		}
 	}
 
 	public int enterKoukikourei(KoukikoureiDTO koukikoureiDTO){
