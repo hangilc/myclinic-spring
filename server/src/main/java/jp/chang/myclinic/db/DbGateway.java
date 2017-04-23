@@ -25,6 +25,8 @@ public class DbGateway {
 	private KoukikoureiRepository koukikoureiRepository;
 	@Autowired
 	private RoujinRepository roujinRepository;
+	@Autowired
+	private KouhiRepository kouhiRepository;
 
 	public PatientDTO getPatient(int patientId){
 		Patient patient = patientRepository.findOne(patientId);
@@ -69,6 +71,13 @@ public class DbGateway {
 		roujin.setRoujinId(0);
 		roujin = roujinRepository.save(roujin);
 		return roujin.getRoujinId();
+	}
+	
+	public int enterKouhi(KouhiDTO kouhiDTO){
+		Kouhi kouhi = mapper.fromKouhiDTO(kouhiDTO);
+		kouhi.setKouhiId(0);
+		kouhi = kouhiRepository.save(kouhi);
+		return kouhi.getKouhiId();
 	}
 	
 }

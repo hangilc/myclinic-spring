@@ -139,6 +139,28 @@ public class DTOMapper {
 		return roujin;
 	}
 
+	public KouhiDTO toKouhiDTO(Kouhi kouhi){
+		KouhiDTO kouhiDTO = new KouhiDTO();
+		kouhiDTO.kouhiId = kouhi.getKouhiId();
+		kouhiDTO.patientId = kouhi.getPatientId();
+		kouhiDTO.futansha = kouhi.getFutansha();
+		kouhiDTO.jukyuusha = kouhi.getJukyuusha();
+		kouhiDTO.validFrom = kouhi.getValidFrom().toString();
+		kouhiDTO.validUpto = kouhi.getValidUpto();
+		return kouhiDTO;
+	}
+
+	public Kouhi fromKouhiDTO(KouhiDTO kouhiDTO){
+		Kouhi kouhi = new Kouhi();
+		kouhi.setKouhiId(kouhiDTO.kouhiId);
+		kouhi.setPatientId(kouhiDTO.patientId);
+		kouhi.setFutansha(kouhiDTO.futansha);
+		kouhi.setJukyuusha(kouhiDTO.jukyuusha);
+		kouhi.setValidFrom(stringToDate(kouhiDTO.validFrom));
+		kouhi.setValidUpto(kouhiDTO.validUpto);
+		return kouhi;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;
