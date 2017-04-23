@@ -161,6 +161,20 @@ public class DTOMapper {
 		return kouhi;
 	}
 
+	public ChargeDTO toChargeDTO(Charge charge){
+		ChargeDTO chargeDTO = new ChargeDTO();
+		chargeDTO.visitId = charge.getVisitId();
+		chargeDTO.charge = charge.getCharge();
+		return chargeDTO;
+	}
+
+	public Charge fromChargeDTO(ChargeDTO chargeDTO){
+		Charge charge = new Charge();
+		charge.setVisitId(chargeDTO.visitId);
+		charge.setCharge(chargeDTO.charge);
+		return charge;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;

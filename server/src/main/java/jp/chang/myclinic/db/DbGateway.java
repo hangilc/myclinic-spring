@@ -27,6 +27,8 @@ public class DbGateway {
 	private RoujinRepository roujinRepository;
 	@Autowired
 	private KouhiRepository kouhiRepository;
+	@Autowired
+	private ChargeRepository chargeRepository;
 
 	public PatientDTO getPatient(int patientId){
 		Patient patient = patientRepository.findOne(patientId);
@@ -80,4 +82,9 @@ public class DbGateway {
 		return kouhi.getKouhiId();
 	}
 	
+	public void enterCharge(ChargeDTO chargeDTO){
+		Charge charge = mapper.fromChargeDTO(chargeDTO);
+		charge = chargeRepository.save(charge);
+	}
+
 }
