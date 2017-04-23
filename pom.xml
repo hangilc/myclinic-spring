@@ -26,6 +26,7 @@
     <module>database</module>
     <module>server</module>
     <module>rest-api</module>
+    <module>dto</module>
   </modules>
 
 </project>

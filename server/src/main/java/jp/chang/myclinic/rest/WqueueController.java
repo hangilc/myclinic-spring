@@ -13,19 +13,18 @@ import jp.chang.myclinic.db.DbGateway;
 import jp.chang.myclinic.dto.*;
 
 import java.util.List;
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/")
 @Transactional
-public class PatientController {
+public class WqueueController {
 
 	@Autowired
 	private DbGateway dbGateway;
 
-	@RequestMapping(value="/get-patient", method=RequestMethod.GET)
-	public PatientDTO getPatient(@RequestParam("patient-id") int patientId){
-		return dbGateway.getPatient(patientId);
+	@RequestMapping(value="/list-full-wqueue", method=RequestMethod.GET)
+	public List<WqueueFullDTO> listWqueueFull(){
+		return dbGateway.listWqueueFull();
 	}
 
 }

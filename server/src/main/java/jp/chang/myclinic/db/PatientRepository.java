@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface PatientRepository extends CrudRepository<Patient, Integer> {
+interface PatientRepository extends CrudRepository<Patient, Integer> {
 
     @Query("select p from Patient p where p.lastName like CONCAT('%', ?1, '%') " +
             " or p.firstName like CONCAT('%', ?1, '%') " +

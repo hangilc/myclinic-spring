@@ -31,7 +31,7 @@
     </dependency>
     <dependency>
       <groupId>jp.chang.myclinic</groupId>
-      <artifactId>rest-api</artifactId>
+      <artifactId>dto</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>

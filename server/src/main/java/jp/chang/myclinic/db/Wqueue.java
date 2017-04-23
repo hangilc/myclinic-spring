@@ -28,32 +28,31 @@ public class Wqueue {
 	}
 
 	@Column(name="wait_state")
-	@Enumerated(EnumType.ORDINAL)
-	private WqueueState waitState;
+	private Integer waitState;
 
-	public WqueueState getWaitState(){
+	public Integer getWaitState(){
 		return waitState;
 	}
 
-	public void setWaitState(WqueueState waitState){
+	public void setWaitState(Integer waitState){
 		this.waitState = waitState;
 	}
 
-	@OneToOne
-	@PrimaryKeyJoinColumn
-	private Visit visit;
+	// @OneToOne
+	// @PrimaryKeyJoinColumn
+	// private Visit visit;
 
-	public Visit getVisit() {
-		return visit;
-	}
+	// public Visit getVisit() {
+	// 	return visit;
+	// }
 
-	public void setVisit(Visit visit) {
-		this.visit = visit;
-	}
+	// public void setVisit(Visit visit) {
+	// 	this.visit = visit;
+	// }
 
 	@Override
 	public String toString(){
-		return "Charge[" +
+		return "Wqueue[" +
 			"visitId=" + visitId + ", " +
 			"waitState=" + waitState +
 		"]";
