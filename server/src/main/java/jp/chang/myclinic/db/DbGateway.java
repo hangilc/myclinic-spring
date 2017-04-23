@@ -140,6 +140,14 @@ public class DbGateway {
 		return kouhi.getKouhiId();
 	}
 	
+	public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at){
+		Sort sort = new Sort(Sort.Direction.ASC, "kouhiId");
+		Date atDate = Date.valueOf(at);
+		try(Stream<Kouhi> stream = kouhiRepository.findAvailable(patientId, atDate, sort)){
+			return stream.map(mapper::toKouhiDTO).collect(Collectors.toList());
+		}
+	}
+
 	public void enterCharge(ChargeDTO chargeDTO){
 		Charge charge = mapper.fromChargeDTO(chargeDTO);
 		charge = chargeRepository.save(charge);

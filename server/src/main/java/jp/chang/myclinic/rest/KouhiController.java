@@ -14,6 +14,8 @@ import jp.chang.myclinic.db.DbGateway;
 import jp.chang.myclinic.dto.*;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/json")
@@ -26,6 +28,12 @@ public class KouhiController {
 	@RequestMapping(value="/enter-kouhi", method=RequestMethod.POST)
 	public int enterKouhi(@RequestBody KouhiDTO kouhiDTO){
 		return dbGateway.enterKouhi(kouhiDTO);
+	}
+
+	@RequestMapping(value="/find-available-kouhi", method=RequestMethod.GET)
+	public List<KouhiDTO> findAvailableKouhi(@RequestParam("patient-id") int patientId, @RequestParam("at") String atString){
+		LocalDate at = LocalDate.parse(atString, DateTimeFormatter.ISO_LOCAL_DATE);
+		return dbGateway.findAvailableKouhi(patientId, at);
 	}
 
 }
