@@ -49,6 +49,13 @@ public class DTOMapper {
 		return wqueueDTO;
 	}
 
+	public Wqueue fromWqueueDTO(WqueueDTO wqueueDTO){
+		Wqueue wqueue = new Wqueue();
+		wqueue.setVisitId(wqueueDTO.visitId);
+		wqueue.setWaitState(wqueueDTO.waitState);
+		return wqueue;
+	}
+
 	public VisitDTO toVisitDTO(Visit visit){
 		VisitDTO visitDTO = new VisitDTO();
 		visitDTO.visitId = visit.getVisitId();
@@ -61,6 +68,20 @@ public class DTOMapper {
 		visitDTO.kouhi2Id = visit.getKouhi2Id();
 		visitDTO.kouhi3Id = visit.getKouhi3Id();
 		return visitDTO;
+	}
+
+	public Visit fromVisitDTO(VisitDTO visitDTO){
+		Visit visit = new Visit();
+		visit.setVisitId(visitDTO.visitId);
+		visit.setPatientId(visitDTO.patientId);
+		visit.setVisitedAt(stringToTimestamp(visitDTO.visitedAt));
+		visit.setShahokokuhoId(visitDTO.shahokokuhoId);
+		visit.setKoukikoureiId(visitDTO.koukikoureiId);
+		visit.setRoujinId(visitDTO.roujinId);
+		visit.setKouhi1Id(visitDTO.kouhi1Id);
+		visit.setKouhi2Id(visitDTO.kouhi2Id);
+		visit.setKouhi3Id(visitDTO.kouhi3Id);
+		return visit;
 	}
 
 	public ShahokokuhoDTO toShahokokuhoDTO(Shahokokuho shahokokuho){

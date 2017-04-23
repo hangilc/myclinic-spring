@@ -27,6 +27,7 @@
     <module>server</module>
     <module>rest-api</module>
     <module>dto</module>
+    <module>myclinic-consts</module>
   </modules>
 
 </project>

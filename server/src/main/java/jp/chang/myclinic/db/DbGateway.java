@@ -34,6 +34,8 @@ public class DbGateway {
 	private ChargeRepository chargeRepository;
 	@Autowired
 	private PaymentRepository paymentRepository;
+	@Autowired
+	private VisitRepository visitRepository;
 
 	public PatientDTO getPatient(int patientId){
 		Patient patient = patientRepository.findOne(patientId);
@@ -51,6 +53,11 @@ public class DbGateway {
 			})
 			.collect(Collectors.toList());
 		}
+	}
+
+	public void enterWqueue(WqueueDTO wqueueDTO){
+		Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
+		wqueueRepository.save(wqueue);
 	}
 
 	public int enterPatient(PatientDTO patientDTO){
@@ -156,6 +163,13 @@ public class DbGateway {
 	public void enterPayment(PaymentDTO paymentDTO){
 		Payment payment = mapper.fromPaymentDTO(paymentDTO);
 		payment = paymentRepository.save(payment);
+	}
+
+	public int enterVisit(VisitDTO visitDTO){
+		Visit visit = mapper.fromVisitDTO(visitDTO);
+		visit.setVisitId(0);
+		visit = visitRepository.save(visit);
+		return visit.getVisitId();
 	}
 
 }
