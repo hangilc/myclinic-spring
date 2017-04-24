@@ -18,6 +18,7 @@ class SearchPaymentDialog extends JDialog {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 		{
 			JButton recentPaymentsButton = new JButton("最近の会計");
+			recentPaymentsButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 			panel.add(recentPaymentsButton);
 		}
 		panel.add(Box.createVerticalStrut(5));
@@ -31,8 +32,10 @@ class SearchPaymentDialog extends JDialog {
 			box.add(Box.createHorizontalStrut(5));
 			JButton searchButton = new JButton("検索");
 			box.add(searchButton);
+			box.setAlignmentX(Component.LEFT_ALIGNMENT);
+			panel.add(box);
 		}
-		add(panel, BorderLayout.SOUTH);
+		add(panel, BorderLayout.CENTER);
 	}
 
 	private void setupSouth(){

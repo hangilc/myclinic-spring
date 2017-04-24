@@ -94,6 +94,11 @@ class MainFrame extends JFrame {
 		{
 			JButton updateButton = new JButton("更新");
 			JButton cashierButton = new JButton("会計");
+			cashierButton.addActionListener(event -> {
+				CashierDialog dialog = new CashierDialog(this);
+				dialog.setLocationByPlatform(true);
+				dialog.setVisible(true);
+			});
 			JButton unselectButton = new JButton("選択解除");
 			JButton deleteButton = new JButton("削除");
 
