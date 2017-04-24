@@ -16,10 +16,11 @@ import java.util.ArrayList;
 import jp.chang.myclinic.dto.*;
 
 class Service {
+	public static String serverUrl;
 
 	static public List<WqueueFullDTO> listWqueue() throws IOException {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpGet httpGet = new HttpGet("http://localhost:8080/json/list-wqueue-full");
+		HttpGet httpGet = new HttpGet(serverUrl + "list-wqueue-full");
 		CloseableHttpResponse response = httpClient.execute(httpGet);
 		try {
 			System.out.println(response.getStatusLine());

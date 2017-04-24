@@ -7,7 +7,18 @@ import java.io.IOException;
 public class AppReception 
 {
     public static void main( String[] args ) throws IOException {
-        System.out.println(Service.listWqueue());
+    	if( args.length == 0 ){
+    		System.out.println("Usage: server-url");
+    		System.exit(1);
+    	}
+    	{
+    		String serverUrl = args[0];
+    		if( !serverUrl.endsWith("/") ){
+    			serverUrl = serverUrl + "/";
+    		}
+	    	Service.serverUrl = serverUrl;
+    	}
+    	System.out.println(Service.listWqueue());
         EventQueue.invokeLater(() -> {
         	try{
 	        	UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
