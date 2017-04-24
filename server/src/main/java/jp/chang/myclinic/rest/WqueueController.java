@@ -22,7 +22,7 @@ public class WqueueController {
 	@Autowired
 	private DbGateway dbGateway;
 
-	@RequestMapping(value="/list-full-wqueue", method=RequestMethod.GET)
+	@RequestMapping(value="/list-wqueue-full", method=RequestMethod.GET)
 	public List<WqueueFullDTO> listWqueueFull(){
 		return dbGateway.listWqueueFull();
 	}
