@@ -35,6 +35,17 @@ class SearchPaymentDialog extends JDialog {
 			box.setAlignmentX(Component.LEFT_ALIGNMENT);
 			panel.add(box);
 		}
+		panel.add(Box.createVerticalStrut(5));
+		{
+			JList list = new JList();
+			list.setPreferredSize(new Dimension(400, 400));
+			panel.add(list);
+		}
+		panel.add(Box.createVerticalStrut(5));
+		{
+			JButton reprintReceiptButton = new JButton("領収書再発行");
+			panel.add(reprintReceiptButton);
+		}
 		add(panel, BorderLayout.CENTER);
 	}
 
