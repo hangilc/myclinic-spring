@@ -18,7 +18,7 @@ public class AppReception
     		}
 	    	Service.serverUrl = serverUrl;
     	}
-    	System.out.println(Service.listWqueue());
+    	System.out.println(Service.getPatient(199).lastName);
         EventQueue.invokeLater(() -> {
         	try{
 	        	UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
