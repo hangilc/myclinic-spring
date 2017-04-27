@@ -7,7 +7,6 @@ import java.io.IOException;
 public class AppReception 
 {
     public static void main( String[] args ) throws IOException {
-        System.out.println(Service.listWqueue());
         EventQueue.invokeLater(() -> {
         	try{
 	        	UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");

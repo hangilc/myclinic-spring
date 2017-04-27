@@ -4,6 +4,12 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import jp.chang.myclinic.MyclinicConsts.WqueueState;
+import jp.chang.myclinic.dto.*;
+import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.io.IOException;
+
 
 class MainFrame extends JFrame {
 
@@ -93,6 +99,7 @@ class MainFrame extends JFrame {
 		lowerBox.setLayout(new BoxLayout(lowerBox, BoxLayout.LINE_AXIS));
 		{
 			JButton updateButton = new JButton("更新");
+			updateButton.addActionListener(event -> doUpdate());
 			JButton cashierButton = new JButton("会計");
 			cashierButton.addActionListener(event -> {
 				CashierDialog dialog = new CashierDialog(this);
@@ -133,6 +140,19 @@ class MainFrame extends JFrame {
 			newPatientDialog.setLocationByPlatform(true);
 		}
 		newPatientDialog.setVisible(true);
+	}
+
+	private void doUpdate(){
+		try{
+			List<WqueueFullDTO> list = Service.listWqueue();
+			List<WqueueData> dataList = list.stream()
+				.map(wq -> {
+					return new WqueueData(wq.wqueue.waitState, "LABEL");
+				})
+				.collect(Collectors.toList());
+		} catch(IOException ex){
+			JOptionPane.showMessageDialog(this, ex.toString());
+		}
 	}
 
 }
