@@ -1,4 +1,4 @@
-package jp.chang.myclinic;
+package jp.chang.myclinic.consts;
 
 
 public class MyclinicConsts {

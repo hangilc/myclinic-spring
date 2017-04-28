@@ -1,18 +1,18 @@
 package jp.chang.myclinic;
 
-import jp.chang.myclinic.MyclinicConsts.WqueueState;
+import jp.chang.myclinic.consts.WqueueWaitState;
 
 class WqueueData {
 
-	private final WqueueState state;
+	private final WqueueWaitState state;
 	private final String label;
 
-	public WqueueData(WqueueState state, String label){
+	public WqueueData(WqueueWaitState state, String label){
 		this.state = state;
 		this.label = label;
 	}
 
-	public WqueueState getState(){
+	public WqueueWaitState getState(){
 		return state;
 	}
 

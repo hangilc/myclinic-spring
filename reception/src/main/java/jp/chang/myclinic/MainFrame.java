@@ -3,7 +3,7 @@ package jp.chang.myclinic;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import jp.chang.myclinic.MyclinicConsts.WqueueState;
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import java.util.List;
 import java.util.stream.Stream;
@@ -14,6 +14,7 @@ import java.io.IOException;
 class MainFrame extends JFrame {
 
 	private NewPatientDialog newPatientDialog;
+	private WqueueList wqueueList;
 
 	MainFrame(){
 		setTitle("受付");
@@ -79,15 +80,11 @@ class MainFrame extends JFrame {
 	}
 
 	private void setupCenter(){
-		WqueueList wqList = new WqueueList();
-		wqList.setPreferredSize(new Dimension(500, 300));
-		wqList.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-		add(wqList, BorderLayout.CENTER);
-		WqueueData[] list = new WqueueData[]{
-			new WqueueData(WqueueState.WaitExam, "WAITING EXAM PATIENT"),
-			new WqueueData(WqueueState.WaitCashier, "WAITING CASHIER PATIENT")
-		};
-		wqList.setListData(list);
+		wqueueList = new WqueueList();
+		wqueueList.setPreferredSize(new Dimension(500, 300));
+		wqueueList.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+		add(wqueueList, BorderLayout.CENTER);
+		wqueueList.setListData(new WqueueData[]{});
 	}
 
 	private void setupSouth(){
@@ -145,11 +142,12 @@ class MainFrame extends JFrame {
 	private void doUpdate(){
 		try{
 			List<WqueueFullDTO> list = Service.listWqueue();
-			List<WqueueData> dataList = list.stream()
+			WqueueData[] dataList = list.stream()
 				.map(wq -> {
-					return new WqueueData(wq.wqueue.waitState, "LABEL");
+					return new WqueueData(WqueueWaitState.fromCode(wq.wqueue.waitState), "LABEL");
 				})
-				.collect(Collectors.toList());
+				.toArray(size -> new WqueueData[size]);
+			wqueueList.setListData(dataList);
 		} catch(IOException ex){
 			JOptionPane.showMessageDialog(this, ex.toString());
 		}
