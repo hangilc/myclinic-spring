@@ -1,9 +1,18 @@
 package jp.chang.myclinic;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import javax.swing.*;
+import jp.chang.myclinic.dto.*;
+import java.util.List;
+import java.io.IOException;
 
 class SearchPatientDialog extends JDialog {
+
+	private JTextField lastNameTextField = new JTextField(6);
+	private JTextField firstNameTextField = new JTextField(6);
+	private JTextField lastNameYomiTextField = new JTextField(6);
+	private JTextField firstNameYomiTextField = new JTextField(6);
 
 	SearchPatientDialog(JFrame owner){
 		super(owner, "患者検索", true);
@@ -32,13 +41,12 @@ class SearchPatientDialog extends JDialog {
 		{
 			JPanel box = new JPanel();
 			box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
-			JTextField lastNameTextField = new JTextField(6);
 			box.add(lastNameTextField);
 			box.add(Box.createHorizontalStrut(5));
-			JTextField firstNameTextField = new JTextField(6);
 			box.add(firstNameTextField);
 			box.add(Box.createHorizontalStrut(5));
 			JButton searchByNameButton = new JButton("検索");
+			searchByNameButton.addActionListener(this::onSearchByName);
 			box.add(searchByNameButton);
 			box.add(Box.createHorizontalGlue());
 			panel.add(box, c);
@@ -50,10 +58,8 @@ class SearchPatientDialog extends JDialog {
 		{
 			JPanel box = new JPanel();
 			box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
-			JTextField lastNameYomiTextField = new JTextField(6);
 			box.add(lastNameYomiTextField);
 			box.add(Box.createHorizontalStrut(5));
-			JTextField firstNameYomiTextField = new JTextField(6);
 			box.add(firstNameYomiTextField);
 			box.add(Box.createHorizontalStrut(5));
 			JButton searchByYomiButton = new JButton("検索");
@@ -92,11 +98,24 @@ class SearchPatientDialog extends JDialog {
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		panel.add(Box.createHorizontalGlue());
 		JButton closeButton = new JButton("閉じる");
+		closeButton.addActionListener(event -> dispose());
 		panel.add(closeButton);
 		panel.add(Box.createHorizontalStrut(5));
 		JButton registerButton = new JButton("診療受付");
 		panel.add(registerButton);
 		add(panel, BorderLayout.SOUTH);
+	}
+
+	private void onSearchByName(ActionEvent event){
+		String lastName = lastNameTextField.getText();
+		String firstName = firstNameTextField.getText();
+		try{
+			List<PatientDTO> result = Service.searchPatientByName(lastName, firstName);
+			System.out.println(result);
+		} catch(IOException ex){
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(this, "サーバーからデータを取得できませんでした。");
+		}
 	}
 
 }

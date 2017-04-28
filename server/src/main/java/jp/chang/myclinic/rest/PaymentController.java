@@ -14,6 +14,7 @@ import jp.chang.myclinic.db.DbGateway;
 import jp.chang.myclinic.dto.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/json")

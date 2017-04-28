@@ -4,6 +4,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.HttpEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,15 +14,18 @@ import java.io.UncheckedIOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.ArrayList;
 import jp.chang.myclinic.dto.*;
 
 class Service {
 	public static String serverUrl;
+	private static CloseableHttpClient httpClient = HttpClients.createDefault();
 
 	static public List<WqueueFullDTO> listWqueue() throws IOException {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
+		//CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(serverUrl + "list-wqueue-full");
 		CloseableHttpResponse response = httpClient.execute(httpGet);
 		try {
@@ -42,7 +46,7 @@ class Service {
 	}
 
 	static public PatientDTO getPatient(int patientId) throws IOException {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
+		//CloseableHttpClient httpClient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(serverUrl + "get-patient?patient-id=" + patientId);
 		CloseableHttpResponse response = httpClient.execute(httpGet);
 		try {
@@ -59,6 +63,35 @@ class Service {
 			throw new UncheckedIOException(ex);
 		} finally {
 			response.close();
+		}
+	}
+
+	static public List<PatientDTO> searchPatientByName(String lastName, String firstName)
+		throws IOException {
+		URI uri = null;
+		try{
+			uri = new URIBuilder(serverUrl + "search-patient-by-name")
+				.addParameter("last-name", lastName)
+				.addParameter("first-name", firstName)
+				.build();
+		} catch(URISyntaxException ex){
+			ex.printStackTrace();
+			throw new RuntimeException("URI error");
+		}
+		HttpGet httpGet = new HttpGet(uri);
+		System.out.println(httpGet);
+		try(CloseableHttpResponse response = httpClient.execute(httpGet)){
+			HttpEntity entity = response.getEntity();
+			String content = readEntity(entity);
+			EntityUtils.consume(entity);
+			System.out.println(content);
+			return null;
+			// try(InputStream inputStream = entity.getContent()){
+			// 	return new ObjectMapper().readValue(inputStream, 
+			// 		new TypeReference<List<PatientDTO>>(){});
+			// } finally {
+			// 	EntityUtils.consume(entity);
+			// }
 		}
 	}
 

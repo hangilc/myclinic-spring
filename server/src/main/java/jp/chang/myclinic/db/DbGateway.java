@@ -95,6 +95,20 @@ public class DbGateway {
 		}
 	}
 
+	public List<PatientDTO> searchPatientByName(String lastName, String firstName){
+		Sort sort = new Sort(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
+		try(Stream<Patient> stream = patientRepository.searchPatientByName(lastName, firstName, sort)){
+			return stream.map(mapper::toPatientDTO).collect(Collectors.toList());
+		}
+	}
+
+	public List<PatientDTO> searchPatientByYomi(String lastNameYomi, String firstNameYomi){
+		Sort sort = new Sort(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
+		try(Stream<Patient> stream = patientRepository.searchPatientByYomi(lastNameYomi, firstNameYomi, sort)){
+			return stream.map(mapper::toPatientDTO).collect(Collectors.toList());
+		}
+	}
+
 	public int enterShahokokuho(ShahokokuhoDTO shahokokuhoDTO){
 		Shahokokuho shahokokuho = mapper.fromShahokokuhoDTO(shahokokuhoDTO);
 		shahokokuho.setShahokokuhoId(0);

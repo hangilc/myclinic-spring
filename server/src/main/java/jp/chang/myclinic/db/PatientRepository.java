@@ -19,6 +19,10 @@ interface PatientRepository extends CrudRepository<Patient, Integer> {
             " and p.firstName like CONCAT('%', ?2, '%') ")
     Stream<Patient> searchPatientByName(String lastName, String firstName, Sort sort);
 
+    @Query("select p from Patient p where p.lastNameYomi like CONCAT('%', ?1, '%') " +
+            " and p.firstNameYomi like CONCAT('%', ?2, '%') ")
+    Stream<Patient> searchPatientByYomi(String lastNameYomi, String firstNameYomi, Sort sort);
+
     // @Query("select p from Patient p where p.lastName like CONCAT('%', ?1, '%') " +
     //         " or p.firstName like CONCAT('%', ?1, '%') " +
     //         " or p.lastNameYomi like CONCAT('%', ?1, '%') " +

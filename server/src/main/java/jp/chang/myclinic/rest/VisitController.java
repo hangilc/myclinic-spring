@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import jp.chang.myclinic.db.DbGateway;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.MyclinicConsts;
+import jp.chang.myclinic.consts.MyclinicConsts;
 
 import java.util.List;
 import java.time.LocalDate;
