@@ -144,7 +144,6 @@ class MainFrame extends JFrame {
 				openWindows += 1;
 			}
 		}
-		System.out.println(openWindows);
 		if( openWindows > 1 ){
 			int choice = JOptionPane.showConfirmDialog(this, "完了していない画面がありますが、このまま終了しますか？",
 				"終了の確認", JOptionPane.YES_NO_OPTION);

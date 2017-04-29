@@ -2,11 +2,15 @@ package jp.chang.myclinic;
 
 import java.awt.*;
 import javax.swing.*;
+import java.util.List;
+import java.util.ArrayList;
+import jp.chang.myclinic.dto.*;
 
 class NewPatientHoken extends JPanel {
 
 	private JList hokenList;
 	private JDialog owner;
+	private List<ShahokokuhoDTO> shahokokuhoList = new ArrayList<>();
 
 	NewPatientHoken(JDialog owner){
 		this.owner = owner;
@@ -44,7 +48,12 @@ class NewPatientHoken extends JPanel {
 			upperBox.setLayout(new FlowLayout());
 			JButton enterShahoButton = new JButton("新規社保国保");
 			enterShahoButton.addActionListener(event -> {
-				ShahoKokuhoForm form = new ShahoKokuhoForm(owner);
+				ShahokokuhoForm form = new ShahokokuhoForm(owner, "新規社保国保入力", new ShahokokuhoDTO()){
+					@Override
+					public void onEnter(ShahokokuhoDTO shahokokuhoDTO){
+						shahokokuhoList.add(shahokokuhoDTO);
+					}
+				};
 				form.setLocationByPlatform(true);
 				form.setVisible(true);
 			});

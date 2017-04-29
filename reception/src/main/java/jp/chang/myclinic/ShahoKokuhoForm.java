@@ -1,15 +1,68 @@
 package jp.chang.myclinic;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import javax.swing.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import jp.chang.myclinic.dto.ShahokokuhoDTO;
 
-class ShahoKokuhoForm extends JDialog {
+class ShahokokuhoForm extends JDialog {
 
-	ShahoKokuhoForm(JDialog owner){
-		super(owner, "新規社保国保入力", true);
+	private ShahokokuhoDTO shahokokuhoDTO;
+	private JTextField hokenshaBangouField = new JTextField(6);
+	private JTextField kigouField = new JTextField(10);
+	private JTextField bangouField = new JTextField(10);
+	private JRadioButton honninButton = new JRadioButton("本人");
+	private JRadioButton kazokuButton = new JRadioButton("家族");
+	private DateInput validFromInput = new DateInput(new String[]{"平成"}).setGengou("平成");
+	private DateInput validUptoInput = new DateInput(new String[]{"平成"}).setGengou("平成");
+	private JRadioButton noKoureiButton = new JRadioButton("高齢でない");
+	private JRadioButton kourei1wariButton = new JRadioButton("１割");
+	private JRadioButton kourei2wariButton = new JRadioButton("２割");
+	private JRadioButton kourei3wariButton = new JRadioButton("３割");
+
+	ShahokokuhoForm(JDialog owner, String title, ShahokokuhoDTO shahokokuhoDTO){
+		super(owner, title, true);
+		this.shahokokuhoDTO = shahokokuhoDTO;
 		setupCenter();
 		setupSouth();
 		pack();
+	}
+
+	public ShahokokuhoDTO getValue(){
+		return shahokokuhoDTO;
+	}
+
+	private void setValue(){
+		if( shahokokuhoDTO.hokenshaBangou > 0 ){
+			hokenshaBangouField.setText(String.valueOf(shahokokuhoDTO.hokenshaBangou));
+		}
+		if( !(shahokokuhoDTO.hihokenshaKigou == null || shahokokuhoDTO.hihokenshaKigou.isEmpty()) ){
+			kigouField.setText(shahokokuhoDTO.hihokenshaKigou);
+		}
+		if( !(shahokokuhoDTO.hihokenshaBangou == null || shahokokuhoDTO.hihokenshaBangou.isEmpty()) ){
+			bangouField.setText(shahokokuhoDTO.hihokenshaBangou);
+		}
+		if( shahokokuhoDTO.honnin != 0 ){
+			honninButton.setSelected(true);
+		} else {
+			kazokuButton.setSelected(true);
+		}
+		if( !(shahokokuhoDTO.validFrom != null || shahokokuhoDTO.validFrom.isEmpty()) ){
+			throw new RuntimeException("not implemented yet");
+		}
+		if( !(shahokokuhoDTO.validUpto != null || shahokokuhoDTO.validUpto.isEmpty()) ){
+			if( !shahokokuhoDTO.validUpto.equals("0000-00-00") ){
+				throw new RuntimeException("not implemented yet");
+			}
+		}
+		switch(shahokokuhoDTO.kourei){
+			case 1: kourei1wariButton.setSelected(true); break;
+			case 2: kourei2wariButton.setSelected(true); break;
+			case 3: kourei3wariButton.setSelected(true); break;
+			default: noKoureiButton.setSelected(true); break;
+		}
 	}
 
 	private void setupCenter(){
@@ -26,8 +79,7 @@ class ShahoKokuhoForm extends JDialog {
 		c.gridx = 1;
 		c.gridy = 0;
 		{
-			JTextField patientIdField = new JTextField(6);
-			panel.add(patientIdField, c);
+			panel.add(hokenshaBangouField, c);
 		}
 		c.gridx = 0;
 		c.gridy = 1;
@@ -38,10 +90,8 @@ class ShahoKokuhoForm extends JDialog {
 			JPanel box = new JPanel();
 			box.setLayout(new FlowLayout());
 			box.add(new JLabel("記号"));
-			JTextField kigouField = new JTextField(10);
 			box.add(kigouField);
 			box.add(new JLabel("番号"));
-			JTextField bangouField = new JTextField(10);
 			box.add(bangouField);
 			panel.add(box, c);
 		}
@@ -53,8 +103,6 @@ class ShahoKokuhoForm extends JDialog {
 		{
 			JPanel box = new JPanel();
 			box.setLayout(new FlowLayout());
-			JRadioButton honninButton = new JRadioButton("本人");
-			JRadioButton kazokuButton = new JRadioButton("家族");
 			kazokuButton.setSelected(true);
 			ButtonGroup honninGroup = new ButtonGroup();
 			honninGroup.add(honninButton);
@@ -69,7 +117,6 @@ class ShahoKokuhoForm extends JDialog {
 		c.gridx = 1;
 		c.gridy = 3;
 		{
-			DateInput validFromInput = new DateInput(new String[]{"平成"});
 			panel.add(validFromInput, c);
 		}
 		c.gridx = 0;
@@ -78,8 +125,7 @@ class ShahoKokuhoForm extends JDialog {
 		c.gridx = 1;
 		c.gridy = 4;
 		{
-			DateInput validFromInput = new DateInput(new String[]{"平成"});
-			panel.add(validFromInput, c);
+			panel.add(validUptoInput, c);
 		}
 		c.gridx = 0;
 		c.gridy = 5;
@@ -88,10 +134,6 @@ class ShahoKokuhoForm extends JDialog {
 		c.gridy = 5;
 		{
 			JPanel box = new JPanel();
-			JRadioButton noKoureiButton = new JRadioButton("高齢でない");
-			JRadioButton kourei1wariButton = new JRadioButton("１割");
-			JRadioButton kourei2wariButton = new JRadioButton("２割");
-			JRadioButton kourei3wariButton = new JRadioButton("３割");
 			noKoureiButton.setSelected(true);
 			ButtonGroup koureiGroup = new ButtonGroup();
 			koureiGroup.add(noKoureiButton);
@@ -112,12 +154,88 @@ class ShahoKokuhoForm extends JDialog {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 		JButton enterButton = new JButton("入力");
+		enterButton.addActionListener(event -> {
+			if( updateValue() ){
+				dispose();
+				onEnter(shahokokuhoDTO);
+			}
+		});
 		JButton cancelButton = new JButton("キャンセル");
+		cancelButton.addActionListener(event -> {
+			dispose();
+			onCancel();
+		});
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		panel.add(Box.createHorizontalGlue());
 		panel.add(enterButton);
 		panel.add(Box.createHorizontalStrut(5));
 		panel.add(cancelButton);
 		add(panel, BorderLayout.SOUTH);
+	}
+
+	private int getKoureiValue(){
+		if( kourei1wariButton.isSelected() ){
+			return 1;
+		} else if( kourei2wariButton.isSelected() ){
+			return 2;
+		} else if( kourei3wariButton.isSelected() ){
+			return 3;
+		} else {
+			return 0;
+		}
+	}
+
+	private boolean updateValue(){
+		int hokenshaBangou;
+		try {
+			hokenshaBangou = Integer.parseInt(hokenshaBangouField.getText());
+		} catch(NumberFormatException ex){
+			JOptionPane.showMessageDialog(this, "保険者番号の入力が不適切です。");
+			return false;
+		}
+		String kigou = kigouField.getText();
+		String bangou = bangouField.getText();
+		if( kigou.isEmpty() && bangou.isEmpty() ){
+			JOptionPane.showMessageDialog(this, "被保険者記号と被保険者番号が両方空白です。");
+			return false;
+		}
+		int honnin = 0;
+		if( honninButton.isSelected() ){
+			honnin = 1;
+		}
+		LocalDate validFrom = null;
+		try{
+			validFrom = validFromInput.getValue();
+		} catch(DateInput.DateInputException ex){
+			JOptionPane.showMessageDialog(this, "資格取得日の入力が不適切です。\n" + ex.getMessage());
+			return false;
+		}
+		String validFromValue = DateTimeFormatter.ISO_LOCAL_DATE.format(validFrom);
+		LocalDate validUpto = null;
+		if( !validUptoInput.isEmpty() ){
+			try{
+				validUpto = validUptoInput.getValue();
+			} catch(DateInput.DateInputException ex){
+				JOptionPane.showMessageDialog(this, "有効期限の入力が不適切です。\n" + ex.getMessage());
+				return false;
+			}
+		}
+		String validUptoValue = validUpto == null ? "0000-00-00" : DateTimeFormatter.ISO_LOCAL_DATE.format(validUpto);
+		int kourei = getKoureiValue();
+		shahokokuhoDTO.hokenshaBangou = hokenshaBangou;
+		shahokokuhoDTO.hihokenshaKigou = kigou;
+		shahokokuhoDTO.hihokenshaBangou = bangou;
+		shahokokuhoDTO.honnin = honnin;
+		shahokokuhoDTO.validFrom = validFromValue;
+		shahokokuhoDTO.validUpto = validUptoValue;
+		return true;
+	}
+
+	protected void onEnter(ShahokokuhoDTO shahokokuhoDTO){
+
+	}
+
+	protected void onCancel(){
+
 	}
 }
