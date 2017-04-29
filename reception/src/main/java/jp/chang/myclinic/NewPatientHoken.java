@@ -23,9 +23,12 @@ class NewPatientHoken extends JPanel {
 	private JComponent makeUpperPanel(){
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-		hokenList = new HokenList();
-		hokenList.setPreferredSize(new Dimension(400, 200));
-		panel.add(hokenList);
+		{
+			hokenList = new HokenList();
+			JScrollPane scroll = new JScrollPane(hokenList);
+			scroll.setPreferredSize(new Dimension(300, 160));
+			panel.add(scroll);
+		}
 		panel.add(Box.createHorizontalStrut(5));
 		JPanel commandBox = new JPanel();
 		{
