@@ -8,7 +8,7 @@ import jp.chang.myclinic.dto.*;
 
 class NewPatientHoken extends JPanel {
 
-	private JList hokenList;
+	private HokenList hokenList;
 	private JDialog owner;
 	private List<ShahokokuhoDTO> shahokokuhoList = new ArrayList<>();
 
@@ -23,7 +23,7 @@ class NewPatientHoken extends JPanel {
 	private JComponent makeUpperPanel(){
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-		hokenList = new JList();
+		hokenList = new HokenList();
 		hokenList.setPreferredSize(new Dimension(400, 200));
 		panel.add(hokenList);
 		panel.add(Box.createHorizontalStrut(5));
@@ -52,6 +52,7 @@ class NewPatientHoken extends JPanel {
 					@Override
 					public void onEnter(ShahokokuhoDTO shahokokuhoDTO){
 						shahokokuhoList.add(shahokokuhoDTO);
+						hokenList.setListData(makeHokenDataList());
 					}
 				};
 				form.setLocationByPlatform(true);
@@ -84,6 +85,12 @@ class NewPatientHoken extends JPanel {
 		}
 		panel.add(lowerBox);
 		return panel;
+	}
+
+	private Object[] makeHokenDataList(){
+		List<Object> list = new ArrayList<Object>();
+		shahokokuhoList.forEach(hoken -> list.add(hoken));
+		return list.toArray();
 	}
 
 }
