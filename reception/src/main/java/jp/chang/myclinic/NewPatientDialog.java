@@ -25,6 +25,7 @@ class NewPatientDialog extends JDialog {
 	private DateInput birthdayInput = new DateInput().setGengou("昭和");
 	private JTextField addressField = new JTextField(30);
 	private JTextField phoneField = new JTextField(15);
+	private JButton okButton = new JButton("ＯＫ");
 
 	private void setupCenter(){
 		JPanel panel = new JPanel();
@@ -113,7 +114,6 @@ class NewPatientDialog extends JDialog {
 	private void setupSouth(){
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-		JButton okButton = new JButton("ＯＫ");
 		okButton.addActionListener(event -> doEnter());
 		JButton cancelButton = new JButton("キャンセル");
 		cancelButton.addActionListener(event -> dispose());
@@ -136,25 +136,30 @@ class NewPatientDialog extends JDialog {
 	}
 
 	private void doEnter(){
+		okButton.setEnabled(false);
 		PatientDTO patient = new PatientDTO();
 		patient.lastName = lastNameField.getText();
 		if( patient.lastName.isEmpty() ){
 			JOptionPane.showMessageDialog(this, "姓が入力されていません。の入力が不適切です。");
+			okButton.setEnabled(true);
 			return;
 		}
 		patient.firstName = firstNameField.getText();
 		if( patient.firstName.isEmpty() ){
 			JOptionPane.showMessageDialog(this, "名が入力されていません。の入力が不適切です。");
+			okButton.setEnabled(true);
 			return;
 		}
 		patient.lastNameYomi = lastNameYomiField.getText();
 		if( patient.lastNameYomi.isEmpty() ){
 			JOptionPane.showMessageDialog(this, "姓のよみ方が入力されていません。の入力が不適切です。");
+			okButton.setEnabled(true);
 			return;
 		}
 		patient.firstNameYomi = firstNameYomiField.getText();
 		if( patient.firstNameYomi.isEmpty() ){
 			JOptionPane.showMessageDialog(this, "名のよみ方が入力されていません。の入力が不適切です。");
+			okButton.setEnabled(true);
 			return;
 		}
 		patient.sex = getSex().getCode();
@@ -163,11 +168,22 @@ class NewPatientDialog extends JDialog {
 			patient.birthday = DateTimeFormatter.ISO_LOCAL_DATE.format(birthday);
 		} catch(DateInput.DateInputException ex){
 			JOptionPane.showMessageDialog(this, "生年月日の入力が不適切です。\n" + ex.getMessage());
+			okButton.setEnabled(true);
 			return;
 		}
 		patient.address = addressField.getText();
 		patient.phone = phoneField.getText();
-		System.out.println(patient);
+		Service.api.enterPatient(patient)
+			.whenComplete((patientId, t) -> {
+				if( t != null ){
+					t.printStackTrace();
+					JOptionPane.showMessageDialog(NewPatientDialog.this, "サーバーアクセルエラー\n" + t);
+					okButton.setEnabled(true);
+					return;
+				}
+				System.out.println(patientId);
+				dispose();
+			});
 	}
 }
 

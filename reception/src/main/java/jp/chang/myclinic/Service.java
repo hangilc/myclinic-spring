@@ -8,6 +8,8 @@ import jp.chang.myclinic.dto.*;
 import retrofit2.Retrofit;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Body;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 
@@ -15,6 +17,9 @@ class Service {
 	public static interface ServerAPI {
 		@GET("list-wqueue-full")
 		CompletableFuture<List<WqueueFullDTO>> listWqueue();
+
+		@POST("enter-patient")
+		CompletableFuture<Integer> enterPatient(@Body PatientDTO patient);
 	}
 
 	public static ServerAPI api; 
