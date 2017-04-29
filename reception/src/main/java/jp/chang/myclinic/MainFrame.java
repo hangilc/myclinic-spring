@@ -3,6 +3,8 @@ package jp.chang.myclinic;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import java.util.List;
@@ -15,7 +17,6 @@ import retrofit2.Response;
 
 class MainFrame extends JFrame {
 
-	private NewPatientDialog newPatientDialog;
 	private WqueueList wqueueList;
 
 	MainFrame(){
@@ -24,6 +25,13 @@ class MainFrame extends JFrame {
 		setupCenter();
 		setupSouth();
 		pack();
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter(){
+			@Override
+			public void windowClosing(WindowEvent event){
+				onClosing();
+			}
+		});
 	}
 
 	private void setupNorth(){
@@ -49,7 +57,6 @@ class MainFrame extends JFrame {
 				dialog.setVisible(true);
 			});
 			JButton receiptButton = new JButton("領収証用紙");
-
 
 			upperBox.add(newPatientButton);
 			upperBox.add(Box.createHorizontalStrut(5));
@@ -119,10 +126,7 @@ class MainFrame extends JFrame {
 		}
 		{
 			JButton closeButton = new JButton("終了");
-			closeButton.addActionListener(event -> {
-				dispose();
-				System.exit(0);
-			});
+			closeButton.addActionListener(event -> onClosing());
 			lowerBox.add(closeButton);
 			lowerBox.add(Box.createHorizontalGlue());
 		}
@@ -133,11 +137,28 @@ class MainFrame extends JFrame {
 		add(panel, BorderLayout.SOUTH);
 	}
 
-	private void doNewPatient(ActionEvent event){
-		if( newPatientDialog == null ){
-			newPatientDialog = new NewPatientDialog();
-			newPatientDialog.setLocationByPlatform(true);
+	private void onClosing(){
+		int openWindows = 0;
+		for(Window win: Window.getWindows()){
+			if( win.isShowing() ){
+				openWindows += 1;
+			}
 		}
+		System.out.println(openWindows);
+		if( openWindows > 1 ){
+			int choice = JOptionPane.showConfirmDialog(this, "完了していない画面がありますが、このまま終了しますか？",
+				"終了の確認", JOptionPane.YES_NO_OPTION);
+			if( choice != JOptionPane.YES_OPTION ){
+				return;
+			}
+		}
+		dispose();
+		System.exit(0);
+	}
+
+	private void doNewPatient(ActionEvent event){
+		NewPatientDialog newPatientDialog = new NewPatientDialog();
+		newPatientDialog.setLocationByPlatform(true);
 		newPatientDialog.setVisible(true);
 	}
 

@@ -10,10 +10,17 @@ class DateInput extends JPanel {
 	private JTextField birthdayMonth;
 	private JTextField birthdayDay;
 
+	private static final String[] defaultGengouList = new String[]{"明治", "大正", "昭和", "平成"};
+
+	DateInput(){
+		this(defaultGengouList);
+	}
+
 	DateInput(String[] gengouChoices){
 		setLayout(new FlowLayout());
-		//gengouList = new JComboBox<String>(new String[]{"明治", "大正", "昭和", "平成"});
 		gengouList = new JComboBox<String>(gengouChoices);
+		gengouList.setPrototypeDisplayValue("平成 ");
+		gengouList.setSelectedIndex(gengouChoices.length-1);
 		birthdayNen = new JTextField(3);
 		birthdayMonth = new JTextField(3);
 		birthdayDay = new JTextField(3);

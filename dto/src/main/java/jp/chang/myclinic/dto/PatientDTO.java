@@ -10,4 +10,19 @@ public class PatientDTO {
 	public String sex;
 	public String address;
 	public String phone;
+
+	@Override
+	public String toString(){
+		return "PatientDTO[" +
+			"patientId=" + patientId + ", " +
+			"lastName=" + lastName + ", " +
+			"firstName=" + firstName + ", " +
+			"lastNameYomi=" + lastNameYomi + ", " +
+			"firstNameYomi=" + firstNameYomi + ", " +
+			"sex=" + sex + ", " +
+			"birthday=" + birthday + ", " +
+			"address=" + address + ", " +
+			"phone=" + phone + 
+			"]";
+	}
 }

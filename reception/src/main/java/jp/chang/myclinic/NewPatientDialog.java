@@ -2,13 +2,24 @@ package jp.chang.myclinic;
 
 import java.awt.*;
 import javax.swing.*;
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.consts.Sex;
 
 class NewPatientDialog extends JDialog {
 	NewPatientDialog(){
+		setTitle("新規患者入力");
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setupCenter();
 		setupSouth();
 		pack();
 	}
+
+	private JTextField lastNameField = new JTextField(6);
+	private JTextField firstNameField = new JTextField(6);
+	private JTextField lastNameYomiField = new JTextField(6);
+	private JTextField firstNameYomiField = new JTextField(6);
+	private JRadioButton maleButton = new JRadioButton(Sex.Male.getKanji());
+	private JRadioButton femaleButton = new JRadioButton(Sex.Female.getKanji());
 
 	private void setupCenter(){
 		JPanel panel = new JPanel();
@@ -38,8 +49,6 @@ class NewPatientDialog extends JDialog {
 		c.insets = new Insets(0, 0, 0, 0);
 		c.gridx = 1;
 		{
-			JTextField lastNameField = new JTextField(6);
-			JTextField firstNameField = new JTextField(6);
 			JPanel box = new JPanel();
 			box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
 			box.add(lastNameField);
@@ -51,10 +60,6 @@ class NewPatientDialog extends JDialog {
 			c.gridwidth = 1;
 		}
 		{
-			JTextField lastNameYomiField = new JTextField(6);
-			JTextField firstNameYomiField = new JTextField(6);
-			JRadioButton maleButton = new JRadioButton("男");
-			JRadioButton femaleButton = new JRadioButton("女");
 			ButtonGroup buttonGroup = new ButtonGroup();
 			buttonGroup.add(maleButton);
 			buttonGroup.add(femaleButton);
@@ -73,29 +78,11 @@ class NewPatientDialog extends JDialog {
 			c.gridwidth = 1;
 		}
 		{
-			JComboBox<String> gengouList = new JComboBox<String>(new String[]{"明治", "大正", "昭和", "平成"});
-			gengouList.setSelectedIndex(2);
-			JTextField birthdayNen = new JTextField(3);
-			JTextField birthdayMonth = new JTextField(3);
-			JTextField birthdayDay = new JTextField(3);
-			JPanel box = new JPanel();
-			box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
-			box.add(gengouList);
-			box.add(Box.createHorizontalStrut(5));
-			box.add(birthdayNen);
-			box.add(Box.createHorizontalStrut(5));
-			box.add(new JLabel("年"));
-			box.add(Box.createHorizontalStrut(5));
-			box.add(birthdayMonth);
-			box.add(Box.createHorizontalStrut(5));
-			box.add(new JLabel("月"));
-			box.add(Box.createHorizontalStrut(5));
-			box.add(birthdayDay);
-			box.add(Box.createHorizontalStrut(5));
-			box.add(new JLabel("日"));
+			DateInput birthdayInput = new DateInput();
+			birthdayInput.setGengou("昭和");
 			c.gridx = 2;
 			c.gridy = 2;
-			panel.add(box, c);		
+			panel.add(birthdayInput, c);		
 		}
 		{
 			JTextField addressField = new JTextField(30);
@@ -126,12 +113,34 @@ class NewPatientDialog extends JDialog {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 		JButton okButton = new JButton("ＯＫ");
+		okButton.addActionListener(event -> doEnter());
 		JButton cancelButton = new JButton("キャンセル");
+		cancelButton.addActionListener(event -> dispose());
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		panel.add(okButton);
 		panel.add(Box.createHorizontalStrut(5));
 		panel.add(cancelButton);
 		panel.add(Box.createHorizontalGlue());
 		add(panel, BorderLayout.SOUTH);
+	}
+
+	private Sex getSex(){
+		if( maleButton.isSelected() ){
+			return Sex.Male;
+		} else if( femaleButton.isSelected() ){
+			return Sex.Female;
+		} else {
+			return Sex.Female;
+		}
+	}
+
+	private void doEnter(){
+		PatientDTO patient = new PatientDTO();
+		patient.lastName = lastNameField.getText();
+		patient.firstName = firstNameField.getText();
+		patient.lastNameYomi = lastNameYomiField.getText();
+		patient.firstNameYomi = firstNameYomiField.getText();
+		patient.sex = getSex().getCode();
+		System.out.println(patient);
 	}
 }

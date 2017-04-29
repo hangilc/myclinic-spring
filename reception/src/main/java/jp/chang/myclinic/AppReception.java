@@ -25,7 +25,6 @@ public class AppReception
 	        	ex.printStackTrace();
 	        }
         	MainFrame mainFrame = new MainFrame();
-        	mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         	mainFrame.setLocationByPlatform(true);
         	mainFrame.setVisible(true);
         });
