@@ -2,11 +2,21 @@ package jp.chang.myclinic;
 
 import java.awt.*;
 import javax.swing.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import jp.chang.myclinic.dto.KouhiDTO;
 
 class KouhiForm extends JDialog {
 
-	KouhiForm(JDialog owner){
-		super(owner, "新規公費負担入力", true);
+	private KouhiDTO kouhiDTO;
+	private JTextField futanshaField = new JTextField(6);
+	private JTextField jukyuushaField = new JTextField(6);
+	private DateInput validFromInput = new DateInput(new String[]{"平成"});
+	private DateInput validUptoInput = new DateInput(new String[]{"平成"});
+
+	KouhiForm(JDialog owner, String title, KouhiDTO kouhiDTO){
+		super(owner, title, true);
+		this.kouhiDTO = kouhiDTO;
 		setupCenter();
 		setupSouth();
 		pack();
@@ -26,8 +36,7 @@ class KouhiForm extends JDialog {
 		panel.add(new JLabel("負担者番号"), c);
 		c.gridx = 1;
 		{
-			JTextField hokenshaBangouField = new JTextField(6);
-			panel.add(hokenshaBangouField, c);
+			panel.add(futanshaField, c);
 		}
 		
 		c.gridy = 1;
@@ -35,8 +44,7 @@ class KouhiForm extends JDialog {
 		panel.add(new JLabel("受給者番号"), c);
 		c.gridx = 1;
 		{
-			JTextField hihokenshaBangou = new JTextField(6);
-			panel.add(hihokenshaBangou, c);
+			panel.add(jukyuushaField, c);
 		}
 
 		c.gridy = 2;
@@ -44,7 +52,6 @@ class KouhiForm extends JDialog {
 		panel.add(new JLabel("資格取得日"), c);
 		c.gridx = 1;
 		{
-			DateInput validFromInput = new DateInput(new String[]{"平成"});
 			panel.add(validFromInput, c);
 		}
 
@@ -53,7 +60,6 @@ class KouhiForm extends JDialog {
 		panel.add(new JLabel("有効期限"), c);
 		c.gridx = 1;
 		{
-			DateInput validUptoInput = new DateInput(new String[]{"平成"});
 			panel.add(validUptoInput, c);
 		}
 
@@ -64,7 +70,17 @@ class KouhiForm extends JDialog {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 		JButton enterButton = new JButton("入力");
+		enterButton.addActionListener(event -> {
+			if( updateValue() ){
+				dispose();
+				onEnter(kouhiDTO);
+			}
+		});
 		JButton cancelButton = new JButton("キャンセル");
+		cancelButton.addActionListener(event -> {
+			dispose();
+			onCancel();
+		});
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		panel.add(Box.createHorizontalGlue());
 		panel.add(enterButton);
@@ -72,4 +88,51 @@ class KouhiForm extends JDialog {
 		panel.add(cancelButton);
 		add(panel, BorderLayout.SOUTH);
 	}
+
+	private boolean updateValue(){
+		int futansha;
+		int jukyuusha;
+		String validFrom;
+		String validUpto;
+		try {
+			futansha = Integer.parseInt(futanshaField.getText());
+		} catch(NumberFormatException ex){
+			JOptionPane.showMessageDialog(this, "負担者番号の入力が適切でありません。");
+			return false;
+		}
+		try {
+			jukyuusha = Integer.parseInt(jukyuushaField.getText());
+		} catch(NumberFormatException ex){
+			JOptionPane.showMessageDialog(this, "受給者番号の入力が適切でありません。");
+			return false;
+		}
+		LocalDate validFromDate = null;
+		try{
+			validFromDate = validFromInput.getValue();
+		} catch(DateInput.DateInputException ex){
+			JOptionPane.showMessageDialog(this, "資格取得日の入力が不適切です。\n" + ex.getMessage());
+			return false;
+		}
+		validFrom = DateTimeFormatter.ISO_LOCAL_DATE.format(validFromDate);
+		LocalDate validUptoDate = null;
+		if( !validUptoInput.isEmpty() ){
+			try{
+				validUptoDate = validUptoInput.getValue();
+			} catch(DateInput.DateInputException ex){
+				JOptionPane.showMessageDialog(this, "有効期限の入力が不適切です。\n" + ex.getMessage());
+				return false;
+			}
+		}
+		validUpto = validUptoDate == null ? "0000-00-00" : DateTimeFormatter.ISO_LOCAL_DATE.format(validUptoDate);
+		kouhiDTO.futansha = futansha;
+		kouhiDTO.jukyuusha = jukyuusha;
+		kouhiDTO.validFrom = validFrom;
+		kouhiDTO.validUpto = validUpto;
+		return true;
+	}
+
+	protected void onEnter(KouhiDTO kouhiDTO){ }
+
+	protected void onCancel(){ }
+
 }

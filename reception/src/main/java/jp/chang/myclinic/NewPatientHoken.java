@@ -79,7 +79,13 @@ class NewPatientHoken extends JPanel {
 			});
 			JButton enterKouhiButton = new JButton("新規公費負担");
 			enterKouhiButton.addActionListener(event -> {
-				KouhiForm form = new KouhiForm(owner);
+				KouhiForm form = new KouhiForm(owner, "新規公費負担入力", new KouhiDTO()){
+					@Override
+					public void onEnter(KouhiDTO kouhiDTO){
+						kouhiList.add(kouhiDTO);
+						hokenList.setListData(makeHokenDataList());
+					}
+				};
 				form.setLocationByPlatform(true);
 				form.setVisible(true);
 			});
