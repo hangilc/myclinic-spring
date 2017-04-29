@@ -11,6 +11,9 @@ class NewPatientHoken extends JPanel {
 	private HokenList hokenList;
 	private JDialog owner;
 	private List<ShahokokuhoDTO> shahokokuhoList = new ArrayList<>();
+	private List<KoukikoureiDTO> koukikoureiList = new ArrayList<>();
+	private List<RoujinDTO> roujinList = new ArrayList<>();
+	private List<KouhiDTO> kouhiList = new ArrayList<>();
 
 	NewPatientHoken(JDialog owner){
 		this.owner = owner;
@@ -64,7 +67,13 @@ class NewPatientHoken extends JPanel {
 			upperBox.add(enterShahoButton);
 			JButton enterKoukiButton = new JButton("新規後期高齢");
 			enterKoukiButton.addActionListener(event -> {
-				KoukiKoureiForm form = new KoukiKoureiForm(owner);
+				KoukikoureiForm form = new KoukikoureiForm(owner, "新規後期高齢入力", new KoukikoureiDTO()){
+					@Override
+					public void onEnter(KoukikoureiDTO koukikoureiDTO){
+						koukikoureiList.add(koukikoureiDTO);
+						hokenList.setListData(makeHokenDataList());
+					}
+				};
 				form.setLocationByPlatform(true);
 				form.setVisible(true);
 			});
@@ -93,6 +102,9 @@ class NewPatientHoken extends JPanel {
 	private Object[] makeHokenDataList(){
 		List<Object> list = new ArrayList<Object>();
 		shahokokuhoList.forEach(hoken -> list.add(hoken));
+		koukikoureiList.forEach(hoken -> list.add(hoken));
+		roujinList.forEach(hoken -> list.add(hoken));
+		kouhiList.forEach(hoken -> list.add(hoken));
 		return list.toArray();
 	}
 
