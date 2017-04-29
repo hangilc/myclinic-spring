@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.io.IOException;
-
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 class MainFrame extends JFrame {
 
@@ -140,17 +142,30 @@ class MainFrame extends JFrame {
 	}
 
 	private void doUpdate(){
-		try{
-			List<WqueueFullDTO> list = Service.listWqueue();
-			WqueueData[] dataList = list.stream()
-				.map(wq -> {
-					return new WqueueData(WqueueWaitState.fromCode(wq.wqueue.waitState), "LABEL");
-				})
-				.toArray(size -> new WqueueData[size]);
-			wqueueList.setListData(dataList);
-		} catch(IOException ex){
-			JOptionPane.showMessageDialog(this, ex.toString());
-		}
+		Service.api.listWqueue()
+			.whenComplete((result, t) -> {
+				if( t != null ){
+					t.printStackTrace();
+					EventQueue.invokeLater(() -> {
+						JOptionPane.showMessageDialog(MainFrame.this, "サーバーアクセスエラー\n" + t.toString());
+					});
+					return;
+				}
+				WqueueData[] dataList = result.stream()
+					.map(this::toWqueueData)
+					.toArray(size -> new WqueueData[size]);
+				EventQueue.invokeLater(() -> {
+					wqueueList.setListData(dataList);
+				});
+			});
+	}
+
+	private WqueueData toWqueueData(WqueueFullDTO wq){
+		WqueueWaitState waitState = WqueueWaitState.fromCode(wq.wqueue.waitState);
+		PatientDTO patient = wq.patient;
+		String label = String.format("[%s] (%04d) %s %s (%s %s)", waitState.getLabel(),
+			patient.patientId, patient.lastName, patient.firstName, patient.lastNameYomi, patient.firstNameYomi);
+		return new WqueueData(waitState, label);
 	}
 
 }

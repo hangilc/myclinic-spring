@@ -16,7 +16,7 @@ public class AppReception
     		if( !serverUrl.endsWith("/") ){
     			serverUrl = serverUrl + "/";
     		}
-	    	Service.serverUrl = serverUrl;
+            Service.setServerUrl(serverUrl);
     	}
         EventQueue.invokeLater(() -> {
         	try{
