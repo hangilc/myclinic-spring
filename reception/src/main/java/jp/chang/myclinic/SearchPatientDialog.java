@@ -7,6 +7,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.chrono.JapaneseDate;
+import java.time.temporal.ChronoUnit;
 
 class SearchPatientDialog extends JDialog {
 
@@ -15,9 +20,11 @@ class SearchPatientDialog extends JDialog {
 	private JTextField lastNameYomiTextField = new JTextField(6);
 	private JTextField firstNameYomiTextField = new JTextField(6);
 	private JList<PatientDTO> resultList = new JList<>();
+	private JTextArea infoArea = new JTextArea(7, 44);
+	private static DateTimeFormatter birthdayFormatter = DateTimeFormatter.ofPattern("Gyy年MM月dd日");
 
-	SearchPatientDialog(JFrame owner){
-		super(owner, "患者検索", true);
+	SearchPatientDialog(){
+		setTitle("患者検索");
 		setupCenter();
 		setupSouth();
 		pack();
@@ -83,16 +90,37 @@ class SearchPatientDialog extends JDialog {
 		c.gridwidth = 2;
 		{
 			resultList.setCellRenderer(new Renderer());
+			resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			resultList.addListSelectionListener(event -> {
+				if( event.getValueIsAdjusting() ){
+					PatientDTO select = resultList.getSelectedValue();
+					setInfo(select);
+				}
+			});
 			JScrollPane scroll = new JScrollPane(resultList);
-			scroll.setPreferredSize(new Dimension(400, 300));
+			scroll.setPreferredSize(new Dimension(400, 260));
 			panel.add(scroll, c);
 		}
 		c.gridx = 0;
 		c.gridy = 4;
 		c.gridwidth = 2;
 		{
+			JPanel box = new JPanel();
+			box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
+			infoArea.setEditable(false);
+			JScrollPane scroll = new JScrollPane(infoArea);
+			JPanel commandBox = new JPanel();
+			commandBox.setLayout(new BoxLayout(commandBox, BoxLayout.PAGE_AXIS));
 			JButton patientInfoButton = new JButton("患者情報");
-			panel.add(patientInfoButton, c);
+			JButton registerButton = new JButton("診療受付");
+			commandBox.add(patientInfoButton);
+			commandBox.add(Box.createVerticalStrut(5));
+			commandBox.add(registerButton);
+			commandBox.add(Box.createVerticalGlue());
+			box.add(scroll);
+			box.add(Box.createHorizontalStrut(5));
+			box.add(commandBox);
+			panel.add(box, c);
 		}
 		return panel;
 	}
@@ -105,10 +133,31 @@ class SearchPatientDialog extends JDialog {
 		JButton closeButton = new JButton("閉じる");
 		closeButton.addActionListener(event -> dispose());
 		panel.add(closeButton);
-		panel.add(Box.createHorizontalStrut(5));
-		JButton registerButton = new JButton("診療受付");
-		panel.add(registerButton);
 		add(panel, BorderLayout.SOUTH);
+	}
+
+	private String makeBirthdayPart(String dateString){
+		if( dateString == null || dateString.isEmpty() || "0000-00-00".equals(dateString) ){
+			return null;
+		} else {
+			LocalDate birthday = LocalDate.parse(dateString);
+			JapaneseDate jd = JapaneseDate.from(birthday);
+			long age = birthday.until(LocalDate.now(), ChronoUnit.YEARS);
+			return String.format("%s（%d 才）", birthdayFormatter.format(jd), age);
+		}
+	}
+
+	private void setInfo(PatientDTO data){
+		String birthdayPart = makeBirthdayPart(data.birthday);
+
+		infoArea.setText("");
+		infoArea.append(String.format("患者番号： %d\n", data.patientId));
+		infoArea.append(String.format("名前： %s %s\n", data.lastName, data.firstName));
+		infoArea.append(String.format("よみ： %s %s\n", data.lastNameYomi, data.firstNameYomi));
+		infoArea.append(String.format("生年月日： %s\n", birthdayPart == null ? "（不明）" : birthdayPart));
+		infoArea.append(String.format("性別： %s性\n", "M".equals(data.sex) ? "男" : "女"));
+		infoArea.append(String.format("住所： %s\n", data.address));
+		infoArea.append(String.format("電話： %s", data.phone));
 	}
 
 	private void onSearchByName(ActionEvent event){

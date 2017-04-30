@@ -46,7 +46,7 @@ class MainFrame extends JFrame {
 			newPatientButton.addActionListener(this::doNewPatient);
 			JButton searchPatientButton = new JButton("患者検索");
 			searchPatientButton.addActionListener(event -> {
-				SearchPatientDialog dialog = new SearchPatientDialog(this);
+				SearchPatientDialog dialog = new SearchPatientDialog();
 				dialog.setLocationByPlatform(true);
 				dialog.setVisible(true);
 			});
