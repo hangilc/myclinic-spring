@@ -9,16 +9,18 @@ import jp.chang.myclinic.dto.KouhiDTO;
 class KouhiForm extends JDialog {
 
 	private KouhiDTO kouhiDTO;
+	private String defaultGengou = "平成";
 	private JTextField futanshaField = new JTextField(6);
 	private JTextField jukyuushaField = new JTextField(6);
-	private DateInput validFromInput = new DateInput(new String[]{"平成"});
-	private DateInput validUptoInput = new DateInput(new String[]{"平成"});
+	private DateInput validFromInput = new DateInput(new String[]{"平成"}).setGengou(defaultGengou);
+	private DateInput validUptoInput = new DateInput(new String[]{"平成"}).setGengou(defaultGengou);
 
 	KouhiForm(JDialog owner, String title, KouhiDTO kouhiDTO){
 		super(owner, title, true);
 		this.kouhiDTO = kouhiDTO;
 		setupCenter();
 		setupSouth();
+		setValue();
 		pack();
 	}
 
@@ -87,6 +89,39 @@ class KouhiForm extends JDialog {
 		panel.add(Box.createHorizontalStrut(5));
 		panel.add(cancelButton);
 		add(panel, BorderLayout.SOUTH);
+	}
+
+	private void setValidFrom(String validFrom){
+		if( validFrom != null && !validFrom.isEmpty() ){
+			LocalDate validFromDate = LocalDate.parse(validFrom, DateTimeFormatter.ISO_LOCAL_DATE);
+			validFromInput.setValue(validFromDate);
+		} else {
+			validFromInput.clear();
+			validFromInput.setGengou(defaultGengou);
+		}
+	}
+
+	private void setValidUpto(String validUpto){
+		if( validUpto != null && !validUpto.isEmpty() && !validUpto.equals("0000-00-00") ){
+			LocalDate validUptoDate = LocalDate.parse(validUpto, DateTimeFormatter.ISO_LOCAL_DATE);
+			validUptoInput.setValue(validUptoDate);
+		} else {
+			validUptoInput.clear();
+			validUptoInput.setGengou(defaultGengou);
+		}
+	}
+
+	private void setValue(){
+		int futansha, jukyuusha;
+		String validFrom, validUpto;
+		if( kouhiDTO.futansha > 0 ){
+			futanshaField.setText(String.valueOf(kouhiDTO.futansha));
+		}
+		if( kouhiDTO.jukyuusha > 0 ){
+			jukyuushaField.setText(String.valueOf(kouhiDTO.jukyuusha));
+		}
+		setValidFrom(kouhiDTO.validFrom);
+		setValidUpto(kouhiDTO.validUpto);
 	}
 
 	private boolean updateValue(){

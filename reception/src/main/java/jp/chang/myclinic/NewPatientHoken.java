@@ -171,7 +171,6 @@ class NewPatientHoken extends JPanel {
 			ShahokokuhoForm form = new ShahokokuhoForm(owner, "新規社保国保編集", (ShahokokuhoDTO)obj){
 				@Override
 				public void onEnter(ShahokokuhoDTO shahokokuhoDTO){
-					shahokokuho = shahokokuhoDTO;
 					updateHokenList();
 				}
 			};
@@ -181,7 +180,15 @@ class NewPatientHoken extends JPanel {
 			KoukikoureiForm form = new KoukikoureiForm(owner, "新規後期高齢編集", (KoukikoureiDTO)obj){
 				@Override
 				public void onEnter(KoukikoureiDTO koukikoureiDTO){
-					koukikourei = koukikoureiDTO;
+					updateHokenList();
+				}
+			};
+			form.setLocationByPlatform(true);
+			form.setVisible(true);
+		} else if( obj instanceof KouhiDTO ){
+			KouhiForm form = new KouhiForm(owner, "新規公費編集", (KouhiDTO)obj){
+				@Override
+				public void onEnter(KouhiDTO kouhiDTO){
 					updateHokenList();
 				}
 			};
