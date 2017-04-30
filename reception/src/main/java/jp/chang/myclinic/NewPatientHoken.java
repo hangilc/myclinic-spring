@@ -14,6 +14,9 @@ class NewPatientHoken extends JPanel {
 	private KoukikoureiDTO koukikourei;
 	private RoujinDTO roujin;
 	private List<KouhiDTO> kouhiList = new ArrayList<>();
+	private JButton enterShahoButton = new JButton("新規社保国保");
+	private JButton enterKoukiButton = new JButton("新規後期高齢");
+	private JButton enterKouhiButton = new JButton("新規公費負担");
 
 	NewPatientHoken(JDialog owner){
 		this.owner = owner;
@@ -77,6 +80,9 @@ class NewPatientHoken extends JPanel {
 				doEditHoken();
 			});
 			JButton deleteButton = new JButton("削除");
+			deleteButton.addActionListener(event -> {
+				doDeleteHoken();
+			});
 			commandBox.add(editButton);
 			commandBox.add(Box.createVerticalStrut(5));
 			commandBox.add(deleteButton);
@@ -91,7 +97,6 @@ class NewPatientHoken extends JPanel {
 		JPanel upperBox = new JPanel();
 		{
 			upperBox.setLayout(new FlowLayout());
-			JButton enterShahoButton = new JButton("新規社保国保");
 			enterShahoButton.addActionListener(event -> {
 				ShahokokuhoForm form = new ShahokokuhoForm(owner, "新規社保国保入力", new ShahokokuhoDTO()){
 					@Override
@@ -105,7 +110,6 @@ class NewPatientHoken extends JPanel {
 				form.setVisible(true);
 			});
 			upperBox.add(enterShahoButton);
-			JButton enterKoukiButton = new JButton("新規後期高齢");
 			enterKoukiButton.addActionListener(event -> {
 				KoukikoureiForm form = new KoukikoureiForm(owner, "新規後期高齢入力", new KoukikoureiDTO()){
 					@Override
@@ -118,7 +122,6 @@ class NewPatientHoken extends JPanel {
 				form.setLocationByPlatform(true);
 				form.setVisible(true);
 			});
-			JButton enterKouhiButton = new JButton("新規公費負担");
 			enterKouhiButton.addActionListener(event -> {
 				KouhiForm form = new KouhiForm(owner, "新規公費負担入力", new KouhiDTO()){
 					@Override
@@ -186,7 +189,7 @@ class NewPatientHoken extends JPanel {
 			form.setLocationByPlatform(true);
 			form.setVisible(true);
 		} else if( obj instanceof KouhiDTO ){
-			KouhiForm form = new KouhiForm(owner, "新規公費編集", (KouhiDTO)obj){
+			KouhiForm form = new KouhiForm(owner, "新規公費負担編集", (KouhiDTO)obj){
 				@Override
 				public void onEnter(KouhiDTO kouhiDTO){
 					updateHokenList();
@@ -195,6 +198,32 @@ class NewPatientHoken extends JPanel {
 			form.setLocationByPlatform(true);
 			form.setVisible(true);
 		}
+	}
+
+	private void doDeleteHoken(){
+		Object obj = hokenList.getSelectedValue();
+		if( obj instanceof ShahokokuhoDTO ){
+			if( JOptionPane.showConfirmDialog(this, "この国保社保を削除していいですか？", "確認", 
+				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION ){
+				shahokokuho = null;
+				updateHokenList();
+				enterShahoButton.setEnabled(true);
+			}
+		} else if( obj instanceof KoukikoureiDTO ){
+			if( JOptionPane.showConfirmDialog(this, "この後期高齢を削除していいですか？", "確認", 
+				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION ){
+				koukikourei = null;
+				updateHokenList();
+				enterKoukiButton.setEnabled(true);
+			}
+		} else if( obj instanceof KouhiDTO ){
+			if( JOptionPane.showConfirmDialog(this, "この公費負担を削除していいですか？", "確認", 
+				JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION ){
+				kouhiList.remove(obj);
+				updateHokenList();
+				enterKouhiButton.setEnabled(true);
+			}
+		}		
 	}
 
 }
