@@ -111,10 +111,7 @@ class SearchPatientDialog extends JDialog {
 			JScrollPane scroll = new JScrollPane(infoArea);
 			JPanel commandBox = new JPanel();
 			commandBox.setLayout(new BoxLayout(commandBox, BoxLayout.PAGE_AXIS));
-			JButton patientInfoButton = new JButton("患者情報");
 			JButton registerButton = new JButton("診療受付");
-			commandBox.add(patientInfoButton);
-			commandBox.add(Box.createVerticalStrut(5));
 			commandBox.add(registerButton);
 			commandBox.add(Box.createVerticalGlue());
 			box.add(scroll);
