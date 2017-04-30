@@ -104,4 +104,10 @@ class DateInput extends JPanel {
 		setMonth(date.getMonthValue());
 		setDay(date.getDayOfMonth());
 	}
+
+	public void clear(){
+		nenField.setText("");
+		monthField.setText("");
+		dayField.setText("");
+	}
 }

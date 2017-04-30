@@ -9,19 +9,21 @@ import jp.chang.myclinic.dto.KoukikoureiDTO;
 class KoukikoureiForm extends JDialog {
 
 	private KoukikoureiDTO koukikoureiDTO;
+	private static String defaultGengou = "平成";
 	private JTextField hokenshaBangouField = new JTextField(6);
-			JTextField hihokenshaBangouField = new JTextField(6);
+	private JTextField hihokenshaBangouField = new JTextField(6);
 	private JRadioButton futan1wariButton = new JRadioButton("１割");
 	private JRadioButton futan2wariButton = new JRadioButton("２割");
 	private JRadioButton futan3wariButton = new JRadioButton("３割");
-	private DateInput validFromInput = new DateInput(new String[]{"平成"}).setGengou("平成");
-	private DateInput validUptoInput = new DateInput(new String[]{"平成"}).setGengou("平成");
+	private DateInput validFromInput = new DateInput(new String[]{"平成"}).setGengou(defaultGengou);
+	private DateInput validUptoInput = new DateInput(new String[]{"平成"}).setGengou(defaultGengou);
 
 	KoukikoureiForm(JDialog owner, String title, KoukikoureiDTO koukikoureiDTO){
 		super(owner, title, true);
 		this.koukikoureiDTO = koukikoureiDTO;
 		setupCenter();
 		setupSouth();
+		setValue(koukikoureiDTO);
 		pack();
 	}
 
@@ -107,6 +109,43 @@ class KoukikoureiForm extends JDialog {
 		panel.add(Box.createHorizontalStrut(5));
 		panel.add(cancelButton);
 		add(panel, BorderLayout.SOUTH);
+	}
+
+	private void setFutanWari(int futanWari){
+		switch(futanWari){
+			case 1: futan1wariButton.setSelected(true); break;
+			case 2: futan2wariButton.setSelected(true); break;
+			case 3: futan3wariButton.setSelected(true); break;
+			default: futan1wariButton.setSelected(true); break;
+		}
+	}
+
+	private void setValidFrom(String validFrom){
+		if( validFrom != null && !validFrom.isEmpty() ){
+			LocalDate validFromDate = LocalDate.parse(validFrom, DateTimeFormatter.ISO_LOCAL_DATE);
+			validFromInput.setValue(validFromDate);
+		} else {
+			validFromInput.clear();
+			validFromInput.setGengou(defaultGengou);
+		}
+	}
+
+	private void setValidUpto(String validUpto){
+		if( validUpto != null && !validUpto.isEmpty() && !validUpto.equals("0000-00-00") ){
+			LocalDate validUptoDate = LocalDate.parse(validUpto, DateTimeFormatter.ISO_LOCAL_DATE);
+			validUptoInput.setValue(validUptoDate);
+		} else {
+			validUptoInput.clear();
+			validUptoInput.setGengou(defaultGengou);
+		}
+	}
+
+	private void setValue(KoukikoureiDTO koukikoureiDTO){
+		hokenshaBangouField.setText(koukikoureiDTO.hokenshaBangou);
+		hihokenshaBangouField.setText(koukikoureiDTO.hihokenshaBangou);
+		setFutanWari(koukikoureiDTO.futanWari);
+		setValidFrom(koukikoureiDTO.validFrom);
+		setValidUpto(koukikoureiDTO.validUpto);
 	}
 
 	private int getFutanWari(){

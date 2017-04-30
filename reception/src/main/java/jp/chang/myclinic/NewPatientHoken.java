@@ -167,22 +167,26 @@ class NewPatientHoken extends JPanel {
 
 	private void doEditHoken(){
 		Object obj = hokenList.getSelectedValue();
-		if( obj == null ){
-			return;
-		} else {
-			if( obj instanceof ShahokokuhoDTO ){
-				ShahokokuhoForm form = new ShahokokuhoForm(owner, "新規社保国保入力", (ShahokokuhoDTO)obj){
-					@Override
-					public void onEnter(ShahokokuhoDTO shahokokuhoDTO){
-						shahokokuho = shahokokuhoDTO;
-						updateHokenList();
-					}
-				};
-				form.setLocationByPlatform(true);
-				form.setVisible(true);
-			} else {
-				return;
-			}
+		if( obj instanceof ShahokokuhoDTO ){
+			ShahokokuhoForm form = new ShahokokuhoForm(owner, "新規社保国保編集", (ShahokokuhoDTO)obj){
+				@Override
+				public void onEnter(ShahokokuhoDTO shahokokuhoDTO){
+					shahokokuho = shahokokuhoDTO;
+					updateHokenList();
+				}
+			};
+			form.setLocationByPlatform(true);
+			form.setVisible(true);
+		} else if( obj instanceof KoukikoureiDTO ){
+			KoukikoureiForm form = new KoukikoureiForm(owner, "新規後期高齢編集", (KoukikoureiDTO)obj){
+				@Override
+				public void onEnter(KoukikoureiDTO koukikoureiDTO){
+					koukikourei = koukikoureiDTO;
+					updateHokenList();
+				}
+			};
+			form.setLocationByPlatform(true);
+			form.setVisible(true);
 		}
 	}
 

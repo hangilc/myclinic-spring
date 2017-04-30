@@ -10,13 +10,14 @@ import jp.chang.myclinic.dto.ShahokokuhoDTO;
 class ShahokokuhoForm extends JDialog {
 
 	private ShahokokuhoDTO shahokokuhoDTO;
+	private static String defaultGengou = "平成";
 	private JTextField hokenshaBangouField = new JTextField(6);
 	private JTextField kigouField = new JTextField(10);
 	private JTextField bangouField = new JTextField(10);
 	private JRadioButton honninButton = new JRadioButton("本人");
 	private JRadioButton kazokuButton = new JRadioButton("家族");
-	private DateInput validFromInput = new DateInput(new String[]{"平成"}).setGengou("平成");
-	private DateInput validUptoInput = new DateInput(new String[]{"平成"}).setGengou("平成");
+	private DateInput validFromInput = new DateInput(new String[]{"平成"}).setGengou(defaultGengou);
+	private DateInput validUptoInput = new DateInput(new String[]{"平成"}).setGengou(defaultGengou);
 	private JRadioButton noKoureiButton = new JRadioButton("高齢でない");
 	private JRadioButton kourei1wariButton = new JRadioButton("１割");
 	private JRadioButton kourei2wariButton = new JRadioButton("２割");
@@ -35,6 +36,26 @@ class ShahokokuhoForm extends JDialog {
 		return shahokokuhoDTO;
 	}
 
+	private void setValidFrom(String validFrom){
+		if( validFrom != null && !validFrom.isEmpty() ){
+			LocalDate validFromDate = LocalDate.parse(validFrom, DateTimeFormatter.ISO_LOCAL_DATE);
+			validFromInput.setValue(validFromDate);
+		} else {
+			validFromInput.clear();
+			validFromInput.setGengou(defaultGengou);
+		}
+	}
+
+	private void setValidUpto(String validUpto){
+		if( validUpto != null && !validUpto.isEmpty() && !validUpto.equals("0000-00-00") ){
+			LocalDate validUptoDate = LocalDate.parse(validUpto, DateTimeFormatter.ISO_LOCAL_DATE);
+			validUptoInput.setValue(validUptoDate);
+		} else {
+			validUptoInput.clear();
+			validUptoInput.setGengou(defaultGengou);
+		}
+	}
+
 	private void setValue(){
 		if( shahokokuhoDTO.hokenshaBangou > 0 ){
 			hokenshaBangouField.setText(String.valueOf(shahokokuhoDTO.hokenshaBangou));
@@ -50,15 +71,8 @@ class ShahokokuhoForm extends JDialog {
 		} else {
 			kazokuButton.setSelected(true);
 		}
-		if( shahokokuhoDTO.validFrom != null && !shahokokuhoDTO.validFrom.isEmpty() ){
-			LocalDate validFromDate = LocalDate.parse(shahokokuhoDTO.validFrom, DateTimeFormatter.ISO_LOCAL_DATE);
-			validFromInput.setValue(validFromDate);
-		}
-		if( shahokokuhoDTO.validUpto != null && !shahokokuhoDTO.validUpto.isEmpty() && 
-			!shahokokuhoDTO.validUpto.equals("0000-00-00") ){
-			LocalDate validUptoDate = LocalDate.parse(shahokokuhoDTO.validUpto, DateTimeFormatter.ISO_LOCAL_DATE);
-			validUptoInput.setValue(validUptoDate);
-		}
+		setValidFrom(shahokokuhoDTO.validFrom);
+		setValidUpto(shahokokuhoDTO.validUpto);
 		switch(shahokokuhoDTO.kourei){
 			case 1: kourei1wariButton.setSelected(true); break;
 			case 2: kourei2wariButton.setSelected(true); break;
