@@ -4,8 +4,10 @@ import java.awt.*;
 import javax.swing.*;
 import java.time.LocalDate;
 import java.time.DateTimeException;
+import java.time.chrono.JapaneseDate;
 import java.time.chrono.JapaneseEra;
 import java.time.chrono.JapaneseChronology;
+import java.time.temporal.ChronoField;
 import jp.chang.myclinic.consts.Gengou;
 
 class DateInput extends JPanel {
@@ -49,6 +51,18 @@ class DateInput extends JPanel {
 		return this;
 	}
 
+	public void setNen(int nen){
+		nenField.setText(String.valueOf(nen));
+	}
+
+	public void setMonth(int month){
+		monthField.setText(String.valueOf(month));
+	}
+
+	public void setDay(int day){
+		dayField.setText(String.valueOf(day));
+	}
+
 	public boolean isEmpty(){
 		return nenField.getText().isEmpty() && monthField.getText().isEmpty() &&
 			dayField.getText().isEmpty();
@@ -79,5 +93,15 @@ class DateInput extends JPanel {
 		} catch(DateTimeException ex){
 			throw new DateInputException("入力した日付が不適切です。");
 		}
+	}
+
+	public void setValue(LocalDate date){
+		JapaneseDate jd = JapaneseDate.of(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+		JapaneseEra era = jd.getEra();
+		int nen = jd.get(ChronoField.YEAR_OF_ERA);
+		setGengou(Gengou.fromEra(era).getKanji());
+		setNen(nen);
+		setMonth(date.getMonthValue());
+		setDay(date.getDayOfMonth());
 	}
 }

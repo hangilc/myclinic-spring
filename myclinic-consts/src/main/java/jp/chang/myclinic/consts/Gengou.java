@@ -20,9 +20,22 @@ public enum Gengou {
 		return code;
 	}
 
+	public String getKanji(){
+		return kanji;
+	}
+
 	public static Gengou fromKanji(String kanji){
 		for(Gengou gengou: values()){
 			if( gengou.kanji.equals(kanji) ){
+				return gengou;
+			}
+		}
+		return null;
+	}
+
+	public static Gengou fromEra(JapaneseEra era){
+		for(Gengou gengou: values()){
+			if( gengou.code == era ){
 				return gengou;
 			}
 		}

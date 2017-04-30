@@ -27,6 +27,7 @@ class ShahokokuhoForm extends JDialog {
 		this.shahokokuhoDTO = shahokokuhoDTO;
 		setupCenter();
 		setupSouth();
+		setValue();
 		pack();
 	}
 
@@ -49,13 +50,14 @@ class ShahokokuhoForm extends JDialog {
 		} else {
 			kazokuButton.setSelected(true);
 		}
-		if( !(shahokokuhoDTO.validFrom != null || shahokokuhoDTO.validFrom.isEmpty()) ){
-			throw new RuntimeException("not implemented yet");
+		if( shahokokuhoDTO.validFrom != null && !shahokokuhoDTO.validFrom.isEmpty() ){
+			LocalDate validFromDate = LocalDate.parse(shahokokuhoDTO.validFrom, DateTimeFormatter.ISO_LOCAL_DATE);
+			validFromInput.setValue(validFromDate);
 		}
-		if( !(shahokokuhoDTO.validUpto != null || shahokokuhoDTO.validUpto.isEmpty()) ){
-			if( !shahokokuhoDTO.validUpto.equals("0000-00-00") ){
-				throw new RuntimeException("not implemented yet");
-			}
+		if( shahokokuhoDTO.validUpto != null && !shahokokuhoDTO.validUpto.isEmpty() && 
+			!shahokokuhoDTO.validUpto.equals("0000-00-00") ){
+			LocalDate validUptoDate = LocalDate.parse(shahokokuhoDTO.validUpto, DateTimeFormatter.ISO_LOCAL_DATE);
+			validUptoInput.setValue(validUptoDate);
 		}
 		switch(shahokokuhoDTO.kourei){
 			case 1: kourei1wariButton.setSelected(true); break;
@@ -228,6 +230,7 @@ class ShahokokuhoForm extends JDialog {
 		shahokokuhoDTO.honnin = honnin;
 		shahokokuhoDTO.validFrom = validFromValue;
 		shahokokuhoDTO.validUpto = validUptoValue;
+		shahokokuhoDTO.kourei = kourei;
 		return true;
 	}
 

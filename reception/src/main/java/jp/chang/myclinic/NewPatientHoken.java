@@ -73,6 +73,9 @@ class NewPatientHoken extends JPanel {
 		{
 			commandBox.setLayout(new BoxLayout(commandBox, BoxLayout.PAGE_AXIS));
 			JButton editButton = new JButton("訂正");
+			editButton.addActionListener(event -> {
+				doEditHoken();
+			});
 			JButton deleteButton = new JButton("削除");
 			commandBox.add(editButton);
 			commandBox.add(Box.createVerticalStrut(5));
@@ -95,7 +98,7 @@ class NewPatientHoken extends JPanel {
 					public void onEnter(ShahokokuhoDTO shahokokuhoDTO){
 						shahokokuho = shahokokuhoDTO;
 						enterShahoButton.setEnabled(false);
-						hokenList.setListData(makeHokenDataList());
+						updateHokenList();
 					}
 				};
 				form.setLocationByPlatform(true);
@@ -109,7 +112,7 @@ class NewPatientHoken extends JPanel {
 					public void onEnter(KoukikoureiDTO koukikoureiDTO){
 						koukikourei = koukikoureiDTO;
 						enterKoukiButton.setEnabled(false);
-						hokenList.setListData(makeHokenDataList());
+						updateHokenList();
 					}
 				};
 				form.setLocationByPlatform(true);
@@ -124,7 +127,7 @@ class NewPatientHoken extends JPanel {
 						if( kouhiList.size() >= 3 ){
 							enterKouhiButton.setEnabled(false);
 						}
-						hokenList.setListData(makeHokenDataList());
+						updateHokenList();
 					}
 				};
 				form.setLocationByPlatform(true);
@@ -156,6 +159,31 @@ class NewPatientHoken extends JPanel {
 		}
 		kouhiList.forEach(hoken -> list.add(hoken));
 		return list.toArray();
+	}
+
+	private void updateHokenList(){
+		hokenList.setListData(makeHokenDataList());
+	}
+
+	private void doEditHoken(){
+		Object obj = hokenList.getSelectedValue();
+		if( obj == null ){
+			return;
+		} else {
+			if( obj instanceof ShahokokuhoDTO ){
+				ShahokokuhoForm form = new ShahokokuhoForm(owner, "新規社保国保入力", (ShahokokuhoDTO)obj){
+					@Override
+					public void onEnter(ShahokokuhoDTO shahokokuhoDTO){
+						shahokokuho = shahokokuhoDTO;
+						updateHokenList();
+					}
+				};
+				form.setLocationByPlatform(true);
+				form.setVisible(true);
+			} else {
+				return;
+			}
+		}
 	}
 
 }
