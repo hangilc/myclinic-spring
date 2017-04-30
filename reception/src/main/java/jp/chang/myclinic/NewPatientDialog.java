@@ -4,7 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.consts.Sex;
 
 class NewPatientDialog extends JDialog {
@@ -26,6 +26,7 @@ class NewPatientDialog extends JDialog {
 	private JTextField addressField = new JTextField(30);
 	private JTextField phoneField = new JTextField(15);
 	private JButton okButton = new JButton("ＯＫ");
+	private NewPatientHoken hokenPanel;
 
 	private void setupCenter(){
 		JPanel panel = new JPanel();
@@ -102,7 +103,7 @@ class NewPatientDialog extends JDialog {
 			panel.add(phoneField, c);
 		}
 		{
-			NewPatientHoken hokenPanel = new NewPatientHoken(this);
+			hokenPanel = new NewPatientHoken(this);
 			c.gridwidth = 2;
 			c.gridx = 1;
 			c.gridy = 5;
@@ -135,32 +136,27 @@ class NewPatientDialog extends JDialog {
 		}
 	}
 
-	private void doEnter(){
-		okButton.setEnabled(false);
+	private PatientDTO getPatientDTO(){
 		PatientDTO patient = new PatientDTO();
 		patient.lastName = lastNameField.getText();
 		if( patient.lastName.isEmpty() ){
 			JOptionPane.showMessageDialog(this, "姓が入力されていません。の入力が不適切です。");
-			okButton.setEnabled(true);
-			return;
+			return null;
 		}
 		patient.firstName = firstNameField.getText();
 		if( patient.firstName.isEmpty() ){
 			JOptionPane.showMessageDialog(this, "名が入力されていません。の入力が不適切です。");
-			okButton.setEnabled(true);
-			return;
+			return null;
 		}
 		patient.lastNameYomi = lastNameYomiField.getText();
 		if( patient.lastNameYomi.isEmpty() ){
 			JOptionPane.showMessageDialog(this, "姓のよみ方が入力されていません。の入力が不適切です。");
-			okButton.setEnabled(true);
-			return;
+			return null;
 		}
 		patient.firstNameYomi = firstNameYomiField.getText();
 		if( patient.firstNameYomi.isEmpty() ){
 			JOptionPane.showMessageDialog(this, "名のよみ方が入力されていません。の入力が不適切です。");
-			okButton.setEnabled(true);
-			return;
+			return null;
 		}
 		patient.sex = getSex().getCode();
 		try{
@@ -168,20 +164,36 @@ class NewPatientDialog extends JDialog {
 			patient.birthday = DateTimeFormatter.ISO_LOCAL_DATE.format(birthday);
 		} catch(DateInput.DateInputException ex){
 			JOptionPane.showMessageDialog(this, "生年月日の入力が不適切です。\n" + ex.getMessage());
-			okButton.setEnabled(true);
-			return;
+			return null;
 		}
 		patient.address = addressField.getText();
 		patient.phone = phoneField.getText();
-		Service.api.enterPatient(patient)
-			.whenComplete((patientId, t) -> {
+		return patient;		
+	}
+
+	private void doEnter(){
+		okButton.setEnabled(false);
+		PatientHokenDTO patientHokenDTO = new PatientHokenDTO();
+		patientHokenDTO.patientDTO = getPatientDTO();
+		if( patientHokenDTO.patientDTO == null ){
+			okButton.setEnabled(true);
+			return;
+		}
+		patientHokenDTO.hokenDTO = new HokenDTO();
+		patientHokenDTO.hokenDTO.shahokokuhoDTO = hokenPanel.getShahokokuhoDTO();
+		patientHokenDTO.hokenDTO.koukikoureiDTO = hokenPanel.getKoukikoureiDTO();
+		patientHokenDTO.hokenDTO.roujinDTO = hokenPanel.getRoujinDTO();
+		patientHokenDTO.hokenDTO.kouhi1DTO = hokenPanel.getKouhi1DTO();
+		patientHokenDTO.hokenDTO.kouhi2DTO = hokenPanel.getKouhi2DTO();
+		patientHokenDTO.hokenDTO.kouhi3DTO = hokenPanel.getKouhi3DTO();
+		Service.api.enterPatientWithHoken(patientHokenDTO)
+			.whenComplete((PatientHokenDTO result, Throwable t) -> {
 				if( t != null ){
 					t.printStackTrace();
-					JOptionPane.showMessageDialog(NewPatientDialog.this, "サーバーアクセルエラー\n" + t);
+					JOptionPane.showMessageDialog(NewPatientDialog.this, "エラー\n" + t);
 					okButton.setEnabled(true);
 					return;
 				}
-				System.out.println(patientId);
 				dispose();
 			});
 	}

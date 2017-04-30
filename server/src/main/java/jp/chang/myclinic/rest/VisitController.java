@@ -30,7 +30,7 @@ public class VisitController {
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 
 	@RequestMapping(value="/start-visit", method=RequestMethod.POST)
-	public int startVisit(@RequestBody ArgPatientTimeDTO arg){
+	public int startVisit(@RequestBody PatientIdTimeDTO arg){
 		int patientId = arg.patientId;
 		LocalDateTime at = LocalDateTime.parse(arg.time, dateTimeFormatter);
 		LocalDate atDate = at.toLocalDate();

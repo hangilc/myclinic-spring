@@ -35,6 +35,44 @@ public class PatientController {
 		return dbGateway.enterPatient(patient);
 	}
 
+	@RequestMapping(value="/enter-patient-with-hoken", method=RequestMethod.POST)
+	public PatientHokenDTO enterPatientWithHoken(@RequestBody PatientHokenDTO patientHoken){
+		int patientId = dbGateway.enterPatient(patientHoken.patientDTO);
+		patientHoken.patientDTO.patientId = patientId;
+		HokenDTO hokenDTO = patientHoken.hokenDTO;
+		if( hokenDTO != null && hokenDTO.shahokokuhoDTO != null ){
+			ShahokokuhoDTO shahokokuhoDTO = hokenDTO.shahokokuhoDTO;
+			shahokokuhoDTO.patientId = patientId;
+			shahokokuhoDTO.shahokokuhoId = dbGateway.enterShahokokuho(shahokokuhoDTO);
+		}
+		if( hokenDTO != null && hokenDTO.koukikoureiDTO != null ){
+			KoukikoureiDTO koukikoureiDTO = hokenDTO.koukikoureiDTO;
+			koukikoureiDTO.patientId = patientId;
+			koukikoureiDTO.koukikoureiId = dbGateway.enterKoukikourei(koukikoureiDTO);
+		}
+		if( hokenDTO != null && hokenDTO.roujinDTO != null ){
+			RoujinDTO roujinDTO = hokenDTO.roujinDTO;
+			roujinDTO.patientId = patientId;
+			roujinDTO.roujinId = dbGateway.enterRoujin(roujinDTO);
+		}
+		if( hokenDTO != null && hokenDTO.kouhi1DTO != null ){
+			KouhiDTO kouhiDTO = hokenDTO.kouhi1DTO;
+			kouhiDTO.patientId = patientId;
+			kouhiDTO.kouhiId = dbGateway.enterKouhi(kouhiDTO);
+		}
+		if( hokenDTO != null && hokenDTO.kouhi2DTO != null ){
+			KouhiDTO kouhiDTO = hokenDTO.kouhi2DTO;
+			kouhiDTO.patientId = patientId;
+			kouhiDTO.kouhiId = dbGateway.enterKouhi(kouhiDTO);
+		}
+		if( hokenDTO != null && hokenDTO.kouhi3DTO != null ){
+			KouhiDTO kouhiDTO = hokenDTO.kouhi3DTO;
+			kouhiDTO.patientId = patientId;
+			kouhiDTO.kouhiId = dbGateway.enterKouhi(kouhiDTO);
+		}
+		return patientHoken;
+	}
+
 	@RequestMapping(value="/search-patient-by-name", method=RequestMethod.GET)
 	public List<PatientDTO> searchPatientByName(@RequestParam(name="last-name", defaultValue="") String lastName,
 			@RequestParam(name="first-name", defaultValue="") String firstName){

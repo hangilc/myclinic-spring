@@ -18,8 +18,8 @@ class Service {
 		@GET("list-wqueue-full")
 		CompletableFuture<List<WqueueFullDTO>> listWqueue();
 
-		@POST("enter-patient")
-		CompletableFuture<Integer> enterPatient(@Body PatientDTO patient);
+		@POST("enter-patient-with-hoken")
+		CompletableFuture<PatientHokenDTO> enterPatientWithHoken(@Body PatientHokenDTO patientHokenDTO);
 	}
 
 	public static ServerAPI api; 

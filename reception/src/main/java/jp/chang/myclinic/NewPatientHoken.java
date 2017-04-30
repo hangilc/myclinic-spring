@@ -10,9 +10,9 @@ class NewPatientHoken extends JPanel {
 
 	private HokenList hokenList;
 	private JDialog owner;
-	private List<ShahokokuhoDTO> shahokokuhoList = new ArrayList<>();
-	private List<KoukikoureiDTO> koukikoureiList = new ArrayList<>();
-	private List<RoujinDTO> roujinList = new ArrayList<>();
+	private ShahokokuhoDTO shahokokuho;
+	private KoukikoureiDTO koukikourei;
+	private RoujinDTO roujin;
 	private List<KouhiDTO> kouhiList = new ArrayList<>();
 
 	NewPatientHoken(JDialog owner){
@@ -21,6 +21,42 @@ class NewPatientHoken extends JPanel {
 		add(makeUpperPanel());
 		add(Box.createVerticalStrut(5));
 		add(makeLowerPanel());
+	}
+
+	public ShahokokuhoDTO getShahokokuhoDTO(){
+		return shahokokuho;
+	}
+
+	public KoukikoureiDTO getKoukikoureiDTO(){
+		return koukikourei;
+	}
+
+	public RoujinDTO getRoujinDTO(){
+		return roujin;
+	}
+
+	public KouhiDTO getKouhi1DTO(){
+		if( kouhiList.size() > 0 ){
+			return kouhiList.get(0);
+		} else {
+			return null;
+		}
+	}
+
+	public KouhiDTO getKouhi2DTO(){
+		if( kouhiList.size() > 1 ){
+			return kouhiList.get(1);
+		} else {
+			return null;
+		}
+	}
+
+	public KouhiDTO getKouhi3DTO(){
+		if( kouhiList.size() > 2 ){
+			return kouhiList.get(2);
+		} else {
+			return null;
+		}
 	}
 
 	private JComponent makeUpperPanel(){
@@ -57,7 +93,8 @@ class NewPatientHoken extends JPanel {
 				ShahokokuhoForm form = new ShahokokuhoForm(owner, "新規社保国保入力", new ShahokokuhoDTO()){
 					@Override
 					public void onEnter(ShahokokuhoDTO shahokokuhoDTO){
-						shahokokuhoList.add(shahokokuhoDTO);
+						shahokokuho = shahokokuhoDTO;
+						enterShahoButton.setEnabled(false);
 						hokenList.setListData(makeHokenDataList());
 					}
 				};
@@ -70,7 +107,8 @@ class NewPatientHoken extends JPanel {
 				KoukikoureiForm form = new KoukikoureiForm(owner, "新規後期高齢入力", new KoukikoureiDTO()){
 					@Override
 					public void onEnter(KoukikoureiDTO koukikoureiDTO){
-						koukikoureiList.add(koukikoureiDTO);
+						koukikourei = koukikoureiDTO;
+						enterKoukiButton.setEnabled(false);
 						hokenList.setListData(makeHokenDataList());
 					}
 				};
@@ -83,6 +121,9 @@ class NewPatientHoken extends JPanel {
 					@Override
 					public void onEnter(KouhiDTO kouhiDTO){
 						kouhiList.add(kouhiDTO);
+						if( kouhiList.size() >= 3 ){
+							enterKouhiButton.setEnabled(false);
+						}
 						hokenList.setListData(makeHokenDataList());
 					}
 				};
@@ -94,22 +135,25 @@ class NewPatientHoken extends JPanel {
 		}
 		panel.add(upperBox);
 		panel.add(Box.createVerticalStrut(5));
-		JPanel lowerBox = new JPanel();
-		{
-			lowerBox.setLayout(new BoxLayout(lowerBox, BoxLayout.LINE_AXIS));
-			JCheckBox onlyCurrentBox = new JCheckBox("現在有効のみ");
-			onlyCurrentBox.setSelected(true);
-			lowerBox.add(onlyCurrentBox);
-		}
-		panel.add(lowerBox);
+		// JPanel lowerBox = new JPanel();
+		// {
+		// 	lowerBox.setLayout(new BoxLayout(lowerBox, BoxLayout.LINE_AXIS));
+		// 	JCheckBox onlyCurrentBox = new JCheckBox("現在有効のみ");
+		// 	onlyCurrentBox.setSelected(true);
+		// 	lowerBox.add(onlyCurrentBox);
+		// }
+		// panel.add(lowerBox);
 		return panel;
 	}
 
 	private Object[] makeHokenDataList(){
 		List<Object> list = new ArrayList<Object>();
-		shahokokuhoList.forEach(hoken -> list.add(hoken));
-		koukikoureiList.forEach(hoken -> list.add(hoken));
-		roujinList.forEach(hoken -> list.add(hoken));
+		if( shahokokuho != null ){
+			list.add(shahokokuho);
+		}
+		if( koukikourei != null ){
+			list.add(koukikourei);
+		}
 		kouhiList.forEach(hoken -> list.add(hoken));
 		return list.toArray();
 	}

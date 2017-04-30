@@ -37,11 +37,6 @@ public class DbGateway {
 	@Autowired
 	private VisitRepository visitRepository;
 
-	public PatientDTO getPatient(int patientId){
-		Patient patient = patientRepository.findOne(patientId);
-		return mapper.toPatientDTO(patient);
-	}
-
 	public List<WqueueFullDTO> listWqueueFull(){
 		try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
 			return stream.map(wqueue -> {
@@ -58,6 +53,11 @@ public class DbGateway {
 	public void enterWqueue(WqueueDTO wqueueDTO){
 		Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
 		wqueueRepository.save(wqueue);
+	}
+
+	public PatientDTO getPatient(int patientId){
+		Patient patient = patientRepository.findOne(patientId);
+		return mapper.toPatientDTO(patient);
 	}
 
 	public int enterPatient(PatientDTO patientDTO){
