@@ -10,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Body;
+import retrofit2.http.Query;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 
@@ -20,6 +21,14 @@ class Service {
 
 		@POST("enter-patient-with-hoken")
 		CompletableFuture<PatientHokenDTO> enterPatientWithHoken(@Body PatientHokenDTO patientHokenDTO);
+
+		@GET("search-patient-by-name")
+		CompletableFuture<List<PatientDTO>> searchPatientByName(@Query("last-name") String lastName, 
+			@Query("first-name") String firstName);
+
+		@GET("search-patient-by-yomi")
+		CompletableFuture<List<PatientDTO>> searchPatientByYomi(@Query("last-name-yomi") String lastNameYomi, 
+			@Query("first-name-yomi") String firstNameYomi);
 	}
 
 	public static ServerAPI api; 
@@ -33,12 +42,8 @@ class Service {
 		api = server.create(ServerAPI.class);
 	}
 
-	static public PatientDTO getPatient(int patientId) throws IOException {
-		return null;
-	}
-
-	static public List<PatientDTO> searchPatientByName(String lastName, String firstName) throws IOException {
-		return null;
-	}
+	// static public PatientDTO getPatient(int patientId) throws IOException {
+	// 	return null;
+	// }
 
 }

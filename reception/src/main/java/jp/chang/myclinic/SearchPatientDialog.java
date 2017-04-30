@@ -1,11 +1,11 @@
 package jp.chang.myclinic;
 
+import jp.chang.myclinic.dto.PatientDTO;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import javax.swing.*;
-import jp.chang.myclinic.dto.*;
 import java.util.List;
-import java.io.IOException;
 
 class SearchPatientDialog extends JDialog {
 
@@ -13,6 +13,7 @@ class SearchPatientDialog extends JDialog {
 	private JTextField firstNameTextField = new JTextField(6);
 	private JTextField lastNameYomiTextField = new JTextField(6);
 	private JTextField firstNameYomiTextField = new JTextField(6);
+	private JList<PatientDTO> resultList = new JList<>();
 
 	SearchPatientDialog(JFrame owner){
 		super(owner, "患者検索", true);
@@ -63,6 +64,7 @@ class SearchPatientDialog extends JDialog {
 			box.add(firstNameYomiTextField);
 			box.add(Box.createHorizontalStrut(5));
 			JButton searchByYomiButton = new JButton("検索");
+			searchByYomiButton.addActionListener(this::onSearchByYomi);
 			box.add(searchByYomiButton);
 			box.add(Box.createHorizontalGlue());
 			panel.add(box, c);
@@ -78,9 +80,10 @@ class SearchPatientDialog extends JDialog {
 		c.gridy = 3;
 		c.gridwidth = 2;
 		{
-			JList resultList = new JList();
-			resultList.setPreferredSize(new Dimension(400, 300));
-			panel.add(resultList, c);
+			resultList.setCellRenderer(new Renderer());
+			JScrollPane scroll = new JScrollPane(resultList);
+			scroll.setPreferredSize(new Dimension(400, 300));
+			panel.add(scroll, c);
 		}
 		c.gridx = 0;
 		c.gridy = 4;
@@ -109,12 +112,60 @@ class SearchPatientDialog extends JDialog {
 	private void onSearchByName(ActionEvent event){
 		String lastName = lastNameTextField.getText();
 		String firstName = firstNameTextField.getText();
-		try{
-			List<PatientDTO> result = Service.searchPatientByName(lastName, firstName);
-			System.out.println(result);
-		} catch(IOException ex){
-			ex.printStackTrace();
-			JOptionPane.showMessageDialog(this, "サーバーからデータを取得できませんでした。");
+		Service.api.searchPatientByName(lastName, firstName)
+			.whenComplete((List<PatientDTO> result, Throwable t) -> {
+				if( t != null ){
+					t.printStackTrace();
+					JOptionPane.showMessageDialog(this, "サーバーからデータを取得できませんでした。" + t);
+					return;
+				}
+				setResult(result);
+			});
+	}
+
+	private void onSearchByYomi(ActionEvent event){
+		String lastNameYomi = lastNameYomiTextField.getText();
+		String firstNameYomi = firstNameYomiTextField.getText();
+		Service.api.searchPatientByYomi(lastNameYomi, firstNameYomi)
+			.whenComplete((List<PatientDTO> result, Throwable t) -> {
+				if( t != null ){
+					t.printStackTrace();
+					JOptionPane.showMessageDialog(this, "サーバーからデータを取得できませんでした。" + t);
+					return;
+				}
+				setResult(result);
+			});
+	}
+
+	private void setResult(List<PatientDTO> result){
+		PatientDTO[] arr = new PatientDTO[result.size()];
+		for(int i=0;i<result.size();i++){
+			arr[i] = result.get(i);
+		}
+		resultList.setListData(arr);
+	}
+
+	static class Renderer extends JLabel implements ListCellRenderer<PatientDTO> {
+
+		Renderer(){
+			setOpaque(true);
+		}
+
+		@Override
+		public Component getListCellRendererComponent(JList<? extends PatientDTO> list, PatientDTO value, int index,
+			boolean isSelected, boolean cellHasFocus){
+			setText(makeLabel(value));
+			if( isSelected ){
+				setBackground(list.getSelectionBackground());
+			} else {
+				setBackground(list.getBackground());
+			}
+			return this;
+		}
+
+		private String makeLabel(PatientDTO patientDTO){
+			return String.format("[%04d] %s %s （%s %s）", patientDTO.patientId, patientDTO.lastName, patientDTO.firstName,
+				patientDTO.lastNameYomi, patientDTO.firstNameYomi);
 		}
 	}
 
