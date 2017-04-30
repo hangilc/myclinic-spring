@@ -101,6 +101,11 @@ public class PatientController {
 		}
 	}
 
+	@RequestMapping(value="/list-recently-registered-patients", method=RequestMethod.GET)
+	public List<PatientDTO> listRecentlyRegisteredPatients(@RequestParam(name="n", defaultValue="20") int n){
+		return dbGateway.listRecentlyRegisteredPatients(n);
+	}
+
 
 
 }

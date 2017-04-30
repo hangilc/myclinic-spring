@@ -2,6 +2,8 @@ package jp.chang.myclinic.db;
 
 import org.springframework.stereotype.Component;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import jp.chang.myclinic.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +109,11 @@ public class DbGateway {
 		try(Stream<Patient> stream = patientRepository.searchPatientByYomi(lastNameYomi, firstNameYomi, sort)){
 			return stream.map(mapper::toPatientDTO).collect(Collectors.toList());
 		}
+	}
+
+	public List<PatientDTO> listRecentlyRegisteredPatients(int n){
+		PageRequest pageRequest = new PageRequest(0, n, Sort.Direction.DESC, "patientId");
+		return patientRepository.findAll(pageRequest).map(mapper::toPatientDTO).getContent();
 	}
 
 	public int enterShahokokuho(ShahokokuhoDTO shahokokuhoDTO){

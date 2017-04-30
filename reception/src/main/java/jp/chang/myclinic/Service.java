@@ -29,6 +29,9 @@ class Service {
 		@GET("search-patient-by-yomi")
 		CompletableFuture<List<PatientDTO>> searchPatientByYomi(@Query("last-name-yomi") String lastNameYomi, 
 			@Query("first-name-yomi") String firstNameYomi);
+
+		@GET("list-recently-registered-patients")
+		CompletableFuture<List<PatientDTO>> listRecentlyRegisteredPatients();
 	}
 
 	public static ServerAPI api; 

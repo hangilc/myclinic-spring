@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 class SearchPatientDialog extends JDialog {
 
@@ -74,6 +75,7 @@ class SearchPatientDialog extends JDialog {
 		c.gridwidth = 2;
 		{
 			JButton recentButton = new JButton("最近の登録");
+			recentButton.addActionListener(this::onRecentPatients);
 			panel.add(recentButton, c);
 		}
 		c.gridx = 0;
@@ -112,29 +114,28 @@ class SearchPatientDialog extends JDialog {
 	private void onSearchByName(ActionEvent event){
 		String lastName = lastNameTextField.getText();
 		String firstName = firstNameTextField.getText();
-		Service.api.searchPatientByName(lastName, firstName)
-			.whenComplete((List<PatientDTO> result, Throwable t) -> {
-				if( t != null ){
-					t.printStackTrace();
-					JOptionPane.showMessageDialog(this, "サーバーからデータを取得できませんでした。" + t);
-					return;
-				}
-				setResult(result);
-			});
+		handleResult(Service.api.searchPatientByName(lastName, firstName));
 	}
 
 	private void onSearchByYomi(ActionEvent event){
 		String lastNameYomi = lastNameYomiTextField.getText();
 		String firstNameYomi = firstNameYomiTextField.getText();
-		Service.api.searchPatientByYomi(lastNameYomi, firstNameYomi)
-			.whenComplete((List<PatientDTO> result, Throwable t) -> {
-				if( t != null ){
-					t.printStackTrace();
-					JOptionPane.showMessageDialog(this, "サーバーからデータを取得できませんでした。" + t);
-					return;
-				}
-				setResult(result);
-			});
+		handleResult(Service.api.searchPatientByYomi(lastNameYomi, firstNameYomi));
+	}
+
+	private void onRecentPatients(ActionEvent event){
+		handleResult(Service.api.listRecentlyRegisteredPatients());
+	}
+
+	private void handleResult(CompletableFuture<List<PatientDTO>> future){
+		future.whenComplete((List<PatientDTO> result, Throwable t) -> {
+			if( t != null ){
+				t.printStackTrace();
+				JOptionPane.showMessageDialog(this, "サーバーからデータを取得できませんでした。" + t);
+				return;
+			}
+			setResult(result);
+		});
 	}
 
 	private void setResult(List<PatientDTO> result){
