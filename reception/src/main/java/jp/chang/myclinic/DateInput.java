@@ -30,7 +30,7 @@ class DateInput extends JPanel {
 	}
 
 	DateInput(String[] gengouChoices){
-		setLayout(new FlowLayout());
+		setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		gengouList = new JComboBox<String>(gengouChoices);
 		gengouList.setPrototypeDisplayValue("平成 ");
 		gengouList.setSelectedIndex(gengouChoices.length-1);
