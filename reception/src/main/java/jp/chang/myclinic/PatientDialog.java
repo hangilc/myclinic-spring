@@ -16,7 +16,8 @@ class PatientDialog extends JDialog {
 	private DateInput birthdayInput = new DateInput().setGengou("昭和");
 	private JTextField addressField = new JTextField(30);
 	private JTextField phoneField = new JTextField(15);
-	private NewPatientHoken hokenPanel;
+	//private NewPatientHoken hokenPanel;
+	private HokenEditor hokenEditor = new HokenEditor();
 	private JButton okButton = new JButton("OK");
 	private JButton cancelButton = new JButton("キャンセル");
 
@@ -24,10 +25,9 @@ class PatientDialog extends JDialog {
 		setTitle(title);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setupSexChoices();
-		hokenPanel = new NewPatientHoken(this);
 		setLayout(new MigLayout("debug, fill, flowy", 
 			"[grow, fill]", 
-			"[] [grow] []"));
+			"[] [grow, fill] []"));
 		add(makePane1());
 		add(makePane2());
 		add(makePane3());
@@ -65,7 +65,7 @@ class PatientDialog extends JDialog {
 	private JPanel makePane2(){
 		JPanel panel = new JPanel(new MigLayout("", "", ""));
 		panel.setBorder(BorderFactory.createTitledBorder("保険情報"));
-		panel.add(hokenPanel);
+		panel.add(hokenEditor, "width :400:, height :300:");
 		return panel;
 	}
 
