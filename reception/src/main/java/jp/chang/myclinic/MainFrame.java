@@ -156,7 +156,11 @@ class MainFrame extends JFrame {
 	}
 
 	private void doNewPatient(ActionEvent event){
-		//NewPatientDialog newPatientDialog = new NewPatientDialog();
+		{
+			NewPatientDialog dialog = new NewPatientDialog();
+			dialog.setLocationByPlatform(true);
+			dialog.setVisible(true);
+		}
 		PatientDialog newPatientDialog = new PatientDialog("新規患者入力");
 		newPatientDialog.setLocationByPlatform(true);
 		newPatientDialog.setVisible(true);
