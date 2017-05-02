@@ -3,7 +3,10 @@ package jp.chang.myclinic;
 import java.awt.*;
 import javax.swing.*;
 import net.miginfocom.swing.MigLayout;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import jp.chang.myclinic.consts.Sex;
+import jp.chang.myclinic.dto.PatientDTO;
 
 class PatientDialog extends JDialog {
 
@@ -74,6 +77,51 @@ class PatientDialog extends JDialog {
 		panel.add(okButton, "sizegroup cmdbutton");
 		panel.add(cancelButton, "sizegroup cmdbutton");
 		return panel;
+	}
+
+	private Sex getSex(){
+		if( maleButton.isSelected() ){
+			return Sex.Male;
+		} else if( femaleButton.isSelected() ){
+			return Sex.Female;
+		} else {
+			return Sex.Female;
+		}
+	}
+
+	private PatientDTO getPatientDTO(){
+		PatientDTO patient = new PatientDTO();
+		patient.lastName = lastNameField.getText();
+		if( patient.lastName.isEmpty() ){
+			JOptionPane.showMessageDialog(this, "姓が入力されていません。の入力が不適切です。");
+			return null;
+		}
+		patient.firstName = firstNameField.getText();
+		if( patient.firstName.isEmpty() ){
+			JOptionPane.showMessageDialog(this, "名が入力されていません。の入力が不適切です。");
+			return null;
+		}
+		patient.lastNameYomi = lastNameYomiField.getText();
+		if( patient.lastNameYomi.isEmpty() ){
+			JOptionPane.showMessageDialog(this, "姓のよみ方が入力されていません。の入力が不適切です。");
+			return null;
+		}
+		patient.firstNameYomi = firstNameYomiField.getText();
+		if( patient.firstNameYomi.isEmpty() ){
+			JOptionPane.showMessageDialog(this, "名のよみ方が入力されていません。の入力が不適切です。");
+			return null;
+		}
+		patient.sex = getSex().getCode();
+		try{
+			LocalDate birthday = birthdayInput.getValue();
+			patient.birthday = DateTimeFormatter.ISO_LOCAL_DATE.format(birthday);
+		} catch(DateInput.DateInputException ex){
+			JOptionPane.showMessageDialog(this, "生年月日の入力が不適切です。\n" + ex.getMessage());
+			return null;
+		}
+		patient.address = addressField.getText();
+		patient.phone = phoneField.getText();
+		return patient;		
 	}
 
 }
