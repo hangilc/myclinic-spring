@@ -14,15 +14,16 @@ class HokenEditor extends JPanel {
 	private JButton enterKouhiButton = new JButton("新規公費負担");
 
 	HokenEditor(){
-		setLayout(new MigLayout("fill", "[fill, grow] []", "[fill, grow] []"));
-		add(makeMainPart());
+		setLayout(new MigLayout("fill, flowy", "[grow]", "[fill, grow] []"));
+		add(makeMainPart(), "grow");
 		add(makeEnterCommandPart());
 	}
 
 	private JComponent makeMainPart(){
-		JPanel panel = new JPanel(new MigLayout("", "", ""));
-		add(hokenList);
-		add(makeItemCommandPart());
+		JPanel panel = new JPanel(new MigLayout("", "[grow, fill]", "[grow]"));
+		hokenList.setBorder(BorderFactory.createEtchedBorder());
+		panel.add(hokenList, "grow");
+		panel.add(makeItemCommandPart());
 		return panel;
 	}
 
@@ -34,10 +35,10 @@ class HokenEditor extends JPanel {
 	}
 
 	private JComponent makeEnterCommandPart(){
-		JPanel panel = new JPanel(new MigLayout("center", "", ""));
-		add(enterShahoButton);
-		add(enterKoukiButton);
-		add(enterKouhiButton);
+		JPanel panel = new JPanel(new MigLayout("flowx, center", "[] [] []", ""));
+		panel.add(enterShahoButton);
+		panel.add(enterKoukiButton);
+		panel.add(enterKouhiButton);
 		return panel;
 	}
 }

@@ -63,9 +63,10 @@ class PatientDialog extends JDialog {
 	}
 
 	private JPanel makePane2(){
-		JPanel panel = new JPanel(new MigLayout("", "", ""));
+		JPanel panel = new JPanel(new MigLayout("fill", "", ""));
+		hokenEditor.setBorder(BorderFactory.createEtchedBorder());
 		panel.setBorder(BorderFactory.createTitledBorder("保険情報"));
-		panel.add(hokenEditor, "width :400:, height :300:");
+		panel.add(hokenEditor, "");
 		return panel;
 	}
 
