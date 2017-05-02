@@ -14,28 +14,28 @@ class HokenEditor extends JPanel {
 	private JButton enterKouhiButton = new JButton("新規公費負担");
 
 	HokenEditor(){
-		setLayout(new MigLayout("fill, flowy", "[grow]", "[fill, grow] []"));
+		setLayout(new MigLayout("fill, flowy, insets 0", "[grow]", "[grow] []"));
 		add(makeMainPart(), "grow");
 		add(makeEnterCommandPart());
 	}
 
 	private JComponent makeMainPart(){
-		JPanel panel = new JPanel(new MigLayout("", "[grow, fill]", "[grow]"));
-		hokenList.setBorder(BorderFactory.createEtchedBorder());
-		panel.add(hokenList, "grow");
-		panel.add(makeItemCommandPart());
+		JPanel panel = new JPanel(new MigLayout("insets 0", "[grow] []", "[grow]"));
+		JScrollPane scroll = new JScrollPane(hokenList);
+		panel.add(scroll, "grow");
+		panel.add(makeItemCommandPart(), "top");
 		return panel;
 	}
 
 	private JComponent makeItemCommandPart(){
-		JPanel panel = new JPanel(new MigLayout("flowy", "", ""));
+		JPanel panel = new JPanel(new MigLayout("flowy, insets 0", "", ""));
 		panel.add(editButton);
 		panel.add(deleteButton);
 		return panel;
 	}
 
 	private JComponent makeEnterCommandPart(){
-		JPanel panel = new JPanel(new MigLayout("flowx, center", "[] [] []", ""));
+		JPanel panel = new JPanel(new MigLayout("flowx, center, insets 0", "[] [] []", ""));
 		panel.add(enterShahoButton);
 		panel.add(enterKoukiButton);
 		panel.add(enterKouhiButton);

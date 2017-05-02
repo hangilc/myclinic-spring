@@ -11,7 +11,12 @@ import jp.chang.myclinic.util.KouhiUtil;
 class HokenList extends JList<Object> {
 
 	HokenList(){
+		this(6);
+	}
+
+	HokenList(int nrow){
 		setCellRenderer(new Renderer());
+		setVisibleRowCount(nrow);
 	}
 
 	static class Renderer extends JLabel implements ListCellRenderer<Object> {

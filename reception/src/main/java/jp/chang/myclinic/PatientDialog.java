@@ -25,7 +25,7 @@ class PatientDialog extends JDialog {
 		setTitle(title);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setupSexChoices();
-		setLayout(new MigLayout("debug, fill, flowy", 
+		setLayout(new MigLayout("fill, flowy", 
 			"[grow, fill]", 
 			"[] [grow, fill] []"));
 		add(makePane1());
@@ -42,7 +42,7 @@ class PatientDialog extends JDialog {
 	}
 
 	private JPanel makePane1(){
-		JPanel panel = new JPanel(new MigLayout("", "[right] [grow]", ""));
+		JPanel panel = new JPanel(new MigLayout("insets 0", "[right] [grow]", ""));
 		panel.setBorder(BorderFactory.createTitledBorder("基本情報"));
 		panel.add(new JLabel("名前"), "");
 		panel.add(lastNameField, "split 2");
@@ -63,15 +63,14 @@ class PatientDialog extends JDialog {
 	}
 
 	private JPanel makePane2(){
-		JPanel panel = new JPanel(new MigLayout("fill", "", ""));
-		hokenEditor.setBorder(BorderFactory.createEtchedBorder());
+		JPanel panel = new JPanel(new MigLayout("fill, insets 0", "[grow]", "[grow]"));
 		panel.setBorder(BorderFactory.createTitledBorder("保険情報"));
-		panel.add(hokenEditor, "");
+		panel.add(hokenEditor, "grow");
 		return panel;
 	}
 
 	private JPanel makePane3(){
-		JPanel panel = new JPanel(new MigLayout("right", "", ""));
+		JPanel panel = new JPanel(new MigLayout("right, insets 0", "", ""));
 		panel.add(okButton, "sizegroup cmdbutton");
 		panel.add(cancelButton, "sizegroup cmdbutton");
 		return panel;
