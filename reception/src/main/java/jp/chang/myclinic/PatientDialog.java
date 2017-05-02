@@ -42,7 +42,7 @@ class PatientDialog extends JDialog {
 	}
 
 	private JPanel makePane1(){
-		JPanel panel = new JPanel(new MigLayout("insets 0", "[right] [grow]", ""));
+		JPanel panel = new JPanel(new MigLayout("insets 0, gapy 3", "[right] [grow]", ""));
 		panel.setBorder(BorderFactory.createTitledBorder("基本情報"));
 		panel.add(new JLabel("名前"), "");
 		panel.add(lastNameField, "split 2");
