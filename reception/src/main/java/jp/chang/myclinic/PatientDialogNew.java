@@ -32,12 +32,12 @@ class PatientDialogNew extends PatientDialog {
 
 			@Override
 			public CompletableFuture<Boolean> onDeleting(ShahokokuhoDTO shahokokuhoDTO){
-				return CompletableFuture.completedFuture(true);
+				return CompletableFuture.completedFuture(confirm("この社保国保を削除していいですか？"));
 			}
 
 			@Override
 			public void onDeleted(ShahokokuhoDTO shahokokuhoDTO){
-
+				setEnterShahokokuhoButtonEnabled(true);
 			}
 		});
 		setKoukikoureiListener(new HokenListener<KoukikoureiDTO>(){
@@ -63,12 +63,12 @@ class PatientDialogNew extends PatientDialog {
 
 			@Override
 			public CompletableFuture<Boolean> onDeleting(KoukikoureiDTO koukikoureiDTO){
-				return CompletableFuture.completedFuture(true);
+				return CompletableFuture.completedFuture(confirm("この後期高齢を削除していいですか？"));
 			}
 
 			@Override
 			public void onDeleted(KoukikoureiDTO koukikoureiDTO){
-
+				setEnterKoukikoureiButtonEnabled(true);
 			}
 		});
 		setKouhiListener(new HokenListener<KouhiDTO>(){
@@ -96,14 +96,18 @@ class PatientDialogNew extends PatientDialog {
 
 			@Override
 			public CompletableFuture<Boolean> onDeleting(KouhiDTO kouhiDTO){
-				return CompletableFuture.completedFuture(true);
+				return CompletableFuture.completedFuture(confirm("この公費負担を削除していいですか？"));
 			}
-
+			
 			@Override
 			public void onDeleted(KouhiDTO kouhiDTO){
-
+				setEnterKouhiButtonEnabled(true);
 			}
 		});
+	}
+
+	private boolean confirm(String msg){
+		return JOptionPane.showConfirmDialog(this, msg, "確認", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
 	}
 
 	@Override
