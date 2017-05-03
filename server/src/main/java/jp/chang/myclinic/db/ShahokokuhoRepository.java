@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.sql.Date;
 import java.util.stream.Stream;
+import java.util.List;
 
 public interface ShahokokuhoRepository extends CrudRepository<Shahokokuho, Integer> {
 
@@ -15,4 +16,5 @@ public interface ShahokokuhoRepository extends CrudRepository<Shahokokuho, Integ
     )
     Stream<Shahokokuho> findAvailable(int patientId, Date at, Sort sort);
 
+    List<Shahokokuho> findByPatientId(int patientId, Sort sort);
 }

@@ -131,6 +131,12 @@ public class DbGateway {
 		}
 	}
 
+	public List<ShahokokuhoDTO> findShahokokuhoByPatient(int patientId){
+		Sort sort = new Sort(Sort.Direction.DESC, "shahokokuhoId");
+		return shahokokuhoRepository.findByPatientId(patientId, sort).stream()
+			.map(mapper::toShahokokuhoDTO).collect(Collectors.toList());
+	}
+
 	public int enterKoukikourei(KoukikoureiDTO koukikoureiDTO){
 		Koukikourei koukikourei = mapper.fromKoukikoureiDTO(koukikoureiDTO);
 		koukikourei.setKoukikoureiId(0);
@@ -144,6 +150,12 @@ public class DbGateway {
 		try(Stream<Koukikourei> stream = koukikoureiRepository.findAvailable(patientId, atDate, sort)){
 			return stream.map(mapper::toKoukikoureiDTO).collect(Collectors.toList());
 		}
+	}
+
+	public List<KoukikoureiDTO> findKoukikoureiByPatient(int patientId){
+		Sort sort = new Sort(Sort.Direction.DESC, "koukikoureiId");
+		return koukikoureiRepository.findByPatientId(patientId, sort).stream()
+			.map(mapper::toKoukikoureiDTO).collect(Collectors.toList());
 	}
 
 	public int enterRoujin(RoujinDTO roujinDTO){
@@ -161,6 +173,12 @@ public class DbGateway {
 		}
 	}
 
+	public List<RoujinDTO> findRoujinByPatient(int patientId){
+		Sort sort = new Sort(Sort.Direction.DESC, "roujinId");
+		return roujinRepository.findByPatientId(patientId, sort).stream()
+			.map(mapper::toRoujinDTO).collect(Collectors.toList());
+	}
+
 	public int enterKouhi(KouhiDTO kouhiDTO){
 		Kouhi kouhi = mapper.fromKouhiDTO(kouhiDTO);
 		kouhi.setKouhiId(0);
@@ -174,6 +192,21 @@ public class DbGateway {
 		try(Stream<Kouhi> stream = kouhiRepository.findAvailable(patientId, atDate, sort)){
 			return stream.map(mapper::toKouhiDTO).collect(Collectors.toList());
 		}
+	}
+
+	public List<KouhiDTO> findKouhiByPatient(int patientId){
+		Sort sort = new Sort(Sort.Direction.DESC, "kouhiId");
+		return kouhiRepository.findByPatientId(patientId, sort).stream()
+			.map(mapper::toKouhiDTO).collect(Collectors.toList());
+	}
+
+	public HokenListDTO findHokenByPatient(int patientId){
+		HokenListDTO hokenListDTO = new HokenListDTO();
+		hokenListDTO.shahokokuhoListDTO = findShahokokuhoByPatient(patientId);
+		hokenListDTO.koukikoureiListDTO = findKoukikoureiByPatient(patientId);
+		hokenListDTO.roujinListDTO = findRoujinByPatient(patientId);
+		hokenListDTO.kouhiListDTO = findKouhiByPatient(patientId);
+		return hokenListDTO;
 	}
 
 	public void enterCharge(ChargeDTO chargeDTO){

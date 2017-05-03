@@ -19,6 +19,9 @@ class Service {
 		@GET("list-wqueue-full")
 		CompletableFuture<List<WqueueFullDTO>> listWqueue();
 
+		@GET("get-patient")
+		CompletableFuture<PatientDTO> getPatient(@Query("patient-id") int patientId);
+
 		@POST("enter-patient-with-hoken")
 		CompletableFuture<PatientHokenListDTO> enterPatientWithHoken(@Body PatientHokenListDTO patientHokenListDTO);
 

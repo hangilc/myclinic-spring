@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.sql.Date;
 import java.util.stream.Stream;
+import java.util.List;
 
 public interface RoujinRepository extends CrudRepository<Roujin, Integer> {
 
@@ -15,4 +16,5 @@ public interface RoujinRepository extends CrudRepository<Roujin, Integer> {
     )
     Stream<Roujin> findAvailable(int patientId, Date at, Sort sort);
 
+    List<Roujin> findByPatientId(int patientId, Sort sort);
 }

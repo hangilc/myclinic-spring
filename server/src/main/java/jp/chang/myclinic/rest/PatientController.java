@@ -92,6 +92,8 @@ public class PatientController {
 		return dbGateway.listRecentlyRegisteredPatients(n);
 	}
 
-
-
+	@RequestMapping(value="/list-hoken", method=RequestMethod.GET)
+	public HokenListDTO listHoken(@RequestParam(name="patient-id") int patientId){
+		return dbGateway.findHokenByPatient(patientId);
+	}
 }

@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.sql.Date;
 import java.util.stream.Stream;
+import java.util.List;
 
 public interface KoukikoureiRepository extends CrudRepository<Koukikourei, Integer> {
 
@@ -14,4 +15,6 @@ public interface KoukikoureiRepository extends CrudRepository<Koukikourei, Integ
             " (h.validUpto = '0000-00-00' or h.validUpto >= ?2) "
     )
     Stream<Koukikourei> findAvailable(int patientId, Date at, Sort sort);
+
+    List<Koukikourei> findByPatientId(int patientId, Sort sort);
 }
