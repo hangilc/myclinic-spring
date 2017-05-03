@@ -5,6 +5,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import net.miginfocom.swing.MigLayout;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.time.LocalDate;
@@ -19,142 +20,166 @@ class SearchPatientDialog extends JDialog {
 	private JTextField firstNameTextField = new JTextField(6);
 	private JTextField lastNameYomiTextField = new JTextField(6);
 	private JTextField firstNameYomiTextField = new JTextField(6);
+	private JButton searchByNameButton = new JButton("検索");
+	private JButton searchByYomiButton = new JButton("検索");
+	private JButton recentButton = new JButton("最近の登録");
 	private JList<PatientDTO> resultList = new JList<>();
-	private JTextArea infoArea = new JTextArea(7, 44);
-	private static DateTimeFormatter birthdayFormatter = DateTimeFormatter.ofPattern("Gyy年MM月dd日");
+	private JButton registerButton = new JButton("診療受付");
+	private PatientInfo infoArea = new PatientInfo();
+	private JButton closeButton = new JButton("閉じる	");
 
 	SearchPatientDialog(){
 		setTitle("患者検索");
-		setupCenter();
-		setupSouth();
+		setupUI();
+		bind();
 		pack();
 	}
 
-	private void setupCenter(){
-		JPanel panel = new JPanel();
-		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
-		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-		panel.add(centerBox1());
-		add(panel, BorderLayout.CENTER);
+	private void setupUI(){
+		setLayout(new MigLayout("debug, fill, wrap 1", "[grow]", "[] [grow] [grow] []"));
+		add(makeSearchTextInput());
+		add(makeSearchResult(), "grow");
+		add(makeInfo(), "grow");
+		add(makeSouth(), "right");
 	}
 
-	private JComponent centerBox1(){
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		c.insets = new Insets(0, 0, 5, 5);
-		c.anchor = GridBagConstraints.LINE_START;
-		c.gridy = 0;
-		panel.add(new JLabel("名前"), c);
-		c.gridx = 1;
-		{
-			JPanel box = new JPanel();
-			box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
-			box.add(lastNameTextField);
-			box.add(Box.createHorizontalStrut(5));
-			box.add(firstNameTextField);
-			box.add(Box.createHorizontalStrut(5));
-			JButton searchByNameButton = new JButton("検索");
-			searchByNameButton.addActionListener(this::onSearchByName);
-			box.add(searchByNameButton);
-			box.add(Box.createHorizontalGlue());
-			panel.add(box, c);
-		}
-		c.gridx = 0;
-		c.gridy = 1;
-		panel.add(new JLabel("よみ"), c);
-		c.gridx = 1;
-		{
-			JPanel box = new JPanel();
-			box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
-			box.add(lastNameYomiTextField);
-			box.add(Box.createHorizontalStrut(5));
-			box.add(firstNameYomiTextField);
-			box.add(Box.createHorizontalStrut(5));
-			JButton searchByYomiButton = new JButton("検索");
-			searchByYomiButton.addActionListener(this::onSearchByYomi);
-			box.add(searchByYomiButton);
-			box.add(Box.createHorizontalGlue());
-			panel.add(box, c);
-		}
-		c.gridx = 0;
-		c.gridy = 2;
-		c.gridwidth = 2;
-		{
-			JButton recentButton = new JButton("最近の登録");
-			recentButton.addActionListener(this::onRecentPatients);
-			panel.add(recentButton, c);
-		}
-		c.gridx = 0;
-		c.gridy = 3;
-		c.gridwidth = 2;
-		{
-			resultList.setCellRenderer(new Renderer());
-			resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			resultList.addListSelectionListener(event -> {
-				if( event.getValueIsAdjusting() ){
-					PatientDTO select = resultList.getSelectedValue();
-					setInfo(select);
-				}
-			});
-			JScrollPane scroll = new JScrollPane(resultList);
-			scroll.setPreferredSize(new Dimension(400, 260));
-			panel.add(scroll, c);
-		}
-		c.gridx = 0;
-		c.gridy = 4;
-		c.gridwidth = 2;
-		{
-			JPanel box = new JPanel();
-			box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
-			infoArea.setEditable(false);
-			JScrollPane scroll = new JScrollPane(infoArea);
-			JPanel commandBox = new JPanel();
-			commandBox.setLayout(new BoxLayout(commandBox, BoxLayout.PAGE_AXIS));
-			JButton registerButton = new JButton("診療受付");
-			commandBox.add(registerButton);
-			commandBox.add(Box.createVerticalGlue());
-			box.add(scroll);
-			box.add(Box.createHorizontalStrut(5));
-			box.add(commandBox);
-			panel.add(box, c);
-		}
+	private void bind(){
+		searchByNameButton.addActionListener(this::onSearchByName);
+		searchByYomiButton.addActionListener(this::onSearchByYomi);
+		closeButton.addActionListener(event -> dispose());
+	}
+
+	private JComponent makeSearchTextInput(){
+		JPanel panel = new JPanel(new MigLayout("insets 0", "[right] [grow]", ""));
+		panel.add(new JLabel("名前"));
+		panel.add(firstNameTextField, "split 3");
+		panel.add(lastNameTextField);
+		panel.add(searchByNameButton, "wrap");
+		panel.add(new JLabel("よみ"));
+		panel.add(firstNameYomiTextField, "split 3");
+		panel.add(lastNameYomiTextField);
+		panel.add(searchByYomiButton, "wrap");
+		panel.add(recentButton, "left, span 2");
 		return panel;
 	}
 
-	private void setupSouth(){
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		panel.add(Box.createHorizontalGlue());
-		JButton closeButton = new JButton("閉じる");
-		closeButton.addActionListener(event -> dispose());
-		panel.add(closeButton);
-		add(panel, BorderLayout.SOUTH);
+	private JComponent makeSearchResult(){
+		resultList.setCellRenderer(new Renderer());
+		resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JPanel panel = new JPanel(new MigLayout("insets 0", "[grow] []", "[grow]"));
+		JScrollPane scroll = new JScrollPane(resultList);
+		panel.add(scroll, "grow, width 260, height 300");
+		panel.add(registerButton, "top");
+		return panel;
 	}
 
-	private String makeBirthdayPart(String dateString){
-		if( dateString == null || dateString.isEmpty() || "0000-00-00".equals(dateString) ){
-			return null;
-		} else {
-			LocalDate birthday = LocalDate.parse(dateString);
-			JapaneseDate jd = JapaneseDate.from(birthday);
-			long age = birthday.until(LocalDate.now(), ChronoUnit.YEARS);
-			return String.format("%s（%d 才）", birthdayFormatter.format(jd), age);
-		}
+	private JComponent makeInfo(){
+		JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+		panel.add(infoArea, "grow");
+		return panel;
 	}
+
+	private JComponent makeSouth(){
+		JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+		panel.add(closeButton);
+		return panel;
+	}
+
+	// private void setupCenter(){
+	// 	JPanel panel = new JPanel();
+	// 	panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
+	// 	panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+	// 	panel.add(centerBox1());
+	// 	add(panel, BorderLayout.CENTER);
+	// }
+
+	// private JComponent centerBox1(){
+	// 	JPanel panel = new JPanel();
+	// 	panel.setLayout(new GridBagLayout());
+	// 	GridBagConstraints c = new GridBagConstraints();
+	// 	c.insets = new Insets(0, 0, 5, 5);
+	// 	c.anchor = GridBagConstraints.LINE_START;
+	// 	c.gridy = 0;
+	// 	panel.add(new JLabel("名前"), c);
+	// 	c.gridx = 1;
+	// 	{
+	// 		JPanel box = new JPanel();
+	// 		box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
+	// 		box.add(lastNameTextField);
+	// 		box.add(Box.createHorizontalStrut(5));
+	// 		box.add(firstNameTextField);
+	// 		box.add(Box.createHorizontalStrut(5));
+	// 		JButton searchByNameButton = new JButton("検索");
+	// 		searchByNameButton.addActionListener(this::onSearchByName);
+	// 		box.add(searchByNameButton);
+	// 		box.add(Box.createHorizontalGlue());
+	// 		panel.add(box, c);
+	// 	}
+	// 	c.gridx = 0;
+	// 	c.gridy = 1;
+	// 	panel.add(new JLabel("よみ"), c);
+	// 	c.gridx = 1;
+	// 	{
+	// 		JPanel box = new JPanel();
+	// 		box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
+	// 		box.add(lastNameYomiTextField);
+	// 		box.add(Box.createHorizontalStrut(5));
+	// 		box.add(firstNameYomiTextField);
+	// 		box.add(Box.createHorizontalStrut(5));
+	// 		JButton searchByYomiButton = new JButton("検索");
+	// 		searchByYomiButton.addActionListener(this::onSearchByYomi);
+	// 		box.add(searchByYomiButton);
+	// 		box.add(Box.createHorizontalGlue());
+	// 		panel.add(box, c);
+	// 	}
+	// 	c.gridx = 0;
+	// 	c.gridy = 2;
+	// 	c.gridwidth = 2;
+	// 	{
+	// 		JButton recentButton = new JButton("最近の登録");
+	// 		recentButton.addActionListener(this::onRecentPatients);
+	// 		panel.add(recentButton, c);
+	// 	}
+	// 	c.gridx = 0;
+	// 	c.gridy = 3;
+	// 	c.gridwidth = 2;
+	// 	{
+	// 		resultList.setCellRenderer(new Renderer());
+	// 		resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	// 		resultList.addListSelectionListener(event -> {
+	// 			if( event.getValueIsAdjusting() ){
+	// 				PatientDTO select = resultList.getSelectedValue();
+	// 				setInfo(select);
+	// 			}
+	// 		});
+	// 		JScrollPane scroll = new JScrollPane(resultList);
+	// 		scroll.setPreferredSize(new Dimension(400, 260));
+	// 		panel.add(scroll, c);
+	// 	}
+	// 	c.gridx = 0;
+	// 	c.gridy = 4;
+	// 	c.gridwidth = 2;
+	// 	{
+	// 		JPanel box = new JPanel();
+	// 		box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
+	// 		// infoArea.setEditable(false);
+	// 		// JScrollPane scroll = new JScrollPane(infoArea);
+	// 		JPanel commandBox = new JPanel();
+	// 		commandBox.setLayout(new BoxLayout(commandBox, BoxLayout.PAGE_AXIS));
+	// 		JButton registerButton = new JButton("診療受付");
+	// 		commandBox.add(registerButton);
+	// 		commandBox.add(Box.createVerticalGlue());
+	// 		box.add(infoArea);
+	// 		box.add(Box.createHorizontalStrut(5));
+	// 		box.add(commandBox);
+	// 		panel.add(box, c);
+	// 	}
+	// 	return panel;
+	// }
+
 
 	private void setInfo(PatientDTO data){
-		String birthdayPart = makeBirthdayPart(data.birthday);
-
-		infoArea.setText("");
-		infoArea.append(String.format("患者番号： %d\n", data.patientId));
-		infoArea.append(String.format("名前： %s %s\n", data.lastName, data.firstName));
-		infoArea.append(String.format("よみ： %s %s\n", data.lastNameYomi, data.firstNameYomi));
-		infoArea.append(String.format("生年月日： %s\n", birthdayPart == null ? "（不明）" : birthdayPart));
-		infoArea.append(String.format("性別： %s性\n", "M".equals(data.sex) ? "男" : "女"));
-		infoArea.append(String.format("住所： %s\n", data.address));
-		infoArea.append(String.format("電話： %s", data.phone));
+		infoArea.setPatient(data);
 	}
 
 	private void onSearchByName(ActionEvent event){

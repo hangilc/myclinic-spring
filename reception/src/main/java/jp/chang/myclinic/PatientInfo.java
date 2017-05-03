@@ -19,7 +19,7 @@ class PatientInfo extends JPanel {
 	private JLabel phoneLabel = new JLabel("");
 
 	PatientInfo(){
-		setLayout(new MigLayout("debug, insets 0, fill", "[right] [grow]", ""));
+		setLayout(new MigLayout("insets 0, fill", "[right] [grow]", ""));
 		addressArea.setEditable(false);
 		addressArea.setLineWrap(true);
 		addressArea.setBackground(getBackground());
