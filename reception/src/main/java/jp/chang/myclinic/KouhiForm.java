@@ -84,7 +84,7 @@ class KouhiForm extends JDialog {
 		enterButton.addActionListener(event -> {
 			if( updateValue() ){
 				dispose();
-				onEnter(kouhiDTO);
+				onEnter();
 			}
 		});
 		JButton cancelButton = new JButton("キャンセル");
@@ -175,7 +175,7 @@ class KouhiForm extends JDialog {
 		return true;
 	}
 
-	protected void onEnter(KouhiDTO kouhiDTO){ }
+	protected void onEnter(){ }
 
 	protected void onCancel(){ }
 

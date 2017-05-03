@@ -182,7 +182,7 @@ class ShahokokuhoForm extends JDialog {
 		enterButton.addActionListener(event -> {
 			if( updateValue() ){
 				dispose();
-				onEnter(shahokokuhoDTO);
+				onEnter();
 			}
 		});
 		JButton cancelButton = new JButton("キャンセル");
@@ -257,7 +257,7 @@ class ShahokokuhoForm extends JDialog {
 		return true;
 	}
 
-	protected void onEnter(ShahokokuhoDTO shahokokuhoDTO){
+	protected void onEnter(){
 
 	}
 

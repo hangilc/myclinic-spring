@@ -38,6 +38,18 @@ class PatientDialog extends JDialog {
 		pack();
 	}
 
+	public void setShahokokuhoListener(HokenListener<ShahokokuhoDTO> shahokokuhoListener){
+		hokenEditor.setShahokokuhoListener(shahokokuhoListener);
+	}
+
+	public void setKoukikoureiListener(HokenListener<KoukikoureiDTO> koukikoureiListener){
+		hokenEditor.setKoukikoureiListener(koukikoureiListener);
+	}
+
+	public void setKouhiListener(HokenListener<KouhiDTO> kouhiListener){
+		hokenEditor.setKouhiListener(kouhiListener);
+	}
+
 	private void setupSexChoices(){
 		ButtonGroup buttonGroup = new ButtonGroup();
 		buttonGroup.add(maleButton);
@@ -46,34 +58,7 @@ class PatientDialog extends JDialog {
 	}
 
 	private void setupHokenEditor(){
-		hokenEditor = new HokenEditor(){
-			@Override
-			protected void onShahokokuhoEntered(ShahokokuhoDTO shahokokuhoDTO){
-				PatientDialog.this.onShahokokuhoEntered(shahokokuhoDTO);
-			}
-
-			@Override
-			protected void onKoukikoureiEntered(KoukikoureiDTO koukikoureiDTO){
-				PatientDialog.this.onKoukikoureiEntered(koukikoureiDTO);
-			}
-
-			@Override
-			protected void onKouhiEntered(KouhiDTO kouhiDTO){
-				PatientDialog.this.onKouhiEntered(kouhiDTO);
-			}
-		};
-	}
-
-	protected void onShahokokuhoEntered(ShahokokuhoDTO shahokokuhoDTO){
-
-	}
-
-	protected void onKoukikoureiEntered(KoukikoureiDTO koukikoureiDTO){
-
-	}
-
-	protected void onKouhiEntered(KouhiDTO kouhiDTO){
-
+		hokenEditor = new HokenEditor();
 	}
 
 	public int getKouhiListSize(){

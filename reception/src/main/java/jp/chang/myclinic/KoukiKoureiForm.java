@@ -104,7 +104,7 @@ class KoukikoureiForm extends JDialog {
 		enterButton.addActionListener(event -> {
 			if( doUpdate() ){
 				dispose();
-				onEnter(koukikoureiDTO);
+				onEnter();
 			}
 		});
 		JButton cancelButton = new JButton("キャンセル");
@@ -207,7 +207,7 @@ class KoukikoureiForm extends JDialog {
 	}
 
 	protected
-	void onEnter(KoukikoureiDTO koukikoureiDTO){ }
+	void onEnter(){ }
 
 	protected
 	void onCancel(){ }
