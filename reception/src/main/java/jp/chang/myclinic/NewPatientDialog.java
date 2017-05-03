@@ -186,16 +186,16 @@ class NewPatientDialog extends JDialog {
 		patientHokenDTO.hokenDTO.kouhi1DTO = hokenPanel.getKouhi1DTO();
 		patientHokenDTO.hokenDTO.kouhi2DTO = hokenPanel.getKouhi2DTO();
 		patientHokenDTO.hokenDTO.kouhi3DTO = hokenPanel.getKouhi3DTO();
-		Service.api.enterPatientWithHoken(patientHokenDTO)
-			.whenComplete((PatientHokenDTO result, Throwable t) -> {
-				if( t != null ){
-					t.printStackTrace();
-					JOptionPane.showMessageDialog(NewPatientDialog.this, "エラー\n" + t);
-					okButton.setEnabled(true);
-					return;
-				}
-				dispose();
-			});
+		// Service.api.enterPatientWithHoken(patientHokenDTO)
+		// 	.whenComplete((PatientHokenDTO result, Throwable t) -> {
+		// 		if( t != null ){
+		// 			t.printStackTrace();
+		// 			JOptionPane.showMessageDialog(NewPatientDialog.this, "エラー\n" + t);
+		// 			okButton.setEnabled(true);
+		// 			return;
+		// 		}
+		// 		dispose();
+		// 	});
 	}
 }
 

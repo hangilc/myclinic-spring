@@ -17,6 +17,15 @@ class KouhiForm extends JDialog {
 
 	KouhiForm(JDialog owner, String title, KouhiDTO kouhiDTO){
 		super(owner, title, true);
+		init(kouhiDTO);
+	}
+
+	KouhiForm(Window owner, String title, KouhiDTO kouhiDTO){
+		super(owner, title, Dialog.ModalityType.DOCUMENT_MODAL);
+		init(kouhiDTO);
+	}
+
+	private void init(KouhiDTO kouhiDTO){
 		this.kouhiDTO = kouhiDTO;
 		setupCenter();
 		setupSouth();

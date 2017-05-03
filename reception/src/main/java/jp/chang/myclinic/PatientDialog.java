@@ -6,7 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import jp.chang.myclinic.consts.Sex;
-import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.*;
 
 class PatientDialog extends JDialog {
 
@@ -19,8 +19,7 @@ class PatientDialog extends JDialog {
 	private DateInput birthdayInput = new DateInput().setGengou("昭和");
 	private JTextField addressField = new JTextField(30);
 	private JTextField phoneField = new JTextField(15);
-	//private NewPatientHoken hokenPanel;
-	private HokenEditor hokenEditor = new HokenEditor();
+	private HokenEditor hokenEditor;
 	private JButton okButton = new JButton("OK");
 	private JButton cancelButton = new JButton("キャンセル");
 
@@ -28,12 +27,14 @@ class PatientDialog extends JDialog {
 		setTitle(title);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setupSexChoices();
+		setupHokenEditor();
 		setLayout(new MigLayout("fill, flowy", 
 			"[grow, fill]", 
 			"[] [grow, fill] []"));
 		add(makePane1());
 		add(makePane2());
 		add(makePane3());
+		bind();
 		pack();
 	}
 
@@ -42,6 +43,41 @@ class PatientDialog extends JDialog {
 		buttonGroup.add(maleButton);
 		buttonGroup.add(femaleButton);
 		femaleButton.setSelected(true);
+	}
+
+	private void setupHokenEditor(){
+		hokenEditor = new HokenEditor(){
+			@Override
+			protected void onShahokokuhoEntered(ShahokokuhoDTO shahokokuhoDTO){
+				PatientDialog.this.onShahokokuhoEntered(shahokokuhoDTO);
+			}
+
+			@Override
+			protected void onKoukikoureiEntered(KoukikoureiDTO koukikoureiDTO){
+				PatientDialog.this.onKoukikoureiEntered(koukikoureiDTO);
+			}
+
+			@Override
+			protected void onKouhiEntered(KouhiDTO kouhiDTO){
+				PatientDialog.this.onKouhiEntered(kouhiDTO);
+			}
+		};
+	}
+
+	protected void onShahokokuhoEntered(ShahokokuhoDTO shahokokuhoDTO){
+
+	}
+
+	protected void onKoukikoureiEntered(KoukikoureiDTO koukikoureiDTO){
+
+	}
+
+	protected void onKouhiEntered(KouhiDTO kouhiDTO){
+
+	}
+
+	public int getKouhiListSize(){
+		return hokenEditor.getKouhiListSize();
 	}
 
 	private JPanel makePane1(){
@@ -77,6 +113,45 @@ class PatientDialog extends JDialog {
 		panel.add(okButton, "sizegroup cmdbutton");
 		panel.add(cancelButton, "sizegroup cmdbutton");
 		return panel;
+	}
+
+	private void bind(){
+		okButton.addActionListener(event -> {
+			okButton.setEnabled(false);
+			PatientHokenListDTO patientHokenListDTO = new PatientHokenListDTO();
+			patientHokenListDTO.patientDTO = getPatientDTO();
+			if( patientHokenListDTO.patientDTO != null ){
+				patientHokenListDTO.hokenListDTO = hokenEditor.getHokenListDTO();
+				onEnter(patientHokenListDTO);
+			} else {
+				okButton.setEnabled(true);
+			}
+		});
+		cancelButton.addActionListener(event -> onCancel());
+	}
+
+	protected void setEnterShahokokuhoButtonEnabled(boolean enabled){
+		hokenEditor.setEnterShahokokuhoButtonEnabled(enabled);
+	}
+
+	protected void setEnterKoukikoureiButtonEnabled(boolean enabled){
+		hokenEditor.setEnterKoukikoureiButtonEnabled(enabled);
+	}
+
+	protected void setEnterKouhiButtonEnabled(boolean enabled){
+		hokenEditor.setEnterKouhiButtonEnabled(enabled);
+	}
+
+	protected void setEnterButtonEnabled(boolean enabled){
+		okButton.setEnabled(enabled);
+	}
+
+	protected void onCancel(){
+		dispose();
+	}
+
+	protected void onEnter(PatientHokenListDTO patientDTO){
+
 	}
 
 	private Sex getSex(){

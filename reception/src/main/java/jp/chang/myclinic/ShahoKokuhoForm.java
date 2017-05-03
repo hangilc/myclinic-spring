@@ -25,6 +25,15 @@ class ShahokokuhoForm extends JDialog {
 
 	ShahokokuhoForm(JDialog owner, String title, ShahokokuhoDTO shahokokuhoDTO){
 		super(owner, title, true);
+		init(shahokokuhoDTO);
+	}
+
+	ShahokokuhoForm(Window owner, String title, ShahokokuhoDTO shahokokuhoDTO){
+		super(owner, title, Dialog.ModalityType.DOCUMENT_MODAL);
+		init(shahokokuhoDTO);
+	}
+
+	private void init(ShahokokuhoDTO shahokokuhoDTO){
 		this.shahokokuhoDTO = shahokokuhoDTO;
 		setupCenter();
 		setupSouth();

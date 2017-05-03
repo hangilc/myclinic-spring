@@ -20,6 +20,15 @@ class KoukikoureiForm extends JDialog {
 
 	KoukikoureiForm(JDialog owner, String title, KoukikoureiDTO koukikoureiDTO){
 		super(owner, title, true);
+		init(koukikoureiDTO);
+	}
+
+	KoukikoureiForm(Window owner, String title, KoukikoureiDTO koukikoureiDTO){
+		super(owner, title, Dialog.ModalityType.DOCUMENT_MODAL);
+		init(koukikoureiDTO);
+	}
+
+	private void init(KoukikoureiDTO koukikoureiDTO){
 		this.koukikoureiDTO = koukikoureiDTO;
 		setupCenter();
 		setupSouth();

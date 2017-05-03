@@ -20,7 +20,7 @@ class Service {
 		CompletableFuture<List<WqueueFullDTO>> listWqueue();
 
 		@POST("enter-patient-with-hoken")
-		CompletableFuture<PatientHokenDTO> enterPatientWithHoken(@Body PatientHokenDTO patientHokenDTO);
+		CompletableFuture<PatientHokenListDTO> enterPatientWithHoken(@Body PatientHokenListDTO patientHokenListDTO);
 
 		@GET("search-patient-by-name")
 		CompletableFuture<List<PatientDTO>> searchPatientByName(@Query("last-name") String lastName, 
