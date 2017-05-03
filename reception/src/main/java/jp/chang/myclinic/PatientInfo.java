@@ -11,30 +11,37 @@ import jp.chang.myclinic.util.DateTimeUtil;
 
 class PatientInfo extends JPanel {
 
-	private JLabel nameLabel = new JLabel("");
-	private JLabel yomiLabel = new JLabel("");
+	private JTextArea nameLabel = new JTextArea();
+	private JTextArea yomiLabel = new JTextArea();
 	private JLabel birthdayLabel = new JLabel("");
 	private JLabel sexLabel = new JLabel("");
 	private JTextArea addressArea = new JTextArea();
-	private JLabel phoneLabel = new JLabel("");
+	private JTextArea phoneLabel = new JTextArea();
 
 	PatientInfo(){
 		setLayout(new MigLayout("insets 0, fill", "[right] [grow]", ""));
-		addressArea.setEditable(false);
-		addressArea.setLineWrap(true);
-		addressArea.setBackground(getBackground());
+		prepTextArea(nameLabel);
+		prepTextArea(yomiLabel);
+		prepTextArea(addressArea);
+		prepTextArea(phoneLabel);
 		add(new JLabel("名前："));
-		add(nameLabel, "wrap");
+		add(nameLabel, "grow, wmin 10, wrap");
 		add(new JLabel("よみ："));
-		add(yomiLabel, "wrap");
+		add(yomiLabel, "grow, wmin 10, wrap");
 		add(new JLabel("生年月日："));
 		add(birthdayLabel, "wrap");
 		add(new JLabel("性別："));
 		add(sexLabel, "wrap");
 		add(new JLabel("住所："));
-		add(addressArea, "growx, wmin 10, wrap");
+		add(addressArea, "grow, wmin 10, wrap");
 		add(new JLabel("電話："));
-		add(phoneLabel);
+		add(phoneLabel, "grow, wmin 10, wrap");
+	}
+
+	private void prepTextArea(JTextArea ta){
+		ta.setEditable(false);
+		ta.setLineWrap(true);
+		ta.setBackground(getBackground());
 	}
 
 	public void setPatient(PatientDTO patient){

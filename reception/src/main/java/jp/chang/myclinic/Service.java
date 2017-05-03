@@ -45,8 +45,4 @@ class Service {
 		api = server.create(ServerAPI.class);
 	}
 
-	// static public PatientDTO getPatient(int patientId) throws IOException {
-	// 	return null;
-	// }
-
 }

@@ -24,6 +24,7 @@ class SearchPatientDialog extends JDialog {
 	private JButton searchByYomiButton = new JButton("検索");
 	private JButton recentButton = new JButton("最近の登録");
 	private JList<PatientDTO> resultList = new JList<>();
+	private JButton editButton = new JButton("編集");
 	private JButton registerButton = new JButton("診療受付");
 	private PatientInfo infoArea = new PatientInfo();
 	private JButton closeButton = new JButton("閉じる	");
@@ -36,7 +37,7 @@ class SearchPatientDialog extends JDialog {
 	}
 
 	private void setupUI(){
-		setLayout(new MigLayout("debug, fill, wrap 1", "[grow]", "[] [grow] [grow] []"));
+		setLayout(new MigLayout("fill, wrap 1", "[grow]", "[] [grow] [grow] []"));
 		add(makeSearchTextInput());
 		add(makeSearchResult(), "grow");
 		add(makeInfo(), "grow");
@@ -44,20 +45,35 @@ class SearchPatientDialog extends JDialog {
 	}
 
 	private void bind(){
+		lastNameTextField.addActionListener(this::onSearchByName);
+		firstNameTextField.addActionListener(this::onSearchByName);
 		searchByNameButton.addActionListener(this::onSearchByName);
+		lastNameYomiTextField.addActionListener(this::onSearchByYomi);
+		firstNameYomiTextField.addActionListener(this::onSearchByYomi);
 		searchByYomiButton.addActionListener(this::onSearchByYomi);
+		recentButton.addActionListener(this::onRecentPatients);
+		bindList();
 		closeButton.addActionListener(event -> dispose());
+	}
+
+	private void bindList(){
+		resultList.addListSelectionListener(event -> {
+			if( event.getValueIsAdjusting() ){
+				PatientDTO select = resultList.getSelectedValue();
+				setInfo(select);
+			}
+		});
 	}
 
 	private JComponent makeSearchTextInput(){
 		JPanel panel = new JPanel(new MigLayout("insets 0", "[right] [grow]", ""));
 		panel.add(new JLabel("名前"));
-		panel.add(firstNameTextField, "split 3");
-		panel.add(lastNameTextField);
+		panel.add(lastNameTextField, "split 3");
+		panel.add(firstNameTextField);
 		panel.add(searchByNameButton, "wrap");
 		panel.add(new JLabel("よみ"));
-		panel.add(firstNameYomiTextField, "split 3");
-		panel.add(lastNameYomiTextField);
+		panel.add(lastNameYomiTextField, "split 3");
+		panel.add(firstNameYomiTextField);
 		panel.add(searchByYomiButton, "wrap");
 		panel.add(recentButton, "left, span 2");
 		return panel;
@@ -69,13 +85,14 @@ class SearchPatientDialog extends JDialog {
 		JPanel panel = new JPanel(new MigLayout("insets 0", "[grow] []", "[grow]"));
 		JScrollPane scroll = new JScrollPane(resultList);
 		panel.add(scroll, "grow, width 260, height 300");
-		panel.add(registerButton, "top");
 		return panel;
 	}
 
 	private JComponent makeInfo(){
-		JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+		JPanel panel = new JPanel(new MigLayout("insets 0", "[grow]", ""));
 		panel.add(infoArea, "grow");
+		panel.add(editButton, "top, flowy, split 2, sizegroup btn");
+		panel.add(registerButton, "sizegroup btn");
 		return panel;
 	}
 
@@ -84,99 +101,6 @@ class SearchPatientDialog extends JDialog {
 		panel.add(closeButton);
 		return panel;
 	}
-
-	// private void setupCenter(){
-	// 	JPanel panel = new JPanel();
-	// 	panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
-	// 	panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-	// 	panel.add(centerBox1());
-	// 	add(panel, BorderLayout.CENTER);
-	// }
-
-	// private JComponent centerBox1(){
-	// 	JPanel panel = new JPanel();
-	// 	panel.setLayout(new GridBagLayout());
-	// 	GridBagConstraints c = new GridBagConstraints();
-	// 	c.insets = new Insets(0, 0, 5, 5);
-	// 	c.anchor = GridBagConstraints.LINE_START;
-	// 	c.gridy = 0;
-	// 	panel.add(new JLabel("名前"), c);
-	// 	c.gridx = 1;
-	// 	{
-	// 		JPanel box = new JPanel();
-	// 		box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
-	// 		box.add(lastNameTextField);
-	// 		box.add(Box.createHorizontalStrut(5));
-	// 		box.add(firstNameTextField);
-	// 		box.add(Box.createHorizontalStrut(5));
-	// 		JButton searchByNameButton = new JButton("検索");
-	// 		searchByNameButton.addActionListener(this::onSearchByName);
-	// 		box.add(searchByNameButton);
-	// 		box.add(Box.createHorizontalGlue());
-	// 		panel.add(box, c);
-	// 	}
-	// 	c.gridx = 0;
-	// 	c.gridy = 1;
-	// 	panel.add(new JLabel("よみ"), c);
-	// 	c.gridx = 1;
-	// 	{
-	// 		JPanel box = new JPanel();
-	// 		box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
-	// 		box.add(lastNameYomiTextField);
-	// 		box.add(Box.createHorizontalStrut(5));
-	// 		box.add(firstNameYomiTextField);
-	// 		box.add(Box.createHorizontalStrut(5));
-	// 		JButton searchByYomiButton = new JButton("検索");
-	// 		searchByYomiButton.addActionListener(this::onSearchByYomi);
-	// 		box.add(searchByYomiButton);
-	// 		box.add(Box.createHorizontalGlue());
-	// 		panel.add(box, c);
-	// 	}
-	// 	c.gridx = 0;
-	// 	c.gridy = 2;
-	// 	c.gridwidth = 2;
-	// 	{
-	// 		JButton recentButton = new JButton("最近の登録");
-	// 		recentButton.addActionListener(this::onRecentPatients);
-	// 		panel.add(recentButton, c);
-	// 	}
-	// 	c.gridx = 0;
-	// 	c.gridy = 3;
-	// 	c.gridwidth = 2;
-	// 	{
-	// 		resultList.setCellRenderer(new Renderer());
-	// 		resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-	// 		resultList.addListSelectionListener(event -> {
-	// 			if( event.getValueIsAdjusting() ){
-	// 				PatientDTO select = resultList.getSelectedValue();
-	// 				setInfo(select);
-	// 			}
-	// 		});
-	// 		JScrollPane scroll = new JScrollPane(resultList);
-	// 		scroll.setPreferredSize(new Dimension(400, 260));
-	// 		panel.add(scroll, c);
-	// 	}
-	// 	c.gridx = 0;
-	// 	c.gridy = 4;
-	// 	c.gridwidth = 2;
-	// 	{
-	// 		JPanel box = new JPanel();
-	// 		box.setLayout(new BoxLayout(box, BoxLayout.LINE_AXIS));
-	// 		// infoArea.setEditable(false);
-	// 		// JScrollPane scroll = new JScrollPane(infoArea);
-	// 		JPanel commandBox = new JPanel();
-	// 		commandBox.setLayout(new BoxLayout(commandBox, BoxLayout.PAGE_AXIS));
-	// 		JButton registerButton = new JButton("診療受付");
-	// 		commandBox.add(registerButton);
-	// 		commandBox.add(Box.createVerticalGlue());
-	// 		box.add(infoArea);
-	// 		box.add(Box.createHorizontalStrut(5));
-	// 		box.add(commandBox);
-	// 		panel.add(box, c);
-	// 	}
-	// 	return panel;
-	// }
-
 
 	private void setInfo(PatientDTO data){
 		infoArea.setPatient(data);
