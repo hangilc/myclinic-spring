@@ -25,8 +25,8 @@ class Service {
 		@POST("enter-patient-with-hoken")
 		CompletableFuture<PatientHokenListDTO> enterPatientWithHoken(@Body PatientHokenListDTO patientHokenListDTO);
 
-		@POST("update-patient")
-		CompletableFuture<Boolean> updatePatient(@Body PatientDTO patientDTO);
+		@POST("enter-patient")
+		CompletableFuture<Integer> enterPatient(@Body PatientDTO patientDTO);
 
 		@GET("list-hoken")
 		CompletableFuture<HokenListDTO> listHoken(@Query("patient-id") int patientId);
@@ -41,6 +41,15 @@ class Service {
 
 		@GET("list-recently-registered-patients")
 		CompletableFuture<List<PatientDTO>> listRecentlyRegisteredPatients();
+
+		@POST("enter-shahokokuho")
+		CompletableFuture<Integer> enterShahokokuho(@Body ShahokokuhoDTO shahokokuhoDTO);
+
+		@POST("enter-koukikourei")
+		CompletableFuture<Integer> enterKoukikourei(@Body KoukikoureiDTO koukikoureiDTO);
+
+		@POST("enter-kouhi")
+		CompletableFuture<Integer> enterKouhi(@Body KouhiDTO kouhiDTO);
 	}
 
 	public static ServerAPI api; 

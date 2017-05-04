@@ -20,32 +20,31 @@ class PatientDialog extends JDialog {
 	private DateInput birthdayInput = new DateInput().setGengou("昭和");
 	private JTextField addressField = new JTextField(30);
 	private JTextField phoneField = new JTextField(15);
+	private JButton enterPatientButton = new JButton("入力");
 	private HokenEditor hokenEditor;
-	private JButton okButton = new JButton("OK");
-	private JButton cancelButton = new JButton("キャンセル");
-	private int patientId;
+	private JButton closeButton = new JButton("閉じる");
+	private PatientDTO currentPatient;
 
-	PatientDialog(String title){
-		this(title, false);
-	}
-
-	PatientDialog(String title, boolean showCurrentOnly){
+	PatientDialog(String title, PatientDTO patient, HokenListDTO hokenList){
 		setTitle(title);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setupSexChoices();
-		setupHokenEditor(showCurrentOnly);
+		setupHokenEditor();
 		setLayout(new MigLayout("fill, flowy", 
 			"[grow, fill]", 
 			"[] [grow, fill] []"));
 		add(makePane1());
 		add(makePane2());
 		add(makePane3());
+		if( patient != null ){
+			setPatient(patient);
+		}
 		bind();
 		pack();
 	}
 
 	public void setPatient(PatientDTO patientDTO){
-		patientId = patientDTO.patientId;
+		currentPatient = patientDTO;
 		lastNameField.setText(patientDTO.lastName);
 		firstNameField.setText(patientDTO.firstName);
 		lastNameYomiField.setText(patientDTO.lastNameYomi);
@@ -54,22 +53,13 @@ class PatientDialog extends JDialog {
 		setBirthday(patientDTO.birthday);
 		addressField.setText(patientDTO.address);
 		phoneField.setText(patientDTO.phone);
+		if( hokenEditor.getPatientId() == 0 ){
+			hokenEditor.setPatientId(patientDTO.patientId);
+		}
 	}
 
 	public void setHokenList(HokenListDTO hokenListDTO){
 		hokenEditor.setHokenList(hokenListDTO);
-	}
-
-	public void setShahokokuhoListener(HokenListener<ShahokokuhoDTO> shahokokuhoListener){
-		hokenEditor.setShahokokuhoListener(shahokokuhoListener);
-	}
-
-	public void setKoukikoureiListener(HokenListener<KoukikoureiDTO> koukikoureiListener){
-		hokenEditor.setKoukikoureiListener(koukikoureiListener);
-	}
-
-	public void setKouhiListener(HokenListener<KouhiDTO> kouhiListener){
-		hokenEditor.setKouhiListener(kouhiListener);
 	}
 
 	private void setupSexChoices(){
@@ -79,8 +69,8 @@ class PatientDialog extends JDialog {
 		femaleButton.setSelected(true);
 	}
 
-	private void setupHokenEditor(boolean showCurrentOnly){
-		hokenEditor = new HokenEditor(showCurrentOnly);
+	private void setupHokenEditor(){
+		hokenEditor = new HokenEditor(0);
 	}
 
 	public int getKouhiListSize(){
@@ -108,7 +98,8 @@ class PatientDialog extends JDialog {
 		panel.add(new JLabel("住所"));
 		panel.add(addressField, "grow, wrap");
 		panel.add(new JLabel("電話番号"));
-		panel.add(phoneField, "");
+		panel.add(phoneField, "wrap");
+		panel.add(enterPatientButton, "span 2, left, gaptop rel");
 		return panel;
 	}
 
@@ -121,24 +112,38 @@ class PatientDialog extends JDialog {
 
 	private JPanel makePane3(){
 		JPanel panel = new JPanel(new MigLayout("right, insets 0", "", ""));
-		panel.add(okButton, "sizegroup cmdbutton");
-		panel.add(cancelButton, "sizegroup cmdbutton");
+		panel.add(closeButton);
 		return panel;
 	}
 
 	private void bind(){
-		okButton.addActionListener(event -> {
-			okButton.setEnabled(false);
-			PatientHokenListDTO patientHokenListDTO = new PatientHokenListDTO();
-			patientHokenListDTO.patientDTO = getPatientDTO();
-			if( patientHokenListDTO.patientDTO != null ){
-				patientHokenListDTO.hokenListDTO = hokenEditor.getHokenListDTO();
-				onEnter(patientHokenListDTO);
-			} else {
-				okButton.setEnabled(true);
-			}
-		});
-		cancelButton.addActionListener(event -> onCancel());
+		enterPatientButton.addActionListener(event -> doEnterPatient());
+		closeButton.addActionListener(event -> doClose());
+	}
+
+	private void doEnterPatient(){
+		PatientDTO patient = getPatientDTO();
+		if( patient == null ){
+			return;
+		}
+		Service.api.enterPatient(patient)
+			.whenComplete((result, t) -> {
+				if( t != null ){
+					t.printStackTrace();
+					alert("患者情報の入力に失敗しました。" + t);
+					return;
+				}
+				int patientId = result;
+				patient.patientId = patientId;
+				alert("患者情報が入力されました。");
+				EventQueue.invokeLater(() -> {
+					setPatient(patient);
+				});
+			});
+	}
+
+	private void alert(String message){
+		JOptionPane.showMessageDialog(this, message);
 	}
 
 	protected void setEnterShahokokuhoButtonEnabled(boolean enabled){
@@ -151,18 +156,6 @@ class PatientDialog extends JDialog {
 
 	protected void setEnterKouhiButtonEnabled(boolean enabled){
 		hokenEditor.setEnterKouhiButtonEnabled(enabled);
-	}
-
-	protected void setEnterButtonEnabled(boolean enabled){
-		okButton.setEnabled(enabled);
-	}
-
-	protected void onCancel(){
-		dispose();
-	}
-
-	protected void onEnter(PatientHokenListDTO patientDTO){
-
 	}
 
 	private Sex getSex(){
@@ -194,7 +187,9 @@ class PatientDialog extends JDialog {
 
 	private PatientDTO getPatientDTO(){
 		PatientDTO patient = new PatientDTO();
-		patient.patientId = patientId;
+		if( currentPatient != null ){
+			patient.patientId = currentPatient.patientId;
+		}
 		patient.lastName = lastNameField.getText();
 		if( patient.lastName.isEmpty() ){
 			JOptionPane.showMessageDialog(this, "姓が入力されていません。の入力が不適切です。");
@@ -226,6 +221,60 @@ class PatientDialog extends JDialog {
 		patient.address = addressField.getText();
 		patient.phone = phoneField.getText();
 		return patient;		
+	}
+
+	private boolean isPatientInputEmpty(){
+		return lastNameField.getText().isEmpty() &&
+			firstNameField.getText().isEmpty() &&
+			lastNameYomiField.getText().isEmpty() &&
+			firstNameYomiField.getText().isEmpty() &&
+			birthdayInput.isEmpty() &&
+			addressField.getText().isEmpty() &&
+			phoneField.getText().isEmpty();
+	}
+
+	private boolean isBirthdayInSync(){
+		String birthday = currentPatient.birthday;
+		if( birthday == null || birthday.isEmpty() || "0000-00-00".equals(birthday) ){
+			return birthdayInput.isEmpty();
+		} else {
+			try {
+				return LocalDate.parse(birthday, DateTimeUtil.sqlDateFormatter).equals(birthdayInput.getValue());
+			} catch (DateInput.DateInputException ex){
+				return false;
+			}
+		}
+	}
+
+	private boolean isPatientInputSync(){
+		PatientDTO patient = currentPatient;
+		return lastNameField.getText().equals(patient.lastName) &&
+			firstNameField.getText().equals(patient.firstName) &&
+			lastNameYomiField.getText().equals(patient.lastNameYomi) &&
+			firstNameYomiField.getText().equals(patient.firstNameYomi) &&
+			isBirthdayInSync() &&
+			patient.sex.equals(getSex().getCode()) &&
+			addressField.getText().equals(patient.address) &&
+			phoneField.getText().equals(patient.phone);
+	}
+
+	private boolean isPatientInputDirty(){
+		if( currentPatient == null ){
+			return !isPatientInputEmpty();
+		} else {
+			return !isPatientInputSync();
+		}
+	}
+
+	private void doClose(){
+		if( isPatientInputDirty() ){
+			int choice = JOptionPane.showConfirmDialog(this, "患者情報の入力が変更されていますが、このまま閉じますか？", "確認",
+				JOptionPane.YES_NO_OPTION);
+			if( choice != JOptionPane.YES_OPTION ){
+				return;
+			}
+		}
+		dispose();
 	}
 
 }

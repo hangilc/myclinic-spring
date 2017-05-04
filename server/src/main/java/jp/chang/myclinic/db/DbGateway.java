@@ -64,7 +64,6 @@ public class DbGateway {
 
 	public int enterPatient(PatientDTO patientDTO){
 		Patient patient = mapper.fromPatientDTO(patientDTO);
-		patient.setPatientId(0);
 		patient = patientRepository.save(patient);
 		return patient.getPatientId();
 	}
@@ -123,7 +122,6 @@ public class DbGateway {
 
 	public int enterShahokokuho(ShahokokuhoDTO shahokokuhoDTO){
 		Shahokokuho shahokokuho = mapper.fromShahokokuhoDTO(shahokokuhoDTO);
-		shahokokuho.setShahokokuhoId(0);
 		shahokokuho = shahokokuhoRepository.save(shahokokuho);
 		return shahokokuho.getShahokokuhoId();
 	}
@@ -144,7 +142,6 @@ public class DbGateway {
 
 	public int enterKoukikourei(KoukikoureiDTO koukikoureiDTO){
 		Koukikourei koukikourei = mapper.fromKoukikoureiDTO(koukikoureiDTO);
-		koukikourei.setKoukikoureiId(0);
 		koukikourei = koukikoureiRepository.save(koukikourei);
 		return koukikourei.getKoukikoureiId();
 	}
@@ -165,7 +162,6 @@ public class DbGateway {
 
 	public int enterRoujin(RoujinDTO roujinDTO){
 		Roujin roujin = mapper.fromRoujinDTO(roujinDTO);
-		roujin.setRoujinId(0);
 		roujin = roujinRepository.save(roujin);
 		return roujin.getRoujinId();
 	}
@@ -186,7 +182,6 @@ public class DbGateway {
 
 	public int enterKouhi(KouhiDTO kouhiDTO){
 		Kouhi kouhi = mapper.fromKouhiDTO(kouhiDTO);
-		kouhi.setKouhiId(0);
 		kouhi = kouhiRepository.save(kouhi);
 		return kouhi.getKouhiId();
 	}
@@ -226,7 +221,6 @@ public class DbGateway {
 
 	public int enterVisit(VisitDTO visitDTO){
 		Visit visit = mapper.fromVisitDTO(visitDTO);
-		visit.setVisitId(0);
 		visit = visitRepository.save(visit);
 		return visit.getVisitId();
 	}
