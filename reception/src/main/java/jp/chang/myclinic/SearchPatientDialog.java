@@ -28,6 +28,7 @@ class SearchPatientDialog extends JDialog {
 	private JButton registerButton = new JButton("診療受付");
 	private PatientInfo infoArea = new PatientInfo();
 	private JButton closeButton = new JButton("閉じる	");
+	private PatientDTO currentPatientDTO;
 
 	SearchPatientDialog(){
 		setTitle("患者検索");
@@ -53,6 +54,7 @@ class SearchPatientDialog extends JDialog {
 		searchByYomiButton.addActionListener(this::onSearchByYomi);
 		recentButton.addActionListener(this::onRecentPatients);
 		bindList();
+		editButton.addActionListener(this::onEdit);
 		closeButton.addActionListener(event -> dispose());
 	}
 
@@ -103,6 +105,7 @@ class SearchPatientDialog extends JDialog {
 	}
 
 	private void setInfo(PatientDTO data){
+		currentPatientDTO = data;
 		infoArea.setPatient(data);
 	}
 
@@ -122,6 +125,22 @@ class SearchPatientDialog extends JDialog {
 		handleResult(Service.api.listRecentlyRegisteredPatients());
 	}
 
+	private void onEdit(ActionEvent event){
+		if( currentPatientDTO == null ){
+			return;
+		}
+		Service.api.listHoken(currentPatientDTO.patientId)
+			.whenComplete((result, t) -> {
+				if( t != null ){
+					t.printStackTrace();
+					alert("保険情報を取得できませんでした。" + t);
+					return;
+				}
+				PatientDialogEdit dialog = new PatientDialogEdit(currentPatientDTO, result);
+				dialog.setVisible(true);
+			});
+	}
+
 	private void handleResult(CompletableFuture<List<PatientDTO>> future){
 		future.whenComplete((List<PatientDTO> result, Throwable t) -> {
 			if( t != null ){
@@ -139,6 +158,10 @@ class SearchPatientDialog extends JDialog {
 			arr[i] = result.get(i);
 		}
 		resultList.setListData(arr);
+	}
+
+	private void alert(String message){
+		JOptionPane.showMessageDialog(this, message);
 	}
 
 	static class Renderer extends JLabel implements ListCellRenderer<PatientDTO> {

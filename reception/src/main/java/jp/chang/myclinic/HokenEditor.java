@@ -5,7 +5,10 @@ import javax.swing.*;
 import net.miginfocom.swing.MigLayout;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDate;
+import java.util.stream.Collectors;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.util.DateTimeUtil;
 
 class HokenEditor extends JPanel {
 
@@ -15,6 +18,7 @@ class HokenEditor extends JPanel {
 	private JButton enterShahoButton = new JButton("新規社保国保");
 	private JButton enterKoukiButton = new JButton("新規後期高齢");
 	private JButton enterKouhiButton = new JButton("新規公費負担");
+	private JCheckBox currentOnlyCheckBox = new JCheckBox("現在有効のみ");
 	private List<ShahokokuhoDTO> shahokokuhoList = new ArrayList<>();
 	private List<KoukikoureiDTO> koukikoureiList = new ArrayList<>();
 	private List<RoujinDTO> roujinList = new ArrayList<>();
@@ -24,8 +28,12 @@ class HokenEditor extends JPanel {
 	private HokenListener<KouhiDTO> kouhiListener;
 
 	HokenEditor(){
+		this(false);
+	}
+
+	HokenEditor(boolean showCurrentOnly){
 		setLayout(new MigLayout("fill, flowy, insets 0", "[grow]", "[grow] []"));
-		add(makeMainPart(), "grow");
+		add(makeMainPart(showCurrentOnly), "grow");
 		add(makeEnterCommandPart(), "center");
 		bind();
 	}
@@ -42,12 +50,33 @@ class HokenEditor extends JPanel {
 		this.kouhiListener = kouhiListener;
 	}
 
-	private JComponent makeMainPart(){
-		JPanel panel = new JPanel(new MigLayout("insets 0", "[grow] []", "[grow]"));
-		JScrollPane scroll = new JScrollPane(hokenList);
-		panel.add(scroll, "grow");
-		panel.add(makeItemCommandPart(), "top");
-		return panel;
+	public void setHokenList(HokenListDTO hokenListDTO){
+		shahokokuhoList = hokenListDTO.shahokokuhoListDTO;
+		koukikoureiList = hokenListDTO.koukikoureiListDTO;
+		roujinList = hokenListDTO.roujinListDTO;
+		kouhiList = hokenListDTO.kouhiListDTO;
+		updateHokenList();
+	}
+
+	public void setCurrentOnlySelected(boolean selected){
+		currentOnlyCheckBox.setSelected(selected);
+	}
+
+	private JComponent makeMainPart(boolean currentOnly){
+		if( currentOnly ){
+			JPanel panel = new JPanel(new MigLayout("insets 0", "[grow] []", "[grow] []"));
+			JScrollPane scroll = new JScrollPane(hokenList);
+			panel.add(scroll, "grow");
+			panel.add(makeItemCommandPart(), "top, wrap");
+			panel.add(currentOnlyCheckBox, "left, span 2");
+			return panel;
+		} else {
+			JPanel panel = new JPanel(new MigLayout("insets 0", "[grow] []", "[grow]"));
+			JScrollPane scroll = new JScrollPane(hokenList);
+			panel.add(scroll, "grow");
+			panel.add(makeItemCommandPart(), "top");
+			return panel;
+		}
 	}
 
 	private JComponent makeItemCommandPart(){
@@ -143,6 +172,9 @@ class HokenEditor extends JPanel {
 		});
 		editButton.addActionListener(event -> doEdit());
 		deleteButton.addActionListener(event -> doDelete());
+		currentOnlyCheckBox.addActionListener(event -> {
+			updateHokenList();
+		});
 	}
 
 	private void doEdit(){
@@ -290,12 +322,54 @@ class HokenEditor extends JPanel {
 		}		
 	}
 
+	private List<ShahokokuhoDTO> listShahokokuhoForDisp(boolean currentOnly, LocalDate today){
+		if( currentOnly ){
+			return shahokokuhoList.stream()
+				.filter(h -> DateTimeUtil.isValidAt(today, h.validFrom, h.validUpto))
+				.collect(Collectors.toList());
+		} else {
+			return shahokokuhoList;
+		}
+	}
+
+	private List<KoukikoureiDTO> listKoukikoureiForDisp(boolean currentOnly, LocalDate today){
+		if( currentOnly ){
+			return koukikoureiList.stream()
+				.filter(h -> DateTimeUtil.isValidAt(today, h.validFrom, h.validUpto))
+				.collect(Collectors.toList());
+		} else {
+			return koukikoureiList;
+		}
+	}
+
+	private List<RoujinDTO> listRoujinForDisp(boolean currentOnly, LocalDate today){
+		if( currentOnly ){
+			return roujinList.stream()
+				.filter(h -> DateTimeUtil.isValidAt(today, h.validFrom, h.validUpto))
+				.collect(Collectors.toList());
+		} else {
+			return roujinList;
+		}
+	}
+
+	private List<KouhiDTO> listKouhiForDisp(boolean currentOnly, LocalDate today){
+		if( currentOnly ){
+			return kouhiList.stream()
+				.filter(h -> DateTimeUtil.isValidAt(today, h.validFrom, h.validUpto))
+				.collect(Collectors.toList());
+		} else {
+			return kouhiList;
+		}
+	}
+
 	private void updateHokenList(){
+		boolean currentOnly = currentOnlyCheckBox.isVisible() && currentOnlyCheckBox.isSelected();
+		LocalDate today = LocalDate.now();
 		List<Object> list = new ArrayList<Object>();
-		list.addAll(shahokokuhoList);
-		list.addAll(koukikoureiList);
-		list.addAll(roujinList);
-		list.addAll(kouhiList);
+		list.addAll(listShahokokuhoForDisp(currentOnly, today));
+		list.addAll(listKoukikoureiForDisp(currentOnly, today));
+		list.addAll(listRoujinForDisp(currentOnly, today));
+		list.addAll(listKouhiForDisp(currentOnly, today));
 		hokenList.setListData(list.toArray());
 	}
 

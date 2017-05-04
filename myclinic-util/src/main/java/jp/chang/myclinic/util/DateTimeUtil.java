@@ -15,4 +15,11 @@ public class DateTimeUtil {
 			JapaneseDate jd = JapaneseDate.from(date);
 			return jd.format(formatter);
 	}
+
+	public static boolean isValidAt(LocalDate at, String validFrom, String validUpto){
+		LocalDate validFromDate = LocalDate.parse(validFrom, sqlDateFormatter);
+		return validFromDate.compareTo(at) <= 0 &&
+			(validUpto == null || "0000-00-00".equals(validUpto) || 
+				at.compareTo(LocalDate.parse(validUpto, sqlDateFormatter)) <= 0);
+	}
 }

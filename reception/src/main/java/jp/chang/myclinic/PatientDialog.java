@@ -6,6 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import jp.chang.myclinic.consts.Sex;
+import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.dto.*;
 
 class PatientDialog extends JDialog {
@@ -22,12 +23,17 @@ class PatientDialog extends JDialog {
 	private HokenEditor hokenEditor;
 	private JButton okButton = new JButton("OK");
 	private JButton cancelButton = new JButton("キャンセル");
+	private int patientId;
 
 	PatientDialog(String title){
+		this(title, false);
+	}
+
+	PatientDialog(String title, boolean showCurrentOnly){
 		setTitle(title);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setupSexChoices();
-		setupHokenEditor();
+		setupHokenEditor(showCurrentOnly);
 		setLayout(new MigLayout("fill, flowy", 
 			"[grow, fill]", 
 			"[] [grow, fill] []"));
@@ -36,6 +42,22 @@ class PatientDialog extends JDialog {
 		add(makePane3());
 		bind();
 		pack();
+	}
+
+	public void setPatient(PatientDTO patientDTO){
+		patientId = patientDTO.patientId;
+		lastNameField.setText(patientDTO.lastName);
+		firstNameField.setText(patientDTO.firstName);
+		lastNameYomiField.setText(patientDTO.lastNameYomi);
+		firstNameYomiField.setText(patientDTO.firstNameYomi);
+		setSex(patientDTO.sex);
+		setBirthday(patientDTO.birthday);
+		addressField.setText(patientDTO.address);
+		phoneField.setText(patientDTO.phone);
+	}
+
+	public void setHokenList(HokenListDTO hokenListDTO){
+		hokenEditor.setHokenList(hokenListDTO);
 	}
 
 	public void setShahokokuhoListener(HokenListener<ShahokokuhoDTO> shahokokuhoListener){
@@ -57,12 +79,16 @@ class PatientDialog extends JDialog {
 		femaleButton.setSelected(true);
 	}
 
-	private void setupHokenEditor(){
-		hokenEditor = new HokenEditor();
+	private void setupHokenEditor(boolean showCurrentOnly){
+		hokenEditor = new HokenEditor(showCurrentOnly);
 	}
 
 	public int getKouhiListSize(){
 		return hokenEditor.getKouhiListSize();
+	}
+
+	public void setCurrentOnlySelected(boolean selected){
+		hokenEditor.setCurrentOnlySelected(selected);
 	}
 
 	private JPanel makePane1(){
@@ -149,8 +175,26 @@ class PatientDialog extends JDialog {
 		}
 	}
 
+	private void setSex(String sex){
+		if( "M".equals(sex) ){
+			maleButton.setSelected(true);
+		} else {
+			femaleButton.setSelected(true);
+		}
+	}
+
+	private void setBirthday(String birthday){
+		if( birthday == null || birthday.isEmpty() || "0000-00-00".equals(birthday) ){
+			birthdayInput.clear();
+		} else {
+			LocalDate birthdayDate = LocalDate.parse(birthday, DateTimeUtil.sqlDateFormatter);
+			birthdayInput.setValue(birthdayDate);
+		}
+	}
+
 	private PatientDTO getPatientDTO(){
 		PatientDTO patient = new PatientDTO();
+		patient.patientId = patientId;
 		patient.lastName = lastNameField.getText();
 		if( patient.lastName.isEmpty() ){
 			JOptionPane.showMessageDialog(this, "姓が入力されていません。の入力が不適切です。");
