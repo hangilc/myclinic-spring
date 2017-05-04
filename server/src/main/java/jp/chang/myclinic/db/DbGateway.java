@@ -69,6 +69,11 @@ public class DbGateway {
 		return patient.getPatientId();
 	}
 
+	public void updatePatient(PatientDTO patientDTO){
+		Patient patient = mapper.fromPatientDTO(patientDTO);
+		patientRepository.save(patient);
+	}
+
 	public List<PatientDTO> searchPatientByLastName(String text){
 		Sort sort = new Sort(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
 		try(Stream<Patient> stream = patientRepository.findByLastNameContaining(text, sort)){

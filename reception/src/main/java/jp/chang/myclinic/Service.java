@@ -25,6 +25,9 @@ class Service {
 		@POST("enter-patient-with-hoken")
 		CompletableFuture<PatientHokenListDTO> enterPatientWithHoken(@Body PatientHokenListDTO patientHokenListDTO);
 
+		@POST("update-patient")
+		CompletableFuture<Boolean> updatePatient(@Body PatientDTO patientDTO);
+
 		@GET("list-hoken")
 		CompletableFuture<HokenListDTO> listHoken(@Query("patient-id") int patientId);
 

@@ -119,8 +119,8 @@ class PatientDialogEdit extends PatientDialog {
 
 	@Override
 	protected void onEnter(PatientHokenListDTO patientHokenListDTO){
-		Service.api.enterPatientWithHoken(patientHokenListDTO)
-			.whenComplete((PatientHokenListDTO result, Throwable t) -> {
+		Service.api.updatePatient(patientHokenListDTO.patientDTO)
+			.whenComplete((result, t) -> {
 				if( t != null ){
 					t.printStackTrace();
 					alert("エラー\n" + t);
