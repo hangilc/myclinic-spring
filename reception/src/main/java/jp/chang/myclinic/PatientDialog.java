@@ -135,6 +135,12 @@ class PatientDialog extends JDialog {
 				}
 				int patientId = result;
 				patient.patientId = patientId;
+				if( currentPatient != null ){
+					if( patientId != currentPatient.patientId ){
+						throw new RuntimeException("cannot happen");
+					}
+					Broadcast.patientModified.broadcast(patient);
+				}
 				alert("患者情報が入力されました。");
 				EventQueue.invokeLater(() -> {
 					setPatient(patient);

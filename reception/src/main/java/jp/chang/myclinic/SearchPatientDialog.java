@@ -42,10 +42,10 @@ class SearchPatientDialog extends JDialog {
 		setupUI();
 		bind();
 		pack();
-		Broadcast.patientChanged.addListener(this, this::onPatientChanged);
+		Broadcast.patientModified.addListener(this, this::onPatientModified);
 	}
 
-	private void onPatientChanged(PatientDTO newPatientDTO){
+	private void onPatientModified(PatientDTO newPatientDTO){
 		if( currentPatientDTO != null && Objects.equals(currentPatientDTO.patientId, newPatientDTO.patientId) ){
 			setInfo(newPatientDTO);
 			int n = listModel.getSize();
@@ -156,8 +156,10 @@ class SearchPatientDialog extends JDialog {
 					alert("保険情報を取得できませんでした。" + t);
 					return;
 				}
-				PatientDialogEdit dialog = new PatientDialogEdit(currentPatientDTO, result);
-				dialog.setVisible(true);
+				EventQueue.invokeLater(() -> {
+					PatientDialog dialog = new PatientDialog("患者情報の編集", currentPatientDTO, result);
+					dialog.setVisible(true);
+				});
 			});
 	}
 

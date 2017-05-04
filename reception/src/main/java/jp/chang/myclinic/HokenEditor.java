@@ -348,63 +348,6 @@ class HokenEditor extends JPanel {
 				}
 			});
 		} 
-
-		// Object obj = hokenList.getSelectedValue();
-		// if( obj instanceof ShahokokuhoDTO ){
-		// 	if( shahokokuhoListener == null ){
-		// 		return;
-		// 	}
-		// 	ShahokokuhoDTO shahokokuhoDTO = (ShahokokuhoDTO)obj;
-		// 	shahokokuhoListener.onDeleting(shahokokuhoDTO)
-		// 		.whenComplete((ok, t) -> {
-		// 			if( t != null ){
-		// 				t.printStackTrace();
-		// 				JOptionPane.showMessageDialog(this, t.toString());
-		// 				return;
-		// 			}
-		// 			if( ok ){
-		// 				shahokokuhoList.remove(shahokokuhoDTO);
-		// 				updateHokenList();
-		// 				shahokokuhoListener.onDeleted(shahokokuhoDTO);
-		// 			}
-		// 		});
-		// } else if( obj instanceof KoukikoureiDTO ){
-		// 	if( koukikoureiListener == null ){
-		// 		return;
-		// 	}
-		// 	KoukikoureiDTO koukikoureiDTO = (KoukikoureiDTO)obj;
-		// 	koukikoureiListener.onDeleting(koukikoureiDTO)
-		// 		.whenComplete((ok, t) -> {
-		// 			if( t != null ){
-		// 				t.printStackTrace();
-		// 				JOptionPane.showMessageDialog(this, t.toString());
-		// 				return;
-		// 			}
-		// 			if( ok ){
-		// 				koukikoureiList.remove(koukikoureiDTO);
-		// 				updateHokenList();
-		// 				koukikoureiListener.onDeleted(koukikoureiDTO);
-		// 			}
-		// 		});
-		// } else if( obj instanceof KouhiDTO ){
-		// 	if( kouhiListener == null ){
-		// 		return;
-		// 	}
-		// 	KouhiDTO kouhiDTO = (KouhiDTO)obj;
-		// 	kouhiListener.onDeleting(kouhiDTO)
-		// 		.whenComplete((ok, t) -> {
-		// 			if( t != null ){
-		// 				t.printStackTrace();
-		// 				JOptionPane.showMessageDialog(this, t.toString());
-		// 				return;
-		// 			}
-		// 			if( ok ){
-		// 				kouhiList.remove(kouhiDTO);
-		// 				updateHokenList();
-		// 				kouhiListener.onDeleted(kouhiDTO);
-		// 			}
-		// 		});
-		// }		
 	}
 
 	private void scheduleAlert(String message){

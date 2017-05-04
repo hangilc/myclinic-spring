@@ -1,5 +1,6 @@
 package jp.chang.myclinic;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.Window;
@@ -12,7 +13,9 @@ class BroadcastChannel<T> {
 	private List<BroadcastListener<T>> listeners = new ArrayList<>();
 
 	public void broadcast(T value){
-		listeners.forEach(listener -> listener.onBroadcast(value));
+		EventQueue.invokeLater(() -> {
+			listeners.forEach(listener -> listener.onBroadcast(value));
+		});
 	}
 
 	public void addListener(BroadcastListener<T> listener){
