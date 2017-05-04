@@ -25,15 +25,18 @@ class HokenEditor extends JPanel {
 	private List<RoujinDTO> roujinList = new ArrayList<>();
 	private List<KouhiDTO> kouhiList = new ArrayList<>();
 
-	HokenEditor(int patientId){
+	HokenEditor(int patientId, HokenListDTO hokenList){
 		setLayout(new MigLayout("fill, flowy, insets 0", "[grow]", "[grow] []"));
 		add(makeMainPart(), "grow");
 		add(makeEnterCommandPart(), "center");
 		setPatientId(patientId);
+		if( hokenList != null ){
+			setHokenList(hokenList);
+		}
 		bind();
 	}
 
-	public void setHokenList(HokenListDTO hokenListDTO){
+	private void setHokenList(HokenListDTO hokenListDTO){
 		shahokokuhoList = hokenListDTO.shahokokuhoListDTO;
 		koukikoureiList = hokenListDTO.koukikoureiListDTO;
 		roujinList = hokenListDTO.roujinListDTO;
@@ -41,7 +44,7 @@ class HokenEditor extends JPanel {
 		updateHokenList();
 	}
 
-	public void setCurrentOnlySelected(boolean selected){
+	private void setCurrentOnlySelected(boolean selected){
 		currentOnlyCheckBox.setSelected(selected);
 	}
 

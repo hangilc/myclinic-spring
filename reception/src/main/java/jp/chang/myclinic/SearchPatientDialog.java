@@ -149,6 +149,11 @@ class SearchPatientDialog extends JDialog {
 		if( currentPatientDTO == null ){
 			return;
 		}
+		PatientDialog editor = PatientEditorRegistry.INSTANCE.find(currentPatientDTO.patientId);
+		if( editor != null ){
+			editor.toFront();
+			return;
+		}
 		Service.api.listHoken(currentPatientDTO.patientId)
 			.whenComplete((result, t) -> {
 				if( t != null ){
@@ -158,6 +163,7 @@ class SearchPatientDialog extends JDialog {
 				}
 				EventQueue.invokeLater(() -> {
 					PatientDialog dialog = new PatientDialog("患者情報の編集", currentPatientDTO, result);
+					PatientEditorRegistry.INSTANCE.register(currentPatientDTO.patientId, dialog);
 					dialog.setVisible(true);
 				});
 			});

@@ -29,7 +29,7 @@ class PatientDialog extends JDialog {
 		setTitle(title);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setupSexChoices();
-		setupHokenEditor();
+		setupHokenEditor(patient, hokenList);
 		setLayout(new MigLayout("fill, flowy", 
 			"[grow, fill]", 
 			"[] [grow, fill] []"));
@@ -38,6 +38,7 @@ class PatientDialog extends JDialog {
 		add(makePane3());
 		if( patient != null ){
 			setPatient(patient);
+			PatientEditorRegistry.INSTANCE.register(patient.patientId, this);
 		}
 		bind();
 		pack();
@@ -58,9 +59,9 @@ class PatientDialog extends JDialog {
 		}
 	}
 
-	public void setHokenList(HokenListDTO hokenListDTO){
-		hokenEditor.setHokenList(hokenListDTO);
-	}
+	// public void setHokenList(HokenListDTO hokenListDTO){
+	// 	hokenEditor.setHokenList(hokenListDTO);
+	// }
 
 	private void setupSexChoices(){
 		ButtonGroup buttonGroup = new ButtonGroup();
@@ -69,17 +70,18 @@ class PatientDialog extends JDialog {
 		femaleButton.setSelected(true);
 	}
 
-	private void setupHokenEditor(){
-		hokenEditor = new HokenEditor(0);
+	private void setupHokenEditor(PatientDTO patient, HokenListDTO hokenList){
+		int patientId = patient != null ? patient.patientId : 0;
+		hokenEditor = new HokenEditor(patientId, hokenList);
 	}
 
 	public int getKouhiListSize(){
 		return hokenEditor.getKouhiListSize();
 	}
 
-	public void setCurrentOnlySelected(boolean selected){
-		hokenEditor.setCurrentOnlySelected(selected);
-	}
+	// public void setCurrentOnlySelected(boolean selected){
+	// 	hokenEditor.setCurrentOnlySelected(selected);
+	// }
 
 	private JPanel makePane1(){
 		JPanel panel = new JPanel(new MigLayout("insets 0, gapy 3", "[right] [grow]", ""));
@@ -126,6 +128,7 @@ class PatientDialog extends JDialog {
 		if( patient == null ){
 			return;
 		}
+		PatientDialog self = this;
 		Service.api.enterPatient(patient)
 			.whenComplete((result, t) -> {
 				if( t != null ){
@@ -140,6 +143,8 @@ class PatientDialog extends JDialog {
 						throw new RuntimeException("cannot happen");
 					}
 					Broadcast.patientModified.broadcast(patient);
+				} else {
+					PatientEditorRegistry.INSTANCE.register(patientId, self);
 				}
 				alert("患者情報が入力されました。");
 				EventQueue.invokeLater(() -> {
