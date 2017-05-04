@@ -283,6 +283,72 @@ class HokenEditor extends JPanel {
 	}
 
 	private void doDelete(){
+		Object obj = hokenList.getSelectedValue();
+		if( obj instanceof ShahokokuhoDTO ){
+			if( !confirm("この社保国保を削除しますか？") ){
+				return;
+			}
+			ShahokokuhoDTO shahokokuhoDTO = (ShahokokuhoDTO)obj;
+			Service.api.deleteShahokokuho(shahokokuhoDTO)
+			.whenComplete((ok, t) -> {
+				if( t != null ){
+					t.printStackTrace();
+					scheduleAlert("社保国保の削除に失敗しました。" + t);
+					return;
+				}
+				if( ok ){
+					EventQueue.invokeLater(() -> {
+						shahokokuhoList.remove(shahokokuhoDTO);
+						updateHokenList();
+					});
+				} else {
+					scheduleAlert("delete-shahokokuho returned false");
+				}
+			});
+		} else if( obj instanceof KoukikoureiDTO ){
+			if( !confirm("この後期高齢を削除しますか？") ){
+				return;
+			}
+			KoukikoureiDTO koukikoureiDTO = (KoukikoureiDTO)obj;
+			Service.api.deleteKoukikourei(koukikoureiDTO)
+			.whenComplete((ok, t) -> {
+				if( t != null ){
+					t.printStackTrace();
+					scheduleAlert("後期高齢の削除に失敗しました。" + t);
+					return;
+				}
+				if( ok ){
+					EventQueue.invokeLater(() -> {
+						koukikoureiList.remove(koukikoureiDTO);
+						updateHokenList();
+					});
+				} else {
+					scheduleAlert("delete-koukikourei returned false");
+				}
+			});
+		} else if( obj instanceof KouhiDTO ){
+			if( !confirm("この公費負担を削除しますか？") ){
+				return;
+			}
+			KouhiDTO kouhiDTO = (KouhiDTO)obj;
+			Service.api.deleteKouhi(kouhiDTO)
+			.whenComplete((ok, t) -> {
+				if( t != null ){
+					t.printStackTrace();
+					scheduleAlert("公費負担の削除に失敗しました。" + t);
+					return;
+				}
+				if( ok ){
+					EventQueue.invokeLater(() -> {
+						kouhiList.remove(kouhiDTO);
+						updateHokenList();
+					});
+				} else {
+					scheduleAlert("delete-kouhi returned false");
+				}
+			});
+		} 
+
 		// Object obj = hokenList.getSelectedValue();
 		// if( obj instanceof ShahokokuhoDTO ){
 		// 	if( shahokokuhoListener == null ){
@@ -345,6 +411,11 @@ class HokenEditor extends JPanel {
 		EventQueue.invokeLater(() -> {
 			JOptionPane.showMessageDialog(this, message);
 		});
+	}
+
+	private boolean confirm(String message){
+		int choice = JOptionPane.showConfirmDialog(this, message, "確認", JOptionPane.YES_NO_OPTION);
+		return choice == JOptionPane.YES_OPTION;
 	}
 
 	private List<ShahokokuhoDTO> listShahokokuhoForDisp(boolean currentOnly, LocalDate today){

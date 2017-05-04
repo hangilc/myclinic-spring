@@ -30,6 +30,12 @@ public class KouhiController {
 		return dbGateway.enterKouhi(kouhiDTO);
 	}
 
+	@RequestMapping(value="/delete-kouhi", method=RequestMethod.POST)
+	public boolean deleteKouhi(@RequestBody KouhiDTO kouhiDTO){
+		dbGateway.deleteKouhi(kouhiDTO.kouhiId);
+		return true;
+	}
+
 	@RequestMapping(value="/find-available-kouhi", method=RequestMethod.GET)
 	public List<KouhiDTO> findAvailableKouhi(@RequestParam("patient-id") int patientId, @RequestParam("at") String atString){
 		LocalDate at = LocalDate.parse(atString, DateTimeFormatter.ISO_LOCAL_DATE);

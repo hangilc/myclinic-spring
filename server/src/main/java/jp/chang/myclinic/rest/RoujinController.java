@@ -30,6 +30,12 @@ public class RoujinController {
 		return dbGateway.enterRoujin(roujinDTO);
 	}
 
+	@RequestMapping(value="/delete-roujin", method=RequestMethod.POST)
+	public boolean deleteRoujin(@RequestBody RoujinDTO roujinDTO){
+		dbGateway.deleteRoujin(roujinDTO.roujinId);
+		return true;
+	}
+
 	@RequestMapping(value="/find-available-roujin", method=RequestMethod.GET)
 	public List<RoujinDTO> findAvailableRoujin(@RequestParam("patient-id") int patientId, @RequestParam("at") String atString){
 		LocalDate at = LocalDate.parse(atString, DateTimeFormatter.ISO_LOCAL_DATE);

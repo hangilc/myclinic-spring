@@ -126,6 +126,10 @@ public class DbGateway {
 		return shahokokuho.getShahokokuhoId();
 	}
 
+	public void deleteShahokokuho(int shahokokuhoId){
+		shahokokuhoRepository.delete(shahokokuhoId);
+	}
+
 	public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at){
 		Sort sort = new Sort(Sort.Direction.DESC, "shahokokuhoId");
 		Date atDate = Date.valueOf(at);
@@ -145,7 +149,11 @@ public class DbGateway {
 		koukikourei = koukikoureiRepository.save(koukikourei);
 		return koukikourei.getKoukikoureiId();
 	}
-	
+
+	public void deleteKoukikourei(int koukikoureiId){
+		koukikoureiRepository.delete(koukikoureiId);
+	}
+
 	public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at){
 		Sort sort = new Sort(Sort.Direction.DESC, "koukikoureiId");
 		Date atDate = Date.valueOf(at);
@@ -166,6 +174,10 @@ public class DbGateway {
 		return roujin.getRoujinId();
 	}
 	
+	public void deleteRoujin(int roujinId){
+		roujinRepository.delete(roujinId);
+	}
+
 	public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at){
 		Sort sort = new Sort(Sort.Direction.DESC, "roujinId");
 		Date atDate = Date.valueOf(at);
@@ -186,6 +198,10 @@ public class DbGateway {
 		return kouhi.getKouhiId();
 	}
 	
+	public void deleteKouhi(int kouhiId){
+		kouhiRepository.delete(kouhiId);
+	}
+
 	public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at){
 		Sort sort = new Sort(Sort.Direction.ASC, "kouhiId");
 		Date atDate = Date.valueOf(at);

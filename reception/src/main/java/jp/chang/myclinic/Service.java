@@ -45,11 +45,20 @@ class Service {
 		@POST("enter-shahokokuho")
 		CompletableFuture<Integer> enterShahokokuho(@Body ShahokokuhoDTO shahokokuhoDTO);
 
+		@POST("delete-shahokokuho")
+		CompletableFuture<Boolean> deleteShahokokuho(@Body ShahokokuhoDTO shahokokuhoDTO);
+
 		@POST("enter-koukikourei")
 		CompletableFuture<Integer> enterKoukikourei(@Body KoukikoureiDTO koukikoureiDTO);
 
+		@POST("delete-koukikourei")
+		CompletableFuture<Boolean> deleteKoukikourei(@Body KoukikoureiDTO koukikoureiDTO);
+
 		@POST("enter-kouhi")
 		CompletableFuture<Integer> enterKouhi(@Body KouhiDTO kouhiDTO);
+
+		@POST("delete-kouhi")
+		CompletableFuture<Boolean> deleteKouhi(@Body KouhiDTO kouhiDTO);
 	}
 
 	public static ServerAPI api; 
