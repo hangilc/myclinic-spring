@@ -74,7 +74,7 @@ class HokenEditor extends JPanel {
 		enterShahoButton.setEnabled(true);
 		enterKoukiButton.setEnabled(true);
 		enterKouhiButton.setEnabled(true);
-		currentOnlyCheckBox.setEnabled(false);
+		currentOnlyCheckBox.setEnabled(true);
 		adaptUI();
 	}
 
@@ -126,6 +126,11 @@ class HokenEditor extends JPanel {
 					shahokokuhoDTO.patientId = patientId;
 					Service.api.enterShahokokuho(shahokokuhoDTO)
 					.whenComplete((result, t) -> {
+						if( t != null ){
+							t.printStackTrace();
+							scheduleAlert("新規社保国保の登録に失敗しました。" + t);
+							return;
+						}
 						shahokokuhoDTO.shahokokuhoId = result;
 						EventQueue.invokeLater(() -> {
 							shahokokuhoList.add(shahokokuhoDTO);
@@ -149,6 +154,11 @@ class HokenEditor extends JPanel {
 					koukikoureiDTO.patientId = patientId;
 					Service.api.enterKoukikourei(koukikoureiDTO)
 					.whenComplete((result, t) -> {
+						if( t != null ){
+							t.printStackTrace();
+							scheduleAlert("新規後期高齢の登録に失敗しました。" + t);
+							return;
+						}
 						koukikoureiDTO.koukikoureiId = result;
 						EventQueue.invokeLater(() -> {
 							koukikoureiList.add(koukikoureiDTO);
@@ -172,6 +182,11 @@ class HokenEditor extends JPanel {
 					kouhiDTO.patientId = patientId;
 					Service.api.enterKouhi(kouhiDTO)
 					.whenComplete((result, t) -> {
+						if( t != null ){
+							t.printStackTrace();
+							scheduleAlert("新規公費負担の登録に失敗しました。" + t);
+							return;
+						}
 						kouhiDTO.kouhiId = result;
 						EventQueue.invokeLater(() -> {
 							kouhiList.add(kouhiDTO);
@@ -183,54 +198,6 @@ class HokenEditor extends JPanel {
 			form.setLocationByPlatform(true);
 			form.setVisible(true);
 		});
-		// enterKoukiButton.addActionListener(event -> {
-		// 	Window owner = SwingUtilities.getWindowAncestor(this);
-		// 	KoukikoureiDTO koukikoureiDTO = new KoukikoureiDTO();
-		// 	KoukikoureiForm form = new KoukikoureiForm(owner, "新規後期高齢入力", koukikoureiDTO){
-		// 		@Override
-		// 		public void onEnter(){
-		// 			koukikoureiListener.onEntering(koukikoureiDTO)
-		// 				.whenComplete((ok, t) -> {
-		// 					if( t != null ){
-		// 						t.printStackTrace();
-		// 						JOptionPane.showMessageDialog(this, t.toString());
-		// 						return;
-		// 					}
-		// 					if( ok ){
-		// 						koukikoureiList.add(koukikoureiDTO);
-		// 						updateHokenList();
-		// 						koukikoureiListener.onEntered(koukikoureiDTO);
-		// 					}
-		// 				});
-		// 		}
-		// 	};
-		// 	form.setLocationByPlatform(true);
-		// 	form.setVisible(true);
-		// });
-		// enterKouhiButton.addActionListener(event -> {
-		// 	Window owner = SwingUtilities.getWindowAncestor(this);
-		// 	KouhiDTO kouhiDTO = new KouhiDTO();
-		// 	KouhiForm form = new KouhiForm(owner, "新規公費負担入力", kouhiDTO){
-		// 		@Override
-		// 		public void onEnter(){
-		// 			kouhiListener.onEntering(kouhiDTO)
-		// 				.whenComplete((ok, t) -> {
-		// 					if( t != null ){
-		// 						t.printStackTrace();
-		// 						JOptionPane.showMessageDialog(this, t.toString());
-		// 						return;
-		// 					}
-		// 					if( ok ){
-		// 						kouhiList.add(kouhiDTO);
-		// 						updateHokenList();
-		// 						kouhiListener.onEntered(kouhiDTO);
-		// 					}
-		// 				});
-		// 		}
-		// 	};
-		// 	form.setLocationByPlatform(true);
-		// 	form.setVisible(true);
-		// });
 		editButton.addActionListener(event -> doEdit());
 		deleteButton.addActionListener(event -> doDelete());
 		currentOnlyCheckBox.addActionListener(event -> {
@@ -248,80 +215,71 @@ class HokenEditor extends JPanel {
 	}
 
 	private void doEdit(){
-		// Object obj = hokenList.getSelectedValue();
-		// if( obj instanceof ShahokokuhoDTO ){
-		// 	ShahokokuhoDTO shahokokuhoDTO = (ShahokokuhoDTO)obj;
-		// 	ShahokokuhoDTO copy = shahokokuhoDTO.copy();
-		// 	Window owner = SwingUtilities.getWindowAncestor(this);
-		// 	ShahokokuhoForm form = new ShahokokuhoForm(owner, "社保国保編集", copy){
-		// 		@Override
-		// 		public void onEnter(){
-		// 			shahokokuhoListener.onUpdating(copy)
-		// 				.whenComplete((ok, t) -> {
-		// 					if( t != null ){
-		// 						t.printStackTrace();
-		// 						JOptionPane.showMessageDialog(this, t.toString());
-		// 						return;
-		// 					}
-		// 					if( ok ){
-		// 						shahokokuhoDTO.assign(copy);
-		// 						updateHokenList();
-		// 						shahokokuhoListener.onUpdated(shahokokuhoDTO);
-		// 					}
-		// 				});
-		// 		}
-		// 	};
-		// 	form.setLocationByPlatform(true);
-		// 	form.setVisible(true);
-		// } else if( obj instanceof KoukikoureiDTO ){
-		// 	KoukikoureiDTO koukikoureiDTO = (KoukikoureiDTO)obj;
-		// 	KoukikoureiDTO copy = koukikoureiDTO.copy();
-		// 	Window owner = SwingUtilities.getWindowAncestor(this);
-		// 	KoukikoureiForm form = new KoukikoureiForm(owner, "後期高齢編集", copy){
-		// 		@Override
-		// 		public void onEnter(){
-		// 			koukikoureiListener.onUpdating(copy)
-		// 				.whenComplete((ok, t) -> {
-		// 					if( t != null ){
-		// 						t.printStackTrace();
-		// 						JOptionPane.showMessageDialog(this, t.toString());
-		// 						return;
-		// 					}
-		// 					if( ok ){
-		// 						koukikoureiDTO.assign(copy);
-		// 						updateHokenList();
-		// 						koukikoureiListener.onUpdated(koukikoureiDTO);
-		// 					}
-		// 				});
-		// 		}
-		// 	};
-		// 	form.setLocationByPlatform(true);
-		// 	form.setVisible(true);
-		// } else if( obj instanceof KouhiDTO ){
-		// 	KouhiDTO kouhiDTO = (KouhiDTO)obj;
-		// 	KouhiDTO copy = kouhiDTO.copy();
-		// 	Window owner = SwingUtilities.getWindowAncestor(this);
-		// 	KouhiForm form = new KouhiForm(owner, "公費負担編集", copy){
-		// 		@Override
-		// 		public void onEnter(){
-		// 			kouhiListener.onUpdating(copy)
-		// 				.whenComplete((ok, t) -> {
-		// 					if( t != null ){
-		// 						t.printStackTrace();
-		// 						JOptionPane.showMessageDialog(this, t.toString());
-		// 						return;
-		// 					}
-		// 					if( ok ){
-		// 						kouhiDTO.assign(copy);
-		// 						updateHokenList();
-		// 						kouhiListener.onUpdated(kouhiDTO);
-		// 					}
-		// 				});
-		// 		}
-		// 	};
-		// 	form.setLocationByPlatform(true);
-		// 	form.setVisible(true);
-		// }
+		Object obj = hokenList.getSelectedValue();
+		if( obj instanceof ShahokokuhoDTO ){
+			ShahokokuhoDTO shahokokuhoDTO = (ShahokokuhoDTO)obj;
+			Window owner = SwingUtilities.getWindowAncestor(this);
+			ShahokokuhoForm form = new ShahokokuhoForm(owner, "社保国保編集", shahokokuhoDTO){
+				@Override
+				public void onEnter(){
+					Service.api.enterShahokokuho(shahokokuhoDTO)
+					.whenComplete((result, t) -> {
+						if( t != null ){
+							t.printStackTrace();
+							scheduleAlert("社保国保の変更に失敗しました。" + t);
+							return;
+						}
+						EventQueue.invokeLater(() -> {
+							updateHokenList();
+						});
+					});
+				}
+			};
+			form.setLocationByPlatform(true);
+			form.setVisible(true);
+		} else if( obj instanceof KoukikoureiDTO ){
+			KoukikoureiDTO koukikoureiDTO = (KoukikoureiDTO)obj;
+			Window owner = SwingUtilities.getWindowAncestor(this);
+			KoukikoureiForm form = new KoukikoureiForm(owner, "後期高齢編集", koukikoureiDTO){
+				@Override
+				public void onEnter(){
+					Service.api.enterKoukikourei(koukikoureiDTO)
+					.whenComplete((result, t) -> {
+						if( t != null ){
+							t.printStackTrace();
+							scheduleAlert("後期高齢の変更に失敗しました。" + t);
+							return;
+						}
+						EventQueue.invokeLater(() -> {
+							updateHokenList();
+						});
+					});
+				}
+			};
+			form.setLocationByPlatform(true);
+			form.setVisible(true);
+		} else if( obj instanceof KouhiDTO ){
+			KouhiDTO kouhiDTO = (KouhiDTO)obj;
+			Window owner = SwingUtilities.getWindowAncestor(this);
+			KouhiForm form = new KouhiForm(owner, "後期高齢編集", kouhiDTO){
+				@Override
+				public void onEnter(){
+					Service.api.enterKouhi(kouhiDTO)
+					.whenComplete((result, t) -> {
+						if( t != null ){
+							t.printStackTrace();
+							scheduleAlert("後期高齢の変更に失敗しました。" + t);
+							return;
+						}
+						EventQueue.invokeLater(() -> {
+							updateHokenList();
+						});
+					});
+				}
+			};
+			form.setLocationByPlatform(true);
+			form.setVisible(true);
+		} 
 	}
 
 	private void doDelete(){
@@ -381,6 +339,12 @@ class HokenEditor extends JPanel {
 		// 			}
 		// 		});
 		// }		
+	}
+
+	private void scheduleAlert(String message){
+		EventQueue.invokeLater(() -> {
+			JOptionPane.showMessageDialog(this, message);
+		});
 	}
 
 	private List<ShahokokuhoDTO> listShahokokuhoForDisp(boolean currentOnly, LocalDate today){

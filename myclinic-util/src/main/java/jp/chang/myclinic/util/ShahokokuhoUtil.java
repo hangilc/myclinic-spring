@@ -5,12 +5,20 @@ import jp.chang.myclinic.dto.ShahokokuhoDTO;
 public class ShahokokuhoUtil {
 
 	public static String rep(ShahokokuhoDTO shahokokuhoDTO){
-		int bangou = shahokokuhoDTO.hokenshaBangou;
-		if( bangou <= 9999 )
+		String name = name(shahokokuhoDTO.hokenshaBangou);
+		if( shahokokuhoDTO.kourei > 0 ){
+			return name + "・高齢" + shahokokuhoDTO.kourei + "割";
+		} else {
+			return name;
+		}
+	}
+
+	public static String name(int hokenshaBangou){
+		if( hokenshaBangou <= 9999 )
 			return "政管健保";
-		if( bangou <= 999999 )
+		if( hokenshaBangou <= 999999 )
 			return "国保";
-		switch(bangou/1000000){
+		switch(hokenshaBangou/1000000){
 			case 1: return "協会けんぽ";
 			case 2: return "船員";
 			case 3: return "日雇一般";
