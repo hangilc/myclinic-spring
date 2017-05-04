@@ -119,7 +119,8 @@ class PatientDialogEdit extends PatientDialog {
 
 	@Override
 	protected void onEnter(PatientHokenListDTO patientHokenListDTO){
-		Service.api.updatePatient(patientHokenListDTO.patientDTO)
+		PatientDTO patientDTO = patientHokenListDTO.patientDTO;
+		Service.api.updatePatient(patientDTO)
 			.whenComplete((result, t) -> {
 				if( t != null ){
 					t.printStackTrace();
@@ -127,6 +128,7 @@ class PatientDialogEdit extends PatientDialog {
 					setEnterButtonEnabled(true);
 					return;
 				}
+				Broadcast.patientChanged.broadcast(patientDTO);
 				dispose();
 			});
 	}

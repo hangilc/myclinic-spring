@@ -5,9 +5,12 @@ import jp.chang.myclinic.dto.PatientDTO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
 import net.miginfocom.swing.MigLayout;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.Objects;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -23,7 +26,8 @@ class SearchPatientDialog extends JDialog {
 	private JButton searchByNameButton = new JButton("検索");
 	private JButton searchByYomiButton = new JButton("検索");
 	private JButton recentButton = new JButton("最近の登録");
-	private JList<PatientDTO> resultList = new JList<>();
+	private DefaultListModel<PatientDTO> listModel = new DefaultListModel<>();
+	private JList<PatientDTO> resultList;
 	private JButton editButton = new JButton("編集");
 	private JButton registerButton = new JButton("診療受付");
 	private PatientInfo infoArea = new PatientInfo();
@@ -32,9 +36,27 @@ class SearchPatientDialog extends JDialog {
 
 	SearchPatientDialog(){
 		setTitle("患者検索");
+		resultList = new JList<PatientDTO>(listModel);
+		resultList.setCellRenderer(new Renderer());
+		resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		setupUI();
 		bind();
 		pack();
+		Broadcast.patientChanged.addListener(this, this::onPatientChanged);
+	}
+
+	private void onPatientChanged(PatientDTO newPatientDTO){
+		if( currentPatientDTO != null && Objects.equals(currentPatientDTO.patientId, newPatientDTO.patientId) ){
+			setInfo(newPatientDTO);
+			int n = listModel.getSize();
+			for(int i=0;i<n;i++){
+				PatientDTO element = listModel.getElementAt(i);
+				if( Objects.equals(element.patientId, newPatientDTO.patientId) ){
+					listModel.setElementAt(newPatientDTO, i);
+					break;
+				}
+			}
+		}
 	}
 
 	private void setupUI(){
@@ -60,7 +82,7 @@ class SearchPatientDialog extends JDialog {
 
 	private void bindList(){
 		resultList.addListSelectionListener(event -> {
-			if( event.getValueIsAdjusting() ){
+			if( event.getValueIsAdjusting() == false ){
 				PatientDTO select = resultList.getSelectedValue();
 				setInfo(select);
 			}
@@ -82,8 +104,6 @@ class SearchPatientDialog extends JDialog {
 	}
 
 	private JComponent makeSearchResult(){
-		resultList.setCellRenderer(new Renderer());
-		resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		JPanel panel = new JPanel(new MigLayout("insets 0", "[grow] []", "[grow]"));
 		JScrollPane scroll = new JScrollPane(resultList);
 		panel.add(scroll, "grow, width 260, height 300");
@@ -148,16 +168,13 @@ class SearchPatientDialog extends JDialog {
 				JOptionPane.showMessageDialog(this, "サーバーからデータを取得できませんでした。" + t);
 				return;
 			}
-			setResult(result);
+			EventQueue.invokeLater(() -> setResult(result));
 		});
 	}
 
 	private void setResult(List<PatientDTO> result){
-		PatientDTO[] arr = new PatientDTO[result.size()];
-		for(int i=0;i<result.size();i++){
-			arr[i] = result.get(i);
-		}
-		resultList.setListData(arr);
+		listModel.clear();
+		result.forEach(patientDTO -> listModel.addElement(patientDTO));
 	}
 
 	private void alert(String message){
