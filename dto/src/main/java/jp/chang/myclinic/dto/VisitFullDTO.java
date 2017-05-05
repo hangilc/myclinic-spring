@@ -6,4 +6,5 @@ public class VisitFullDTO {
 	public VisitDTO visit;
 	public List<ShinryouFullDTO> shinryouList;
 	public List<DrugFullDTO> drugs;
+	public List<ConductFullDTO> conducts;
 }

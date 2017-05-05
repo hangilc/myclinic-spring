@@ -291,6 +291,8 @@ public class DbGateway {
 		visitFullDTO.visit = visitDTO;
 		visitFullDTO.shinryouList = listShinryouFull(visitId);
 		visitFullDTO.drugs = listDrugFull(visitId);
+		visitFullDTO.conducts = listConducts(visitId).stream()
+			.map(this::extendConduct).collect(Collectors.toList());
 		return visitFullDTO;
 	}
 
@@ -322,6 +324,12 @@ public class DbGateway {
 		} else {
 			return null;
 		}
+	}
+
+	public List<ConductDTO> listConducts(int visitId){
+		return conductRepository.findByVisitId(visitId).stream()
+			.map(mapper::toConductDTO)
+			.collect(Collectors.toList());
 	}
 
 	public List<ConductShinryouFullDTO> listConductShinryouFull(int conductId){
