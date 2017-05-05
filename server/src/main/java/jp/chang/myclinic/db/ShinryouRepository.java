@@ -4,6 +4,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -20,4 +21,10 @@ public interface ShinryouRepository extends CrudRepository<Shinryou, Integer> {
 		" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto) ")
 	List<Object[]> findOneWithMaster(@Param("shinryouId") int shinryouId);
 
+	@Query("select s, m from Shinryou s, ShinryouMaster m, Visit v " +
+		" where v.visitId = :visitId and s.visitId = :visitId " +
+		" and s.shinryoucode = m.shinryoucode " +
+		" and m.validFrom <= DATE(v.visitedAt) " + 
+		" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto)")
+	List<Object[]> findByVisitIdWithMaster(@Param("visitId") int visitId, Sort sort);
 }

@@ -239,6 +239,11 @@ public class DbGateway {
 		payment = paymentRepository.save(payment);
 	}
 
+	public VisitDTO getVisit(int visitId){
+		Visit visit = visitRepository.findOne(visitId);
+		return mapper.toVisitDTO(visit);
+	}
+
 	public int enterVisit(VisitDTO visitDTO){
 		Visit visit = mapper.fromVisitDTO(visitDTO);
 		visit = visitRepository.save(visit);
@@ -247,6 +252,38 @@ public class DbGateway {
 
 	public ShinryouFullDTO getShinryouFull(int shinryouId){
 		Object[] result = shinryouRepository.findOneWithMaster(shinryouId).get(0);
+		return resultToShinryouFullDTO(result);
+	}
+
+	public List<ShinryouFullDTO> listShinryouFull(int visitId){
+		Sort sort = new Sort(Sort.Direction.ASC, "shinryoucode");
+		return shinryouRepository.findByVisitIdWithMaster(visitId, sort).stream()
+		.map(this::resultToShinryouFullDTO)
+		.collect(Collectors.toList());
+	}
+
+	public DrugFullDTO getDrugFull(int drugId){
+		Object[] result = drugRepository.findOneWithMaster(drugId).get(0);
+		return resultToDrugFullDTO(result);
+	}
+
+	public List<DrugFullDTO> listDrugFull(int visitId){
+		Sort sort = new Sort(Sort.Direction.ASC, "drugId");
+		return drugRepository.findByVisitIdWithMaster(visitId, sort).stream()
+		.map(this::resultToDrugFullDTO)
+		.collect(Collectors.toList());
+	}
+
+	public VisitFullDTO getVisitFull(int visitId){
+		VisitDTO visitDTO = getVisit(visitId);
+		VisitFullDTO visitFullDTO = new VisitFullDTO();
+		visitFullDTO.visit = visitDTO;
+		visitFullDTO.shinryouList = listShinryouFull(visitId);
+		visitFullDTO.drugs = listDrugFull(visitId);
+		return visitFullDTO;
+	}
+
+	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
 		Shinryou shinryou = (Shinryou)result[0];
 		ShinryouMaster master = (ShinryouMaster)result[1];
 		ShinryouFullDTO shinryouFullDTO = new ShinryouFullDTO();
@@ -255,8 +292,7 @@ public class DbGateway {
 		return shinryouFullDTO;
 	}
 
-	public DrugFullDTO getDrugFull(int drugId){
-		Object[] result = drugRepository.findOneWithMaster(drugId).get(0);
+	private DrugFullDTO resultToDrugFullDTO(Object[] result){
 		Drug drug = (Drug)result[0];
 		IyakuhinMaster master = (IyakuhinMaster)result[1];
 		DrugFullDTO drugFullDTO = new DrugFullDTO();

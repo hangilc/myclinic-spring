@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Sort;
 
 public interface DrugRepository extends CrudRepository<Drug, Integer> {
 
@@ -18,5 +19,12 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 		" and m.validFrom <= DATE(v.visitedAt) " + 
 		" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto) ")
 	List<Object[]> findOneWithMaster(@Param("drugId") int drugId);
+
+	@Query("select d, m from Drug d, IyakuhinMaster m, Visit v " +
+		" where d.visitId = :visitId and d.visitId = v.visitId " +
+		" and d.iyakuhincode = m.iyakuhincode " + 
+		" and m.validFrom <= DATE(v.visitedAt) " + 
+		" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto) ")
+	List<Object[]> findByVisitIdWithMaster(@Param("visitId") int visitId, Sort sort);
 
 }

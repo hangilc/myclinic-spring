@@ -85,4 +85,9 @@ public class VisitController {
 		return visitId;
 	}
 
+	@RequestMapping(value="/get-visit-full", method=RequestMethod.GET)
+	public VisitFullDTO getVisitFull(@RequestParam("visit-id") int visitId){
+		return dbGateway.getVisitFull(visitId);
+	}
+
 }
