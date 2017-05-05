@@ -419,6 +419,20 @@ public class DTOMapper {
 		return shinryou;
 	}
 
+	public GazouLabelDTO toGazouLabelDTO(GazouLabel gazouLabel){
+		GazouLabelDTO gazouLabelDTO = new GazouLabelDTO();
+		gazouLabelDTO.conductId = gazouLabel.getConductId();
+		gazouLabelDTO.label = gazouLabel.getLabel();
+		return gazouLabelDTO;
+	}
+
+	public GazouLabel fromGazouLabelDTO(GazouLabelDTO gazouLabelDTO){
+		GazouLabel gazouLabel = new GazouLabel();
+		gazouLabel.setConductId(gazouLabelDTO.conductId);
+		gazouLabel.setLabel(gazouLabelDTO.label);
+		return gazouLabel;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;

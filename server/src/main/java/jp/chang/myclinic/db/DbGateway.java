@@ -15,6 +15,7 @@ import java.sql.Date;
 
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Component
 public class DbGateway {
@@ -42,6 +43,16 @@ public class DbGateway {
 	private ShinryouRepository shinryouRepository;
 	@Autowired
 	private DrugRepository drugRepository;
+	@Autowired
+	private ConductRepository conductRepository;
+	@Autowired
+	private GazouLabelRepository gazouLabelRepository;
+	@Autowired
+	private ConductShinryouRepository conductShinryouRepository;
+	@Autowired
+	private ConductDrugRepository conductDrugRepository;
+	@Autowired
+	private ConductKizaiRepository conductKizaiRepository;
 
 	public List<WqueueFullDTO> listWqueueFull(){
 		try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
@@ -283,6 +294,40 @@ public class DbGateway {
 		return visitFullDTO;
 	}
 
+	public ConductDTO getConduct(int conductId){
+		Conduct conduct = conductRepository.findOne(conductId);
+		return mapper.toConductDTO(conduct);
+	}
+
+	public ConductFullDTO getConductFull(int conductId){
+		ConductDTO conductDTO = getConduct(conductId);
+		return extendConduct(conductDTO);
+	}
+
+	private ConductFullDTO extendConduct(ConductDTO conductDTO){
+		int conductId = conductDTO.conductId;
+		ConductFullDTO conductFullDTO = new ConductFullDTO();
+		conductFullDTO.conduct = conductDTO;
+		conductFullDTO.gazouLabel = findGazouLabel(conductId);
+		conductFullDTO.conductShinryouList = listConductShinryouFull(conductId);
+		return conductFullDTO;
+	}
+
+	public GazouLabelDTO findGazouLabel(int conductId){
+		Optional<GazouLabel> gazouLabel = gazouLabelRepository.findOneByConductId(conductId);
+		if( gazouLabel.isPresent() ){
+			return mapper.toGazouLabelDTO(gazouLabel.get());
+		} else {
+			return null;
+		}
+	}
+
+	public List<ConductShinryouFullDTO> listConductShinryouFull(int conductId){
+		return conductShinryouRepository.findByConductIdWithMaster(conductId).stream()
+		.map(this::resulToConductShinryouFullDTO)
+		.collect(Collectors.toList());
+	}
+
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
 		Shinryou shinryou = (Shinryou)result[0];
 		ShinryouMaster master = (ShinryouMaster)result[1];
@@ -299,6 +344,15 @@ public class DbGateway {
 		drugFullDTO.drug = mapper.toDrugDTO(drug);
 		drugFullDTO.master = mapper.toIyakuhinMasterDTO(master);
 		return drugFullDTO;
+	}
+
+	private ConductShinryouFullDTO resulToConductShinryouFullDTO(Object[] result){
+		ConductShinryou conductShinryou = (ConductShinryou)result[0];
+		ShinryouMaster master = (ShinryouMaster)result[1];
+		ConductShinryouFullDTO conductShinryouFull = new ConductShinryouFullDTO();
+		conductShinryouFull.conductShinryou = mapper.toConductShinryouDTO(conductShinryou);
+		conductShinryouFull.master = mapper.toShinryouMasterDTO(master);
+		return conductShinryouFull;
 	}
 
 }

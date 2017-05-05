@@ -71,7 +71,7 @@ public class Conduct {
 		this.kind = kind;
 	}
 
-	// @OneToOne
+	// @OneToOne(fetch=FetchType.EAGER)
 	// @JoinColumn(name="id", insertable=false, updatable=false)
 	// @NotFound(action=NotFoundAction.IGNORE)
 	// private GazouLabel gazouLabel;

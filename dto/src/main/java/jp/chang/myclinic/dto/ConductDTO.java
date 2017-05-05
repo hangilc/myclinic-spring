@@ -8,9 +8,9 @@ public class ConductDTO {
 	@Override
 	public String toString(){
 		return "ConductDTO[" +
-		"conductId" + conductId + "," +
-		"visitId" + visitId + "," +
-		"kind" + kind + //"," +
+		"conductId=" + conductId + "," +
+		"visitId=" + visitId + "," +
+		"kind=" + kind + //"," +
 		"]";
 	}
 }
