@@ -7,4 +7,5 @@ public class ConductFullDTO {
 	public GazouLabelDTO gazouLabel;
 	public List<ConductShinryouFullDTO> conductShinryouList;
 	public List<ConductDrugFullDTO> conductDrugs;
+	public List<ConductKizaiFullDTO> conductKizaiList;
 }

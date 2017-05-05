@@ -311,6 +311,7 @@ public class DbGateway {
 		conductFullDTO.gazouLabel = findGazouLabel(conductId);
 		conductFullDTO.conductShinryouList = listConductShinryouFull(conductId);
 		conductFullDTO.conductDrugs = listConductDrugFull(conductId);
+		conductFullDTO.conductKizaiList = listConductKizaiFull(conductId);
 		return conductFullDTO;
 	}
 
@@ -332,6 +333,12 @@ public class DbGateway {
 	public List<ConductDrugFullDTO> listConductDrugFull(int conductId){
 		return conductDrugRepository.findByConductIdWithMaster(conductId).stream()
 		.map(this::resulToConductDrugFullDTO)
+		.collect(Collectors.toList());
+	}
+
+	public List<ConductKizaiFullDTO> listConductKizaiFull(int conductId){
+		return conductKizaiRepository.findByConductIdWithMaster(conductId).stream()
+		.map(this::resulToConductKizaiFullDTO)
 		.collect(Collectors.toList());
 	}
 
@@ -369,6 +376,15 @@ public class DbGateway {
 		conductDrugFull.conductDrug = mapper.toConductDrugDTO(conductDrug);
 		conductDrugFull.master = mapper.toIyakuhinMasterDTO(master);
 		return conductDrugFull;
+	}
+
+	private ConductKizaiFullDTO resulToConductKizaiFullDTO(Object[] result){
+		ConductKizai conductKizai = (ConductKizai)result[0];
+		KizaiMaster master = (KizaiMaster)result[1];
+		ConductKizaiFullDTO conductKizaiFull = new ConductKizaiFullDTO();
+		conductKizaiFull.conductKizai = mapper.toConductKizaiDTO(conductKizai);
+		conductKizaiFull.master = mapper.toKizaiMasterDTO(master);
+		return conductKizaiFull;
 	}
 
 }
