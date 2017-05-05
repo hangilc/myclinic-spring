@@ -212,6 +212,42 @@ public class DTOMapper {
 		return payment;
 	}
 
+	public ShinryouDTO toShinryouDTO(Shinryou shinryou){
+		ShinryouDTO shinryouDTO = new ShinryouDTO();
+		shinryouDTO.shinryouId = shinryou.getShinryouId();
+		shinryouDTO.visitId = shinryou.getVisitId();
+		shinryouDTO.shinryoucode = shinryou.getShinryoucode();
+		return shinryouDTO;
+	}
+
+	public Shinryou fromShinryouDTO(ShinryouDTO shinryouDTO){
+		Shinryou shinryou = new Shinryou();
+		shinryou.setShinryouId(shinryouDTO.shinryouId);
+		shinryou.setVisitId(shinryouDTO.visitId);
+		shinryou.setShinryoucode(shinryouDTO.shinryoucode);
+		return shinryou;
+	}
+
+	public ShinryouMasterDTO toShinryouMasterDTO(ShinryouMaster master){
+		ShinryouMasterDTO masterDTO = new ShinryouMasterDTO();
+		masterDTO.shinryoucode = master.getShinryoucode();
+		masterDTO.validFrom = master.getValidFrom().toString();
+		masterDTO.name = master.getName();
+		masterDTO.tensuu = master.getTensuu();
+		masterDTO.tensuuShikibetsu = master.getTensuuShikibetsu();
+		masterDTO.shuukeisaki = master.getShuukeisaki();
+		masterDTO.houkatsukensa = master.getHoukatsukensa();
+		masterDTO.oushinkubun = master.getOushinkubun();
+		masterDTO.kensaGroup = master.getKensagroup();
+		masterDTO.roujinTekiyou = master.getRoujintekiyou();
+		masterDTO.codeShou = master.getCodeShou();
+		masterDTO.codeBu = master.getCodeBu();
+		masterDTO.codeAlpha = master.getCodeAlpha();
+		masterDTO.codeKubun = master.getCodeKubun();
+		masterDTO.validUpto = master.getValidUpto();
+		return masterDTO;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;

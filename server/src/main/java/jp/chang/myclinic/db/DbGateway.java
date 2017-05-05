@@ -38,6 +38,8 @@ public class DbGateway {
 	private PaymentRepository paymentRepository;
 	@Autowired
 	private VisitRepository visitRepository;
+	@Autowired
+	private ShinryouRepository shinryouRepository;
 
 	public List<WqueueFullDTO> listWqueueFull(){
 		try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
@@ -239,6 +241,16 @@ public class DbGateway {
 		Visit visit = mapper.fromVisitDTO(visitDTO);
 		visit = visitRepository.save(visit);
 		return visit.getVisitId();
+	}
+
+	public ShinryouFullDTO getShinryouFull(int shinryouId){
+		Object[] result = shinryouRepository.findOneWithMaster(shinryouId).get(0);
+		Shinryou shinryou = (Shinryou)result[0];
+		ShinryouMaster master = (ShinryouMaster)result[1];
+		ShinryouFullDTO shinryouFullDTO = new ShinryouFullDTO();
+		shinryouFullDTO.shinryou = mapper.toShinryouDTO(shinryou);
+		shinryouFullDTO.master = mapper.toShinryouMasterDTO(master);
+		return shinryouFullDTO;
 	}
 
 }
