@@ -40,6 +40,8 @@ public class DbGateway {
 	private VisitRepository visitRepository;
 	@Autowired
 	private ShinryouRepository shinryouRepository;
+	@Autowired
+	private DrugRepository drugRepository;
 
 	public List<WqueueFullDTO> listWqueueFull(){
 		try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
@@ -251,6 +253,16 @@ public class DbGateway {
 		shinryouFullDTO.shinryou = mapper.toShinryouDTO(shinryou);
 		shinryouFullDTO.master = mapper.toShinryouMasterDTO(master);
 		return shinryouFullDTO;
+	}
+
+	public DrugFullDTO getDrugFull(int drugId){
+		Object[] result = drugRepository.findOneWithMaster(drugId).get(0);
+		Drug drug = (Drug)result[0];
+		IyakuhinMaster master = (IyakuhinMaster)result[1];
+		DrugFullDTO drugFullDTO = new DrugFullDTO();
+		drugFullDTO.drug = mapper.toDrugDTO(drug);
+		drugFullDTO.master = mapper.toIyakuhinMasterDTO(master);
+		return drugFullDTO;
 	}
 
 }

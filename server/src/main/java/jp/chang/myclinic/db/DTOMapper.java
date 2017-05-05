@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.math.BigDecimal;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -246,6 +247,84 @@ public class DTOMapper {
 		masterDTO.codeKubun = master.getCodeKubun();
 		masterDTO.validUpto = master.getValidUpto();
 		return masterDTO;
+	}
+
+	public ShinryouMaster fromShinryouMasterDTO(ShinryouMasterDTO masterDTO){
+		ShinryouMaster master = new ShinryouMaster();
+		master.setShinryoucode(masterDTO.shinryoucode);
+		master.setValidFrom(stringToDate(masterDTO.validFrom));
+		master.setName(masterDTO.name);
+		master.setTensuu(masterDTO.tensuu);
+		master.setTensuuShikibetsu(masterDTO.tensuuShikibetsu);
+		master.setShuukeisaki(masterDTO.shuukeisaki);
+		master.setHoukatsukensa(masterDTO.houkatsukensa);
+		master.setOushinkubun(masterDTO.oushinkubun);
+		master.setKensagroup(masterDTO.kensaGroup);
+		master.setRoujintekiyou(masterDTO.roujinTekiyou);
+		master.setCodeShou(masterDTO.codeShou);
+		master.setCodeBu(masterDTO.codeBu);
+		master.setCodeAlpha(masterDTO.codeAlpha);
+		master.setCodeKubun(masterDTO.codeKubun);
+		master.setValidUpto(masterDTO.validUpto);
+		return master;
+	}
+
+	public DrugDTO toDrugDTO(Drug drug){
+		DrugDTO drugDTO = new DrugDTO();
+		drugDTO.drugId = drug.getDrugId();
+		drugDTO.visitId = drug.getVisitId();
+		drugDTO.iyakuhincode = drug.getIyakuhincode();
+		drugDTO.amount = drug.getAmount().doubleValue();
+		drugDTO.usage = drug.getUsage();
+		drugDTO.days = drug.getDays();
+		drugDTO.category = drug.getCategory();
+		drugDTO.shuukeisaki = drug.getShuukeisaki();
+		drugDTO.prescribed = drug.getPrescribed();
+		return drugDTO;
+	}
+
+	public Drug fromDrugDTO(DrugDTO drugDTO){
+		Drug drug = new Drug();
+		drug.setDrugId(drugDTO.drugId);
+		drug.setVisitId(drugDTO.visitId);
+		drug.setIyakuhincode(drugDTO.iyakuhincode);
+		drug.setAmount(BigDecimal.valueOf(drugDTO.amount));
+		drug.setUsage(drugDTO.usage);
+		drug.setDays(drugDTO.days);
+		drug.setCategory(drugDTO.category);
+		drug.setShuukeisaki(drugDTO.shuukeisaki);
+		drug.setPrescribed(drugDTO.prescribed);
+		return drug;
+	}
+
+	public IyakuhinMasterDTO toIyakuhinMasterDTO(IyakuhinMaster master){
+		IyakuhinMasterDTO masterDTO = new IyakuhinMasterDTO();
+		masterDTO.iyakuhincode = master.getIyakuhincode();
+		masterDTO.validFrom = master.getValidFrom().toString();
+		masterDTO.name = master.getName();
+		masterDTO.yomi = master.getYomi();
+		masterDTO.unit = master.getUnit();
+		masterDTO.yakka = master.getYakka().doubleValue();
+		masterDTO.madoku = master.getMadoku();
+		masterDTO.kouhatsu = master.getKouhatsu();
+		masterDTO.zaikei = master.getZaikei();
+		masterDTO.validUpto = master.getValidUpto();
+		return masterDTO;
+	}
+
+	public IyakuhinMaster fromIyakuhinMasterDTO(IyakuhinMasterDTO masterDTO){
+		IyakuhinMaster master = new IyakuhinMaster();
+		master.setIyakuhincode(masterDTO.iyakuhincode);
+		master.setValidFrom(stringToDate(masterDTO.validFrom));
+		master.setName(masterDTO.name);
+		master.setYomi(masterDTO.yomi);
+		master.setUnit(masterDTO.unit);
+		master.setYakka(BigDecimal.valueOf(masterDTO.yakka));
+		master.setMadoku(masterDTO.madoku);
+		master.setKouhatsu(masterDTO.kouhatsu);
+		master.setZaikei(masterDTO.zaikei);
+		master.setValidUpto(masterDTO.validUpto);
+		return master;
 	}
 
 	private String nullableDateToString(Date date){
