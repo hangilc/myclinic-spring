@@ -68,6 +68,18 @@
             <point>320</point>
           </step>
         </group>
+        <group key="09"> <!-- 感染症抗体価 -->
+          <step>
+            <threshold>8</threshold>
+            <point>632</point>
+          </step>
+        </group>
+        <group key="10"> <!-- グロブリンクラス別抗体価 -->
+          <step>
+            <threshold>2</threshold>
+            <point>438</point>
+          </step>
+        </group>
         <group key="11"> <!-- IgE -->
           <step>
             <threshold>13</threshold>
