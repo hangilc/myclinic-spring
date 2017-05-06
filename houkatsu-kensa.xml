@@ -1,0 +1,50 @@
+<houkatsu-kensa>
+  <revision valid-from="2016-04-01">
+    <groups>
+      <group key="01">
+        <step>
+          <threshold>10</threshold>
+          <point>130</point>
+        </step>
+        <step>
+          <threshold>8</threshold>
+          <point>110</point>
+        </step>
+      </group>
+      <group key="02">
+        <step>
+          <threshold>4</threshold>
+          <point>30</point>
+        </step>
+        <step>
+          <threshold>2</threshold>
+          <point>10</point>
+        </step>
+      </group>
+      </groups>
+    </revision>
+    <revision valid-from="2014-04-01">
+      <groups>
+      <group key="01">
+        <step>
+          <threshold>10</threshold>
+          <point>140</point>
+        </step>
+        <step>
+          <threshold>8</threshold>
+          <point>110</point>
+        </step>
+      </group>
+      <group key="02">
+        <step>
+          <threshold>4</threshold>
+          <point>36</point>
+        </step>
+        <step>
+          <threshold>2</threshold>
+          <point>12</point>
+        </step>
+      </group>
+    </groups>
+  </revision>
+</houkatsu-kensa>

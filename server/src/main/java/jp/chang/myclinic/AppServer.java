@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class AppServer {
     public static void main( String[] args )
     {
-        SpringApplication.run(AppServer.class, args);
+    	jp.chang.myclinic.rcpt.HoukatsuKensa.read();
+        //SpringApplication.run(AppServer.class, args);
     }
 }
