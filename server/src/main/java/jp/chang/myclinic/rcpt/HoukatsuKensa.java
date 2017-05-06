@@ -18,6 +18,12 @@ import java.io.File;
 
 public class HoukatsuKensa {
 
+	@XmlElementWrapper
+	@XmlElement(name = "revision")
+	public Revision[] revisions;
+
+	
+
 	public static class Revision {
 
 		private LocalDate validFrom;
@@ -52,9 +58,7 @@ public class HoukatsuKensa {
 		private String key;
 		private List<Step> steps;
 
-		public GroupEntry(){
-			System.out.println("GroupEntry()");
-		}
+		public GroupEntry(){ }
 
 		@XmlAttribute
 		public String getKey(){
@@ -77,11 +81,18 @@ public class HoukatsuKensa {
 	}
 
 	public static class Group {
-		@XmlElement(name = "group")
-		public List<GroupEntry> entries;
 
-		public Group(){
-			System.out.println("Group()");
+		private List<GroupEntry> entries;
+
+		public Group(){}
+
+		@XmlElement(name = "group")
+		public List<GroupEntry> getEntries(){
+			return entries;
+		}
+
+		public void setEntries(List<GroupEntry> entries){
+			this.entries = entries;
 		}
 	}
 
@@ -158,9 +169,6 @@ public class HoukatsuKensa {
 		}
 	}
 
-	@XmlElement(name = "revision")
-	public Revision[] revisions;
-
 	public static void read(){
 		HoukatsuKensa houkatsu = JAXB.unmarshal(new File("./houkatsu-kensa.xml"), HoukatsuKensa.class);
 		for(Revision r: houkatsu.revisions){
@@ -171,57 +179,6 @@ public class HoukatsuKensa {
 				System.out.println("steps:" + val);
 			});
 		}
+		JAXB.marshal(houkatsu, System.out);
 	}
 }
-
-/*
-public class HoukatsuKensa {
-	private String version;
-	private Revision[] revisions;
-
-	HoukatsuKensa(Revision[] revisions){
-		this.revisions = revisions;
-	}
-
-	public static class Revision {
-		private LocalDate validFrom;
-		private Map<String, Step[]> map;
-
-		public Revision(String validFromRep, Map<String, Step[]> map){
-			setValidFrom(validFromRep);
-			this.map = map;
-		}
-
-		private void setValidFrom(String value){
-			validFrom = LocalDate.parse(value, DateTimeFormatter.ISO_LOCAL_DATE);
-		}
-	}
-
-	public static class Step {
-		private int threshold;
-		private int point;
-
-		public Step(int threshold, int point){
-			this.threshold = threshold;
-			this.point = point;
-		}
-
-		public int getThreshold(){
-			return threshold;
-		}
-
-		public void setThreshold(int threshold){
-			this.threshold = threshold;
-		}
-
-		public int getPoint(){
-			return point;
-		}
-
-		public void setPoint(int point){
-			this.point = point;
-		}
-	}
-
-}
-*/
