@@ -2,51 +2,415 @@
   <revisions>
     <revision valid-from="2016-04-01">
       <groups>
-        <group key="01">
+        <group key="01"> <!-- 血液化学 --> 
+          <step>
+            <threshold>10</threshold>
+            <point>115</point>
+          </step>
+          <step>
+            <threshold>8</threshold>
+            <point>99</point>
+          </step>
+          <step>
+            <threshold>5</threshold>
+            <point>93</point>
+          </step>
+        </group>
+        <group key="02"> <!-- 内分泌 -->
+          <step>
+            <threshold>8</threshold>
+            <point>900</point>
+          </step>
+          <step>
+            <threshold>6</threshold>
+            <point>623</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>410</point>
+          </step>
+        </group>
+        <group key="03"> <!-- 肝炎 -->
+          <step>
+            <threshold>5</threshold>
+            <point>460</point>
+          </step>
+          <step>
+            <threshold>4</threshold>
+            <point>360</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>290</point>
+          </step>
+        </group>
+        <group key="05"> <!--腫瘍マーカー -->
+          <step>
+            <threshold>4</threshold>
+            <point>420</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>290</point>
+          </step>
+          <step>
+            <threshold>2</threshold>
+            <point>230</point>
+          </step>
+        </group>
+        <group key="07"> <!-- 自己抗体 -->
+          <step>
+            <threshold>3</threshold>
+            <point>490</point>
+          </step>
+          <step>
+            <threshold>2</threshold>
+            <point>320</point>
+          </step>
+        </group>
+        <group key="11"> <!-- IgE -->
+          <step>
+            <threshold>13</threshold>
+            <point>1430</point>
+          </step>
+        </group>
+      </groups>
+    </revision>
+
+    <revision valid-from="2014-04-01">
+      <groups>
+        <group key="01"> <!-- 血液化学 --> 
+          <step>
+            <threshold>10</threshold>
+            <point>117</point>
+          </step>
+          <step>
+            <threshold>8</threshold>
+            <point>99</point>
+          </step>
+          <step>
+            <threshold>5</threshold>
+            <point>93</point>
+          </step>
+        </group>
+        <group key="02"> <!-- 内分泌 -->
+          <step>
+            <threshold>8</threshold>
+            <point>900</point>
+          </step>
+          <step>
+            <threshold>6</threshold>
+            <point>623</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>410</point>
+          </step>
+        </group>
+        <group key="03"> <!-- 肝炎 -->
+          <step>
+            <threshold>5</threshold>
+            <point>469</point>
+          </step>
+          <step>
+            <threshold>4</threshold>
+            <point>360</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>290</point>
+          </step>
+        </group>
+        <group key="05"> <!--腫瘍マーカー -->
+          <step>
+            <threshold>4</threshold>
+            <point>420</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>290</point>
+          </step>
+          <step>
+            <threshold>2</threshold>
+            <point>230</point>
+          </step>
+        </group>
+        <group key="11"> <!-- IgE -->
+          <step>
+            <threshold>13</threshold>
+            <point>1430</point>
+          </step>
+        </group>
+      </groups>
+    </revision>
+
+    <revision valid-from="2012-04-01">
+      <groups>
+        <group key="01"> <!-- 血液化学 --> 
+          <step>
+            <threshold>10</threshold>
+            <point>121</point>
+          </step>
+          <step>
+            <threshold>8</threshold>
+            <point>102</point>
+          </step>
+          <step>
+            <threshold>5</threshold>
+            <point>93</point>
+          </step>
+        </group>
+        <group key="02"> <!-- 内分泌 -->
+          <step>
+            <threshold>8</threshold>
+            <point>900</point>
+          </step>
+          <step>
+            <threshold>6</threshold>
+            <point>630</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>410</point>
+          </step>
+        </group>
+        <group key="03"> <!-- 肝炎 -->
+          <step>
+            <threshold>5</threshold>
+            <point>520</point>
+          </step>
+          <step>
+            <threshold>4</threshold>
+            <point>360</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>290</point>
+          </step>
+        </group>
+        <group key="05"> <!--腫瘍マーカー -->
+          <step>
+            <threshold>4</threshold>
+            <point>420</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>290</point>
+          </step>
+          <step>
+            <threshold>2</threshold>
+            <point>230</point>
+          </step>
+        </group>
+        <group key="11"> <!-- IgE -->
+          <step>
+            <threshold>13</threshold>
+            <point>1430</point>
+          </step>
+        </group>
+      </groups>
+    </revision>
+
+    <revision valid-from="2010-04-01">
+      <groups>
+        <group key="01"> <!-- 血液化学 --> 
+          <step>
+            <threshold>10</threshold>
+            <point>123</point>
+          </step>
+          <step>
+            <threshold>8</threshold>
+            <point>104</point>
+          </step>
+          <step>
+            <threshold>5</threshold>
+            <point>95</point>
+          </step>
+        </group>
+        <group key="02"> <!-- 内分泌 -->
+          <step>
+            <threshold>8</threshold>
+            <point>900</point>
+          </step>
+          <step>
+            <threshold>6</threshold>
+            <point>630</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>410</point>
+          </step>
+        </group>
+        <group key="03"> <!-- 肝炎 -->
+          <step>
+            <threshold>5</threshold>
+            <point>520</point>
+          </step>
+          <step>
+            <threshold>4</threshold>
+            <point>360</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>290</point>
+          </step>
+        </group>
+        <group key="05"> <!--腫瘍マーカー -->
+          <step>
+            <threshold>4</threshold>
+            <point>420</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>290</point>
+          </step>
+          <step>
+            <threshold>2</threshold>
+            <point>230</point>
+          </step>
+        </group>
+        <group key="11"> <!-- IgE -->
+          <step>
+            <threshold>13</threshold>
+            <point>1430</point>
+          </step>
+        </group>
+      </groups>
+    </revision>
+
+    <revision valid-from="2008-04-01">
+      <groups>
+        <group key="01"> <!-- 血液化学 --> 
+          <step>
+            <threshold>10</threshold>
+            <point>129</point>
+          </step>
+          <step>
+            <threshold>8</threshold>
+            <point>109</point>
+          </step>
+          <step>
+            <threshold>5</threshold>
+            <point>100</point>
+          </step>
+        </group>
+        <group key="02"> <!-- 内分泌 -->
+          <step>
+            <threshold>8</threshold>
+            <point>900</point>
+          </step>
+          <step>
+            <threshold>6</threshold>
+            <point>630</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>410</point>
+          </step>
+        </group>
+        <group key="03"> <!-- 肝炎 -->
+          <step>
+            <threshold>5</threshold>
+            <point>520</point>
+          </step>
+          <step>
+            <threshold>4</threshold>
+            <point>360</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>290</point>
+          </step>
+        </group>
+        <group key="05"> <!--腫瘍マーカー -->
+          <step>
+            <threshold>4</threshold>
+            <point>420</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>290</point>
+          </step>
+          <step>
+            <threshold>2</threshold>
+            <point>230</point>
+          </step>
+        </group>
+        <group key="11"> <!-- IgE -->
+          <step>
+            <threshold>13</threshold>
+            <point>1430</point>
+          </step>
+        </group>
+      </groups>
+    </revision>
+
+    <revision valid-from="2006-04-01">
+      <groups>
+        <group key="01"> <!-- 血液化学 --> 
           <step>
             <threshold>10</threshold>
             <point>130</point>
           </step>
           <step>
             <threshold>8</threshold>
-            <point>110</point>
+            <point>111</point>
+          </step>
+          <step>
+            <threshold>5</threshold>
+            <point>102</point>
           </step>
         </group>
-        <group key="02">
-          <step>
-            <threshold>4</threshold>
-            <point>30</point>
-          </step>
-          <step>
-            <threshold>2</threshold>
-            <point>10</point>
-          </step>
-        </group>
-        </groups>
-      </revision>
-      <revision valid-from="2014-04-01">
-        <groups>
-        <group key="01">
-          <step>
-            <threshold>10</threshold>
-            <point>140</point>
-          </step>
+        <group key="02"> <!-- 内分泌 -->
           <step>
             <threshold>8</threshold>
-            <point>110</point>
+            <point>900</point>
+          </step>
+          <step>
+            <threshold>6</threshold>
+            <point>630</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>410</point>
           </step>
         </group>
-        <group key="02">
+        <group key="03"> <!-- 肝炎 -->
+          <step>
+            <threshold>5</threshold>
+            <point>520</point>
+          </step>
           <step>
             <threshold>4</threshold>
-            <point>36</point>
+            <point>360</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>290</point>
+          </step>
+        </group>
+        <group key="05"> <!--腫瘍マーカー -->
+          <step>
+            <threshold>4</threshold>
+            <point>420</point>
+          </step>
+          <step>
+            <threshold>3</threshold>
+            <point>290</point>
           </step>
           <step>
             <threshold>2</threshold>
-            <point>12</point>
+            <point>230</point>
+          </step>
+        </group>
+        <group key="11"> <!-- IgE -->
+          <step>
+            <threshold>13</threshold>
+            <point>1430</point>
           </step>
         </group>
       </groups>
     </revision>
+
   </revisions>
 </houkatsu-kensa>
