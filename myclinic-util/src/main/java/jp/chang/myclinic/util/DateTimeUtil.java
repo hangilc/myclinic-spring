@@ -1,6 +1,7 @@
 package jp.chang.myclinic.util;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.chrono.JapaneseDate;
 
@@ -21,5 +22,13 @@ public class DateTimeUtil {
 		return validFromDate.compareTo(at) <= 0 &&
 			(validUpto == null || "0000-00-00".equals(validUpto) || 
 				at.compareTo(LocalDate.parse(validUpto, sqlDateFormatter)) <= 0);
+	}
+
+	public static LocalDateTime parseSqlDateTime(String sqlDateTime){
+		return LocalDateTime.parse(sqlDateTime, sqlDateTimeFormatter);
+	}
+
+	public static LocalDate parseSqlDate(String sqlDate){
+		return LocalDate.parse(sqlDate, sqlDateFormatter);
 	}
 }

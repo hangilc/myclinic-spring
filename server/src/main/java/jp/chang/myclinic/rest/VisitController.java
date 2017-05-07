@@ -7,12 +7,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.transaction.annotation.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import jp.chang.myclinic.db.DbGateway;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.consts.MyclinicConsts;
+import jp.chang.myclinic.consts.MeisaiSection;
+import jp.chang.myclinic.rcpt.HoukatsuKensa;
+import jp.chang.myclinic.rcpt.RcptVisit;
+import jp.chang.myclinic.rcpt.Meisai;
+import jp.chang.myclinic.rcpt.SectionItem;
+import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.util.List;
 import java.time.LocalDate;
@@ -26,6 +31,8 @@ public class VisitController {
 
 	@Autowired
 	private DbGateway dbGateway;
+	@Autowired
+	private HoukatsuKensa houkatsuKensa;
 
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 
@@ -88,6 +95,28 @@ public class VisitController {
 	@RequestMapping(value="/get-visit-full", method=RequestMethod.GET)
 	public VisitFullDTO getVisitFull(@RequestParam("visit-id") int visitId){
 		return dbGateway.getVisitFull(visitId);
+	}
+
+	@RequestMapping(value="/get-visit-meisai", method=RequestMethod.GET)
+	public boolean getVisitMeisai(@RequestParam("visit-id") int visitId){
+		RcptVisit rcptVisit = new RcptVisit();
+		VisitDTO visit = dbGateway.getVisit(visitId);
+		List<ShinryouFullDTO> shinryouList = dbGateway.listShinryouFull(visitId);
+		LocalDate at =DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
+		HoukatsuKensa.Revision revision = houkatsuKensa.findRevision(at);
+		rcptVisit.add(shinryouList, revision);
+		Meisai meisai = rcptVisit.getMeisai();
+		for(MeisaiSection section: MeisaiSection.values()){
+			System.out.println(section.getLabel());
+			List<SectionItem> items = meisai.getItems(section);
+			if( items != null ){
+				items.forEach(item -> {
+					System.out.println(item);
+				});
+			}
+			System.out.println(meisai.sectionTotal(section));
+		}
+		return true;
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Optional;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -16,18 +17,36 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.File;
 
+import jp.chang.myclinic.consts.HoukatsuKensaKind;
+
 public class HoukatsuKensa {
 
 	@XmlElementWrapper
 	@XmlElement(name = "revision")
 	public Revision[] revisions;
 
-	
+	public Optional<Integer> calcTen(HoukatsuKensaKind kind, int n, LocalDate at){
+		Revision r = findRevision(at);
+		if( r == null ){
+			return Optional.empty();
+		} else {
+			return r.calcTen(kind, n);
+		}
+	}
+
+	public Revision findRevision(LocalDate at){
+		for(Revision r: revisions){
+			if( r.validFrom.compareTo(at) <= 0 ){
+				return r;
+			}
+		}
+		return null;
+	}
 
 	public static class Revision {
 
 		private LocalDate validFrom;
-		private Map<String, List<Step>> map;
+		private Map<HoukatsuKensaKind, List<Step>> map;
 
 		public Revision(){}
 
@@ -43,12 +62,25 @@ public class HoukatsuKensa {
 
 		@XmlJavaTypeAdapter(GroupMapAdapter.class)
 		@XmlElement(name = "groups")
-		public Map<String, List<Step>> getMap(){
+		public Map<HoukatsuKensaKind, List<Step>> getMap(){
 			return map;
 		}
 
-		public void setMap(Map<String, List<Step>> map){
+		public void setMap(Map<HoukatsuKensaKind, List<Step>> map){
 			this.map = map;
+		}
+
+		public List<Step> getSteps(HoukatsuKensaKind kind){
+			return map.get(kind);
+		}
+
+		public Optional<Integer> calcTen(HoukatsuKensaKind kind, int n){
+			for(Step step: getSteps(kind)){
+				if( step.getThreshold() <= n ){
+					return Optional.of(step.getPoint());
+				}
+			}
+			return Optional.empty();
 		}
 
 	}
@@ -142,24 +174,24 @@ public class HoukatsuKensa {
 		}
 	}
 
-	public static class GroupMapAdapter extends XmlAdapter<Group, Map<String, List<Step>>> {
+	public static class GroupMapAdapter extends XmlAdapter<Group, Map<HoukatsuKensaKind, List<Step>>> {
 		@Override
-		public Map<String, List<Step>> unmarshal(Group group){
-			Map<String, List<Step>> map = new HashMap<>();
+		public Map<HoukatsuKensaKind, List<Step>> unmarshal(Group group){
+			Map<HoukatsuKensaKind, List<Step>> map = new HashMap<>();
 			group.entries.forEach(entry -> {
 				String key = entry.getKey();
 				List<Step> steps = entry.getSteps();
-				map.put(key, steps);
+				map.put(HoukatsuKensaKind.fromCode(key), steps);
 			});
 			return map;
 		}
 
 		@Override 
-		public Group marshal(Map<String, List<Step>> map){
+		public Group marshal(Map<HoukatsuKensaKind, List<Step>> map){
 			List<GroupEntry> entries = new ArrayList<>();
 			map.forEach((k, v) -> {
 				GroupEntry entry = new GroupEntry();
-				entry.setKey(k);
+				entry.setKey(k.getCode());
 				entry.setSteps(v);
 				entries.add(entry);
 			});
@@ -167,6 +199,10 @@ public class HoukatsuKensa {
 			group.entries = entries;
 			return group;
 		}
+	}
+
+	public static HoukatsuKensa load(){
+		return JAXB.unmarshal(new File("./houkatsu-kensa.xml"), HoukatsuKensa.class);
 	}
 
 	public static void read(){
