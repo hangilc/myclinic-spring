@@ -7,7 +7,11 @@ public abstract class SectionItem {
 	private int count;
 
 	SectionItem(){
-		count = 1;
+		this(1);
+	}
+
+	SectionItem(int count){
+		this.count = count;
 	}
 
 	public int getCount(){

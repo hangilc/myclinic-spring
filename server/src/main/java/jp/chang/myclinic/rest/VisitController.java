@@ -102,9 +102,11 @@ public class VisitController {
 		RcptVisit rcptVisit = new RcptVisit();
 		VisitDTO visit = dbGateway.getVisit(visitId);
 		List<ShinryouFullDTO> shinryouList = dbGateway.listShinryouFull(visitId);
+		List<DrugFullDTO> drugs = dbGateway.listDrugFull(visitId);
 		LocalDate at =DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
 		HoukatsuKensa.Revision revision = houkatsuKensa.findRevision(at);
 		rcptVisit.add(shinryouList, revision);
+		rcptVisit.add(drugs);
 		Meisai meisai = rcptVisit.getMeisai();
 		for(MeisaiSection section: MeisaiSection.values()){
 			System.out.println(section.getLabel());
