@@ -332,6 +332,12 @@ public class DbGateway {
 			.collect(Collectors.toList());
 	}
 
+	public List<ConductFullDTO> listConductFull(int visitId){
+		return listConducts(visitId).stream()
+			.map(this::extendConduct)
+			.collect(Collectors.toList());
+	}
+
 	public List<ConductShinryouFullDTO> listConductShinryouFull(int conductId){
 		return conductShinryouRepository.findByConductIdWithMaster(conductId).stream()
 		.map(this::resulToConductShinryouFullDTO)

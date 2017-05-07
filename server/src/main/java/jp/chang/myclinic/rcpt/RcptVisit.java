@@ -17,15 +17,23 @@ public class RcptVisit {
 		return meisai;
 	}
 
-	public void add(List<ShinryouFullDTO> shinryouList, HoukatsuKensa.Revision revision){
-		shinryouList.forEach(shinryou -> add(shinryou, revision));
+	public void addShinryouList(List<ShinryouFullDTO> shinryouList, HoukatsuKensa.Revision revision){
+		shinryouList.forEach(shinryou -> addShinryou(shinryou, revision));
 	}
 
-	public void add(List<DrugFullDTO> drugs){
-		drugs.forEach(this::add);
+	public void addDrugs(List<DrugFullDTO> drugs){
+		drugs.forEach(this::addDrug);
 	}
 
-	public void add(ShinryouFullDTO shinryou, HoukatsuKensa.Revision revision){
+	public void addConducts(List<ConductFullDTO> conducts){
+		conducts.forEach(conduct -> {
+			conduct.conductShinryouList.forEach(this::addConductShinryou);
+			conduct.conductDrugs.forEach(this::addConductDrug);
+			conduct.conductKizaiList.forEach(this::addConductKizai);
+		});
+	}
+
+	public void addShinryou(ShinryouFullDTO shinryou, HoukatsuKensa.Revision revision){
 		ShinryouMasterDTO master = shinryou.master;
 		HoukatsuKensaKind kind = HoukatsuKensaKind.fromCode(master.houkatsukensa);
 		if( kind == HoukatsuKensaKind.NONE ){
@@ -38,7 +46,7 @@ public class RcptVisit {
 		}
 	}
 
-	public void add(DrugFullDTO drugFull){
+	public void addDrug(DrugFullDTO drugFull){
 		DrugDTO drug = drugFull.drug;
 		IyakuhinMasterDTO master = drugFull.master;
 		DrugCategory category = DrugCategory.fromCode(drug.category);
@@ -60,6 +68,18 @@ public class RcptVisit {
 			}
 			default: System.out.println("Unknown category (neglected): " + drug.category);
 		}
+	}
+
+	public void addConductShinryou(ConductShinryouFullDTO conductShinryou){
+		throw new RuntimeException("not implemented");
+	}
+
+	public void addConductDrug(ConductDrugFullDTO conductDrug){
+		throw new RuntimeException("not implemented");
+	}
+
+	public void addConductKizai(ConductKizaiFullDTO conductKizai){
+		throw new RuntimeException("not implemented");
 	}
 
 }
