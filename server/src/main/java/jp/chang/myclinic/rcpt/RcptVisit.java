@@ -32,7 +32,8 @@ public class RcptVisit {
 			if( conduct.conduct.kind == MyclinicConsts.ConductKindGazou ){
 				sect = MeisaiSection.Gazou;
 			} else {
-				sect = MeisaiSection.Chuusha;
+				//sect = MeisaiSection.Chuusha;
+				sect = MeisaiSection.Shochi;
 			}
 			conduct.conductShinryouList.forEach(conductShinryou -> addConductShinryou(conductShinryou, sect));
 			conduct.conductDrugs.forEach(drug -> addConductDrug(drug, sect));
@@ -84,7 +85,8 @@ public class RcptVisit {
 	}
 
 	public void addConductDrug(ConductDrugFullDTO conductDrug, MeisaiSection sect){
-		//throw new RuntimeException("not implemented");
+		ConductDrugItem item = new ConductDrugItem(conductDrug, sect);
+		meisai.add(sect, item);
 	}
 
 	public void addConductKizai(ConductKizaiFullDTO conductKizai, MeisaiSection sect){
