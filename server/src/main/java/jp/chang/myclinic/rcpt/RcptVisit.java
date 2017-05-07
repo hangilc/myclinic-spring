@@ -48,7 +48,11 @@ public class RcptVisit {
 				meisai.add(MeisaiSection.Touyaku, item);
 				break;
 			}
-			case Tonpuku: break;
+			case Tonpuku: {
+				TonpukuItem item = new TonpukuItem(drugFull);
+				meisai.add(MeisaiSection.Touyaku, item);
+				break;
+			}
 			case Gaiyou: break;
 			default: System.out.println("Unknown category (neglected): " + drug.category);
 		}
