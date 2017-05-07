@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import jp.chang.myclinic.consts.HoukatsuKensaKind;
 import jp.chang.myclinic.consts.MeisaiSection;
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.consts.MyclinicConsts;
 
 import jp.chang.myclinic.dto.*;
 
@@ -27,9 +28,15 @@ public class RcptVisit {
 
 	public void addConducts(List<ConductFullDTO> conducts){
 		conducts.forEach(conduct -> {
-			conduct.conductShinryouList.forEach(this::addConductShinryou);
-			conduct.conductDrugs.forEach(this::addConductDrug);
-			conduct.conductKizaiList.forEach(this::addConductKizai);
+			MeisaiSection sect;
+			if( conduct.conduct.kind == MyclinicConsts.ConductKindGazou ){
+				sect = MeisaiSection.Gazou;
+			} else {
+				sect = MeisaiSection.Chuusha;
+			}
+			conduct.conductShinryouList.forEach(conductShinryou -> addConductShinryou(conductShinryou, sect));
+			conduct.conductDrugs.forEach(drug -> addConductDrug(drug, sect));
+			conduct.conductKizaiList.forEach(conductKizai -> addConductKizai(conductKizai, sect));
 		});
 	}
 
@@ -70,16 +77,19 @@ public class RcptVisit {
 		}
 	}
 
-	public void addConductShinryou(ConductShinryouFullDTO conductShinryou){
-		throw new RuntimeException("not implemented");
+	public void addConductShinryou(ConductShinryouFullDTO conductShinryou, MeisaiSection sect){
+		ShinryouMasterDTO master = conductShinryou.master;
+		SimpleShinryouItem item = new SimpleShinryouItem(master.shinryoucode, master.tensuu, master.name);
+		meisai.add(sect, item);
 	}
 
-	public void addConductDrug(ConductDrugFullDTO conductDrug){
-		throw new RuntimeException("not implemented");
+	public void addConductDrug(ConductDrugFullDTO conductDrug, MeisaiSection sect){
+		//throw new RuntimeException("not implemented");
 	}
 
-	public void addConductKizai(ConductKizaiFullDTO conductKizai){
-		throw new RuntimeException("not implemented");
+	public void addConductKizai(ConductKizaiFullDTO conductKizai, MeisaiSection sect){
+		KizaiItem item = new KizaiItem(conductKizai);
+		meisai.add(sect, item);
 	}
 
 }
