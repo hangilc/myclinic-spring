@@ -53,7 +53,11 @@ public class RcptVisit {
 				meisai.add(MeisaiSection.Touyaku, item);
 				break;
 			}
-			case Gaiyou: break;
+			case Gaiyou: {
+				GaiyouItem item = new GaiyouItem(drugFull);
+				meisai.add(MeisaiSection.Touyaku, item);
+				break;
+			}
 			default: System.out.println("Unknown category (neglected): " + drug.category);
 		}
 	}
