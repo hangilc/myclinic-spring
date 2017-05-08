@@ -1,10 +1,10 @@
 package jp.chang.myclinic.dto;
 
 public class HokenDTO {
-	public ShahokokuhoDTO shahokokuhoDTO;
-	public KoukikoureiDTO koukikoureiDTO;
-	public RoujinDTO roujinDTO;
-	public KouhiDTO kouhi1DTO;
-	public KouhiDTO kouhi2DTO;
-	public KouhiDTO kouhi3DTO;
+	public ShahokokuhoDTO shahokokuho;
+	public KoukikoureiDTO koukikourei;
+	public RoujinDTO roujin;
+	public KouhiDTO kouhi1;
+	public KouhiDTO kouhi2;
+	public KouhiDTO kouhi3;
 }
