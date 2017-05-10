@@ -59,6 +59,9 @@ class Service {
 
 		@POST("delete-kouhi")
 		CompletableFuture<Boolean> deleteKouhi(@Body KouhiDTO kouhiDTO);
+
+		@GET("get-visit-meisai")
+		CompletableFuture<MeisaiDTO> getVisitMeisai(@Query("visit-id") int visitId);
 	}
 
 	public static ServerAPI api; 

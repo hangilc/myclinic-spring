@@ -107,11 +107,7 @@ class MainFrame extends JFrame {
 			JButton updateButton = new JButton("更新");
 			updateButton.addActionListener(event -> doUpdate());
 			JButton cashierButton = new JButton("会計");
-			cashierButton.addActionListener(event -> {
-				CashierDialog dialog = new CashierDialog(this);
-				dialog.setLocationByPlatform(true);
-				dialog.setVisible(true);
-			});
+			cashierButton.addActionListener(event -> doCashier());
 			JButton unselectButton = new JButton("選択解除");
 			JButton deleteButton = new JButton("削除");
 
@@ -180,12 +176,39 @@ class MainFrame extends JFrame {
 			});
 	}
 
+	private void doCashier(){
+		WqueueData wq = wqueueList.getSelectedValue();
+		if( wq == null ){
+			return;
+		}
+		int visitId = wq.getVisitId() ;
+        Service.api.getVisitMeisai(visitId)
+                .whenComplete((result, t) -> {
+                    if( t != null ){
+                        EventQueue.invokeLater(() -> {
+                            alert("明細情報の取得に失敗しました。" + t.toString());
+                        });
+                        return;
+                    }
+                    EventQueue.invokeLater(() -> {
+                        CashierDialog dialog = new CashierDialog(this, result, wq.getPatient());
+                        dialog.setLocationByPlatform(true);
+                        dialog.setVisible(true);
+                    });
+                });
+	}
+
 	private WqueueData toWqueueData(WqueueFullDTO wq){
 		WqueueWaitState waitState = WqueueWaitState.fromCode(wq.wqueue.waitState);
 		PatientDTO patient = wq.patient;
 		String label = String.format("[%s] (%04d) %s %s (%s %s)", waitState.getLabel(),
 			patient.patientId, patient.lastName, patient.firstName, patient.lastNameYomi, patient.firstNameYomi);
-		return new WqueueData(waitState, label);
+		int visitId = wq.visit.visitId;
+		return new WqueueData(waitState, label, visitId, wq.patient);
 	}
+
+	private void alert(String message){
+        JOptionPane.showMessageDialog(MainFrame.this, message);
+    }
 
 }

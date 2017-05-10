@@ -10,5 +10,4 @@ class WqueueList extends JList<WqueueData> {
 		this.setCellRenderer(new WqueueListCellRenderer());
 	}
 
-	
 }

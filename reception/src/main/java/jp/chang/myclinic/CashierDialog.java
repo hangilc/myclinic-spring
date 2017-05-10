@@ -1,12 +1,20 @@
 package jp.chang.myclinic;
 
+import jp.chang.myclinic.dto.MeisaiDTO;
+import jp.chang.myclinic.dto.PatientDTO;
+
 import java.awt.*;
 import javax.swing.*;
 
 class CashierDialog extends JDialog {
 
-	CashierDialog(JFrame owner){
+	private MeisaiDTO meisai;
+	private PatientDTO patient;
+
+	CashierDialog(JFrame owner, MeisaiDTO meisai, PatientDTO patient){
 		super(owner, "会計", true);
+		this.meisai = meisai;
+		this.patient = patient;
 		setupCenter();
 		setupSouth();
 		pack();
@@ -17,12 +25,7 @@ class CashierDialog extends JDialog {
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 		{
-			JLabel label = new JLabel();
-			// *** (***) 様　患者番号 ***
-			// お薬　*　種類
-			// 請求金額 *** 円
-			// 再診 *** 点
-			// ...
+			JLabel label = new JLabel(makeLabelContent());
 			label.setPreferredSize(new Dimension(300, 500));
 			panel.add(label);
 		}
@@ -51,6 +54,21 @@ class CashierDialog extends JDialog {
 		JButton cancelButton = new JButton("キャンセル");
 		panel.add(cancelButton);
 		add(panel, BorderLayout.SOUTH);
+	}
+
+	private String makeLabelContent(){
+		// *** (***) 様　患者番号 ***
+		// お薬　*　種類
+		// 請求金額 *** 円
+		// 再診 *** 点
+		// ...
+		StringBuilder sb = new StringBuilder();
+		sb.append("<html>");
+		sb.append(String.format("<div>%s %s (%s %s) 様 患者番号：%s</div>",
+				patient.lastName, patient.firstName, patient.lastNameYomi, patient.firstNameYomi,
+				patient.patientId));
+		sb.append("</html>");
+		return sb.toString();
 	}
 
 }
