@@ -264,6 +264,9 @@ public class DbGateway {
 
 	public ShinryouFullDTO getShinryouFull(int shinryouId){
 		Object[] result = shinryouRepository.findOneWithMaster(shinryouId).get(0);
+		if( result == null ){
+			System.out.println("cannot get full shinryou for shinryouId: " + shinryouId);
+		}
 		return resultToShinryouFullDTO(result);
 	}
 

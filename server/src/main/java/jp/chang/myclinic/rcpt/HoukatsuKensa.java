@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.Collections;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -71,7 +72,12 @@ public class HoukatsuKensa {
 		}
 
 		public List<Step> getSteps(HoukatsuKensaKind kind){
-			return map.get(kind);
+			List<Step> steps = map.get(kind);
+			if( steps == null ){
+				return Collections.emptyList();
+			} else {
+				return steps;
+			}
 		}
 
 		public Optional<Integer> calcTen(HoukatsuKensaKind kind, int n){

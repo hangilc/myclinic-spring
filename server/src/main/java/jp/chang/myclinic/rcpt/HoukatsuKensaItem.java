@@ -25,6 +25,9 @@ class HoukatsuKensaItem extends SectionItem {
 
 	@Override
 	public int getTanka(){
+		if( revision == null ){
+			return sumMasters();
+		}
 		Optional<Integer> tanka = revision.calcTen(kind, masters.size());
 		return tanka.orElseGet(this::sumMasters);
 	}
