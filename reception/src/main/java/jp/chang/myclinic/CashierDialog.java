@@ -2,9 +2,12 @@ package jp.chang.myclinic;
 
 import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
+import net.miginfocom.swing.MigLayout;
 
 import java.awt.*;
 import javax.swing.*;
+
+import static javax.swing.SwingConstants.TOP;
 
 class CashierDialog extends JDialog {
 
@@ -15,45 +18,41 @@ class CashierDialog extends JDialog {
 		super(owner, "会計", true);
 		this.meisai = meisai;
 		this.patient = patient;
-		setupCenter();
-		setupSouth();
+		setLayout(new MigLayout("fill", "[fill]", "[] []"));
+		add(makeCenter(), "wrap");
+		add(makeSouth());
 		pack();
 	}
 
-	private void setupCenter(){
-		JPanel panel = new JPanel();
-		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
+	private JComponent makeCenter(){
+		JPanel panel = new JPanel(new MigLayout("insets 0 0 0 0", "[grow]", "[grow]"));
 		{
 			JLabel label = new JLabel(makeLabelContent());
-			label.setPreferredSize(new Dimension(300, 500));
-			panel.add(label);
+			label.setHorizontalAlignment(SwingConstants.LEFT);
+			label.setVerticalAlignment(SwingConstants.TOP);
+			label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			JScrollPane scroll = new JScrollPane(label);
+			panel.add(scroll, "width :400:, height :300:, top, grow");
 		}
-		panel.add(Box.createHorizontalStrut(5));
 		{
-			JPanel box = new JPanel();
-			box.setLayout(new BoxLayout(box, BoxLayout.PAGE_AXIS));
+			JPanel box = new JPanel(new MigLayout("insets 0 0 0 0", "", ""));
 			JButton printReceiptButton = new JButton("領収書発行");
-			box.add(printReceiptButton);
-			box.add(Box.createVerticalStrut(5));
+			box.add(printReceiptButton, "sizegroup btn, wrap");
 			JButton printBlankButton = new JButton("記入用領収書");
-			box.add(printBlankButton);
-			panel.add(box);
+			box.add(printBlankButton, "sizegroup btn, gap push");
+			panel.add(box, "top");
 		}
-		add(panel, BorderLayout.CENTER);
+		return panel;
 	}
 
-	private void setupSouth(){
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-		panel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
-		panel.add(Box.createHorizontalGlue());
+	private JComponent makeSouth(){
+		JPanel panel = new JPanel(new MigLayout("insets 0 0 0 0, right", "", ""));
 		JButton okButton = new JButton("OK");
-		panel.add(okButton);
-		panel.add(Box.createHorizontalStrut(5));
+		panel.add(okButton, "sizegroup btn");
 		JButton cancelButton = new JButton("キャンセル");
-		panel.add(cancelButton);
-		add(panel, BorderLayout.SOUTH);
+		cancelButton.addActionListener(event -> dispose());
+		panel.add(cancelButton, "sizegroup btn");
+		return panel;
 	}
 
 	private String makeLabelContent(){
