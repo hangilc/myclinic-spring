@@ -134,6 +134,11 @@ public class VisitController {
 		return meisaiDTO;
 	}
 
+	@RequestMapping(value="/list-visit-ids", method=RequestMethod.GET)
+	public List<Integer> listVisitIds(){
+		return dbGateway.listVisitIds();
+	}
+
 	private SectionItemDTO toSectionItemDTO(SectionItem sectionItem) {
 		SectionItemDTO sectionItemDTO = new SectionItemDTO();
 		sectionItemDTO.label = sectionItem.getLabel();

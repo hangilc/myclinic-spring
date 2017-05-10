@@ -1,5 +1,6 @@
 package jp.chang.myclinic.db;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
@@ -20,4 +21,7 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 	int countByPatientId(int patientId);
 
 	List<Visit> findByPatientId(int patientId, Pageable pageable);
+
+	@Query("select v.visitId from Visit v")
+    List<Integer> findAllVisitIds(Sort sort);
 }

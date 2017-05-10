@@ -1,21 +1,17 @@
 package jp.chang.myclinic.db;
 
-import org.springframework.stereotype.Component;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
 import jp.chang.myclinic.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.time.LocalDate;
 import java.sql.Date;
-
-import java.util.stream.Stream;
-import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class DbGateway {
@@ -259,6 +255,11 @@ public class DbGateway {
 		Visit visit = mapper.fromVisitDTO(visitDTO);
 		visit = visitRepository.save(visit);
 		return visit.getVisitId();
+	}
+
+	public List<Integer> listVisitIds(){
+		Sort sort = new Sort(Sort.Direction.DESC, "visitId");
+		return visitRepository.findAllVisitIds(sort);
 	}
 
 	public ShinryouFullDTO getShinryouFull(int shinryouId){
