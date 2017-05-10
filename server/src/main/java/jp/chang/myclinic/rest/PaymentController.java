@@ -30,4 +30,9 @@ public class PaymentController {
 		return true;
 	}
 
+	@RequestMapping(value="/list-payment", method=RequestMethod.GET)
+	public List<PaymentDTO> listPayment(@RequestParam("visit-id") int visitId){
+		return dbGateway.listPayment(visitId);
+	}
+
 }

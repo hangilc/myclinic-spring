@@ -241,9 +241,21 @@ public class DbGateway {
 		charge = chargeRepository.save(charge);
 	}
 
+	public ChargeDTO getCharge(int visitId){
+		Charge charge = chargeRepository.findOne(visitId);
+		return mapper.toChargeDTO(charge);
+	}
+
 	public void enterPayment(PaymentDTO paymentDTO){
 		Payment payment = mapper.fromPaymentDTO(paymentDTO);
-		payment = paymentRepository.save(payment);
+		paymentRepository.save(payment);
+	}
+
+	public List<PaymentDTO> listPayment(int visitId){
+		//Sort sort = new Sort(Sort.Direction.DESC, "visitId");
+		return paymentRepository.findByVisitIdOrderByPaytimeDesc(visitId).stream()
+				.map(mapper::toPaymentDTO)
+				.collect(Collectors.toList());
 	}
 
 	public VisitDTO getVisit(int visitId){

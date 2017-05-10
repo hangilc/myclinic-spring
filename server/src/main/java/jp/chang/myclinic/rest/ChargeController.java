@@ -29,4 +29,9 @@ public class ChargeController {
 		return true;
 	}
 
+	@RequestMapping(value="/get-charge", method=RequestMethod.GET)
+	public ChargeDTO getCharge(@RequestParam("visit-id") int visitId){
+		return dbGateway.getCharge(visitId);
+	}
+
 }
