@@ -2,7 +2,7 @@ package jp.chang.myclinic.rcpt;
 
 import jp.chang.myclinic.dto.*;
 
-class FutanWari {
+public class FutanWari {
 	public static int calcFutanWari(HokenDTO hoken, int rcptAge){
 		int futanWari = 10;
 		 if( hoken.shahokokuho != null ){

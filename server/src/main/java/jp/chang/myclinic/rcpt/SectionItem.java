@@ -1,7 +1,6 @@
 package jp.chang.myclinic.rcpt;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class SectionItem {
 	private int count;
@@ -34,8 +33,11 @@ public abstract class SectionItem {
 	}
 
 	public static int sum(List<SectionItem> items){
-		return items.stream()
-		.collect(Collectors.summingInt(item -> item.getTanka() * item.getCount()));
+		if( items == null ){
+			return 0;
+		} else {
+			return items.stream().mapToInt(item -> item.getTanka() * item.getCount()).sum();
+		}
 	}
 
 	@Override

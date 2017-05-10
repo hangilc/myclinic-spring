@@ -4,10 +4,7 @@ import jp.chang.myclinic.consts.MeisaiSection;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.db.DbGateway;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.rcpt.HoukatsuKensa;
-import jp.chang.myclinic.rcpt.Meisai;
-import jp.chang.myclinic.rcpt.RcptVisit;
-import jp.chang.myclinic.rcpt.SectionItem;
+import jp.chang.myclinic.rcpt.*;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,9 +114,23 @@ public class VisitController {
 				meisaiSectionDTO.items = items.stream()
 						.map(this::toSectionItemDTO)
 						.collect(Collectors.toList());
+				meisaiSectionDTO.sectionTotalTen = SectionItem.sum(items);
 				meisaiDTO.sections.add(meisaiSectionDTO);
 			}
 		}
+		meisaiDTO.totalTen = meisai.totalTen();
+		PatientDTO patientDTO = dbGateway.getPatient(visit.patientId);
+		if( patientDTO.birthday != null ){
+			HokenDTO hokenDTO = dbGateway.getHokenForVisit(visit);
+			LocalDateTime atDateTime = DateTimeUtil.parseSqlDateTime(visit.visitedAt);
+			LocalDate birthdayDate = DateTimeUtil.parseSqlDate(patientDTO.birthday);
+			int rcptAge = RcptUtil.calcRcptAge(birthdayDate.getYear(), birthdayDate.getMonth().getValue(),
+					birthdayDate.getDayOfMonth(), at.getYear(), at.getMonth().getValue());
+			meisaiDTO.futanWari = FutanWari.calcFutanWari(hokenDTO, rcptAge);
+		} else {
+			meisaiDTO.futanWari = 10;
+		}
+		meisaiDTO.charge = RcptUtil.calcCharge(meisaiDTO.totalTen, meisaiDTO.futanWari);
 		return meisaiDTO;
 	}
 

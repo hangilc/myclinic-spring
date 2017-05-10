@@ -1,6 +1,6 @@
 package jp.chang.myclinic.rcpt;
 
-class RcptUtil {
+public class RcptUtil {
 
 	public static int touyakuKingakuToTen(double kingaku){
 		if( kingaku <= 15.0 ){

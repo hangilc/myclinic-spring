@@ -37,4 +37,12 @@ public class Meisai {
 			return SectionItem.sum(items);
 		}
 	}
+
+	public int totalTen(){
+		int total = 0;
+		for(List<SectionItem> items: map.values()){
+			total += SectionItem.sum(items);
+		}
+		return total;
+	}
 }

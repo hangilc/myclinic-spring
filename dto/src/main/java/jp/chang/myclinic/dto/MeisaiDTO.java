@@ -7,4 +7,7 @@ import java.util.List;
  */
 public class MeisaiDTO {
     public List<MeisaiSectionDTO> sections;
+    public int totalTen;
+    public int futanWari;
+    public int charge;
 }

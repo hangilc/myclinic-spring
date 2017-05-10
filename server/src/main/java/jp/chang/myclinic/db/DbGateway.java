@@ -356,6 +356,29 @@ public class DbGateway {
 		.collect(Collectors.toList());
 	}
 
+	public HokenDTO getHokenForVisit(VisitDTO visitDTO){
+		HokenDTO hokenDTO = new HokenDTO();
+		if( visitDTO.shahokokuhoId > 0 ){
+			hokenDTO.shahokokuho = mapper.toShahokokuhoDTO(shahokokuhoRepository.findOne(visitDTO.shahokokuhoId));
+		}
+		if( visitDTO.koukikoureiId > 0 ){
+			hokenDTO.koukikourei = mapper.toKoukikoureiDTO(koukikoureiRepository.findOne(visitDTO.koukikoureiId));
+		}
+		if( visitDTO.roujinId > 0 ){
+			hokenDTO.roujin = mapper.toRoujinDTO(roujinRepository.findOne(visitDTO.roujinId));
+		}
+		if( visitDTO.kouhi1Id > 0 ){
+			hokenDTO.kouhi1 = mapper.toKouhiDTO(kouhiRepository.findOne(visitDTO.kouhi1Id));
+		}
+		if( visitDTO.kouhi2Id > 0 ){
+			hokenDTO.kouhi2 = mapper.toKouhiDTO(kouhiRepository.findOne(visitDTO.kouhi2Id));
+		}
+		if( visitDTO.kouhi3Id > 0 ){
+			hokenDTO.kouhi3 = mapper.toKouhiDTO(kouhiRepository.findOne(visitDTO.kouhi3Id));
+		}
+		return hokenDTO;
+	}
+
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
 		Shinryou shinryou = (Shinryou)result[0];
 		ShinryouMaster master = (ShinryouMaster)result[1];

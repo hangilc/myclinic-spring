@@ -10,4 +10,5 @@ public class MeisaiSectionDTO {
     public String name;
     public String label;
     public List<SectionItemDTO> items;
+    public int sectionTotalTen;
 }
