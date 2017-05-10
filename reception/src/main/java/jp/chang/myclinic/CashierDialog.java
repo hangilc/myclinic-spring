@@ -1,7 +1,9 @@
 package jp.chang.myclinic;
 
 import jp.chang.myclinic.dto.MeisaiDTO;
+import jp.chang.myclinic.dto.MeisaiSectionDTO;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.SectionItemDTO;
 import net.miginfocom.swing.MigLayout;
 
 import java.awt.*;
@@ -56,18 +58,59 @@ class CashierDialog extends JDialog {
 	}
 
 	private String makeLabelContent(){
-		// *** (***) 様　患者番号 ***
-		// お薬　*　種類
-		// 請求金額 *** 円
-		// 再診 *** 点
-		// ...
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html>");
+		addTopline(sb);
+		addSections(sb);
+		addSummary(sb);
+		sb.append("</html>");
+		return sb.toString();
+	}
+
+	private void addTopline(StringBuilder sb){
 		sb.append(String.format("<div>%s %s (%s %s) 様 患者番号：%s</div>",
 				patient.lastName, patient.firstName, patient.lastNameYomi, patient.firstNameYomi,
 				patient.patientId));
-		sb.append("</html>");
-		return sb.toString();
+	}
+
+	private void addSections(StringBuilder sb){
+		sb.append("<table>");
+		for(MeisaiSectionDTO section: meisai.sections){
+			addSection(sb, section);
+		}
+		sb.append("</table>");
+	}
+
+	private void addSection(StringBuilder sb, MeisaiSectionDTO section){
+		sb.append("<tr>");
+		sb.append("<td span='2'>");
+		sb.append(String.format("[%s] (%d)", section.label, section.sectionTotalTen));
+		sb.append("</td>");
+		sb.append("</tr>");
+		for(SectionItemDTO item: section.items){
+			sb.append("<tr>");
+			sb.append("<td>");
+			sb.append(item.label);
+			sb.append("</td>");
+			sb.append("<td align='right'>");
+			sb.append(String.format("%dx%d=%d", item.tanka, item.count, item.tanka * item.count));
+			sb.append("</td>");
+			sb.append("</tr>");
+		}
+	}
+
+	private void addSummary(StringBuilder sb){
+		sb.append("<div>");
+		sb.append("<div>");
+		sb.append(String.format("総点 %d点", meisai.totalTen));
+		sb.append("</div>");
+		sb.append("<div>");
+		sb.append(String.format("負担割 %d割", meisai.futanWari));
+		sb.append("</div>");
+		sb.append("<div>");
+		sb.append(String.format("請求額 %d円", meisai.charge));
+		sb.append("</div>");
+		sb.append("</div>");
 	}
 
 }
