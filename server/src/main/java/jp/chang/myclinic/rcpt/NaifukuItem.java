@@ -15,7 +15,7 @@ class NaifukuItem extends SectionItem {
 	NaifukuItem(DrugFullDTO drugFull){
 		super(drugFull.drug.days);
 		usage = drugFull.drug.usage;
-		//usage = usage.replace("就寝前", "寝る前");
+		usage = usage.replace("就寝前", "寝る前");
 		drugFullList.add(drugFull);
 	}
 
