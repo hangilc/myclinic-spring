@@ -1,28 +1,24 @@
 package jp.chang.myclinic.rest;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-
+import jp.chang.myclinic.consts.MeisaiSection;
+import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.db.DbGateway;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.consts.MyclinicConsts;
-import jp.chang.myclinic.consts.MeisaiSection;
 import jp.chang.myclinic.rcpt.HoukatsuKensa;
-import jp.chang.myclinic.rcpt.RcptVisit;
 import jp.chang.myclinic.rcpt.Meisai;
+import jp.chang.myclinic.rcpt.RcptVisit;
 import jp.chang.myclinic.rcpt.SectionItem;
 import jp.chang.myclinic.util.DateTimeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/json")
@@ -98,7 +94,7 @@ public class VisitController {
 	}
 
 	@RequestMapping(value="/get-visit-meisai", method=RequestMethod.GET)
-	public boolean getVisitMeisai(@RequestParam("visit-id") int visitId){
+	public MeisaiDTO getVisitMeisai(@RequestParam("visit-id") int visitId){
 		RcptVisit rcptVisit = new RcptVisit();
 		VisitDTO visit = dbGateway.getVisit(visitId);
 		List<ShinryouFullDTO> shinryouList = dbGateway.listShinryouFull(visitId);
@@ -110,17 +106,29 @@ public class VisitController {
 		rcptVisit.addDrugs(drugs);
 		rcptVisit.addConducts(conducts);
 		Meisai meisai = rcptVisit.getMeisai();
+		MeisaiDTO meisaiDTO = new MeisaiDTO();
+		meisaiDTO.sections = new ArrayList<>();
 		for(MeisaiSection section: MeisaiSection.values()){
-			System.out.println(section.getLabel());
 			List<SectionItem> items = meisai.getItems(section);
 			if( items != null ){
-				items.forEach(item -> {
-					System.out.println(item);
-				});
+				MeisaiSectionDTO meisaiSectionDTO = new MeisaiSectionDTO();
+				meisaiSectionDTO.name = section.toString();
+				meisaiSectionDTO.label = section.getLabel();
+				meisaiSectionDTO.items = items.stream()
+						.map(this::toSectionItemDTO)
+						.collect(Collectors.toList());
+				meisaiDTO.sections.add(meisaiSectionDTO);
 			}
-			System.out.println(meisai.sectionTotal(section));
 		}
-		return true;
+		return meisaiDTO;
+	}
+
+	private SectionItemDTO toSectionItemDTO(SectionItem sectionItem) {
+		SectionItemDTO sectionItemDTO = new SectionItemDTO();
+		sectionItemDTO.label = sectionItem.getLabel();
+		sectionItemDTO.tanka = sectionItem.getTanka();
+		sectionItemDTO.count = sectionItem.getCount();
+		return sectionItemDTO;
 	}
 
 }

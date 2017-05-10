@@ -40,7 +40,7 @@ public abstract class SectionItem {
 
 	@Override
 	public String toString(){
-		return "SectionItem[" +
+		return "SectionItemDTO[" +
 			"tanka=" + getTanka() + "," +
 			"count=" + getCount() + "," +
 			"label=" + getLabel() + //"," +
@@ -53,12 +53,12 @@ public abstract class SectionItem {
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class SectionItem {
+public abstract class SectionItemDTO {
 
 	private final Object key;
 	private int count;
 
-	SectionItem(Object key){
+	SectionItemDTO(Object key){
 		this.key = key;
 		this.count = 1;
 	}
@@ -67,11 +67,11 @@ public abstract class SectionItem {
 		return key;
 	}
 
-	public boolean canMerge(SectionItem item){
+	public boolean canMerge(SectionItemDTO item){
 		return getKey().equals(item.getKey());
 	}
 
-	public void merge(SectionItem item){
+	public void merge(SectionItemDTO item){
 		if( !canMerge(item) ){
 			throw new RuntimeException("inconsistent key");
 		}
@@ -89,14 +89,14 @@ public abstract class SectionItem {
 		this.count = count;
 	}
 
-	public static int sum(List<SectionItem> items){
+	public static int sum(List<SectionItemDTO> items){
 		return items.stream()
 		.collect(Collectors.summingInt(item -> item.getTanka() * item.getCount()));
 	}
 
 	@Override
 	public String toString(){
-		return "SectionItem[" +
+		return "SectionItemDTO[" +
 			"tanka=" + getTanka() + "," +
 			"count=" + getCount() + "," +
 			"label=" + getLabel() + //"," +
