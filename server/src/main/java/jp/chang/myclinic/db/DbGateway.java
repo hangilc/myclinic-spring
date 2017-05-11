@@ -274,6 +274,10 @@ public class DbGateway {
 		return visitRepository.findAllVisitIds(sort);
 	}
 
+	public List<VisitPatientDTO> listVisitWithPatient(int page, int itemsPerPage){
+		return null;
+	}
+
 	public ShinryouFullDTO getShinryouFull(int shinryouId){
 		Object[] result = shinryouRepository.findOneWithMaster(shinryouId).get(0);
 		if( result == null ){

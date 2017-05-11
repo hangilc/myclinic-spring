@@ -139,6 +139,13 @@ public class VisitController {
 		return dbGateway.listVisitIds();
 	}
 
+	@RequestMapping(value="/list-visit-with-patient", method=RequestMethod.GET)
+	public List<VisitPatientDTO> listVisitWithPatient(
+		@RequestParam(value="page", defaultValue="0") int page,
+		@RequestParam(value="items-per-page", defaultValue="30") int itemsPerPage){
+		return dbGateway.listVisitWithPatient(page, itemsPerPage);
+	}
+
 	private SectionItemDTO toSectionItemDTO(SectionItem sectionItem) {
 		SectionItemDTO sectionItemDTO = new SectionItemDTO();
 		sectionItemDTO.label = sectionItem.getLabel();
