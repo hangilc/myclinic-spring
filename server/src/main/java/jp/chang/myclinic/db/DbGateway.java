@@ -252,7 +252,6 @@ public class DbGateway {
 	}
 
 	public List<PaymentDTO> listPayment(int visitId){
-		//Sort sort = new Sort(Sort.Direction.DESC, "visitId");
 		return paymentRepository.findByVisitIdOrderByPaytimeDesc(visitId).stream()
 				.map(mapper::toPaymentDTO)
 				.collect(Collectors.toList());
@@ -275,7 +274,11 @@ public class DbGateway {
 	}
 
 	public List<VisitPatientDTO> listVisitWithPatient(int page, int itemsPerPage){
-		return null;
+		Sort sort = new Sort(Sort.Direction.DESC, "visitId");
+		PageRequest pageRequest = new PageRequest(page, itemsPerPage, sort);
+		return visitRepository.findAllWithPatient(pageRequest).stream()
+			.map(this::resultToVisitPatientDTO)
+			.collect(Collectors.toList());
 	}
 
 	public ShinryouFullDTO getShinryouFull(int shinryouId){
@@ -442,6 +445,15 @@ public class DbGateway {
 		conductKizaiFull.conductKizai = mapper.toConductKizaiDTO(conductKizai);
 		conductKizaiFull.master = mapper.toKizaiMasterDTO(master);
 		return conductKizaiFull;
+	}
+
+	private VisitPatientDTO resultToVisitPatientDTO(Object[] result){
+		VisitDTO visitDTO = mapper.toVisitDTO((Visit)result[0]);
+		PatientDTO patientDTO = mapper.toPatientDTO((Patient)result[1]);
+		VisitPatientDTO visitPatientDTO = new VisitPatientDTO();
+		visitPatientDTO.visit = visitDTO;
+		visitPatientDTO.patient = patientDTO;
+		return visitPatientDTO;
 	}
 
 }

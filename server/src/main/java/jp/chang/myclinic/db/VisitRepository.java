@@ -10,9 +10,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
-	@EntityGraph(attributePaths={"patient"})
-	@Query("select v from Visit v")
-	List<Visit> findAllWithPatient(Pageable pageable);
+	// @EntityGraph(attributePaths={"patient"})
+	// @Query("select v from Visit v")
+	// List<Visit> findAllWithPatient(Pageable pageable);
 
 	@EntityGraph(attributePaths={"patient"})
 	@Query("select v from Visit v where FUNCTION('date', v.visitedAt) = current_date")
@@ -24,4 +24,7 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
 	@Query("select v.visitId from Visit v")
     List<Integer> findAllVisitIds(Sort sort);
+
+    @Query("select v, p from Visit v, Patient p where v.patientId = p.patientId")
+    List<Object[]> findAllWithPatient(Pageable pageable);
 }
