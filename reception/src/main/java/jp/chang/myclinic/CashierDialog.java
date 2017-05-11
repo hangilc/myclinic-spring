@@ -1,22 +1,18 @@
 package jp.chang.myclinic;
 
-import jp.chang.myclinic.dto.MeisaiDTO;
-import jp.chang.myclinic.dto.MeisaiSectionDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.SectionItemDTO;
+import jp.chang.myclinic.dto.*;
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.*;
 import javax.swing.*;
-
-import static javax.swing.SwingConstants.TOP;
+import java.util.List;
 
 class CashierDialog extends JDialog {
 
 	private MeisaiDTO meisai;
 	private PatientDTO patient;
 
-	CashierDialog(JFrame owner, MeisaiDTO meisai, PatientDTO patient){
+	CashierDialog(JFrame owner, MeisaiDTO meisai, PatientDTO patient, ChargeDTO charge,
+				  List<PaymentDTO> payments){
 		super(owner, "会計", true);
 		this.meisai = meisai;
 		this.patient = patient;
@@ -24,6 +20,8 @@ class CashierDialog extends JDialog {
 		add(makeCenter(), "wrap");
 		add(makeSouth());
 		pack();
+		System.out.println(charge);
+		System.out.println(payments);
 	}
 
 	private JComponent makeCenter(){

@@ -8,6 +8,7 @@ import java.awt.event.WindowAdapter;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.io.IOException;
@@ -182,20 +183,20 @@ class MainFrame extends JFrame {
 			return;
 		}
 		int visitId = wq.getVisitId() ;
-        Service.api.getVisitMeisai(visitId)
-                .whenComplete((result, t) -> {
-                    if( t != null ){
-                        EventQueue.invokeLater(() -> {
-                            alert("明細情報の取得に失敗しました。" + t.toString());
-                        });
-                        return;
-                    }
-                    EventQueue.invokeLater(() -> {
-                        CashierDialog dialog = new CashierDialog(this, result, wq.getPatient());
-                        dialog.setLocationByPlatform(true);
-                        dialog.setVisible(true);
-                    });
-                });
+		CompletableFuture<MeisaiDTO> meisaiFetcher = Service.api.getVisitMeisai(visitId);
+		CompletableFuture<ChargeDTO> chargeFetcher = Service.api.getCharge(visitId);
+		CompletableFuture<List<PaymentDTO>> paymentsFetcher = Service.api.listPayment(visitId);
+		try{
+			CompletableFuture.allOf(meisaiFetcher, chargeFetcher, paymentsFetcher).join();
+			MeisaiDTO meisai = meisaiFetcher.get();
+			ChargeDTO charge = chargeFetcher.get();
+			List<PaymentDTO> payments = paymentsFetcher.get();
+			CashierDialog dialog = new CashierDialog(this, meisai, wq.getPatient(), charge, payments);
+			dialog.setLocationByPlatform(true);
+			dialog.setVisible(true);
+		} catch(Throwable t){
+			alert("明細情報の取得に失敗しました。" + t.toString());
+		}
 	}
 
 	private WqueueData toWqueueData(WqueueFullDTO wq){

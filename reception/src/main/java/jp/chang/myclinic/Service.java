@@ -62,6 +62,12 @@ class Service {
 
 		@GET("get-visit-meisai")
 		CompletableFuture<MeisaiDTO> getVisitMeisai(@Query("visit-id") int visitId);
+
+		@GET("get-charge")
+		CompletableFuture<ChargeDTO> getCharge(@Query("visit-id") int visitId);
+
+		@GET("list-payment")
+		CompletableFuture<List<PaymentDTO>> listPayment(@Query("visit-id") int visitId);
 	}
 
 	public static ServerAPI api; 
