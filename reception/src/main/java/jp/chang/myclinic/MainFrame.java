@@ -179,24 +179,28 @@ class MainFrame extends JFrame {
 
 	private void doCashier(){
 		WqueueData wq = wqueueList.getSelectedValue();
-		if( wq == null ){
+		if( wq == null || wq.getState() != WqueueWaitState.WaitCashier ){
 			return;
 		}
 		int visitId = wq.getVisitId() ;
 		CompletableFuture<MeisaiDTO> meisaiFetcher = Service.api.getVisitMeisai(visitId);
 		CompletableFuture<ChargeDTO> chargeFetcher = Service.api.getCharge(visitId);
 		CompletableFuture<List<PaymentDTO>> paymentsFetcher = Service.api.listPayment(visitId);
-		try{
-			CompletableFuture.allOf(meisaiFetcher, chargeFetcher, paymentsFetcher).join();
-			MeisaiDTO meisai = meisaiFetcher.get();
-			ChargeDTO charge = chargeFetcher.get();
-			List<PaymentDTO> payments = paymentsFetcher.get();
-			CashierDialog dialog = new CashierDialog(this, meisai, wq.getPatient(), charge, payments);
-			dialog.setLocationByPlatform(true);
-			dialog.setVisible(true);
-		} catch(Throwable t){
-			alert("明細情報の取得に失敗しました。" + t.toString());
-		}
+		CompletableFuture.allOf(meisaiFetcher, chargeFetcher, paymentsFetcher)
+				.whenComplete((r, t) -> {
+					if( t != null ){
+						alert("明細情報の取得に失敗しました。" + t.toString());
+						return;
+					}
+					MeisaiDTO meisai = meisaiFetcher.join();
+					ChargeDTO charge = chargeFetcher.join();
+					List<PaymentDTO> payments = paymentsFetcher.join();
+					System.out.println(charge);
+					System.out.println(payments);
+					CashierDialog dialog = new CashierDialog(this, meisai, wq.getPatient(), charge, payments);
+					dialog.setLocationByPlatform(true);
+					dialog.setVisible(true);
+				});
 	}
 
 	private WqueueData toWqueueData(WqueueFullDTO wq){

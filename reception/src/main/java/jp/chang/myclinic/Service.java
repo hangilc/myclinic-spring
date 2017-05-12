@@ -66,6 +66,9 @@ class Service {
 		@GET("get-charge")
 		CompletableFuture<ChargeDTO> getCharge(@Query("visit-id") int visitId);
 
+		@GET("find-charge")
+		CompletableFuture<ChargeDTO> findCharge(@Query("visit-id") int visitId);
+
 		@GET("list-payment")
 		CompletableFuture<List<PaymentDTO>> listPayment(@Query("visit-id") int visitId);
 	}

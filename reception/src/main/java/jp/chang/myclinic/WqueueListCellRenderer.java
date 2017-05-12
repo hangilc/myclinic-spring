@@ -14,7 +14,8 @@ class WqueueListCellRenderer extends JLabel implements ListCellRenderer<WqueueDa
 		boolean isSelected, boolean cellHasFocus){
 		setText(value.getLabel());
 		switch(value.getState()){
-			case WaitExam: setForeground(Color.RED); break;
+			case WaitCashier: setForeground(Color.RED); break;
+			case WaitDrug: setForeground(Color.GREEN); break;
 			default: setForeground(list.getForeground()); break;
 		}
 		if( isSelected ){
