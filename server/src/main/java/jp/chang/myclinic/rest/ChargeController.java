@@ -14,6 +14,7 @@ import jp.chang.myclinic.db.DbGateway;
 import jp.chang.myclinic.dto.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/json")
@@ -32,6 +33,11 @@ public class ChargeController {
 	@RequestMapping(value="/get-charge", method=RequestMethod.GET)
 	public ChargeDTO getCharge(@RequestParam("visit-id") int visitId){
 		return dbGateway.getCharge(visitId);
+	}
+
+	@RequestMapping(value="/find-charge", method=RequestMethod.GET)
+	public ChargeDTO findCharge(@RequestParam("visit-id") int visitId){
+		return dbGateway.findCharge(visitId).orElse(null);
 	}
 
 }

@@ -246,6 +246,11 @@ public class DbGateway {
 		return mapper.toChargeDTO(charge);
 	}
 
+	public Optional<ChargeDTO> findCharge(int visitId){
+		return chargeRepository.findByVisitId(visitId)
+			.map(mapper::toChargeDTO);
+	}
+
 	public void enterPayment(PaymentDTO paymentDTO){
 		Payment payment = mapper.fromPaymentDTO(paymentDTO);
 		paymentRepository.save(payment);
