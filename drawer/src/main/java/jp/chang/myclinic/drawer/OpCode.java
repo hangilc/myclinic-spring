@@ -1,5 +1,8 @@
 package jp.chang.myclinic.drawer;
 
+import java.util.Map;
+import java.util.HashMap;
+
 public enum OpCode {
 
     MoveTo("move_to"),
@@ -26,5 +29,22 @@ public enum OpCode {
         return "OpCode[" +
                     "ident=" + ident +
                 "]";
+    }
+
+    public static class IdentMap {
+
+        private static Map<String, OpCode> map = new HashMap<>();
+
+        {
+            for(OpCode opCode: OpCode.values()){
+                map.put(opCode.getIdent(), opCode);
+            }
+
+        }
+
+        public static OpCode get(String ident){
+            return map.get(ident);
+        }
+
     }
 }
