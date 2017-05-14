@@ -28,6 +28,7 @@
     <module>rest-api</module>
     <module>dto</module>
     <module>myclinic-consts</module>
+    <module>drawer</module>
   </modules>
 
 </project>

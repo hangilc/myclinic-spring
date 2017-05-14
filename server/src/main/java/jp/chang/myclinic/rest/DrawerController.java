@@ -1,6 +1,7 @@
 package jp.chang.myclinic.rest;
 
 import jp.chang.myclinic.drawer.*;
+import jp.chang.myclinic.drawer.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
