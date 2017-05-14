@@ -1,7 +1,10 @@
 package jp.chang.myclinic;
 
+import jp.chang.myclinic.drawer.JacksonOpSerializer;
+import jp.chang.myclinic.drawer.Op;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 
 import jp.chang.myclinic.rcpt.HoukatsuKensa;
@@ -18,4 +21,10 @@ public class AppServer {
     	return HoukatsuKensa.load();
     }
 
+    @Bean
+    public Jackson2ObjectMapperBuilderCustomizer addDrawerOpDeserializer(){
+        return builder -> {
+            builder.serializerByType(Op.class, new JacksonOpSerializer());
+        };
+    }
 }
