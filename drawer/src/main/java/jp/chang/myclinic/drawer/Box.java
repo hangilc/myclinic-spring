@@ -1,5 +1,7 @@
 package jp.chang.myclinic.drawer;
 
+import java.util.Arrays;
+
 public class Box {
 
     public enum HorizAnchor {
@@ -159,9 +161,108 @@ public class Box {
                 double top = getCy() - height/2.0;
                 return new Box(left, top, right, top + height);
             }
-            case Bottom: return new Box(left bottom - height, right, bottom);
+            case Bottom: return new Box(left, bottom - height, right, bottom);
             default: throw new RuntimeException("unknown anchor: " + anchor);
         }
     }
+
+    public Box flipRight(){
+        return shiftToRight(getWidth());
+    }
+
+    public Box[] splitToColumns(double... borders){
+        Box[] cols = new Box[borders.length + 1];
+        double colLeft = left;
+        for(int i=0;i<borders.length;i++){
+            double colRight = borders[i];
+            cols[i] = new Box(colLeft, top, colRight, bottom);
+            colLeft = colRight;
+        }
+        cols[borders.length] = new Box(colLeft, top, right, bottom);
+        return cols;
+    }
+
+    public Box[] splitToColumnsByWidths(double... ws){
+        Box[] cols = new Box[ws.length+1];
+        double colLeft = left;
+        for(int i=0;i<ws.length;i++){
+            double colRight = colLeft + ws[i];
+            cols[i] = new Box(colLeft, top, colRight, bottom);
+            colLeft = colRight;
+        }
+        cols[ws.length] = new Box(colLeft, top, right, bottom);
+        return cols;
+    }
+
+    public Box[] splitToEvenColumns(int n){
+        Box[] cols = new Box[n];
+        double colLeft = left;
+        double w = getWidth() / n;
+        for(int i=0;i<n;i++){
+            double colRight = (i == (n-1)) ? right: (left + w * (i+1));
+            cols[i] = new Box(colLeft, top, colRight, bottom);
+            colLeft = colRight;
+        }
+        return cols;
+    }
+
+    public Box[] splitToRows(double... borders){
+        Box[] rows = new Box[borders.length + 1];
+        double rowTop = top;
+        for(int i=0;i<borders.length;i++){
+            double rowBottom = borders[i];
+            rows[i] = new Box(left, rowTop, right, rowBottom);
+            rowTop = rowBottom;
+        }
+        rows[borders.length] = new Box(left, rowTop, right, bottom);
+        return rows;
+    }
+
+    public Box[] splitToRowsByHeights(double... hs){
+        Box[] rows = new Box[hs.length + 1];
+        double rowTop = top;
+        for(int i=0;i<hs.length;i++){
+            double rowBottom = rowTop + hs[i];
+            rows[i] = new Box(left, rowTop, right, rowBottom);
+            rowTop = rowBottom;
+        }
+        rows[hs.length] = new Box(left, rowTop, right, bottom);
+        return rows;
+    }
+
+    public Box[] splitToEvenRows(int n){
+        Box[] rows = new Box[n];
+        double rowTop = top;
+        double h = getHeight() / n;
+        for(int i=0;i<n;i++){
+            double rowBottom = (i == (n-1)) ? bottom: (top + h * (i+1));
+            rows[i] = new Box(left, rowTop, right, rowBottom);
+            rowTop = rowBottom;
+        }
+        return rows;
+    }
+
+    public Box[][] splitToEventCells(int nrows, int ncols){
+        Box[][] cells = new Box[nrows][];
+        Box[] rows = splitToEvenRows(nrows);
+        for(int i=0;i<nrows;i++){
+            cells[i] = rows[i].splitToEvenColumns(ncols);
+        }
+        return cells;
+    }
+
+    public static Box boundingBox2(Box a, Box b){
+        return new Box(Math.min(a.left, b.left), Math.min(a.top, b.top),
+                Math.max(a.right, b.right), Math.max(a.bottom, b.bottom));
+    }
+
+    public static Box boundingBox(Box... boxes){
+        return Arrays.stream(boxes).reduce(Box::boundingBox2).get();
+    }
+
+    public static Box of(PaperSize paperSize){
+        return new Box(0, 0, paperSize.getWidth(), paperSize.getHeight());
+    }
+
 
 }

@@ -12,17 +12,21 @@ class CashierDialog extends JDialog {
 	private PatientDTO patient;
 	private ChargeDTO charge;
 	private List<PaymentDTO> payments;
+	private int visitId;
+	private JButton printReceiptButton;
 
 	CashierDialog(JFrame owner, MeisaiDTO meisai, PatientDTO patient, ChargeDTO charge,
-				  List<PaymentDTO> payments){
+				  List<PaymentDTO> payments, int visitId){
 		super(owner, "会計", true);
 		this.meisai = meisai;
 		this.patient = patient;
 		this.charge = charge;
 		this.payments = payments;
+		this.visitId = visitId;
 		setLayout(new MigLayout("fill", "[fill]", "[] []"));
 		add(makeCenter(), "wrap");
 		add(makeSouth());
+		bind();
 		pack();
 	}
 
@@ -38,7 +42,7 @@ class CashierDialog extends JDialog {
 		}
 		{
 			JPanel box = new JPanel(new MigLayout("insets 0 0 0 0", "", ""));
-			JButton printReceiptButton = new JButton("領収書発行");
+			printReceiptButton = new JButton("領収書発行");
 			box.add(printReceiptButton, "sizegroup btn, wrap");
 			JButton printBlankButton = new JButton("記入用領収書");
 			box.add(printBlankButton, "sizegroup btn, gap push");
@@ -123,6 +127,26 @@ class CashierDialog extends JDialog {
 		}
 		sb.append("</div>");
 		sb.append("</div>");
+	}
+
+	private void bind(){
+		printReceiptButton.addActionListener(event -> {
+			Service.api.getReceiptDrawerOps(visitId)
+					.whenComplete((result, t) -> {
+						if( t != null ){
+							t.printStackTrace();
+							alert("領収書のイメージの取得に失敗しました。\n" + t);
+							return;
+						}
+						JDialog dialog = new ReceiptPreviewDialog(this, result);
+						dialog.setLocationByPlatform(true);
+						dialog.setVisible(true);
+					});
+		});
+	}
+
+	private void alert(String message){
+		JOptionPane.showMessageDialog(this, message);
 	}
 
 }

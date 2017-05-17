@@ -31,20 +31,4 @@ public enum OpCode {
                 "]";
     }
 
-    public static class IdentMap {
-
-        private static Map<String, OpCode> map = new HashMap<>();
-
-        {
-            for(OpCode opCode: OpCode.values()){
-                map.put(opCode.getIdent(), opCode);
-            }
-
-        }
-
-        public static OpCode get(String ident){
-            return map.get(ident);
-        }
-
-    }
-}
+ }

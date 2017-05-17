@@ -22,15 +22,17 @@ public class JacksonOpDeserializer extends StdDeserializer<Op> {
         super(c);
     }
 
+    private OpCodeMapper opCodeMapper = new OpCodeMapper();
+
     @Override
     public Op deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
         JsonNode identNode = node.get(0);
-        if( identNode != null ){
+        if( identNode == null ){
             throw new RuntimeException("cannot find ident node for drawer op");
         }
         String ident = identNode.asText();
-        switch(OpCode.IdentMap.get(ident)){
+        switch(opCodeMapper.map(ident)){
             case MoveTo: {
                 double x = node.get(1).asDouble();
                 double y = node.get(2).asDouble();

@@ -195,11 +195,11 @@ class MainFrame extends JFrame {
 					MeisaiDTO meisai = meisaiFetcher.join();
 					ChargeDTO charge = chargeFetcher.join();
 					List<PaymentDTO> payments = paymentsFetcher.join();
-					System.out.println(charge);
-					System.out.println(payments);
-					CashierDialog dialog = new CashierDialog(this, meisai, wq.getPatient(), charge, payments);
-					dialog.setLocationByPlatform(true);
-					dialog.setVisible(true);
+					EventQueue.invokeLater(() -> {
+						CashierDialog dialog = new CashierDialog(this, meisai, wq.getPatient(), charge, payments, visitId);
+						dialog.setLocationByPlatform(true);
+						dialog.setVisible(true);
+					});
 				});
 	}
 

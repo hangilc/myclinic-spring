@@ -3,6 +3,11 @@ package jp.chang.myclinic;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import jp.chang.myclinic.drawer.JacksonOpDeserializer;
+import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.dto.*;
 
 import retrofit2.Retrofit;
@@ -71,14 +76,21 @@ class Service {
 
 		@GET("list-payment")
 		CompletableFuture<List<PaymentDTO>> listPayment(@Query("visit-id") int visitId);
+
+		@GET("get-receipt-drawer-ops")
+		CompletableFuture<List<Op>> getReceiptDrawerOps(@Query("visit-id") int visitId);
 	}
 
 	public static ServerAPI api; 
 
 	public static void setServerUrl(String serverUrl){
+		ObjectMapper mapper = new ObjectMapper();
+		SimpleModule module = new SimpleModule();
+		module.addDeserializer(Op.class, new JacksonOpDeserializer());
+		mapper.registerModule(module);
 		Retrofit server = new Retrofit.Builder()
 			.baseUrl(serverUrl)
-			.addConverterFactory(JacksonConverterFactory.create())
+			.addConverterFactory(JacksonConverterFactory.create(mapper))
 			.addCallAdapterFactory(Java8CallAdapterFactory.create())
 			.build();
 		api = server.create(ServerAPI.class);
