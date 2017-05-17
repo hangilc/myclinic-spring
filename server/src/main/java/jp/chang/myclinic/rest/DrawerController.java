@@ -22,7 +22,7 @@ public class DrawerController {
         List<Op> ops = new ArrayList<>();
         ops.add(new OpMoveTo(10, 20));
         ops.add(new OpLineTo(20, 40));
-//        ops.add(new OpCreateFont("regular", "mincho", 12, 0, false));
+        ops.add(new OpCreateFont("regular", "MS Mincho", 12, 0, false));
 //        ops.add(new OpSetFont("regular"));
 //        ops.add(new OpDrawChars("hello", Arrays.asList(new Double(10.0), new Double(12.0), new Double(16.0)),
 //                Arrays.asList(new Double(30), new Double(30), new Double(30))));

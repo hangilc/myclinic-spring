@@ -8,7 +8,7 @@ public abstract class Op {
         this.opCode = opCode;
     }
 
-    OpCode getOpCode(){
+    public OpCode getOpCode(){
         return opCode;
     }
 

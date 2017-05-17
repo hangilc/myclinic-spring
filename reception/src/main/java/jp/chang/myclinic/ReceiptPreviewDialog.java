@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.List;
 
 public class ReceiptPreviewDialog extends JDialog {
@@ -17,15 +18,17 @@ public class ReceiptPreviewDialog extends JDialog {
         super(owner, "領収書プレビュー", Dialog.ModalityType.DOCUMENT_MODAL);
         this.ops = ops;
         setLayout(new MigLayout("fill", "[grow]", "[grow] []"));
-        add(makeCenter(), "wrap");
+        add(makeCenter(), "grow, wrap");
         add(makeSouth(), "right");
         bind();
         pack();
     }
 
     private JComponent makeCenter(){
-        JComponent pane = new DrawerPreviewPane(ops);
+        JComponent pane = new DrawerPreviewPane(ops, 148, 105);
         pane.setPreferredSize(new Dimension(300, 200));
+        pane.setOpaque((true));
+        pane.setBackground(Color.WHITE);
         return pane;
     }
 
