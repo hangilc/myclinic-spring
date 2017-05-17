@@ -8,6 +8,7 @@ import java.awt.event.WindowAdapter;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.io.IOException;
@@ -178,24 +179,28 @@ class MainFrame extends JFrame {
 
 	private void doCashier(){
 		WqueueData wq = wqueueList.getSelectedValue();
-		if( wq == null ){
+		if( wq == null || wq.getState() != WqueueWaitState.WaitCashier ){
 			return;
 		}
 		int visitId = wq.getVisitId() ;
-        Service.api.getVisitMeisai(visitId)
-                .whenComplete((result, t) -> {
-                    if( t != null ){
-                        EventQueue.invokeLater(() -> {
-                            alert("明細情報の取得に失敗しました。" + t.toString());
-                        });
-                        return;
-                    }
-                    EventQueue.invokeLater(() -> {
-                        CashierDialog dialog = new CashierDialog(this, result, wq.getPatient());
-                        dialog.setLocationByPlatform(true);
-                        dialog.setVisible(true);
-                    });
-                });
+		CompletableFuture<MeisaiDTO> meisaiFetcher = Service.api.getVisitMeisai(visitId);
+		CompletableFuture<ChargeDTO> chargeFetcher = Service.api.getCharge(visitId);
+		CompletableFuture<List<PaymentDTO>> paymentsFetcher = Service.api.listPayment(visitId);
+		CompletableFuture.allOf(meisaiFetcher, chargeFetcher, paymentsFetcher)
+				.whenComplete((r, t) -> {
+					if( t != null ){
+						alert("明細情報の取得に失敗しました。" + t.toString());
+						return;
+					}
+					MeisaiDTO meisai = meisaiFetcher.join();
+					ChargeDTO charge = chargeFetcher.join();
+					List<PaymentDTO> payments = paymentsFetcher.join();
+					System.out.println(charge);
+					System.out.println(payments);
+					CashierDialog dialog = new CashierDialog(this, meisai, wq.getPatient(), charge, payments);
+					dialog.setLocationByPlatform(true);
+					dialog.setVisible(true);
+				});
 	}
 
 	private WqueueData toWqueueData(WqueueFullDTO wq){

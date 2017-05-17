@@ -1,25 +1,25 @@
 package jp.chang.myclinic;
 
-import jp.chang.myclinic.dto.MeisaiDTO;
-import jp.chang.myclinic.dto.MeisaiSectionDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.SectionItemDTO;
+import jp.chang.myclinic.dto.*;
 import net.miginfocom.swing.MigLayout;
 
-import java.awt.*;
 import javax.swing.*;
-
-import static javax.swing.SwingConstants.TOP;
+import java.util.List;
 
 class CashierDialog extends JDialog {
 
 	private MeisaiDTO meisai;
 	private PatientDTO patient;
+	private ChargeDTO charge;
+	private List<PaymentDTO> payments;
 
-	CashierDialog(JFrame owner, MeisaiDTO meisai, PatientDTO patient){
+	CashierDialog(JFrame owner, MeisaiDTO meisai, PatientDTO patient, ChargeDTO charge,
+				  List<PaymentDTO> payments){
 		super(owner, "会計", true);
 		this.meisai = meisai;
 		this.patient = patient;
+		this.charge = charge;
+		this.payments = payments;
 		setLayout(new MigLayout("fill", "[fill]", "[] []"));
 		add(makeCenter(), "wrap");
 		add(makeSouth());
@@ -108,7 +108,19 @@ class CashierDialog extends JDialog {
 		sb.append(String.format("負担割 %d割", meisai.futanWari));
 		sb.append("</div>");
 		sb.append("<div>");
-		sb.append(String.format("請求額 %d円", meisai.charge));
+		if( payments.size() > 0 ){
+			int chargeValue = charge.charge;
+			int prevPay = payments.get(0).amount;
+			int diff = chargeValue - prevPay;
+			if( diff > 0 ){
+				sb.append(String.format("追加請求額 %d円 （総請求額 %d円、以前の徴収額 %d円）", diff, charge.charge,  prevPay));
+			}
+		} else {
+			sb.append(String.format("請求額 %d円", charge.charge));
+		}
+		if (meisai.charge != charge.charge) {
+			sb.append(String.format("??? 請求額(%d)が計算値（%d）と異なります。", charge.charge, meisai.charge));
+		}
 		sb.append("</div>");
 		sb.append("</div>");
 	}
