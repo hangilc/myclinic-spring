@@ -2,14 +2,44 @@ package jp.chang.myclinic;
 
 import java.awt.*;
 import javax.swing.*;
+import net.miginfocom.swing.MigLayout;
 
 class SearchPaymentDialog extends JDialog {
 
-	SearchPaymentDialog(JFrame owner){
-		super(owner, "会計検索", true);
-		setupCenter();
-		setupSouth();
+	private JButton recentPaymentsButton = new JButton("最近の会計");
+	private JTextField searchTextField = new JTextField(8);
+	private JButton searchButton = new JButton("検索");
+	private JButton reprintReceiptButton = new JButton("領収書再発行");
+
+	SearchPaymentDialog(Window owner){
+		super(owner, "会計検索", Dialog.ModalityType.DOCUMENT_MODAL);
+		setLayout(new MigLayout("fill", "[grow]", "[] [grow]"));
+		add(makeSearchInputPane(), "grow, wrap");
+		add(makeSearchResultPane(), "grow, wrap");
+		add(reprintReceiptButton);
+		//setupCenter();
+		//setupSouth();
 		pack();
+	}
+
+	private JComponent makeSearchInputPane(){
+		JPanel panel = new JPanel(new MigLayout("insets 0, fill", "[] [grow] []", ""));
+		panel.add(recentPaymentsButton, "wrap, span 3");
+		panel.add(new JLabel("患者番号"));
+		panel.add(searchTextField, "grow");
+		panel.add(searchButton);
+		return panel;
+	}
+
+	private JComponent makeSearchResultPane(){
+		JList list = new JList();
+		JScrollPane scroll = new JScrollPane(list);
+		scroll.setPreferredSize(new Dimension(400, 300));
+		return scroll;
+	}
+
+	private JComponent makeSouth(){
+		return null;
 	}
 
 	private void setupCenter(){
