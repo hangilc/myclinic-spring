@@ -269,6 +269,81 @@ public class DrawerCompiler {
         line(box.getRight(), box.getBottom(), box.getLeft(), box.getBottom());
     }
 
+    public void frameCells(Box[][] cells) {
+        for(Box[] row: cells){
+            for(Box cell: row){
+                box(cell);
+            }
+        }
+    }
+
+    public void frameRightOfNthColumn(Box[][] cells, int iCol, double dx){
+        double x = cells[0][iCol].getRight() + dx;
+        double top = cells[0][0].getTop();
+        double bottom = cells[cells.length-1][0].getBottom();
+        line(x, top, x, bottom);
+    }
+
+    public void frameInnerColumnBorders(Box box, int nCol){
+        double left = box.getLeft();
+        double top = box.getTop();
+        double bottom = box.getBottom();
+        double cw = box.getWidth() / nCol;
+        for(int i=1;i<nCol;i++){
+            double x = left + cw * i;
+            line(x, top, x, bottom);
+        }
+    }
+
+    public void frameInnerColumnBorders(Box[][] cells){
+        int nCol = cells[0].length;
+        Box[] firstRow = cells[0];
+        double top = firstRow[0].getTop();
+        double bottom = cells[cells.length-1][0].getBottom();
+        for(int i=1;i<firstRow.length;i++){
+            Box cell = firstRow[i];
+            double x = cell.getLeft();
+            line(x, top, x, bottom);
+        }
+    }
+
+    public List<String> breakLine(String line, double lineWidth){
+        return LineBreaker.breakLine(line, currentFontSize, lineWidth);
+    }
+
+    public void multilineText(List<String> lines, Box box, HAlign halign, VAlign valign, double leading){
+        if( lines == null || lines.size() == 0 ){
+            return;
+        }
+        int nLines = lines.size();
+        double y;
+        switch(valign){
+            case Top: y = box.getTop(); break;
+            case Center: y = box.getTop() + (box.getHeight() - calcTotalHeight(nLines, currentFontSize, leading))/ 2; break;
+            case Bottom: y = box.getTop() + box.getHeight() - calcTotalHeight(nLines, currentFontSize, leading); break;
+            default: throw new RuntimeException("invalid valign: " + valign);
+        }
+        double x;
+        switch(halign){
+            case Left: x = box.getLeft(); break;
+            case Center: x = box.getCx(); break;
+            case Right: x = box.getRight(); break;
+            default: throw new RuntimeException("invalid halign: " + halign);
+        }
+        for(String line: lines){
+            textAt(line, x, y, halign, VAlign.Top);
+            y += currentFontSize + leading;
+        }
+    }
+
+    public double calcTotalHeight(int nLines, double fontSize, double leading){
+        if( nLines == 0 ){
+            return 0;
+        } else {
+            return nLines * fontSize + leading * (nLines - 1);
+        }
+    }
+
     private static List<Double> measureChars(String str, double fontSize){
         return str.codePoints().mapToDouble(code -> charWidth(code, fontSize)).boxed().collect(Collectors.toList());
     }
