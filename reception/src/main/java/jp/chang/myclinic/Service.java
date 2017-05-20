@@ -79,6 +79,9 @@ class Service {
 
 		@GET("get-receipt-drawer-ops")
 		CompletableFuture<List<Op>> getReceiptDrawerOps(@Query("visit-id") int visitId);
+
+		@GET("list-recent-payment")
+        CompletableFuture<List<PaymentVisitPatientDTO>> listRecentPayment(@Query("n") int n);
 	}
 
     public static ServerAPI api; 

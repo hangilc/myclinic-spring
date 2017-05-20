@@ -73,31 +73,31 @@ public class Shinryou {
 		this.shinryoucode = shinryoucode;
 	}
 
-	@Column(name="master_valid_from")
-	private Date masterValidFrom;
-
-	public Date getMasterValidFrom(){
-		return masterValidFrom;
-	}
-
-	public void setMasterValidFrom(Date masterValidFrom){
-		this.masterValidFrom = masterValidFrom;
-	}
-
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumns({
-		@JoinColumn(name="shinryoucode", referencedColumnName="shinryoucode", insertable=false, updatable=false),
-		@JoinColumn(name="master_valid_from", referencedColumnName="valid_from", insertable=false, updatable=false),
-	})
-	private ShinryouMaster master;
-
-	public ShinryouMaster getMaster(){
-		return master;
-	}
-
-	public void setMaster(ShinryouMaster master){
-		this.master = master;
-	}
+//	@Column(name="master_valid_from")
+//	private Date masterValidFrom;
+//
+//	public Date getMasterValidFrom(){
+//		return masterValidFrom;
+//	}
+//
+//	public void setMasterValidFrom(Date masterValidFrom){
+//		this.masterValidFrom = masterValidFrom;
+//	}
+//
+//	@ManyToOne(fetch=FetchType.LAZY)
+//	@JoinColumns({
+//		@JoinColumn(name="shinryoucode", referencedColumnName="shinryoucode", insertable=false, updatable=false),
+//		@JoinColumn(name="master_valid_from", referencedColumnName="valid_from", insertable=false, updatable=false),
+//	})
+//	private ShinryouMaster master;
+//
+//	public ShinryouMaster getMaster(){
+//		return master;
+//	}
+//
+//	public void setMaster(ShinryouMaster master){
+//		this.master = master;
+//	}
 
 	@Override
 	public String toString(){
