@@ -68,7 +68,7 @@ public class DrawerPreviewPane extends JPanel {
                     if (opCreateFont.isItalic()) {
                         style |= Font.ITALIC;
                     }
-                    int size = (int) (opCreateFont.getSize() * scale / 25.4 * 72);
+                    int size = (int) (opCreateFont.getSize() * scale);
                     Font font = new Font(opCreateFont.getFontName(), style, size);
                     fontMap.put(opCreateFont.getName(), font);
                     break;

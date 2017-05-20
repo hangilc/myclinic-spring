@@ -49,6 +49,7 @@ public class ReceiptDrawer {
         compiler.box(instituteBox);
         compiler.box(ryoushuuBox);
         mainTitle(titleBox);
+        renderRow1(row1);
     }
 
     public List<Op> getOps(){
@@ -66,5 +67,27 @@ public class ReceiptDrawer {
     private void mainTitle(Box box){
         compiler.setFont("mincho-6");
         compiler.textInJustified("領収証", box, VAlign.Top);
+    }
+
+    private void renderRow1(Box box, String name, String charge){
+//        name = name || "";
+//        charge = charge || "";
+//        if( typeof charge === "number" ){
+//            charge = util.formatNumber(charge);
+//        }
+//        var c = this.compiler;
+//        c.setFont("mincho-6");
+//        c.frameBottom(box);
+//        c.textIn("様", box, "right", "bottom");
+//        var nameBox = box.clone().shrinkWidth(8, "left");
+//        c.textIn(name, nameBox, "center", "bottom");
+//        var chargeBox = box.flipRight().shiftToRight(8).setWidth(52, "left");
+//        c.textIn("領収金額", chargeBox, "left", "bottom");
+//        c.textIn("円", chargeBox, "right", "bottom");
+//        c.frameBottom(chargeBox);
+//        var kingakuBox = chargeBox.clone().displaceLeftEdge(24).displaceRightEdge(-6.9);
+//        c.setFont("gothic-5");
+//        c.textIn(charge, kingakuBox, "right", "bottom");
+
     }
 }

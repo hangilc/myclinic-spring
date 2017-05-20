@@ -22,7 +22,8 @@ public class DrawerCompiler {
     }
 
     private List<Op> ops = new ArrayList<>();
-    private Integer currentFontSize;
+    private Map<String, Double> fontMap = new HashMap<>();
+    private Double currentFontSize;
     private Map<String, Point> pointDict = new HashMap<>();
     private Map<String, Box> boxDict = new HashMap<>();
 
@@ -61,6 +62,7 @@ public class DrawerCompiler {
 
     public void createFont(String name, String fontName, double size, int weight, boolean italic){
         ops.add(new OpCreateFont(name, fontName, size, weight, italic));
+        fontMap.put(name, size);
     }
 
     public void createFont(String name, String fontName, double size){
@@ -69,6 +71,7 @@ public class DrawerCompiler {
 
     public void setFont(String name){
         ops.add(new OpSetFont(name));
+        currentFontSize = fontMap.get(name);
     }
 
     public void textAt(String text, double x, double y, HAlign halign, VAlign valign, TextAtOpt opt){
@@ -104,8 +107,6 @@ public class DrawerCompiler {
         if( text == null || text.isEmpty() ){
             return;
         }
-        System.out.println(text);
-        System.out.println(currentFontSize);
         List<Double> mes = measureChars(text, currentFontSize);
         double totalWidth = mes.stream().reduce((a,b) -> a + b).orElse(0.0);
         if( text.length() < 2 ){
