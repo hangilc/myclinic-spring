@@ -407,6 +407,12 @@ public class DbGateway {
 		return hokenDTO;
 	}
 
+	public List<PaymentVisitPatientDTO> listRecentPayment(int n) {
+		PageRequest pageRequest = new PageRequest(0, n, Sort.Direction.DESC, "visitId");
+		return paymentRepository.findAllFull(pageRequest).getContent().stream()
+				.map(this::resultToPaymentVisitPatient).collect(Collectors.toList());
+	}
+
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
 		Shinryou shinryou = (Shinryou)result[0];
 		ShinryouMaster master = (ShinryouMaster)result[1];
@@ -461,4 +467,15 @@ public class DbGateway {
 		return visitPatientDTO;
 	}
 
-}
+	private PaymentVisitPatientDTO resultToPaymentVisitPatient(Object[] result){
+		PaymentDTO paymentDTO = mapper.toPaymentDTO((Payment)result[0]);
+		VisitDTO visitDTO = mapper.toVisitDTO((Visit)result[1]);
+		PatientDTO patientDTO = mapper.toPatientDTO((Patient)result[2]);
+		PaymentVisitPatientDTO paymentVisitPatientDTO = new PaymentVisitPatientDTO();
+		paymentVisitPatientDTO.payment = paymentDTO;
+		paymentVisitPatientDTO.visit = visitDTO;
+		paymentVisitPatientDTO.patient = patientDTO;
+		return paymentVisitPatientDTO;
+	}
+
+ }
