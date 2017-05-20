@@ -3,6 +3,7 @@ package jp.chang.myclinic;
 import java.awt.*;
 import javax.swing.*;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
@@ -82,6 +83,11 @@ class SearchPaymentDialog extends JDialog {
 							dialog.setLocationByPlatform(true);
 							dialog.setVisible(true);
 						});
+					})
+					.exceptionally(t -> {
+						t.printStackTrace();
+						alert(t.toString());
+						return null;
 					});
 		});
 		closeButton.addActionListener(event -> {

@@ -24,6 +24,16 @@ public class Box {
         this.bottom = bottom;
     }
 
+    @Override
+    public String toString() {
+        return "Box{" +
+                "left=" + left +
+                ", top=" + top +
+                ", right=" + right +
+                ", bottom=" + bottom +
+                '}';
+    }
+
     public double getLeft() {
         return left;
     }

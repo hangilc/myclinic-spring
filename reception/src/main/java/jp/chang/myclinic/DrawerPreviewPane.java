@@ -53,6 +53,7 @@ public class DrawerPreviewPane extends JPanel {
                     OpLineTo opLineTo = (OpLineTo)op;
                     Point2D toPoint = new Point2D.Double(opLineTo.getX() * scale, opLineTo.getY() * scale);
                     g.draw(new Line2D.Double(currentPoint, toPoint));
+                    currentPoint = toPoint;
                     break;
                 }
                 case CreateFont: {

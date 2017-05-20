@@ -14,8 +14,6 @@
   </properties>
 
   <modules>
-    <!-- <module>model</module> -->
-    <!--<module>web</module> -->
     <module>master-map</module>
     <module>master-app</module>
     <module>wia</module>
@@ -23,9 +21,7 @@
     <module>scanner-backup</module>
     <module>reception</module>
     <module>myclinic-util</module>
-    <module>database</module>
     <module>server</module>
-    <module>rest-api</module>
     <module>dto</module>
     <module>myclinic-consts</module>
     <module>drawer</module>
