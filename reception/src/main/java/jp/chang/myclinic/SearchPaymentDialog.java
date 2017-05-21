@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
+import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.dto.PaymentVisitPatientDTO;
 import net.miginfocom.swing.MigLayout;
@@ -67,6 +68,7 @@ class SearchPaymentDialog extends JDialog {
 			if( selection == null ){
 				return;
 			}
+			final ReceiptDrawerData data = new ReceiptDrawerData();
 			Service.api.getVisitMeisai(selection.payment.visitId)
 					.whenComplete((MeisaiDTO meisai, Throwable t) -> {
 						if( t != null ){
@@ -76,7 +78,7 @@ class SearchPaymentDialog extends JDialog {
 							});
 							return;
 						}
-						ReceiptDrawer receiptDrawer = new ReceiptDrawer();
+						ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
 						final List<Op> ops = receiptDrawer.getOps();
 						EventQueue.invokeLater(() -> {
 							ReceiptPreviewDialog dialog = new ReceiptPreviewDialog(this, ops);

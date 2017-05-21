@@ -16,8 +16,10 @@ import java.util.List;
 public class ReceiptDrawer {
 
     private DrawerCompiler compiler = new DrawerCompiler();
+    private ReceiptDrawerData data;
 
-    public ReceiptDrawer(){
+    public ReceiptDrawer(ReceiptDrawerData data){
+        this.data = data;
         setupFonts();
         compiler.createPen("regular", 0, 0, 0, 0.1);
         compiler.setPen("regular");
@@ -49,7 +51,7 @@ public class ReceiptDrawer {
         compiler.box(instituteBox);
         compiler.box(ryoushuuBox);
         mainTitle(titleBox);
-        renderRow1(row1);
+        renderRow1(row1, data.getPatientName(), data.getCharge());
     }
 
     public List<Op> getOps(){
