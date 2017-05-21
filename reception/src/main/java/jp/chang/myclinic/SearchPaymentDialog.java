@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
+import jp.chang.myclinic.dto.HokenDTO;
 import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.dto.PaymentVisitPatientDTO;
 import net.miginfocom.swing.MigLayout;
@@ -68,16 +69,11 @@ class SearchPaymentDialog extends JDialog {
 			if( selection == null ){
 				return;
 			}
-			final ReceiptDrawerData data = new ReceiptDrawerData();
+			final DataStore dataStore = new DataStore();
+
 			Service.api.getVisitMeisai(selection.payment.visitId)
-					.whenComplete((MeisaiDTO meisai, Throwable t) -> {
-						if( t != null ){
-							t.printStackTrace();
-							EventQueue.invokeLater(() -> {
-								alert(t.toString());
-							});
-							return;
-						}
+					.thenAccept((MeisaiDTO meisai) -> {
+						ReceiptDrawerData data = ReceiptDrawerDataCreator.create(selection.patient, selection.visit, meisai);
 						ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
 						final List<Op> ops = receiptDrawer.getOps();
 						EventQueue.invokeLater(() -> {
@@ -85,10 +81,13 @@ class SearchPaymentDialog extends JDialog {
 							dialog.setLocationByPlatform(true);
 							dialog.setVisible(true);
 						});
+
 					})
 					.exceptionally(t -> {
 						t.printStackTrace();
-						alert(t.toString());
+						EventQueue.invokeLater(() -> {
+							alert(t.toString());
+						});
 						return null;
 					});
 		});
@@ -101,4 +100,7 @@ class SearchPaymentDialog extends JDialog {
 		JOptionPane.showMessageDialog(this, message);
 	}
 
+	private static class DataStore {
+		HokenDTO hoken;
+	}
 }

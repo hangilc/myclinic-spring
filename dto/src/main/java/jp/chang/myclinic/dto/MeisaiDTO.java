@@ -10,4 +10,5 @@ public class MeisaiDTO {
     public int totalTen;
     public int futanWari;
     public int charge;
+    public HokenDTO hoken;
 }

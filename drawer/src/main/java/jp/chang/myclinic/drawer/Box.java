@@ -252,7 +252,7 @@ public class Box {
         return rows;
     }
 
-    public Box[][] splitToEventCells(int nrows, int ncols){
+    public Box[][] splitToEvenCells(int nrows, int ncols){
         Box[][] cells = new Box[nrows][];
         Box[] rows = splitToEvenRows(nrows);
         for(int i=0;i<nrows;i++){

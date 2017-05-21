@@ -122,6 +122,7 @@ public class VisitController {
 		PatientDTO patientDTO = dbGateway.getPatient(visit.patientId);
 		if( patientDTO.birthday != null ){
 			HokenDTO hokenDTO = dbGateway.getHokenForVisit(visit);
+			meisaiDTO.hoken = hokenDTO;
 			LocalDateTime atDateTime = DateTimeUtil.parseSqlDateTime(visit.visitedAt);
 			LocalDate birthdayDate = DateTimeUtil.parseSqlDate(patientDTO.birthday);
 			int rcptAge = RcptUtil.calcRcptAge(birthdayDate.getYear(), birthdayDate.getMonth().getValue(),

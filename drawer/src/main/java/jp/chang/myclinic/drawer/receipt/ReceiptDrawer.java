@@ -24,22 +24,22 @@ public class ReceiptDrawer {
         compiler.createPen("regular", 0, 0, 0, 0.1);
         compiler.setPen("regular");
         Box frameBox = new Box(0, 0, 148, 105);
-        Box titleBox = frameBox.copy().shiftDown(4).setWidth(28, HorizAnchor.Center)
+        Box titleBox = frameBox.shiftDown(4).setWidth(28, HorizAnchor.Center)
                 .setHeight(6, VertAnchor.Top);
         Box row1 = frameBox.innerBox(13, 14, 73, 23);
-        Box row2 = frameBox.copy().shiftDown(row1.getBottom()+3)
+        Box row2 = frameBox.shiftDown(row1.getBottom()+3)
                 .setHeight(4, VertAnchor.Top).setLeft(13).setWidth(60, HorizAnchor.Left);
-        Box row3 = frameBox.copy().setTop(row2.getBottom()+3)
+        Box row3 = frameBox.setTop(row2.getBottom()+3)
                 .setHeight(10, VertAnchor.Top).setLeft(13).setWidth(120, HorizAnchor.Left);
-        Box row4 = frameBox.copy().setTop(row3.getBottom()+3)
+        Box row4 = frameBox.setTop(row3.getBottom()+3)
                 .setHeight(10, VertAnchor.Top).setLeft(13).setWidth(120, HorizAnchor.Left);
-        Box row5 = frameBox.copy().setTop(row4.getBottom()+1)
+        Box row5 = frameBox.setTop(row4.getBottom()+1)
                 .setHeight(10, VertAnchor.Top).setLeft(13).setWidth(120, HorizAnchor.Left);
-        Box hokengaiBox = frameBox.copy().setTop(row5.getBottom()+3)
+        Box hokengaiBox = frameBox.setTop(row5.getBottom()+3)
                 .setHeight(25, VertAnchor.Top).setLeft(13).setWidth(48, HorizAnchor.Left);
-        Box instituteBox = hokengaiBox.copy().flipRight().shiftToRight(11)
+        Box instituteBox = hokengaiBox.flipRight().shiftToRight(11)
                 .setHeight(25, VertAnchor.Top).setWidth(30, HorizAnchor.Left);
-        Box ryoushuuBox = instituteBox.copy().flipRight().shiftToRight(7)
+        Box ryoushuuBox = instituteBox.flipRight().shiftToRight(7)
                 .setHeight(29, VertAnchor.Top).setWidth(24, HorizAnchor.Left);
         compiler.box(titleBox);
         compiler.box(row1);
@@ -52,6 +52,8 @@ public class ReceiptDrawer {
         compiler.box(ryoushuuBox);
         mainTitle(titleBox);
         renderRow1(row1, data.getPatientName(), data.getCharge());
+        renderRow2(row2, data.getVisitDate(), data.getIssueDate());
+        renderRow3(row3, data.getPatientId(), data.getHoken(), data.getFutanWari());
     }
 
     public List<Op> getOps(){
@@ -72,24 +74,40 @@ public class ReceiptDrawer {
     }
 
     private void renderRow1(Box box, String name, String charge){
-//        name = name || "";
-//        charge = charge || "";
-//        if( typeof charge === "number" ){
-//            charge = util.formatNumber(charge);
-//        }
-//        var c = this.compiler;
-//        c.setFont("mincho-6");
-//        c.frameBottom(box);
-//        c.textIn("様", box, "right", "bottom");
-//        var nameBox = box.clone().shrinkWidth(8, "left");
-//        c.textIn(name, nameBox, "center", "bottom");
-//        var chargeBox = box.flipRight().shiftToRight(8).setWidth(52, "left");
-//        c.textIn("領収金額", chargeBox, "left", "bottom");
-//        c.textIn("円", chargeBox, "right", "bottom");
-//        c.frameBottom(chargeBox);
-//        var kingakuBox = chargeBox.clone().displaceLeftEdge(24).displaceRightEdge(-6.9);
-//        c.setFont("gothic-5");
-//        c.textIn(charge, kingakuBox, "right", "bottom");
+        compiler.setFont("mincho-6");
+        compiler.frameBottom(box);
+        compiler.textIn("様", box, HAlign.Right, VAlign.Bottom);
+        Box nameBox = box.shrinkWidth(8, HorizAnchor.Left);
+        compiler.textIn(name, nameBox, HAlign.Center, VAlign.Bottom);
+        Box chargeBox = box.flipRight().shiftToRight(8).setWidth(52, HorizAnchor.Left);
+        compiler.textIn("領収金額", chargeBox, HAlign.Left, VAlign.Bottom);
+        compiler.textIn("円", chargeBox, HAlign.Right, VAlign.Bottom);
+        compiler.frameBottom(chargeBox);
+        Box kingakuBox = chargeBox.displaceLeftEdge(24).displaceRightEdge(-6.9);
+        compiler.setFont("gothic-5");
+        compiler.textIn(charge, kingakuBox, HAlign.Right, VAlign.Bottom);
+    }
+
+    private void renderRow2(Box box, String visitDate, String issueDate){
+        compiler.setFont("mincho-4");
+        compiler.textIn("診察日", box, HAlign.Left, VAlign.Center);
+        Box dateBox = box.shrinkWidth(16, HorizAnchor.Right);
+        compiler.textIn(visitDate, dateBox, HAlign.Left, VAlign.Center);
+        Box issueBox = box.flipRight().shiftToRight(6);
+        compiler.textIn("発効日", issueBox, HAlign.Left, VAlign.Center);
+        compiler.textIn(issueDate, issueBox.displaceLeftEdge(16), HAlign.Left, VAlign.Center);
+    }
+
+    private void renderRow3(Box box, String patientId, String hoken, String futanWari){
+        Box[][] cells = box.splitToEvenCells(2, 3);
+        compiler.frameCells(cells);
+        compiler.setFont("mincho-4");
+        compiler.textIn("患者番号", cells[0][0], HAlign.Center, VAlign.Center);
+        compiler.textIn("保険種別", cells[0][1], HAlign.Center, VAlign.Center);
+        compiler.textIn("負担割合", cells[0][2], HAlign.Center, VAlign.Center);
+        compiler.textIn( patientId, cells[1][0], HAlign.Center, VAlign.Center);
+        compiler.textIn( hoken, cells[1][1], HAlign.Center, VAlign.Center);
+        compiler.textIn(futanWari, cells[1][2], HAlign.Center, VAlign.Center);
 
     }
 }
