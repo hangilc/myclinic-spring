@@ -36,8 +36,10 @@ public class ChargeController {
 	}
 
 	@RequestMapping(value="/find-charge", method=RequestMethod.GET)
-	public ChargeDTO findCharge(@RequestParam("visit-id") int visitId){
-		return dbGateway.findCharge(visitId).orElse(null);
+	public ChargeOptionalDTO findCharge(@RequestParam("visit-id") int visitId){
+		ChargeOptionalDTO chargeOptionalDTO = new ChargeOptionalDTO();
+		chargeOptionalDTO.charge = dbGateway.findCharge(visitId).orElse(null);
+		return chargeOptionalDTO;
 	}
 
 }

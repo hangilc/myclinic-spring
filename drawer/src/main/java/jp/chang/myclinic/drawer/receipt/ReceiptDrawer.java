@@ -54,6 +54,9 @@ public class ReceiptDrawer {
         renderRow1(row1, data.getPatientName(), data.getCharge());
         renderRow2(row2, data.getVisitDate(), data.getIssueDate());
         renderRow3(row3, data.getPatientId(), data.getHoken(), data.getFutanWari());
+        renderRow4(row4, data.getShoshin(), data.getKanri(), data.getZaitaku(), data.getKensa(), data.getGazou());
+        renderRow5(row5, data.getTouyaku(), data.getChuusha(), data.getShochi(), data.getSonota(), data.getSouten());
+        renderHokengai(hokengaiBox, data.getHokengai());
     }
 
     public List<Op> getOps(){
@@ -108,6 +111,49 @@ public class ReceiptDrawer {
         compiler.textIn( patientId, cells[1][0], HAlign.Center, VAlign.Center);
         compiler.textIn( hoken, cells[1][1], HAlign.Center, VAlign.Center);
         compiler.textIn(futanWari, cells[1][2], HAlign.Center, VAlign.Center);
-
     }
+
+    private void renderRow4(Box box, String shoshin, String kanri, String zaitaku, String kensa, String gazou){
+        Box[][] cells = box.splitToEvenCells(2, 5);
+        compiler.frameCells(cells);
+        compiler.setFont("mincho-4");
+        compiler.textIn("初・再診料", cells[0][0], HAlign.Center, VAlign.Center);
+        compiler.textIn(shoshin , cells[1][0], HAlign.Center, VAlign.Center);
+        compiler.textIn("医学管理等", cells[0][1], HAlign.Center, VAlign.Center);
+        compiler.textIn(kanri , cells[1][1], HAlign.Center, VAlign.Center);
+        compiler.textIn("在宅医療", cells[0][2], HAlign.Center, VAlign.Center);
+        compiler.textIn(zaitaku , cells[1][2], HAlign.Center, VAlign.Center);
+        compiler.textIn("検査", cells[0][3], HAlign.Center, VAlign.Center);
+        compiler.textIn(kensa , cells[1][3], HAlign.Center, VAlign.Center);
+        compiler.textIn("画像診断", cells[0][4], HAlign.Center, VAlign.Center);
+        compiler.textIn(gazou , cells[1][4], HAlign.Center, VAlign.Center);
+    }
+
+    private void renderRow5(Box box, String touyaku, String chuusha, String shochi, String sonota, String souten){
+        Box[][] cells = box.splitToEvenCells(2, 5);
+        compiler.frameCells(cells);
+        compiler.frameRightOfNthColumn(cells, 3,  -1);
+        compiler.setFont("mincho-4");
+        compiler.textIn("投薬", cells[0][0], HAlign.Center, VAlign.Center);
+        compiler.textIn(touyaku , cells[1][0], HAlign.Center, VAlign.Center);
+        compiler.textIn("注射", cells[0][1], HAlign.Center, VAlign.Center);
+        compiler.textIn(chuusha , cells[1][1], HAlign.Center, VAlign.Center);
+        compiler.textIn("処置", cells[0][2], HAlign.Center, VAlign.Center);
+        compiler.textIn(shochi , cells[1][2], HAlign.Center, VAlign.Center);
+        compiler.textIn("その他", cells[0][3], HAlign.Center, VAlign.Center);
+        compiler.textIn(sonota , cells[1][3], HAlign.Center, VAlign.Center);
+        compiler.textIn("診療総点数", cells[0][4], HAlign.Center, VAlign.Center);
+        compiler.textIn(souten , cells[1][4], HAlign.Center, VAlign.Center);
+    }
+
+    private void renderHokengai(Box box, String[] texts){
+        Box[][] cells = box.splitToEvenCells(5, 1);
+        compiler.setFont("mincho-4");
+        compiler.frameCells(cells);
+        compiler.textIn("保険外", cells[0][0], HAlign.Center, VAlign.Center);
+        for(int i=0;i<texts.length;i++){
+            compiler.textIn(texts[i], cells[1][0].shrinkWidth(1, HorizAnchor.Right), HAlign.Left, VAlign.Center);
+        }
+    }
+
 }

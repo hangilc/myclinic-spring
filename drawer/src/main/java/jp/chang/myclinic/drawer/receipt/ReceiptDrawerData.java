@@ -14,6 +14,17 @@ public class ReceiptDrawerData {
     private String patientId = "";
     private String hoken = "";
     private String futanWari = "";
+    private String shoshin = "";
+    private String kanri = "";
+    private String zaitaku = "";
+    private String kensa = "";
+    private String gazou = "";
+    private String touyaku = "";
+    private String chuusha = "";
+    private String shochi = "";
+    private String sonota = "";
+    private String souten = "";
+    private String[] hokengai = new String[]{ "", "", "", "" };
     private NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
     public String getPatientName() {
@@ -74,5 +85,97 @@ public class ReceiptDrawerData {
 
     public void setFutanWari(String futanWari) {
         this.futanWari = futanWari;
+    }
+
+    public String getShoshin() {
+        return shoshin;
+    }
+
+    public void setShoshin(String shoshin) {
+        this.shoshin = shoshin;
+    }
+
+    public String getKanri() {
+        return kanri;
+    }
+
+    public void setKanri(String kanri) {
+        this.kanri = kanri;
+    }
+
+    public String getZaitaku() {
+        return zaitaku;
+    }
+
+    public void setZaitaku(String zaitaku) {
+        this.zaitaku = zaitaku;
+    }
+
+    public String getKensa() {
+        return kensa;
+    }
+
+    public void setKensa(String kensa) {
+        this.kensa = kensa;
+    }
+
+    public String getGazou() {
+        return gazou;
+    }
+
+    public void setGazou(String gazou) {
+        this.gazou = gazou;
+    }
+
+    public String getTouyaku() {
+        return touyaku;
+    }
+
+    public void setTouyaku(String touyaku) {
+        this.touyaku = touyaku;
+    }
+
+    public String getChuusha() {
+        return chuusha;
+    }
+
+    public void setChuusha(String chuusha) {
+        this.chuusha = chuusha;
+    }
+
+    public String getShochi() {
+        return shochi;
+    }
+
+    public void setShochi(String shochi) {
+        this.shochi = shochi;
+    }
+
+    public String getSonota() {
+        return sonota;
+    }
+
+    public void setSonota(String sonota) {
+        this.sonota = sonota;
+    }
+
+    public String getSouten() {
+        return souten;
+    }
+
+    public void setSouten(String souten) {
+        this.souten = souten;
+    }
+
+    public String[] getHokengai(){
+        return hokengai;
+    }
+
+    public String getHokengai(int i){
+        return hokengai[i];
+    }
+
+    public void setHokengai(int i, String text){
+        hokengai[i] = text;
     }
 }

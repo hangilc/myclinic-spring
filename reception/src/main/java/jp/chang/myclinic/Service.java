@@ -2,8 +2,10 @@ package jp.chang.myclinic;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.drawer.JacksonOpDeserializer;
@@ -72,7 +74,7 @@ class Service {
 		CompletableFuture<ChargeDTO> getCharge(@Query("visit-id") int visitId);
 
 		@GET("find-charge")
-		CompletableFuture<ChargeDTO> findCharge(@Query("visit-id") int visitId);
+		CompletableFuture<ChargeOptionalDTO> findCharge(@Query("visit-id") int visitId);
 
 		@GET("list-payment")
 		CompletableFuture<List<PaymentDTO>> listPayment(@Query("visit-id") int visitId);

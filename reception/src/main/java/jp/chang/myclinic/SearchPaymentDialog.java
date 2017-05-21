@@ -3,14 +3,13 @@ package jp.chang.myclinic;
 import java.awt.*;
 import javax.swing.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
-import jp.chang.myclinic.dto.HokenDTO;
-import jp.chang.myclinic.dto.MeisaiDTO;
-import jp.chang.myclinic.dto.PaymentVisitPatientDTO;
+import jp.chang.myclinic.dto.*;
 import net.miginfocom.swing.MigLayout;
 
 class SearchPaymentDialog extends JDialog {
@@ -69,11 +68,16 @@ class SearchPaymentDialog extends JDialog {
 			if( selection == null ){
 				return;
 			}
+			int visitId = selection.payment.visitId;
 			final DataStore dataStore = new DataStore();
-
-			Service.api.getVisitMeisai(selection.payment.visitId)
+			Service.api.findCharge(visitId)
+					.thenCompose((ChargeOptionalDTO optCharge) -> {
+						dataStore.charge = optCharge.charge;
+						return Service.api.getVisitMeisai(visitId);
+					})
 					.thenAccept((MeisaiDTO meisai) -> {
-						ReceiptDrawerData data = ReceiptDrawerDataCreator.create(selection.patient, selection.visit, meisai);
+						ReceiptDrawerData data = ReceiptDrawerDataCreator.create(dataStore.getChargeValue(),
+								selection.patient, selection.visit, meisai);
 						ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
 						final List<Op> ops = receiptDrawer.getOps();
 						EventQueue.invokeLater(() -> {
@@ -101,6 +105,10 @@ class SearchPaymentDialog extends JDialog {
 	}
 
 	private static class DataStore {
-		HokenDTO hoken;
+		ChargeDTO charge;
+
+		int getChargeValue(){
+			return charge == null ? 0 : charge.charge;
+		}
 	}
 }
