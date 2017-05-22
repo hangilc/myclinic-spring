@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilde
 import org.springframework.context.annotation.Bean;
 
 import jp.chang.myclinic.rcpt.HoukatsuKensa;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
 
 @SpringBootApplication
 public class AppServer {
@@ -27,4 +28,5 @@ public class AppServer {
             builder.serializerByType(Op.class, new JacksonOpSerializer());
         };
     }
+
 }
