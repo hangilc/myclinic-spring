@@ -8,6 +8,10 @@ programs/
 *.iml
 *.log
 application.properties
+application-save.properties
+application.yml
+
+
 
 
 

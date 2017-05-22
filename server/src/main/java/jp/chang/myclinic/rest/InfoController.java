@@ -27,9 +27,14 @@ public class InfoController {
 
     @RequestMapping(value="/get-clinic-info", method=RequestMethod.GET)
     public ClinicInfoDTO getClinicInfo(){
-        ClinicInfoDTO infoDTO = new ClinicInfoDTO();
-        infoDTO.name = clinicInfo.getName();
-        return infoDTO;
+        ClinicInfoDTO clinicInfoDTO = new ClinicInfoDTO();
+        clinicInfoDTO.name = clinicInfo.getName();
+        clinicInfoDTO.postalCode = clinicInfo.getPostalCode();
+        clinicInfoDTO.address = clinicInfo.getAddress();
+        clinicInfoDTO.tel = clinicInfo.getTel();
+        clinicInfoDTO.fax = clinicInfo.getFax();
+        clinicInfoDTO.homepage = clinicInfo.getHomepage();
+        return clinicInfoDTO;
     }
 }
 
