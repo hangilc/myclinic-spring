@@ -1,6 +1,8 @@
 package jp.chang.myclinic.drawer.receipt;
 
 import java.text.NumberFormat;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by hangil on 2017/05/21.
@@ -25,6 +27,8 @@ public class ReceiptDrawerData {
     private String sonota = "";
     private String souten = "";
     private String[] hokengai = new String[]{ "", "", "", "" };
+    private String clinicName = "";
+    private String[] addressLines = new String[]{};
     private NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
     public String getPatientName() {
@@ -177,5 +181,25 @@ public class ReceiptDrawerData {
 
     public void setHokengai(int i, String text){
         hokengai[i] = text;
+    }
+
+    public void setHokengai(String[] hokengai) {
+        this.hokengai = hokengai;
+    }
+
+    public String getClinicName() {
+        return clinicName;
+    }
+
+    public void setClinicName(String clinicName) {
+        this.clinicName = clinicName;
+    }
+
+    public String[] getAddressLines() {
+        return addressLines;
+    }
+
+    public void setAddressLines(String[] addressLines) {
+        this.addressLines = addressLines;
     }
 }

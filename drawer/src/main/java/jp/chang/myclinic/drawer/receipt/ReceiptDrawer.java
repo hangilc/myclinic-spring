@@ -57,6 +57,7 @@ public class ReceiptDrawer {
         renderRow4(row4, data.getShoshin(), data.getKanri(), data.getZaitaku(), data.getKensa(), data.getGazou());
         renderRow5(row5, data.getTouyaku(), data.getChuusha(), data.getShochi(), data.getSonota(), data.getSouten());
         renderHokengai(hokengaiBox, data.getHokengai());
+        renderInstitute(instituteBox, data.getClinicName(), data.getAddressLines());
     }
 
     public List<Op> getOps(){
@@ -154,6 +155,15 @@ public class ReceiptDrawer {
         for(int i=0;i<texts.length;i++){
             compiler.textIn(texts[i], cells[1][0].shrinkWidth(1, HorizAnchor.Right), HAlign.Left, VAlign.Center);
         }
+    }
+
+    private void renderInstitute(Box box, String name, String[] addressLines){
+        box = box.shiftToRight(-4);
+        Box[] bb = box.splitToRows(5);
+        compiler.setFont("gothic-4");
+        compiler.textIn(name, bb[0], HAlign.Left, VAlign.Top);
+        compiler.setFont("gothic-2.6");
+        compiler.multilineText(addressLines, bb[1], HAlign.Left, VAlign.Top, 1);
     }
 
 }

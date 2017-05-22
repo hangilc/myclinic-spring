@@ -318,11 +318,11 @@ public class DrawerCompiler {
         return LineBreaker.breakLine(line, currentFontSize, lineWidth);
     }
 
-    public void multilineText(List<String> lines, Box box, HAlign halign, VAlign valign, double leading){
-        if( lines == null || lines.size() == 0 ){
+    public void multilineText(String[] lines, Box box, HAlign halign, VAlign valign, double leading){
+        if( lines == null || lines.length == 0 ){
             return;
         }
-        int nLines = lines.size();
+        int nLines = lines.length;
         double y;
         switch(valign){
             case Top: y = box.getTop(); break;

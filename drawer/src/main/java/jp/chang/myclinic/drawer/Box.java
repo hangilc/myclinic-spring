@@ -220,7 +220,7 @@ public class Box {
         Box[] rows = new Box[borders.length + 1];
         double rowTop = top;
         for(int i=0;i<borders.length;i++){
-            double rowBottom = borders[i];
+            double rowBottom = top + borders[i];
             rows[i] = new Box(left, rowTop, right, rowBottom);
             rowTop = rowBottom;
         }

@@ -8,6 +8,7 @@ import jp.chang.myclinic.util.HokenUtil;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 /**
  * Created by hangil on 2017/05/21.
@@ -44,6 +45,14 @@ public class ReceiptDrawerDataCreator {
             }
         }
         data.setSouten(creator.format(meisai.totalTen));
+        data.setClinicName(clinicInfo.name);
+        data.setAddressLines(new String[]{
+                clinicInfo.postalCode,
+                clinicInfo.address,
+                clinicInfo.tel,
+                clinicInfo.fax,
+                clinicInfo.homepage
+        });
         return data;
     }
 
