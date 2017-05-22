@@ -70,14 +70,18 @@ class SearchPaymentDialog extends JDialog {
 			}
 			int visitId = selection.payment.visitId;
 			final DataStore dataStore = new DataStore();
-			Service.api.findCharge(visitId)
+			Service.api.getClinicInfo()
+					.thenCompose((ClinicInfoDTO clinicInfo) -> {
+						dataStore.clinicInfo = clinicInfo;
+						return Service.api.findCharge(visitId);
+					})
 					.thenCompose((ChargeOptionalDTO optCharge) -> {
 						dataStore.charge = optCharge.charge;
 						return Service.api.getVisitMeisai(visitId);
 					})
 					.thenAccept((MeisaiDTO meisai) -> {
 						ReceiptDrawerData data = ReceiptDrawerDataCreator.create(dataStore.getChargeValue(),
-								selection.patient, selection.visit, meisai);
+								selection.patient, selection.visit, meisai, dataStore.clinicInfo);
 						ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
 						final List<Op> ops = receiptDrawer.getOps();
 						EventQueue.invokeLater(() -> {
@@ -106,6 +110,7 @@ class SearchPaymentDialog extends JDialog {
 
 	private static class DataStore {
 		ChargeDTO charge;
+		ClinicInfoDTO clinicInfo;
 
 		int getChargeValue(){
 			return charge == null ? 0 : charge.charge;

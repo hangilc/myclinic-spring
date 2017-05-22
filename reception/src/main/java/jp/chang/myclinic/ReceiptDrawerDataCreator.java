@@ -16,7 +16,8 @@ public class ReceiptDrawerDataCreator {
 
     private NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
-    public static ReceiptDrawerData create(int charge, PatientDTO patient, VisitDTO visit, MeisaiDTO meisai){
+    public static ReceiptDrawerData create(int charge, PatientDTO patient, VisitDTO visit, MeisaiDTO meisai,
+        ClinicInfoDTO clinicInfo){
         ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
         ReceiptDrawerData data = new ReceiptDrawerData();
         data.setPatientName(patient.lastName + patient.firstName);
