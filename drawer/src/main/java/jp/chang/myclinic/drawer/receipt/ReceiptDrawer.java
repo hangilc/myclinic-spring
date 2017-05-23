@@ -41,15 +41,6 @@ public class ReceiptDrawer {
                 .setHeight(25, VertAnchor.Top).setWidth(30, HorizAnchor.Left);
         Box ryoushuuBox = instituteBox.flipRight().shiftToRight(7)
                 .setHeight(29, VertAnchor.Top).setWidth(24, HorizAnchor.Left);
-        compiler.box(titleBox);
-        compiler.box(row1);
-        compiler.box(row2);
-        compiler.box(row3);
-        compiler.box(row4);
-        compiler.box(row5);
-        compiler.box(hokengaiBox);
-        compiler.box(instituteBox);
-        compiler.box(ryoushuuBox);
         mainTitle(titleBox);
         renderRow1(row1, data.getPatientName(), data.getCharge());
         renderRow2(row2, data.getVisitDate(), data.getIssueDate());
@@ -58,6 +49,7 @@ public class ReceiptDrawer {
         renderRow5(row5, data.getTouyaku(), data.getChuusha(), data.getShochi(), data.getSonota(), data.getSouten());
         renderHokengai(hokengaiBox, data.getHokengai());
         renderInstitute(instituteBox, data.getClinicName(), data.getAddressLines());
+        renderRyoushuu(ryoushuuBox);
     }
 
     public List<Op> getOps(){
@@ -164,6 +156,14 @@ public class ReceiptDrawer {
         compiler.textIn(name, bb[0], HAlign.Left, VAlign.Top);
         compiler.setFont("gothic-2.6");
         compiler.multilineText(addressLines, bb[1], HAlign.Left, VAlign.Top, 1);
+    }
+
+    private void renderRyoushuu(Box box){
+        compiler.box(box);
+        Box[] bb = box.splitToRows(5);
+        compiler.frameBottom(bb[0]);
+        compiler.setFont("mincho-4");
+        compiler.textIn("領収印", bb[0], HAlign.Center, VAlign.Center);
     }
 
 }
