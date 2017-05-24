@@ -228,7 +228,7 @@ public class DrawerCompiler {
         }
     }
 
-    public void setTextcolor(int red, int green, int blue){
+    public void setTextColor(int red, int green, int blue){
         ops.add(new OpSetTextColor(red, green, blue));
     }
 

@@ -2,15 +2,11 @@ package jp.chang.myclinic.drawer.printer;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
 import com.sun.jna.WString;
-import com.sun.jna.platform.win32.WinGDI.ICONINFO;
-import com.sun.jna.ptr.ByteByReference;
-import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.platform.win32.WinUser;
 import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
-import com.sun.jna.platform.win32.WinUser;
-import com.sun.jna.platform.win32.WinNT;
 
 public interface MyGdi32 extends StdCallLibrary, WinUser, WinNT {
     MyGdi32 INSTANCE = (MyGdi32)Native.loadLibrary("gdi32", MyGdi32.class, W32APIOptions.DEFAULT_OPTIONS);
@@ -27,4 +23,5 @@ public interface MyGdi32 extends StdCallLibrary, WinUser, WinNT {
     boolean MoveToEx(HDC hdc, int x, int y, POINT point);
     boolean LineTo(HDC hdc, int x, int y);
     boolean TextOut(HDC hdc, int x, int y, WString text, int length);
+    Pointer SetTextColor(HDC hdc, int rgb);
 }

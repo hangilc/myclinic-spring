@@ -5,12 +5,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.platform.win32.BaseTSD.SIZE_T;
-import com.sun.jna.platform.win32.WinDef.ATOM;
-import com.sun.jna.platform.win32.WinDef.HDC;
-import com.sun.jna.platform.win32.WinDef.HFONT;
-import com.sun.jna.platform.win32.WinDef.HMODULE;
-import com.sun.jna.platform.win32.WinDef.HWND;
-import com.sun.jna.platform.win32.WinDef.UINT;
+import com.sun.jna.platform.win32.WinDef.*;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.platform.win32.WinUser.WNDCLASSEX;
@@ -271,6 +266,10 @@ public class DrawerPrinter {
         GDI32.INSTANCE.SelectObject(hdc, handle);
     }
 
+    private int RGB(int r, int g, int b){
+        return r + (g << 8) + (b << 16);
+    }
+
     private void execOps(HDC hdc, Iterable<Op> ops, int dpix, int dpiy){
         Map<String, HFONT> fontMap = new HashMap<>();
         for(Op op: ops){
@@ -324,6 +323,12 @@ public class DrawerPrinter {
                         int y = calcCoord(cy, dpiy);
                         MyGdi32.INSTANCE.TextOut(hdc, x, y, new WString(String.valueOf(chars[i])), 1);
                     }
+                    break;
+                }
+                case SetTextColor: {
+                    OpSetTextColor opSetTextColor = (OpSetTextColor)op;
+                    int rgb = RGB(opSetTextColor.getR(), opSetTextColor.getG(), opSetTextColor.getB());
+                    MyGdi32.INSTANCE.SetTextColor(hdc, rgb);
                     break;
                 }
                 default: {
