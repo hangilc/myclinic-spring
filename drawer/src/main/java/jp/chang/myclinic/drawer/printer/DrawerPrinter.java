@@ -24,10 +24,6 @@ public class DrawerPrinter {
     public void print(Iterable<Op> ops){
         DialogResult dialogResult = printDialog(null, null);
         if( dialogResult.ok ){
-            DevNamesInfo devNamesInfo = new DevNamesInfo(dialogResult.devnamesData);
-            System.out.println(devNamesInfo);
-            DevModeInfo devModeInfo = new DevModeInfo(dialogResult.devmodeData);
-            System.out.println(devModeInfo);
             HDC hdc = createDC(dialogResult.devnamesData, dialogResult.devmodeData);
             if( hdc.getPointer() == Pointer.NULL ){
                 throw new RuntimeException("createDC faield");
@@ -39,14 +35,14 @@ public class DrawerPrinter {
             int dpix = getDpix(hdc);
             int dpiy = getDpiy(hdc);
             startPage(hdc);
+            MyGdi32.INSTANCE.SetBkMode(hdc, PrinterConsts.TRANSPARENT);
             execOps(hdc, ops, dpix, dpiy);
             endPage(hdc);
             int endDocResult = endPrint(hdc);
             if( endDocResult <= 0 ){
                 throw new RuntimeException("EndDoc failed");
             }
-            boolean ok = deleteDC(hdc);
-            System.out.println(ok);
+            deleteDC(hdc);
         }
     }
 
@@ -242,7 +238,7 @@ public class DrawerPrinter {
         }
     }
 
-    public HFONT createFont(String fontName, int size, int weight, boolean italic){
+    private HFONT createFont(String fontName, int size, int weight, boolean italic){
         LOGFONT logfont = new LOGFONT();
         logfont.lfHeight = size;
         logfont.lfWeight = weight;
@@ -270,8 +266,13 @@ public class DrawerPrinter {
         return r + (g << 8) + (b << 16);
     }
 
+    private HPEN createPen(int penStyle, int width, int rgb){
+        return MyGdi32.INSTANCE.CreatePen(penStyle, width, rgb);
+    }
+
     private void execOps(HDC hdc, Iterable<Op> ops, int dpix, int dpiy){
         Map<String, HFONT> fontMap = new HashMap<>();
+        Map<String, HPEN> penMap = new HashMap<>();
         for(Op op: ops){
             switch(op.getOpCode()){
                 case MoveTo: {
@@ -331,6 +332,20 @@ public class DrawerPrinter {
                     MyGdi32.INSTANCE.SetTextColor(hdc, rgb);
                     break;
                 }
+                case CreatePen: {
+                    OpCreatePen opCreatePen = (OpCreatePen)op;
+                    int width = calcCoord(opCreatePen.getWidth(), dpix);
+                    int rgb = RGB(opCreatePen.getR(), opCreatePen.getG(), opCreatePen.getB());
+                    HPEN pen = createPen(PrinterConsts.PS_SOLID, width, rgb);
+                    penMap.put(opCreatePen.getName(), pen);
+                    break;
+                }
+                case SetPen: {
+                    OpSetPen opSetPen = (OpSetPen)op;
+                    HPEN pen = penMap.get(opSetPen.getName());
+                    selectObject(hdc, pen);
+                    break;
+                }
                 default: {
                     System.out.println("Unknown op: " + op);
                 }
@@ -338,6 +353,9 @@ public class DrawerPrinter {
         }
         for(HFONT font: fontMap.values()){
             deleteObject(font);
+        }
+        for(HPEN pen: penMap.values()){
+            deleteObject(pen);
         }
     }
 

@@ -24,4 +24,6 @@ public interface MyGdi32 extends StdCallLibrary, WinUser, WinNT {
     boolean LineTo(HDC hdc, int x, int y);
     boolean TextOut(HDC hdc, int x, int y, WString text, int length);
     Pointer SetTextColor(HDC hdc, int rgb);
+    int SetBkMode(HDC hdc, int mode);
+    HPEN CreatePen(int style, int width, int rgb);
 }
