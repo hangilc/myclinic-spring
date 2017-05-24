@@ -24,4 +24,7 @@ public interface MyGdi32 extends StdCallLibrary, WinUser, WinNT {
     int AbortDoc(HDC hdc);
     int StartPage(HDC hdc);
     int EndPage(HDC hdc);
+    boolean MoveToEx(HDC hdc, int x, int y, POINT point);
+    boolean LineTo(HDC hdc, int x, int y);
+    boolean TextOut(HDC hdc, int x, int y, WString text, int length);
 }

@@ -7,6 +7,7 @@ import com.sun.jna.platform.win32.*;
 import com.sun.jna.platform.win32.BaseTSD.SIZE_T;
 import com.sun.jna.platform.win32.WinDef.ATOM;
 import com.sun.jna.platform.win32.WinDef.HDC;
+import com.sun.jna.platform.win32.WinDef.HFONT;
 import com.sun.jna.platform.win32.WinDef.HMODULE;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinDef.UINT;
@@ -14,7 +15,11 @@ import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.platform.win32.WinUser.WNDCLASSEX;
 import com.sun.jna.platform.win32.WinUser.WindowProc;
-import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by hangil on 2017/05/24.
@@ -36,7 +41,10 @@ public class DrawerPrinter {
             if( jobId <= 0 ){
                 throw new RuntimeException("StartDoc failed");
             }
+            int dpix = getDpix(hdc);
+            int dpiy = getDpiy(hdc);
             startPage(hdc);
+            execOps(hdc, ops, dpix, dpiy);
             endPage(hdc);
             int endDocResult = endPrint(hdc);
             if( endDocResult <= 0 ){
@@ -206,6 +214,125 @@ public class DrawerPrinter {
         int ret = MyGdi32.INSTANCE.EndPage(hdc);
         if( ret <= 0 ){
             throw new RuntimeException("EndPage failed");
+        }
+    }
+
+    private int getDpix(HDC hdc){
+        return GDI32.INSTANCE.GetDeviceCaps(hdc, PrinterConsts.LOGPIXELSX);
+    }
+
+    private int getDpiy(HDC hdc){
+        return GDI32.INSTANCE.GetDeviceCaps(hdc, PrinterConsts.LOGPIXELSY);
+    }
+
+    private int calcCoord(double mm, int dpi){
+        return (int)(mmToInch(mm) * dpi);
+    }
+
+    private double mmToInch(double mm){
+        return mm * 0.0393701;
+    }
+
+    private void moveTo(HDC hdc, int x, int y){
+        boolean ok = MyGdi32.INSTANCE.MoveToEx(hdc, x, y, null);
+        if( !ok ){
+            throw new RuntimeException("MoveToEx failed");
+        }
+    }
+
+    private void lineTo(HDC hdc, int x, int y){
+        boolean ok = MyGdi32.INSTANCE.LineTo(hdc, x, y);
+        if( !ok ){
+            throw new RuntimeException("LineTo failed");
+        }
+    }
+
+    public HFONT createFont(String fontName, int size, int weight, boolean italic){
+        LOGFONT logfont = new LOGFONT();
+        logfont.lfHeight = size;
+        logfont.lfWeight = weight;
+        logfont.lfItalic = italic ? 1 : 0;
+        logfont.lfCharSet = PrinterConsts.DEFAULT_CHARSET;
+        if( fontName.length() >= PrinterConsts.LF_FACESIZE ){
+            throw new RuntimeException("Too long font name");
+        }
+        logfont.lfFaceName = fontName.toCharArray();
+        return MyGdi32.INSTANCE.CreateFontIndirect(logfont);
+    }
+
+    private void deleteObject(HANDLE handle){
+        boolean ok = GDI32.INSTANCE.DeleteObject(handle);
+        if( !ok ){
+            throw new RuntimeException("DeleteObject failed");
+        }
+    }
+
+    private void selectObject(HDC hdc, HANDLE handle){
+        GDI32.INSTANCE.SelectObject(hdc, handle);
+    }
+
+    private void execOps(HDC hdc, Iterable<Op> ops, int dpix, int dpiy){
+        Map<String, HFONT> fontMap = new HashMap<>();
+        for(Op op: ops){
+            switch(op.getOpCode()){
+                case MoveTo: {
+                    OpMoveTo opMoveTo = (OpMoveTo)op;
+                    int x = calcCoord(opMoveTo.getX(), dpix);
+                    int y = calcCoord(opMoveTo.getY(), dpiy);
+                    moveTo(hdc, x, y);
+                    break;
+                }
+                case LineTo: {
+                    OpLineTo opLineTo = (OpLineTo)op;
+                    int x = calcCoord(opLineTo.getX(), dpix);
+                    int y = calcCoord(opLineTo.getY(), dpiy);
+                    lineTo(hdc, x, y);
+                    break;
+                }
+                case CreateFont: {
+                    OpCreateFont opCreateFont = (OpCreateFont)op;
+                    int size = (int)(mmToInch(opCreateFont.getSize()) * dpiy);
+                    HFONT font = createFont(opCreateFont.getFontName(), size, opCreateFont.getWeight(),
+                            opCreateFont.isItalic());
+                    fontMap.put(opCreateFont.getName(), font);
+                    break;
+                }
+                case SetFont: {
+                    OpSetFont opSetFont = (OpSetFont)op;
+                    HFONT font = fontMap.get(opSetFont.getName());
+                    selectObject(hdc, font);
+                    break;
+                }
+                case DrawChars: {
+                    OpDrawChars opDrawChars = (OpDrawChars)op;
+                    List<Double> xs = opDrawChars.getXs();
+                    List<Double> ys = opDrawChars.getYs();
+                    char[] chars = opDrawChars.getChars().toCharArray();
+                    for(int i=0;i<chars.length;i++){
+                        double cx, cy;
+                        if( i >= xs.size() ){
+                            cx = xs.get(xs.size()-1);
+                        } else {
+                            cx = xs.get(i);
+                        }
+                        if( i >= ys.size() ){
+                            cy = ys.get(ys.size()-1);
+                        } else {
+                            cy = ys.get(i);
+                        }
+                        int x = calcCoord(cx, dpix);
+                        int y = calcCoord(cy, dpiy);
+                        MyGdi32.INSTANCE.TextOut(hdc, x, y, new WString(String.valueOf(chars[i])), 1);
+                    }
+                    break;
+                }
+                default: {
+                    System.out.println("Unknown op: " + op);
+                }
+            }
+        }
+        for(HFONT font: fontMap.values()){
+            deleteObject(font);
         }
     }
 
