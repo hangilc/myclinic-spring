@@ -1,9 +1,12 @@
 package jp.chang.myclinic.drawer.printer;
 
+import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
+import com.sun.jna.WString;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.platform.win32.BaseTSD.SIZE_T;
 import com.sun.jna.platform.win32.WinDef.ATOM;
+import com.sun.jna.platform.win32.WinDef.HDC;
 import com.sun.jna.platform.win32.WinDef.HMODULE;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinDef.UINT;
@@ -25,6 +28,22 @@ public class DrawerPrinter {
             System.out.println(devNamesInfo);
             DevModeInfo devModeInfo = new DevModeInfo(dialogResult.devmodeData);
             System.out.println(devModeInfo);
+            HDC hdc = createDC(dialogResult.devnamesData, dialogResult.devmodeData);
+            if( hdc.getPointer() == Pointer.NULL ){
+                throw new RuntimeException("createDC faield");
+            }
+            int jobId = beginPrint(hdc);
+            if( jobId <= 0 ){
+                throw new RuntimeException("StartDoc failed");
+            }
+            startPage(hdc);
+            endPage(hdc);
+            int endDocResult = endPrint(hdc);
+            if( endDocResult <= 0 ){
+                throw new RuntimeException("EndDoc failed");
+            }
+            boolean ok = deleteDC(hdc);
+            System.out.println(ok);
         }
     }
 
@@ -121,7 +140,7 @@ public class DrawerPrinter {
                 0, 0, 0, 0, 0, null, null, hInst, null);
     }
 
-    private static HANDLE allocHandle(byte[] data){
+    private HANDLE allocHandle(byte[] data){
         UINT flag = new UINT(MyKernel32.GMEM_MOVEABLE);
         //flag.setValue(MyKernel32.GMEM_MOVEABLE);
         BaseTSD.SIZE_T size = new SIZE_T(data.length);
@@ -132,21 +151,62 @@ public class DrawerPrinter {
         return handle;
     }
 
-    private static boolean disposeWindow(HWND hwnd){
+    private boolean disposeWindow(HWND hwnd){
         return User32.INSTANCE.DestroyWindow(hwnd);
     }
 
-    private static byte[] copyDevNamesData(Pointer pDevNames){
+    private byte[] copyDevNamesData(Pointer pDevNames){
         DEVNAMES devnames = new DEVNAMES(pDevNames);
         String outputName = pDevNames.getWideString(devnames.wOutputOffset.intValue()*2);
         int devnamesSize = (devnames.wOutputOffset.intValue() + outputName.length() + 1)*2;
         return pDevNames.getByteArray(0, devnamesSize);
     }
 
-    private static byte[] copyDevModeData(Pointer pDevMode){
+    private byte[] copyDevModeData(Pointer pDevMode){
         DEVMODE devmode = new DEVMODE(pDevMode);
         int devmodeSize = devmode.dmSize.intValue() + devmode.dmDriverExtra.intValue();
         return pDevMode.getByteArray(0, devmodeSize);
+    }
+
+    private HDC createDC(byte[] devnamesData, byte[] devmodeData){
+        DevNamesInfo devNamesInfo = new DevNamesInfo(devnamesData);
+        Pointer devmodePointer = new Memory(devmodeData.length);
+        devmodePointer.write(0, devmodeData, 0, devmodeData.length);
+        return MyGdi32.INSTANCE.CreateDC(null, new WString(devNamesInfo.getDevice()), null, devmodePointer);
+    }
+
+    private boolean deleteDC(HDC hdc){
+        return MyGdi32.INSTANCE.DeleteDC(hdc);
+    }
+
+    private int beginPrint(HDC hdc){
+        DOCINFO docinfo = new DOCINFO();
+        docinfo.cbSize = docinfo.size();
+        docinfo.docName = new WString("drawer printing");
+        int ret = MyGdi32.INSTANCE.StartDoc(hdc, docinfo);
+        return ret;
+    }
+
+    private int endPrint(HDC hdc){
+        return MyGdi32.INSTANCE.EndDoc(hdc);
+    }
+
+    private int abortPrint(HDC hdc){
+        return MyGdi32.INSTANCE.AbortDoc(hdc);
+    }
+
+    private void startPage(HDC hdc){
+        int ret = MyGdi32.INSTANCE.StartPage(hdc);
+        if( ret <= 0 ){
+            throw new RuntimeException("StartPage failed");
+        }
+    }
+
+    private void endPage(HDC hdc){
+        int ret = MyGdi32.INSTANCE.EndPage(hdc);
+        if( ret <= 0 ){
+            throw new RuntimeException("EndPage failed");
+        }
     }
 
 }

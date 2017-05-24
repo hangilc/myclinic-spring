@@ -19,4 +19,9 @@ public interface MyGdi32 extends StdCallLibrary, WinUser, WinNT {
     HFONT CreateFontIndirect(LOGFONT logfont);
     HDC CreateDC(WString driver, WString device, WString output, Pointer devmode);
     boolean DeleteDC(HDC hdc);
+    int StartDoc(HDC hdc, DOCINFO docinfo);
+    int EndDoc(HDC hdc);
+    int AbortDoc(HDC hdc);
+    int StartPage(HDC hdc);
+    int EndPage(HDC hdc);
 }
