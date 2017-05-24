@@ -1,7 +1,6 @@
 package jp.chang.myclinic.drawer.printer;
 
 import com.sun.jna.Pointer;
-import com.sun.jna.WString;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.platform.win32.BaseTSD.SIZE_T;
 import com.sun.jna.platform.win32.WinDef.ATOM;
@@ -10,8 +9,8 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinDef.UINT;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
-import com.sun.jna.platform.win32.WinUser.WindowProc;
 import com.sun.jna.platform.win32.WinUser.WNDCLASSEX;
+import com.sun.jna.platform.win32.WinUser.WindowProc;
 import jp.chang.myclinic.drawer.Op;
 
 /**
@@ -20,7 +19,13 @@ import jp.chang.myclinic.drawer.Op;
 public class DrawerPrinter {
 
     public void print(Iterable<Op> ops){
-        System.out.println(ops);
+        DialogResult dialogResult = printDialog(null, null);
+        if( dialogResult.ok ){
+            DevNamesInfo devNamesInfo = new DevNamesInfo(dialogResult.devnamesData);
+            System.out.println(devNamesInfo);
+            DevModeInfo devModeInfo = new DevModeInfo(dialogResult.devmodeData);
+            System.out.println(devModeInfo);
+        }
     }
 
     public static final int PD_ALLPAGES = 0x00000000;
@@ -38,22 +43,6 @@ public class DrawerPrinter {
     public static final int PD_RESULT_APPLY = 0x2;
     public static final int START_PAGE_GENERAL = 0xFFFFFFFF;
 
-    public static class DialogResult {
-        public boolean ok;
-        public byte[] devmodeData;
-        public byte[] devnamesData;
-        public int nCopies;
-
-        DialogResult(){ }
-
-        DialogResult(boolean ok, byte[] devmodeData, byte[] devnamesData, int nCopies){
-            this.ok = ok;
-            this.devmodeData = devmodeData;
-            this.devnamesData = devnamesData;
-            this.nCopies = nCopies;
-        }
-    }
-
     private static class NopWindowProc implements WinDef, WinUser.WindowProc {
         public LRESULT callback(HWND hwnd, int uMsg, WPARAM wParam, LPARAM lParam){
             return User32.INSTANCE.DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -70,6 +59,22 @@ public class DrawerPrinter {
         ATOM atom = User32.INSTANCE.RegisterClassEx(wndClass);
         if( atom.intValue() == 0 ){
             throw new RuntimeException("RegisterWindowEx failed");
+        }
+    }
+
+    public static class DialogResult {
+        public boolean ok;
+        public byte[] devmodeData;
+        public byte[] devnamesData;
+        public int nCopies;
+
+        DialogResult(){ }
+
+        DialogResult(boolean ok, byte[] devmodeData, byte[] devnamesData, int nCopies){
+            this.ok = ok;
+            this.devmodeData = devmodeData;
+            this.devnamesData = devnamesData;
+            this.nCopies = nCopies;
         }
     }
 

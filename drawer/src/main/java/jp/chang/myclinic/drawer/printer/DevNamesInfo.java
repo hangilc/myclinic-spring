@@ -1,32 +1,44 @@
 package jp.chang.myclinic.drawer.printer;
 
+import com.sun.jna.Memory;
+import com.sun.jna.Pointer;
+
 public class DevNamesInfo {
 	private String driver = "";
 	private String device = "";
 	private String output = "";
 
-	public String getDriver(){
-		return driver;
+	private DevNamesInfo(){
+
 	}
 
-	public void setDriver(String driver){
-		this.driver = driver;
+	public DevNamesInfo(Pointer pointer){
+		init(pointer);
+	}
+
+	public DevNamesInfo(byte[] data){
+		Pointer pointer = new Memory(data.length);
+		pointer.write(0, data, 0, data.length);
+		init(pointer);
+	}
+
+	private void init(Pointer pointer){
+		DEVNAMES devnames = new DEVNAMES(pointer);
+		driver = pointer.getWideString(devnames.wDriverOffset.intValue()*2);
+		device = pointer.getWideString(devnames.wDeviceOffset.intValue()*2);
+		output = pointer.getWideString(devnames.wOutputOffset.intValue()*2);
+	}
+
+	public String getDriver(){
+		return driver;
 	}
 
 	public String getDevice(){
 		return device;
 	}
 
-	public void setDevice(String device){
-		this.device = device;
-	}
-
 	public String getOutput(){
 		return output;
-	}
-
-	public void setOutput(String output){
-		this.output = output;
 	}
 
 	@Override
