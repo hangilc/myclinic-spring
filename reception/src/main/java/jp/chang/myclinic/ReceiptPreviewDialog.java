@@ -1,6 +1,7 @@
 package jp.chang.myclinic;
 
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -42,6 +43,10 @@ public class ReceiptPreviewDialog extends JDialog {
     }
 
     private void bind(){
+        printButton.addActionListener(event -> {
+            DrawerPrinter printer = new DrawerPrinter();
+            printer.print(ops);
+        });
         cancelButton.addActionListener(event -> {
             dispose();
         });
