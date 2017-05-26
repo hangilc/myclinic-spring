@@ -4,8 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by hangil on 2017/05/24.
@@ -48,6 +52,22 @@ public class PrinterSetting {
     public AuxSetting readAuxSetting(String name) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(new File(auxSettingPath(name).toString()), AuxSetting.class);
+    }
+
+    public List<String> listNames(){
+        try {
+            List<String> names = new ArrayList<>();
+            for(Path path: Files.newDirectoryStream(settingDir, "*.devnames")){
+                String fileName = path.getFileName().toString();
+                int pos = fileName.lastIndexOf('.');
+                String name = fileName.substring(0, pos);
+                names.add(name);
+            }
+            return names;
+        } catch(IOException ex){
+            ex.printStackTrace();
+            throw new UncheckedIOException(ex);
+        }
     }
 
 

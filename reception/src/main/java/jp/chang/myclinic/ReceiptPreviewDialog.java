@@ -3,6 +3,7 @@ package jp.chang.myclinic;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.drawer.printer.PrinterManageDialog;
+import jp.chang.myclinic.drawer.printer.PrinterSetting;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -62,6 +63,10 @@ public class ReceiptPreviewDialog extends JDialog {
         });
         cancelButton.addActionListener(event -> {
             dispose();
+        });
+        itemSelectPrinter.addActionListener(event -> {
+            PrinterSetting setting = new PrinterSetting(ReceptionConfig.INSTANCE.getSettingDir());
+            System.out.println(setting.listNames());
         });
         itemManagePrinter.addActionListener(event -> {
             PrinterManageDialog dialog = new PrinterManageDialog(this, ReceptionConfig.INSTANCE.getSettingDir());
