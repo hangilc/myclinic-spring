@@ -19,15 +19,15 @@ public class PrinterSetting {
     }
 
     private Path devnamesSettingPath(String name){
-        return settingDir.resolve(name + "./devnames");
+        return settingDir.resolve(name + ".devnames");
     }
 
     private Path devmodeSettingPath(String name){
-        return settingDir.resolve(name + "./devmode");
+        return settingDir.resolve(name + ".devmode");
     }
 
     private Path auxSettingPath(String name){
-        return settingDir.resolve(name + "./json");
+        return settingDir.resolve(name + ".json");
     }
 
     public void saveSetting(String name, byte[] devnames, byte[] devmode, AuxSetting auxSetting) throws IOException {

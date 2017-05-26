@@ -10,7 +10,7 @@ public class ReceptionConfig {
 
     public static ReceptionConfig INSTANCE = new ReceptionConfig();
 
-    private Path settingDir = Paths.get(".");
+    private Path settingDir = Paths.get(".", "printer-settings");
 
     private ReceptionConfig(){
 

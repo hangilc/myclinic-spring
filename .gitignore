@@ -10,6 +10,7 @@ programs/
 application.properties
 application-save.properties
 application.yml
+printer-settings/
 
 
 

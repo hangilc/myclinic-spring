@@ -2,6 +2,7 @@ package jp.chang.myclinic;
 
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
+import jp.chang.myclinic.drawer.printer.PrinterManageDialog;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -13,6 +14,8 @@ public class ReceiptPreviewDialog extends JDialog {
 
     private JButton printButton;
     private JButton cancelButton;
+    private JMenuItem itemSelectPrinter = new JMenuItem("プリンター選択");
+    private JMenuItem itemManagePrinter = new JMenuItem("プリンター管理");
     private java.util.List<Op> ops;
 
     public ReceiptPreviewDialog(Window owner, List<Op> ops){
@@ -30,9 +33,7 @@ public class ReceiptPreviewDialog extends JDialog {
         JMenuBar menuBar = new JMenuBar();
         JMenu menuPringSetting = new JMenu("印刷設定");
         menuBar.add(menuPringSetting);
-        JMenuItem itemSelectPrinter = new JMenuItem("プリンター選択");
         menuPringSetting.add(itemSelectPrinter);
-        JMenuItem itemManagePrinter = new JMenuItem("プリンター管理");
         menuPringSetting.add(itemManagePrinter);
         setJMenuBar(menuBar);
     }
@@ -61,6 +62,11 @@ public class ReceiptPreviewDialog extends JDialog {
         });
         cancelButton.addActionListener(event -> {
             dispose();
+        });
+        itemManagePrinter.addActionListener(event -> {
+            PrinterManageDialog dialog = new PrinterManageDialog(this, ReceptionConfig.INSTANCE.getSettingDir());
+            dialog.setLocationByPlatform(true);
+            dialog.setVisible(true);
         });
     }
 }
