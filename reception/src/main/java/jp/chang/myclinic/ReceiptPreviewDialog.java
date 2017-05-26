@@ -19,10 +19,22 @@ public class ReceiptPreviewDialog extends JDialog {
         super(owner, "領収書プレビュー", Dialog.ModalityType.DOCUMENT_MODAL);
         this.ops = ops;
         setLayout(new MigLayout("fill", "[grow]", "[grow] []"));
+        setupMenu();
         add(makeCenter(), "grow, wrap");
         add(makeSouth(), "right");
         bind();
         pack();
+    }
+
+    private void setupMenu(){
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menuPringSetting = new JMenu("印刷設定");
+        menuBar.add(menuPringSetting);
+        JMenuItem itemSelectPrinter = new JMenuItem("プリンター選択");
+        menuPringSetting.add(itemSelectPrinter);
+        JMenuItem itemManagePrinter = new JMenuItem("プリンター管理");
+        menuPringSetting.add(itemManagePrinter);
+        setJMenuBar(menuBar);
     }
 
     private JComponent makeCenter(){
