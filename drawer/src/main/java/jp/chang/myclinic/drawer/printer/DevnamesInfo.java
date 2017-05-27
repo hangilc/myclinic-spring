@@ -3,20 +3,20 @@ package jp.chang.myclinic.drawer.printer;
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 
-public class DevNamesInfo {
+public class DevnamesInfo {
 	private String driver = "";
 	private String device = "";
 	private String output = "";
 
-	private DevNamesInfo(){
+	private DevnamesInfo(){
 
 	}
 
-	public DevNamesInfo(Pointer pointer){
+	public DevnamesInfo(Pointer pointer){
 		init(pointer);
 	}
 
-	public DevNamesInfo(byte[] data){
+	public DevnamesInfo(byte[] data){
 		Pointer pointer = new Memory(data.length);
 		pointer.write(0, data, 0, data.length);
 		init(pointer);
@@ -43,7 +43,7 @@ public class DevNamesInfo {
 
 	@Override
 	public String toString(){
-		return "DevNamesInfo[" + 
+		return "DevnamesInfo[" +
 			"driver=" + driver + ", " +
 			"device=" + device + ", " +
 			"ouotput=" + output +

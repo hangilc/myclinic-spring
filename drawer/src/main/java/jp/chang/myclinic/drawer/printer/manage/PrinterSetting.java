@@ -1,6 +1,7 @@
-package jp.chang.myclinic.drawer.printer;
+package jp.chang.myclinic.drawer.printer.manage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jp.chang.myclinic.drawer.printer.AuxSetting;
 
 import java.io.File;
 import java.io.IOException;

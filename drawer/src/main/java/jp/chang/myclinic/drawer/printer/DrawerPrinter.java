@@ -168,10 +168,10 @@ public class DrawerPrinter {
     }
 
     private HDC createDC(byte[] devnamesData, byte[] devmodeData){
-        DevNamesInfo devNamesInfo = new DevNamesInfo(devnamesData);
+        DevnamesInfo devnamesInfo = new DevnamesInfo(devnamesData);
         Pointer devmodePointer = new Memory(devmodeData.length);
         devmodePointer.write(0, devmodeData, 0, devmodeData.length);
-        return MyGdi32.INSTANCE.CreateDC(null, new WString(devNamesInfo.getDevice()), null, devmodePointer);
+        return MyGdi32.INSTANCE.CreateDC(null, new WString(devnamesInfo.getDevice()), null, devmodePointer);
     }
 
     private boolean deleteDC(HDC hdc){

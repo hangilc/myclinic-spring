@@ -2,13 +2,12 @@ package jp.chang.myclinic;
 
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
-import jp.chang.myclinic.drawer.printer.PrinterManageDialog;
-import jp.chang.myclinic.drawer.printer.PrinterSetting;
+import jp.chang.myclinic.drawer.printer.manage.PrinterManageDialog;
+import jp.chang.myclinic.drawer.printer.manage.PrinterSetting;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.util.List;
 
 public class ReceiptPreviewDialog extends JDialog {

@@ -1,5 +1,8 @@
-package jp.chang.myclinic.drawer.printer;
+package jp.chang.myclinic.drawer.printer.manage;
 
+import jp.chang.myclinic.drawer.printer.AuxSetting;
+import jp.chang.myclinic.drawer.printer.DrawerPrinter;
+import jp.chang.myclinic.drawer.printer.manage.PrinterSetting;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -47,6 +50,10 @@ public class PrinterManageDialog extends JDialog {
                 ensureSettingDir();
                 PrinterSetting setting = new PrinterSetting(settingDir);
                 setting.saveSetting(name, result.devnamesData, result.devmodeData, new AuxSetting());
+                CreatedSettingDialog confirmDialog = new CreatedSettingDialog(this, name, settingDir);
+                confirmDialog.setLocationByPlatform(true);
+                confirmDialog.setVisible(true);
+                dispose();
             } catch (IOException ex){
                 ex.printStackTrace();
                 throw new UncheckedIOException(ex);

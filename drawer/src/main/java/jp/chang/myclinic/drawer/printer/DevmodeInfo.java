@@ -3,7 +3,7 @@ package jp.chang.myclinic.drawer.printer;
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 
-public class DevModeInfo {
+public class DevmodeInfo {
 	private String deviceName = "";
 	private int orientation;
 	private String orientationLabel = "";
@@ -15,15 +15,15 @@ public class DevModeInfo {
 	private int defaultSource;
 	private String defaultSourceLabel = "";
 
-	private DevModeInfo(){
+	private DevmodeInfo(){
 
 	}
 
-	public DevModeInfo(Pointer pointer){
+	public DevmodeInfo(Pointer pointer){
 		init(pointer);
 	}
 
-	public DevModeInfo(byte[] data){
+	public DevmodeInfo(byte[] data){
 		Pointer pointer = new Memory(data.length);
 		pointer.write(0, data, 0, data.length);
 		init(pointer);
@@ -90,6 +90,10 @@ public class DevModeInfo {
 		this.printQualityLabel = PrinterConsts.findPrintQualityLabel(printQuality);
 	}
 
+	public String getPrintQualityLabel(){
+		return printQualityLabel;
+	}
+
 	public int getDefaultSource(){
 		return defaultSource;
 	}
@@ -99,9 +103,13 @@ public class DevModeInfo {
 		this.defaultSourceLabel = PrinterConsts.findDefaultSourceLabel(defaultSource);
 	}
 
+	public String getDefaultSourceLabel(){
+		return defaultSourceLabel;
+	}
+
 	@Override
 	public String toString(){
-		return "DevModeInfo[" +
+		return "DevmodeInfo[" +
 			"deviceName=" + deviceName + ", " +
 			"orientation=" + orientationLabel + "(" + orientation + "), " +
 			"paperSize=" + paperSizeLabel + "(" + paperSize + "), " +
