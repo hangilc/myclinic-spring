@@ -14,15 +14,20 @@ public class CreatedSettingDialog extends JDialog {
 
     private String settingName;
     private Path settingDir;
+    private boolean canceled = true;
 
     public CreatedSettingDialog(Window owner, String name, Path settingDir) throws IOException{
-        super(owner, "新規に作成された印刷設定", ModalityType.APPLICATION_MODAL);
+        super(owner, "新規印刷設定", ModalityType.APPLICATION_MODAL);
         this.settingName = name;
         this.settingDir = settingDir;
         setLayout(new MigLayout("fill", "[grow]", ""));
         add(makeTitle(), "wrap");
         add(makePrinterInfo(), "wrap");
         pack();
+    }
+
+    public boolean isCanceled(){
+        return canceled;
     }
 
     private JComponent makeTitle(){
@@ -34,6 +39,7 @@ public class CreatedSettingDialog extends JDialog {
         panel.setBorder(BorderFactory.createTitledBorder("プリンター設定"));
         PrinterSetting setting = new PrinterSetting(settingDir);
         DevmodeInfo devmodeInfo = new DevmodeInfo(setting.readDevmode(settingName));
+        panel.add(new JLabel(String.format("%s: %s", "プリンター", devmodeInfo.getPaperSizeLabel())), "wrap");
         panel.add(new JLabel(String.format("%s: %s", "用紙", devmodeInfo.getPaperSizeLabel())), "wrap");
         panel.add(new JLabel(String.format("%s: %s", "向き", devmodeInfo.getOrientationLabel())), "wrap");
         panel.add(new JLabel(String.format("%s: %s", "印刷品質", devmodeInfo.getPrintQualityLabel())), "wrap");

@@ -47,12 +47,15 @@ public class PrinterManageDialog extends JDialog {
                 return;
             }
             try{
-                ensureSettingDir();
-                PrinterSetting setting = new PrinterSetting(settingDir);
-                setting.saveSetting(name, result.devnamesData, result.devmodeData, new AuxSetting());
+//                ensureSettingDir();
+//                PrinterSetting setting = new PrinterSetting(settingDir);
+//                setting.saveSetting(name, result.devnamesData, result.devmodeData, new AuxSetting());
                 CreatedSettingDialog confirmDialog = new CreatedSettingDialog(this, name, settingDir);
                 confirmDialog.setLocationByPlatform(true);
                 confirmDialog.setVisible(true);
+                if( !confirmDialog.isCanceled() ){
+
+                }
                 dispose();
             } catch (IOException ex){
                 ex.printStackTrace();
