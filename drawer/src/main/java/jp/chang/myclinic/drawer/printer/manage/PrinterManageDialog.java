@@ -2,14 +2,12 @@ package jp.chang.myclinic.drawer.printer.manage;
 
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
-import jp.chang.myclinic.drawer.printer.manage.PrinterSetting;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
@@ -55,8 +53,8 @@ public class PrinterManageDialog extends JDialog {
                 return;
             }
             try{
-                ensureSettingDir();
                 PrinterSetting setting = new PrinterSetting(settingDir);
+                setting.ensureSettingDir();
                 setting.saveSetting(name, confirmDialog.getDevnamesData(),
                         confirmDialog.getDevmodeData(),
                         confirmDialog.getAuxSetting());
@@ -71,14 +69,4 @@ public class PrinterManageDialog extends JDialog {
         });
     }
 
-    private void ensureSettingDir() throws IOException {
-        if( Files.exists(settingDir) ){
-            if( Files.isDirectory(settingDir) ){
-                return;
-            }
-            throw new RuntimeException("invalid setting dir: " + settingDir);
-        } else {
-            Files.createDirectory(settingDir);
-        }
-    }
 }

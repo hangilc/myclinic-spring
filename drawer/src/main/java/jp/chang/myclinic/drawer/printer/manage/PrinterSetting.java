@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by hangil on 2017/05/24.
@@ -71,5 +70,15 @@ public class PrinterSetting {
         }
     }
 
+    public void ensureSettingDir() throws IOException {
+        if( Files.exists(settingDir) ){
+            if( Files.isDirectory(settingDir) ){
+                return;
+            }
+            throw new RuntimeException("invalid setting dir: " + settingDir);
+        } else {
+            Files.createDirectory(settingDir);
+        }
+    }
 
 }
