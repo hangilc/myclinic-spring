@@ -17,7 +17,9 @@ public class CreatedSettingDialog extends JDialog {
     private AuxSetting auxSetting;
     private JButton printerDialogButton;
     private JButton modifyAuxButton;
-    private boolean canceled = true;
+    private JButton okButton;
+    private JButton cancelButton;
+    private boolean canceled;
 
     public CreatedSettingDialog(Window owner, String name, byte[] devnamesData, byte[] devmodeData, AuxSetting auxSetting){
         super(owner, "新規印刷設定", ModalityType.APPLICATION_MODAL);
@@ -32,11 +34,24 @@ public class CreatedSettingDialog extends JDialog {
         return canceled;
     }
 
+    public byte[] getDevnamesData() {
+        return devnamesData;
+    }
+
+    public byte[] getDevmodeData() {
+        return devmodeData;
+    }
+
+    public AuxSetting getAuxSetting() {
+        return auxSetting;
+    }
+
     private void setupUI(){
         setLayout(new MigLayout("fill", "[grow]", ""));
         add(makeTitle(), "wrap");
         add(makePrinterInfo(), "grow, wrap");
-        add(makeAuxInfo(), "grow");
+        add(makeAuxInfo(), "grow, wrap");
+        add(makeSouth(), "right");
         bind();
         pack();
     }
@@ -71,6 +86,15 @@ public class CreatedSettingDialog extends JDialog {
         return panel;
     }
 
+    private JComponent makeSouth(){
+        okButton = new JButton("OK");
+        cancelButton = new JButton("キャンセル");
+        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+        panel.add(okButton, "sizegroup btn");
+        panel.add(cancelButton, "sizegroup btn");
+        return panel;
+    }
+
     private void bind(){
         printerDialogButton.addActionListener(event -> {
             DrawerPrinter printer = new DrawerPrinter();
@@ -81,6 +105,23 @@ public class CreatedSettingDialog extends JDialog {
                 getContentPane().removeAll();
                 setupUI();
             }
+        });
+        modifyAuxButton.addActionListener(event -> {
+            AuxSettingEditor editor = new AuxSettingEditor(this, auxSetting);
+            editor.setLocationByPlatform(true);
+            editor.setVisible(true);
+            if( !editor.isCanceled() ){
+                getContentPane().removeAll();
+                setupUI();
+            }
+        });
+        okButton.addActionListener(event -> {
+            canceled = false;
+            dispose();
+        });
+        cancelButton.addActionListener(event -> {
+            canceled = true;
+            dispose();
         });
     }
 
