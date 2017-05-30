@@ -46,21 +46,23 @@ public class PrinterManageDialog extends JDialog {
             if( !result.ok ){
                 return;
             }
-            try{
-//                ensureSettingDir();
-//                PrinterSetting setting = new PrinterSetting(settingDir);
-//                setting.saveSetting(name, result.devnamesData, result.devmodeData, new AuxSetting());
-                CreatedSettingDialog confirmDialog = new CreatedSettingDialog(this, name, settingDir);
-                confirmDialog.setLocationByPlatform(true);
-                confirmDialog.setVisible(true);
-                if( !confirmDialog.isCanceled() ){
-
-                }
+            CreatedSettingDialog confirmDialog = new CreatedSettingDialog(this, name, result.devnamesData,
+                    result.devmodeData, new AuxSetting());
+            confirmDialog.setLocationByPlatform(true);
+            confirmDialog.setVisible(true);
+            if( confirmDialog.isCanceled() ){
                 dispose();
-            } catch (IOException ex){
-                ex.printStackTrace();
-                throw new UncheckedIOException(ex);
+                return;
             }
+//            try{
+////                ensureSettingDir();
+////                PrinterSetting setting = new PrinterSetting(settingDir);
+////                setting.saveSetting(name, result.devnamesData, result.devmodeData, new AuxSetting());
+//                dispose();
+//            } catch (IOException ex){
+//                ex.printStackTrace();
+//                throw new UncheckedIOException(ex);
+//            }
         });
         closeButton.addActionListener(event -> {
             dispose();
