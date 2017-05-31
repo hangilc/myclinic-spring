@@ -78,7 +78,8 @@ public class ReceiptPreviewDialog extends JDialog {
                 selector.setVisible(true);
                 if( !selector.isCanceled() ){
                     String selectedName = selector.getSelectedItem();
-                    System.out.println(selectedName);
+                    ReceptionConfig.INSTANCE.setCurrentSetting(selectedName);
+                    ReceptionConfig.INSTANCE.writeToConfigFile();
                 }
             } catch(IOException ex){
                 ex.printStackTrace();
