@@ -9,7 +9,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 
-public class CreatedSettingDialog extends JDialog {
+public class SettingEditorDialog extends JDialog {
 
     private String settingName;
     private byte[] devnamesData;
@@ -23,8 +23,8 @@ public class CreatedSettingDialog extends JDialog {
     private JButton cancelButton = new JButton("キャンセル");
     private boolean canceled = true;
 
-    public CreatedSettingDialog(Window owner, String name, byte[] devnamesData, byte[] devmodeData, AuxSetting auxSetting){
-        super(owner, "新規印刷設定", ModalityType.DOCUMENT_MODAL);
+    public SettingEditorDialog(Window owner, String name, byte[] devnamesData, byte[] devmodeData, AuxSetting auxSetting){
+        super(owner, "印刷設定の編集", ModalityType.DOCUMENT_MODAL);
         this.settingName = name;
         this.devnamesData = devnamesData;
         this.devmodeData = devmodeData;
@@ -102,7 +102,7 @@ public class CreatedSettingDialog extends JDialog {
     private void bind(){
         printerDialogButton.addActionListener(event -> {
             DrawerPrinter printer = new DrawerPrinter();
-            DrawerPrinter.DialogResult result = printer.printDialog(CreatedSettingDialog.this, devmodeData, devnamesData);
+            DrawerPrinter.DialogResult result = printer.printDialog(SettingEditorDialog.this, devmodeData, devnamesData);
             if( result.ok ){
                 devnamesData = result.devnamesData;
                 devmodeData = result.devmodeData;
