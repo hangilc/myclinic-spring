@@ -15,19 +15,26 @@ public class CreatedSettingDialog extends JDialog {
     private byte[] devnamesData;
     private byte[] devmodeData;
     private AuxSetting auxSetting;
-    private JButton printerDialogButton;
-    private JButton modifyAuxButton;
-    private JButton okButton;
-    private JButton cancelButton;
-    private boolean canceled;
+    private PrinterInfoPane printerInfoPane = new PrinterInfoPane();
+    private JButton printerDialogButton = new JButton("変更");
+    private JButton modifyAuxButton = new JButton("変更");
+    private JButton okButton = new JButton("OK");
+    private JButton cancelButton = new JButton("キャンセル");
+    private boolean canceled = true;
 
     public CreatedSettingDialog(Window owner, String name, byte[] devnamesData, byte[] devmodeData, AuxSetting auxSetting){
-        super(owner, "新規印刷設定", ModalityType.APPLICATION_MODAL);
+        super(owner, "新規印刷設定", ModalityType.DOCUMENT_MODAL);
         this.settingName = name;
         this.devnamesData = devnamesData;
         this.devmodeData = devmodeData;
         this.auxSetting = auxSetting;
+        {
+            System.out.println("CreateSettingDialog");
+            System.out.println(new DevnamesInfo(devnamesData));
+            System.out.println(new DevmodeInfo(devmodeData));
+        }
         setupUI();
+        bind();
     }
 
     public boolean isCanceled(){
@@ -52,7 +59,6 @@ public class CreatedSettingDialog extends JDialog {
         add(makePrinterInfo(), "grow, wrap");
         add(makeAuxInfo(), "grow, wrap");
         add(makeSouth(), "right");
-        bind();
         pack();
     }
 
@@ -65,20 +71,14 @@ public class CreatedSettingDialog extends JDialog {
         panel.setBorder(BorderFactory.createTitledBorder("プリンター設定"));
         DevnamesInfo devnamesInfo = new DevnamesInfo(devnamesData);
         DevmodeInfo devmodeInfo = new DevmodeInfo(devmodeData);
-        printerDialogButton = new JButton("変更");
-        panel.add(new JLabel(String.format("%s: %s", "プリンター", devnamesInfo.getDevice())), "gaptop 5, wrap");
-        panel.add(new JLabel(String.format("%s: %s", "用紙", devmodeInfo.getPaperSizeLabel())), "wrap");
-        panel.add(new JLabel(String.format("%s: %s", "向き", devmodeInfo.getOrientationLabel())), "wrap");
-        panel.add(new JLabel(String.format("%s: %s", "印刷品質", devmodeInfo.getPrintQualityLabel())), "wrap");
-        panel.add(new JLabel(String.format("%s: %s", "給紙", devmodeInfo.getDefaultSourceLabel())), "wrap");
-        panel.add(new JLabel(String.format("%s: %s", "接続", devnamesInfo.getOutput())), "gapbottom 5, wrap");
+        printerInfoPane.setup(devnamesInfo, devmodeInfo);
+        panel.add(printerInfoPane, "wrap");
         panel.add(printerDialogButton, "right");
         return panel;
     }
 
     private JComponent makeAuxInfo(){
         JPanel panel = new JPanel(new MigLayout("inset 0, gapy 0, fill", "[grow]", ""));
-        modifyAuxButton = new JButton("変更");
         panel.setBorder(BorderFactory.createTitledBorder("その他"));
         panel.add(new JLabel(String.format("%s: %s", "dx", auxSetting.getDx())), "gaptop 5, wrap");
         panel.add(new JLabel(String.format("%s: %s", "dx", auxSetting.getDy())), "gapbottom 5, wrap");
@@ -87,23 +87,30 @@ public class CreatedSettingDialog extends JDialog {
     }
 
     private JComponent makeSouth(){
-        okButton = new JButton("OK");
-        cancelButton = new JButton("キャンセル");
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         panel.add(okButton, "sizegroup btn");
         panel.add(cancelButton, "sizegroup btn");
         return panel;
     }
 
+    private void updatePrinterInfo(DevnamesInfo devnames, DevmodeInfo devmode){
+        printerInfoPane.update(new DevnamesInfo(devnamesData), new DevmodeInfo(devmodeData));
+        pack();
+    }
+
     private void bind(){
         printerDialogButton.addActionListener(event -> {
             DrawerPrinter printer = new DrawerPrinter();
-            DrawerPrinter.DialogResult result = printer.printDialog(null, null);
+            DrawerPrinter.DialogResult result = printer.printDialog(CreatedSettingDialog.this, devmodeData, devnamesData);
             if( result.ok ){
                 devnamesData = result.devnamesData;
                 devmodeData = result.devmodeData;
-                getContentPane().removeAll();
-                setupUI();
+                {
+                    System.out.println("printerDialogButton");
+                    System.out.println(new DevnamesInfo(devnamesData));
+                    System.out.println(new DevmodeInfo(devmodeData));
+                }
+                updatePrinterInfo(new DevnamesInfo(devnamesData), new DevmodeInfo(devmodeData));
             }
         });
         modifyAuxButton.addActionListener(event -> {
@@ -125,4 +132,25 @@ public class CreatedSettingDialog extends JDialog {
         });
     }
 
+    private static class PrinterInfoPane extends JPanel {
+
+        PrinterInfoPane(){
+            super(new MigLayout("insets 0, gapy 0", "[grow]", ""));
+        }
+
+        void setup(DevnamesInfo devnames, DevmodeInfo devmode){
+            add(new JLabel(String.format("%s: %s", "プリンター", devnames.getDevice())), "wrap");
+            add(new JLabel(String.format("%s: %s", "用紙", devmode.getPaperSizeLabel())), "wrap");
+            add(new JLabel(String.format("%s: %s", "向き", devmode.getOrientationLabel())), "wrap");
+            add(new JLabel(String.format("%s: %s", "印刷品質", devmode.getPrintQualityLabel())), "wrap");
+            add(new JLabel(String.format("%s: %s", "給紙", devmode.getDefaultSourceLabel())), "wrap");
+            add(new JLabel(String.format("%s: %s", "接続", devnames.getOutput())), "");
+        }
+
+        void update(DevnamesInfo devnames, DevmodeInfo devmode){
+            removeAll();
+            setup(devnames, devmode);
+            validate();
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package jp.chang.myclinic.drawer.printer;
 
 import com.sun.jna.Memory;
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.*;
@@ -12,6 +13,7 @@ import com.sun.jna.platform.win32.WinUser.WNDCLASSEX;
 import com.sun.jna.platform.win32.WinUser.WindowProc;
 import jp.chang.myclinic.drawer.*;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,13 +98,9 @@ public class DrawerPrinter {
         }
     }
 
-    public DialogResult printDialog(byte[] devmodeBase, byte[] devnamesBase){
+    public DialogResult printDialog(WinDef.HWND owner, byte[] devmodeBase, byte[] devnamesBase){
         PRINTDLGEX pd = new PRINTDLGEX();
-        WinDef.HWND hwnd = createWindow();
-        if( hwnd == null ){
-            throw new RuntimeException("Printer.createWindow failed");
-        }
-        pd.hwndOwner = hwnd;
+        pd.hwndOwner = owner;
         pd.Flags.setValue(PD_NOPAGENUMS);
         pd.nCopies.setValue(1);
         pd.nStartPage.setValue(START_PAGE_GENERAL);
@@ -129,7 +127,22 @@ public class DrawerPrinter {
         } else {
             result = new DialogResult();
         }
-        System.out.println(disposeWindow(hwnd));
+        return result;
+    }
+
+    public DialogResult printDialog(Component owner, byte[] devmodeBase, byte[] devnamesBase){
+        WinDef.HWND hwnd = new WinDef.HWND();
+        hwnd.setPointer(Native.getComponentPointer(owner));
+        return printDialog(hwnd, devmodeBase, devnamesBase);
+    }
+
+    public DialogResult printDialog(byte[] devmodeBase, byte[] devnamesBase){
+        WinDef.HWND hwnd = createWindow();
+        if( hwnd == null ){
+            throw new RuntimeException("Printer.createWindow failed");
+        }
+        DialogResult result = printDialog(hwnd, devmodeBase, devnamesBase);
+        User32.INSTANCE.CloseWindow(hwnd);
         return result;
     }
 
@@ -141,7 +154,6 @@ public class DrawerPrinter {
 
     private HANDLE allocHandle(byte[] data){
         UINT flag = new UINT(MyKernel32.GMEM_MOVEABLE);
-        //flag.setValue(MyKernel32.GMEM_MOVEABLE);
         BaseTSD.SIZE_T size = new SIZE_T(data.length);
         HANDLE handle = MyKernel32.INSTANCE.GlobalAlloc(flag, size);
         Pointer ptr = MyKernel32.INSTANCE.GlobalLock(handle);

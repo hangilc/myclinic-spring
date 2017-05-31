@@ -20,7 +20,7 @@ public class PrinterManageDialog extends JDialog {
     private JButton closeButton = new JButton("閉じる");
 
     public PrinterManageDialog(Window owner, Path settingDir){
-        super(owner, "プリンター管理", Dialog.ModalityType.APPLICATION_MODAL);
+        super(owner, "プリンター管理", Dialog.ModalityType.DOCUMENT_MODAL);
         this.settingDir = settingDir;
         setLayout(new MigLayout("fill", "[grow]", ""));
         add(newButton, "wrap");
@@ -40,7 +40,7 @@ public class PrinterManageDialog extends JDialog {
                 return;
             }
             DrawerPrinter printer = new DrawerPrinter();
-            DrawerPrinter.DialogResult result = printer.printDialog(null, null);
+            DrawerPrinter.DialogResult result = printer.printDialog(PrinterManageDialog.this, null, null);
             if( !result.ok ){
                 return;
             }
@@ -58,10 +58,11 @@ public class PrinterManageDialog extends JDialog {
                 setting.saveSetting(name, confirmDialog.getDevnamesData(),
                         confirmDialog.getDevmodeData(),
                         confirmDialog.getAuxSetting());
-                dispose();
             } catch (IOException ex){
                 ex.printStackTrace();
                 throw new UncheckedIOException(ex);
+            } finally {
+                dispose();
             }
         });
         closeButton.addActionListener(event -> {
