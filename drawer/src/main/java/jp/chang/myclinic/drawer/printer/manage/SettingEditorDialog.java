@@ -145,7 +145,8 @@ public class SettingEditorDialog extends JDialog {
         void update(DevnamesInfo devnames, DevmodeInfo devmode){
             removeAll();
             setup(devnames, devmode);
-            validate();
+            repaint();
+            revalidate();
         }
     }
 
@@ -163,7 +164,8 @@ public class SettingEditorDialog extends JDialog {
         void update(AuxSetting auxSetting){
             removeAll();
             setup(auxSetting);
-            validate();
+            repaint();
+            revalidate();
         }
     }
 }
