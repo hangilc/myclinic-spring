@@ -16,6 +16,7 @@ public class CreatedSettingDialog extends JDialog {
     private byte[] devmodeData;
     private AuxSetting auxSetting;
     private PrinterInfoPane printerInfoPane = new PrinterInfoPane();
+    private AuxSettingPane auxSettingPane = new AuxSettingPane();
     private JButton printerDialogButton = new JButton("変更");
     private JButton modifyAuxButton = new JButton("変更");
     private JButton okButton = new JButton("OK");
@@ -28,11 +29,6 @@ public class CreatedSettingDialog extends JDialog {
         this.devnamesData = devnamesData;
         this.devmodeData = devmodeData;
         this.auxSetting = auxSetting;
-        {
-            System.out.println("CreateSettingDialog");
-            System.out.println(new DevnamesInfo(devnamesData));
-            System.out.println(new DevmodeInfo(devmodeData));
-        }
         setupUI();
         bind();
     }
@@ -72,7 +68,7 @@ public class CreatedSettingDialog extends JDialog {
         DevnamesInfo devnamesInfo = new DevnamesInfo(devnamesData);
         DevmodeInfo devmodeInfo = new DevmodeInfo(devmodeData);
         printerInfoPane.setup(devnamesInfo, devmodeInfo);
-        panel.add(printerInfoPane, "wrap");
+        panel.add(printerInfoPane, "gaptop 5, wrap");
         panel.add(printerDialogButton, "right");
         return panel;
     }
@@ -80,8 +76,8 @@ public class CreatedSettingDialog extends JDialog {
     private JComponent makeAuxInfo(){
         JPanel panel = new JPanel(new MigLayout("inset 0, gapy 0, fill", "[grow]", ""));
         panel.setBorder(BorderFactory.createTitledBorder("その他"));
-        panel.add(new JLabel(String.format("%s: %s", "dx", auxSetting.getDx())), "gaptop 5, wrap");
-        panel.add(new JLabel(String.format("%s: %s", "dx", auxSetting.getDy())), "gapbottom 5, wrap");
+        auxSettingPane.setup(auxSetting);
+        panel.add(auxSettingPane, "gaptop 5, wrap");
         panel.add(modifyAuxButton, "right");
         return panel;
     }
@@ -98,6 +94,11 @@ public class CreatedSettingDialog extends JDialog {
         pack();
     }
 
+    private void updateAuxSetting(AuxSetting auxSetting){
+        auxSettingPane.update(auxSetting);
+        pack();
+    }
+
     private void bind(){
         printerDialogButton.addActionListener(event -> {
             DrawerPrinter printer = new DrawerPrinter();
@@ -105,11 +106,6 @@ public class CreatedSettingDialog extends JDialog {
             if( result.ok ){
                 devnamesData = result.devnamesData;
                 devmodeData = result.devmodeData;
-                {
-                    System.out.println("printerDialogButton");
-                    System.out.println(new DevnamesInfo(devnamesData));
-                    System.out.println(new DevmodeInfo(devmodeData));
-                }
                 updatePrinterInfo(new DevnamesInfo(devnamesData), new DevmodeInfo(devmodeData));
             }
         });
@@ -118,8 +114,7 @@ public class CreatedSettingDialog extends JDialog {
             editor.setLocationByPlatform(true);
             editor.setVisible(true);
             if( !editor.isCanceled() ){
-                getContentPane().removeAll();
-                setupUI();
+                updateAuxSetting(auxSetting);
             }
         });
         okButton.addActionListener(event -> {
@@ -150,6 +145,24 @@ public class CreatedSettingDialog extends JDialog {
         void update(DevnamesInfo devnames, DevmodeInfo devmode){
             removeAll();
             setup(devnames, devmode);
+            validate();
+        }
+    }
+
+    private static class AuxSettingPane extends JPanel {
+
+        AuxSettingPane(){
+            super(new MigLayout("inset 0, gapy 0, fill", "[grow]", ""));
+        }
+
+        void setup(AuxSetting auxSetting){
+            add(new JLabel(String.format("%s: %s", "dx", auxSetting.getDx())), "wrap");
+            add(new JLabel(String.format("%s: %s", "dx", auxSetting.getDy())), "wrap");
+        }
+
+        void update(AuxSetting auxSetting){
+            removeAll();
+            setup(auxSetting);
             validate();
         }
     }
