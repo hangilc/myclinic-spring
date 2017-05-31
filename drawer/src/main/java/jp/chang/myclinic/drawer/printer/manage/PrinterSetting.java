@@ -64,6 +64,12 @@ public class PrinterSetting {
         return names;
     }
 
+    public void deleteSetting(String name) throws IOException {
+        Files.delete(devnamesSettingPath(name));
+        Files.delete(devmodeSettingPath(name));
+        Files.delete(auxSettingPath(name));
+    }
+
     public void ensureSettingDir() throws IOException {
         if( Files.exists(settingDir) ){
             if( Files.isDirectory(settingDir) ){

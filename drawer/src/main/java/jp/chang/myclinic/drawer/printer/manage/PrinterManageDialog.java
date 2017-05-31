@@ -69,6 +69,7 @@ public class PrinterManageDialog extends JDialog {
                 setting.saveSetting(name, confirmDialog.getDevnamesData(),
                         confirmDialog.getDevmodeData(),
                         confirmDialog.getAuxSetting());
+                namesCombo.reload();
             } catch (IOException ex){
                 ex.printStackTrace();
                 throw new UncheckedIOException(ex);
@@ -92,6 +93,24 @@ public class PrinterManageDialog extends JDialog {
                     printerSetting.saveSetting(name, editor.getDevnamesData(),
                             editor.getDevmodeData(), editor.getAuxSetting());
                 }
+            } catch(IOException ex){
+                ex.printStackTrace();
+                alert(ex.toString());
+            }
+        });
+        deleteButton.addActionListener(event -> {
+            String name = namesCombo.getSelectedName();
+            if( name == null ){
+                return;
+            }
+            if( JOptionPane.showConfirmDialog(this, "印刷設定 " + name + " を削除していいですか？",
+                    "確認", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION ){
+                return;
+            }
+            try {
+                PrinterSetting printerSetting = new PrinterSetting(settingDir);
+                printerSetting.deleteSetting(name);
+                namesCombo.reload();
             } catch(IOException ex){
                 ex.printStackTrace();
                 alert(ex.toString());

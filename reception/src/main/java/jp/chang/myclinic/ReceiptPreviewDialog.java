@@ -18,6 +18,7 @@ public class ReceiptPreviewDialog extends JDialog {
     private JButton cancelButton;
     private JMenuItem itemSelectPrinter = new JMenuItem("プリンター選択");
     private JMenuItem itemManagePrinter = new JMenuItem("プリンター管理");
+    private JMenuItem itemClearPrintSetting = new JMenuItem("印刷設定をクリア");
     private java.util.List<Op> ops;
 
     public ReceiptPreviewDialog(Window owner, List<Op> ops){
@@ -33,10 +34,13 @@ public class ReceiptPreviewDialog extends JDialog {
 
     private void setupMenu(){
         JMenuBar menuBar = new JMenuBar();
-        JMenu menuPringSetting = new JMenu("印刷設定");
-        menuBar.add(menuPringSetting);
-        menuPringSetting.add(itemSelectPrinter);
-        menuPringSetting.add(itemManagePrinter);
+        JMenu menuPrintSetting = new JMenu("印刷設定");
+        menuBar.add(menuPrintSetting);
+        menuPrintSetting.add(itemSelectPrinter);
+        menuPrintSetting.add(itemManagePrinter);
+        JMenu otherMenu = new JMenu("その他");
+        otherMenu.add(itemClearPrintSetting);
+        menuPrintSetting.add(otherMenu);
         setJMenuBar(menuBar);
     }
 
@@ -97,9 +101,26 @@ public class ReceiptPreviewDialog extends JDialog {
                 alert(ex.toString());
             }
         });
+        itemClearPrintSetting.addActionListener(event -> {
+            if( !confirm("印刷設定をクリアしていいですか？") ){
+                return;
+            }
+            ReceptionConfig.INSTANCE.setCurrentSetting("");
+            try {
+                ReceptionConfig.INSTANCE.writeToConfigFile();
+            } catch(IOException ex){
+                ex.printStackTrace();
+                alert(ex.toString());
+            }
+        });
     }
 
     private void alert(String message){
         JOptionPane.showMessageDialog(this, message);
+    }
+
+    private boolean confirm(String message){
+        int choice = JOptionPane.showConfirmDialog(this, message, "確認", JOptionPane.YES_NO_OPTION);
+        return choice == JOptionPane.YES_OPTION;
     }
 }
