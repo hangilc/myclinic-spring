@@ -5,7 +5,6 @@ import jp.chang.myclinic.drawer.printer.AuxSetting;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -54,20 +53,15 @@ public class PrinterSetting {
         return mapper.readValue(new File(auxSettingPath(name).toString()), AuxSetting.class);
     }
 
-    public List<String> listNames(){
-        try {
-            List<String> names = new ArrayList<>();
-            for(Path path: Files.newDirectoryStream(settingDir, "*.devnames")){
-                String fileName = path.getFileName().toString();
-                int pos = fileName.lastIndexOf('.');
-                String name = fileName.substring(0, pos);
-                names.add(name);
-            }
-            return names;
-        } catch(IOException ex){
-            ex.printStackTrace();
-            throw new UncheckedIOException(ex);
+    public List<String> listNames() throws IOException {
+        List<String> names = new ArrayList<>();
+        for(Path path: Files.newDirectoryStream(settingDir, "*.devnames")){
+            String fileName = path.getFileName().toString();
+            int pos = fileName.lastIndexOf('.');
+            String name = fileName.substring(0, pos);
+            names.add(name);
         }
+        return names;
     }
 
     public void ensureSettingDir() throws IOException {

@@ -11,6 +11,7 @@ public class ReceptionConfig {
     public static ReceptionConfig INSTANCE = new ReceptionConfig();
 
     private Path settingDir = Paths.get(".", "printer-settings");
+    private String currentSetting = null;
 
     private ReceptionConfig(){
 
@@ -22,5 +23,13 @@ public class ReceptionConfig {
 
     public void setSettingDir(Path path){
         settingDir = path;
+    }
+
+    public String getCurrentSetting() {
+        return currentSetting;
+    }
+
+    public void setCurrentSetting(String currentSetting) {
+        this.currentSetting = currentSetting;
     }
 }

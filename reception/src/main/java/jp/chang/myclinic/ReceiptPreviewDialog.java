@@ -3,11 +3,13 @@ package jp.chang.myclinic;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.drawer.printer.manage.PrinterManageDialog;
+import jp.chang.myclinic.drawer.printer.manage.PrinterSetting;
 import jp.chang.myclinic.drawer.printer.manage.SettingSelectorDialog;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 
 public class ReceiptPreviewDialog extends JDialog {
@@ -64,13 +66,24 @@ public class ReceiptPreviewDialog extends JDialog {
             dispose();
         });
         itemSelectPrinter.addActionListener(event -> {
-            SettingSelectorDialog selector = new SettingSelectorDialog(this, ReceptionConfig.INSTANCE.getSettingDir());
-            if( selector.isCanceled() ){
-                selector.dispose();
-                return;
+            PrinterSetting printerSetting = new PrinterSetting(ReceptionConfig.INSTANCE.getSettingDir());
+            try {
+                List<String> names = printerSetting.listNames();
+                if( names.size() == 0 ){
+                    alert("選択できる印刷設定がありません。");
+                    return;
+                }
+                SettingSelectorDialog selector = new SettingSelectorDialog(this, names, ReceptionConfig.INSTANCE.getCurrentSetting());
+                selector.setLocationByPlatform(true);
+                selector.setVisible(true);
+                if( !selector.isCanceled() ){
+                    String selectedName = selector.getSelectedItem();
+                    System.out.println(selectedName);
+                }
+            } catch(IOException ex){
+                ex.printStackTrace();
+                alert(ex.toString());
             }
-            selector.setLocationByPlatform(true);
-            selector.setVisible(true);
         });
         itemManagePrinter.addActionListener(event -> {
             PrinterManageDialog dialog = new PrinterManageDialog(this, ReceptionConfig.INSTANCE.getSettingDir());
