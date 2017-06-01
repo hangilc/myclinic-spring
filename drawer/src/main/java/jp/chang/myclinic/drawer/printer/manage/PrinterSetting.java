@@ -49,8 +49,18 @@ public class PrinterSetting {
     }
 
     public AuxSetting readAuxSetting(String name) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(new File(auxSettingPath(name).toString()), AuxSetting.class);
+        Path path = auxSettingPath(name);
+        if( Files.exists(path) ) {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(new File(auxSettingPath(name).toString()), AuxSetting.class);
+        } else {
+            return new AuxSetting();
+        }
+    }
+
+    public boolean nameExists(String name){
+        return Files.exists(devnamesSettingPath(name)) &&
+                Files.exists(devmodeSettingPath(name));
     }
 
     public List<String> listNames() throws IOException {

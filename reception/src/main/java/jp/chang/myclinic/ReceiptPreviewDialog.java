@@ -1,6 +1,7 @@
 package jp.chang.myclinic;
 
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.drawer.printer.manage.PrinterManageDialog;
 import jp.chang.myclinic.drawer.printer.manage.PrinterSetting;
@@ -64,7 +65,33 @@ public class ReceiptPreviewDialog extends JDialog {
     private void bind(){
         printButton.addActionListener(event -> {
             DrawerPrinter printer = new DrawerPrinter();
-            printer.print(ops);
+            String currentSetting = ReceptionConfig.INSTANCE.getCurrentSetting();
+            PrinterSetting printerSetting = new PrinterSetting(ReceptionConfig.INSTANCE.getSettingDir());
+            if( currentSetting == null || !printerSetting.nameExists(currentSetting) ){
+                alert("設定が有効でないので、プリンターを選択して印刷します。");
+                currentSetting = null;
+            }
+            byte[] devmodeData, devnamesData;
+            AuxSetting auxSetting;
+            DrawerPrinter drawerPrinter = new DrawerPrinter();
+            try {
+                if (currentSetting == null) {
+                    DrawerPrinter.DialogResult result = drawerPrinter.printDialog(ReceiptPreviewDialog.this, null, null);
+                    if (!result.ok) {
+                        return;
+                    }
+                    devmodeData = result.devmodeData;
+                    devnamesData = result.devnamesData;
+                    auxSetting = new AuxSetting();
+                } else {
+                    devmodeData = printerSetting.readDevmode(currentSetting);
+                    devnamesData = printerSetting.readDevnames(currentSetting);
+                    auxSetting = printerSetting.readAuxSetting(currentSetting);
+                }
+            } catch(IOException ex){
+                ex.printStackTrace();
+                alert(ex.toString());
+            }
         });
         cancelButton.addActionListener(event -> {
             dispose();
