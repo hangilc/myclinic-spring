@@ -23,6 +23,9 @@ import java.util.Map;
  */
 public class DrawerPrinter {
 
+    private double dx = 0;
+    private double dy = 0;
+
     public void print(Iterable<Op> ops){
         DialogResult dialogResult = printDialog(null, null);
         if( dialogResult.ok ){
@@ -50,6 +53,14 @@ public class DrawerPrinter {
             throw new RuntimeException("EndDoc failed");
         }
         deleteDC(hdc);
+    }
+
+    public void setDx(double dx) {
+        this.dx = dx;
+    }
+
+    public void setDy(double dy) {
+        this.dy = dy;
     }
 
     public static final int PD_ALLPAGES = 0x00000000;
@@ -293,15 +304,15 @@ public class DrawerPrinter {
             switch(op.getOpCode()){
                 case MoveTo: {
                     OpMoveTo opMoveTo = (OpMoveTo)op;
-                    int x = calcCoord(opMoveTo.getX(), dpix);
-                    int y = calcCoord(opMoveTo.getY(), dpiy);
+                    int x = calcCoord(opMoveTo.getX() + dx, dpix);
+                    int y = calcCoord(opMoveTo.getY() + dy, dpiy);
                     moveTo(hdc, x, y);
                     break;
                 }
                 case LineTo: {
                     OpLineTo opLineTo = (OpLineTo)op;
-                    int x = calcCoord(opLineTo.getX(), dpix);
-                    int y = calcCoord(opLineTo.getY(), dpiy);
+                    int x = calcCoord(opLineTo.getX() + dx, dpix);
+                    int y = calcCoord(opLineTo.getY() + dy, dpiy);
                     lineTo(hdc, x, y);
                     break;
                 }
@@ -327,14 +338,14 @@ public class DrawerPrinter {
                     for(int i=0;i<chars.length;i++){
                         double cx, cy;
                         if( i >= xs.size() ){
-                            cx = xs.get(xs.size()-1);
+                            cx = xs.get(xs.size()-1) + dx;
                         } else {
-                            cx = xs.get(i);
+                            cx = xs.get(i) + dx;
                         }
                         if( i >= ys.size() ){
-                            cy = ys.get(ys.size()-1);
+                            cy = ys.get(ys.size()-1) + dy;
                         } else {
-                            cy = ys.get(i);
+                            cy = ys.get(i) + dy;
                         }
                         int x = calcCoord(cx, dpix);
                         int y = calcCoord(cy, dpiy);

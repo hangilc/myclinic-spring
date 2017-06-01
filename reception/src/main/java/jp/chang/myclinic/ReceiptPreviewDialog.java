@@ -79,6 +79,8 @@ public class ReceiptPreviewDialog extends JDialog {
                     byte[] devmodeData = printerSetting.readDevmode(currentSetting);
                     byte[] devnamesData = printerSetting.readDevnames(currentSetting);
                     AuxSetting auxSetting = printerSetting.readAuxSetting(currentSetting);
+                    drawerPrinter.setDx(auxSetting.getDx());
+                    drawerPrinter.setDy(auxSetting.getDy());
                     drawerPrinter.print(ops, devmodeData, devnamesData);
                 } catch(IOException ex){
                     ex.printStackTrace();
