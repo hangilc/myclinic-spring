@@ -8,7 +8,6 @@ import jp.chang.myclinic.util.HokenUtil;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 /**
  * Created by hangil on 2017/05/21.
@@ -28,7 +27,6 @@ public class ReceiptDrawerDataCreator {
         data.setPatientId("" + patient.patientId);
         data.setHoken(creator.hokenRep(meisai.hoken));
         data.setFutanWari("" + meisai.futanWari);
-        System.out.println(meisai.sections);
         for(MeisaiSectionDTO section: meisai.sections){
             String ten = creator.format(section.sectionTotalTen);
             switch(MeisaiSection.valueOf(section.name)){
