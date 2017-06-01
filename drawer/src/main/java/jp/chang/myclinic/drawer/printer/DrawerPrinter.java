@@ -26,26 +26,30 @@ public class DrawerPrinter {
     public void print(Iterable<Op> ops){
         DialogResult dialogResult = printDialog(null, null);
         if( dialogResult.ok ){
-            HDC hdc = createDC(dialogResult.devnamesData, dialogResult.devmodeData);
-            if( hdc.getPointer() == Pointer.NULL ){
-                throw new RuntimeException("createDC faield");
-            }
-            int jobId = beginPrint(hdc);
-            if( jobId <= 0 ){
-                throw new RuntimeException("StartDoc failed");
-            }
-            int dpix = getDpix(hdc);
-            int dpiy = getDpiy(hdc);
-            startPage(hdc);
-            MyGdi32.INSTANCE.SetBkMode(hdc, PrinterConsts.TRANSPARENT);
-            execOps(hdc, ops, dpix, dpiy);
-            endPage(hdc);
-            int endDocResult = endPrint(hdc);
-            if( endDocResult <= 0 ){
-                throw new RuntimeException("EndDoc failed");
-            }
-            deleteDC(hdc);
+            print(ops, dialogResult.devmodeData, dialogResult.devnamesData);
         }
+    }
+
+    public void print(Iterable<Op> ops, byte[] devmode, byte[] devnames){
+        HDC hdc = createDC(devnames, devmode);
+        if( hdc.getPointer() == Pointer.NULL ){
+            throw new RuntimeException("createDC faield");
+        }
+        int jobId = beginPrint(hdc);
+        if( jobId <= 0 ){
+            throw new RuntimeException("StartDoc failed");
+        }
+        int dpix = getDpix(hdc);
+        int dpiy = getDpiy(hdc);
+        startPage(hdc);
+        MyGdi32.INSTANCE.SetBkMode(hdc, PrinterConsts.TRANSPARENT);
+        execOps(hdc, ops, dpix, dpiy);
+        endPage(hdc);
+        int endDocResult = endPrint(hdc);
+        if( endDocResult <= 0 ){
+            throw new RuntimeException("EndDoc failed");
+        }
+        deleteDC(hdc);
     }
 
     public static final int PD_ALLPAGES = 0x00000000;

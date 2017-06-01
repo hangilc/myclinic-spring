@@ -71,26 +71,19 @@ public class ReceiptPreviewDialog extends JDialog {
                 alert("設定が有効でないので、プリンターを選択して印刷します。");
                 currentSetting = null;
             }
-            byte[] devmodeData, devnamesData;
-            AuxSetting auxSetting;
             DrawerPrinter drawerPrinter = new DrawerPrinter();
-            try {
-                if (currentSetting == null) {
-                    DrawerPrinter.DialogResult result = drawerPrinter.printDialog(ReceiptPreviewDialog.this, null, null);
-                    if (!result.ok) {
-                        return;
-                    }
-                    devmodeData = result.devmodeData;
-                    devnamesData = result.devnamesData;
-                    auxSetting = new AuxSetting();
-                } else {
-                    devmodeData = printerSetting.readDevmode(currentSetting);
-                    devnamesData = printerSetting.readDevnames(currentSetting);
-                    auxSetting = printerSetting.readAuxSetting(currentSetting);
+            if( currentSetting == null ){
+                drawerPrinter.print(ops);
+            } else {
+                try {
+                    byte[] devmodeData = printerSetting.readDevmode(currentSetting);
+                    byte[] devnamesData = printerSetting.readDevnames(currentSetting);
+                    AuxSetting auxSetting = printerSetting.readAuxSetting(currentSetting);
+                    drawerPrinter.print(ops, devmodeData, devnamesData);
+                } catch(IOException ex){
+                    ex.printStackTrace();
+                    alert(ex.toString());
                 }
-            } catch(IOException ex){
-                ex.printStackTrace();
-                alert(ex.toString());
             }
         });
         cancelButton.addActionListener(event -> {
