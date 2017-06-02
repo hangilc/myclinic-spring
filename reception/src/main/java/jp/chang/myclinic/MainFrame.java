@@ -1,22 +1,16 @@
 package jp.chang.myclinic;
 
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowAdapter;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
-import java.util.stream.Collectors;
-import java.io.IOException;
-
-import net.miginfocom.swing.MigLayout;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 class MainFrame extends JFrame {
 
@@ -103,6 +97,7 @@ class MainFrame extends JFrame {
             dialog.setLocationByPlatform(true);
             dialog.setVisible(true);
         });
+        printBlankReceiptButton.addActionListener(event -> doPrintBlankReceipt());
         updateWqueueButton.addActionListener(event -> doUpdate());
         cashierButton.addActionListener(event -> doCashier());
         closeButton.addActionListener(event -> onClosing());
@@ -130,6 +125,10 @@ class MainFrame extends JFrame {
 		PatientDialog newPatientDialog = new PatientDialog("新規患者入力", null, null);
 		newPatientDialog.setLocationByPlatform(true);
 		newPatientDialog.setVisible(true);
+	}
+
+	private void doPrintBlankReceipt(){
+
 	}
 
 	private void doUpdate(){
