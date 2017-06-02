@@ -413,6 +413,12 @@ public class DbGateway {
 				.map(this::resultToPaymentVisitPatient).collect(Collectors.toList());
 	}
 
+	public List<PaymentVisitPatientDTO> listPaymentByPatient(int patientId, int n) {
+		PageRequest pageRequest = new PageRequest(0, n, Sort.Direction.DESC, "visitId");
+		return paymentRepository.findFullByPatient(patientId, pageRequest).getContent().stream()
+				.map(this::resultToPaymentVisitPatient).collect(Collectors.toList());
+	}
+
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
 		Shinryou shinryou = (Shinryou)result[0];
 		ShinryouMaster master = (ShinryouMaster)result[1];

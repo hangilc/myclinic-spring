@@ -40,4 +40,10 @@ public class PaymentController {
 		return dbGateway.listRecentPayment(n);
 	}
 
+	@RequestMapping(value = "/list-payment-by-patient", method = RequestMethod.GET)
+	public List<PaymentVisitPatientDTO> listPaymentByPatient(@RequestParam(value="patient-id") int patientId,
+															 @RequestParam(value = "n", defaultValue = "30") int n){
+		return dbGateway.listPaymentByPatient(patientId, n);
+	}
+
 }
