@@ -113,7 +113,19 @@ class SearchPaymentDialog extends JDialog {
 		}
 		try {
 			int patientId = Integer.parseInt(searchText);
-			System.out.println(patientId);
+			Service.api.listPaymentByPatient(patientId, 30)
+					.whenComplete((result, t) -> {
+						if( t != null ){
+							t.printStackTrace();
+							EventQueue.invokeLater(() -> {
+								alert(t.toString());
+							});
+							return;
+						}
+						EventQueue.invokeLater(() -> {
+							resultList.setListData(result.toArray(new PaymentVisitPatientDTO[0]));
+						});
+					});
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
 			alert("患者番号の入力が不適切です。");

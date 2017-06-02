@@ -85,6 +85,10 @@ class Service {
 		@GET("list-recent-payment")
         CompletableFuture<List<PaymentVisitPatientDTO>> listRecentPayment(@Query("n") int n);
 
+		@GET("list-payment-by-patient")
+        CompletableFuture<List<PaymentVisitPatientDTO>> listPaymentByPatient(@Query("patient-id") int patientId,
+                                                                             @Query("n") int n);
+
         @GET("get-clinic-info")
         CompletableFuture<ClinicInfoDTO> getClinicInfo();
 	}
