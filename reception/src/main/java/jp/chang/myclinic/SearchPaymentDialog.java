@@ -24,7 +24,7 @@ class SearchPaymentDialog extends JDialog {
 	SearchPaymentDialog(Window owner) {
 		super(owner, "会計検索", Dialog.ModalityType.DOCUMENT_MODAL);
 		setLayout(new MigLayout("fill", "[grow]", "[] [grow]"));
-		add(makeSearchInputPane(), "grow, wrap");
+		add(makeSearchInputPane(), "wrap");
 		add(makeSearchResultPane(), "grow, wrap");
 		add(reprintReceiptButton, "wrap");
 		add(closeButton, "right");
@@ -33,10 +33,10 @@ class SearchPaymentDialog extends JDialog {
 	}
 
 	private JComponent makeSearchInputPane() {
-		JPanel panel = new JPanel(new MigLayout("insets 0, fill", "[] [grow] []", ""));
+		JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
 		panel.add(recentPaymentsButton, "wrap, span 3");
 		panel.add(new JLabel("患者番号"));
-		panel.add(searchTextField, "grow");
+		panel.add(searchTextField, "");
 		panel.add(searchButton);
 		return panel;
 	}
@@ -99,9 +99,25 @@ class SearchPaymentDialog extends JDialog {
 						return null;
 					});
 		});
+		searchButton.addActionListener(event -> doSearch());
 		closeButton.addActionListener(event -> {
 			dispose();
 		});
+	}
+
+	private void doSearch(){
+		String searchText = searchTextField.getText();
+		System.out.println("searchText: " + searchText);
+		if( searchText.isEmpty() ){
+			return;
+		}
+		try {
+			int patientId = Integer.parseInt(searchText);
+			System.out.println(patientId);
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			alert("患者番号の入力が不適切です。");
+		}
 	}
 
 	private void alert(String message){

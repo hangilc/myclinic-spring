@@ -24,11 +24,11 @@ class BroadcastChannel<T> {
 
 	public void addListener(Window window, BroadcastListener<T> listener){
 		listeners.add(listener);
-		System.out.println("listener added: " + listener);
+		//System.out.println("listener added: " + listener);
 		window.addWindowListener(new WindowAdapter(){
 			@Override
 			public void windowClosed(WindowEvent event){
-				System.out.println("listener removed: " + listener);
+				//System.out.println("listener removed: " + listener);
 				removeListener(listener);
 			}
 		});
