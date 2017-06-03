@@ -1,6 +1,9 @@
 package jp.chang.myclinic;
 
 import jp.chang.myclinic.consts.WqueueWaitState;
+import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
+import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
 import net.miginfocom.swing.MigLayout;
 
@@ -128,6 +131,26 @@ class MainFrame extends JFrame {
 	}
 
 	private void doPrintBlankReceipt(){
+		Service.api.getClinicInfo()
+				.thenAccept((ClinicInfoDTO clinicInfo) -> {
+					ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
+					creator.setClinicInfo(clinicInfo);
+					ReceiptDrawerData data = creator.getData();
+					ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
+					final List<Op> ops = receiptDrawer.getOps();
+					EventQueue.invokeLater(() -> {
+						ReceiptPreviewDialog dialog = new ReceiptPreviewDialog(this, ops);
+						dialog.setLocationByPlatform(true);
+						dialog.setVisible(true);
+					});
+				})
+				.exceptionally(t -> {
+					t.printStackTrace();
+					EventQueue.invokeLater(() -> {
+						alert(t.toString());
+					});
+					return null;
+				});
 
 	}
 

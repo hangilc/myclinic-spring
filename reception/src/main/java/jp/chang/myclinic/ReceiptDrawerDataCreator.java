@@ -15,20 +15,51 @@ import java.time.LocalDate;
 public class ReceiptDrawerDataCreator {
 
     private NumberFormat numberFormat = NumberFormat.getNumberInstance();
+    private ReceiptDrawerData data;
 
     public static ReceiptDrawerData create(int charge, PatientDTO patient, VisitDTO visit, MeisaiDTO meisai,
         ClinicInfoDTO clinicInfo){
         ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
-        ReceiptDrawerData data = new ReceiptDrawerData();
+        ReceiptDrawerData data =creator.data;
+        creator.setPatient(patient);
+        creator.setCharge(charge);
+        creator.setVisitDate(visit);
+        creator.setIssueDate();
+        creator.setMeisai(meisai);
+        creator.setClinicInfo(clinicInfo);
+        return data;
+    }
+
+    public ReceiptDrawerDataCreator(){
+        this.data = new ReceiptDrawerData();
+    }
+
+    public ReceiptDrawerData getData(){
+        return data;
+    }
+
+    public void setPatient(PatientDTO patient){
         data.setPatientName(patient.lastName + patient.firstName);
-        data.setChargeByInt(charge);
-        data.setVisitDate(DateTimeUtil.formatSqlDateTime(visit.visitedAt, DateTimeUtil.kanjiFormatter1));
-        data.setIssueDate(DateTimeUtil.toKanji(LocalDate.now(), DateTimeUtil.kanjiFormatter1));
         data.setPatientId("" + patient.patientId);
-        data.setHoken(creator.hokenRep(meisai.hoken));
-        data.setFutanWari("" + meisai.futanWari);
+    }
+
+    public void setCharge(int charge){
+        data.setChargeByInt(charge);
+    }
+
+    public void setVisitDate(VisitDTO visit){
+        data.setVisitDate(DateTimeUtil.formatSqlDateTime(visit.visitedAt, DateTimeUtil.kanjiFormatter1));
+    }
+
+    public void setIssueDate(){
+        data.setIssueDate(DateTimeUtil.toKanji(LocalDate.now(), DateTimeUtil.kanjiFormatter1));
+    }
+
+    public void setMeisai(MeisaiDTO meisai){
+        setHoken(meisai.hoken);
+        setFutanWari(meisai.futanWari);
         for(MeisaiSectionDTO section: meisai.sections){
-            String ten = creator.format(section.sectionTotalTen);
+            String ten = format(section.sectionTotalTen);
             switch(MeisaiSection.valueOf(section.name)){
                 case ShoshinSaisin: data.setShoshin(ten); break;
                 case IgakuKanri: data.setKanri(ten); break;
@@ -42,7 +73,22 @@ public class ReceiptDrawerDataCreator {
                 default: System.out.println("unknown meisai section: " + section.name);
             }
         }
-        data.setSouten(creator.format(meisai.totalTen));
+        setSouten(meisai.totalTen);
+    }
+
+    public void setHoken(HokenDTO hoken){
+        data.setHoken(hokenRep(hoken));
+    }
+
+    public void setFutanWari(int futanWari){
+        data.setFutanWari("" + futanWari);
+    }
+
+    public void setSouten(int souten){
+        data.setSouten(format(souten));
+    }
+
+    public void setClinicInfo(ClinicInfoDTO clinicInfo){
         data.setClinicName(clinicInfo.name);
         data.setAddressLines(new String[]{
                 clinicInfo.postalCode,
@@ -51,7 +97,6 @@ public class ReceiptDrawerDataCreator {
                 clinicInfo.fax,
                 clinicInfo.homepage
         });
-        return data;
     }
 
     private String hokenRep(HokenDTO hoken){
