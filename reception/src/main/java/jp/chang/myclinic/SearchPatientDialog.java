@@ -149,24 +149,25 @@ class SearchPatientDialog extends JDialog {
 		if( currentPatientDTO == null ){
 			return;
 		}
-		PatientDialog editor = PatientEditorRegistry.INSTANCE.find(currentPatientDTO.patientId);
-		if( editor != null ){
-			editor.toFront();
-			return;
-		}
-		Service.api.listHoken(currentPatientDTO.patientId)
-			.whenComplete((result, t) -> {
-				if( t != null ){
-					t.printStackTrace();
-					alert("保険情報を取得できませんでした。" + t);
-					return;
-				}
-				EventQueue.invokeLater(() -> {
-					PatientDialog dialog = new PatientDialog("患者情報の編集", currentPatientDTO, result);
-					PatientEditorRegistry.INSTANCE.register(currentPatientDTO.patientId, dialog);
-					dialog.setVisible(true);
-				});
-			});
+		PatientEditorRegistry.INSTANCE.openPatientEditor(currentPatientDTO);
+//		PatientDialog editor = PatientEditorRegistry.INSTANCE.find(currentPatientDTO.patientId);
+//		if( editor != null ){
+//			editor.toFront();
+//			return;
+//		}
+//		Service.api.listHoken(currentPatientDTO.patientId)
+//			.whenComplete((result, t) -> {
+//				if( t != null ){
+//					t.printStackTrace();
+//					alert("保険情報を取得できませんでした。" + t);
+//					return;
+//				}
+//				EventQueue.invokeLater(() -> {
+//					PatientDialog dialog = new PatientDialog("患者情報の編集", currentPatientDTO, result);
+//					PatientEditorRegistry.INSTANCE.register(currentPatientDTO.patientId, dialog);
+//					dialog.setVisible(true);
+//				});
+//			});
 	}
 
 	private void handleResult(CompletableFuture<List<PatientDTO>> future){

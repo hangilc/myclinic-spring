@@ -101,9 +101,31 @@ class MainFrame extends JFrame {
             dialog.setVisible(true);
         });
         printBlankReceiptButton.addActionListener(event -> doPrintBlankReceipt());
+        patientInfoButton.addActionListener(event -> doPatientInfo());
         updateWqueueButton.addActionListener(event -> doUpdate());
         cashierButton.addActionListener(event -> doCashier());
         closeButton.addActionListener(event -> onClosing());
+	}
+
+	private void doPatientInfo() {
+		try {
+			int patientId = Integer.parseInt(patientIdField.getText());
+			Service.api.getPatient(patientId)
+					.thenAccept((PatientDTO patient) -> {
+						PatientInfoDialog patientInfoDialog = new PatientInfoDialog(this, patient, true);
+						patientInfoDialog.setLocationByPlatform(true);
+						patientInfoDialog.setVisible(true);
+					})
+					.exceptionally(t -> {
+						t.printStackTrace();
+						EventQueue.invokeLater(() -> {
+							alert(t.toString());
+						});
+						return null;
+					});
+		} catch (NumberFormatException e) {
+			alert("患者番号の入力が不適切です。");
+		}
 	}
 
 	private void onClosing(){

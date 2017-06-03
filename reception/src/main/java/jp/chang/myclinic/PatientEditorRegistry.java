@@ -1,5 +1,9 @@
 package jp.chang.myclinic;
 
+import jp.chang.myclinic.dto.PatientDTO;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.Map;
 import java.util.HashMap;
 import java.awt.event.WindowAdapter;
@@ -13,6 +17,28 @@ class PatientEditorRegistry {
 
 	private PatientEditorRegistry(){
 
+	}
+
+	public void openPatientEditor(PatientDTO patient){
+		PatientDialog editor = find(patient.patientId);
+		if( editor != null ){
+			editor.toFront();
+			return;
+		}
+		Service.api.listHoken(patient.patientId)
+				.whenComplete((result, t) -> {
+					if( t != null ){
+						t.printStackTrace();
+						JOptionPane.showMessageDialog(null, "保険情報を取得できませんでした。" + t);
+						return;
+					}
+					EventQueue.invokeLater(() -> {
+						PatientDialog dialog = new PatientDialog("患者情報の編集", patient, result);
+						register(patient.patientId, dialog);
+						dialog.setLocationByPlatform(true);
+						dialog.setVisible(true);
+					});
+				});
 	}
 
 	public PatientDialog find(Integer patientId){
