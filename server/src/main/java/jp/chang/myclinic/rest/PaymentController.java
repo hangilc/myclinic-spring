@@ -1,20 +1,13 @@
 package jp.chang.myclinic.rest;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.transaction.annotation.Transactional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import jp.chang.myclinic.db.DbGateway;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.dto.PaymentDTO;
+import jp.chang.myclinic.dto.PaymentVisitPatientDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/json")
@@ -44,6 +37,11 @@ public class PaymentController {
 	public List<PaymentVisitPatientDTO> listPaymentByPatient(@RequestParam(value="patient-id") int patientId,
 															 @RequestParam(value = "n", defaultValue = "30") int n){
 		return dbGateway.listPaymentByPatient(patientId, n);
+	}
+
+	@RequestMapping(value = "/list-final-payment", method = RequestMethod.GET)
+	public List<PaymentDTO> listFinalPayment(@RequestParam(value = "n", defaultValue = "30") int n){
+		return dbGateway.listFinalPayment(n);
 	}
 
 }

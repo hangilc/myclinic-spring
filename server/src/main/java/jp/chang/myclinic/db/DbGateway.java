@@ -409,7 +409,9 @@ public class DbGateway {
 
 	public List<PaymentVisitPatientDTO> listRecentPayment(int n) {
 		PageRequest pageRequest = new PageRequest(0, n, Sort.Direction.DESC, "visitId");
-		return paymentRepository.findAllFull(pageRequest).getContent().stream()
+		List<Integer> visitIds = paymentRepository.findFinalPayment(pageRequest).stream()
+				.map(payment -> payment.getVisitId()).collect(Collectors.toList());
+		return paymentRepository.findFullFinalPayment(visitIds, pageRequest).stream()
 				.map(this::resultToPaymentVisitPatient).collect(Collectors.toList());
 	}
 
@@ -417,6 +419,12 @@ public class DbGateway {
 		PageRequest pageRequest = new PageRequest(0, n, Sort.Direction.DESC, "visitId");
 		return paymentRepository.findFullByPatient(patientId, pageRequest).getContent().stream()
 				.map(this::resultToPaymentVisitPatient).collect(Collectors.toList());
+	}
+
+	public List<PaymentDTO> listFinalPayment(int n){
+		PageRequest pageRequest = new PageRequest(0, n, Sort.Direction.DESC, "visitId");
+		return paymentRepository.findFinalPayment(pageRequest).stream()
+				.map(mapper::toPaymentDTO).collect(Collectors.toList());
 	}
 
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
