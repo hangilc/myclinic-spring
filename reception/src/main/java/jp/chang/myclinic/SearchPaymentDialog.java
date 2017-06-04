@@ -1,16 +1,14 @@
 package jp.chang.myclinic;
 
-import java.awt.*;
-import javax.swing.*;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
 
 class SearchPaymentDialog extends JDialog {
 
@@ -89,7 +87,6 @@ class SearchPaymentDialog extends JDialog {
 							dialog.setLocationByPlatform(true);
 							dialog.setVisible(true);
 						});
-
 					})
 					.exceptionally(t -> {
 						t.printStackTrace();

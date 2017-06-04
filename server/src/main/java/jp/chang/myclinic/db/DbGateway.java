@@ -1,5 +1,6 @@
 package jp.chang.myclinic.db;
 
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -49,6 +50,8 @@ public class DbGateway {
 	private ConductDrugRepository conductDrugRepository;
 	@Autowired
 	private ConductKizaiRepository conductKizaiRepository;
+	@Autowired
+	private PharmaQueueRepository pharmaQueueRepository;
 
 	public List<WqueueFullDTO> listWqueueFull(){
 		try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
@@ -425,6 +428,25 @@ public class DbGateway {
 		PageRequest pageRequest = new PageRequest(0, n, Sort.Direction.DESC, "visitId");
 		return paymentRepository.findFinalPayment(pageRequest).stream()
 				.map(mapper::toPaymentDTO).collect(Collectors.toList());
+	}
+
+	public void finishCashier(PaymentDTO paymentDTO){
+		Payment payment = mapper.fromPaymentDTO(paymentDTO);
+		paymentRepository.save(payment);
+		Optional<PharmaQueue> optPharmaQueue = pharmaQueueRepository.findByVisitId(paymentDTO.visitId);
+		Optional<Wqueue> optWqueue = wqueueRepository.findByVisitId(paymentDTO.visitId);
+		if( optPharmaQueue.isPresent() ){
+			if( optWqueue.isPresent() ){
+				Wqueue wqueue = optWqueue.get();
+				wqueue.setWaitState(WqueueWaitState.WaitDrug.getCode());
+				wqueueRepository.save(wqueue);
+			}
+		} else {
+			if( optWqueue.isPresent() ){
+				Wqueue wqueue = optWqueue.get();
+				wqueueRepository.delete(wqueue);
+			}
+		}
 	}
 
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){

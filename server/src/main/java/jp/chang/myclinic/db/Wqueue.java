@@ -1,15 +1,6 @@
 package jp.chang.myclinic.db;
 
 import javax.persistence.*;
-import java.sql.Date;
-import java.sql.Timestamp;
-
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name="wqueue")

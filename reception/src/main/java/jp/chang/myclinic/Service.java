@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 class Service {
-    public static interface ServerAPI {
+    public interface ServerAPI {
         @GET("list-wqueue-full")
         CompletableFuture<List<WqueueFullDTO>> listWqueue();
 
@@ -74,9 +74,6 @@ class Service {
 		@GET("list-payment")
 		CompletableFuture<List<PaymentDTO>> listPayment(@Query("visit-id") int visitId);
 
-		@GET("get-receipt-drawer-ops")
-		CompletableFuture<List<Op>> getReceiptDrawerOps(@Query("visit-id") int visitId);
-
 		@GET("list-recent-payment")
         CompletableFuture<List<PaymentVisitPatientDTO>> listRecentPayment(@Query("n") int n);
 
@@ -89,6 +86,12 @@ class Service {
 
         @POST("start-visit")
         CompletableFuture<Integer> startVisit(@Query("patient-id") int patientId);
+
+        @GET("get-visit")
+        CompletableFuture<VisitDTO> getVisit(@Query("visit-id") int visitId);
+
+        @POST("finish-cashier")
+        CompletableFuture<Boolean> finishCashier(@Body PaymentDTO payment);
 	}
 
     public static ServerAPI api; 

@@ -146,6 +146,11 @@ public class VisitController {
 		return dbGateway.listVisitWithPatient(page, itemsPerPage);
 	}
 
+	@RequestMapping(value="/get-visit", method=RequestMethod.GET)
+	public VisitDTO getVisit(@RequestParam("visit-id") int visitId){
+		return dbGateway.getVisit(visitId);
+	}
+
 	private SectionItemDTO toSectionItemDTO(SectionItem sectionItem) {
 		SectionItemDTO sectionItemDTO = new SectionItemDTO();
 		sectionItemDTO.label = sectionItem.getLabel();

@@ -1,9 +1,15 @@
 package jp.chang.myclinic;
 
+import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
+import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.util.DateTimeUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 class CashierDialog extends JDialog {
@@ -14,6 +20,8 @@ class CashierDialog extends JDialog {
 	private List<PaymentDTO> payments;
 	private int visitId;
 	private JButton printReceiptButton;
+	private JButton doneButton = new JButton("会計終了");
+	private JButton cancelButton = new JButton("キャンセル");
 
 	CashierDialog(JFrame owner, MeisaiDTO meisai, PatientDTO patient, ChargeDTO charge,
 				  List<PaymentDTO> payments, int visitId){
@@ -53,10 +61,7 @@ class CashierDialog extends JDialog {
 
 	private JComponent makeSouth(){
 		JPanel panel = new JPanel(new MigLayout("insets 0 0 0 0, right", "", ""));
-		JButton okButton = new JButton("OK");
-		panel.add(okButton, "sizegroup btn");
-		JButton cancelButton = new JButton("キャンセル");
-		cancelButton.addActionListener(event -> dispose());
+		panel.add(doneButton, "sizegroup btn");
 		panel.add(cancelButton, "sizegroup btn");
 		return panel;
 	}
@@ -131,22 +136,58 @@ class CashierDialog extends JDialog {
 
 	private void bind(){
 		printReceiptButton.addActionListener(event -> {
-			Service.api.getReceiptDrawerOps(visitId)
-					.whenComplete((result, t) -> {
-						if( t != null ){
-							t.printStackTrace();
-							alert("領収書のイメージの取得に失敗しました。\n" + t);
-							return;
-						}
-						JDialog dialog = new ReceiptPreviewDialog(this, result);
-						dialog.setLocationByPlatform(true);
-						dialog.setVisible(true);
+			final DataStore dataStore = new DataStore();
+			Service.api.getClinicInfo()
+					.thenCompose(clinicInfo -> {
+						dataStore.clinicInfo = clinicInfo;
+						return Service.api.getVisit(visitId);
+					})
+					.thenAccept(visit -> {
+						ReceiptDrawerData data = ReceiptDrawerDataCreator.create(charge.charge, patient,
+								visit, meisai, dataStore.clinicInfo);
+						ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
+						List<Op> ops = receiptDrawer.getOps();
+						EventQueue.invokeLater(() -> {
+							ReceiptPreviewDialog dialog = new ReceiptPreviewDialog(this, ops);
+							dialog.setLocationByPlatform(true);
+							dialog.setVisible(true);
+						});
+
+					})
+					.exceptionally(t -> {
+						t.printStackTrace();
+						alert(t.toString());
+						return null;
 					});
 		});
+		doneButton.addActionListener(event -> doDone());
+		cancelButton.addActionListener(event -> dispose());
+	}
+
+	private void doDone() {
+		PaymentDTO payment = new PaymentDTO();
+		payment.visitId = visitId;
+		payment.amount = charge.charge;
+		payment.paytime = DateTimeUtil.toSqlDateTime(LocalDateTime.now());
+		Service.api.finishCashier(payment)
+				.thenAccept(result -> {
+					EventQueue.invokeLater(() -> {
+						dispose();
+
+					});
+				})
+				.exceptionally(t -> {
+					t.printStackTrace();
+					alert(t.toString());
+					return null;
+				});
 	}
 
 	private void alert(String message){
 		JOptionPane.showMessageDialog(this, message);
 	}
 
+	private static class DataStore {
+		ClinicInfoDTO clinicInfo;
+	}
 }

@@ -1,9 +1,6 @@
 package jp.chang.myclinic.consts;
 
-import java.util.Map;
-import java.util.HashMap;
-
-public enum WqueueWaitState 
+public enum WqueueWaitState
 {
 	WaitExam(MyclinicConsts.WqueueStateWaitExam, "診待"),
 	InExam(MyclinicConsts.WqueueStateInExam, "診中"),
