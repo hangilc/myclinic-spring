@@ -1,21 +1,14 @@
 package jp.chang.myclinic;
 
 import jp.chang.myclinic.dto.PatientDTO;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowAdapter;
-import net.miginfocom.swing.MigLayout;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.Objects;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.time.chrono.JapaneseDate;
-import java.time.temporal.ChronoUnit;
+import java.util.concurrent.CompletableFuture;
 
 class SearchPatientDialog extends JDialog {
 
@@ -112,7 +105,9 @@ class SearchPatientDialog extends JDialog {
 
 	private JComponent makeInfo(){
 		JPanel panel = new JPanel(new MigLayout("insets 0", "[grow]", ""));
-		panel.add(infoArea, "grow");
+		JScrollPane sp = new JScrollPane(infoArea);
+		sp.setBorder(BorderFactory.createEmptyBorder());
+		panel.add(sp, "w 260, h 160, grow");
 		panel.add(editButton, "top, flowy, split 2, sizegroup btn");
 		panel.add(registerButton, "sizegroup btn");
 		return panel;
