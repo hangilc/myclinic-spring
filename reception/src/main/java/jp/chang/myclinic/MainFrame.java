@@ -220,6 +220,8 @@ class MainFrame extends JFrame {
 	}
 
 	public void doUpdateWqueue(){
+		WqueueData wqueueData = wqueueList.getSelectedValue();
+		final int selectedVisitId = wqueueData == null ? 0 : wqueueData.getVisitId();
 		Service.api.listWqueue()
 			.whenComplete((result, t) -> {
 				if( t != null ){
@@ -234,6 +236,7 @@ class MainFrame extends JFrame {
 					.toArray(size -> new WqueueData[size]);
 				EventQueue.invokeLater(() -> {
 					wqueueList.setListData(dataList);
+					wqueueList.setSelectedVisitId(selectedVisitId);
 				});
 			});
 	}

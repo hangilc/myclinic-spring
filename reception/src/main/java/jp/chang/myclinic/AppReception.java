@@ -36,6 +36,9 @@ public class AppReception
         	mainFrame.setLocationByPlatform(true);
         	mainFrame.setVisible(true);
         	mainFrame.doUpdateWqueue();
+			new Timer(5000, event -> {
+				mainFrame.doUpdateWqueue();
+			}).start();
         });
     }
 
