@@ -108,6 +108,9 @@ class MainFrame extends JFrame {
         patientInfoButton.addActionListener(event -> doPatientInfo());
         updateWqueueButton.addActionListener(event -> doUpdateWqueue());
         cashierButton.addActionListener(event -> doCashier());
+        unselectWqueueButton.addActionListener(event -> {
+        	wqueueList.setSelectedVisitId(0);
+		});
         closeButton.addActionListener(event -> onClosing());
 	}
 
