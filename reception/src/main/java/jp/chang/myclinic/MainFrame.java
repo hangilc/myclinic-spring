@@ -38,7 +38,7 @@ class MainFrame extends JFrame {
 		setLayout(new MigLayout("fill", "[grow]", ""));
 		add(makeRow1(), "wrap");
 		add(makeRow2(), "wrap");
-		add(makeCenter(), "grow, wrap");
+		add(makeCenter(), "w 500, h 300, grow, wrap");
 		add(makeRow3(), "wrap");
 		add(makeSouth(), "right");
 		bind();
@@ -73,9 +73,9 @@ class MainFrame extends JFrame {
 
 	private JComponent makeCenter(){
 		wqueueList = new WqueueList();
-		wqueueList.setPreferredSize(new Dimension(500, 300));
 		wqueueList.setListData(new WqueueData[]{});
-		return wqueueList;
+		JScrollPane sp = new JScrollPane(wqueueList);
+		return sp;
 	}
 
 	private JComponent makeRow3(){
