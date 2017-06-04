@@ -41,6 +41,7 @@ class MainFrame extends JFrame {
 		add(makeSouth(), "right");
 		bind();
 		pack();
+		patientIdField.requestFocus();
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter(){
 			@Override

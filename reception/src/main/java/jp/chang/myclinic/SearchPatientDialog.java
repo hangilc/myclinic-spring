@@ -77,7 +77,9 @@ class SearchPatientDialog extends JDialog {
 		resultList.addListSelectionListener(event -> {
 			if( event.getValueIsAdjusting() == false ){
 				PatientDTO select = resultList.getSelectedValue();
-				setInfo(select);
+				if( select != null ) {
+					setInfo(select);
+				}
 			}
 		});
 	}
