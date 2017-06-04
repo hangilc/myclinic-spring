@@ -35,6 +35,7 @@ public class AppReception
         	MainFrame mainFrame = new MainFrame();
         	mainFrame.setLocationByPlatform(true);
         	mainFrame.setVisible(true);
+        	mainFrame.doUpdateWqueue();
         });
     }
 

@@ -106,7 +106,7 @@ class MainFrame extends JFrame {
         printBlankReceiptButton.addActionListener(event -> doPrintBlankReceipt());
         registerButton.addActionListener(event -> doRegister());
         patientInfoButton.addActionListener(event -> doPatientInfo());
-        updateWqueueButton.addActionListener(event -> doUpdate());
+        updateWqueueButton.addActionListener(event -> doUpdateWqueue());
         cashierButton.addActionListener(event -> doCashier());
         closeButton.addActionListener(event -> onClosing());
 	}
@@ -219,7 +219,7 @@ class MainFrame extends JFrame {
 
 	}
 
-	private void doUpdate(){
+	public void doUpdateWqueue(){
 		Service.api.listWqueue()
 			.whenComplete((result, t) -> {
 				if( t != null ){
