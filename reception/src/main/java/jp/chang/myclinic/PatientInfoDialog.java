@@ -1,9 +1,10 @@
 package jp.chang.myclinic;
 
-import java.awt.*;
-import javax.swing.*;
-import net.miginfocom.swing.MigLayout;
 import jp.chang.myclinic.dto.PatientDTO;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.awt.*;
 
 class PatientInfoDialog extends JDialog {
 
@@ -17,7 +18,9 @@ class PatientInfoDialog extends JDialog {
 				modal ? Dialog.ModalityType.DOCUMENT_MODAL : Dialog.ModalityType.MODELESS);
 		this.patient = patient;
 		setLayout(new MigLayout("fill, flowy, wrap", "[grow]", "[grow] []"));
-		add(infoPane, "w 300, grow");
+		JScrollPane sp = new JScrollPane(infoPane);
+		sp.setBorder(BorderFactory.createEmptyBorder());
+		add(sp, "w 300, grow");
 		add(makeSouth(), "right");
 		infoPane.setPatient(patient);
 		bind();

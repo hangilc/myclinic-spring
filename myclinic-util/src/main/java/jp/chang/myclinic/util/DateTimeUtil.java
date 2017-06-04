@@ -2,8 +2,9 @@ package jp.chang.myclinic.util;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.chrono.JapaneseDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public class DateTimeUtil {
 
@@ -48,5 +49,13 @@ public class DateTimeUtil {
 
 	public static String formatSqlDateTime(String sqlDateTime, DateTimeFormatter formatter){
 		return toKanji(parseSqlDateTime(sqlDateTime), formatter);
+	}
+
+	public static int calcAge(LocalDate birthday, LocalDate at){
+		return (int)birthday.until(at, ChronoUnit.YEARS);
+	}
+
+	public static int calcAge(LocalDate birthday){
+		return calcAge(birthday, LocalDate.now());
 	}
 }
