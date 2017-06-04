@@ -29,7 +29,7 @@ class SearchPatientDialog extends JDialog {
 
 	SearchPatientDialog(){
 		setTitle("患者検索");
-		resultList = new JList<PatientDTO>(listModel);
+		resultList = new JList<>(listModel);
 		resultList.setCellRenderer(new Renderer());
 		resultList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		setupUI();
@@ -101,7 +101,7 @@ class SearchPatientDialog extends JDialog {
 	private JComponent makeSearchResult(){
 		JPanel panel = new JPanel(new MigLayout("insets 0", "[grow] []", "[grow]"));
 		JScrollPane scroll = new JScrollPane(resultList);
-		panel.add(scroll, "grow, width 260, height 300");
+		panel.add(scroll, "grow, width 260, height 260");
 		return panel;
 	}
 

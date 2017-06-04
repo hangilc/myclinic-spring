@@ -51,6 +51,10 @@ public class DateTimeUtil {
 		return toKanji(parseSqlDateTime(sqlDateTime), formatter);
 	}
 
+	public static String toSqlDateTime(LocalDateTime at){
+		return at.format(sqlDateTimeFormatter);
+	}
+
 	public static int calcAge(LocalDate birthday, LocalDate at){
 		return (int)birthday.until(at, ChronoUnit.YEARS);
 	}

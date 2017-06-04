@@ -30,13 +30,12 @@ public class VisitController {
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 
 	@RequestMapping(value="/start-visit", method=RequestMethod.POST)
-	public int startVisit(@RequestBody PatientIdTimeDTO arg){
-		int patientId = arg.patientId;
-		LocalDateTime at = LocalDateTime.parse(arg.time, dateTimeFormatter);
+	public int startVisit(@RequestParam("patient-id") int patientId){
+		LocalDateTime at = LocalDateTime.now();
 		LocalDate atDate = at.toLocalDate();
 		VisitDTO visitDTO = new VisitDTO();
 		visitDTO.patientId = patientId;
-		visitDTO.visitedAt = arg.time;
+		visitDTO.visitedAt = DateTimeUtil.toSqlDateTime(at);
 		{
 			List<ShahokokuhoDTO> list = dbGateway.findAvailableShahokokuho(patientId, atDate);
 			if( list.size() == 0 ){

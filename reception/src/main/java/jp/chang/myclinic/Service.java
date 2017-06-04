@@ -1,25 +1,20 @@
 package jp.chang.myclinic;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.drawer.JacksonOpDeserializer;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.dto.*;
-
 import retrofit2.Retrofit;
-import retrofit2.Call;
+import retrofit2.adapter.java8.Java8CallAdapterFactory;
+import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.Body;
 import retrofit2.http.Query;
-import retrofit2.converter.jackson.JacksonConverterFactory;
-import retrofit2.adapter.java8.Java8CallAdapterFactory;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 class Service {
     public static interface ServerAPI {
@@ -91,6 +86,9 @@ class Service {
 
         @GET("get-clinic-info")
         CompletableFuture<ClinicInfoDTO> getClinicInfo();
+
+        @POST("start-visit")
+        CompletableFuture<Integer> startVisit(@Query("patient-id") int patientId);
 	}
 
     public static ServerAPI api; 

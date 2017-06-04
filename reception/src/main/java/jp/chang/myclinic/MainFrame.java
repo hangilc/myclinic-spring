@@ -13,7 +13,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 class MainFrame extends JFrame {
 
@@ -102,10 +104,50 @@ class MainFrame extends JFrame {
             dialog.setVisible(true);
         });
         printBlankReceiptButton.addActionListener(event -> doPrintBlankReceipt());
+        registerButton.addActionListener(event -> doRegister());
         patientInfoButton.addActionListener(event -> doPatientInfo());
         updateWqueueButton.addActionListener(event -> doUpdate());
         cashierButton.addActionListener(event -> doCashier());
         closeButton.addActionListener(event -> onClosing());
+	}
+
+	private void doRegister() {
+		try {
+			int patientId = Integer.parseInt(patientIdField.getText());
+			Service.api.getPatient(patientId)
+					.thenCompose(patient -> {
+						ConfirmRegisterDialog confirmRegisterDialog = new ConfirmRegisterDialog(this, patient);
+						confirmRegisterDialog.setLocationByPlatform(true);
+						confirmRegisterDialog.setVisible(true);
+						if( confirmRegisterDialog.isCanceled() ){
+							throw new CancellationException();
+						} else {
+							return Service.api.startVisit(patientId);
+						}
+					})
+					.thenAccept(visitId -> {
+						System.out.println(visitId);
+					})
+					.exceptionally(t -> {
+						if (!(isCancellation(t))) {
+							t.printStackTrace();
+							alert(t.toString());
+						}
+						return null;
+					});
+		} catch (NumberFormatException e) {
+			alert("患者番号の入力が不適切です。");
+		}
+	}
+
+	private boolean isCancellation(Throwable t){
+		if( t instanceof CompletionException){
+			CompletionException ce = (CompletionException)t;
+			if( ce.getCause() instanceof CancellationException ){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void doPatientInfo() {
