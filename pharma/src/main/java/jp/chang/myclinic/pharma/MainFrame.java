@@ -18,12 +18,25 @@ public class MainFrame extends JFrame {
     private JButton startPrescButton = new JButton("調剤開始");
 
     public MainFrame(){
+        super("薬局");
+        setupMenu();
         setLayout(new MigLayout("fill", "[grow] [grow]", ""));
         add(makeLeft(), "");
         add(makeRight(), "");
         add(makeSouth(), "dock south, right");
         bind();
         pack();
+    }
+
+    private void setupMenu() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu settingMenu = new JMenu("設定");
+        JMenuItem printSettingItem = new JMenuItem("印刷設定");
+        settingMenu.add(printSettingItem);
+        JMenuItem printManageItem = new JMenuItem("印刷管理");
+        settingMenu.add(printManageItem);
+        menuBar.add(settingMenu);
+        setJMenuBar(menuBar);
     }
 
     private JComponent makeLeft(){
