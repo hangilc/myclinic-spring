@@ -25,6 +25,7 @@
     <module>dto</module>
     <module>myclinic-consts</module>
     <module>drawer</module>
+    <module>pharma</module>
   </modules>
 
 </project>
