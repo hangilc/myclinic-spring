@@ -16,13 +16,15 @@ public class MainFrame extends JFrame {
     private JCheckBox includePrescribedCheckBox = new JCheckBox("処方済の患者も含める");
     private JButton updatePatientListButton = new JButton("更新");
     private JButton startPrescButton = new JButton("調剤開始");
+    private JTextField prevTechouSearchField = new JTextField(6);
+    private JButton searchPrevTechouButton = new JButton("検索");
 
     public MainFrame(){
         super("薬局");
         setupMenu();
         setLayout(new MigLayout("fill", "[grow] [grow]", ""));
-        add(makeLeft(), "");
-        add(makeRight(), "");
+        add(makeLeft(), "top");
+        add(makeRight(), "top");
         add(makeSouth(), "dock south, right");
         bind();
         pack();
@@ -44,6 +46,7 @@ public class MainFrame extends JFrame {
         panel.add(new JLabel("患者リスト"), "left, wrap");
         panel.add(new JList(), "w 200, h 180, grow, wrap");
         panel.add(makePatientListSub(), "grow, wrap");
+        panel.add(makePrevTechou(), "grow");
         return panel;
     }
 
@@ -83,8 +86,23 @@ public class MainFrame extends JFrame {
         return panel;
     }
 
-    private JComponent makeRight(){
+    private JComponent makePrevTechou(){
         JPanel panel = new JPanel(new MigLayout("", "", ""));
+        panel.setBorder(BorderFactory.createTitledBorder("過去のお薬手帳"));
+        panel.add(prevTechouSearchField);
+        panel.add(searchPrevTechouButton);
+        return panel;
+    }
+
+    private JComponent makeRight(){
+        JPanel panel = new JPanel(new MigLayout("", "[grow]", "[]"));
+        panel.add(makeWorkarea(), "w 300, h 180");
+        return panel;
+    }
+
+    private JComponent makeWorkarea(){
+        JPanel panel = new JPanel(new MigLayout("", "", ""));
+        panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         return panel;
     }
 
