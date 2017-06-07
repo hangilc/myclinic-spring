@@ -22,6 +22,7 @@ class CashierDialog extends JDialog {
 	private JButton printReceiptButton;
 	private JButton doneButton = new JButton("会計終了");
 	private JButton cancelButton = new JButton("キャンセル");
+	private boolean canceled = true;
 
 	CashierDialog(JFrame owner, MeisaiDTO meisai, PatientDTO patient, ChargeDTO charge,
 				  List<PaymentDTO> payments, int visitId){
@@ -36,6 +37,10 @@ class CashierDialog extends JDialog {
 		add(makeSouth());
 		bind();
 		pack();
+	}
+
+	public boolean isCanceled(){
+		return canceled;
 	}
 
 	private JComponent makeCenter(){
@@ -152,7 +157,6 @@ class CashierDialog extends JDialog {
 							dialog.setLocationByPlatform(true);
 							dialog.setVisible(true);
 						});
-
 					})
 					.exceptionally(t -> {
 						t.printStackTrace();
@@ -161,7 +165,7 @@ class CashierDialog extends JDialog {
 					});
 		});
 		doneButton.addActionListener(event -> doDone());
-		cancelButton.addActionListener(event -> dispose());
+		cancelButton.addActionListener(event -> doCancel());
 	}
 
 	private void doDone() {
@@ -172,8 +176,8 @@ class CashierDialog extends JDialog {
 		Service.api.finishCashier(payment)
 				.thenAccept(result -> {
 					EventQueue.invokeLater(() -> {
+						canceled = false;
 						dispose();
-
 					});
 				})
 				.exceptionally(t -> {
@@ -181,6 +185,11 @@ class CashierDialog extends JDialog {
 					alert(t.toString());
 					return null;
 				});
+	}
+
+	private void doCancel(){
+		canceled = true;
+		dispose();
 	}
 
 	private void alert(String message){

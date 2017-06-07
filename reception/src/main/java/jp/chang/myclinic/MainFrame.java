@@ -141,6 +141,7 @@ class MainFrame extends JFrame {
 					})
 					.thenAccept(visitId -> {
 						EventQueue.invokeLater(() -> {
+							patientIdField.setText("");
 							doUpdateWqueue();
 						});
 					})
@@ -174,6 +175,7 @@ class MainFrame extends JFrame {
 						PatientInfoDialog patientInfoDialog = new PatientInfoDialog(this, patient, true);
 						patientInfoDialog.setLocationByPlatform(true);
 						patientInfoDialog.setVisible(true);
+						patientIdField.setText("");
 					})
 					.exceptionally(t -> {
 						t.printStackTrace();
@@ -283,6 +285,9 @@ class MainFrame extends JFrame {
 						CashierDialog dialog = new CashierDialog(this, meisai, wq.getPatient(), charge, payments, visitId);
 						dialog.setLocationByPlatform(true);
 						dialog.setVisible(true);
+						if( !dialog.isCanceled() ){
+							doUpdateWqueue();
+						}
 					});
 				});
 	}
