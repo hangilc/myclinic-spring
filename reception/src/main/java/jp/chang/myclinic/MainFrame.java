@@ -12,6 +12,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -31,7 +33,9 @@ class MainFrame extends JFrame {
 	private JButton cashierButton = new JButton("会計");
 	private JButton unselectWqueueButton = new JButton("選択解除");
 	private JButton deleteWqueueButton = new JButton("削除");
+	private JLabel messageBox = new JLabel("");
 	private JButton closeButton = new JButton("終了");
+	private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 	MainFrame(){
 		setTitle("受付");
@@ -40,7 +44,7 @@ class MainFrame extends JFrame {
 		add(makeRow2(), "wrap");
 		add(makeCenter(), "w 500, h 300, grow, wrap");
 		add(makeRow3(), "wrap");
-		add(makeSouth(), "right");
+		add(makeSouth(), "grow, right");
 		bind();
 		pack();
 		patientIdField.requestFocus();
@@ -88,7 +92,14 @@ class MainFrame extends JFrame {
 	}
 
 	private JComponent makeSouth(){
-        return closeButton;
+		JPanel panel = new JPanel(new MigLayout("insets 0", "[grow] []", ""));
+		JScrollPane sp = new JScrollPane(messageBox);
+		sp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		sp.setVerticalScrollBarPolicy((JScrollPane.VERTICAL_SCROLLBAR_NEVER));
+		sp.setBorder(BorderFactory.createEmptyBorder());
+		panel.add(sp, "grow");
+		panel.add(closeButton);
+		return panel;
 	}
 
 	private void bind(){
@@ -129,7 +140,9 @@ class MainFrame extends JFrame {
 						}
 					})
 					.thenAccept(visitId -> {
-						System.out.println(visitId);
+						EventQueue.invokeLater(() -> {
+							doUpdateWqueue();
+						});
 					})
 					.exceptionally(t -> {
 						if (!(isCancellation(t))) {
@@ -230,7 +243,9 @@ class MainFrame extends JFrame {
 				if( t != null ){
 					t.printStackTrace();
 					EventQueue.invokeLater(() -> {
-						JOptionPane.showMessageDialog(MainFrame.this, "サーバーアクセスエラー\n" + t.toString());
+						messageBox.setForeground(Color.RED);
+						messageBox.setText("患者リスト更新に失敗しました。" + LocalDateTime.now().format(timeFormatter));
+						//JOptionPane.showMessageDialog(MainFrame.this, "サーバーアクセスエラー\n" + t.toString());
 					});
 					return;
 				}
@@ -240,6 +255,8 @@ class MainFrame extends JFrame {
 				EventQueue.invokeLater(() -> {
 					wqueueList.setListData(dataList);
 					wqueueList.setSelectedVisitId(selectedVisitId);
+					messageBox.setForeground(Color.BLACK);
+					messageBox.setText("患者リスト更新 " + LocalDateTime.now().format(timeFormatter));
 				});
 			});
 	}
