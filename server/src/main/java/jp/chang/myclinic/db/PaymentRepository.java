@@ -33,4 +33,6 @@ public interface PaymentRepository extends CrudRepository<Payment, Integer> {
             " and visit.visitId = payment.visitId and patient.patientId = visit.patientId " +
             " and payment.visitId in :visitIds ")
     List<Object[]> findFullFinalPayment(@Param("visitIds") List<Integer> visitIds, Pageable pageable);
+
+    List<Payment> findByVisitId(int visitId);
 }

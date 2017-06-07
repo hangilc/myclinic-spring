@@ -1,13 +1,14 @@
 package jp.chang.myclinic.db;
 
 import jp.chang.myclinic.dto.*;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.math.BigDecimal;
-import org.springframework.stereotype.Component;
 
 @Component
 public class DTOMapper {
@@ -431,6 +432,22 @@ public class DTOMapper {
 		gazouLabel.setConductId(gazouLabelDTO.conductId);
 		gazouLabel.setLabel(gazouLabelDTO.label);
 		return gazouLabel;
+	}
+
+	public Text fromTextDTO(TextDTO textDTO){
+		Text text = new Text();
+		text.setTextId(textDTO.textId);
+		text.setVisitId(textDTO.visitId);
+		text.setContent(textDTO.content);
+		return text;
+	}
+
+	public TextDTO toTextDTO(Text text){
+		TextDTO textDTO = new TextDTO();
+		textDTO.textId = text.getTextId();
+		textDTO.visitId = text.getVisitId();
+		textDTO.content = text.getContent();
+		return textDTO;
 	}
 
 	private String nullableDateToString(Date date){

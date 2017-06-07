@@ -32,7 +32,7 @@ class MainFrame extends JFrame {
 	private JButton updateWqueueButton = new JButton("更新");
 	private JButton cashierButton = new JButton("会計");
 	private JButton unselectWqueueButton = new JButton("選択解除");
-	private JButton deleteWqueueButton = new JButton("削除");
+	private JButton deleteVisitButton = new JButton("削除");
 	private JLabel messageBox = new JLabel("");
 	private JButton closeButton = new JButton("終了");
 	private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -87,7 +87,7 @@ class MainFrame extends JFrame {
 		panel.add(updateWqueueButton);
 		panel.add(cashierButton);
 		panel.add(unselectWqueueButton);
-		panel.add(deleteWqueueButton);
+		panel.add(deleteVisitButton);
 		return panel;
 	}
 
@@ -122,6 +122,7 @@ class MainFrame extends JFrame {
         unselectWqueueButton.addActionListener(event -> {
         	wqueueList.setSelectedVisitId(0);
 		});
+        deleteVisitButton.addActionListener(event -> doDeleteVisit());
         closeButton.addActionListener(event -> onClosing());
 	}
 
@@ -247,7 +248,6 @@ class MainFrame extends JFrame {
 					EventQueue.invokeLater(() -> {
 						messageBox.setForeground(Color.RED);
 						messageBox.setText("患者リスト更新に失敗しました。" + LocalDateTime.now().format(timeFormatter));
-						//JOptionPane.showMessageDialog(MainFrame.this, "サーバーアクセスエラー\n" + t.toString());
 					});
 					return;
 				}
@@ -292,6 +292,33 @@ class MainFrame extends JFrame {
 				});
 	}
 
+	private void doDeleteVisit(){
+		WqueueData wq = wqueueList.getSelectedValue();
+		if( wq == null ){
+			return;
+		}
+//		if( wq.getState() != WqueueWaitState.WaitExam ){
+//			alert("診察待ちでないので、削除できません。");
+//			return;
+//		}
+		String confirmMessage = String.format("%s%s様（%d）の受付を削除していいですか？",
+				wq.getPatient().lastName, wq.getPatient().firstName, wq.getPatient().patientId);
+		if( !confirm(confirmMessage) ){
+			return;
+		}
+		int visitId = wq.getVisitId() ;
+		Service.api.deleteVisitFromReception(visitId)
+				.thenAccept(r -> {
+					System.out.println("done");
+					doUpdateWqueue();
+				})
+				.exceptionally(t -> {
+					t.printStackTrace();
+					alert(t.toString());
+					return null;
+				});
+	}
+
 	private WqueueData toWqueueData(WqueueFullDTO wq){
 		WqueueWaitState waitState = WqueueWaitState.fromCode(wq.wqueue.waitState);
 		PatientDTO patient = wq.patient;
@@ -304,5 +331,10 @@ class MainFrame extends JFrame {
 	private void alert(String message){
         JOptionPane.showMessageDialog(MainFrame.this, message);
     }
+
+	private boolean confirm(String message){
+		int choice = JOptionPane.showConfirmDialog(this, message, "確認", JOptionPane.YES_NO_OPTION);
+		return choice == JOptionPane.YES_OPTION;
+	}
 
 }

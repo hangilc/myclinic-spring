@@ -52,6 +52,8 @@ public class DbGateway {
 	private ConductKizaiRepository conductKizaiRepository;
 	@Autowired
 	private PharmaQueueRepository pharmaQueueRepository;
+	@Autowired
+	private TextRepository textRepository;
 
 	public List<WqueueFullDTO> listWqueueFull(){
 		try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
@@ -316,10 +318,16 @@ public class DbGateway {
 		.collect(Collectors.toList());
 	}
 
+	public List<TextDTO> listText(int visitId){
+		List<Text> texts = textRepository.findByVisitId(visitId);
+		return texts.stream().map(mapper::toTextDTO).collect(Collectors.toList());
+	}
+
 	public VisitFullDTO getVisitFull(int visitId){
 		VisitDTO visitDTO = getVisit(visitId);
 		VisitFullDTO visitFullDTO = new VisitFullDTO();
 		visitFullDTO.visit = visitDTO;
+		visitFullDTO.texts = listText(visitId);
 		visitFullDTO.shinryouList = listShinryouFull(visitId);
 		visitFullDTO.drugs = listDrugFull(visitId);
 		visitFullDTO.conducts = listConducts(visitId).stream()
@@ -335,6 +343,50 @@ public class DbGateway {
 	public ConductFullDTO getConductFull(int conductId){
 		ConductDTO conductDTO = getConduct(conductId);
 		return extendConduct(conductDTO);
+	}
+
+	public void deleteVisitFromReception(int visitId){
+		Optional<Wqueue> wqueueOpt = wqueueRepository.findByVisitId(visitId);
+		if( wqueueOpt.isPresent() ){
+			Wqueue wqueue = wqueueOpt.get();
+			if( wqueue.getWaitState() != WqueueWaitState.WaitExam.getCode() ){
+				throw new RuntimeException("診察の状態が診察待ちでないため、削除できません。");
+			}
+		}
+		deleteVisitSafely(visitId);
+	}
+
+	public void deleteVisitSafely(int visitId){
+		VisitFullDTO visit = getVisitFull(visitId);
+		if( visit.texts.size() > 0 ){
+			throw new RuntimeException("文章があるので、診察を削除できません。");
+		}
+		if( visit.drugs.size() > 0 ){
+			throw new RuntimeException("投薬があるので、診察を削除できません。");
+		}
+		if( visit.shinryouList.size() > 0 ){
+			throw new RuntimeException("診療行為があるので、診察を削除できません。");
+		}
+		if( visit.conducts.size() > 0 ){
+			throw new RuntimeException("処置があるので、診察を削除できません。");
+		}
+		Optional<Charge> optCharge = chargeRepository.findByVisitId(visitId);
+		if( optCharge.isPresent() ){
+			throw new RuntimeException("請求があるので、診察を削除できません。");
+		}
+		List<Payment> payments = paymentRepository.findByVisitId(visitId);
+		if( payments.size() > 0 ){
+			throw new RuntimeException("支払い記録があるので、診察を削除できません。");
+		}
+		Optional<Wqueue> optWqueue = wqueueRepository.findByVisitId(visitId);
+		if( optWqueue.isPresent() ){
+			wqueueRepository.delete(optWqueue.get());
+		}
+		Optional<PharmaQueue> optPharmaQueue = pharmaQueueRepository.findByVisitId(visitId);
+		if( optPharmaQueue.isPresent() ){
+			pharmaQueueRepository.delete(optPharmaQueue.get());
+		}
+		visitRepository.delete(visitId);
 	}
 
 	private ConductFullDTO extendConduct(ConductDTO conductDTO){

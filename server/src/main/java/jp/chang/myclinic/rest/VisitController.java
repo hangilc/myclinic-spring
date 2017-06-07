@@ -151,6 +151,12 @@ public class VisitController {
 		return dbGateway.getVisit(visitId);
 	}
 
+	@RequestMapping(value="/delete-visit-from-reception", method=RequestMethod.POST)
+	public boolean deleteVisitFromReception(@RequestParam("visit-id") int visitId){
+		dbGateway.deleteVisitFromReception(visitId);
+		return true;
+	}
+
 	private SectionItemDTO toSectionItemDTO(SectionItem sectionItem) {
 		SectionItemDTO sectionItemDTO = new SectionItemDTO();
 		sectionItemDTO.label = sectionItem.getLabel();

@@ -92,6 +92,9 @@ class Service {
 
         @POST("finish-cashier")
         CompletableFuture<Boolean> finishCashier(@Body PaymentDTO payment);
+
+        @POST("delete-visit-from-reception")
+        CompletableFuture<Boolean> deleteVisitFromReception(@Query("visit-id") int visitId);
 	}
 
     public static ServerAPI api; 
