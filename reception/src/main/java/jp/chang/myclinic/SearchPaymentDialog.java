@@ -17,6 +17,7 @@ class SearchPaymentDialog extends JDialog {
 	private JButton searchButton = new JButton("検索");
 	private SearchPaymentResultList resultList = new SearchPaymentResultList();
 	private JButton reprintReceiptButton = new JButton("領収書再発行");
+	private JButton dispMeisaiButton = new JButton("明細情報表示");
 	private JButton closeButton = new JButton("閉じる");
 
 	SearchPaymentDialog(Window owner) {
@@ -24,7 +25,7 @@ class SearchPaymentDialog extends JDialog {
 		setLayout(new MigLayout("fill", "[grow]", "[] [grow]"));
 		add(makeSearchInputPane(), "wrap");
 		add(makeSearchResultPane(), "grow, wrap");
-		add(reprintReceiptButton, "wrap");
+		add(makeCommandPane(), "wrap");
 		add(closeButton, "right");
 		bind();
 		pack();
@@ -36,6 +37,13 @@ class SearchPaymentDialog extends JDialog {
 		panel.add(new JLabel("患者番号"));
 		panel.add(searchTextField, "");
 		panel.add(searchButton);
+		return panel;
+	}
+
+	private JComponent makeCommandPane(){
+		JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+		panel.add(reprintReceiptButton);
+		panel.add(dispMeisaiButton);
 		return panel;
 	}
 
@@ -96,10 +104,36 @@ class SearchPaymentDialog extends JDialog {
 						return null;
 					});
 		});
+		dispMeisaiButton.addActionListener(event -> doDispMeisai());
 		searchButton.addActionListener(event -> doSearch());
 		closeButton.addActionListener(event -> {
 			dispose();
 		});
+	}
+
+	private void doDispMeisai() {
+		PaymentVisitPatientDTO selection = resultList.getSelectedValue();
+		if( selection == null ){
+			return;
+		}
+		PatientDTO patient = selection.patient;
+		int visitId = selection.payment.visitId;
+		final DataStore dataStore = new DataStore();
+		Service.api.findCharge(visitId)
+				.thenCompose(charge -> {
+					dataStore.charge = charge.charge;
+					return Service.api.getVisitMeisai(visitId);
+				})
+				.thenAccept(meisai -> {
+
+				})
+				.exceptionally(t -> {
+					t.printStackTrace();
+					EventQueue.invokeLater(() -> {
+						alert(t.toString());
+					});
+					return null;
+				});
 	}
 
 	private void doSearch(){
