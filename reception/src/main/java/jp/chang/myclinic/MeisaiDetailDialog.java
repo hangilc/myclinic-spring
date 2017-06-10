@@ -12,28 +12,23 @@ public class MeisaiDetailDialog extends JDialog {
 
     public MeisaiDetailDialog(Window owner){
         super(owner, "明細の詳細");
-        setLayout(new MigLayout("fill", "[grow]", "[grow]"));
-        add(new MeisaiDetailPane(), "grow");
+        setLayout(new MigLayout("", "[]", "[]"));
+        add(new MeisaiDetailPane(), "");
         pack();
     }
 
     private static class MeisaiDetailPane extends JPanel {
         MeisaiDetailPane() {
-            super(new MigLayout("insets 0, debug", "[grow] []", "[grow]"));
+            super(new MigLayout("insets 0", "[] []", "[]"));
             {
-                String text = "long long text for testing purpose";
+                String text = "明細の詳細明細の詳細明細の詳細明細の詳細明細の詳細明細の詳細";
                 JTextArea ta = new JTextArea(text);
                 ta.setLineWrap(true);
-                add(ta, "grow");
-                add(new JLabel("3 x 10 = 30"), "wrap");
-            }
-            {
-                String text = "long long text for testing purpose";
-                JTextArea ta = new JTextArea(text);
-                ta.setLineWrap(true);
-                add(ta, "grow");
+                ta.setBackground(getBackground());
+                add(ta, "w 200");
                 add(new JLabel("3 x 10 = 30"), "wrap");
             }
         }
     }
 }
+
