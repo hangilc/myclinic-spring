@@ -450,6 +450,20 @@ public class DTOMapper {
 		return textDTO;
 	}
 
+	public PharmaQueueDTO toPharmaQueueDTO(PharmaQueue pharmaQueue){
+		PharmaQueueDTO pharmaQueueDTO = new PharmaQueueDTO();
+		pharmaQueueDTO.visitId = pharmaQueue.getVisitId();
+		pharmaQueueDTO.pharmaState = pharmaQueue.getPharmaState();
+		return pharmaQueueDTO;
+	}
+
+	public PharmaQueue fromPharmaQueueDTO(PharmaQueueDTO pharmaQueueDTO){
+		PharmaQueue pharmaQueue = new PharmaQueue();
+		pharmaQueue.setVisitId(pharmaQueueDTO.visitId);
+		pharmaQueue.setPharmaState(pharmaQueueDTO.pharmaState);
+		return pharmaQueue;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;

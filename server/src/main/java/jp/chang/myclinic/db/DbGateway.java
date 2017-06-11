@@ -501,6 +501,16 @@ public class DbGateway {
 		}
 	}
 
+	public List<PharmaQueueFullDTO> listPharmaQueueFullForPrescription(){
+		return pharmaQueueRepository.findFullForPrescription().stream()
+				.map(this::resultToPharmaQueueFull).collect(Collectors.toList());
+	}
+
+	public List<PharmaQueueFullDTO> listPharmaQueueFullForToday(){
+		return pharmaQueueRepository.findFullForToday().stream()
+				.map(this::resultToPharmaQueueFull).collect(Collectors.toList());
+	}
+
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
 		Shinryou shinryou = (Shinryou)result[0];
 		ShinryouMaster master = (ShinryouMaster)result[1];
@@ -564,6 +574,14 @@ public class DbGateway {
 		paymentVisitPatientDTO.visit = visitDTO;
 		paymentVisitPatientDTO.patient = patientDTO;
 		return paymentVisitPatientDTO;
+	}
+
+	private PharmaQueueFullDTO resultToPharmaQueueFull(Object[] result){
+		PharmaQueueFullDTO pharmaQueueFullDTO = new PharmaQueueFullDTO();
+		PatientDTO patientDTO = mapper.toPatientDTO((Patient)result[1]);
+		pharmaQueueFullDTO.pharmaQueue = mapper.toPharmaQueueDTO((PharmaQueue)result[0]);
+		pharmaQueueFullDTO.patient = mapper.toPatientDTO((Patient)result[1]);
+		return pharmaQueueFullDTO;
 	}
 
  }
