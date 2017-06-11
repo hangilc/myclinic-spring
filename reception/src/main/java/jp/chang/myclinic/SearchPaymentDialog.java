@@ -125,7 +125,7 @@ class SearchPaymentDialog extends JDialog {
 					return Service.api.getVisitMeisai(visitId);
 				})
 				.thenAccept(meisai -> {
-					MeisaiDetailDialog meisaiDetailDialog = new MeisaiDetailDialog(this);
+					MeisaiDetailDialog meisaiDetailDialog = new MeisaiDetailDialog(this, meisai);
 					meisaiDetailDialog.setLocationByPlatform(true);
 					meisaiDetailDialog.setVisible(true);
 				})
