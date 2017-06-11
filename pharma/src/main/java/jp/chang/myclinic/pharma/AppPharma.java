@@ -11,9 +11,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-/**
- * Hello world!
- */
 public class AppPharma {
     public static void main(String[] args) throws IOException {
         if( args.length == 0 ){
@@ -35,7 +32,7 @@ public class AppPharma {
                 ex.printStackTrace();
             }
             MainFrame mainFrame = new MainFrame();
-            mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             mainFrame.setLocationByPlatform(true);
             mainFrame.setVisible(true);
 

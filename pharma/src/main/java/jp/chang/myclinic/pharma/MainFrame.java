@@ -1,5 +1,6 @@
 package jp.chang.myclinic.pharma;
 
+import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;
@@ -12,6 +13,7 @@ import java.io.IOException;
  */
 public class MainFrame extends JFrame {
 
+    private PharmaQueueList pharmaQueueList = new PharmaQueueList();
     private JButton closeButton = new JButton("閉じる");
     private JCheckBox includePrescribedCheckBox = new JCheckBox("処方済の患者も含める");
     private JButton updatePatientListButton = new JButton("更新");
@@ -44,7 +46,7 @@ public class MainFrame extends JFrame {
     private JComponent makeLeft(){
         JPanel panel = new JPanel(new MigLayout("", "", ""));
         panel.add(new JLabel("患者リスト"), "left, wrap");
-        panel.add(new JList(), "w 200, h 180, grow, wrap");
+        panel.add(new JScrollPane(pharmaQueueList), "w 200, h 180, grow, wrap");
         panel.add(makePatientListSub(), "grow, wrap");
         panel.add(makePrevTechou(), "grow");
         return panel;
@@ -96,6 +98,7 @@ public class MainFrame extends JFrame {
 
     private JComponent makeRight(){
         JPanel panel = new JPanel(new MigLayout("", "[grow]", "[]"));
+        panel.add(new JLabel("投薬"), "wrap");
         panel.add(makeWorkarea(), "w 300, h 180");
         return panel;
     }
@@ -113,9 +116,22 @@ public class MainFrame extends JFrame {
     }
 
     private void bind(){
+        updatePatientListButton.addActionListener(event -> doUpdatePatientList());
         closeButton.addActionListener(event -> {
             dispose();
         });
+    }
+
+    private void doUpdatePatientList() {
+        Service.api.listPharmaQueueForPrescription()
+                .thenAccept(result -> {
+                    pharmaQueueList.setListData(result.toArray(new PharmaQueueFullDTO[]{}));
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    //alert(t.toString());
+                    return null;
+                });
     }
 
     private void alert(String message){

@@ -6,4 +6,5 @@ package jp.chang.myclinic.dto;
 public class PharmaQueueFullDTO {
     public PharmaQueueDTO pharmaQueue;
     public PatientDTO patient;
+    public WqueueDTO wqueue;
 }

@@ -4,9 +4,9 @@ package jp.chang.myclinic.consts;
  * Created by hangil on 2017/06/04.
  */
 public enum PharmaQueueState {
-    WaitPack(0),
-    InPack(1),
-    PackDone(2);
+    WaitPack(MyclinicConsts.PharmaQueueStateWaitPack),
+    InPack(MyclinicConsts.PharmaQueueStateInPack),
+    PackDone(MyclinicConsts.PharmaQueueStatePackDone);
 
     private int code;
 
@@ -16,5 +16,14 @@ public enum PharmaQueueState {
 
     public int getCode(){
         return code;
+    }
+
+    public static PharmaQueueState fromCode(int code){
+        for(PharmaQueueState state: values()){
+            if( state.code == code ){
+                return state;
+            }
+        }
+        return null;
     }
 }

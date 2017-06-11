@@ -2,6 +2,7 @@ package jp.chang.myclinic.db;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,4 +18,9 @@ public interface WqueueRepository extends CrudRepository<Wqueue, Integer> {
     Stream<Wqueue> findAllAsStream();
 
     Optional<Wqueue> findByVisitId(int visitId);
+
+    @Query("select q, p, v from Wqueue q, Patient p, Visit v " +
+            " where q.waitState in :waitStates and v.visitId = q.visitId " +
+            " and p.patientId = v.patientId ")
+    List<Object[]> findFullByStateSet(@Param("waitStates") Set<Integer> waitStates);
 }

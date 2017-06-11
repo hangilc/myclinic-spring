@@ -11,6 +11,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -66,6 +67,12 @@ public class DbGateway {
 			})
 			.collect(Collectors.toList());
 		}
+	}
+
+	public List<WqueueFullDTO> listWqueueFullByStates(Set<WqueueWaitState> states){
+		Set<Integer> waitSets = states.stream().mapToInt(s -> s.getCode()).boxed().collect(Collectors.toSet());
+		return wqueueRepository.findFullByStateSet(waitSets).stream()
+				.map(this::resultToWqueueFull).collect(Collectors.toList());
 	}
 
 	public void enterWqueue(WqueueDTO wqueueDTO){
@@ -502,8 +509,9 @@ public class DbGateway {
 	}
 
 	public List<PharmaQueueFullDTO> listPharmaQueueFullForPrescription(){
-		return pharmaQueueRepository.findFullForPrescription().stream()
-				.map(this::resultToPharmaQueueFull).collect(Collectors.toList());
+		return pharmaQueueRepository.findAll().stream()
+				.map()
+				.collect(Collectors.toList());
 	}
 
 	public List<PharmaQueueFullDTO> listPharmaQueueFullForToday(){
@@ -582,6 +590,14 @@ public class DbGateway {
 		pharmaQueueFullDTO.pharmaQueue = mapper.toPharmaQueueDTO((PharmaQueue)result[0]);
 		pharmaQueueFullDTO.patient = mapper.toPatientDTO((Patient)result[1]);
 		return pharmaQueueFullDTO;
+	}
+
+	private WqueueFullDTO resultToWqueueFull(Object[] result){
+		WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
+		wqueueFullDTO.wqueue = mapper.toWqueueDTO((Wqueue)result[0]);
+		wqueueFullDTO.patient = mapper.toPatientDTO((Patient)result[1]);
+		wqueueFullDTO.visit = mapper.toVisitDTO((Visit)result[2]);
+		return wqueueFullDTO;
 	}
 
  }
