@@ -5,6 +5,7 @@ import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.NumberUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -44,15 +45,16 @@ class CashierDialog extends JDialog {
 	}
 
 	private JComponent makeCenter(){
-		JPanel panel = new JPanel(new MigLayout("insets 0 0 0 0", "[grow]", "[grow]"));
-		{
-			JLabel label = new JLabel(makeLabelContent());
-			label.setHorizontalAlignment(SwingConstants.LEFT);
-			label.setVerticalAlignment(SwingConstants.TOP);
-			label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-			JScrollPane scroll = new JScrollPane(label);
-			panel.add(scroll, "width :400:, height :300:, top, grow");
-		}
+		JPanel panel = new JPanel(new MigLayout("insets 0 0 0 0", "[]", "[]"));
+//		{
+//			JLabel label = new JLabel(makeLabelContent());
+//			label.setHorizontalAlignment(SwingConstants.LEFT);
+//			label.setVerticalAlignment(SwingConstants.TOP);
+//			label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+//			JScrollPane scroll = new JScrollPane(label);
+//			panel.add(scroll, "width :400:, height :300:, top, grow");
+//		}
+		panel.add(makeMeisaiDetail(), "");
 		{
 			JPanel box = new JPanel(new MigLayout("insets 0 0 0 0", "", ""));
 			printReceiptButton = new JButton("領収書発行");
@@ -61,6 +63,16 @@ class CashierDialog extends JDialog {
 			box.add(printBlankButton, "sizegroup btn, gap push");
 			panel.add(box, "top");
 		}
+		return panel;
+	}
+
+	private JComponent makeMeisaiDetail(){
+		JPanel panel = new JPanel(new MigLayout("insets 0, gapy 0px", "", ""));
+		panel.add(new JLabel(patientLabel(patient)), "wrap");
+		panel.add(new MeisaiDetailPane(meisai), "gaptop 5, wrap");
+		panel.add(new JLabel("総点：" + NumberUtil.formatNumber(meisai.totalTen) + "点"), "gaptop 5, wrap");
+		panel.add(new JLabel("負担割：" + meisai.futanWari + "割"), "wrap");
+		panel.add(new JLabel("請求額：" + NumberUtil.formatNumber(meisai.charge) + "円"), "wrap");
 		return panel;
 	}
 
@@ -137,6 +149,10 @@ class CashierDialog extends JDialog {
 		}
 		sb.append("</div>");
 		sb.append("</div>");
+	}
+
+	private String patientLabel(PatientDTO patient){
+		return String.format("(%d) %s %S ", patient.patientId, patient.lastName, patient.firstName);
 	}
 
 	private void bind(){

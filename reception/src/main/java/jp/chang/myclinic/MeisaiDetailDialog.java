@@ -22,7 +22,7 @@ public class MeisaiDetailDialog extends JDialog {
         add(new MeisaiDetailPane(meisai), "gaptop 5, wrap");
         add(new JLabel("総点：" + NumberUtil.formatNumber(meisai.totalTen) + "点"), "gaptop 5, wrap");
         add(new JLabel("負担割：" + meisai.futanWari + "割"), "wrap");
-        add(new JLabel("請求額" + meisai.charge + "円"), "wrap");
+        add(new JLabel("請求額：" + NumberUtil.formatNumber(meisai.charge) + "円"), "wrap");
         add(closeButton, "right");
         bind();
         pack();
