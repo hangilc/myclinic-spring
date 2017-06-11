@@ -48,7 +48,7 @@ public class ReceiptDrawerDataCreator {
     }
 
     public void setVisitDate(VisitDTO visit){
-        data.setVisitDate(DateTimeUtil.formatSqlDateTime(visit.visitedAt, DateTimeUtil.kanjiFormatter1));
+        data.setVisitDate(DateTimeUtil.sqlDateTimeToKanji(visit.visitedAt, DateTimeUtil.kanjiFormatter1, null));
     }
 
     public void setIssueDate(){

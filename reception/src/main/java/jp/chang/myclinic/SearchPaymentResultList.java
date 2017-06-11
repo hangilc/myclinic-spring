@@ -30,7 +30,7 @@ public class SearchPaymentResultList extends JList<PaymentVisitPatientDTO> {
             VisitDTO visit = value.visit;
             PaymentDTO payment = value.payment;
             String label = String.format("[%d] %s %s %d円　%s", patient.patientId, patient.lastName, patient.firstName,
-                    payment.amount, DateTimeUtil.formatSqlDateTime(visit.visitedAt, DateTimeUtil.kanjiFormatter3));
+                    payment.amount, DateTimeUtil.sqlDateTimeToKanji(visit.visitedAt, DateTimeUtil.kanjiFormatter3, null));
             setText(label);
             if( isSelected ){
                 setBackground(list.getSelectionBackground());

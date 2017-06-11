@@ -13,6 +13,7 @@ public class DateTimeUtil {
 	public static DateTimeFormatter kanjiFormatter1 = DateTimeFormatter.ofPattern("Gy年M月d日");
 	public static DateTimeFormatter kanjiFormatter2 = DateTimeFormatter.ofPattern("Gyy年MM月dd日");
 	public static DateTimeFormatter kanjiFormatter3 = DateTimeFormatter.ofPattern("Gyy年MM月dd日（E）");
+	public static DateTimeFormatter kanjiFormatter4 = DateTimeFormatter.ofPattern("HH時mm分");
 
 	public static String toKanji(LocalDate date, DateTimeFormatter formatter){
 			JapaneseDate jd = JapaneseDate.from(date);
@@ -39,16 +40,26 @@ public class DateTimeUtil {
 		return LocalDate.parse(sqlDate, sqlDateFormatter);
 	}
 
-	public static String formatSqlDate(String sqlDate){
-		return formatSqlDate(sqlDate, kanjiFormatter1);
+	public static String sqlDateToKanji(String sqlDate){
+		return sqlDateToKanji(sqlDate, kanjiFormatter1);
 	}
 
-	public static String formatSqlDate(String sqlDate, DateTimeFormatter formatter){
+	public static String sqlDateToKanji(String sqlDate, DateTimeFormatter formatter){
 		return toKanji(parseSqlDate(sqlDate), formatter);
 	}
 
-	public static String formatSqlDateTime(String sqlDateTime, DateTimeFormatter formatter){
-		return toKanji(parseSqlDateTime(sqlDateTime), formatter);
+	public static String sqlDateTimeToKanji(String sqlDateTime, DateTimeFormatter dateFormatter, DateTimeFormatter timeFormatter, String separator){
+		LocalDateTime dt = parseSqlDateTime(sqlDateTime);
+		String datePart = toKanji(dt.toLocalDate(), dateFormatter);
+		String timePart = "";
+		if( timeFormatter != null ){
+			timePart = separator + dt.format(timeFormatter);
+		}
+		return datePart + timePart;
+	}
+
+	public static String sqlDateTimeToKanji(String sqlDateTime, DateTimeFormatter dateFormatter, DateTimeFormatter timeFormatter) {
+		return sqlDateTimeToKanji(sqlDateTime, dateFormatter, timeFormatter, " ");
 	}
 
 	public static String toSqlDateTime(LocalDateTime at){
