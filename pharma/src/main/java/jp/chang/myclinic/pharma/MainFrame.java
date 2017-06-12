@@ -13,16 +13,19 @@ import java.io.IOException;
  */
 public class MainFrame extends JFrame {
 
-    private PharmaQueueList pharmaQueueList = new PharmaQueueList();
+    private PharmaQueueList pharmaQueueList;
     private JButton closeButton = new JButton("閉じる");
     private JCheckBox includePrescribedCheckBox = new JCheckBox("処方済の患者も含める");
     private JButton updatePatientListButton = new JButton("更新");
     private JButton startPrescButton = new JButton("調剤開始");
     private JTextField prevTechouSearchField = new JTextField(6);
     private JButton searchPrevTechouButton = new JButton("検索");
+    private static Icon waitCashierIcon;
+    private static Icon waitDrugIcon;
 
-    public MainFrame(){
+    public MainFrame() throws IOException{
         super("薬局");
+        setupIcons();
         setupMenu();
         setLayout(new MigLayout("fill", "[grow] [grow]", ""));
         add(makeLeft(), "top");
@@ -30,6 +33,13 @@ public class MainFrame extends JFrame {
         add(makeSouth(), "dock south, right");
         bind();
         pack();
+    }
+
+    private void setupIcons() throws IOException {
+        Image waitCashierImage = ImageIO.read(getClass().getResource("/wait_cashier.bmp"));
+        waitCashierIcon = new ImageIcon(waitCashierImage);
+        Image waitPackImage = ImageIO.read(getClass().getResource("/wait_drug.bmp"));
+        waitDrugIcon = new ImageIcon(waitPackImage);
     }
 
     private void setupMenu() {
@@ -44,6 +54,7 @@ public class MainFrame extends JFrame {
     }
 
     private JComponent makeLeft(){
+        pharmaQueueList = new PharmaQueueList(waitCashierIcon, waitDrugIcon);
         JPanel panel = new JPanel(new MigLayout("", "", ""));
         panel.add(new JLabel("患者リスト"), "left, wrap");
         panel.add(new JScrollPane(pharmaQueueList), "w 200, h 180, grow, wrap");
@@ -61,19 +72,12 @@ public class MainFrame extends JFrame {
 
     private JComponent makePatientListSubRow1(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        try {
-            Image waitCashierIcon = ImageIO.read(getClass().getResource("/wait_cashier.bmp"));
-            JLabel waitCashierLabel = new JLabel("会計待ち");
-            waitCashierLabel.setIcon(new ImageIcon(waitCashierIcon));
-            Image waitPackIcon = ImageIO.read(getClass().getResource("/wait_drug.bmp"));
-            JLabel waitPackLabel = new JLabel("薬渡待ち");
-            waitPackLabel.setIcon(new ImageIcon(waitPackIcon));
-            panel.add(waitCashierLabel);
-            panel.add(waitPackLabel);
-        } catch (IOException e) {
-            e.printStackTrace();
-            alert("画像を読み込めませんでした。");
-        }
+        JLabel waitCashierLabel = new JLabel("会計待ち");
+        waitCashierLabel.setIcon(waitCashierIcon);
+        JLabel waitPackLabel = new JLabel("薬渡待ち");
+        waitPackLabel.setIcon(waitDrugIcon);
+        panel.add(waitCashierLabel);
+        panel.add(waitPackLabel);
         return panel;
     }
 

@@ -3,16 +3,17 @@ package jp.chang.myclinic.pharma;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created by hangil on 2017/06/11.
  */
 public class PharmaQueueList extends JList<PharmaQueueFullDTO> {
 
-    public PharmaQueueList(){
+    public PharmaQueueList(Icon waitCashierImage, Icon waitDrugImage){
         super();
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        this.setCellRenderer(new PharmaQueueListListCellRenderer());
+        this.setCellRenderer(new PharmaQueueListListCellRenderer(waitCashierImage, waitDrugImage));
     }
 
     public void setSelectedVisitId(int visitId){

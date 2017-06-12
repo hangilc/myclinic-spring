@@ -509,8 +509,16 @@ public class DbGateway {
 	}
 
 	public List<PharmaQueueFullDTO> listPharmaQueueFullForPrescription(){
-		return pharmaQueueRepository.findAll().stream()
-				.map()
+		return pharmaQueueRepository.findFull().stream()
+				.map(result -> {
+					PharmaQueueFullDTO pharmaQueueFullDTO = new PharmaQueueFullDTO();
+					pharmaQueueFullDTO.pharmaQueue = mapper.toPharmaQueueDTO((PharmaQueue)result[0]);
+					pharmaQueueFullDTO.patient = mapper.toPatientDTO((Patient)result[1]);
+					Optional<Wqueue> optWqueue = wqueueRepository.findByVisitId(pharmaQueueFullDTO.pharmaQueue.visitId);
+					pharmaQueueFullDTO.wqueue = optWqueue.map(mapper::toWqueueDTO).orElse(null);
+					pharmaQueueFullDTO.visitId = pharmaQueueFullDTO.pharmaQueue.visitId;
+					return pharmaQueueFullDTO;
+				})
 				.collect(Collectors.toList());
 	}
 
