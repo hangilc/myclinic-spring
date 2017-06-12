@@ -26,4 +26,6 @@ public interface PharmaQueueRepository extends CrudRepository<PharmaQueue, Integ
     @Query("select queue, patient from PharmaQueue queue, Visit visit, Patient patient " +
             " where queue.visitId = visit.visitId and visit.patientId = patient.patientId ")
     List<Object[]> findFull();
+
+    List<PharmaQueue> findAll();
 }

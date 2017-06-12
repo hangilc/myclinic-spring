@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -523,8 +521,28 @@ public class DbGateway {
 	}
 
 	public List<PharmaQueueFullDTO> listPharmaQueueFullForToday(){
-		return pharmaQueueRepository.findFullForToday().stream()
-				.map(this::resultToPharmaQueueFull).collect(Collectors.toList());
+		List<Integer> visitIds = visitRepository.findVisitIdForToday();
+		Map<Integer, WqueueDTO> wqueueMap = new HashMap<>();
+		Map<Integer, PharmaQueueDTO> pharmaQueueMap = new HashMap<>();
+		wqueueRepository.findAll().forEach(wq -> {
+			wqueueMap.put(wq.getVisitId(), mapper.toWqueueDTO(wq));
+		});
+		pharmaQueueRepository.findAll().forEach(pq -> {
+			pharmaQueueMap.put(pq.getVisitId(), mapper.toPharmaQueueDTO(pq));
+		});
+		return visitRepository.findByVisitIdsWithPatient(visitIds).stream()
+				.map(result -> {
+					Visit visit = (Visit)result[0];
+					int visitId = visit.getVisitId();
+					Patient patient = (Patient)result[1];
+					PharmaQueueFullDTO pharmaQueueFullDTO = new PharmaQueueFullDTO();
+					pharmaQueueFullDTO.visitId = visitId;
+					pharmaQueueFullDTO.patient = mapper.toPatientDTO(patient);
+					pharmaQueueFullDTO.pharmaQueue = pharmaQueueMap.get(visitId);
+					pharmaQueueFullDTO.wqueue = wqueueMap.get(visitId);
+					return pharmaQueueFullDTO;
+				})
+				.collect(Collectors.toList());
 	}
 
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){

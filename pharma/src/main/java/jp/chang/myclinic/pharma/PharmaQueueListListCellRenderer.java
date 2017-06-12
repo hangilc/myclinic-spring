@@ -13,14 +13,14 @@ import java.awt.*;
  */
 public class PharmaQueueListListCellRenderer extends JLabel implements ListCellRenderer<PharmaQueueFullDTO> {
 
-    private Icon waitCashierImage;
-    private Icon waitDrugImage;
-    private Icon blankImage;
+    private Icon waitCashierIcon;
+    private Icon waitDrugIcon;
+    private Icon blankIcon;
 
-    public PharmaQueueListListCellRenderer(Icon waitCashierImage, Icon waitDrugImage){
-        this.waitCashierImage = waitCashierImage;
-        this.waitDrugImage = waitDrugImage;
-        this.blankImage = new BlankIcon(12, 12);
+    public PharmaQueueListListCellRenderer(Icon waitCashierIcon, Icon waitDrugIcon){
+        this.waitCashierIcon = waitCashierIcon;
+        this.waitDrugIcon = waitDrugIcon;
+        this.blankIcon = new BlankIcon(12, 12);
     }
 
     @Override
@@ -32,14 +32,17 @@ public class PharmaQueueListListCellRenderer extends JLabel implements ListCellR
             switch(WqueueWaitState.fromCode(wqueue.waitState)){
                 case WaitCashier: {
                     setForeground(Color.GREEN);
+                    setIcon(waitCashierIcon);
                     break;
                 }
                 case WaitDrug: {
                     setForeground(Color.RED);
+                    setIcon(waitDrugIcon);
                     break;
                 }
                 default: {
                     setForeground(Color.BLACK);
+                    setIcon(blankIcon);
                     break;
                 }
             }

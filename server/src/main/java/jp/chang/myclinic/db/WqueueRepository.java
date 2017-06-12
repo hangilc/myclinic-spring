@@ -23,4 +23,6 @@ public interface WqueueRepository extends CrudRepository<Wqueue, Integer> {
             " where q.waitState in :waitStates and v.visitId = q.visitId " +
             " and p.patientId = v.patientId ")
     List<Object[]> findFullByStateSet(@Param("waitStates") Set<Integer> waitStates);
+
+    List<Wqueue> findAll();
 }
