@@ -34,9 +34,12 @@ public class MainFrame extends JFrame {
             throw new RuntimeException("failed to load icons");
         }
         setupMenu();
-        setLayout(new MigLayout("fill", "[grow] [grow]", ""));
+        setLayout(new MigLayout("", "[] []", "[grow]"));
         add(makeLeft(), "top");
-        add(makeRight(), "top");
+        JScrollPane sp = new JScrollPane(makeRight());
+        sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        sp.setBorder(BorderFactory.createEmptyBorder());
+        add(sp, "top, grow");
         add(makeSouth(), "dock south, right");
         bind();
         pack();
@@ -108,7 +111,7 @@ public class MainFrame extends JFrame {
     }
 
     private JComponent makeRight(){
-        JPanel panel = new JPanel(new MigLayout("", "[grow]", "[]"));
+        JPanel panel = new JPanel(new MigLayout("insets n n n 22", "[]", "[]"));
         panel.add(new JLabel("投薬"), "wrap");
         panel.add(makeWorkarea(), "w 300, h 180");
         return panel;
@@ -128,10 +131,19 @@ public class MainFrame extends JFrame {
 
     private void bind(){
         updatePatientListButton.addActionListener(event -> doUpdatePatientList());
+        startPrescButton.addActionListener(event -> doStartPresc());
         closeButton.addActionListener(event -> {
             dispose();
             System.exit(0);
         });
+    }
+
+    private void doStartPresc() {
+        PharmaQueueFullDTO pharmaQueueFull = pharmaQueueList.getSelectedValue();
+        if( pharmaQueueFull == null ){
+            return;
+        }
+        System.out.println(pharmaQueueFull);
     }
 
     private void doUpdatePatientList() {
