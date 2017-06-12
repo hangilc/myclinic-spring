@@ -21,6 +21,7 @@ public class PharmaQueueListListCellRenderer extends JLabel implements ListCellR
         this.waitCashierIcon = waitCashierIcon;
         this.waitDrugIcon = waitDrugIcon;
         this.blankIcon = new BlankIcon(12, 12);
+        setOpaque(true);
     }
 
     @Override
@@ -46,12 +47,16 @@ public class PharmaQueueListListCellRenderer extends JLabel implements ListCellR
                     break;
                 }
             }
+        } else {
+            setForeground(Color.BLACK);
+            setIcon(blankIcon);
         }
         String label = String.format("%s%s（%s%s）", patient.lastName, patient.firstName,
                 patient.lastNameYomi, patient.firstNameYomi);
         setText(label);
         if( isSelected ){
             setBackground(list.getSelectionBackground());
+            setForeground(list.getSelectionForeground());
         } else {
             setBackground(list.getBackground());
         }

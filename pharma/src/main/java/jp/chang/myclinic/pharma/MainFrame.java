@@ -7,6 +7,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Created by hangil on 2017/06/05.
@@ -23,9 +25,14 @@ public class MainFrame extends JFrame {
     private static Icon waitCashierIcon;
     private static Icon waitDrugIcon;
 
-    public MainFrame() throws IOException{
+    public MainFrame(){
         super("薬局");
-        setupIcons();
+        try {
+            setupIcons();
+        } catch(IOException ex){
+            ex.printStackTrace();
+            throw new RuntimeException("failed to load icons");
+        }
         setupMenu();
         setLayout(new MigLayout("fill", "[grow] [grow]", ""));
         add(makeLeft(), "top");
@@ -123,19 +130,26 @@ public class MainFrame extends JFrame {
         updatePatientListButton.addActionListener(event -> doUpdatePatientList());
         closeButton.addActionListener(event -> {
             dispose();
+            System.exit(0);
         });
     }
 
     private void doUpdatePatientList() {
-        Service.api.listPharmaQueueForPrescription()
-                .thenAccept(result -> {
-                    pharmaQueueList.setListData(result.toArray(new PharmaQueueFullDTO[]{}));
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    //alert(t.toString());
-                    return null;
-                });
+        CompletableFuture<List<PharmaQueueFullDTO>> pharmaList;
+        if( includePrescribedCheckBox.isSelected() ){
+            pharmaList = Service.api.listPharmaQueueForToday();
+        } else {
+            pharmaList = Service.api.listPharmaQueueForPrescription();
+        }
+        pharmaList.thenAccept(result -> {
+            EventQueue.invokeLater(() -> {
+                pharmaQueueList.setListData(result.toArray(new PharmaQueueFullDTO[]{}));
+            });
+        })
+        .exceptionally(t -> {
+            t.printStackTrace();
+            return null;
+        });
     }
 
     private void alert(String message){
