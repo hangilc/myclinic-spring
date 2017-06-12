@@ -20,6 +20,10 @@ public class DateTimeUtil {
 			return jd.format(formatter);
 	}
 
+	public static String toKanji(LocalDate date){
+		return toKanji(date, kanjiFormatter1);
+	}
+
 	public static String toKanji(LocalDateTime dateTime, DateTimeFormatter formatter){
 			JapaneseDate jd = JapaneseDate.from(dateTime);
 			return jd.format(formatter);

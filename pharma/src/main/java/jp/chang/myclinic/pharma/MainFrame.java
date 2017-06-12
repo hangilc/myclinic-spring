@@ -16,6 +16,7 @@ import java.util.concurrent.CompletableFuture;
 public class MainFrame extends JFrame {
 
     private PharmaQueueList pharmaQueueList;
+    private Workarea workarea;
     private JButton closeButton = new JButton("閉じる");
     private JCheckBox includePrescribedCheckBox = new JCheckBox("処方済の患者も含める");
     private JButton updatePatientListButton = new JButton("更新");
@@ -118,9 +119,10 @@ public class MainFrame extends JFrame {
     }
 
     private JComponent makeWorkarea(){
-        JPanel panel = new JPanel(new MigLayout("", "", ""));
-        panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        return panel;
+        Workarea wa = new Workarea();
+        wa.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        workarea = wa;
+        return wa;
     }
 
     private JComponent makeSouth(){
@@ -143,7 +145,7 @@ public class MainFrame extends JFrame {
         if( pharmaQueueFull == null ){
             return;
         }
-        System.out.println(pharmaQueueFull);
+        workarea.update(pharmaQueueFull.patient);
     }
 
     private void doUpdatePatientList() {
