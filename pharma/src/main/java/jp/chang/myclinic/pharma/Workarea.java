@@ -43,6 +43,7 @@ public class Workarea extends JPanel {
             String text = DrugUtil.drugRep(drugFull);
             WrappedText wrap = new WrappedText(200, text);
             JLabel bagButton = new JLabel("<html><font color=\"#0000ff\"><u>薬袋</u></font></html>");
+            bagButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
             wrap.append(bagButton);
             add(wrap, "wrap");
         }
