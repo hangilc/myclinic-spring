@@ -55,7 +55,7 @@ public class WrappedText extends JPanel {
             newline();
         }
         component.setBounds(posX, posY, (int)dim.getWidth(), (int)dim.getHeight());
-        posX += dim.getWidth();
+        posX += (int)dim.getWidth();
         int y = posY + (int)dim.getHeight();
         if( y > botY ){
             botY = y;

@@ -30,10 +30,17 @@ public class DrugUtil {
                         drug.days);
             }
             case Tonpuku: {
-                return "";
+                return String.format("%s １回 %s%s %s %d回分", master.name,
+                        numberFormat.format(drug.amount),
+                        master.unit,
+                        drug.usage,
+                        drug.days);
             }
             case Gaiyou: {
-                return "";
+                return String.format("%s %s%s %s", master.name,
+                        numberFormat.format(drug.amount),
+                        master.unit,
+                        drug.usage);
             }
             default: return "Unknown drug category: " + drug.category;
         }

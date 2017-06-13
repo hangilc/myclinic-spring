@@ -21,6 +21,7 @@ public class Workarea extends JPanel {
     private JLabel nameLabel = new JLabel("");
     private JLabel yomiLabel = new JLabel("");
     private JLabel patientInfoLabel = new JLabel("");
+    private JPanel drugsContainer = new JPanel();
 
     public Workarea(){
         setupNameLabel();
@@ -28,6 +29,8 @@ public class Workarea extends JPanel {
         add(nameLabel, "gap top 0, wrap");
         add(yomiLabel, "gap top 5, wrap");
         add(patientInfoLabel, "wrap");
+        drugsContainer.setLayout(new MigLayout("insets 0, gapy 1", "", ""));
+        add(drugsContainer);
     }
 
     public void update(PatientDTO patient, List<DrugFullDTO> drugs){
@@ -39,13 +42,16 @@ public class Workarea extends JPanel {
                 DateTimeUtil.calcAge(birthday),
                 "M".equals(patient.sex) ? "男" : "女");
         patientInfoLabel.setText(infoLabel);
+        drugsContainer.removeAll();
+        int index = 1;
         for(DrugFullDTO drugFull: drugs){
-            String text = DrugUtil.drugRep(drugFull);
+            String text = (index++) + ") " + DrugUtil.drugRep(drugFull);
             WrappedText wrap = new WrappedText(200, text);
-            JLabel bagButton = new JLabel("<html><font color=\"#0000ff\"><u>薬袋</u></font></html>");
-            bagButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-            wrap.append(bagButton);
-            add(wrap, "wrap");
+            JLabel bagLink = new JLabel("薬袋");
+            bagLink.setForeground(Color.BLUE);
+            bagLink.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+            wrap.append(bagLink);
+            drugsContainer.add(wrap, "wrap");
         }
         repaint();
         revalidate();
