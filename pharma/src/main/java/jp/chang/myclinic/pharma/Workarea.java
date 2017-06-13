@@ -1,12 +1,15 @@
 package jp.chang.myclinic.pharma;
 
+import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.DrugUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.util.List;
 
 import static java.awt.Font.BOLD;
 
@@ -27,7 +30,7 @@ public class Workarea extends JPanel {
         add(patientInfoLabel, "wrap");
     }
 
-    public void update(PatientDTO patient){
+    public void update(PatientDTO patient, List<DrugFullDTO> drugs){
         nameLabel.setText(patient.lastName + patient.firstName);
         yomiLabel.setText(patient.lastNameYomi + patient.firstNameYomi);
         LocalDate birthday = DateTimeUtil.parseSqlDate(patient.birthday);
@@ -36,6 +39,15 @@ public class Workarea extends JPanel {
                 DateTimeUtil.calcAge(birthday),
                 "M".equals(patient.sex) ? "男" : "女");
         patientInfoLabel.setText(infoLabel);
+        for(DrugFullDTO drugFull: drugs){
+            String text = DrugUtil.drugRep(drugFull);
+            WrappedText wrap = new WrappedText(200, text);
+            JLabel bagButton = new JLabel("<html><font color=\"#0000ff\"><u>薬袋</u></font></html>");
+            wrap.append(bagButton);
+            add(wrap, "wrap");
+        }
+        repaint();
+        revalidate();
     }
 
     private void setupNameLabel(){

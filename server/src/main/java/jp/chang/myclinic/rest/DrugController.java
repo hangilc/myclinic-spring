@@ -30,4 +30,8 @@ public class DrugController {
 		return dbGateway.getDrugFull(drugId);
 	}
 
+	@RequestMapping(value="/list-drug-full", method=RequestMethod.GET)
+	public List<DrugFullDTO> listDrugFull(@RequestParam("visit-id") int visitId){
+		return dbGateway.listDrugFull(visitId);
+	}
 }

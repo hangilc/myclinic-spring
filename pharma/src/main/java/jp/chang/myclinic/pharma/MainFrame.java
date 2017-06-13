@@ -114,7 +114,7 @@ public class MainFrame extends JFrame {
     private JComponent makeRight(){
         JPanel panel = new JPanel(new MigLayout("insets n n n 22", "[]", "[]"));
         panel.add(new JLabel("投薬"), "wrap");
-        panel.add(makeWorkarea(), "w 300, h 180");
+        panel.add(makeWorkarea(), "w 300");
         return panel;
     }
 
@@ -145,7 +145,15 @@ public class MainFrame extends JFrame {
         if( pharmaQueueFull == null ){
             return;
         }
-        workarea.update(pharmaQueueFull.patient);
+        Service.api.listDrugFull(pharmaQueueFull.visitId)
+                .thenAccept(drugs -> {
+                    EventQueue.invokeLater(() -> {
+                        workarea.update(pharmaQueueFull.patient, drugs);
+                    });
+                })
+                .exceptionally(t -> {
+                    return null;
+                });
     }
 
     private void doUpdatePatientList() {
