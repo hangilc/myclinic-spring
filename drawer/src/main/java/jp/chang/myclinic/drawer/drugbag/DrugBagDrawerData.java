@@ -14,4 +14,5 @@ public class DrugBagDrawerData {
     public String patientName = "　　　 　　　";
     public String patientNameYomi = "　　　 　　　　";
     public List<String> instructions = Collections.emptyList();
+    public String drugName = "";
 }

@@ -61,7 +61,7 @@ public class DrugBagDataCreator {
         data.patientName = patient.lastName + " " + patient.firstName;
         data.patientNameYomi = patient.lastNameYomi + " " + patient.firstNameYomi;
         data.instructions = composeInstructions();
-        System.out.println(data.instructions);
+        data.drugName = composeDrugName();
         return data;
     }
 
@@ -217,6 +217,15 @@ public class DrugBagDataCreator {
         return Arrays.asList("１日" + dosageRep() + " " +
                 numberStringToKanjiString("" + drug.days) + "日分",
                 drug.usage);
+    }
+
+    private String composeDrugName(){
+        String name = master.name;
+        Double powderDose = powderDrugMap.get(drug.iyakuhincode);
+        if( powderDose != null ){
+            name += "（１包" + numberToKanjiString(powderDose) +  "ｇ）";
+        }
+        return name;
     }
 
     private int digitToKanji(int codePoint){

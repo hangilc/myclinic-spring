@@ -21,7 +21,7 @@ public class DrugBagDrawer {
     private Box patientNameBox;
     private Box patientNameYomiBox;
     private Box drugBox;
-    private Box nameBox;
+    private Box drugNameBox;
     private Box descBox;
     private Box prescribedAtBox;
     private Box clinicNameBox;
@@ -47,7 +47,7 @@ public class DrugBagDrawer {
         patientNameBox = paper.innerBox(10, 52.88, 108, 6.35);
         patientNameYomiBox = paper.innerBox(10, 61.23, 108, 4.94);
         drugBox = paper.innerBox(15, 71.17, 98, 17.83);
-        nameBox = paper.innerBox(18+1.5, 91, 84, 16);
+        drugNameBox = paper.innerBox(18+1.5, 91, 84, 16);
         descBox = paper.innerBox(27.5, 111, 74.8, 20+1);
         prescribedAtBox = paper.innerBox(64, 134, 54, 3.53);
         Box footer = paper.innerBox(10, 140, 108, 37);
@@ -63,6 +63,7 @@ public class DrugBagDrawer {
         setupPatientName();
         setupPatientNameYomi();
         setupInstructions();
+        setupDrugName();
     }
 
     public List<Op> getOps(){
@@ -107,5 +108,15 @@ public class DrugBagDrawer {
             lines.addAll(chunks);
         }
         compiler.multilineText(lines, drugBox, halign, VAlign.Top, 2);
+    }
+
+    private void setupDrugName(){
+        compiler.setFont(REGULAR_FONT);
+        List<String> lines = compiler.breakLine(data.drugName, drugNameBox.getWidth());
+        if( lines.size() > 1 ){
+            compiler.multilineText(lines, drugNameBox, HAlign.Left, VAlign.Top, 0.5);
+        } else {
+            compiler.textIn(data.drugName, drugNameBox, HAlign.Center, VAlign.Top);
+        }
     }
 }
