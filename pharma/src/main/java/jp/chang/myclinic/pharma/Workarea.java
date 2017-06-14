@@ -63,12 +63,10 @@ public class Workarea extends JPanel {
             WrappedText wrap = new WrappedText(200, text);
             JLabel bagLink = new JLabel("薬袋");
             bagLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            final int drugId = drugFull.drug.drugId;
             bagLink.addMouseListener(new MouseAdapter(){
                 @Override
                 public void mouseClicked(MouseEvent e){
-                    System.out.println(drugId);
-                    doPreviewDrugBag(drugId);
+                    doPreviewDrugBag(drugFull);
                 }
             });
             bagLink.setForeground(Color.BLUE);
@@ -108,7 +106,7 @@ public class Workarea extends JPanel {
         return panel;
     }
 
-    private void doPreviewDrugBag(int drugId){
+    private void doPreviewDrugBag(DrugFullDTO drugFull){
         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
         previewDialog.setImageSize(128, 182);
         previewDialog.setPreviewPaneSize(256, 364);
