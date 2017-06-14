@@ -52,6 +52,7 @@ public class LineBreaker {
         String line = new String(codes, 0, codes.length);
         lines.add(line);
         curWidth = 0;
+        curCodePoints.clear();
     }
 
     private double charWidth(int code){

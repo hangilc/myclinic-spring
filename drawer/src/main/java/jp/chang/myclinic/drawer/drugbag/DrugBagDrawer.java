@@ -6,6 +6,7 @@ import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
 import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
 import jp.chang.myclinic.drawer.Op;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -94,6 +95,17 @@ public class DrugBagDrawer {
 
     private void setupInstructions(){
         compiler.setFont(REGULAR_FONT);
-        
+        HAlign halign = HAlign.Center;
+        List<String> lines = new ArrayList<>();
+        double width = drugBox.getWidth();
+        for(String instr: data.instructions){
+            List<String> chunks = compiler.breakLine(instr, width);
+            if( chunks.size() > 1 ){
+                halign = HAlign.Left;
+            }
+            System.out.println(chunks);
+            lines.addAll(chunks);
+        }
+        compiler.multilineText(lines, drugBox, halign, VAlign.Top, 2);
     }
 }

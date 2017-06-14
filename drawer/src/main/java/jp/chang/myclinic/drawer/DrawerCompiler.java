@@ -318,11 +318,11 @@ public class DrawerCompiler {
         return LineBreaker.breakLine(line, currentFontSize, lineWidth);
     }
 
-    public void multilineText(String[] lines, Box box, HAlign halign, VAlign valign, double leading){
-        if( lines == null || lines.length == 0 ){
+    public void multilineText(Collection<String> lines, Box box, HAlign halign, VAlign valign, double leading){
+        if( lines == null || lines.size() == 0 ){
             return;
         }
-        int nLines = lines.length;
+        int nLines = lines.size();
         double y;
         switch(valign){
             case Top: y = box.getTop(); break;
@@ -341,6 +341,10 @@ public class DrawerCompiler {
             textAt(line, x, y, halign, VAlign.Top);
             y += currentFontSize + leading;
         }
+    }
+
+    public void multilineText(String[] lines, Box box, HAlign halign, VAlign valign, double leading){
+        multilineText(Arrays.asList(lines), box, halign, valign, leading);
     }
 
     public double calcTotalHeight(int nLines, double fontSize, double leading){

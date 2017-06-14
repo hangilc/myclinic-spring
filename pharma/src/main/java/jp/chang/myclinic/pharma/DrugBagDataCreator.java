@@ -119,18 +119,32 @@ public class DrugBagDataCreator {
         Matcher matcher = unevenPattern.matcher(usage);
         if( matcher.matches() ){
             List<Double> weights = parseUnevenWeights(matcher.group(1));
-            naifukuUneven(instrs, times, weights, (matcher.group(1) + " " + matcher.group(2).trim()).trim());
+            if( times != weights.size() ){
+                throw new RuntimeException("invalid uneven prescription (times and weights does not match)");
+            }
+            String restUsage = trim(matcher.group(2));
+            List<String> timings = extractTimingParts(restUsage);
+            if( timings.size() != weights.size() ){
+                System.out.println(weights);
+                System.out.println(timings);
+                throw new RuntimeException("invalid uneven prescription (timings and weights does not match)");
+            }
+            naifukuUneven(instrs, times, weights, timings);
         } else {
             naifukuEven(instrs, times, usage);
         }
         return instrs;
     }
 
-    private void naifukuUneven(List<String> instrs, int times, List<Double> weights, String restUsage){
-        if( times != weights.size() ){
-            throw new RuntimeException("invalid uneven prescription (times and weights does not match)");
-        }
+    private void naifukuUneven(List<String> instrs, int times, List<Double> weights, List<String> timings){
         double totalWeights = weights.stream().mapToDouble(w -> w).sum();
+        List<String> parts = new ArrayList<>();
+        for(int i=0;i<weights.size();i++){
+            double weight = weights.get(i);
+            String timing = timings.get(i);
+            parts.add(timing + dosageRep(weight, totalWeights));
+        }
+        instrs.add(parts.stream().collect(Collectors.joining("、")));
     }
 
     private List<String> extractTimingParts(String usage){
@@ -144,7 +158,14 @@ public class DrugBagDataCreator {
                 parts.add("夕食" + suffix);
             } else {
                 Matcher matcher = mealsPattern.matcher(usage);
-
+                if( matcher.matches() ){
+                    String suffix = matcher.group(2);
+                    matcher.group(1).chars().forEach(ch -> {
+                        parts.add(String.format("%c食%s", ch, suffix));
+                    });
+                } else {
+                    parts.add(part);
+                }
             }
         }
         return parts;
@@ -162,12 +183,13 @@ public class DrugBagDataCreator {
             } else {
                 ch = kanjiToDigit(ch);
                 if( ch >= '0' && ch <= '9' ){
-                    sb.append(ch);
+                    sb.appendCodePoint(ch);
                 } else {
                     throw new Error("invalid char in uneven weights");
                 }
             }
         });
+        //System.out.println("uneven part: " + sb.toString());
         return Arrays.stream(sb.toString().split("-")).map(Double::parseDouble).collect(Collectors.toList());
     }
 
