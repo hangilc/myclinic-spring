@@ -95,8 +95,23 @@ public class DrugBagDataCreator {
         }
         switch(category){
             case Naifuku: return naifukuInstructions();
+            case Tonpuku: return tonpukuInstructions();
+            case Gaiyou: return gaiyouInstructions();
             default: return Collections.emptyList();
         }
+    }
+
+    private List<String> gaiyouInstructions() {
+        List<String> instrs = new ArrayList<>();
+        instrs.add(drug.usage);
+        return instrs;
+    }
+
+    private List<String> tonpukuInstructions() {
+        List<String> instrs = new ArrayList<>();
+        instrs.add("１回" + dosageRep(1, 1) + " " + numberToKanjiString(drug.days) + "回分");
+        instrs.add(drug.usage);
+        return instrs;
     }
 
     private List<String> naifukuInstructions(){
