@@ -22,6 +22,13 @@ public class Workarea extends JPanel {
     private JLabel yomiLabel = new JLabel("");
     private JLabel patientInfoLabel = new JLabel("");
     private JPanel drugsContainer = new JPanel();
+    private JButton printPrescButton = new JButton("処方内容印刷");
+    private JButton printDrugBagButton = new JButton("薬袋印刷");
+    private JButton printTechouButton = new JButton("薬手帳印刷");
+    private JButton printAllButton = new JButton("*全部印刷*");
+    private JButton printAllExceptTechouButton = new JButton("*全部印刷(薬手帳なし)*");
+    private JButton cancelButton = new JButton("キャンセル");
+    private JButton doneButton = new JButton("薬渡し終了");
 
     public Workarea(){
         setupNameLabel();
@@ -30,7 +37,10 @@ public class Workarea extends JPanel {
         add(yomiLabel, "gap top 5, wrap");
         add(patientInfoLabel, "wrap");
         drugsContainer.setLayout(new MigLayout("insets 0, gapy 1", "", ""));
-        add(drugsContainer);
+        add(drugsContainer, "wrap");
+        add(makeCommandRow1(), "wrap");
+        add(makeCommandRow2(), "wrap");
+        add(makeCommandRow3(), "right");
     }
 
     public void update(PatientDTO patient, List<DrugFullDTO> drugs){
@@ -62,5 +72,29 @@ public class Workarea extends JPanel {
         Font font = baseFont.deriveFont(BOLD, (int)(baseFont.getSize() * 1.2));
         nameLabel.setFont(font);
     }
+
+    private JComponent makeCommandRow1(){
+        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+        panel.add(printPrescButton);
+        panel.add(printDrugBagButton);
+        panel.add(printTechouButton);
+        return panel;
+    }
+
+    private JComponent makeCommandRow2(){
+        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+        panel.add(printAllButton);
+        panel.add(printAllExceptTechouButton);
+        return panel;
+    }
+
+    private JComponent makeCommandRow3(){
+        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+        panel.add(cancelButton);
+        panel.add(doneButton);
+        return panel;
+    }
+
+
 
 }
