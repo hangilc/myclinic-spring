@@ -1,5 +1,6 @@
 package jp.chang.myclinic.pharma;
 
+import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
@@ -8,7 +9,10 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import static java.awt.Font.BOLD;
@@ -58,6 +62,15 @@ public class Workarea extends JPanel {
             String text = (index++) + ") " + DrugUtil.drugRep(drugFull);
             WrappedText wrap = new WrappedText(200, text);
             JLabel bagLink = new JLabel("薬袋");
+            bagLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            final int drugId = drugFull.drug.drugId;
+            bagLink.addMouseListener(new MouseAdapter(){
+                @Override
+                public void mouseClicked(MouseEvent e){
+                    System.out.println(drugId);
+                    doPreviewDrugBag(drugId);
+                }
+            });
             bagLink.setForeground(Color.BLUE);
             bagLink.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
             wrap.append(bagLink);
@@ -95,6 +108,13 @@ public class Workarea extends JPanel {
         return panel;
     }
 
-
+    private void doPreviewDrugBag(int drugId){
+        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
+        previewDialog.setImageSize(128, 182);
+        previewDialog.setPreviewPaneSize(256, 364);
+        previewDialog.setLocationByPlatform(true);
+        previewDialog.render(Collections.emptyList());
+        previewDialog.setVisible(true);
+    }
 
 }

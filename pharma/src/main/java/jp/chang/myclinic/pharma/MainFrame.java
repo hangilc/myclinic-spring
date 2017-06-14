@@ -114,7 +114,7 @@ public class MainFrame extends JFrame {
     }
 
     private JComponent makeRight(){
-        JPanel panel = new JPanel(new MigLayout("debug, insets n n n 22", "[]", "[]"));
+        JPanel panel = new JPanel(new MigLayout("insets n n n 22", "[]", "[]"));
         panel.add(new JLabel("投薬"), "wrap");
         panel.add(makeWorkarea(), "w 300, wrap");
         {
