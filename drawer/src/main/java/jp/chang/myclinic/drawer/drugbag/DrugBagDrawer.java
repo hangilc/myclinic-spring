@@ -61,6 +61,7 @@ public class DrugBagDrawer {
         setupTitle();
         setupPatientName();
         setupPatientNameYomi();
+        setupInstructions();
     }
 
     public List<Op> getOps(){
@@ -89,5 +90,10 @@ public class DrugBagDrawer {
         String text = "(" + data.patientNameYomi + ")";
         compiler.setFont(REGULAR_FONT);
         compiler.textIn(text, patientNameYomiBox, HAlign.Center, VAlign.Top);
+    }
+
+    private void setupInstructions(){
+        compiler.setFont(REGULAR_FONT);
+        
     }
 }
