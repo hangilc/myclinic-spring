@@ -8,4 +8,6 @@ import jp.chang.myclinic.drawer.DrawerColor;
 public class DrugBagDrawerData {
     public DrawerColor color;
     public String title;
+    public String patientName = "　　　 　　　";
+    public String patientNameYomi = "　　　 　　　　";
 }

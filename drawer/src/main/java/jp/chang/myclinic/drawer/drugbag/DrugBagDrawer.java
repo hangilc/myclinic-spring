@@ -2,6 +2,8 @@ package jp.chang.myclinic.drawer.drugbag;
 
 import jp.chang.myclinic.drawer.Box;
 import jp.chang.myclinic.drawer.DrawerCompiler;
+import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
+import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
 import jp.chang.myclinic.drawer.Op;
 
 import java.util.List;
@@ -57,6 +59,8 @@ public class DrugBagDrawer {
         compiler.setPen("regular-pen");
         compiler.setTextColor(data.color.r, data.color.g, data.color.b);
         setupTitle();
+        setupPatientName();
+        setupPatientNameYomi();
     }
 
     public List<Op> getOps(){
@@ -72,6 +76,18 @@ public class DrugBagDrawer {
 
     private void setupTitle(){
         compiler.setFont(LARGE_FONT);
-        compiler.textIn(data.title, titleBox, DrawerCompiler.HAlign.Center, DrawerCompiler.VAlign.Center);
+        compiler.textIn(data.title, titleBox, HAlign.Center, VAlign.Center);
+    }
+
+    private void setupPatientName(){
+        String text = data.patientName + " 様";
+        compiler.setFont(MEDIUM_FONT);
+        compiler.textIn(text, patientNameBox, HAlign.Center, VAlign.Top);
+    }
+
+    private void setupPatientNameYomi(){
+        String text = "(" + data.patientNameYomi + ")";
+        compiler.setFont(REGULAR_FONT);
+        compiler.textIn(text, patientNameYomiBox, HAlign.Center, VAlign.Top);
     }
 }

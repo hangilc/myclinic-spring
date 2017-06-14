@@ -1,5 +1,8 @@
 package jp.chang.myclinic.pharma;
 
+import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
+import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
@@ -12,7 +15,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 
 import static java.awt.Font.BOLD;
@@ -66,7 +68,7 @@ public class Workarea extends JPanel {
             bagLink.addMouseListener(new MouseAdapter(){
                 @Override
                 public void mouseClicked(MouseEvent e){
-                    doPreviewDrugBag(drugFull);
+                    doPreviewDrugBag(drugFull, patient);
                 }
             });
             bagLink.setForeground(Color.BLUE);
@@ -106,12 +108,15 @@ public class Workarea extends JPanel {
         return panel;
     }
 
-    private void doPreviewDrugBag(DrugFullDTO drugFull){
+    private void doPreviewDrugBag(DrugFullDTO drugFull, PatientDTO patient){
         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
         previewDialog.setImageSize(128, 182);
         previewDialog.setPreviewPaneSize(256, 364);
         previewDialog.setLocationByPlatform(true);
-        previewDialog.render(Collections.emptyList());
+        DrugBagDataCreator dataCreator = new DrugBagDataCreator(drugFull, patient);
+        DrugBagDrawerData data = dataCreator.createData();
+        List<Op> ops = new DrugBagDrawer(data).getOps();
+        previewDialog.render(ops);
         previewDialog.setVisible(true);
     }
 
