@@ -12,18 +12,14 @@ import java.nio.file.Path;
 
 public class PrinterManageDialog extends JDialog {
 
-    private Path settingDir;
-    private String currentSetting;
     private JButton newButton = new JButton("新規印刷設定");
     private NamesComboBox namesCombo;
     private JButton editButton = new JButton("編集");
     private JButton deleteButton = new JButton("削除");
     private JButton closeButton = new JButton("閉じる");
 
-    public PrinterManageDialog(Window owner, Path settingDir, String currentSetting) throws IOException{
+    public PrinterManageDialog(Window owner) throws IOException{
         super(owner, "プリンター管理", Dialog.ModalityType.DOCUMENT_MODAL);
-        this.settingDir = settingDir;
-        this.currentSetting = currentSetting;
         setLayout(new MigLayout("fill", "[grow]", ""));
         add(newButton, "sizegroup btn, wrap");
         add(makeChoicePane(), "wrap");
@@ -34,7 +30,7 @@ public class PrinterManageDialog extends JDialog {
 
     private JComponent makeChoicePane() throws IOException {
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        namesCombo = new NamesComboBox(settingDir, currentSetting);
+        namesCombo = new NamesComboBox();
         panel.add(namesCombo);
         panel.add(editButton);
         panel.add(deleteButton);
@@ -61,7 +57,7 @@ public class PrinterManageDialog extends JDialog {
                 return;
             }
             try{
-                PrinterSetting setting = new PrinterSetting(settingDir);
+                PrinterSetting setting = PrinterSetting.INSTANCE;
                 setting.ensureSettingDir();
                 setting.saveSetting(name, confirmDialog.getDevnamesData(),
                         confirmDialog.getDevmodeData(),
@@ -77,7 +73,7 @@ public class PrinterManageDialog extends JDialog {
             if( name == null ){
                 return;
             }
-            PrinterSetting printerSetting = new PrinterSetting(settingDir);
+            PrinterSetting printerSetting = PrinterSetting.INSTANCE;
             try {
                 SettingEditorDialog editor = new SettingEditorDialog(PrinterManageDialog.this,
                         name,
@@ -105,7 +101,7 @@ public class PrinterManageDialog extends JDialog {
                 return;
             }
             try {
-                PrinterSetting printerSetting = new PrinterSetting(settingDir);
+                PrinterSetting printerSetting = PrinterSetting.INSTANCE;
                 printerSetting.deleteSetting(name);
                 namesCombo.reload();
             } catch(IOException ex){

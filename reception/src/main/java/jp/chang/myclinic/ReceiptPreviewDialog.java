@@ -114,8 +114,7 @@ public class ReceiptPreviewDialog extends JDialog {
         });
         itemManagePrinter.addActionListener(event -> {
             try {
-                PrinterManageDialog dialog = new PrinterManageDialog(this, ReceptionConfig.INSTANCE.getSettingDir(),
-                        ReceptionConfig.INSTANCE.getCurrentSetting());
+                PrinterManageDialog dialog = new PrinterManageDialog(this);
                 dialog.setLocationByPlatform(true);
                 dialog.setVisible(true);
             } catch(IOException ex){

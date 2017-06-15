@@ -5,6 +5,7 @@ import jp.chang.myclinic.drawer.printer.AuxSetting;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,6 +25,11 @@ public class PrinterSetting {
         Path path = Paths.get(System.getProperty("user.home"), "printer-settings");
         System.out.println("printer setting path: " + path);
         INSTANCE = new PrinterSetting(path);
+        try {
+            INSTANCE.ensureSettingDir();
+        } catch(IOException ex){
+            throw new UncheckedIOException(ex);
+        }
     }
 
     public PrinterSetting(Path settingDir){

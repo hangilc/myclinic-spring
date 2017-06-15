@@ -11,12 +11,9 @@ import java.util.List;
  */
 public class NamesComboBox extends JComboBox<String> {
 
-    private Path settingDir;
-
-    public NamesComboBox(Path settingDir, String currentSetting) throws IOException {
+    public NamesComboBox() throws IOException {
         super(new String[]{});
-        this.settingDir = settingDir;
-        load(currentSetting);
+        load();
     }
 
     public String getSelectedName(){
@@ -31,20 +28,14 @@ public class NamesComboBox extends JComboBox<String> {
     public void reload() throws IOException {
         String current = getSelectedName();
         removeAllItems();
-        load(current);
+        load();
     }
 
-    public void load(String currentSetting) throws IOException {
-        PrinterSetting printerSetting = new PrinterSetting(settingDir);
+    public void load() throws IOException {
+        PrinterSetting printerSetting = PrinterSetting.INSTANCE;
         List<String> names = printerSetting.listNames();
         for (String name : names) {
             addItem(name);
-        }
-        for (String name : names) {
-            if (name.equals(currentSetting)) {
-                setSelectedItem(name);
-                break;
-            }
         }
         String proto = maxName(names);
         if( proto != null ){
