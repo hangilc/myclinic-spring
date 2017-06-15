@@ -72,6 +72,7 @@ public class DrugBagDrawer {
         compiler.box(stampBox);
         setupStampLabel();
         setupClinicName();
+        setupClinicAddr();
     }
 
     private static Box innerBox(Box box, double left, double top, double width, double height){
@@ -153,5 +154,10 @@ public class DrugBagDrawer {
     private void setupClinicName(){
         compiler.setFont(MEDIUM_FONT);
         compiler.textIn(data.clinicName, clinicNameBox, HAlign.Left, VAlign.Top);
+    }
+
+    private void setupClinicAddr(){
+        compiler.setFont(SMALL_FONT);
+        compiler.multilineText(data.clinicAddr, clinicAddrBox, HAlign.Left, VAlign.Top, 1.4);
     }
 }

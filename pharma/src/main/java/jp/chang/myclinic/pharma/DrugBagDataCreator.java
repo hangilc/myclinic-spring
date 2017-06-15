@@ -68,6 +68,7 @@ public class DrugBagDataCreator {
         data.drugDescription = composeDescription();
         data.prescribedAt = composePrescribedAt();
         data.clinicName = clinicInfo.name;
+        data.clinicAddr = composeClinicAddr();
         return data;
     }
 
@@ -241,6 +242,15 @@ public class DrugBagDataCreator {
 
     private String composePrescribedAt(){
         return DateTimeUtil.toKanji(LocalDate.now());
+    }
+
+    private List<String> composeClinicAddr(){
+        List<String> lines = new ArrayList<>();
+        lines.add(clinicInfo.postalCode);
+        lines.add(clinicInfo.address);
+        lines.add(clinicInfo.tel);
+        lines.add(clinicInfo.homepage);
+        return lines;
     }
 
     private int digitToKanji(int codePoint){
