@@ -464,6 +464,22 @@ public class DTOMapper {
 		return pharmaQueue;
 	}
 
+	public PharmaDrugDTO toPharmaDrugDTO(PharmaDrug pharmaDrug){
+		PharmaDrugDTO pharmaDrugDTO = new PharmaDrugDTO();
+		pharmaDrugDTO.iyakuhincode = pharmaDrug.getIyakuhincode();
+		pharmaDrugDTO.description = pharmaDrug.getDescription();
+		pharmaDrugDTO.sideeffect = pharmaDrug.getSideeffect();
+		return pharmaDrugDTO;
+	}
+
+	public PharmaDrug fromPharmaDrugDTO(PharmaDrugDTO pharmaDrugDTO){
+		PharmaDrug pharmaDrug = new PharmaDrug();
+		pharmaDrug.setIyakuhincode(pharmaDrugDTO.iyakuhincode);
+		pharmaDrug.setDescription(pharmaDrugDTO.description);
+		pharmaDrug.setSideeffect(pharmaDrugDTO.sideeffect);
+		return pharmaDrug;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;

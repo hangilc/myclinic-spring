@@ -53,6 +53,8 @@ public class DbGateway {
 	private PharmaQueueRepository pharmaQueueRepository;
 	@Autowired
 	private TextRepository textRepository;
+	@Autowired
+	private PharmaDrugRepository pharmaDrugRepository;
 
 	public List<WqueueFullDTO> listWqueueFull(){
 		try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
@@ -543,6 +545,11 @@ public class DbGateway {
 					return pharmaQueueFullDTO;
 				})
 				.collect(Collectors.toList());
+	}
+
+	public PharmaDrugDTO findPharmaDrugByIyakuhincode(int iyakuhincode){
+		return pharmaDrugRepository.findByIyakuhincode(iyakuhincode)
+				.map(mapper::toPharmaDrugDTO).orElse(null);
 	}
 
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
