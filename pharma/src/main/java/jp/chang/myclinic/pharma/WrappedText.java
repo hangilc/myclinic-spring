@@ -51,7 +51,7 @@ public class WrappedText extends JPanel {
 
     public void append(JComponent component){
         Dimension dim = component.getPreferredSize();
-        if( posX > 0 && dim.getWidth() + posY > width ){
+        if( posX > 0 && dim.getWidth() + posX > width ){
             newline();
         }
         component.setBounds(posX, posY, (int)dim.getWidth(), (int)dim.getHeight());

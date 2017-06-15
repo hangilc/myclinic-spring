@@ -16,4 +16,5 @@ public class DrugBagDrawerData {
     public List<String> instructions = Collections.emptyList();
     public String drugName = "";
     public String drugDescription = "";
+    public String prescribedAt = "";
 }

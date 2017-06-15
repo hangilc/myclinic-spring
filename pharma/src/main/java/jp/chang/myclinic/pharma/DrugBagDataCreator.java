@@ -4,8 +4,10 @@ import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.drawer.DrawerColor;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,6 +64,7 @@ public class DrugBagDataCreator {
         data.instructions = composeInstructions();
         data.drugName = composeDrugName();
         data.drugDescription = composeDescription();
+        data.prescribedAt = composePrescribedAt();
         return data;
     }
 
@@ -140,8 +143,6 @@ public class DrugBagDataCreator {
             String restUsage = trim(matcher.group(2));
             List<String> timings = extractTimingParts(restUsage);
             if( timings.size() != weights.size() ){
-                System.out.println(weights);
-                System.out.println(timings);
                 throw new RuntimeException("invalid uneven prescription (timings and weights does not match)");
             }
             naifukuUneven(instrs, times, weights, timings);
@@ -233,6 +234,10 @@ public class DrugBagDataCreator {
             return "";
         }
         return "【効能】" + pharmaDrug.description + "【副作用】" + pharmaDrug.sideeffect;
+    }
+
+    private String composePrescribedAt(){
+        return DateTimeUtil.toKanji(LocalDate.now());
     }
 
     private int digitToKanji(int codePoint){

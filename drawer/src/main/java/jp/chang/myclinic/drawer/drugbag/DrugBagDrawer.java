@@ -24,6 +24,7 @@ public class DrugBagDrawer {
     private Box drugNameBox;
     private Box descBox;
     private Box prescribedAtBox;
+    private Box footerBox;
     private Box clinicNameBox;
     private Box clinicAddrBox;
     private Box stampBox;
@@ -43,18 +44,19 @@ public class DrugBagDrawer {
 
     public DrugBagDrawer(DrugBagDrawerData data){
         this.data = data;
-        titleBox = paper.innerBox(0, 35, 128, 9.88);
-        patientNameBox = paper.innerBox(10, 52.88, 108, 6.35);
-        patientNameYomiBox = paper.innerBox(10, 61.23, 108, 4.94);
-        drugBox = paper.innerBox(15, 71.17, 98, 17.83);
-        drugNameBox = paper.innerBox(18+1.5, 91, 84, 16);
-        descBox = paper.innerBox(27.5, 111, 74.8, 20+1);
-        prescribedAtBox = paper.innerBox(64, 134, 54, 3.53);
-        Box footer = paper.innerBox(10, 140, 108, 37);
-        clinicNameBox = footer.innerBox(0, 5, 70, 6.35);
-        clinicAddrBox = footer.innerBox(0, 14.35, 70, 22.65);
-        stampBox = footer.innerBox(78, 5, 20, 20);
-        stampLabelBox = footer.innerBox(78, 27, 20, 3.53);
+        titleBox = innerBox(paper, 0, 35, 128, 9.88);
+        patientNameBox = innerBox(paper, 10, 52.88, 108, 6.35);
+        patientNameYomiBox = innerBox(paper, 10, 61.23, 108, 4.94);
+        drugBox = innerBox(paper, 15, 71.17, 98, 17.83);
+        drugNameBox = innerBox(paper, 18+1.5, 91, 84, 16);
+        descBox = innerBox(paper, 27.5, 111, 74.8, 20+1);
+        prescribedAtBox = innerBox(paper, 64, 134, 54, 3.53);
+        Box footer = innerBox(paper, 10, 140, 108, 37);
+        footerBox = footer;
+        clinicNameBox = innerBox(footer, 0, 5, 70, 6.35);
+        clinicAddrBox = innerBox(footer, 0, 14.35, 70, 22.65);
+        stampBox = innerBox(footer, 78, 5, 20, 20);
+        stampLabelBox = innerBox(footer, 78, 27, 20, 3.53);
         setupFonts();
         compiler.createPen("regular-pen", data.color.r, data.color.g, data.color.b);
         compiler.setPen("regular-pen");
@@ -65,6 +67,11 @@ public class DrugBagDrawer {
         setupInstructions();
         setupDrugName();
         setupDrugDescription();
+        setupPrescribedAt();
+    }
+
+    private static Box innerBox(Box box, double left, double top, double width, double height){
+        return box.innerBox(left, top, left + width, top + height);
     }
 
     public List<Op> getOps(){
@@ -105,7 +112,6 @@ public class DrugBagDrawer {
             if( chunks.size() > 1 ){
                 halign = HAlign.Left;
             }
-            System.out.println(chunks);
             lines.addAll(chunks);
         }
         compiler.multilineText(lines, drugBox, halign, VAlign.Top, 2);
@@ -123,8 +129,15 @@ public class DrugBagDrawer {
 
     private void setupDrugDescription(){
         compiler.setFont(SMALL_FONT);
+        compiler.box(descBox);
         Box box = descBox.inset(1, 0.8);
         List<String> lines = compiler.breakLine(data.drugDescription, box.getWidth());
         compiler.multilineText(lines, box, HAlign.Left, VAlign.Top, 0.5);
+    }
+
+    private void setupPrescribedAt(){
+        String label = "調剤年月日 " + data.prescribedAt;
+        compiler.setFont(SMALL_FONT);
+        compiler.textIn(label, prescribedAtBox, HAlign.Left, VAlign.Top);
     }
 }
