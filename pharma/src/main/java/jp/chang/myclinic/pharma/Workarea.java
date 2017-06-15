@@ -109,15 +109,29 @@ public class Workarea extends JPanel {
     }
 
     private void doPreviewDrugBag(DrugFullDTO drugFull, PatientDTO patient){
-        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
-        previewDialog.setImageSize(128, 182);
-        previewDialog.setPreviewPaneSize(256, 364);
-        previewDialog.setLocationByPlatform(true);
-        DrugBagDataCreator dataCreator = new DrugBagDataCreator(drugFull, patient);
-        DrugBagDrawerData data = dataCreator.createData();
-        List<Op> ops = new DrugBagDrawer(data).getOps();
-        previewDialog.render(ops);
-        previewDialog.setVisible(true);
+        Service.api.getPharmaDrug(drugFull.drug.iyakuhincode)
+                .thenAccept(pharmaDrug -> {
+                    EventQueue.invokeLater(() -> {
+                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
+                        previewDialog.setImageSize(128, 182);
+                        previewDialog.setPreviewPaneSize(256, 364);
+                        previewDialog.setLocationByPlatform(true);
+                        DrugBagDataCreator dataCreator = new DrugBagDataCreator(drugFull, patient, pharmaDrug);
+                        DrugBagDrawerData data = dataCreator.createData();
+                        List<Op> ops = new DrugBagDrawer(data).getOps();
+                        previewDialog.render(ops);
+                        previewDialog.setVisible(true);
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
     }
 
 }

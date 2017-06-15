@@ -64,6 +64,7 @@ public class DrugBagDrawer {
         setupPatientNameYomi();
         setupInstructions();
         setupDrugName();
+        setupDrugDescription();
     }
 
     public List<Op> getOps(){
@@ -118,5 +119,12 @@ public class DrugBagDrawer {
         } else {
             compiler.textIn(data.drugName, drugNameBox, HAlign.Center, VAlign.Top);
         }
+    }
+
+    private void setupDrugDescription(){
+        compiler.setFont(SMALL_FONT);
+        Box box = descBox.inset(1, 0.8);
+        List<String> lines = compiler.breakLine(data.drugDescription, box.getWidth());
+        compiler.multilineText(lines, box, HAlign.Left, VAlign.Top, 0.5);
     }
 }

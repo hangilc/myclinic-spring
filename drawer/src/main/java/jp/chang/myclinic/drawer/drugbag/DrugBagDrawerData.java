@@ -15,4 +15,5 @@ public class DrugBagDrawerData {
     public String patientNameYomi = "　　　 　　　　";
     public List<String> instructions = Collections.emptyList();
     public String drugName = "";
+    public String drugDescription = "";
 }

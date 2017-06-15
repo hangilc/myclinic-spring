@@ -3,10 +3,7 @@ package jp.chang.myclinic.pharma;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.drawer.DrawerColor;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
-import jp.chang.myclinic.dto.DrugDTO;
-import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.*;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -22,6 +19,7 @@ public class DrugBagDataCreator {
     private DrugDTO drug;
     private IyakuhinMasterDTO master;
     private PatientDTO patient;
+    private PharmaDrugDTO pharmaDrug;
     private DrugCategory category;
     private static Pattern timesPattern = Pattern.compile("分([0-9０-９]+)(.*)");
     private static Pattern unevenPattern = Pattern.compile(".*[(（]([- 　0-9０-９.．ー－]+)[)）](.*)");
@@ -47,10 +45,11 @@ public class DrugBagDataCreator {
         powderDrugMap.put(620392528, 1.0);  // コデイン散
     }
 
-    public DrugBagDataCreator(DrugFullDTO drugFull, PatientDTO patient){
+    public DrugBagDataCreator(DrugFullDTO drugFull, PatientDTO patient, PharmaDrugDTO pharmaDrug){
         this.drug = drugFull.drug;
         this.master = drugFull.master;
         this.patient = patient;
+        this.pharmaDrug = pharmaDrug;
         category = DrugCategory.fromCode(drug.category);
     }
 
@@ -62,6 +61,7 @@ public class DrugBagDataCreator {
         data.patientNameYomi = patient.lastNameYomi + " " + patient.firstNameYomi;
         data.instructions = composeInstructions();
         data.drugName = composeDrugName();
+        data.drugDescription = composeDescription();
         return data;
     }
 
@@ -226,6 +226,13 @@ public class DrugBagDataCreator {
             name += "（１包" + numberToKanjiString(powderDose) +  "ｇ）";
         }
         return name;
+    }
+
+    private String composeDescription(){
+        if( pharmaDrug == null ){
+            return "";
+        }
+        return "【効能】" + pharmaDrug.description + "【副作用】" + pharmaDrug.sideeffect;
     }
 
     private int digitToKanji(int codePoint){
