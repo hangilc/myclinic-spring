@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,14 @@ import java.util.List;
 public class PrinterSetting {
 
     private Path settingDir;
+
+    public static PrinterSetting INSTANCE;
+
+    static {
+        Path path = Paths.get(System.getProperty("user.home"), "printer-settings");
+        System.out.println("printer setting path: " + path);
+        INSTANCE = new PrinterSetting(path);
+    }
 
     public PrinterSetting(Path settingDir){
         this.settingDir = settingDir;
