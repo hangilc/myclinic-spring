@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
-/**
- * Created by hangil on 2017/05/26.
- */
 public class PrinterManageDialog extends JDialog {
 
     private Path settingDir;
@@ -122,7 +119,7 @@ public class PrinterManageDialog extends JDialog {
     }
 
     private void alert(String message){
-        JOptionPane.showMessageDialog(this, message.toString());
+        JOptionPane.showMessageDialog(this, message);
     }
 
 }
