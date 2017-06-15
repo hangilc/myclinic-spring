@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.drawer.JacksonOpDeserializer;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
@@ -33,6 +34,9 @@ class Service {
 
         @GET("get-pharma-drug")
         CompletableFuture<PharmaDrugDTO> getPharmaDrug(@Query("iyakuhincode") int iyakuhincode);
+
+        @GET("get-clinic-info")
+        CompletableFuture<ClinicInfoDTO> getClinicInfo();
 
 //        @GET("list-wqueue-full")
 //        CompletableFuture<List<WqueueFullDTO>> listWqueue();

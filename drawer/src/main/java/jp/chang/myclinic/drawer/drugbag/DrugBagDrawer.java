@@ -68,6 +68,10 @@ public class DrugBagDrawer {
         setupDrugName();
         setupDrugDescription();
         setupPrescribedAt();
+        compiler.frameTop(footerBox);
+        compiler.box(stampBox);
+        setupStampLabel();
+        setupClinicName();
     }
 
     private static Box innerBox(Box box, double left, double top, double width, double height){
@@ -139,5 +143,15 @@ public class DrugBagDrawer {
         String label = "調剤年月日 " + data.prescribedAt;
         compiler.setFont(SMALL_FONT);
         compiler.textIn(label, prescribedAtBox, HAlign.Left, VAlign.Top);
+    }
+
+    private void setupStampLabel(){
+        compiler.setFont(SMALL_FONT);
+        compiler.textIn("調剤者の印", stampLabelBox, HAlign.Center, VAlign.Top);
+    }
+
+    private void setupClinicName(){
+        compiler.setFont(MEDIUM_FONT);
+        compiler.textIn(data.clinicName, clinicNameBox, HAlign.Left, VAlign.Top);
     }
 }

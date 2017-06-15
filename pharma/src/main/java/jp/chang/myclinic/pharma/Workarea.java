@@ -4,8 +4,10 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.PharmaDrugDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DrugUtil;
 import net.miginfocom.swing.MigLayout;
@@ -109,14 +111,19 @@ public class Workarea extends JPanel {
     }
 
     private void doPreviewDrugBag(DrugFullDTO drugFull, PatientDTO patient){
+        final DataStore dataStore = new DataStore();
         Service.api.getPharmaDrug(drugFull.drug.iyakuhincode)
-                .thenAccept(pharmaDrug -> {
+                .thenCompose(pharmaDrug -> {
+                    dataStore.pharmaDrug = pharmaDrug;
+                    return Service.api.getClinicInfo();
+                })
+                .thenAccept(clinicInfo -> {
                     EventQueue.invokeLater(() -> {
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
                         previewDialog.setImageSize(128, 182);
                         previewDialog.setPreviewPaneSize(256, 364);
                         previewDialog.setLocationByPlatform(true);
-                        DrugBagDataCreator dataCreator = new DrugBagDataCreator(drugFull, patient, pharmaDrug);
+                        DrugBagDataCreator dataCreator = new DrugBagDataCreator(drugFull, patient, dataStore.pharmaDrug, clinicInfo);
                         DrugBagDrawerData data = dataCreator.createData();
                         List<Op> ops = new DrugBagDrawer(data).getOps();
                         previewDialog.render(ops);
@@ -128,6 +135,10 @@ public class Workarea extends JPanel {
                     alert(t.toString());
                     return null;
                 });
+    }
+
+    private static class DataStore {
+        PharmaDrugDTO pharmaDrug;
     }
 
     private void alert(String message){

@@ -22,6 +22,7 @@ public class DrugBagDataCreator {
     private IyakuhinMasterDTO master;
     private PatientDTO patient;
     private PharmaDrugDTO pharmaDrug;
+    private ClinicInfoDTO clinicInfo;
     private DrugCategory category;
     private static Pattern timesPattern = Pattern.compile("分([0-9０-９]+)(.*)");
     private static Pattern unevenPattern = Pattern.compile(".*[(（]([- 　0-9０-９.．ー－]+)[)）](.*)");
@@ -47,11 +48,12 @@ public class DrugBagDataCreator {
         powderDrugMap.put(620392528, 1.0);  // コデイン散
     }
 
-    public DrugBagDataCreator(DrugFullDTO drugFull, PatientDTO patient, PharmaDrugDTO pharmaDrug){
+    public DrugBagDataCreator(DrugFullDTO drugFull, PatientDTO patient, PharmaDrugDTO pharmaDrug, ClinicInfoDTO clinicInfo){
         this.drug = drugFull.drug;
         this.master = drugFull.master;
         this.patient = patient;
         this.pharmaDrug = pharmaDrug;
+        this.clinicInfo = clinicInfo;
         category = DrugCategory.fromCode(drug.category);
     }
 
@@ -65,6 +67,7 @@ public class DrugBagDataCreator {
         data.drugName = composeDrugName();
         data.drugDescription = composeDescription();
         data.prescribedAt = composePrescribedAt();
+        data.clinicName = clinicInfo.name;
         return data;
     }
 
