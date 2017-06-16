@@ -8,5 +8,6 @@ public class ClinicInfoDTO {
     public String tel;
     public String fax;
     public String homepage;
+    public String doctorName;
     
 }

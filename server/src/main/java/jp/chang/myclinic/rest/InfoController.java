@@ -34,6 +34,7 @@ public class InfoController {
         clinicInfoDTO.tel = clinicInfo.getTel();
         clinicInfoDTO.fax = clinicInfo.getFax();
         clinicInfoDTO.homepage = clinicInfo.getHomepage();
+        clinicInfoDTO.doctorName = clinicInfo.getDoctorName();
         return clinicInfoDTO;
     }
 }

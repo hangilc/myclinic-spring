@@ -13,6 +13,7 @@ public class ClinicInfo {
     private String tel = "";
     private String fax = "";
     private String homepage = "";
+    private String doctorName = "";
 
     public String getName(){
         return name;
@@ -62,4 +63,11 @@ public class ClinicInfo {
         this.homepage = homepage;
     }
 
+    public String getDoctorName() {
+        return doctorName;
+    }
+
+    public void setDoctorName(String doctorName) {
+        this.doctorName = doctorName;
+    }
 }
