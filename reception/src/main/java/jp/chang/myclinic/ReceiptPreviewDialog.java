@@ -113,14 +113,9 @@ public class ReceiptPreviewDialog extends JDialog {
             }
         });
         itemManagePrinter.addActionListener(event -> {
-            try {
-                PrinterManageDialog dialog = new PrinterManageDialog(this);
-                dialog.setLocationByPlatform(true);
-                dialog.setVisible(true);
-            } catch(IOException ex){
-                ex.printStackTrace();
-                alert(ex.toString());
-            }
+            PrinterManageDialog dialog = new PrinterManageDialog(this);
+            dialog.setLocationByPlatform(true);
+            dialog.setVisible(true);
         });
         itemClearPrintSetting.addActionListener(event -> {
             if( !confirm("印刷設定をクリアしていいですか？") ){

@@ -18,7 +18,7 @@ public class PrinterManageDialog extends JDialog {
     private JButton deleteButton = new JButton("削除");
     private JButton closeButton = new JButton("閉じる");
 
-    public PrinterManageDialog(Window owner) throws IOException{
+    public PrinterManageDialog(Window owner) {
         super(owner, "プリンター管理", Dialog.ModalityType.DOCUMENT_MODAL);
         setLayout(new MigLayout("fill", "[grow]", ""));
         add(newButton, "sizegroup btn, wrap");
@@ -28,7 +28,7 @@ public class PrinterManageDialog extends JDialog {
         pack();
     }
 
-    private JComponent makeChoicePane() throws IOException {
+    private JComponent makeChoicePane() {
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         namesCombo = new NamesComboBox();
         panel.add(namesCombo);

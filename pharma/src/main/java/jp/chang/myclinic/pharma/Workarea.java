@@ -4,7 +4,6 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
-import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
@@ -122,6 +121,7 @@ public class Workarea extends JPanel {
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
                         previewDialog.setImageSize(128, 182);
                         previewDialog.setPreviewPaneSize(256, 364);
+                        previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getDrugbagPrinterSetting());
                         previewDialog.setLocationByPlatform(true);
                         DrugBagDataCreator dataCreator = new DrugBagDataCreator(drugFull, patient, dataStore.pharmaDrug, clinicInfo);
                         DrugBagDrawerData data = dataCreator.createData();

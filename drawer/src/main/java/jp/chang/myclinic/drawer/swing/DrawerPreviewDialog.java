@@ -12,14 +12,12 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by hangil on 2017/06/14.
- */
 public class DrawerPreviewDialog extends JDialog {
 
     private DrawerPreviewPane previewPane = new DrawerPreviewPane();
     private JPanel northPanel;
     private JButton printButton = new JButton("印刷");
+    private JLabel settingLabel = new JLabel("");
     private List<Op> ops = Collections.emptyList();
     private String settingName;
 
@@ -53,11 +51,20 @@ public class DrawerPreviewDialog extends JDialog {
 
     public void setPrinterSetting(String settingName){
         this.settingName = settingName;
+        String settingDisp = settingName;
+        if( settingName == null || settingName.isEmpty() ){
+            settingDisp = "(プリンター未選択)";
+        }
+        settingLabel.setText(settingDisp);
+        repaint();
+        revalidate();
+        pack();
     }
 
     private JPanel makeNorth(){
         JPanel panel = new JPanel(new MigLayout("", "", ""));
         panel.add(printButton);
+        panel.add(settingLabel);
         return panel;
     }
 
@@ -84,7 +91,7 @@ public class DrawerPreviewDialog extends JDialog {
                     return;
                 }
             }
-            drawerPrinter.print(ops);
+            drawerPrinter.print(ops, devmode, devnames);
             dispose();
         } catch(IOException ex){
             ex.printStackTrace();

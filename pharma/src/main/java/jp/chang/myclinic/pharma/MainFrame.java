@@ -1,6 +1,7 @@
 package jp.chang.myclinic.pharma;
 
 import jp.chang.myclinic.drawer.printer.manage.PrinterManageDialog;
+import jp.chang.myclinic.drawer.printer.manage.SettingChooserDialog;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import net.miginfocom.swing.MigLayout;
 
@@ -24,6 +25,9 @@ public class MainFrame extends JFrame {
     private JButton startPrescButton = new JButton("調剤開始");
     private JTextField prevTechouSearchField = new JTextField(6);
     private JButton searchPrevTechouButton = new JButton("検索");
+    private JMenuItem prescPrinterSettingItem = new JMenuItem("処方内容印刷設定");
+    private JMenuItem drugbagPrinterSettingItem = new JMenuItem("薬袋印刷設定");
+    private JMenuItem techouPrinterSettingItem = new JMenuItem("お薬手帳印刷設定");
     private JMenuItem printManageItem = new JMenuItem("印刷管理");
     private static Icon waitCashierIcon;
     private static Icon waitDrugIcon;
@@ -60,8 +64,9 @@ public class MainFrame extends JFrame {
     private void setupMenu() {
         JMenuBar menuBar = new JMenuBar();
         JMenu settingMenu = new JMenu("設定");
-        JMenuItem printSettingItem = new JMenuItem("印刷設定");
-        settingMenu.add(printSettingItem);
+        settingMenu.add(prescPrinterSettingItem);
+        settingMenu.add(drugbagPrinterSettingItem);
+        settingMenu.add(techouPrinterSettingItem);
         settingMenu.add(printManageItem);
         menuBar.add(settingMenu);
         setJMenuBar(menuBar);
@@ -150,7 +155,23 @@ public class MainFrame extends JFrame {
             dispose();
             System.exit(0);
         });
+        drugbagPrinterSettingItem.addActionListener(event -> doDrugbagPrinterSetting());
         printManageItem.addActionListener(event -> doManagePrint());
+    }
+
+    private void doDrugbagPrinterSetting() {
+        SettingChooserDialog dialog = new SettingChooserDialog(this, "薬袋の印刷設定");
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
+        if( !dialog.isCanceled() ){
+            PharmaConfig.INSTANCE.setDrugbagPrinterSetting(dialog.getSelectedSetting());
+            try {
+                PharmaConfig.INSTANCE.writeToConfigFile();
+            } catch(IOException ex){
+                ex.printStackTrace();
+                alert("設定ファイルの保存に失敗しました。\n" + ex);
+            }
+        }
     }
 
     private void doStartPresc() {
@@ -188,14 +209,9 @@ public class MainFrame extends JFrame {
     }
 
     private void doManagePrint(){
-        try {
-            PrinterManageDialog printerManageDialog = new PrinterManageDialog(this);
-            printerManageDialog.setLocationByPlatform(true);
-            printerManageDialog.setVisible(true);
-        } catch(IOException ex){
-            ex.printStackTrace();
-            alert(ex.toString());
-        }
+        PrinterManageDialog printerManageDialog = new PrinterManageDialog(this);
+        printerManageDialog.setLocationByPlatform(true);
+        printerManageDialog.setVisible(true);
     }
 
     private void alert(String message){

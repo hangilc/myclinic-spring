@@ -3,15 +3,13 @@ package jp.chang.myclinic.drawer.printer.manage;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.List;
 
-/**
- * Created by hangil on 2017/05/31.
- */
 public class NamesComboBox extends JComboBox<String> {
 
-    public NamesComboBox() throws IOException {
+    public NamesComboBox() {
         super(new String[]{});
         load();
     }
@@ -25,21 +23,26 @@ public class NamesComboBox extends JComboBox<String> {
         }
     }
 
-    public void reload() throws IOException {
+    public void reload() {
         String current = getSelectedName();
         removeAllItems();
         load();
     }
 
-    public void load() throws IOException {
+    public void load() {
         PrinterSetting printerSetting = PrinterSetting.INSTANCE;
-        List<String> names = printerSetting.listNames();
-        for (String name : names) {
-            addItem(name);
-        }
-        String proto = maxName(names);
-        if( proto != null ){
-            setPrototypeDisplayValue(proto + "  ");
+        try {
+            List<String> names = printerSetting.listNames();
+            for (String name : names) {
+                addItem(name);
+            }
+            String proto = maxName(names);
+            if (proto != null) {
+                setPrototypeDisplayValue(proto + "  ");
+            }
+        } catch(IOException ex){
+            ex.printStackTrace();
+            throw new UncheckedIOException(ex);
         }
     }
 

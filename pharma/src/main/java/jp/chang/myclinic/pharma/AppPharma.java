@@ -24,7 +24,7 @@ public class AppPharma {
             }
             Service.setServerUrl(serverUrl);
         }
-        readConfig();
+        //readConfig();
         EventQueue.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -39,25 +39,25 @@ public class AppPharma {
         });
     }
 
-    private static void readConfig() throws IOException {
-        Path configPath = Paths.get(System.getProperty("user.home"), "myclinic-pharma.properties");
-        if( Files.exists(configPath) ){
-            try(BufferedReader reader = Files.newBufferedReader(configPath, StandardCharsets.UTF_8)){
-                Properties props = new Properties();
-                props.load(reader);
-                String settingName = props.getProperty("printer-setting-name");
-                if( settingName != null ){
-                    PharmaConfig.INSTANCE.setCurrentSetting(settingName);
-                }
-            }
-        } else {
-            try(BufferedWriter writer = Files.newBufferedWriter(configPath, StandardCharsets.UTF_8)){
-                Properties props = new Properties();
-                props.setProperty("printer-setting-name", "");
-                props.store(writer, "");
-            }
-        }
-    }
+//    private static void readConfig() throws IOException {
+//        Path configPath = Paths.get(System.getProperty("user.home"), "myclinic-pharma.properties");
+//        if( Files.exists(configPath) ){
+//            try(BufferedReader reader = Files.newBufferedReader(configPath, StandardCharsets.UTF_8)){
+//                Properties props = new Properties();
+//                props.load(reader);
+//                String settingName = props.getProperty("printer-setting-name");
+//                if( settingName != null ){
+//                    PharmaConfig.INSTANCE.setPrinterSetting(settingName);
+//                }
+//            }
+//        } else {
+//            try(BufferedWriter writer = Files.newBufferedWriter(configPath, StandardCharsets.UTF_8)){
+//                Properties props = new Properties();
+//                props.setProperty("printer-setting-name", "");
+//                props.store(writer, "");
+//            }
+//        }
+//    }
 
 
 }
