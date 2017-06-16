@@ -63,6 +63,9 @@ public class PrinterManageDialog extends JDialog {
                         confirmDialog.getDevmodeData(),
                         confirmDialog.getAuxSetting());
                 namesCombo.reload();
+                repaint();
+                revalidate();
+                pack();
             } catch (IOException ex){
                 ex.printStackTrace();
                 throw new UncheckedIOException(ex);
@@ -104,6 +107,9 @@ public class PrinterManageDialog extends JDialog {
                 PrinterSetting printerSetting = PrinterSetting.INSTANCE;
                 printerSetting.deleteSetting(name);
                 namesCombo.reload();
+                repaint();
+                revalidate();
+                pack();
             } catch(IOException ex){
                 ex.printStackTrace();
                 alert(ex.toString());

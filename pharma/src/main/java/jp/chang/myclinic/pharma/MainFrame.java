@@ -1,5 +1,6 @@
 package jp.chang.myclinic.pharma;
 
+import jp.chang.myclinic.drawer.printer.manage.PrinterManageDialog;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import net.miginfocom.swing.MigLayout;
 
@@ -23,6 +24,7 @@ public class MainFrame extends JFrame {
     private JButton startPrescButton = new JButton("調剤開始");
     private JTextField prevTechouSearchField = new JTextField(6);
     private JButton searchPrevTechouButton = new JButton("検索");
+    private JMenuItem printManageItem = new JMenuItem("印刷管理");
     private static Icon waitCashierIcon;
     private static Icon waitDrugIcon;
 
@@ -60,7 +62,6 @@ public class MainFrame extends JFrame {
         JMenu settingMenu = new JMenu("設定");
         JMenuItem printSettingItem = new JMenuItem("印刷設定");
         settingMenu.add(printSettingItem);
-        JMenuItem printManageItem = new JMenuItem("印刷管理");
         settingMenu.add(printManageItem);
         menuBar.add(settingMenu);
         setJMenuBar(menuBar);
@@ -149,6 +150,7 @@ public class MainFrame extends JFrame {
             dispose();
             System.exit(0);
         });
+        printManageItem.addActionListener(event -> doManagePrint());
     }
 
     private void doStartPresc() {
@@ -183,6 +185,17 @@ public class MainFrame extends JFrame {
             t.printStackTrace();
             return null;
         });
+    }
+
+    private void doManagePrint(){
+        try {
+            PrinterManageDialog printerManageDialog = new PrinterManageDialog(this);
+            printerManageDialog.setLocationByPlatform(true);
+            printerManageDialog.setVisible(true);
+        } catch(IOException ex){
+            ex.printStackTrace();
+            alert(ex.toString());
+        }
     }
 
     private void alert(String message){
