@@ -1,9 +1,10 @@
-package jp.chang.myclinic.drawer.presccontent;
+package jp.chang.myclinic.drawer.techou;
 
 import java.util.List;
 
-public class PrescContentDrawerData {
+public class TechouDrawerData {
     public String patientName;
     public String prescDate;
     public List<String> drugs;
+    public List<String> clinic;
 }

@@ -6,6 +6,8 @@ import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawer;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawerData;
 import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
+import jp.chang.myclinic.drawer.techou.TechouDrawer;
+import jp.chang.myclinic.drawer.techou.TechouDrawerData;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
@@ -117,6 +119,7 @@ public class Workarea extends JPanel {
 
     private void bind(){
         printPrescButton.addActionListener(event -> doPrintPrescContent());
+        printTechouButton.addActionListener(event -> doPrintTechou());
     }
 
     private void doPreviewDrugBag(DrugFullDTO drugFull, PatientDTO patient){
@@ -160,6 +163,31 @@ public class Workarea extends JPanel {
         dialog.render(drawer.getOps());
         dialog.setLocationByPlatform(true);
         dialog.setVisible(true);
+    }
+
+    private void doPrintTechou(){
+        Service.api.getClinicInfo()
+                .thenAccept(clinicInfo -> {
+                    LocalDate prescDate = LocalDate.now();
+                    TechouDataCreator creator = new TechouDataCreator(patient, prescDate, drugs, clinicInfo);
+                    TechouDrawerData data = creator.createData();
+                    TechouDrawer drawer = new TechouDrawer(data);
+                    List<Op> ops = drawer.getOps();
+                    EventQueue.invokeLater(() -> {
+                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "お薬手帳印刷プレビュー", false);
+                        previewDialog.setImageSize(99, 182);
+                        previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getDrugbagPrinterSetting());
+                        previewDialog.setLocationByPlatform(true);
+                        previewDialog.render(ops);
+                        previewDialog.setVisible(true);
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
+
     }
 
     private void alert(String message){
