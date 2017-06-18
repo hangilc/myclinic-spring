@@ -13,21 +13,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by hangil on 2017/05/17.
- */
 public class DrawerPreviewPane extends JPanel {
 
+    private static double defaultScale = 3.78;   // dot per mm
     private List<Op> ops;
     private double imageWidth;
     private double imageHeight;
     private Point2D currentPoint = new Point2D.Double(0, 0);
     private Color textColor;
+    private double scale;
 
     public DrawerPreviewPane(List<Op> ops, double imageWidth, double imageHeight){
         this.ops = ops;
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
+        this.scale = defaultScale;
         setBackground(Color.WHITE);
     }
 
@@ -40,6 +40,21 @@ public class DrawerPreviewPane extends JPanel {
         this.imageHeight = imageHeight;
     }
 
+    @Override
+    public Dimension getPreferredSize(){
+        int width = (int)(imageWidth * scale);
+        int height = (int)(imageHeight * scale);
+        return new Dimension(width, height);
+    }
+
+    public double getImageWidth(){
+        return imageWidth;
+    }
+
+    public double getImageHeight(){
+        return imageHeight;
+    }
+
     public void setOps(List<Op> ops){
         this.ops = ops;
     }
@@ -47,9 +62,6 @@ public class DrawerPreviewPane extends JPanel {
     @Override
     public void paintComponent(Graphics g1){
         super.paintComponent(g1);
-        double xScale = getWidth() / imageWidth;
-        double yScale = getHeight() / imageHeight;
-        double scale = Math.min(xScale, yScale);
         Map<String, Font> fontMap = new HashMap<>();
         Map<String, Color> colorMap = new HashMap<>();
         Map<String, Stroke> strokeMap = new HashMap<>();
@@ -162,4 +174,5 @@ public class DrawerPreviewPane extends JPanel {
             }
         });
     }
+
 }

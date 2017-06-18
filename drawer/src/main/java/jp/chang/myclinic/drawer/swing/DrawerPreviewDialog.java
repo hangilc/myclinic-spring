@@ -23,16 +23,22 @@ public class DrawerPreviewDialog extends JDialog {
 
     public DrawerPreviewDialog(Window owner, String title, boolean modal){
         super(owner, title, modal ? ModalityType.DOCUMENT_MODAL : ModalityType.MODELESS);
-        setLayout(new MigLayout("", "", ""));
+        setLayout(new MigLayout("fill, insets 0 0 0 22", "", ""));
         northPanel = makeNorth();
         add(northPanel, "dock north");
-        add(previewPane);
+        {
+            JScrollPane sp = new JScrollPane(previewPane);
+            add(sp, "grow");
+        }
         bind();
         pack();
     }
 
     public void setImageSize(double imageWidth, double imageHeight){
         previewPane.setImageSize(imageWidth, imageHeight);
+        previewPane.repaint();
+        previewPane.revalidate();
+        pack();
     }
 
     public void setPreviewPaneSize(int width, int height){
@@ -45,8 +51,8 @@ public class DrawerPreviewDialog extends JDialog {
     public void render(List<Op> ops){
         previewPane.setOps(ops);
         this.ops = ops;
-        repaint();
-        revalidate();
+        previewPane.repaint();
+        previewPane.revalidate();
     }
 
     public void setPrinterSetting(String settingName){

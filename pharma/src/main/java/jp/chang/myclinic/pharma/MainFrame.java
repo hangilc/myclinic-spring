@@ -12,9 +12,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-/**
- * Created by hangil on 2017/06/05.
- */
 public class MainFrame extends JFrame {
 
     private PharmaQueueList pharmaQueueList;

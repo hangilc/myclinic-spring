@@ -130,7 +130,6 @@ public class Workarea extends JPanel {
                     EventQueue.invokeLater(() -> {
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
                         previewDialog.setImageSize(128, 182);
-                        previewDialog.setPreviewPaneSize(256, 364);
                         previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getDrugbagPrinterSetting());
                         previewDialog.setLocationByPlatform(true);
                         DrugBagDataCreator dataCreator = new DrugBagDataCreator(drugFull, patient, dataStore.pharmaDrug, clinicInfo);
@@ -158,7 +157,6 @@ public class Workarea extends JPanel {
         PrescContentDrawer drawer = new PrescContentDrawer(data);
         DrawerPreviewDialog dialog = new DrawerPreviewDialog(SwingUtilities.getWindowAncestor(this), "処方内容の印刷", true);
         dialog.setImageSize(148, 210);
-        dialog.setPreviewPaneSize(148, 210);
         dialog.render(drawer.getOps());
         dialog.setLocationByPlatform(true);
         dialog.setVisible(true);
