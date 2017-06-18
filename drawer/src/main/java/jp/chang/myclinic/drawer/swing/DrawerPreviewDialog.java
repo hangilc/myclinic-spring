@@ -9,7 +9,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DrawerPreviewDialog extends JDialog {
@@ -18,7 +18,8 @@ public class DrawerPreviewDialog extends JDialog {
     private JPanel northPanel;
     private JButton printButton = new JButton("印刷");
     private JLabel settingLabel = new JLabel("");
-    private List<Op> ops = Collections.emptyList();
+    private List<List<Op>> pages = new ArrayList<>();
+    //private List<Op> ops = Collections.emptyList();
     private String settingName;
 
     public DrawerPreviewDialog(Window owner, String title, boolean modal){
@@ -50,7 +51,8 @@ public class DrawerPreviewDialog extends JDialog {
 
     public void render(List<Op> ops){
         previewPane.setOps(ops);
-        this.ops = ops;
+        pages.clear();
+        pages.add(ops);
         previewPane.repaint();
         previewPane.revalidate();
     }
@@ -98,7 +100,7 @@ public class DrawerPreviewDialog extends JDialog {
                     return;
                 }
             }
-            drawerPrinter.print(ops, devmode, devnames);
+            drawerPrinter.print(pages.get(0), devmode, devnames);
             dispose();
         } catch(IOException ex){
             ex.printStackTrace();
