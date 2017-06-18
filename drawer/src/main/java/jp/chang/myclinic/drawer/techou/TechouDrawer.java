@@ -17,6 +17,7 @@ public class TechouDrawer {
     private int pageHeight = 210;
     private double fontSize = 3.2;
     private double padding = 4;
+    private double lastY;
 
     public TechouDrawer(TechouDrawerData data){
         this.data = data;
@@ -32,11 +33,19 @@ public class TechouDrawer {
         }
         lines.add("");
         lines.addAll(data.clinic);
-        compiler.multilineText(lines, dispBox, HAlign.Left, VAlign.Top, 0);
+        lastY = compiler.multilineText(lines, dispBox, HAlign.Left, VAlign.Top, 0);
     }
 
     public List<Op> getOps(){
         return compiler.getOps();
+    }
+
+    public double getPageWidth(){
+        return pageWidth;
+    }
+
+    public double getPageHeight(){
+        return lastY + padding;
     }
 
     private void addDrug(List<String> lines, Box box, String drug){

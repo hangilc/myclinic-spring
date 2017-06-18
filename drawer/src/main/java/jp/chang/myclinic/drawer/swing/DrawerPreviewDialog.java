@@ -23,7 +23,7 @@ public class DrawerPreviewDialog extends JDialog {
 
     public DrawerPreviewDialog(Window owner, String title, boolean modal){
         super(owner, title, modal ? ModalityType.DOCUMENT_MODAL : ModalityType.MODELESS);
-        setLayout(new MigLayout("fill, insets 0 0 0 22", "", ""));
+        setLayout(new MigLayout("fill, insets 0 5 5 5", "", ""));
         northPanel = makeNorth();
         add(northPanel, "dock north");
         {
@@ -87,6 +87,7 @@ public class DrawerPreviewDialog extends JDialog {
                 devmode = PrinterSetting.INSTANCE.readDevmode(settingName);
                 devnames = PrinterSetting.INSTANCE.readDevnames(settingName);
                 auxSetting = PrinterSetting.INSTANCE.readAuxSetting(settingName);
+                // TODO: use auxSetting
             }
             if (devmode == null) {
                 DrawerPrinter.DialogResult result = drawerPrinter.printDialog(null, null);
@@ -106,7 +107,7 @@ public class DrawerPreviewDialog extends JDialog {
     }
 
     private void alert(String message){
-        JOptionPane.showMessageDialog(this, message.toString());
+        JOptionPane.showMessageDialog(this, message);
     }
 
 }

@@ -41,7 +41,6 @@ public class DrugBagDrawer {
     private static double SMALL_FONT_SIZE = 3.43;
     private static double DRUGBOX_FONT_SIZE = REGULAR_FONT_SIZE;
 
-
     public DrugBagDrawer(DrugBagDrawerData data){
         this.data = data;
         titleBox = innerBox(paper, 0, 35, 128, 9.88);
@@ -75,12 +74,12 @@ public class DrugBagDrawer {
         setupClinicAddr();
     }
 
-    private static Box innerBox(Box box, double left, double top, double width, double height){
-        return box.innerBox(left, top, left + width, top + height);
-    }
-
     public List<Op> getOps(){
         return compiler.getOps();
+    }
+
+    private static Box innerBox(Box box, double left, double top, double width, double height){
+        return box.innerBox(left, top, left + width, top + height);
     }
 
     private void setupFonts(){

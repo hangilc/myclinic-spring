@@ -15,11 +15,13 @@ public class PrescContentDrawer {
     private PrescContentDrawerData data;
     private int pageWidth = 148;
     private int pageHeight = 210;
+    private double padding = 5;
+    private double lastY;
 
     public PrescContentDrawer(PrescContentDrawerData data){
         this.data = data;
         Box page = new Box(0, 0, pageWidth, pageHeight);
-        Box dispBox = page.inset(5);
+        Box dispBox = page.inset(padding);
         compiler.createFont("regular", "MS Gothic", 4.6);
         compiler.setFont("regular");
         List<String> lines = new ArrayList<>();
@@ -28,11 +30,19 @@ public class PrescContentDrawer {
         for(String drug: data.drugs){
             addDrug(lines, dispBox, drug);
         }
-        compiler.multilineText(lines, dispBox, HAlign.Left, VAlign.Top, 0);
+        lastY = compiler.multilineText(lines, dispBox, HAlign.Left, VAlign.Top, 0);
     }
 
     public List<Op> getOps(){
         return compiler.getOps();
+    }
+
+    public double getPageWidth(){
+        return pageWidth;
+    }
+
+    public double getPageHeight(){
+        return lastY + padding;
     }
 
     private void addDrug(List<String> lines, Box box, String drug){
