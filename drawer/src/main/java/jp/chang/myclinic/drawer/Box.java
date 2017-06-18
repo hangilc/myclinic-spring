@@ -98,6 +98,10 @@ public class Box {
         return new Box(left, top, right, bottom);
     }
 
+    public Box inset(double amount){
+        return inset(amount, amount);
+    }
+
     public Box inset(double dx, double dy){
         return new Box(left + dx, top + dy, right - dx, bottom - dy);
     }

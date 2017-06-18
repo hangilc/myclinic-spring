@@ -3,6 +3,8 @@ package jp.chang.myclinic.pharma;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
+import jp.chang.myclinic.drawer.presccontent.PrescContentDrawer;
+import jp.chang.myclinic.drawer.presccontent.PrescContentDrawerData;
 import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
@@ -16,13 +18,11 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import static java.awt.Font.BOLD;
 
-/**
- * Created by hangil on 2017/06/12.
- */
 public class Workarea extends JPanel {
 
     private JLabel nameLabel = new JLabel("");
@@ -36,6 +36,8 @@ public class Workarea extends JPanel {
     private JButton printAllExceptTechouButton = new JButton("*全部印刷(薬手帳なし)*");
     private JButton cancelButton = new JButton("キャンセル");
     private JButton doneButton = new JButton("薬渡し終了");
+    private PatientDTO patient;
+    private List<DrugFullDTO> drugs = Collections.emptyList();
 
     public Workarea(){
         setupNameLabel();
@@ -48,9 +50,12 @@ public class Workarea extends JPanel {
         add(makeCommandRow1(), "wrap");
         add(makeCommandRow2(), "wrap");
         add(makeCommandRow3(), "right");
+        bind();
     }
 
     public void update(PatientDTO patient, List<DrugFullDTO> drugs){
+        this.patient = patient;
+        this.drugs = drugs;
         nameLabel.setText(patient.lastName + patient.firstName);
         yomiLabel.setText(patient.lastNameYomi + patient.firstNameYomi);
         LocalDate birthday = DateTimeUtil.parseSqlDate(patient.birthday);
@@ -75,6 +80,7 @@ public class Workarea extends JPanel {
             bagLink.setForeground(Color.BLUE);
             bagLink.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
             wrap.append(bagLink);
+            // TODO: add 'prescribed' label
             drugsContainer.add(wrap, "wrap");
         }
         repaint();
@@ -109,6 +115,10 @@ public class Workarea extends JPanel {
         return panel;
     }
 
+    private void bind(){
+        printPrescButton.addActionListener(event -> doPrintPrescContent());
+    }
+
     private void doPreviewDrugBag(DrugFullDTO drugFull, PatientDTO patient){
         final DataStore dataStore = new DataStore();
         Service.api.getPharmaDrug(drugFull.drug.iyakuhincode)
@@ -139,6 +149,19 @@ public class Workarea extends JPanel {
 
     private static class DataStore {
         PharmaDrugDTO pharmaDrug;
+    }
+
+    private void doPrintPrescContent(){
+        LocalDate prescDate = LocalDate.now();
+        PrescContentDataCreator creator = new PrescContentDataCreator(patient, prescDate, drugs);
+        PrescContentDrawerData data = creator.createData();
+        PrescContentDrawer drawer = new PrescContentDrawer(data);
+        DrawerPreviewDialog dialog = new DrawerPreviewDialog(SwingUtilities.getWindowAncestor(this), "処方内容の印刷", true);
+        dialog.setImageSize(148, 210);
+        dialog.setPreviewPaneSize(148, 210);
+        dialog.render(drawer.getOps());
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
     }
 
     private void alert(String message){

@@ -473,6 +473,9 @@ public class DbGateway {
 		PageRequest pageRequest = new PageRequest(0, n, Sort.Direction.DESC, "visitId");
 		List<Integer> visitIds = paymentRepository.findFinalPayment(pageRequest).stream()
 				.map(payment -> payment.getVisitId()).collect(Collectors.toList());
+		if( visitIds.isEmpty() ){
+			return Collections.emptyList();
+		}
 		return paymentRepository.findFullFinalPayment(visitIds, pageRequest).stream()
 				.map(this::resultToPaymentVisitPatient).collect(Collectors.toList());
 	}
@@ -524,6 +527,9 @@ public class DbGateway {
 
 	public List<PharmaQueueFullDTO> listPharmaQueueFullForToday(){
 		List<Integer> visitIds = visitRepository.findVisitIdForToday();
+		if( visitIds.isEmpty() ){
+			return Collections.emptyList();
+		}
 		Map<Integer, WqueueDTO> wqueueMap = new HashMap<>();
 		Map<Integer, PharmaQueueDTO> pharmaQueueMap = new HashMap<>();
 		wqueueRepository.findAll().forEach(wq -> {
