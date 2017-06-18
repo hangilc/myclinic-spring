@@ -14,26 +14,49 @@ import com.sun.jna.platform.win32.WinUser.WindowProc;
 import jp.chang.myclinic.drawer.*;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by hangil on 2017/05/24.
- */
 public class DrawerPrinter {
 
     private double dx = 0;
     private double dy = 0;
 
-    public void print(Iterable<Op> ops){
+    public void print(List<Op> ops){
         DialogResult dialogResult = printDialog(null, null);
         if( dialogResult.ok ){
             print(ops, dialogResult.devmodeData, dialogResult.devnamesData);
         }
     }
 
-    public void print(Iterable<Op> ops, byte[] devmode, byte[] devnames){
+    public void print(List<Op> ops, byte[] devmode, byte[] devnames){
+        List<List<Op>> pages = new ArrayList<>();
+        pages.add(ops);
+        printPages(pages, devmode, devnames);
+//        HDC hdc = createDC(devnames, devmode);
+//        if( hdc.getPointer() == Pointer.NULL ){
+//            throw new RuntimeException("createDC faield");
+//        }
+//        int jobId = beginPrint(hdc);
+//        if( jobId <= 0 ){
+//            throw new RuntimeException("StartDoc failed");
+//        }
+//        int dpix = getDpix(hdc);
+//        int dpiy = getDpiy(hdc);
+//        startPage(hdc);
+//        MyGdi32.INSTANCE.SetBkMode(hdc, PrinterConsts.TRANSPARENT);
+//        execOps(hdc, ops, dpix, dpiy);
+//        endPage(hdc);
+//        int endDocResult = endPrint(hdc);
+//        if( endDocResult <= 0 ){
+//            throw new RuntimeException("EndDoc failed");
+//        }
+//        deleteDC(hdc);
+    }
+
+    public void printPages(List<List<Op>> pages, byte[] devmode, byte[] devnames){
         HDC hdc = createDC(devnames, devmode);
         if( hdc.getPointer() == Pointer.NULL ){
             throw new RuntimeException("createDC faield");
@@ -44,10 +67,12 @@ public class DrawerPrinter {
         }
         int dpix = getDpix(hdc);
         int dpiy = getDpiy(hdc);
-        startPage(hdc);
         MyGdi32.INSTANCE.SetBkMode(hdc, PrinterConsts.TRANSPARENT);
-        execOps(hdc, ops, dpix, dpiy);
-        endPage(hdc);
+        for(List<Op> ops: pages){
+            startPage(hdc);
+            execOps(hdc, ops, dpix, dpiy);
+            endPage(hdc);
+        }
         int endDocResult = endPrint(hdc);
         if( endDocResult <= 0 ){
             throw new RuntimeException("EndDoc failed");
