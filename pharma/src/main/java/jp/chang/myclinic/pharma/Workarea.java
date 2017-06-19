@@ -8,6 +8,7 @@ import jp.chang.myclinic.drawer.presccontent.PrescContentDrawerData;
 import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
 import jp.chang.myclinic.drawer.techou.TechouDrawer;
 import jp.chang.myclinic.drawer.techou.TechouDrawerData;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
@@ -20,8 +21,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.awt.Font.BOLD;
 
@@ -119,6 +121,7 @@ public class Workarea extends JPanel {
 
     private void bind(){
         printPrescButton.addActionListener(event -> doPrintPrescContent());
+        printDrugBagButton.addActionListener(event -> doPrintDrugBag());
         printTechouButton.addActionListener(event -> doPrintTechou());
     }
 
@@ -151,6 +154,44 @@ public class Workarea extends JPanel {
 
     private static class DataStore {
         PharmaDrugDTO pharmaDrug;
+        ClinicInfoDTO clinicInfo;
+    }
+
+    private void doPrintDrugBag(){
+        final DataStore dataStore = new DataStore();
+        Service.api.getClinicInfo()
+                .thenCompose(clinicInfo -> {
+                    dataStore.clinicInfo = clinicInfo;
+                    Set<Integer> iyakuhincodes = drugs.stream().map(d -> d.drug.iyakuhincode).collect(Collectors.toSet());
+                    return Service.api.collectPharmaDrugByIyakuhincodes(iyakuhincodes);
+                })
+                .thenAccept(pharmaDrugs -> {
+                    Map<Integer, PharmaDrugDTO> pharmaMap = new HashMap<>();
+                    for(PharmaDrugDTO pharmaDrug: pharmaDrugs){
+                        pharmaMap.put(pharmaDrug.iyakuhincode, pharmaDrug);
+                    }
+                    final ClinicInfoDTO clinicInfo = dataStore.clinicInfo;
+                    List<List<Op>> pages = drugs.stream().map(drug -> {
+                        PharmaDrugDTO pharmaDrug = pharmaMap.get(drug.drug.iyakuhincode);
+                        DrugBagDataCreator dataCreator = new DrugBagDataCreator(drug, patient, pharmaDrug, clinicInfo);
+                        DrugBagDrawerData data = dataCreator.createData();
+                        DrugBagDrawer drawer = new DrugBagDrawer(data);
+                        return drawer.getOps();
+                    }).collect(Collectors.toList());
+                    EventQueue.invokeLater(() -> {
+                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷のプレビュー", true);
+                        previewDialog.setImageSize(128, 182);
+                        // TODO: set printer setting
+                        previewDialog.renderPages(pages);
+                        previewDialog.setLocationByPlatform(true);
+                        previewDialog.setVisible(true);
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
     }
 
     private void doPrintPrescContent(){

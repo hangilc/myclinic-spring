@@ -8,8 +8,11 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DrawerPreviewDialog extends JDialog {
@@ -18,8 +21,11 @@ public class DrawerPreviewDialog extends JDialog {
     private JPanel northPanel;
     private JButton printButton = new JButton("印刷");
     private JLabel settingLabel = new JLabel("");
+    private JLabel leftNavButton = new JLabel("<html><font color=\"#0000ff\">&lt;</font></html>");
+    private JLabel navStateLabel = new JLabel("");
+    private JLabel rightNavButton = new JLabel("<html><font color=\"#0000ff\">&gt;</font></html>");
     private List<List<Op>> pages = new ArrayList<>();
-    //private List<Op> ops = Collections.emptyList();
+    private int pageIndex;
     private String settingName;
 
     public DrawerPreviewDialog(Window owner, String title, boolean modal){
@@ -50,11 +56,76 @@ public class DrawerPreviewDialog extends JDialog {
     }
 
     public void render(List<Op> ops){
-        previewPane.setOps(ops);
         pages.clear();
         pages.add(ops);
+        doRender(ops);
+    }
+
+    public void doRender(List<Op> ops){
+        previewPane.setOps(ops);
         previewPane.repaint();
         previewPane.revalidate();
+    }
+
+    public void renderPages(List<List<Op>> pages){
+        this.pages = pages;
+        pageIndex = 0;
+        doRender(pages.size() > 0 ? pages.get(0) : Collections.emptyList());
+        addNav();
+        pack();
+    }
+
+    private void addNav(){
+        leftNavButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        rightNavButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        navStateLabel.setText(getNavLabelString());
+        northPanel.add(leftNavButton);
+        northPanel.add(navStateLabel);
+        northPanel.add(rightNavButton);
+        northPanel.revalidate();
+        bindNav();
+    }
+
+    private void bindNav(){
+        leftNavButton.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                doNavLeft();
+                pack();
+            }
+        });
+        rightNavButton.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                doNavRight();
+                pack();
+            }
+        });
+    }
+
+    private void doNavLeft(){
+        int newPage = pageIndex - 1;
+        if( newPage >= 0 && newPage < pages.size() ){
+            pageIndex = newPage;
+            doRender(pages.get(pageIndex));
+            navStateLabel.setText(getNavLabelString());
+        }
+    }
+
+    private void doNavRight(){
+        int newPage = pageIndex + 1;
+        if( newPage < pages.size() ){
+            pageIndex = newPage;
+            doRender(pages.get(pageIndex));
+            navStateLabel.setText(getNavLabelString());
+        }
+    }
+
+    private String getNavLabelString(){
+        if( pages.size() == 0 ){
+            return "0/0";
+        }
+        return String.format("%d/%d", pageIndex+1, pages.size());
     }
 
     public void setPrinterSetting(String settingName){

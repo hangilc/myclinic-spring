@@ -19,6 +19,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 class Service {
@@ -37,6 +38,9 @@ class Service {
 
         @GET("get-clinic-info")
         CompletableFuture<ClinicInfoDTO> getClinicInfo();
+
+        @GET("collect-pharma-drug-by-iyakuhincodes")
+        CompletableFuture<List<PharmaDrugDTO>> collectPharmaDrugByIyakuhincodes(@Query("iyakuhincode[]") Set<Integer> iyakuhincodes);
 
 //        @GET("list-wqueue-full")
 //        CompletableFuture<List<WqueueFullDTO>> listWqueue();

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/json")
@@ -23,6 +24,11 @@ public class PharmaDrugController {
     @RequestMapping(value="/get-pharma-drug", method= RequestMethod.GET)
     public PharmaDrugDTO getPharmaDrug(@RequestParam("iyakuhincode") int iyakuhincode){
         return dbGateway.findPharmaDrugByIyakuhincode(iyakuhincode);
+    }
+
+    @RequestMapping(value="/collect-pharma-drug-by-iyakuhincodes", method=RequestMethod.GET)
+    public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(@RequestParam("iyakuhincode[]") Set<Integer> iyakuhincodes){
+        return dbGateway.collectPharmaDrugByIyakuhincodes(iyakuhincodes);
     }
 
 }

@@ -558,6 +558,15 @@ public class DbGateway {
 				.map(mapper::toPharmaDrugDTO).orElse(null);
 	}
 
+	public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(Set<Integer> iyakuhincodes){
+		if( iyakuhincodes.size() == 0 ) {
+			return Collections.emptyList();
+		} else {
+			return pharmaDrugRepository.collectByIyakuhincodes(iyakuhincodes).stream()
+					.map(mapper::toPharmaDrugDTO).collect(Collectors.toList());
+		}
+	}
+
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
 		Shinryou shinryou = (Shinryou)result[0];
 		ShinryouMaster master = (ShinryouMaster)result[1];
