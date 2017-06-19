@@ -171,7 +171,7 @@ public class DrawerPreviewDialog extends JDialog {
                     return;
                 }
             }
-            drawerPrinter.print(pages.get(0), devmode, devnames);
+            drawerPrinter.printPages(pages, devmode, devnames);
             dispose();
         } catch(IOException ex){
             ex.printStackTrace();
