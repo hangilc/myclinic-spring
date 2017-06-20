@@ -171,18 +171,35 @@ public class Workarea extends JPanel {
                         pharmaMap.put(pharmaDrug.iyakuhincode, pharmaDrug);
                     }
                     final ClinicInfoDTO clinicInfo = dataStore.clinicInfo;
-                    List<List<Op>> pages = drugs.stream().map(drug -> {
+                    List<List<Op>> allPages = new ArrayList<>();
+                    List<List<Op>> unprescribedPages = new ArrayList<>();
+                    for(DrugFullDTO drug: drugs){
                         PharmaDrugDTO pharmaDrug = pharmaMap.get(drug.drug.iyakuhincode);
                         DrugBagDataCreator dataCreator = new DrugBagDataCreator(drug, patient, pharmaDrug, clinicInfo);
                         DrugBagDrawerData data = dataCreator.createData();
                         DrugBagDrawer drawer = new DrugBagDrawer(data);
-                        return drawer.getOps();
-                    }).collect(Collectors.toList());
+                        List<Op> ops = drawer.getOps();
+                        allPages.add(ops);
+                        if( drug.drug.prescribed == 0 ){
+                            unprescribedPages.add(ops);
+                        }
+                    }
                     EventQueue.invokeLater(() -> {
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷のプレビュー", true);
                         previewDialog.setImageSize(128, 182);
                         // TODO: set printer setting
-                        previewDialog.renderPages(pages);
+                        JCheckBox includePrescribedCheckBox = new JCheckBox("処方済も含める");
+                        includePrescribedCheckBox.addItemListener(event -> {
+                            if( includePrescribedCheckBox.isSelected() ){
+                                previewDialog.changePages(allPages);
+                                previewDialog.pack();
+                            } else {
+                                previewDialog.changePages(unprescribedPages);
+                                previewDialog.pack();
+                            }
+                        });
+                        previewDialog.renderPages(unprescribedPages);
+                        previewDialog.addComponent(includePrescribedCheckBox);
                         previewDialog.setLocationByPlatform(true);
                         previewDialog.setVisible(true);
                     });

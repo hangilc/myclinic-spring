@@ -75,6 +75,17 @@ public class DrawerPreviewDialog extends JDialog {
         pack();
     }
 
+    public void changePages(List<List<Op>> pages){
+        this.pages = pages;
+        pageIndex = 0;
+        doRender(pages.size() > 0 ? pages.get(0) : Collections.emptyList());
+        navStateLabel.setText(getNavLabelString());
+    }
+
+    public void addComponent(JComponent component){
+        northPanel.add(component);
+    }
+
     private void addNav(){
         leftNavButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         rightNavButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
