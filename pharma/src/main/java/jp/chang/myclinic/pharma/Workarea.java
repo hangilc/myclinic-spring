@@ -84,7 +84,12 @@ public class Workarea extends JPanel {
             bagLink.setForeground(Color.BLUE);
             bagLink.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
             wrap.append(bagLink);
-            // TODO: add 'prescribed' label
+            if( drugFull.drug.prescribed != 0 ){
+                JLabel prescribedLabel = new JLabel(" 処方済 ");
+                Font font = prescribedLabel.getFont().deriveFont(BOLD);
+                prescribedLabel.setFont(font);
+                wrap.append(prescribedLabel);
+            }
             drugsContainer.add(wrap, "wrap");
         }
         repaint();
