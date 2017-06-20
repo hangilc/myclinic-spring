@@ -29,6 +29,7 @@ public class MainFrame extends JFrame {
     private static Icon waitCashierIcon;
     private static Icon waitDrugIcon;
 
+    // TODO: print blank drug bag
     public MainFrame(){
         super("薬局");
         try {
@@ -152,8 +153,25 @@ public class MainFrame extends JFrame {
             dispose();
             System.exit(0);
         });
+        prescPrinterSettingItem.addActionListener(event -> doPrescPrinterSetting());
         drugbagPrinterSettingItem.addActionListener(event -> doDrugbagPrinterSetting());
+        techouPrinterSettingItem.addActionListener(event -> doTechouPrinterSetting());
         printManageItem.addActionListener(event -> doManagePrint());
+    }
+
+    private void doPrescPrinterSetting() {
+        SettingChooserDialog dialog = new SettingChooserDialog(this, "処方内容の印刷設定");
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
+        if( !dialog.isCanceled() ){
+            PharmaConfig.INSTANCE.setPrescPrinterSetting(dialog.getSelectedSetting());
+            try {
+                PharmaConfig.INSTANCE.writeToConfigFile();
+            } catch(IOException ex){
+                ex.printStackTrace();
+                alert("設定ファイルの保存に失敗しました。\n" + ex);
+            }
+        }
     }
 
     private void doDrugbagPrinterSetting() {
@@ -162,6 +180,21 @@ public class MainFrame extends JFrame {
         dialog.setVisible(true);
         if( !dialog.isCanceled() ){
             PharmaConfig.INSTANCE.setDrugbagPrinterSetting(dialog.getSelectedSetting());
+            try {
+                PharmaConfig.INSTANCE.writeToConfigFile();
+            } catch(IOException ex){
+                ex.printStackTrace();
+                alert("設定ファイルの保存に失敗しました。\n" + ex);
+            }
+        }
+    }
+
+    private void doTechouPrinterSetting() {
+        SettingChooserDialog dialog = new SettingChooserDialog(this, "お薬手帳の印刷設定");
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
+        if( !dialog.isCanceled() ){
+            PharmaConfig.INSTANCE.setTechouPrinterSetting(dialog.getSelectedSetting());
             try {
                 PharmaConfig.INSTANCE.writeToConfigFile();
             } catch(IOException ex){

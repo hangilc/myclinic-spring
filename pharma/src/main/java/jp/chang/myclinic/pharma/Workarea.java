@@ -5,6 +5,7 @@ import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawer;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawerData;
+import jp.chang.myclinic.drawer.printer.manage.PrinterSetting;
 import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
 import jp.chang.myclinic.drawer.techou.TechouDrawer;
 import jp.chang.myclinic.drawer.techou.TechouDrawerData;
@@ -130,6 +131,7 @@ public class Workarea extends JPanel {
         printDrugBagButton.addActionListener(event -> doPrintDrugBag());
         printTechouButton.addActionListener(event -> doPrintTechou());
         printAllButton.addActionListener(event -> doPrintAll());
+        printAllExceptTechouButton.addActionListener(event -> doPrintAllExceptTechou());
     }
 
     private void doPreviewDrugBag(DrugFullDTO drugFull, PatientDTO patient){
@@ -202,7 +204,7 @@ public class Workarea extends JPanel {
                     EventQueue.invokeLater(() -> {
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷のプレビュー", true);
                         previewDialog.setImageSize(128, 182);
-                        // TODO: set printer setting
+                        previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getDrugbagPrinterSetting());
                         JCheckBox includePrescribedCheckBox = new JCheckBox("処方済も含める");
                         List<List<Op>> allDrugBags = drugBagOps.stream()
                                 .map(arg -> arg.ops)
@@ -233,29 +235,41 @@ public class Workarea extends JPanel {
                 });
     }
 
-    private void doPrintPrescContent(){
+    private PrescContentDrawer createPrescContentDrawer(){
         LocalDate prescDate = LocalDate.now();
         PrescContentDataCreator creator = new PrescContentDataCreator(patient, prescDate, drugs);
         PrescContentDrawerData data = creator.createData();
-        PrescContentDrawer drawer = new PrescContentDrawer(data);
+        return new PrescContentDrawer(data);
+    }
+
+    private void doPrintPrescContent(){
+        PrescContentDrawer drawer = createPrescContentDrawer();
         DrawerPreviewDialog dialog = new DrawerPreviewDialog(SwingUtilities.getWindowAncestor(this), "処方内容の印刷", true);
+        dialog.setPrinterSetting(PharmaConfig.INSTANCE.getPrescPrinterSetting());
         dialog.setImageSize(drawer.getPageWidth(), drawer.getPageHeight());
         dialog.render(drawer.getOps());
         dialog.setLocationByPlatform(true);
         dialog.setVisible(true);
     }
 
-    private void doPrintTechou(){
-        Service.api.getClinicInfo()
-                .thenAccept(clinicInfo -> {
+    private CompletableFuture<TechouDrawer> composeTechouDrawer(){
+        return Service.api.getClinicInfo()
+                .thenApply(clinicInfo -> {
                     LocalDate prescDate = LocalDate.now();
                     TechouDataCreator creator = new TechouDataCreator(patient, prescDate, drugs, clinicInfo);
                     TechouDrawerData data = creator.createData();
-                    TechouDrawer drawer = new TechouDrawer(data);
+                    return new TechouDrawer(data);
+                });
+    }
+
+    private void doPrintTechou(){
+        composeTechouDrawer()
+                .thenAccept(drawer -> {
                     List<Op> ops = drawer.getOps();
                     EventQueue.invokeLater(() -> {
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "お薬手帳印刷プレビュー", false);
                         previewDialog.setImageSize(drawer.getPageWidth(), drawer.getPageHeight());
+                        previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getTechouPrinterSetting());
                         previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getDrugbagPrinterSetting());
                         previewDialog.setLocationByPlatform(true);
                         previewDialog.render(ops);
@@ -267,10 +281,74 @@ public class Workarea extends JPanel {
                     alert(t.toString());
                     return null;
                 });
+        /*
+        Service.api.getClinicInfo()
+                .thenAccept(clinicInfo -> {
+                    LocalDate prescDate = LocalDate.now();
+                    TechouDataCreator creator = new TechouDataCreator(patient, prescDate, drugs, clinicInfo);
+                    TechouDrawerData data = creator.createData();
+                    TechouDrawer drawer = new TechouDrawer(data);
+                    List<Op> ops = drawer.getOps();
+                    EventQueue.invokeLater(() -> {
+                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "お薬手帳印刷プレビュー", false);
+                        previewDialog.setImageSize(drawer.getPageWidth(), drawer.getPageHeight());
+                        previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getTechouPrinterSetting());
+                        previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getDrugbagPrinterSetting());
+                        previewDialog.setLocationByPlatform(true);
+                        previewDialog.render(ops);
+                        previewDialog.setVisible(true);
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
+                */
+    }
+
+    private void printAll(boolean includeTechou){
+        {
+            PrescContentDrawer drawer = createPrescContentDrawer();
+            String settingName = PharmaConfig.INSTANCE.getPrescPrinterSetting();
+            PrinterSetting.INSTANCE.print(drawer.getOps(), settingName);
+        }
+        {
+            composeDrugBagPages(drugs)
+                    .thenAccept(drugBagOps -> {
+                        List<List<Op>> pages = drugBagOps.stream()
+                                .map(drugBagOp -> drugBagOp.ops)
+                                .collect(Collectors.toList());
+                        String settingName = PharmaConfig.INSTANCE.getDrugbagPrinterSetting();
+                        PrinterSetting.INSTANCE.printPages(pages, settingName);
+                    })
+                    .exceptionally(t -> {
+                        t.printStackTrace();
+                        alert(t.toString());
+                        return null;
+                    });
+        }
+        if( includeTechou ){
+            composeTechouDrawer()
+                    .thenAccept(drawer -> {
+                        String settingName = PharmaConfig.INSTANCE.getTechouPrinterSetting();
+                        PrinterSetting.INSTANCE.print(drawer.getOps(), settingName);
+                    })
+                    .exceptionally(t -> {
+                        t.printStackTrace();
+                        alert(t.toString());
+                        return null;
+                    });
+
+        }
     }
 
     private void doPrintAll(){
-        
+        printAll(true);
+    }
+
+    private void doPrintAllExceptTechou(){
+        printAll(false);
     }
 
     private void alert(String message){

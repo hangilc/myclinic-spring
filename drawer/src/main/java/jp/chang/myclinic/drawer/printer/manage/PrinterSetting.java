@@ -1,7 +1,9 @@
 package jp.chang.myclinic.drawer.printer.manage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
+import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 
 import java.io.File;
 import java.io.IOException;
@@ -104,6 +106,25 @@ public class PrinterSetting {
         } else {
             Files.createDirectory(settingDir);
         }
+    }
+
+    public void printPages(List<List<Op>> pages, String settingName){
+        try {
+            byte[] devmode = readDevmode(settingName);
+            byte[] devnames = readDevnames(settingName);
+            AuxSetting auxSetting = readAuxSetting(settingName);
+            // TODO: apply auxSetting
+            DrawerPrinter drawerPrinter = new DrawerPrinter();
+            drawerPrinter.printPages(pages, devmode, devnames);
+        } catch(IOException ex){
+            throw new UncheckedIOException(ex);
+        }
+    }
+
+    public void print(List<Op> ops, String settingName){
+        List<List<Op>> pages = new ArrayList<>();
+        pages.add(ops);
+        printPages(pages, settingName);
     }
 
 }
