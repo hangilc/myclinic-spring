@@ -23,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static java.awt.Font.BOLD;
@@ -128,6 +129,7 @@ public class Workarea extends JPanel {
         printPrescButton.addActionListener(event -> doPrintPrescContent());
         printDrugBagButton.addActionListener(event -> doPrintDrugBag());
         printTechouButton.addActionListener(event -> doPrintTechou());
+        printAllButton.addActionListener(event -> doPrintAll());
     }
 
     private void doPreviewDrugBag(DrugFullDTO drugFull, PatientDTO patient){
@@ -162,48 +164,63 @@ public class Workarea extends JPanel {
         ClinicInfoDTO clinicInfo;
     }
 
-    private void doPrintDrugBag(){
+    private static class DrugBagOps {
+        boolean prescribed;
+        List<Op> ops;
+    }
+
+    private CompletableFuture<List<DrugBagOps>> composeDrugBagPages(List<DrugFullDTO> drugs) {
         final DataStore dataStore = new DataStore();
-        Service.api.getClinicInfo()
+        return Service.api.getClinicInfo()
                 .thenCompose(clinicInfo -> {
                     dataStore.clinicInfo = clinicInfo;
                     Set<Integer> iyakuhincodes = drugs.stream().map(d -> d.drug.iyakuhincode).collect(Collectors.toSet());
                     return Service.api.collectPharmaDrugByIyakuhincodes(iyakuhincodes);
                 })
-                .thenAccept(pharmaDrugs -> {
+                .thenApply(pharmaDrugs -> {
                     Map<Integer, PharmaDrugDTO> pharmaMap = new HashMap<>();
-                    for(PharmaDrugDTO pharmaDrug: pharmaDrugs){
+                    for (PharmaDrugDTO pharmaDrug : pharmaDrugs) {
                         pharmaMap.put(pharmaDrug.iyakuhincode, pharmaDrug);
                     }
                     final ClinicInfoDTO clinicInfo = dataStore.clinicInfo;
-                    List<List<Op>> allPages = new ArrayList<>();
-                    List<List<Op>> unprescribedPages = new ArrayList<>();
-                    for(DrugFullDTO drug: drugs){
+                    return drugs.stream().map(drug -> {
                         PharmaDrugDTO pharmaDrug = pharmaMap.get(drug.drug.iyakuhincode);
                         DrugBagDataCreator dataCreator = new DrugBagDataCreator(drug, patient, pharmaDrug, clinicInfo);
                         DrugBagDrawerData data = dataCreator.createData();
                         DrugBagDrawer drawer = new DrugBagDrawer(data);
-                        List<Op> ops = drawer.getOps();
-                        allPages.add(ops);
-                        if( drug.drug.prescribed == 0 ){
-                            unprescribedPages.add(ops);
-                        }
-                    }
+                        DrugBagOps drugBagOps = new DrugBagOps();
+                        drugBagOps.prescribed = drug.drug.prescribed != 0;
+                        drugBagOps.ops = drawer.getOps();
+                        return drugBagOps;
+                    }).collect(Collectors.toList());
+                 });
+     }
+
+    private void doPrintDrugBag(){
+        composeDrugBagPages(drugs)
+                .thenAccept(drugBagOps -> {
                     EventQueue.invokeLater(() -> {
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷のプレビュー", true);
                         previewDialog.setImageSize(128, 182);
                         // TODO: set printer setting
                         JCheckBox includePrescribedCheckBox = new JCheckBox("処方済も含める");
+                        List<List<Op>> allDrugBags = drugBagOps.stream()
+                                .map(arg -> arg.ops)
+                                .collect(Collectors.toList());
+                        List<List<Op>> unprescribedDrugBags = drugBagOps.stream()
+                                .filter(arg -> !arg.prescribed)
+                                .map(arg -> arg.ops)
+                                .collect(Collectors.toList());
                         includePrescribedCheckBox.addItemListener(event -> {
                             if( includePrescribedCheckBox.isSelected() ){
-                                previewDialog.changePages(allPages);
+                                previewDialog.changePages(allDrugBags);
                                 previewDialog.pack();
                             } else {
-                                previewDialog.changePages(unprescribedPages);
+                                previewDialog.changePages(unprescribedDrugBags);
                                 previewDialog.pack();
                             }
                         });
-                        previewDialog.renderPages(unprescribedPages);
+                        previewDialog.renderPages(unprescribedDrugBags);
                         previewDialog.addComponent(includePrescribedCheckBox);
                         previewDialog.setLocationByPlatform(true);
                         previewDialog.setVisible(true);
@@ -250,7 +267,10 @@ public class Workarea extends JPanel {
                     alert(t.toString());
                     return null;
                 });
+    }
 
+    private void doPrintAll(){
+        
     }
 
     private void alert(String message){
