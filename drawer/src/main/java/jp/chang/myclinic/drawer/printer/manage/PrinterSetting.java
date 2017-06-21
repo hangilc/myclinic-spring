@@ -109,12 +109,29 @@ public class PrinterSetting {
     }
 
     public void printPages(List<List<Op>> pages, String settingName){
+        DrawerPrinter drawerPrinter = new DrawerPrinter();
+        byte[] devmode = null, devnames = null;
+        AuxSetting auxSetting = null;
         try {
-            byte[] devmode = readDevmode(settingName);
-            byte[] devnames = readDevnames(settingName);
-            AuxSetting auxSetting = readAuxSetting(settingName);
+            if( settingName == null || settingName.isEmpty() ){
+                DrawerPrinter.DialogResult result = drawerPrinter.printDialog(null, null);
+                if (result.ok) {
+                    devmode = result.devmodeData;
+                    devnames = result.devnamesData;
+                    auxSetting = null;
+                } else {
+                    return;
+                }
+
+            } else {
+                if( !INSTANCE.nameExists(settingName) ){
+                    throw new RuntimeException(settingName + ": この名前の印刷設定を見つけられません。");
+                }
+                devmode = readDevmode(settingName);
+                devnames = readDevnames(settingName);
+                auxSetting = readAuxSetting(settingName);
+            }
             // TODO: apply auxSetting
-            DrawerPrinter drawerPrinter = new DrawerPrinter();
             drawerPrinter.printPages(pages, devmode, devnames);
         } catch(IOException ex){
             throw new UncheckedIOException(ex);

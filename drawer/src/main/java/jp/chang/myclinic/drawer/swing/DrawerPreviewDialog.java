@@ -163,6 +163,8 @@ public class DrawerPreviewDialog extends JDialog {
     }
 
     private void doPrint(){
+        PrinterSetting.INSTANCE.printPages(pages, settingName);
+        /*
         DrawerPrinter drawerPrinter = new DrawerPrinter();
         byte[] devmode = null, devnames = null;
         AuxSetting auxSetting = null;
@@ -188,6 +190,7 @@ public class DrawerPreviewDialog extends JDialog {
             ex.printStackTrace();
             alert(ex.toString());
         }
+        */
     }
 
     private void alert(String message){
