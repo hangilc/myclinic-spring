@@ -7,8 +7,13 @@ import javax.swing.*;
  */
 public class AuxArea extends JPanel {
 
+    private int patientId;
+
     public AuxArea(){
 
     }
 
+    public void setup(int patientId){
+        this.patientId = patientId;
+    }
 }

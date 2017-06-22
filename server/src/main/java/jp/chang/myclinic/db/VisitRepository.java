@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,4 +37,10 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
     @Query("select v, p from Visit v, Patient p where v.patientId = p.patientId")
     List<Object[]> findAllWithPatient(Pageable pageable);
+
+    @Query("select visit.visitId from Visit visit where visit.patientId = :patientId")
+	List<Integer> findVisitIdsByPatient(@Param("patientId") int patientId, Sort sort);
+
+	@Query("select visit from Visit visit where visit.visitId in :visitIds")
+	List<Visit> findByVisitIds(@Param("visitIds") Set<Integer> visitIds, Sort sort);
 }

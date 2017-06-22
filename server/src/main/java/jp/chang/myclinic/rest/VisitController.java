@@ -3,6 +3,7 @@ package jp.chang.myclinic.rest;
 import jp.chang.myclinic.consts.MeisaiSection;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.db.DbGateway;
+import jp.chang.myclinic.db.Visit;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.rcpt.*;
 import jp.chang.myclinic.util.DateTimeUtil;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -139,6 +141,11 @@ public class VisitController {
 		return dbGateway.listVisitIds();
 	}
 
+	@RequestMapping(value="list-visit-ids-for-patient", method=RequestMethod.GET)
+	public List<Integer> listVisitIdsForPatient(@RequestParam("patient-id") int patientId){
+		return dbGateway.listVisitIdsForPatient(patientId);
+	}
+
 	@RequestMapping(value="/list-visit-with-patient", method=RequestMethod.GET)
 	public List<VisitPatientDTO> listVisitWithPatient(
 		@RequestParam(value="page", defaultValue="0") int page,
@@ -155,6 +162,11 @@ public class VisitController {
 	public boolean deleteVisitFromReception(@RequestParam("visit-id") int visitId){
 		dbGateway.deleteVisitFromReception(visitId);
 		return true;
+	}
+
+	@RequestMapping(value="/list-visit-text-drug", method=RequestMethod.GET)
+	public List<VisitTextDrugDTO> listVisitTextDrug(@RequestParam("visit-id[]") Set<Integer> visitIds){
+		return dbGateway.listVisitTextDrug(visitIds);
 	}
 
 	private SectionItemDTO toSectionItemDTO(SectionItem sectionItem) {

@@ -290,6 +290,11 @@ public class DbGateway {
 		return visitRepository.findAllVisitIds(sort);
 	}
 
+	public List<Integer> listVisitIdsForPatient(int patientId){
+		Sort sort = new Sort(Sort.Direction.DESC, "visitId");
+		return visitRepository.findVisitIdsByPatient(patientId, sort);
+	}
+
 	public List<VisitPatientDTO> listVisitWithPatient(int page, int itemsPerPage){
 		Sort sort = new Sort(Sort.Direction.DESC, "visitId");
 		PageRequest pageRequest = new PageRequest(page, itemsPerPage, sort);
@@ -565,6 +570,17 @@ public class DbGateway {
 			return pharmaDrugRepository.collectByIyakuhincodes(iyakuhincodes).stream()
 					.map(mapper::toPharmaDrugDTO).collect(Collectors.toList());
 		}
+	}
+
+	public List<VisitTextDrugDTO> listVisitTextDrug(Set<Integer> visitIds){
+		return visitRepository.findByVisitIds(visitIds, new Sort(Sort.Direction.DESC, "visitId")).stream()
+				.map(visit -> {
+					VisitTextDrugDTO visitTextDrugDTO = new VisitTextDrugDTO();
+					visitTextDrugDTO.texts = listText(visit.getVisitId());
+					visitTextDrugDTO.drugs = listDrugFull(visit.getVisitId());
+					return visitTextDrugDTO;
+				})
+				.collect(Collectors.toList());
 	}
 
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){

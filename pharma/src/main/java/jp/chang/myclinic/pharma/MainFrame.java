@@ -16,6 +16,7 @@ public class MainFrame extends JFrame {
 
     private PharmaQueueList pharmaQueueList;
     private Workarea workarea;
+    private AuxArea auxArea = new AuxArea();
     private JButton closeButton = new JButton("閉じる");
     private JCheckBox includePrescribedCheckBox = new JCheckBox("処方済の患者も含める");
     private JButton updatePatientListButton = new JButton("更新");
@@ -127,7 +128,6 @@ public class MainFrame extends JFrame {
             panel.add(auxCtrl, "grow, wrap");
         }
         {
-            AuxArea auxArea = new AuxArea();
             panel.add(auxArea, "grow");
         }
         return panel;
