@@ -45,7 +45,8 @@ public class MainFrame extends JFrame {
         add(makeLeft(), "top");
         {
             JScrollPane sp = new JScrollPane(makeRight());
-            sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            //sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            sp.getVerticalScrollBar().setUnitIncrement(16);
             sp.setBorder(BorderFactory.createEmptyBorder());
             add(sp, "top, grow");
         }
