@@ -33,6 +33,13 @@ public class WrappedText extends JPanel {
         StringBuilder sb = new StringBuilder();
         int x = posX;
         for(char ch: text.toCharArray()){
+            if( ch == '\n' ){
+                stringItems.add(new StringItem(posX, posY, sb.toString()));
+                sb.setLength(0);
+                newline();
+                x = 0;
+                continue;
+            }
             int cw = fm.charWidth(ch);
             if( x > 0 && x + cw > width ){
                 stringItems.add(new StringItem(posX, posY, sb.toString()));

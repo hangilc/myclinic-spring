@@ -593,6 +593,7 @@ public class DbGateway {
 		return visitRepository.findByVisitIds(visitIds, new Sort(Sort.Direction.DESC, "visitId")).stream()
 				.map(visit -> {
 					VisitTextDrugDTO visitTextDrugDTO = new VisitTextDrugDTO();
+					visitTextDrugDTO.visit = mapper.toVisitDTO(visit);
 					visitTextDrugDTO.texts = listText(visit.getVisitId());
 					visitTextDrugDTO.drugs = listDrugFull(visit.getVisitId());
 					return visitTextDrugDTO;
