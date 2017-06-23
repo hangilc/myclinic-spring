@@ -4,6 +4,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.util.List;
 
 /**
  * Created by hangil on 2017/06/14.
@@ -24,8 +25,17 @@ public class AuxControl extends JPanel {
     }
 
     public void update(PatientDTO patient){
-        AuxDispVisits auxDispVisits = new AuxDispVisits(patient.patientId);
-        auxArea.setContent(auxDispVisits);
+        Service.api.listVisitIdVisitedAtForPatient(patient.patientId)
+                .thenAccept(visitIds -> {
+                    List<RecordPage>  pages = RecordPage.divideToPages(visitIds);
+                    AuxDispVisits auxDispVisits = new AuxDispVisits(patient, pages);
+                    auxArea.setContent(auxDispVisits);
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
     }
 
     private JComponent makeRow1(){
@@ -55,6 +65,10 @@ public class AuxControl extends JPanel {
 
     private void doShowDrugs() {
 
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
     }
 
 }

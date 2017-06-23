@@ -17,7 +17,7 @@ public class RecordPage {
         if( visits.size() == 0 ){
             tooltip = "";
         } else {
-            tooltip = DateTimeUtil.sqlDateTimeToKanji(visits.get(0).visitedAt);
+            tooltip = DateTimeUtil.toKanji(DateTimeUtil.parseSqlDateTime(visits.get(0).visitedAt).toLocalDate());
         }
     }
 
@@ -31,12 +31,9 @@ public class RecordPage {
                 j = totalItems;
             }
             List<VisitIdVisitedAtDTO> subs = visits.subList(i, j);
-            System.out.println("subs: " + subs);
             pages.add(new RecordPage(subs));
-            System.out.println("pages: " + pages);
             i = j;
         }
-        System.out.println("pages: " + pages);
         return pages;
     }
 

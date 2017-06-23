@@ -1,21 +1,32 @@
 package jp.chang.myclinic.pharma;
 
+import jp.chang.myclinic.dto.PatientDTO;
+import net.miginfocom.swing.MigLayout;
+
 import javax.swing.*;
+import java.util.Collections;
 import java.util.List;
 
 public class AuxDispVisits extends JPanel {
-    private int patientId;
+    private PatientDTO patient;
+    private List<RecordPage> pages = Collections.emptyList();
+    private AuxDispVisitsNav nav;
+    private AuxDispVisitsRecords records;
 
-    public AuxDispVisits(int patientId){
-        this.patientId = patientId;
-        Service.api.listVisitIdVisitedAtForPatient(patientId)
-                .thenAccept(visitIds -> {
-                    List<RecordPage> pages = RecordPage.divideToPages(visitIds);
-                    System.out.println(pages);
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    return null;
-                });
+    public AuxDispVisits(PatientDTO patient, List<RecordPage> pages){
+        this.patient = patient;
+        this.pages = pages;
+        setLayout(new MigLayout("fill", "", ""));
+        nav = new AuxDispVisitsNav(pages, patient);
+        add(nav, "wrap");
+        records = new AuxDispVisitsRecords();
+        if( pages.size() > 0 ){
+            records.showVisits(pages.get(0).visitIds);
+        }
+        add(records);
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
     }
 }
