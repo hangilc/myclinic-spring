@@ -22,6 +22,7 @@ public class AuxDispVisitsRecords extends JPanel {
         Service.api.listVisitTextDrug(new HashSet<Integer>(visitIds))
                 .thenAccept(records -> {
                     EventQueue.invokeLater(() -> {
+                        removeAll();
                         for (VisitTextDrugDTO record : records) {
                             String visitDate = DateTimeUtil.toKanji(DateTimeUtil.parseSqlDateTime(record.visit.visitedAt).toLocalDate());
                             add(makeDateTitle(visitDate), "span 2, grow, wrap");

@@ -17,9 +17,9 @@ public class AuxDispVisits extends JPanel {
         this.patient = patient;
         this.pages = pages;
         setLayout(new MigLayout("fill", "", ""));
-        nav = new AuxDispVisitsNav(pages, patient);
-        add(nav, "wrap");
         records = new AuxDispVisitsRecords();
+        nav = new AuxDispVisitsNav(records, pages, patient);
+        add(nav, "wrap");
         if( pages.size() > 0 ){
             records.showVisits(pages.get(0).visitIds);
         }
