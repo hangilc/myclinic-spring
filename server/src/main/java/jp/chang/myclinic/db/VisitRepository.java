@@ -41,6 +41,9 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
     @Query("select visit.visitId from Visit visit where visit.patientId = :patientId")
 	List<Integer> findVisitIdsByPatient(@Param("patientId") int patientId, Sort sort);
 
+    @Query("select visit.visitId, visit.visitedAt from Visit visit where visit.patientId = :patientId")
+	List<Object[]> findVisitIdVisitedAtByPatient(@Param("patientId") int patientId, Sort sort);
+
 	@Query("select visit from Visit visit where visit.visitId in :visitIds")
 	List<Visit> findByVisitIds(@Param("visitIds") Set<Integer> visitIds, Sort sort);
 }

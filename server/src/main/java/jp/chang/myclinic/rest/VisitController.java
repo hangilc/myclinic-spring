@@ -141,9 +141,14 @@ public class VisitController {
 		return dbGateway.listVisitIds();
 	}
 
-	@RequestMapping(value="list-visit-ids-for-patient", method=RequestMethod.GET)
+	@RequestMapping(value="list-visit-id-for-patient", method=RequestMethod.GET)
 	public List<Integer> listVisitIdsForPatient(@RequestParam("patient-id") int patientId){
 		return dbGateway.listVisitIdsForPatient(patientId);
+	}
+
+	@RequestMapping(value="list-visit-id-visited-at-for-patient", method=RequestMethod.GET)
+	public List<VisitIdVisitedAtDTO> listVisitIdVisitedAtForPatient(@RequestParam("patient-id") int patientId){
+		return dbGateway.listVisitIdVisitedAtForPatient(patientId);
 	}
 
 	@RequestMapping(value="/list-visit-with-patient", method=RequestMethod.GET)

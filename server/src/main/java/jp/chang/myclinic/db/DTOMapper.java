@@ -62,7 +62,7 @@ public class DTOMapper {
 		VisitDTO visitDTO = new VisitDTO();
 		visitDTO.visitId = visit.getVisitId();
 		visitDTO.patientId = visit.getPatientId();
-		visitDTO.visitedAt = timestampToString(visit.getVisitedAt());
+		visitDTO.visitedAt = visit.getVisitedAt();
 		visitDTO.shahokokuhoId = visit.getShahokokuhoId();
 		visitDTO.koukikoureiId = visit.getKoukikoureiId();
 		visitDTO.roujinId = visit.getRoujinId();
@@ -76,7 +76,7 @@ public class DTOMapper {
 		Visit visit = new Visit();
 		visit.setVisitId(visitDTO.visitId);
 		visit.setPatientId(visitDTO.patientId);
-		visit.setVisitedAt(stringToTimestamp(visitDTO.visitedAt));
+		visit.setVisitedAt(visitDTO.visitedAt);
 		visit.setShahokokuhoId(visitDTO.shahokokuhoId);
 		visit.setKoukikoureiId(visitDTO.koukikoureiId);
 		visit.setRoujinId(visitDTO.roujinId);

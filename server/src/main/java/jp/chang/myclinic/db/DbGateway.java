@@ -295,6 +295,20 @@ public class DbGateway {
 		return visitRepository.findVisitIdsByPatient(patientId, sort);
 	}
 
+	public List<VisitIdVisitedAtDTO> listVisitIdVisitedAtForPatient(int patientId){
+		Sort sort = new Sort(Sort.Direction.DESC, "visitId");
+		return visitRepository.findVisitIdVisitedAtByPatient(patientId, sort).stream()
+				.map(result -> {
+					Integer visitId = (Integer)result[0];
+					String visitedAt = (String)result[1];
+					VisitIdVisitedAtDTO visitIdVisitedAtDTO = new VisitIdVisitedAtDTO();
+					visitIdVisitedAtDTO.visitId = visitId;
+					visitIdVisitedAtDTO.visitedAt = visitedAt;
+					return visitIdVisitedAtDTO;
+				})
+				.collect(Collectors.toList());
+	}
+
 	public List<VisitPatientDTO> listVisitWithPatient(int page, int itemsPerPage){
 		Sort sort = new Sort(Sort.Direction.DESC, "visitId");
 		PageRequest pageRequest = new PageRequest(page, itemsPerPage, sort);
@@ -573,6 +587,9 @@ public class DbGateway {
 	}
 
 	public List<VisitTextDrugDTO> listVisitTextDrug(Set<Integer> visitIds){
+		if( visitIds.size() == 0 ){
+			return Collections.emptyList();
+		}
 		return visitRepository.findByVisitIds(visitIds, new Sort(Sort.Direction.DESC, "visitId")).stream()
 				.map(visit -> {
 					VisitTextDrugDTO visitTextDrugDTO = new VisitTextDrugDTO();

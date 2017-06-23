@@ -8,10 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.drawer.JacksonOpDeserializer;
 import jp.chang.myclinic.drawer.Op;
-import jp.chang.myclinic.dto.ClinicInfoDTO;
-import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.dto.PharmaDrugDTO;
-import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.dto.*;
 import retrofit2.Retrofit;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -41,6 +38,12 @@ class Service {
 
         @GET("collect-pharma-drug-by-iyakuhincodes")
         CompletableFuture<List<PharmaDrugDTO>> collectPharmaDrugByIyakuhincodes(@Query("iyakuhincode[]") Set<Integer> iyakuhincodes);
+
+        @GET("list-visit-id-visited-at-for-patient")
+        CompletableFuture<List<VisitIdVisitedAtDTO>> listVisitIdVisitedAtForPatient(@Query("patient-id") int patientId);
+
+        @GET("list-visit-text-drug")
+        CompletableFuture<List<VisitTextDrugDTO>> listVistTextDrug(@Query("visit-id[]") Set<Integer> visitIds);
 
 //        @GET("list-wqueue-full")
 //        CompletableFuture<List<WqueueFullDTO>> listWqueue();

@@ -68,13 +68,13 @@ public class Visit {
 	}
 
 	@Column(name="v_datetime")
-	private Timestamp visitedAt;
+	private String visitedAt;
 
-	public Timestamp getVisitedAt(){
+	public String getVisitedAt(){
 		return visitedAt;
 	}
 
-	public void setVisitedAt(Timestamp visitedAt){
+	public void setVisitedAt(String visitedAt){
 		this.visitedAt = visitedAt;
 	}
 

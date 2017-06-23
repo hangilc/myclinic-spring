@@ -16,7 +16,8 @@ public class MainFrame extends JFrame {
 
     private PharmaQueueList pharmaQueueList;
     private Workarea workarea;
-    private AuxArea auxArea = new AuxArea();
+    private AuxArea auxArea;
+    private AuxControl auxControl;
     private JButton closeButton = new JButton("閉じる");
     private JCheckBox includePrescribedCheckBox = new JCheckBox("処方済の患者も含める");
     private JButton updatePatientListButton = new JButton("更新");
@@ -122,10 +123,11 @@ public class MainFrame extends JFrame {
         JPanel panel = new JPanel(new MigLayout("insets n n n 22", "[]", "[]"));
         panel.add(new JLabel("投薬"), "wrap");
         panel.add(makeWorkarea(), "w 300, wrap");
+        auxArea = new AuxArea();
+        auxControl = new AuxControl(auxArea);
         {
-            AuxControll auxCtrl = new AuxControll();
-            auxCtrl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            panel.add(auxCtrl, "grow, wrap");
+            auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            panel.add(auxControl, "grow, wrap");
         }
         {
             panel.add(auxArea, "grow");
@@ -213,11 +215,10 @@ public class MainFrame extends JFrame {
                 .thenAccept(drugs -> {
                     EventQueue.invokeLater(() -> {
                         workarea.update(pharmaQueueFull.patient, drugs);
+                        auxControl.update(pharmaQueueFull.patient);
                     });
                 })
-                .exceptionally(t -> {
-                    return null;
-                });
+                .exceptionally(t -> null);
     }
 
     private void doUpdatePatientList() {
