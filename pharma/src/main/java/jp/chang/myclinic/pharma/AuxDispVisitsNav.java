@@ -36,25 +36,29 @@ public class AuxDispVisitsNav extends JPanel {
     }
 
     private void bind(){
-        gotoPrevLink.addMouseListener(new MouseAdapter(){
-            @Override
-            public void mouseClicked(MouseEvent e){
-                if( currentPage > 0 ){
-                    currentPage -= 1;
-                    records.showVisits(pages.get(currentPage).visitIds);
-                    currentPageLabel.setText("" + (currentPage+1));
+        if( gotoPrevLink != null ) {
+            gotoPrevLink.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (currentPage > 0) {
+                        currentPage -= 1;
+                        records.showVisits(pages.get(currentPage).visitIds);
+                        currentPageLabel.setText("" + (currentPage + 1));
+                    }
                 }
-            }
-        });
-        gotoNextLink.addMouseListener(new MouseAdapter(){
-            @Override
-            public void mouseClicked(MouseEvent e){
-                if( currentPage < pages.size() - 1 ){
-                    currentPage += 1;
-                    records.showVisits(pages.get(currentPage).visitIds);
-                    currentPageLabel.setText("" + (currentPage+1));
+            });
+        }
+        if( gotoNextLink != null ) {
+            gotoNextLink.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (currentPage < pages.size() - 1) {
+                        currentPage += 1;
+                        records.showVisits(pages.get(currentPage).visitIds);
+                        currentPageLabel.setText("" + (currentPage + 1));
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 }
