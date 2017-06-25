@@ -47,11 +47,11 @@ public class Workarea extends JPanel {
 
     public Workarea(){
         setupNameLabel();
-        setLayout(new MigLayout("fill, gapy 0, debug", "", ""));
+        setLayout(new MigLayout("gapy 0", "[grow]", ""));
         add(nameLabel, "gap top 0, wrap");
         add(yomiLabel, "gap top 5, wrap");
         add(patientInfoLabel, "wrap");
-        drugsContainer.setLayout(new MigLayout("insets 0, gapy 1, fill", "", ""));
+        drugsContainer.setLayout(new MigLayout("insets 0, gapy 1, debug", "[grow]", ""));
         add(drugsContainer, "growx, wrap");
         add(makeCommandRow1(), "wrap");
         add(makeCommandRow2(), "gaptop 5, right");
@@ -95,6 +95,8 @@ public class Workarea extends JPanel {
         }
         drugsContainer.repaint();
         drugsContainer.revalidate();
+        repaint();
+        revalidate();
     }
 
     private void setupNameLabel(){

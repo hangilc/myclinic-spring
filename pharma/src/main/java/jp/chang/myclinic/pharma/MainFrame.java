@@ -44,7 +44,7 @@ public class MainFrame extends JFrame {
         setupMenu();
         setLayout(new MigLayout("debug, fill", "[grow, fill][grow, fill]", "[grow]"));
         add(makeLeft(), "w 48%, top");
-        add(makeRight(), "w 48%, top");
+        add(makeRight(), "w 48%, top, grow");
 //        {
 //            JScrollPane sp = new JScrollPane(makeRight());
 //            sp.getVerticalScrollBar().setUnitIncrement(16);
@@ -130,7 +130,7 @@ public class MainFrame extends JFrame {
     private JComponent makeRight(){
         auxArea = new AuxArea();
         auxControl = new AuxControl(auxArea);
-        JPanel panel = new JPanel(new MigLayout("fill", "[]", "[]"));
+        JPanel panel = new RightPane(new MigLayout("fill", "[grow]", "[]"));
         panel.add(new JLabel("投薬"), "wrap");
         panel.add(makeWorkarea(), "growx, wrap");
 //        {
@@ -140,7 +140,8 @@ public class MainFrame extends JFrame {
 //        {
 //            panel.add(auxArea, "grow");
 //        }
-        return panel;
+        JScrollPane scroll = new JScrollPane(panel);
+        return scroll;
     }
 
     private JComponent makeWorkarea(){
