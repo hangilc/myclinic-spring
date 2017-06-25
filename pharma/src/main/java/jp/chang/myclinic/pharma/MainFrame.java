@@ -132,7 +132,7 @@ public class MainFrame extends JFrame {
         auxControl = new AuxControl(auxArea);
         JPanel panel = new RightPane(new MigLayout("fill", "[grow]", "[]"));
         panel.add(new JLabel("投薬"), "wrap");
-        panel.add(makeWorkarea(), "growx, wrap");
+        panel.add(makeWorkarea(), "grow, wrap");
 //        {
 //            auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 //            panel.add(auxControl, "grow, wrap");
