@@ -2,12 +2,9 @@ package jp.chang.myclinic;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Created by hangil on 2017/06/11.
- */
 public class WrappedText extends JPanel {
 
     private String text;

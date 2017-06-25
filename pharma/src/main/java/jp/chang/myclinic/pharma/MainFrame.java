@@ -32,6 +32,7 @@ public class MainFrame extends JFrame {
     private static Icon waitDrugIcon;
 
     // TODO: print blank drug bag
+    // TODO: move close button to menu
     public MainFrame(){
         super("薬局");
         try {
@@ -41,15 +42,15 @@ public class MainFrame extends JFrame {
             throw new RuntimeException("failed to load icons");
         }
         setupMenu();
-        setLayout(new MigLayout("", "[] []", "[grow]"));
-        add(makeLeft(), "top");
-        {
-            JScrollPane sp = new JScrollPane(makeRight());
-            //sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            sp.getVerticalScrollBar().setUnitIncrement(16);
-            sp.setBorder(BorderFactory.createEmptyBorder());
-            add(sp, "top, grow");
-        }
+        setLayout(new MigLayout("debug, fill", "[grow, fill][grow, fill]", "[grow]"));
+        add(makeLeft(), "w 48%, top");
+        add(makeRight(), "w 48%, top");
+//        {
+//            JScrollPane sp = new JScrollPane(makeRight());
+//            sp.getVerticalScrollBar().setUnitIncrement(16);
+//            sp.setBorder(BorderFactory.createEmptyBorder());
+//            add(sp, "w 48%, top");
+//        }
         add(makeSouth(), "dock south, right");
         bind();
         pack();
@@ -75,18 +76,19 @@ public class MainFrame extends JFrame {
 
     private JComponent makeLeft(){
         pharmaQueueList = new PharmaQueueList(waitCashierIcon, waitDrugIcon);
-        JPanel panel = new JPanel(new MigLayout("", "", ""));
+        JPanel panel = new JPanel(new MigLayout("fill", "", ""));
         panel.add(new JLabel("患者リスト"), "left, wrap");
-        panel.add(new JScrollPane(pharmaQueueList), "w 200, h 180, grow, wrap");
-        panel.add(makePatientListSub(), "grow, wrap");
-        panel.add(makePrevTechou(), "grow");
+        panel.add(new JScrollPane(pharmaQueueList), "grow, wrap");
+        panel.add(makePatientListSub(), "growx, wrap");
+        panel.add(makePrevTechou(), "growx");
         return panel;
     }
 
     private JComponent makePatientListSub(){
         JPanel panel = new JPanel(new MigLayout("insets 0, gapy 0", "", ""));
         panel.add(makePatientListSubRow1(), "wrap");
-        panel.add(makePatientListSubRow2(), "");
+        panel.add(makePatientListSubRow2(), "wrap");
+        panel.add(makePatientListSubRow3(), "");
         return panel;
     }
 
@@ -108,6 +110,11 @@ public class MainFrame extends JFrame {
         includePrescribedCheckBox.setMargin(insets);
         panel.add(includePrescribedCheckBox, "");
         panel.add(updatePatientListButton);
+        return panel;
+    }
+
+    private JComponent makePatientListSubRow3(){
+        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         panel.add(startPrescButton);
         return panel;
     }
@@ -121,18 +128,18 @@ public class MainFrame extends JFrame {
     }
 
     private JComponent makeRight(){
-        JPanel panel = new JPanel(new MigLayout("insets n n n 22", "[]", "[]"));
-        panel.add(new JLabel("投薬"), "wrap");
-        panel.add(makeWorkarea(), "w 300, wrap");
         auxArea = new AuxArea();
         auxControl = new AuxControl(auxArea);
-        {
-            auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            panel.add(auxControl, "grow, wrap");
-        }
-        {
-            panel.add(auxArea, "grow");
-        }
+        JPanel panel = new JPanel(new MigLayout("fill", "[]", "[]"));
+        panel.add(new JLabel("投薬"), "wrap");
+        panel.add(makeWorkarea(), "growx, wrap");
+//        {
+//            auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+//            panel.add(auxControl, "grow, wrap");
+//        }
+//        {
+//            panel.add(auxArea, "grow");
+//        }
         return panel;
     }
 

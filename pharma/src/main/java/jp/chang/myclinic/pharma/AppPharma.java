@@ -2,14 +2,7 @@ package jp.chang.myclinic.pharma;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Properties;
 
 public class AppPharma {
     public static void main(String[] args) throws IOException {
@@ -33,6 +26,7 @@ public class AppPharma {
                 System.exit(1);
             }
             MainFrame mainFrame = new MainFrame();
+            mainFrame.setSize(new Dimension(600, 400));
             mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             mainFrame.setLocationByPlatform(true);
             mainFrame.setVisible(true);

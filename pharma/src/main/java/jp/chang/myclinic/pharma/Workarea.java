@@ -47,15 +47,14 @@ public class Workarea extends JPanel {
 
     public Workarea(){
         setupNameLabel();
-        setLayout(new MigLayout("gapy 0", "", ""));
+        setLayout(new MigLayout("fill, gapy 0, debug", "", ""));
         add(nameLabel, "gap top 0, wrap");
         add(yomiLabel, "gap top 5, wrap");
         add(patientInfoLabel, "wrap");
-        drugsContainer.setLayout(new MigLayout("insets 0, gapy 1", "", ""));
-        add(drugsContainer, "wrap");
+        drugsContainer.setLayout(new MigLayout("insets 0, gapy 1, fill", "", ""));
+        add(drugsContainer, "growx, wrap");
         add(makeCommandRow1(), "wrap");
-        add(makeCommandRow2(), "wrap");
-        add(makeCommandRow3(), "right");
+        add(makeCommandRow2(), "gaptop 5, right");
         bind();
     }
 
@@ -74,7 +73,7 @@ public class Workarea extends JPanel {
         int index = 1;
         for(DrugFullDTO drugFull: drugs){
             String text = (index++) + ") " + DrugUtil.drugRep(drugFull);
-            WrappedText wrap = new WrappedText(200, text);
+            WrappedText wrap = new WrappedText(text);
             JLabel bagLink = new JLabel("薬袋");
             bagLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             bagLink.addMouseListener(new MouseAdapter(){
@@ -92,10 +91,10 @@ public class Workarea extends JPanel {
                 prescribedLabel.setFont(font);
                 wrap.append(prescribedLabel);
             }
-            drugsContainer.add(wrap, "wrap");
+            drugsContainer.add(wrap, "growx, wrap");
         }
-        repaint();
-        revalidate();
+        drugsContainer.repaint();
+        drugsContainer.revalidate();
     }
 
     private void setupNameLabel(){
@@ -105,24 +104,19 @@ public class Workarea extends JPanel {
     }
 
     private JComponent makeCommandRow1(){
-        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+        JPanel panel = new JPanel(new MigLayout("insets 0, gapy 1", "", ""));
         panel.add(printPrescButton);
         panel.add(printDrugBagButton);
-        panel.add(printTechouButton);
+        panel.add(printTechouButton, "wrap");
+        panel.add(printAllButton, "grow");
+        panel.add(printAllExceptTechouButton, "span 2, grow");
         return panel;
     }
 
     private JComponent makeCommandRow2(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        panel.add(printAllButton);
-        panel.add(printAllExceptTechouButton);
-        return panel;
-    }
-
-    private JComponent makeCommandRow3(){
-        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        panel.add(cancelButton);
-        panel.add(doneButton);
+        panel.add(cancelButton, "sizegroup btn");
+        panel.add(doneButton, "sizegroup btn");
         return panel;
     }
 

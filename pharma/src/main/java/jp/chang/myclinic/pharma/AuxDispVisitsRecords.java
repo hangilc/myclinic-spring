@@ -53,7 +53,7 @@ public class AuxDispVisitsRecords extends JPanel {
     private JComponent makeTextPane(List<TextDTO> texts){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         for(TextDTO text: texts){
-            WrappedText t = new WrappedText(180, text.content);
+            WrappedText t = new WrappedText(text.content);
             panel.add(t, "wrap");
         }
         return panel;
@@ -64,7 +64,7 @@ public class AuxDispVisitsRecords extends JPanel {
         int index = 1;
         for(DrugFullDTO drug: drugs){
             String label = (index++) + ") " + DrugUtil.drugRep(drug);
-            WrappedText t = new WrappedText(180, label);
+            WrappedText t = new WrappedText(label);
             panel.add(t, "wrap");
         }
         return panel;
