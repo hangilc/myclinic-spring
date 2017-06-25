@@ -15,7 +15,7 @@ public class RightPane extends JPanel implements Scrollable {
 
     @Override
     public Dimension getPreferredScrollableViewportSize() {
-        return null;
+        return getPreferredSize();
     }
 
     @Override

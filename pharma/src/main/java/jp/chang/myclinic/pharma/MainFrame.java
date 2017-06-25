@@ -127,12 +127,16 @@ public class MainFrame extends JFrame {
         return panel;
     }
 
+    JScrollPane rightScroll;
+    JComponent rightWorkArea;
+
     private JComponent makeRight(){
         auxArea = new AuxArea();
         auxControl = new AuxControl(auxArea);
-        JPanel panel = new RightPane(new MigLayout("fill", "[grow]", "[]"));
+        JPanel panel = new RightPane(new MigLayout("", "[grow]", "[]"));
         panel.add(new JLabel("投薬"), "wrap");
-        panel.add(makeWorkarea(), "grow, wrap");
+        rightWorkArea = makeWorkarea();
+        panel.add(rightWorkArea, "grow, wrap");
 //        {
 //            auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 //            panel.add(auxControl, "grow, wrap");
@@ -140,8 +144,8 @@ public class MainFrame extends JFrame {
 //        {
 //            panel.add(auxArea, "grow");
 //        }
-        JScrollPane scroll = new JScrollPane(panel);
-        return scroll;
+        rightScroll = new JScrollPane(panel);
+        return rightScroll;
     }
 
     private JComponent makeWorkarea(){
@@ -161,8 +165,12 @@ public class MainFrame extends JFrame {
         updatePatientListButton.addActionListener(event -> doUpdatePatientList());
         startPrescButton.addActionListener(event -> doStartPresc());
         closeButton.addActionListener(event -> {
-            dispose();
-            System.exit(0);
+            rightWorkArea.repaint();
+            rightWorkArea.revalidate();
+            rightScroll.repaint();
+            rightScroll.revalidate();
+//            dispose();
+//            System.exit(0);
         });
         prescPrinterSettingItem.addActionListener(event -> doPrescPrinterSetting());
         drugbagPrinterSettingItem.addActionListener(event -> doDrugbagPrinterSetting());

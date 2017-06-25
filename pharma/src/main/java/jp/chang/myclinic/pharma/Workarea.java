@@ -53,7 +53,7 @@ public class Workarea extends JPanel {
         add(patientInfoLabel, "wrap");
         {
             drugsContainer.setLayout(new MigLayout("insets 0, gapy 1", "[grow]", ""));
-            add(drugsContainer, "grow, wrap, wmin 10, hmin 10");
+            add(drugsContainer, "growx, wrap, wmin 10, hmin 10");
         }
         add(makeCommandRow1(), "wrap");
         add(makeCommandRow2(), "gaptop 5, right");
@@ -75,7 +75,7 @@ public class Workarea extends JPanel {
         int index = 1;
         for(DrugFullDTO drugFull: drugs){
             String text = (index++) + ") " + DrugUtil.drugRep(drugFull);
-            WrappedText wrap = new WrappedText(text);
+            WrappedText wrap = new WrappedText(text, 200);
             JLabel bagLink = new JLabel("薬袋");
             bagLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             bagLink.addMouseListener(new MouseAdapter(){
@@ -95,10 +95,8 @@ public class Workarea extends JPanel {
             }
             drugsContainer.add(wrap, "growx, wrap");
         }
-        EventQueue.invokeLater(() -> {
-            drugsContainer.repaint();
-            drugsContainer.revalidate();
-        });
+        drugsContainer.repaint();
+        drugsContainer.revalidate();
     }
 
     private void setupNameLabel(){

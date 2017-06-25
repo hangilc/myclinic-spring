@@ -16,13 +16,18 @@ class WrappedText extends JPanel {
     private int posY;
     private int botY;
 
-    public WrappedText(String text){
+    public WrappedText(String text, int width){
         setLayout(null);
+        this.width = width;
         Font font = getFont();
         this.ascent = getFontMetrics(font).getAscent();
         this.fontSize = font.getSize();
         this.botY = this.fontSize;
         append(text);
+    }
+
+    public WrappedText(String text){
+        this(text, 0);
     }
 
     public void append(String text){
@@ -57,6 +62,12 @@ class WrappedText extends JPanel {
             repaint();
             revalidate();
         }
+    }
+
+    @Override
+    public void setBounds(Rectangle rect){
+        System.out.println("setBounds(Rectangle): " + rect);
+        super.setBounds(rect);
     }
 
     private int getCurrentHeight(){
