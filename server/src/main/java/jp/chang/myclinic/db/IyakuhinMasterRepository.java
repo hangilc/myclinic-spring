@@ -1,5 +1,6 @@
 package jp.chang.myclinic.db;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -35,4 +36,8 @@ public interface IyakuhinMasterRepository extends CrudRepository<IyakuhinMaster,
 				.map(code -> findTopByIyakuhincodeOrderByValidFromDesc(code))
 				.collect(Collectors.toList());
 	}
+
+	@Query("select m.iyakuhincode, m.name from IyakuhinMaster m where iyakuhincode in :iyakuhincodes " +
+			" group by m.iyakuhincode, m.name ")
+	List<Object[]> findNameForIyakuhincode(@Param("iyakuhincodes") List<Integer> iyakuhincodes, Sort sort);
 }

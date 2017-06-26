@@ -165,12 +165,8 @@ public class MainFrame extends JFrame {
         updatePatientListButton.addActionListener(event -> doUpdatePatientList());
         startPrescButton.addActionListener(event -> doStartPresc());
         closeButton.addActionListener(event -> {
-            rightWorkArea.repaint();
-            rightWorkArea.revalidate();
-            rightScroll.repaint();
-            rightScroll.revalidate();
-//            dispose();
-//            System.exit(0);
+            dispose();
+            System.exit(0);
         });
         prescPrinterSettingItem.addActionListener(event -> doPrescPrinterSetting());
         drugbagPrinterSettingItem.addActionListener(event -> doDrugbagPrinterSetting());

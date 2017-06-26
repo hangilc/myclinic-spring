@@ -55,6 +55,8 @@ public class DbGateway {
 	private TextRepository textRepository;
 	@Autowired
 	private PharmaDrugRepository pharmaDrugRepository;
+	@Autowired
+	private IyakuhinMasterRepository iyakuhinMasterRepository;
 
 	public List<WqueueFullDTO> listWqueueFull(){
 		try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
@@ -70,6 +72,9 @@ public class DbGateway {
 	}
 
 	public List<WqueueFullDTO> listWqueueFullByStates(Set<WqueueWaitState> states){
+		if( states.size() == 0 ){
+			return Collections.emptyList();
+		}
 		Set<Integer> waitSets = states.stream().mapToInt(s -> s.getCode()).boxed().collect(Collectors.toSet());
 		return wqueueRepository.findFullByStateSet(waitSets).stream()
 				.map(this::resultToWqueueFull).collect(Collectors.toList());
@@ -599,6 +604,31 @@ public class DbGateway {
 					return visitTextDrugDTO;
 				})
 				.collect(Collectors.toList());
+	}
+
+	public List<Integer> listIyakuhincodeForPatient(int patientId){
+		return drugRepository.findIyakuhincodeByPatient(patientId);
+	}
+
+	public List<IyakuhincodeNameDTO> findNamesForIyakuhincodes(List<Integer> iyakuhincodes){
+		if( iyakuhincodes.size() == 0 ){
+			return Collections.emptyList();
+		}
+		return iyakuhinMasterRepository.findNameForIyakuhincode(iyakuhincodes, new Sort(Sort.Direction.ASC, "yomi")).stream()
+				.map(result -> {
+					Integer iyakuhincode = (Integer)result[0];
+					String name = (String)result[1];
+					IyakuhincodeNameDTO iyakuhincodeNameDTO = new IyakuhincodeNameDTO();
+					iyakuhincodeNameDTO.iyakuhincode = iyakuhincode;
+					iyakuhincodeNameDTO.name = name;
+					return iyakuhincodeNameDTO;
+				})
+				.collect(Collectors.toList());
+	}
+
+	public List<IyakuhincodeNameDTO> listIyakuhinForPatient(int patientId){
+		List<Integer> iyakuhincodes = listIyakuhincodeForPatient(patientId);
+		return findNamesForIyakuhincodes(iyakuhincodes);
 	}
 
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){

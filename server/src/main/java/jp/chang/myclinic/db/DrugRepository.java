@@ -27,4 +27,7 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 		" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto) ")
 	List<Object[]> findByVisitIdWithMaster(@Param("visitId") int visitId, Sort sort);
 
+	@Query("select d.iyakuhincode from Drug d, Visit v where d.visitId = v.visitId and v.patientId = :patientId")
+	List<Integer> findIyakuhincodeByPatient(@Param("patientId") int patientId);
+
 }

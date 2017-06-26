@@ -52,7 +52,7 @@ public class Workarea extends JPanel {
         add(yomiLabel, "gap top 5, wrap");
         add(patientInfoLabel, "wrap");
         {
-            drugsContainer.setLayout(new MigLayout("insets 0, gapy 1", "[grow]", ""));
+            drugsContainer.setLayout(new MigLayout("insets 0, gapy 1, nocache", "[grow]", ""));
             add(drugsContainer, "growx, wrap, wmin 10, hmin 10");
         }
         add(makeCommandRow1(), "wrap");

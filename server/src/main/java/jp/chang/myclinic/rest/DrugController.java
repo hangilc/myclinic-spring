@@ -1,4 +1,4 @@
-package jp.chang.myclinic.db;
+package jp.chang.myclinic.rest;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,5 +33,10 @@ public class DrugController {
 	@RequestMapping(value="/list-drug-full", method=RequestMethod.GET)
 	public List<DrugFullDTO> listDrugFull(@RequestParam("visit-id") int visitId){
 		return dbGateway.listDrugFull(visitId);
+	}
+
+	@RequestMapping(value="/list-iyakuhin-for-patient", method=RequestMethod.GET)
+	public List<IyakuhincodeNameDTO> listIyakuhinForPatient(@RequestParam("patient-id") int patientId){
+		return dbGateway.listIyakuhinForPatient(patientId);
 	}
 }
