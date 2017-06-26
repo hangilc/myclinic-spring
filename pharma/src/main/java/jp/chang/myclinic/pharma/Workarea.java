@@ -87,12 +87,12 @@ public class Workarea extends JPanel {
             });
             bagLink.setForeground(Color.BLUE);
             bagLink.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-            wrap.append(bagLink);
+            wrap.appendComponent(bagLink);
             if( drugFull.drug.prescribed != 0 ){
                 JLabel prescribedLabel = new JLabel(" 処方済 ");
                 Font font = prescribedLabel.getFont().deriveFont(BOLD);
                 prescribedLabel.setFont(font);
-                wrap.append(prescribedLabel);
+                wrap.appendComponent(prescribedLabel);
             }
             drugsContainer.add(wrap, "growx, wrap");
         }
