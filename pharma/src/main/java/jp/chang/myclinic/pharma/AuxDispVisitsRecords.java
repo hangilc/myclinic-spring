@@ -14,20 +14,24 @@ import java.util.List;
 
 public class AuxDispVisitsRecords extends JPanel {
 
-    public AuxDispVisitsRecords(){
-        setLayout(new MigLayout("insets 0", "", ""));
+    private int width;
+
+    public AuxDispVisitsRecords(int width){
+        this.width = width;
+        setLayout(new MigLayout("insets 0", "[]5[]", ""));
     }
 
     public void showVisits(List<Integer> visitIds) {
-        Service.api.listVisitTextDrug(new HashSet<Integer>(visitIds))
+        int colwidth = (width - 5) / 2;
+        Service.api.listVisitTextDrug(new HashSet<>(visitIds))
                 .thenAccept(records -> {
                     EventQueue.invokeLater(() -> {
                         removeAll();
                         for (VisitTextDrugDTO record : records) {
                             String visitDate = DateTimeUtil.toKanji(DateTimeUtil.parseSqlDateTime(record.visit.visitedAt).toLocalDate());
-                            add(makeDateTitle(visitDate), "span 2, grow, wrap");
-                            add(makeTextPane(record.texts), "top, gapright 10");
-                            add(makeDrugPane(record.drugs), "top, wrap");
+                            add(makeDateTitle(visitDate, width), "span 2, growx, wrap");
+                            add(makeTextPane(record.texts, colwidth), "top");
+                            add(makeDrugPane(record.drugs, colwidth), "top, wrap");
                         }
                         repaint();
                         revalidate();
@@ -40,7 +44,7 @@ public class AuxDispVisitsRecords extends JPanel {
                 });
     }
 
-    private JComponent makeDateTitle(String date){
+    private JComponent makeDateTitle(String date, int width){
         JLabel label = new JLabel(date);
         label.setOpaque(true);
         label.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -50,21 +54,21 @@ public class AuxDispVisitsRecords extends JPanel {
         return label;
     }
 
-    private JComponent makeTextPane(List<TextDTO> texts){
+    private JComponent makeTextPane(List<TextDTO> texts, int colwidth){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         for(TextDTO text: texts){
-            WrappedText t = new WrappedText(text.content, 180);
+            WrappedText t = new WrappedText(text.content, colwidth);
             panel.add(t, "wrap");
         }
         return panel;
     }
 
-    private JComponent makeDrugPane(List<DrugFullDTO> drugs){
+    private JComponent makeDrugPane(List<DrugFullDTO> drugs, int colwidth){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         int index = 1;
         for(DrugFullDTO drug: drugs){
             String label = (index++) + ") " + DrugUtil.drugRep(drug);
-            WrappedText t = new WrappedText(label, 180);
+            WrappedText t = new WrappedText(label, colwidth);
             panel.add(t, "wrap");
         }
         return panel;

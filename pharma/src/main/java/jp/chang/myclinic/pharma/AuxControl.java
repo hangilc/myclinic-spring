@@ -11,14 +11,15 @@ import java.util.List;
  */
 public class AuxControl extends JPanel {
 
-    private int patientId;
+    private int width;
     private AuxArea auxArea;
     private JRadioButton showRecordsButton = new JRadioButton("日にち順");
     private JRadioButton showDrugsButton = new JRadioButton("薬剤別");
 
-    public AuxControl(AuxArea auxArea){
+    public AuxControl(AuxArea auxArea, int width){
         this.auxArea = auxArea;
-        setLayout(new MigLayout("", "", ""));
+        this.width = width;
+        setLayout(new MigLayout("insets 0", "[" + width + "!]", ""));
         add(makeRow1(), "wrap");
         add(makeRow2());
         bind();
@@ -28,7 +29,7 @@ public class AuxControl extends JPanel {
         Service.api.listVisitIdVisitedAtForPatient(patient.patientId)
                 .thenAccept(visitIds -> {
                     List<RecordPage>  pages = RecordPage.divideToPages(visitIds);
-                    AuxDispVisits auxDispVisits = new AuxDispVisits(patient, pages);
+                    AuxDispVisits auxDispVisits = new AuxDispVisits(patient, pages,width);
                     auxArea.setContent(auxDispVisits);
                 })
                 .exceptionally(t -> {

@@ -45,12 +45,6 @@ public class MainFrame extends JFrame {
         setLayout(new MigLayout("fill", "[260px!]5px![360px!]", "[400px]"));
         add(makeLeft(), "growx, top");
         add(makeRight(), "grow, top");
-//        {
-//            JScrollPane sp = new JScrollPane(makeRight());
-//            sp.getVerticalScrollBar().setUnitIncrement(16);
-//            sp.setBorder(BorderFactory.createEmptyBorder());
-//            add(sp, "w 48%, top");
-//        }
         add(makeSouth(), "dock south, right");
         bind();
         pack();
@@ -128,21 +122,21 @@ public class MainFrame extends JFrame {
     }
 
     private JComponent makeRight(){
-        auxArea = new AuxArea();
-        auxControl = new AuxControl(auxArea);
-        JPanel panel = new JPanel(new MigLayout("", "[330px!]", ""));
+        int width = 330;
+        auxArea = new AuxArea(width);
+        auxControl = new AuxControl(auxArea, width);
+        JPanel panel = new JPanel(new MigLayout("", "[" + width + "!]", ""));
         panel.add(new JLabel("投薬"), "growx, wrap");
         panel.add(makeWorkarea(), "growx, wrap");
-//        {
-//            auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-//            panel.add(auxControl, "grow, wrap");
-//        }
-//        {
-//            panel.add(auxArea, "grow");
-//        }
+        {
+            auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            panel.add(auxControl, "growx, wrap");
+        }
+        {
+            panel.add(auxArea, "grow");
+        }
         JScrollPane sp = new JScrollPane(panel);
         sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        panel.add(new JLabel(""), "grow");
         return sp;
     }
 

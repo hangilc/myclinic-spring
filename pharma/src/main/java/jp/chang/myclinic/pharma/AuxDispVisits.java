@@ -13,13 +13,13 @@ public class AuxDispVisits extends JPanel {
     private AuxDispVisitsNav nav;
     private AuxDispVisitsRecords records;
 
-    public AuxDispVisits(PatientDTO patient, List<RecordPage> pages){
+    public AuxDispVisits(PatientDTO patient, List<RecordPage> pages, int width){
         this.patient = patient;
         this.pages = pages;
-        setLayout(new MigLayout("fill", "", ""));
-        records = new AuxDispVisitsRecords();
+        setLayout(new MigLayout("fill, insets 0", "", ""));
+        records = new AuxDispVisitsRecords(width);
         nav = new AuxDispVisitsNav(records, pages, patient);
-        add(nav, "wrap");
+        add(nav, "growx, wrap");
         if( pages.size() > 0 ){
             records.showVisits(pages.get(0).visitIds);
         }
