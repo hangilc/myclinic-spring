@@ -6,12 +6,12 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.util.List;
 
-/**
- * Created by hangil on 2017/06/14.
- */
 public class AuxControl extends JPanel {
 
     private int width;
+    private PatientDTO patient;
+    private AuxDispVisits dispVisits;
+    private AuxDispDrugs dispDrugs;
     private AuxArea auxArea;
     private JRadioButton showRecordsButton = new JRadioButton("日にち順");
     private JRadioButton showDrugsButton = new JRadioButton("薬剤別");
@@ -26,11 +26,16 @@ public class AuxControl extends JPanel {
     }
 
     public void update(PatientDTO patient){
+        this.patient = patient;
+        dispVisits = null;
+        dispDrugs = null;
+        showRecordsButton.setEnabled(false);
         Service.api.listVisitIdVisitedAtForPatient(patient.patientId)
                 .thenAccept(visitIds -> {
                     List<RecordPage>  pages = RecordPage.divideToPages(visitIds);
-                    AuxDispVisits auxDispVisits = new AuxDispVisits(patient, pages,width);
-                    auxArea.setContent(auxDispVisits);
+                    dispVisits = new AuxDispVisits(patient, pages,width);
+                    auxArea.setContent(dispVisits);
+                    showRecordsButton.setEnabled(true);
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();
@@ -65,7 +70,21 @@ public class AuxControl extends JPanel {
     }
 
     private void doShowDrugs() {
+        if( dispDrugs == null ){
+            showDrugsButton.setEnabled(false);
+            Service.api.listIyakuhinForPatient(patient.patientId)
+                    .thenAccept(result -> {
+                        dispDrugs = new AuxDispDrugs(patient, result);
 
+                    })
+                    .exceptionally(t -> {
+                        t.printStackTrace();
+                        alert(t.toString());
+                        return null;
+                    });
+        } else {
+            auxArea.setContent(dispDrugs);
+        }
     }
 
     private void alert(String message){

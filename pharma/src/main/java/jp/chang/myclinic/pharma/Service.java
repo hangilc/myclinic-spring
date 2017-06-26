@@ -45,6 +45,9 @@ class Service {
         @GET("list-visit-text-drug")
         CompletableFuture<List<VisitTextDrugDTO>> listVisitTextDrug(@Query("visit-id[]") Set<Integer> visitIds);
 
+        @GET("list-iyakuhin-for-patient")
+        CompletableFuture<List<IyakuhincodeNameDTO>> listIyakuhinForPatient(@Query("patient-id") int patientId);
+
 //        @GET("list-wqueue-full")
 //        CompletableFuture<List<WqueueFullDTO>> listWqueue();
 //

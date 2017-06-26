@@ -1,12 +1,18 @@
 package jp.chang.myclinic.pharma;
 
+import jp.chang.myclinic.dto.IyakuhincodeNameDTO;
+import jp.chang.myclinic.dto.PatientDTO;
+
 import javax.swing.*;
+import java.util.List;
 
 public class AuxDispDrugs extends JPanel {
-    private int patientId;
+    private PatientDTO patient;
+    private List<IyakuhincodeNameDTO> iyakuhinList;
 
-    public AuxDispDrugs(int patientId){
-        this.patientId = patientId;
-        add(new JLabel("Drugs"));
+    public AuxDispDrugs(PatientDTO patient, List<IyakuhincodeNameDTO> iyakuhinList){
+        this.patient = patient;
+        this.iyakuhinList = iyakuhinList;
+
     }
 }
