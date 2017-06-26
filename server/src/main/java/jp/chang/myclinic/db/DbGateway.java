@@ -631,6 +631,8 @@ public class DbGateway {
 		return findNamesForIyakuhincodes(iyakuhincodes);
 	}
 
+	// TODO: implement listVisitIdForDrug
+
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
 		Shinryou shinryou = (Shinryou)result[0];
 		ShinryouMaster master = (ShinryouMaster)result[1];

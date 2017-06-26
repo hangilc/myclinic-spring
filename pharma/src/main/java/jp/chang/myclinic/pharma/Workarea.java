@@ -52,8 +52,8 @@ public class Workarea extends JPanel {
         add(yomiLabel, "gap top 5, wrap");
         add(patientInfoLabel, "wrap");
         {
-            drugsContainer.setLayout(new MigLayout("insets 0, gapy 1, nocache", "[grow]", ""));
-            add(drugsContainer, "growx, wrap, wmin 10, hmin 10");
+            drugsContainer.setLayout(new MigLayout("insets 0, gapy 1", "[grow]", ""));
+            add(drugsContainer, "growx, wrap");
         }
         add(makeCommandRow1(), "wrap");
         add(makeCommandRow2(), "gaptop 5, right");
@@ -74,8 +74,9 @@ public class Workarea extends JPanel {
         drugsContainer.removeAll();
         int index = 1;
         for(DrugFullDTO drugFull: drugs){
+            int width = drugsContainer.getWidth() - 5;
             String text = (index++) + ") " + DrugUtil.drugRep(drugFull);
-            WrappedText wrap = new WrappedText(text, 200);
+            WrappedText wrap = new WrappedText(text, width);
             JLabel bagLink = new JLabel("薬袋");
             bagLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             bagLink.addMouseListener(new MouseAdapter(){

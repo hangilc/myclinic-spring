@@ -26,49 +26,54 @@ class WrappedText extends JPanel {
         append(text);
     }
 
-    public WrappedText(String text){
-        this(text, 0);
-    }
-
     public void append(String text){
         Src src = new SrcString(text);
         src.append();
         sources.add(src);
+        setAllSizes();
     }
 
     public void append(JComponent component){
         Src src = new SrcComponent(component);
         src.append();
         sources.add(src);
+        setAllSizes();
     }
 
-    @Override
-    public Dimension getPreferredSize(){
-        return new Dimension(width, getCurrentHeight());
+    private void setAllSizes(){
+        Dimension size = new Dimension(this.width, getCurrentHeight());
+        setMinimumSize(size);
+        setPreferredSize(size);
+        setMaximumSize(size);
     }
 
-    @Override
-    public void setBounds(int x, int y, int width, int height){
-        super.setBounds(x, y, width, height);
-        if( this.width != width || getCurrentHeight() != height ){
-            this.width = width;
-            this.posX = 0;
-            this.posY = 0;
-            this.botY = fontSize;
-            stringItems.clear();
-            for(Src src: sources){
-                src.append();
-            }
-            repaint();
-            revalidate();
-        }
-    }
-
-    @Override
-    public void setBounds(Rectangle rect){
-        System.out.println("setBounds(Rectangle): " + rect);
-        super.setBounds(rect);
-    }
+//    @Override
+//    public Dimension getPreferredSize(){
+//        return new Dimension(width, getCurrentHeight());
+//    }
+//
+//    @Override
+//    public void setBounds(int x, int y, int width, int height){
+//        super.setBounds(x, y, width, height);
+//        if( this.width != width || getCurrentHeight() != height ){
+//            this.width = width;
+//            this.posX = 0;
+//            this.posY = 0;
+//            this.botY = fontSize;
+//            stringItems.clear();
+//            for(Src src: sources){
+//                src.append();
+//            }
+//            repaint();
+//            revalidate();
+//        }
+//    }
+//
+//    @Override
+//    public void setBounds(Rectangle rect){
+//        System.out.println("setBounds(Rectangle): " + rect);
+//        super.setBounds(rect);
+//    }
 
     private int getCurrentHeight(){
         return botY;

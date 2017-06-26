@@ -26,7 +26,6 @@ public class AppPharma {
                 System.exit(1);
             }
             MainFrame mainFrame = new MainFrame();
-            mainFrame.setSize(new Dimension(700, 500));
             mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             mainFrame.setLocationByPlatform(true);
             mainFrame.setVisible(true);

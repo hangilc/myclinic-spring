@@ -42,9 +42,9 @@ public class MainFrame extends JFrame {
             throw new RuntimeException("failed to load icons");
         }
         setupMenu();
-        setLayout(new MigLayout("debug, fill", "[grow, fill][grow, fill]", "[grow]"));
-        add(makeLeft(), "w 48%, top");
-        add(makeRight(), "w 48%, top, grow");
+        setLayout(new MigLayout("fill", "[260px!]5px![360px!]", "[400px]"));
+        add(makeLeft(), "growx, top");
+        add(makeRight(), "grow, top");
 //        {
 //            JScrollPane sp = new JScrollPane(makeRight());
 //            sp.getVerticalScrollBar().setUnitIncrement(16);
@@ -127,16 +127,12 @@ public class MainFrame extends JFrame {
         return panel;
     }
 
-    JScrollPane rightScroll;
-    JComponent rightWorkArea;
-
     private JComponent makeRight(){
         auxArea = new AuxArea();
         auxControl = new AuxControl(auxArea);
-        JPanel panel = new RightPane(new MigLayout("", "[grow]", "[]"));
-        panel.add(new JLabel("投薬"), "wrap");
-        rightWorkArea = makeWorkarea();
-        panel.add(rightWorkArea, "grow, wrap");
+        JPanel panel = new JPanel(new MigLayout("", "[330px!]", ""));
+        panel.add(new JLabel("投薬"), "growx, wrap");
+        panel.add(makeWorkarea(), "growx, wrap");
 //        {
 //            auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 //            panel.add(auxControl, "grow, wrap");
@@ -144,8 +140,10 @@ public class MainFrame extends JFrame {
 //        {
 //            panel.add(auxArea, "grow");
 //        }
-        rightScroll = new JScrollPane(panel);
-        return rightScroll;
+        JScrollPane sp = new JScrollPane(panel);
+        sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        panel.add(new JLabel(""), "grow");
+        return sp;
     }
 
     private JComponent makeWorkarea(){
