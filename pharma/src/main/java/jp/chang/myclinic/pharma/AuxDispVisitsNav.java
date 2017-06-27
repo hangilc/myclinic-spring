@@ -10,14 +10,14 @@ import java.util.List;
 
 public class AuxDispVisitsNav extends JPanel {
 
-    private AuxDispVisitsRecords records;
+    private AuxDispRecords records;
     private int currentPage;
     private List<RecordPage> pages;
     private JLabel currentPageLabel;
     private JLabel gotoPrevLink;
     private JLabel gotoNextLink;
 
-    public AuxDispVisitsNav(AuxDispVisitsRecords records, List<RecordPage> pages, PatientDTO patient){
+    public AuxDispVisitsNav(AuxDispRecords records, List<RecordPage> pages, PatientDTO patient){
         this.records = records;
         this.pages = pages;
         setLayout(new FlowLayout());

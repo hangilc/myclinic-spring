@@ -124,19 +124,27 @@ public class MainFrame extends JFrame {
     private JComponent makeRight(){
         int width = 330;
         auxArea = new AuxArea(width);
-        auxControl = new AuxControl(auxArea, width);
+        auxControl = new AuxControl(auxArea, width - 2);
+        JPanel auxSubControl = new JPanel(new MigLayout("insets 0", "", ""));
+        auxSubControl.add(new JLabel("SubControl"));
         JPanel panel = new JPanel(new MigLayout("", "[" + width + "!]", ""));
         panel.add(new JLabel("投薬"), "growx, wrap");
         panel.add(makeWorkarea(), "growx, wrap");
         {
+            JPanel control = new JPanel(new MigLayout("insets 0", "", "[]2[]"));
             auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            panel.add(auxControl, "growx, wrap");
+            auxSubControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            control.add(auxControl, "growx, wrap");
+            control.add(auxSubControl, "growx");
+            panel.add(control, "growx, wrap");
         }
         {
             panel.add(auxArea, "grow");
         }
         JScrollPane sp = new JScrollPane(panel);
         sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        System.out.println("auxArea width: " + auxArea.getWidth());
+        System.out.println("auxControl width: " + auxControl.getWidth());
         return sp;
     }
 

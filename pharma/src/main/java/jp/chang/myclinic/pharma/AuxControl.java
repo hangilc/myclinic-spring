@@ -18,10 +18,11 @@ public class AuxControl extends JPanel {
 
     public AuxControl(AuxArea auxArea, int width){
         this.auxArea = auxArea;
-        this.width = width;
+        //this.width = width;
         setLayout(new MigLayout("insets 0", "[" + width + "!]", ""));
-        add(makeRow1(), "wrap");
-        add(makeRow2());
+        add(new JLabel("AuxControl"));
+        //add(makeRow1());
+        //add(makeRow2());
         bind();
     }
 
@@ -55,10 +56,10 @@ public class AuxControl extends JPanel {
         return panel;
     }
 
-    private JComponent makeRow2(){
-        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        return panel;
-    }
+//    private JComponent makeRow2(){
+//        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+//        return panel;
+//    }
 
     private void bind(){
         showRecordsButton.addActionListener(event -> doShowRecords());

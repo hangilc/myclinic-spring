@@ -12,11 +12,11 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
 
-public class AuxDispVisitsRecords extends JPanel {
+public class AuxDispRecords extends JPanel {
 
     private int width;
 
-    public AuxDispVisitsRecords(int width){
+    public AuxDispRecords(int width){
         this.width = width;
         setLayout(new MigLayout("insets 0", "[]5[]", ""));
     }
