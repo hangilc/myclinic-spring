@@ -1,14 +1,14 @@
 package jp.chang.myclinic.pharma;
 
 import jp.chang.myclinic.dto.PatientDTO;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-public class AuxDispVisitsNav extends JPanel {
+public class AuxRecordsNav extends JPanel {
 
     private AuxDispRecords records;
     private int currentPage;
@@ -17,10 +17,10 @@ public class AuxDispVisitsNav extends JPanel {
     private JLabel gotoPrevLink;
     private JLabel gotoNextLink;
 
-    public AuxDispVisitsNav(AuxDispRecords records, List<RecordPage> pages, PatientDTO patient){
+    public AuxRecordsNav(AuxDispRecords records, List<RecordPage> pages, PatientDTO patient){
         this.records = records;
         this.pages = pages;
-        setLayout(new FlowLayout());
+        setLayout(new MigLayout("insets 0", "", ""));
         if( pages.size() > 1 ){
             currentPageLabel = new JLabel("1");
             add(currentPageLabel);
@@ -32,6 +32,9 @@ public class AuxDispVisitsNav extends JPanel {
             add(gotoNextLink);
         }
         add(new JLabel("(" + patient.lastName + patient.firstName + ")"));
+        if( pages.size() > 0 ){
+            records.showVisits(pages.get(0).visitIds);
+        }
         bind();
     }
 

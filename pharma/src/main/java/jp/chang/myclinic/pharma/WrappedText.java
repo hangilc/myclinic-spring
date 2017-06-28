@@ -1,11 +1,13 @@
 package jp.chang.myclinic.pharma;
 
+import jp.chang.myclinic.pharma.wrappedtext.LinkItem;
+import jp.chang.myclinic.pharma.wrappedtext.StringChunk;
+import jp.chang.myclinic.pharma.wrappedtext.StringItem;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 class WrappedText extends JPanel {
@@ -13,7 +15,8 @@ class WrappedText extends JPanel {
     private int width;
     private int ascent;
     private int fontSize;
-    private List<Item> items = new ArrayList<>();
+    private List<StringItem> stringItems = new ArrayList<>();
+    private List<LinkItem> linkItems;
     private int posX;
     private int posY;
     private int botY;
@@ -25,14 +28,14 @@ class WrappedText extends JPanel {
         this.ascent = getFontMetrics(font).getAscent();
         this.fontSize = font.getSize();
         this.botY = this.fontSize;
-        addMouseListener(new MouseAdapter(){
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                Point p = e.getPoint();
-                System.out.println(p);
-            }
-        });
+//        addMouseListener(new MouseAdapter(){
+//            @Override
+//            public void mouseClicked(MouseEvent e) {
+//                super.mouseClicked(e);
+//                Point p = e.getPoint();
+//                System.out.println(p);
+//            }
+//        });
     }
 
     public WrappedText(String text, int width){
@@ -40,14 +43,14 @@ class WrappedText extends JPanel {
         appendString(text);
     }
 
-    private List<StringItem> breakToLines(String text){
-        List<StringItem> result = new ArrayList<>();
+    private List<StringChunk> breakToLines(String text){
+        List<StringChunk> result = new ArrayList<>();
         FontMetrics fm = getFontMetrics(getFont());
         StringBuilder sb = new StringBuilder();
         int x = posX;
         for(char ch: text.toCharArray()){
             if( ch == '\n' ){
-                result.add(new StringItem(posX, posY + ascent, sb.toString()));
+                result.add(new StringChunk(sb.toString(), new Rectangle(posX, posY, x - posX, fontSize)));
                 sb.setLength(0);
                 newline();
                 x = 0;
@@ -55,7 +58,7 @@ class WrappedText extends JPanel {
             }
             int cw = fm.charWidth(ch);
             if( x > 0 && x + cw > width ){
-                result.add(new StringItem(posX, posY + ascent, sb.toString()));
+                result.add(new StringChunk(sb.toString(), new Rectangle(posX, posY, x - posX, fontSize)));
                 sb.setLength(0);
                 newline();
                 x = 0;
@@ -64,14 +67,19 @@ class WrappedText extends JPanel {
             x += cw;
         }
         if( sb.length() > 0 ){
-            result.add(new StringItem(posX, posY + ascent, sb.toString()));
+            result.add(new StringChunk(sb.toString(), new Rectangle(posX, posY, x - posX, fontSize)));
             posX = x;
         }
         return result;
     }
 
+    private StringItem stringChunkToStringItem(StringChunk chunk){
+        Rectangle rect = chunk.rect;
+        return new StringItem((int)rect.getX(), (int)rect.getY() + ascent, chunk.text);
+    }
+
     private void appendString(String text){
-        items.addAll(breakToLines(text));
+        stringItems.addAll(breakToLines(text).stream().map(this::stringChunkToStringItem).collect(Collectors.toList()));
         setAllSizes();
     }
 
@@ -91,10 +99,17 @@ class WrappedText extends JPanel {
     }
 
     public void appendLink(String text, Runnable action){
-        List<LinkItem> linkItems = breakToLines(text).stream()
-                .map(stringItem -> new LinkItem(stringItem, action))
-                .collect(Collectors.toList());
-        items.addAll(linkItems);
+        List<LinkItem> items = breakToLines(text).stream().map(chunk -> {
+            StringItem stringItem = stringChunkToStringItem(chunk);
+            return new LinkItem(stringItem, action);
+        }).collect(Collectors.toList());
+        if( items.size() > 0 ){
+            if( linkItems == null ){
+                linkItems = new ArrayList<>();
+                // TODO: ass mouse listener
+            }
+            linkItems.addAll(items);
+        }
     }
 
     private void setAllSizes(){
@@ -117,65 +132,17 @@ class WrappedText extends JPanel {
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-        for(Item item: items) {
-            item.render(g);
+        for(StringItem stringItem: stringItems){
+            stringItem.render(g);
         }
         paintComponents(g);
-    }
-
-    private interface Item {
-        void render(Graphics g);
-    }
-
-    private static class StringItem implements Item {
-        int x;
-        int y;
-        String text;
-
-        StringItem(int x, int y, String text){
-            this.x = x;
-            this.y = y;
-            this.text = text;
-        }
-
-        @Override
-        public void render(Graphics g){
-            g.drawString(this.text, this.x, this.y);
-        }
-
-        @Override
-        public String toString() {
-            return "StringItem{" +
-                    "x=" + x +
-                    ", y=" + y +
-                    ", text='" + text + '\'' +
-                    '}';
-        }
-    }
-
-    private static class LinkItem implements Item {
-        StringItem stringItem;
-        Runnable runnable;
-
-        LinkItem(StringItem stringItem, Runnable runnable){
-            this.stringItem = stringItem;
-            this.runnable = runnable;
-        }
-
-        @Override
-        public void render(Graphics g){
+        if( linkItems != null ){
             Color colorSave = g.getColor();
             g.setColor(Color.BLUE);
-            stringItem.render(g);
+            for(LinkItem linkItem: linkItems){
+                linkItem.render(g);
+            }
             g.setColor(colorSave);
-        }
-
-        @Override
-        public String toString() {
-            return "LinkItem{" +
-                    "stringItem=" + stringItem +
-                    ", runnable=" + runnable +
-                    '}';
         }
     }
 

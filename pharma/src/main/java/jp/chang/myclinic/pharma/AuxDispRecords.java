@@ -22,6 +22,12 @@ public class AuxDispRecords extends JPanel {
     }
 
     public void showVisits(List<Integer> visitIds) {
+        if( visitIds.size() == 0 ){
+            removeAll();
+            repaint();
+            revalidate();
+            return;
+        }
         int colwidth = (width - 5) / 2;
         Service.api.listVisitTextDrug(new HashSet<>(visitIds))
                 .thenAccept(records -> {

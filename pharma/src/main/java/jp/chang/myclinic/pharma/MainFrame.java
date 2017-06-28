@@ -16,7 +16,6 @@ public class MainFrame extends JFrame {
 
     private PharmaQueueList pharmaQueueList;
     private Workarea workarea;
-    private AuxArea auxArea;
     private AuxControl auxControl;
     private JButton closeButton = new JButton("閉じる");
     private JCheckBox includePrescribedCheckBox = new JCheckBox("処方済の患者も含める");
@@ -123,10 +122,9 @@ public class MainFrame extends JFrame {
 
     private JComponent makeRight(){
         int width = 330;
-        auxArea = new AuxArea(width);
-        auxControl = new AuxControl(auxArea, width - 2);
-        JPanel auxSubControl = new JPanel(new MigLayout("insets 0", "", ""));
-        auxSubControl.add(new JLabel("SubControl"));
+        JPanel auxSubControl = new JPanel(new MigLayout("", "", ""));
+        AuxDispRecords dispRecords = new AuxDispRecords(width);
+        auxControl = new AuxControl(auxSubControl, dispRecords, width - 2);
         JPanel panel = new JPanel(new MigLayout("", "[" + width + "!]", ""));
         panel.add(new JLabel("投薬"), "growx, wrap");
         panel.add(makeWorkarea(), "growx, wrap");
@@ -138,13 +136,10 @@ public class MainFrame extends JFrame {
             control.add(auxSubControl, "growx");
             panel.add(control, "growx, wrap");
         }
-        {
-            panel.add(auxArea, "grow");
-        }
+        panel.add(dispRecords, "grow");
         JScrollPane sp = new JScrollPane(panel);
+        sp.setBorder(null);
         sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        System.out.println("auxArea width: " + auxArea.getWidth());
-        System.out.println("auxControl width: " + auxControl.getWidth());
         return sp;
     }
 
