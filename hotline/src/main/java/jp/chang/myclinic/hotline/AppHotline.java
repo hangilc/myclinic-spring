@@ -1,11 +1,16 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.hotline;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
-public class AppPharma {
-    public static void main(String[] args) throws IOException {
+/**
+ * Hello world!
+ *
+ */
+public class AppHotline
+{
+    public static void main( String[] args )
+    {
         if( args.length == 0 ){
             System.out.println("Usage: server-url");
             System.exit(1);
@@ -15,9 +20,8 @@ public class AppPharma {
             if( !serverUrl.endsWith("/") ){
                 serverUrl = serverUrl + "/";
             }
-            Service.setServerUrl(serverUrl);
+            //Service.setServerUrl(serverUrl);
         }
-        //readConfig();
         EventQueue.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -31,5 +35,4 @@ public class AppPharma {
             mainFrame.setVisible(true);
         });
     }
-
 }

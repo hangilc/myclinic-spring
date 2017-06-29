@@ -26,6 +26,7 @@
     <module>myclinic-consts</module>
     <module>drawer</module>
     <module>pharma</module>
+    <module>hotline</module>
   </modules>
 
 </project>
