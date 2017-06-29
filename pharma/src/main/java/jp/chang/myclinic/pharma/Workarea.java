@@ -173,7 +173,7 @@ public class Workarea extends JPanel {
         return Service.api.getClinicInfo()
                 .thenCompose(clinicInfo -> {
                     dataStore.clinicInfo = clinicInfo;
-                    Set<Integer> iyakuhincodes = drugs.stream().map(d -> d.drug.iyakuhincode).collect(Collectors.toSet());
+                    List<Integer> iyakuhincodes = drugs.stream().map(d -> d.drug.iyakuhincode).collect(Collectors.toList());
                     return Service.api.collectPharmaDrugByIyakuhincodes(iyakuhincodes);
                 })
                 .thenApply(pharmaDrugs -> {

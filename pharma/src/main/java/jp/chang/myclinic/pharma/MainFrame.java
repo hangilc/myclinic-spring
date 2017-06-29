@@ -140,6 +140,7 @@ public class MainFrame extends JFrame {
         JScrollPane sp = new JScrollPane(panel);
         sp.setBorder(null);
         sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        sp.getVerticalScrollBar().setUnitIncrement(12);
         return sp;
     }
 

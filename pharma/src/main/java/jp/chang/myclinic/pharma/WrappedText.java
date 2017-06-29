@@ -6,6 +6,9 @@ import jp.chang.myclinic.pharma.wrappedtext.StringItem;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,14 +31,6 @@ class WrappedText extends JPanel {
         this.ascent = getFontMetrics(font).getAscent();
         this.fontSize = font.getSize();
         this.botY = this.fontSize;
-//        addMouseListener(new MouseAdapter(){
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                super.mouseClicked(e);
-//                Point p = e.getPoint();
-//                System.out.println(p);
-//            }
-//        });
     }
 
     public WrappedText(String text, int width){
@@ -101,15 +96,31 @@ class WrappedText extends JPanel {
     public void appendLink(String text, Runnable action){
         List<LinkItem> items = breakToLines(text).stream().map(chunk -> {
             StringItem stringItem = stringChunkToStringItem(chunk);
-            return new LinkItem(stringItem, action);
+            return new LinkItem(stringItem, chunk.rect, action);
         }).collect(Collectors.toList());
         if( items.size() > 0 ){
             if( linkItems == null ){
                 linkItems = new ArrayList<>();
-                // TODO: ass mouse listener
+                addMouseListener(makeMouseListener());
             }
             linkItems.addAll(items);
         }
+    }
+
+    private MouseListener makeMouseListener(){
+        return new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                Point p = e.getPoint();
+                for(LinkItem linkItem: linkItems){
+                    if( linkItem.contains(p) ){
+                        linkItem.doAction();
+                        return;
+                    }
+                }
+            }
+        };
     }
 
     private void setAllSizes(){

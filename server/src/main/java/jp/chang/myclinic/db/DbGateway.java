@@ -582,7 +582,7 @@ public class DbGateway {
 				.map(mapper::toPharmaDrugDTO).orElse(null);
 	}
 
-	public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(Set<Integer> iyakuhincodes){
+	public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(List<Integer> iyakuhincodes){
 		if( iyakuhincodes.size() == 0 ) {
 			return Collections.emptyList();
 		} else {
@@ -591,7 +591,7 @@ public class DbGateway {
 		}
 	}
 
-	public List<VisitTextDrugDTO> listVisitTextDrug(Set<Integer> visitIds){
+	public List<VisitTextDrugDTO> listVisitTextDrug(List<Integer> visitIds){
 		if( visitIds.size() == 0 ){
 			return Collections.emptyList();
 		}
@@ -631,7 +631,16 @@ public class DbGateway {
 		return findNamesForIyakuhincodes(iyakuhincodes);
 	}
 
-	// TODO: implement listVisitIdForDrug
+	public List<VisitIdVisitedAtDTO> listVisitIdVisitedAtByIyakuhincodeAndPatientId(int patientId, int iyakuhincode){
+		return drugRepository.findVisitIdVisitedAtByPatientAndIyakuhincode(patientId, iyakuhincode).stream()
+				.map(result -> {
+					VisitIdVisitedAtDTO visitIdVisitedAtDTO = new VisitIdVisitedAtDTO();
+					visitIdVisitedAtDTO.visitId = (Integer)result[0];
+					visitIdVisitedAtDTO.visitedAt = (String)result[1];
+					return visitIdVisitedAtDTO;
+				})
+				.collect(Collectors.toList());
+	}
 
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
 		Shinryou shinryou = (Shinryou)result[0];

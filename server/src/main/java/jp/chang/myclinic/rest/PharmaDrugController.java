@@ -1,7 +1,6 @@
 package jp.chang.myclinic.rest;
 
 import jp.chang.myclinic.db.DbGateway;
-import jp.chang.myclinic.dto.PaymentDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/json")
@@ -27,7 +25,7 @@ public class PharmaDrugController {
     }
 
     @RequestMapping(value="/collect-pharma-drug-by-iyakuhincodes", method=RequestMethod.GET)
-    public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(@RequestParam("iyakuhincode[]") Set<Integer> iyakuhincodes){
+    public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(@RequestParam("iyakuhincode[]") List<Integer> iyakuhincodes){
         return dbGateway.collectPharmaDrugByIyakuhincodes(iyakuhincodes);
     }
 

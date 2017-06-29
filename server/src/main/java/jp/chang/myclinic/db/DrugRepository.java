@@ -1,11 +1,11 @@
 package jp.chang.myclinic.db;
 
-import org.springframework.data.repository.CrudRepository;
-import java.util.List;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface DrugRepository extends CrudRepository<Drug, Integer> {
 
@@ -29,5 +29,9 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 
 	@Query("select d.iyakuhincode from Drug d, Visit v where d.visitId = v.visitId and v.patientId = :patientId")
 	List<Integer> findIyakuhincodeByPatient(@Param("patientId") int patientId);
+
+	@Query("select d.visitId, v.visitedAt from Drug d, Visit v where v.patientId = :patientId and v.visitId = d.visitId " +
+			" and d.iyakuhincode = :iyakuhincode")
+	List<Object[]> findVisitIdVisitedAtByPatientAndIyakuhincode(@Param("patientId") int patientId, @Param("iyakuhincode") int iyakuhincode);
 
 }

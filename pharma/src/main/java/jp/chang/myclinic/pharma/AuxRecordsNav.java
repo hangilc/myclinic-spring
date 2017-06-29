@@ -31,11 +31,13 @@ public class AuxRecordsNav extends JPanel {
             add(gotoPrevLink);
             add(gotoNextLink);
         }
-        add(new JLabel("(" + patient.lastName + patient.firstName + ")"));
-        if( pages.size() > 0 ){
-            records.showVisits(pages.get(0).visitIds);
-        }
         bind();
+    }
+
+    public void updateVisits(){
+        if( currentPage >= 0 && currentPage < pages.size() ){
+            records.showVisits(pages.get(currentPage).visitIds);
+        }
     }
 
     private void bind(){

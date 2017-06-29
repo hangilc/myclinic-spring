@@ -9,7 +9,6 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashSet;
 import java.util.List;
 
 public class AuxDispRecords extends JPanel {
@@ -29,7 +28,7 @@ public class AuxDispRecords extends JPanel {
             return;
         }
         int colwidth = (width - 5) / 2;
-        Service.api.listVisitTextDrug(new HashSet<>(visitIds))
+        Service.api.listVisitTextDrug(visitIds)
                 .thenAccept(records -> {
                     EventQueue.invokeLater(() -> {
                         removeAll();

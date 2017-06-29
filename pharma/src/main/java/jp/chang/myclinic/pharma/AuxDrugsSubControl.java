@@ -5,6 +5,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,10 +39,35 @@ public class AuxDrugsSubControl extends JPanel {
         for(IyakuhincodeNameDTO iyakuhin: iyakuhinList){
             WrappedText tt = new WrappedText("・", 300);
             tt.appendLink(iyakuhin.name, () -> {
-
+                doDrug(iyakuhin.iyakuhincode);
             });
             panel.add(tt, "wrap");
         }
         return panel;
     }
+
+    private void doDrug(int iyakuhincode){
+        if( patient == null ){
+            return;
+        }
+        Service.api.listVisitIdVisitedAtByPatientAndIyakuhincode(patient.patientId, iyakuhincode)
+                .thenAccept(result -> {
+                    List<RecordPage> pages = RecordPage.divideToPages(result);
+                    AuxRecordsNav nav = new AuxRecordsNav(dispRecords, pages, patient);
+                    EventQueue.invokeLater(() -> {
+                        setNavAreaContent(nav);
+                        nav.updateVisits();
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
+    }
+
 }

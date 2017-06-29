@@ -4,18 +4,25 @@ import java.awt.*;
 
 public class LinkItem {
     private StringItem stringItem;
+    private Rectangle rect;
     private Runnable runnable;
 
-    public LinkItem(StringItem stringItem, Runnable runnable){
+    public LinkItem(StringItem stringItem, Rectangle rect, Runnable runnable){
         this.stringItem = stringItem;
+        this.rect = rect;
         this.runnable = runnable;
     }
 
     public void render(Graphics g){
-        //Color colorSave = g.getColor();
-        //g.setColor(Color.BLUE);
         stringItem.render(g);
-        //g.setColor(colorSave);
+    }
+
+    public boolean contains(Point p){
+        return rect.contains(p);
+    }
+
+    public void doAction(){
+        runnable.run();
     }
 
     @Override

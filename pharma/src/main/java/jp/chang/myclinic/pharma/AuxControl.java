@@ -66,6 +66,7 @@ public class AuxControl extends JPanel {
             return;
         }
         setSubControlContent(dispVisits);
+        dispVisits.updateVisitsArea();
     }
 
     private void doShowDrugs() {

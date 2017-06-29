@@ -16,7 +16,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 class Service {
@@ -37,16 +36,20 @@ class Service {
         CompletableFuture<ClinicInfoDTO> getClinicInfo();
 
         @GET("collect-pharma-drug-by-iyakuhincodes")
-        CompletableFuture<List<PharmaDrugDTO>> collectPharmaDrugByIyakuhincodes(@Query("iyakuhincode[]") Set<Integer> iyakuhincodes);
+        CompletableFuture<List<PharmaDrugDTO>> collectPharmaDrugByIyakuhincodes(@Query("iyakuhincode[]") List<Integer> iyakuhincodes);
 
         @GET("list-visit-id-visited-at-for-patient")
         CompletableFuture<List<VisitIdVisitedAtDTO>> listVisitIdVisitedAtForPatient(@Query("patient-id") int patientId);
 
         @GET("list-visit-text-drug")
-        CompletableFuture<List<VisitTextDrugDTO>> listVisitTextDrug(@Query("visit-id[]") Set<Integer> visitIds);
+        CompletableFuture<List<VisitTextDrugDTO>> listVisitTextDrug(@Query("visit-id[]") List<Integer> visitIds);
 
         @GET("list-iyakuhin-for-patient")
         CompletableFuture<List<IyakuhincodeNameDTO>> listIyakuhinForPatient(@Query("patient-id") int patientId);
+
+        @GET("list-visit-id-visited-at-by-patient-and-iyakuhincode")
+        CompletableFuture<List<VisitIdVisitedAtDTO>> listVisitIdVisitedAtByPatientAndIyakuhincode(@Query("patient-id") int patientId,
+                                                                                            @Query("iyakuhincode") int iyakuhincode);
 
 //        @GET("list-wqueue-full")
 //        CompletableFuture<List<WqueueFullDTO>> listWqueue();

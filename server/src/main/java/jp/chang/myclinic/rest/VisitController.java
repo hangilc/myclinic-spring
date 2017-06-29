@@ -170,7 +170,7 @@ public class VisitController {
 	}
 
 	@RequestMapping(value="/list-visit-text-drug", method=RequestMethod.GET)
-	public List<VisitTextDrugDTO> listVisitTextDrug(@RequestParam("visit-id[]") Set<Integer> visitIds){
+	public List<VisitTextDrugDTO> listVisitTextDrug(@RequestParam("visit-id[]") List<Integer> visitIds){
 		return dbGateway.listVisitTextDrug(visitIds);
 	}
 
