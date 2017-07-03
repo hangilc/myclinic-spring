@@ -44,6 +44,7 @@ public class AuxControl extends JPanel {
                 .thenAccept(visitIds -> {
                     List<RecordPage>  pages = RecordPage.divideToPages(visitIds);
                     EventQueue.invokeLater(() -> {
+                        showVisitsButton.setSelected(true);
                         dispVisits = new AuxVisitsSubControl(patient, pages, dispRecords);
                         setSubControlContent(dispVisits);
                         showVisitsButton.setEnabled(true);
