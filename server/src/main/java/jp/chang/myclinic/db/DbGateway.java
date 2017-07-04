@@ -57,6 +57,8 @@ public class DbGateway {
 	private PharmaDrugRepository pharmaDrugRepository;
 	@Autowired
 	private IyakuhinMasterRepository iyakuhinMasterRepository;
+	@Autowired
+	private HotlineRepository hotlineRepository;
 
 	public List<WqueueFullDTO> listWqueueFull(){
 		try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
@@ -640,6 +642,17 @@ public class DbGateway {
 					return visitIdVisitedAtDTO;
 				})
 				.collect(Collectors.toList());
+	}
+
+	public Integer getLastHotlineId(){
+		Optional<Hotline> hotline = hotlineRepository.findTopByOrderByHotlineIdDesc();
+		return hotline.map(h -> h.getHotlineId()).orElse(0);
+	}
+
+	public List<HotlineDTO> listHotlineInRange(int lowerHotlineId, int upperHotlineId){
+		Sort sort = new Sort(Sort.Direction.ASC, "hotlineId");
+		return hotlineRepository.findInRange(lowerHotlineId, upperHotlineId, sort).stream()
+				.map(mapper::toHotlineDTO).collect(Collectors.toList());
 	}
 
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){

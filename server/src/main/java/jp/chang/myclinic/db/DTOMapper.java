@@ -480,6 +480,26 @@ public class DTOMapper {
 		return pharmaDrug;
 	}
 
+	public HotlineDTO toHotlineDTO(Hotline hotline){
+		HotlineDTO hotlineDTO = new HotlineDTO();
+		hotlineDTO.hotlineId = hotline.getHotlineId();
+		hotlineDTO.message = hotline.getMessage();
+		hotlineDTO.sender = hotline.getSender();
+		hotlineDTO.recipient = hotline.getRecipient();
+		hotlineDTO.postedAt = hotline.getPostedAt();
+		return hotlineDTO;
+	}
+
+	public Hotline fromHotlineDTO(HotlineDTO hotlineDTO){
+		Hotline hotline = new Hotline();
+		hotline.setHotlineId(hotlineDTO.hotlineId);
+		hotline.setMessage(hotlineDTO.message);
+		hotline.setSender(hotlineDTO.sender);
+		hotline.setRecipient(hotlineDTO.recipient);
+		hotline.setPostedAt(hotlineDTO.postedAt);
+		return hotline;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;

@@ -2,9 +2,6 @@ package jp.chang.myclinic.db;
 
 import javax.persistence.*;
 
-/**
- * Created by hangil on 2017/06/07.
- */
 @Entity
 @Table(name="visit_text")
 public class Text {
