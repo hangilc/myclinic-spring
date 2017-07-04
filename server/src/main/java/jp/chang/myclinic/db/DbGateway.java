@@ -655,6 +655,12 @@ public class DbGateway {
 				.map(mapper::toHotlineDTO).collect(Collectors.toList());
 	}
 
+	public int enterHotline(HotlineDTO hotlineDTO){
+		Hotline hotline = mapper.fromHotlineDTO(hotlineDTO);
+		hotlineRepository.save(hotline);
+		return hotline.getHotlineId();
+	}
+
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
 		Shinryou shinryou = (Shinryou)result[0];
 		ShinryouMaster master = (ShinryouMaster)result[1];

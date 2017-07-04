@@ -5,10 +5,7 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.HotlineDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,5 +26,10 @@ public class HotlineController {
     public List<HotlineDTO> listHotlineInRange(@RequestParam("lower-hotline-id") int lowerHotlineId,
                                                @RequestParam("upper-hotline-id") int upperHotlineId){
         return dbGateway.listHotlineInRange(lowerHotlineId, upperHotlineId);
+    }
+
+    @RequestMapping(value="/enter-hotling", method=RequestMethod.GET)
+    public int enterHotline(@RequestBody HotlineDTO hotlineDTO){
+        return dbGateway.enterHotline(hotlineDTO);
     }
 }
