@@ -73,7 +73,7 @@ class WrappedText extends JPanel {
         return new StringItem((int)rect.getX(), (int)rect.getY() + ascent, chunk.text);
     }
 
-    private void appendString(String text){
+    public void appendString(String text){
         stringItems.addAll(breakToLines(text).stream().map(this::stringChunkToStringItem).collect(Collectors.toList()));
         setAllSizes();
     }

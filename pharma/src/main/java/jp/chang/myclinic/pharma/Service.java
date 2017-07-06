@@ -51,6 +51,9 @@ class Service {
         CompletableFuture<List<VisitIdVisitedAtDTO>> listVisitIdVisitedAtByPatientAndIyakuhincode(@Query("patient-id") int patientId,
                                                                                             @Query("iyakuhincode") int iyakuhincode);
 
+        @GET("get-patient")
+        CompletableFuture<PatientDTO> getPatient(@Query("patient-id") int patientId);
+
 //        @GET("list-wqueue-full")
 //        CompletableFuture<List<WqueueFullDTO>> listWqueue();
 //

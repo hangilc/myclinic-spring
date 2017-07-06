@@ -2,7 +2,9 @@ package jp.chang.myclinic.pharma;
 
 import jp.chang.myclinic.drawer.printer.manage.PrinterManageDialog;
 import jp.chang.myclinic.drawer.printer.manage.SettingChooserDialog;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.dto.VisitIdVisitedAtDTO;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;
@@ -23,6 +25,8 @@ public class MainFrame extends JFrame {
     private JButton startPrescButton = new JButton("調剤開始");
     private JTextField prevTechouSearchField = new JTextField(6);
     private JButton searchPrevTechouButton = new JButton("検索");
+    private JPanel searchPrevTechouResult;
+    private JScrollPane searchPrevTechouResultScroll;
     private JMenuItem prescPrinterSettingItem = new JMenuItem("処方内容印刷設定");
     private JMenuItem drugbagPrinterSettingItem = new JMenuItem("薬袋印刷設定");
     private JMenuItem techouPrinterSettingItem = new JMenuItem("お薬手帳印刷設定");
@@ -116,7 +120,10 @@ public class MainFrame extends JFrame {
         JPanel panel = new JPanel(new MigLayout("", "", ""));
         panel.setBorder(BorderFactory.createTitledBorder("過去のお薬手帳"));
         panel.add(prevTechouSearchField);
-        panel.add(searchPrevTechouButton);
+        panel.add(searchPrevTechouButton, "wrap");
+        searchPrevTechouResult = new JPanel(new MigLayout("insets 0", "[220!]", ""));
+        JScrollPane searchPrevTechouResultScroll = new JScrollPane(panel);
+        panel.add(searchPrevTechouResult, "span 2, h n:n:300");
         return panel;
     }
 
@@ -168,6 +175,7 @@ public class MainFrame extends JFrame {
         drugbagPrinterSettingItem.addActionListener(event -> doDrugbagPrinterSetting());
         techouPrinterSettingItem.addActionListener(event -> doTechouPrinterSetting());
         printManageItem.addActionListener(event -> doManagePrint());
+        searchPrevTechouButton.addActionListener(event -> doSearchPrevTechou());
     }
 
     private void doPrescPrinterSetting() {
@@ -252,6 +260,45 @@ public class MainFrame extends JFrame {
         PrinterManageDialog printerManageDialog = new PrinterManageDialog(this);
         printerManageDialog.setLocationByPlatform(true);
         printerManageDialog.setVisible(true);
+    }
+
+    private void doSearchPrevTechou(){
+        try {
+            int patientId = Integer.parseInt(prevTechouSearchField.getText());
+            PrevTechouStorage storage = new PrevTechouStorage();
+            Service.api.getPatient(patientId)
+                    .thenCompose(patient -> {
+                        storage.patient = patient;
+                        return Service.api.listVisitIdVisitedAtForPatient(patientId);
+                    })
+                    .thenAccept(visits -> {
+                        updatePrevTechou(storage.patient, visits.subList(0, 20));
+                    })
+                    .exceptionally(t -> {
+                        t.printStackTrace();
+                        alert(t.toString());
+                        return null;
+                    });
+        } catch(NumberFormatException ex){
+            alert("患者番号の入力が不適切です。");
+            return;
+        }
+     }
+
+     private void updatePrevTechou(PatientDTO patient, List<VisitIdVisitedAtDTO> visits){
+        JPanel panel = searchPrevTechouResult;
+        panel.removeAll();
+        WrappedText patientNameText = new WrappedText(patient.lastName + patient.firstName, 260);
+        patientNameText.appendString(" ");
+        JButton toListButton = new JButton("終了");
+        patientNameText.appendComponent(toListButton);
+        panel.add(patientNameText, "wrap");
+        panel.repaint();
+        panel.revalidate();
+     }
+
+    private static class PrevTechouStorage {
+        PatientDTO patient;
     }
 
     private void alert(String message){
