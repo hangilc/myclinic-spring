@@ -7,32 +7,22 @@ import java.util.List;
 
 public class Line {
     private int left;
+    private int lineWidth;
     private int top;
-    private int width;
     private int height;
     private int baseLineOffset;
-    private int currentWidth;
     private List<Item> items = new ArrayList<>();
 
-    public Line(int left, int top, int width){
+    public Line(int left, int top){
         this.left = left;
         this.top = top;
-        this.width = width;
     }
 
     public boolean isEmpty(){
-        return currentWidth > 0;
+        return  items.size() == 0;
     }
 
-    public boolean addChar(char ch, VAlign valign, FontMetrics fontMetrics){
-        int cw = fontMetrics.charWidth(ch);;
-        if( currentWidth > 0 ){
-            if (currentWidth + cw > width) {
-                return false;
-            }
-        }
-        int ascent = fontMetrics.getAscent();
-        int fontHeight = fontMetrics.getHeight();
+    public void addString(String text, int width, VAlign valign, int fontHeight, int ascent){
         switch(valign){
             case Top:case Center:case Bottom: {
                 if( height < fontHeight ){
@@ -50,20 +40,11 @@ public class Line {
                 break;
             }
         }
-        items.add(new CharItem(ch, cw, valign, fontHeight, ascent));
-        currentWidth += cw;
-        return true;
+        items.add(new StringItem(text, width, valign, fontHeight, ascent));
+        lineWidth += width;
     }
 
-    public boolean addLink(char ch, VAlign valign, FontMetrics fontMetrics, Runnable action){
-        int cw = fontMetrics.charWidth(ch);;
-        if( currentWidth > 0 ){
-            if (currentWidth + cw > width) {
-                return false;
-            }
-        }
-        int ascent = fontMetrics.getAscent();
-        int fontHeight = fontMetrics.getHeight();
+    public void addLink(String text, int width, VAlign valign, int fontHeight, int ascent, Runnable action){
         switch(valign){
             case Top:case Center:case Bottom: {
                 if( height < fontHeight ){
@@ -81,21 +62,15 @@ public class Line {
                 break;
             }
         }
-        items.add(new LinkItem(ch, cw, valign, fontHeight, ascent, action));
-        currentWidth += cw;
-        return true;
+        items.add(new LinkItem(text, width, valign, fontHeight, ascent, action));
+        lineWidth += width;
     }
 
-    public boolean addComponent(JComponent component, VAlign valign){
+    public void addComponent(JComponent component, VAlign valign){
         Dimension dim = component.getPreferredSize();
         int w = (int)dim.getWidth();
         int h = (int)dim.getHeight();
         int y = top;
-        if( currentWidth > 0 ){
-            if( currentWidth + w > width ){
-                return false;
-            }
-        }
         switch(valign){
             case Top: {
                 if( height < h ){
@@ -122,15 +97,16 @@ public class Line {
             }
             case BaseLine: throw new RuntimeException("invalid valign (BaseLine) for addComponent");
         }
-        component.setBounds(left + currentWidth, y, (int)dim.getWidth(), (int)dim.getHeight());
-        currentWidth += w;
-        return true;
+        component.setBounds(left + lineWidth, y, (int)dim.getWidth(), (int)dim.getHeight());
+        items.add(new ComponentItem(w));
+        lineWidth += w;
     }
 
     public void render(Graphics g){
         int x = left;
         for(Item item: items){
-            x = item.render(g, x);
+            item.renderItem(g, x);
+            x += item.getItemWidth();
         }
     }
 
@@ -143,20 +119,20 @@ public class Line {
     }
 
     public boolean containsPoint(int x, int y){
-        return y >= top && y < top + height && x >= left && x < left + width;
+        return y >= top && y < top + height && x >= left && x < left + lineWidth;
     }
 
     public void handleClick(int x, int y){
         int probeX = left;
         for(Item item: items){
-            if( probeX <= x && x < probeX + item.getCharWidth() ) {
+            if( probeX <= x && x < probeX + item.getItemWidth() ) {
                 if (item instanceof LinkItem) {
                     LinkItem linkItem = (LinkItem) item;
                     linkItem.run();
                 }
                 return;
             } else {
-                probeX += item.getCharWidth();
+                probeX += item.getItemWidth();
             }
             if( probeX > x ){
                 return;
@@ -167,10 +143,10 @@ public class Line {
     public boolean isInLink(int x, int y){
         int probeX = left;
         for(Item item: items){
-            if( probeX <= x && x < probeX + item.getCharWidth() ){
+            if( probeX <= x && x < probeX + item.getItemWidth() ){
                 return item instanceof LinkItem;
             } else {
-                probeX += item.getCharWidth();
+                probeX += item.getItemWidth();
             }
             if( probeX > x ){
                 break;
@@ -184,27 +160,28 @@ public class Line {
     }
 
     private interface Item {
-        int render(Graphics g, int x);
-        int getCharWidth();
+        void renderItem(Graphics g, int x);
+        int getItemWidth();
     }
 
-    private class CharItem implements Item {
-        char ch;
-        int charWidth;
-        VAlign valign;
-        int fontHeight;
-        int ascent;
+    private class StringItem implements Item {
 
-        CharItem(char ch, int charWidth, VAlign valign, int fontHeight, int ascent){
-            this.ch = ch;
-            this.charWidth = charWidth;
+        private String text;
+        private int itemWidth;
+        private VAlign valign;
+        private int fontHeight;
+        private int ascent;
+
+        StringItem(String text, int itemWidth, VAlign valign, int fontHeight, int ascent){
+            this.text = text;
+            this.itemWidth = itemWidth;
             this.valign = valign;
             this.fontHeight = fontHeight;
             this.ascent = ascent;
         }
 
         @Override
-        public int render(Graphics g, int x){
+        public void renderItem(Graphics g, int x){
             int y = top;
             switch(valign){
                 case Top: y = top + ascent; break;
@@ -212,36 +189,52 @@ public class Line {
                 case BaseLine: y = top + baseLineOffset; break;
                 case Bottom: y = top + height - fontHeight + ascent; break;
             }
-            g.drawChars(new char[]{ ch }, 0, 1, x, y);
-            return x + charWidth;
+            g.drawString(text, x, y);
         }
 
         @Override
-        public int getCharWidth(){
-            return charWidth;
+        public int getItemWidth(){
+            return itemWidth;
         }
     }
 
-    private class LinkItem extends CharItem {
+    private class LinkItem extends StringItem {
 
         private Runnable callback;
 
-        LinkItem(char ch, int charWidth, VAlign valign, int fontHeight, int ascent, Runnable callback){
-            super(ch, charWidth, valign, fontHeight, ascent);
+        LinkItem(String text, int itemWidth, VAlign valign, int fontHeight, int ascent, Runnable callback){
+            super(text, itemWidth, valign, fontHeight, ascent);
             this.callback = callback;
         }
 
         @Override
-        public int render(Graphics g, int x){
+        public void renderItem(Graphics g, int x){
             Color save = g.getColor();
             g.setColor(Color.BLUE);
-            int ret = super.render(g, x);
+            super.renderItem(g, x);
             g.setColor(save);
-            return ret;
         }
 
         public void run(){
             callback.run();
+        }
+    }
+
+    private class ComponentItem implements Item {
+        private int itemWidth;
+
+        ComponentItem(int itemWidth){
+            this.itemWidth = itemWidth;
+        }
+
+        @Override
+        public void renderItem(Graphics g, int x){
+            // nop
+        }
+
+        @Override
+        public int getItemWidth(){
+            return itemWidth;
         }
     }
 
