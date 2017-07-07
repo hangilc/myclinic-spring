@@ -13,24 +13,14 @@ import java.util.List;
 public class WrappedText extends JPanel {
 
     private int width;
-//    private int ascent;
-//    private int fontSize;
-//    private List<StringItem> stringItems = new ArrayList<>();
-//    private List<LinkItem> linkItems;
-//    private int posX;
-//    private int posY;
-//    private int botY;
     private List<Line> lines = new ArrayList<>();
     private Line currentLine;
+    private boolean inLink;
 
     public WrappedText(int width){
         setLayout(null);
         this.width = width;
         addMouseListener(makeMouseListener());
-//        Font font = getFont();
-//        this.ascent = getFontMetrics(font).getAscent();
-//        this.fontSize = font.getSize();
-//        this.botY = this.fontSize;
     }
 
     public WrappedText(String text, int width){
@@ -116,6 +106,20 @@ public class WrappedText extends JPanel {
                     if( line.containsPoint(x, y) ){
                         line.handleClick(x, y);
                         return;
+                    }
+
+                }
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                Point p = e.getPoint();
+                int x = (int)p.getX();
+                int y = (int)p.getY();
+                for(Line line: lines){
+                    if( line.containsPoint(x, y) ){
+                        boolean nowInLink = line.isInLink(x, y);
+                        break;
                     }
 
                 }

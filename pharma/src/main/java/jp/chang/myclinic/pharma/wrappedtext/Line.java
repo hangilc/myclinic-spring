@@ -149,16 +149,34 @@ public class Line {
     public void handleClick(int x, int y){
         int probeX = left;
         for(Item item: items){
-            if( probeX <= x && x < probeX + item.getCharWidth() ){
-                if( item instanceof LinkItem ){
-                    LinkItem linkItem = (LinkItem)item;
+            if( probeX <= x && x < probeX + item.getCharWidth() ) {
+                if (item instanceof LinkItem) {
+                    LinkItem linkItem = (LinkItem) item;
                     linkItem.run();
                 }
                 return;
             } else {
                 probeX += item.getCharWidth();
             }
+            if( probeX > x ){
+                return;
+            }
          }
+    }
+
+    public boolean isInLink(int x, int y){
+        int probeX = left;
+        for(Item item: items){
+            if( probeX <= x && x < probeX + item.getCharWidth() ){
+                return item instanceof LinkItem;
+            } else {
+                probeX += item.getCharWidth();
+            }
+            if( probeX > x ){
+                break;
+            }
+        }
+        return false;
     }
 
     public enum VAlign {
