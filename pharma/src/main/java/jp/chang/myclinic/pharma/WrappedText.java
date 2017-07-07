@@ -26,6 +26,7 @@ public class WrappedText extends JPanel {
     public WrappedText(int width){
         setLayout(null);
         this.width = width;
+        addMouseListener(makeMouseListener());
 //        Font font = getFont();
 //        this.ascent = getFontMetrics(font).getAscent();
 //        this.fontSize = font.getSize();
@@ -36,41 +37,6 @@ public class WrappedText extends JPanel {
         this(width);
         appendString(text);
     }
-
-//    private List<StringChunk> breakToLines(String text){
-//        List<StringChunk> result = new ArrayList<>();
-//        FontMetrics fm = getFontMetrics(getFont());
-//        StringBuilder sb = new StringBuilder();
-//        int x = posX;
-//        for(char ch: text.toCharArray()){
-//            if( ch == '\n' ){
-//                result.add(new StringChunk(sb.toString(), new Rectangle(posX, posY, x - posX, fontSize)));
-//                sb.setLength(0);
-//                newline();
-//                x = 0;
-//                continue;
-//            }
-//            int cw = fm.charWidth(ch);
-//            if( x > 0 && x + cw > width ){
-//                result.add(new StringChunk(sb.toString(), new Rectangle(posX, posY, x - posX, fontSize)));
-//                sb.setLength(0);
-//                newline();
-//                x = 0;
-//            }
-//            sb.append(ch);
-//            x += cw;
-//        }
-//        if( sb.length() > 0 ){
-//            result.add(new StringChunk(sb.toString(), new Rectangle(posX, posY, x - posX, fontSize)));
-//            posX = x;
-//        }
-//        return result;
-//    }
-
-//    private StringItem stringChunkToStringItem(StringChunk chunk){
-//        Rectangle rect = chunk.rect;
-//        return new StringItem((int)rect.getX(), (int)rect.getY() + ascent, chunk.text);
-//    }
 
     public void appendString(String text){
         if( text.isEmpty() ){
@@ -84,7 +50,29 @@ public class WrappedText extends JPanel {
             char ch = text.charAt(i);
             if( ch == '\n' || !currentLine.addChar(ch, valign, fontMetrics) ){
                 newline();
-                currentLine.addChar(ch, valign, fontMetrics);
+                if( ch != '\n' ) {
+                    currentLine.addChar(ch, valign, fontMetrics);
+                }
+            }
+        }
+        setAllSizes();
+    }
+
+    public void appendLink(String text, Runnable action){
+        if( text.isEmpty() ){
+            return;
+        }
+        Font font = getFont();
+        FontMetrics fontMetrics = getFontMetrics(font);
+        Line.VAlign valign = Line.VAlign.BaseLine;
+        ensureCurrentLine();
+        for(int i=0;i<text.length();i++){
+            char ch = text.charAt(i);
+            if( ch == '\n' || !currentLine.addLink(ch, valign, fontMetrics, action) ){
+                newline();
+                if( ch != '\n' ) {
+                    currentLine.addLink(ch, valign, fontMetrics, action);
+                }
             }
         }
         setAllSizes();
@@ -117,32 +105,20 @@ public class WrappedText extends JPanel {
         setAllSizes();
     }
 
-    public void appendLink(String text, Runnable action){
-//        List<LinkItem> items = breakToLines(text).stream().map(chunk -> {
-//            StringItem stringItem = stringChunkToStringItem(chunk);
-//            return new LinkItem(stringItem, chunk.rect, action);
-//        }).collect(Collectors.toList());
-//        if( items.size() > 0 ){
-//            if( linkItems == null ){
-//                linkItems = new ArrayList<>();
-//                addMouseListener(makeMouseListener());
-//            }
-//            linkItems.addAll(items);
-//        }
-    }
-
     private MouseListener makeMouseListener(){
         return new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e) {
-//                super.mouseClicked(e);
-//                Point p = e.getPoint();
-//                for(LinkItem linkItem: linkItems){
-//                    if( linkItem.contains(p) ){
-//                        linkItem.doAction();
-//                        return;
-//                    }
-//                }
+                Point p = e.getPoint();
+                int x = (int)p.getX();
+                int y = (int)p.getY();
+                for(Line line: lines){
+                    if( line.containsPoint(x, y) ){
+                        line.handleClick(x, y);
+                        return;
+                    }
+
+                }
             }
         };
     }
