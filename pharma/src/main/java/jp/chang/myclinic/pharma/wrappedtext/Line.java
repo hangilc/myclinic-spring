@@ -3,7 +3,6 @@ package jp.chang.myclinic.pharma.wrappedtext;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Line {
@@ -19,6 +18,10 @@ public class Line {
         this.left = left;
         this.top = top;
         this.width = width;
+    }
+
+    public boolean isEmpty(){
+        return currentWidth > 0;
     }
 
     public boolean addChar(char ch, VAlign valign, FontMetrics fontMetrics){
@@ -38,21 +41,25 @@ public class Line {
                 break;
             }
             case BaseLine: {
+                if( height < fontHeight ){
+                    height = fontHeight;
+                }
                 if( baseLineOffset < ascent ){
                     baseLineOffset = ascent;
-                }
-                if( height - baseLineOffset < fontHeight - ascent ){
-                    height = baseLineOffset + (fontHeight - ascent);
                 }
                 break;
             }
         }
         items.add(new CharItem(ch, cw, valign, fontHeight, ascent));
+        currentWidth += cw;
+        return true;
     }
 
     public boolean addComponent(JComponent component, VAlign valign){
-        int w = component.getWidth();
-        int h = component.getHeight();
+        Dimension dim = component.getPreferredSize();
+        int w = (int)dim.getWidth();
+        int h = (int)dim.getHeight();
+        int y = top;
         if( currentWidth > 0 ){
             if( currentWidth + w > width ){
                 return false;
@@ -63,6 +70,7 @@ public class Line {
                 if( height < h ){
                     height = h;
                 }
+                y = top;
                 break;
             }
             case Center: {
@@ -70,6 +78,7 @@ public class Line {
                     baseLineOffset += (h - height) / 2;
                     height = h;
                 }
+                y = top + (height - h)/2;
                 break;
             }
             case Bottom: {
@@ -77,10 +86,14 @@ public class Line {
                     baseLineOffset += h - height;
                     height = h;
                 }
+                y = top + height - h;
                 break;
             }
             case BaseLine: throw new RuntimeException("invalid valign (BaseLine) for addComponent");
         }
+        component.setBounds(left + currentWidth, y, (int)dim.getWidth(), (int)dim.getHeight());
+        currentWidth += w;
+        return true;
     }
 
     public void render(Graphics g){
@@ -88,6 +101,14 @@ public class Line {
         for(Item item: items){
             x = item.render(g, x);
         }
+    }
+
+    public int getTop(){
+        return top;
+    }
+
+    public int getHeight(){
+        return height;
     }
 
     public enum VAlign {
@@ -113,8 +134,8 @@ public class Line {
             this.ascent = ascent;
         }
 
-        int render(Graphics g, int x){
-            int y;
+        public int render(Graphics g, int x){
+            int y = top;
             switch(valign){
                 case Top: y = top + ascent; break;
                 case Center: y = (int)(top + height/2.0 - fontHeight/2.0 + ascent); break;
@@ -126,22 +147,4 @@ public class Line {
         }
     }
 
-    private class ComponentItem implements Item {
-        JComponent component ;
-        VAlign valign;
-
-        ComponentItem(JComponent component, VAlign valign){
-            this.component = component;
-            this.valign = valign;
-        }
-
-        public int render(Graphics g, int x){
-            int h = component.getHeight();
-            switch(valign){
-                case Top: {
-
-                }
-            }
-        }
-    }
 }
