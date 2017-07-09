@@ -1,18 +1,17 @@
 package jp.chang.myclinic.db;
 
-import java.sql.Date;
 import java.io.Serializable;
 import java.util.Objects;
 
 public class IyakuhinMasterId implements Serializable {
 	public Integer iyakuhincode;
-	public Date validFrom;
+	public String validFrom;
 
 	public IyakuhinMasterId(){
 
 	}
 
-	public IyakuhinMasterId(Integer iyakuhincode, Date validFrom){
+	public IyakuhinMasterId(Integer iyakuhincode, String validFrom){
 		this.iyakuhincode = iyakuhincode;
 		this.validFrom = validFrom;
 	}
@@ -21,7 +20,7 @@ public class IyakuhinMasterId implements Serializable {
 		return iyakuhincode;
 	}
 
-	public Date getValidFrom(){
+	public String getValidFrom(){
 		return validFrom;
 	}
 

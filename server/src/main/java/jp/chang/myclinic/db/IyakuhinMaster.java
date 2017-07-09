@@ -1,25 +1,6 @@
 package jp.chang.myclinic.db;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinColumn;
-import javax.persistence.FetchType;
-import javax.persistence.Transient;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.sql.Date;
-
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -39,13 +20,13 @@ public class IyakuhinMaster {
 
 	@Id
 	@Column(name="valid_from")
-	private Date validFrom;
+	private String validFrom;
 
-	public Date getValidFrom(){
+	public String getValidFrom(){
 		return validFrom;
 	}
 
-	public void setValidFrom(Date validFrom){
+	public void setValidFrom(String validFrom){
 		this.validFrom = validFrom;
 	}
 

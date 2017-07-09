@@ -632,6 +632,11 @@ public class DbGateway {
 				.collect(Collectors.toList());
 	}
 
+	public List<IyakuhinMasterDTO> searchIyakuhinByName(String text, LocalDate at){
+		return iyakuhinMasterRepository.searchByName(text, at.toString(), new Sort("yomi")).stream()
+				.map(mapper::toIyakuhinMasterDTO).collect(Collectors.toList());
+	}
+
 	public List<IyakuhincodeNameDTO> listIyakuhinForPatient(int patientId){
 		List<Integer> iyakuhincodes = listIyakuhincodeForPatient(patientId);
 		return findNamesForIyakuhincodes(iyakuhincodes);

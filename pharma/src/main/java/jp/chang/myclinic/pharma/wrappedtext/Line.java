@@ -5,6 +5,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: adjust cursor for link
 public class Line {
     private int left;
     private int contentWidth;

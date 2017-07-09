@@ -63,6 +63,21 @@ public class MainFrame extends JFrame {
 
     private void setupMenu() {
         JMenuBar menuBar = new JMenuBar();
+        JMenu drugInfoMenu = new JMenu("薬剤情報");
+        {
+            JMenuItem item = new JMenuItem("新規作成");
+            drugInfoMenu.add(item);
+            item.addActionListener(event -> {
+                NewDrugInfoDialog dialog = new NewDrugInfoDialog();
+                dialog.setLocationByPlatform(true);
+                dialog.setVisible(true);
+            });
+        }
+        {
+            JMenuItem item = new JMenuItem("表示・編集");
+            drugInfoMenu.add(item);
+        }
+        menuBar.add(drugInfoMenu);
         JMenu settingMenu = new JMenu("設定");
         settingMenu.add(prescPrinterSettingItem);
         settingMenu.add(drugbagPrinterSettingItem);

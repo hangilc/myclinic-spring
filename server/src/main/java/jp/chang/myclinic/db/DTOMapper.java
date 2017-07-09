@@ -301,7 +301,7 @@ public class DTOMapper {
 	public IyakuhinMasterDTO toIyakuhinMasterDTO(IyakuhinMaster master){
 		IyakuhinMasterDTO masterDTO = new IyakuhinMasterDTO();
 		masterDTO.iyakuhincode = master.getIyakuhincode();
-		masterDTO.validFrom = master.getValidFrom().toString();
+		masterDTO.validFrom = master.getValidFrom();
 		masterDTO.name = master.getName();
 		masterDTO.yomi = master.getYomi();
 		masterDTO.unit = master.getUnit();
@@ -316,7 +316,7 @@ public class DTOMapper {
 	public IyakuhinMaster fromIyakuhinMasterDTO(IyakuhinMasterDTO masterDTO){
 		IyakuhinMaster master = new IyakuhinMaster();
 		master.setIyakuhincode(masterDTO.iyakuhincode);
-		master.setValidFrom(stringToDate(masterDTO.validFrom));
+		master.setValidFrom(masterDTO.validFrom);
 		master.setName(masterDTO.name);
 		master.setYomi(masterDTO.yomi);
 		master.setUnit(masterDTO.unit);
