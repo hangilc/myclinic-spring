@@ -87,6 +87,15 @@ public class WrappedText extends JPanel {
         setAllSizes();
     }
 
+    public void appendComponent(JComponent component){
+        if( workingLine.getRemaining() < component.getWidth() ){
+            newline();
+        }
+        workingLine.addComponent(component, Line.VAlign.Center);
+        add(component);
+        setAllSizes();
+    }
+
     private void newline(){
         lines.add(workingLine);
         workingLine = createNextLine();
@@ -113,14 +122,6 @@ public class WrappedText extends JPanel {
 
     private Line createNextLine(){
         return new Line(0, getCurrentHeight(), width);
-    }
-
-    public void appendComponent(JComponent component){
-        if( workingLine.getRemaining() < component.getWidth() ){
-            newline();
-        }
-        workingLine.addComponent(component, Line.VAlign.Center);
-        setAllSizes();
     }
 
     private MouseListener makeMouseListener(){

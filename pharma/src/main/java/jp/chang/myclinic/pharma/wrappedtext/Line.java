@@ -104,6 +104,7 @@ public class Line {
             case BaseLine: throw new RuntimeException("invalid valign (BaseLine) for addComponent");
         }
         component.setBounds(left + contentWidth, y, (int)dim.getWidth(), (int)dim.getHeight());
+        //System.out.println("addComponent: " + component.getBounds());
         items.add(new ComponentItem(w));
         contentWidth += w;
     }

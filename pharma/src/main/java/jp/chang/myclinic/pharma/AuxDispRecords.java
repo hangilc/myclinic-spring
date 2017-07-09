@@ -10,6 +10,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
 
 public class AuxDispRecords extends JPanel {
@@ -19,6 +20,10 @@ public class AuxDispRecords extends JPanel {
     public AuxDispRecords(int width){
         this.width = width;
         setLayout(new MigLayout("insets 0", "[]5[]", ""));
+    }
+
+    public void clear(){
+        showVisits(Collections.emptyList());
     }
 
     public void showVisits(List<Integer> visitIds) {

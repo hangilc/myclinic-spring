@@ -273,7 +273,9 @@ public class MainFrame extends JFrame {
                         return Service.api.listVisitIdVisitedAtForPatient(patientId);
                     })
                     .thenAccept(visits -> {
-                        updatePrevTechou(storage.patient, visits.subList(0, 20));
+                        EventQueue.invokeLater(() -> {
+                            updatePrevTechou(storage.patient, visits.subList(0, 20));
+                        });
                     })
                     .exceptionally(t -> {
                         t.printStackTrace();

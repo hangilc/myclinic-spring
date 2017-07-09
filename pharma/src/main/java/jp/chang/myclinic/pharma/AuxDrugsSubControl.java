@@ -77,6 +77,7 @@ public class AuxDrugsSubControl extends JPanel {
         JButton backToListButton = new JButton("薬剤一覧にもどえる");
         backToListButton.addActionListener((event -> {
             setNavAreaContent(drugListPane);
+            dispRecords.clear();
         }));
         panel.add(backToListButton);
         recNav.updateVisits();
