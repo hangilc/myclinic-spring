@@ -5,6 +5,7 @@ import jp.chang.myclinic.drawer.printer.manage.SettingChooserDialog;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import jp.chang.myclinic.dto.VisitIdVisitedAtDTO;
+import jp.chang.myclinic.pharma.wrappedtext.WrappedText;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;

@@ -1,6 +1,4 @@
-package jp.chang.myclinic.pharma;
-
-import jp.chang.myclinic.pharma.wrappedtext.Line;
+package jp.chang.myclinic.pharma.wrappedtext;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,18 +7,20 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class WrappedText extends JPanel {
 
     private int width;
     private List<Line> lines = new ArrayList<>();
-    private Line currentLine;
+    private Line workingLine;
+    private boolean mouseListenerAdded;
     private boolean inLink;
 
     public WrappedText(int width){
         setLayout(null);
         this.width = width;
-        addMouseListener(makeMouseListener());
+        workingLine = createNextLine();
     }
 
     public WrappedText(String text, int width){
@@ -28,56 +28,87 @@ public class WrappedText extends JPanel {
         appendString(text);
     }
 
-    public void appendString(String text){
-        if( text.isEmpty() ){
-            return;
-        }
-        Font font = getFont();
+    private interface AppendCharSeqCallback {
+        void add(String text, int width, Line.VAlign align, int fontHeight, int ascent);
+    }
+
+    private void appendCharSeq(CharSequence seq, Font font, Line.VAlign valign, AppendCharSeqCallback callback){
         FontMetrics fontMetrics = getFontMetrics(font);
-        Line.VAlign valign = Line.VAlign.BaseLine;
-        ensureCurrentLine();
-        for(int i=0;i<text.length();i++){
-            char ch = text.charAt(i);
-            if( ch == '\n' || !currentLine.addChar(ch, valign, fontMetrics) ){
+        int fontHeight = fontMetrics.getHeight();
+        int ascent = fontMetrics.getAscent();
+        StringBuilder sb = new StringBuilder();
+        int remaining = workingLine.getRemaining();
+        int chunkWidth = 0;
+        for(int i=0;i<seq.length();i++){
+            char ch = seq.charAt(i);
+            if( ch == '\n' ){
+                callback.add(sb.toString(), chunkWidth, valign, fontHeight, ascent);
                 newline();
-                if( ch != '\n' ) {
-                    currentLine.addChar(ch, valign, fontMetrics);
-                }
+                sb = new StringBuilder();
+                remaining = workingLine.getRemaining();
+                chunkWidth = 0;
+                continue;
             }
+            int cw = fontMetrics.charWidth(ch);
+            if( remaining < chunkWidth + cw && !(workingLine.isEmpty() && i == 0) ){
+                callback.add(sb.toString(), chunkWidth, valign, fontHeight, ascent);
+                newline();
+                sb = new StringBuilder();
+                remaining = workingLine.getRemaining();
+                chunkWidth = 0;
+            }
+            sb.append(ch);
+            chunkWidth += cw;
         }
+        if( sb.length() > 0 ){
+            callback.add(sb.toString(), chunkWidth, valign, fontHeight, ascent);
+        }
+    }
+
+    public void appendString(String text){
+        Font font = getFont();
+        appendCharSeq(text, font, Line.VAlign.BaseLine, (String chunk, int width, Line.VAlign valign, int fontHeight, int ascent) -> {
+            //System.out.printf("appendString: %d %s\n", width, chunk);
+            workingLine.addString(chunk, width, valign, fontHeight, ascent);
+        });
         setAllSizes();
     }
 
     public void appendLink(String text, Runnable action){
-        if( text.isEmpty() ){
-            return;
-        }
         Font font = getFont();
-        FontMetrics fontMetrics = getFontMetrics(font);
-        Line.VAlign valign = Line.VAlign.BaseLine;
-        ensureCurrentLine();
-        for(int i=0;i<text.length();i++){
-            char ch = text.charAt(i);
-            if( ch == '\n' || !currentLine.addLink(ch, valign, fontMetrics, action) ){
-                newline();
-                if( ch != '\n' ) {
-                    currentLine.addLink(ch, valign, fontMetrics, action);
-                }
-            }
+        appendCharSeq(text, font, Line.VAlign.BaseLine, (String chunk, int width, Line.VAlign valign, int fontHeight, int ascent) -> {
+            //System.out.printf("appendString: %s\n", chunk);
+            workingLine.addLink(chunk, width, valign, fontHeight, ascent, action);
+        });
+        if( !mouseListenerAdded ){
+            addMouseListener(makeMouseListener());
+            mouseListenerAdded = true;
         }
         setAllSizes();
     }
 
-    private void ensureCurrentLine(){
-        if( currentLine == null ){
-            currentLine = createNextLine();
-            lines.add(currentLine);
+    private void newline(){
+        lines.add(workingLine);
+        workingLine = createNextLine();
+    }
+
+    private Optional<Line> getLastLine(){
+        if( workingLine == null ){
+            return Optional.empty();
+        }
+        if( !workingLine.isEmpty() ){
+            return Optional.of(workingLine);
+        } else {
+            if( lines.size() > 0 ){
+                return Optional.of(lines.get(lines.size() - 1));
+            } else {
+                return Optional.empty();
+            }
         }
     }
 
-    private void newline(){
-        currentLine = createNextLine();
-        lines.add(currentLine);
+    private int getCurrentHeight(){
+        return getLastLine().map(line -> line.getTop() + line.getHeight()).orElse(0);
     }
 
     private Line createNextLine(){
@@ -85,13 +116,10 @@ public class WrappedText extends JPanel {
     }
 
     public void appendComponent(JComponent component){
-        ensureCurrentLine();
-        Line.VAlign valign = Line.VAlign.Center;
-        if( !currentLine.addComponent(component, valign) ){
+        if( workingLine.getRemaining() < component.getWidth() ){
             newline();
-            currentLine.addComponent(component, valign);
         }
-        add(component);
+        workingLine.addComponent(component, Line.VAlign.Center);
         setAllSizes();
     }
 
@@ -107,7 +135,10 @@ public class WrappedText extends JPanel {
                         line.handleClick(x, y);
                         return;
                     }
-
+                }
+                if( workingLine.containsPoint(x, y) ){
+                    workingLine.handleClick(x, y);
+                    return;
                 }
             }
 
@@ -121,7 +152,10 @@ public class WrappedText extends JPanel {
                         boolean nowInLink = line.isInLink(x, y);
                         break;
                     }
-
+                }
+                if( workingLine.containsPoint(x, y) ){
+                    boolean nowInLink = workingLine.isInLink(x, y);
+                    return;
                 }
             }
         };
@@ -134,20 +168,14 @@ public class WrappedText extends JPanel {
         setMaximumSize(size);
     }
 
-    private int getCurrentHeight(){
-        if( lines.size() > 0 ){
-            Line lastLine = lines.get(lines.size() - 1);
-            return lastLine.getTop() + lastLine.getHeight();
-        } else {
-            return 0;
-        }
-    }
-
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         for(Line line: lines){
             line.render(g);
+        }
+        if( !workingLine.isEmpty() ){
+            workingLine.render(g);
         }
         paintComponents(g);
     }

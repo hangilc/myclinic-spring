@@ -7,19 +7,25 @@ import java.util.List;
 
 public class Line {
     private int left;
-    private int lineWidth;
+    private int contentWidth;
+    private int width;
     private int top;
     private int height;
     private int baseLineOffset;
     private List<Item> items = new ArrayList<>();
 
-    public Line(int left, int top){
+    public Line(int left, int top, int width){
         this.left = left;
         this.top = top;
+        this.width = width;
     }
 
     public boolean isEmpty(){
         return  items.size() == 0;
+    }
+
+    public int getRemaining(){
+        return width - contentWidth;
     }
 
     public void addString(String text, int width, VAlign valign, int fontHeight, int ascent){
@@ -41,7 +47,7 @@ public class Line {
             }
         }
         items.add(new StringItem(text, width, valign, fontHeight, ascent));
-        lineWidth += width;
+        contentWidth += width;
     }
 
     public void addLink(String text, int width, VAlign valign, int fontHeight, int ascent, Runnable action){
@@ -63,7 +69,7 @@ public class Line {
             }
         }
         items.add(new LinkItem(text, width, valign, fontHeight, ascent, action));
-        lineWidth += width;
+        contentWidth += width;
     }
 
     public void addComponent(JComponent component, VAlign valign){
@@ -97,9 +103,9 @@ public class Line {
             }
             case BaseLine: throw new RuntimeException("invalid valign (BaseLine) for addComponent");
         }
-        component.setBounds(left + lineWidth, y, (int)dim.getWidth(), (int)dim.getHeight());
+        component.setBounds(left + contentWidth, y, (int)dim.getWidth(), (int)dim.getHeight());
         items.add(new ComponentItem(w));
-        lineWidth += w;
+        contentWidth += w;
     }
 
     public void render(Graphics g){
@@ -119,7 +125,7 @@ public class Line {
     }
 
     public boolean containsPoint(int x, int y){
-        return y >= top && y < top + height && x >= left && x < left + lineWidth;
+        return y >= top && y < top + height && x >= left && x < left + contentWidth;
     }
 
     public void handleClick(int x, int y){

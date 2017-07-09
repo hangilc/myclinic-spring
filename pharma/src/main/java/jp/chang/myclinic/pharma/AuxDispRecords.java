@@ -3,6 +3,7 @@ package jp.chang.myclinic.pharma;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitTextDrugDTO;
+import jp.chang.myclinic.pharma.wrappedtext.WrappedText;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DrugUtil;
 import net.miginfocom.swing.MigLayout;
