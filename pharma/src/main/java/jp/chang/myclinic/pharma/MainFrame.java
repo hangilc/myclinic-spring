@@ -32,6 +32,7 @@ public class MainFrame extends JFrame {
     private JMenuItem drugbagPrinterSettingItem = new JMenuItem("薬袋印刷設定");
     private JMenuItem techouPrinterSettingItem = new JMenuItem("お薬手帳印刷設定");
     private JMenuItem printManageItem = new JMenuItem("印刷管理");
+    private JScrollPane rightScroll;
     private static Icon waitCashierIcon;
     private static Icon waitDrugIcon;
 
@@ -145,11 +146,11 @@ public class MainFrame extends JFrame {
             panel.add(control, "growx, wrap");
         }
         panel.add(dispRecords, "grow");
-        JScrollPane sp = new JScrollPane(panel);
-        sp.setBorder(null);
-        sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        sp.getVerticalScrollBar().setUnitIncrement(12);
-        return sp;
+        rightScroll = new JScrollPane(panel);
+        rightScroll.setBorder(null);
+        rightScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        rightScroll.getVerticalScrollBar().setUnitIncrement(12);
+        return rightScroll;
     }
 
     private JComponent makeWorkarea(){
@@ -234,6 +235,7 @@ public class MainFrame extends JFrame {
                     EventQueue.invokeLater(() -> {
                         workarea.update(pharmaQueueFull.patient, drugs);
                         auxControl.update(pharmaQueueFull.patient);
+                        rightScroll.getVerticalScrollBar().setValue(0);
                     });
                 })
                 .exceptionally(t -> null);
