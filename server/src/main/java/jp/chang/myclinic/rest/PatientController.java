@@ -1,21 +1,16 @@
 package jp.chang.myclinic.rest;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.transaction.annotation.Transactional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import jp.chang.myclinic.db.DbGateway;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.dto.HokenListDTO;
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.PatientHokenListDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/json")
@@ -28,6 +23,11 @@ public class PatientController {
 	@RequestMapping(value="/get-patient", method=RequestMethod.GET)
 	public PatientDTO getPatient(@RequestParam("patient-id") int patientId){
 		return dbGateway.getPatient(patientId);
+	}
+
+	@RequestMapping(value="/find-patient", method=RequestMethod.GET)
+	public Optional<PatientDTO> findPatient(@RequestParam("patient-id") int patientId){
+		return dbGateway.findPatient(patientId);
 	}
 
 	@RequestMapping(value="/enter-patient", method=RequestMethod.POST)

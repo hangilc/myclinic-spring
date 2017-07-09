@@ -92,6 +92,10 @@ public class DbGateway {
 		return mapper.toPatientDTO(patient);
 	}
 
+	public Optional<PatientDTO> findPatient(int patientId){
+		return patientRepository.tryFind(patientId).map(mapper::toPatientDTO);
+	}
+
 	public int enterPatient(PatientDTO patientDTO){
 		Patient patient = mapper.fromPatientDTO(patientDTO);
 		patient = patientRepository.save(patient);

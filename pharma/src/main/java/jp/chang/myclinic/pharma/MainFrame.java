@@ -4,8 +4,6 @@ import jp.chang.myclinic.drawer.printer.manage.PrinterManageDialog;
 import jp.chang.myclinic.drawer.printer.manage.SettingChooserDialog;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
-import jp.chang.myclinic.dto.VisitIdVisitedAtDTO;
-import jp.chang.myclinic.pharma.wrappedtext.WrappedText;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;
@@ -14,6 +12,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 public class MainFrame extends JFrame {
 
@@ -47,7 +46,7 @@ public class MainFrame extends JFrame {
             throw new RuntimeException("failed to load icons");
         }
         setupMenu();
-        setLayout(new MigLayout("fill", "[260px!]5px![360px!]", "[400px]"));
+        setLayout(new MigLayout("fill", "[260px!]5px![360px!]", "[460px]"));
         add(makeLeft(), "growx, top");
         add(makeRight(), "grow, top");
         add(makeSouth(), "dock south, right");
@@ -265,41 +264,59 @@ public class MainFrame extends JFrame {
         printerManageDialog.setVisible(true);
     }
 
+    private class AlertException extends RuntimeException {
+        private String message;
+
+        AlertException(String message){
+            this.message = message;
+        }
+
+        @Override
+        public String toString(){
+            return message;
+        }
+    }
+
     private void doSearchPrevTechou(){
         try {
             int patientId = Integer.parseInt(prevTechouSearchField.getText());
             PrevTechouStorage storage = new PrevTechouStorage();
-            Service.api.getPatient(patientId)
+            Cursor origCursor = getCursor();
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            Service.api.findPatient(patientId)
                     .thenCompose(patient -> {
-                        storage.patient = patient;
-                        return Service.api.listVisitIdVisitedAtForPatient(patientId);
+                        if( patient != null ){
+                            storage.patient = patient;
+                            return Service.api.listVisitIdVisitedAtForPatient(patientId);
+                        } else {
+                            throw new AlertException("該当患者が見つかりません。");
+                        }
                     })
                     .thenAccept(visits -> {
                         EventQueue.invokeLater(() -> {
-                            updatePrevTechou(storage.patient, visits.subList(0, 20));
+                            setCursor(origCursor);
+                            prevTechouSearchField.setText("");
+                            PrevTechouDialog dialog = new PrevTechouDialog(storage.patient, visits.subList(0, Math.min(20, visits.size())));
+                            dialog.setLocationByPlatform(true);
+                            dialog.setVisible(true);
                         });
                     })
                     .exceptionally(t -> {
                         t.printStackTrace();
-                        alert(t.toString());
+                        EventQueue.invokeLater(() -> {
+                            setCursor(origCursor);
+                            String message = t.toString();
+                            if( t instanceof CompletionException ){
+                                message = t.getCause().toString();
+                            }
+                            alert(message);
+                        });
                         return null;
                     });
         } catch(NumberFormatException ex){
             alert("患者番号の入力が不適切です。");
             return;
         }
-     }
-
-     private void updatePrevTechou(PatientDTO patient, List<VisitIdVisitedAtDTO> visits){
-        JPanel panel = searchPrevTechouResult;
-        panel.removeAll();
-        WrappedText patientNameText = new WrappedText(patient.lastName + patient.firstName, 260);
-        patientNameText.appendString(" ");
-        JButton toListButton = new JButton("終了");
-        patientNameText.appendComponent(toListButton);
-        panel.add(patientNameText, "wrap");
-        panel.repaint();
-        panel.revalidate();
      }
 
     private static class PrevTechouStorage {

@@ -54,6 +54,9 @@ class Service {
         @GET("get-patient")
         CompletableFuture<PatientDTO> getPatient(@Query("patient-id") int patientId);
 
+        @GET("find-patient")
+        CompletableFuture<PatientDTO> findPatient(@Query("patient-id") int patientId);
+
 //        @GET("list-wqueue-full")
 //        CompletableFuture<List<WqueueFullDTO>> listWqueue();
 //

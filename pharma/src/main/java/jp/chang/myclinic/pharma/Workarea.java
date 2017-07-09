@@ -279,30 +279,6 @@ public class Workarea extends JPanel {
                     alert(t.toString());
                     return null;
                 });
-        /*
-        Service.api.getClinicInfo()
-                .thenAccept(clinicInfo -> {
-                    LocalDate prescDate = LocalDate.now();
-                    TechouDataCreator creator = new TechouDataCreator(patient, prescDate, drugs, clinicInfo);
-                    TechouDrawerData data = creator.createData();
-                    TechouDrawer drawer = new TechouDrawer(data);
-                    List<Op> ops = drawer.getOps();
-                    EventQueue.invokeLater(() -> {
-                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "お薬手帳印刷プレビュー", false);
-                        previewDialog.setImageSize(drawer.getPageWidth(), drawer.getPageHeight());
-                        previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getTechouPrinterSetting());
-                        previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getDrugbagPrinterSetting());
-                        previewDialog.setLocationByPlatform(true);
-                        previewDialog.render(ops);
-                        previewDialog.setVisible(true);
-                    });
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    alert(t.toString());
-                    return null;
-                });
-                */
     }
 
     private void printAll(boolean includeTechou){
