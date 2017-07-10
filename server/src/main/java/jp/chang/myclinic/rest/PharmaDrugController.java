@@ -4,10 +4,7 @@ import jp.chang.myclinic.db.DbGateway;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +30,24 @@ public class PharmaDrugController {
     @RequestMapping(value="/collect-pharma-drug-by-iyakuhincodes", method=RequestMethod.GET)
     public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(@RequestParam("iyakuhincode[]") List<Integer> iyakuhincodes){
         return dbGateway.collectPharmaDrugByIyakuhincodes(iyakuhincodes);
+    }
+
+    @RequestMapping(value="/enter-pharma-drug", method=RequestMethod.POST)
+    public boolean enterPharmaDrug(@RequestBody PharmaDrugDTO pharmaDrugDTO){
+        dbGateway.enterPharmaDrug(pharmaDrugDTO);
+        return true;
+    }
+
+    @RequestMapping(value="/update-pharma-drug", method=RequestMethod.POST)
+    public boolean updatePharmaDrug(@RequestBody PharmaDrugDTO pharmaDrugDTO){
+        dbGateway.updatePharmaDrug(pharmaDrugDTO);
+        return true;
+    }
+
+    @RequestMapping(value="/delete-pharma-drug", method=RequestMethod.POST)
+    public boolean deletePharmaDrug(@RequestParam("iyakuhincode") int iyakuhincode){
+        dbGateway.deletePharmaDrug(iyakuhincode);
+        return true;
     }
 
 }

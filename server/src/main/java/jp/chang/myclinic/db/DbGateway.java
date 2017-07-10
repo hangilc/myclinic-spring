@@ -601,6 +601,20 @@ public class DbGateway {
 		}
 	}
 
+	public void enterPharmaDrug(PharmaDrugDTO pharmaDrugDTO){
+	    PharmaDrug pharmaDrug = mapper.fromPharmaDrugDTO(pharmaDrugDTO);
+	    pharmaDrugRepository.save(pharmaDrug);
+    }
+
+	public void updatePharmaDrug(PharmaDrugDTO pharmaDrugDTO){
+	    PharmaDrug pharmaDrug = mapper.fromPharmaDrugDTO(pharmaDrugDTO);
+	    pharmaDrugRepository.save(pharmaDrug);
+    }
+
+    public void deletePharmaDrug(int iyakuhincode){
+	    pharmaDrugRepository.delete(iyakuhincode);
+    }
+
 	public List<VisitTextDrugDTO> listVisitTextDrug(List<Integer> visitIds){
 		if( visitIds.size() == 0 ){
 			return Collections.emptyList();
