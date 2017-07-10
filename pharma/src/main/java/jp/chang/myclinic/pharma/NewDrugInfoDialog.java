@@ -75,7 +75,42 @@ public class NewDrugInfoDialog extends JDialog {
     }
 
     private void doTransitToEdit(IyakuhinMasterDTO master){
-        removeAll();
+        Service.api.findPharmaDrug(master.iyakuhincode)
+                .thenAccept(pharma -> {
+                    if( pharma == null ){
+                        doOpenEditor(master);
+                    } else {
+                        EventQueue.invokeLater(() -> {
+                            String msg = master.name + "はすでに登録されています。\n内容を表示しますか？";
+                            int choice = JOptionPane.showConfirmDialog(this, msg, "オプションの選択",
+                                    JOptionPane.OK_CANCEL_OPTION);
+                            if( choice == JOptionPane.OK_OPTION ){
+                                // TODO: open pharma drug editor
+                            }
+                        });
+                    }
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
+    private void doOpenEditor(IyakuhinMasterDTO master){
+        getContentPane().removeAll();
+        setLayout(new MigLayout("", "", ""));
+        add(new JLabel(master.name), "wrap");
+        add(new JLabel("説明"), "wrap");
+        JTextArea descInput = new JTextArea(6, 30);
+        add(descInput, "wrap");
+        add(new JLabel("副作用"), "wrap");
+        JTextArea sideeffectInput = new JTextArea(6, 30);
+        add(sideeffectInput, "wrap");
+        JButton enterButton = new JButton("入力");
+        add(enterButton);
         repaint();
         revalidate();
         pack();

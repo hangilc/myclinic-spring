@@ -583,9 +583,13 @@ public class DbGateway {
 				.collect(Collectors.toList());
 	}
 
-	public PharmaDrugDTO findPharmaDrugByIyakuhincode(int iyakuhincode){
-		return pharmaDrugRepository.findByIyakuhincode(iyakuhincode)
-				.map(mapper::toPharmaDrugDTO).orElse(null);
+	public PharmaDrugDTO getPharmaDrugByIyakuhincode(int iyakuhincode){
+		return mapper.toPharmaDrugDTO(pharmaDrugRepository.findByIyakuhincode(iyakuhincode));
+	}
+
+	public Optional<PharmaDrugDTO> findPharmaDrugByIyakuhincode(int iyakuhincode){
+		return pharmaDrugRepository.tryFindByIyakuhincode(iyakuhincode)
+				.map(mapper::toPharmaDrugDTO);
 	}
 
 	public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(List<Integer> iyakuhincodes){

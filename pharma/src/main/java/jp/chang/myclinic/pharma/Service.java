@@ -32,6 +32,9 @@ class Service {
         @GET("get-pharma-drug")
         CompletableFuture<PharmaDrugDTO> getPharmaDrug(@Query("iyakuhincode") int iyakuhincode);
 
+        @GET("find-pharma-drug")
+        CompletableFuture<PharmaDrugDTO> findPharmaDrug(@Query("iyakuhincode") int iyakuhincode);
+
         @GET("get-clinic-info")
         CompletableFuture<ClinicInfoDTO> getClinicInfo();
 

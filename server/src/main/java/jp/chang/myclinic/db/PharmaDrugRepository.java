@@ -12,7 +12,10 @@ import java.util.Optional;
  */
 public interface PharmaDrugRepository extends CrudRepository<PharmaDrug, Integer> {
 
-    Optional<PharmaDrug> findByIyakuhincode(int iyakuhincode);
+    PharmaDrug findByIyakuhincode(int iyakuhincode);
+
+    @Query("select p from PharmaDrug p where p.iyakuhincode = :iyakuhincode")
+    Optional<PharmaDrug> tryFindByIyakuhincode(@Param("iyakuhincode") int iyakuhincode);
 
     @Query("select p from PharmaDrug p where p.iyakuhincode in :iyakuhincodes")
     List<PharmaDrug> collectByIyakuhincodes(@Param("iyakuhincodes") List<Integer> iyakuhincodes);

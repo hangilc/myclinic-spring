@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/json")
@@ -19,8 +20,13 @@ public class PharmaDrugController {
     @Autowired
     private DbGateway dbGateway;
 
-    @RequestMapping(value="/get-pharma-drug", method= RequestMethod.GET)
+    @RequestMapping(value="/get-pharma-drug")
     public PharmaDrugDTO getPharmaDrug(@RequestParam("iyakuhincode") int iyakuhincode){
+        return dbGateway.getPharmaDrugByIyakuhincode(iyakuhincode);
+    }
+
+    @RequestMapping(value="/find-pharma-drug", method= RequestMethod.GET)
+    public Optional<PharmaDrugDTO> findPharmaDrug(@RequestParam("iyakuhincode") int iyakuhincode){
         return dbGateway.findPharmaDrugByIyakuhincode(iyakuhincode);
     }
 
