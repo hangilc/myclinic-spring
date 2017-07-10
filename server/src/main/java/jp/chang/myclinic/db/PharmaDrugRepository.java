@@ -19,4 +19,6 @@ public interface PharmaDrugRepository extends CrudRepository<PharmaDrug, Integer
 
     @Query("select p from PharmaDrug p where p.iyakuhincode in :iyakuhincodes")
     List<PharmaDrug> collectByIyakuhincodes(@Param("iyakuhincodes") List<Integer> iyakuhincodes);
+
+
 }

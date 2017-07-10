@@ -7,14 +7,13 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
-import java.util.List;
 
-public class NewDrugInfoDialog extends JDialog {
+public class EditDrugInfoDialog extends JDialog {
 
     private JList<IyakuhinMasterDTO> searchResultList;
 
-    NewDrugInfoDialog(){
-        setTitle("新規薬剤情報入力");
+    EditDrugInfoDialog(){
+        setTitle("薬剤情報の表示・編集");
         setLayout(new MigLayout("", "", ""));
         add(new JLabel("薬剤検索"), "wrap");
         JTextField searchTextField = new JTextField(12);

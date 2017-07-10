@@ -12,7 +12,9 @@ import jp.chang.myclinic.dto.*;
 import retrofit2.Retrofit;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 import java.util.List;
@@ -34,6 +36,9 @@ class Service {
 
         @GET("find-pharma-drug")
         CompletableFuture<PharmaDrugDTO> findPharmaDrug(@Query("iyakuhincode") int iyakuhincode);
+
+        @POST("enter-pharma-drug")
+        CompletableFuture<Boolean> enterPharmaDrug(@Body PharmaDrugDTO pharmaDrugDTO);
 
         @GET("get-clinic-info")
         CompletableFuture<ClinicInfoDTO> getClinicInfo();
