@@ -109,6 +109,7 @@ public class NewDrugInfoDialog extends JDialog {
         JButton enterButton = new JButton("入力");
         enterButton.addActionListener(event -> {
             PharmaDrugDTO pharmaDrug = new PharmaDrugDTO();
+            pharmaDrug.iyakuhincode = master.iyakuhincode;
             pharmaDrug.description = editor.getDescription();
             pharmaDrug.sideeffect = editor.getSideEffect();
             Service.api.enterPharmaDrug(pharmaDrug)

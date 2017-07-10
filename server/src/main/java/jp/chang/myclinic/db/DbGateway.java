@@ -603,6 +603,7 @@ public class DbGateway {
 
 	public void enterPharmaDrug(PharmaDrugDTO pharmaDrugDTO){
 	    PharmaDrug pharmaDrug = mapper.fromPharmaDrugDTO(pharmaDrugDTO);
+	    System.out.println("pharmaDrug: " + pharmaDrug);
 	    pharmaDrugRepository.save(pharmaDrug);
     }
 

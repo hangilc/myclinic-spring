@@ -7,6 +7,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.util.List;
 
 public class EditDrugInfoDialog extends JDialog {
 
@@ -108,8 +109,10 @@ public class EditDrugInfoDialog extends JDialog {
         JButton enterButton = new JButton("入力");
         enterButton.addActionListener(event -> {
             PharmaDrugDTO pharmaDrug = new PharmaDrugDTO();
+            pharmaDrug.iyakuhincode = master.iyakuhincode;
             pharmaDrug.description = editor.getDescription();
             pharmaDrug.sideeffect = editor.getSideEffect();
+            System.out.println("pharmaDrugDTO (2): " + pharmaDrug);
             Service.api.enterPharmaDrug(pharmaDrug)
                     .thenAccept(result -> {
                         EventQueue.invokeLater(() -> {
