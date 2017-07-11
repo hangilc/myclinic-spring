@@ -14,10 +14,14 @@ public class PharmaDrugEditor extends JPanel {
         setLayout(new MigLayout("insets 0", "", ""));
         add(new JLabel("説明"), "wrap");
         descInput = new JTextArea(6, 30);
-        add(descInput, "wrap");
+        JScrollPane descScroll = new JScrollPane(descInput);
+        add(descScroll, "wrap");
         add(new JLabel("副作用"), "wrap");
         sideeffectInput = new JTextArea(6, 30);
-        add(sideeffectInput);
+        JScrollPane sideeffectScroll = new JScrollPane(sideeffectInput);
+        add(sideeffectScroll);
+        descInput.setLineWrap(true);
+        sideeffectInput.setLineWrap(true);
         descInput.setText(description);
         sideeffectInput.setText(sideeffect);
     }

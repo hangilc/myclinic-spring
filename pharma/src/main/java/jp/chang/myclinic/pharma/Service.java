@@ -40,6 +40,9 @@ class Service {
         @POST("enter-pharma-drug")
         CompletableFuture<Boolean> enterPharmaDrug(@Body PharmaDrugDTO pharmaDrugDTO);
 
+        @POST("update-pharma-drug")
+        CompletableFuture<Boolean> updatePharmaDrug(@Body PharmaDrugDTO pharmaDrugDTO);
+
         @GET("get-clinic-info")
         CompletableFuture<ClinicInfoDTO> getClinicInfo();
 
