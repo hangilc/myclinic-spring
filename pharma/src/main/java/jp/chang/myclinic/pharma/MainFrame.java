@@ -82,6 +82,15 @@ public class MainFrame extends JFrame {
                 dialog.setVisible(true);
             });
         }
+        {
+            JMenuItem item = new JMenuItem("一覧");
+            drugInfoMenu.add(item);
+            item.addActionListener(event -> {
+                ListAllPharmaDrugDialog dialog = new ListAllPharmaDrugDialog();
+                dialog.setLocationByPlatform(true);
+                dialog.setVisible(true);
+            });
+        }
         menuBar.add(drugInfoMenu);
         JMenu settingMenu = new JMenu("設定");
         settingMenu.add(prescPrinterSettingItem);

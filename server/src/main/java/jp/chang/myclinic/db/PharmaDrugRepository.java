@@ -24,4 +24,6 @@ public interface PharmaDrugRepository extends CrudRepository<PharmaDrug, Integer
             " p.iyakuhincode = m.iyakuhincode and m.name like CONCAT('%', :text, '%') " +
             " group by m.iyakuhincode, m.name ")
     List<Object[]> searchNames(@Param("text") String text);
+
+    List<Object[]> findAllPharmaDrugNames();
 }
