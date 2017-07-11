@@ -76,6 +76,11 @@ public class MainFrame extends JFrame {
         {
             JMenuItem item = new JMenuItem("表示・編集");
             drugInfoMenu.add(item);
+            item.addActionListener(event -> {
+                EditDrugInfoDialog dialog = new EditDrugInfoDialog();
+                dialog.setLocationByPlatform(true);
+                dialog.setVisible(true);
+            });
         }
         menuBar.add(drugInfoMenu);
         JMenu settingMenu = new JMenu("設定");

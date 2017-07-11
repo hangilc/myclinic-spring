@@ -35,14 +35,14 @@ public class EditDrugInfoDialog extends JDialog {
                                 add(sp, "newline, span, growx, w n:n:300, h n:n:360, wrap");
                                 JButton startButton = new JButton("作成");
                                 startButton.addActionListener(ev -> {
-                                    IyakuhinMasterDTO selectedMaster = searchResultList.getSelectedValue();
-                                    if( selectedMaster != null ){
-                                        doTransitToEdit(selectedMaster);
-                                    }
+//                                    IyakuhinMasterDTO selectedMaster = searchResultList.getSelectedValue();
+//                                    if( selectedMaster != null ){
+//                                        doTransitToEdit(selectedMaster);
+//                                    }
                                 });
                                 add(startButton);
                             } else {
-                                searchResultList.setListData(masters.toArray(new IyakuhinMasterDTO[]{}));
+                                searchResultList.setListData(result.toArray(new PharmaDrugNameDTO[]{}));
                             }
                             searchResultList.repaint();
                             searchResultList.revalidate();
@@ -60,10 +60,10 @@ public class EditDrugInfoDialog extends JDialog {
         pack();
     }
 
-    private JList<PharmaDrugNameDTO> makeSearchResultList(List<PharmaDrugNameDTO> masters){
+    private JList<PharmaDrugNameDTO> makeSearchResultList(List<PharmaDrugNameDTO> dataList){
         JList<PharmaDrugNameDTO> result = new JList<>();
-        result.setCellRenderer((list, master, index, isSelected, cellHasFocus) -> {
-            JLabel comp = new JLabel(master.name);
+        result.setCellRenderer((list, data, index, isSelected, cellHasFocus) -> {
+            JLabel comp = new JLabel(data.name);
             if( isSelected ){
                 comp.setBackground(list.getSelectionBackground());
                 comp.setForeground(list.getSelectionForeground());
@@ -71,33 +71,33 @@ public class EditDrugInfoDialog extends JDialog {
             }
             return comp;
         });
-        result.setListData(masters.toArray(new IyakuhinMasterDTO[]{}));
+        result.setListData(dataList.toArray(new PharmaDrugNameDTO[]{}));
         return result;
     }
 
     private void doTransitToEdit(PharmaDrugNameDTO data){
-        Service.api.findPharmaDrug(master.iyakuhincode)
-                .thenAccept(pharma -> {
-                    if( pharma == null ){
-                        doOpenEditor(master);
-                    } else {
-                        EventQueue.invokeLater(() -> {
-                            String msg = master.name + "はすでに登録されています。\n内容を表示しますか？";
-                            int choice = JOptionPane.showConfirmDialog(this, msg, "オプションの選択",
-                                    JOptionPane.OK_CANCEL_OPTION);
-                            if( choice == JOptionPane.OK_OPTION ){
-                                // TODO: open pharma drug editor
-                            }
-                        });
-                    }
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    EventQueue.invokeLater(() -> {
-                        alert(t.toString());
-                    });
-                    return null;
-                });
+//        Service.api.findPharmaDrug(master.iyakuhincode)
+//                .thenAccept(pharma -> {
+//                    if( pharma == null ){
+//                        doOpenEditor(master);
+//                    } else {
+//                        EventQueue.invokeLater(() -> {
+//                            String msg = master.name + "はすでに登録されています。\n内容を表示しますか？";
+//                            int choice = JOptionPane.showConfirmDialog(this, msg, "オプションの選択",
+//                                    JOptionPane.OK_CANCEL_OPTION);
+//                            if( choice == JOptionPane.OK_OPTION ){
+//                                // TODO: open pharma drug editor
+//                            }
+//                        });
+//                    }
+//                })
+//                .exceptionally(t -> {
+//                    t.printStackTrace();
+//                    EventQueue.invokeLater(() -> {
+//                        alert(t.toString());
+//                    });
+//                    return null;
+//                });
     }
 
     private void doOpenEditor(IyakuhinMasterDTO master){
