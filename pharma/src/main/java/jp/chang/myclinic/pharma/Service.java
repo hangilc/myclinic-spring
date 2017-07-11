@@ -68,6 +68,8 @@ class Service {
         @GET("search-iyakuhin-master-by-name")
         CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMasterByName(@Query("text") String text, @Query("at") String at);
 
+        @GET("search-pharma-drug-names")
+        CompletableFuture<List<PharmaDrugNameDTO>> searchPharmaDrugNames(@Query("text") String text);
     }
 
     public static ServerAPI api;

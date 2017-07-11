@@ -2,18 +2,18 @@ package jp.chang.myclinic.pharma;
 
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
+import jp.chang.myclinic.dto.PharmaDrugNameDTO;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
 import java.util.List;
 
 public class EditDrugInfoDialog extends JDialog {
 
-    private JList<IyakuhinMasterDTO> searchResultList;
+    private JList<PharmaDrugNameDTO> searchResultList;
 
-    EditDrugInfoDialog(){
+    public EditDrugInfoDialog(){
         setTitle("薬剤情報の表示・編集");
         setLayout(new MigLayout("", "", ""));
         add(new JLabel("薬剤検索"), "wrap");
@@ -26,11 +26,11 @@ public class EditDrugInfoDialog extends JDialog {
             if( searchText.isEmpty() ){
                 return;
             }
-            Service.api.searchIyakuhinMasterByName(searchText, LocalDate.now().toString())
-                    .thenAccept(masters -> {
+            Service.api.searchPharmaDrugNames(searchText)
+                    .thenAccept(result -> {
                         EventQueue.invokeLater(() -> {
                             if( searchResultList == null ){
-                                searchResultList = makeSearchResultList(masters);
+                                searchResultList = makeSearchResultList(result);
                                 JScrollPane sp = new JScrollPane(searchResultList);
                                 add(sp, "newline, span, growx, w n:n:300, h n:n:360, wrap");
                                 JButton startButton = new JButton("作成");
@@ -60,8 +60,8 @@ public class EditDrugInfoDialog extends JDialog {
         pack();
     }
 
-    private JList<IyakuhinMasterDTO> makeSearchResultList(List<IyakuhinMasterDTO> masters){
-        JList<IyakuhinMasterDTO> result = new JList<>();
+    private JList<PharmaDrugNameDTO> makeSearchResultList(List<PharmaDrugNameDTO> masters){
+        JList<PharmaDrugNameDTO> result = new JList<>();
         result.setCellRenderer((list, master, index, isSelected, cellHasFocus) -> {
             JLabel comp = new JLabel(master.name);
             if( isSelected ){
@@ -75,7 +75,7 @@ public class EditDrugInfoDialog extends JDialog {
         return result;
     }
 
-    private void doTransitToEdit(IyakuhinMasterDTO master){
+    private void doTransitToEdit(PharmaDrugNameDTO data){
         Service.api.findPharmaDrug(master.iyakuhincode)
                 .thenAccept(pharma -> {
                     if( pharma == null ){
