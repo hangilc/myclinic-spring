@@ -7,9 +7,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Created by hangil on 2017/06/15.
- */
 public interface PharmaDrugRepository extends CrudRepository<PharmaDrug, Integer> {
 
     PharmaDrug findByIyakuhincode(int iyakuhincode);
@@ -25,5 +22,7 @@ public interface PharmaDrugRepository extends CrudRepository<PharmaDrug, Integer
             " group by m.iyakuhincode, m.name ")
     List<Object[]> searchNames(@Param("text") String text);
 
+    @Query("select m.iyakuhincode, m.name, m.yomi from PharmaDrug p, IyakuhinMaster m where " +
+            " p.iyakuhincode = m.iyakuhincode group by m.iyakuhincode, m.name ")
     List<Object[]> findAllPharmaDrugNames();
 }

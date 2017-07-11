@@ -56,4 +56,9 @@ public class PharmaDrugController {
         return dbGateway.searchPharmaDrugNames(text);
     }
 
+    @RequestMapping(value="/list-all-pharma-drug-names", method=RequestMethod.GET)
+    public List<PharmaDrugNameDTO> listAllPharmaDrugNames(){
+        return dbGateway.listAllPharmaDrugNames();
+    }
+
 }
