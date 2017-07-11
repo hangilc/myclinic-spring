@@ -616,6 +616,19 @@ public class DbGateway {
 	    pharmaDrugRepository.delete(iyakuhincode);
     }
 
+    public List<PharmaDrugNameDTO> searchPharmaDrugNames(String text){
+		return pharmaDrugRepository.searchNames(text).stream()
+				.map(result -> {
+					PharmaDrugNameDTO pharmaDrugNameDTO = new PharmaDrugNameDTO();
+					pharmaDrugNameDTO.iyakuhincode = (Integer)result[0];
+					pharmaDrugNameDTO.name = (String)result[1];
+					pharmaDrugNameDTO.yomi = (String)result[2];
+					return pharmaDrugNameDTO;
+				})
+                .sorted(Comparator.comparing(a -> a.yomi))
+				.collect(Collectors.toList());
+	}
+
 	public List<VisitTextDrugDTO> listVisitTextDrug(List<Integer> visitIds){
 		if( visitIds.size() == 0 ){
 			return Collections.emptyList();

@@ -2,6 +2,7 @@ package jp.chang.myclinic.rest;
 
 import jp.chang.myclinic.db.DbGateway;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
+import jp.chang.myclinic.dto.PharmaDrugNameDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +49,11 @@ public class PharmaDrugController {
     public boolean deletePharmaDrug(@RequestParam("iyakuhincode") int iyakuhincode){
         dbGateway.deletePharmaDrug(iyakuhincode);
         return true;
+    }
+
+    @RequestMapping(value="/search-pharma-drug-names", method=RequestMethod.GET)
+    public List<PharmaDrugNameDTO> searchPharmaDrugNames(@RequestParam("text") String text){
+        return dbGateway.searchPharmaDrugNames(text);
     }
 
 }

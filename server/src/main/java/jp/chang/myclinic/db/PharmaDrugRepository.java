@@ -20,5 +20,8 @@ public interface PharmaDrugRepository extends CrudRepository<PharmaDrug, Integer
     @Query("select p from PharmaDrug p where p.iyakuhincode in :iyakuhincodes")
     List<PharmaDrug> collectByIyakuhincodes(@Param("iyakuhincodes") List<Integer> iyakuhincodes);
 
-
+    @Query("select m.iyakuhincode, m.name, m.yomi from PharmaDrug p, IyakuhinMaster m where " +
+            " p.iyakuhincode = m.iyakuhincode and m.name like CONCAT('%', :text, '%') " +
+            " group by m.iyakuhincode, m.name ")
+    List<Object[]> searchNames(@Param("text") String text);
 }
