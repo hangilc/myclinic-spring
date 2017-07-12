@@ -12,8 +12,18 @@ import java.util.List;
 public class NewDrugInfoDialog extends JDialog {
 
     private JList<IyakuhinMasterDTO> searchResultList;
+    private PharmaDrugDTO basePharmaDrug;
 
     NewDrugInfoDialog(){
+        init();
+    }
+
+    public NewDrugInfoDialog(PharmaDrugDTO basePharmaDrug){
+        this.basePharmaDrug = basePharmaDrug;
+        init();
+    }
+
+    private void init(){
         setTitle("新規薬剤情報入力");
         setLayout(new MigLayout("", "", ""));
         add(new JLabel("薬剤検索"), "wrap");
@@ -79,7 +89,13 @@ public class NewDrugInfoDialog extends JDialog {
         Service.api.findPharmaDrug(master.iyakuhincode)
                 .thenAccept(pharma -> {
                     if( pharma == null ){
-                        doOpenEditor(master);
+                        String description = "";
+                        String sideeffect = "";
+                        if( basePharmaDrug != null ){
+                            description = basePharmaDrug.description;
+                            sideeffect = basePharmaDrug.sideeffect;
+                        }
+                        doOpenEditor(master.name, master.iyakuhincode, description, sideeffect);
                     } else {
                         EventQueue.invokeLater(() -> {
                             String msg = master.name + "はすでに登録されています。\n内容を表示しますか？";
@@ -100,16 +116,16 @@ public class NewDrugInfoDialog extends JDialog {
                 });
     }
 
-    private void doOpenEditor(IyakuhinMasterDTO master){
+    private void doOpenEditor(String name, int iyakuhincode, String description, String sideeffect){
         getContentPane().removeAll();
         setLayout(new MigLayout("", "", ""));
-        add(new JLabel(master.name), "wrap");
-        PharmaDrugEditor editor = new PharmaDrugEditor();
+        add(new JLabel(name), "wrap");
+        PharmaDrugEditor editor = new PharmaDrugEditor(description, sideeffect);
         add(editor, "wrap");
         JButton enterButton = new JButton("入力");
         enterButton.addActionListener(event -> {
             PharmaDrugDTO pharmaDrug = new PharmaDrugDTO();
-            pharmaDrug.iyakuhincode = master.iyakuhincode;
+            pharmaDrug.iyakuhincode = iyakuhincode;
             pharmaDrug.description = editor.getDescription();
             pharmaDrug.sideeffect = editor.getSideEffect();
             Service.api.enterPharmaDrug(pharmaDrug)
