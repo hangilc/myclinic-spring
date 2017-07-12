@@ -79,6 +79,9 @@ class Service {
 
         @POST("delete-pharma-drug")
         CompletableFuture<Boolean> deletePharmaDrug(@Query("iyakuhincode") int iyakuhincode);
+
+        @POST("presc-done")
+        CompletableFuture<Boolean> prescDone(@Query("visit-id") int visitId);
     }
 
     public static ServerAPI api;

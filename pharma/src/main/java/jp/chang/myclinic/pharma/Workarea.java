@@ -101,6 +101,17 @@ public class Workarea extends JPanel {
         drugsContainer.revalidate();
     }
 
+    public void clear(){
+        this.patient = null;
+        this.drugs = Collections.emptyList();
+        nameLabel.setText("");
+        yomiLabel.setText("");
+        patientInfoLabel.setText("");
+        drugsContainer.removeAll();
+        drugsContainer.repaint();
+        drugsContainer.revalidate();
+    }
+
     private void setupNameLabel(){
         Font baseFont = nameLabel.getFont();
         Font font = baseFont.deriveFont(BOLD, (int)(baseFont.getSize() * 1.2));
@@ -124,14 +135,43 @@ public class Workarea extends JPanel {
         return panel;
     }
 
-    // TODO: implement cancel button
-    // TODO: implement done button
     private void bind(){
         printPrescButton.addActionListener(event -> doPrintPrescContent());
         printDrugBagButton.addActionListener(event -> doPrintDrugBag());
         printTechouButton.addActionListener(event -> doPrintTechou());
         printAllButton.addActionListener(event -> doPrintAll());
         printAllExceptTechouButton.addActionListener(event -> doPrintAllExceptTechou());
+        doneButton.addActionListener(event -> doPrescDone());
+        cancelButton.addActionListener(event -> doCancel());
+    }
+
+    private void doPrescDone(){
+        if( drugs.size() > 0 ){
+            int visitId = drugs.get(0).drug.visitId;
+            Service.api.prescDone(visitId)
+                    .thenAccept(result -> {
+                        EventQueue.invokeLater(() -> onPrescDone());
+                    })
+                    .exceptionally(t -> {
+                        t.printStackTrace();
+                        EventQueue.invokeLater(() -> alert(t.toString()));
+                        return null;
+                    });
+        } else {
+            onPrescDone();
+        }
+    }
+
+    public void onPrescDone(){
+
+    }
+
+    private void doCancel(){
+        onCancel();
+    }
+
+    public void onCancel(){
+
     }
 
     private void doPreviewDrugBag(DrugFullDTO drugFull, PatientDTO patient){

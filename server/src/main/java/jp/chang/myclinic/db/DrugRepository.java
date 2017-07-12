@@ -1,6 +1,7 @@
 package jp.chang.myclinic.db;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -34,4 +35,7 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 			" and d.iyakuhincode = :iyakuhincode")
 	List<Object[]> findVisitIdVisitedAtByPatientAndIyakuhincode(@Param("patientId") int patientId, @Param("iyakuhincode") int iyakuhincode);
 
+	@Modifying
+	@Query("update Drug d set d.prescribed = 1 where d.visitId = :visitId")
+	void markAsPrescribedForVisit(@Param("visitId") int visitId);
 }

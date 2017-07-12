@@ -87,6 +87,15 @@ public class DbGateway {
 		wqueueRepository.save(wqueue);
 	}
 
+	public Optional<WqueueDTO> findWqueue(int visitId){
+		return wqueueRepository.findByVisitId(visitId).map(mapper::toWqueueDTO);
+	}
+
+	public void deleteWqueue(WqueueDTO wqueueDTO){
+		Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
+		wqueueRepository.delete(wqueue);
+	}
+
 	public PatientDTO getPatient(int patientId){
 		Patient patient = patientRepository.findOne(patientId);
 		return mapper.toPatientDTO(patient);
@@ -355,6 +364,10 @@ public class DbGateway {
 		.collect(Collectors.toList());
 	}
 
+	public void markDrugsAsPrescribedForVisit(int visitId){
+		drugRepository.markAsPrescribedForVisit(visitId);
+	}
+
 	public List<TextDTO> listText(int visitId){
 		List<Text> texts = textRepository.findByVisitId(visitId);
 		return texts.stream().map(mapper::toTextDTO).collect(Collectors.toList());
@@ -541,6 +554,10 @@ public class DbGateway {
 		}
 	}
 
+	public Optional<PharmaQueueDTO> findPharmaQueue(int visitId){
+		return pharmaQueueRepository.findByVisitId(visitId).map(mapper::toPharmaQueueDTO);
+	}
+
 	public List<PharmaQueueFullDTO> listPharmaQueueFullForPrescription(){
 		return pharmaQueueRepository.findFull().stream()
 				.map(result -> {
@@ -581,6 +598,11 @@ public class DbGateway {
 					return pharmaQueueFullDTO;
 				})
 				.collect(Collectors.toList());
+	}
+
+	public void deletePharmaQueue(PharmaQueueDTO pharmaQueueDTO){
+		PharmaQueue pharmaQueue = mapper.fromPharmaQueueDTO(pharmaQueueDTO);
+		pharmaQueueRepository.delete(pharmaQueue);
 	}
 
 	public PharmaDrugDTO getPharmaDrugByIyakuhincode(int iyakuhincode){

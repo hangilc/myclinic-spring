@@ -191,7 +191,23 @@ public class MainFrame extends JFrame {
     }
 
     private JComponent makeWorkarea(){
-        Workarea wa = new Workarea();
+        Workarea wa = new Workarea(){
+            @Override
+            public void onPrescDone(){
+                // TODO: update patient list
+                clearRight();
+            }
+
+            @Override
+            public void onCancel(){
+                clearRight();
+            }
+
+            private void clearRight(){
+                clear();
+                // TODO: clear records
+            }
+        };
         wa.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         workarea = wa;
         return wa;
