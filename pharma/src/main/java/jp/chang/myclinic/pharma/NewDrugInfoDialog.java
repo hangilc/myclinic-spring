@@ -132,6 +132,7 @@ public class NewDrugInfoDialog extends JDialog {
                     .thenAccept(result -> {
                         EventQueue.invokeLater(() -> {
                             dispose();
+                            onPharmaDrugEntered(pharmaDrug);
                         });
                     })
                     .exceptionally(t -> {
@@ -146,6 +147,10 @@ public class NewDrugInfoDialog extends JDialog {
         repaint();
         revalidate();
         pack();
+    }
+
+    public void onPharmaDrugEntered(PharmaDrugDTO enteredPharmaDrug){
+
     }
 
     private void alert(String message){

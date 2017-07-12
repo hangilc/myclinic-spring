@@ -16,13 +16,44 @@ public class ListAllPharmaDrugDialog extends JDialog {
     private JPanel editorCommandArea;
     private String currentDrugName;
     private PharmaDrugDTO currentPharmaDrug;
+    private JMenuItem deleteMenuItem;
 
     public ListAllPharmaDrugDialog(List<PharmaDrugNameDTO> pharmaDrugNames){
         setTitle("薬剤情報一覧");
+        setupMenu();
         setLayout(new MigLayout("", "[300]", "[grow]"));
         add(makeLeft(pharmaDrugNames));
         add(makeRight(), "top");
         pack();
+    }
+
+    private void setupMenu(){
+        JMenuBar menuBar = new JMenuBar();
+        JMenu manipMenu = new JMenu("その他の操作");
+        deleteMenuItem = new JMenuItem("薬剤情報を削除");
+        deleteMenuItem.addActionListener(event -> {
+            int reply = JOptionPane.showConfirmDialog(this, currentDrugName + "の薬剤情報を削除しますか？", "確認", JOptionPane.OK_CANCEL_OPTION);
+            if (reply == JOptionPane.OK_OPTION) {
+                Service.api.deletePharmaDrug(currentPharmaDrug.iyakuhincode)
+                        .thenAccept(result -> {
+                            EventQueue.invokeLater(() -> {
+                                reloadDrugList();
+                                gotoBlank();
+                            });
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+        });
+        deleteMenuItem.setEnabled(false);
+        manipMenu.add(deleteMenuItem);
+        menuBar.add(manipMenu);
+        setJMenuBar(menuBar);
     }
 
     private JComponent makeLeft(List<PharmaDrugNameDTO> pharmaDrugNames){
@@ -86,28 +117,23 @@ public class ListAllPharmaDrugDialog extends JDialog {
             editorCommandArea.repaint();
             editorCommandArea.revalidate();
         });
-        JButton deleteButton = new JButton("削除");
-        deleteButton.addActionListener(event -> {
-            int reply = JOptionPane.showConfirmDialog(this, currentDrugName + "の薬剤情報を削除しますか？", "確認", JOptionPane.OK_CANCEL_OPTION);
-            if (reply == JOptionPane.OK_OPTION) {
-                Service.api.deletePharmaDrug(currentPharmaDrug.iyakuhincode)
-                        .thenAccept(result -> {
-                            EventQueue.invokeLater(() -> {
-                                reloadDrugList();
-                                gotoBlank();
-                            });
-                        })
-                        .exceptionally(t -> {
-                            t.printStackTrace();
-                            EventQueue.invokeLater(() -> {
-                                alert(t.toString());
-                            });
-                            return null;
-                        });
+        JButton copyButton = new JButton("新規作成");
+        copyButton.addActionListener(event -> {
+            int reply = JOptionPane.showConfirmDialog(this,
+                    "この薬剤情報をもとに別の薬剤情報を作成しますか？", "確認", JOptionPane.OK_CANCEL_OPTION);
+            if( reply == JOptionPane.OK_OPTION ){
+                NewDrugInfoDialog dialog = new NewDrugInfoDialog(currentPharmaDrug){
+                    @Override
+                    public void onPharmaDrugEntered(PharmaDrugDTO newPharmaDrug){
+                        reloadDrugList();
+                    }
+                };
+                dialog.setLocationByPlatform(true);
+                dialog.setVisible(true);
             }
         });
         panel.add(editButton);
-        panel.add(deleteButton);
+        panel.add(copyButton);
         return panel;
     }
 
@@ -166,6 +192,7 @@ public class ListAllPharmaDrugDialog extends JDialog {
     private void updateRight(PharmaDrugDTO pharmaDrug, String name){
         currentDrugName = name;
         currentPharmaDrug = pharmaDrug;
+        deleteMenuItem.setEnabled(true);
         gotoDefault(false);
     }
 
