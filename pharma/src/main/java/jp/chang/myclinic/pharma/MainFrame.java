@@ -36,7 +36,6 @@ public class MainFrame extends JFrame {
     private static Icon waitDrugIcon;
 
     // TODO: print blank drug bag
-    // TODO: move close button to menu
     public MainFrame(){
         super("薬局");
         try {

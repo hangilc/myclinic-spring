@@ -124,6 +124,8 @@ public class Workarea extends JPanel {
         return panel;
     }
 
+    // TODO: implement cancel button
+    // TODO: implement done button
     private void bind(){
         printPrescButton.addActionListener(event -> doPrintPrescContent());
         printDrugBagButton.addActionListener(event -> doPrintDrugBag());

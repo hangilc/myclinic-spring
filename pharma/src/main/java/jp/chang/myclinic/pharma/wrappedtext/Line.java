@@ -5,7 +5,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: adjust cursor for link
 public class Line {
     private int left;
     private int contentWidth;
@@ -105,7 +104,6 @@ public class Line {
             case BaseLine: throw new RuntimeException("invalid valign (BaseLine) for addComponent");
         }
         component.setBounds(left + contentWidth, y, (int)dim.getWidth(), (int)dim.getHeight());
-        //System.out.println("addComponent: " + component.getBounds());
         items.add(new ComponentItem(w));
         contentWidth += w;
     }
