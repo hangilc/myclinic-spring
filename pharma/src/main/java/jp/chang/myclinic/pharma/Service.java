@@ -73,6 +73,9 @@ class Service {
 
         @GET("search-pharma-drug-names")
         CompletableFuture<List<PharmaDrugNameDTO>> searchPharmaDrugNames(@Query("text") String text);
+
+        @GET("list-all-pharma-drug-names")
+        CompletableFuture<List<PharmaDrugNameDTO>> listAllPharmaDrugNames();
     }
 
     public static ServerAPI api;
