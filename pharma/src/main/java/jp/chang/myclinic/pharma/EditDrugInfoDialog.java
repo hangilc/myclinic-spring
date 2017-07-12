@@ -11,6 +11,10 @@ import java.util.List;
 public class EditDrugInfoDialog extends JDialog {
 
     private JList<PharmaDrugNameDTO> searchResultList;
+    private String currentDrugName;
+    private PharmaDrugDTO pharmaDrug;
+    private PharmaDrugEditor editor;
+    private JPanel commandArea;
 
     public EditDrugInfoDialog(){
         setTitle("薬剤情報の表示・編集");
@@ -32,7 +36,7 @@ public class EditDrugInfoDialog extends JDialog {
                                 searchResultList = makeSearchResultList(result);
                                 JScrollPane sp = new JScrollPane(searchResultList);
                                 add(sp, "newline, span, growx, w n:n:300, h n:n:360, wrap");
-                                JButton startButton = new JButton("作成");
+                                JButton startButton = new JButton("表示");
                                 startButton.addActionListener(ev -> {
                                     PharmaDrugNameDTO selectedData = searchResultList.getSelectedValue();
                                     if( selectedData != null ){
@@ -89,20 +93,39 @@ public class EditDrugInfoDialog extends JDialog {
     }
 
     private void doOpenEditor(PharmaDrugDTO pharmaDrug, String name){
+        this.currentDrugName = name;
+        this.pharmaDrug = pharmaDrug;
         getContentPane().removeAll();
         setLayout(new MigLayout("", "", ""));
         add(new JLabel(name), "wrap");
-        PharmaDrugEditor editor = new PharmaDrugEditor(pharmaDrug);
+        this.editor = new PharmaDrugEditor(pharmaDrug);
+        editor.setEditable(false);
         add(editor, "wrap");
+        this.commandArea = new JPanel(new MigLayout("insets 0", "", ""));
+        setupDispModeCommands(false);
+        add(commandArea);
+        repaint();
+        revalidate();
+        pack();
+    }
+
+    private JButton makeEditButton(){
+        JButton editButton = new JButton("編集");
+        editButton.addActionListener(event -> {
+            editor.setEditable(true);
+            setupEditModeCommands();
+        });
+        return editButton;
+    }
+
+    private JButton makeEnterButton(){
         JButton enterButton = new JButton("入力");
-        enterButton.addActionListener(event -> {
+        enterButton.addActionListener(evt -> {
             pharmaDrug.description = editor.getDescription();
             pharmaDrug.sideeffect = editor.getSideEffect();
             Service.api.updatePharmaDrug(pharmaDrug)
                     .thenAccept(result -> {
-                        EventQueue.invokeLater(() -> {
-                            dispose();
-                        });
+                        EventQueue.invokeLater(this::dispose);
                     })
                     .exceptionally(t -> {
                         t.printStackTrace();
@@ -112,10 +135,59 @@ public class EditDrugInfoDialog extends JDialog {
                         return null;
                     });
         });
-        add(enterButton);
-        repaint();
-        revalidate();
-        pack();
+        return enterButton;
+    }
+
+    private JButton makeDeleteButton(){
+        JButton deleteButton = new JButton("削除");
+        deleteButton.addActionListener(event -> {
+            int reply = JOptionPane.showConfirmDialog(this, currentDrugName + "の薬剤情報を削除しますか？",
+                    "確認", JOptionPane.OK_CANCEL_OPTION);
+            if (reply == JOptionPane.OK_OPTION) {
+                Service.api.deletePharmaDrug(pharmaDrug.iyakuhincode)
+                        .thenAccept(result -> {
+                            dispose();
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+        });
+        return deleteButton;
+    }
+
+    private JButton makeCancelButton(){
+        JButton button = new JButton("キャンセル");
+        button.addActionListener(event -> {
+            editor.setEditable(false);
+            editor.setData(pharmaDrug);
+            setupDispModeCommands(true);
+        });
+        return button;
+    }
+
+    private void setupDispModeCommands(boolean repaint){
+        if( repaint ){
+            commandArea.removeAll();
+        }
+        commandArea.add(makeEditButton());
+        if( repaint ){
+            commandArea.repaint();
+            commandArea.revalidate();
+        }
+    }
+
+    private void setupEditModeCommands(){
+        commandArea.removeAll();
+        commandArea.add(makeEnterButton());
+        commandArea.add(makeDeleteButton());
+        commandArea.add(makeCancelButton());
+        commandArea.repaint();
+        commandArea.revalidate();
     }
 
     private void alert(String message){
