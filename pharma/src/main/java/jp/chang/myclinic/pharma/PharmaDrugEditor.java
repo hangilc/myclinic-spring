@@ -51,4 +51,9 @@ public class PharmaDrugEditor extends JPanel {
         descInput.setEditable(editable);
         sideeffectInput.setEditable(editable);
     }
+
+    public void clear(){
+        descInput.setText("");
+        sideeffectInput.setText("");
+    }
 }

@@ -76,6 +76,9 @@ class Service {
 
         @GET("list-all-pharma-drug-names")
         CompletableFuture<List<PharmaDrugNameDTO>> listAllPharmaDrugNames();
+
+        @POST("delete-pharma-drug")
+        CompletableFuture<Boolean> deletePharmaDrug(@Query("iyakuhincode") int iyakuhincode);
     }
 
     public static ServerAPI api;

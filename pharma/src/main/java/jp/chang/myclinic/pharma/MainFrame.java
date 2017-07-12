@@ -19,7 +19,7 @@ public class MainFrame extends JFrame {
     private PharmaQueueList pharmaQueueList;
     private Workarea workarea;
     private AuxControl auxControl;
-    private JButton closeButton = new JButton("閉じる");
+    //private JButton closeButton = new JButton("閉じる");
     private JCheckBox includePrescribedCheckBox = new JCheckBox("処方済の患者も含める");
     private JButton updatePatientListButton = new JButton("更新");
     private JButton startPrescButton = new JButton("調剤開始");
@@ -49,7 +49,7 @@ public class MainFrame extends JFrame {
         setLayout(new MigLayout("fill", "[260px!]5px![360px!]", "[460px]"));
         add(makeLeft(), "growx, top");
         add(makeRight(), "grow, top");
-        add(makeSouth(), "dock south, right");
+        //add(makeSouth(), "dock south, right");
         bind();
         pack();
     }
@@ -198,19 +198,19 @@ public class MainFrame extends JFrame {
         return wa;
     }
 
-    private JComponent makeSouth(){
-        JPanel panel = new JPanel(new MigLayout("", "[grow]", ""));
-        panel.add(closeButton, "right");
-        return panel;
-    }
+//    private JComponent makeSouth(){
+//        JPanel panel = new JPanel(new MigLayout("", "[grow]", ""));
+//        panel.add(closeButton, "right");
+//        return panel;
+//    }
 
     private void bind(){
         updatePatientListButton.addActionListener(event -> doUpdatePatientList());
         startPrescButton.addActionListener(event -> doStartPresc());
-        closeButton.addActionListener(event -> {
-            dispose();
-            System.exit(0);
-        });
+//        closeButton.addActionListener(event -> {
+//            dispose();
+//            System.exit(0);
+//        });
         prescPrinterSettingItem.addActionListener(event -> doPrescPrinterSetting());
         drugbagPrinterSettingItem.addActionListener(event -> doDrugbagPrinterSetting());
         techouPrinterSettingItem.addActionListener(event -> doTechouPrinterSetting());

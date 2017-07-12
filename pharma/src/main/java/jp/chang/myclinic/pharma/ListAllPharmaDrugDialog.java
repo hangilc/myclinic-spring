@@ -10,6 +10,7 @@ import java.util.List;
 
 public class ListAllPharmaDrugDialog extends JDialog {
 
+    private JList<PharmaDrugNameDTO> pharmaDrugList;
     private JLabel drugNameLabel;
     private PharmaDrugEditor pharmaDrugEditor;
     private JPanel editorCommandArea;
@@ -27,6 +28,7 @@ public class ListAllPharmaDrugDialog extends JDialog {
     private JComponent makeLeft(List<PharmaDrugNameDTO> pharmaDrugNames){
         JPanel panel = new JPanel(new MigLayout("insets 0", "[grow]", "[grow] []"));
         JList<PharmaDrugNameDTO> list = new JList<>();
+        pharmaDrugList = list;
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setCellRenderer((JList<? extends PharmaDrugNameDTO> aList, PharmaDrugNameDTO value, int index, boolean isSelected, boolean cellHasFocus) -> {
             JLabel label = new JLabel(value.name);
@@ -45,6 +47,9 @@ public class ListAllPharmaDrugDialog extends JDialog {
                 return;
             }
             PharmaDrugNameDTO pharmaDrugName = list.getSelectedValue();
+            if( pharmaDrugName == null ){
+                return;
+            }
             Service.api.getPharmaDrug(pharmaDrugName.iyakuhincode)
                     .thenAccept(pharmaDrug -> {
                         EventQueue.invokeLater(() -> updateRight(pharmaDrug, pharmaDrugName.name));
@@ -65,7 +70,6 @@ public class ListAllPharmaDrugDialog extends JDialog {
         drugNameLabel = new JLabel();
         pharmaDrugEditor = new PharmaDrugEditor();
         editorCommandArea = new JPanel(new MigLayout("insets 0", "", ""));
-        editorCommandArea.add(makeDefaultCommands());
         panel.add(drugNameLabel, "wrap");
         panel.add(pharmaDrugEditor, "wrap");
         panel.add(editorCommandArea);
@@ -74,7 +78,7 @@ public class ListAllPharmaDrugDialog extends JDialog {
 
     private JComponent makeDefaultCommands(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        JButton editButton = new JButton("編集する");
+        JButton editButton = new JButton("編集");
         editButton.addActionListener(event -> {
             pharmaDrugEditor.setEditable(true);
             editorCommandArea.removeAll();
@@ -82,7 +86,28 @@ public class ListAllPharmaDrugDialog extends JDialog {
             editorCommandArea.repaint();
             editorCommandArea.revalidate();
         });
+        JButton deleteButton = new JButton("削除");
+        deleteButton.addActionListener(event -> {
+            int reply = JOptionPane.showConfirmDialog(this, currentDrugName + "の薬剤情報を削除しますか？", "確認", JOptionPane.OK_CANCEL_OPTION);
+            if (reply == JOptionPane.OK_OPTION) {
+                Service.api.deletePharmaDrug(currentPharmaDrug.iyakuhincode)
+                        .thenAccept(result -> {
+                            EventQueue.invokeLater(() -> {
+                                reloadDrugList();
+                                gotoBlank();
+                            });
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+        });
         panel.add(editButton);
+        panel.add(deleteButton);
         return panel;
     }
 
@@ -127,10 +152,33 @@ public class ListAllPharmaDrugDialog extends JDialog {
         }
     }
 
+    private void gotoBlank() {
+        currentDrugName = null;
+        currentPharmaDrug = null;
+        drugNameLabel.setText("");
+        pharmaDrugEditor.setEditable(false);
+        pharmaDrugEditor.clear();
+        editorCommandArea.removeAll();
+        editorCommandArea.repaint();
+        editorCommandArea.revalidate();
+    }
+
     private void updateRight(PharmaDrugDTO pharmaDrug, String name){
         currentDrugName = name;
         currentPharmaDrug = pharmaDrug;
         gotoDefault(false);
+    }
+
+    private void reloadDrugList(){
+        Service.api.listAllPharmaDrugNames()
+                .thenAccept(result -> {
+                    EventQueue.invokeLater(() -> pharmaDrugList.setListData(result.toArray(new PharmaDrugNameDTO[]{})));
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> alert(t.toString()));
+                    return null;
+                });
     }
 
     private void alert(String message){
