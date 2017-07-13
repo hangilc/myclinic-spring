@@ -2,8 +2,11 @@ package jp.chang.myclinic.pharma;
 
 import jp.chang.myclinic.drawer.printer.manage.PrinterManageDialog;
 import jp.chang.myclinic.drawer.printer.manage.SettingChooserDialog;
+import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import jp.chang.myclinic.pharma.leftpane.LeftPane;
+import jp.chang.myclinic.pharma.rightpane.RightPane;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;
@@ -15,8 +18,8 @@ import java.util.concurrent.CompletionException;
 class MainFrame extends JFrame {
 
     //private PharmaQueueList pharmaQueueList;
-    private Workarea workarea;
-    private AuxControl auxControl;
+//    private Workarea workarea;
+//    private AuxControl auxControl;
     private JButton updatePatientListButton = new JButton("更新");
     private JButton startPrescButton = new JButton("調剤開始");
     private JTextField prevTechouSearchField = new JTextField(6);
@@ -27,7 +30,7 @@ class MainFrame extends JFrame {
     private JMenuItem drugbagPrinterSettingItem = new JMenuItem("薬袋印刷設定");
     private JMenuItem techouPrinterSettingItem = new JMenuItem("お薬手帳印刷設定");
     private JMenuItem printManageItem = new JMenuItem("印刷管理");
-    private JScrollPane rightScroll;
+    //private JScrollPane rightScroll;
     private static Icon waitCashierIcon;
     private static Icon waitDrugIcon;
 
@@ -44,9 +47,22 @@ class MainFrame extends JFrame {
         }
         setupMenu();
         setLayout(new MigLayout("fill", "[260px!]5px![360px!]", "[460px]"));
-        leftPane = new LeftPane(waitCashierIcon, waitDrugIcon);
+        JScrollPane rightScroll = new JScrollPane();
+        rightScroll.setBorder(null);
+        rightScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        rightScroll.getVerticalScrollBar().setUnitIncrement(12);
+        leftPane = new LeftPane(waitCashierIcon, waitDrugIcon){
+            @Override
+            public void onStartPresc(PharmaQueueFullDTO pharmaQueueFull, java.util.List<DrugFullDTO> drugs){
+                RightPane rightPane = new RightPane(pharmaQueueFull, drugs);
+                rightScroll.getViewport().setView(rightPane);
+                rightScroll.getVerticalScrollBar().setValue(0);
+                //rightScroll.repaint();
+                //rightScroll.revalidate();
+            }
+        };
         add(leftPane, "growx, top");
-        add(makeRight(), "grow, top");
+        add(rightScroll, "grow, top");
         bind();
         pack();
     }
@@ -108,52 +124,52 @@ class MainFrame extends JFrame {
         setJMenuBar(menuBar);
     }
 
-    private JComponent makeRight(){
-        int width = 330;
-        JPanel auxSubControl = new JPanel(new MigLayout("", "", ""));
-        AuxDispRecords dispRecords = new AuxDispRecords(width);
-        auxControl = new AuxControl(auxSubControl, dispRecords, width - 2);
-        JPanel panel = new JPanel(new MigLayout("", "[" + width + "!]", ""));
-        panel.add(new JLabel("投薬"), "growx, wrap");
-        panel.add(makeWorkarea(), "growx, wrap");
-        {
-            JPanel control = new JPanel(new MigLayout("insets 0", "", "[]2[]"));
-            auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            auxSubControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            control.add(auxControl, "growx, wrap");
-            control.add(auxSubControl, "growx");
-            panel.add(control, "growx, wrap");
-        }
-        panel.add(dispRecords, "grow");
-        rightScroll = new JScrollPane(panel);
-        rightScroll.setBorder(null);
-        rightScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        rightScroll.getVerticalScrollBar().setUnitIncrement(12);
-        return rightScroll;
-    }
+//    private JComponent makeRight(){
+//        int width = 330;
+//        JPanel auxSubControl = new JPanel(new MigLayout("", "", ""));
+//        AuxDispRecords dispRecords = new AuxDispRecords(width);
+//        auxControl = new AuxControl(auxSubControl, dispRecords, width - 2);
+//        JPanel panel = new JPanel(new MigLayout("", "[" + width + "!]", ""));
+//        panel.add(new JLabel("投薬"), "growx, wrap");
+//        panel.add(makeWorkarea(), "growx, wrap");
+//        {
+//            JPanel control = new JPanel(new MigLayout("insets 0", "", "[]2[]"));
+//            auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+//            auxSubControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+//            control.add(auxControl, "growx, wrap");
+//            control.add(auxSubControl, "growx");
+//            panel.add(control, "growx, wrap");
+//        }
+//        panel.add(dispRecords, "grow");
+//        rightScroll = new JScrollPane(panel);
+//        rightScroll.setBorder(null);
+//        rightScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+//        rightScroll.getVerticalScrollBar().setUnitIncrement(12);
+//        return rightScroll;
+//    }
 
-    private JComponent makeWorkarea(){
-        Workarea wa = new Workarea(){
-            @Override
-            public void onPrescDone(){
-                // TODO: update patient list
-                clearRight();
-            }
-
-            @Override
-            public void onCancel(){
-                clearRight();
-            }
-
-            private void clearRight(){
-                clear();
-                // TODO: clear records
-            }
-        };
-        wa.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        workarea = wa;
-        return wa;
-    }
+//    private JComponent makeWorkarea(){
+//        Workarea wa = new Workarea(){
+//            @Override
+//            public void onPrescDone(){
+//                // TODO: update patient list
+//                clearRight();
+//            }
+//
+//            @Override
+//            public void onCancel(){
+//                clearRight();
+//            }
+//
+//            private void clearRight(){
+//                clear();
+//                // TODO: clear records
+//            }
+//        };
+//        wa.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+//        workarea = wa;
+//        return wa;
+//    }
 
     private void bind(){
         prescPrinterSettingItem.addActionListener(event -> doPrescPrinterSetting());

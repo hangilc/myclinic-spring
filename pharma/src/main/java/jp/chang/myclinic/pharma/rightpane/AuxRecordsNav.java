@@ -1,6 +1,8 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.rightpane;
 
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.pharma.PharmaUtil;
+import jp.chang.myclinic.pharma.RecordPage;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;

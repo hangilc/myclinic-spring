@@ -1,13 +1,15 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.rightpane;
 
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.pharma.RecordPage;
+import jp.chang.myclinic.pharma.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class AuxControl extends JPanel {
+class AuxControl extends JPanel {
 
     private int width;
     private PatientDTO patient;
@@ -18,7 +20,7 @@ public class AuxControl extends JPanel {
     private JRadioButton showVisitsButton = new JRadioButton("日にち順");
     private JRadioButton showDrugsButton = new JRadioButton("薬剤別");
 
-    public AuxControl(JPanel subControl, AuxDispRecords dispRecords, int width){
+    AuxControl(JPanel subControl, AuxDispRecords dispRecords, int width){
         this.subControl = subControl;
         this.dispRecords = dispRecords;
         setLayout(new MigLayout("insets 0", "[" + width + "!]", ""));

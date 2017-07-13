@@ -1,4 +1,4 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.rightpane;
 
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
@@ -13,6 +13,7 @@ import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
+import jp.chang.myclinic.pharma.*;
 import jp.chang.myclinic.pharma.wrappedtext.WrappedText;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DrugUtil;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 
 import static java.awt.Font.BOLD;
 
-public class Workarea extends JPanel {
+class Workarea extends JPanel {
 
     private JLabel nameLabel = new JLabel("");
     private JLabel yomiLabel = new JLabel("");
@@ -46,7 +47,7 @@ public class Workarea extends JPanel {
     private PatientDTO patient;
     private List<DrugFullDTO> drugs = Collections.emptyList();
 
-    public Workarea(){
+    Workarea(PatientDTO patient, List<DrugFullDTO> drugs){
         setupNameLabel();
         setLayout(new MigLayout("gapy 0", "[grow]", ""));
         add(nameLabel, "gap top 0, wrap");
@@ -58,10 +59,11 @@ public class Workarea extends JPanel {
         }
         add(makeCommandRow1(), "wrap");
         add(makeCommandRow2(), "gaptop 5, right");
+        update(patient, drugs);
         bind();
     }
 
-    public void update(PatientDTO patient, List<DrugFullDTO> drugs){
+    private void update(PatientDTO patient, List<DrugFullDTO> drugs){
         this.patient = patient;
         this.drugs = drugs;
         nameLabel.setText(patient.lastName + patient.firstName);
@@ -97,17 +99,6 @@ public class Workarea extends JPanel {
             }
             drugsContainer.add(wrap, "growx, wrap");
         }
-        drugsContainer.repaint();
-        drugsContainer.revalidate();
-    }
-
-    public void clear(){
-        this.patient = null;
-        this.drugs = Collections.emptyList();
-        nameLabel.setText("");
-        yomiLabel.setText("");
-        patientInfoLabel.setText("");
-        drugsContainer.removeAll();
         drugsContainer.repaint();
         drugsContainer.revalidate();
     }

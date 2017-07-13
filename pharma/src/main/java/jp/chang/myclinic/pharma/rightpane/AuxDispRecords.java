@@ -1,8 +1,9 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.rightpane;
 
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitTextDrugDTO;
+import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.wrappedtext.WrappedText;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DrugUtil;
@@ -13,20 +14,20 @@ import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
-public class AuxDispRecords extends JPanel {
+class AuxDispRecords extends JPanel {
 
     private int width;
 
-    public AuxDispRecords(int width){
+    AuxDispRecords(int width){
         this.width = width;
         setLayout(new MigLayout("insets 0", "[]5[]", ""));
     }
 
-    public void clear(){
+    void clear(){
         showVisits(Collections.emptyList());
     }
 
-    public void showVisits(List<Integer> visitIds) {
+    void showVisits(List<Integer> visitIds) {
         if( visitIds.size() == 0 ){
             removeAll();
             repaint();

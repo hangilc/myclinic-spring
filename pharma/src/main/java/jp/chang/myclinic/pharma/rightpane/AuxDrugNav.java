@@ -1,4 +1,4 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.rightpane;
 
 import net.miginfocom.swing.MigLayout;
 
