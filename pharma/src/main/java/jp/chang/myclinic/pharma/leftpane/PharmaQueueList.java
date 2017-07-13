@@ -1,29 +1,34 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.leftpane;
 
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 
 import javax.swing.*;
-import java.awt.*;
 
-/**
- * Created by hangil on 2017/06/11.
- */
-public class PharmaQueueList extends JList<PharmaQueueFullDTO> {
+class PharmaQueueList extends JList<PharmaQueueFullDTO> {
 
-    public PharmaQueueList(Icon waitCashierImage, Icon waitDrugImage){
+    PharmaQueueList(Icon waitCashierImage, Icon waitDrugImage){
         super();
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.setCellRenderer(new PharmaQueueListListCellRenderer(waitCashierImage, waitDrugImage));
     }
 
-    public void setSelectedVisitId(int visitId){
+    @Override
+    public void setListData(PharmaQueueFullDTO[] listData) {
+        PharmaQueueFullDTO selected = getSelectedValue();
+        super.setListData(listData);
+        if( selected != null ){
+            setSelectedVisitId(selected.visitId);
+        }
+    }
+
+    private void setSelectedVisitId(int visitId){
         if( visitId == 0 ){
             clearSelection();
         } else {
             ListModel<PharmaQueueFullDTO> model = getModel();
             for(int i=0;i<model.getSize();i++){
                 PharmaQueueFullDTO data = model.getElementAt(i);
-                if( data.pharmaQueue.visitId == visitId ){
+                if( data.visitId == visitId ){
                     setSelectedIndex(i);
                     break;
                 }

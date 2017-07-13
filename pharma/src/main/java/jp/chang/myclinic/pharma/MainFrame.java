@@ -3,24 +3,20 @@ package jp.chang.myclinic.pharma;
 import jp.chang.myclinic.drawer.printer.manage.PrinterManageDialog;
 import jp.chang.myclinic.drawer.printer.manage.SettingChooserDialog;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.pharma.leftpane.LeftPane;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-public class MainFrame extends JFrame {
+class MainFrame extends JFrame {
 
-    private PharmaQueueList pharmaQueueList;
+    //private PharmaQueueList pharmaQueueList;
     private Workarea workarea;
     private AuxControl auxControl;
-    //private JButton closeButton = new JButton("閉じる");
-    private JCheckBox includePrescribedCheckBox = new JCheckBox("処方済の患者も含める");
     private JButton updatePatientListButton = new JButton("更新");
     private JButton startPrescButton = new JButton("調剤開始");
     private JTextField prevTechouSearchField = new JTextField(6);
@@ -35,8 +31,10 @@ public class MainFrame extends JFrame {
     private static Icon waitCashierIcon;
     private static Icon waitDrugIcon;
 
+    private LeftPane leftPane;
+
     // TODO: print blank drug bag
-    public MainFrame(){
+    MainFrame(){
         super("薬局");
         try {
             setupIcons();
@@ -46,9 +44,9 @@ public class MainFrame extends JFrame {
         }
         setupMenu();
         setLayout(new MigLayout("fill", "[260px!]5px![360px!]", "[460px]"));
-        add(makeLeft(), "growx, top");
+        leftPane = new LeftPane(waitCashierIcon, waitDrugIcon);
+        add(leftPane, "growx, top");
         add(makeRight(), "grow, top");
-        //add(makeSouth(), "dock south, right");
         bind();
         pack();
     }
@@ -110,62 +108,6 @@ public class MainFrame extends JFrame {
         setJMenuBar(menuBar);
     }
 
-    private JComponent makeLeft(){
-        pharmaQueueList = new PharmaQueueList(waitCashierIcon, waitDrugIcon);
-        JPanel panel = new JPanel(new MigLayout("fill", "", ""));
-        panel.add(new JLabel("患者リスト"), "left, wrap");
-        panel.add(new JScrollPane(pharmaQueueList), "grow, wrap");
-        panel.add(makePatientListSub(), "growx, wrap");
-        panel.add(makePrevTechou(), "growx");
-        return panel;
-    }
-
-    private JComponent makePatientListSub(){
-        JPanel panel = new JPanel(new MigLayout("insets 0, gapy 0", "", ""));
-        panel.add(makePatientListSubRow1(), "wrap");
-        panel.add(makePatientListSubRow2(), "wrap");
-        panel.add(makePatientListSubRow3(), "");
-        return panel;
-    }
-
-    private JComponent makePatientListSubRow1(){
-        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        JLabel waitCashierLabel = new JLabel("会計待ち");
-        waitCashierLabel.setIcon(waitCashierIcon);
-        JLabel waitPackLabel = new JLabel("薬渡待ち");
-        waitPackLabel.setIcon(waitDrugIcon);
-        panel.add(waitCashierLabel);
-        panel.add(waitPackLabel);
-        return panel;
-    }
-
-    private JComponent makePatientListSubRow2(){
-        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        Insets insets = includePrescribedCheckBox.getInsets();
-        insets.left = -1;
-        includePrescribedCheckBox.setMargin(insets);
-        panel.add(includePrescribedCheckBox, "");
-        panel.add(updatePatientListButton);
-        return panel;
-    }
-
-    private JComponent makePatientListSubRow3(){
-        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        panel.add(startPrescButton);
-        return panel;
-    }
-
-    private JComponent makePrevTechou(){
-        JPanel panel = new JPanel(new MigLayout("", "", ""));
-        panel.setBorder(BorderFactory.createTitledBorder("過去のお薬手帳"));
-        panel.add(prevTechouSearchField);
-        panel.add(searchPrevTechouButton, "wrap");
-        searchPrevTechouResult = new JPanel(new MigLayout("insets 0", "[220!]", ""));
-        JScrollPane searchPrevTechouResultScroll = new JScrollPane(panel);
-        panel.add(searchPrevTechouResult, "span 2, h n:n:300");
-        return panel;
-    }
-
     private JComponent makeRight(){
         int width = 330;
         JPanel auxSubControl = new JPanel(new MigLayout("", "", ""));
@@ -213,19 +155,7 @@ public class MainFrame extends JFrame {
         return wa;
     }
 
-//    private JComponent makeSouth(){
-//        JPanel panel = new JPanel(new MigLayout("", "[grow]", ""));
-//        panel.add(closeButton, "right");
-//        return panel;
-//    }
-
     private void bind(){
-        updatePatientListButton.addActionListener(event -> doUpdatePatientList());
-        startPrescButton.addActionListener(event -> doStartPresc());
-//        closeButton.addActionListener(event -> {
-//            dispose();
-//            System.exit(0);
-//        });
         prescPrinterSettingItem.addActionListener(event -> doPrescPrinterSetting());
         drugbagPrinterSettingItem.addActionListener(event -> doDrugbagPrinterSetting());
         techouPrinterSettingItem.addActionListener(event -> doTechouPrinterSetting());
@@ -279,37 +209,37 @@ public class MainFrame extends JFrame {
     }
 
     private void doStartPresc() {
-        PharmaQueueFullDTO pharmaQueueFull = pharmaQueueList.getSelectedValue();
-        if( pharmaQueueFull == null ){
-            return;
-        }
-        Service.api.listDrugFull(pharmaQueueFull.visitId)
-                .thenAccept(drugs -> {
-                    EventQueue.invokeLater(() -> {
-                        workarea.update(pharmaQueueFull.patient, drugs);
-                        auxControl.update(pharmaQueueFull.patient);
-                        rightScroll.getVerticalScrollBar().setValue(0);
-                    });
-                })
-                .exceptionally(t -> null);
+//        PharmaQueueFullDTO pharmaQueueFull = pharmaQueueList.getSelectedValue();
+//        if( pharmaQueueFull == null ){
+//            return;
+//        }
+//        Service.api.listDrugFull(pharmaQueueFull.visitId)
+//                .thenAccept(drugs -> {
+//                    EventQueue.invokeLater(() -> {
+//                        workarea.update(pharmaQueueFull.patient, drugs);
+//                        auxControl.update(pharmaQueueFull.patient);
+//                        rightScroll.getVerticalScrollBar().setValue(0);
+//                    });
+//                })
+//                .exceptionally(t -> null);
     }
 
     private void doUpdatePatientList() {
-        CompletableFuture<List<PharmaQueueFullDTO>> pharmaList;
-        if( includePrescribedCheckBox.isSelected() ){
-            pharmaList = Service.api.listPharmaQueueForToday();
-        } else {
-            pharmaList = Service.api.listPharmaQueueForPrescription();
-        }
-        pharmaList.thenAccept(result -> {
-            EventQueue.invokeLater(() -> {
-                pharmaQueueList.setListData(result.toArray(new PharmaQueueFullDTO[]{}));
-            });
-        })
-        .exceptionally(t -> {
-            t.printStackTrace();
-            return null;
-        });
+//        CompletableFuture<List<PharmaQueueFullDTO>> pharmaList;
+//        if( includePrescribedCheckBox.isSelected() ){
+//            pharmaList = Service.api.listPharmaQueueForToday();
+//        } else {
+//            pharmaList = Service.api.listPharmaQueueForPrescription();
+//        }
+//        pharmaList.thenAccept(result -> {
+//            EventQueue.invokeLater(() -> {
+//                pharmaQueueList.setListData(result.toArray(new PharmaQueueFullDTO[]{}));
+//            });
+//        })
+//        .exceptionally(t -> {
+//            t.printStackTrace();
+//            return null;
+//        });
     }
 
     private void doManagePrint(){

@@ -20,7 +20,7 @@ import retrofit2.http.Query;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-class Service {
+public class Service {
     public interface ServerAPI {
         @GET("list-pharma-queue-full-for-prescription")
         CompletableFuture<List<PharmaQueueFullDTO>> listPharmaQueueForPrescription();
