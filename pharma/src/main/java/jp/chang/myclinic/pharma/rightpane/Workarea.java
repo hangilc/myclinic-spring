@@ -14,6 +14,7 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
 import jp.chang.myclinic.pharma.*;
+import jp.chang.myclinic.pharma.wrappedtext.Strut;
 import jp.chang.myclinic.pharma.wrappedtext.WrappedText;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DrugUtil;
@@ -24,8 +25,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -48,19 +51,63 @@ class Workarea extends JPanel {
     private List<DrugFullDTO> drugs = Collections.emptyList();
 
     Workarea(PatientDTO patient, List<DrugFullDTO> drugs){
+        this.patient = patient;
+        this.drugs = drugs;
         setupNameLabel();
+        nameLabel.setText(patient.lastName + patient.firstName);
+        yomiLabel.setText(patient.lastNameYomi + patient.firstNameYomi);
+        patientInfoLabel.setText(patientInfoText(patient));
         setLayout(new MigLayout("gapy 0", "[grow]", ""));
         add(nameLabel, "gap top 0, wrap");
         add(yomiLabel, "gap top 5, wrap");
         add(patientInfoLabel, "wrap");
         {
             drugsContainer.setLayout(new MigLayout("insets 0, gapy 1", "[grow]", ""));
+            drugsContainer.add(new Strut(width -> {
+                addDrugs(drugsContainer, width - 5, drugs);
+                drugsContainer.repaint();
+                drugsContainer.revalidate();
+            }), "growx");
             add(drugsContainer, "growx, wrap");
         }
         add(makeCommandRow1(), "wrap");
         add(makeCommandRow2(), "gaptop 5, right");
-        update(patient, drugs);
         bind();
+    }
+
+    private String patientInfoText(PatientDTO patient){
+        LocalDate birthday = DateTimeUtil.parseSqlDate(patient.birthday);
+        return String.format("患者番号 %d %s生 %d才 %s性", patient.patientId,
+                DateTimeUtil.toKanji(birthday),
+                DateTimeUtil.calcAge(birthday),
+                "M".equals(patient.sex) ? "男" : "女");
+    }
+
+    private void addDrugs(Container container, int width, List<DrugFullDTO> drugs){
+        int index = 1;
+        for(DrugFullDTO drugFull: drugs){
+            String text = (index++) + ") " + DrugUtil.drugRep(drugFull);
+            WrappedText wrap = new WrappedText(text, width);
+            JLabel bagLink = new JLabel("薬袋");
+            bagLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            bagLink.addMouseListener(new MouseAdapter(){
+                @Override
+                public void mouseClicked(MouseEvent e){
+                    doPreviewDrugBag(drugFull, patient);
+                }
+            });
+            bagLink.setForeground(Color.BLUE);
+            bagLink.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+            wrap.appendComponent(bagLink);
+            if( drugFull.drug.prescribed != 0 ){
+                JLabel prescribedLabel = new JLabel(" 処方済 ");
+                Font font = prescribedLabel.getFont().deriveFont(BOLD);
+                prescribedLabel.setFont(font);
+                wrap.appendComponent(prescribedLabel);
+            }
+            drugsContainer.add(wrap, "growx, wrap");
+        }
+
     }
 
     private void update(PatientDTO patient, List<DrugFullDTO> drugs){
@@ -208,6 +255,7 @@ class Workarea extends JPanel {
                 .thenCompose(clinicInfo -> {
                     dataStore.clinicInfo = clinicInfo;
                     List<Integer> iyakuhincodes = drugs.stream().map(d -> d.drug.iyakuhincode).collect(Collectors.toList());
+                    System.out.println("DEBUG: " + iyakuhincodes);
                     return Service.api.collectPharmaDrugByIyakuhincodes(iyakuhincodes);
                 })
                 .thenApply(pharmaDrugs -> {

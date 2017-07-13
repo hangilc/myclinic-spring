@@ -92,7 +92,10 @@ public class WrappedText extends JPanel {
     }
 
     public void appendComponent(JComponent component){
-        if( workingLine.getRemaining() < component.getWidth() ){
+        Dimension dim = component.getPreferredSize();
+        component.setMinimumSize(dim);
+        component.setMaximumSize(dim);
+        if( workingLine.getRemaining() < dim.getWidth() ){
             newline();
         }
         workingLine.addComponent(component, Line.VAlign.Center);

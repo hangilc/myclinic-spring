@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,10 @@ public class PharmaDrugController {
     }
 
     @RequestMapping(value="/collect-pharma-drug-by-iyakuhincodes", method=RequestMethod.GET)
-    public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(@RequestParam("iyakuhincode[]") List<Integer> iyakuhincodes){
+    public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(@RequestParam(value="iyakuhincode[]", required=false) List<Integer> iyakuhincodes){
+        if( iyakuhincodes == null ){
+            iyakuhincodes = Collections.emptyList();
+        }
         return dbGateway.collectPharmaDrugByIyakuhincodes(iyakuhincodes);
     }
 
