@@ -10,24 +10,31 @@ import java.awt.*;
 import java.util.List;
 
 public class LeftPane extends JPanel {
+
+    public interface Callbacks {
+        default void onStartPresc(PharmaQueueFullDTO pharmaQueue, List<DrugFullDTO> drugs){}
+    }
+
     private PharmaQueueList pharmaQueueList;
     private PatientListControlPane patientListControlPane;
-    private PrevTechouPane prevTechouPane;
+    private Callbacks callbacks;
 
-    public LeftPane(Icon waitCashierIcon, Icon waitDrugIcon){
+    public LeftPane(Icon waitCashierIcon, Icon waitDrugIcon, Callbacks callbacks){
+        this.callbacks = callbacks;
         pharmaQueueList = new PharmaQueueList(waitCashierIcon, waitDrugIcon);
-        patientListControlPane = new PatientListControlPane(waitCashierIcon, waitDrugIcon){
-            @Override
-            public void onUpdatePharmaQueue(List<PharmaQueueFullDTO> list){
-                pharmaQueueList.setListData(list.toArray(new PharmaQueueFullDTO[]{}));
-            }
+        patientListControlPane = new PatientListControlPane(waitCashierIcon, waitDrugIcon,
+                new PatientListControlPane.Callbacks() {
+                    @Override
+                    public void onUpdatePharmaQueue(List<PharmaQueueFullDTO> list) {
+                        pharmaQueueList.setListData(list.toArray(new PharmaQueueFullDTO[]{}));
+                    }
 
-            @Override
-            public void onStartPresc(){
-                doStartPresc();
-            }
-        };
-        prevTechouPane = new PrevTechouPane();
+                    @Override
+                    public void onStartPresc() {
+                        doStartPresc();
+                    }
+                });
+        PrevTechouPane prevTechouPane = new PrevTechouPane();
         setLayout(new MigLayout("fill", "", ""));
         add(new JLabel("患者リスト"), "left, wrap");
         add(new JScrollPane(pharmaQueueList), "grow, wrap");
@@ -39,8 +46,8 @@ public class LeftPane extends JPanel {
         pharmaQueueList.clearSelection();
     }
 
-    public void reloadPharmaQueueList(){
-        pharmaQueueList.reload();
+    public void reloadPharmaQueue(){
+        patientListControlPane.triggerPharmaQueueUpdate();
     }
 
     private void doStartPresc(){
@@ -51,16 +58,10 @@ public class LeftPane extends JPanel {
         Service.api.listDrugFull(pharmaQueueFull.visitId)
                 .thenAccept(drugs -> {
                     EventQueue.invokeLater(() -> {
-                        onStartPresc(pharmaQueueFull, drugs);
-//                        workarea.update(pharmaQueueFull.patient, drugs);
-//                        auxControl.update(pharmaQueueFull.patient);
-//                        rightScroll.getVerticalScrollBar().setValue(0);
+                        callbacks.onStartPresc(pharmaQueueFull, drugs);
                     });
                 })
                 .exceptionally(t -> null);
     }
 
-    public void onStartPresc(PharmaQueueFullDTO pharmaQueueFull, List<DrugFullDTO> drugs){
-
-    }
 }

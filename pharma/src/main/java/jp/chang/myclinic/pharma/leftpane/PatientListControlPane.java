@@ -11,15 +11,22 @@ import java.util.concurrent.CompletableFuture;
 
 class PatientListControlPane extends JPanel {
 
+    interface Callbacks {
+        default void onUpdatePharmaQueue(List<PharmaQueueFullDTO> list){ }
+        default void onStartPresc(){ }
+    }
+
     private Icon waitCashierIcon;
     private Icon waitDrugIcon;
     private JCheckBox includePrescribedCheckBox = new JCheckBox("処方済の患者も含める");
     private JButton updatePatientListButton = new JButton("更新");
     private JButton startPrescButton = new JButton("調剤開始");
+    private Callbacks callbacks;
 
-    PatientListControlPane(Icon waitCashierIcon, Icon waitDrugIcon){
+    PatientListControlPane(Icon waitCashierIcon, Icon waitDrugIcon, Callbacks callbacks){
         this.waitCashierIcon = waitCashierIcon;
         this.waitDrugIcon = waitDrugIcon;
+        this.callbacks = callbacks;
         setLayout(new MigLayout("insets 0, gapy 0", "", ""));
         add(makePatientListSubRow1(), "wrap");
         add(makePatientListSubRow2(), "wrap");
@@ -28,9 +35,11 @@ class PatientListControlPane extends JPanel {
         startPrescButton.addActionListener(event -> doStartPresc());
     }
 
+    PatientListControlPane(Icon waitCashierIcon, Icon waitDrugIcon) {
+        this(waitCashierIcon, waitDrugIcon, new Callbacks(){});
+    }
 
-
-    private JComponent makePatientListSubRow1(){
+        private JComponent makePatientListSubRow1(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         JLabel waitCashierLabel = new JLabel("会計待ち");
         waitCashierLabel.setIcon(waitCashierIcon);
@@ -66,8 +75,7 @@ class PatientListControlPane extends JPanel {
         }
         pharmaList.thenAccept(result -> {
             EventQueue.invokeLater(() -> {
-                //pharmaQueueList.setListData(result.toArray(new PharmaQueueFullDTO[]{}));
-                onUpdatePharmaQueue(result);
+                callbacks.onUpdatePharmaQueue(result);
             });
         })
         .exceptionally(t -> {
@@ -76,16 +84,12 @@ class PatientListControlPane extends JPanel {
         });
     }
 
-    public void onUpdatePharmaQueue(List<PharmaQueueFullDTO> list){
-
+    public void triggerPharmaQueueUpdate(){
+        doUpdatePatientList();
     }
 
     private void doStartPresc(){
-        onStartPresc();
-    }
-
-    public void onStartPresc(){
-
+        callbacks.onStartPresc();
     }
 
 }

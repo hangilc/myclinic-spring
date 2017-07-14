@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CompletionException;
 
 class MainFrame extends JFrame {
@@ -43,25 +44,12 @@ class MainFrame extends JFrame {
         rightScroll.setBorder(null);
         rightScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         rightScroll.getVerticalScrollBar().setUnitIncrement(12);
-        leftPane = new LeftPane(waitCashierIcon, waitDrugIcon){
+        leftPane = new LeftPane(waitCashierIcon, waitDrugIcon, new LeftPane.Callbacks(){
             @Override
-            public void onStartPresc(PharmaQueueFullDTO pharmaQueueFull, java.util.List<DrugFullDTO> drugs){
-                RightPane rightPane = new RightPane(pharmaQueueFull, drugs);
-                rightPane.setOnCancelCallback(() -> {
-                    rightScroll.getViewport().setView(null);
-                    leftPane.clear();
-                });
-                rightPane.setOnPrescDoneCallback(() -> {
-                    rightScroll.getViewport().setView(null);
-                    leftPane.clear();
-                    leftPane.reloadPharmaQueueList();
-                });
-                rightScroll.getViewport().setView(rightPane);
-                rightScroll.getVerticalScrollBar().setValue(0);
-                //rightScroll.repaint();
-                //rightScroll.revalidate();
+            public void onStartPresc(PharmaQueueFullDTO pharmaQueue, List<DrugFullDTO> drugs) {
+                startPresc(pharmaQueue, drugs, rightScroll, leftPane);
             }
-        };
+        });
         add(leftPane, "growx, top");
         add(rightScroll, "grow, top");
         bind();
@@ -171,6 +159,23 @@ class MainFrame extends JFrame {
 //        workarea = wa;
 //        return wa;
 //    }
+
+    private void startPresc(PharmaQueueFullDTO pharmaQueueFull, List<DrugFullDTO> drugs, JScrollPane rightScroll,
+                            LeftPane leftPane){
+        RightPane rightPane = new RightPane(pharmaQueueFull, drugs);
+        rightPane.setOnCancelCallback(() -> {
+            rightScroll.getViewport().setView(null);
+            leftPane.clear();
+        });
+        rightPane.setOnPrescDoneCallback(() -> {
+            rightScroll.getViewport().setView(null);
+            leftPane.clear();
+            leftPane.reloadPharmaQueue();
+        });
+        rightScroll.getViewport().setView(rightPane);
+        rightScroll.getVerticalScrollBar().setValue(0);
+
+    }
 
     private void bind(){
         prescPrinterSettingItem.addActionListener(event -> doPrescPrinterSetting());
@@ -316,7 +321,6 @@ class MainFrame extends JFrame {
                     });
         } catch(NumberFormatException ex){
             alert("患者番号の入力が不適切です。");
-            return;
         }
      }
 
