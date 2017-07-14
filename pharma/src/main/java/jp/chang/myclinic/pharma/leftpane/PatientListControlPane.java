@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 class PatientListControlPane extends JPanel {
+
     private Icon waitCashierIcon;
     private Icon waitDrugIcon;
     private JCheckBox includePrescribedCheckBox = new JCheckBox("処方済の患者も含める");
@@ -26,6 +27,8 @@ class PatientListControlPane extends JPanel {
         updatePatientListButton.addActionListener(event -> doUpdatePatientList());
         startPrescButton.addActionListener(event -> doStartPresc());
     }
+
+
 
     private JComponent makePatientListSubRow1(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));

@@ -36,32 +36,21 @@ import static java.awt.Font.BOLD;
 
 class Workarea extends JPanel {
 
-    private JLabel nameLabel = new JLabel("");
-    private JLabel yomiLabel = new JLabel("");
-    private JLabel patientInfoLabel = new JLabel("");
-    private JPanel drugsContainer = new JPanel();
-    private JButton printPrescButton = new JButton("処方内容印刷");
-    private JButton printDrugBagButton = new JButton("薬袋印刷");
-    private JButton printTechouButton = new JButton("薬手帳印刷");
-    private JButton printAllButton = new JButton("*全部印刷*");
-    private JButton printAllExceptTechouButton = new JButton("*全部印刷(薬手帳なし)*");
-    private JButton cancelButton = new JButton("キャンセル");
-    private JButton doneButton = new JButton("薬渡し終了");
     private PatientDTO patient;
     private List<DrugFullDTO> drugs = Collections.emptyList();
+
+    private RightPane.OnPrescDoneCallback onPrescDoneCallback;
+    private RightPane.OnCancelCallback onCancelCallback;
 
     Workarea(PatientDTO patient, List<DrugFullDTO> drugs){
         this.patient = patient;
         this.drugs = drugs;
-        setupNameLabel();
-        nameLabel.setText(patient.lastName + patient.firstName);
-        yomiLabel.setText(patient.lastNameYomi + patient.firstNameYomi);
-        patientInfoLabel.setText(patientInfoText(patient));
         setLayout(new MigLayout("gapy 0", "[grow]", ""));
-        add(nameLabel, "gap top 0, wrap");
-        add(yomiLabel, "gap top 5, wrap");
-        add(patientInfoLabel, "wrap");
+        add(makeNameLabel(patient), "gap top 0, wrap");
+        add(makeYomiLabel(patient), "gap top 5, wrap");
+        add(makePatientInfoLabel(patient), "wrap");
         {
+            JPanel drugsContainer = new JPanel();
             drugsContainer.setLayout(new MigLayout("insets 0, gapy 1", "[grow]", ""));
             drugsContainer.add(new Strut(width -> {
                 addDrugs(drugsContainer, width - 5, drugs);
@@ -72,15 +61,35 @@ class Workarea extends JPanel {
         }
         add(makeCommandRow1(), "wrap");
         add(makeCommandRow2(), "gaptop 5, right");
-        bind();
     }
 
-    private String patientInfoText(PatientDTO patient){
+    public void setOnPrescDoneCallback(RightPane.OnPrescDoneCallback callback){
+        this.onPrescDoneCallback = callback;
+    }
+
+    public void setOnCancelCallback(RightPane.OnCancelCallback callback){
+        this.onCancelCallback = callback;
+    }
+
+    private JComponent makeNameLabel(PatientDTO patient){
+        JLabel nameLabel = new JLabel(patient.lastName + patient.firstName);
+        Font baseFont = nameLabel.getFont();
+        Font font = baseFont.deriveFont(BOLD, (int)(baseFont.getSize() * 1.2));
+        nameLabel.setFont(font);
+        return nameLabel;
+    }
+
+    private JComponent makeYomiLabel(PatientDTO patient){
+        return new JLabel(patient.lastNameYomi + patient.firstNameYomi);
+    }
+
+    private JComponent makePatientInfoLabel(PatientDTO patient){
         LocalDate birthday = DateTimeUtil.parseSqlDate(patient.birthday);
-        return String.format("患者番号 %d %s生 %d才 %s性", patient.patientId,
+        String text = String.format("患者番号 %d %s生 %d才 %s性", patient.patientId,
                 DateTimeUtil.toKanji(birthday),
                 DateTimeUtil.calcAge(birthday),
                 "M".equals(patient.sex) ? "男" : "女");
+        return new JLabel(text);
     }
 
     private void addDrugs(Container container, int width, List<DrugFullDTO> drugs){
@@ -105,82 +114,54 @@ class Workarea extends JPanel {
                 prescribedLabel.setFont(font);
                 wrap.appendComponent(prescribedLabel);
             }
-            drugsContainer.add(wrap, "growx, wrap");
+            container.add(wrap, "growx, wrap");
         }
 
-    }
-
-    private void update(PatientDTO patient, List<DrugFullDTO> drugs){
-        this.patient = patient;
-        this.drugs = drugs;
-        nameLabel.setText(patient.lastName + patient.firstName);
-        yomiLabel.setText(patient.lastNameYomi + patient.firstNameYomi);
-        LocalDate birthday = DateTimeUtil.parseSqlDate(patient.birthday);
-        String infoLabel = String.format("患者番号 %d %s生 %d才 %s性", patient.patientId,
-                DateTimeUtil.toKanji(birthday),
-                DateTimeUtil.calcAge(birthday),
-                "M".equals(patient.sex) ? "男" : "女");
-        patientInfoLabel.setText(infoLabel);
-        drugsContainer.removeAll();
-        int index = 1;
-        for(DrugFullDTO drugFull: drugs){
-            int width = drugsContainer.getWidth() - 5;
-            String text = (index++) + ") " + DrugUtil.drugRep(drugFull);
-            WrappedText wrap = new WrappedText(text, width);
-            JLabel bagLink = new JLabel("薬袋");
-            bagLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            bagLink.addMouseListener(new MouseAdapter(){
-                @Override
-                public void mouseClicked(MouseEvent e){
-                    doPreviewDrugBag(drugFull, patient);
-                }
-            });
-            bagLink.setForeground(Color.BLUE);
-            bagLink.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
-            wrap.appendComponent(bagLink);
-            if( drugFull.drug.prescribed != 0 ){
-                JLabel prescribedLabel = new JLabel(" 処方済 ");
-                Font font = prescribedLabel.getFont().deriveFont(BOLD);
-                prescribedLabel.setFont(font);
-                wrap.appendComponent(prescribedLabel);
-            }
-            drugsContainer.add(wrap, "growx, wrap");
-        }
-        drugsContainer.repaint();
-        drugsContainer.revalidate();
-    }
-
-    private void setupNameLabel(){
-        Font baseFont = nameLabel.getFont();
-        Font font = baseFont.deriveFont(BOLD, (int)(baseFont.getSize() * 1.2));
-        nameLabel.setFont(font);
     }
 
     private JComponent makeCommandRow1(){
         JPanel panel = new JPanel(new MigLayout("insets 0, gapy 1", "", ""));
-        panel.add(printPrescButton);
-        panel.add(printDrugBagButton);
-        panel.add(printTechouButton, "wrap");
-        panel.add(printAllButton, "grow");
-        panel.add(printAllExceptTechouButton, "span 2, grow");
+        {
+            JButton printPrescButton = new JButton("処方内容印刷");
+            printPrescButton.addActionListener(event -> doPrintPrescContent());
+            panel.add(printPrescButton);
+        }
+        {
+            JButton printDrugBagButton = new JButton("薬袋印刷");
+            printDrugBagButton.addActionListener(event -> doPrintDrugBag());
+            panel.add(printDrugBagButton);
+        }
+        {
+            JButton printTechouButton = new JButton("薬手帳印刷");
+            printTechouButton.addActionListener(event -> doPrintTechou());
+            panel.add(printTechouButton, "wrap");
+        }
+        {
+            JButton printAllButton = new JButton("*全部印刷*");
+            printAllButton.addActionListener(event -> doPrintAll());
+            panel.add(printAllButton, "grow");
+        }
+        {
+            JButton printAllExceptTechouButton = new JButton("*全部印刷(薬手帳なし)*");
+            printAllExceptTechouButton.addActionListener(event -> doPrintAllExceptTechou());
+            panel.add(printAllExceptTechouButton, "span 2, grow");
+        }
         return panel;
     }
 
     private JComponent makeCommandRow2(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        panel.add(cancelButton, "sizegroup btn");
-        panel.add(doneButton, "sizegroup btn");
+        {
+            JButton cancelButton = new JButton("キャンセル");
+            cancelButton.addActionListener(event -> doCancel());
+            panel.add(cancelButton, "sizegroup btn");
+        }
+        {
+            JButton doneButton = new JButton("薬渡し終了");
+            doneButton.addActionListener(event -> doPrescDone());
+            panel.add(doneButton, "sizegroup btn");
+        }
         return panel;
-    }
-
-    private void bind(){
-        printPrescButton.addActionListener(event -> doPrintPrescContent());
-        printDrugBagButton.addActionListener(event -> doPrintDrugBag());
-        printTechouButton.addActionListener(event -> doPrintTechou());
-        printAllButton.addActionListener(event -> doPrintAll());
-        printAllExceptTechouButton.addActionListener(event -> doPrintAllExceptTechou());
-        doneButton.addActionListener(event -> doPrescDone());
-        cancelButton.addActionListener(event -> doCancel());
     }
 
     private void doPrescDone(){
@@ -188,7 +169,9 @@ class Workarea extends JPanel {
             int visitId = drugs.get(0).drug.visitId;
             Service.api.prescDone(visitId)
                     .thenAccept(result -> {
-                        EventQueue.invokeLater(() -> onPrescDone());
+                        if( onPrescDoneCallback != null ){
+                            EventQueue.invokeLater(() -> onPrescDoneCallback.callback());
+                        }
                     })
                     .exceptionally(t -> {
                         t.printStackTrace();
@@ -196,20 +179,16 @@ class Workarea extends JPanel {
                         return null;
                     });
         } else {
-            onPrescDone();
+            if( onPrescDoneCallback != null ){
+                EventQueue.invokeLater(() -> onPrescDoneCallback.callback());
+            }
         }
     }
 
-    public void onPrescDone(){
-
-    }
-
     private void doCancel(){
-        onCancel();
-    }
-
-    public void onCancel(){
-
+        if( onCancelCallback != null ){
+            onCancelCallback.callback();
+        }
     }
 
     private void doPreviewDrugBag(DrugFullDTO drugFull, PatientDTO patient){

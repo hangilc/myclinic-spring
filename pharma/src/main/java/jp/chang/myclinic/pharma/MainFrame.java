@@ -17,20 +17,12 @@ import java.util.concurrent.CompletionException;
 
 class MainFrame extends JFrame {
 
-    //private PharmaQueueList pharmaQueueList;
-//    private Workarea workarea;
-//    private AuxControl auxControl;
-    private JButton updatePatientListButton = new JButton("更新");
-    private JButton startPrescButton = new JButton("調剤開始");
     private JTextField prevTechouSearchField = new JTextField(6);
     private JButton searchPrevTechouButton = new JButton("検索");
-    private JPanel searchPrevTechouResult;
-    private JScrollPane searchPrevTechouResultScroll;
     private JMenuItem prescPrinterSettingItem = new JMenuItem("処方内容印刷設定");
     private JMenuItem drugbagPrinterSettingItem = new JMenuItem("薬袋印刷設定");
     private JMenuItem techouPrinterSettingItem = new JMenuItem("お薬手帳印刷設定");
     private JMenuItem printManageItem = new JMenuItem("印刷管理");
-    //private JScrollPane rightScroll;
     private static Icon waitCashierIcon;
     private static Icon waitDrugIcon;
 
@@ -55,6 +47,15 @@ class MainFrame extends JFrame {
             @Override
             public void onStartPresc(PharmaQueueFullDTO pharmaQueueFull, java.util.List<DrugFullDTO> drugs){
                 RightPane rightPane = new RightPane(pharmaQueueFull, drugs);
+                rightPane.setOnCancelCallback(() -> {
+                    rightScroll.getViewport().setView(null);
+                    leftPane.clear();
+                });
+                rightPane.setOnPrescDoneCallback(() -> {
+                    rightScroll.getViewport().setView(null);
+                    leftPane.clear();
+                    leftPane.reloadPharmaQueueList();
+                });
                 rightScroll.getViewport().setView(rightPane);
                 rightScroll.getVerticalScrollBar().setValue(0);
                 //rightScroll.repaint();

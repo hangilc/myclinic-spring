@@ -35,6 +35,14 @@ public class LeftPane extends JPanel {
         add(prevTechouPane, "growx");
     }
 
+    public void clear(){
+        pharmaQueueList.clearSelection();
+    }
+
+    public void reloadPharmaQueueList(){
+        pharmaQueueList.reload();
+    }
+
     private void doStartPresc(){
         PharmaQueueFullDTO pharmaQueueFull = pharmaQueueList.getSelectedValue();
         if( pharmaQueueFull == null ){

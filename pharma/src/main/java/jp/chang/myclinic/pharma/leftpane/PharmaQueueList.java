@@ -6,6 +6,8 @@ import javax.swing.*;
 
 class PharmaQueueList extends JList<PharmaQueueFullDTO> {
 
+    enum LoadMode { PharmaQueueOnly, TodaysVisits };
+
     PharmaQueueList(Icon waitCashierImage, Icon waitDrugImage){
         super();
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -34,6 +36,10 @@ class PharmaQueueList extends JList<PharmaQueueFullDTO> {
                 }
             }
         }
+    }
+
+    private void reload(LoadMode lodeMode){
+
     }
 
 }

@@ -15,6 +15,14 @@ public class RightPane extends JPanel {
     private Workarea workarea;
     private AuxControl auxControl;
 
+    public interface OnPrescDoneCallback {
+        void callback();
+    }
+
+    public interface OnCancelCallback {
+        void callback();
+    }
+
     public RightPane(PharmaQueueFullDTO pharmaQueueFull, java.util.List<DrugFullDTO> drugs){
         this.pharmaQueueFull = pharmaQueueFull;
         this.drugs = drugs;
@@ -24,7 +32,11 @@ public class RightPane extends JPanel {
         auxControl = new AuxControl(auxSubControl, dispRecords, width - 2);
         setLayout(new MigLayout("", "[" + width + "!]", ""));
         add(new JLabel("投薬"), "growx, wrap");
-        add(makeWorkarea(), "growx, wrap");
+        {
+            workarea = new Workarea(pharmaQueueFull.patient, drugs);
+            workarea.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            add(workarea, "growx, wrap");
+        }
         {
             JPanel control = new JPanel(new MigLayout("insets 0", "", "[]2[]"));
             auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
@@ -36,26 +48,38 @@ public class RightPane extends JPanel {
         add(dispRecords, "grow");
     }
 
-    private JComponent makeWorkarea(){
-        Workarea wa = new Workarea(pharmaQueueFull.patient, drugs){
-            @Override
-            public void onPrescDone(){
-                // TODO: update patient list
-                clearRight();
-            }
-
-            @Override
-            public void onCancel(){
-                clearRight();
-            }
-
-            private void clearRight(){
-                // TODO: clear records
-            }
-        };
-        wa.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        workarea = wa;
-        return wa;
+    public void setOnPrescDoneCallback(OnPrescDoneCallback callback){
+        if( workarea != null ){
+            workarea.setOnPrescDoneCallback(callback);
+        }
     }
+
+    public void setOnCancelCallback(OnCancelCallback callback){
+        if( workarea != null ){
+            workarea.setOnCancelCallback(callback);
+        }
+    }
+
+//    private JComponent makeWorkarea(){
+//        Workarea wa = new Workarea(pharmaQueueFull.patient, drugs){
+//            @Override
+//            public void onPrescDone(){
+//                // TODO: update patient list
+//                clearRight();
+//            }
+//
+//            @Override
+//            public void onCancel(){
+//                clearRight();
+//            }
+//
+//            private void clearRight(){
+//                // TODO: clear records
+//            }
+//        };
+//        wa.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+//        workarea = wa;
+//        return wa;
+//    }
 
 }

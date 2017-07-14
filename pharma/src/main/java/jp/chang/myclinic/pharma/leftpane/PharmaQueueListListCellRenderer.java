@@ -9,13 +9,13 @@ import jp.chang.myclinic.pharma.BlankIcon;
 import javax.swing.*;
 import java.awt.*;
 
-public class PharmaQueueListListCellRenderer extends JLabel implements ListCellRenderer<PharmaQueueFullDTO> {
+class PharmaQueueListListCellRenderer extends JLabel implements ListCellRenderer<PharmaQueueFullDTO> {
 
     private Icon waitCashierIcon;
     private Icon waitDrugIcon;
     private Icon blankIcon;
 
-    public PharmaQueueListListCellRenderer(Icon waitCashierIcon, Icon waitDrugIcon){
+    PharmaQueueListListCellRenderer(Icon waitCashierIcon, Icon waitDrugIcon){
         this.waitCashierIcon = waitCashierIcon;
         this.waitDrugIcon = waitDrugIcon;
         this.blankIcon = new BlankIcon(12, 12);
