@@ -1,15 +1,55 @@
 package jp.chang.myclinic.pharma.rightpane;
 
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.pharma.RecordPage;
-import jp.chang.myclinic.pharma.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.List;
 
 class AuxControl extends JPanel {
+
+    interface Callbacks {
+        void onShowVisits();
+        void onShowDrugs();
+    }
+
+    private JRadioButton showVisitsButton;
+    private JRadioButton showDrugsButton;
+
+    AuxControl(Callbacks callbacks){
+        setLayout(new MigLayout("insets 0", "", ""));
+        {
+            setLayout(new MigLayout("insets 0", "", ""));
+            showVisitsButton = new JRadioButton("日にち順");
+            showVisitsButton.addActionListener(event -> callbacks.onShowVisits());
+            showDrugsButton = new JRadioButton("薬剤別");
+            showDrugsButton.addActionListener(event -> callbacks.onShowDrugs());
+            ButtonGroup buttonGroup = new ButtonGroup();
+            buttonGroup.add(showVisitsButton);
+            buttonGroup.add(showDrugsButton);
+            showVisitsButton.setSelected(true);
+            add(showVisitsButton);
+            add(showDrugsButton);
+        }
+    }
+
+    void enableButtons(){
+        showVisitsButton.setEnabled(true);
+        showDrugsButton.setEnabled(true);
+    }
+
+    void disableButtons(){
+        showVisitsButton.setEnabled(false);
+        showDrugsButton.setEnabled(false);
+    }
+
+}
+
+/*
+class AuxControl extends JPanel {
+
+    interface Callbacks {
+        void onShowVisits();
+        void onShowDrugs();
+    }
 
     private int width;
     private PatientDTO patient;
@@ -108,3 +148,5 @@ class AuxControl extends JPanel {
     }
 
 }
+
+*/

@@ -10,7 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-public class AuxRecordsNav extends JPanel {
+class AuxRecordsNav extends JPanel {
 
     private AuxDispRecords records;
     private int currentPage;
@@ -19,7 +19,7 @@ public class AuxRecordsNav extends JPanel {
     private JLabel gotoPrevLink;
     private JLabel gotoNextLink;
 
-    public AuxRecordsNav(AuxDispRecords records, List<RecordPage> pages, PatientDTO patient){
+    AuxRecordsNav(AuxDispRecords records, List<RecordPage> pages, PatientDTO patient){
         this.records = records;
         this.pages = pages;
         setLayout(new MigLayout("insets 0", "", ""));
@@ -36,7 +36,7 @@ public class AuxRecordsNav extends JPanel {
         bind();
     }
 
-    public void updateVisits(){
+    void updateVisits(){
         if( currentPage >= 0 && currentPage < pages.size() ){
             records.showVisits(pages.get(currentPage).visitIds);
         }

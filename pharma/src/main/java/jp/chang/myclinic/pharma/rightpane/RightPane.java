@@ -1,7 +1,10 @@
 package jp.chang.myclinic.pharma.rightpane;
 
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.pharma.RecordPage;
+import jp.chang.myclinic.pharma.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -29,7 +32,18 @@ public class RightPane extends JPanel {
         int width = 330;
         JPanel auxSubControl = new JPanel(new MigLayout("", "", ""));
         AuxDispRecords dispRecords = new AuxDispRecords(width);
-        auxControl = new AuxControl(auxSubControl, dispRecords, width - 2);
+        auxControl = new AuxControl(new AuxControl.Callbacks(){
+            @Override
+            public void onShowVisits() {
+                auxControl.disableButtons();
+                doShowVisits();
+            }
+
+            @Override
+            public void onShowDrugs() {
+
+            }
+        });
         setLayout(new MigLayout("", "[" + width + "!]", ""));
         add(new JLabel("投薬"), "growx, wrap");
         {
@@ -38,7 +52,7 @@ public class RightPane extends JPanel {
             add(workarea, "growx, wrap");
         }
         {
-            JPanel control = new JPanel(new MigLayout("insets 0", "", "[]2[]"));
+            JPanel control = new JPanel(new MigLayout("insets 0, fill", "", "[]2[]"));
             auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
             auxSubControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
             control.add(auxControl, "growx, wrap");
@@ -58,6 +72,26 @@ public class RightPane extends JPanel {
         if( workarea != null ){
             workarea.setOnCancelCallback(callback);
         }
+    }
+
+    private void doShowVisits(){
+        PatientDTO patient = pharmaQueueFull.patient;
+        Service.api.listVisitIdVisitedAtForPatient(patient.patientId)
+                .thenAccept(visitIds -> {
+                    List<RecordPage>  pages = RecordPage.divideToPages(visitIds);
+                    EventQueue.invokeLater(() -> {
+                        auxControl.enableButtons();
+                        dispVisits = new AuxVisitsSubControl(patient, pages, dispRecords);
+                        setSubControlContent(dispVisits);
+                        showVisitsButton.setEnabled(true);
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
+
     }
 
 //    private JComponent makeWorkarea(){
