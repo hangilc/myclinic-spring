@@ -36,15 +36,19 @@ import static java.awt.Font.BOLD;
 
 class Workarea extends JPanel {
 
+    interface Callbacks {
+        void onPrescDone();
+        void onCancel();
+    }
+
     private PatientDTO patient;
     private List<DrugFullDTO> drugs = Collections.emptyList();
+    private Callbacks callbacks;
 
-    private RightPane.OnPrescDoneCallback onPrescDoneCallback;
-    private RightPane.OnCancelCallback onCancelCallback;
-
-    Workarea(PatientDTO patient, List<DrugFullDTO> drugs){
+    Workarea(PatientDTO patient, List<DrugFullDTO> drugs, Callbacks callbacks){
         this.patient = patient;
         this.drugs = drugs;
+        this.callbacks = callbacks;
         setLayout(new MigLayout("gapy 0", "[grow]", ""));
         add(makeNameLabel(patient), "gap top 0, wrap");
         add(makeYomiLabel(patient), "gap top 5, wrap");
@@ -61,14 +65,6 @@ class Workarea extends JPanel {
         }
         add(makeCommandRow1(), "wrap");
         add(makeCommandRow2(), "gaptop 5, right");
-    }
-
-    public void setOnPrescDoneCallback(RightPane.OnPrescDoneCallback callback){
-        this.onPrescDoneCallback = callback;
-    }
-
-    public void setOnCancelCallback(RightPane.OnCancelCallback callback){
-        this.onCancelCallback = callback;
     }
 
     private JComponent makeNameLabel(PatientDTO patient){
@@ -169,9 +165,7 @@ class Workarea extends JPanel {
             int visitId = drugs.get(0).drug.visitId;
             Service.api.prescDone(visitId)
                     .thenAccept(result -> {
-                        if( onPrescDoneCallback != null ){
-                            EventQueue.invokeLater(() -> onPrescDoneCallback.callback());
-                        }
+                            EventQueue.invokeLater(() -> callbacks.onPrescDone());
                     })
                     .exceptionally(t -> {
                         t.printStackTrace();
@@ -179,16 +173,12 @@ class Workarea extends JPanel {
                         return null;
                     });
         } else {
-            if( onPrescDoneCallback != null ){
-                EventQueue.invokeLater(() -> onPrescDoneCallback.callback());
-            }
+            EventQueue.invokeLater(() -> callbacks.onPrescDone());
         }
     }
 
     private void doCancel(){
-        if( onCancelCallback != null ){
-            onCancelCallback.callback();
-        }
+        callbacks.onCancel();
     }
 
     private void doPreviewDrugBag(DrugFullDTO drugFull, PatientDTO patient){

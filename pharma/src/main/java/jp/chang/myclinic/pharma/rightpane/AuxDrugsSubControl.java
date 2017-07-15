@@ -2,7 +2,6 @@ package jp.chang.myclinic.pharma.rightpane;
 
 import jp.chang.myclinic.dto.IyakuhincodeNameDTO;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.pharma.RecordPage;
 import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.wrappedtext.WrappedText;
 import net.miginfocom.swing.MigLayout;

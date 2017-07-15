@@ -1,34 +1,56 @@
 package jp.chang.myclinic.pharma.rightpane;
 
+import jp.chang.myclinic.pharma.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
+import java.util.List;
 
 class AuxControl extends JPanel {
 
     interface Callbacks {
-        void onShowVisits();
+        void onShowVisits(List<RecordPage>  pages);
         void onShowDrugs();
     }
 
+    private int patientId;
     private JRadioButton showVisitsButton;
     private JRadioButton showDrugsButton;
+    private Callbacks callbacks;
 
-    AuxControl(Callbacks callbacks){
+    AuxControl(int patientId, Callbacks callbacks){
+        this.patientId = patientId;
+        this.callbacks = callbacks;
         setLayout(new MigLayout("insets 0", "", ""));
-        {
-            setLayout(new MigLayout("insets 0", "", ""));
-            showVisitsButton = new JRadioButton("日にち順");
-            showVisitsButton.addActionListener(event -> callbacks.onShowVisits());
-            showDrugsButton = new JRadioButton("薬剤別");
-            showDrugsButton.addActionListener(event -> callbacks.onShowDrugs());
-            ButtonGroup buttonGroup = new ButtonGroup();
-            buttonGroup.add(showVisitsButton);
-            buttonGroup.add(showDrugsButton);
-            showVisitsButton.setSelected(true);
-            add(showVisitsButton);
-            add(showDrugsButton);
-        }
+        showVisitsButton = new JRadioButton("日にち順");
+        showVisitsButton.addActionListener(event -> triggerShowVisits());
+        showDrugsButton = new JRadioButton("薬剤別");
+        showDrugsButton.addActionListener(event -> callbacks.onShowDrugs());
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(showVisitsButton);
+        buttonGroup.add(showDrugsButton);
+        showVisitsButton.setSelected(true);
+        add(showVisitsButton);
+        add(showDrugsButton);
+    }
+
+    void triggerShowVisits(){
+        disableButtons();
+        Service.api.listVisitIdVisitedAtForPatient(patientId)
+                .thenAccept(visitIds -> {
+                    List<RecordPage>  pages = RecordPage.divideToPages(visitIds);
+                    EventQueue.invokeLater(() -> {
+                        enableButtons();
+                        callbacks.onShowVisits(pages);
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
+
     }
 
     void enableButtons(){
@@ -39,6 +61,10 @@ class AuxControl extends JPanel {
     void disableButtons(){
         showVisitsButton.setEnabled(false);
         showDrugsButton.setEnabled(false);
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
     }
 
 }

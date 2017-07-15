@@ -162,15 +162,19 @@ class MainFrame extends JFrame {
 
     private void startPresc(PharmaQueueFullDTO pharmaQueueFull, List<DrugFullDTO> drugs, JScrollPane rightScroll,
                             LeftPane leftPane){
-        RightPane rightPane = new RightPane(pharmaQueueFull, drugs);
-        rightPane.setOnCancelCallback(() -> {
-            rightScroll.getViewport().setView(null);
-            leftPane.clear();
-        });
-        rightPane.setOnPrescDoneCallback(() -> {
-            rightScroll.getViewport().setView(null);
-            leftPane.clear();
-            leftPane.reloadPharmaQueue();
+        RightPane rightPane = new RightPane(pharmaQueueFull, drugs, new RightPane.Callbacks(){
+            @Override
+            public void onPrescDone() {
+                rightScroll.getViewport().setView(null);
+                leftPane.clear();
+                leftPane.reloadPharmaQueue();
+            }
+
+            @Override
+            public void onCancel() {
+                rightScroll.getViewport().setView(null);
+                leftPane.clear();
+            }
         });
         rightScroll.getViewport().setView(rightPane);
         rightScroll.getVerticalScrollBar().setValue(0);

@@ -1,10 +1,7 @@
 package jp.chang.myclinic.pharma.rightpane;
 
 import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
-import jp.chang.myclinic.pharma.RecordPage;
-import jp.chang.myclinic.pharma.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -13,30 +10,30 @@ import java.util.List;
 
 public class RightPane extends JPanel {
 
+    public interface Callbacks {
+        void onPrescDone();
+
+        void onCancel();
+    }
+
     private PharmaQueueFullDTO pharmaQueueFull;
     private List<DrugFullDTO> drugs;
     private Workarea workarea;
     private AuxControl auxControl;
+    private JPanel auxSubControl;
+    private Callbacks callbacks;
 
-    public interface OnPrescDoneCallback {
-        void callback();
-    }
-
-    public interface OnCancelCallback {
-        void callback();
-    }
-
-    public RightPane(PharmaQueueFullDTO pharmaQueueFull, java.util.List<DrugFullDTO> drugs){
+    public RightPane(PharmaQueueFullDTO pharmaQueueFull, java.util.List<DrugFullDTO> drugs, Callbacks callbacks) {
         this.pharmaQueueFull = pharmaQueueFull;
         this.drugs = drugs;
+        this.callbacks = callbacks;
         int width = 330;
-        JPanel auxSubControl = new JPanel(new MigLayout("", "", ""));
+        auxSubControl = new JPanel(new MigLayout("", "", ""));
         AuxDispRecords dispRecords = new AuxDispRecords(width);
-        auxControl = new AuxControl(new AuxControl.Callbacks(){
+        auxControl = new AuxControl(pharmaQueueFull.patient.patientId, new AuxControl.Callbacks() {
             @Override
-            public void onShowVisits() {
-                auxControl.disableButtons();
-                doShowVisits();
+            public void onShowVisits(List<RecordPage> pages) {
+                doShowVisits(pages);
             }
 
             @Override
@@ -47,7 +44,17 @@ public class RightPane extends JPanel {
         setLayout(new MigLayout("", "[" + width + "!]", ""));
         add(new JLabel("投薬"), "growx, wrap");
         {
-            workarea = new Workarea(pharmaQueueFull.patient, drugs);
+            workarea = new Workarea(pharmaQueueFull.patient, drugs, new Workarea.Callbacks() {
+                @Override
+                public void onPrescDone() {
+                    callbacks.onPrescDone();
+                }
+
+                @Override
+                public void onCancel() {
+                    callbacks.onCancel();
+                }
+            });
             workarea.setBorder(BorderFactory.createLineBorder(Color.GRAY));
             add(workarea, "growx, wrap");
         }
@@ -62,58 +69,18 @@ public class RightPane extends JPanel {
         add(dispRecords, "grow");
     }
 
-    public void setOnPrescDoneCallback(OnPrescDoneCallback callback){
-        if( workarea != null ){
-            workarea.setOnPrescDoneCallback(callback);
-        }
+    private void doShowVisits(List<RecordPage> pages) {
+        AuxVisitsSubControl dispVisits = new AuxVisitsSubControl(pharmaQueueFull.patient, pages, new AuxVisitsSubControl.Callbacks(){
+
+        });
+        auxSubControl.removeAll();
+        auxSubControl.add(dispVisits);
+        auxSubControl.repaint();
+        auxSubControl.revalidate();
     }
 
-    public void setOnCancelCallback(OnCancelCallback callback){
-        if( workarea != null ){
-            workarea.setOnCancelCallback(callback);
-        }
+    private void alert(String message) {
+        JOptionPane.showMessageDialog(this, message);
     }
-
-    private void doShowVisits(){
-        PatientDTO patient = pharmaQueueFull.patient;
-        Service.api.listVisitIdVisitedAtForPatient(patient.patientId)
-                .thenAccept(visitIds -> {
-                    List<RecordPage>  pages = RecordPage.divideToPages(visitIds);
-                    EventQueue.invokeLater(() -> {
-                        auxControl.enableButtons();
-                        dispVisits = new AuxVisitsSubControl(patient, pages, dispRecords);
-                        setSubControlContent(dispVisits);
-                        showVisitsButton.setEnabled(true);
-                    });
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    alert(t.toString());
-                    return null;
-                });
-
-    }
-
-//    private JComponent makeWorkarea(){
-//        Workarea wa = new Workarea(pharmaQueueFull.patient, drugs){
-//            @Override
-//            public void onPrescDone(){
-//                // TODO: update patient list
-//                clearRight();
-//            }
-//
-//            @Override
-//            public void onCancel(){
-//                clearRight();
-//            }
-//
-//            private void clearRight(){
-//                // TODO: clear records
-//            }
-//        };
-//        wa.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-//        workarea = wa;
-//        return wa;
-//    }
 
 }
