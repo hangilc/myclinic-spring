@@ -89,25 +89,6 @@ class AuxDrugsSubControl extends JPanel {
                 });
     }
 
-//    private JComponent makeDrugNav(List<RecordPage> pages, String name){
-//        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-//        WrappedText drugName = new WrappedText(name, width);
-//        panel.add(drugName, "wrap");
-//        AuxRecordsNav recNav = new AuxRecordsNav(pages, new AuxRecordsNav.Callbacks(){
-//            @Override
-//            public void onPageSelected(RecordPage page) {
-//                callbacks.onShowRecords(page.getVisitIds());
-//            }
-//        });
-//        panel.add(recNav, "wrap");
-//        JButton backToListButton = new JButton("薬剤一覧にもどえる");
-//        backToListButton.addActionListener((event -> {
-//            setNavAreaContent(drugListPane);
-//        }));
-//        panel.add(backToListButton);
-//        return panel;
-//    }
-
     void trigger(){
         if( auxDrugNav != null ){
             auxDrugNav.trigger();
