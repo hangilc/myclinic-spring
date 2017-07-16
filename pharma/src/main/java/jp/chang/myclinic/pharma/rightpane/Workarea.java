@@ -243,8 +243,8 @@ class Workarea extends JPanel {
                         drugBagOps.ops = drawer.getOps();
                         return drugBagOps;
                     }).collect(Collectors.toList());
-                 });
-     }
+                });
+    }
 
     private void doPrintDrugBag(){
         composeDrugBagPages(drugs)

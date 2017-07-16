@@ -110,7 +110,7 @@ public class RightPane extends JPanel {
                                 }
                             });
                             setSubcontrol(drugsSubcontrol);
-                            dispRecords.clear();
+                            drugsSubcontrol.trigger();
                         });
                     })
                     .exceptionally(t -> {
@@ -120,7 +120,7 @@ public class RightPane extends JPanel {
                     });
         } else {
             setSubcontrol(drugsSubcontrol);
-            dispRecords.clear();
+            drugsSubcontrol.trigger();
         }
     }
 

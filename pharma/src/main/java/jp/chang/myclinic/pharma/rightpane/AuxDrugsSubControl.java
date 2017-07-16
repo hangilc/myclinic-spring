@@ -9,6 +9,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
 
 class AuxDrugsSubControl extends JPanel {
@@ -22,6 +23,7 @@ class AuxDrugsSubControl extends JPanel {
     private Callbacks callbacks;
     private JPanel navArea;
     private JComponent drugListPane;
+    private AuxDrugNav auxDrugNav;
     private int width;
 
     AuxDrugsSubControl(PatientDTO patient, List<IyakuhincodeNameDTO> iyakuhinList, Callbacks callbacks){
@@ -34,7 +36,8 @@ class AuxDrugsSubControl extends JPanel {
             add(new WrappedText("(" + patient.lastName + patient.firstName + ")", width), "wrap");
             navArea = new JPanel(new MigLayout("", "", ""));
             add(navArea);
-            setNavAreaContent(makeDrugListPane());
+            drugListPane = makeDrugListPane();
+            setNavAreaContent(drugListPane);
         }), "span, growx");
     }
 
@@ -54,7 +57,6 @@ class AuxDrugsSubControl extends JPanel {
             });
             panel.add(tt, "wrap");
         }
-        drugListPane = panel;
         return panel;
     }
 
@@ -63,7 +65,7 @@ class AuxDrugsSubControl extends JPanel {
                 .thenAccept(result -> {
                     List<RecordPage> pages = RecordPage.divideToPages(result);
                     EventQueue.invokeLater(() -> {
-                        AuxDrugNav nav = new AuxDrugNav(drugName, width, pages, new AuxDrugNav.Callbacks() {
+                        auxDrugNav = new AuxDrugNav(drugName, width, pages, new AuxDrugNav.Callbacks() {
                             @Override
                             public void onShowRecords(List<Integer> visitIds) {
                                 callbacks.onShowRecords(visitIds);
@@ -71,11 +73,13 @@ class AuxDrugsSubControl extends JPanel {
 
                             @Override
                             public void onBackToDrugList() {
+                                auxDrugNav = null;
                                 setNavAreaContent(drugListPane);
+                                trigger();
                             }
                         });
-                        setNavAreaContent(nav);
-                        nav.trigger();
+                        setNavAreaContent(auxDrugNav);
+                        auxDrugNav.trigger();
                     });
                 })
                 .exceptionally(t -> {
@@ -85,23 +89,31 @@ class AuxDrugsSubControl extends JPanel {
                 });
     }
 
-    private JComponent makeDrugNav(List<RecordPage> pages, String name){
-        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        WrappedText drugName = new WrappedText(name, width);
-        panel.add(drugName, "wrap");
-        AuxRecordsNav recNav = new AuxRecordsNav(pages, new AuxRecordsNav.Callbacks(){
-            @Override
-            public void onPageSelected(RecordPage page) {
-                callbacks.onShowRecords(page.getVisitIds());
-            }
-        });
-        panel.add(recNav, "wrap");
-        JButton backToListButton = new JButton("薬剤一覧にもどえる");
-        backToListButton.addActionListener((event -> {
-            setNavAreaContent(drugListPane);
-        }));
-        panel.add(backToListButton);
-        return panel;
+//    private JComponent makeDrugNav(List<RecordPage> pages, String name){
+//        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+//        WrappedText drugName = new WrappedText(name, width);
+//        panel.add(drugName, "wrap");
+//        AuxRecordsNav recNav = new AuxRecordsNav(pages, new AuxRecordsNav.Callbacks(){
+//            @Override
+//            public void onPageSelected(RecordPage page) {
+//                callbacks.onShowRecords(page.getVisitIds());
+//            }
+//        });
+//        panel.add(recNav, "wrap");
+//        JButton backToListButton = new JButton("薬剤一覧にもどえる");
+//        backToListButton.addActionListener((event -> {
+//            setNavAreaContent(drugListPane);
+//        }));
+//        panel.add(backToListButton);
+//        return panel;
+//    }
+
+    void trigger(){
+        if( auxDrugNav != null ){
+            auxDrugNav.trigger();
+        } else {
+            callbacks.onShowRecords(Collections.emptyList());
+        }
     }
 
     private void alert(String message){
