@@ -14,16 +14,16 @@ public class NewDrugInfoDialog extends JDialog {
     private JList<IyakuhinMasterDTO> searchResultList;
     private PharmaDrugDTO basePharmaDrug;
 
-    NewDrugInfoDialog(){
+    NewDrugInfoDialog() {
         init();
     }
 
-    public NewDrugInfoDialog(PharmaDrugDTO basePharmaDrug){
+    public NewDrugInfoDialog(PharmaDrugDTO basePharmaDrug) {
         this.basePharmaDrug = basePharmaDrug;
         init();
     }
 
-    private void init(){
+    private void init() {
         setTitle("新規薬剤情報入力");
         setLayout(new MigLayout("", "", ""));
         add(new JLabel("薬剤検索"), "wrap");
@@ -33,20 +33,20 @@ public class NewDrugInfoDialog extends JDialog {
         add(searchButton);
         searchButton.addActionListener(event -> {
             String searchText = searchTextField.getText();
-            if( searchText.isEmpty() ){
+            if (searchText.isEmpty()) {
                 return;
             }
             Service.api.searchIyakuhinMasterByName(searchText, LocalDate.now().toString())
                     .thenAccept(masters -> {
                         EventQueue.invokeLater(() -> {
-                            if( searchResultList == null ){
+                            if (searchResultList == null) {
                                 searchResultList = makeSearchResultList(masters);
                                 JScrollPane sp = new JScrollPane(searchResultList);
                                 add(sp, "newline, span, growx, w n:n:300, h n:n:360, wrap");
                                 JButton startButton = new JButton("作成");
                                 startButton.addActionListener(ev -> {
                                     IyakuhinMasterDTO selectedMaster = searchResultList.getSelectedValue();
-                                    if( selectedMaster != null ){
+                                    if (selectedMaster != null) {
                                         doTransitToEdit(selectedMaster);
                                     }
                                 });
@@ -70,11 +70,11 @@ public class NewDrugInfoDialog extends JDialog {
         pack();
     }
 
-    private JList<IyakuhinMasterDTO> makeSearchResultList(List<IyakuhinMasterDTO> masters){
+    private JList<IyakuhinMasterDTO> makeSearchResultList(List<IyakuhinMasterDTO> masters) {
         JList<IyakuhinMasterDTO> result = new JList<>();
         result.setCellRenderer((list, master, index, isSelected, cellHasFocus) -> {
             JLabel comp = new JLabel(master.name);
-            if( isSelected ){
+            if (isSelected) {
                 comp.setBackground(list.getSelectionBackground());
                 comp.setForeground(list.getSelectionForeground());
                 comp.setOpaque(true);
@@ -85,13 +85,13 @@ public class NewDrugInfoDialog extends JDialog {
         return result;
     }
 
-    private void doTransitToEdit(IyakuhinMasterDTO master){
+    private void doTransitToEdit(IyakuhinMasterDTO master) {
         Service.api.findPharmaDrug(master.iyakuhincode)
                 .thenAccept(pharma -> {
-                    if( pharma == null ){
+                    if (pharma == null) {
                         String description = "";
                         String sideeffect = "";
-                        if( basePharmaDrug != null ){
+                        if (basePharmaDrug != null) {
                             description = basePharmaDrug.description;
                             sideeffect = basePharmaDrug.sideeffect;
                         }
@@ -101,8 +101,11 @@ public class NewDrugInfoDialog extends JDialog {
                             String msg = master.name + "はすでに登録されています。\n内容を表示しますか？";
                             int choice = JOptionPane.showConfirmDialog(this, msg, "オプションの選択",
                                     JOptionPane.OK_CANCEL_OPTION);
-                            if( choice == JOptionPane.OK_OPTION ){
-                                // TODO: open pharma drug editor
+                            if (choice == JOptionPane.OK_OPTION) {
+                                EditDrugInfoDialog dialog = new EditDrugInfoDialog(master.name, pharma);
+                                dialog.setLocationByPlatform(true);
+                                dialog.setVisible(true);
+                                dispose();
                             }
                         });
                     }
@@ -116,7 +119,7 @@ public class NewDrugInfoDialog extends JDialog {
                 });
     }
 
-    private void doOpenEditor(String name, int iyakuhincode, String description, String sideeffect){
+    private void doOpenEditor(String name, int iyakuhincode, String description, String sideeffect) {
         getContentPane().removeAll();
         setLayout(new MigLayout("", "", ""));
         add(new JLabel(name), "wrap");
@@ -149,11 +152,11 @@ public class NewDrugInfoDialog extends JDialog {
         pack();
     }
 
-    public void onPharmaDrugEntered(PharmaDrugDTO enteredPharmaDrug){
+    public void onPharmaDrugEntered(PharmaDrugDTO enteredPharmaDrug) {
 
     }
 
-    private void alert(String message){
+    private void alert(String message) {
         JOptionPane.showMessageDialog(this, message);
     }
 

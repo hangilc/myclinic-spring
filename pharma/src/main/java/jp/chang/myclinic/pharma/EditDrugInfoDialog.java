@@ -8,11 +8,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class EditDrugInfoDialog extends JDialog {
+class EditDrugInfoDialog extends JDialog {
 
-    public EditDrugInfoDialog(){
+    EditDrugInfoDialog(){
         setTitle("薬剤情報の表示・編集");
         new SearchMode().start();
+    }
+
+    EditDrugInfoDialog(String drugName, PharmaDrugDTO pharmaDrug){
+        setTitle("薬剤情報の表示・編集");
+        new EditMode(drugName, pharmaDrug, false).start();
     }
 
     private class SearchMode {
@@ -105,13 +110,20 @@ public class EditDrugInfoDialog extends JDialog {
         private PharmaDrugEditor editor;
         private JPanel commandArea;
         private JMenuBar editMenuBar;
+        private boolean showPrevButton = true;
 
         EditMode(String drugName, PharmaDrugDTO pharmaDrug){
-            this.currentDrugName = drugName;
-            this.pharmaDrug = pharmaDrug;
+            this(drugName, pharmaDrug, true);
         }
 
-        void start(){
+        EditMode(String drugName, PharmaDrugDTO pharmaDrug, boolean showPrevButton) {
+            this.currentDrugName = drugName;
+            this.pharmaDrug = pharmaDrug;
+            this.showPrevButton = showPrevButton;
+            start();
+        }
+
+        void start() {
             getContentPane().removeAll();
             setLayout(new MigLayout("", "", ""));
             add(new JLabel(currentDrugName), "wrap");
@@ -192,7 +204,9 @@ public class EditDrugInfoDialog extends JDialog {
             }
             commandArea.add(makeEditButton());
             commandArea.add(makeCopyButton());
-            commandArea.add(makeBackToSearchButton());
+            if( showPrevButton ) {
+                commandArea.add(makeBackToSearchButton());
+            }
             if( repaint ){
                 commandArea.repaint();
                 commandArea.revalidate();

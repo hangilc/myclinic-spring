@@ -113,53 +113,6 @@ class MainFrame extends JFrame {
         setJMenuBar(menuBar);
     }
 
-//    private JComponent makeRight(){
-//        int width = 330;
-//        JPanel auxSubControl = new JPanel(new MigLayout("", "", ""));
-//        AuxDispRecords dispRecords = new AuxDispRecords(width);
-//        auxControl = new AuxControl(auxSubControl, dispRecords, width - 2);
-//        JPanel panel = new JPanel(new MigLayout("", "[" + width + "!]", ""));
-//        panel.add(new JLabel("投薬"), "growx, wrap");
-//        panel.add(makeWorkarea(), "growx, wrap");
-//        {
-//            JPanel control = new JPanel(new MigLayout("insets 0", "", "[]2[]"));
-//            auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-//            auxSubControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-//            control.add(auxControl, "growx, wrap");
-//            control.add(auxSubControl, "growx");
-//            panel.add(control, "growx, wrap");
-//        }
-//        panel.add(dispRecords, "grow");
-//        rightScroll = new JScrollPane(panel);
-//        rightScroll.setBorder(null);
-//        rightScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-//        rightScroll.getVerticalScrollBar().setUnitIncrement(12);
-//        return rightScroll;
-//    }
-
-//    private JComponent makeWorkarea(){
-//        Workarea wa = new Workarea(){
-//            @Override
-//            public void onPrescDone(){
-//                // TODO: update patient list
-//                clearRight();
-//            }
-//
-//            @Override
-//            public void onCancel(){
-//                clearRight();
-//            }
-//
-//            private void clearRight(){
-//                clear();
-//                // TODO: clear records
-//            }
-//        };
-//        wa.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-//        workarea = wa;
-//        return wa;
-//    }
-
     private void startPresc(PharmaQueueFullDTO pharmaQueueFull, List<DrugFullDTO> drugs, JScrollPane rightScroll,
                             LeftPane leftPane){
         RightPane rightPane = new RightPane(pharmaQueueFull, drugs, new RightPane.Callbacks(){
