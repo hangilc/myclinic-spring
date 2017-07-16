@@ -73,7 +73,12 @@ public class AuxDrugsSubControl extends JPanel {
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         WrappedText drugName = new WrappedText(name, 260);
         panel.add(drugName, "wrap");
-        AuxRecordsNav recNav = new AuxRecordsNav(dispRecords, pages, patient);
+        AuxRecordsNav recNav = new AuxRecordsNav(pages, new AuxRecordsNav.Callbacks(){
+            @Override
+            public void onPageSelected(RecordPage page) {
+
+            }
+        });
         panel.add(recNav, "wrap");
         JButton backToListButton = new JButton("薬剤一覧にもどえる");
         backToListButton.addActionListener((event -> {
@@ -81,7 +86,7 @@ public class AuxDrugsSubControl extends JPanel {
             dispRecords.clear();
         }));
         panel.add(backToListButton);
-        recNav.updateVisits();
+        //recNav.updateVisits();
         return panel;
     }
 

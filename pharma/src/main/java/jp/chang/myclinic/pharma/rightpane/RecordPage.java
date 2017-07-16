@@ -20,6 +20,10 @@ class RecordPage {
         }
     }
 
+    List<Integer> getVisitIds(){
+        return visitIds;
+    }
+
     static List<RecordPage> divideToPages(List<VisitIdVisitedAtDTO> visits){
         List<RecordPage> pages = new ArrayList<>();
         int totalItems = visits.size();

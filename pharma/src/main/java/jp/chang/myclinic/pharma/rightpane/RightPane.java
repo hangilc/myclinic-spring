@@ -1,7 +1,9 @@
 package jp.chang.myclinic.pharma.rightpane;
 
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.pharma.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -21,6 +23,7 @@ public class RightPane extends JPanel {
     private Workarea workarea;
     private AuxControl auxControl;
     private JPanel auxSubControl;
+    private AuxDispRecords dispRecords;
     private Callbacks callbacks;
 
     public RightPane(PharmaQueueFullDTO pharmaQueueFull, java.util.List<DrugFullDTO> drugs, Callbacks callbacks) {
@@ -29,11 +32,10 @@ public class RightPane extends JPanel {
         this.callbacks = callbacks;
         int width = 330;
         auxSubControl = new JPanel(new MigLayout("", "", ""));
-        AuxDispRecords dispRecords = new AuxDispRecords(width);
         auxControl = new AuxControl(pharmaQueueFull.patient.patientId, new AuxControl.Callbacks() {
             @Override
-            public void onShowVisits(List<RecordPage> pages) {
-                doShowVisits(pages);
+            public void onShowVisits() {
+                doShowVisits();
             }
 
             @Override
@@ -42,6 +44,7 @@ public class RightPane extends JPanel {
             }
         });
         setLayout(new MigLayout("", "[" + width + "!]", ""));
+        //setLayout(new MigLayout("fill", "", ""));
         add(new JLabel("投薬"), "growx, wrap");
         {
             workarea = new Workarea(pharmaQueueFull.patient, drugs, new Workarea.Callbacks() {
@@ -66,17 +69,34 @@ public class RightPane extends JPanel {
             control.add(auxSubControl, "growx");
             add(control, "growx, wrap");
         }
+        dispRecords = new AuxDispRecords();
         add(dispRecords, "grow");
+        auxControl.selectShowVisits();
     }
 
-    private void doShowVisits(List<RecordPage> pages) {
-        AuxVisitsSubControl dispVisits = new AuxVisitsSubControl(pharmaQueueFull.patient, pages, new AuxVisitsSubControl.Callbacks(){
-
-        });
-        auxSubControl.removeAll();
-        auxSubControl.add(dispVisits);
-        auxSubControl.repaint();
-        auxSubControl.revalidate();
+    private void doShowVisits() {
+        PatientDTO patient = pharmaQueueFull.patient;
+        int patientId = patient.patientId;
+        Service.api.listVisitIdVisitedAtForPatient(patientId)
+                .thenAccept(visitIds -> {
+                    List<RecordPage>  pages = RecordPage.divideToPages(visitIds);
+                    EventQueue.invokeLater(() -> {
+                        AuxRecordsNav nav = new AuxRecordsNav(pages, page -> {
+                            dispRecords.showVisits(page.getVisitIds());
+                        });
+                        auxSubControl.removeAll();
+                        auxSubControl.add(nav);
+                        auxSubControl.add(new JLabel("(" + patient.lastName + patient.firstName + ")"));
+                        nav.trigger();
+                        auxSubControl.repaint();
+                        auxSubControl.revalidate();
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
     }
 
     private void alert(String message) {

@@ -39,7 +39,7 @@ class MainFrame extends JFrame {
             throw new RuntimeException("failed to load icons");
         }
         setupMenu();
-        setLayout(new MigLayout("fill", "[260px!]5px![360px!]", "[460px]"));
+        setLayout(new MigLayout("fill", "[260px!]5px![364px!]", "[460px]"));
         JScrollPane rightScroll = new JScrollPane();
         rightScroll.setBorder(null);
         rightScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);

@@ -4,6 +4,7 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitTextDrugDTO;
 import jp.chang.myclinic.pharma.Service;
+import jp.chang.myclinic.pharma.wrappedtext.Strut;
 import jp.chang.myclinic.pharma.wrappedtext.WrappedText;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DrugUtil;
@@ -16,18 +17,32 @@ import java.util.List;
 
 class AuxDispRecords extends JPanel {
 
-    private int width;
+    private int width = -1;
+    private List<Integer> pendingVisitIds;
 
-    AuxDispRecords(int width){
-        this.width = width;
-        setLayout(new MigLayout("insets 0", "[]5[]", ""));
+    AuxDispRecords(){
+        setLayout(new MigLayout("insets 0, fill", "[]5[]", ""));
+        add(new Strut(w -> {
+            AuxDispRecords.this.width = w;
+            if( pendingVisitIds != null ){
+                doShowVisits(pendingVisitIds);
+            }
+        }), "span, growx");
     }
 
     void clear(){
         showVisits(Collections.emptyList());
     }
 
-    void showVisits(List<Integer> visitIds) {
+    void showVisits(List<Integer> visitIds){
+        if( width < 0 ){
+            pendingVisitIds = visitIds;
+        } else {
+            doShowVisits(visitIds);
+        }
+    }
+
+    void doShowVisits(List<Integer> visitIds) {
         if( visitIds.size() == 0 ){
             removeAll();
             repaint();
