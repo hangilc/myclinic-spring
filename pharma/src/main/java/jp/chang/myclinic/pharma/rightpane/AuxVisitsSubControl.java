@@ -1,7 +1,6 @@
 package jp.chang.myclinic.pharma.rightpane;
 
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.pharma.wrappedtext.Strut;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -10,21 +9,22 @@ import java.util.List;
 class AuxVisitsSubControl extends JPanel {
 
     interface Callbacks {
-
+        void onShowRecords(List<Integer> visitIds);
     }
 
-    //private AuxRecordsNav nav;
-    private Callbacks callbacks;
+    private AuxRecordsNav nav;
 
     AuxVisitsSubControl(PatientDTO patient, List<RecordPage> pages, Callbacks callbacks){
-        this.callbacks = callbacks;
-        setLayout(new MigLayout("fill, insets 0", "", ""));
-        add(new Strut(width -> {
-            System.out.println(width);
-            //add(new WrappedText("(" + patient.lastName + patient.firstName + ")", 300), "wrap");
-        }));
-        //nav = new AuxRecordsNav(patient, pages);
-        //add(nav, "");
+        setLayout(new MigLayout("insets 0", "", ""));
+        nav = new AuxRecordsNav(pages, page -> {
+            callbacks.onShowRecords(page.getVisitIds());
+        });
+        add(nav);
+        add(new JLabel("(" + patient.lastName + patient.firstName + ")"));
+    }
+
+    void trigger(){
+        nav.trigger();
     }
 
     private void alert(String message){

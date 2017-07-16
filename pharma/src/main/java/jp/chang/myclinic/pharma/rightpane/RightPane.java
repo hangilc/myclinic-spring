@@ -19,20 +19,16 @@ public class RightPane extends JPanel {
     }
 
     private PharmaQueueFullDTO pharmaQueueFull;
-    private List<DrugFullDTO> drugs;
-    private Workarea workarea;
-    private AuxControl auxControl;
     private JPanel auxSubControl;
     private AuxDispRecords dispRecords;
-    private Callbacks callbacks;
+    private AuxVisitsSubControl visitsSubcontrol;
+    private AuxDrugsSubControl drugsSubcontrol;
 
     public RightPane(PharmaQueueFullDTO pharmaQueueFull, java.util.List<DrugFullDTO> drugs, Callbacks callbacks) {
         this.pharmaQueueFull = pharmaQueueFull;
-        this.drugs = drugs;
-        this.callbacks = callbacks;
         int width = 330;
         auxSubControl = new JPanel(new MigLayout("fill", "", ""));
-        auxControl = new AuxControl(pharmaQueueFull.patient.patientId, new AuxControl.Callbacks() {
+        AuxControl auxControl = new AuxControl(pharmaQueueFull.patient.patientId, new AuxControl.Callbacks() {
             @Override
             public void onShowVisits() {
                 doShowVisits();
@@ -46,7 +42,7 @@ public class RightPane extends JPanel {
         setLayout(new MigLayout("", "[" + width + "!]", ""));
         add(new JLabel("投薬"), "growx, wrap");
         {
-            workarea = new Workarea(pharmaQueueFull.patient, drugs, new Workarea.Callbacks() {
+            Workarea workarea = new Workarea(pharmaQueueFull.patient, drugs, new Workarea.Callbacks() {
                 @Override
                 public void onPrescDone() {
                     callbacks.onPrescDone();
@@ -75,47 +71,57 @@ public class RightPane extends JPanel {
 
     private void doShowVisits() {
         PatientDTO patient = pharmaQueueFull.patient;
-        Service.api.listVisitIdVisitedAtForPatient(patient.patientId)
-                .thenAccept(visitIds -> {
-                    List<RecordPage>  pages = RecordPage.divideToPages(visitIds);
-                    EventQueue.invokeLater(() -> {
-                        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-                        AuxRecordsNav nav = new AuxRecordsNav(pages, page -> {
-                            dispRecords.showVisits(page.getVisitIds());
+        if( visitsSubcontrol == null ) {
+            Service.api.listVisitIdVisitedAtForPatient(patient.patientId)
+                    .thenAccept(visitIds -> {
+                        List<RecordPage> pages = RecordPage.divideToPages(visitIds);
+                        EventQueue.invokeLater(() -> {
+                            this.visitsSubcontrol = new AuxVisitsSubControl(patient, pages, new AuxVisitsSubControl.Callbacks() {
+                                @Override
+                                public void onShowRecords(List<Integer> visitIds) {
+                                    dispRecords.showVisits(visitIds);
+                                }
+                            });
+                            setSubcontrol(visitsSubcontrol);
+                            visitsSubcontrol.trigger();
                         });
-                        panel.add(nav);
-                        panel.add(new JLabel("(" + patient.lastName + patient.firstName + ")"));
-                        setSubcontrol(panel);
-                        nav.trigger();
+                    })
+                    .exceptionally(t -> {
+                        t.printStackTrace();
+                        alert(t.toString());
+                        return null;
                     });
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    alert(t.toString());
-                    return null;
-                });
+        } else {
+            setSubcontrol(visitsSubcontrol);
+            visitsSubcontrol.trigger();
+        }
     }
 
     private void doShowDrugs(){
-        PatientDTO patient = pharmaQueueFull.patient;
-        Service.api.listIyakuhinForPatient(patient.patientId)
-                .thenAccept(result -> {
-                    EventQueue.invokeLater(() -> {
-                        AuxDrugsSubControl dispDrugs = new AuxDrugsSubControl(patient, result, new AuxDrugsSubControl.Callbacks() {
-                            @Override
-                            public void onShowRecords(List<Integer> visitIds) {
-                                dispRecords.showVisits(visitIds);
-                            }
+        if( drugsSubcontrol == null ) {
+            PatientDTO patient = pharmaQueueFull.patient;
+            Service.api.listIyakuhinForPatient(patient.patientId)
+                    .thenAccept(result -> {
+                        EventQueue.invokeLater(() -> {
+                            this.drugsSubcontrol = new AuxDrugsSubControl(patient, result, new AuxDrugsSubControl.Callbacks() {
+                                @Override
+                                public void onShowRecords(List<Integer> visitIds) {
+                                    dispRecords.showVisits(visitIds);
+                                }
+                            });
+                            setSubcontrol(drugsSubcontrol);
+                            dispRecords.clear();
                         });
-                        setSubcontrol(dispDrugs);
-                        dispRecords.clear();
+                    })
+                    .exceptionally(t -> {
+                        t.printStackTrace();
+                        alert(t.toString());
+                        return null;
                     });
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    alert(t.toString());
-                    return null;
-                });
+        } else {
+            setSubcontrol(drugsSubcontrol);
+            dispRecords.clear();
+        }
     }
 
     private void setSubcontrol(JComponent comp){
