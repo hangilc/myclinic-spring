@@ -31,7 +31,7 @@ public class RightPane extends JPanel {
         this.drugs = drugs;
         this.callbacks = callbacks;
         int width = 330;
-        auxSubControl = new JPanel(new MigLayout("", "", ""));
+        auxSubControl = new JPanel(new MigLayout("fill", "", ""));
         auxControl = new AuxControl(pharmaQueueFull.patient.patientId, new AuxControl.Callbacks() {
             @Override
             public void onShowVisits() {
@@ -40,11 +40,10 @@ public class RightPane extends JPanel {
 
             @Override
             public void onShowDrugs() {
-
+                doShowDrugs();
             }
         });
         setLayout(new MigLayout("", "[" + width + "!]", ""));
-        //setLayout(new MigLayout("fill", "", ""));
         add(new JLabel("投薬"), "growx, wrap");
         {
             workarea = new Workarea(pharmaQueueFull.patient, drugs, new Workarea.Callbacks() {
@@ -76,20 +75,18 @@ public class RightPane extends JPanel {
 
     private void doShowVisits() {
         PatientDTO patient = pharmaQueueFull.patient;
-        int patientId = patient.patientId;
-        Service.api.listVisitIdVisitedAtForPatient(patientId)
+        Service.api.listVisitIdVisitedAtForPatient(patient.patientId)
                 .thenAccept(visitIds -> {
                     List<RecordPage>  pages = RecordPage.divideToPages(visitIds);
                     EventQueue.invokeLater(() -> {
+                        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
                         AuxRecordsNav nav = new AuxRecordsNav(pages, page -> {
                             dispRecords.showVisits(page.getVisitIds());
                         });
-                        auxSubControl.removeAll();
-                        auxSubControl.add(nav);
-                        auxSubControl.add(new JLabel("(" + patient.lastName + patient.firstName + ")"));
+                        panel.add(nav);
+                        panel.add(new JLabel("(" + patient.lastName + patient.firstName + ")"));
+                        setSubcontrol(panel);
                         nav.trigger();
-                        auxSubControl.repaint();
-                        auxSubControl.revalidate();
                     });
                 })
                 .exceptionally(t -> {
@@ -97,6 +94,37 @@ public class RightPane extends JPanel {
                     alert(t.toString());
                     return null;
                 });
+    }
+
+    private void doShowDrugs(){
+        PatientDTO patient = pharmaQueueFull.patient;
+        Service.api.listIyakuhinForPatient(patient.patientId)
+                .thenAccept(result -> {
+                    EventQueue.invokeLater(() -> {
+                        AuxDrugsSubControl dispDrugs = new AuxDrugsSubControl(patient, result, new AuxDrugsSubControl.Callbacks() {
+                            @Override
+                            public void onShowRecords(List<Integer> visitIds) {
+                                dispRecords.showVisits(visitIds);
+                            }
+                        });
+                        setSubcontrol(dispDrugs);
+                        dispRecords.clear();
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
+    }
+
+    private void setSubcontrol(JComponent comp){
+        auxSubControl.removeAll();
+        auxSubControl.setLayout(new MigLayout("fill", "", ""));
+        auxSubControl.add(comp, "grow");
+        auxSubControl.repaint();
+        auxSubControl.revalidate();
+
     }
 
     private void alert(String message) {

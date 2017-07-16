@@ -3,31 +3,39 @@ package jp.chang.myclinic.pharma.rightpane;
 import jp.chang.myclinic.dto.IyakuhincodeNameDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.pharma.Service;
+import jp.chang.myclinic.pharma.wrappedtext.Strut;
 import jp.chang.myclinic.pharma.wrappedtext.WrappedText;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
 import java.util.List;
 
-public class AuxDrugsSubControl extends JPanel {
+class AuxDrugsSubControl extends JPanel {
+
+    interface Callbacks {
+        void onShowRecords(List<Integer> visitIds);
+    }
+
     private PatientDTO patient;
     private List<IyakuhincodeNameDTO> iyakuhinList;
+    private Callbacks callbacks;
     private JPanel navArea;
-    private AuxDispRecords dispRecords;
     private JComponent drugListPane;
+    private int width;
 
-    public AuxDrugsSubControl(PatientDTO patient, List<IyakuhincodeNameDTO> iyakuhinList, AuxDispRecords dispRecords){
+    AuxDrugsSubControl(PatientDTO patient, List<IyakuhincodeNameDTO> iyakuhinList, Callbacks callbacks){
         this.patient = patient;
         this.iyakuhinList = iyakuhinList;
-        this.dispRecords = dispRecords;
-        setLayout(new MigLayout("insets 0", "", ""));
-        add(new WrappedText("(" + patient.lastName + patient.firstName + ")", 300), "wrap");
-        navArea = new JPanel(new MigLayout("", "", ""));
-        add(navArea);
-        setNavAreaContent(makeDrugListPane());
-        dispRecords.showVisits(Collections.emptyList());
+        this.callbacks = callbacks;
+        setLayout(new MigLayout("insets 0, fill", "", ""));
+        add(new Strut(w -> {
+            this.width = w - 28;
+            add(new WrappedText("(" + patient.lastName + patient.firstName + ")", width), "wrap");
+            navArea = new JPanel(new MigLayout("", "", ""));
+            add(navArea);
+            setNavAreaContent(makeDrugListPane());
+        }), "span, growx");
     }
 
     private void setNavAreaContent(JComponent content){
@@ -40,7 +48,7 @@ public class AuxDrugsSubControl extends JPanel {
     private JComponent makeDrugListPane(){
         JPanel panel = new JPanel(new MigLayout("insets 0, gapy 2", "", ""));
         for(IyakuhincodeNameDTO iyakuhin: iyakuhinList){
-            WrappedText tt = new WrappedText("・", 300);
+            WrappedText tt = new WrappedText("・", width);
             tt.appendLink(iyakuhin.name, () -> {
                 doDrug(iyakuhin.iyakuhincode, iyakuhin.name);
             });
@@ -51,15 +59,23 @@ public class AuxDrugsSubControl extends JPanel {
     }
 
     private void doDrug(int iyakuhincode, String drugName){
-        if( patient == null ){
-            return;
-        }
         Service.api.listVisitIdVisitedAtByPatientAndIyakuhincode(patient.patientId, iyakuhincode)
                 .thenAccept(result -> {
                     List<RecordPage> pages = RecordPage.divideToPages(result);
                     EventQueue.invokeLater(() -> {
-                        JComponent nav = makeDrugNav(pages, drugName);
+                        AuxDrugNav nav = new AuxDrugNav(drugName, width, pages, new AuxDrugNav.Callbacks() {
+                            @Override
+                            public void onShowRecords(List<Integer> visitIds) {
+                                callbacks.onShowRecords(visitIds);
+                            }
+
+                            @Override
+                            public void onBackToDrugList() {
+                                setNavAreaContent(drugListPane);
+                            }
+                        });
                         setNavAreaContent(nav);
+                        nav.trigger();
                     });
                 })
                 .exceptionally(t -> {
@@ -71,22 +87,20 @@ public class AuxDrugsSubControl extends JPanel {
 
     private JComponent makeDrugNav(List<RecordPage> pages, String name){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        WrappedText drugName = new WrappedText(name, 260);
+        WrappedText drugName = new WrappedText(name, width);
         panel.add(drugName, "wrap");
         AuxRecordsNav recNav = new AuxRecordsNav(pages, new AuxRecordsNav.Callbacks(){
             @Override
             public void onPageSelected(RecordPage page) {
-
+                callbacks.onShowRecords(page.getVisitIds());
             }
         });
         panel.add(recNav, "wrap");
         JButton backToListButton = new JButton("薬剤一覧にもどえる");
         backToListButton.addActionListener((event -> {
             setNavAreaContent(drugListPane);
-            dispRecords.clear();
         }));
         panel.add(backToListButton);
-        //recNav.updateVisits();
         return panel;
     }
 
