@@ -57,6 +57,8 @@ public class DbGateway {
 	private PharmaDrugRepository pharmaDrugRepository;
 	@Autowired
 	private IyakuhinMasterRepository iyakuhinMasterRepository;
+	@Autowired
+	private HotlineRepository hotlineRepository;
 
 	public List<WqueueFullDTO> listWqueueFull(){
 		try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
@@ -85,9 +87,22 @@ public class DbGateway {
 		wqueueRepository.save(wqueue);
 	}
 
+	public Optional<WqueueDTO> findWqueue(int visitId){
+		return wqueueRepository.findByVisitId(visitId).map(mapper::toWqueueDTO);
+	}
+
+	public void deleteWqueue(WqueueDTO wqueueDTO){
+		Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
+		wqueueRepository.delete(wqueue);
+	}
+
 	public PatientDTO getPatient(int patientId){
 		Patient patient = patientRepository.findOne(patientId);
 		return mapper.toPatientDTO(patient);
+	}
+
+	public Optional<PatientDTO> findPatient(int patientId){
+		return patientRepository.tryFind(patientId).map(mapper::toPatientDTO);
 	}
 
 	public int enterPatient(PatientDTO patientDTO){
@@ -349,6 +364,10 @@ public class DbGateway {
 		.collect(Collectors.toList());
 	}
 
+	public void markDrugsAsPrescribedForVisit(int visitId){
+		drugRepository.markAsPrescribedForVisit(visitId);
+	}
+
 	public List<TextDTO> listText(int visitId){
 		List<Text> texts = textRepository.findByVisitId(visitId);
 		return texts.stream().map(mapper::toTextDTO).collect(Collectors.toList());
@@ -535,6 +554,10 @@ public class DbGateway {
 		}
 	}
 
+	public Optional<PharmaQueueDTO> findPharmaQueue(int visitId){
+		return pharmaQueueRepository.findByVisitId(visitId).map(mapper::toPharmaQueueDTO);
+	}
+
 	public List<PharmaQueueFullDTO> listPharmaQueueFullForPrescription(){
 		return pharmaQueueRepository.findFull().stream()
 				.map(result -> {
@@ -577,12 +600,21 @@ public class DbGateway {
 				.collect(Collectors.toList());
 	}
 
-	public PharmaDrugDTO findPharmaDrugByIyakuhincode(int iyakuhincode){
-		return pharmaDrugRepository.findByIyakuhincode(iyakuhincode)
-				.map(mapper::toPharmaDrugDTO).orElse(null);
+	public void deletePharmaQueue(PharmaQueueDTO pharmaQueueDTO){
+		PharmaQueue pharmaQueue = mapper.fromPharmaQueueDTO(pharmaQueueDTO);
+		pharmaQueueRepository.delete(pharmaQueue);
 	}
 
-	public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(Set<Integer> iyakuhincodes){
+	public PharmaDrugDTO getPharmaDrugByIyakuhincode(int iyakuhincode){
+		return mapper.toPharmaDrugDTO(pharmaDrugRepository.findByIyakuhincode(iyakuhincode));
+	}
+
+	public Optional<PharmaDrugDTO> findPharmaDrugByIyakuhincode(int iyakuhincode){
+		return pharmaDrugRepository.tryFindByIyakuhincode(iyakuhincode)
+				.map(mapper::toPharmaDrugDTO);
+	}
+
+	public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(List<Integer> iyakuhincodes){
 		if( iyakuhincodes.size() == 0 ) {
 			return Collections.emptyList();
 		} else {
@@ -591,7 +623,47 @@ public class DbGateway {
 		}
 	}
 
-	public List<VisitTextDrugDTO> listVisitTextDrug(Set<Integer> visitIds){
+	public void enterPharmaDrug(PharmaDrugDTO pharmaDrugDTO){
+	    PharmaDrug pharmaDrug = mapper.fromPharmaDrugDTO(pharmaDrugDTO);
+	    pharmaDrugRepository.save(pharmaDrug);
+    }
+
+	public void updatePharmaDrug(PharmaDrugDTO pharmaDrugDTO){
+	    PharmaDrug pharmaDrug = mapper.fromPharmaDrugDTO(pharmaDrugDTO);
+	    pharmaDrugRepository.save(pharmaDrug);
+    }
+
+    public void deletePharmaDrug(int iyakuhincode){
+	    pharmaDrugRepository.delete(iyakuhincode);
+    }
+
+    public List<PharmaDrugNameDTO> searchPharmaDrugNames(String text){
+		return pharmaDrugRepository.searchNames(text).stream()
+				.map(result -> {
+					PharmaDrugNameDTO pharmaDrugNameDTO = new PharmaDrugNameDTO();
+					pharmaDrugNameDTO.iyakuhincode = (Integer)result[0];
+					pharmaDrugNameDTO.name = (String)result[1];
+					pharmaDrugNameDTO.yomi = (String)result[2];
+					return pharmaDrugNameDTO;
+				})
+                .sorted(Comparator.comparing(a -> a.yomi))
+				.collect(Collectors.toList());
+	}
+
+	public List<PharmaDrugNameDTO> listAllPharmaDrugNames(){
+    	return pharmaDrugRepository.findAllPharmaDrugNames().stream()
+				.map(result -> {
+					PharmaDrugNameDTO pharmaDrugNameDTO = new PharmaDrugNameDTO();
+					pharmaDrugNameDTO.iyakuhincode = (Integer)result[0];
+					pharmaDrugNameDTO.name = (String)result[1];
+					pharmaDrugNameDTO.yomi = (String)result[2];
+					return pharmaDrugNameDTO;
+				})
+				.sorted(Comparator.comparing(a -> a.yomi))
+				.collect(Collectors.toList());
+	}
+
+	public List<VisitTextDrugDTO> listVisitTextDrug(List<Integer> visitIds){
 		if( visitIds.size() == 0 ){
 			return Collections.emptyList();
 		}
@@ -626,12 +698,43 @@ public class DbGateway {
 				.collect(Collectors.toList());
 	}
 
+	public List<IyakuhinMasterDTO> searchIyakuhinByName(String text, LocalDate at){
+		return iyakuhinMasterRepository.searchByName(text, at.toString(), new Sort("yomi")).stream()
+				.map(mapper::toIyakuhinMasterDTO).collect(Collectors.toList());
+	}
+
 	public List<IyakuhincodeNameDTO> listIyakuhinForPatient(int patientId){
 		List<Integer> iyakuhincodes = listIyakuhincodeForPatient(patientId);
 		return findNamesForIyakuhincodes(iyakuhincodes);
 	}
 
-	// TODO: implement listVisitIdForDrug
+	public List<VisitIdVisitedAtDTO> listVisitIdVisitedAtByIyakuhincodeAndPatientId(int patientId, int iyakuhincode){
+		return drugRepository.findVisitIdVisitedAtByPatientAndIyakuhincode(patientId, iyakuhincode).stream()
+				.map(result -> {
+					VisitIdVisitedAtDTO visitIdVisitedAtDTO = new VisitIdVisitedAtDTO();
+					visitIdVisitedAtDTO.visitId = (Integer)result[0];
+					visitIdVisitedAtDTO.visitedAt = (String)result[1];
+					return visitIdVisitedAtDTO;
+				})
+				.collect(Collectors.toList());
+	}
+
+	public Integer getLastHotlineId(){
+		Optional<Hotline> hotline = hotlineRepository.findTopByOrderByHotlineIdDesc();
+		return hotline.map(h -> h.getHotlineId()).orElse(0);
+	}
+
+	public List<HotlineDTO> listHotlineInRange(int lowerHotlineId, int upperHotlineId){
+		Sort sort = new Sort(Sort.Direction.ASC, "hotlineId");
+		return hotlineRepository.findInRange(lowerHotlineId, upperHotlineId, sort).stream()
+				.map(mapper::toHotlineDTO).collect(Collectors.toList());
+	}
+
+	public int enterHotline(HotlineDTO hotlineDTO){
+		Hotline hotline = mapper.fromHotlineDTO(hotlineDTO);
+		hotlineRepository.save(hotline);
+		return hotline.getHotlineId();
+	}
 
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
 		Shinryou shinryou = (Shinryou)result[0];

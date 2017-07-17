@@ -1,6 +1,6 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.rightpane;
 
-import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.pharma.PharmaUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -8,60 +8,59 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-public class AuxRecordsNav extends JPanel {
+class AuxRecordsNav extends JPanel {
 
-    private AuxDispRecords records;
-    private int currentPage;
+    interface Callbacks {
+        void onPageSelected(RecordPage page);
+    }
+
     private List<RecordPage> pages;
+    private int currentPage;
     private JLabel currentPageLabel;
-    private JLabel gotoPrevLink;
-    private JLabel gotoNextLink;
+    private Callbacks callbacks;
 
-    public AuxRecordsNav(AuxDispRecords records, List<RecordPage> pages, PatientDTO patient){
-        this.records = records;
+    AuxRecordsNav(List<RecordPage> pages, Callbacks callbacks){
         this.pages = pages;
+        this.callbacks = callbacks;
         setLayout(new MigLayout("insets 0", "", ""));
         if( pages.size() > 1 ){
             currentPageLabel = new JLabel("1");
             add(currentPageLabel);
             add(new JLabel("/"));
             add(new JLabel("" + pages.size()));
-            gotoPrevLink = PharmaUtil.makeLink("<");
-            gotoNextLink = PharmaUtil.makeLink(">");
-            add(gotoPrevLink);
-            add(gotoNextLink);
-        }
-        add(new JLabel("(" + patient.lastName + patient.firstName + ")"));
-        if( pages.size() > 0 ){
-            records.showVisits(pages.get(0).visitIds);
-        }
-        bind();
-    }
-
-    private void bind(){
-        if( gotoPrevLink != null ) {
+            JLabel gotoPrevLink = PharmaUtil.makeLink("<");
             gotoPrevLink.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if (currentPage > 0) {
                         currentPage -= 1;
-                        records.showVisits(pages.get(currentPage).visitIds);
+                        trigger();
                         currentPageLabel.setText("" + (currentPage + 1));
                     }
                 }
             });
-        }
-        if( gotoNextLink != null ) {
+            JLabel gotoNextLink = PharmaUtil.makeLink(">");
             gotoNextLink.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if (currentPage < pages.size() - 1) {
                         currentPage += 1;
-                        records.showVisits(pages.get(currentPage).visitIds);
+                        trigger();
                         currentPageLabel.setText("" + (currentPage + 1));
                     }
                 }
             });
+            add(gotoPrevLink);
+            add(gotoNextLink);
         }
     }
+
+    private RecordPage getCurrentPage(){
+        return pages.get(currentPage);
+    }
+
+    void trigger(){
+        callbacks.onPageSelected(getCurrentPage());
+    }
+
 }

@@ -301,7 +301,7 @@ public class DTOMapper {
 	public IyakuhinMasterDTO toIyakuhinMasterDTO(IyakuhinMaster master){
 		IyakuhinMasterDTO masterDTO = new IyakuhinMasterDTO();
 		masterDTO.iyakuhincode = master.getIyakuhincode();
-		masterDTO.validFrom = master.getValidFrom().toString();
+		masterDTO.validFrom = master.getValidFrom();
 		masterDTO.name = master.getName();
 		masterDTO.yomi = master.getYomi();
 		masterDTO.unit = master.getUnit();
@@ -316,7 +316,7 @@ public class DTOMapper {
 	public IyakuhinMaster fromIyakuhinMasterDTO(IyakuhinMasterDTO masterDTO){
 		IyakuhinMaster master = new IyakuhinMaster();
 		master.setIyakuhincode(masterDTO.iyakuhincode);
-		master.setValidFrom(stringToDate(masterDTO.validFrom));
+		master.setValidFrom(masterDTO.validFrom);
 		master.setName(masterDTO.name);
 		master.setYomi(masterDTO.yomi);
 		master.setUnit(masterDTO.unit);
@@ -478,6 +478,26 @@ public class DTOMapper {
 		pharmaDrug.setDescription(pharmaDrugDTO.description);
 		pharmaDrug.setSideeffect(pharmaDrugDTO.sideeffect);
 		return pharmaDrug;
+	}
+
+	public HotlineDTO toHotlineDTO(Hotline hotline){
+		HotlineDTO hotlineDTO = new HotlineDTO();
+		hotlineDTO.hotlineId = hotline.getHotlineId();
+		hotlineDTO.message = hotline.getMessage();
+		hotlineDTO.sender = hotline.getSender();
+		hotlineDTO.recipient = hotline.getRecipient();
+		hotlineDTO.postedAt = hotline.getPostedAt();
+		return hotlineDTO;
+	}
+
+	public Hotline fromHotlineDTO(HotlineDTO hotlineDTO){
+		Hotline hotline = new Hotline();
+		hotline.setHotlineId(hotlineDTO.hotlineId);
+		hotline.setMessage(hotlineDTO.message);
+		hotline.setSender(hotlineDTO.sender);
+		hotline.setRecipient(hotlineDTO.recipient);
+		hotline.setPostedAt(hotlineDTO.postedAt);
+		return hotline;
 	}
 
 	private String nullableDateToString(Date date){

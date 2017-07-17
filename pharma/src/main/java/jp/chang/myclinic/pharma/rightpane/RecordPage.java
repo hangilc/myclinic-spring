@@ -1,18 +1,17 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.rightpane;
 
 import jp.chang.myclinic.dto.VisitIdVisitedAtDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RecordPage {
-    public List<Integer> visitIds;
-    public String tooltip;
+class RecordPage {
+    private List<Integer> visitIds;
+    private String tooltip;
 
-    public RecordPage(List<VisitIdVisitedAtDTO> visits){
+    private RecordPage(List<VisitIdVisitedAtDTO> visits){
         visitIds = visits.stream().map(arg -> arg.visitId).collect(Collectors.toList());
         if( visits.size() == 0 ){
             tooltip = "";
@@ -21,7 +20,11 @@ public class RecordPage {
         }
     }
 
-    public static List<RecordPage> divideToPages(List<VisitIdVisitedAtDTO> visits){
+    List<Integer> getVisitIds(){
+        return visitIds;
+    }
+
+    static List<RecordPage> divideToPages(List<VisitIdVisitedAtDTO> visits){
         List<RecordPage> pages = new ArrayList<>();
         int totalItems = visits.size();
         int itemsPerPage = 10;

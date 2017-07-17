@@ -18,4 +18,5 @@ public interface PharmaQueueRepository extends CrudRepository<PharmaQueue, Integ
     List<Object[]> findFull();
 
     List<PharmaQueue> findAll();
+
 }

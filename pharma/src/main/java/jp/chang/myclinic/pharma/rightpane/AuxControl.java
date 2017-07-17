@@ -1,13 +1,85 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.rightpane;
 
-import jp.chang.myclinic.dto.PatientDTO;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.List;
 
-public class AuxControl extends JPanel {
+class AuxControl extends JPanel {
+
+    interface Callbacks {
+        void onShowVisits();
+
+        void onShowDrugs();
+    }
+
+    private JRadioButton showVisitsButton;
+    private Callbacks callbacks;
+
+    AuxControl(int patientId, Callbacks callbacks) {
+        this.callbacks = callbacks;
+        setLayout(new MigLayout("insets 0", "", ""));
+        showVisitsButton = new JRadioButton("日にち順");
+        showVisitsButton.addActionListener(event -> {
+            callbacks.onShowVisits();
+        });
+        JRadioButton showDrugsButton = new JRadioButton("薬剤別");
+        showDrugsButton.addActionListener(event -> {
+            callbacks.onShowDrugs();
+        });
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(showVisitsButton);
+        buttonGroup.add(showDrugsButton);
+        showVisitsButton.setSelected(true);
+        add(showVisitsButton);
+        add(showDrugsButton);
+    }
+
+    void selectShowVisits() {
+        showVisitsButton.setSelected(true);
+        callbacks.onShowVisits();
+    }
+
+//    void triggerShowVisits(){
+//        disableButtons();
+//        Service.api.listVisitIdVisitedAtForPatient(patientId)
+//                .thenAccept(visitIds -> {
+//                    List<RecordPage>  pages = RecordPage.divideToPages(visitIds);
+//                    EventQueue.invokeLater(() -> {
+//                        enableButtons();
+//                        callbacks.onShowVisits(pages);
+//                    });
+//                })
+//                .exceptionally(t -> {
+//                    t.printStackTrace();
+//                    alert(t.toString());
+//                    return null;
+//                });
+//
+//    }
+
+//    void enableButtons(){
+//        showVisitsButton.setEnabled(true);
+//        showDrugsButton.setEnabled(true);
+//    }
+//
+//    void disableButtons(){
+//        showVisitsButton.setEnabled(false);
+//        showDrugsButton.setEnabled(false);
+//    }
+
+    private void alert(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
+
+}
+
+/*
+class AuxControl extends JPanel {
+
+    interface Callbacks {
+        void onShowVisits();
+        void onShowDrugs();
+    }
 
     private int width;
     private PatientDTO patient;
@@ -18,7 +90,7 @@ public class AuxControl extends JPanel {
     private JRadioButton showVisitsButton = new JRadioButton("日にち順");
     private JRadioButton showDrugsButton = new JRadioButton("薬剤別");
 
-    public AuxControl(JPanel subControl, AuxDispRecords dispRecords, int width){
+    AuxControl(JPanel subControl, AuxDispRecords dispRecords, int width){
         this.subControl = subControl;
         this.dispRecords = dispRecords;
         setLayout(new MigLayout("insets 0", "[" + width + "!]", ""));
@@ -44,6 +116,7 @@ public class AuxControl extends JPanel {
                 .thenAccept(visitIds -> {
                     List<RecordPage>  pages = RecordPage.divideToPages(visitIds);
                     EventQueue.invokeLater(() -> {
+                        showVisitsButton.setSelected(true);
                         dispVisits = new AuxVisitsSubControl(patient, pages, dispRecords);
                         setSubControlContent(dispVisits);
                         showVisitsButton.setEnabled(true);
@@ -66,6 +139,7 @@ public class AuxControl extends JPanel {
             return;
         }
         setSubControlContent(dispVisits);
+        dispVisits.updateVisitsArea();
     }
 
     private void doShowDrugs() {
@@ -104,3 +178,5 @@ public class AuxControl extends JPanel {
     }
 
 }
+
+*/

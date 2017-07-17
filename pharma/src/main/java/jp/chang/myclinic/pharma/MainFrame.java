@@ -1,8 +1,17 @@
 package jp.chang.myclinic.pharma;
 
+import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
+import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.drawer.printer.manage.PrinterManageDialog;
 import jp.chang.myclinic.drawer.printer.manage.SettingChooserDialog;
+import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
+import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.pharma.leftpane.LeftPane;
+import jp.chang.myclinic.pharma.rightpane.RightPane;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;
@@ -10,17 +19,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
-public class MainFrame extends JFrame {
+class MainFrame extends JFrame {
 
-    private PharmaQueueList pharmaQueueList;
-    private Workarea workarea;
-    private AuxControl auxControl;
-    private JButton closeButton = new JButton("閉じる");
-    private JCheckBox includePrescribedCheckBox = new JCheckBox("処方済の患者も含める");
-    private JButton updatePatientListButton = new JButton("更新");
-    private JButton startPrescButton = new JButton("調剤開始");
     private JTextField prevTechouSearchField = new JTextField(6);
     private JButton searchPrevTechouButton = new JButton("検索");
     private JMenuItem prescPrinterSettingItem = new JMenuItem("処方内容印刷設定");
@@ -30,9 +32,9 @@ public class MainFrame extends JFrame {
     private static Icon waitCashierIcon;
     private static Icon waitDrugIcon;
 
-    // TODO: print blank drug bag
-    // TODO: move close button to menu
-    public MainFrame(){
+    private LeftPane leftPane;
+
+    MainFrame(){
         super("薬局");
         try {
             setupIcons();
@@ -41,10 +43,19 @@ public class MainFrame extends JFrame {
             throw new RuntimeException("failed to load icons");
         }
         setupMenu();
-        setLayout(new MigLayout("fill", "[260px!]5px![360px!]", "[400px]"));
-        add(makeLeft(), "growx, top");
-        add(makeRight(), "grow, top");
-        add(makeSouth(), "dock south, right");
+        setLayout(new MigLayout("fill", "[260px!]5px![364px!]", "[460px]"));
+        JScrollPane rightScroll = new JScrollPane();
+        rightScroll.setBorder(null);
+        rightScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        rightScroll.getVerticalScrollBar().setUnitIncrement(12);
+        leftPane = new LeftPane(waitCashierIcon, waitDrugIcon, new LeftPane.Callbacks(){
+            @Override
+            public void onStartPresc(PharmaQueueFullDTO pharmaQueue, List<DrugFullDTO> drugs) {
+                startPresc(pharmaQueue, drugs, rightScroll, leftPane);
+            }
+        });
+        add(leftPane, "growx, top");
+        add(rightScroll, "grow, top");
         bind();
         pack();
     }
@@ -58,115 +69,120 @@ public class MainFrame extends JFrame {
 
     private void setupMenu() {
         JMenuBar menuBar = new JMenuBar();
+        JMenu drugInfoMenu = new JMenu("薬剤情報");
+        {
+            JMenuItem item = new JMenuItem("新規作成");
+            drugInfoMenu.add(item);
+            item.addActionListener(event -> {
+                NewDrugInfoDialog dialog = new NewDrugInfoDialog();
+                dialog.setLocationByPlatform(true);
+                dialog.setVisible(true);
+            });
+        }
+        {
+            JMenuItem item = new JMenuItem("表示・編集");
+            drugInfoMenu.add(item);
+            item.addActionListener(event -> {
+                EditDrugInfoDialog dialog = new EditDrugInfoDialog();
+                dialog.setLocationByPlatform(true);
+                dialog.setVisible(true);
+            });
+        }
+        {
+            JMenuItem item = new JMenuItem("一覧");
+            drugInfoMenu.add(item);
+            item.addActionListener(event -> {
+                Service.api.listAllPharmaDrugNames()
+                        .thenAccept(list -> {
+                            ListAllPharmaDrugDialog dialog = new ListAllPharmaDrugDialog(list);
+                            dialog.setLocationByPlatform(true);
+                            dialog.setVisible(true);
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            });
+        }
+        menuBar.add(drugInfoMenu);
         JMenu settingMenu = new JMenu("設定");
         settingMenu.add(prescPrinterSettingItem);
         settingMenu.add(drugbagPrinterSettingItem);
         settingMenu.add(techouPrinterSettingItem);
         settingMenu.add(printManageItem);
         menuBar.add(settingMenu);
+        menuBar.add(makeBlankPrintMenu());
         setJMenuBar(menuBar);
     }
 
-    private JComponent makeLeft(){
-        pharmaQueueList = new PharmaQueueList(waitCashierIcon, waitDrugIcon);
-        JPanel panel = new JPanel(new MigLayout("fill", "", ""));
-        panel.add(new JLabel("患者リスト"), "left, wrap");
-        panel.add(new JScrollPane(pharmaQueueList), "grow, wrap");
-        panel.add(makePatientListSub(), "growx, wrap");
-        panel.add(makePrevTechou(), "growx");
-        return panel;
+    private JMenu makeBlankPrintMenu(){
+        JMenu menu = new JMenu("印刷");
+        menu.add(createBlankPrintMenuItem("内服薬袋印刷", DrugCategory.Naifuku));
+        menu.add(createBlankPrintMenuItem("頓服薬袋印刷", DrugCategory.Tonpuku));
+        menu.add(createBlankPrintMenuItem("外用薬袋印刷", DrugCategory.Gaiyou));
+        menu.add(createBlankPrintMenuItem("おくすり薬袋印刷", null));
+        return menu;
     }
 
-    private JComponent makePatientListSub(){
-        JPanel panel = new JPanel(new MigLayout("insets 0, gapy 0", "", ""));
-        panel.add(makePatientListSubRow1(), "wrap");
-        panel.add(makePatientListSubRow2(), "wrap");
-        panel.add(makePatientListSubRow3(), "");
-        return panel;
+    private JMenuItem createBlankPrintMenuItem(String label, DrugCategory category){
+        JMenuItem item = new JMenuItem(label);
+        item.addActionListener(event -> {
+            printBlankDrugBag(category);
+        });
+        return item;
     }
 
-    private JComponent makePatientListSubRow1(){
-        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        JLabel waitCashierLabel = new JLabel("会計待ち");
-        waitCashierLabel.setIcon(waitCashierIcon);
-        JLabel waitPackLabel = new JLabel("薬渡待ち");
-        waitPackLabel.setIcon(waitDrugIcon);
-        panel.add(waitCashierLabel);
-        panel.add(waitPackLabel);
-        return panel;
+    private void printBlankDrugBag(DrugCategory category){
+        Service.api.getClinicInfo()
+                .thenAccept(clinicInfo -> {
+                    DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
+                    previewDialog.setImageSize(128, 182);
+                    previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getDrugbagPrinterSetting());
+                    previewDialog.setLocationByPlatform(true);
+                    DrugBagDataCreator dataCreator = new DrugBagDataCreator(category);
+                    dataCreator.setClinicInfo(clinicInfo);
+                    DrugBagDrawerData data = dataCreator.createData();
+                    List<Op> ops = new DrugBagDrawer(data).getOps();
+                    previewDialog.render(ops);
+                    previewDialog.setVisible(true);
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> alert(t.toString()));
+                    return null;
+                });
     }
 
-    private JComponent makePatientListSubRow2(){
-        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        Insets insets = includePrescribedCheckBox.getInsets();
-        insets.left = -1;
-        includePrescribedCheckBox.setMargin(insets);
-        panel.add(includePrescribedCheckBox, "");
-        panel.add(updatePatientListButton);
-        return panel;
-    }
+    private void startPresc(PharmaQueueFullDTO pharmaQueueFull, List<DrugFullDTO> drugs, JScrollPane rightScroll,
+                            LeftPane leftPane){
+        RightPane rightPane = new RightPane(pharmaQueueFull, drugs, new RightPane.Callbacks(){
+            @Override
+            public void onPrescDone() {
+                rightScroll.getViewport().setView(null);
+                leftPane.clear();
+                leftPane.reloadPharmaQueue();
+            }
 
-    private JComponent makePatientListSubRow3(){
-        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        panel.add(startPrescButton);
-        return panel;
-    }
+            @Override
+            public void onCancel() {
+                rightScroll.getViewport().setView(null);
+                leftPane.clear();
+            }
+        });
+        rightScroll.getViewport().setView(rightPane);
+        rightScroll.getVerticalScrollBar().setValue(0);
 
-    private JComponent makePrevTechou(){
-        JPanel panel = new JPanel(new MigLayout("", "", ""));
-        panel.setBorder(BorderFactory.createTitledBorder("過去のお薬手帳"));
-        panel.add(prevTechouSearchField);
-        panel.add(searchPrevTechouButton);
-        return panel;
-    }
-
-    private JComponent makeRight(){
-        int width = 330;
-        JPanel auxSubControl = new JPanel(new MigLayout("", "", ""));
-        AuxDispRecords dispRecords = new AuxDispRecords(width);
-        auxControl = new AuxControl(auxSubControl, dispRecords, width - 2);
-        JPanel panel = new JPanel(new MigLayout("", "[" + width + "!]", ""));
-        panel.add(new JLabel("投薬"), "growx, wrap");
-        panel.add(makeWorkarea(), "growx, wrap");
-        {
-            JPanel control = new JPanel(new MigLayout("insets 0", "", "[]2[]"));
-            auxControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            auxSubControl.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            control.add(auxControl, "growx, wrap");
-            control.add(auxSubControl, "growx");
-            panel.add(control, "growx, wrap");
-        }
-        panel.add(dispRecords, "grow");
-        JScrollPane sp = new JScrollPane(panel);
-        sp.setBorder(null);
-        sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        return sp;
-    }
-
-    private JComponent makeWorkarea(){
-        Workarea wa = new Workarea();
-        wa.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-        workarea = wa;
-        return wa;
-    }
-
-    private JComponent makeSouth(){
-        JPanel panel = new JPanel(new MigLayout("", "[grow]", ""));
-        panel.add(closeButton, "right");
-        return panel;
     }
 
     private void bind(){
-        updatePatientListButton.addActionListener(event -> doUpdatePatientList());
-        startPrescButton.addActionListener(event -> doStartPresc());
-        closeButton.addActionListener(event -> {
-            dispose();
-            System.exit(0);
-        });
         prescPrinterSettingItem.addActionListener(event -> doPrescPrinterSetting());
         drugbagPrinterSettingItem.addActionListener(event -> doDrugbagPrinterSetting());
         techouPrinterSettingItem.addActionListener(event -> doTechouPrinterSetting());
         printManageItem.addActionListener(event -> doManagePrint());
+        searchPrevTechouButton.addActionListener(event -> doSearchPrevTechou());
     }
 
     private void doPrescPrinterSetting() {
@@ -215,42 +231,101 @@ public class MainFrame extends JFrame {
     }
 
     private void doStartPresc() {
-        PharmaQueueFullDTO pharmaQueueFull = pharmaQueueList.getSelectedValue();
-        if( pharmaQueueFull == null ){
-            return;
-        }
-        Service.api.listDrugFull(pharmaQueueFull.visitId)
-                .thenAccept(drugs -> {
-                    EventQueue.invokeLater(() -> {
-                        workarea.update(pharmaQueueFull.patient, drugs);
-                        auxControl.update(pharmaQueueFull.patient);
-                    });
-                })
-                .exceptionally(t -> null);
+//        PharmaQueueFullDTO pharmaQueueFull = pharmaQueueList.getSelectedValue();
+//        if( pharmaQueueFull == null ){
+//            return;
+//        }
+//        Service.api.listDrugFull(pharmaQueueFull.visitId)
+//                .thenAccept(drugs -> {
+//                    EventQueue.invokeLater(() -> {
+//                        workarea.update(pharmaQueueFull.patient, drugs);
+//                        auxControl.update(pharmaQueueFull.patient);
+//                        rightScroll.getVerticalScrollBar().setValue(0);
+//                    });
+//                })
+//                .exceptionally(t -> null);
     }
 
     private void doUpdatePatientList() {
-        CompletableFuture<List<PharmaQueueFullDTO>> pharmaList;
-        if( includePrescribedCheckBox.isSelected() ){
-            pharmaList = Service.api.listPharmaQueueForToday();
-        } else {
-            pharmaList = Service.api.listPharmaQueueForPrescription();
-        }
-        pharmaList.thenAccept(result -> {
-            EventQueue.invokeLater(() -> {
-                pharmaQueueList.setListData(result.toArray(new PharmaQueueFullDTO[]{}));
-            });
-        })
-        .exceptionally(t -> {
-            t.printStackTrace();
-            return null;
-        });
+//        CompletableFuture<List<PharmaQueueFullDTO>> pharmaList;
+//        if( includePrescribedCheckBox.isSelected() ){
+//            pharmaList = Service.api.listPharmaQueueForToday();
+//        } else {
+//            pharmaList = Service.api.listPharmaQueueForPrescription();
+//        }
+//        pharmaList.thenAccept(result -> {
+//            EventQueue.invokeLater(() -> {
+//                pharmaQueueList.setListData(result.toArray(new PharmaQueueFullDTO[]{}));
+//            });
+//        })
+//        .exceptionally(t -> {
+//            t.printStackTrace();
+//            return null;
+//        });
     }
 
     private void doManagePrint(){
         PrinterManageDialog printerManageDialog = new PrinterManageDialog(this);
         printerManageDialog.setLocationByPlatform(true);
         printerManageDialog.setVisible(true);
+    }
+
+    private class AlertException extends RuntimeException {
+        private String message;
+
+        AlertException(String message){
+            this.message = message;
+        }
+
+        @Override
+        public String toString(){
+            return message;
+        }
+    }
+
+    private void doSearchPrevTechou(){
+        try {
+            int patientId = Integer.parseInt(prevTechouSearchField.getText());
+            PrevTechouStorage storage = new PrevTechouStorage();
+            Cursor origCursor = getCursor();
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            Service.api.findPatient(patientId)
+                    .thenCompose(patient -> {
+                        if( patient != null ){
+                            storage.patient = patient;
+                            return Service.api.listVisitIdVisitedAtForPatient(patientId);
+                        } else {
+                            throw new AlertException("該当患者が見つかりません。");
+                        }
+                    })
+                    .thenAccept(visits -> {
+                        EventQueue.invokeLater(() -> {
+                            setCursor(origCursor);
+                            prevTechouSearchField.setText("");
+                            PrevTechouDialog dialog = new PrevTechouDialog(storage.patient, visits.subList(0, Math.min(20, visits.size())));
+                            dialog.setLocationByPlatform(true);
+                            dialog.setVisible(true);
+                        });
+                    })
+                    .exceptionally(t -> {
+                        t.printStackTrace();
+                        EventQueue.invokeLater(() -> {
+                            setCursor(origCursor);
+                            String message = t.toString();
+                            if( t instanceof CompletionException ){
+                                message = t.getCause().toString();
+                            }
+                            alert(message);
+                        });
+                        return null;
+                    });
+        } catch(NumberFormatException ex){
+            alert("患者番号の入力が不適切です。");
+        }
+     }
+
+    private static class PrevTechouStorage {
+        PatientDTO patient;
     }
 
     private void alert(String message){

@@ -5,8 +5,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 interface PatientRepository extends CrudRepository<Patient, Integer> {
@@ -25,6 +26,9 @@ interface PatientRepository extends CrudRepository<Patient, Integer> {
     Stream<Patient> searchPatientByYomi(String lastNameYomi, String firstNameYomi, Sort sort);
 
     Page<Patient> findAll(Pageable pageable);
+
+    @Query("select p from Patient p where p.patientId = :patientId")
+    Optional<Patient> tryFind(@Param("patientId") int patientId);
 
     // @Query("select p from Patient p where p.lastName like CONCAT('%', ?1, '%') " +
     //         " or p.firstName like CONCAT('%', ?1, '%') " +

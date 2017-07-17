@@ -62,6 +62,10 @@ public class DateTimeUtil {
 		return datePart + timePart;
 	}
 
+	public static String sqlDateTimeToKanji(String sqlDateTime, DateTimeFormatter dateFormatter) {
+		return sqlDateTimeToKanji(sqlDateTime, dateFormatter, null);
+	}
+
 	public static String sqlDateTimeToKanji(String sqlDateTime, DateTimeFormatter dateFormatter, DateTimeFormatter timeFormatter) {
 		return sqlDateTimeToKanji(sqlDateTime, dateFormatter, timeFormatter, " ");
 	}

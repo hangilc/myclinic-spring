@@ -1,8 +1,6 @@
 package jp.chang.myclinic.drawer.swing;
 
 import jp.chang.myclinic.drawer.Op;
-import jp.chang.myclinic.drawer.printer.AuxSetting;
-import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.drawer.printer.manage.PrinterSetting;
 import net.miginfocom.swing.MigLayout;
 
@@ -10,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +58,7 @@ public class DrawerPreviewDialog extends JDialog {
         doRender(ops);
     }
 
-    public void doRender(List<Op> ops){
+    private void doRender(List<Op> ops){
         previewPane.setOps(ops);
         previewPane.repaint();
         previewPane.revalidate();
@@ -164,6 +161,7 @@ public class DrawerPreviewDialog extends JDialog {
 
     private void doPrint(){
         PrinterSetting.INSTANCE.printPages(pages, settingName);
+        dispose();
         /*
         DrawerPrinter drawerPrinter = new DrawerPrinter();
         byte[] devmode = null, devnames = null;

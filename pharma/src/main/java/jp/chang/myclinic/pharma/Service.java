@@ -12,14 +12,15 @@ import jp.chang.myclinic.dto.*;
 import retrofit2.Retrofit;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-class Service {
+public class Service {
     public interface ServerAPI {
         @GET("list-pharma-queue-full-for-prescription")
         CompletableFuture<List<PharmaQueueFullDTO>> listPharmaQueueForPrescription();
@@ -33,98 +34,54 @@ class Service {
         @GET("get-pharma-drug")
         CompletableFuture<PharmaDrugDTO> getPharmaDrug(@Query("iyakuhincode") int iyakuhincode);
 
+        @GET("find-pharma-drug")
+        CompletableFuture<PharmaDrugDTO> findPharmaDrug(@Query("iyakuhincode") int iyakuhincode);
+
+        @POST("enter-pharma-drug")
+        CompletableFuture<Boolean> enterPharmaDrug(@Body PharmaDrugDTO pharmaDrugDTO);
+
+        @POST("update-pharma-drug")
+        CompletableFuture<Boolean> updatePharmaDrug(@Body PharmaDrugDTO pharmaDrugDTO);
+
         @GET("get-clinic-info")
         CompletableFuture<ClinicInfoDTO> getClinicInfo();
 
         @GET("collect-pharma-drug-by-iyakuhincodes")
-        CompletableFuture<List<PharmaDrugDTO>> collectPharmaDrugByIyakuhincodes(@Query("iyakuhincode[]") Set<Integer> iyakuhincodes);
+        CompletableFuture<List<PharmaDrugDTO>> collectPharmaDrugByIyakuhincodes(@Query("iyakuhincode[]") List<Integer> iyakuhincodes);
 
         @GET("list-visit-id-visited-at-for-patient")
         CompletableFuture<List<VisitIdVisitedAtDTO>> listVisitIdVisitedAtForPatient(@Query("patient-id") int patientId);
 
         @GET("list-visit-text-drug")
-        CompletableFuture<List<VisitTextDrugDTO>> listVisitTextDrug(@Query("visit-id[]") Set<Integer> visitIds);
+        CompletableFuture<List<VisitTextDrugDTO>> listVisitTextDrug(@Query("visit-id[]") List<Integer> visitIds);
 
         @GET("list-iyakuhin-for-patient")
         CompletableFuture<List<IyakuhincodeNameDTO>> listIyakuhinForPatient(@Query("patient-id") int patientId);
 
-//        @GET("list-wqueue-full")
-//        CompletableFuture<List<WqueueFullDTO>> listWqueue();
-//
-//        @GET("get-patient")
-//        CompletableFuture<PatientDTO> getPatient(@Query("patient-id") int patientId);
-//
-//        @POST("enter-patient-with-hoken")
-//        CompletableFuture<PatientHokenListDTO> enterPatientWithHoken(@Body PatientHokenListDTO patientHokenListDTO);
-//
-//        @POST("enter-patient")
-//        CompletableFuture<Integer> enterPatient(@Body PatientDTO patientDTO);
-//
-//        @GET("list-hoken")
-//        CompletableFuture<HokenListDTO> listHoken(@Query("patient-id") int patientId);
-//
-//        @GET("search-patient-by-name")
-//        CompletableFuture<List<PatientDTO>> searchPatientByName(@Query("last-name") String lastName,
-//                                                                @Query("first-name") String firstName);
-//
-//        @GET("search-patient-by-yomi")
-//        CompletableFuture<List<PatientDTO>> searchPatientByYomi(@Query("last-name-yomi") String lastNameYomi,
-//                                                                @Query("first-name-yomi") String firstNameYomi);
-//
-//        @GET("list-recently-registered-patients")
-//        CompletableFuture<List<PatientDTO>> listRecentlyRegisteredPatients();
-//
-//        @POST("enter-shahokokuho")
-//        CompletableFuture<Integer> enterShahokokuho(@Body ShahokokuhoDTO shahokokuhoDTO);
-//
-//        @POST("delete-shahokokuho")
-//        CompletableFuture<Boolean> deleteShahokokuho(@Body ShahokokuhoDTO shahokokuhoDTO);
-//
-//        @POST("enter-koukikourei")
-//        CompletableFuture<Integer> enterKoukikourei(@Body KoukikoureiDTO koukikoureiDTO);
-//
-//        @POST("delete-koukikourei")
-//        CompletableFuture<Boolean> deleteKoukikourei(@Body KoukikoureiDTO koukikoureiDTO);
-//
-//        @POST("enter-kouhi")
-//        CompletableFuture<Integer> enterKouhi(@Body KouhiDTO kouhiDTO);
-//
-//        @POST("delete-kouhi")
-//        CompletableFuture<Boolean> deleteKouhi(@Body KouhiDTO kouhiDTO);
-//
-//        @GET("get-visit-meisai")
-//        CompletableFuture<MeisaiDTO> getVisitMeisai(@Query("visit-id") int visitId);
-//
-//        @GET("get-charge")
-//        CompletableFuture<ChargeDTO> getCharge(@Query("visit-id") int visitId);
-//
-//        @GET("find-charge")
-//        CompletableFuture<ChargeOptionalDTO> findCharge(@Query("visit-id") int visitId);
-//
-//        @GET("list-payment")
-//        CompletableFuture<List<PaymentDTO>> listPayment(@Query("visit-id") int visitId);
-//
-//        @GET("list-recent-payment")
-//        CompletableFuture<List<PaymentVisitPatientDTO>> listRecentPayment(@Query("n") int n);
-//
-//        @GET("list-payment-by-patient")
-//        CompletableFuture<List<PaymentVisitPatientDTO>> listPaymentByPatient(@Query("patient-id") int patientId,
-//                                                                             @Query("n") int n);
-//
-//        @GET("get-clinic-info")
-//        CompletableFuture<ClinicInfoDTO> getClinicInfo();
-//
-//        @POST("start-visit")
-//        CompletableFuture<Integer> startVisit(@Query("patient-id") int patientId);
-//
-//        @GET("get-visit")
-//        CompletableFuture<VisitDTO> getVisit(@Query("visit-id") int visitId);
-//
-//        @POST("finish-cashier")
-//        CompletableFuture<Boolean> finishCashier(@Body PaymentDTO payment);
-//
-//        @POST("delete-visit-from-reception")
-//        CompletableFuture<Boolean> deleteVisitFromReception(@Query("visit-id") int visitId);
+        @GET("list-visit-id-visited-at-by-patient-and-iyakuhincode")
+        CompletableFuture<List<VisitIdVisitedAtDTO>> listVisitIdVisitedAtByPatientAndIyakuhincode(@Query("patient-id") int patientId,
+                                                                                            @Query("iyakuhincode") int iyakuhincode);
+
+        @GET("get-patient")
+        CompletableFuture<PatientDTO> getPatient(@Query("patient-id") int patientId);
+
+        @GET("find-patient")
+        CompletableFuture<PatientDTO> findPatient(@Query("patient-id") int patientId);
+
+        @GET("search-iyakuhin-master-by-name")
+        CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMasterByName(@Query("text") String text, @Query("at") String at);
+
+        @GET("search-pharma-drug-names")
+        CompletableFuture<List<PharmaDrugNameDTO>> searchPharmaDrugNames(@Query("text") String text);
+
+        @GET("list-all-pharma-drug-names")
+        CompletableFuture<List<PharmaDrugNameDTO>> listAllPharmaDrugNames();
+
+        @POST("delete-pharma-drug")
+        CompletableFuture<Boolean> deletePharmaDrug(@Query("iyakuhincode") int iyakuhincode);
+
+        @POST("presc-done")
+        CompletableFuture<Boolean> prescDone(@Query("visit-id") int visitId);
     }
 
     public static ServerAPI api;

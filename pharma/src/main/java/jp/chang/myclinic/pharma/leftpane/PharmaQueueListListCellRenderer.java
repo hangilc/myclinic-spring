@@ -1,23 +1,21 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.leftpane;
 
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
+import jp.chang.myclinic.pharma.BlankIcon;
 
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Created by hangil on 2017/06/11.
- */
-public class PharmaQueueListListCellRenderer extends JLabel implements ListCellRenderer<PharmaQueueFullDTO> {
+class PharmaQueueListListCellRenderer extends JLabel implements ListCellRenderer<PharmaQueueFullDTO> {
 
     private Icon waitCashierIcon;
     private Icon waitDrugIcon;
     private Icon blankIcon;
 
-    public PharmaQueueListListCellRenderer(Icon waitCashierIcon, Icon waitDrugIcon){
+    PharmaQueueListListCellRenderer(Icon waitCashierIcon, Icon waitDrugIcon){
         this.waitCashierIcon = waitCashierIcon;
         this.waitDrugIcon = waitDrugIcon;
         this.blankIcon = new BlankIcon(12, 12);
