@@ -1,7 +1,12 @@
 package jp.chang.myclinic.pharma;
 
+import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
+import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.drawer.printer.manage.PrinterManageDialog;
 import jp.chang.myclinic.drawer.printer.manage.SettingChooserDialog;
+import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
@@ -110,7 +115,46 @@ class MainFrame extends JFrame {
         settingMenu.add(techouPrinterSettingItem);
         settingMenu.add(printManageItem);
         menuBar.add(settingMenu);
+        menuBar.add(makeBlankPrintMenu());
         setJMenuBar(menuBar);
+    }
+
+    private JMenu makeBlankPrintMenu(){
+        JMenu menu = new JMenu("印刷");
+        menu.add(createBlankPrintMenuItem("内服薬袋印刷", DrugCategory.Naifuku));
+        menu.add(createBlankPrintMenuItem("頓服薬袋印刷", DrugCategory.Tonpuku));
+        menu.add(createBlankPrintMenuItem("外用薬袋印刷", DrugCategory.Gaiyou));
+        menu.add(createBlankPrintMenuItem("おくすり薬袋印刷", null));
+        return menu;
+    }
+
+    private JMenuItem createBlankPrintMenuItem(String label, DrugCategory category){
+        JMenuItem item = new JMenuItem(label);
+        item.addActionListener(event -> {
+            printBlankDrugBag(category);
+        });
+        return item;
+    }
+
+    private void printBlankDrugBag(DrugCategory category){
+        Service.api.getClinicInfo()
+                .thenAccept(clinicInfo -> {
+                    DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
+                    previewDialog.setImageSize(128, 182);
+                    previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getDrugbagPrinterSetting());
+                    previewDialog.setLocationByPlatform(true);
+                    DrugBagDataCreator dataCreator = new DrugBagDataCreator(category);
+                    dataCreator.setClinicInfo(clinicInfo);
+                    DrugBagDrawerData data = dataCreator.createData();
+                    List<Op> ops = new DrugBagDrawer(data).getOps();
+                    previewDialog.render(ops);
+                    previewDialog.setVisible(true);
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> alert(t.toString()));
+                    return null;
+                });
     }
 
     private void startPresc(PharmaQueueFullDTO pharmaQueueFull, List<DrugFullDTO> drugs, JScrollPane rightScroll,

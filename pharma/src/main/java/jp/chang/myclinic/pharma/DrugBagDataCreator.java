@@ -13,9 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * Created by hangil on 2017/06/14.
- */
 public class DrugBagDataCreator {
 
     private DrugDTO drug;
@@ -48,21 +45,29 @@ public class DrugBagDataCreator {
         powderDrugMap.put(620392528, 1.0);  // コデイン散
     }
 
+    public DrugBagDataCreator(DrugCategory category){
+        this.category = category;
+    }
+
     public DrugBagDataCreator(DrugFullDTO drugFull, PatientDTO patient, PharmaDrugDTO pharmaDrug, ClinicInfoDTO clinicInfo){
+        this(DrugCategory.fromCode(drugFull.drug.category));
         this.drug = drugFull.drug;
         this.master = drugFull.master;
         this.patient = patient;
         this.pharmaDrug = pharmaDrug;
         this.clinicInfo = clinicInfo;
-        category = DrugCategory.fromCode(drug.category);
+    }
+
+    public void setClinicInfo(ClinicInfoDTO clinicInfo){
+        this.clinicInfo = clinicInfo;
     }
 
     public DrugBagDrawerData createData(){
         DrugBagDrawerData data = new DrugBagDrawerData();
         data.color = getColor();
         data.title = getTitle();
-        data.patientName = patient.lastName + " " + patient.firstName;
-        data.patientNameYomi = patient.lastNameYomi + " " + patient.firstNameYomi;
+        data.patientName = getPatientName();
+        data.patientNameYomi = getPatientNameYomi();
         data.instructions = composeInstructions();
         data.drugName = composeDrugName();
         data.drugDescription = composeDescription();
@@ -86,7 +91,7 @@ public class DrugBagDataCreator {
 
     private String getTitle(){
         if( category == null ){
-            return "";
+            return "おくすり";
         }
         switch(category){
             case Naifuku: return "内服薬";
@@ -96,8 +101,24 @@ public class DrugBagDataCreator {
         }
     }
 
+    private String getPatientName(){
+        if( patient != null ){
+            return patient.lastName + " " + patient.firstName;
+        } else {
+            return "　　　" + " " + "　　　";
+        }
+    }
+
+    private String getPatientNameYomi(){
+        if( patient != null ){
+            return patient.lastNameYomi + " " + patient.firstNameYomi;
+        } else {
+            return "　　　　　" + " " + "　　　　　　";
+        }
+    }
+
     private List<String> composeInstructions(){
-        if( category == null ){
+        if( category == null || drug == null || master == null ){
             return Collections.emptyList();
         }
         switch(category){
@@ -225,6 +246,9 @@ public class DrugBagDataCreator {
     }
 
     private String composeDrugName(){
+        if( drug == null || master == null ){
+            return "";
+        }
         String name = master.name;
         Double powderDose = powderDrugMap.get(drug.iyakuhincode);
         if( powderDose != null ){
@@ -245,6 +269,9 @@ public class DrugBagDataCreator {
     }
 
     private List<String> composeClinicAddr(){
+        if( clinicInfo == null ){
+            return Collections.emptyList();
+        }
         List<String> lines = new ArrayList<>();
         lines.add(clinicInfo.postalCode);
         lines.add(clinicInfo.address);
