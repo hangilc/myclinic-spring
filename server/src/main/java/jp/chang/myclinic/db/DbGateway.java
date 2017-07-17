@@ -736,6 +736,12 @@ public class DbGateway {
 		return hotline.getHotlineId();
 	}
 
+	public List<HotlineDTO> listTodaysHotline(){
+		return hotlineRepository.findTodaysHotline().stream()
+				.map(mapper::toHotlineDTO)
+				.collect(Collectors.toList());
+	}
+
 	private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
 		Shinryou shinryou = (Shinryou)result[0];
 		ShinryouMaster master = (ShinryouMaster)result[1];

@@ -1,7 +1,6 @@
 package jp.chang.myclinic.rest;
 
 import jp.chang.myclinic.db.DbGateway;
-import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.HotlineDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,5 +30,10 @@ public class HotlineController {
     @RequestMapping(value="/enter-hotling", method=RequestMethod.GET)
     public int enterHotline(@RequestBody HotlineDTO hotlineDTO){
         return dbGateway.enterHotline(hotlineDTO);
+    }
+
+    @RequestMapping(value="/list-todays-hotline", method=RequestMethod.GET)
+    public List<HotlineDTO> listTodaysHotline(){
+        return dbGateway.listTodaysHotline();
     }
 }

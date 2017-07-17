@@ -20,7 +20,7 @@ public class AppHotline
             if( !serverUrl.endsWith("/") ){
                 serverUrl = serverUrl + "/";
             }
-            //Service.setServerUrl(serverUrl);
+            Service.setServerUrl(serverUrl);
         }
         EventQueue.invokeLater(() -> {
             try {

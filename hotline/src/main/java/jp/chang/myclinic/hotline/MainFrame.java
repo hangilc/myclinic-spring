@@ -3,19 +3,21 @@ package jp.chang.myclinic.hotline;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 
-public class MainFrame extends JFrame {
+class MainFrame extends JFrame {
 
     private JButton sendButton = new JButton("送信");
     private JButton ryoukaiButton = new JButton("了解");
     private JButton beepButton = new JButton("ビープ");
     private JCheckBox soundCheckBox = new JCheckBox("サウンド", true);
     private JButton closeButton = new JButton("閉じる");
+    private DispPane dispPane;
 
-    public MainFrame(){
+    MainFrame(){
         setLayout(new MigLayout("", "[180!]", ""));
-        add(makeDisp(), "growx, h 300, wrap");
-        add(makeInput(), "growx, h 80, wrap");
+        add(makeDisp(), "growx, h 260, wrap");
+        add(makeInput(), "growx, h 60, wrap");
         add(sendButton, "sizegroup btn, wrap");
         add(ryoukaiButton, "split 2, sizegroup btn");
         add(beepButton, "sizegroup btn, wrap");
@@ -23,11 +25,14 @@ public class MainFrame extends JFrame {
         add(makeSouth(), "right");
         bind();
         pack();
+        reload();
     }
 
     private JComponent makeDisp(){
-        JPanel panel = new JPanel();
-        JScrollPane sp = new JScrollPane(panel);
+        dispPane = new DispPane();
+        dispPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 30));
+        JScrollPane sp = new JScrollPane(dispPane);
+        sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         return sp;
     }
 
@@ -49,5 +54,21 @@ public class MainFrame extends JFrame {
             dispose();
             System.exit(0);
         });
+    }
+
+    private void reload(){
+        Service.api.listTodaysHotline()
+                .thenAccept(hotlines -> {
+                    EventQueue.invokeLater(() -> dispPane.addHotlines(hotlines));
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> alert(t.toString()));
+                    return null;
+                });
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
     }
 }
