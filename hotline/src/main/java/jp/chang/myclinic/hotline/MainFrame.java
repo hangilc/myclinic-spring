@@ -6,6 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 class MainFrame extends JFrame {
@@ -101,7 +102,35 @@ class MainFrame extends JFrame {
     }
 
     void onNewHotline(List<HotlineDTO> hotlines){
-        dispPane.addHotlines(hotlines);
+        List<HotlineDTO> mine = new ArrayList<>();
+        int maxMyHotlineId = dispPane.getLargestHotlineId();
+        boolean needBeep = false;
+        for(HotlineDTO h: hotlines){
+            if( h.hotlineId <= maxMyHotlineId ){
+                continue;
+            }
+            if( isSentToMe(h) ){
+                needBeep = true;
+                mine.add(h);
+            } else if( isSentFromMe(h) ){
+                mine.add(h);
+            }
+        }
+        if( mine.size() > 0 ){
+            dispPane.addHotlines(mine);
+        }
+        if( needBeep ){
+            System.out.println("beep");
+            Toolkit.getDefaultToolkit().beep();
+        }
+    }
+
+    private boolean isSentFromMe(HotlineDTO hotline){
+        return hotline.sender.equals(sender) && hotline.recipient.equals(recipient);
+    }
+
+    private boolean isSentToMe(HotlineDTO hotline){
+        return hotline.sender.equals(recipient) && hotline.recipient.equals(sender);
     }
 
     private void alert(String message){

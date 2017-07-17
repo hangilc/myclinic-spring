@@ -14,6 +14,7 @@ class DispPane extends JPanel {
 
     private int width = -1;
     private List<HotlineDTO> pendingHotlines = new ArrayList<>();
+    private int largestHotlineId;
 
     DispPane(){
         setLayout(new MigLayout("insets 0, fillx, top, gapy 2", "", ""));
@@ -32,6 +33,10 @@ class DispPane extends JPanel {
         }
     }
 
+    int getLargestHotlineId(){
+        return largestHotlineId;
+    }
+
     private void batchAddhotlines(Collection<HotlineDTO> hotlines){
         for(HotlineDTO hotline: hotlines){
             doAddHotline(hotline);
@@ -41,9 +46,12 @@ class DispPane extends JPanel {
     }
 
     private void doAddHotline(HotlineDTO hotline){
-        String s = String.format("%s(%03d)> %s", roleLabel(hotline.sender), hotline.hotlineId % 1000, hotline.message);
-        WrappedText text = new WrappedText(width, s);
-        add(text, "wrap");
+        if( hotline.hotlineId > largestHotlineId ){
+            String s = String.format("%s(%03d)> %s", roleLabel(hotline.sender), hotline.hotlineId % 1000, hotline.message);
+            WrappedText text = new WrappedText(width, s);
+            add(text, "wrap");
+            largestHotlineId = hotline.hotlineId;
+        }
     }
 
     private String roleLabel(String role){

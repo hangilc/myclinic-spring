@@ -29,7 +29,6 @@ class Reloader implements Runnable {
         while(true){
             try {
                 triggerQueue.poll(lastHotlineId <= 0 ? 0 : 2000, TimeUnit.MILLISECONDS);
-                System.out.println("starting reload");
                 Response<List<HotlineDTO>> response = reload();
                 if( response.isSuccessful() ){
                     List<HotlineDTO> hotlines = response.body();
@@ -37,7 +36,6 @@ class Reloader implements Runnable {
                         EventQueue.invokeAndWait(() -> {
                             mainFrame.onNewHotline(hotlines);
                             lastHotlineId = hotlines.get(hotlines.size()-1).hotlineId;
-                            System.out.println(lastHotlineId);
                         });
                     }
                 }

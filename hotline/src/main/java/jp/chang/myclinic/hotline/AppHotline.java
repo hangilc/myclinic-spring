@@ -5,6 +5,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
+// TODO: optionally show others hotlines
 public class AppHotline
 {
     public static void main( String[] args ) {
@@ -49,5 +50,6 @@ public class AppHotline
             th.start();
             mainFrame.setReloader(reloader);
         });
+
     }
 }
