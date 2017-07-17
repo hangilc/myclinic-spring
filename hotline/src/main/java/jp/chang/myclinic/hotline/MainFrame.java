@@ -19,6 +19,7 @@ class MainFrame extends JFrame {
     private JCheckBox soundCheckBox = new JCheckBox("サウンド", true);
     private JButton closeButton = new JButton("閉じる");
     private DispPane dispPane;
+    private Reloader reloader;
 
     MainFrame(String sender, String recipient){
         this.sender = sender;
@@ -33,6 +34,10 @@ class MainFrame extends JFrame {
         add(makeSouth(), "right");
         bind();
         pack();
+    }
+
+    void setReloader(Reloader reloader){
+        this.reloader = reloader;
     }
 
     private JComponent makeDisp(){
@@ -81,9 +86,11 @@ class MainFrame extends JFrame {
         hotline.postedAt = LocalDate.now().toString();
         Service.api.enterHotline(hotline)
                 .thenAccept(hotlineId -> {
-                    System.out.println("hotlineId: " + hotlineId);
                     if( clearTextArea ) {
                         textArea.setText("");
+                    }
+                    if( reloader != null ){
+                        reloader.trigger();
                     }
                 })
                 .exceptionally(t -> {
@@ -95,18 +102,6 @@ class MainFrame extends JFrame {
 
     void onNewHotline(List<HotlineDTO> hotlines){
         dispPane.addHotlines(hotlines);
-    }
-
-    private void reload(){
-        Service.api.listTodaysHotline()
-                .thenAccept(hotlines -> {
-                    EventQueue.invokeLater(() -> dispPane.addHotlines(hotlines));
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    EventQueue.invokeLater(() -> alert(t.toString()));
-                    return null;
-                });
     }
 
     private void alert(String message){

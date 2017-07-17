@@ -43,9 +43,11 @@ public class AppHotline
             mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             mainFrame.setLocationByPlatform(true);
             mainFrame.setVisible(true);
-            Thread th = new Thread(new Reloader(mainFrame));
+            Reloader reloader = new Reloader(mainFrame);
+            Thread th = new Thread(reloader);
             th.setDaemon(true);
             th.start();
+            mainFrame.setReloader(reloader);
         });
     }
 }

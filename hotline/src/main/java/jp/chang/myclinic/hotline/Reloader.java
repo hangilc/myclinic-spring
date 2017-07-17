@@ -14,17 +14,21 @@ class Reloader implements Runnable {
 
     private MainFrame mainFrame;
     private int lastHotlineId;
-    private BlockingQueue<Void> trigger = new ArrayBlockingQueue<>(1);
+    private BlockingQueue<Integer> triggerQueue = new ArrayBlockingQueue<>(1);
 
     Reloader(MainFrame mainFrame){
         this.mainFrame = mainFrame;
+    }
+
+    public void trigger(){
+        triggerQueue.offer(0);
     }
 
     @Override
     public void run() {
         while(true){
             try {
-                trigger.poll(lastHotlineId <= 0 ? 0 : 2000, TimeUnit.MILLISECONDS);
+                triggerQueue.poll(lastHotlineId <= 0 ? 0 : 2000, TimeUnit.MILLISECONDS);
                 System.out.println("starting reload");
                 Response<List<HotlineDTO>> response = reload();
                 if( response.isSuccessful() ){
