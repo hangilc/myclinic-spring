@@ -17,7 +17,7 @@ class MainFrame extends JFrame {
     private JButton sendButton = new JButton("送信");
     private JButton ryoukaiButton = new JButton("了解");
     private JButton beepButton = new JButton("ビープ");
-    private JCheckBox soundCheckBox = new JCheckBox("サウンド", true);
+    //private JCheckBox soundCheckBox = new JCheckBox("サウンド", true);
     private JButton closeButton = new JButton("閉じる");
     private DispPane dispPane;
     private Reloader reloader;
@@ -32,7 +32,7 @@ class MainFrame extends JFrame {
         add(sendButton, "sizegroup btn, wrap");
         add(ryoukaiButton, "split 2, sizegroup btn");
         add(beepButton, "sizegroup btn, wrap");
-        add(soundCheckBox, "wrap");
+        //add(soundCheckBox, "wrap");
         add(makeSouth(), "right");
         bind();
         pack();
