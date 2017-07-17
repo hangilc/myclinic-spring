@@ -7,7 +7,9 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -17,6 +19,8 @@ class Service {
         @GET("list-todays-hotline")
         CompletableFuture<List<HotlineDTO>> listTodaysHotline();
 
+        @POST("enter-hotline")
+        CompletableFuture<Integer> enterHotline(@Body HotlineDTO hotline);
     }
 
     public static ServerAPI api;

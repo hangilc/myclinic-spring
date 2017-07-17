@@ -27,7 +27,7 @@ public class HotlineController {
         return dbGateway.listHotlineInRange(lowerHotlineId, upperHotlineId);
     }
 
-    @RequestMapping(value="/enter-hotling", method=RequestMethod.GET)
+    @RequestMapping(value="/enter-hotline", method=RequestMethod.POST)
     public int enterHotline(@RequestBody HotlineDTO hotlineDTO){
         return dbGateway.enterHotline(hotlineDTO);
     }

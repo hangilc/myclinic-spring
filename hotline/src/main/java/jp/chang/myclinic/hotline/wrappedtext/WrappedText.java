@@ -26,7 +26,7 @@ public class WrappedText extends JPanel {
         workingLine = createNextLine();
     }
 
-    public WrappedText(String text, int width){
+    public WrappedText(int width, String text){
         this(width);
         appendString(text);
     }

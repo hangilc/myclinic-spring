@@ -2,17 +2,15 @@ package jp.chang.myclinic.hotline;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
 
-/**
- * Hello world!
- *
- */
 public class AppHotline
 {
     public static void main( String[] args )
     {
-        if( args.length == 0 ){
-            System.out.println("Usage: server-url");
+        if( args.length != 3 ){
+            System.out.println("Usage: server-url sender recipient");
             System.exit(1);
         }
         {
@@ -22,6 +20,19 @@ public class AppHotline
             }
             Service.setServerUrl(serverUrl);
         }
+        String sender = args[1];
+        String recipient = args[2];
+        {
+            List<String> validRoles = Arrays.asList("Reception", "Pharma", "Practice");
+            if( !validRoles.contains(sender) ){
+                System.err.println("invalid sender (should be one of Reception, Pharma, or Practice");
+                System.exit(2);
+            }
+            if( !validRoles.contains(recipient) ){
+                System.err.println("invalid recipient (should be one of Reception, Pharma, or Practice");
+                System.exit(2);
+            }
+        }
         EventQueue.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -29,7 +40,7 @@ public class AppHotline
                 ex.printStackTrace();
                 System.exit(1);
             }
-            MainFrame mainFrame = new MainFrame();
+            MainFrame mainFrame = new MainFrame(sender, recipient);
             mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             mainFrame.setLocationByPlatform(true);
             mainFrame.setVisible(true);

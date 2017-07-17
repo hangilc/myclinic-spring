@@ -732,7 +732,7 @@ public class DbGateway {
 
 	public int enterHotline(HotlineDTO hotlineDTO){
 		Hotline hotline = mapper.fromHotlineDTO(hotlineDTO);
-		hotlineRepository.save(hotline);
+		hotline = hotlineRepository.save(hotline);
 		return hotline.getHotlineId();
 	}
 
