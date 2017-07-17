@@ -730,6 +730,11 @@ public class DbGateway {
 				.map(mapper::toHotlineDTO).collect(Collectors.toList());
 	}
 
+	public List<HotlineDTO> listRecentHotline(int thresholdHotlineId){
+		return hotlineRepository.findRecent(thresholdHotlineId).stream()
+				.map(mapper::toHotlineDTO).collect(Collectors.toList());
+	}
+
 	public int enterHotline(HotlineDTO hotlineDTO){
 		Hotline hotline = mapper.fromHotlineDTO(hotlineDTO);
 		hotline = hotlineRepository.save(hotline);

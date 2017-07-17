@@ -7,8 +7,7 @@ import java.util.List;
 
 public class AppHotline
 {
-    public static void main( String[] args )
-    {
+    public static void main( String[] args ) {
         if( args.length != 3 ){
             System.out.println("Usage: server-url sender recipient");
             System.exit(1);
@@ -44,6 +43,9 @@ public class AppHotline
             mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             mainFrame.setLocationByPlatform(true);
             mainFrame.setVisible(true);
+            Thread th = new Thread(new Reloader(mainFrame));
+            th.setDaemon(true);
+            th.start();
         });
     }
 }

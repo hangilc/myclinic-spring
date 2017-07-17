@@ -6,6 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.util.List;
 
 class MainFrame extends JFrame {
 
@@ -32,7 +33,6 @@ class MainFrame extends JFrame {
         add(makeSouth(), "right");
         bind();
         pack();
-        reload();
     }
 
     private JComponent makeDisp(){
@@ -91,6 +91,10 @@ class MainFrame extends JFrame {
                     EventQueue.invokeLater(() -> alert(t.toString()));
                     return null;
                 });
+    }
+
+    void onNewHotline(List<HotlineDTO> hotlines){
+        dispPane.addHotlines(hotlines);
     }
 
     private void reload(){

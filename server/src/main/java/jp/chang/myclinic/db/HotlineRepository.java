@@ -17,4 +17,7 @@ public interface HotlineRepository extends CrudRepository<Hotline, Integer> {
 
     @Query("select h from Hotline h where h.postedAt >= CURRENT_DATE()")
     List<Hotline> findTodaysHotline();
+
+    @Query("select h from Hotline h where h.hotlineId > :hotlineId")
+    List<Hotline> findRecent(@Param("hotlineId") int thresholdHotlineId);
 }

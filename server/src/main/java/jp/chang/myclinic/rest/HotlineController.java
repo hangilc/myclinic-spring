@@ -36,4 +36,9 @@ public class HotlineController {
     public List<HotlineDTO> listTodaysHotline(){
         return dbGateway.listTodaysHotline();
     }
+
+    @RequestMapping(value="/list-recent-hotline", method=RequestMethod.GET)
+    public List<HotlineDTO> listRecentHotline(@RequestParam("threshold-hotline-id") int thresholdHotlineId){
+        return dbGateway.listRecentHotline(thresholdHotlineId);
+    }
 }
