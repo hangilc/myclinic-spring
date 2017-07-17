@@ -34,7 +34,6 @@ class MainFrame extends JFrame {
 
     private LeftPane leftPane;
 
-    // TODO: print blank drug bag
     MainFrame(){
         super("薬局");
         try {
