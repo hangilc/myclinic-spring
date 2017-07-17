@@ -21,6 +21,7 @@ class MainFrame extends JFrame {
     private JButton closeButton = new JButton("閉じる");
     private DispPane dispPane;
     private Reloader reloader;
+    private static String BeepMessage = "[BEEP]";
 
     MainFrame(String sender, String recipient){
         this.sender = sender;
@@ -65,6 +66,7 @@ class MainFrame extends JFrame {
     private void bind(){
         sendButton.addActionListener(event -> doSend());
         ryoukaiButton.addActionListener(event -> sendMessage("了解", false));
+        beepButton.addActionListener(event -> sendMessage(BeepMessage, false));
         closeButton.addActionListener(event -> {
             dispose();
             System.exit(0);
@@ -110,17 +112,22 @@ class MainFrame extends JFrame {
                 continue;
             }
             if( isSentToMe(h) ){
-                needBeep = true;
-                mine.add(h);
+                if( maxMyHotlineId > 0 ) {
+                    needBeep = true;
+                }
+                if( !BeepMessage.equals(h.message) ){
+                    mine.add(h);
+                }
             } else if( isSentFromMe(h) ){
-                mine.add(h);
+                if( !BeepMessage.equals(h.message) ){
+                    mine.add(h);
+                }
             }
         }
         if( mine.size() > 0 ){
             dispPane.addHotlines(mine);
         }
         if( needBeep ){
-            System.out.println("beep");
             Toolkit.getDefaultToolkit().beep();
         }
     }
