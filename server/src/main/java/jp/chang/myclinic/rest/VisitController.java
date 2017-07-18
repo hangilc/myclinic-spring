@@ -2,8 +2,7 @@ package jp.chang.myclinic.rest;
 
 import jp.chang.myclinic.consts.MeisaiSection;
 import jp.chang.myclinic.consts.MyclinicConsts;
-import jp.chang.myclinic.db.DbGateway;
-import jp.chang.myclinic.db.Visit;
+import jp.chang.myclinic.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.rcpt.*;
 import jp.chang.myclinic.util.DateTimeUtil;
@@ -16,7 +15,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController

@@ -1,6 +1,6 @@
 package jp.chang.myclinic.rest;
 
-import jp.chang.myclinic.db.DbGateway;
+import jp.chang.myclinic.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PatientHokenListDTO;

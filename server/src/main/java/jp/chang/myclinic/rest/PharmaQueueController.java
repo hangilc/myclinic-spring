@@ -1,6 +1,6 @@
 package jp.chang.myclinic.rest;
 
-import jp.chang.myclinic.db.DbGateway;
+import jp.chang.myclinic.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.PharmaQueueDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import org.springframework.beans.factory.annotation.Autowired;
