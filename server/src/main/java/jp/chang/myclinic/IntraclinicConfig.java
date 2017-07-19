@@ -24,7 +24,7 @@ import java.util.HashMap;
 )
 public class IntraclinicConfig {
 
-    @Bean
+    @Bean(name="intraclinicEntityManager")
     public LocalContainerEntityManagerFactoryBean intraclinicEntityManager(){
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(intraclinicDataSource());
