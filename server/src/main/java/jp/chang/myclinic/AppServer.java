@@ -2,14 +2,11 @@ package jp.chang.myclinic;
 
 import jp.chang.myclinic.drawer.JacksonOpSerializer;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.rcpt.HoukatsuKensa;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import jp.chang.myclinic.rcpt.HoukatsuKensa;
-import jp.chang.myclinic.dto.ClinicInfoDTO;
 
 @SpringBootApplication
 public class AppServer {

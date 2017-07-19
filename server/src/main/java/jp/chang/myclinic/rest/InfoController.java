@@ -1,13 +1,11 @@
 package jp.chang.myclinic.rest;
 
+import jp.chang.myclinic.ClinicInfo;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.ClinicInfo;
 
 @RestController
 @RequestMapping("/json")
