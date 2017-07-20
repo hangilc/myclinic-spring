@@ -29,6 +29,7 @@ public class IntraclinicConfig {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(intraclinicDataSource());
         em.setPackagesToScan("jp.chang.myclinic.db.intraclinic");
+        em.setPersistenceUnitName("intraclinic");
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         HashMap<String, Object> properties = new HashMap<>();

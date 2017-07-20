@@ -30,6 +30,7 @@ public class MyclinicConfig {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(myclinicDataSource());
         em.setPackagesToScan("jp.chang.myclinic.db.myclinic");
+        em.setPersistenceUnitName("myclinic");
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
         HashMap<String, Object> properties = new HashMap<>();

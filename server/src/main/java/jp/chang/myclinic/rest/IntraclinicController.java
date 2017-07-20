@@ -1,9 +1,11 @@
 package jp.chang.myclinic.rest;
 
+import jp.chang.myclinic.UserRegistry;
 import jp.chang.myclinic.db.intraclinic.Post;
 import jp.chang.myclinic.db.intraclinic.PostRepository;
 import jp.chang.myclinic.dto.IntraclinicPostDTO;
 import jp.chang.myclinic.dto.IntraclinicPostPageDTO;
+import jp.chang.myclinic.dto.UserInfoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +26,9 @@ class IntraclinicController {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private UserRegistry userRegistry;
 
     @RequestMapping(value="/get-post", method= RequestMethod.GET)
     public IntraclinicPostDTO getPost(@RequestParam("post-id") int id){
@@ -63,6 +68,16 @@ class IntraclinicController {
     public boolean deletePost(@RequestParam("post-id") int postId){
         postRepository.delete(postId);
         return true;
+    }
+
+    @RequestMapping(value="/login", method=RequestMethod.POST)
+    public UserInfoDTO login(@RequestParam("user") String user, @RequestParam("password") String password){
+        UserRegistry.UserInfo userInfo = userRegistry.getInfo(user);
+        UserInfoDTO userInfoDTO = new UserInfoDTO();
+        userInfoDTO.user = user;
+        userInfoDTO.name = userInfo.getName();
+        userInfoDTO.roles = userInfo.getRoles();
+        return userInfoDTO;
     }
 
     private IntraclinicPostDTO toPostDTO(Post post){
