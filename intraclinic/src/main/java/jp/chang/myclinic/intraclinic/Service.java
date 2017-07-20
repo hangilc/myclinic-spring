@@ -2,18 +2,23 @@ package jp.chang.myclinic.intraclinic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.dto.IntraclinicPostPageDTO;
+import jp.chang.myclinic.dto.UserInfoDTO;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 import java.util.concurrent.CompletableFuture;
 
 class Service {
     public interface ServerAPI {
+        @POST("login")
+        CompletableFuture<UserInfoDTO> login(@Query("user") String user, @Query("password") String password);
+
         @GET("list-post")
         CompletableFuture<IntraclinicPostPageDTO> listPost(@Query("page") int page);
     }

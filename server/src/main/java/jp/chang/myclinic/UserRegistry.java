@@ -27,6 +27,7 @@ public class UserRegistry {
 
     public static class UserInfo {
         private String name;
+        private String password;
         private List<String> roles;
 
         public String getName() {
@@ -35,6 +36,14 @@ public class UserRegistry {
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
         }
 
         public List<String> getRoles() {

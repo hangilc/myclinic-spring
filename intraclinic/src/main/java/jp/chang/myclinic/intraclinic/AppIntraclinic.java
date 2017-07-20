@@ -1,5 +1,7 @@
 package jp.chang.myclinic.intraclinic;
 
+import jp.chang.myclinic.dto.UserInfoDTO;
+
 import javax.swing.*;
 
 public class AppIntraclinic
@@ -26,7 +28,12 @@ public class AppIntraclinic
             System.exit(2);
         }
         LoginDialog loginDialog = new LoginDialog();
+        loginDialog.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         loginDialog.setLocationByPlatform(true);
         loginDialog.setVisible(true);
+        UserInfoDTO userInfo = loginDialog.getUserInfo();
+        if( userInfo != null ){
+            System.out.println(userInfo);
+        }
     }
 }

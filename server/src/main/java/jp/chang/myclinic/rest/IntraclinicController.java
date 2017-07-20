@@ -73,11 +73,15 @@ class IntraclinicController {
     @RequestMapping(value="/login", method=RequestMethod.POST)
     public UserInfoDTO login(@RequestParam("user") String user, @RequestParam("password") String password){
         UserRegistry.UserInfo userInfo = userRegistry.getInfo(user);
-        UserInfoDTO userInfoDTO = new UserInfoDTO();
-        userInfoDTO.user = user;
-        userInfoDTO.name = userInfo.getName();
-        userInfoDTO.roles = userInfo.getRoles();
-        return userInfoDTO;
+        if( userInfo.getPassword().equals(password) ){
+            UserInfoDTO userInfoDTO = new UserInfoDTO();
+            userInfoDTO.user = user;
+            userInfoDTO.name = userInfo.getName();
+            userInfoDTO.roles = userInfo.getRoles();
+            return userInfoDTO;
+        } else {
+            throw new RuntimeException("invalid password");
+        }
     }
 
     private IntraclinicPostDTO toPostDTO(Post post){
