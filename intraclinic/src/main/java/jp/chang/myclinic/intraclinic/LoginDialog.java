@@ -7,16 +7,20 @@ import javax.swing.*;
 import java.awt.*;
 
 class LoginDialog extends JFrame {
+    interface Callback {
+        void ok(UserInfoDTO userInfo);
+    }
 
     private JTextField userNameInput = new JTextField(8);
-    private JTextField passwordInput = new JTextField(8);
+    private JPasswordField passwordInput = new JPasswordField(8);
     private JButton enterButton = new JButton("入力");
     private JButton cancelButton = new JButton("キャンセル");
     private JLabel errorMessage = new JLabel("");
-    private UserInfoDTO userInfo;
+    private Callback callback;
 
-    LoginDialog(){
+    LoginDialog(Callback callback){
         super("ログイン");
+        this.callback = callback;
         setupErrorMessage();
         setLayout(new MigLayout("", "", ""));
         add(new JLabel("院内ミーティングへログイン"), "span, wrap");
@@ -28,11 +32,11 @@ class LoginDialog extends JFrame {
         add(enterButton, "span, split 2, sizegroup btn");
         add(cancelButton, "sizegroup btn");
         enterButton.addActionListener(event -> {
-            Service.api.login(userNameInput.getText(), passwordInput.getText())
+            char[] chars = passwordInput.getPassword();
+            Service.api.login(userNameInput.getText(), new String(chars))
                     .thenAccept(result -> {
-                        System.out.println(result);
-                        userInfo = result;
                         dispose();
+                        callback.ok(result);
                     })
                     .exceptionally(t -> {
                         t.printStackTrace();
@@ -49,10 +53,6 @@ class LoginDialog extends JFrame {
             System.exit(2);
         });
         pack();
-    }
-
-    UserInfoDTO getUserInfo(){
-        return userInfo;
     }
 
     private void setupErrorMessage(){

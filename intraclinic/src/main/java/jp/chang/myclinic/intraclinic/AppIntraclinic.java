@@ -21,19 +21,26 @@ public class AppIntraclinic
         }
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(2);
         }
-        LoginDialog loginDialog = new LoginDialog();
+        LoginDialog loginDialog = new LoginDialog(userInfo -> {
+            openMainWindow(userInfo);
+        });
         loginDialog.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         loginDialog.setLocationByPlatform(true);
         loginDialog.setVisible(true);
-        UserInfoDTO userInfo = loginDialog.getUserInfo();
-        if( userInfo != null ){
-            System.out.println(userInfo);
+    }
+
+    private static void openMainWindow(UserInfoDTO userInfo){
+        if( userInfo != null && userInfo.roles != null ){
+            boolean isAdmin = userInfo.roles.contains("admin");
+            MainWindow mainWindow = new MainWindow(isAdmin, userInfo.name);
+            mainWindow.setLocationByPlatform(true);
+            mainWindow.setVisible(true);
+        } else {
+            System.exit(0);
         }
     }
 }
