@@ -11,4 +11,6 @@ class MainWindow extends JFrame {
         setLayout(new MigLayout("", "", ""));
         pack();
     }
+
+
 }
