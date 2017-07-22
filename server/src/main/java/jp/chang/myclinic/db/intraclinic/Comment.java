@@ -11,10 +11,13 @@ public class Comment {
     private Integer id;
     private String name;
     private String content;
-    @Column(name="post_id")
-    private Integer postid;
+//    @Column(name="post_id")
+//    private Integer postid;
     @Column(name="created_at")
     private String createdAt;
+    @ManyToOne
+    @JoinColumn(name="post_id")
+    private Post post;
 
     public Integer getId() {
         return id;
@@ -40,13 +43,13 @@ public class Comment {
         this.content = content;
     }
 
-    public Integer getPostid() {
-        return postid;
-    }
-
-    public void setPostid(Integer postid) {
-        this.postid = postid;
-    }
+//    public Integer getPostid() {
+//        return postid;
+//    }
+//
+//    public void setPostid(Integer postid) {
+//        this.postid = postid;
+//    }
 
     public String getCreatedAt() {
         return createdAt;
@@ -54,5 +57,24 @@ public class Comment {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", content='" + content + '\'' +
+                ", postid=" + post.getId() +
+                ", createdAt='" + createdAt + '\'' +
+                '}';
     }
 }

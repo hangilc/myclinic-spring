@@ -1,11 +1,10 @@
 package jp.chang.myclinic.rest;
 
 import jp.chang.myclinic.UserRegistry;
+import jp.chang.myclinic.db.intraclinic.Comment;
 import jp.chang.myclinic.db.intraclinic.Post;
 import jp.chang.myclinic.db.intraclinic.PostRepository;
-import jp.chang.myclinic.dto.IntraclinicPostDTO;
-import jp.chang.myclinic.dto.IntraclinicPostPageDTO;
-import jp.chang.myclinic.dto.UserInfoDTO;
+import jp.chang.myclinic.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,13 +30,22 @@ class IntraclinicController {
     private UserRegistry userRegistry;
 
     @RequestMapping(value="/get-post", method= RequestMethod.GET)
-    public IntraclinicPostDTO getPost(@RequestParam("post-id") int id){
-        return toPostDTO(postRepository.findOne(id));
+    public IntraclinicPostFullDTO getPost(@RequestParam("post-id") int id){
+        return toPostFullDTO(postRepository.findOne(id));
     }
 
     @RequestMapping(value="/list-recent", method=RequestMethod.GET)
-    public List<IntraclinicPostDTO> listRecent(){
-        return postRepository.findTop7ByOrderByIdDesc().stream().map(this::toPostDTO).collect(Collectors.toList());
+    public List<IntraclinicPostFullDTO> listRecent(){
+        return postRepository.findTop7ByOrderByIdDesc().stream().map(this::toPostFullDTO).collect(Collectors.toList());
+    }
+
+    @RequestMapping(value="/list-post", method=RequestMethod.GET)
+    public IntraclinicPostFullPageDTO listPost(@RequestParam("page") int page){
+        Page<Post> postPage = postRepository.findAll(new PageRequest(page, 7, Sort.Direction.DESC, "id"));
+        IntraclinicPostFullPageDTO pageDTO = new IntraclinicPostFullPageDTO();
+        pageDTO.totalPages = postPage.getTotalPages();
+        pageDTO.posts = postPage.map(this::toPostFullDTO).getContent();
+        return pageDTO;
     }
 
     @RequestMapping(value="/enter-post", method=RequestMethod.POST)
@@ -53,15 +61,6 @@ class IntraclinicController {
         Post post = fromPostDTO(postDTO);
         postRepository.save(post);
         return true;
-    }
-
-    @RequestMapping(value="/list-post", method=RequestMethod.GET)
-    public IntraclinicPostPageDTO listPost(@RequestParam("page") int page){
-        Page<Post> postPage = postRepository.findAll(new PageRequest(page, 7, Sort.Direction.DESC, "id"));
-        IntraclinicPostPageDTO pageDTO = new IntraclinicPostPageDTO();
-        pageDTO.totalPages = postPage.getTotalPages();
-        pageDTO.posts = postPage.map(this::toPostDTO).getContent();
-        return pageDTO;
     }
 
     @RequestMapping(value="/delete-post", method=RequestMethod.POST)
@@ -84,7 +83,7 @@ class IntraclinicController {
         }
     }
 
-    private IntraclinicPostDTO toPostDTO(Post post){
+    private IntraclinicPostDTO toPostDTO(Post post) {
         IntraclinicPostDTO postDTO = new IntraclinicPostDTO();
         postDTO.id = post.getId();
         postDTO.content = post.getContent();
@@ -98,5 +97,23 @@ class IntraclinicController {
         post.setContent(postDTO.content);
         post.setCreatedAt(postDTO.createdAt);
         return post;
+    }
+
+    private IntraclinicPostFullDTO toPostFullDTO(Post post){
+        IntraclinicPostFullDTO postFullDTO = new IntraclinicPostFullDTO();
+        postFullDTO.post = toPostDTO(post);
+        postFullDTO.comments = post.getComments().stream()
+                .map(this::toCommentDTO).collect(Collectors.toList());
+        return postFullDTO;
+    }
+
+    private IntraclinicCommentDTO toCommentDTO(Comment comment){
+        IntraclinicCommentDTO commentDTO = new IntraclinicCommentDTO();
+        commentDTO.id = comment.getId();
+        commentDTO.name = comment.getName();
+        commentDTO.content = comment.getContent();
+        commentDTO.postId = comment.getPost().getId();
+        commentDTO.createdAt = comment.getCreatedAt();
+        return commentDTO;
     }
 }

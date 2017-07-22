@@ -1,6 +1,7 @@
 package jp.chang.myclinic.db.intraclinic;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "post")
@@ -12,6 +13,8 @@ public class Post {
     private String content;
     @Column(name="created_at")
     private String createdAt;
+    @OneToMany(mappedBy="post", fetch=FetchType.EAGER)
+    private List<Comment> comments;
 
     public Integer getId() {
         return id;
@@ -35,5 +38,23 @@ public class Post {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", comments=" + comments +
+                '}';
     }
 }
