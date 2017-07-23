@@ -15,26 +15,30 @@ import java.util.List;
 class PostsPane extends JPanel {
 
     private int width;
-    private List<IntraclinicPostFullDTO> fullPosts;
     private boolean isAdmin;
     private String today = LocalDate.now().toString();
 
     PostsPane(List<IntraclinicPostFullDTO> fullPosts, boolean isAdmin){
-        this.fullPosts = fullPosts;
         this.isAdmin = isAdmin;
-        System.out.println("today: " + today);
         setLayout(new MigLayout("insets 0, fill", "", ""));
         add(new Strut(w -> {
             width = w;
             EventQueue.invokeLater(() -> {
-                renderPosts();
+                renderPosts(fullPosts);
                 repaint();
                 revalidate();
             });
         }), "growx");
     }
 
-    private void renderPosts(){
+    public void updatePosts(List<IntraclinicPostFullDTO> fullPosts){
+        removeAll();
+        renderPosts(fullPosts);
+        repaint();
+        revalidate();
+    }
+
+    private void renderPosts(List<IntraclinicPostFullDTO> fullPosts){
         for(IntraclinicPostFullDTO fullPost: fullPosts){
             add(makeUnit(fullPost), "growx, wrap");
         }
