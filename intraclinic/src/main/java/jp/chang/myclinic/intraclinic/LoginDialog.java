@@ -11,17 +11,15 @@ class LoginDialog extends JFrame {
         void ok(UserInfoDTO userInfo);
     }
 
-    private JTextField userNameInput = new JTextField(8);
-    private JPasswordField passwordInput = new JPasswordField(8);
-    private JButton enterButton = new JButton("入力");
-    private JButton cancelButton = new JButton("キャンセル");
-    private JLabel errorMessage = new JLabel("");
-    private Callback callback;
-
     LoginDialog(Callback callback){
         super("ログイン");
-        this.callback = callback;
-        setupErrorMessage();
+        JTextField userNameInput = new JTextField(14);
+        JPasswordField passwordInput = new JPasswordField(14);
+        JButton enterButton = new JButton("入力");
+        JButton cancelButton = new JButton("キャンセル");
+        JLabel errorMessage = new JLabel("");
+        errorMessage.setForeground(Color.RED);
+        errorMessage.setVisible(false);
         setLayout(new MigLayout("", "", ""));
         add(new JLabel("院内ミーティングへログイン"), "span, wrap");
         add(errorMessage, "span, hidemode 3, wrap");
@@ -52,12 +50,9 @@ class LoginDialog extends JFrame {
             dispose();
             System.exit(2);
         });
+        getRootPane().setDefaultButton(enterButton);
         pack();
     }
 
-    private void setupErrorMessage(){
-        errorMessage.setForeground(Color.RED);
-        errorMessage.setVisible(false);
-    }
 }
 

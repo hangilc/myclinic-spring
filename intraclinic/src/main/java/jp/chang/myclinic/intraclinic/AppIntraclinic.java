@@ -1,8 +1,10 @@
 package jp.chang.myclinic.intraclinic;
 
+import jp.chang.myclinic.dto.IntraclinicPostFullPageDTO;
 import jp.chang.myclinic.dto.UserInfoDTO;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class AppIntraclinic
 {
@@ -26,21 +28,31 @@ public class AppIntraclinic
             System.exit(2);
         }
         LoginDialog loginDialog = new LoginDialog(userInfo -> {
-            openMainWindow(userInfo);
+            Service.api.listPost(0)
+                    .thenAccept(page -> {
+                        EventQueue.invokeLater(() -> openMainWindow(userInfo, page));
+                    })
+                    .exceptionally(t -> {
+                        t.printStackTrace();
+                        EventQueue.invokeLater(() ->JOptionPane.showMessageDialog(null, t.toString()));
+                        return null;
+                    });
         });
         loginDialog.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         loginDialog.setLocationByPlatform(true);
         loginDialog.setVisible(true);
     }
 
-    private static void openMainWindow(UserInfoDTO userInfo){
+    private static void openMainWindow(UserInfoDTO userInfo, IntraclinicPostFullPageDTO page){
         if( userInfo != null && userInfo.roles != null ){
             boolean isAdmin = userInfo.roles.contains("admin");
-            MainWindow mainWindow = new MainWindow(isAdmin, userInfo.name);
+            MainWindow mainWindow = new MainWindow(isAdmin, userInfo.name, page);
+            mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             mainWindow.setLocationByPlatform(true);
             mainWindow.setVisible(true);
         } else {
             System.exit(0);
         }
     }
+
 }

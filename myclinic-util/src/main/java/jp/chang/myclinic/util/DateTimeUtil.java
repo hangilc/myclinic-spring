@@ -48,6 +48,10 @@ public class DateTimeUtil {
 		return sqlDateToKanji(sqlDate, kanjiFormatter1);
 	}
 
+	public static String sqlDateToKanjiWithYoubi(String sqlDate) {
+		return sqlDateToKanji(sqlDate, kanjiFormatter3);
+	}
+
 	public static String sqlDateToKanji(String sqlDate, DateTimeFormatter formatter){
 		return toKanji(parseSqlDate(sqlDate), formatter);
 	}

@@ -1,7 +1,7 @@
 package jp.chang.myclinic.intraclinic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.dto.IntraclinicPostPageDTO;
+import jp.chang.myclinic.dto.IntraclinicPostFullPageDTO;
 import jp.chang.myclinic.dto.UserInfoDTO;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -20,7 +20,7 @@ class Service {
         CompletableFuture<UserInfoDTO> login(@Query("user") String user, @Query("password") String password);
 
         @GET("list-post")
-        CompletableFuture<IntraclinicPostPageDTO> listPost(@Query("page") int page);
+        CompletableFuture<IntraclinicPostFullPageDTO> listPost(@Query("page") int page);
     }
 
     public static ServerAPI api;
