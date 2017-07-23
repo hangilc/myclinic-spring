@@ -10,10 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +46,7 @@ class IntraclinicController {
     }
 
     @RequestMapping(value="/enter-post", method=RequestMethod.POST)
-    public int enterPost(IntraclinicPostDTO postDTO){
+    public int enterPost(@RequestBody IntraclinicPostDTO postDTO){
         Post post = fromPostDTO(postDTO);
         post.setId(0);
         post = postRepository.save(post);
@@ -57,7 +54,7 @@ class IntraclinicController {
     }
 
     @RequestMapping(value="/update-post", method=RequestMethod.POST)
-    public boolean updatePost(IntraclinicPostDTO postDTO){
+    public boolean updatePost(@RequestBody IntraclinicPostDTO postDTO){
         Post post = fromPostDTO(postDTO);
         postRepository.save(post);
         return true;

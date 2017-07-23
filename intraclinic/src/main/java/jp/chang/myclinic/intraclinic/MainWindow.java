@@ -81,7 +81,7 @@ class MainWindow extends JFrame {
         NewPostDialog dialog = new NewPostDialog(new NewPostDialog.Callback(){
             @Override
             public void onPost(int postId){
-
+                System.out.println(postId);
             }
         });
         dialog.setLocationByPlatform(true);
