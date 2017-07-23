@@ -19,7 +19,7 @@ class MainWindow extends JFrame {
         this.currentPage = 0;
         this.totalPages = initialPage.totalPages;
         setLayout(new MigLayout("", "", ""));
-        add(makeControl(), "wrap");
+        add(makeControl(isAdmin), "wrap");
         postsPane = new PostsPane(initialPage.posts, isAdmin);
         postsPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 24));
         JScrollPane scrollPane = new JScrollPane(postsPane);
@@ -31,12 +31,17 @@ class MainWindow extends JFrame {
         pack();
     }
 
-    private JComponent makeControl(){
+    private JComponent makeControl(boolean isAdmin){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         prevButton.addActionListener(event -> doPrev());
         nextButton.addActionListener(event -> doNext());
         panel.add(prevButton);
         panel.add(nextButton);
+        if( isAdmin ){
+            JButton newButton = new JButton("新規投稿");
+            newButton.addActionListener(event -> doNew());
+            panel.add(newButton);
+        }
         return panel;
     }
 
@@ -70,6 +75,17 @@ class MainWindow extends JFrame {
                     alert(t.toString());
                     return null;
                 });
+    }
+
+    private void doNew(){
+        NewPostDialog dialog = new NewPostDialog(new NewPostDialog.Callback(){
+            @Override
+            public void onPost(int postId){
+
+            }
+        });
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
     }
 
     private void adaptButtons(){
