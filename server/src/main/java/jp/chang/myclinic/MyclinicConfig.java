@@ -35,7 +35,6 @@ public class MyclinicConfig {
         em.setJpaVendorAdapter(vendorAdapter);
         HashMap<String, Object> properties = new HashMap<>();
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
-        properties.put("hibernate.id.new_generator_mappings", false);
         em.setJpaPropertyMap(properties);
         return em;
     }
