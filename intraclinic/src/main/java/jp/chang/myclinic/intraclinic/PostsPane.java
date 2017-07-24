@@ -1,6 +1,7 @@
 package jp.chang.myclinic.intraclinic;
 
 import jp.chang.myclinic.dto.IntraclinicCommentDTO;
+import jp.chang.myclinic.dto.IntraclinicPostDTO;
 import jp.chang.myclinic.dto.IntraclinicPostFullDTO;
 import jp.chang.myclinic.intraclinic.wrappedtext.Strut;
 import jp.chang.myclinic.intraclinic.wrappedtext.WrappedText;
@@ -54,6 +55,11 @@ class PostsPane extends JPanel {
         panel.add(title, "growx, wrap");
         WrappedText wt = new WrappedText(width, fullPost.post.content);
         panel.add(wt, "wrap");
+        if( isAdmin && today.equals(fullPost.post.createdAt) ){
+            JButton editButton = new JButton("編集");
+            editButton.addActionListener(event -> doEdit(fullPost.post));
+            panel.add(editButton, "wrap");
+        }
         panel.add(makeCommentsBox(fullPost.comments), "growx");
         return panel;
     }
@@ -80,5 +86,16 @@ class PostsPane extends JPanel {
             });
         }), "growx");
         return panel;
+    }
+
+    private void doEdit(IntraclinicPostDTO post){
+        EditPostDialog dialog = new EditPostDialog(SwingUtilities.getWindowAncestor(this), post, new EditPostDialog.Callback(){
+            @Override
+            public void onUpdate(){
+                // TODO: update post display
+            }
+        });
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
     }
 }

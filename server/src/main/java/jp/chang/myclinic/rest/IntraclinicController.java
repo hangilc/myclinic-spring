@@ -48,7 +48,7 @@ class IntraclinicController {
     @RequestMapping(value="/enter-post", method=RequestMethod.POST)
     public int enterPost(@RequestBody IntraclinicPostDTO postDTO){
         Post post = fromPostDTO(postDTO);
-        post.setId(0);
+        post.setId(null);
         post = postRepository.save(post);
         return post.getId();
     }

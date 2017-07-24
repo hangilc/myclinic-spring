@@ -26,6 +26,9 @@ class Service {
 
         @POST("enter-post")
         CompletableFuture<Integer> enterPost(@Body IntraclinicPostDTO post);
+
+        @POST("update-post")
+        CompletableFuture<Boolean> updatePost(@Body IntraclinicPostDTO post);
     }
 
     public static ServerAPI api;
