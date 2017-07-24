@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Text {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="text_id")
     private Integer textId;
 

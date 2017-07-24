@@ -12,7 +12,7 @@ import java.sql.Date;
 public class Roujin {
 	@Id
 	@Column(name="roujin_id")
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer roujinId;
 
 	public Integer getRoujinId(){

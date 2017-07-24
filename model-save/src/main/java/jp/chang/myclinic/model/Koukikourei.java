@@ -12,7 +12,7 @@ import java.sql.Date;
 public class Koukikourei {
 	@Id
 	@Column(name="koukikourei_id")
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer koukikoureiId;
 
 	public Integer getKoukikoureiId(){

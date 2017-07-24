@@ -28,7 +28,7 @@ import java.sql.Date;
 public class Drug {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="drug_id")
 	private Integer drugId;
 

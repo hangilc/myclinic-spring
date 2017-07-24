@@ -1,17 +1,13 @@
 package jp.chang.myclinic.db.myclinic;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Column;
+import javax.persistence.*;
 import java.sql.Date;
 
 @Entity
 @Table(name="patient")
 class Patient {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	@Column(name="patient_id")
 	private Integer patientId;
 

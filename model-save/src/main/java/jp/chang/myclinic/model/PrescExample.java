@@ -25,7 +25,7 @@ import java.math.BigDecimal;
 public class PrescExample {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="presc_example_id")
 	private Integer prescExampleId;
 

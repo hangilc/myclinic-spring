@@ -28,7 +28,7 @@ import java.math.BigDecimal;
 public class Shinryou {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="shinryou_id")
 	private Integer shinryouId;
 

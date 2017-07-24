@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Tag {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer id;
     private String name;
 

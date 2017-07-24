@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class ConductShinryou {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	@Column(name="id")
 	private Integer conductShinryouId;
 

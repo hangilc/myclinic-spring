@@ -1,13 +1,6 @@
 package jp.chang.myclinic.db.myclinic;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.FetchType;
+import javax.persistence.*;
 // import javax.persistence.NamedEntityGraphs;
 // import javax.persistence.NamedEntityGraph;
 // import javax.persistence.NamedAttributeNode;
@@ -18,7 +11,7 @@ import javax.persistence.FetchType;
 public class Shinryou {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	@Column(name="shinryou_id")
 	private Integer shinryouId;
 

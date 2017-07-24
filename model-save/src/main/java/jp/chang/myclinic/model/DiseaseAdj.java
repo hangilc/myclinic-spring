@@ -25,7 +25,7 @@ import java.math.BigDecimal;
 public class DiseaseAdj {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="disease_adj_id")
 	private Integer diseaseAdjId;
 

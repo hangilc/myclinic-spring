@@ -26,7 +26,7 @@ import java.math.BigDecimal;
 public class Hotline {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	@Column(name="hotline_id")
 	private Integer hotlineId;
 

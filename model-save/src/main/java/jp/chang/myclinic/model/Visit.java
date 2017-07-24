@@ -32,7 +32,7 @@ import java.util.List;
 @Table(name="visit")
 public class Visit {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	@Column(name="visit_id")
 	private Integer visitId;
 

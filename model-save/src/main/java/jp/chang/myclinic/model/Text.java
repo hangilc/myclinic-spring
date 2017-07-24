@@ -23,7 +23,7 @@ import java.util.List;
 @Table(name="visit_text")
 public class Text {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="text_id")
 	private Integer textId;
 
