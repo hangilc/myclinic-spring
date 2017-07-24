@@ -32,8 +32,8 @@ class Service {
 
     public static void setServerUrl(String serverUrl){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        //logging.setLevel(HttpLoggingInterceptor.Level.NONE);
+        //logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        logging.setLevel(HttpLoggingInterceptor.Level.NONE);
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
 

@@ -81,7 +81,19 @@ class MainWindow extends JFrame {
         NewPostDialog dialog = new NewPostDialog(new NewPostDialog.Callback(){
             @Override
             public void onPost(int postId){
-                System.out.println(postId);
+                Service.api.listPost(currentPage)
+                        .thenAccept(pages -> {
+                            totalPages = pages.totalPages;
+                            EventQueue.invokeLater(() -> {
+                                postsPane.updatePosts(pages.posts);
+                                adaptButtons();
+                            });
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            alert(t.toString());
+                            return null;
+                        });
             }
         });
         dialog.setLocationByPlatform(true);

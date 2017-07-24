@@ -14,16 +14,19 @@ class NewPostDialog extends JDialog {
     }
 
     private Callback callback;
-    private JTextArea textarea = new JTextArea(10, 20);
+    private JTextArea textarea = new JTextArea(10, 30);
 
     NewPostDialog(Callback callback){
         setTitle("新規投稿");
         this.callback = callback;
         setLayout(new MigLayout("fill", "", ""));
-        add(textarea, "grow, wrap");
+        textarea.setLineWrap(true);
+        JScrollPane sp = new JScrollPane(textarea);
+        add(sp, "grow, wrap");
         JButton enterButton = new JButton("投稿");
         enterButton.addActionListener(event -> doEnter());
         JButton cancelButton = new JButton("キャンセル");
+        cancelButton.addActionListener(event -> doCancel());
         add(enterButton, "split 2, sizegroup btn");
         add(cancelButton, "sizegroup btn");
         pack();
@@ -49,6 +52,10 @@ class NewPostDialog extends JDialog {
                     alert(t.toString());
                     return null;
                 });
+    }
+
+    private void doCancel(){
+        dispose();
     }
 
     private void alert(String message){
