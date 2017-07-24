@@ -6,6 +6,7 @@ import jp.chang.myclinic.dto.UserInfoDTO;
 import javax.swing.*;
 import java.awt.*;
 
+// TODO: support copying post content
 public class AppIntraclinic
 {
     public static void main( String[] args ) {

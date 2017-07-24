@@ -17,7 +17,7 @@ class EditPostDialog extends JDialog {
     private Callback callback;
 
     EditPostDialog(Window owner, IntraclinicPostDTO post, Callback callback){
-        super(owner, "投稿の編集", ModalityType.DOCUMENT_MODAL);
+        super(owner, "投稿の編集", ModalityType.MODELESS);
         this.post = post;
         this.callback = callback;
         setLayout(new MigLayout("fill", "", ""));
