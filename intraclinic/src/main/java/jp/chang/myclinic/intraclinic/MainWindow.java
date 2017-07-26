@@ -13,6 +13,7 @@ class MainWindow extends JFrame {
     private PostsPane postsPane;
     private JButton prevButton = new JButton("前へ");
     private JButton nextButton = new JButton("次へ");
+    private JScrollPane scrollPane = new JScrollPane();
 
     MainWindow(boolean isAdmin, String name, IntraclinicPostFullPageDTO initialPage){
         super("院内ミーティング");
@@ -20,9 +21,18 @@ class MainWindow extends JFrame {
         this.totalPages = initialPage.totalPages;
         setLayout(new MigLayout("", "", ""));
         add(makeControl(isAdmin), "wrap");
-        postsPane = new PostsPane(initialPage.posts, isAdmin);
+        postsPane = new PostsPane(initialPage.posts, isAdmin, new PostsPane.Callback(){
+            @Override
+            public void onRendered(){
+                EventQueue.invokeLater(() -> {
+                    scrollPane.getVerticalScrollBar().setValue(0);
+                    //scrollPane.getViewport().setViewPosition(new Point(0, 0));
+                });
+            }
+        });
         postsPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 24));
-        JScrollPane scrollPane = new JScrollPane(postsPane);
+        //scrollPane = new JScrollPane(postsPane);
+        scrollPane.setViewportView(postsPane);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setUnitIncrement(12);
