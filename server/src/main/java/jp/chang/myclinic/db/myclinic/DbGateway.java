@@ -158,6 +158,18 @@ public class DbGateway {
 		}
 	}
 
+	public List<PatientDTO> searchPatient(String text){
+		Sort sort = new Sort(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
+		return patientRepository.searchPatient(text, sort).stream()
+				.map(mapper::toPatientDTO).collect(Collectors.toList());
+	}
+
+	public List<PatientDTO> searchPatient(String textLastName, String textFirstName){
+		Sort sort = new Sort(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
+		return patientRepository.searchPatient(textLastName, textFirstName, sort).stream()
+				.map(mapper::toPatientDTO).collect(Collectors.toList());
+	}
+
 	public List<PatientDTO> listRecentlyRegisteredPatients(int n){
 		PageRequest pageRequest = new PageRequest(0, n, Sort.Direction.DESC, "patientId");
 		return patientRepository.findAll(pageRequest).map(mapper::toPatientDTO).getContent();

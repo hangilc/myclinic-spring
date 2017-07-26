@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -29,6 +30,18 @@ interface PatientRepository extends CrudRepository<Patient, Integer> {
 
     @Query("select p from Patient p where p.patientId = :patientId")
     Optional<Patient> tryFind(@Param("patientId") int patientId);
+
+    @Query("select p from Patient p where p.lastName like CONCAT('%', :text, '%') or " +
+            " p.lastNameYomi like CONCAT('%', :text, '%') or " +
+            " p.firstName like CONCAT('%', :text, '%') or " +
+            " p.firstNameYomi like CONCAT('%', :text, '%')")
+    List<Patient> searchPatient(@Param("text") String text, Sort sort);
+
+    @Query("select p from Patient p where (p.lastName like CONCAT('%', :textLastName, '%') or " +
+            " p.lastNameYomi like CONCAT('%', :textLastName, '%') ) and " +
+            " (p.firstName like CONCAT('%', :textFirstName, '%') or " +
+            " p.firstNameYomi like CONCAT('%', :textFirstName, '%') )")
+    List<Patient> searchPatient(@Param("textLastName") String text1, @Param("textFirstName") String text2, Sort sort);
 
     // @Query("select p from Patient p where p.lastName like CONCAT('%', ?1, '%') " +
     //         " or p.firstName like CONCAT('%', ?1, '%') " +

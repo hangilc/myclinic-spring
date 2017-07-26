@@ -87,6 +87,19 @@ public class PatientController {
 		}
 	}
 
+	@RequestMapping(value="/search-patient", method=RequestMethod.GET)
+	public List<PatientDTO> searchPatient(@RequestParam("text") String text){
+		if( text.isEmpty() ){
+			return Collections.emptyList();
+		}
+		String[] parts = text.split("\\p{Z}", 2);
+		if( parts.length == 1 ){
+			return dbGateway.searchPatient(parts[0]);
+		} else {
+			return dbGateway.searchPatient(parts[0], parts[1]);
+		}
+	}
+
 	@RequestMapping(value="/list-recently-registered-patients", method=RequestMethod.GET)
 	public List<PatientDTO> listRecentlyRegisteredPatients(@RequestParam(name="n", defaultValue="20") int n){
 		return dbGateway.listRecentlyRegisteredPatients(n);
