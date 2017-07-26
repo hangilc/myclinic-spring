@@ -20,11 +20,13 @@ class PostsPane extends JPanel {
     }
 
     private int width;
+    private String name;
     private boolean isAdmin;
     private String today = LocalDate.now().toString();
     private Callback callback;
 
-    PostsPane(List<IntraclinicPostFullDTO> fullPosts, boolean isAdmin, Callback callback){
+    PostsPane(List<IntraclinicPostFullDTO> fullPosts, String name, boolean isAdmin, Callback callback){
+        this.name = name;
         this.isAdmin = isAdmin;
         this.callback = callback;
         setLayout(new MigLayout("insets 0, fill", "", ""));
@@ -81,11 +83,12 @@ class PostsPane extends JPanel {
             editButton.addActionListener(event -> doEdit(fullPost.post, wrapper));
             panel.add(editButton, "wrap");
         }
-        panel.add(makeCommentsBox(fullPost.comments, isToday), "growx");
+        panel.add(makeCommentsBox(fullPost.comments, isToday, fullPost, wrapper), "growx");
         return panel;
     }
 
-    private JComponent makeCommentsBox(List<IntraclinicCommentDTO> comments, boolean isToday){
+    private JComponent makeCommentsBox(List<IntraclinicCommentDTO> comments, boolean isToday,
+                                       IntraclinicPostFullDTO postFull, Container wrapper){
         JPanel panel = new JPanel(new MigLayout("fill, gapy 0", "", ""));
         panel.setBorder(BorderFactory.createTitledBorder("コメント"));
         int ncom = comments.size();
@@ -109,13 +112,55 @@ class PostsPane extends JPanel {
             }
             panel.add(wt, i == (ncom - 1) ? "" : "wrap");
         }
-        // TODO: set default text for comment input
         if( isToday ){
             JTextField textField = new JTextField();
+            textField.setText(defaultCommentInput(comments));
             panel.add(textField, "newline, split 2, growx");
             JButton submitButton = new JButton("投稿");
+            submitButton.addActionListener(event -> doEnterComment(postFull.post.id, textField.getText(), wrapper));
+            panel.add(submitButton);
         }
         return panel;
+    }
+
+    private String defaultCommentInput(List<IntraclinicCommentDTO> comments){
+        if( isAdmin ){
+            return "";
+        } else {
+            String hasRead = "閲覧しました";
+            for(IntraclinicCommentDTO comment: comments){
+                if( name.equals(comment.name) && hasRead.equals(comment.content) ){
+                    return "";
+                }
+            }
+            return hasRead;
+        }
+    }
+
+    private void doEnterComment(int postId, String content, Container wrapper){
+        if( content.isEmpty() ){
+            return;
+        }
+        IntraclinicCommentDTO comment = new IntraclinicCommentDTO();
+        comment.name = name;
+        comment.postId = postId;
+        comment.content = content;
+        comment.createdAt = LocalDate.now().toString();
+        Service.api.enterComment(comment)
+                .thenCompose(commentId -> Service.api.getPost(postId))
+                .thenAccept(newPostFull -> {
+                    EventQueue.invokeLater(() -> {
+                        wrapper.removeAll();
+                        wrapper.add(makeUnitContent(newPostFull, wrapper), "growx");
+                        wrapper.repaint();
+                        wrapper.revalidate();
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
     }
 
     private void doEdit(IntraclinicPostDTO post, Container wrapper){

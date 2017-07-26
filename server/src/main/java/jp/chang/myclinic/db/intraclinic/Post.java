@@ -13,7 +13,9 @@ public class Post {
     private String content;
     @Column(name="created_at")
     private String createdAt;
-    @OneToMany(mappedBy="post", fetch=FetchType.EAGER)
+    //@OneToMany(mappedBy="post", fetch=FetchType.EAGER)
+    @OneToMany
+    @JoinColumn(name="post_id")
     private List<Comment> comments;
 
     public Integer getId() {

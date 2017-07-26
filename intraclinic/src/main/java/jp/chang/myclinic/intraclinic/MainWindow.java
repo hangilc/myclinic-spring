@@ -6,6 +6,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 
+// TODO: add user name
 class MainWindow extends JFrame {
 
     private int currentPage;
@@ -21,7 +22,7 @@ class MainWindow extends JFrame {
         this.totalPages = initialPage.totalPages;
         setLayout(new MigLayout("", "", ""));
         add(makeControl(isAdmin), "wrap");
-        postsPane = new PostsPane(initialPage.posts, isAdmin, new PostsPane.Callback(){
+        postsPane = new PostsPane(initialPage.posts, name, isAdmin, new PostsPane.Callback(){
             @Override
             public void onRendered(){
                 EventQueue.invokeLater(() -> {

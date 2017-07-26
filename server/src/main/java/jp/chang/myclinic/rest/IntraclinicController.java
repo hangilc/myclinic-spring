@@ -2,6 +2,7 @@ package jp.chang.myclinic.rest;
 
 import jp.chang.myclinic.UserRegistry;
 import jp.chang.myclinic.db.intraclinic.Comment;
+import jp.chang.myclinic.db.intraclinic.CommentRepository;
 import jp.chang.myclinic.db.intraclinic.Post;
 import jp.chang.myclinic.db.intraclinic.PostRepository;
 import jp.chang.myclinic.dto.*;
@@ -22,7 +23,8 @@ class IntraclinicController {
 
     @Autowired
     private PostRepository postRepository;
-
+    @Autowired
+    private CommentRepository commentRepository;
     @Autowired
     private UserRegistry userRegistry;
 
@@ -64,6 +66,14 @@ class IntraclinicController {
     public boolean deletePost(@RequestParam("post-id") int postId){
         postRepository.delete(postId);
         return true;
+    }
+
+    @RequestMapping(value="/enter-comment", method=RequestMethod.POST)
+    public int enterComment(@RequestBody IntraclinicCommentDTO commentDTO){
+        Comment comment = fromCommentDTO(commentDTO);
+        comment.setId(null);
+        comment = commentRepository.save(comment);
+        return comment.getId();
     }
 
     @RequestMapping(value="/login", method=RequestMethod.POST)
@@ -109,8 +119,18 @@ class IntraclinicController {
         commentDTO.id = comment.getId();
         commentDTO.name = comment.getName();
         commentDTO.content = comment.getContent();
-        commentDTO.postId = comment.getPost().getId();
+        commentDTO.postId = comment.getPostId();
         commentDTO.createdAt = comment.getCreatedAt();
         return commentDTO;
+    }
+
+    private Comment fromCommentDTO(IntraclinicCommentDTO commentDTO){
+        Comment comment = new Comment();
+        comment.setId(commentDTO.id);
+        comment.setName(commentDTO.name);
+        comment.setContent(commentDTO.content);
+        comment.setPostId(commentDTO.postId);
+        comment.setCreatedAt(commentDTO.createdAt);
+        return comment;
     }
 }

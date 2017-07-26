@@ -1,10 +1,7 @@
 package jp.chang.myclinic.intraclinic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.dto.IntraclinicPostDTO;
-import jp.chang.myclinic.dto.IntraclinicPostFullDTO;
-import jp.chang.myclinic.dto.IntraclinicPostFullPageDTO;
-import jp.chang.myclinic.dto.UserInfoDTO;
+import jp.chang.myclinic.dto.*;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -33,6 +30,9 @@ class Service {
 
         @POST("update-post")
         CompletableFuture<Boolean> updatePost(@Body IntraclinicPostDTO post);
+
+        @POST("enter-comment")
+        CompletableFuture<Integer> enterComment(@Body IntraclinicCommentDTO comment);
     }
 
     public static ServerAPI api;
