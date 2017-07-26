@@ -84,10 +84,20 @@ class PostsPane extends JPanel {
         for(int i=0;i<ncom;i++){
             IntraclinicCommentDTO c = comments.get(i);
             String text = c.name + "：" + c.content;
-            //WrappedText wt = new WrappedText(w, text);
             JEditorPane wt = new JEditorPane();
             wt.setText(text);
             wt.setBackground(getBackground());
+            {
+                JPopupMenu popup = new JPopupMenu();
+                JMenuItem item = new JMenuItem("コピー");
+                item.addActionListener(event -> {
+                    String sel = wt.getSelectedText();
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clipboard.setContents(new StringSelection(sel), null);
+                });
+                popup.add(item);
+                wt.setComponentPopupMenu(popup);
+            }
             panel.add(wt, i == (ncom - 1) ? "" : "wrap");
         }
         // TODO: restrict entering comment only to today's post
