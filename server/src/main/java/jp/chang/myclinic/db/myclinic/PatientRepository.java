@@ -43,17 +43,4 @@ interface PatientRepository extends CrudRepository<Patient, Integer> {
             " p.firstNameYomi like CONCAT('%', :textFirstName, '%') )")
     List<Patient> searchPatient(@Param("textLastName") String text1, @Param("textFirstName") String text2, Sort sort);
 
-    // @Query("select p from Patient p where p.lastName like CONCAT('%', ?1, '%') " +
-    //         " or p.firstName like CONCAT('%', ?1, '%') " +
-    //         " or p.lastNameYomi like CONCAT('%', ?1, '%') " +
-    //         " or p.firstNameYomi like CONCAT('%', ?1, '%') "
-    // )
-    // List<Patient> searchPatientByName(String text, Pageable pageable);
-
-    // @Query("select p from Patient p where " +
-    //         " (p.lastName like CONCAT('%', ?1, '%') or p.lastNameYomi like CONCAT('%', ?1, '%')) and " +
-    //         " (p.firstName like CONCAT('%', ?2, '%') or p.firstNameYomi like CONCAT('%', ?2, '%')) "
-    // )
-    // List<Patient> searchPatientByName(String text1, String text2, Pageable pageable);
-
 }

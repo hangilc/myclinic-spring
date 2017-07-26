@@ -1,7 +1,6 @@
 package jp.chang.myclinic.db.myclinic;
 
 import javax.persistence.*;
-import java.sql.Date;
 
 @Entity
 @Table(name="patient")
@@ -26,7 +25,7 @@ class Patient {
 	private String sex;
 
 	@Column(name="birth_day")
-	private Date birthday;
+	private String birthday;
 
 	private String address;
 	private String phone;
@@ -79,11 +78,11 @@ class Patient {
 		this.sex = sex;
 	}
 
-	public Date getBirthday(){
+	public String getBirthday(){
 		return birthday;
 	}
 
-	public void setBirthday(Date birthday){
+	public void setBirthday(String birthday){
 		this.birthday = birthday;
 	}
 

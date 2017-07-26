@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.rightpane;
 
+import jp.chang.myclinic.practice.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -21,6 +22,18 @@ public class SearchPatient extends JPanel {
         if( text.isEmpty() ){
             return;
         }
+        Service.api.searchPatient(text)
+                .thenAccept(patients -> {
+                    System.out.println(patients);
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
+    }
 
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
     }
 }

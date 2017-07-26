@@ -23,7 +23,7 @@ public class DTOMapper {
 		patientDTO.firstName = patient.getFirstName();
 		patientDTO.lastNameYomi = patient.getLastNameYomi();
 		patientDTO.firstNameYomi = patient.getFirstNameYomi();
-		patientDTO.birthday = nullableDateToString(patient.getBirthday());
+		patientDTO.birthday = patient.getBirthday();
 		patientDTO.sex = patient.getSex();
 		patientDTO.address = patient.getAddress();
 		patientDTO.phone = patient.getPhone();
@@ -37,7 +37,7 @@ public class DTOMapper {
 		patient.setFirstName(patientDTO.firstName);
 		patient.setLastNameYomi(patientDTO.lastNameYomi);
 		patient.setFirstNameYomi(patientDTO.firstNameYomi);
-		patient.setBirthday(stringToDate(patientDTO.birthday));
+		patient.setBirthday(patientDTO.birthday);
 		patient.setSex(patientDTO.sex);
 		patient.setAddress(patientDTO.address);
 		patient.setPhone(patientDTO.phone);
