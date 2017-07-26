@@ -26,12 +26,10 @@ class MainWindow extends JFrame {
             public void onRendered(){
                 EventQueue.invokeLater(() -> {
                     scrollPane.getVerticalScrollBar().setValue(0);
-                    //scrollPane.getViewport().setViewPosition(new Point(0, 0));
                 });
             }
         });
         postsPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 24));
-        //scrollPane = new JScrollPane(postsPane);
         scrollPane.setViewportView(postsPane);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());

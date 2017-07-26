@@ -8,6 +8,8 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,17 +29,9 @@ class PostsPane extends JPanel {
         this.callback = callback;
         setLayout(new MigLayout("insets 0, fill", "", ""));
         renderPosts(fullPosts);
-//        add(new Strut(w -> {
-//            width = w;
-//            EventQueue.invokeLater(() -> {
-//                renderPosts(fullPosts);
-//                repaint();
-//                revalidate();
-//            });
-//        }), "growx");
     }
 
-    public void updatePosts(List<IntraclinicPostFullDTO> fullPosts){
+    void updatePosts(List<IntraclinicPostFullDTO> fullPosts){
         removeAll();
         renderPosts(fullPosts);
         repaint();
@@ -59,12 +53,20 @@ class PostsPane extends JPanel {
         title.setOpaque(true);
         title.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         panel.add(title, "growx, wrap");
-        //WrappedText wt = new WrappedText(width, fullPost.post.content);
-
         JEditorPane wt = new JEditorPane();
         wt.setBackground(getBackground());
         wt.setText(fullPost.post.content);
-
+        {
+            JPopupMenu popup = new JPopupMenu();
+            JMenuItem item = new JMenuItem("コピー");
+            item.addActionListener(event -> {
+                String sel = wt.getSelectedText();
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(new StringSelection(sel), null);
+            });
+            popup.add(item);
+            wt.setComponentPopupMenu(popup);
+        }
         panel.add(wt, "growx, wrap");
         if( isAdmin && today.equals(fullPost.post.createdAt) ){
             JButton editButton = new JButton("編集");
@@ -92,35 +94,6 @@ class PostsPane extends JPanel {
         JTextField textField = new JTextField();
         panel.add(textField, "newline, split 2, growx");
         JButton submitButton = new JButton("投稿");
-//
-//
-//
-//        panel.add(new Strut(w -> {
-//            EventQueue.invokeLater(() -> {
-//                int ncom = comments.size();
-//                for(int i=0;i<ncom;i++){
-//                    IntraclinicCommentDTO c = comments.get(i);
-//                    String text = c.name + "：" + c.content;
-//                    //WrappedText wt = new WrappedText(w, text);
-//                    try {
-//                        JEditorPane wt = new JEditorPane();
-//                        wt.setText(text);
-//                        wt.setBackground(getBackground());
-//                        panel.add(wt, i == (ncom-1) ? "" : "wrap");
-//                    } catch(Exception ex){
-//                        ex.printStackTrace();
-//                        return;
-//                    }
-//                }
-//                // TODO: restrict entering comment only to today's post
-//                JTextField textField = new JTextField();
-//                panel.add(textField, "newline, split 2, growx");
-//                JButton submitButton = new JButton("投稿");
-//                panel.add(submitButton);
-//                panel.repaint();
-//                panel.revalidate();
-//            });
-//        }), "growx");
         return panel;
     }
 
