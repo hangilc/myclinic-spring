@@ -75,17 +75,18 @@ class PostsPane extends JPanel {
             wt.setComponentPopupMenu(popup);
         }
         panel.add(wt, "growx, wrap");
-        if( isAdmin && today.equals(fullPost.post.createdAt) ){
+        boolean isToday = today.equals(fullPost.post.createdAt);
+        if( isAdmin && isToday ){
             JButton editButton = new JButton("編集");
             editButton.addActionListener(event -> doEdit(fullPost.post, wrapper));
             panel.add(editButton, "wrap");
         }
-        panel.add(makeCommentsBox(fullPost.comments), "growx");
+        panel.add(makeCommentsBox(fullPost.comments, isToday), "growx");
         return panel;
     }
 
-    private JComponent makeCommentsBox(List<IntraclinicCommentDTO> comments){
-        JPanel panel = new JPanel(new MigLayout("fill", "", ""));
+    private JComponent makeCommentsBox(List<IntraclinicCommentDTO> comments, boolean isToday){
+        JPanel panel = new JPanel(new MigLayout("fill, gapy 0", "", ""));
         panel.setBorder(BorderFactory.createTitledBorder("コメント"));
         int ncom = comments.size();
         for(int i=0;i<ncom;i++){
@@ -94,6 +95,7 @@ class PostsPane extends JPanel {
             JEditorPane wt = new JEditorPane();
             wt.setText(text);
             wt.setBackground(getBackground());
+            wt.setBorder(null);
             {
                 JPopupMenu popup = new JPopupMenu();
                 JMenuItem item = new JMenuItem("コピー");
@@ -107,10 +109,12 @@ class PostsPane extends JPanel {
             }
             panel.add(wt, i == (ncom - 1) ? "" : "wrap");
         }
-        // TODO: restrict entering comment only to today's post
-        JTextField textField = new JTextField();
-        panel.add(textField, "newline, split 2, growx");
-        JButton submitButton = new JButton("投稿");
+        // TODO: set default text for comment input
+        if( isToday ){
+            JTextField textField = new JTextField();
+            panel.add(textField, "newline, split 2, growx");
+            JButton submitButton = new JButton("投稿");
+        }
         return panel;
     }
 
