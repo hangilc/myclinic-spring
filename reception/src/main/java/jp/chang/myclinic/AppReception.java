@@ -11,6 +11,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+// TODO: decrease height of patient list
+// TODO: decrease update rate to 2 sec
 public class AppReception 
 {
     public static void main( String[] args ) throws IOException {
@@ -36,7 +38,7 @@ public class AppReception
         	mainFrame.setLocationByPlatform(true);
         	mainFrame.setVisible(true);
         	mainFrame.doUpdateWqueue();
-			new Timer(5000, event -> {
+			new Timer(2000, event -> {
 				mainFrame.doUpdateWqueue();
 			}).start();
         });

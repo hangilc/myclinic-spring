@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 // TODO: optionally show others hotlines
+// TODO: add title to main window
+// TODO: change command line args from Practice to practice, ...
 public class AppHotline
 {
     public static void main( String[] args ) {
