@@ -26,18 +26,18 @@ class IntraclinicController {
     @Autowired
     private UserRegistry userRegistry;
 
-    @RequestMapping(value="/get-post", method= RequestMethod.GET)
-    public IntraclinicPostFullDTO getPost(@RequestParam("post-id") int id){
+    @RequestMapping(value="/get-post-full", method= RequestMethod.GET)
+    public IntraclinicPostFullDTO getPostFull(@RequestParam("post-id") int id){
         return toPostFullDTO(postRepository.findOne(id));
     }
 
-    @RequestMapping(value="/list-recent", method=RequestMethod.GET)
-    public List<IntraclinicPostFullDTO> listRecent(){
+    @RequestMapping(value="/list-recent-full", method=RequestMethod.GET)
+    public List<IntraclinicPostFullDTO> listRecentFull(){
         return postRepository.findTop7ByOrderByIdDesc().stream().map(this::toPostFullDTO).collect(Collectors.toList());
     }
 
-    @RequestMapping(value="/list-post", method=RequestMethod.GET)
-    public IntraclinicPostFullPageDTO listPost(@RequestParam("page") int page){
+    @RequestMapping(value="/list-post-full", method=RequestMethod.GET)
+    public IntraclinicPostFullPageDTO listPostFull(@RequestParam("page") int page){
         Page<Post> postPage = postRepository.findAll(new PageRequest(page, 7, Sort.Direction.DESC, "id"));
         IntraclinicPostFullPageDTO pageDTO = new IntraclinicPostFullPageDTO();
         pageDTO.totalPages = postPage.getTotalPages();

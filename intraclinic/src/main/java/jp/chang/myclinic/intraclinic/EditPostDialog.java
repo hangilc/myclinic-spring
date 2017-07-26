@@ -47,7 +47,6 @@ class EditPostDialog extends JDialog {
                     } catch(Exception ex){
                         ex.printStackTrace();
                         alert(ex.toString());
-                        return;
                     }
                 });
                 popup.add(item);

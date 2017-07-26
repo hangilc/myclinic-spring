@@ -45,7 +45,14 @@ class PostsPane extends JPanel {
         callback.onRendered();
     }
 
-    private JComponent makeUnit(IntraclinicPostFullDTO fullPost) {
+    private JComponent makeUnit(IntraclinicPostFullDTO fullPost){
+        JPanel panel = new JPanel(new MigLayout("insets 0, fill", "", ""));
+        panel.setBorder(null);
+        panel.add(makeUnitContent(fullPost, panel), "growx");
+        return panel;
+    }
+
+    private JComponent makeUnitContent(IntraclinicPostFullDTO fullPost, Container wrapper) {
         JPanel panel = new JPanel(new MigLayout("insets 0, fill", "", ""));
         JLabel title = new JLabel(DateTimeUtil.sqlDateToKanjiWithYoubi(fullPost.post.createdAt));
         title.setFont(title.getFont().deriveFont(Font.BOLD));
@@ -70,7 +77,7 @@ class PostsPane extends JPanel {
         panel.add(wt, "growx, wrap");
         if( isAdmin && today.equals(fullPost.post.createdAt) ){
             JButton editButton = new JButton("編集");
-            editButton.addActionListener(event -> doEdit(fullPost.post));
+            editButton.addActionListener(event -> doEdit(fullPost.post, wrapper));
             panel.add(editButton, "wrap");
         }
         panel.add(makeCommentsBox(fullPost.comments), "growx");
@@ -107,14 +114,31 @@ class PostsPane extends JPanel {
         return panel;
     }
 
-    private void doEdit(IntraclinicPostDTO post){
+    private void doEdit(IntraclinicPostDTO post, Container wrapper){
         EditPostDialog dialog = new EditPostDialog(SwingUtilities.getWindowAncestor(this), post, new EditPostDialog.Callback(){
             @Override
             public void onUpdate(){
-                // TODO: update post display
+                Service.api.getPost(post.id)
+                        .thenAccept(postFull -> {
+                            EventQueue.invokeLater(() -> {
+                                wrapper.removeAll();
+                                wrapper.add(makeUnitContent(postFull, wrapper), "growx");
+                                wrapper.repaint();
+                                wrapper.revalidate();
+                            });
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            alert(t.toString());
+                            return null;
+                        });
             }
         });
         dialog.setLocationByPlatform(true);
         dialog.setVisible(true);
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(null, message);
     }
 }
