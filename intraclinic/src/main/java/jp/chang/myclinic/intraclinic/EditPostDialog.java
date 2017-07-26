@@ -5,6 +5,9 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 
 class EditPostDialog extends JDialog {
 
@@ -23,6 +26,34 @@ class EditPostDialog extends JDialog {
         setLayout(new MigLayout("fill", "", ""));
         textarea.setLineWrap(true);
         textarea.setText(post.content);
+        {
+            JPopupMenu popup = new JPopupMenu();
+            {
+                JMenuItem item = new JMenuItem("コピー");
+                item.addActionListener(event -> {
+                    String sel = textarea.getSelectedText();
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clipboard.setContents(new StringSelection(sel), null);
+                });
+                popup.add(item);
+            }
+            {
+                JMenuItem item = new JMenuItem("貼付け");
+                item.addActionListener(event -> {
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    try {
+                        String text = (String) clipboard.getData(DataFlavor.stringFlavor);
+                        textarea.insert(text, textarea.getCaretPosition());
+                    } catch(Exception ex){
+                        ex.printStackTrace();
+                        alert(ex.toString());
+                        return;
+                    }
+                });
+                popup.add(item);
+            }
+            textarea.setComponentPopupMenu(popup);
+        }
         JScrollPane sp = new JScrollPane(textarea);
         add(sp, "grow, wrap");
         JButton enterButton = new JButton("投稿");
