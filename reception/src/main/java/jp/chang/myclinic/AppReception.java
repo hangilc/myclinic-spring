@@ -11,8 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-// TODO: decrease height of patient list
-public class AppReception 
+public class AppReception
 {
     public static void main( String[] args ) throws IOException {
     	if( args.length == 0 ){

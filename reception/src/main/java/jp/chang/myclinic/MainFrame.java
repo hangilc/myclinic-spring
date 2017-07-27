@@ -42,7 +42,7 @@ class MainFrame extends JFrame {
 		setLayout(new MigLayout("fill", "[grow]", ""));
 		add(makeRow1(), "wrap");
 		add(makeRow2(), "wrap");
-		add(makeCenter(), "w 500, h 300, grow, wrap");
+		add(makeCenter(), "w 500, h 180, grow, wrap");
 		add(makeRow3(), "wrap");
 		add(makeSouth(), "grow, right");
 		bind();
