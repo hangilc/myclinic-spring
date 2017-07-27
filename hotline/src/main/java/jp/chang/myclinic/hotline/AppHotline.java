@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.*;
 
 // TODO: optionally show others hotlines
-// TODO: add title to main window
 public class AppHotline
 {
     public static void main( String[] args ) {

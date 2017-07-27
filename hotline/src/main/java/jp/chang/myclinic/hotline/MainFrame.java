@@ -17,7 +17,6 @@ class MainFrame extends JFrame {
     private JButton sendButton = new JButton("送信");
     private JButton ryoukaiButton = new JButton("了解");
     private JButton beepButton = new JButton("ビープ");
-    //private JCheckBox soundCheckBox = new JCheckBox("サウンド", true);
     private JButton closeButton = new JButton("閉じる");
     private DispPane dispPane;
     private Reloader reloader;
@@ -27,6 +26,7 @@ class MainFrame extends JFrame {
     MainFrame(User sender, User recipient){
         this.sender = sender;
         this.recipient = recipient;
+        setTitle(recipient.getDispName());
         setLayout(new MigLayout("", "[180!]", ""));
         add(makeDisp(), "growx, h 260, wrap");
         add(makeInput(), "growx, h 60, wrap");
