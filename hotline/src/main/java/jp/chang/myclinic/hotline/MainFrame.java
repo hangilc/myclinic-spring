@@ -22,24 +22,35 @@ class MainFrame extends JFrame {
     private Reloader reloader;
     private JScrollPane scrollPane;
     private static String BeepMessage = "[BEEP]";
+    private JLabel statusBar = new JLabel(" ");
 
     MainFrame(User sender, User recipient){
         this.sender = sender;
         this.recipient = recipient;
         setTitle(recipient.getDispName());
+        setupStatusBar();
         setLayout(new MigLayout("", "[180!]", ""));
         add(makeDisp(), "growx, h 260, wrap");
         add(makeInput(), "growx, h 60, wrap");
         add(sendButton, "sizegroup btn, wrap");
         add(ryoukaiButton, "split 2, sizegroup btn");
         add(beepButton, "sizegroup btn, wrap");
-        add(makeSouth(), "right");
+        add(makeSouth(), "right, wrap");
+        add(statusBar, "gap top 4, growx");
         bind();
         pack();
     }
 
     void setReloader(Reloader reloader){
         this.reloader = reloader;
+    }
+
+    void showMessage(String message){
+        statusBar.setText(message);
+    }
+
+    private void setupStatusBar(){
+        statusBar.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
     }
 
     private JComponent makeDisp(){

@@ -41,7 +41,7 @@ class Reloader implements Runnable {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                // TODO: show error message in main frame
+                EventQueue.invokeLater(() -> mainFrame.showMessage("サーバーからの読み込みに失敗。"));
             }
 
         }
