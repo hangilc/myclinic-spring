@@ -25,13 +25,13 @@ public class AppHotline
         String sender = args[1];
         String recipient = args[2];
         {
-            List<String> validRoles = Arrays.asList("Reception", "Pharma", "Practice");
+            List<String> validRoles = Arrays.asList("Reception", "Pharmacy", "Practice");
             if( !validRoles.contains(sender) ){
-                System.err.println("invalid sender (should be one of Reception, Pharma, or Practice");
+                System.err.println("invalid sender (should be one of Reception, Pharmacy, or Practice");
                 System.exit(2);
             }
             if( !validRoles.contains(recipient) ){
-                System.err.println("invalid recipient (should be one of Reception, Pharma, or Practice");
+                System.err.println("invalid recipient (should be one of Reception, Pharmacy, or Practice");
                 System.exit(2);
             }
         }
