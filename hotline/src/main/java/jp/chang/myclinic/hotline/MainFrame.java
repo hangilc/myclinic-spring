@@ -11,8 +11,8 @@ import java.util.List;
 
 class MainFrame extends JFrame {
 
-    private String sender;
-    private String recipient;
+    private User sender;
+    private User recipient;
     private JTextArea textArea;
     private JButton sendButton = new JButton("送信");
     private JButton ryoukaiButton = new JButton("了解");
@@ -24,7 +24,7 @@ class MainFrame extends JFrame {
     private JScrollPane scrollPane;
     private static String BeepMessage = "[BEEP]";
 
-    MainFrame(String sender, String recipient){
+    MainFrame(User sender, User recipient){
         this.sender = sender;
         this.recipient = recipient;
         setLayout(new MigLayout("", "[180!]", ""));
@@ -33,7 +33,6 @@ class MainFrame extends JFrame {
         add(sendButton, "sizegroup btn, wrap");
         add(ryoukaiButton, "split 2, sizegroup btn");
         add(beepButton, "sizegroup btn, wrap");
-        //add(soundCheckBox, "wrap");
         add(makeSouth(), "right");
         bind();
         pack();
@@ -61,8 +60,7 @@ class MainFrame extends JFrame {
     private JComponent makeInput(){
         textArea = new JTextArea();
         textArea.setLineWrap(true);
-        JScrollPane sp = new JScrollPane(textArea);
-        return sp;
+        return new JScrollPane(textArea);
     }
 
     private JComponent makeSouth(){
@@ -92,8 +90,8 @@ class MainFrame extends JFrame {
     private void sendMessage(String message, boolean clearTextArea){
         HotlineDTO hotline = new HotlineDTO();
         hotline.message = message;
-        hotline.sender = sender;
-        hotline.recipient = recipient;
+        hotline.sender = sender.getName();
+        hotline.recipient = recipient.getName();
         hotline.postedAt = LocalDate.now().toString();
         Service.api.enterHotline(hotline)
                 .thenAccept(hotlineId -> {
@@ -141,11 +139,11 @@ class MainFrame extends JFrame {
     }
 
     private boolean isSentFromMe(HotlineDTO hotline){
-        return hotline.sender.equals(sender) && hotline.recipient.equals(recipient);
+        return hotline.sender.equals(sender.getName()) && hotline.recipient.equals(recipient.getName());
     }
 
     private boolean isSentToMe(HotlineDTO hotline){
-        return hotline.sender.equals(recipient) && hotline.recipient.equals(sender);
+        return hotline.sender.equals(recipient.getName()) && hotline.recipient.equals(sender.getName());
     }
 
     private void alert(String message){

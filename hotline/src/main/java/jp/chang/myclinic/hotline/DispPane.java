@@ -56,11 +56,11 @@ class DispPane extends JPanel {
     }
 
     private String roleLabel(String role){
-        switch(role){
-            case "Practice": return "診察";
-            case "Pharmacy": return "薬局";
-            case "Reception": return "受付";
-            default: return "不明";
+        for(User user: User.values()){
+            if( user.getName().equals(role) ){
+                return user.getDispName();
+            }
         }
+        return "不明";
     }
 }
