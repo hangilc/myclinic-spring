@@ -16,20 +16,20 @@ class DispPane extends JPanel {
     private List<HotlineDTO> pendingHotlines = new ArrayList<>();
     private int largestHotlineId;
 
-    DispPane(){
+    DispPane(Runnable onComplete){
         setLayout(new MigLayout("insets 0, fillx, top, gapy 2", "", ""));
         add(new Strut(w -> {
             width = w;
-            batchAddhotlines(pendingHotlines);
+            batchAddhotlines(pendingHotlines, onComplete);
             pendingHotlines = null;
         }), "growx");
     }
 
-    void addHotlines(Collection<HotlineDTO> hotlines){
+    void addHotlines(Collection<HotlineDTO> hotlines, Runnable onComplete){
         if( width < 0 ){
             pendingHotlines.addAll(hotlines);
         } else {
-            batchAddhotlines(hotlines);
+            batchAddhotlines(hotlines, onComplete);
         }
     }
 
@@ -37,12 +37,13 @@ class DispPane extends JPanel {
         return largestHotlineId;
     }
 
-    private void batchAddhotlines(Collection<HotlineDTO> hotlines){
+    private void batchAddhotlines(Collection<HotlineDTO> hotlines, Runnable onComplete){
         for(HotlineDTO hotline: hotlines){
             doAddHotline(hotline);
         }
         repaint();
         revalidate();
+        onComplete.run();
     }
 
     private void doAddHotline(HotlineDTO hotline){

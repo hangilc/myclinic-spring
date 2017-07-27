@@ -21,6 +21,7 @@ class MainFrame extends JFrame {
     private JButton closeButton = new JButton("閉じる");
     private DispPane dispPane;
     private Reloader reloader;
+    private JScrollPane scrollPane;
     private static String BeepMessage = "[BEEP]";
 
     MainFrame(String sender, String recipient){
@@ -43,11 +44,18 @@ class MainFrame extends JFrame {
     }
 
     private JComponent makeDisp(){
-        dispPane = new DispPane();
+        dispPane = new DispPane(this::scrollToBottom);
         dispPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 22));
-        JScrollPane sp = new JScrollPane(dispPane);
-        sp.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        return sp;
+        scrollPane = new JScrollPane(dispPane);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        return scrollPane;
+    }
+
+    private void scrollToBottom(){
+        EventQueue.invokeLater(() -> {
+            JScrollBar sb = scrollPane.getVerticalScrollBar();
+            sb.setValue(sb.getMaximum());
+        });
     }
 
     private JComponent makeInput(){
@@ -125,7 +133,7 @@ class MainFrame extends JFrame {
             }
         }
         if( mine.size() > 0 ){
-            dispPane.addHotlines(mine);
+            dispPane.addHotlines(mine, this::scrollToBottom);
         }
         if( needBeep ){
             Toolkit.getDefaultToolkit().beep();
