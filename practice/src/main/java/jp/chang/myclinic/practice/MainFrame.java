@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice;
 
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.rightpane.SearchPatient;
 import net.miginfocom.swing.MigLayout;
 
@@ -25,12 +26,16 @@ class MainFrame extends JFrame {
         {
             JPanel frame = new JPanel(new MigLayout("insets 0, fill", "", ""));
             frame.setBorder(BorderFactory.createTitledBorder("患者検索"));
-            frame.add(new SearchPatient(), "growx");
+            frame.add(new SearchPatient(patient -> doStartPatient(patient)), "growx");
             pane.add(frame, "top, growx, wrap");
         }
         JScrollPane sp = new JScrollPane(pane);
         sp.setBorder(null);
         sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
         return sp;
+    }
+
+    private void doStartPatient(PatientDTO patient){
+        System.out.println("starting patient: " + patient);
     }
 }

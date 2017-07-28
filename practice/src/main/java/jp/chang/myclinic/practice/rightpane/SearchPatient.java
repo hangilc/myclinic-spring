@@ -6,24 +6,37 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class SearchPatient extends JPanel {
 
-    private JTextField tf = new JTextField();
+    public interface Callback {
+        void onSelect(PatientDTO patient);
+    }
+
+    private JTextField searchTextField = new JTextField();
     private JList<PatientDTO> searchResult = new JList<>();
     private JScrollPane scrollPane;
+    private Callback callback;
 
-    public SearchPatient(){
+    public SearchPatient(Callback callback){
+        this.callback = callback;
         setLayout(new MigLayout("insets 0, fill", "[grow] []", ""));
+        setupSearchTextField();
         setupSearchResult();
         JButton btn = new JButton("検索");
         btn.addActionListener(event -> doSearch());
-        add(tf, "grow");
+        add(searchTextField, "grow");
         add(btn, "");
         scrollPane = new JScrollPane(searchResult);
         scrollPane.setVisible(false);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, "newline, span, grow, h 200, hidemode 2");
+    }
+
+    private void setupSearchTextField(){
+        searchTextField.addActionListener(event -> doSearch());
     }
 
     private void setupSearchResult(){
@@ -32,16 +45,28 @@ public class SearchPatient extends JPanel {
             label.setText(value.lastName + " " + value.firstName);
             return label;
         });
+        searchResult.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if( e.getClickCount() == 2 ){
+                    PatientDTO patient = searchResult.getSelectedValue();
+                    if( patient != null ){
+                        callback.onSelect(patient);
+                    }
+                }
+            }
+        });
     }
 
     private void doSearch(){
         if( scrollPane.isVisible() ){
             searchResult.setListData(new PatientDTO[]{});
             scrollPane.setVisible(false);
+            searchTextField.setText("");
             repaint();
             revalidate();
         } else {
-            String text = tf.getText();
+            String text = searchTextField.getText();
             if( text.isEmpty() ){
                 return;
             }
