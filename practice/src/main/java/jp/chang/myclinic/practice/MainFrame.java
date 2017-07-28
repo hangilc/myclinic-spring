@@ -10,8 +10,8 @@ class MainFrame extends JFrame {
     MainFrame(){
         setTitle("診察");
         setLayout(new MigLayout("", "", ""));
-        add(makeLeftPane(), "w 460");
-        add(makeRightPane(), "w 200");
+        add(makeLeftPane(), "w 460, h 300, grow");
+        add(makeRightPane(), "w 220, h 300, grow");
         pack();
     }
 
@@ -21,8 +21,16 @@ class MainFrame extends JFrame {
     }
 
     private JComponent makeRightPane(){
-        JPanel pane = new JPanel(new MigLayout("insets 0, fill", "", ""));
-        pane.add(new SearchPatient(), "growx, wrap");
-        return pane;
+        JPanel pane = new JPanel(new MigLayout("insets 0 0 0 24, fill", "", ""));
+        {
+            JPanel frame = new JPanel(new MigLayout("insets 0, fill", "", ""));
+            frame.setBorder(BorderFactory.createTitledBorder("患者検索"));
+            frame.add(new SearchPatient(), "growx");
+            pane.add(frame, "top, growx, wrap");
+        }
+        JScrollPane sp = new JScrollPane(pane);
+        sp.setBorder(null);
+        sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+        return sp;
     }
 }
