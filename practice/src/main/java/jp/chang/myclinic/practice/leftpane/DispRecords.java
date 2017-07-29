@@ -16,7 +16,7 @@ public class DispRecords extends JPanel {
     }
 
     private MigLayout makeLayout(){
-        return new MigLayout("insets 0 0 0 24, fillx, debug", "[sizegroup c, grow] [sizegroup c, grow]", "");
+        return new MigLayout("insets 0 0 0 24, fillx", "[sizegroup c, grow] [sizegroup c, grow]", "");
     }
 
     public void setVisits(List<VisitFullDTO> visits){

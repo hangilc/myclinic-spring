@@ -410,7 +410,7 @@ public class DbGateway {
 
 	public VisitFullPageDTO listVisitFull(int patientId, int page){
 		int itemsPerPage = 10;
-		Pageable pageable = new PageRequest(page, itemsPerPage, Sort.Direction.DESC, "patientId");
+		Pageable pageable = new PageRequest(page, itemsPerPage, Sort.Direction.DESC, "visitId");
 		Page<Visit> pageVisit = visitRepository.findByPatientId(patientId, pageable);
 		VisitFullPageDTO visitFullPageDTO = new VisitFullPageDTO();
 		visitFullPageDTO.totalPages = pageVisit.getTotalPages();

@@ -4,24 +4,21 @@ import jp.chang.myclinic.dto.PatientDTO;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 
-public class PatientInfoPane extends JPanel {
+class PatientInfoPane extends JPanel {
 
-    private Container container;
     private PatientDTO patient;
     private JEditorPane infoPane;
     private boolean detailShown = false;
 
-    public PatientInfoPane(Container container, PatientDTO patient){
-        this.container = container;
+    PatientInfoPane(PatientDTO patient){
         this.patient = patient;
         setLayout(new MigLayout("fillx", "", ""));
         infoPane = new JEditorPane();
         infoPane.setContentType("text/plain");
-        infoPane.setBackground(container.getBackground());
         infoPane.setText(makeText());
         infoPane.setEditable(false);
+        infoPane.setBackground(this.getBackground());
         JButton detailButton = new JButton("詳細");
         detailButton.addActionListener(event -> doToggleDetail());
         add(infoPane, "growx");
