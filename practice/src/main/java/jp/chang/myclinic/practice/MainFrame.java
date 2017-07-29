@@ -56,7 +56,7 @@ class MainFrame extends JFrame {
     private void doStartPatient(PatientDTO patient){
         leftPanel.removeAll();
         leftPanel.setLayout(makeLeftPanelLayout());
-        leftPanel.add(new PatientInfoPane(patient), "top, wrap");
+        leftPanel.add(new PatientInfoPane(this, patient), "top, growx, wrap");
         leftPanel.repaint();
         leftPanel.revalidate();
     }
