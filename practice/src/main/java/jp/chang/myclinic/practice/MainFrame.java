@@ -8,6 +8,7 @@ import jp.chang.myclinic.practice.rightpane.SearchPatient;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 
 class MainFrame extends JFrame {
 
@@ -56,17 +57,32 @@ class MainFrame extends JFrame {
     }
 
     private void doStartPatient(PatientDTO patient){
-        leftPanel.removeAll();
-        leftPanel.setLayout(makeLeftPanelLayout());
-        DispRecords dispRecords = new DispRecords();
-        leftPanel.add(new PatientInfoPane(this, patient), "growx, wrap");
-        leftPanel.add(new PatientManip(), "top, wrap");
-        {
-            JScrollPane scrollPane = new JScrollPane(dispRecords);
-            scrollPane.setBorder(BorderFactory.createEmptyBorder());
-            leftPanel.add(scrollPane, "grow");
-        }
-        leftPanel.repaint();
-        leftPanel.revalidate();
+        Service.api.listVisitFull(patient.patientId, 0)
+                .thenAccept(page -> {
+                    EventQueue.invokeLater(() -> {
+                        leftPanel.removeAll();
+                        leftPanel.setLayout(makeLeftPanelLayout());
+                        DispRecords dispRecords = new DispRecords();
+                        leftPanel.add(new PatientInfoPane(this, patient), "growx, wrap");
+                        leftPanel.add(new PatientManip(), "top, wrap");
+                        {
+                            JScrollPane scrollPane = new JScrollPane(dispRecords);
+                            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+                            leftPanel.add(scrollPane, "grow");
+                            dispRecords.setVisits(page.visits);
+                        }
+                        leftPanel.repaint();
+                        leftPanel.revalidate();
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    alert(t.toString());
+                    return null;
+                });
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
     }
 }
