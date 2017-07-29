@@ -16,7 +16,7 @@ public class PatientInfoPane extends JPanel {
     public PatientInfoPane(Container container, PatientDTO patient){
         this.container = container;
         this.patient = patient;
-        setLayout(new MigLayout("insets 0, fill", "", ""));
+        setLayout(new MigLayout("fillx", "", ""));
         infoPane = new JEditorPane();
         infoPane.setContentType("text/plain");
         infoPane.setBackground(container.getBackground());

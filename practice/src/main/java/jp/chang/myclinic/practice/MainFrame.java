@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice;
 
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.leftpane.PatientInfoPane;
+import jp.chang.myclinic.practice.leftpane.PatientManip;
 import jp.chang.myclinic.practice.rightpane.SearchPatient;
 import net.miginfocom.swing.MigLayout;
 
@@ -32,11 +33,11 @@ class MainFrame extends JFrame {
     }
 
     private MigLayout makeLeftPanelLayout(){
-        return new MigLayout("insets 0 0 0 24, fill", "", "");
+        return new MigLayout("insets 0 0 0 24, fillx", "", "");
     }
 
     private JComponent makeRightPane(){
-        rightPanel = new JPanel(new MigLayout("insets 0 0 0 24, fill", "", ""));
+        rightPanel = new JPanel(new MigLayout("insets 0 0 0 24, fillx", "", ""));
         {
             JPanel frame = new JPanel(new MigLayout("insets 0, fill", "", ""));
             frame.setBorder(BorderFactory.createTitledBorder("患者検索"));
@@ -56,7 +57,8 @@ class MainFrame extends JFrame {
     private void doStartPatient(PatientDTO patient){
         leftPanel.removeAll();
         leftPanel.setLayout(makeLeftPanelLayout());
-        leftPanel.add(new PatientInfoPane(this, patient), "top, growx, wrap");
+        leftPanel.add(new PatientInfoPane(this, patient), "growx, wrap");
+        leftPanel.add(new PatientManip(), "top, wrap");
         leftPanel.repaint();
         leftPanel.revalidate();
     }
