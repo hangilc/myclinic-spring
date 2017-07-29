@@ -3,7 +3,9 @@ package jp.chang.myclinic.db.myclinic;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
@@ -387,14 +389,34 @@ public class DbGateway {
 
 	public VisitFullDTO getVisitFull(int visitId){
 		VisitDTO visitDTO = getVisit(visitId);
+		return getVisitFull(visitDTO);
+	}
+
+	private VisitFullDTO getVisitFull(Visit visit){
+		return getVisitFull(mapper.toVisitDTO(visit));
+	}
+
+	private VisitFullDTO getVisitFull(VisitDTO visitDTO){
+		int visitId = visitDTO.visitId;
 		VisitFullDTO visitFullDTO = new VisitFullDTO();
 		visitFullDTO.visit = visitDTO;
 		visitFullDTO.texts = listText(visitId);
 		visitFullDTO.shinryouList = listShinryouFull(visitId);
 		visitFullDTO.drugs = listDrugFull(visitId);
 		visitFullDTO.conducts = listConducts(visitId).stream()
-			.map(this::extendConduct).collect(Collectors.toList());
+				.map(this::extendConduct).collect(Collectors.toList());
 		return visitFullDTO;
+	}
+
+	public VisitFullPageDTO listVisitFull(int patientId, int page){
+		int itemsPerPage = 10;
+		Pageable pageable = new PageRequest(page, itemsPerPage, Sort.Direction.DESC, "patientId");
+		Page<Visit> pageVisit = visitRepository.findByPatientId(patientId, pageable);
+		VisitFullPageDTO visitFullPageDTO = new VisitFullPageDTO();
+		visitFullPageDTO.totalPages = pageVisit.getTotalPages();
+		visitFullPageDTO.page = page;
+		visitFullPageDTO.visits = pageVisit.getContent().stream().map(this::getVisitFull).collect(Collectors.toList());
+		return visitFullPageDTO;
 	}
 
 	public ConductDTO getConduct(int conductId){

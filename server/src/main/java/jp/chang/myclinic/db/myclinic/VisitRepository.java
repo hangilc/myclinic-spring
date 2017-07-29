@@ -1,5 +1,6 @@
 package jp.chang.myclinic.db.myclinic;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,14 +11,6 @@ import java.util.List;
 
 public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
-	// @EntityGraph(attributePaths={"patient"})
-	// @Query("select v from Visit v")
-	// List<Visit> findAllWithPatient(Pageable pageable);
-
-//	@EntityGraph(attributePaths={"patient"})
-//	@Query("select v from Visit v where FUNCTION('date', v.visitedAt) = current_date")
-//	List<Visit> findTodaysVisits(Pageable pageable);
-
 	@Query("select visit.visitId from Visit visit where date(visit.visitedAt) = date(now()) ")
 	List<Integer> findVisitIdForToday();
 
@@ -27,7 +20,7 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
 	int countByPatientId(int patientId);
 
-	List<Visit> findByPatientId(int patientId, Pageable pageable);
+	//List<Visit> findByPatientId(int patientId, Pageable pageable);
 
 	@Query("select v.visitId from Visit v")
     List<Integer> findAllVisitIds(Sort sort);
@@ -43,4 +36,6 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
 	@Query("select visit from Visit visit where visit.visitId in :visitIds")
 	List<Visit> findByVisitIds(@Param("visitIds") List<Integer> visitIds, Sort sort);
+
+	Page<Visit> findByPatientId(int patientId, Pageable pageable);
 }
