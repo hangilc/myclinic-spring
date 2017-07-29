@@ -9,8 +9,9 @@ public class PatientInfoPane extends JPanel {
 
     private PatientDTO patient;
 
-    public PatientInfoPane(){
+    public PatientInfoPane(PatientDTO patient){
         this.patient = patient;
         setLayout(new MigLayout("insets 0", "", ""));
+        add(new JLabel(patient.lastName));
     }
 }
