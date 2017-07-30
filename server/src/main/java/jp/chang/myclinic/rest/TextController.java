@@ -4,10 +4,7 @@ import jp.chang.myclinic.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.TextDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/json")
@@ -25,6 +22,12 @@ class TextController {
     @RequestMapping(value="/enter-text", method= RequestMethod.POST)
     public int enterText(@RequestBody TextDTO textDTO){
         return dbGateway.enterText(textDTO);
+    }
+
+    @RequestMapping(value="/delete-text", method= RequestMethod.POST)
+    public boolean enterText(@RequestParam("text-id") int textId){
+        dbGateway.deleteText(textId);
+        return true;
     }
 
 }

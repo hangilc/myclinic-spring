@@ -399,6 +399,10 @@ public class DbGateway {
 		textRepository.save(text);
 	}
 
+	public void deleteText(int textId){
+		textRepository.delete(textId);
+	}
+
 	public VisitFullDTO getVisitFull(int visitId){
 		VisitDTO visitDTO = getVisit(visitId);
 		return getVisitFull(visitDTO);

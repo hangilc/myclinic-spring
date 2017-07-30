@@ -33,6 +33,9 @@ public class Service {
 
         @POST("enter-text")
         CompletableFuture<Integer> enterText(@Body TextDTO textDTO);
+
+        @POST("delete-text")
+        CompletableFuture<Boolean> deleteText(@Query("text-id") int textId);
     }
 
     public static ServerAPI api;

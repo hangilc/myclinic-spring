@@ -124,6 +124,26 @@ public class DispRecords extends JPanel {
                     }
 
                     @Override
+                    public void onDelete(){
+                        Service.api.deleteText(textDTO.textId)
+                                .thenAccept(result -> {
+                                    EventQueue.invokeLater(() -> {
+                                        Container parent = wrapper.getParent();
+                                        parent.remove(wrapper);
+                                        parent.repaint();
+                                        parent.revalidate();
+                                    });
+                                })
+                                .exceptionally(t -> {
+                                    EventQueue.invokeLater(() -> {
+                                        t.printStackTrace();
+                                        alert(t.toString());
+                                    });
+                                    return null;
+                                });
+                    }
+
+                    @Override
                     public void onCancel() {
                         wrapper.removeAll();
                         wrapper.add(textDisp, "growx");

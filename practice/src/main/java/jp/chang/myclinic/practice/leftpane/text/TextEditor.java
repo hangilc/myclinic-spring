@@ -10,6 +10,7 @@ public class TextEditor extends JPanel {
 
     public interface Callback {
         void onEnter(TextDTO newText);
+        void onDelete();
         void onCancel();
     }
 
@@ -26,7 +27,7 @@ public class TextEditor extends JPanel {
         enterButton.addActionListener(event -> doEnter());
         JButton cancelButton = new JButton("キャンセル");
         cancelButton.addActionListener(event -> callback.onCancel());
-        Link deleteLink = new Link("削除", () -> {});
+        Link deleteLink = new Link("削除", this::doDelete);
         Link prescLink = new Link("処方箋発行", () -> {});
         Link copyLink = new Link("コピー", () -> {});
         add(new JScrollPane(ep), "growx, h 200:n:n, wrap");
@@ -41,5 +42,13 @@ public class TextEditor extends JPanel {
         TextDTO newText = textDTO.copy();
         newText.content = ep.getText();
         callback.onEnter(newText);
+    }
+
+    private void doDelete(){
+        int select = JOptionPane.showConfirmDialog(this, "この文章を削除していいですか？", "確認",
+                JOptionPane.YES_NO_OPTION);
+        if( select == JOptionPane.YES_OPTION ){
+            callback.onDelete();
+        }
     }
 }
