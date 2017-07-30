@@ -5,6 +5,7 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.HokenUtil;
 import jp.chang.myclinic.util.KizaiUtil;
+import jp.chang.myclinic.util.NumberUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -50,6 +51,7 @@ public class DispRecords extends JPanel {
         panel.add(makeDrugPane(visitFull.drugs), "growx, wrap");
         panel.add(makeShinryouPane(visitFull.shinryouList), "growx, wrap");
         panel.add(makeConductPane(visitFull.conducts), "growx, wrap");
+        panel.add(makeChargePane(visitFull.charge), "");
         return panel;
     }
 
@@ -132,5 +134,16 @@ public class DispRecords extends JPanel {
         }
         return panel;
     }
+
+    private JComponent makeChargePane(ChargeDTO charge){
+        String label;
+        if( charge != null ){
+            label = "請求額：" + NumberUtil.formatNumber(charge.charge) + "円";
+        } else {
+            label = "(未請求)";
+        }
+        return new JLabel(label);
+    }
+
 
 }
