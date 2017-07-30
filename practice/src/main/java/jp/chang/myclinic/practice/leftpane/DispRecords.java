@@ -1,11 +1,10 @@
 package jp.chang.myclinic.practice.leftpane;
 
-import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.dto.HokenDTO;
-import jp.chang.myclinic.dto.ShinryouFullDTO;
-import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.consts.ConductKind;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.HokenUtil;
+import jp.chang.myclinic.util.KizaiUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -50,6 +49,7 @@ public class DispRecords extends JPanel {
         panel.add(makeHokenPane(visitFull.hoken), "wrap");
         panel.add(makeDrugPane(visitFull.drugs), "growx, wrap");
         panel.add(makeShinryouPane(visitFull.shinryouList), "growx, wrap");
+        panel.add(makeConductPane(visitFull.conducts), "growx, wrap");
         return panel;
     }
 
@@ -86,4 +86,51 @@ public class DispRecords extends JPanel {
         }
         return panel;
     }
+
+    private JComponent makeConductPane(List<ConductFullDTO> conducts){
+        JPanel panel = new JPanel(new MigLayout("insets 0", "[grow]", ""));
+        for(ConductFullDTO conduct: conducts){
+            panel.add(makeConductItemPane(conduct), "growx, wrap");
+        }
+        return panel;
+    }
+
+    private JComponent makeConductItemPane(ConductFullDTO conductFull){
+        JPanel panel = new JPanel(new MigLayout("insets 0, fillx, gapy 0", "[grow]", ""));
+        {
+            String kindRep = "<" + ConductKind.fromCode(conductFull.conduct.kind).getKanjiRep() + ">";
+            panel.add(new JLabel(kindRep), "wrap");
+        }
+        {
+            if( conductFull.gazouLabel != null ){
+                JEditorPane ep = new JEditorPane("text/plain", conductFull.gazouLabel.label);
+                ep.setBackground(getBackground());
+                ep.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+                panel.add(ep, "growx, wrap");
+            }
+        }
+        for(ConductShinryouFullDTO shinryou: conductFull.conductShinryouList){
+            String label = shinryou.master.name;
+            JEditorPane ep = new JEditorPane("text/plain", label);
+            ep.setBackground(getBackground());
+            ep.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+            panel.add(ep, "growx, wrap");
+        }
+        for(ConductDrugFullDTO drug: conductFull.conductDrugs){
+            String label = DrugUtil.conductDrugRep(drug);
+            JEditorPane ep = new JEditorPane("text/plain", label);
+            ep.setBackground(getBackground());
+            ep.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+            panel.add(ep, "growx, wrap");
+        }
+        for(ConductKizaiFullDTO kizai: conductFull.conductKizaiList){
+            String label = KizaiUtil.kizaiRep(kizai);
+            JEditorPane ep = new JEditorPane("text/plain", label);
+            ep.setBackground(getBackground());
+            ep.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+            panel.add(ep, "growx, wrap");
+        }
+        return panel;
+    }
+
 }
