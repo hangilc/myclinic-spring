@@ -387,6 +387,18 @@ public class DbGateway {
 		return texts.stream().map(mapper::toTextDTO).collect(Collectors.toList());
 	}
 
+	public int enterText(TextDTO textDTO){
+		Text text = mapper.fromTextDTO(textDTO);
+		text.setTextId(null);
+		text = textRepository.save(text);
+		return text.getTextId();
+	}
+
+	public void updateText(TextDTO textDTO){
+		Text text = mapper.fromTextDTO(textDTO);
+		textRepository.save(text);
+	}
+
 	public VisitFullDTO getVisitFull(int visitId){
 		VisitDTO visitDTO = getVisit(visitId);
 		return getVisitFull(visitDTO);

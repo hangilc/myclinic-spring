@@ -24,6 +24,8 @@ public class LeftPane extends JPanel {
         dispRecords = new DispRecords();
         dispRecords.setVisits(visitFullPage.visits);
         scrollPane = new JScrollPane(dispRecords);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
         setLayout(new MigLayout("insets 0, fill", "[grow]", "[] [] [] [grow] []"));
         add(new PatientInfoPane(patient), "growx, wrap");
         add(new PatientManip(), "wrap");

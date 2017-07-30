@@ -2,6 +2,9 @@ package jp.chang.myclinic.practice.leftpane;
 
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.leftpane.text.TextDisp;
+import jp.chang.myclinic.practice.leftpane.text.TextEditor;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.HokenUtil;
 import jp.chang.myclinic.util.KizaiUtil;
@@ -9,6 +12,8 @@ import jp.chang.myclinic.util.NumberUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class DispRecords extends JPanel {
@@ -37,12 +42,54 @@ public class DispRecords extends JPanel {
     private JComponent makeTextPane(VisitFull2DTO visitFull){
         JPanel panel = new JPanel(new MigLayout("insets 0, fillx", "[grow]", ""));
         visitFull.texts.forEach(textDTO -> {
-            JEditorPane ep = new JEditorPane();
-            ep.setContentType("text/plain");
-            ep.setText(textDTO.content.trim());
-            panel.add(ep, "growx, wrap");
+            panel.add(makeTextItemPane(textDTO), "growx, wrap");
         });
         return panel;
+    }
+
+    private JComponent makeTextItemPane(TextDTO textDTO){
+        JPanel wrapper = new JPanel(new MigLayout("insets 0", "[grow]", ""));
+        addTextDisp(wrapper, textDTO);
+        return wrapper;
+    }
+
+    private void addTextDisp(JPanel wrapper, TextDTO textDTO){
+        TextDisp textDisp = new TextDisp(textDTO, getBackground());
+        textDisp.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                TextEditor textEditor = new TextEditor(textDTO, new TextEditor.Callback(){
+                    @Override
+                    public void onEnter(TextDTO newText) {
+                        Service.api.updateText(newText)
+                                .thenAccept(result -> {
+                                    wrapper.removeAll();
+                                    addTextDisp(wrapper, newText);
+                                    wrapper.repaint();
+                                    wrapper.revalidate();
+                                })
+                                .exceptionally(t -> {
+                                    t.printStackTrace();
+                                    alert(t.toString());
+                                    return null;
+                                });
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        wrapper.removeAll();
+                        wrapper.add(textDisp, "growx");
+                        wrapper.repaint();
+                        wrapper.revalidate();
+                    }
+                });
+                wrapper.removeAll();
+                wrapper.add(textEditor, "growx");
+                wrapper.repaint();
+                wrapper.revalidate();
+            }
+        });
+        wrapper.add(textDisp, "growx");
     }
 
     private JComponent makeRightPane(VisitFull2DTO visitFull){
@@ -100,7 +147,13 @@ public class DispRecords extends JPanel {
     private JComponent makeConductItemPane(ConductFullDTO conductFull){
         JPanel panel = new JPanel(new MigLayout("insets 0, fillx, gapy 0", "[grow]", ""));
         {
-            String kindRep = "<" + ConductKind.fromCode(conductFull.conduct.kind).getKanjiRep() + ">";
+            String kindRep;
+            ConductKind conductKind = ConductKind.fromCode(conductFull.conduct.kind);
+            if( conductKind != null ){
+                kindRep = "<" + conductKind.getKanjiRep() + ">";
+            } else {
+                kindRep = "<" + "不明" + ">";
+            }
             panel.add(new JLabel(kindRep), "wrap");
         }
         {
@@ -145,5 +198,8 @@ public class DispRecords extends JPanel {
         return new JLabel(label);
     }
 
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
+    }
 
 }

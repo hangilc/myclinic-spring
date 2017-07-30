@@ -5,13 +5,16 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.drawer.JacksonOpDeserializer;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitFull2PageDTO;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 import java.util.List;
@@ -24,6 +27,9 @@ public class Service {
 
         @GET("list-visit-full2")
         CompletableFuture<VisitFull2PageDTO> listVisitFull2(@Query("patient-id") int patientId, @Query("page") int page);
+
+        @POST("update-text")
+        CompletableFuture<Boolean> updateText(@Body TextDTO textDTO);
     }
 
     public static ServerAPI api;
