@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.drawer.JacksonOpDeserializer;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.VisitFullPageDTO;
+import jp.chang.myclinic.dto.VisitFull2PageDTO;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -22,8 +22,8 @@ public class Service {
         @GET("search-patient")
         CompletableFuture<List<PatientDTO>> searchPatient(@Query("text") String text);
 
-        @GET("list-visit-full")
-        CompletableFuture<VisitFullPageDTO> listVisitFull(@Query("patient-id") int patientId, @Query("page") int page);
+        @GET("list-visit-full2")
+        CompletableFuture<VisitFull2PageDTO> listVisitFull2(@Query("patient-id") int patientId, @Query("page") int page);
     }
 
     public static ServerAPI api;

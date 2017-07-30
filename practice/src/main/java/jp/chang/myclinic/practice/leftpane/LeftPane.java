@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice.leftpane;
 
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.VisitFullPageDTO;
+import jp.chang.myclinic.dto.VisitFull2PageDTO;
 import jp.chang.myclinic.practice.Service;
 import net.miginfocom.swing.MigLayout;
 
@@ -10,13 +10,13 @@ import javax.swing.*;
 public class LeftPane extends JPanel {
 
     private PatientDTO patient;
-    private VisitFullPageDTO visitFullPage;
+    private VisitFull2PageDTO visitFullPage;
     private RecordsNav topNav;
     private RecordsNav bottomNav;
     private DispRecords dispRecords;
     private JScrollPane scrollPane;
 
-    public LeftPane(PatientDTO patient, VisitFullPageDTO visitFullPage){
+    public LeftPane(PatientDTO patient, VisitFull2PageDTO visitFullPage){
         this.patient = patient;
         this.visitFullPage = visitFullPage;
         topNav = makeNav();
@@ -37,7 +37,7 @@ public class LeftPane extends JPanel {
     }
 
     private void onNavTrigger(int newPage){
-        Service.api.listVisitFull(patient.patientId, newPage)
+        Service.api.listVisitFull2(patient.patientId, newPage)
                 .thenAccept(visitPage -> {
                     dispRecords.setVisits(visitPage.visits);
                     topNav.set(newPage, visitPage.totalPages);

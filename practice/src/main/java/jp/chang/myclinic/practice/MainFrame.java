@@ -20,8 +20,8 @@ class MainFrame extends JFrame {
     MainFrame(){
         setTitle("診察");
         setLayout(new MigLayout("fill", "", ""));
-        add(makeLeftPane(), "w 460, h 260, grow");
-        add(makeRightPane(), "w 220, h 300, grow");
+        add(makeLeftPane(), "w 460, h 360, grow");
+        add(makeRightPane(), "w 220, h 360, grow");
         pack();
     }
 
@@ -29,11 +29,6 @@ class MainFrame extends JFrame {
         leftPanel = new JPanel(new MigLayout("insets 0, fill", "", ""));
         leftPanel.setBorder(BorderFactory.createEmptyBorder());
         return leftPanel;
-//        leftPanel = new JPanel(makeLeftPanelLayout());
-//        leftScroll = new JScrollPane(leftPanel);
-//        leftScroll.setBorder(null);
-//        leftScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-//        return leftScroll;
     }
 
     private MigLayout makeLeftPanelLayout(){
@@ -59,7 +54,7 @@ class MainFrame extends JFrame {
     }
 
     private void doStartPatient(PatientDTO patient){
-        Service.api.listVisitFull(patient.patientId, 0)
+        Service.api.listVisitFull2(patient.patientId, 0)
                 .thenAccept(page -> {
                     EventQueue.invokeLater(() -> {
                         leftPanel.removeAll();
@@ -73,39 +68,10 @@ class MainFrame extends JFrame {
                     alert(t.toString());
                     return null;
                 });
-//        Service.api.listVisitFull(patient.patientId, 0)
-//                .thenAccept(page -> {
-//                    EventQueue.invokeLater(() -> {
-//                        leftPanel.removeAll();
-//                        leftPanel.setLayout(makeLeftPanelLayout());
-//                        DispRecords dispRecords = new DispRecords();
-//                        leftPanel.add(new PatientInfoPane(this, patient), "growx, wrap");
-//                        leftPanel.add(new PatientManip(), "top, wrap");
-//                        leftPanel.add(new RecordsNav(0, page.totalPages,
-//                                newPage -> onNavTrigger(patient.patientId, newPage, dispRecords)),
-//                                "top, wrap");
-//                        {
-//                            JScrollPane scrollPane = new JScrollPane(dispRecords);
-//                            scrollPane.setBorder(BorderFactory.createEmptyBorder());
-//                            leftPanel.add(scrollPane, "grow, wrap");
-//                            dispRecords.setVisits(page.visits);
-//                        }
-//                        leftPanel.add(new RecordsNav(0, page.totalPages,
-//                                newPage -> onNavTrigger(patient.patientId, newPage, dispRecords)),
-//                                "top, wrap");
-//                        leftPanel.repaint();
-//                        leftPanel.revalidate();
-//                    });
-//                })
-//                .exceptionally(t -> {
-//                    t.printStackTrace();
-//                    alert(t.toString());
-//                    return null;
-//                });
     }
 
     private void onNavTrigger(int patientId, int page, DispRecords dispRecords){
-        Service.api.listVisitFull(patientId, page)
+        Service.api.listVisitFull2(patientId, page)
                 .thenAccept(visitPage -> {
                     dispRecords.setVisits(visitPage.visits);
 

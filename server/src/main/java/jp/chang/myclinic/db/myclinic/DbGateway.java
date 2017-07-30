@@ -408,6 +408,21 @@ public class DbGateway {
 		return visitFullDTO;
 	}
 
+	private VisitFull2DTO getVisitFull2(Visit visit){
+		int visitId = visit.getVisitId();
+		VisitDTO visitDTO = mapper.toVisitDTO(visit);
+		VisitFull2DTO visitFull2DTO = new VisitFull2DTO();
+		visitFull2DTO.visit = visitDTO;
+		visitFull2DTO.texts = listText(visitId);
+		visitFull2DTO.shinryouList = listShinryouFull(visitId);
+		visitFull2DTO.drugs = listDrugFull(visitId);
+		visitFull2DTO.conducts = listConducts(visitId).stream()
+				.map(this::extendConduct).collect(Collectors.toList());
+		visitFull2DTO.hoken = getHokenForVisit(visitDTO);
+		visitFull2DTO.charge = findCharge(visitId).orElse(null);
+		return visitFull2DTO;
+	}
+
 	public VisitFullPageDTO listVisitFull(int patientId, int page){
 		int itemsPerPage = 10;
 		Pageable pageable = new PageRequest(page, itemsPerPage, Sort.Direction.DESC, "visitId");
@@ -417,6 +432,17 @@ public class DbGateway {
 		visitFullPageDTO.page = page;
 		visitFullPageDTO.visits = pageVisit.getContent().stream().map(this::getVisitFull).collect(Collectors.toList());
 		return visitFullPageDTO;
+	}
+
+	public VisitFull2PageDTO listVisitFull2(int patientId, int page){
+		int itemsPerPage = 10;
+		Pageable pageable = new PageRequest(page, itemsPerPage, Sort.Direction.DESC, "visitId");
+		Page<Visit> pageVisit = visitRepository.findByPatientId(patientId, pageable);
+		VisitFull2PageDTO visitFull2PageDTO = new VisitFull2PageDTO();
+		visitFull2PageDTO.totalPages = pageVisit.getTotalPages();
+		visitFull2PageDTO.page = page;
+		visitFull2PageDTO.visits = pageVisit.getContent().stream().map(this::getVisitFull2).collect(Collectors.toList());
+		return visitFull2PageDTO;
 	}
 
 	public ConductDTO getConduct(int conductId){

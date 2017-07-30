@@ -1,6 +1,8 @@
 package jp.chang.myclinic.practice.leftpane;
 
-import jp.chang.myclinic.dto.VisitFullDTO;
+import jp.chang.myclinic.dto.HokenDTO;
+import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.util.HokenUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -19,17 +21,17 @@ public class DispRecords extends JPanel {
         return new MigLayout("insets 0 0 0 24, fillx", "[sizegroup c, grow] [sizegroup c, grow]", "");
     }
 
-    public void setVisits(List<VisitFullDTO> visits){
+    public void setVisits(List<VisitFull2DTO> visits){
         removeAll();
         setLayout(makeLayout());
         visits.forEach(visitFull -> {
             add(new JLabel(visitFull.visit.visitedAt), "span, wrap");
             add(makeTextPane(visitFull), "top, growx");
-            add(new JLabel("right pane"), "top, growx, wrap");
+            add(makeRightPane(visitFull), "top, growx, wrap");
         });
     }
 
-    private JComponent makeTextPane(VisitFullDTO visitFull){
+    private JComponent makeTextPane(VisitFull2DTO visitFull){
         JPanel panel = new JPanel(new MigLayout("insets 0, fillx", "[grow]", ""));
         visitFull.texts.forEach(textDTO -> {
             JEditorPane ep = new JEditorPane();
@@ -38,5 +40,16 @@ public class DispRecords extends JPanel {
             panel.add(ep, "growx, wrap");
         });
         return panel;
+    }
+
+    private JComponent makeRightPane(VisitFull2DTO visitFull){
+        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+        panel.add(makeHokenPane(visitFull.hoken), "wrap");
+        return panel;
+    }
+
+    private JComponent makeHokenPane(HokenDTO hoken){
+        String rep = HokenUtil.hokenRep(hoken);
+        return new JLabel(rep);
     }
 }

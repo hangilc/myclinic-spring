@@ -94,6 +94,11 @@ public class VisitController {
 		return dbGateway.listVisitFull(patientId, page);
 	}
 
+	@RequestMapping(value="/list-visit-full2", method=RequestMethod.GET)
+	public VisitFull2PageDTO listVisitFull2(@RequestParam("patient-id") int patientId, @RequestParam("page") int page){
+		return dbGateway.listVisitFull2(patientId, page);
+	}
+
 	@RequestMapping(value="/get-visit-meisai", method=RequestMethod.GET)
 	public MeisaiDTO getVisitMeisai(@RequestParam("visit-id") int visitId){
 		RcptVisit rcptVisit = new RcptVisit();
