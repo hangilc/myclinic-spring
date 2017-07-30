@@ -189,8 +189,7 @@ public class DbGateway {
 
 	public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at){
 		Sort sort = new Sort(Sort.Direction.DESC, "shahokokuhoId");
-		Date atDate = Date.valueOf(at);
-		try(Stream<Shahokokuho> stream = shahokokuhoRepository.findAvailable(patientId, atDate, sort)){
+		try(Stream<Shahokokuho> stream = shahokokuhoRepository.findAvailable(patientId, at.toString(), sort)){
 			return stream.map(mapper::toShahokokuhoDTO).collect(Collectors.toList());
 		}
 	}
@@ -280,6 +279,17 @@ public class DbGateway {
 		hokenListDTO.roujinListDTO = findRoujinByPatient(patientId);
 		hokenListDTO.kouhiListDTO = findKouhiByPatient(patientId);
 		return hokenListDTO;
+	}
+
+	public HokenDTO listAvailableHoken(int patientId, String at){
+		if( at.length() > 10 ){
+			at = at.substring(0, 10);
+		}
+		LocalDate date = LocalDate.parse(at);
+		HokenDTO hokenDTO = new HokenDTO();
+		hokenDTO.shahokokuho = findAvailableShahokokuho(patientId, date).stream().findFirst().orElse(null);
+		// TODO: stuff others
+		return hokenDTO;
 	}
 
 	public void enterCharge(ChargeDTO chargeDTO){

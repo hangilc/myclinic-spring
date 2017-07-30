@@ -4,11 +4,11 @@ import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.leftpane.hoken.HokenDisp;
 import jp.chang.myclinic.practice.leftpane.text.TextCreator;
 import jp.chang.myclinic.practice.leftpane.text.TextDisp;
 import jp.chang.myclinic.practice.leftpane.text.TextEditor;
 import jp.chang.myclinic.util.DrugUtil;
-import jp.chang.myclinic.util.HokenUtil;
 import jp.chang.myclinic.util.KizaiUtil;
 import jp.chang.myclinic.util.NumberUtil;
 import net.miginfocom.swing.MigLayout;
@@ -162,17 +162,12 @@ public class DispRecords extends JPanel {
 
     private JComponent makeRightPane(VisitFull2DTO visitFull){
         JPanel panel = new JPanel(new MigLayout("insets 0", "[grow]", ""));
-        panel.add(makeHokenPane(visitFull.hoken), "wrap");
+        panel.add(new HokenDisp(visitFull.hoken), "wrap");
         panel.add(makeDrugPane(visitFull.drugs), "growx, wrap");
         panel.add(makeShinryouPane(visitFull.shinryouList), "growx, wrap");
         panel.add(makeConductPane(visitFull.conducts), "growx, wrap");
         panel.add(makeChargePane(visitFull.charge), "");
         return panel;
-    }
-
-    private JComponent makeHokenPane(HokenDTO hoken){
-        String rep = HokenUtil.hokenRep(hoken);
-        return new JLabel(rep);
     }
 
     private JComponent makeDrugPane(List<DrugFullDTO> drugs){

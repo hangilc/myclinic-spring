@@ -1,7 +1,6 @@
 package jp.chang.myclinic.db.myclinic;
 
 import javax.persistence.*;
-import java.sql.Date;
 
 @Entity
 @Table(name="hoken_shahokokuho")
@@ -28,7 +27,7 @@ public class Shahokokuho {
 	private Integer kourei;
 
 	@Column(name="valid_from")
-	private Date validFrom;
+	private String validFrom;
 
 	@Column(name="valid_upto")
 	private String validUpto;
@@ -89,11 +88,11 @@ public class Shahokokuho {
 		this.kourei = kourei;
 	}
 
-	public Date getValidFrom(){
+	public String getValidFrom(){
 		return validFrom;
 	}
 
-	public void setValidFrom(Date validFrom){
+	public void setValidFrom(String validFrom){
 		this.validFrom = validFrom;
 	}
 
