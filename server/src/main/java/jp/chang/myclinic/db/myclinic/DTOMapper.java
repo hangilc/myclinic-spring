@@ -95,7 +95,7 @@ public class DTOMapper {
 		shahokokuhoDTO.hihokenshaKigou= shahokokuho.getHihokenshaKigou();
 		shahokokuhoDTO.honnin = shahokokuho.getHonnin();
 		shahokokuhoDTO.kourei = shahokokuho.getKourei();
-		shahokokuhoDTO.validFrom = shahokokuho.getValidFrom().toString();
+		shahokokuhoDTO.validFrom = shahokokuho.getValidFrom();
 		shahokokuhoDTO.validUpto = shahokokuho.getValidUpto();
 		return shahokokuhoDTO;
 	}
@@ -109,7 +109,7 @@ public class DTOMapper {
 		shahokokuho.setHihokenshaKigou(shahokokuhoDTO.hihokenshaKigou);
 		shahokokuho.setHonnin(shahokokuhoDTO.honnin);
 		shahokokuho.setKourei(shahokokuhoDTO.kourei);
-		shahokokuho.setValidFrom(stringToDate(shahokokuhoDTO.validFrom));
+		shahokokuho.setValidFrom(shahokokuhoDTO.validFrom);
 		shahokokuho.setValidUpto(shahokokuhoDTO.validUpto);
 		return shahokokuho;
 	}
@@ -121,7 +121,7 @@ public class DTOMapper {
 		koukikoureiDTO.hokenshaBangou = koukikourei.getHokenshaBangou();
 		koukikoureiDTO.hihokenshaBangou = koukikourei.getHihokenshaBangou();
 		koukikoureiDTO.futanWari = koukikourei.getFutanWari();
-		koukikoureiDTO.validFrom = koukikourei.getValidFrom().toString();
+		koukikoureiDTO.validFrom = koukikourei.getValidFrom();
 		koukikoureiDTO.validUpto = koukikourei.getValidUpto();
 		return koukikoureiDTO;
 	}
@@ -133,7 +133,7 @@ public class DTOMapper {
 		koukikourei.setHokenshaBangou(koukikoureiDTO.hokenshaBangou);
 		koukikourei.setHihokenshaBangou(koukikoureiDTO.hihokenshaBangou);
 		koukikourei.setFutanWari(koukikoureiDTO.futanWari);
-		koukikourei.setValidFrom(stringToDate(koukikoureiDTO.validFrom));
+		koukikourei.setValidFrom(koukikoureiDTO.validFrom);
 		koukikourei.setValidUpto(koukikoureiDTO.validUpto);
 		return koukikourei;
 	}
@@ -145,7 +145,7 @@ public class DTOMapper {
 		roujinDTO.shichouson = roujin.getShichouson();
 		roujinDTO.jukyuusha = roujin.getJukyuusha();
 		roujinDTO.futanWari = roujin.getFutanWari();
-		roujinDTO.validFrom = roujin.getValidFrom().toString();
+		roujinDTO.validFrom = roujin.getValidFrom();
 		roujinDTO.validUpto = roujin.getValidUpto();
 		return roujinDTO;
 	}
@@ -157,7 +157,7 @@ public class DTOMapper {
 		roujin.setShichouson(roujinDTO.shichouson);
 		roujin.setJukyuusha(roujinDTO.jukyuusha);
 		roujin.setFutanWari(roujinDTO.futanWari);
-		roujin.setValidFrom(stringToDate(roujinDTO.validFrom));
+		roujin.setValidFrom(roujinDTO.validFrom);
 		roujin.setValidUpto(roujinDTO.validUpto);
 		return roujin;
 	}
@@ -168,7 +168,7 @@ public class DTOMapper {
 		kouhiDTO.patientId = kouhi.getPatientId();
 		kouhiDTO.futansha = kouhi.getFutansha();
 		kouhiDTO.jukyuusha = kouhi.getJukyuusha();
-		kouhiDTO.validFrom = kouhi.getValidFrom().toString();
+		kouhiDTO.validFrom = kouhi.getValidFrom();
 		kouhiDTO.validUpto = kouhi.getValidUpto();
 		return kouhiDTO;
 	}
@@ -179,7 +179,7 @@ public class DTOMapper {
 		kouhi.setPatientId(kouhiDTO.patientId);
 		kouhi.setFutansha(kouhiDTO.futansha);
 		kouhi.setJukyuusha(kouhiDTO.jukyuusha);
-		kouhi.setValidFrom(stringToDate(kouhiDTO.validFrom));
+		kouhi.setValidFrom(kouhiDTO.validFrom);
 		kouhi.setValidUpto(kouhiDTO.validUpto);
 		return kouhi;
 	}

@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -212,7 +211,7 @@ public class DbGateway {
 
 	public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at){
 		Sort sort = new Sort(Sort.Direction.DESC, "koukikoureiId");
-		Date atDate = Date.valueOf(at);
+		String atDate = at.toString();
 		try(Stream<Koukikourei> stream = koukikoureiRepository.findAvailable(patientId, atDate, sort)){
 			return stream.map(mapper::toKoukikoureiDTO).collect(Collectors.toList());
 		}
@@ -236,7 +235,7 @@ public class DbGateway {
 
 	public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at){
 		Sort sort = new Sort(Sort.Direction.DESC, "roujinId");
-		Date atDate = Date.valueOf(at);
+		String atDate = at.toString();
 		try(Stream<Roujin> stream = roujinRepository.findAvailable(patientId, atDate, sort)){
 			return stream.map(mapper::toRoujinDTO).collect(Collectors.toList());
 		}
@@ -260,7 +259,7 @@ public class DbGateway {
 
 	public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at){
 		Sort sort = new Sort(Sort.Direction.ASC, "kouhiId");
-		Date atDate = Date.valueOf(at);
+		String atDate = at.toString();
 		try(Stream<Kouhi> stream = kouhiRepository.findAvailable(patientId, atDate, sort)){
 			return stream.map(mapper::toKouhiDTO).collect(Collectors.toList());
 		}
@@ -288,7 +287,18 @@ public class DbGateway {
 		LocalDate date = LocalDate.parse(at);
 		HokenDTO hokenDTO = new HokenDTO();
 		hokenDTO.shahokokuho = findAvailableShahokokuho(patientId, date).stream().findFirst().orElse(null);
-		// TODO: stuff others
+		hokenDTO.koukikourei = findAvailableKoukikourei(patientId, date).stream().findFirst().orElse(null);
+		hokenDTO.roujin = findAvailableRoujin(patientId, date).stream().findFirst().orElse(null);
+		List<KouhiDTO> kouhiList = findAvailableKouhi(patientId, date);
+		if( kouhiList.size() > 0 ){
+			hokenDTO.kouhi1 = kouhiList.get(0);
+			if( kouhiList.size() > 1 ){
+				hokenDTO.kouhi2 = kouhiList.get(1);
+				if( kouhiList.size() > 2 ){
+					hokenDTO.kouhi3 = kouhiList.get(2);
+				}
+			}
+		}
 		return hokenDTO;
 	}
 
