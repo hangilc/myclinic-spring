@@ -2,7 +2,9 @@ package jp.chang.myclinic.practice.leftpane;
 
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.leftpane.text.TextCreator;
 import jp.chang.myclinic.practice.leftpane.text.TextDisp;
 import jp.chang.myclinic.practice.leftpane.text.TextEditor;
 import jp.chang.myclinic.util.DrugUtil;
@@ -12,6 +14,7 @@ import jp.chang.myclinic.util.NumberUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -44,6 +47,47 @@ public class DispRecords extends JPanel {
         visitFull.texts.forEach(textDTO -> {
             panel.add(makeTextItemPane(textDTO), "growx, wrap");
         });
+        Link newTextLink = new Link("[文章作成]");
+        newTextLink.setCallback(() -> {
+            TextDTO textDTO = new TextDTO();
+            textDTO.visitId = visitFull.visit.visitId;
+            TextCreator textCreator = new TextCreator(textDTO, new TextCreator.Callback(){
+                @Override
+                public void onEnter(TextCreator creator) {
+                    Service.api.enterText(textDTO)
+                            .thenAccept(textId -> {
+                                textDTO.textId = textId;
+                                EventQueue.invokeLater(() -> {
+                                    panel.remove(creator);
+                                    panel.add(makeTextItemPane(textDTO), "growx, wrap");
+                                    panel.add(newTextLink);
+                                    panel.repaint();
+                                    panel.revalidate();
+                                });
+                            })
+                            .exceptionally(t -> {
+                                EventQueue.invokeLater(() -> {
+                                    t.printStackTrace();
+                                    alert(t.toString());
+                                });
+                                return null;
+                            });
+                }
+
+                @Override
+                public void onCancel(TextCreator creator) {
+                    panel.remove(creator);
+                    panel.add(newTextLink);
+                    panel.repaint();
+                    panel.revalidate();
+                }
+            });
+            panel.remove(newTextLink);
+            panel.add(textCreator, "growx");
+            panel.repaint();
+            panel.revalidate();
+        });
+        panel.add(newTextLink);
         return panel;
     }
 
@@ -63,14 +107,18 @@ public class DispRecords extends JPanel {
                     public void onEnter(TextDTO newText) {
                         Service.api.updateText(newText)
                                 .thenAccept(result -> {
-                                    wrapper.removeAll();
-                                    addTextDisp(wrapper, newText);
-                                    wrapper.repaint();
-                                    wrapper.revalidate();
+                                    EventQueue.invokeLater(() -> {
+                                        wrapper.removeAll();
+                                        addTextDisp(wrapper, newText);
+                                        wrapper.repaint();
+                                        wrapper.revalidate();
+                                    });
                                 })
                                 .exceptionally(t -> {
-                                    t.printStackTrace();
-                                    alert(t.toString());
+                                    EventQueue.invokeLater(() -> {
+                                        t.printStackTrace();
+                                        alert(t.toString());
+                                    });
                                     return null;
                                 });
                     }

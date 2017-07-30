@@ -30,6 +30,9 @@ public class Service {
 
         @POST("update-text")
         CompletableFuture<Boolean> updateText(@Body TextDTO textDTO);
+
+        @POST("enter-text")
+        CompletableFuture<Integer> enterText(@Body TextDTO textDTO);
     }
 
     public static ServerAPI api;

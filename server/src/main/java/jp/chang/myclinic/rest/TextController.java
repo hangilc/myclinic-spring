@@ -22,4 +22,9 @@ class TextController {
         return true;
     }
 
+    @RequestMapping(value="/enter-text", method= RequestMethod.POST)
+    public int enterText(@RequestBody TextDTO textDTO){
+        return dbGateway.enterText(textDTO);
+    }
+
 }

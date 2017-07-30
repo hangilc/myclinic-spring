@@ -1,23 +1,22 @@
 package jp.chang.myclinic.practice.leftpane.text;
 
 import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.practice.Link;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 
-public class TextEditor extends JPanel {
+public class TextCreator extends JPanel {
 
     public interface Callback {
-        void onEnter(TextDTO newText);
-        void onCancel();
+        void onEnter(TextCreator creator);
+        void onCancel(TextCreator creator);
     }
 
     private TextDTO textDTO;
     private JEditorPane ep;
     private Callback callback;
 
-    public TextEditor(TextDTO textDTO, Callback callback){
+    public TextCreator(TextDTO textDTO, Callback callback){
         this.textDTO = textDTO;
         this.callback = callback;
         setLayout(new MigLayout("insets 0", "[grow]", ""));
@@ -25,21 +24,14 @@ public class TextEditor extends JPanel {
         JButton enterButton = new JButton("入力");
         enterButton.addActionListener(event -> doEnter());
         JButton cancelButton = new JButton("キャンセル");
-        cancelButton.addActionListener(event -> callback.onCancel());
-        Link deleteLink = new Link("削除", () -> {});
-        Link prescLink = new Link("処方箋発行", () -> {});
-        Link copyLink = new Link("コピー", () -> {});
+        cancelButton.addActionListener(event -> callback.onCancel(this));
         add(new JScrollPane(ep), "growx, h 200:n:n, wrap");
         add(enterButton, "split 2");
-        add(cancelButton, "wrap");
-        add(deleteLink, "split 3");
-        add(prescLink);
-        add(copyLink);
+        add(cancelButton, "");
     }
 
     private void doEnter(){
-        TextDTO newText = textDTO.copy();
-        newText.content = ep.getText();
-        callback.onEnter(newText);
+        textDTO.content = ep.getText();
+        callback.onEnter(this);
     }
 }
