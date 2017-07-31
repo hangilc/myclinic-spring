@@ -162,7 +162,7 @@ public class DispRecords extends JPanel {
 
     private JComponent makeRightPane(VisitFull2DTO visitFull){
         JPanel panel = new JPanel(new MigLayout("insets 0", "[grow]", ""));
-        panel.add(new HokenDisp(visitFull.hoken), "wrap");
+        panel.add(new HokenDisp(visitFull.hoken, visitFull.visit), "wrap");
         panel.add(makeDrugPane(visitFull.drugs), "growx, wrap");
         panel.add(makeShinryouPane(visitFull.shinryouList), "growx, wrap");
         panel.add(makeConductPane(visitFull.conducts), "growx, wrap");
