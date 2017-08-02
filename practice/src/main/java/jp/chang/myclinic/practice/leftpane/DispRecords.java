@@ -4,6 +4,7 @@ import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.leftpane.drug.DrugArea;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenDisp;
 import jp.chang.myclinic.practice.leftpane.text.TextCreator;
 import jp.chang.myclinic.practice.leftpane.text.TextDisp;
@@ -163,7 +164,7 @@ public class DispRecords extends JPanel {
     private JComponent makeRightPane(VisitFull2DTO visitFull){
         JPanel panel = new JPanel(new MigLayout("insets 0", "[grow]", ""));
         panel.add(new HokenDisp(visitFull.hoken, visitFull.visit), "wrap");
-        panel.add(makeDrugPane(visitFull.drugs), "growx, wrap");
+        panel.add(new DrugArea(visitFull.drugs), "growx, wrap");
         panel.add(makeShinryouPane(visitFull.shinryouList), "growx, wrap");
         panel.add(makeConductPane(visitFull.conducts), "growx, wrap");
         panel.add(makeChargePane(visitFull.charge), "");
