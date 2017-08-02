@@ -4,18 +4,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.function.Consumer;
 
 public class Link extends JLabel {
 
     private static Cursor handCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 
-    private Runnable callback;
+    private Consumer<MouseEvent> callback;
 
     public Link(String text){
         this(text, null);
     }
 
-    public Link(String text, Runnable callback){
+    public Link(String text, Consumer<MouseEvent> callback){
         super(text);
         this.callback = callback;
         setForeground(Color.BLUE);
@@ -23,18 +24,18 @@ public class Link extends JLabel {
         addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e) {
-                invokeCallback();
+                invokeCallback(e);
             }
         });
     }
 
-    private void invokeCallback(){
+    private void invokeCallback(MouseEvent e){
         if( callback != null ){
-            callback.run();
+            callback.accept(e);
         }
     }
 
-    public void setCallback(Runnable callback){
+    public void setCallback(Consumer<MouseEvent> callback){
         this.callback = callback;
     }
 }

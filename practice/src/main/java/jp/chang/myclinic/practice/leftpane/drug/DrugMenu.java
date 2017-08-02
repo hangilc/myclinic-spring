@@ -4,6 +4,7 @@ import jp.chang.myclinic.practice.Link;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
 
 class DrugMenu extends JPanel {
 
@@ -19,12 +20,12 @@ class DrugMenu extends JPanel {
         add(subMenuLink);
     }
 
-    private void doSubMenuClick(){
+    private void doSubMenuClick(MouseEvent event){
         if( workPane != null ){
             return;
         }
         SubMenuPane submenu = new SubMenuPane();
-        submenu.show(this, x, y);
+        submenu.show(this, event.getX(), event.getY());
     }
 
 }

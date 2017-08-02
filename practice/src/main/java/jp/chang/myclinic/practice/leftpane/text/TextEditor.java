@@ -27,9 +27,9 @@ public class TextEditor extends JPanel {
         enterButton.addActionListener(event -> doEnter());
         JButton cancelButton = new JButton("キャンセル");
         cancelButton.addActionListener(event -> callback.onCancel());
-        Link deleteLink = new Link("削除", this::doDelete);
-        Link prescLink = new Link("処方箋発行", () -> {});
-        Link copyLink = new Link("コピー", () -> {});
+        Link deleteLink = new Link("削除", event -> doDelete());
+        Link prescLink = new Link("処方箋発行", event -> {});
+        Link copyLink = new Link("コピー", event -> {});
         add(new JScrollPane(ep), "growx, h 200:n:n, wrap");
         add(enterButton, "split 2");
         add(cancelButton, "wrap");

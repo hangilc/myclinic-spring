@@ -49,7 +49,7 @@ public class DispRecords extends JPanel {
             panel.add(makeTextItemPane(textDTO), "growx, wrap");
         });
         Link newTextLink = new Link("[文章作成]");
-        newTextLink.setCallback(() -> {
+        newTextLink.setCallback(event -> {
             TextDTO textDTO = new TextDTO();
             textDTO.visitId = visitFull.visit.visitId;
             TextCreator textCreator = new TextCreator(textDTO, new TextCreator.Callback(){
