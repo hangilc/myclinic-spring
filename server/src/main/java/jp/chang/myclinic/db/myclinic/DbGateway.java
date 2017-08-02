@@ -339,6 +339,11 @@ public class DbGateway {
 		return visit.getVisitId();
 	}
 
+	public void updateVisit(VisitDTO visitDTO){
+		Visit visit = mapper.fromVisitDTO(visitDTO);
+		visitRepository.save(visit);
+	}
+
 	public List<Integer> listVisitIds(){
 		Sort sort = new Sort(Sort.Direction.DESC, "visitId");
 		return visitRepository.findAllVisitIds(sort);
