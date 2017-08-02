@@ -182,6 +182,19 @@ public class VisitController {
 		return dbGateway.listVisitTextDrug(visitIds);
 	}
 
+	@RequestMapping(value="/update-hoken", method=RequestMethod.GET)
+	public boolean updateHoken(@RequestBody VisitDTO visitDTO){
+		VisitDTO origVisit = dbGateway.getVisit(visitDTO.visitId);
+		origVisit.shahokokuhoId = visitDTO.shahokokuhoId;
+		origVisit.koukikoureiId = visitDTO.koukikoureiId;
+		origVisit.roujinId = visitDTO.roujinId;
+		origVisit.kouhi1Id = visitDTO.kouhi1Id;
+		origVisit.kouhi2Id = visitDTO.kouhi2Id;
+		origVisit.kouhi3Id = visitDTO.kouhi3Id;
+		dbGateway.updateVisit(origVisit);
+		return true;
+	}
+
 	private SectionItemDTO toSectionItemDTO(SectionItem sectionItem) {
 		SectionItemDTO sectionItemDTO = new SectionItemDTO();
 		sectionItemDTO.label = sectionItem.getLabel();
