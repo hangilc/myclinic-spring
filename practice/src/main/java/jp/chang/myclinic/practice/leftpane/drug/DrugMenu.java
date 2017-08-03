@@ -12,12 +12,33 @@ class DrugMenu extends JPanel {
     private JComponent workPane;
 
     DrugMenu(){
-        setLayout(new MigLayout("insets 0", "[]", ""));
+        setLayout(new MigLayout("insets 0", "[grow]", ""));
         Link mainMenuLink = new Link("[処方]");
+        mainMenuLink.setCallback(event -> doNewDrug());
         Link subMenuLink = new Link("[+]");
         subMenuLink.setCallback(this::doSubMenuClick);
-        add(mainMenuLink);
+        add(mainMenuLink, "span, split 2");
         add(subMenuLink);
+    }
+
+    private void doNewDrug(){
+        if( subMenuPane != null ){
+            return;
+        }
+        if( workPane != null ){
+            if( workPane instanceof DrugNew ){
+                remove(workPane);
+                workPane = null;
+                repaint();
+                revalidate();
+            }
+            return;
+        }
+        DrugNew drugNew = new DrugNew();
+        workPane = drugNew;
+        add(drugNew, "newline, growx");
+        repaint();
+        revalidate();
     }
 
     private void doSubMenuClick(MouseEvent event){
