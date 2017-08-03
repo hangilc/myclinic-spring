@@ -40,6 +40,12 @@ public class Service {
 
         @POST("update-hoken")
         CompletableFuture<Boolean> updateHoken(@Body VisitDTO visitDTO);
+
+        @GET("get-visit")
+        CompletableFuture<VisitDTO> getVisit(@Query("visit-id") int visitId);
+
+        @GET("get-hoken")
+        CompletableFuture<HokenDTO> getHoken(@Query("visit-id") int visitId);
     }
 
     public static ServerAPI api;
