@@ -44,7 +44,7 @@ public class HokenDisp extends JPanel {
                     chooser.setCallback(new HokenChooser.Callback(){
                         @Override
                         public void onEnter(HokenDTO selectedHoken){
-                            System.out.println(selectedHoken);
+                            doEnter(selectedHoken);
                         }
 
                         @Override
@@ -69,6 +69,33 @@ public class HokenDisp extends JPanel {
                     });
                     return null;
                 });
+    }
+
+    private void doEnter(HokenDTO selectedHoken){
+        visit.shahokokuhoId = selectedHoken.shahokokuho == null ? 0 :
+                selectedHoken.shahokokuho.shahokokuhoId;
+        visit.koukikoureiId = selectedHoken.koukikourei == null ? 0 :
+                selectedHoken.koukikourei.koukikoureiId;
+        visit.roujinId = selectedHoken.roujin == null ? 0 :
+                selectedHoken.roujin.roujinId;
+        visit.kouhi1Id = selectedHoken.kouhi1 == null ? 0 :
+                selectedHoken.kouhi1.kouhiId;
+        visit.kouhi2Id = selectedHoken.kouhi2 == null ? 0 :
+                selectedHoken.kouhi2.kouhiId;
+        visit.kouhi3Id = selectedHoken.kouhi3 == null ? 0 :
+                selectedHoken.kouhi3.kouhiId;
+        Service.api.updateHoken(visit)
+                .thenAccept(result -> {
+                    // TODO: update disp
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+
     }
 
     private void alert(String message){

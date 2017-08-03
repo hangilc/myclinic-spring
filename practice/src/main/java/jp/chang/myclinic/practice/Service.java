@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.drawer.JacksonOpDeserializer;
 import jp.chang.myclinic.drawer.Op;
-import jp.chang.myclinic.dto.HokenDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.dto.VisitFull2PageDTO;
+import jp.chang.myclinic.dto.*;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -40,6 +37,9 @@ public class Service {
 
         @GET("list-available-hoken")
         CompletableFuture<HokenDTO> listAvailableHoken(@Query("patient-id") int patientId, @Query("at") String at);
+
+        @POST("update-hoken")
+        CompletableFuture<Boolean> updateHoken(@Body VisitDTO visitDTO);
     }
 
     public static ServerAPI api;

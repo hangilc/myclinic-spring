@@ -182,7 +182,7 @@ public class VisitController {
 		return dbGateway.listVisitTextDrug(visitIds);
 	}
 
-	@RequestMapping(value="/update-hoken", method=RequestMethod.GET)
+	@RequestMapping(value="/update-hoken", method=RequestMethod.POST)
 	public boolean updateHoken(@RequestBody VisitDTO visitDTO){
 		VisitDTO origVisit = dbGateway.getVisit(visitDTO.visitId);
 		origVisit.shahokokuhoId = visitDTO.shahokokuhoId;
