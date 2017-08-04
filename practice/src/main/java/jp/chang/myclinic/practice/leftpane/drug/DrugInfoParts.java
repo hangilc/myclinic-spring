@@ -1,28 +1,61 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.practice.Link;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 
 class DrugInfoParts {
+
+    interface Callback {
+        default void onSetDaysVisible(boolean visible){};
+    }
+
     private JLabel nameLabel = new JLabel("");
     private JLabel amountLabel = new JLabel("");
     private JTextField amountField = new JTextField(6);
     private JLabel amountUnit = new JLabel("");
     private JTextField usageField = new JTextField(10);
+    private Link exampleUsageLink = new Link("例");
+    private JPanel exampleWrapper;
     private JLabel daysLabel = new JLabel("");
     private JTextField daysField = new JTextField(2);
     private JLabel daysUnit = new JLabel("");
     private JRadioButton naifukuRadio = new JRadioButton("内服");
     private JRadioButton tonpukuRadio = new JRadioButton("屯服");
     private JRadioButton gaiyouRadio = new JRadioButton("外用");
-    private ButtonGroup categoryGroup = new ButtonGroup();
+    private JPanel categoryPane;
+    private Callback callback = new Callback(){};
 
-    DrugInfoParts(DrugCategory drugCategory){
+    DrugInfoParts(){
+        ButtonGroup categoryGroup = new ButtonGroup();
         categoryGroup.add(naifukuRadio);
         categoryGroup.add(tonpukuRadio);
         categoryGroup.add(gaiyouRadio);
-        adaptToCategory(drugCategory);
+        categoryPane = new JPanel(new MigLayout("insets 0", "", ""));
+        categoryPane.add(naifukuRadio);
+        categoryPane.add(tonpukuRadio);
+        categoryPane.add(gaiyouRadio);
+        naifukuRadio.addActionListener(event -> {
+            setCategory(DrugCategory.Naifuku);
+        });
+        tonpukuRadio.addActionListener(event -> {
+            setCategory(DrugCategory.Tonpuku);
+        });
+        gaiyouRadio.addActionListener(event -> {
+            setCategory(DrugCategory.Gaiyou);
+        });
+        setCategory(DrugCategory.Naifuku);
+        exampleWrapper = createExampleWrapper();
+        exampleWrapper.setVisible(false);
+        exampleUsageLink.setCallback(event -> {
+            exampleWrapper.setVisible(!exampleWrapper.isVisible());
+        });
+    }
+
+    public void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     private void adaptToCategory(DrugCategory category){
@@ -31,65 +64,105 @@ class DrugInfoParts {
                 amountLabel.setText("用量");
                 daysLabel.setText("日数");
                 daysUnit.setText("日分");
-                naifukuRadio.setSelected(true);
+                setDaysVisible(true);
                 break;
             }
             case Tonpuku: {
                 amountLabel.setText("一回");
                 daysLabel.setText("回数");
                 daysUnit.setText("回分");
-                tonpukuRadio.setSelected(true);
+                setDaysVisible(true);
                 break;
             }
             case Gaiyou: {
                 amountLabel.setText("用量");
-                gaiyouRadio.setSelected(true);
+                setDaysVisible(false);
                 break;
             }
         }
     }
 
-    public JLabel getNameLabel() {
+    private void setDaysVisible(boolean visible){
+        daysLabel.setVisible(visible);
+        daysField.setVisible(visible);
+        daysUnit.setVisible(visible);
+        callback.onSetDaysVisible(visible);
+    }
+
+    private void setCategory(DrugCategory category){
+        switch(category){
+            case Naifuku: {
+                naifukuRadio.setSelected(true);
+                adaptToCategory(DrugCategory.Naifuku);
+                break;
+            }
+            case Tonpuku: {
+                tonpukuRadio.setSelected(true);
+                adaptToCategory(DrugCategory.Tonpuku);
+                break;
+            }
+            case Gaiyou: {
+                gaiyouRadio.setSelected(true);
+                adaptToCategory(DrugCategory.Gaiyou);
+                break;
+            }
+        }
+    }
+
+    private JPanel createExampleWrapper(){
+        JPanel wrapper = new JPanel(new MigLayout("", ", "));
+        String[] examples = new String[]{"分１　朝食後", "分２　朝夕食後", "分３　毎食後", "分１　寝る前"};
+        for(int i=0;i<examples.length;i++){
+            String text = examples[i];
+            wrapper.add(new Link(text, event -> {
+                usageField.setText(text);
+                wrapper.setVisible(false);
+            }), i == (examples.length-1) ? "" : "wrap");
+        }
+        return wrapper;
+    }
+
+    JLabel getNameLabel() {
         return nameLabel;
     }
 
-    public JLabel getAmountLabel() {
+    JLabel getAmountLabel() {
         return amountLabel;
     }
 
-    public JTextField getAmountField() {
+    JTextField getAmountField() {
         return amountField;
     }
 
-    public JLabel getAmountUnit() {
+    JLabel getAmountUnit() {
         return amountUnit;
     }
 
-    public JTextField getUsageField() {
+    JTextField getUsageField() {
         return usageField;
     }
 
-    public JLabel getDaysLabel() {
+    JLabel getDaysLabel() {
         return daysLabel;
     }
 
-    public JTextField getDaysField() {
+    JTextField getDaysField() {
         return daysField;
     }
 
-    public JLabel getDaysUnit() {
+    JLabel getDaysUnit() {
         return daysUnit;
     }
 
-    public JRadioButton getNaifukuRadio() {
-        return naifukuRadio;
+    JComponent getCatgegoryPane(){
+        return categoryPane;
     }
 
-    public JRadioButton getTonpukuRadio() {
-        return tonpukuRadio;
+    Link getUsageExampleLink(){
+        return exampleUsageLink;
     }
 
-    public JRadioButton getGaiyouRadio() {
-        return gaiyouRadio;
+    JPanel getUsageExampleWrapper(){
+        return exampleWrapper;
     }
 }
