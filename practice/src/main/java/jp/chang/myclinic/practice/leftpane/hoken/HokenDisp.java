@@ -84,7 +84,7 @@ public class HokenDisp extends JPanel {
                 selectedHoken.kouhi3.kouhiId;
         Service.api.updateHoken(visit)
                 .thenAccept(result -> {
-                    // TODO: update disp
+                    refreshDisp(visit);
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();
@@ -95,6 +95,24 @@ public class HokenDisp extends JPanel {
                 });
 
     }
+
+    private void refreshDisp(VisitDTO visit){
+        Service.api.getHoken(visit.visitId)
+                .thenAccept(hoken -> {
+                    removeAll();
+                    addDisp(hoken, visit);
+                    repaint();
+                    revalidate();
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
 
     private void alert(String message){
         JOptionPane.showMessageDialog(this, message);
