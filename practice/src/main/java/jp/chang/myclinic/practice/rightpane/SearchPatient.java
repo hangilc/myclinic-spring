@@ -40,7 +40,7 @@ public class SearchPatient extends JPanel {
             });
             add(strut, "growx, wrap, h 0, gapy 0");
         }
-        add(searchTextField, "grow");
+        add(searchTextField, "growx");
         add(btn, "");
         scrollPane = new JScrollPane(searchResult);
         scrollPane.setVisible(false);
