@@ -1,6 +1,8 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.dto.DrugDTO;
+import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.util.NumberUtil;
 import net.miginfocom.swing.MigLayout;
@@ -9,22 +11,33 @@ import javax.swing.*;
 import java.awt.*;
 
 class DrugNew extends JPanel {
+    interface Callback {
+        default void onEnter(DrugDTO drug){};
+        default void onClose(){};
+    }
 
     private DrugInfoNew drugInfoPane = new DrugInfoNew();
+    private Callback callback = new Callback(){};
 
-    DrugNew(int patientId, String at){
-        DrugSearch drugSearch = new DrugSearch(patientId, at, this::doOnDrugSelected);
+    DrugNew(VisitDTO visit){
+        DrugSearch drugSearch = new DrugSearch(visit.patientId, visit.visitedAt.substring(0, 10),
+                this::doOnDrugSelected);
         setLayout(new MigLayout("", "[grow]", ""));
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
         add(new JLabel("新規処方の入力"), "growx, wrap");
         add(drugInfoPane, "growx, wrap");
-        add(makeCommandBox(), "growx, wrap");
+        add(makeCommandBox(visit), "growx, wrap");
         add(drugSearch, "growx");
     }
 
-    private JComponent makeCommandBox(){
+    void setCallback(Callback callback){
+        this.callback = callback;
+    }
+
+    private JComponent makeCommandBox(VisitDTO visit){
         JButton enterButton = new JButton("入力");
         JButton closeButton = new JButton("閉じる");
+        closeButton.addActionListener(event -> callback.onClose());
         Link clearLink = new Link("クリア");
         JPanel box = new JPanel(new MigLayout("", "", ""));
         box.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));

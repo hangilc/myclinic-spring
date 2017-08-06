@@ -1,5 +1,7 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
+import jp.chang.myclinic.dto.DrugDTO;
+import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.Link;
 import net.miginfocom.swing.MigLayout;
 
@@ -8,24 +10,20 @@ import java.awt.event.MouseEvent;
 
 class DrugMenu extends JPanel {
 
-    private int patientId;
-    private String at;
     private JComponent subMenuPane;
     private JComponent workPane;
 
-    DrugMenu(int patientId, String at){
-        this.patientId = patientId;
-        this.at = at;
+    DrugMenu(VisitDTO visit){
         setLayout(new MigLayout("insets 0", "[grow]", ""));
         Link mainMenuLink = new Link("[処方]");
-        mainMenuLink.setCallback(event -> doNewDrug());
+        mainMenuLink.setCallback(event -> doNewDrug(visit));
         Link subMenuLink = new Link("[+]");
         subMenuLink.setCallback(this::doSubMenuClick);
         add(mainMenuLink, "span, split 2");
         add(subMenuLink);
     }
 
-    private void doNewDrug(){
+    private void doNewDrug(VisitDTO visit){
         if( subMenuPane != null ){
             return;
         }
@@ -38,7 +36,21 @@ class DrugMenu extends JPanel {
             }
             return;
         }
-        DrugNew drugNew = new DrugNew(patientId, at);
+        DrugNew drugNew = new DrugNew(visit);
+        drugNew.setCallback(new DrugNew.Callback(){
+            @Override
+            public void onEnter(DrugDTO drug) {
+
+            }
+
+            @Override
+            public void onClose() {
+                remove(workPane);
+                workPane = null;
+                repaint();
+                revalidate();
+            }
+        });
         workPane = drugNew;
         add(drugNew, "newline, growx");
         repaint();
