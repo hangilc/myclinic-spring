@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Created by hangil on 2017/06/11.
- */
 @RestController
 @RequestMapping("/json")
 @Transactional

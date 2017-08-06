@@ -500,6 +500,32 @@ public class DTOMapper {
 		return hotline;
 	}
 
+	public PrescExampleDTO toPrescExampleDTO(PrescExample prescExample){
+		PrescExampleDTO prescExampleDTO = new PrescExampleDTO();
+		prescExampleDTO.prescExampleId = prescExample.getPrescExampleId();
+		prescExampleDTO.iyakuhincode = prescExample.getIyakuhincode();
+		prescExampleDTO.masterValidFrom = prescExample.getMasterValidFrom();
+		prescExampleDTO.amount = prescExample.getAmount();
+		prescExampleDTO.usage = prescExample.getUsage();
+		prescExampleDTO.days = prescExample.getDays();
+		prescExampleDTO.category = prescExample.getCategory();
+		prescExampleDTO.comment = prescExample.getComment();
+		return prescExampleDTO;
+	}
+
+	public PrescExample fromPrescExampleDTO(PrescExampleDTO prescExampleDTO){
+		PrescExample prescExample = new PrescExample();
+		prescExample.setPrescExampleId(prescExampleDTO.prescExampleId);
+		prescExample.setIyakuhincode(prescExampleDTO.iyakuhincode);
+		prescExample.setMasterValidFrom(prescExampleDTO.masterValidFrom);
+		prescExample.setAmount(prescExampleDTO.amount);
+		prescExample.setUsage(prescExampleDTO.usage);
+		prescExample.setDays(prescExampleDTO.days);
+		prescExample.setCategory(prescExampleDTO.category);
+		prescExample.setComment(prescExampleDTO.comment);
+		return prescExample;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;

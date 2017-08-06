@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.leftpane.drug;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 
 class DrugSearch extends JPanel {
 
@@ -10,30 +11,34 @@ class DrugSearch extends JPanel {
 
     }
 
-    private JList<SearchResult> searchResult = new JList<>();
+    private enum SearchMode {
+        Master, Example, Prev
+    }
+
+    private JRadioButton masterRadio = new JRadioButton("マスター");
+    private JRadioButton exampleRadio = new JRadioButton("約束処方");
+    private JRadioButton prevRadio = new JRadioButton("過去の処方");
+
+    private JList<SearchResult> searchResult = new JList<SearchResult>(){
+        @Override
+        public Dimension getPreferredScrollableViewportSize() {
+            Dimension dim = super.getPreferredScrollableViewportSize();
+            return new Dimension(20, dim.height);
+        }
+    };
 
     DrugSearch(){
         JTextField searchTextField = new JTextField();
         JButton searchButton = new JButton("検索");
+        searchButton.addActionListener(event -> doSearch(searchTextField.getText()));
         setupSearchResult();
 
         setLayout(new MigLayout("insets 0", "[grow] []", ""));
         add(searchTextField, "growx");
         add(searchButton, "wrap");
         add(makeModeBox(), "span, wrap");
-//        {
-//            JComponent strut = new JComponent(){};
-//            strut.addComponentListener(new ComponentAdapter(){
-//                @Override
-//                public void componentResized(ComponentEvent e) {
-//                    int w = (int)strut.getSize().getWidth();
-//                    searchResult.setFixedCellWidth(w-4);
-//                }
-//            });
-//            add(strut, "span, growx, wrap, h 0, gapy 0");
-//        }
         JScrollPane scrollPane = new JScrollPane(searchResult);
-        add(scrollPane, "span, growx, w 20, h 100");
+        add(scrollPane, "span, growx, h 100");
     }
 
     private void setupSearchResult(){
@@ -53,9 +58,6 @@ class DrugSearch extends JPanel {
     }
 
     private JComponent makeModeBox(){
-        JRadioButton masterRadio = new JRadioButton("マスター");
-        JRadioButton exampleRadio = new JRadioButton("約束処方");
-        JRadioButton prevRadio = new JRadioButton("過去の処方");
         ButtonGroup bg = new ButtonGroup();
         bg.add(masterRadio);
         bg.add(exampleRadio);
@@ -66,5 +68,30 @@ class DrugSearch extends JPanel {
         panel.add(exampleRadio);
         panel.add(prevRadio);
         return panel;
+    }
+
+    private SearchMode getSearchMode(){
+        if( masterRadio.isSelected() ){
+            return SearchMode.Master;
+        } else if( exampleRadio.isSelected() ){
+            return SearchMode.Example;
+        } else if( prevRadio.isSelected() ){
+            return SearchMode.Prev;
+        }
+        throw new RuntimeException("cannot find search mode");
+    }
+
+    private void doSearch(String text){
+        switch(getSearchMode()){
+            case Master: {
+                break;
+            }
+            case Example: {
+                break;
+            }
+            case Prev: {
+                break;
+            }
+        }
     }
 }

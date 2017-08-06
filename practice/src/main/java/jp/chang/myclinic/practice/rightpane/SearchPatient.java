@@ -6,8 +6,6 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -18,7 +16,13 @@ public class SearchPatient extends JPanel {
     }
 
     private JTextField searchTextField = new JTextField();
-    private JList<PatientDTO> searchResult = new JList<>();
+    private JList<PatientDTO> searchResult = new JList<PatientDTO>(){
+        @Override
+        public Dimension getPreferredScrollableViewportSize() {
+            Dimension dim = super.getPreferredScrollableViewportSize();
+            return new Dimension(10,dim.height);
+        }
+    };
     private JScrollPane scrollPane;
     private Callback callback;
 
@@ -29,17 +33,6 @@ public class SearchPatient extends JPanel {
         setupSearchResult();
         JButton btn = new JButton("検索");
         btn.addActionListener(event -> doSearch());
-        {
-            Strut strut = new Strut();
-            strut.addComponentListener(new ComponentAdapter(){
-                @Override
-                public void componentResized(ComponentEvent e) {
-                    int w = (int)strut.getSize().getWidth();
-                    searchResult.setFixedCellWidth(w);
-                }
-            });
-            add(strut, "growx, wrap, h 0, gapy 0");
-        }
         add(searchTextField, "growx");
         add(btn, "");
         scrollPane = new JScrollPane(searchResult);
@@ -123,7 +116,4 @@ public class SearchPatient extends JPanel {
         JOptionPane.showMessageDialog(this, message);
     }
 
-    private static class Strut extends JComponent {
-
-    }
 }

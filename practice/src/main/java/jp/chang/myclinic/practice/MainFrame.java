@@ -19,9 +19,9 @@ class MainFrame extends JFrame {
 
     MainFrame(){
         setTitle("診察");
-        setLayout(new MigLayout("fill", "", ""));
-        add(makeLeftPane(), "w 520, h 520, grow");
-        add(makeRightPane(), "w 220, h 520, grow");
+        setLayout(new MigLayout("", "", ""));
+        add(makeLeftPane(), "w 520!, h 520, grow");
+        add(makeRightPane(), "w 220!, h 520, grow");
         pack();
     }
 

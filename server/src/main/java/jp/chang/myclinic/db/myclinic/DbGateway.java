@@ -60,6 +60,8 @@ public class DbGateway {
 	private IyakuhinMasterRepository iyakuhinMasterRepository;
 	@Autowired
 	private HotlineRepository hotlineRepository;
+	@Autowired
+	private PrescExampleRepository prescExampleRepository;
 
 	public List<WqueueFullDTO> listWqueueFull(){
 		try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
@@ -845,6 +847,19 @@ public class DbGateway {
 	public List<HotlineDTO> listTodaysHotline(){
 		return hotlineRepository.findTodaysHotline().stream()
 				.map(mapper::toHotlineDTO)
+				.collect(Collectors.toList());
+	}
+
+	public List<PrescExampleFullDTO> searchPrescExampleFullByName(String text){
+		return prescExampleRepository.searchByNameFull(text).stream()
+				.map(result -> {
+					PrescExample prescExample = (PrescExample)result[0];
+					IyakuhinMaster iyakuhinMaster = (IyakuhinMaster)result[1];
+					PrescExampleFullDTO prescExampleFullDTO = new PrescExampleFullDTO();
+					prescExampleFullDTO.prescExample = mapper.toPrescExampleDTO((prescExample));
+					prescExampleFullDTO.master = mapper.toIyakuhinMasterDTO(iyakuhinMaster);
+					return prescExampleFullDTO;
+				})
 				.collect(Collectors.toList());
 	}
 
