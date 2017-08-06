@@ -4,6 +4,7 @@ import jp.chang.myclinic.consts.DrugCategory;
 
 import javax.swing.*;
 
+// TODO: implement COMMENT
 class DrugInfoNew extends DrugInfoBase {
 
     private JCheckBox daysFixedCheckBox = new JCheckBox("日数を固定");

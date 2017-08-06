@@ -836,9 +836,13 @@ public class DbGateway {
 				.collect(Collectors.toList());
 	}
 
+	public Optional<IyakuhinMasterDTO> findIyakuhinMaster(int iyakuhincode, String at){
+		return iyakuhinMasterRepository.tryFind(iyakuhincode, at).map(mapper::toIyakuhinMasterDTO);
+	}
+
 	public Integer getLastHotlineId(){
 		Optional<Hotline> hotline = hotlineRepository.findTopByOrderByHotlineIdDesc();
-		return hotline.map(h -> h.getHotlineId()).orElse(0);
+		return hotline.map(Hotline::getHotlineId).orElse(0);
 	}
 
 	public List<HotlineDTO> listHotlineInRange(int lowerHotlineId, int upperHotlineId){

@@ -12,8 +12,8 @@ class DrugNew extends JPanel {
 
     private DrugInfoNew drugInfoPane = new DrugInfoNew();
 
-    DrugNew(int patientId){
-        DrugSearch drugSearch = new DrugSearch(patientId, this::doOnDrugSelected);
+    DrugNew(int patientId, String at){
+        DrugSearch drugSearch = new DrugSearch(patientId, at, this::doOnDrugSelected);
         setLayout(new MigLayout("", "[grow]", ""));
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
         add(new JLabel("新規処方の入力"), "growx, wrap");
@@ -45,6 +45,7 @@ class DrugNew extends JPanel {
                         String t = selectedDrug.getDays().map(Object::toString).orElse("");
                         drugInfoPane.daysField.setText(t);
                     }
+                    drugInfoPane.usageField.setText(selectedDrug.getUsage());
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();

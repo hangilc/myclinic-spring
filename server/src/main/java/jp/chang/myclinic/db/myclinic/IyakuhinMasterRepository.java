@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IyakuhinMasterRepository extends CrudRepository<IyakuhinMaster, IyakuhinMasterId> {
 
@@ -42,4 +43,9 @@ public interface IyakuhinMasterRepository extends CrudRepository<IyakuhinMaster,
 	@Query("select m from IyakuhinMaster m where m.name like CONCAT('%', :text, '%') and " +
 			" m.validFrom <= :at and (m.validUpto = '0000-00-00' or m.validUpto >= :at)")
 	List<IyakuhinMaster> searchByName(@Param("text") String text, @Param("at") String at, Sort sort);
+
+	@Query("select m from IyakuhinMaster m where m.iyakuhincode = :iyakuhincode and " +
+			" m.validFrom <= DATE(:at) " +
+			" and (m.validUpto = '0000-00-00' or m.validUpto >= DATE(:at)) ")
+	Optional<IyakuhinMaster> tryFind(@Param("iyakuhincode") int iyakuhincode, @Param("at") String at);
 }

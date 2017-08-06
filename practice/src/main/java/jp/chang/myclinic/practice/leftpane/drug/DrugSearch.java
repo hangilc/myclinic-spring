@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
@@ -37,6 +38,7 @@ class DrugSearch extends JPanel {
     }
 
     private int patientId;
+    private String at;
     private Callback callback;
     private JRadioButton masterRadio = new JRadioButton("マスター");
     private JRadioButton exampleRadio = new JRadioButton("約束処方");
@@ -50,8 +52,9 @@ class DrugSearch extends JPanel {
         }
     };
 
-    DrugSearch(int patientId, Callback callback){
+    DrugSearch(int patientId, String at, Callback callback){
         this.patientId = patientId;
+        this.at = at;
         this.callback = callback;
         JTextField searchTextField = new JTextField();
         JButton searchButton = new JButton("検索");
@@ -138,7 +141,8 @@ class DrugSearch extends JPanel {
             case Example: {
                 Service.api.searchPrescExample(text)
                         .thenAccept(result -> {
-                            SearchResult[] listData = result.stream().map(ExampleSearchResult::new)
+                            SearchResult[] listData = result.stream()
+                                    .map(ex -> new ExampleSearchResult(ex, at))
                                     .toArray(SearchResult[]::new);
                             EventQueue.invokeLater(() -> searchResult.setListData(listData));
                         })
@@ -190,13 +194,25 @@ class DrugSearch extends JPanel {
         public CompletableFuture<IyakuhinMasterDTO> resolveMaster() {
             return CompletableFuture.completedFuture(master);
         }
+
+        @Override
+        public DrugCategory getCategory() {
+            if( master.zaikei == MyclinicConsts.ZaikeiGaiyou ){
+                return DrugCategory.Gaiyou;
+            } else {
+                return DrugCategory.Naifuku;
+            }
+        }
     }
 
     private static class ExampleSearchResult implements SearchResult {
-        private PrescExampleFullDTO example;
 
-        ExampleSearchResult(PrescExampleFullDTO example){
+        private PrescExampleFullDTO example;
+        private String at;
+
+        ExampleSearchResult(PrescExampleFullDTO example, String at){
             this.example = example;
+            this.at = at;
         }
 
         @Override
@@ -206,22 +222,29 @@ class DrugSearch extends JPanel {
 
         @Override
         public CompletableFuture<IyakuhinMasterDTO> resolveMaster() {
-            return null;
+            return Service.api.resolveIyakuhinMaster(example.prescExample.iyakuhincode, at)
+                    .thenApply(result -> {
+                        if( result != null ){
+                            return result;
+                        } else {
+                            throw new RuntimeException(example.master.name + "は現在使用できません。");
+                        }
+                    });
         }
 
         @Override
         public DrugCategory getCategory() {
-            return null;
+            return DrugCategory.fromCode(example.prescExample.category);
         }
 
         @Override
         public Optional<Double> getAmount() {
-            return null;
+            return Optional.of(Double.valueOf(example.prescExample.amount));
         }
 
         @Override
         public String getUsage() {
-            return null;
+            return example.prescExample.usage;
         }
 
         @Override

@@ -55,6 +55,10 @@ public class Service {
 
         @GET("search-prev-drug")
         CompletableFuture<List<DrugFullDTO>> searchPrevDrug(@Query("text") String text, @Query("patient-id") int patientId);
+
+        @GET("resolve-iyakuhin-master")
+        CompletableFuture<IyakuhinMasterDTO> resolveIyakuhinMaster(@Query("iyakuhincode") int iyakuhincode,
+                                                                             @Query("at") String at);
     }
 
     public static ServerAPI api;
