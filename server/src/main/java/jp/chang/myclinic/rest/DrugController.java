@@ -62,7 +62,12 @@ public class DrugController {
 	}
 
 	@RequestMapping(value="/search-prev-drug", method=RequestMethod.GET)
-	public List<DrugFullDTO> searchPrevDrug(@RequestParam("patient-id") int patientId){
-		return dbGateway.searchPrevDrug(patientId);
+	public List<DrugFullDTO> searchPrevDrug(@RequestParam("patient-id") int patientId,
+											@RequestParam(value="text", defaultValue="") String text){
+		if( text.isEmpty() ) {
+			return dbGateway.searchPrevDrug(patientId);
+		} else {
+			return dbGateway.searchPrevDrug(patientId, text);
+		}
 	}
 }

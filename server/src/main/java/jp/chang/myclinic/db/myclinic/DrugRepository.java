@@ -45,11 +45,31 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 			" group by d.iyakuhincode, d.amount, d.usage, d.days ")
 	List<Integer> findNaifukuAndTonpukuPatternByPatient(@Param("patientId") int patientId);
 
+	@Query("select MAX(d.drugId) from Drug d, Visit v, IyakuhinMaster m where d.visitId = v.visitId " +
+			" and v.patientId = :patientId " +
+			" and d.iyakuhincode = m.iyakuhincode " +
+			" and m.validFrom <= DATE(v.visitedAt) " +
+			" and (m.validUpto = '0000-00-00' or m.validUpto >= DATE(v.visitedAt)) " +
+			" and m.name like CONCAT('%', :text, '%') " +
+			" and d.category in (0, 1) " +
+			" group by d.iyakuhincode, d.amount, d.usage, d.days ")
+	List<Integer> findNaifukuAndTonpukuPatternByPatient(@Param("patientId") int patientId, @Param("text") String text);
+
 	@Query("select MAX(d.drugId) from Drug d, Visit v where d.visitId = v.visitId " +
 			" and v.patientId = :patientId " +
 			" and d.category = 2 " +
 			" group by d.iyakuhincode, d.amount, d.usage, d.days ")
 	List<Integer> findGaiyouPatternByPatient(@Param("patientId") int patientId);
+
+	@Query("select MAX(d.drugId) from Drug d, Visit v, IyakuhinMaster m where d.visitId = v.visitId " +
+			" and v.patientId = :patientId " +
+			" and d.iyakuhincode = m.iyakuhincode " +
+			" and m.validFrom <= DATE(v.visitedAt) " +
+			" and (m.validUpto = '0000-00-00' or m.validUpto >= DATE(v.visitedAt)) " +
+			" and m.name like CONCAT('%', :text, '%') " +
+			" and d.category = 2 " +
+			" group by d.iyakuhincode, d.amount, d.usage, d.days ")
+	List<Integer> findGaiyouPatternByPatient(@Param("patientId") int patientId, @Param("text") String text);
 
 
 }

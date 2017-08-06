@@ -8,8 +8,8 @@ import java.awt.*;
 
 class DrugNew extends JPanel {
 
-    DrugNew(){
-        DrugSearch drugSearch = new DrugSearch();
+    DrugNew(int patientId){
+        DrugSearch drugSearch = new DrugSearch(patientId);
         setLayout(new MigLayout("", "[grow]", ""));
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
         DrugInfoNew drugInfoPane = new DrugInfoNew();

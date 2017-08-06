@@ -46,6 +46,15 @@ public class Service {
 
         @GET("get-hoken")
         CompletableFuture<HokenDTO> getHoken(@Query("visit-id") int visitId);
+
+        @GET("search-iyakuhin-master-by-name")
+        CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMaster(@Query("text") String text, @Query("at") String at);
+
+        @GET("search-presc-example-full-by-name")
+        CompletableFuture<List<PrescExampleFullDTO>> searchPrescExample(@Query("text") String text);
+
+        @GET("search-prev-drug")
+        CompletableFuture<List<DrugFullDTO>> searchPrevDrug(@Query("text") String text, @Query("patient-id") int patientId);
     }
 
     public static ServerAPI api;

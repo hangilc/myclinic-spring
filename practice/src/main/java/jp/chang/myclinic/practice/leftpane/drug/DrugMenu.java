@@ -8,10 +8,12 @@ import java.awt.event.MouseEvent;
 
 class DrugMenu extends JPanel {
 
+    private int patientId;
     private JComponent subMenuPane;
     private JComponent workPane;
 
-    DrugMenu(){
+    DrugMenu(int patientId){
+        this.patientId = patientId;
         setLayout(new MigLayout("insets 0", "[grow]", ""));
         Link mainMenuLink = new Link("[処方]");
         mainMenuLink.setCallback(event -> doNewDrug());
@@ -34,7 +36,7 @@ class DrugMenu extends JPanel {
             }
             return;
         }
-        DrugNew drugNew = new DrugNew();
+        DrugNew drugNew = new DrugNew(patientId);
         workPane = drugNew;
         add(drugNew, "newline, growx");
         repaint();

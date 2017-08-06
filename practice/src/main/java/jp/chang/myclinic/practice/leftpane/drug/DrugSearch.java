@@ -1,9 +1,16 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
+import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.dto.PrescExampleFullDTO;
+import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.util.DrugUtil;
+import jp.chang.myclinic.util.PrescExampleUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 
 class DrugSearch extends JPanel {
 
@@ -15,6 +22,7 @@ class DrugSearch extends JPanel {
         Master, Example, Prev
     }
 
+    private int patientId;
     private JRadioButton masterRadio = new JRadioButton("マスター");
     private JRadioButton exampleRadio = new JRadioButton("約束処方");
     private JRadioButton prevRadio = new JRadioButton("過去の処方");
@@ -27,7 +35,8 @@ class DrugSearch extends JPanel {
         }
     };
 
-    DrugSearch(){
+    DrugSearch(int patientId){
+        this.patientId = patientId;
         JTextField searchTextField = new JTextField();
         JButton searchButton = new JButton("検索");
         searchButton.addActionListener(event -> doSearch(searchTextField.getText()));
@@ -84,14 +93,98 @@ class DrugSearch extends JPanel {
     private void doSearch(String text){
         switch(getSearchMode()){
             case Master: {
+                Service.api.searchIyakuhinMaster(text, LocalDate.now().toString())
+                        .thenAccept(result -> {
+                            SearchResult[] listData = result.stream().map(MasterSearchResult::new)
+                                    .toArray(SearchResult[]::new);
+                            EventQueue.invokeLater(() -> searchResult.setListData(listData));
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+
                 break;
             }
             case Example: {
+                Service.api.searchPrescExample(text)
+                        .thenAccept(result -> {
+                            SearchResult[] listData = result.stream().map(ExampleSearchResult::new)
+                                    .toArray(SearchResult[]::new);
+                            EventQueue.invokeLater(() -> searchResult.setListData(listData));
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
                 break;
             }
             case Prev: {
+                Service.api.searchPrevDrug(text, patientId)
+                        .thenAccept(result -> {
+                            SearchResult[] listData = result.stream().map(DrugSearchResult::new)
+                                    .toArray(SearchResult[]::new);
+                            EventQueue.invokeLater(() -> searchResult.setListData(listData));
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
                 break;
             }
         }
     }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
+    }
+
+    private static class MasterSearchResult implements SearchResult {
+        private IyakuhinMasterDTO master;
+
+        MasterSearchResult(IyakuhinMasterDTO master){
+            this.master = master;
+        }
+
+        @Override
+        public String toString(){
+            return master.name;
+        }
+    }
+
+    private static class ExampleSearchResult implements SearchResult {
+        private PrescExampleFullDTO example;
+
+        ExampleSearchResult(PrescExampleFullDTO example){
+            this.example = example;
+        }
+
+        @Override
+        public String toString(){
+            return PrescExampleUtil.rep(example);
+        }
+    }
+
+    private static class DrugSearchResult implements SearchResult {
+        private DrugFullDTO drugFull;
+
+        DrugSearchResult(DrugFullDTO drugFull){
+            this.drugFull = drugFull;
+        }
+
+        @Override
+        public String toString(){
+            return DrugUtil.drugRep(drugFull);
+        }
+    }
+
 }
