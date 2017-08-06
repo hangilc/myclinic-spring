@@ -409,6 +409,13 @@ public class DbGateway {
 		drugRepository.markAsPrescribedForVisit(visitId);
 	}
 
+	public List<DrugFullDTO> searchPrevDrug(int patientId){
+		List<Integer> drugIds = drugRepository.findNaifukuAndTonpukuPatternByPatient(patientId);
+		drugIds.addAll(drugRepository.findGaiyouPatternByPatient(patientId));
+		drugIds.sort(Comparator.<Integer>naturalOrder().reversed());
+		return drugIds.stream().map(this::getDrugFull).collect(Collectors.toList());
+	}
+
 	public List<TextDTO> listText(int visitId){
 		List<Text> texts = textRepository.findByVisitId(visitId);
 		return texts.stream().map(mapper::toTextDTO).collect(Collectors.toList());

@@ -38,4 +38,18 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 	@Modifying
 	@Query("update Drug d set d.prescribed = 1 where d.visitId = :visitId")
 	void markAsPrescribedForVisit(@Param("visitId") int visitId);
+
+	@Query("select MAX(d.drugId) from Drug d, Visit v where d.visitId = v.visitId " +
+			" and v.patientId = :patientId " +
+			" and d.category in (0, 1) " +
+			" group by d.iyakuhincode, d.amount, d.usage, d.days ")
+	List<Integer> findNaifukuAndTonpukuPatternByPatient(@Param("patientId") int patientId);
+
+	@Query("select MAX(d.drugId) from Drug d, Visit v where d.visitId = v.visitId " +
+			" and v.patientId = :patientId " +
+			" and d.category = 2 " +
+			" group by d.iyakuhincode, d.amount, d.usage, d.days ")
+	List<Integer> findGaiyouPatternByPatient(@Param("patientId") int patientId);
+
+
 }
