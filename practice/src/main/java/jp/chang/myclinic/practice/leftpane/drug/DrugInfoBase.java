@@ -10,7 +10,7 @@ import javax.swing.*;
 class DrugInfoBase extends JPanel {
 
     int iyakuhincode;
-    JLabel drugNameLabel = new JLabel();
+    JEditorPane drugNameLabel = new JEditorPane();
     JLabel amountLabel = new JLabel("");
     JTextField amountField = new JTextField(6);
     JLabel amountUnit = new JLabel("");
@@ -26,7 +26,8 @@ class DrugInfoBase extends JPanel {
     JPanel categoryPane;
 
     DrugInfoBase(){
-        setLayout(new MigLayout("insets 0", "", ""));
+        drugNameLabel.setEditable(false);
+        drugNameLabel.setBackground(getBackground());
         usageExampleWrapper = createUsageExampleWrapper();
         ButtonGroup categoryGroup = new ButtonGroup();
         categoryGroup.add(naifukuRadio);

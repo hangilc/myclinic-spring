@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.consts.DrugCategory;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 
@@ -10,8 +11,9 @@ class DrugInfoNew extends DrugInfoBase {
     private JCheckBox daysFixedCheckBox = new JCheckBox("日数を固定");
 
     DrugInfoNew(){
+        setLayout(new MigLayout("insets 0", "[] [grow]", ""));
         add(new JLabel("名称"));
-        add(drugNameLabel, "wrap");
+        add(drugNameLabel, "growx, wrap");
         add(amountLabel);
         add(amountField, "split 2");
         add(amountUnit, "wrap");
