@@ -102,6 +102,7 @@ public class Drug {
 		this.category = category;
 	}
 
+	// TODO: remove d_shuukeisaki (not used)
 	@Column(name="d_shuukeisaki")
 	private Integer shuukeisaki;
 

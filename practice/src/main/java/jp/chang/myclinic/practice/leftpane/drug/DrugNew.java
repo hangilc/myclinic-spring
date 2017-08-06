@@ -36,6 +36,7 @@ class DrugNew extends JPanel {
 
     private JComponent makeCommandBox(VisitDTO visit){
         JButton enterButton = new JButton("入力");
+        enterButton.addActionListener(event -> callback.onEnter(drugInfoPane.getDrug()));
         JButton closeButton = new JButton("閉じる");
         closeButton.addActionListener(event -> callback.onClose());
         Link clearLink = new Link("クリア");

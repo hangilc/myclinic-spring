@@ -40,7 +40,7 @@ class DrugMenu extends JPanel {
         drugNew.setCallback(new DrugNew.Callback(){
             @Override
             public void onEnter(DrugDTO drug) {
-
+                System.out.println(drug);
             }
 
             @Override

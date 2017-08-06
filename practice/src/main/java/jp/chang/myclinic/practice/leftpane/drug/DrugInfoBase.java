@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.practice.Link;
 import net.miginfocom.swing.MigLayout;
@@ -115,5 +116,39 @@ class DrugInfoBase extends JPanel {
         amountUnit.setText(master.unit);
     }
 
+    private DrugCategory getCategory(){
+        if( naifukuRadio.isSelected() ){
+            return DrugCategory.Naifuku;
+        } else if( tonpukuRadio.isSelected() ){
+            return DrugCategory.Tonpuku;
+        } else if( gaiyouRadio.isSelected() ){
+            return DrugCategory.Gaiyou;
+        } else {
+            throw new RuntimeException("cannot resolve category");
+        }
+    }
+
+    DrugDTO getDrug(){
+        if( iyakuhincode <= 0 ){
+            alert("医薬品が選択されていません。");
+            throw new RuntimeException("no drug selected");
+        }
+        DrugCategory category = getCategory();
+        DrugDTO drug = new DrugDTO();
+        drug.iyakuhincode = iyakuhincode;
+        drug.amount = Double.valueOf(amountField.getText());
+        drug.category = category.getCode();
+        drug.usage = usageField.getText();
+        if( category == DrugCategory.Gaiyou ){
+            drug.days = 1;
+        } else {
+            drug.days = Integer.valueOf(daysField.getText());
+        }
+        return drug;
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
+    }
 
 }
