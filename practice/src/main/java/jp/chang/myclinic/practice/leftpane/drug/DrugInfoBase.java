@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.practice.Link;
 import net.miginfocom.swing.MigLayout;
 
@@ -8,6 +9,7 @@ import javax.swing.*;
 
 class DrugInfoBase extends JPanel {
 
+    int iyakuhincode;
     JLabel drugNameLabel = new JLabel();
     JLabel amountLabel = new JLabel("");
     JTextField amountField = new JTextField(6);
@@ -104,6 +106,12 @@ class DrugInfoBase extends JPanel {
                 break;
             }
         }
+    }
+
+    void setMaster(IyakuhinMasterDTO master){
+        this.iyakuhincode = master.iyakuhincode;
+        drugNameLabel.setText(master.name);
+        amountUnit.setText(master.unit);
     }
 
 

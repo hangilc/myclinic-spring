@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
+import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
@@ -10,12 +11,25 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 class DrugSearch extends JPanel {
 
-    private interface SearchResult {
+    interface Callback {
+        void onDrugSelected(SearchResult selectedItem);
+    }
 
+    interface SearchResult {
+        CompletableFuture<IyakuhinMasterDTO> resolveMaster();
+        default DrugCategory getCategory(){ return DrugCategory.Naifuku; };
+        default Optional<Double> getAmount(){ return Optional.empty(); };
+        default String getUsage() { return ""; };
+        default Optional<Integer> getDays(){ return Optional.empty(); };
+        default Optional<String> getComment(){ return Optional.empty(); }
     }
 
     private enum SearchMode {
@@ -23,6 +37,7 @@ class DrugSearch extends JPanel {
     }
 
     private int patientId;
+    private Callback callback;
     private JRadioButton masterRadio = new JRadioButton("マスター");
     private JRadioButton exampleRadio = new JRadioButton("約束処方");
     private JRadioButton prevRadio = new JRadioButton("過去の処方");
@@ -35,8 +50,9 @@ class DrugSearch extends JPanel {
         }
     };
 
-    DrugSearch(int patientId){
+    DrugSearch(int patientId, Callback callback){
         this.patientId = patientId;
+        this.callback = callback;
         JTextField searchTextField = new JTextField();
         JButton searchButton = new JButton("検索");
         searchButton.addActionListener(event -> doSearch(searchTextField.getText()));
@@ -63,6 +79,16 @@ class DrugSearch extends JPanel {
             }
             label.setOpaque(true);
             return label;
+        });
+        searchResult.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                SearchResult select = searchResult.getSelectedValue();
+                if( select == null ){
+                    return;
+                }
+                callback.onDrugSelected(select);
+            }
         });
     }
 
@@ -159,6 +185,11 @@ class DrugSearch extends JPanel {
         public String toString(){
             return master.name;
         }
+
+        @Override
+        public CompletableFuture<IyakuhinMasterDTO> resolveMaster() {
+            return CompletableFuture.completedFuture(master);
+        }
     }
 
     private static class ExampleSearchResult implements SearchResult {
@@ -172,6 +203,36 @@ class DrugSearch extends JPanel {
         public String toString(){
             return PrescExampleUtil.rep(example);
         }
+
+        @Override
+        public CompletableFuture<IyakuhinMasterDTO> resolveMaster() {
+            return null;
+        }
+
+        @Override
+        public DrugCategory getCategory() {
+            return null;
+        }
+
+        @Override
+        public Optional<Double> getAmount() {
+            return null;
+        }
+
+        @Override
+        public String getUsage() {
+            return null;
+        }
+
+        @Override
+        public Optional<Integer> getDays() {
+            return Optional.of(example.prescExample.days);
+        }
+
+        @Override
+        public Optional<String> getComment() {
+            return Optional.of(example.prescExample.comment);
+        }
     }
 
     private static class DrugSearchResult implements SearchResult {
@@ -184,6 +245,26 @@ class DrugSearch extends JPanel {
         @Override
         public String toString(){
             return DrugUtil.drugRep(drugFull);
+        }
+
+        @Override
+        public CompletableFuture<IyakuhinMasterDTO> resolveMaster() {
+            return null;
+        }
+
+        @Override
+        public DrugCategory getCategory() {
+            return null;
+        }
+
+        @Override
+        public String getUsage() {
+            return null;
+        }
+
+        @Override
+        public Optional<Integer> getDays() {
+            return Optional.of(drugFull.drug.days);
         }
     }
 

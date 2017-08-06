@@ -1,7 +1,9 @@
 package jp.chang.myclinic.rest;
 
 import jp.chang.myclinic.db.myclinic.DbGateway;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.IyakuhincodeNameDTO;
+import jp.chang.myclinic.dto.VisitIdVisitedAtDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/json")
@@ -50,24 +51,35 @@ public class DrugController {
 	@RequestMapping(value="/presc-done", method=RequestMethod.POST)
 	public boolean prescDone(@RequestParam("visit-id") int visitId){
 		dbGateway.markDrugsAsPrescribedForVisit(visitId);
-		Optional<PharmaQueueDTO> pharmaQueueDTO = dbGateway.findPharmaQueue(visitId);
-		if( pharmaQueueDTO.isPresent() ){
-			dbGateway.deletePharmaQueue(pharmaQueueDTO.get());
-		}
-		Optional<WqueueDTO> wqueueDTO = dbGateway.findWqueue(visitId);
-		if( wqueueDTO.isPresent() ){
-			dbGateway.deleteWqueue(wqueueDTO.get());
-		}
+		dbGateway.findPharmaQueue(visitId)
+				.ifPresent(pharmaQueueDTO1 -> dbGateway.deletePharmaQueue(pharmaQueueDTO1));
+		dbGateway.findWqueue(visitId)
+				.ifPresent(wqueueDTO1 -> dbGateway.deleteWqueue(wqueueDTO1));
 		return true;
 	}
 
 	@RequestMapping(value="/search-prev-drug", method=RequestMethod.GET)
 	public List<DrugFullDTO> searchPrevDrug(@RequestParam("patient-id") int patientId,
 											@RequestParam(value="text", defaultValue="") String text){
+		List<DrugFullDTO> result;
 		if( text.isEmpty() ) {
-			return dbGateway.searchPrevDrug(patientId);
+			result = dbGateway.searchPrevDrug(patientId);
 		} else {
-			return dbGateway.searchPrevDrug(patientId, text);
+			result = dbGateway.searchPrevDrug(patientId, text);
 		}
+		result.sort((o1, o2) -> {
+            int i1 = o1.drug.visitId;
+            int i2 = o2.drug.visitId;
+            if( i1 < i2 ){
+                return 1;
+            } else if( i1 > i2 ){
+                return -1;
+            } else {
+                int k1 = o1.drug.drugId;
+                int k2 = o2.drug.drugId;
+                return k1 - k2;
+            }
+        });
+		return result;
 	}
 }
