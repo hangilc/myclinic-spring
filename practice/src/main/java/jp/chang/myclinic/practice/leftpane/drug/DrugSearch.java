@@ -158,7 +158,8 @@ class DrugSearch extends JPanel {
             case Prev: {
                 Service.api.searchPrevDrug(text, patientId)
                         .thenAccept(result -> {
-                            SearchResult[] listData = result.stream().map(DrugSearchResult::new)
+                            SearchResult[] listData = result.stream()
+                                    .map(m -> new DrugSearchResult(m, at))
                                     .toArray(SearchResult[]::new);
                             EventQueue.invokeLater(() -> searchResult.setListData(listData));
                         })
@@ -260,9 +261,11 @@ class DrugSearch extends JPanel {
 
     private static class DrugSearchResult implements SearchResult {
         private DrugFullDTO drugFull;
+        private String at;
 
-        DrugSearchResult(DrugFullDTO drugFull){
+        DrugSearchResult(DrugFullDTO drugFull, String at){
             this.drugFull = drugFull;
+            this.at = at;
         }
 
         @Override
@@ -272,17 +275,29 @@ class DrugSearch extends JPanel {
 
         @Override
         public CompletableFuture<IyakuhinMasterDTO> resolveMaster() {
-            return null;
+            return Service.api.resolveIyakuhinMaster(drugFull.drug.iyakuhincode, at)
+                    .thenApply(result -> {
+                        if( result != null ){
+                            return result;
+                        } else {
+                            throw new RuntimeException(drugFull.master.name + "は現在使用できません。");
+                        }
+                    });
         }
 
         @Override
         public DrugCategory getCategory() {
-            return null;
+            return DrugCategory.fromCode(drugFull.drug.category);
+        }
+
+        @Override
+        public Optional<Double> getAmount() {
+            return Optional.of(drugFull.drug.amount);
         }
 
         @Override
         public String getUsage() {
-            return null;
+            return drugFull.drug.usage;
         }
 
         @Override
