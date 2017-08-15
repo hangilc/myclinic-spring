@@ -1,6 +1,5 @@
 package jp.chang.myclinic.practice;
 
-import com.sun.xml.internal.ws.policy.ComplexAssertion;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
@@ -63,16 +62,12 @@ class MainFrame extends JFrame {
         return leftPanel;
     }
 
-    private MigLayout makeLeftPanelLayout(){
-        return new MigLayout("insets 0 0 0 24, fill", "", "[] [] [] [grow] []");
-    }
-
     private JComponent makeRightPane(){
         SelectVisit selectVisit = new SelectVisit();
         selectVisit.setCallback(new SelectVisit.Callback(){
             @Override
             public void onSelect(WqueueFullDTO wqueue) {
-                System.out.println(wqueue);
+                doStartExam(wqueue.patient, wqueue.visit);
             }
         });
         rightPanel = new JPanel(new MigLayout("insets 0 0 0 24, fillx", "[grow]", ""));
@@ -94,10 +89,11 @@ class MainFrame extends JFrame {
     }
 
     private void doStartPatient(PatientDTO patient){
-        Service.api.listVisitFull2(patient.patientId, 0)
+        closeCurrentPatient()
+                .thenCompose(result -> Service.api.listVisitFull2(patient.patientId, 0))
                 .thenAccept(page -> {
                     EventQueue.invokeLater(() -> {
-                        leftPanel.removeAll();
+                        currentPatient = patient;
                         leftPanel.add(new LeftPane(patient, page), "grow");
                         leftPanel.repaint();
                         leftPanel.revalidate();
@@ -114,7 +110,6 @@ class MainFrame extends JFrame {
         Service.api.listVisitFull2(patientId, page)
                 .thenAccept(visitPage -> {
                     dispRecords.setVisits(visitPage.visits);
-
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();
@@ -129,18 +124,43 @@ class MainFrame extends JFrame {
         dialog.setVisible(true);
     }
 
-    private void doStartVisit(PatientDTO patietn, VisitDTO visit){
-
+    private void doStartExam(PatientDTO patient, VisitDTO visit){
+        closeCurrentPatient()
+                .thenCompose(result -> Service.api.startExam(visit.visitId))
+                .thenCompose(result -> Service.api.listVisitFull2(patient.patientId, 0))
+                .thenAccept(page -> {
+                    currentPatient = patient;
+                    currentVisit = visit;
+                    leftPanel.add(new LeftPane(patient, page), "grow");
+                    leftPanel.repaint();
+                    leftPanel.revalidate();
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
 
     private CompletableFuture<Boolean> closeCurrentPatient(){
-        if( currentPatient == null ){
-            currentVisit = null;
-            tempVisitId = 0;
-            return CompletableFuture.completedFuture(true);
+        int visitIdSave = (currentVisit != null ) ? currentVisit.visitId : 0;
+        tempVisitId = 0;
+        currentPatient = null;
+        currentVisit = null;
+        clearCurrentPatient();
+        if( visitIdSave > 0 ){
+            return Service.api.suspendExam(visitIdSave);
         } else {
-
+            return CompletableFuture.completedFuture(true);
         }
+    }
+
+    private void clearCurrentPatient(){
+        leftPanel.removeAll();
+        leftPanel.repaint();
+        leftPanel.revalidate();
     }
 
     private void alert(String message){
