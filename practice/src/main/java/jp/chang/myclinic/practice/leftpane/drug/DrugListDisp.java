@@ -8,12 +8,15 @@ import java.util.List;
 
 class DrugListDisp extends JPanel {
 
+    private int index = 1;
+
     DrugListDisp(List<DrugFullDTO> drugs){
         setLayout(new MigLayout("insets 0, gapy 0", "[grow]", ""));
-        int index = 1;
-        for(DrugFullDTO drug: drugs){
-            DrugDisp drugDisp = new DrugDisp(drug, index++);
-            add(drugDisp, "growx, wrap");
-        }
+        drugs.forEach(this::addDrug);
+    }
+
+    void addDrug(DrugFullDTO drug){
+        DrugDisp drugDisp = new DrugDisp(drug, index++);
+        add(drugDisp, "growx, wrap");
     }
 }

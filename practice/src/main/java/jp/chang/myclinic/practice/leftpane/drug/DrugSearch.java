@@ -40,6 +40,7 @@ class DrugSearch extends JPanel {
     private int patientId;
     private String at;
     private Callback callback;
+    private JTextField searchTextField = new JTextField();
     private JRadioButton masterRadio = new JRadioButton("マスター");
     private JRadioButton exampleRadio = new JRadioButton("約束処方");
     private JRadioButton prevRadio = new JRadioButton("過去の処方");
@@ -56,7 +57,6 @@ class DrugSearch extends JPanel {
         this.patientId = patientId;
         this.at = at;
         this.callback = callback;
-        JTextField searchTextField = new JTextField();
         JButton searchButton = new JButton("検索");
         searchButton.addActionListener(event -> doSearch(searchTextField.getText()));
         setupSearchResult();
@@ -67,6 +67,13 @@ class DrugSearch extends JPanel {
         add(makeModeBox(), "span, wrap");
         JScrollPane scrollPane = new JScrollPane(searchResult);
         add(scrollPane, "span, growx, h 100");
+    }
+
+    void clear(){
+        searchTextField.setText("");
+        searchResult.setListData(new SearchResult[]{});
+        repaint();
+        revalidate();
     }
 
     private void setupSearchResult(){

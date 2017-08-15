@@ -12,8 +12,13 @@ import java.awt.event.MouseEvent;
 
 class DrugMenu extends JPanel {
 
+    interface Callback {
+        default void onNewDrug(DrugDTO drug){ throw new RuntimeException("not implemented"); }
+    }
+
     private JComponent subMenuPane;
     private JComponent workPane;
+    private Callback callback = new Callback(){};
 
     DrugMenu(VisitDTO visit){
         setLayout(new MigLayout("insets 0", "[grow]", ""));
@@ -23,6 +28,10 @@ class DrugMenu extends JPanel {
         subMenuLink.setCallback(this::doSubMenuClick);
         add(mainMenuLink, "span, split 2");
         add(subMenuLink);
+    }
+
+    void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     private void doNewDrug(VisitDTO visit){
@@ -42,7 +51,7 @@ class DrugMenu extends JPanel {
         drugNew.setCallback(new DrugNew.Callback(){
             @Override
             public void onEnter(DrugDTO drug) {
-                doEnterNewDrug(drug);
+                doEnterNewDrug(drug, drugNew);
             }
 
             @Override
@@ -67,10 +76,11 @@ class DrugMenu extends JPanel {
         submenu.show(this, event.getX(), event.getY());
     }
 
-    private void doEnterNewDrug(DrugDTO drug){
+    private void doEnterNewDrug(DrugDTO drug, DrugNew drugNewPane){
         Service.api.enterDrug(drug)
-                .thenAccept(drugId -> {
-                    System.out.println(drugId);
+                .thenAccept(newDrug -> {
+                    callback.onNewDrug(newDrug);
+                    drugNewPane.clear();
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();

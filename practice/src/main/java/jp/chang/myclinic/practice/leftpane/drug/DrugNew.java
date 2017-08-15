@@ -17,11 +17,11 @@ class DrugNew extends JPanel {
     }
 
     private DrugInfoNew drugInfoPane = new DrugInfoNew();
+    private DrugSearch drugSearch;
     private Callback callback = new Callback(){};
 
     DrugNew(VisitDTO visit){
-        DrugSearch drugSearch = new DrugSearch(visit.patientId, visit.visitedAt.substring(0, 10),
-                this::doOnDrugSelected);
+        drugSearch = new DrugSearch(visit.patientId, visit.visitedAt.substring(0, 10), this::doOnDrugSelected);
         setLayout(new MigLayout("", "[grow]", ""));
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
         add(new JLabel("新規処方の入力"), "growx, wrap");
@@ -32,6 +32,11 @@ class DrugNew extends JPanel {
 
     void setCallback(Callback callback){
         this.callback = callback;
+    }
+
+    void clear(){
+        drugInfoPane.clear();
+        drugSearch.clear();
     }
 
     private JComponent makeCommandBox(VisitDTO visit){
@@ -60,8 +65,10 @@ class DrugNew extends JPanel {
                     drugInfoPane.setCategory(category);
                     drugInfoPane.amountField.setText(selectedDrug.getAmount().map(NumberUtil::formatNumber).orElse(""));
                     if( category != DrugCategory.Gaiyou ){
-                        String t = selectedDrug.getDays().map(Object::toString).orElse("");
-                        drugInfoPane.daysField.setText(t);
+                        if( !drugInfoPane.isDaysFixed() || drugInfoPane.isDaysFieldEmpty() ){
+                            String t = selectedDrug.getDays().map(Object::toString).orElse("");
+                            drugInfoPane.daysField.setText(t);
+                        }
                     }
                     drugInfoPane.usageField.setText(selectedDrug.getUsage());
                 })

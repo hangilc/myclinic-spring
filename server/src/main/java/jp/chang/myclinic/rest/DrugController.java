@@ -82,7 +82,7 @@ public class DrugController {
 	}
 
 	@RequestMapping(value="/enter-drug", method=RequestMethod.POST)
-	public int enterDrug(@RequestBody DrugDTO drug){
+	public DrugDTO enterDrug(@RequestBody DrugDTO drug){
 		return dbGateway.enterDrug(drug);
 	}
 }

@@ -147,6 +147,16 @@ class DrugInfoBase extends JPanel {
         return drug;
     }
 
+    void clear(){
+        drugNameLabel.setText("");
+        amountField.setText("");
+        usageField.setText("");
+        daysField.setText("");
+        usageExampleWrapper.setVisible(false);
+        repaint();
+        revalidate();
+    }
+
     private void alert(String message){
         JOptionPane.showMessageDialog(this, message);
     }

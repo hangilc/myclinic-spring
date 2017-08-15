@@ -35,4 +35,22 @@ class DrugInfoNew extends DrugInfoBase {
         super.setDaysVisible(visible);
         daysFixedCheckBox.setVisible(visible);
     }
+
+    boolean isDaysFixed(){
+        return daysFixedCheckBox.isSelected();
+    }
+
+    boolean isDaysFieldEmpty(){
+        return daysField.getText().isEmpty();
+    }
+
+    void clear(){
+        if( isDaysFixed() ){
+            String save = daysField.getText();
+            super.clear();
+            daysField.setText(save);
+        } else {
+            super.clear();
+        }
+    }
 }
