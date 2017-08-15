@@ -12,17 +12,17 @@ public class DrugDTO {
 	public int prescribed;
 
 	@Override
-	public String toString(){
-		return "DrugDTO[" +
-			"drugId" + drugId + "," +
-			"visitId" + visitId + "," +
-			"iyakuhincode" + iyakuhincode + "," +
-			"amount" + amount + "," +
-			"usage" + usage + "," +
-			"days" + days + "," +
-			"category" + category + "," +
-			"shuukeisaki" + shuukeisaki + "," +
-			"prescribed" + prescribed + //"," +
-		"]";
+	public String toString() {
+		return "DrugDTO{" +
+				"drugId=" + drugId +
+				", visitId=" + visitId +
+				", iyakuhincode=" + iyakuhincode +
+				", amount=" + amount +
+				", usage='" + usage + '\'' +
+				", days=" + days +
+				", category=" + category +
+				", shuukeisaki=" + shuukeisaki +
+				", prescribed=" + prescribed +
+				'}';
 	}
 }

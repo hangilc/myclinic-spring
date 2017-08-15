@@ -3,9 +3,11 @@ package jp.chang.myclinic.practice.leftpane.drug;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.Link;
+import jp.chang.myclinic.practice.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 
 class DrugMenu extends JPanel {
@@ -40,7 +42,7 @@ class DrugMenu extends JPanel {
         drugNew.setCallback(new DrugNew.Callback(){
             @Override
             public void onEnter(DrugDTO drug) {
-                System.out.println(drug);
+                doEnterNewDrug(drug);
             }
 
             @Override
@@ -63,6 +65,25 @@ class DrugMenu extends JPanel {
         }
         SubMenuPane submenu = new SubMenuPane();
         submenu.show(this, event.getX(), event.getY());
+    }
+
+    private void doEnterNewDrug(DrugDTO drug){
+        Service.api.enterDrug(drug)
+                .thenAccept(drugId -> {
+                    System.out.println(drugId);
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
     }
 
 }

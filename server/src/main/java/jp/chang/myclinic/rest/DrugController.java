@@ -1,15 +1,13 @@
 package jp.chang.myclinic.rest;
 
 import jp.chang.myclinic.db.myclinic.DbGateway;
+import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.IyakuhincodeNameDTO;
 import jp.chang.myclinic.dto.VisitIdVisitedAtDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -81,5 +79,10 @@ public class DrugController {
             }
         });
 		return result;
+	}
+
+	@RequestMapping(value="/enter-drug", method=RequestMethod.POST)
+	public int enterDrug(@RequestBody DrugDTO drug){
+		return dbGateway.enterDrug(drug);
 	}
 }

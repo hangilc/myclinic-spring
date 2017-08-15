@@ -59,6 +59,9 @@ public class Service {
         @GET("resolve-iyakuhin-master")
         CompletableFuture<IyakuhinMasterDTO> resolveIyakuhinMaster(@Query("iyakuhincode") int iyakuhincode,
                                                                              @Query("at") String at);
+
+        @POST("enter-drug")
+        CompletableFuture<Integer> enterDrug(@Body DrugDTO drug);
     }
 
     public static ServerAPI api;

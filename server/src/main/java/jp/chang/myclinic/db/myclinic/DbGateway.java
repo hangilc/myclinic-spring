@@ -405,6 +405,13 @@ public class DbGateway {
 		.collect(Collectors.toList());
 	}
 
+	public int enterDrug(DrugDTO drugDTO){
+		Drug drug = mapper.fromDrugDTO(drugDTO);
+		drug.setDrugId(null);
+		drug = drugRepository.save(drug);
+		return drug.getDrugId();
+	}
+
 	public void markDrugsAsPrescribedForVisit(int visitId){
 		drugRepository.markAsPrescribedForVisit(visitId);
 	}
