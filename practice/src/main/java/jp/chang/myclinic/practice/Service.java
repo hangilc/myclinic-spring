@@ -65,6 +65,9 @@ public class Service {
 
         @GET("get-drug-full")
         CompletableFuture<DrugFullDTO> getDrugFull(@Query("drug-id") int drugId);
+
+        @POST("start-visit")
+        CompletableFuture<Integer> startVisit(@Query("patient-id") int patientId);
     }
 
     public static ServerAPI api;

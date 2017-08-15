@@ -1,5 +1,7 @@
 package jp.chang.myclinic.practice.newvisitdialog;
 
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.util.DateTimeUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -38,5 +40,23 @@ class PatientDisp extends JPanel {
         add(addressLabel, "wrap");
         add(new JLabel("電話"));
         add(phoneLabel, "wrap");
+    }
+
+    void setPatient(PatientDTO patient){
+        patientIdLabel.setText("" + patient.patientId);
+        nameLabel.setText(patient.lastName + " " + patient.firstName);
+        yomiLabel.setText(patient.lastNameYomi + " " + patient.firstNameYomi);
+        birthdayLabel.setText(createBirthdayText(patient.birthday));
+        sexLabel.setText("M".equals(patient.sex) ? "男" : "女");
+        addressLabel.setText(patient.address);
+        phoneLabel.setText(patient.phone);
+    }
+
+    private String createBirthdayText(String birthday){
+        if( birthday == null || "0000-00-00".equals(birthday) ){
+            return "";
+        } else {
+            return DateTimeUtil.sqlDateToKanji(birthday);
+        }
     }
 }
