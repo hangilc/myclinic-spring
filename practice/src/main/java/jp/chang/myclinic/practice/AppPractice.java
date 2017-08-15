@@ -3,10 +3,6 @@ package jp.chang.myclinic.practice;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Hello world!
- *
- */
 public class AppPractice
 {
     public static void main( String[] args )

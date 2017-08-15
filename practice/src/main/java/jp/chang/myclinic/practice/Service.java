@@ -68,6 +68,18 @@ public class Service {
 
         @POST("start-visit")
         CompletableFuture<Integer> startVisit(@Query("patient-id") int patientId);
+
+        @GET("list-wqueue-full")
+        CompletableFuture<List<WqueueFullDTO>> listWqueueFull();
+
+        @POST("start-exam")
+        CompletableFuture<Boolean> startExam(@Query("visit-id") int visitId);
+
+        @POST("suspend-exam")
+        CompletableFuture<Boolean> suspendExam(@Query("visit-id") int visitId);
+
+        @POST("end-exam")
+        CompletableFuture<Boolean> endExam(@Query("visit-id") int visitId, @Query("charge") int charge);
     }
 
     public static ServerAPI api;

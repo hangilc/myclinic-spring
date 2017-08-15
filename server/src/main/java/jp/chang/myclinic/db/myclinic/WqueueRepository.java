@@ -17,7 +17,10 @@ public interface WqueueRepository extends CrudRepository<Wqueue, Integer> {
     @Query("select q from Wqueue q")
     Stream<Wqueue> findAllAsStream();
 
-    Optional<Wqueue> findByVisitId(int visitId);
+    @Query("select wq from Wqueue wq where wq.visitId = :visitId")
+    Optional<Wqueue> tryFindByVisitId(@Param("visitId") int visitId);
+
+    Wqueue findOneByVisitId(int visitId);
 
     @Query("select q, p, v from Wqueue q, Patient p, Visit v " +
             " where q.waitState in :waitStates and v.visitId = q.visitId " +

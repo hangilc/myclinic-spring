@@ -1,14 +1,19 @@
 package jp.chang.myclinic.practice;
 
+import com.sun.xml.internal.ws.policy.ComplexAssertion;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.practice.leftpane.DispRecords;
 import jp.chang.myclinic.practice.leftpane.LeftPane;
 import jp.chang.myclinic.practice.newvisitdialog.NewVisitDialog;
 import jp.chang.myclinic.practice.rightpane.SearchPatient;
+import jp.chang.myclinic.practice.rightpane.selectvisit.SelectVisit;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.CompletableFuture;
 
 class MainFrame extends JFrame {
 
@@ -17,6 +22,9 @@ class MainFrame extends JFrame {
     private JPanel rightPanel;
     private JScrollPane rightScroll;
     private SearchPatient searchPatientPane;
+    private PatientDTO currentPatient;
+    private VisitDTO currentVisit;
+    private int tempVisitId;
 
     MainFrame(){
         setTitle("診察");
@@ -60,7 +68,15 @@ class MainFrame extends JFrame {
     }
 
     private JComponent makeRightPane(){
-        rightPanel = new JPanel(new MigLayout("insets 0 0 0 24, fillx", "", ""));
+        SelectVisit selectVisit = new SelectVisit();
+        selectVisit.setCallback(new SelectVisit.Callback(){
+            @Override
+            public void onSelect(WqueueFullDTO wqueue) {
+                System.out.println(wqueue);
+            }
+        });
+        rightPanel = new JPanel(new MigLayout("insets 0 0 0 24, fillx", "[grow]", ""));
+        rightPanel.add(selectVisit, "growx, wrap");
         {
             JPanel frame = new JPanel(new MigLayout("insets 0, fill", "", ""));
             frame.setBorder(BorderFactory.createTitledBorder("患者検索"));
@@ -111,6 +127,20 @@ class MainFrame extends JFrame {
         NewVisitDialog dialog = new NewVisitDialog();
         dialog.setLocationByPlatform(true);
         dialog.setVisible(true);
+    }
+
+    private void doStartVisit(PatientDTO patietn, VisitDTO visit){
+
+    }
+
+    private CompletableFuture<Boolean> closeCurrentPatient(){
+        if( currentPatient == null ){
+            currentVisit = null;
+            tempVisitId = 0;
+            return CompletableFuture.completedFuture(true);
+        } else {
+
+        }
     }
 
     private void alert(String message){

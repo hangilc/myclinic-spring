@@ -10,10 +10,6 @@ import java.util.List;
 
 public interface DrugRepository extends CrudRepository<Drug, Integer> {
 
-	// @EntityGraph(attributePaths={"master"})
-	// @Query("select d from Drug d where d.visitId = :visitId")
-	// List<Drug> findByVisitIdWithMaster(@Param("visitId") Integer visitId);
-
 	@Query("select d, m from Drug d, IyakuhinMaster m, Visit v " +
 		" where d.drugId = :drugId and d.visitId = v.visitId " +
 		" and d.iyakuhincode = m.iyakuhincode " + 
@@ -33,7 +29,8 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 
 	@Query("select d.visitId, v.visitedAt from Drug d, Visit v where v.patientId = :patientId and v.visitId = d.visitId " +
 			" and d.iyakuhincode = :iyakuhincode")
-	List<Object[]> findVisitIdVisitedAtByPatientAndIyakuhincode(@Param("patientId") int patientId, @Param("iyakuhincode") int iyakuhincode);
+	List<Object[]> findVisitIdVisitedAtByPatientAndIyakuhincode(@Param("patientId") int patientId,
+																@Param("iyakuhincode") int iyakuhincode);
 
 	@Modifying
 	@Query("update Drug d set d.prescribed = 1 where d.visitId = :visitId")
@@ -71,5 +68,6 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 			" group by d.iyakuhincode, d.amount, d.usage, d.days ")
 	List<Integer> findGaiyouPatternByPatient(@Param("patientId") int patientId, @Param("text") String text);
 
+	int countByVisitIdAndPrescribed(int visitId, int prescribed);
 
 }
