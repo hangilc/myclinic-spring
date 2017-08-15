@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.leftpane.DispRecords;
 import jp.chang.myclinic.practice.leftpane.LeftPane;
+import jp.chang.myclinic.practice.newvisitdialog.NewVisitDialog;
 import jp.chang.myclinic.practice.rightpane.SearchPatient;
 import net.miginfocom.swing.MigLayout;
 
@@ -19,10 +20,33 @@ class MainFrame extends JFrame {
 
     MainFrame(){
         setTitle("診察");
+        setupMenu();
         setLayout(new MigLayout("", "", ""));
         add(makeLeftPane(), "w 520!, h 520, grow");
         add(makeRightPane(), "w 220!, h 520, grow");
         pack();
+    }
+
+    private void setupMenu(){
+        JMenuBar mbar = new JMenuBar();
+        JMenu fileMenu = new JMenu("ファイル");
+        {
+            JMenuItem exitMenu = new JMenuItem("終了");
+            exitMenu.addActionListener(event -> {
+                dispose();
+                System.exit(0);
+            });
+            fileMenu.add(exitMenu);
+        }
+        JMenu commandMenu = new JMenu("コマンド");
+        {
+            JMenuItem newVisitItem = new JMenuItem("診察受付");
+            newVisitItem.addActionListener(event -> doNewVisit());
+            commandMenu.add(newVisitItem);
+        }
+        mbar.add(fileMenu);
+        mbar.add(commandMenu);
+        setJMenuBar(mbar);
     }
 
     private JComponent makeLeftPane(){
@@ -81,6 +105,12 @@ class MainFrame extends JFrame {
                     alert(t.toString());
                     return null;
                 });
+    }
+
+    private void doNewVisit(){
+        NewVisitDialog dialog = new NewVisitDialog();
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
     }
 
     private void alert(String message){
