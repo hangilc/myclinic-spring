@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -46,4 +48,18 @@ public class IyakuhinMasterController {
         iyakuhincode = masterMap.resolveIyakuhinCode(iyakuhincode, atDate);
         return dbGateway.findIyakuhinMaster(iyakuhincode, at);
     }
+
+    @RequestMapping(value="/batch-resolve-iyakuhin-master", method=RequestMethod.GET)
+    public Map<Integer, IyakuhinMasterDTO> batchResolveIyakuhinMaster(@RequestParam("iyakuhincode") List<Integer> iyakuhincodes,
+                                                                      @RequestParam("at") String at){
+        Map<Integer, IyakuhinMasterDTO> map = new HashMap<>();
+        LocalDate atDate = LocalDate.parse(at);
+        iyakuhincodes.forEach(iyakuhincode -> {
+            int resolvedIyakuhincode = masterMap.resolveIyakuhinCode(iyakuhincode, atDate);
+            Optional<IyakuhinMasterDTO> optMaster = dbGateway.findIyakuhinMaster(resolvedIyakuhincode, at);
+            map.put(iyakuhincode, optMaster.orElse(null));
+        });
+        return map;
+    }
+
 }

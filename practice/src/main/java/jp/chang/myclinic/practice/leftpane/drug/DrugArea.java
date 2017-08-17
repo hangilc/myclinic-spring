@@ -12,14 +12,20 @@ import java.util.List;
 
 public class DrugArea extends JPanel {
 
-    public DrugArea(List<DrugFullDTO> drugs, VisitDTO visit){
-        DrugMenu drugMenu = new DrugMenu(visit);
+    public interface Callback {
+        void onCopyAll(int targetVisitId, List<Integer> drugIds);
+    }
+
+    public DrugArea(List<DrugFullDTO> drugs, VisitDTO visit, int currentVisitId, int tempVisitId, Callback callback){
+        DrugMenu drugMenu = new DrugMenu(visit, currentVisitId, tempVisitId);
         DrugListDisp drugListDisp = new DrugListDisp(drugs);
         drugMenu.setCallback(new DrugMenu.Callback(){
             @Override
             public void onNewDrug(DrugDTO drug) {
                 Service.api.getDrugFull(drug.drugId)
-                        .thenAccept(drugListDisp::addDrug)
+                        .thenAccept(drugFull -> {
+                            EventQueue.invokeLater(() -> drugListDisp.addDrug(drugFull));
+                        })
                         .exceptionally(t -> {
                             t.printStackTrace();
                             EventQueue.invokeLater(() -> {
@@ -27,6 +33,11 @@ public class DrugArea extends JPanel {
                             });
                             return null;
                         });
+            }
+
+            @Override
+            public void onCopyAll(int targetVisitId, List<Integer> drugIds) {
+                callback.onCopyAll(targetVisitId, drugIds);
             }
         });
         setLayout(new MigLayout("insets 0, gapy 0", "[grow]", ""));

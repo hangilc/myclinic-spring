@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/json")
@@ -27,6 +29,11 @@ public class DrugController {
 	@RequestMapping(value = "/list-drug-full", method = RequestMethod.GET)
 	public List<DrugFullDTO> listDrugFull(@RequestParam("visit-id") int visitId) {
 		return dbGateway.listDrugFull(visitId);
+	}
+
+	@RequestMapping(value = "/list-drug-full-by-drug-ids", method = RequestMethod.GET)
+	public List<DrugFullDTO> listDrugFullByDrugIds(@RequestParam("drug-id") List<Integer> drugIds) {
+		return drugIds.stream().map(dbGateway::getDrugFull).collect(Collectors.toList());
 	}
 
 	@RequestMapping(value = "/list-iyakuhin-for-patient", method = RequestMethod.GET)
@@ -84,5 +91,15 @@ public class DrugController {
 	@RequestMapping(value="/enter-drug", method=RequestMethod.POST)
 	public DrugDTO enterDrug(@RequestBody DrugDTO drug){
 		return dbGateway.enterDrug(drug);
+	}
+
+	@RequestMapping(value="/batch-enter-drugs", method=RequestMethod.POST)
+	public List<Integer> batchEnterDrugs(@RequestBody List<DrugDTO> drugs){
+		List<Integer> drugIds = new ArrayList<>();
+		drugs.forEach(drug -> {
+			DrugDTO entered = dbGateway.enterDrug(drug);
+			drugIds.add(entered.drugId);
+		});
+		return drugIds;
 	}
 }

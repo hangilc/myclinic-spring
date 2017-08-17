@@ -2,23 +2,14 @@ package jp.chang.myclinic.practice.leftpane;
 
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.practice.Link;
-import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.leftpane.drug.DrugArea;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenDisp;
-import jp.chang.myclinic.practice.leftpane.text.TextCreator;
-import jp.chang.myclinic.practice.leftpane.text.TextDisp;
-import jp.chang.myclinic.practice.leftpane.text.TextEditor;
-import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.KizaiUtil;
 import jp.chang.myclinic.util.NumberUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.List;
 
 class DispRecords extends JPanel {
@@ -31,159 +22,36 @@ class DispRecords extends JPanel {
     }
 
     private MigLayout makeLayout(){
-        return new MigLayout("insets 0, fillx", "[sizegroup c, grow] [sizegroup c, grow]", "");
+        return new MigLayout("insets 0, fillx", "[grow]", "");
     }
 
+//    private MigLayout makeLayout(){
+//        return new MigLayout("insets 0, fillx", "[sizegroup c, grow] [sizegroup c, grow]", "");
+//    }
+//
     void setVisits(List<VisitFull2DTO> visits, int currentVisitId, int tempVisitId){
         removeAll();
         setLayout(makeLayout());
         visits.forEach(visitFull -> {
-            add(makeTitle(visitFull.visit, currentVisitId, tempVisitId), "span, growx, wrap");
-            add(makeTextPane(visitFull), "top, growx");
-            add(makeRightPane(visitFull), "top, growx, wrap");
+            Record record = new Record(visitFull, currentVisitId, tempVisitId);
+            add(record, "growx, wrap");
+//            add(makeTitle(visitFull.visit, currentVisitId, tempVisitId), "span, growx, wrap");
+//            add(makeTextPane(visitFull), "top, growx");
+//            add(makeRightPane(visitFull, currentVisitId, tempVisitId), "top, growx, wrap");
         });
     }
 
-    private JComponent makeTitle(VisitDTO visit, int currentVisitId, int tempVisitId){
-        String text = DateTimeUtil.sqlDateTimeToKanji(visit.visitedAt,
-                DateTimeUtil.kanjiFormatter3, DateTimeUtil.kanjiFormatter4);
-        JLabel label = new JLabel(text);
-        Font font = label.getFont().deriveFont(Font.BOLD);
-        label.setFont(font);
-        if( visit.visitId == currentVisitId ){
-            label.setBackground(new Color(0xff, 0xff, 0x99));
-        } else if( visit.visitId == tempVisitId ){
-            label.setBackground(new Color(0x99, 0xff, 0xff));
-        } else {
-            label.setBackground(new Color(0xdd, 0xdd, 0xdd));
-        }
-        label.setOpaque(true);
-        label.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-        return label;
-    }
-
-    private JComponent makeTextPane(VisitFull2DTO visitFull){
-        JPanel panel = new JPanel(new MigLayout("insets 0, fillx", "[grow]", ""));
-        visitFull.texts.forEach(textDTO -> {
-            panel.add(makeTextItemPane(textDTO), "growx, wrap");
-        });
-        Link newTextLink = new Link("[文章作成]");
-        newTextLink.setCallback(event -> {
-            TextDTO textDTO = new TextDTO();
-            textDTO.visitId = visitFull.visit.visitId;
-            TextCreator textCreator = new TextCreator(textDTO, new TextCreator.Callback(){
-                @Override
-                public void onEnter(TextCreator creator) {
-                    Service.api.enterText(textDTO)
-                            .thenAccept(textId -> {
-                                textDTO.textId = textId;
-                                EventQueue.invokeLater(() -> {
-                                    panel.remove(creator);
-                                    panel.add(makeTextItemPane(textDTO), "growx, wrap");
-                                    panel.add(newTextLink);
-                                    panel.repaint();
-                                    panel.revalidate();
-                                });
-                            })
-                            .exceptionally(t -> {
-                                EventQueue.invokeLater(() -> {
-                                    t.printStackTrace();
-                                    alert(t.toString());
-                                });
-                                return null;
-                            });
-                }
-
-                @Override
-                public void onCancel(TextCreator creator) {
-                    panel.remove(creator);
-                    panel.add(newTextLink);
-                    panel.repaint();
-                    panel.revalidate();
-                }
-            });
-            panel.remove(newTextLink);
-            panel.add(textCreator, "growx");
-            panel.repaint();
-            panel.revalidate();
-        });
-        panel.add(newTextLink);
-        return panel;
-    }
-
-    private JComponent makeTextItemPane(TextDTO textDTO){
-        JPanel wrapper = new JPanel(new MigLayout("insets 0", "[grow]", ""));
-        addTextDisp(wrapper, textDTO);
-        return wrapper;
-    }
-
-    private void addTextDisp(JPanel wrapper, TextDTO textDTO){
-        TextDisp textDisp = new TextDisp(textDTO, getBackground());
-        textDisp.addMouseListener(new MouseAdapter(){
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                TextEditor textEditor = new TextEditor(textDTO, new TextEditor.Callback(){
+    private JComponent makeRightPane(VisitFull2DTO visitFull, int currentVisitId, int tempVisitId){
+        DrugArea drugArea = new DrugArea(visitFull.drugs, visitFull.visit, currentVisitId, tempVisitId,
+                new DrugArea.Callback() {
                     @Override
-                    public void onEnter(TextDTO newText) {
-                        Service.api.updateText(newText)
-                                .thenAccept(result -> {
-                                    EventQueue.invokeLater(() -> {
-                                        wrapper.removeAll();
-                                        addTextDisp(wrapper, newText);
-                                        wrapper.repaint();
-                                        wrapper.revalidate();
-                                    });
-                                })
-                                .exceptionally(t -> {
-                                    EventQueue.invokeLater(() -> {
-                                        t.printStackTrace();
-                                        alert(t.toString());
-                                    });
-                                    return null;
-                                });
-                    }
+                    public void onCopyAll(int targetVisitId, List<Integer> drugIds) {
 
-                    @Override
-                    public void onDelete(){
-                        Service.api.deleteText(textDTO.textId)
-                                .thenAccept(result -> {
-                                    EventQueue.invokeLater(() -> {
-                                        Container parent = wrapper.getParent();
-                                        parent.remove(wrapper);
-                                        parent.repaint();
-                                        parent.revalidate();
-                                    });
-                                })
-                                .exceptionally(t -> {
-                                    EventQueue.invokeLater(() -> {
-                                        t.printStackTrace();
-                                        alert(t.toString());
-                                    });
-                                    return null;
-                                });
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        wrapper.removeAll();
-                        wrapper.add(textDisp, "growx");
-                        wrapper.repaint();
-                        wrapper.revalidate();
                     }
                 });
-                wrapper.removeAll();
-                wrapper.add(textEditor, "growx");
-                wrapper.repaint();
-                wrapper.revalidate();
-            }
-        });
-        wrapper.add(textDisp, "growx");
-    }
-
-    private JComponent makeRightPane(VisitFull2DTO visitFull){
         JPanel panel = new JPanel(new MigLayout("insets 0", "[grow]", ""));
         panel.add(new HokenDisp(visitFull.hoken, visitFull.visit), "wrap");
-        panel.add(new DrugArea(visitFull.drugs, visitFull.visit), "growx, wrap");
+        panel.add(drugArea, "growx, wrap");
         panel.add(makeShinryouPane(visitFull.shinryouList), "growx, wrap");
         panel.add(makeConductPane(visitFull.conducts), "growx, wrap");
         panel.add(makeChargePane(visitFull.charge), "");

@@ -16,6 +16,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class Service {
@@ -80,11 +81,21 @@ public class Service {
 
         @POST("end-exam")
         CompletableFuture<Boolean> endExam(@Query("visit-id") int visitId, @Query("charge") int charge);
+
+        @GET("list-drug-full")
+        CompletableFuture<List<DrugFullDTO>> listDrugFull(@Query("visit-id") int visitId);
+
+        @GET("batch-resolve-iyakuhin-master")
+        CompletableFuture<Map<Integer, IyakuhinMasterDTO>> batchResolveIyakuhinMaster(@Query("iyakuhincode") List<Integer> iyakuhincodes,
+                                                                                        @Query("at") String at);
+
+        @POST("batch-enter-drugs")
+        CompletableFuture<List<Integer>> batchEnterDrugs(@Body List<DrugDTO> drugs);
     }
 
     public static ServerAPI api;
 
-    public static void setServerUrl(String serverUrl){
+    static void setServerUrl(String serverUrl){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         //logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         logging.setLevel(HttpLoggingInterceptor.Level.NONE);

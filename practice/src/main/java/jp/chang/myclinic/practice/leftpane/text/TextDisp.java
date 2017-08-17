@@ -4,10 +4,18 @@ import jp.chang.myclinic.dto.TextDTO;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class TextDisp extends JEditorPane {
+class TextDisp extends JEditorPane {
 
-    public TextDisp(TextDTO textDTO, Color background){
+    interface Callback {
+        default void onClick(){}
+    }
+
+    private Callback callback = new Callback(){};
+
+    TextDisp(TextDTO textDTO, Color background){
         setContentType("text/plain");
         String content = textDTO.content.trim();
         if( content.isEmpty() ){
@@ -16,6 +24,16 @@ public class TextDisp extends JEditorPane {
         setText(content);
         setEditable(false);
         setBackground(background);
+        addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                callback.onClick();
+            }
+        });
+    }
+
+    void setCallback(Callback callback){
+        this.callback = callback;
     }
 
 }

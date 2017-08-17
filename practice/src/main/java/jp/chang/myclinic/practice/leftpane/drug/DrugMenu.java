@@ -9,23 +9,25 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 class DrugMenu extends JPanel {
 
     interface Callback {
         default void onNewDrug(DrugDTO drug){ throw new RuntimeException("not implemented"); }
+        default void onCopyAll(int targetVisitId, List<Integer> drugIds){ throw new RuntimeException("not implemented"); };
     }
 
     private JComponent subMenuPane;
     private JComponent workPane;
     private Callback callback = new Callback(){};
 
-    DrugMenu(VisitDTO visit){
+    DrugMenu(VisitDTO visit, int currentVisitId, int tempVisitId){
         setLayout(new MigLayout("insets 0", "[grow]", ""));
         Link mainMenuLink = new Link("[処方]");
         mainMenuLink.setCallback(event -> doNewDrug(visit));
         Link subMenuLink = new Link("[+]");
-        subMenuLink.setCallback(this::doSubMenuClick);
+        subMenuLink.setCallback(event -> doSubMenuClick(event, visit, currentVisitId, tempVisitId));
         add(mainMenuLink, "span, split 2");
         add(subMenuLink);
     }
@@ -68,11 +70,16 @@ class DrugMenu extends JPanel {
         revalidate();
     }
 
-    private void doSubMenuClick(MouseEvent event){
+    private void doSubMenuClick(MouseEvent event, VisitDTO visit, int currentVisitId, int tempVisitId){
         if( workPane != null ){
             return;
         }
-        SubMenuPane submenu = new SubMenuPane();
+        SubMenuPane submenu = new SubMenuPane(visit, currentVisitId, tempVisitId, new SubMenuPane.Callback(){
+            @Override
+            public void onCopyAll(int targetVisitId, List<Integer> enteredDrugIds) {
+                callback.onCopyAll(targetVisitId, enteredDrugIds);
+            }
+        });
         submenu.show(this, event.getX(), event.getY());
     }
 

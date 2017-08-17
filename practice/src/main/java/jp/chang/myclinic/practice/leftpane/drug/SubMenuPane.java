@@ -1,11 +1,27 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
+import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.Service;
+
 import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 class SubMenuPane extends JPopupMenu {
 
-    SubMenuPane(){
+    interface Callback {
+        void onCopyAll(int targetVisitId, List<Integer> enteredDrugIds);
+    }
+
+    private Callback callback;
+
+    SubMenuPane(VisitDTO visit, int currentVisitId, int tempVisitId, Callback callback){
+        this.callback = callback;
+        int targetVisitId = Math.max(currentVisitId, tempVisitId);
         JMenuItem copyAllItem = new JMenuItem("全部コピー");
+        copyAllItem.addActionListener(event -> doCopyAll(visit, targetVisitId));
         JMenuItem copySomeItem = new JMenuItem("部分コピー");
         JMenuItem modifyDaysItem = new JMenuItem("日数変更");
         JMenuItem deleteSomeItem = new JMenuItem("複数削除");
@@ -16,4 +32,65 @@ class SubMenuPane extends JPopupMenu {
         add(deleteSomeItem);
         add(cancelItem);
     }
+
+    private void doCopyAll(VisitDTO visit, int targetVisitId){
+        if( targetVisitId <= 0 ){
+            alert("コピー先が指定されていません。");
+            return;
+        }
+        if( visit.visitId == targetVisitId ){
+            alert("同じ診察にコピーすることはできません。");
+            return;
+        }
+        final String at = visit.visitedAt.substring(0, 10);
+        final CopyAllStore store = new CopyAllStore();
+        Service.api.listDrugFull(visit.visitId)
+                .thenCompose(drugs -> {
+                    store.drugs = drugs;
+                    List<Integer> iyakuhincodes = drugs.stream().map(drug -> drug.drug.iyakuhincode).collect(Collectors.toList());
+                    return Service.api.batchResolveIyakuhinMaster(iyakuhincodes, at);
+                })
+                .thenCompose(resolvedMap -> {
+                    List<DrugDTO> newDrugs = new ArrayList<>();
+                    store.drugs.forEach(fullDrug -> {
+                        DrugDTO drug = fullDrug.drug;
+                        int iyakuhincode = drug.iyakuhincode;
+                        IyakuhinMasterDTO resolvedMaster = resolvedMap.getOrDefault(iyakuhincode, null);
+                        if( resolvedMaster == null ){
+                            throw new RuntimeException(fullDrug.master.name + "は使用できません。");
+                        } else {
+                            DrugDTO newDrug = DrugDTO.copy(drug);
+                            newDrug.drugId = 0;
+                            newDrug.visitId = targetVisitId;
+                            newDrug.iyakuhincode = resolvedMaster.iyakuhincode;
+                            newDrug.prescribed = 0;
+                            newDrugs.add(newDrug);
+                        }
+                    });
+                    if( newDrugs.size() != store.drugs.size() ){
+                        throw new RuntimeException("cannot noe happen");
+                    }
+                    return Service.api.batchEnterDrugs(newDrugs);
+                })
+                .thenAccept(drugIds -> {
+                    callback.onCopyAll(targetVisitId, drugIds);
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+
+    }
+
+    private static class CopyAllStore {
+        List<DrugFullDTO> drugs;
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
+    }
+
 }
