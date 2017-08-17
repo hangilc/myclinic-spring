@@ -1,10 +1,13 @@
 package jp.chang.myclinic.practice.leftpane;
 
-import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.leftpane.conduct.ConductArea;
 import jp.chang.myclinic.practice.leftpane.drug.DrugArea;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenDisp;
+import jp.chang.myclinic.practice.leftpane.shinryou.ShinryouArea;
 import jp.chang.myclinic.practice.leftpane.text.TextArea;
 import jp.chang.myclinic.practice.leftpane.title.Title;
+import jp.chang.myclinic.util.NumberUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -23,19 +26,43 @@ class Record extends JPanel {
 
     private JComponent makeRightPane(VisitFull2DTO visitFull, int currentVisitId, int tempVisitId){
         JPanel panel = new JPanel(new MigLayout("insets 0", "[grow]", ""));
-        DrugArea drugArea = new DrugArea(visitFull.drugs, visitFull.visit, currentVisitId, tempVisitId,
+        panel.add(new HokenDisp(visitFull.hoken, visitFull.visit), "wrap");
+        panel.add(makeDrugArea(visitFull.drugs, visitFull.visit, currentVisitId, tempVisitId), "growx, wrap");
+        panel.add(makeShinryouArea(visitFull.shinryouList), "growx, wrap");
+        panel.add(makeConductArea(visitFull.conducts), "growx, wrap");
+        panel.add(makeChargePane(visitFull.charge), "");
+        return panel;
+
+    }
+
+    private DrugArea makeDrugArea(List<DrugFullDTO> drugs, VisitDTO visit, int currentVisitId, int tempVisitId){
+        return new DrugArea(drugs, visit, currentVisitId, tempVisitId,
                 new DrugArea.Callback() {
                     @Override
                     public void onCopyAll(int targetVisitId, List<Integer> drugIds) {
 
                     }
                 });
-        panel.add(new HokenDisp(visitFull.hoken, visitFull.visit), "wrap");
-        panel.add(drugArea, "growx, wrap");
-//        panel.add(makeShinryouPane(visitFull.shinryouList), "growx, wrap");
-//        panel.add(makeConductPane(visitFull.conducts), "growx, wrap");
-//        panel.add(makeChargePane(visitFull.charge), "");
-        return panel;
-
     }
+
+    private ShinryouArea makeShinryouArea(List<ShinryouFullDTO> shinryouList){
+        ShinryouArea shinryouArea = new ShinryouArea(shinryouList);
+        return shinryouArea;
+    }
+
+    private ConductArea makeConductArea(List<ConductFullDTO> conducts){
+        ConductArea conductArea = new ConductArea(conducts);
+        return conductArea;
+    }
+
+    private JComponent makeChargePane(ChargeDTO charge){
+        String label;
+        if( charge != null ){
+            label = "請求額：" + NumberUtil.formatNumber(charge.charge) + "円";
+        } else {
+            label = "(未請求)";
+        }
+        return new JLabel(label);
+    }
+
 }
