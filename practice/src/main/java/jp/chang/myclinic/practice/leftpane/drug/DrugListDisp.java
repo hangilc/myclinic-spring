@@ -19,4 +19,8 @@ class DrugListDisp extends JPanel {
         DrugDisp drugDisp = new DrugDisp(drug, index++);
         add(drugDisp, "growx, wrap");
     }
+
+    void addDrugs(List<DrugFullDTO> drugs){
+        drugs.forEach(this::addDrug);
+    }
 }

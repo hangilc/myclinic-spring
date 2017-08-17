@@ -15,6 +15,13 @@ import java.util.List;
 
 class Record extends JPanel {
 
+    interface Callback {
+        default void onCopyAllDrugs(int targetVisitId, List<Integer> drugIds){}
+    }
+
+    private DrugArea drugArea;
+    private Callback callback = new Callback(){};
+
     Record(VisitFull2DTO visitFull, int currentVisitId, int tempVisitId){
         setLayout(new MigLayout("insets 0, fillx", "[sizegroup c, grow] [sizegroup c, grow]", ""));
         Title title = new Title(visitFull.visit, currentVisitId, tempVisitId);
@@ -22,6 +29,14 @@ class Record extends JPanel {
         add(title, "span, growx, wrap");
         add(textArea, "top, growx");
         add(makeRightPane(visitFull, currentVisitId, tempVisitId), "top, growx");
+    }
+
+    void setCallback(Callback callback){
+        this.callback = callback;
+    }
+
+    void appendDrugs(List<DrugFullDTO> drugs){
+        this.drugArea.appendDrugs(drugs);
     }
 
     private JComponent makeRightPane(VisitFull2DTO visitFull, int currentVisitId, int tempVisitId){
@@ -36,13 +51,14 @@ class Record extends JPanel {
     }
 
     private DrugArea makeDrugArea(List<DrugFullDTO> drugs, VisitDTO visit, int currentVisitId, int tempVisitId){
-        return new DrugArea(drugs, visit, currentVisitId, tempVisitId,
+        this.drugArea = new DrugArea(drugs, visit, currentVisitId, tempVisitId,
                 new DrugArea.Callback() {
                     @Override
                     public void onCopyAll(int targetVisitId, List<Integer> drugIds) {
-
+                        callback.onCopyAllDrugs(targetVisitId, drugIds);
                     }
                 });
+        return this.drugArea;
     }
 
     private ShinryouArea makeShinryouArea(List<ShinryouFullDTO> shinryouList){

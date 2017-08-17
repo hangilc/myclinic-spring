@@ -16,9 +16,11 @@ public class DrugArea extends JPanel {
         void onCopyAll(int targetVisitId, List<Integer> drugIds);
     }
 
+    private DrugListDisp drugListDisp;
+
     public DrugArea(List<DrugFullDTO> drugs, VisitDTO visit, int currentVisitId, int tempVisitId, Callback callback){
         DrugMenu drugMenu = new DrugMenu(visit, currentVisitId, tempVisitId);
-        DrugListDisp drugListDisp = new DrugListDisp(drugs);
+        this.drugListDisp = new DrugListDisp(drugs);
         drugMenu.setCallback(new DrugMenu.Callback(){
             @Override
             public void onNewDrug(DrugDTO drug) {
@@ -43,6 +45,11 @@ public class DrugArea extends JPanel {
         setLayout(new MigLayout("insets 0, gapy 0", "[grow]", ""));
         add(drugMenu, "growx, wrap");
         add(drugListDisp, "growx, wrap");
+    }
+
+    public void appendDrugs(List<DrugFullDTO> drugs){
+        drugListDisp.addDrugs(drugs);
+        drugListDisp.revalidate();
     }
 
     private void alert(String message){

@@ -85,6 +85,9 @@ public class Service {
         @GET("list-drug-full")
         CompletableFuture<List<DrugFullDTO>> listDrugFull(@Query("visit-id") int visitId);
 
+        @GET("list-drug-full-by-drug-ids")
+        CompletableFuture<List<DrugFullDTO>> listDrugFullByDrugIds(@Query("drug-id") List<Integer> drugIds);
+
         @GET("batch-resolve-iyakuhin-master")
         CompletableFuture<Map<Integer, IyakuhinMasterDTO>> batchResolveIyakuhinMaster(@Query("iyakuhincode") List<Integer> iyakuhincodes,
                                                                                         @Query("at") String at);
