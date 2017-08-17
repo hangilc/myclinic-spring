@@ -2,8 +2,8 @@ package jp.chang.myclinic.practice;
 
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.dto.VisitFull2PageDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
-import jp.chang.myclinic.practice.leftpane.DispRecords;
 import jp.chang.myclinic.practice.leftpane.LeftPane;
 import jp.chang.myclinic.practice.newvisitdialog.NewVisitDialog;
 import jp.chang.myclinic.practice.rightpane.SearchPatient;
@@ -94,7 +94,7 @@ class MainFrame extends JFrame {
                 .thenAccept(page -> {
                     EventQueue.invokeLater(() -> {
                         currentPatient = patient;
-                        leftPanel.add(new LeftPane(patient, page), "grow");
+                        leftPanel.add(createLeftPaneContent(patient, page), "grow");
                         leftPanel.repaint();
                         leftPanel.revalidate();
                     });
@@ -106,16 +106,14 @@ class MainFrame extends JFrame {
                 });
     }
 
-    private void onNavTrigger(int patientId, int page, DispRecords dispRecords){
-        Service.api.listVisitFull2(patientId, page)
-                .thenAccept(visitPage -> {
-                    dispRecords.setVisits(visitPage.visits);
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    alert(t.toString());
-                    return null;
-                });
+    private LeftPane createLeftPaneContent(PatientDTO patient, VisitFull2PageDTO page){
+        int currentVisitId = currentVisit == null ? 0 : currentVisit.visitId;
+        return new LeftPane(patient, page, currentVisitId, tempVisitId, new LeftPane.Callback(){
+            @Override
+            public void onFinishPatient() {
+                closeCurrentPatient();
+            }
+        });
     }
 
     private void doNewVisit(){
@@ -131,7 +129,7 @@ class MainFrame extends JFrame {
                 .thenAccept(page -> {
                     currentPatient = patient;
                     currentVisit = visit;
-                    leftPanel.add(new LeftPane(patient, page), "grow");
+                    leftPanel.add(createLeftPaneContent(patient, page), "grow");
                     leftPanel.repaint();
                     leftPanel.revalidate();
                 })

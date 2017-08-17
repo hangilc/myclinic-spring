@@ -9,6 +9,7 @@ import jp.chang.myclinic.practice.leftpane.hoken.HokenDisp;
 import jp.chang.myclinic.practice.leftpane.text.TextCreator;
 import jp.chang.myclinic.practice.leftpane.text.TextDisp;
 import jp.chang.myclinic.practice.leftpane.text.TextEditor;
+import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.KizaiUtil;
 import jp.chang.myclinic.util.NumberUtil;
@@ -20,9 +21,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-public class DispRecords extends JPanel {
+class DispRecords extends JPanel {
 
-    public DispRecords(){
+    DispRecords(){
         setLayout(makeLayout());
         add(new JLabel("平成２９年７月２９日"), "span, wrap");
         add(new JLabel("left"), "");
@@ -33,14 +34,32 @@ public class DispRecords extends JPanel {
         return new MigLayout("insets 0, fillx", "[sizegroup c, grow] [sizegroup c, grow]", "");
     }
 
-    public void setVisits(List<VisitFull2DTO> visits){
+    void setVisits(List<VisitFull2DTO> visits, int currentVisitId, int tempVisitId){
         removeAll();
         setLayout(makeLayout());
         visits.forEach(visitFull -> {
-            add(new JLabel(visitFull.visit.visitedAt), "span, wrap");
+            add(makeTitle(visitFull.visit, currentVisitId, tempVisitId), "span, growx, wrap");
             add(makeTextPane(visitFull), "top, growx");
             add(makeRightPane(visitFull), "top, growx, wrap");
         });
+    }
+
+    private JComponent makeTitle(VisitDTO visit, int currentVisitId, int tempVisitId){
+        String text = DateTimeUtil.sqlDateTimeToKanji(visit.visitedAt,
+                DateTimeUtil.kanjiFormatter3, DateTimeUtil.kanjiFormatter4);
+        JLabel label = new JLabel(text);
+        Font font = label.getFont().deriveFont(Font.BOLD);
+        label.setFont(font);
+        if( visit.visitId == currentVisitId ){
+            label.setBackground(new Color(0xff, 0xff, 0x99));
+        } else if( visit.visitId == tempVisitId ){
+            label.setBackground(new Color(0x99, 0xff, 0xff));
+        } else {
+            label.setBackground(new Color(0xdd, 0xdd, 0xdd));
+        }
+        label.setOpaque(true);
+        label.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        return label;
     }
 
     private JComponent makeTextPane(VisitFull2DTO visitFull){
