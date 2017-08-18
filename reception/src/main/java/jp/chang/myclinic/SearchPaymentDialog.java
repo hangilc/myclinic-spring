@@ -124,11 +124,11 @@ class SearchPaymentDialog extends JDialog {
 					dataStore.charge = charge.charge;
 					return Service.api.getVisitMeisai(visitId);
 				})
-				.thenAccept(meisai -> {
+				.thenAccept(meisai -> EventQueue.invokeLater(() ->{
 					MeisaiDetailDialog meisaiDetailDialog = new MeisaiDetailDialog(this, meisai, patient, selection.visit);
 					meisaiDetailDialog.setLocationByPlatform(true);
 					meisaiDetailDialog.setVisible(true);
-				})
+				}))
 				.exceptionally(t -> {
 					t.printStackTrace();
 					EventQueue.invokeLater(() -> {

@@ -26,9 +26,9 @@ class PatientSearch extends JPanel {
                 return;
             }
             Service.api.searchPatient(text)
-                    .thenAccept(list -> {
+                    .thenAccept(list -> EventQueue.invokeLater(() -> {
                         searchResult.setListData(list.toArray(new PatientDTO[]{}));
-                    })
+                    }))
                     .exceptionally(t -> {
                         t.printStackTrace();
                         EventQueue.invokeLater(() -> {

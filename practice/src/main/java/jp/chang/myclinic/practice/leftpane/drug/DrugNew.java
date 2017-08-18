@@ -59,7 +59,7 @@ class DrugNew extends JPanel {
 
     private void doOnDrugSelected(DrugSearch.SearchResult selectedDrug){
         selectedDrug.resolveMaster()
-                .thenAccept(master -> {
+                .thenAccept(master -> EventQueue.invokeLater(() -> {
                     DrugCategory category = selectedDrug.getCategory();
                     drugInfoPane.setMaster(master);
                     drugInfoPane.setCategory(category);
@@ -71,7 +71,7 @@ class DrugNew extends JPanel {
                         }
                     }
                     drugInfoPane.usageField.setText(selectedDrug.getUsage());
-                })
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> {

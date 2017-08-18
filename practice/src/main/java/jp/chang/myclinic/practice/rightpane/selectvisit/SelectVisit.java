@@ -32,12 +32,12 @@ public class SelectVisit extends JPanel {
                 revalidate();
             } else {
                 Service.api.listWqueueFull()
-                        .thenAccept(list -> {
+                        .thenAccept(list -> EventQueue.invokeLater(() -> {
                             searchResult.setListData(list.toArray(new WqueueFullDTO[]{}));
                             scrollPane.setVisible(true);
                             repaint();
                             revalidate();
-                        })
+                        }))
                         .exceptionally(t -> {
                             t.printStackTrace();
                             EventQueue.invokeLater(() -> {

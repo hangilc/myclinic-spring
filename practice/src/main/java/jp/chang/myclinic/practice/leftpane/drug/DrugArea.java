@@ -38,7 +38,7 @@ public class DrugArea extends JPanel {
             }
 
             @Override
-            public void onCopyAll(int targetVisitId, List<Integer> drugIds) {
+            public void onDrugsCopied(int targetVisitId, List<Integer> drugIds) {
                 callback.onCopyAll(targetVisitId, drugIds);
             }
         });

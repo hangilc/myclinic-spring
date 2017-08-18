@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,10 @@ public class DrugController {
 	}
 
 	@RequestMapping(value = "/list-drug-full-by-drug-ids", method = RequestMethod.GET)
-	public List<DrugFullDTO> listDrugFullByDrugIds(@RequestParam("drug-id") List<Integer> drugIds) {
+	public List<DrugFullDTO> listDrugFullByDrugIds(@RequestParam(value="drug-id", required=false) List<Integer> drugIds) {
+		if( drugIds == null ){
+			drugIds = Collections.emptyList();
+		}
 		return drugIds.stream().map(dbGateway::getDrugFull).collect(Collectors.toList());
 	}
 

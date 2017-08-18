@@ -101,7 +101,9 @@ class MainFrame extends JFrame {
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();
-                    alert(t.toString());
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
                     return null;
                 });
     }
@@ -126,13 +128,13 @@ class MainFrame extends JFrame {
         closeCurrentPatient()
                 .thenCompose(result -> Service.api.startExam(visit.visitId))
                 .thenCompose(result -> Service.api.listVisitFull2(patient.patientId, 0))
-                .thenAccept(page -> {
+                .thenAccept(page -> EventQueue.invokeLater(() ->{
                     currentPatient = patient;
                     currentVisit = visit;
                     leftPanel.add(createLeftPaneContent(patient, page), "grow");
                     leftPanel.repaint();
                     leftPanel.revalidate();
-                })
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> {

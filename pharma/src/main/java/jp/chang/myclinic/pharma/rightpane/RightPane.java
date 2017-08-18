@@ -88,7 +88,9 @@ public class RightPane extends JPanel {
                     })
                     .exceptionally(t -> {
                         t.printStackTrace();
-                        alert(t.toString());
+                        EventQueue.invokeLater(() -> {
+                            alert(t.toString());
+                        });
                         return null;
                     });
         } else {
@@ -115,7 +117,9 @@ public class RightPane extends JPanel {
                     })
                     .exceptionally(t -> {
                         t.printStackTrace();
-                        alert(t.toString());
+                        EventQueue.invokeLater(() -> {
+                            alert(t.toString());
+                        });
                         return null;
                     });
         } else {

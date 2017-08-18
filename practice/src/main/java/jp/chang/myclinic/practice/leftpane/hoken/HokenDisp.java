@@ -37,7 +37,7 @@ public class HokenDisp extends JPanel {
 
     private void doEdit(JComponent disp, HokenDTO currentHoken, VisitDTO currentVisit) {
         Service.api.listAvailableHoken(currentVisit.patientId, currentVisit.visitedAt.substring(0, 10))
-                .thenAccept(available -> {
+                .thenAccept(available -> EventQueue.invokeLater(() -> {
                     HokenChooser chooser = new HokenChooser(available, currentHoken);
                     chooser.setCallback(new HokenChooser.Callback(){
                         @Override
@@ -59,7 +59,7 @@ public class HokenDisp extends JPanel {
                     add(chooser, "growx");
                     repaint();
                     revalidate();
-                })
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> {
@@ -83,9 +83,9 @@ public class HokenDisp extends JPanel {
         visit.kouhi3Id = selectedHoken.kouhi3 == null ? 0 :
                 selectedHoken.kouhi3.kouhiId;
         Service.api.updateHoken(visit)
-                .thenAccept(result -> {
+                .thenAccept(result -> EventQueue.invokeLater(() -> {
                     refreshDisp(visit);
-                })
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> {
@@ -98,12 +98,12 @@ public class HokenDisp extends JPanel {
 
     private void refreshDisp(VisitDTO visit){
         Service.api.getHoken(visit.visitId)
-                .thenAccept(hoken -> {
+                .thenAccept(hoken -> EventQueue.invokeLater(() -> {
                     removeAll();
                     addDisp(hoken, visit);
                     repaint();
                     revalidate();
-                })
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> {

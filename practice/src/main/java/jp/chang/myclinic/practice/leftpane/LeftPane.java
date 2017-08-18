@@ -6,6 +6,7 @@ import jp.chang.myclinic.practice.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class LeftPane extends JPanel {
 
@@ -52,14 +53,16 @@ public class LeftPane extends JPanel {
 
     private void onNavTrigger(int newPage, int currentVisitId, int tempVisitId){
         Service.api.listVisitFull2(patient.patientId, newPage)
-                .thenAccept(visitPage -> {
+                .thenAccept(visitPage -> EventQueue.invokeLater(() -> {
                     dispRecords.setVisits(visitPage.visits, currentVisitId, tempVisitId);
                     topNav.set(newPage, visitPage.totalPages);
                     bottomNav.set(newPage, visitPage.totalPages);
-                })
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
-                    alert(t.toString());
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
                     return null;
                 });
     }

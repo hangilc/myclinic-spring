@@ -129,7 +129,9 @@ class CashierDialog extends JDialog {
 					})
 					.exceptionally(t -> {
 						t.printStackTrace();
-						alert(t.toString());
+						EventQueue.invokeLater(() -> {
+							alert(t.toString());
+						});
 						return null;
 					});
 		});
@@ -151,7 +153,9 @@ class CashierDialog extends JDialog {
 				})
 				.exceptionally(t -> {
 					t.printStackTrace();
-					alert(t.toString());
+					EventQueue.invokeLater(() -> {
+						alert(t.toString());
+					});
 					return null;
 				});
 	}

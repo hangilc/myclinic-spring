@@ -13,6 +13,7 @@ class SubMenuPane extends JPopupMenu {
 
     interface Callback {
         void onCopyAll(int targetVisitId, List<Integer> enteredDrugIds);
+        void onCopySome(int targetVisitId);
     }
 
     private Callback callback;
@@ -22,7 +23,8 @@ class SubMenuPane extends JPopupMenu {
         int targetVisitId = Math.max(currentVisitId, tempVisitId);
         JMenuItem copyAllItem = new JMenuItem("全部コピー");
         copyAllItem.addActionListener(event -> doCopyAll(visit, targetVisitId));
-        JMenuItem copySomeItem = new JMenuItem("部分コピー");
+        JMenuItem copySomeItem = new JMenuItem("選択コピー");
+        copySomeItem.addActionListener(event -> doCopySome(visit, targetVisitId));
         JMenuItem modifyDaysItem = new JMenuItem("日数変更");
         JMenuItem deleteSomeItem = new JMenuItem("複数削除");
         JMenuItem cancelItem = new JMenuItem("キャンセル ");
@@ -42,11 +44,15 @@ class SubMenuPane extends JPopupMenu {
             alert("同じ診察にコピーすることはできません。");
             return;
         }
-        final String at = visit.visitedAt.substring(0, 10);
         final CopyAllStore store = new CopyAllStore();
-        Service.api.listDrugFull(visit.visitId)
+        Service.api.getVisit(targetVisitId)
+                .thenCompose(targetVisit -> {
+                    store.targetVisit = targetVisit;
+                    return Service.api.listDrugFull(visit.visitId);
+                })
                 .thenCompose(drugs -> {
                     store.drugs = drugs;
+                    String at = store.targetVisit.visitedAt.substring(0, 10);
                     List<Integer> iyakuhincodes = drugs.stream().map(drug -> drug.drug.iyakuhincode).collect(Collectors.toList());
                     return Service.api.batchResolveIyakuhinMaster(iyakuhincodes, at);
                 })
@@ -73,7 +79,7 @@ class SubMenuPane extends JPopupMenu {
                     return Service.api.batchEnterDrugs(newDrugs);
                 })
                 .thenAccept(drugIds -> {
-                    callback.onCopyAll(targetVisitId, drugIds);
+                    EventQueue.invokeLater(() -> callback.onCopyAll(targetVisitId, drugIds));
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();
@@ -87,6 +93,19 @@ class SubMenuPane extends JPopupMenu {
 
     private static class CopyAllStore {
         List<DrugFullDTO> drugs;
+        VisitDTO targetVisit;
+    }
+
+    private void doCopySome(VisitDTO visit, int targetVisitId){
+        if( targetVisitId <= 0 ){
+            alert("コピー先が指定されていません。");
+            return;
+        }
+        if( visit.visitId == targetVisitId ){
+            alert("同じ診察にコピーすることはできません。");
+            return;
+        }
+        callback.onCopySome(targetVisitId);
     }
 
     private void alert(String message){

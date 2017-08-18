@@ -38,9 +38,9 @@ public class NewVisitDialog extends JDialog {
                 return;
             }
             Service.api.startVisit(patientId)
-                    .thenAccept(visitId -> {
+                    .thenAccept(visitId -> EventQueue.invokeLater(() -> {
                         dispose();
-                    })
+                    }))
                     .exceptionally(t -> {
                         t.printStackTrace();
                         EventQueue.invokeLater(() -> {
