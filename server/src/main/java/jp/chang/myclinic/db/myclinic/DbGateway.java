@@ -469,6 +469,11 @@ public class DbGateway {
 		drugRepository.delete(drugId);
 	}
 
+	public void updateDrug(DrugDTO drugDTO){
+		Drug drug = mapper.fromDrugDTO(drugDTO);
+		drugRepository.save(drug);
+	}
+
 	public void markDrugsAsPrescribedForVisit(int visitId){
 		drugRepository.markAsPrescribedForVisit(visitId);
 	}

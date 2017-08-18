@@ -20,6 +20,7 @@ public class WorkArea extends JPanel {
         title.setOpaque(true);
         Font font = title.getFont().deriveFont(Font.BOLD);
         title.setFont(font);
+        title.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         return title;
     }
 

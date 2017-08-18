@@ -20,7 +20,7 @@ public class DrugArea extends JPanel {
 
     public DrugArea(List<DrugFullDTO> drugs, VisitDTO visit, int currentVisitId, int tempVisitId, Callback callback){
         DrugMenu drugMenu = new DrugMenu(visit, currentVisitId, tempVisitId);
-        this.drugListDisp = new DrugListDisp(drugs);
+        this.drugListDisp = new DrugListDisp(drugs, visit);
         drugMenu.setCallback(new DrugMenu.Callback(){
             @Override
             public void onNewDrug(DrugDTO drug) {

@@ -5,12 +5,19 @@ import jp.chang.myclinic.util.DrugUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 class DrugDisp extends JPanel {
+
+    interface Callback {
+        default void onClick(){}
+    }
 
     private int drugId;
     private int index;
     private String drugRep;
+    private Callback callback;
 
     DrugDisp(DrugFullDTO drug, int index){
         this.drugId = drug.drug.drugId;
@@ -20,11 +27,21 @@ class DrugDisp extends JPanel {
         add(makeEditorPane(), "growx");
     }
 
+    void setCallback(Callback callback){
+        this.callback = callback;
+    }
+
     private JEditorPane makeEditorPane(){
         String label = String.format("%d)%s", index, drugRep);
         JEditorPane dispPane = new JEditorPane("text/plain", label);
         dispPane.setEditable(false);
         dispPane.setBackground(getBackground());
+        dispPane.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                callback.onClick();
+            }
+        });
         return dispPane;
     }
 
