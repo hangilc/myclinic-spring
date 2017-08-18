@@ -35,5 +35,22 @@ public class WqueueController {
 		return true;
 	}
 
+	@RequestMapping(value="/start-exam", method=RequestMethod.POST)
+	public boolean startExam(@RequestParam("visit-id") int visitId){
+		dbGateway.startExam(visitId);
+		return true;
+	}
+
+	@RequestMapping(value="/suspend-exam", method=RequestMethod.POST)
+	public boolean suspendExam(@RequestParam("visit-id") int visitId){
+		dbGateway.suspendExam(visitId);
+		return true;
+	}
+
+	@RequestMapping(value="/end-exam", method=RequestMethod.POST)
+	public boolean endExam(@RequestParam("visit-id") int visitId, @RequestParam("charge") int charge){
+		dbGateway.endExam(visitId, charge);
+		return true;
+	}
 
 }

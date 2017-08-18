@@ -16,6 +16,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class Service {
@@ -59,11 +60,54 @@ public class Service {
         @GET("resolve-iyakuhin-master")
         CompletableFuture<IyakuhinMasterDTO> resolveIyakuhinMaster(@Query("iyakuhincode") int iyakuhincode,
                                                                              @Query("at") String at);
+
+        @POST("enter-drug")
+        CompletableFuture<DrugDTO> enterDrug(@Body DrugDTO drug);
+
+        @GET("get-drug-full")
+        CompletableFuture<DrugFullDTO> getDrugFull(@Query("drug-id") int drugId);
+
+        @POST("start-visit")
+        CompletableFuture<Integer> startVisit(@Query("patient-id") int patientId);
+
+        @GET("list-wqueue-full")
+        CompletableFuture<List<WqueueFullDTO>> listWqueueFull();
+
+        @POST("start-exam")
+        CompletableFuture<Boolean> startExam(@Query("visit-id") int visitId);
+
+        @POST("suspend-exam")
+        CompletableFuture<Boolean> suspendExam(@Query("visit-id") int visitId);
+
+        @POST("end-exam")
+        CompletableFuture<Boolean> endExam(@Query("visit-id") int visitId, @Query("charge") int charge);
+
+        @GET("list-drug-full")
+        CompletableFuture<List<DrugFullDTO>> listDrugFull(@Query("visit-id") int visitId);
+
+        @GET("list-drug-full-by-drug-ids")
+        CompletableFuture<List<DrugFullDTO>> listDrugFullByDrugIds(@Query("drug-id") List<Integer> drugIds);
+
+        @GET("batch-resolve-iyakuhin-master")
+        CompletableFuture<Map<Integer, IyakuhinMasterDTO>> batchResolveIyakuhinMaster(@Query("iyakuhincode") List<Integer> iyakuhincodes,
+                                                                                        @Query("at") String at);
+
+        @POST("batch-enter-drugs")
+        CompletableFuture<List<Integer>> batchEnterDrugs(@Body List<DrugDTO> drugs);
+
+        @POST("batch-update-drug-days")
+        CompletableFuture<Boolean> batchUpdateDrugDays(@Query("drug-id") List<Integer> drugIds, @Query("days") int days);
+
+        @POST("batch-delete-drugs")
+        CompletableFuture<Boolean> batchDeleteDrugs(@Query("drug-id") List<Integer> drugIds);
+
+        @POST("update-drug")
+        CompletableFuture<Boolean> updateDrug(@Body DrugDTO drug);
     }
 
     public static ServerAPI api;
 
-    public static void setServerUrl(String serverUrl){
+    static void setServerUrl(String serverUrl){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         //logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         logging.setLevel(HttpLoggingInterceptor.Level.NONE);

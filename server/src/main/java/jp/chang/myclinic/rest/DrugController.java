@@ -1,17 +1,18 @@
 package jp.chang.myclinic.rest;
 
 import jp.chang.myclinic.db.myclinic.DbGateway;
+import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.IyakuhincodeNameDTO;
 import jp.chang.myclinic.dto.VisitIdVisitedAtDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/json")
@@ -29,6 +30,14 @@ public class DrugController {
 	@RequestMapping(value = "/list-drug-full", method = RequestMethod.GET)
 	public List<DrugFullDTO> listDrugFull(@RequestParam("visit-id") int visitId) {
 		return dbGateway.listDrugFull(visitId);
+	}
+
+	@RequestMapping(value = "/list-drug-full-by-drug-ids", method = RequestMethod.GET)
+	public List<DrugFullDTO> listDrugFullByDrugIds(@RequestParam(value="drug-id", required=false) List<Integer> drugIds) {
+		if( drugIds == null ){
+			drugIds = Collections.emptyList();
+		}
+		return drugIds.stream().map(dbGateway::getDrugFull).collect(Collectors.toList());
 	}
 
 	@RequestMapping(value = "/list-iyakuhin-for-patient", method = RequestMethod.GET)
@@ -81,5 +90,42 @@ public class DrugController {
             }
         });
 		return result;
+	}
+
+	@RequestMapping(value="/enter-drug", method=RequestMethod.POST)
+	public DrugDTO enterDrug(@RequestBody DrugDTO drug){
+		return dbGateway.enterDrug(drug);
+	}
+
+	@RequestMapping(value="/batch-enter-drugs", method=RequestMethod.POST)
+	public List<Integer> batchEnterDrugs(@RequestBody List<DrugDTO> drugs){
+		List<Integer> drugIds = new ArrayList<>();
+		drugs.forEach(drug -> {
+			DrugDTO entered = dbGateway.enterDrug(drug);
+			drugIds.add(entered.drugId);
+		});
+		return drugIds;
+	}
+
+	@RequestMapping(value="/batch-update-drug-days", method=RequestMethod.POST)
+	public boolean batchUpdateDrugDays(@RequestParam(value="drug-id", required=false) List<Integer> drugIds, @RequestParam("days") int days){
+		if( drugIds != null && drugIds.size() > 0 ){
+			dbGateway.batchUpdateDrugDays(drugIds, days);
+		}
+		return true;
+	}
+
+	@RequestMapping(value="/update-drug", method=RequestMethod.POST)
+	public boolean updateDrug(@RequestBody DrugDTO drug){
+		dbGateway.updateDrug(drug);
+		return true;
+	}
+
+	@RequestMapping(value="/batch-delete-drugs", method=RequestMethod.POST)
+	public boolean batchDeleteDrugs(@RequestParam(value="drug-id", required=false) List<Integer> drugIds){
+		if( drugIds != null ){
+			drugIds.forEach(dbGateway::deleteDrug);
+		}
+		return true;
 	}
 }

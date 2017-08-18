@@ -94,12 +94,12 @@ public class SearchPatient extends JPanel {
                 return;
             }
             Service.api.searchPatient(text)
-                    .thenAccept(patients -> {
+                    .thenAccept(patients -> EventQueue.invokeLater(() -> {
                         searchResult.setListData(patients.toArray(new PatientDTO[]{}));
                         scrollPane.setVisible(true);
                         repaint();
                         revalidate();
-                    })
+                    }))
                     .exceptionally(t -> {
                         t.printStackTrace();
                         EventQueue.invokeLater(() -> alert(t.toString()));

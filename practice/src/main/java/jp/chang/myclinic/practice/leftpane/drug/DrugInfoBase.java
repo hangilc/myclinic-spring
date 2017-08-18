@@ -2,15 +2,17 @@ package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.DrugDTO;
+import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.practice.Link;
+import jp.chang.myclinic.util.NumberUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 
 class DrugInfoBase extends JPanel {
 
-    int iyakuhincode;
+    private int iyakuhincode;
     JEditorPane drugNameLabel = new JEditorPane();
     JLabel amountLabel = new JLabel("");
     JTextField amountField = new JTextField(6);
@@ -116,6 +118,21 @@ class DrugInfoBase extends JPanel {
         amountUnit.setText(master.unit);
     }
 
+    void setDrug(DrugDTO drug){
+        DrugCategory category = DrugCategory.fromCode(drug.category);
+        setCategory(category);
+        amountField.setText(NumberUtil.formatNumber(drug.amount).replace(",", ""));
+        usageField.setText(drug.usage);
+        if( category != DrugCategory.Gaiyou ){
+            daysField.setText("" + drug.days);
+        }
+    }
+
+    void setDrugFull(DrugFullDTO drugFull){
+        setMaster(drugFull.master);
+        setDrug(drugFull.drug);
+    }
+
     private DrugCategory getCategory(){
         if( naifukuRadio.isSelected() ){
             return DrugCategory.Naifuku;
@@ -145,6 +162,16 @@ class DrugInfoBase extends JPanel {
             drug.days = Integer.valueOf(daysField.getText());
         }
         return drug;
+    }
+
+    void clear(){
+        drugNameLabel.setText("");
+        amountField.setText("");
+        usageField.setText("");
+        daysField.setText("");
+        usageExampleWrapper.setVisible(false);
+        repaint();
+        revalidate();
     }
 
     private void alert(String message){

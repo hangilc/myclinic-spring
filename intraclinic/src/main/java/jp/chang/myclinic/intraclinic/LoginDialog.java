@@ -32,10 +32,10 @@ class LoginDialog extends JFrame {
         enterButton.addActionListener(event -> {
             char[] chars = passwordInput.getPassword();
             Service.api.login(userNameInput.getText(), new String(chars))
-                    .thenAccept(result -> {
+                    .thenAccept(result -> EventQueue.invokeLater(() -> {
                         dispose();
                         callback.ok(result);
-                    })
+                    }))
                     .exceptionally(t -> {
                         t.printStackTrace();
                         EventQueue.invokeLater(() -> {

@@ -1,13 +1,18 @@
 package jp.chang.myclinic.practice;
 
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.practice.leftpane.DispRecords;
+import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.dto.VisitFull2PageDTO;
+import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.practice.leftpane.LeftPane;
+import jp.chang.myclinic.practice.newvisitdialog.NewVisitDialog;
 import jp.chang.myclinic.practice.rightpane.SearchPatient;
+import jp.chang.myclinic.practice.rightpane.selectvisit.SelectVisit;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.CompletableFuture;
 
 class MainFrame extends JFrame {
 
@@ -16,13 +21,39 @@ class MainFrame extends JFrame {
     private JPanel rightPanel;
     private JScrollPane rightScroll;
     private SearchPatient searchPatientPane;
+    private PatientDTO currentPatient;
+    private VisitDTO currentVisit;
+    private int tempVisitId;
 
     MainFrame(){
         setTitle("診察");
+        setupMenu();
         setLayout(new MigLayout("", "", ""));
         add(makeLeftPane(), "w 520!, h 520, grow");
         add(makeRightPane(), "w 220!, h 520, grow");
         pack();
+    }
+
+    private void setupMenu(){
+        JMenuBar mbar = new JMenuBar();
+        JMenu fileMenu = new JMenu("ファイル");
+        {
+            JMenuItem exitMenu = new JMenuItem("終了");
+            exitMenu.addActionListener(event -> {
+                dispose();
+                System.exit(0);
+            });
+            fileMenu.add(exitMenu);
+        }
+        JMenu commandMenu = new JMenu("コマンド");
+        {
+            JMenuItem newVisitItem = new JMenuItem("診察受付");
+            newVisitItem.addActionListener(event -> doNewVisit());
+            commandMenu.add(newVisitItem);
+        }
+        mbar.add(fileMenu);
+        mbar.add(commandMenu);
+        setJMenuBar(mbar);
     }
 
     private JComponent makeLeftPane(){
@@ -31,12 +62,16 @@ class MainFrame extends JFrame {
         return leftPanel;
     }
 
-    private MigLayout makeLeftPanelLayout(){
-        return new MigLayout("insets 0 0 0 24, fill", "", "[] [] [] [grow] []");
-    }
-
     private JComponent makeRightPane(){
-        rightPanel = new JPanel(new MigLayout("insets 0 0 0 24, fillx", "", ""));
+        SelectVisit selectVisit = new SelectVisit();
+        selectVisit.setCallback(new SelectVisit.Callback(){
+            @Override
+            public void onSelect(WqueueFullDTO wqueue) {
+                doStartExam(wqueue.patient, wqueue.visit);
+            }
+        });
+        rightPanel = new JPanel(new MigLayout("insets 0 0 0 24, fillx", "[grow]", ""));
+        rightPanel.add(selectVisit, "growx, wrap");
         {
             JPanel frame = new JPanel(new MigLayout("insets 0, fill", "", ""));
             frame.setBorder(BorderFactory.createTitledBorder("患者検索"));
@@ -54,33 +89,78 @@ class MainFrame extends JFrame {
     }
 
     private void doStartPatient(PatientDTO patient){
-        Service.api.listVisitFull2(patient.patientId, 0)
+        closeCurrentPatient()
+                .thenCompose(result -> Service.api.listVisitFull2(patient.patientId, 0))
                 .thenAccept(page -> {
                     EventQueue.invokeLater(() -> {
-                        leftPanel.removeAll();
-                        leftPanel.add(new LeftPane(patient, page), "grow");
+                        currentPatient = patient;
+                        leftPanel.add(createLeftPaneContent(patient, page), "grow");
                         leftPanel.repaint();
                         leftPanel.revalidate();
                     });
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();
-                    alert(t.toString());
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
                     return null;
                 });
     }
 
-    private void onNavTrigger(int patientId, int page, DispRecords dispRecords){
-        Service.api.listVisitFull2(patientId, page)
-                .thenAccept(visitPage -> {
-                    dispRecords.setVisits(visitPage.visits);
+    private LeftPane createLeftPaneContent(PatientDTO patient, VisitFull2PageDTO page){
+        int currentVisitId = currentVisit == null ? 0 : currentVisit.visitId;
+        return new LeftPane(patient, page, currentVisitId, tempVisitId, new LeftPane.Callback(){
+            @Override
+            public void onFinishPatient() {
+                closeCurrentPatient();
+            }
+        });
+    }
 
-                })
+    private void doNewVisit(){
+        NewVisitDialog dialog = new NewVisitDialog();
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
+    }
+
+    private void doStartExam(PatientDTO patient, VisitDTO visit){
+        closeCurrentPatient()
+                .thenCompose(result -> Service.api.startExam(visit.visitId))
+                .thenCompose(result -> Service.api.listVisitFull2(patient.patientId, 0))
+                .thenAccept(page -> EventQueue.invokeLater(() ->{
+                    currentPatient = patient;
+                    currentVisit = visit;
+                    leftPanel.add(createLeftPaneContent(patient, page), "grow");
+                    leftPanel.repaint();
+                    leftPanel.revalidate();
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
-                    alert(t.toString());
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
                     return null;
                 });
+    }
+
+    private CompletableFuture<Boolean> closeCurrentPatient(){
+        int visitIdSave = (currentVisit != null ) ? currentVisit.visitId : 0;
+        tempVisitId = 0;
+        currentPatient = null;
+        currentVisit = null;
+        clearCurrentPatient();
+        if( visitIdSave > 0 ){
+            return Service.api.suspendExam(visitIdSave);
+        } else {
+            return CompletableFuture.completedFuture(true);
+        }
+    }
+
+    private void clearCurrentPatient(){
+        leftPanel.removeAll();
+        leftPanel.repaint();
+        leftPanel.revalidate();
     }
 
     private void alert(String message){

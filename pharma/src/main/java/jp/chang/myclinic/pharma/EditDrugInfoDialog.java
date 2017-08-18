@@ -89,9 +89,9 @@ class EditDrugInfoDialog extends JDialog {
 
         private void doTransitToEdit(int iyakuhincode, String name) {
             Service.api.getPharmaDrug(iyakuhincode)
-                    .thenAccept(pharma -> {
+                    .thenAccept(pharma -> EventQueue.invokeLater(() -> {
                         new EditMode(name, pharma).start();
-                    })
+                    }))
                     .exceptionally(t -> {
                         t.printStackTrace();
                         EventQueue.invokeLater(() -> {
@@ -231,9 +231,9 @@ class EditDrugInfoDialog extends JDialog {
                             currentDrugName + "の薬剤情報を削除しますか？", "確認", JOptionPane.OK_CANCEL_OPTION);
                     if (reply == JOptionPane.OK_OPTION) {
                         Service.api.deletePharmaDrug(pharmaDrug.iyakuhincode)
-                                .thenAccept(result -> {
+                                .thenAccept(result -> EventQueue.invokeLater(() -> {
                                     new SearchMode().start();
-                                })
+                                }))
                                 .exceptionally(t -> {
                                     t.printStackTrace();
                                     EventQueue.invokeLater(() -> {

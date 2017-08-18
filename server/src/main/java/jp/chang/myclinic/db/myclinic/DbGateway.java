@@ -1,5 +1,6 @@
 package jp.chang.myclinic.db.myclinic;
 
+import jp.chang.myclinic.consts.PharmaQueueState;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,12 +92,50 @@ public class DbGateway {
 	}
 
 	public Optional<WqueueDTO> findWqueue(int visitId){
-		return wqueueRepository.findByVisitId(visitId).map(mapper::toWqueueDTO);
+		return wqueueRepository.tryFindByVisitId(visitId).map(mapper::toWqueueDTO);
 	}
 
 	public void deleteWqueue(WqueueDTO wqueueDTO){
 		Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
 		wqueueRepository.delete(wqueue);
+	}
+
+	public void startExam(int visitId){
+		Wqueue wqueue = wqueueRepository.findOneByVisitId(visitId);
+		wqueue.setWaitState(WqueueWaitState.InExam.getCode());
+		wqueueRepository.save(wqueue);
+	}
+
+	public void suspendExam(int visitId){
+		Wqueue wqueue = wqueueRepository.findOneByVisitId(visitId);
+		wqueue.setWaitState(WqueueWaitState.WaitReExam.getCode());
+		wqueueRepository.save(wqueue);
+	}
+
+	public void endExam(int visitId, int charge){
+		setChargeOfVisit(visitId, charge);
+		Optional<Wqueue> currentWqueue = wqueueRepository.tryFindByVisitId(visitId);
+		if( currentWqueue.isPresent() ){
+			Wqueue wqueue = currentWqueue.get();
+			wqueue.setWaitState(WqueueWaitState.WaitCashier.getCode());
+			wqueueRepository.save(wqueue);
+		} else {
+			Wqueue wqueue = new Wqueue();
+			wqueue.setVisitId(visitId);
+			wqueue.setWaitState(WqueueWaitState.WaitCashier.getCode());
+			wqueueRepository.save(wqueue);
+		}
+		pharmaQueueRepository.deleteByVisitId(visitId);
+		Visit visit = visitRepository.findOne(visitId);
+		if( visit.getVisitedAt().substring(0, 10).equals(LocalDate.now().toString()) ){
+			int unprescribed = drugRepository.countByVisitIdAndPrescribed(visitId, 0);
+			if( unprescribed > 0 ){
+				PharmaQueue pharmaQueue = new PharmaQueue();
+				pharmaQueue.setVisitId(visitId);
+				pharmaQueue.setPharmaState(PharmaQueueState.WaitPack.getCode());
+				pharmaQueueRepository.save(pharmaQueue);
+			}
+		}
 	}
 
 	public PatientDTO getPatient(int patientId){
@@ -306,7 +345,7 @@ public class DbGateway {
 
 	public void enterCharge(ChargeDTO chargeDTO){
 		Charge charge = mapper.fromChargeDTO(chargeDTO);
-		charge = chargeRepository.save(charge);
+		chargeRepository.save(charge);
 	}
 
 	public ChargeDTO getCharge(int visitId){
@@ -315,8 +354,22 @@ public class DbGateway {
 	}
 
 	public Optional<ChargeDTO> findCharge(int visitId){
-		return chargeRepository.findByVisitId(visitId)
+		return chargeRepository.tryFindByVisitId(visitId)
 			.map(mapper::toChargeDTO);
+	}
+
+	public void setChargeOfVisit(int visitId, int charge){
+		Optional<Charge> optCharge = chargeRepository.tryFindByVisitId(visitId);
+		if( optCharge.isPresent() ){
+			Charge currentCharge = optCharge.get();
+			currentCharge.setCharge(charge);
+			chargeRepository.save(currentCharge);
+		} else {
+			Charge newCharge = new Charge();
+			newCharge.setVisitId(visitId);
+			newCharge.setCharge(charge);
+			chargeRepository.save(newCharge);
+		}
 	}
 
 	public void enterPayment(PaymentDTO paymentDTO){
@@ -405,6 +458,22 @@ public class DbGateway {
 		.collect(Collectors.toList());
 	}
 
+	public DrugDTO enterDrug(DrugDTO drugDTO){
+		Drug drug = mapper.fromDrugDTO(drugDTO);
+		drug.setDrugId(null);
+		drug = drugRepository.save(drug);
+		return mapper.toDrugDTO(drug);
+	}
+
+	public void deleteDrug(int drugId) {
+		drugRepository.delete(drugId);
+	}
+
+	public void updateDrug(DrugDTO drugDTO){
+		Drug drug = mapper.fromDrugDTO(drugDTO);
+		drugRepository.save(drug);
+	}
+
 	public void markDrugsAsPrescribedForVisit(int visitId){
 		drugRepository.markAsPrescribedForVisit(visitId);
 	}
@@ -421,6 +490,10 @@ public class DbGateway {
 		drugIds.addAll(drugRepository.findGaiyouPatternByPatient(patientId, text));
 		drugIds.sort(Comparator.<Integer>naturalOrder().reversed());
 		return drugIds.stream().map(this::getDrugFull).collect(Collectors.toList());
+	}
+
+	public void batchUpdateDrugDays(List<Integer> drugIds, int days){
+		drugRepository.batchUpdateDays(drugIds, days);
 	}
 
 	public List<TextDTO> listText(int visitId){
@@ -513,7 +586,7 @@ public class DbGateway {
 	}
 
 	public void deleteVisitFromReception(int visitId){
-		Optional<Wqueue> wqueueOpt = wqueueRepository.findByVisitId(visitId);
+		Optional<Wqueue> wqueueOpt = wqueueRepository.tryFindByVisitId(visitId);
 		if( wqueueOpt.isPresent() ){
 			Wqueue wqueue = wqueueOpt.get();
 			if( wqueue.getWaitState() != WqueueWaitState.WaitExam.getCode() ){
@@ -537,7 +610,7 @@ public class DbGateway {
 		if( visit.conducts.size() > 0 ){
 			throw new RuntimeException("処置があるので、診察を削除できません。");
 		}
-		Optional<Charge> optCharge = chargeRepository.findByVisitId(visitId);
+		Optional<Charge> optCharge = chargeRepository.tryFindByVisitId(visitId);
 		if( optCharge.isPresent() ){
 			throw new RuntimeException("請求があるので、診察を削除できません。");
 		}
@@ -545,7 +618,7 @@ public class DbGateway {
 		if( payments.size() > 0 ){
 			throw new RuntimeException("支払い記録があるので、診察を削除できません。");
 		}
-		Optional<Wqueue> optWqueue = wqueueRepository.findByVisitId(visitId);
+		Optional<Wqueue> optWqueue = wqueueRepository.tryFindByVisitId(visitId);
 		if( optWqueue.isPresent() ){
 			wqueueRepository.delete(optWqueue.get());
 		}
@@ -656,7 +729,7 @@ public class DbGateway {
 		Payment payment = mapper.fromPaymentDTO(paymentDTO);
 		paymentRepository.save(payment);
 		Optional<PharmaQueue> optPharmaQueue = pharmaQueueRepository.findByVisitId(paymentDTO.visitId);
-		Optional<Wqueue> optWqueue = wqueueRepository.findByVisitId(paymentDTO.visitId);
+		Optional<Wqueue> optWqueue = wqueueRepository.tryFindByVisitId(paymentDTO.visitId);
 		if( optPharmaQueue.isPresent() ){
 			if( optWqueue.isPresent() ){
 				Wqueue wqueue = optWqueue.get();
@@ -681,7 +754,7 @@ public class DbGateway {
 					PharmaQueueFullDTO pharmaQueueFullDTO = new PharmaQueueFullDTO();
 					pharmaQueueFullDTO.pharmaQueue = mapper.toPharmaQueueDTO((PharmaQueue)result[0]);
 					pharmaQueueFullDTO.patient = mapper.toPatientDTO((Patient)result[1]);
-					Optional<Wqueue> optWqueue = wqueueRepository.findByVisitId(pharmaQueueFullDTO.pharmaQueue.visitId);
+					Optional<Wqueue> optWqueue = wqueueRepository.tryFindByVisitId(pharmaQueueFullDTO.pharmaQueue.visitId);
 					pharmaQueueFullDTO.wqueue = optWqueue.map(mapper::toWqueueDTO).orElse(null);
 					pharmaQueueFullDTO.visitId = pharmaQueueFullDTO.pharmaQueue.visitId;
 					return pharmaQueueFullDTO;
@@ -961,5 +1034,4 @@ public class DbGateway {
 		wqueueFullDTO.visit = mapper.toVisitDTO((Visit)result[2]);
 		return wqueueFullDTO;
 	}
-
- }
+}

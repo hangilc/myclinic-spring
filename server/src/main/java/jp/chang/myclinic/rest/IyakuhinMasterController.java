@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/json")
@@ -46,4 +45,21 @@ public class IyakuhinMasterController {
         iyakuhincode = masterMap.resolveIyakuhinCode(iyakuhincode, atDate);
         return dbGateway.findIyakuhinMaster(iyakuhincode, at);
     }
+
+    @RequestMapping(value="/batch-resolve-iyakuhin-master", method=RequestMethod.GET)
+    public Map<Integer, IyakuhinMasterDTO> batchResolveIyakuhinMaster(@RequestParam(value = "iyakuhincode", required = false) List<Integer> iyakuhincodes,
+                                                                      @RequestParam("at") String at){
+        if( iyakuhincodes == null ){
+            iyakuhincodes = Collections.emptyList();
+        }
+        Map<Integer, IyakuhinMasterDTO> map = new HashMap<>();
+        LocalDate atDate = LocalDate.parse(at);
+        iyakuhincodes.forEach(iyakuhincode -> {
+            int resolvedIyakuhincode = masterMap.resolveIyakuhinCode(iyakuhincode, atDate);
+            Optional<IyakuhinMasterDTO> optMaster = dbGateway.findIyakuhinMaster(resolvedIyakuhincode, at);
+            map.put(iyakuhincode, optMaster.orElse(null));
+        });
+        return map;
+    }
+
 }

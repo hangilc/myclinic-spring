@@ -17,11 +17,11 @@ class DrugNew extends JPanel {
     }
 
     private DrugInfoNew drugInfoPane = new DrugInfoNew();
+    private DrugSearch drugSearch;
     private Callback callback = new Callback(){};
 
     DrugNew(VisitDTO visit){
-        DrugSearch drugSearch = new DrugSearch(visit.patientId, visit.visitedAt.substring(0, 10),
-                this::doOnDrugSelected);
+        drugSearch = new DrugSearch(visit.patientId, visit.visitedAt.substring(0, 10), this::doOnDrugSelected);
         setLayout(new MigLayout("", "[grow]", ""));
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
         add(new JLabel("新規処方の入力"), "growx, wrap");
@@ -34,9 +34,18 @@ class DrugNew extends JPanel {
         this.callback = callback;
     }
 
+    void clear(){
+        drugInfoPane.clear();
+        drugSearch.clear();
+    }
+
     private JComponent makeCommandBox(VisitDTO visit){
         JButton enterButton = new JButton("入力");
-        enterButton.addActionListener(event -> callback.onEnter(drugInfoPane.getDrug()));
+        enterButton.addActionListener(event -> {
+            DrugDTO newDrug = drugInfoPane.getDrug();
+            newDrug.visitId = visit.visitId;
+            callback.onEnter(newDrug);
+        });
         JButton closeButton = new JButton("閉じる");
         closeButton.addActionListener(event -> callback.onClose());
         Link clearLink = new Link("クリア");
@@ -50,17 +59,19 @@ class DrugNew extends JPanel {
 
     private void doOnDrugSelected(DrugSearch.SearchResult selectedDrug){
         selectedDrug.resolveMaster()
-                .thenAccept(master -> {
+                .thenAccept(master -> EventQueue.invokeLater(() -> {
                     DrugCategory category = selectedDrug.getCategory();
                     drugInfoPane.setMaster(master);
                     drugInfoPane.setCategory(category);
                     drugInfoPane.amountField.setText(selectedDrug.getAmount().map(NumberUtil::formatNumber).orElse(""));
                     if( category != DrugCategory.Gaiyou ){
-                        String t = selectedDrug.getDays().map(Object::toString).orElse("");
-                        drugInfoPane.daysField.setText(t);
+                        if( !drugInfoPane.isDaysFixed() || drugInfoPane.isDaysFieldEmpty() ){
+                            String t = selectedDrug.getDays().map(Object::toString).orElse("");
+                            drugInfoPane.daysField.setText(t);
+                        }
                     }
                     drugInfoPane.usageField.setText(selectedDrug.getUsage());
-                })
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> {

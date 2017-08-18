@@ -19,4 +19,6 @@ public interface PharmaQueueRepository extends CrudRepository<PharmaQueue, Integ
 
     List<PharmaQueue> findAll();
 
+    Long deleteByVisitId(int visitId);
+
 }

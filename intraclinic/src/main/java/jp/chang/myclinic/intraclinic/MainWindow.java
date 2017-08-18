@@ -65,7 +65,9 @@ class MainWindow extends JFrame {
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();
-                    alert(t.toString());
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
                     return null;
                 });
     }
@@ -81,7 +83,9 @@ class MainWindow extends JFrame {
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();
-                    alert(t.toString());
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
                     return null;
                 });
     }
@@ -100,7 +104,9 @@ class MainWindow extends JFrame {
                         })
                         .exceptionally(t -> {
                             t.printStackTrace();
-                            alert(t.toString());
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
                             return null;
                         });
             }

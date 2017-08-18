@@ -5,19 +5,67 @@ import jp.chang.myclinic.util.DrugUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 class DrugDisp extends JPanel {
 
-    private DrugFullDTO drug;
-    private JEditorPane dispPane;
-
-    DrugDisp(DrugFullDTO drug, int index){
-        this.drug = drug;
-        setLayout(new MigLayout("insets 0", "[grow]", ""));
-        String label = String.format("%d)%s", index, DrugUtil.drugRep(drug));
-        dispPane = new JEditorPane("text/plain", label);
-        dispPane.setBackground(getBackground());
-        add(dispPane, "growx");
+    interface Callback {
+        default void onClick(){}
     }
 
+    private int drugId;
+    private int index;
+    private String drugRep;
+    private Callback callback;
+
+    DrugDisp(DrugFullDTO drug, int index){
+        this.drugId = drug.drug.drugId;
+        this.index = index;
+        this.drugRep = DrugUtil.drugRep(drug);
+        setLayout(new MigLayout("insets 0", "[grow]", ""));
+        add(makeEditorPane(), "growx");
+    }
+
+    void setCallback(Callback callback){
+        this.callback = callback;
+    }
+
+    private JEditorPane makeEditorPane(){
+        String label = String.format("%d)%s", index, drugRep);
+        JEditorPane dispPane = new JEditorPane("text/plain", label);
+        dispPane.setEditable(false);
+        dispPane.setBackground(getBackground());
+        dispPane.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                callback.onClick();
+            }
+        });
+        return dispPane;
+    }
+
+    int getDrugId() {
+        return drugId;
+    }
+
+    int getIndex(){
+        return index;
+    }
+
+    void update(DrugFullDTO drug){
+        this.drugRep = DrugUtil.drugRep(drug);
+        removeAll();
+        add(makeEditorPane(), "growx");
+        repaint();
+        revalidate();
+    }
+
+    void updateIndex(int index){
+        this.index = index;
+        removeAll();
+        add(makeEditorPane(), "growx");
+        repaint();
+        revalidate();
+    }
 }

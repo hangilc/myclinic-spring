@@ -158,7 +158,9 @@ class PostsPane extends JPanel {
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();
-                    alert(t.toString());
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
                     return null;
                 });
     }
@@ -178,7 +180,9 @@ class PostsPane extends JPanel {
                         })
                         .exceptionally(t -> {
                             t.printStackTrace();
-                            alert(t.toString());
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
                             return null;
                         });
             }
