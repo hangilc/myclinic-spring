@@ -41,6 +41,11 @@ public class DrugArea extends JPanel {
             public void onDrugsCopied(int targetVisitId, List<Integer> drugIds) {
                 callback.onCopyAll(targetVisitId, drugIds);
             }
+
+            @Override
+            public void onDrugsModified(List<DrugFullDTO> modifiedDrugs) {
+                drugListDisp.update(modifiedDrugs);
+            }
         });
         setLayout(new MigLayout("insets 0, gapy 0", "[grow]", ""));
         add(drugMenu, "growx, wrap");

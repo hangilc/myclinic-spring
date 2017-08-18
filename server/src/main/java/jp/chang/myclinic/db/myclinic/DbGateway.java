@@ -483,6 +483,10 @@ public class DbGateway {
 		return drugIds.stream().map(this::getDrugFull).collect(Collectors.toList());
 	}
 
+	public void batchUpdateDrugDays(List<Integer> drugIds, int days){
+		drugRepository.batchUpdateDays(drugIds, days);
+	}
+
 	public List<TextDTO> listText(int visitId){
 		List<Text> texts = textRepository.findByVisitId(visitId);
 		return texts.stream().map(mapper::toTextDTO).collect(Collectors.toList());

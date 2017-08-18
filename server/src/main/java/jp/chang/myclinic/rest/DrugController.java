@@ -106,4 +106,12 @@ public class DrugController {
 		});
 		return drugIds;
 	}
+
+	@RequestMapping(value="/batch-update-drug-days", method=RequestMethod.POST)
+	public boolean batchUpdateDrugDays(@RequestParam(value="drug-id", required=false) List<Integer> drugIds, @RequestParam("days") int days){
+		if( drugIds != null && drugIds.size() > 0 ){
+			dbGateway.batchUpdateDrugDays(drugIds, days);
+		}
+		return true;
+	}
 }

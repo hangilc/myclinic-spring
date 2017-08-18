@@ -1,7 +1,6 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.util.DrugUtil;
@@ -12,10 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class CopySomePane extends JPanel {
+class ModifyDaysPane extends JPanel {
 
     interface Callback {
-        default void onEnter(List<DrugFullDTO> selected){}
+        default void onEnter(List<DrugFullDTO> selected, int days){}
         default void onCancel(){}
     }
 
@@ -23,8 +22,12 @@ class CopySomePane extends JPanel {
     private List<Item> items = new ArrayList<>();
     private Callback callback = new Callback(){};
 
-    CopySomePane(List<DrugFullDTO> candidates){
+    ModifyDaysPane(List<DrugFullDTO> fullDrugs){
         super(new MigLayout("insets 0", "[] [grow]", ""));
+        int gaiyouCode = DrugCategory.Gaiyou.getCode();
+        List<DrugFullDTO> candidates = fullDrugs.stream()
+                .filter(d -> d.drug.category != gaiyouCode)
+                .collect(Collectors.toList());
         candidates.forEach(drug -> {
             JCheckBox checkbox = new JCheckBox("");
             JEditorPane rep = new JEditorPane("text/plain", DrugUtil.drugRep(drug));
@@ -88,26 +91,13 @@ class CopySomePane extends JPanel {
 
     private void doEnter(){
         String daysInput = daysField.getText();
-        int gaiyouCode = DrugCategory.Gaiyou.getCode();
-        try {
-            final int days = daysInput.isEmpty() ? 0 : Integer.parseInt(daysInput);
-            List<DrugFullDTO> srcDrugs = items.stream()
-                    .filter(item -> item.checkbox.isSelected())
-                    .map(item -> {
-                        if( days > 0 && item.drug.drug.category != gaiyouCode ){
-                            DrugDTO newDrug = DrugDTO.copy(item.drug.drug);
-                            newDrug.days = days;
-                            DrugFullDTO newFullDrug = DrugFullDTO.copy(item.drug);
-                            newFullDrug.drug = newDrug;
-                            return newFullDrug;
-                        } else {
-                            return item.drug;
-                        }
-                    })
-                    .collect(Collectors.toList());
-            callback.onEnter(srcDrugs);
+        try{
+            int days = daysInput.isEmpty() ? 0 : Integer.parseInt(daysInput);
+            List<DrugFullDTO> selected = items.stream().filter(item -> item.checkbox.isSelected())
+                    .map(item -> item.drug).collect(Collectors.toList());
+            callback.onEnter(selected, days);
         } catch(NumberFormatException ex){
-            alert("日数の指定が不適切です。");
+            alert("日数の入力が不適切です。");
         }
     }
 

@@ -70,4 +70,8 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 
 	int countByVisitIdAndPrescribed(int visitId, int prescribed);
 
+	@Modifying
+	@Query("update Drug d set d.days = :days where d.drugId in :drugIds")
+	void batchUpdateDays(@Param("drugIds") List<Integer> drugIds, @Param("days") int days);
+
 }

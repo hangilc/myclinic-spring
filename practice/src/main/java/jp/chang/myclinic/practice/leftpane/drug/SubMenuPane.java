@@ -14,6 +14,7 @@ class SubMenuPane extends JPopupMenu {
     interface Callback {
         void onCopyAll(int targetVisitId, List<Integer> enteredDrugIds);
         void onCopySome(int targetVisitId);
+        void onModifyDays();
     }
 
     private Callback callback;
@@ -26,6 +27,7 @@ class SubMenuPane extends JPopupMenu {
         JMenuItem copySomeItem = new JMenuItem("選択コピー");
         copySomeItem.addActionListener(event -> doCopySome(visit, targetVisitId));
         JMenuItem modifyDaysItem = new JMenuItem("日数変更");
+        modifyDaysItem.addActionListener(event -> callback.onModifyDays());
         JMenuItem deleteSomeItem = new JMenuItem("複数削除");
         JMenuItem cancelItem = new JMenuItem("キャンセル ");
         add(copyAllItem);

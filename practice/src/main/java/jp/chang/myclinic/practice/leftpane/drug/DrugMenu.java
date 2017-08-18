@@ -12,12 +12,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class DrugMenu extends JPanel {
 
     interface Callback {
         default void onNewDrug(DrugDTO drug){ throw new RuntimeException("not implemented"); }
-        default void onDrugsCopied(int targetVisitId, List<Integer> drugIds){ throw new RuntimeException("not implemented"); };
+        default void onDrugsCopied(int targetVisitId, List<Integer> drugIds){ throw new RuntimeException("not implemented"); }
+        default void onDrugsModified(List<DrugFullDTO> modifiedDrugs){}
     }
 
     private JComponent subMenuPane;
@@ -86,6 +88,11 @@ class DrugMenu extends JPanel {
             public void onCopySome(int targetVisitId) {
                 handleCopySome(targetVisitId, visit);
             }
+
+            @Override
+            public void onModifyDays() {
+                handleModifyDays(visit.visitId);
+            }
         });
         submenu.show(this, event.getX(), event.getY());
     }
@@ -118,7 +125,7 @@ class DrugMenu extends JPanel {
                             DrugLib.copyDrugs(targetVisitId, selected)
                                     .thenAccept(drugIds -> EventQueue.invokeLater(() -> {
                                         closeWorkArea();
-                                        callback.onDrugsCopied(targetVisitId, drugIds);
+                                        EventQueue.invokeLater(() -> callback.onDrugsCopied(targetVisitId, drugIds));
                                     }))
                                     .exceptionally(t -> {
                                         t.printStackTrace();
@@ -139,6 +146,49 @@ class DrugMenu extends JPanel {
                     repaint();
                     revalidate();
                 }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
+    private void handleModifyDays(int visitId){
+        Service.api.listDrugFull(visitId)
+                .thenAccept(fullDrugs -> {
+                    ModifyDaysPane modifyDaysPane = new ModifyDaysPane(fullDrugs);
+                    modifyDaysPane.setCallback(new ModifyDaysPane.Callback(){
+                        @Override
+                        public void onEnter(List<DrugFullDTO> selected, int days) {
+                            List<Integer> drugIds = selected.stream()
+                                    .map(fullDrug -> fullDrug.drug.drugId).collect(Collectors.toList());
+                            Service.api.batchUpdateDrugDays(drugIds, days)
+                                    .thenCompose(ok -> Service.api.listDrugFullByDrugIds(drugIds))
+                                    .thenAccept(modifiedDrugs -> {
+                                        closeWorkArea();
+                                        EventQueue.invokeLater(() -> callback.onDrugsModified(modifiedDrugs));
+                                    })
+                                    .exceptionally(t -> {
+                                        t.printStackTrace();
+                                        EventQueue.invokeLater(() -> {
+                                            alert(t.toString());
+                                        });
+                                        return null;
+                                    });
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            closeWorkArea();
+                        }
+                    });
+                    workPane = new WorkArea("処方日数の変更", modifyDaysPane);
+                    add(workPane, "newline, growx");
+                    repaint();
+                    revalidate();
+                })
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> {
