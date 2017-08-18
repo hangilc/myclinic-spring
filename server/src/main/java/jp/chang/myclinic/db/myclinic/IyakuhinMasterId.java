@@ -3,6 +3,7 @@ package jp.chang.myclinic.db.myclinic;
 import java.io.Serializable;
 import java.util.Objects;
 
+// TODO: add equals() and hash to composite ids
 public class IyakuhinMasterId implements Serializable {
 	public Integer iyakuhincode;
 	public String validFrom;
