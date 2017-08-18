@@ -33,4 +33,19 @@ class DrugListDisp extends JPanel {
             drugDispMap.get(modifiedDrug.drug.drugId).update(modifiedDrug);
         });
     }
+
+    void deleteDrugs(List<Integer> drugIds){
+        drugIds.forEach(drugId -> {
+            DrugDisp drugDisp = drugDispMap.get(drugId);
+            remove(drugDisp);
+            drugDispMap.remove(drugId);
+        });
+        int index = 1;
+        for(DrugDisp drugDisp: drugDispMap.values()){
+            drugDisp.updateIndex(index);
+            index += 1;
+        }
+        repaint();
+        revalidate();
+    }
 }

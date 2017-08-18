@@ -46,6 +46,11 @@ public class DrugArea extends JPanel {
             public void onDrugsModified(List<DrugFullDTO> modifiedDrugs) {
                 drugListDisp.update(modifiedDrugs);
             }
+
+            @Override
+            public void onDrugsDeleted(List<Integer> drugIds) {
+                drugListDisp.deleteDrugs(drugIds);
+            }
         });
         setLayout(new MigLayout("insets 0, gapy 0", "[grow]", ""));
         add(drugMenu, "growx, wrap");

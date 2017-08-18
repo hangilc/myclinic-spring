@@ -20,6 +20,7 @@ class DrugMenu extends JPanel {
         default void onNewDrug(DrugDTO drug){ throw new RuntimeException("not implemented"); }
         default void onDrugsCopied(int targetVisitId, List<Integer> drugIds){ throw new RuntimeException("not implemented"); }
         default void onDrugsModified(List<DrugFullDTO> modifiedDrugs){}
+        default void onDrugsDeleted(List<Integer> drugIds){}
     }
 
     private JComponent subMenuPane;
@@ -92,6 +93,11 @@ class DrugMenu extends JPanel {
             @Override
             public void onModifyDays() {
                 handleModifyDays(visit.visitId);
+            }
+
+            @Override
+            public void onDeleteSome() {
+                handleDeleteSelected(visit.visitId);
             }
         });
         submenu.show(this, event.getX(), event.getY());
@@ -185,6 +191,50 @@ class DrugMenu extends JPanel {
                         }
                     });
                     workPane = new WorkArea("処方日数の変更", modifyDaysPane);
+                    add(workPane, "newline, growx");
+                    repaint();
+                    revalidate();
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
+    private void handleDeleteSelected(int visitId){
+        Service.api.listDrugFull(visitId)
+                .thenAccept(fullDrugs -> {
+                    DeleteSomePane deleteSomePane = new DeleteSomePane(fullDrugs);
+                    deleteSomePane.setCallback(new DeleteSomePane.Callback() {
+                        @Override
+                        public void onEnter(List<DrugFullDTO> selected) {
+                            List<Integer> drugIds = selected.stream()
+                                    .map(fullDrug -> fullDrug.drug.drugId)
+                                    .collect(Collectors.toList());
+                            Service.api.batchDeleteDrugs(drugIds)
+                                    .thenAccept(ok -> EventQueue.invokeLater(() -> {
+                                        closeWorkArea();
+                                        EventQueue.invokeLater(() -> callback.onDrugsDeleted(drugIds));
+                                    }))
+                                    .exceptionally(t -> {
+                                        t.printStackTrace();
+                                        EventQueue.invokeLater(() -> {
+                                            alert(t.toString());
+                                        });
+                                        return null;
+                                    });
+
+                        }
+
+                        @Override
+                        public void onCancel() {
+                            closeWorkArea();
+                        }
+                    });
+                    workPane = new WorkArea("薬剤の選択削除", deleteSomePane);
                     add(workPane, "newline, growx");
                     repaint();
                     revalidate();

@@ -465,6 +465,10 @@ public class DbGateway {
 		return mapper.toDrugDTO(drug);
 	}
 
+	public void deleteDrug(int drugId) {
+		drugRepository.delete(drugId);
+	}
+
 	public void markDrugsAsPrescribedForVisit(int visitId){
 		drugRepository.markAsPrescribedForVisit(visitId);
 	}
@@ -1025,5 +1029,4 @@ public class DbGateway {
 		wqueueFullDTO.visit = mapper.toVisitDTO((Visit)result[2]);
 		return wqueueFullDTO;
 	}
-
- }
+}

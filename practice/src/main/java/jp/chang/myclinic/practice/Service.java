@@ -97,6 +97,9 @@ public class Service {
 
         @POST("batch-update-drug-days")
         CompletableFuture<Boolean> batchUpdateDrugDays(@Query("drug-id") List<Integer> drugIds, @Query("days") int days);
+
+        @POST("batch-delete-drugs")
+        CompletableFuture<Boolean> batchDeleteDrugs(@Query("drug-id") List<Integer> drugIds);
     }
 
     public static ServerAPI api;
