@@ -5,7 +5,7 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
-import jp.chang.myclinic.practice.leftpane.WorkArea;
+import jp.chang.myclinic.practice.leftpane.WorkArea1;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -147,7 +147,7 @@ class DrugMenu extends JPanel {
                             closeWorkArea();
                         }
                     });
-                    workPane = new WorkArea("薬剤の選択コピー", copySomePane);
+                    workPane = new WorkArea1("薬剤の選択コピー", copySomePane);
                     add(workPane, "newline, growx");
                     repaint();
                     revalidate();
@@ -190,7 +190,7 @@ class DrugMenu extends JPanel {
                             closeWorkArea();
                         }
                     });
-                    workPane = new WorkArea("処方日数の変更", modifyDaysPane);
+                    workPane = new WorkArea1("処方日数の変更", modifyDaysPane);
                     add(workPane, "newline, growx");
                     repaint();
                     revalidate();
@@ -234,7 +234,7 @@ class DrugMenu extends JPanel {
                             closeWorkArea();
                         }
                     });
-                    workPane = new WorkArea("薬剤の選択削除", deleteSomePane);
+                    workPane = new WorkArea1("薬剤の選択削除", deleteSomePane);
                     add(workPane, "newline, growx");
                     repaint();
                     revalidate();

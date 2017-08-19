@@ -43,8 +43,8 @@ class Record extends JPanel {
         JPanel panel = new JPanel(new MigLayout("insets 0", "[grow]", ""));
         panel.add(new HokenDisp(visitFull.hoken, visitFull.visit), "wrap");
         panel.add(makeDrugArea(visitFull.drugs, visitFull.visit, currentVisitId, tempVisitId), "growx, wrap");
-        panel.add(makeShinryouArea(visitFull.shinryouList), "growx, wrap");
-        panel.add(makeConductArea(visitFull.conducts), "growx, wrap");
+        panel.add(makeShinryouArea(visitFull.shinryouList, visitFull.visit, currentVisitId, tempVisitId), "growx, wrap");
+        panel.add(makeConductArea(visitFull.conducts, visitFull.visit, currentVisitId, tempVisitId), "growx, wrap");
         panel.add(makeChargePane(visitFull.charge), "");
         return panel;
 
@@ -61,12 +61,12 @@ class Record extends JPanel {
         return this.drugArea;
     }
 
-    private ShinryouArea makeShinryouArea(List<ShinryouFullDTO> shinryouList){
-        ShinryouArea shinryouArea = new ShinryouArea(shinryouList);
+    private ShinryouArea makeShinryouArea(List<ShinryouFullDTO> shinryouList, VisitDTO visit, int currentVisitId, int tempVisitId){
+        ShinryouArea shinryouArea = new ShinryouArea(shinryouList, visit, currentVisitId, tempVisitId);
         return shinryouArea;
     }
 
-    private ConductArea makeConductArea(List<ConductFullDTO> conducts){
+    private ConductArea makeConductArea(List<ConductFullDTO> conducts, VisitDTO visit, int currentVisitId, int tempVisitId){
         ConductArea conductArea = new ConductArea(conducts);
         return conductArea;
     }

@@ -36,6 +36,7 @@ class DrugDisp extends JPanel {
         JEditorPane dispPane = new JEditorPane("text/plain", label);
         dispPane.setEditable(false);
         dispPane.setBackground(getBackground());
+        //dispPane.setBorder(BorderFactory.createEmptyBorder());
         dispPane.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e) {

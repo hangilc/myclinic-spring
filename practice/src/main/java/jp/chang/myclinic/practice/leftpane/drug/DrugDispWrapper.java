@@ -2,7 +2,7 @@ package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.practice.leftpane.WorkArea;
+import jp.chang.myclinic.practice.leftpane.WorkArea1;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -11,7 +11,7 @@ import java.awt.*;
 class DrugDispWrapper extends JPanel {
 
     private DrugDisp drugDisp;
-    private WorkArea workArea;
+    private WorkArea1 workArea;
     private DrugEditPane drugEditPane;
 
     DrugDispWrapper(DrugFullDTO drugFull, int index, VisitDTO visit, DrugExecContext drugExecContext){
@@ -60,7 +60,7 @@ class DrugDispWrapper extends JPanel {
                 drugEditPane = null;
             }
         });
-        workArea = new WorkArea("薬剤の編集", drugEditPane);
+        workArea = new WorkArea1("薬剤の編集", drugEditPane);
         remove(drugDisp);
         add(workArea, "growx");
         repaint();

@@ -5,20 +5,13 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 
-public class WorkArea<T extends JComponent> extends JPanel {
+public class WorkArea1 extends JPanel {
 
-    private T component;
-
-    public WorkArea(String title, T component){
+    public WorkArea1(String title, JComponent pane){
         super(new MigLayout("", "[grow]", ""));
-        this.component = component;
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         add(makeTitle(title), "growx, wrap");
-        add(component, "growx");
-    }
-
-    public T getComponent(){
-        return component;
+        add(pane, "growx");
     }
 
     private JComponent makeTitle(String text){
