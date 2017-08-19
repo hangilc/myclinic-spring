@@ -128,4 +128,10 @@ public class DrugController {
 		}
 		return true;
 	}
+
+	@RequestMapping(value="/delete-drug", method=RequestMethod.POST)
+	public boolean deleteDrug(@RequestParam("drug-id") int drugId){
+		dbGateway.deleteDrug(drugId);
+		return true;
+	}
 }

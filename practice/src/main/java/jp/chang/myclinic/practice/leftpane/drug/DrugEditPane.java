@@ -11,6 +11,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 
 class DrugEditPane extends JPanel {
 
@@ -22,12 +23,12 @@ class DrugEditPane extends JPanel {
     private DrugInfoEdit drugInfoPane;
     private Callback callback = new Callback(){};
 
-    DrugEditPane(DrugFullDTO drugFull, VisitDTO visit){
+    DrugEditPane(DrugFullDTO drugFull, VisitDTO visit, DrugExecContext drugExecContext){
         drugInfoPane = new DrugInfoEdit(drugFull);
         DrugSearch drugSearch = new DrugSearch(visit.patientId, visit.visitedAt.substring(0, 10), this::doOnDrugSelected);
         setLayout(new MigLayout("", "[grow]", ""));
         add(drugInfoPane, "growx, wrap");
-        add(makeCommandBox(drugFull, visit), "growx, wrap");
+        add(makeCommandBox(drugFull, visit, drugExecContext), "growx, wrap");
         add(drugSearch, "growx");
     }
 
@@ -57,7 +58,7 @@ class DrugEditPane extends JPanel {
                 });
     }
 
-    private JComponent makeCommandBox(DrugFullDTO drugFull, VisitDTO visit){
+    private JComponent makeCommandBox(DrugFullDTO drugFull, VisitDTO visit, DrugExecContext drugExecContext){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         JButton enterButton = new JButton("入力");
         enterButton.addActionListener(event -> {
@@ -80,14 +81,35 @@ class DrugEditPane extends JPanel {
         JButton cancelButton = new JButton("キャンセル");
         cancelButton.addActionListener(event -> callback.onClose());
         Link deleteLink = new Link("削除");
+        deleteLink.setCallback(event -> doDelete(drugFull.drug.drugId, drugExecContext));
         panel.add(enterButton);
         panel.add(cancelButton);
         panel.add(deleteLink);
         return panel;
     }
 
+    private void doDelete(int drugId, DrugExecContext drugExecContext){
+        if( !confirm("この処方を削除していいですか？") ){
+            return;
+        }
+        Service.api.deleteDrug(drugId)
+                .thenAccept(ok -> drugExecContext.onDrugDeleted(Collections.singletonList(drugId)))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
     private void alert(String message){
         JOptionPane.showMessageDialog(this, message);
+    }
+
+    private boolean confirm(String message){
+        int choice = JOptionPane.showConfirmDialog(this, message, "確認", JOptionPane.YES_NO_OPTION);
+        return choice == JOptionPane.YES_OPTION;
     }
 
 }

@@ -14,13 +14,13 @@ class DrugDispWrapper extends JPanel {
     private WorkArea workArea;
     private DrugEditPane drugEditPane;
 
-    DrugDispWrapper(DrugFullDTO drugFull, int index, VisitDTO visit){
+    DrugDispWrapper(DrugFullDTO drugFull, int index, VisitDTO visit, DrugExecContext drugExecContext){
         super(new MigLayout("insets 0", "[grow]", ""));
         drugDisp = new DrugDisp(drugFull, index);
         drugDisp.setCallback(new DrugDisp.Callback(){
             @Override
             public void onClick() {
-                doDrugDispClick(drugFull, visit);
+                doDrugDispClick(drugFull, visit, drugExecContext);
             }
         });
         add(drugDisp, "growx");
@@ -34,8 +34,8 @@ class DrugDispWrapper extends JPanel {
         drugDisp.updateIndex(index);
     }
 
-    private void doDrugDispClick(DrugFullDTO drugFull, VisitDTO visit){
-        drugEditPane = new DrugEditPane(drugFull, visit);
+    private void doDrugDispClick(DrugFullDTO drugFull, VisitDTO visit, DrugExecContext drugExecContext){
+        drugEditPane = new DrugEditPane(drugFull, visit, drugExecContext);
         drugEditPane.setCallback(new DrugEditPane.Callback(){
             @Override
             public void onUpdated(DrugFullDTO newDrugFull) {
@@ -66,4 +66,5 @@ class DrugDispWrapper extends JPanel {
         repaint();
         revalidate();
     }
+
 }
