@@ -7,21 +7,28 @@ import javax.swing.*;
 
 class PatientInfoPane extends JPanel {
 
+    private int paneWidth;
     private PatientDTO patient;
     private JEditorPane infoPane;
     private boolean detailShown = false;
 
-    PatientInfoPane(PatientDTO patient){
-        this.patient = patient;
-        setLayout(new MigLayout("fillx", "", ""));
+    PatientInfoPane(int width){
+        int layoutInsets = 4;
+        int colGap = 4;
+        setLayout(new MigLayout("insets " + layoutInsets, "[]" + colGap  + "[]", ""));
+        JButton detailButton = new JButton("詳細");
+        System.out.println("button insets: " + detailButton.getInsets());
+        System.out.println("button pref size: " + detailButton.getPreferredSize());
         infoPane = new JEditorPane();
         infoPane.setContentType("text/plain");
-        infoPane.setText(makeText());
+        infoPane.setText("");
         infoPane.setEditable(false);
         infoPane.setBackground(this.getBackground());
-        JButton detailButton = new JButton("詳細");
+        infoPane.setBorder(BorderFactory.createEmptyBorder());
+        this.paneWidth = width - detailButton.getPreferredSize().width - layoutInsets * 2 - colGap;
+        System.out.println("infoPane insets: " + infoPane.getInsets());
         detailButton.addActionListener(event -> doToggleDetail());
-        add(infoPane, "growx");
+        add(infoPane, "");
         add(detailButton, "top");
     }
 
@@ -39,5 +46,21 @@ class PatientInfoPane extends JPanel {
         detailShown = !detailShown;
     }
 
+    void setPatient(PatientDTO patient){
+        this.patient = patient;
+        System.out.println("insets: " + getInsets());
+        System.out.println(paneWidth);
+        infoPane.setSize(paneWidth, Integer.MAX_VALUE);
+        infoPane.setText(makeText());
+        System.out.println("infoPane size: " + infoPane.getPreferredSize());
+        repaint();
+        revalidate();
+    }
 
+    void reset(){
+        this.patient = null;
+        infoPane.setText("");
+        repaint();
+        revalidate();
+    }
 }

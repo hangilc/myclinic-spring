@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 class SearchPatient extends JPanel {
 
     public interface Context {
-        CompletableFuture<Void> startPatient(PatientDTO patient);
+        CompletableFuture<Boolean> startPatient(PatientDTO patient);
     }
 
    private JTextField searchTextField = new JTextField();
@@ -41,7 +41,7 @@ class SearchPatient extends JPanel {
         add(scrollPane, "newline, span, grow, h 200, hidemode 2");
     }
 
-    public void reset(){
+    void reset(){
         searchTextField.setText("");
         scrollPane.setVisible(false);
         searchResult.setListData(new PatientDTO[]{});
@@ -76,7 +76,7 @@ class SearchPatient extends JPanel {
                     PatientDTO patient = searchResult.getSelectedValue();
                     if( patient != null ){
                         context.startPatient(patient)
-                                .thenAccept((Void v) -> reset())
+                                .thenAccept(ok -> reset())
                                 .exceptionally(t -> {
                                     t.printStackTrace();
                                     EventQueue.invokeLater(() -> {

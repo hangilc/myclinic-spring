@@ -3,7 +3,6 @@ package jp.chang.myclinic.practice.leftpane;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2PageDTO;
 import jp.chang.myclinic.practice.Service;
-import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,25 +24,25 @@ public class LeftPane extends JPanel {
                     Callback callback){
         this.patient = patient;
         this.visitFullPage = visitFullPage;
-        topNav = makeNav(currentVisitId, tempVisitId);
-        bottomNav = makeNav(currentVisitId, tempVisitId);
-        dispRecords = new DispRecords();
-        dispRecords.setVisits(visitFullPage.visits, currentVisitId, tempVisitId);
-        scrollPane = new JScrollPane(dispRecords);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
-        PatientManip patientManip = new PatientManip(new PatientManip.Callback(){
-            @Override
-            public void onFinishPatient() {
-                callback.onFinishPatient();
-            }
-        });
-        setLayout(new MigLayout("insets 0, fill", "[grow]", "[] [] [] [grow] []"));
-        add(new PatientInfoPane(patient), "growx, wrap");
-        add(patientManip, "wrap");
-        add(topNav, "wrap");
-        add(scrollPane, "grow, wrap");
-        add(bottomNav, "");
+//        topNav = makeNav(currentVisitId, tempVisitId);
+//        bottomNav = makeNav(currentVisitId, tempVisitId);
+//        dispRecords = new DispRecords();
+//        dispRecords.setVisits(visitFullPage.visits, currentVisitId, tempVisitId);
+//        scrollPane = new JScrollPane(dispRecords);
+//        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+//        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
+//        PatientManip patientManip = new PatientManip(new PatientManip.Callback(){
+//            @Override
+//            public void onFinishPatient() {
+//                callback.onFinishPatient();
+//            }
+//        });
+//        setLayout(new MigLayout("insets 0, fill", "[grow]", "[] [] [] [grow] []"));
+//        add(new PatientInfoPane(patient), "growx, wrap");
+//        add(patientManip, "wrap");
+//        add(topNav, "wrap");
+//        add(scrollPane, "grow, wrap");
+//        add(bottomNav, "");
     }
 
     private RecordsNav makeNav(int currentVisitId, int tempVisitId){

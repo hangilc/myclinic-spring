@@ -7,6 +7,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface MainExecContext {
 
-    CompletableFuture<Void> startExam(VisitDTO visit, PatientDTO patient);
-
+    CompletableFuture<Boolean> startExam(VisitDTO visit, PatientDTO patient);
+    PatientDTO getCurrentPatient();
 }

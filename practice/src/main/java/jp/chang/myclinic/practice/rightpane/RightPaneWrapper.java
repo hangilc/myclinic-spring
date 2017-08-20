@@ -7,6 +7,7 @@ import jp.chang.myclinic.practice.rightpane.selectvisit.SelectVisit;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.concurrent.CompletableFuture;
 
 public class RightPaneWrapper extends JPanel {
@@ -17,7 +18,15 @@ public class RightPaneWrapper extends JPanel {
         selectVisit.setCallback(new SelectVisit.Callback(){
             @Override
             public void onSelect(WqueueFullDTO wqueue) {
-                mainExecContext.startExam(wqueue.visit, wqueue.patient);
+                mainExecContext.startExam(wqueue.visit, wqueue.patient)
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+
             }
         });
         add(selectVisit, "growx, wrap");
@@ -26,13 +35,17 @@ public class RightPaneWrapper extends JPanel {
             frame.setBorder(BorderFactory.createTitledBorder("患者検索"));
             SearchPatient searchPatientPane = new SearchPatient(new SearchPatient.Context(){
                 @Override
-                public CompletableFuture<Void> startPatient(PatientDTO patient) {
+                public CompletableFuture<Boolean> startPatient(PatientDTO patient) {
                     return mainExecContext.startExam(null, patient);
                 }
             });
             frame.add(searchPatientPane, "growx");
             add(frame, "top, growx, wrap");
         }
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
     }
 
 }
