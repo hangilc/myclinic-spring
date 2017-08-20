@@ -21,14 +21,14 @@ class MainFrame extends JFrame {
     MainFrame(){
         setTitle("診察");
         setupMenu();
-        setLayout(new MigLayout("", "", ""));
+        setLayout(new MigLayout("", "", "[grow]"));
         MainExecContext ctx = makeMainExecContext();
         leftPaneWrapper = new LeftPaneWrapper(ctx);
         rightPaneWrapper = new RightPaneWrapper(ctx);
         JScrollPane rightScroll = new JScrollPane(rightPaneWrapper);
         rightScroll.setBorder(null);
-        add(leftPaneWrapper, "w 580!, h 520, grow");
-        add(rightScroll, "w 220!, h 520, grow");
+        add(leftPaneWrapper, "w 580!, h 520, growy");
+        add(rightScroll, "w 220!, h 520, growy");
         pack();
     }
 

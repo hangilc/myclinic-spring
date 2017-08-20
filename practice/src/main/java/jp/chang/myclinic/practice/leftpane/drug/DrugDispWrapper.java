@@ -14,16 +14,16 @@ class DrugDispWrapper extends JPanel {
     private WorkArea1 workArea;
     private DrugEditPane drugEditPane;
 
-    DrugDispWrapper(DrugFullDTO drugFull, int index, VisitDTO visit, DrugExecContext drugExecContext){
-        super(new MigLayout("insets 0", "[grow]", ""));
-        drugDisp = new DrugDisp(drugFull, index);
+    DrugDispWrapper(DrugFullDTO drugFull, int index, VisitDTO visit, int width, DrugExecContext drugExecContext){
+        super(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
+        drugDisp = new DrugDisp(drugFull, index, width);
         drugDisp.setCallback(new DrugDisp.Callback(){
             @Override
             public void onClick() {
                 doDrugDispClick(drugFull, visit, drugExecContext);
             }
         });
-        add(drugDisp, "growx");
+        add(drugDisp, "");
     }
 
     void update(DrugFullDTO drug){
@@ -44,7 +44,7 @@ class DrugDispWrapper extends JPanel {
                 revalidate();
                 EventQueue.invokeLater(() -> {
                     drugDisp.update(newDrugFull);
-                    add(drugDisp, "growx");
+                    add(drugDisp, "");
                     workArea = null;
                     drugEditPane = null;
                 });
@@ -62,7 +62,7 @@ class DrugDispWrapper extends JPanel {
         });
         workArea = new WorkArea1("薬剤の編集", drugEditPane);
         remove(drugDisp);
-        add(workArea, "growx");
+        add(workArea, "");
         repaint();
         revalidate();
     }

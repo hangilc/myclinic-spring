@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.leftpane;
 
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.practice.MainExecContext;
+import jp.chang.myclinic.practice.leftpane.drug.DrugArea;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenDisp;
 import jp.chang.myclinic.practice.leftpane.text.TextArea;
 import jp.chang.myclinic.practice.leftpane.title.Title;
@@ -34,7 +35,8 @@ class Record extends JPanel {
 
     private JComponent makeRightColumn(){
         JPanel panel = new JPanel(new MigLayout("insets 0", String.format("[%dpx!]", colWidth), ""));
-        panel.add(new HokenDisp(fullVisit.hoken, fullVisit.visit));
+        panel.add(new HokenDisp(fullVisit.hoken, fullVisit.visit), "wrap");
+        panel.add(new DrugArea(fullVisit.drugs, fullVisit.visit, colWidth, mainExecContext), "wrap");
         return panel;
     }
 }

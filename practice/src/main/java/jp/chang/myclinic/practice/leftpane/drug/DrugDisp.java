@@ -19,24 +19,27 @@ class DrugDisp extends JPanel {
     private String drugRep;
     private Callback callback;
 
-    DrugDisp(DrugFullDTO drug, int index){
+    DrugDisp(DrugFullDTO drug, int index, int width){
         this.drugId = drug.drug.drugId;
         this.index = index;
         this.drugRep = DrugUtil.drugRep(drug);
-        setLayout(new MigLayout("insets 0", "[grow]", ""));
-        add(makeEditorPane(), "growx");
+        setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
+        add(makeEditorPane(width), "");
     }
 
     void setCallback(Callback callback){
         this.callback = callback;
     }
 
-    private JEditorPane makeEditorPane(){
+    private JEditorPane makeEditorPane(int width){
         String label = String.format("%d)%s", index, drugRep);
-        JEditorPane dispPane = new JEditorPane("text/plain", label);
+        JEditorPane dispPane = new JEditorPane();
+        dispPane.setContentType("text/plain");
+        dispPane.setSize(width, Integer.MAX_VALUE);
+        dispPane.setText(label);
         dispPane.setEditable(false);
         dispPane.setBackground(getBackground());
-        //dispPane.setBorder(BorderFactory.createEmptyBorder());
+        dispPane.setBorder(BorderFactory.createEmptyBorder());
         dispPane.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -56,17 +59,17 @@ class DrugDisp extends JPanel {
 
     void update(DrugFullDTO drug){
         this.drugRep = DrugUtil.drugRep(drug);
-        removeAll();
-        add(makeEditorPane(), "growx");
-        repaint();
-        revalidate();
+//        removeAll();
+//        add(makeEditorPane(), "growx");
+//        repaint();
+//        revalidate();
     }
 
     void updateIndex(int index){
         this.index = index;
-        removeAll();
-        add(makeEditorPane(), "growx");
-        repaint();
-        revalidate();
+//        removeAll();
+//        add(makeEditorPane(), "growx");
+//        repaint();
+//        revalidate();
     }
 }

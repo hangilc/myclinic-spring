@@ -12,21 +12,30 @@ import java.util.Map;
 
 class DrugListDisp extends JPanel {
 
+    private int width;
     private Map<Integer, DrugDispWrapper> drugDispMap = new LinkedHashMap<>();
     private VisitDTO visit;
     private DrugExecContext drugExecContext;
 
     DrugListDisp(List<DrugFullDTO> drugs, VisitDTO visit){
+//        this.visit = visit;
+//        drugExecContext = makeDrugExecContext();
+//        setLayout(new MigLayout("insets 0, gapy 0", "[grow]", ""));
+//        drugs.forEach(this::addDrug);
+    }
+
+    DrugListDisp(List<DrugFullDTO> drugs, VisitDTO visit, int width){
         this.visit = visit;
+        this.width = width;
         drugExecContext = makeDrugExecContext();
-        setLayout(new MigLayout("insets 0, gapy 0", "[grow]", ""));
+        setLayout(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
         drugs.forEach(this::addDrug);
     }
 
     void addDrug(DrugFullDTO drug){
         int index = drugDispMap.size() + 1;
-        DrugDispWrapper drugDisp = new DrugDispWrapper(drug, index, visit, drugExecContext);
-        add(drugDisp, "growx, wrap");
+        DrugDispWrapper drugDisp = new DrugDispWrapper(drug, index, visit, width, drugExecContext);
+        add(drugDisp, "wrap");
         drugDispMap.put(drug.drug.drugId, drugDisp);
     }
 
