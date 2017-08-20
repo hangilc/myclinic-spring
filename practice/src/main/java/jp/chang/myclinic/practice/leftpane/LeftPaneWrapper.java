@@ -25,7 +25,7 @@ public class LeftPaneWrapper extends JPanel {
         this.patientInfoPane = new PatientInfoPane(width);
         this.topNav = new RecordsNav();
         this.bottomNav = new RecordsNav();
-        dispRecords = new DispRecords(mainExecContext);
+        dispRecords = new DispRecords(width, mainExecContext);
         JScrollPane dispScroll = new JScrollPane(dispRecords);
         dispScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         add(this.patientInfoPane, "wrap");

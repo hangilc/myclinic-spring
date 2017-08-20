@@ -45,8 +45,6 @@ class PatientInfoPane extends JPanel {
 
     void setPatient(PatientDTO patient){
         this.patient = patient;
-        System.out.println("insets: " + getInsets());
-        System.out.println(paneWidth);
         infoPane.setSize(paneWidth, Integer.MAX_VALUE);
         infoPane.setText(makeText());
         repaint();
