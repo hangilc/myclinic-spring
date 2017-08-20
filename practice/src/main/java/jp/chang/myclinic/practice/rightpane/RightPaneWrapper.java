@@ -1,0 +1,38 @@
+package jp.chang.myclinic.practice.rightpane;
+
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.WqueueFullDTO;
+import jp.chang.myclinic.practice.MainExecContext;
+import jp.chang.myclinic.practice.rightpane.selectvisit.SelectVisit;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.util.concurrent.CompletableFuture;
+
+public class RightPaneWrapper extends JPanel {
+
+    public RightPaneWrapper(MainExecContext mainExecContext){
+        setLayout(new MigLayout("", "[grow]", ""));
+        SelectVisit selectVisit = new SelectVisit();
+        selectVisit.setCallback(new SelectVisit.Callback(){
+            @Override
+            public void onSelect(WqueueFullDTO wqueue) {
+                mainExecContext.startExam(wqueue.visit, wqueue.patient);
+            }
+        });
+        add(selectVisit, "growx, wrap");
+        {
+            JPanel frame = new JPanel(new MigLayout("insets 0, fill", "", ""));
+            frame.setBorder(BorderFactory.createTitledBorder("患者検索"));
+            SearchPatient searchPatientPane = new SearchPatient(new SearchPatient.Context(){
+                @Override
+                public CompletableFuture<Void> startPatient(PatientDTO patient) {
+                    return mainExecContext.startExam(null, patient);
+                }
+            });
+            frame.add(searchPatientPane, "growx");
+            add(frame, "top, growx, wrap");
+        }
+    }
+
+}

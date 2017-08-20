@@ -8,14 +8,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.concurrent.CompletableFuture;
 
-public class SearchPatient extends JPanel {
+class SearchPatient extends JPanel {
 
-    public interface Callback {
-        void onSelect(PatientDTO patient);
+    public interface Context {
+        CompletableFuture<Void> startPatient(PatientDTO patient);
     }
 
-    private JTextField searchTextField = new JTextField();
+   private JTextField searchTextField = new JTextField();
     private JList<PatientDTO> searchResult = new JList<PatientDTO>(){
         @Override
         public Dimension getPreferredScrollableViewportSize() {
@@ -24,10 +25,10 @@ public class SearchPatient extends JPanel {
         }
     };
     private JScrollPane scrollPane;
-    private Callback callback;
+    private Context context;
 
-    public SearchPatient(Callback callback){
-        this.callback = callback;
+    SearchPatient(Context context){
+        this.context = context;
         setLayout(new MigLayout("insets 0, fill", "[grow] []", ""));
         setupSearchTextField();
         setupSearchResult();
@@ -74,7 +75,15 @@ public class SearchPatient extends JPanel {
                 if( e.getClickCount() == 2 ){
                     PatientDTO patient = searchResult.getSelectedValue();
                     if( patient != null ){
-                        callback.onSelect(patient);
+                        context.startPatient(patient)
+                                .thenAccept((Void v) -> reset())
+                                .exceptionally(t -> {
+                                    t.printStackTrace();
+                                    EventQueue.invokeLater(() -> {
+                                        alert(t.toString());
+                                    });
+                                    return null;
+                                });
                     }
                 }
             }
