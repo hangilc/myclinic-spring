@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.leftpane.shinryou;
 
 import jp.chang.myclinic.practice.Link;
+import jp.chang.myclinic.practice.MainExecContext;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 import net.miginfocom.swing.MigLayout;
 
@@ -11,7 +12,16 @@ class ShinryouMenu extends JPanel {
     private WorkArea workArea;
 
     ShinryouMenu(int visitId, int currentVisitId, int tempVisitIs){
-        setLayout(new MigLayout("insets 0", "[] [] [grow]", ""));
+//        setLayout(new MigLayout("insets 0", "[] [] [grow]", ""));
+//        Link shohouLink = new Link("[診療行為]");
+//        shohouLink.setCallback(event -> doMainItem());
+//        Link auxLink = new Link("[+]");
+//        add(shohouLink);
+//        add(auxLink);
+    }
+
+    ShinryouMenu(int visitId, int width, MainExecContext mainExecContext){
+        setLayout(new MigLayout("insets 0", "[] []", ""));
         Link shohouLink = new Link("[診療行為]");
         shohouLink.setCallback(event -> doMainItem());
         Link auxLink = new Link("[+]");
