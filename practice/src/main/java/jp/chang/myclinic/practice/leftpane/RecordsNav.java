@@ -15,10 +15,7 @@ public class RecordsNav extends JPanel {
     private Callback callback;
     JLabel label;
 
-    public RecordsNav(int page, int totalPages, Callback callback){
-        this.page = page;
-        this.totalPages = totalPages;
-        this.callback = callback;
+    public RecordsNav(){
         setLayout(new MigLayout("insets 0", "", ""));
         JButton toFirstButton = new JButton("最初へ");
         toFirstButton.addActionListener(event -> doClick(0));
@@ -48,7 +45,7 @@ public class RecordsNav extends JPanel {
 
     private void doClick(int newPage){
         if( newPage != page && newPage >= 0 && newPage < totalPages ){
-            callback.onTrigger(newPage);
+            //callback.onTrigger(newPage);
         }
     }
 }

@@ -1,69 +1,30 @@
 package jp.chang.myclinic.practice.leftpane;
 
 import jp.chang.myclinic.dto.VisitFull2DTO;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.MainExecContext;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 class DispRecords extends JPanel {
 
-    private Map<Integer, Record> recordMap = new HashMap<>();
+    private MainExecContext mainExecContext;
 
-    DispRecords(){
-        setLayout(makeLayout());
-        add(new JLabel("平成２９年７月２９日"), "span, wrap");
-        add(new JLabel("left"), "");
-        add(new JLabel("right right right right"), "wrap");
+    DispRecords(MainExecContext mainExecContext){
+        this.mainExecContext = mainExecContext;
+        setLayout(new MigLayout("insets 0", "[grow]", ""));
     }
 
-    private MigLayout makeLayout(){
-        return new MigLayout("insets 0, fillx", "[grow]", "");
-    }
-
-    void setVisits(List<VisitFull2DTO> visits, int currentVisitId, int tempVisitId){
+    void setVisits(List<VisitFull2DTO> visits){
+        int width = getSize().width;
+        System.out.println("DispRecords width: " + width);
         removeAll();
-        recordMap.clear();
-        setLayout(makeLayout());
-        visits.forEach(visitFull -> {
-            Record record = new Record(visitFull, currentVisitId, tempVisitId);
-            record.setCallback(new Record.Callback(){
-                @Override
-                public void onCopyAllDrugs(int targetVisitId, List<Integer> drugIds) {
-                    handleCopyAllDrugs(targetVisitId, drugIds);
-                }
-            });
+        visits.forEach(visit -> {
+            Record record = new Record(visit, mainExecContext);
             add(record, "growx, wrap");
-            recordMap.put(visitFull.visit.visitId, record);
         });
+        repaint();
+        revalidate();
     }
-
-    private void handleCopyAllDrugs(int targetVisitId, List<Integer> drugIds){
-        Record targetRecord = recordMap.getOrDefault(targetVisitId, null);
-        if( targetRecord != null ){
-            Service.api.listDrugFullByDrugIds(drugIds)
-                    .thenAccept(drugs -> {
-                        EventQueue.invokeLater(() -> {
-                            targetRecord.appendDrugs(drugs);
-                        });
-                    })
-                    .exceptionally(t -> {
-                        t.printStackTrace();
-                        EventQueue.invokeLater(() -> {
-                            alert(t.toString());
-                        });
-                        return null;
-                    });
-
-        }
-    }
-
-    private void alert(String message){
-        JOptionPane.showMessageDialog(this, message);
-    }
-
 }

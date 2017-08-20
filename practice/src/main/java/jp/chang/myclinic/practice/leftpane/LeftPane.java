@@ -17,7 +17,7 @@ public class LeftPane extends JPanel {
     private VisitFull2PageDTO visitFullPage;
     private RecordsNav topNav;
     private RecordsNav bottomNav;
-    private DispRecords dispRecords;
+    private DispRecords1 dispRecords1;
     private JScrollPane scrollPane;
 
     public LeftPane(PatientDTO patient, VisitFull2PageDTO visitFullPage, int currentVisitId, int tempVisitId,
@@ -26,9 +26,9 @@ public class LeftPane extends JPanel {
         this.visitFullPage = visitFullPage;
 //        topNav = makeNav(currentVisitId, tempVisitId);
 //        bottomNav = makeNav(currentVisitId, tempVisitId);
-//        dispRecords = new DispRecords();
-//        dispRecords.setVisits(visitFullPage.visits, currentVisitId, tempVisitId);
-//        scrollPane = new JScrollPane(dispRecords);
+//        dispRecords1 = new DispRecords1();
+//        dispRecords1.setVisits(visitFullPage.visits, currentVisitId, tempVisitId);
+//        scrollPane = new JScrollPane(dispRecords1);
 //        scrollPane.setBorder(BorderFactory.createEmptyBorder());
 //        scrollPane.getVerticalScrollBar().setUnitIncrement(12);
 //        PatientManip patientManip = new PatientManip(new PatientManip.Callback(){
@@ -45,15 +45,15 @@ public class LeftPane extends JPanel {
 //        add(bottomNav, "");
     }
 
-    private RecordsNav makeNav(int currentVisitId, int tempVisitId){
-        return new RecordsNav(visitFullPage.page, visitFullPage.totalPages,
-                newPage -> onNavTrigger(newPage, currentVisitId, tempVisitId));
-    }
+//    private RecordsNav makeNav(int currentVisitId, int tempVisitId){
+//        return new RecordsNav(visitFullPage.page, visitFullPage.totalPages,
+//                newPage -> onNavTrigger(newPage, currentVisitId, tempVisitId));
+//    }
 
     private void onNavTrigger(int newPage, int currentVisitId, int tempVisitId){
         Service.api.listVisitFull2(patient.patientId, newPage)
                 .thenAccept(visitPage -> EventQueue.invokeLater(() -> {
-                    dispRecords.setVisits(visitPage.visits, currentVisitId, tempVisitId);
+                    dispRecords1.setVisits(visitPage.visits, currentVisitId, tempVisitId);
                     topNav.set(newPage, visitPage.totalPages);
                     bottomNav.set(newPage, visitPage.totalPages);
                 }))

@@ -24,13 +24,10 @@ class MainFrame extends JFrame {
         setLayout(new MigLayout("", "", ""));
         MainExecContext ctx = makeMainExecContext();
         leftPaneWrapper = new LeftPaneWrapper(ctx);
-        JScrollPane leftScroll = new JScrollPane(leftPaneWrapper);
-        leftScroll.setBorder(null);
-        leftScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         rightPaneWrapper = new RightPaneWrapper(ctx);
         JScrollPane rightScroll = new JScrollPane(rightPaneWrapper);
         rightScroll.setBorder(null);
-        add(leftScroll, "w 580!, h 520, grow");
+        add(leftPaneWrapper, "w 580!, h 520, grow");
         add(rightScroll, "w 220!, h 520, grow");
         pack();
     }
@@ -46,16 +43,29 @@ class MainFrame extends JFrame {
             public PatientDTO getCurrentPatient() {
                 return currentPatient;
             }
+
+            @Override
+            public VisitDTO getCurrentVisit() {
+                return currentVisit;
+            }
+
+            @Override
+            public int getTempVisitId() {
+                return tempVisitId;
+            }
         };
     }
 
     private CompletableFuture<Boolean> doStartExam(VisitDTO visit, PatientDTO patient) {
         return suspendCurrent()
-                .thenApply(ok -> {
+                .thenCompose(ok -> {
                     currentPatient = patient;
                     currentVisit = visit;
                     tempVisitId = 0;
-                    leftPaneWrapper.start();
+                    return Service.api.listVisitFull2(patient.patientId, 0);
+                })
+                .thenApply(visits -> {
+                    leftPaneWrapper.start(visits);
                     return true;
                 });
     }

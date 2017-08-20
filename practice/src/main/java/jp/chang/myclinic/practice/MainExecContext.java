@@ -9,4 +9,10 @@ public interface MainExecContext {
 
     CompletableFuture<Boolean> startExam(VisitDTO visit, PatientDTO patient);
     PatientDTO getCurrentPatient();
+    VisitDTO getCurrentVisit();
+    default int getCurrentVisitId(){
+        VisitDTO visit = getCurrentVisit();
+        return visit == null ? 0 : visit.visitId;
+    }
+    int getTempVisitId();
 }

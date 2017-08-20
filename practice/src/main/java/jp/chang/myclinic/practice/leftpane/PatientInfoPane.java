@@ -17,8 +17,6 @@ class PatientInfoPane extends JPanel {
         int colGap = 4;
         setLayout(new MigLayout("insets " + layoutInsets, "[]" + colGap  + "[]", ""));
         JButton detailButton = new JButton("詳細");
-        System.out.println("button insets: " + detailButton.getInsets());
-        System.out.println("button pref size: " + detailButton.getPreferredSize());
         infoPane = new JEditorPane();
         infoPane.setContentType("text/plain");
         infoPane.setText("");
@@ -26,7 +24,6 @@ class PatientInfoPane extends JPanel {
         infoPane.setBackground(this.getBackground());
         infoPane.setBorder(BorderFactory.createEmptyBorder());
         this.paneWidth = width - detailButton.getPreferredSize().width - layoutInsets * 2 - colGap;
-        System.out.println("infoPane insets: " + infoPane.getInsets());
         detailButton.addActionListener(event -> doToggleDetail());
         add(infoPane, "");
         add(detailButton, "top");
@@ -52,7 +49,6 @@ class PatientInfoPane extends JPanel {
         System.out.println(paneWidth);
         infoPane.setSize(paneWidth, Integer.MAX_VALUE);
         infoPane.setText(makeText());
-        System.out.println("infoPane size: " + infoPane.getPreferredSize());
         repaint();
         revalidate();
     }
