@@ -6,6 +6,7 @@ import jp.chang.myclinic.practice.MainExecContext;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class LeftPaneWrapper extends JPanel {
 
@@ -18,6 +19,7 @@ public class LeftPaneWrapper extends JPanel {
     public LeftPaneWrapper(MainExecContext mainExecContext){
         setLayout(new MigLayout("insets 0, debug", "[grow]", "[] [] [grow] []"));
         this.mainExecContext = mainExecContext;
+        EventQueue.invokeLater(() -> setupComponents());
     }
 
     private void setupComponents(){
@@ -42,9 +44,6 @@ public class LeftPaneWrapper extends JPanel {
     }
 
     public void start(VisitFull2PageDTO page){
-        if( patientInfoPane == null ){
-            setupComponents();
-        }
         PatientDTO patient = mainExecContext.getCurrentPatient();
         patientInfoPane.setPatient(patient);
         dispRecords.setVisits(page.visits);

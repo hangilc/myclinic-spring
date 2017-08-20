@@ -9,24 +9,24 @@ import java.awt.*;
 
 class TextDispWrapper extends JPanel {
 
-    TextDispWrapper(TextDTO textDTO){
-        setLayout(new MigLayout("insets 0", "[grow]", ""));
-        TextDisp textDisp = makeTextDisp(textDTO);
-        add(textDisp, "growx, wrap");
+    TextDispWrapper(TextDTO textDTO, int width){
+        setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
+        TextDisp textDisp = makeTextDisp(textDTO, width);
+        add(textDisp, "wrap");
     }
 
-    private TextDisp makeTextDisp(TextDTO textDTO){
-        TextDisp textDisp = new TextDisp(textDTO, getBackground());
-        textDisp.setCallback(new TextDisp.Callback(){
-            @Override
-            public void onClick() {
-                TextEditor textEditor = makeTextEditor(textDTO, textDisp);
-                removeAll();
-                add(textEditor, "growx, wrap");
-                repaint();
-                revalidate();
-            }
-        });
+    private TextDisp makeTextDisp(TextDTO textDTO, int width){
+        TextDisp textDisp = new TextDisp(textDTO, getBackground(), width);
+//        textDisp.setCallback(new TextDisp.Callback(){
+//            @Override
+//            public void onClick() {
+//                TextEditor textEditor = makeTextEditor(textDTO, textDisp);
+//                removeAll();
+//                add(textEditor, "growx, wrap");
+//                repaint();
+//                revalidate();
+//            }
+//        });
         return textDisp;
     }
 
@@ -39,10 +39,10 @@ class TextDispWrapper extends JPanel {
                 Service.api.updateText(newText)
                         .thenAccept(result -> {
                             EventQueue.invokeLater(() -> {
-                                wrapper.removeAll();
-                                wrapper.add(makeTextDisp(newText), "growx, wrap");
-                                wrapper.repaint();
-                                wrapper.revalidate();
+//                                wrapper.removeAll();
+//                                wrapper.add(makeTextDisp(newText), "growx, wrap");
+//                                wrapper.repaint();
+//                                wrapper.revalidate();
                             });
                         })
                         .exceptionally(t -> {

@@ -5,7 +5,7 @@ import jp.chang.myclinic.practice.leftpane.conduct.ConductArea;
 import jp.chang.myclinic.practice.leftpane.drug.DrugArea;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenDisp;
 import jp.chang.myclinic.practice.leftpane.shinryou.ShinryouArea;
-import jp.chang.myclinic.practice.leftpane.text.TextArea;
+import jp.chang.myclinic.practice.leftpane.text.TextArea1;
 import jp.chang.myclinic.practice.leftpane.title.Title;
 import jp.chang.myclinic.util.NumberUtil;
 import net.miginfocom.swing.MigLayout;
@@ -25,9 +25,9 @@ class Record1 extends JPanel {
     Record1(VisitFull2DTO visitFull, int currentVisitId, int tempVisitId){
         setLayout(new MigLayout("insets 0, fillx", "[sizegroup c, grow] [sizegroup c, grow]", ""));
         Title title = new Title(visitFull.visit, currentVisitId, tempVisitId);
-        TextArea textArea = new TextArea(visitFull);
+        TextArea1 textArea1 = new TextArea1(visitFull);
         add(title, "span, growx, wrap");
-        add(textArea, "top, growx");
+        add(textArea1, "top, growx");
         add(makeRightPane(visitFull, currentVisitId, tempVisitId), "top, growx");
     }
 
