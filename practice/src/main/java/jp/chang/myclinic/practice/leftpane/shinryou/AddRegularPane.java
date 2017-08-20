@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.leftpane.shinryou;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 
 class AddRegularPane extends JPanel {
 
@@ -44,16 +45,17 @@ class AddRegularPane extends JPanel {
     };
 
     AddRegularPane(){
-        setLayout(new MigLayout("insets 0, debug", "", ""));
-        add(makeLeftCol(), "top");
-        add(makeRightCol(), "top");
+        setLayout(new MigLayout("insets 0", "", ""));
+        add(makeLeftCol(), "top, growx");
+        add(makeRightCol(), "top, growx");
     }
 
-    private JEditorPane makeLabel(String text){
+    private JComponent makeLabel(String text){
         JEditorPane label = new JEditorPane("text/plain", text);
         label.setEditable(false);
         label.setBackground(getBackground());
         label.setBorder(BorderFactory.createEmptyBorder());
+        label.setMinimumSize(new Dimension(10, 10));
         return label;
     }
 
@@ -63,10 +65,8 @@ class AddRegularPane extends JPanel {
             if( text.startsWith("-") ){
                 panel.add(new JLabel(""), "span, h 10, wrap");
             } else {
-                JCheckBox check = new JCheckBox("");
-                check.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-                panel.add(check);
-                panel.add(makeLabel(text), "w 100!, wrap");
+                JCheckBox check = new JCheckBox(text);
+                panel.add(check, "wrap");
             }
         }
         return panel;

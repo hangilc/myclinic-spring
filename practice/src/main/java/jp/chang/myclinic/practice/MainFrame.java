@@ -29,7 +29,7 @@ class MainFrame extends JFrame {
         setTitle("診察");
         setupMenu();
         setLayout(new MigLayout("", "", ""));
-        add(makeLeftPane(), "w 520!, h 520, grow");
+        add(makeLeftPane(), "w 580!, h 520, grow");
         add(makeRightPane(), "w 220!, h 520, grow");
         pack();
     }
