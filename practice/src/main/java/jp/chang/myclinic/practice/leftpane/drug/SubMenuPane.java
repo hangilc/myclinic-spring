@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 class SubMenuPane extends JPopupMenu {
 
     interface Callback {
-        void onCopyAll(int targetVisitId, List<Integer> enteredDrugIds);
+        void onCopyAll(int targetVisitId, List<DrugFullDTO> enteredDrugs);
         void onCopySome(int targetVisitId);
         void onModifyDays();
         void onDeleteSome();
@@ -57,7 +57,8 @@ class SubMenuPane extends JPopupMenu {
                 .thenCompose(drugs -> {
                     store.drugs = drugs;
                     String at = store.targetVisit.visitedAt.substring(0, 10);
-                    List<Integer> iyakuhincodes = drugs.stream().map(drug -> drug.drug.iyakuhincode).collect(Collectors.toList());
+                    List<Integer> iyakuhincodes = drugs.stream().map(drug -> drug.drug.iyakuhincode)
+                            .collect(Collectors.toList());
                     return Service.api.batchResolveIyakuhinMaster(iyakuhincodes, at);
                 })
                 .thenCompose(resolvedMap -> {
@@ -82,9 +83,12 @@ class SubMenuPane extends JPopupMenu {
                     }
                     return Service.api.batchEnterDrugs(newDrugs);
                 })
-                .thenAccept(drugIds -> {
-                    EventQueue.invokeLater(() -> callback.onCopyAll(targetVisitId, drugIds));
+                .thenCompose(drugIds -> {
+                    return Service.api.listDrugFullByDrugIds(drugIds);
                 })
+                .thenAccept(enteredDrugs -> EventQueue.invokeLater(() -> {
+                    callback.onCopyAll(targetVisitId, enteredDrugs);
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> {

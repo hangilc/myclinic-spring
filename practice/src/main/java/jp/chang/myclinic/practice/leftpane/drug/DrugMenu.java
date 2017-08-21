@@ -19,7 +19,7 @@ class DrugMenu extends JPanel {
 
     interface Callback {
         default void onNewDrug(DrugFullDTO drug){}
-        default void onDrugsCopied(int targetVisitId, List<Integer> drugIds){ throw new RuntimeException("not implemented"); }
+        default void onDrugsCopied(int targetVisitId, List<DrugFullDTO> enteredDrugs){}
         default void onDrugsModified(List<DrugFullDTO> modifiedDrugs){}
         default void onDrugsDeleted(List<Integer> drugIds){}
     }
@@ -93,8 +93,8 @@ class DrugMenu extends JPanel {
         }
         SubMenuPane submenu = new SubMenuPane(visit, currentVisitId, tempVisitId, new SubMenuPane.Callback(){
             @Override
-            public void onCopyAll(int targetVisitId, List<Integer> enteredDrugIds) {
-                callback.onDrugsCopied(targetVisitId, enteredDrugIds);
+            public void onCopyAll(int targetVisitId, List<DrugFullDTO> enteredDrugs) {
+                callback.onDrugsCopied(targetVisitId, enteredDrugs);
             }
 
             @Override
@@ -136,46 +136,46 @@ class DrugMenu extends JPanel {
 //    }
 
     private void handleCopySome(int targetVisitId, VisitDTO visit){
-        if( workPane != null ){
-            throw new RuntimeException("cannot happen");
-        }
-        Service.api.listDrugFull(visit.visitId)
-                .thenAccept(candidateDrugs -> EventQueue.invokeLater(() -> {
-                    CopySomePane copySomePane = new CopySomePane(candidateDrugs);
-                    copySomePane.setCallback(new CopySomePane.Callback() {
-                        @Override
-                        public void onEnter(List<DrugFullDTO> selected) {
-                            DrugLib.copyDrugs(targetVisitId, selected)
-                                    .thenAccept(drugIds -> EventQueue.invokeLater(() -> {
-                                        closeWorkArea();
-                                        EventQueue.invokeLater(() -> callback.onDrugsCopied(targetVisitId, drugIds));
-                                    }))
-                                    .exceptionally(t -> {
-                                        t.printStackTrace();
-                                        EventQueue.invokeLater(() -> {
-                                            alert(t.toString());
-                                        });
-                                        return null;
-                                    });
-                        }
-
-                        @Override
-                        public void onCancel() {
-                            closeWorkArea();
-                        }
-                    });
-                    workPane = new WorkArea1("薬剤の選択コピー", copySomePane);
-                    add(workPane, "newline, growx");
-                    repaint();
-                    revalidate();
-                }))
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    EventQueue.invokeLater(() -> {
-                        alert(t.toString());
-                    });
-                    return null;
-                });
+//        if( workPane != null ){
+//            throw new RuntimeException("cannot happen");
+//        }
+//        Service.api.listDrugFull(visit.visitId)
+//                .thenAccept(candidateDrugs -> EventQueue.invokeLater(() -> {
+//                    CopySomePane copySomePane = new CopySomePane(candidateDrugs);
+//                    copySomePane.setCallback(new CopySomePane.Callback() {
+//                        @Override
+//                        public void onEnter(List<DrugFullDTO> selected) {
+//                            DrugLib.copyDrugs(targetVisitId, selected)
+//                                    .thenAccept(drugIds -> EventQueue.invokeLater(() -> {
+//                                        closeWorkArea();
+//                                        EventQueue.invokeLater(() -> callback.onDrugsCopied(targetVisitId, drugIds));
+//                                    }))
+//                                    .exceptionally(t -> {
+//                                        t.printStackTrace();
+//                                        EventQueue.invokeLater(() -> {
+//                                            alert(t.toString());
+//                                        });
+//                                        return null;
+//                                    });
+//                        }
+//
+//                        @Override
+//                        public void onCancel() {
+//                            closeWorkArea();
+//                        }
+//                    });
+//                    workPane = new WorkArea1("薬剤の選択コピー", copySomePane);
+//                    add(workPane, "newline, growx");
+//                    repaint();
+//                    revalidate();
+//                }))
+//                .exceptionally(t -> {
+//                    t.printStackTrace();
+//                    EventQueue.invokeLater(() -> {
+//                        alert(t.toString());
+//                    });
+//                    return null;
+//                });
     }
 
     private void handleModifyDays(int visitId){

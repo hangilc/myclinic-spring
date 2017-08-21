@@ -1,23 +1,21 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
-import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.MainExecContext;
-import jp.chang.myclinic.practice.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.List;
 
 public class DrugArea extends JPanel {
 
     public interface Callback {
-        void onCopyAll(int targetVisitId, List<Integer> drugIds);
+        default void onCopyAll(int targetVisitId, List<DrugFullDTO> enteredDrugs){}
     }
 
     private DrugListDisp drugListDisp;
+    private Callback callback;
 
     public DrugArea(List<DrugFullDTO> drugs, VisitDTO visit, int currentVisitId, int tempVisitId, Callback callback){
 //        DrugMenu drugMenu = new DrugMenu(visit, currentVisitId, tempVisitId);
@@ -69,27 +67,20 @@ public class DrugArea extends JPanel {
         add(drugListDisp);
     }
 
+    public void setCallback(Callback callback){
+        this.callback = callback;
+    }
+
     private void bindDrugMenu(DrugMenu drugMenu){
         drugMenu.setCallback(new DrugMenu.Callback(){
             @Override
             public void onNewDrug(DrugFullDTO drugFull) {
                 drugListDisp.addDrug(drugFull);
-//                Service.api.getDrugFull(drug.drugId)
-//                        .thenAccept(drugFull -> {
-//                            EventQueue.invokeLater(() -> drugListDisp.addDrug(drugFull));
-//                        })
-//                        .exceptionally(t -> {
-//                            t.printStackTrace();
-//                            EventQueue.invokeLater(() -> {
-//                                alert(t.toString());
-//                            });
-//                            return null;
-//                        });
             }
 
             @Override
-            public void onDrugsCopied(int targetVisitId, List<Integer> drugIds) {
-
+            public void onDrugsCopied(int targetVisitId, List<DrugFullDTO> enteredDrugs) {
+                callback.onCopyAll(targetVisitId, enteredDrugs);
             }
 
             @Override
