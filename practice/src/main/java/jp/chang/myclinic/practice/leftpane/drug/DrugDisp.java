@@ -16,22 +16,24 @@ class DrugDisp extends JPanel {
 
     private int drugId;
     private int index;
+    private int width;
     private String drugRep;
     private Callback callback;
 
     DrugDisp(DrugFullDTO drug, int index, int width){
         this.drugId = drug.drug.drugId;
         this.index = index;
+        this.width = width;
         this.drugRep = DrugUtil.drugRep(drug);
         setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
-        add(makeEditorPane(width), "");
+        add(makeDispPane(), "");
     }
 
     void setCallback(Callback callback){
         this.callback = callback;
     }
 
-    private JEditorPane makeEditorPane(int width){
+    private JEditorPane makeDispPane(){
         String label = String.format("%d)%s", index, drugRep);
         JEditorPane dispPane = new JEditorPane();
         dispPane.setContentType("text/plain");
@@ -59,17 +61,17 @@ class DrugDisp extends JPanel {
 
     void update(DrugFullDTO drug){
         this.drugRep = DrugUtil.drugRep(drug);
-//        removeAll();
-//        add(makeEditorPane(), "growx");
-//        repaint();
-//        revalidate();
+        removeAll();
+        add(makeDispPane(), "");
+        repaint();
+        revalidate();
     }
 
     void updateIndex(int index){
         this.index = index;
-//        removeAll();
-//        add(makeEditorPane(), "growx");
-//        repaint();
-//        revalidate();
+        removeAll();
+        add(makeDispPane(), "");
+        repaint();
+        revalidate();
     }
 }

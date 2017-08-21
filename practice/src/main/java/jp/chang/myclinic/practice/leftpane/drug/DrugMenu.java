@@ -12,12 +12,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 class DrugMenu extends JPanel {
 
     interface Callback {
-        default void onNewDrug(DrugDTO drug){ throw new RuntimeException("not implemented"); }
+        default void onNewDrug(DrugFullDTO drug){}
         default void onDrugsCopied(int targetVisitId, List<Integer> drugIds){ throw new RuntimeException("not implemented"); }
         default void onDrugsModified(List<DrugFullDTO> modifiedDrugs){}
         default void onDrugsDeleted(List<Integer> drugIds){}
@@ -58,7 +59,18 @@ class DrugMenu extends JPanel {
         drugNew.setCallback(new DrugNew.Callback(){
             @Override
             public void onEnter(DrugDTO drug) {
-                doEnterNewDrug(drug, drugNew);
+                enterDrug(drug)
+                        .thenAccept((DrugFullDTO enteredDrug) -> EventQueue.invokeLater(() -> {
+                            callback.onNewDrug(enteredDrug);
+                            drugNew.clear();
+                        }))
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
             }
 
             @Override
@@ -103,20 +115,25 @@ class DrugMenu extends JPanel {
         submenu.show(this, event.getX(), event.getY());
     }
 
-    private void doEnterNewDrug(DrugDTO drug, DrugNew drugNewPane){
-        Service.api.enterDrug(drug)
-                .thenAccept(newDrug -> EventQueue.invokeLater(() ->{
-                    callback.onNewDrug(newDrug);
-                    drugNewPane.clear();
-                }))
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    EventQueue.invokeLater(() -> {
-                        alert(t.toString());
-                    });
-                    return null;
-                });
+    private CompletableFuture<DrugFullDTO> enterDrug(DrugDTO drug){
+        return Service.api.enterDrug(drug)
+                .thenCompose(enteredDrug -> Service.api.getDrugFull(enteredDrug.drugId));
     }
+
+//    private void doEnterNewDrug(DrugDTO drug, DrugNew drugNewPane){
+//        Service.api.enterDrug(drug)
+//                .thenAccept(newDrug -> EventQueue.invokeLater(() ->{
+//                    callback.onNewDrug(newDrug);
+//                    drugNewPane.clear();
+//                }))
+//                .exceptionally(t -> {
+//                    t.printStackTrace();
+//                    EventQueue.invokeLater(() -> {
+//                        alert(t.toString());
+//                    });
+//                    return null;
+//                });
+//    }
 
     private void handleCopySome(int targetVisitId, VisitDTO visit){
         if( workPane != null ){

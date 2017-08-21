@@ -9,9 +9,17 @@ import java.awt.*;
 
 class TextDispWrapper extends JPanel {
 
+    private int width;
+
     TextDispWrapper(TextDTO textDTO, int width){
+        this.width = width;
         setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
-        TextDisp textDisp = makeTextDisp(textDTO, width);
+        TextDisp textDisp = makeTextDisp(textDTO);
+        add(textDisp, "wrap");
+    }
+
+    private TextDisp makeTextDisp(TextDTO textDTO){
+        TextDisp textDisp = new TextDisp(textDTO, getBackground(), width);
         textDisp.setCallback(new TextDisp.Callback(){
             @Override
             public void onClick() {
@@ -22,21 +30,6 @@ class TextDispWrapper extends JPanel {
                 revalidate();
             }
         });
-        add(textDisp, "wrap");
-    }
-
-    private TextDisp makeTextDisp(TextDTO textDTO, int width){
-        TextDisp textDisp = new TextDisp(textDTO, getBackground(), width);
-//        textDisp.setCallback(new TextDisp.Callback(){
-//            @Override
-//            public void onClick() {
-//                TextEditor textEditor = makeTextEditor(textDTO, textDisp);
-//                removeAll();
-//                add(textEditor, "growx, wrap");
-//                repaint();
-//                revalidate();
-//            }
-//        });
         return textDisp;
     }
 
@@ -49,10 +42,10 @@ class TextDispWrapper extends JPanel {
                 Service.api.updateText(newText)
                         .thenAccept(result -> {
                             EventQueue.invokeLater(() -> {
-//                                wrapper.removeAll();
-//                                wrapper.add(makeTextDisp(newText), "growx, wrap");
-//                                wrapper.repaint();
-//                                wrapper.revalidate();
+                                wrapper.removeAll();
+                                wrapper.add(makeTextDisp(newText), "wrap");
+                                wrapper.repaint();
+                                wrapper.revalidate();
                             });
                         })
                         .exceptionally(t -> {
@@ -87,7 +80,7 @@ class TextDispWrapper extends JPanel {
             @Override
             public void onCancel() {
                 removeAll();
-                add(origTextDisp, "growx, wrap");
+                add(origTextDisp, "wrap");
                 repaint();
                 revalidate();
             }

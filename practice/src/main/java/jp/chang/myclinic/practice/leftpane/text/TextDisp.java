@@ -9,6 +9,12 @@ import java.awt.event.MouseEvent;
 
 class TextDisp extends JEditorPane {
 
+    interface Callback {
+        default void onClick(){}
+    }
+
+    private Callback callback = new Callback(){};
+
     TextDisp(TextDTO textDTO, Color background, int width){
         setContentType("text/plain");
         String content = textDTO.content.trim();
@@ -23,9 +29,13 @@ class TextDisp extends JEditorPane {
         addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e) {
-
+                callback.onClick();
             }
         });
+    }
+
+    void setCallback(Callback callback){
+        this.callback = callback;
     }
 
 }

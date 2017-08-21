@@ -30,6 +30,9 @@ public class LeftPaneWrapper extends JPanel {
         dispRecords = new DispRecords(width, mainExecContext);
         JScrollPane dispScroll = new JScrollPane(dispRecords);
         dispScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        dispScroll.setBorder(null);
+        dispScroll.getVerticalScrollBar().setUnitIncrement(16);
+        dispScroll.getVerticalScrollBar().setBlockIncrement(160);
         add(this.patientInfoPane, "wrap");
         add(topNav, "wrap");
         add(dispScroll, "grow, wrap");
@@ -51,7 +54,6 @@ public class LeftPaneWrapper extends JPanel {
         dispRecords.setVisits(page.visits);
         repaint();
         revalidate();
-        System.out.println(page);
     }
 
     private RecordsNav makeNav(){
