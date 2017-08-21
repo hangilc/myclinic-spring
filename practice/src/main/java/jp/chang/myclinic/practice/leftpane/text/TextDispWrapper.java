@@ -12,6 +12,16 @@ class TextDispWrapper extends JPanel {
     TextDispWrapper(TextDTO textDTO, int width){
         setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
         TextDisp textDisp = makeTextDisp(textDTO, width);
+        textDisp.setCallback(new TextDisp.Callback(){
+            @Override
+            public void onClick() {
+                TextEditor textEditor = makeTextEditor(textDTO, textDisp);
+                removeAll();
+                add(textEditor, "growx, wrap");
+                repaint();
+                revalidate();
+            }
+        });
         add(textDisp, "wrap");
     }
 
