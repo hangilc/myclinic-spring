@@ -14,7 +14,7 @@ public class LeftPaneWrapper extends JPanel {
     private PatientInfoPane patientInfoPane;
     private RecordsNav topNav;
     private DispRecords dispRecords;
-    private RecordsNav bottomNav;
+    private RecordsNav botNav;
 
     public LeftPaneWrapper(MainExecContext mainExecContext){
         setLayout(new MigLayout("insets 0", "[grow]", "[] [] [grow] []"));
@@ -25,15 +25,15 @@ public class LeftPaneWrapper extends JPanel {
     private void setupComponents(){
         int width = getSize().width;
         this.patientInfoPane = new PatientInfoPane(width);
-        this.topNav = new RecordsNav();
-        this.bottomNav = new RecordsNav();
+        this.topNav = makeNav();
+        this.botNav = makeNav();
         dispRecords = new DispRecords(width, mainExecContext);
         JScrollPane dispScroll = new JScrollPane(dispRecords);
         dispScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         add(this.patientInfoPane, "wrap");
         add(topNav, "wrap");
         add(dispScroll, "grow, wrap");
-        add(bottomNav, "");
+        add(botNav, "");
         revalidate();
     }
 
@@ -46,9 +46,22 @@ public class LeftPaneWrapper extends JPanel {
     public void start(VisitFull2PageDTO page){
         PatientDTO patient = mainExecContext.getCurrentPatient();
         patientInfoPane.setPatient(patient);
+        topNav.start(patient.patientId, page.totalPages);
+        botNav.start(patient.patientId, page.totalPages);
         dispRecords.setVisits(page.visits);
         repaint();
         revalidate();
         System.out.println(page);
+    }
+
+    private RecordsNav makeNav(){
+        return new RecordsNav(){
+            @Override
+            void changePage(VisitFull2PageDTO visitFullPage, int page) {
+                dispRecords.setVisits(visitFullPage.visits);
+                topNav.set(page, visitFullPage.totalPages);
+                botNav.set(page, visitFullPage.totalPages);
+            }
+        };
     }
 }
