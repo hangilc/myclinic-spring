@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.leftpane;
 
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.practice.MainExecContext;
+import jp.chang.myclinic.practice.leftpane.conduct.ConductArea;
 import jp.chang.myclinic.practice.leftpane.drug.DrugArea;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenDisp;
 import jp.chang.myclinic.practice.leftpane.shinryou.ShinryouArea;
@@ -38,7 +39,8 @@ class Record extends JPanel {
         JPanel panel = new JPanel(new MigLayout("insets 0", String.format("[%dpx!]", colWidth), ""));
         panel.add(new HokenDisp(fullVisit.hoken, fullVisit.visit), "wrap");
         panel.add(new DrugArea(fullVisit.drugs, fullVisit.visit, colWidth, mainExecContext), "wrap");
-        panel.add(new ShinryouArea(fullVisit.shinryouList, fullVisit.visit, colWidth, mainExecContext));
+        panel.add(new ShinryouArea(fullVisit.shinryouList, fullVisit.visit, colWidth, mainExecContext), "wrap");
+        panel.add(new ConductArea(fullVisit.conducts, colWidth, mainExecContext), "wrap");
         return panel;
     }
 }
