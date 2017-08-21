@@ -17,7 +17,7 @@ public class LeftPaneWrapper extends JPanel {
     private RecordsNav bottomNav;
 
     public LeftPaneWrapper(MainExecContext mainExecContext){
-        setLayout(new MigLayout("insets 0, debug", "[grow]", "[] [] [grow] []"));
+        setLayout(new MigLayout("insets 0", "[grow]", "[] [] [grow] []"));
         this.mainExecContext = mainExecContext;
         EventQueue.invokeLater(() -> setupComponents());
     }
