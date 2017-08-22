@@ -136,12 +136,12 @@ class DrugMenu extends JPanel {
 //    }
 
     private void handleCopySome(int targetVisitId, VisitDTO visit){
-//        if( workPane != null ){
-//            throw new RuntimeException("cannot happen");
-//        }
-//        Service.api.listDrugFull(visit.visitId)
-//                .thenAccept(candidateDrugs -> EventQueue.invokeLater(() -> {
-//                    CopySomePane copySomePane = new CopySomePane(candidateDrugs);
+        if( workPane != null ){
+            throw new RuntimeException("cannot happen");
+        }
+        Service.api.listDrugFull(visit.visitId)
+                .thenAccept(candidateDrugs -> EventQueue.invokeLater(() -> {
+                    CopySomePane copySomePane = new CopySomePane(candidateDrugs);
 //                    copySomePane.setCallback(new CopySomePane.Callback() {
 //                        @Override
 //                        public void onEnter(List<DrugFullDTO> selected) {
@@ -164,18 +164,18 @@ class DrugMenu extends JPanel {
 //                            closeWorkArea();
 //                        }
 //                    });
-//                    workPane = new WorkArea1("薬剤の選択コピー", copySomePane);
-//                    add(workPane, "newline, growx");
-//                    repaint();
-//                    revalidate();
-//                }))
-//                .exceptionally(t -> {
-//                    t.printStackTrace();
-//                    EventQueue.invokeLater(() -> {
-//                        alert(t.toString());
-//                    });
-//                    return null;
-//                });
+                    workPane = new WorkArea1("薬剤の選択コピー", copySomePane);
+                    add(workPane, "newline, growx");
+                    repaint();
+                    revalidate();
+                }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
 
     private void handleModifyDays(int visitId){
