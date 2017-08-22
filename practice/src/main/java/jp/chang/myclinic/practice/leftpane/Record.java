@@ -18,11 +18,17 @@ import java.util.List;
 
 class Record extends JPanel {
 
+    interface Callback {
+        default void onDrugsCopied(int targetVisitId, List<DrugFullDTO> drugs){}
+    }
+
     private VisitFull2DTO fullVisit;
     private MainExecContext mainExecContext;
     private int colWidth;
     private Title title;
     private TextArea textArea;
+    private DrugArea drugArea;
+    private Callback callback;
 
     Record(VisitFull2DTO fullVisit, int width, MainExecContext mainExecContext){
         this.fullVisit = fullVisit;
@@ -39,9 +45,17 @@ class Record extends JPanel {
         add(makeRightColumn(), "top");
     }
 
+    void setCallback(Callback callback){
+        this.callback = callback;
+    }
+
+    void addDrugs(List<DrugFullDTO> drugs){
+        drugArea.appendDrugs(drugs);
+    }
+
     private JComponent makeRightColumn(){
         JPanel panel = new JPanel(new MigLayout("insets 0", String.format("[%dpx!]", colWidth), ""));
-        DrugArea drugArea = new DrugArea(fullVisit.drugs, fullVisit.visit, colWidth, mainExecContext);
+        drugArea = new DrugArea(fullVisit.drugs, fullVisit.visit, colWidth, mainExecContext);
         bindDrugArea(drugArea);
         panel.add(new HokenDisp(fullVisit.hoken, fullVisit.visit), "wrap");
         panel.add(drugArea, "wrap");
@@ -55,7 +69,7 @@ class Record extends JPanel {
         drugArea.setCallback(new DrugArea.Callback(){
             @Override
             public void onCopyAll(int targetVisitId, List<DrugFullDTO> enteredDrugs) {
-
+                callback.onDrugsCopied(targetVisitId, enteredDrugs);
             }
         });
     }

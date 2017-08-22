@@ -53,10 +53,10 @@ class Record1 extends JPanel {
     private DrugArea makeDrugArea(List<DrugFullDTO> drugs, VisitDTO visit, int currentVisitId, int tempVisitId){
         this.drugArea = new DrugArea(drugs, visit, currentVisitId, tempVisitId,
                 new DrugArea.Callback() {
-                    @Override
-                    public void onCopyAll(int targetVisitId, List<Integer> drugIds) {
-                        callback.onCopyAllDrugs(targetVisitId, drugIds);
-                    }
+//                    @Override
+//                    public void onCopyAll(int targetVisitId, List<Integer> drugIds) {
+//                        callback.onCopyAllDrugs(targetVisitId, drugIds);
+//                    }
                 });
         return this.drugArea;
     }
