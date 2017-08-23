@@ -2,8 +2,8 @@ package jp.chang.myclinic.practice.leftpane.shinryou;
 
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.MainExecContext;
-import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.util.List;
@@ -20,7 +20,8 @@ public class ShinryouArea extends JPanel {
     }
 
     public ShinryouArea(List<ShinryouFullDTO> shinryouList, VisitDTO visit, int width, MainExecContext mainExecContext){
-        super(new MigLayout("insets 0, gapy 3", String.format("[%dpx!]", width), ""));
+        super(new FixedWidthLayout(width));
+        //super(new MigLayout("insets 0, gapy 3", String.format("[%dpx!]", width), ""));
         int currentVisitId = mainExecContext.getCurrentVisitId();
         int tempVisitId = mainExecContext.getTempVisitId();
         shinryouListDisp = new ShinryouListDisp(shinryouList, width, mainExecContext);

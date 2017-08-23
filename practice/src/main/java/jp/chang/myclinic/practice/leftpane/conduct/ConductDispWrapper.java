@@ -5,10 +5,10 @@ import jp.chang.myclinic.dto.ConductDrugFullDTO;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.ConductKizaiFullDTO;
 import jp.chang.myclinic.dto.ConductShinryouFullDTO;
+import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.MainExecContext;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.KizaiUtil;
-import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 
@@ -58,7 +58,8 @@ class ConductDispWrapper extends JPanel {
     }
 
     ConductDispWrapper(ConductFullDTO conductFull, int width, MainExecContext mainExecContext){
-        super(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
+        super(new FixedWidthLayout(width));
+        //super(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
         {
             String kindRep;
             ConductKind conductKind = ConductKind.fromCode(conductFull.conduct.kind);

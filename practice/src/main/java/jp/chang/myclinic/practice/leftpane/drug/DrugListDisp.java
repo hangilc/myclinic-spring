@@ -2,7 +2,9 @@ package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import net.miginfocom.swing.MigLayout;
+import jp.chang.myclinic.practice.FixedWidthLayout;
+import jp.chang.myclinic.practice.WrappedText;
+import jp.chang.myclinic.util.DrugUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,15 +30,17 @@ class DrugListDisp extends JPanel {
         this.visit = visit;
         this.width = width;
         drugExecContext = makeDrugExecContext();
-        setLayout(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
+        setLayout(new FixedWidthLayout(width));
+        //setLayout(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
         drugs.forEach(this::addDrug);
     }
 
     void addDrug(DrugFullDTO drug){
         int index = drugDispMap.size() + 1;
-        DrugDispWrapper drugDisp = new DrugDispWrapper(drug, index, visit, width, drugExecContext);
+        //DrugDispWrapper drugDisp = new DrugDispWrapper(drug, index, visit, width, drugExecContext);
+        WrappedText drugDisp = new WrappedText(width, index + ")" + DrugUtil.drugRep(drug));
         add(drugDisp, "wrap");
-        drugDispMap.put(drug.drug.drugId, drugDisp);
+        //drugDispMap.put(drug.drug.drugId, drugDisp);
     }
 
     void addDrugs(List<DrugFullDTO> drugs){

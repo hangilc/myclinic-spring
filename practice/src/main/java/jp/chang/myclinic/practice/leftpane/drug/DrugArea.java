@@ -2,8 +2,8 @@ package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.MainExecContext;
-import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.util.List;
@@ -62,7 +62,8 @@ public class DrugArea extends JPanel {
         DrugMenu drugMenu = new DrugMenu(visit, currentVisitId, tempVisitId);
         bindDrugMenu(drugMenu);
         this.drugListDisp = new DrugListDisp(drugs, visit, width);
-        setLayout(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
+        //setLayout(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
+        setLayout(new FixedWidthLayout(width));
         add(drugMenu, "wrap");
         add(drugListDisp);
     }
