@@ -8,6 +8,8 @@ interface TextAreaContext {
     void onEditorCancel(TextEditor editor);
     void onTextDeleted(TextEditor editor, int textId);
     void onTextUpdated(TextDTO enteredText, TextEditor editor);
+    void onCreatorCancel(TextCreator creator);
+    void onTextEntered(TextDTO enteredText, TextCreator creator);
 
     static TextAreaContext get(Component comp){
         while( comp != null ){

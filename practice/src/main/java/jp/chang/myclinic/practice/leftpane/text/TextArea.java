@@ -4,11 +4,9 @@ import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.Link;
-import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.WrappedText;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -18,6 +16,7 @@ public class TextArea extends JPanel implements TextAreaContext {
 
     private int width;
     private Map<TextEditor, WrappedText> editorMap = new HashMap<>();
+    private Link newTextLink;
 
     public TextArea(VisitFull2DTO fullVisit, int width){
         this.width = width;
@@ -25,7 +24,7 @@ public class TextArea extends JPanel implements TextAreaContext {
         fullVisit.texts.forEach(text -> {
             add(makeDisp(text));
         });
-        Link newTextLink = new Link("[文章作成]");
+        newTextLink = new Link("[文章作成]");
         bindNewTextLink(newTextLink, fullVisit.visit.visitId);
         add(newTextLink);
     }
@@ -56,41 +55,39 @@ public class TextArea extends JPanel implements TextAreaContext {
     private void bindNewTextLink(Link link, int visitId){
         JPanel panel = this;
         link.setCallback(event -> {
-            TextDTO textDTO = new TextDTO();
-            textDTO.visitId = visitId;
-            TextCreator textCreator = new TextCreator(textDTO, new TextCreator.Callback(){
-                @Override
-                public void onEnter(TextCreator creator) {
-                    Service.api.enterText(textDTO)
-                            .thenAccept(textId -> {
-                                textDTO.textId = textId;
-                                EventQueue.invokeLater(() -> {
-                                    panel.remove(creator);
-                                    panel.add(new TextDispWrapper(textDTO, width), "growx, wrap");
-                                    panel.add(link);
-                                    panel.repaint();
-                                    panel.revalidate();
-                                });
-                            })
-                            .exceptionally(t -> {
-                                EventQueue.invokeLater(() -> {
-                                    t.printStackTrace();
-                                    alert(t.toString());
-                                });
-                                return null;
-                            });
-                }
-
-                @Override
-                public void onCancel(TextCreator creator) {
-                    panel.remove(creator);
-                    panel.add(link);
-                    panel.repaint();
-                    panel.revalidate();
-                }
-            });
-            panel.remove(link);
-            panel.add(textCreator, "growx");
+            TextCreator textCreator = new TextCreator(visitId, width);
+//            TextCreator textCreator = new TextCreator(textDTO, new TextCreator.Callback(){
+//                @Override
+//                public void onEnter(TextCreator creator) {
+//                    Service.api.enterText(textDTO)
+//                            .thenAccept(textId -> {
+//                                textDTO.textId = textId;
+//                                EventQueue.invokeLater(() -> {
+//                                    panel.remove(creator);
+//                                    panel.add(new TextDispWrapper(textDTO, width), "growx, wrap");
+//                                    panel.add(link);
+//                                    panel.repaint();
+//                                    panel.revalidate();
+//                                });
+//                            })
+//                            .exceptionally(t -> {
+//                                EventQueue.invokeLater(() -> {
+//                                    t.printStackTrace();
+//                                    alert(t.toString());
+//                                });
+//                                return null;
+//                            });
+//                }
+//
+//                @Override
+//                public void onCancel(TextCreator creator) {
+//                    panel.remove(creator);
+//                    panel.add(link);
+//                    panel.repaint();
+//                    panel.revalidate();
+//                }
+//            });
+            panel.add(textCreator, new FixedWidthLayout.Replace(link));
             panel.repaint();
             panel.revalidate();
         });
@@ -124,6 +121,22 @@ public class TextArea extends JPanel implements TextAreaContext {
         WrappedText disp = makeDisp(enteredText);
         add(disp, new FixedWidthLayout.Replace(editor));
         editorMap.remove(editor);
+        repaint();
+        revalidate();
+    }
+
+    @Override
+    public void onCreatorCancel(TextCreator creator) {
+        add(newTextLink, new FixedWidthLayout.Replace(creator));
+        repaint();
+        revalidate();
+    }
+
+    @Override
+    public void onTextEntered(TextDTO enteredText, TextCreator creator) {
+        WrappedText disp = makeDisp(enteredText);
+        add(newTextLink, new FixedWidthLayout.Replace(creator));
+        add(disp, new FixedWidthLayout.Before(newTextLink));
         repaint();
         revalidate();
     }

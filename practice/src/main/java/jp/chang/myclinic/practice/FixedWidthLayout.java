@@ -14,6 +14,14 @@ public class FixedWidthLayout implements LayoutManager2 {
         }
     }
 
+    public static class Before {
+        public Component anchorComponent;
+
+        public Before(Component anchorComponent){
+            this.anchorComponent = anchorComponent;
+        }
+    }
+
     private int width;
     private List<Component> series = new ArrayList<>();
 
@@ -63,14 +71,24 @@ public class FixedWidthLayout implements LayoutManager2 {
 
     @Override
     public void addLayoutComponent(Component comp, Object constraints) {
-        if( constraints instanceof Replace ){
-            Replace repl = (Replace)constraints;
+        if( constraints instanceof Replace ) {
+            Replace repl = (Replace) constraints;
+            int n = series.size();
+            for (int i = 0; i < n; i++) {
+                Component c = series.get(i);
+                if (c == repl.origComponent) {
+                    series.set(i, comp);
+                    c.getParent().remove(c);
+                }
+            }
+        } else if( constraints instanceof Before ){
+            Before before = (Before)constraints;
+            Component anchor = before.anchorComponent;
             int n = series.size();
             for(int i=0;i<n;i++){
                 Component c = series.get(i);
-                if( c == repl.origComponent ){
-                    series.set(i, comp);
-                    c.getParent().remove(c);
+                if( c == anchor ){
+                    series.add(i, comp);
                 }
             }
         } else {
