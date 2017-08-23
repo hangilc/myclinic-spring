@@ -1,11 +1,9 @@
 package jp.chang.myclinic.practice.leftpane.text;
 
 import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.practice.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 
 class TextDispWrapper extends JPanel {
 
@@ -34,57 +32,58 @@ class TextDispWrapper extends JPanel {
     }
 
     private TextEditor makeTextEditor(TextDTO textDTO, TextDisp origTextDisp){
-        TextDispWrapper wrapper = this;
-        return new TextEditor(textDTO, new TextEditor.Callback(){
-
-            @Override
-            public void onEnter(TextDTO newText) {
-                Service.api.updateText(newText)
-                        .thenAccept(result -> {
-                            EventQueue.invokeLater(() -> {
-                                wrapper.removeAll();
-                                wrapper.add(makeTextDisp(newText), "wrap");
-                                wrapper.repaint();
-                                wrapper.revalidate();
-                            });
-                        })
-                        .exceptionally(t -> {
-                            EventQueue.invokeLater(() -> {
-                                t.printStackTrace();
-                                alert(t.toString());
-                            });
-                            return null;
-                        });
-            }
-
-            @Override
-            public void onDelete() {
-                Service.api.deleteText(textDTO.textId)
-                        .thenAccept(result -> {
-                            EventQueue.invokeLater(() -> {
-                                Container parent = wrapper.getParent();
-                                parent.remove(wrapper);
-                                parent.repaint();
-                                parent.revalidate();
-                            });
-                        })
-                        .exceptionally(t -> {
-                            EventQueue.invokeLater(() -> {
-                                t.printStackTrace();
-                                alert(t.toString());
-                            });
-                            return null;
-                        });
-            }
-
-            @Override
-            public void onCancel() {
-                removeAll();
-                add(origTextDisp, "wrap");
-                repaint();
-                revalidate();
-            }
-        });
+        return null;
+//        TextDispWrapper wrapper = this;
+//        return new TextEditor(textDTO, new TextEditor.Callback(){
+//
+//            @Override
+//            public void onEnter(TextDTO newText) {
+//                Service.api.updateText(newText)
+//                        .thenAccept(result -> {
+//                            EventQueue.invokeLater(() -> {
+//                                wrapper.removeAll();
+//                                wrapper.add(makeTextDisp(newText), "wrap");
+//                                wrapper.repaint();
+//                                wrapper.revalidate();
+//                            });
+//                        })
+//                        .exceptionally(t -> {
+//                            EventQueue.invokeLater(() -> {
+//                                t.printStackTrace();
+//                                alert(t.toString());
+//                            });
+//                            return null;
+//                        });
+//            }
+//
+//            @Override
+//            public void onDelete() {
+//                Service.api.deleteText(textDTO.textId)
+//                        .thenAccept(result -> {
+//                            EventQueue.invokeLater(() -> {
+//                                Container parent = wrapper.getParent();
+//                                parent.remove(wrapper);
+//                                parent.repaint();
+//                                parent.revalidate();
+//                            });
+//                        })
+//                        .exceptionally(t -> {
+//                            EventQueue.invokeLater(() -> {
+//                                t.printStackTrace();
+//                                alert(t.toString());
+//                            });
+//                            return null;
+//                        });
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                removeAll();
+//                add(origTextDisp, "wrap");
+//                repaint();
+//                revalidate();
+//            }
+//        });
     }
 
     private void alert(String message){

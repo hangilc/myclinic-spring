@@ -82,6 +82,9 @@ public class Service {
         @POST("end-exam")
         CompletableFuture<Boolean> endExam(@Query("visit-id") int visitId, @Query("charge") int charge);
 
+        @GET("get-text")
+        CompletableFuture<TextDTO> getText(@Query("text-id") int textId);
+
         @GET("list-drug-full")
         CompletableFuture<List<DrugFullDTO>> listDrugFull(@Query("visit-id") int visitId);
 

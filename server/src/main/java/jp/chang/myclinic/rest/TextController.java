@@ -30,4 +30,9 @@ class TextController {
         return true;
     }
 
+    @RequestMapping(value="/get-text", method=RequestMethod.GET)
+    public TextDTO getText(@RequestParam("text-id") int textId){
+        return dbGateway.getText(textId);
+    }
+
 }

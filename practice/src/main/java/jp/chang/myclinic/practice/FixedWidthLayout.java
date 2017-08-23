@@ -27,6 +27,7 @@ public class FixedWidthLayout implements LayoutManager2 {
 
     @Override
     public void removeLayoutComponent(Component comp) {
+        System.out.println("FixedWidthLayout remove:" + comp);
         series.remove(comp);
     }
 
@@ -63,7 +64,6 @@ public class FixedWidthLayout implements LayoutManager2 {
     @Override
     public void addLayoutComponent(Component comp, Object constraints) {
         if( constraints instanceof Replace ){
-            System.out.println("constraints:" + constraints);
             Replace repl = (Replace)constraints;
             int n = series.size();
             for(int i=0;i<n;i++){

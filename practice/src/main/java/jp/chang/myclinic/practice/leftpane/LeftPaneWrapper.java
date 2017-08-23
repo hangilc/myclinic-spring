@@ -14,12 +14,13 @@ public class LeftPaneWrapper extends JPanel {
     private PatientInfoPane patientInfoPane;
     private RecordsNav topNav;
     private DispRecords dispRecords;
+    private JScrollPane dispScroll;
     private RecordsNav botNav;
 
     public LeftPaneWrapper(MainExecContext mainExecContext){
         setLayout(new MigLayout("insets 0", "[grow]", "[] [] [grow] []"));
         this.mainExecContext = mainExecContext;
-        EventQueue.invokeLater(() -> setupComponents());
+        EventQueue.invokeLater(this::setupComponents);
     }
 
     private void setupComponents(){
@@ -28,7 +29,7 @@ public class LeftPaneWrapper extends JPanel {
         this.topNav = makeNav();
         this.botNav = makeNav();
         dispRecords = new DispRecords(width, mainExecContext);
-        JScrollPane dispScroll = new JScrollPane(dispRecords);
+        dispScroll = new JScrollPane(dispRecords);
         dispScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         dispScroll.setBorder(null);
         dispScroll.getVerticalScrollBar().setUnitIncrement(16);
@@ -53,6 +54,7 @@ public class LeftPaneWrapper extends JPanel {
         topNav.start(patient.patientId, page.totalPages);
         botNav.start(patient.patientId, page.totalPages);
         dispRecords.setVisits(page.visits);
+        EventQueue.invokeLater(() -> dispScroll.getVerticalScrollBar().setValue(0));
         setVisible(true);
         repaint();
         revalidate();

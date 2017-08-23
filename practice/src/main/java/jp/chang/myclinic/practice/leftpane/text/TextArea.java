@@ -9,23 +9,48 @@ import jp.chang.myclinic.practice.WrappedText;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Map;
 
-public class TextArea extends JPanel {
+public class TextArea extends JPanel implements TextAreaContext {
 
     private int width;
+    private Map<TextEditor, WrappedText> editorMap = new HashMap<>();
 
     public TextArea(VisitFull2DTO fullVisit, int width){
         this.width = width;
-        //setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
         setLayout(new FixedWidthLayout(width));
         fullVisit.texts.forEach(text -> {
-            //TextDispWrapper textDisp = new TextDispWrapper(text, width);
-            WrappedText textDisp = new WrappedText(width, text.content);
-            add(textDisp, "wrap");
+            add(makeDisp(text));
         });
         Link newTextLink = new Link("[文章作成]");
         bindNewTextLink(newTextLink, fullVisit.visit.visitId);
         add(newTextLink);
+    }
+
+    private WrappedText makeDisp(TextDTO text){
+        String content = text.content;
+        if( content.isEmpty() ){
+            content = "(空白)";
+        }
+        WrappedText textDisp = new WrappedText(width, content);
+        bindTextDisp(textDisp, text);
+        return textDisp;
+    }
+
+    private void bindTextDisp(WrappedText disp, TextDTO text){
+        disp.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                TextEditor editor = new TextEditor(text, width);
+                add(editor, new FixedWidthLayout.Replace(disp));
+                editorMap.put(editor, disp);
+                repaint();
+                revalidate();
+            }
+        });
     }
 
     private void bindNewTextLink(Link link, int visitId){
@@ -75,4 +100,31 @@ public class TextArea extends JPanel {
         JOptionPane.showMessageDialog(this, message);
     }
 
+    @Override
+    public void onEditorCancel(TextEditor editor) {
+        WrappedText disp = editorMap.getOrDefault(editor, null);
+        if( disp != null ){
+            add(disp, new FixedWidthLayout.Replace(editor));
+            editorMap.remove(editor);
+            repaint();
+            revalidate();
+        }
+    }
+
+    @Override
+    public void onTextDeleted(TextEditor editor, int textId) {
+        editorMap.remove(editor);
+        remove(editor);
+        repaint();
+        revalidate();
+    }
+
+    @Override
+    public void onTextUpdated(TextDTO enteredText, TextEditor editor) {
+        WrappedText disp = makeDisp(enteredText);
+        add(disp, new FixedWidthLayout.Replace(editor));
+        editorMap.remove(editor);
+        repaint();
+        revalidate();
+    }
 }

@@ -501,6 +501,11 @@ public class DbGateway {
 		return texts.stream().map(mapper::toTextDTO).collect(Collectors.toList());
 	}
 
+	public TextDTO getText(int textId){
+		Text text = textRepository.findOne(textId);
+		return mapper.toTextDTO(text);
+	}
+
 	public int enterText(TextDTO textDTO){
 		Text text = mapper.fromTextDTO(textDTO);
 		text.setTextId(null);
