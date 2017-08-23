@@ -41,6 +41,7 @@ public class LeftPaneWrapper extends JPanel {
     }
 
     public void reset(){
+        dispRecords.clear();
         setVisible(false);
         repaint();
         revalidate();
@@ -52,6 +53,7 @@ public class LeftPaneWrapper extends JPanel {
         topNav.start(patient.patientId, page.totalPages);
         botNav.start(patient.patientId, page.totalPages);
         dispRecords.setVisits(page.visits);
+        setVisible(true);
         repaint();
         revalidate();
     }

@@ -38,6 +38,13 @@ class DispRecords extends JPanel {
         revalidate();
     }
 
+    void clear(){
+        removeAll();
+        recordMap.clear();
+        repaint();
+        revalidate();
+    }
+
     private void bindRecord(Record record){
         record.setCallback(new Record.Callback(){
             @Override

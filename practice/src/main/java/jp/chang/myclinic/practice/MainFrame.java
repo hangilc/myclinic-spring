@@ -8,9 +8,10 @@ import jp.chang.myclinic.practice.rightpane.RightPaneWrapper;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.concurrent.CompletableFuture;
 
-class MainFrame extends JFrame {
+class MainFrame extends JFrame implements MainContext {
 
     private LeftPaneWrapper leftPaneWrapper;
     private RightPaneWrapper rightPaneWrapper;
@@ -30,6 +31,45 @@ class MainFrame extends JFrame {
         add(leftPaneWrapper, "w 580!, h 520, growy");
         add(rightScroll, "w 220!, h 520, growy");
         pack();
+    }
+
+    @Override
+    public void startExam(PatientDTO patient, VisitDTO visit, Runnable edtCallback) {
+        suspendCurrentExam()
+                .thenCompose(res -> Service.api.listVisitFull2(patient.patientId, 0))
+                .thenAccept(page -> EventQueue.invokeLater(() -> {
+                    System.out.println(page);
+                    currentPatient = patient;
+                    currentVisit = visit;
+                    tempVisitId = 0;
+                    leftPaneWrapper.start(page);
+                    edtCallback.run();
+                }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
+    private CompletableFuture<Boolean> suspendCurrentExam(){
+        CompletableFuture<Boolean> cf;
+        if( currentVisit != null ){
+            cf = Service.api.suspendExam(currentVisit.visitId);
+        } else {
+            cf = CompletableFuture.completedFuture(true);
+        }
+        return cf.thenApply(result -> {
+            EventQueue.invokeLater(() -> {
+                currentPatient = null;
+                currentVisit = null;
+                tempVisitId = 0;
+                //leftPaneWrapper.reset();
+            });
+            return true;
+        });
     }
 
     private MainExecContext makeMainExecContext(){
@@ -126,4 +166,5 @@ class MainFrame extends JFrame {
     private void alert(String message){
         JOptionPane.showMessageDialog(this, message);
     }
+
 }

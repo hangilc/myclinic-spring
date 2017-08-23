@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.rightpane;
 
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.practice.MainContext;
 import jp.chang.myclinic.practice.Service;
 import net.miginfocom.swing.MigLayout;
 
@@ -54,6 +55,7 @@ class SearchPatient extends JPanel {
     }
 
     private void setupSearchResult(){
+        Component self = this;
         searchResult.setCellRenderer((list, patient, index, isSelected, cellHasFocus) -> {
             JLabel label = new JLabel();
             String text = String.format("[%04d] %s %s (%s %s)", patient.patientId, patient.lastName,
@@ -75,15 +77,9 @@ class SearchPatient extends JPanel {
                 if( e.getClickCount() == 2 ){
                     PatientDTO patient = searchResult.getSelectedValue();
                     if( patient != null ){
-                        context.startPatient(patient)
-                                .thenAccept(ok -> reset())
-                                .exceptionally(t -> {
-                                    t.printStackTrace();
-                                    EventQueue.invokeLater(() -> {
-                                        alert(t.toString());
-                                    });
-                                    return null;
-                                });
+                        MainContext.getMainContext(self).startExam(patient, null, () -> {
+
+                        });
                     }
                 }
             }

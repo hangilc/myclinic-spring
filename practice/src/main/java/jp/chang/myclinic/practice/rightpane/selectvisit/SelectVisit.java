@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.rightpane.selectvisit;
 
 import jp.chang.myclinic.dto.WqueueFullDTO;
+import jp.chang.myclinic.practice.MainContext;
 import jp.chang.myclinic.practice.Service;
 import net.miginfocom.swing.MigLayout;
 
@@ -24,6 +25,7 @@ public class SelectVisit extends JPanel {
         JButton button = new JButton("患者選択");
         scrollPane = new JScrollPane(searchResult);
         scrollPane.setVisible(false);
+        final Component self = this;
         button.addActionListener(event -> {
             if( scrollPane.isVisible() ){
                 searchResult.setListData(new WqueueFullDTO[]{});
@@ -51,14 +53,15 @@ public class SelectVisit extends JPanel {
         searchResult.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e) {
-                if( e.getClickCount() >= 2 ){
+                if (e.getClickCount() >= 2) {
                     WqueueFullDTO data = searchResult.getSelectedValue();
-                    if( data != null ){
-                        callback.onSelect(data);
-                        searchResult.setListData(new WqueueFullDTO[]{});
-                        scrollPane.setVisible(false);
-                        repaint();
-                        revalidate();
+                    if (data != null) {
+                        MainContext.getMainContext(self).startExam(data.patient, data.visit, () -> {
+                            searchResult.setListData(new WqueueFullDTO[]{});
+                            scrollPane.setVisible(false);
+                            repaint();
+                            revalidate();
+                        });
                     }
                 }
             }
