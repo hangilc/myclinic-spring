@@ -1,7 +1,8 @@
 package jp.chang.myclinic.practice.leftpane.hoken;
 
 import jp.chang.myclinic.dto.HokenDTO;
-import jp.chang.myclinic.dto.KouhiDTO;
+import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.util.KouhiUtil;
 import jp.chang.myclinic.util.KoukikoureiUtil;
 import jp.chang.myclinic.util.RoujinUtil;
@@ -9,17 +10,17 @@ import jp.chang.myclinic.util.ShahokokuhoUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.*;
 
-class HokenChooser extends JPanel {
+public class HokenChooser extends JPanel {
 
-    interface Callback {
+    public interface Callback {
         default void onEnter(HokenDTO hokenDTO){};
         default void onCancel(){};
     }
 
     private HokenDTO available;
+    //private VisitDTO visit;
     private Callback callback = new Callback(){};
     private JCheckBox shahokokuhoCheck;
     private JCheckBox koukikoureiCheck;
@@ -28,7 +29,7 @@ class HokenChooser extends JPanel {
     private JCheckBox kouhi2Check;
     private JCheckBox kouhi3Check;
 
-    HokenChooser(HokenDTO available, HokenDTO current){
+    public HokenChooser(HokenDTO available, HokenDTO current, int visitId, String atDate, int patientId){
         this.available = available;
         setLayout(new MigLayout("insets 0", "[grow]", ""));
         if( available.shahokokuho != null ){
@@ -74,48 +75,52 @@ class HokenChooser extends JPanel {
             add(kouhi3Check, "wrap");
         }
         JButton enterButton = new JButton("入力");
-        enterButton.addActionListener(event -> doEnter());
+        enterButton.addActionListener(event -> doEnter(visitId, atDate, patientId));
         JButton cancelButton = new JButton("キャンセル");
         cancelButton.addActionListener(event -> callback.onCancel());
         add(enterButton, "newline, span, split 2");
         add(cancelButton);
     }
 
-    void setCallback(Callback callback){
+    public void setCallback(Callback callback){
         this.callback = callback;
     }
 
-    void doEnter(){
-        HokenDTO hokenDTO = new HokenDTO();
+    private void doEnter(int visitId, String atDate, int patientId){
+        VisitDTO newVisit = new VisitDTO();
+        newVisit.visitId = visitId;
         if( shahokokuhoCheck != null && shahokokuhoCheck.isSelected() ){
-            hokenDTO.shahokokuho = available.shahokokuho;
+            newVisit.shahokokuhoId = available.shahokokuho.shahokokuhoId;
         }
         if( koukikoureiCheck != null && koukikoureiCheck.isSelected() ){
-            hokenDTO.koukikourei = available.koukikourei;
+            newVisit.koukikoureiId = available.koukikourei.koukikoureiId;
         }
         if( roujinCheck != null && roujinCheck.isSelected() ){
-            hokenDTO.roujin = available.roujin;
+            newVisit.roujinId = available.roujin.roujinId;
         }
-        List<KouhiDTO> kouhiList = new ArrayList<>();
         if( kouhi1Check!= null && kouhi1Check.isSelected() ){
-            kouhiList.add(available.kouhi1);
+            newVisit.kouhi1Id = available.kouhi1.kouhiId;
         }
         if( kouhi2Check!= null && kouhi2Check.isSelected() ){
-            kouhiList.add(available.kouhi2);
+            newVisit.kouhi2Id = available.kouhi2.kouhiId;
         }
         if( kouhi3Check!= null && kouhi3Check.isSelected() ){
-            kouhiList.add(available.kouhi3);
+            newVisit.kouhi3Id = available.kouhi3.kouhiId;
         }
-        int n = kouhiList.size();
-        if( n > 0 ){
-            hokenDTO.kouhi1 = kouhiList.get(0);
-            if( n > 1 ){
-                hokenDTO.kouhi2 = kouhiList.get(1);
-                if( n > 2 ){
-                    hokenDTO.kouhi3 = kouhiList.get(2);
-                }
-            }
-        }
-        callback.onEnter(hokenDTO);
+        Service.api.updateHoken(newVisit)
+                .thenCompose(result -> Service.api.getHoken(visitId))
+                .thenAccept(newHoken -> EventQueue.invokeLater(() -> callback.onEnter(newHoken)))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
+    }
+
 }

@@ -56,37 +56,6 @@ public class TextArea extends JPanel implements TextAreaContext {
         JPanel panel = this;
         link.setCallback(event -> {
             TextCreator textCreator = new TextCreator(visitId, width);
-//            TextCreator textCreator = new TextCreator(textDTO, new TextCreator.Callback(){
-//                @Override
-//                public void onEnter(TextCreator creator) {
-//                    Service.api.enterText(textDTO)
-//                            .thenAccept(textId -> {
-//                                textDTO.textId = textId;
-//                                EventQueue.invokeLater(() -> {
-//                                    panel.remove(creator);
-//                                    panel.add(new TextDispWrapper(textDTO, width), "growx, wrap");
-//                                    panel.add(link);
-//                                    panel.repaint();
-//                                    panel.revalidate();
-//                                });
-//                            })
-//                            .exceptionally(t -> {
-//                                EventQueue.invokeLater(() -> {
-//                                    t.printStackTrace();
-//                                    alert(t.toString());
-//                                });
-//                                return null;
-//                            });
-//                }
-//
-//                @Override
-//                public void onCancel(TextCreator creator) {
-//                    panel.remove(creator);
-//                    panel.add(link);
-//                    panel.repaint();
-//                    panel.revalidate();
-//                }
-//            });
             panel.add(textCreator, new FixedWidthLayout.Replace(link));
             panel.repaint();
             panel.revalidate();

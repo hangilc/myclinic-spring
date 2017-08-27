@@ -35,7 +35,6 @@ public class FixedWidthLayout implements LayoutManager2 {
 
     @Override
     public void removeLayoutComponent(Component comp) {
-        System.out.println("FixedWidthLayout remove:" + comp);
         series.remove(comp);
     }
 

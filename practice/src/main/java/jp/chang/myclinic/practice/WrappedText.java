@@ -13,12 +13,16 @@ public class WrappedText extends JEditorPane {
         });
     }
 
-    public WrappedText(int width, String text) {
+    public WrappedText(int width){
         setContentType("text/plain");
         setSize(width, Integer.MAX_VALUE);
-        setText(text);
         setEditable(false);
         setBorder(null);
         setBackground(background);
+    }
+
+    public WrappedText(int width, String text) {
+        this(width);
+        setText(text);
     }
 }
