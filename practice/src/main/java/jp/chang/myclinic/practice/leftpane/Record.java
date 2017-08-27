@@ -7,6 +7,7 @@ import jp.chang.myclinic.practice.PracticeUtil;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.leftpane.conduct.ConductArea;
 import jp.chang.myclinic.practice.leftpane.drug.DrugArea;
+import jp.chang.myclinic.practice.leftpane.drug.DrugHandler;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenChooser;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenDisp;
 import jp.chang.myclinic.practice.leftpane.shinryou.ShinryouArea;
@@ -31,6 +32,7 @@ class Record extends JPanel {
     private int colWidth;
     private Title title;
     private TextArea textArea;
+    private DrugHandler drugHandler;
     private DrugArea drugArea;
     private Callback callback;
 
@@ -44,6 +46,7 @@ class Record extends JPanel {
                 String.format("[%dpx!]%d[%dpx!]", colWidth, gap, colWidth),
                 ""));
         title = new Title(fullVisit.visit, mainExecContext);
+        drugHandler = new DrugHandler(colWidth, this);
         textArea = new TextArea(fullVisit, colWidth);
         add(title, "span, growx, wrap");
         add(textArea, "top");
@@ -65,10 +68,11 @@ class Record extends JPanel {
 
     private JComponent makeRightColumn(VisitFull2DTO fullVisit){
         JPanel panel = new JPanel(new FixedWidthLayout(colWidth));
-        drugArea = new DrugArea(fullVisit.drugs, fullVisit.visit, colWidth, mainExecContext);
-        bindDrugArea(drugArea);
+        //drugArea = new DrugArea(fullVisit.drugs, fullVisit.visit, colWidth, mainExecContext);
+        //bindDrugArea(drugArea);
         panel.add(makeHokenDisp(fullVisit.hoken, fullVisit.visit, panel));
-        panel.add(drugArea);
+        //panel.add(drugArea);
+        drugHandler.setup(panel);
         panel.add(new ShinryouArea(fullVisit.shinryouList, fullVisit.visit, colWidth, mainExecContext), "wrap");
         panel.add(new ConductArea(fullVisit.conducts, colWidth, mainExecContext), "wrap");
         panel.add(makeChargePane(fullVisit.charge));

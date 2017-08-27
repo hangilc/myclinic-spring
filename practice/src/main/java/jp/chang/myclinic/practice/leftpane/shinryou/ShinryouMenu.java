@@ -2,14 +2,14 @@ package jp.chang.myclinic.practice.leftpane.shinryou;
 
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.MainExecContext;
-import jp.chang.myclinic.practice.leftpane.WorkArea;
+import jp.chang.myclinic.practice.leftpane.WorkArea2;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 
 class ShinryouMenu extends JPanel {
 
-    private WorkArea workArea;
+    private WorkArea2 workArea;
 
     ShinryouMenu(int visitId, int currentVisitId, int tempVisitIs){
 //        setLayout(new MigLayout("insets 0", "[] [] [grow]", ""));
@@ -40,7 +40,7 @@ class ShinryouMenu extends JPanel {
             return;
         }
         AddRegularPane addRegularPane = new AddRegularPane();
-        workArea = new WorkArea<AddRegularPane>("診療行為入力", addRegularPane);
+        workArea = new WorkArea2<AddRegularPane>("診療行為入力", addRegularPane);
         add(workArea, "newline, span, growx");
         revalidate();
     }

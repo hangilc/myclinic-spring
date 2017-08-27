@@ -5,11 +5,11 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 
-public class WorkArea<T extends JComponent> extends JPanel {
+public class WorkArea2<T extends JComponent> extends JPanel {
 
     private T component;
 
-    public WorkArea(String title, T component){
+    public WorkArea2(String title, T component){
         super(new MigLayout("", "[grow]", ""));
         this.component = component;
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));

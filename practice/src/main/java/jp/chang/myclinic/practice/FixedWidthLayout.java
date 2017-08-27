@@ -7,7 +7,7 @@ import java.util.List;
 public class FixedWidthLayout implements LayoutManager2 {
 
     public static class Replace {
-        public Component origComponent;
+        private Component origComponent;
 
         public Replace(Component origComponent){
             this.origComponent = origComponent;
@@ -15,9 +15,17 @@ public class FixedWidthLayout implements LayoutManager2 {
     }
 
     public static class Before {
-        public Component anchorComponent;
+        private Component anchorComponent;
 
         public Before(Component anchorComponent){
+            this.anchorComponent = anchorComponent;
+        }
+    }
+
+    public static class After {
+        private  Component anchorComponent;
+
+        public After(Component anchorComponent){
             this.anchorComponent = anchorComponent;
         }
     }
@@ -80,14 +88,26 @@ public class FixedWidthLayout implements LayoutManager2 {
                     c.getParent().remove(c);
                 }
             }
-        } else if( constraints instanceof Before ){
-            Before before = (Before)constraints;
+        } else if( constraints instanceof Before ) {
+            Before before = (Before) constraints;
             Component anchor = before.anchorComponent;
             int n = series.size();
-            for(int i=0;i<n;i++){
+            for (int i = 0; i < n; i++) {
                 Component c = series.get(i);
-                if( c == anchor ){
+                if (c == anchor) {
                     series.add(i, comp);
+                    break;
+                }
+            }
+        } else if( constraints instanceof  After ){
+            After after = (After) constraints;
+            Component anchor = after.anchorComponent;
+            int n = series.size();
+            for (int i = 0; i < n; i++) {
+                Component c = series.get(i);
+                if (c == anchor) {
+                    series.add(i+1, comp);
+                    break;
                 }
             }
         } else {

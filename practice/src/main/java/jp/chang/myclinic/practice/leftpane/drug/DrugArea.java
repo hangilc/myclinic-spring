@@ -18,9 +18,9 @@ public class DrugArea extends JPanel {
     private Callback callback;
 
     public DrugArea(List<DrugFullDTO> drugs, VisitDTO visit, int currentVisitId, int tempVisitId, Callback callback){
-//        DrugMenu drugMenu = new DrugMenu(visit, currentVisitId, tempVisitId);
+//        DrugMenu1 drugMenu = new DrugMenu1(visit, currentVisitId, tempVisitId);
 //        this.drugListDisp = new DrugListDisp(drugs, visit);
-//        drugMenu.setCallback(new DrugMenu.Callback(){
+//        drugMenu.setCallback(new DrugMenu1.Callback(){
 //            @Override
 //            public void onNewDrug(DrugDTO drug) {
 //                Service.api.getDrugFull(drug.drugId)
@@ -59,12 +59,12 @@ public class DrugArea extends JPanel {
     public DrugArea(List<DrugFullDTO> drugs, VisitDTO visit, int width, MainExecContext mainExecContext){
         int currentVisitId = mainExecContext.getCurrentVisitId();
         int tempVisitId = mainExecContext.getTempVisitId();
-        DrugMenu drugMenu = new DrugMenu(visit, currentVisitId, tempVisitId);
-        bindDrugMenu(drugMenu);
+        DrugMenu1 drugMenu1 = new DrugMenu1(visit, currentVisitId, tempVisitId);
+        bindDrugMenu(drugMenu1);
         this.drugListDisp = new DrugListDisp(drugs, visit, width);
         //setLayout(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
         setLayout(new FixedWidthLayout(width));
-        add(drugMenu, "wrap");
+        add(drugMenu1, "wrap");
         add(drugListDisp);
     }
 
@@ -72,8 +72,8 @@ public class DrugArea extends JPanel {
         this.callback = callback;
     }
 
-    private void bindDrugMenu(DrugMenu drugMenu){
-        drugMenu.setCallback(new DrugMenu.Callback(){
+    private void bindDrugMenu(DrugMenu1 drugMenu1){
+        drugMenu1.setCallback(new DrugMenu1.Callback(){
             @Override
             public void onNewDrug(DrugFullDTO drugFull) {
                 drugListDisp.addDrug(drugFull);

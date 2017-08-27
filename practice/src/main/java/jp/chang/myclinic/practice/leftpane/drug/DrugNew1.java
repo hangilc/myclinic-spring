@@ -10,7 +10,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 
-class DrugNew extends JPanel {
+class DrugNew1 extends JPanel {
     interface Callback {
         default void onEnter(DrugDTO drug){};
         default void onClose(){};
@@ -20,7 +20,7 @@ class DrugNew extends JPanel {
     private DrugSearch drugSearch;
     private Callback callback = new Callback(){};
 
-    DrugNew(VisitDTO visit){
+    DrugNew1(VisitDTO visit){
         drugSearch = new DrugSearch(visit.patientId, visit.visitedAt.substring(0, 10), this::doOnDrugSelected);
         setLayout(new MigLayout("", "[grow]", ""));
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 2));
