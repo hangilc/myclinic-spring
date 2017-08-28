@@ -8,10 +8,12 @@ import javax.swing.*;
 class DrugMenu extends JPanel {
 
     interface Callback {
-        void onNewDrug();
+        default void onNewDrug(){}
     }
 
-    DrugMenu(Callback callback){
+    private Callback callback = new Callback(){};
+
+    DrugMenu(){
         setLayout(new MigLayout("insets 0", "", ""));
         Link mainMenuLink = new Link("[処方]");
         mainMenuLink.setCallback(event -> callback.onNewDrug());
@@ -19,5 +21,9 @@ class DrugMenu extends JPanel {
         //subMenuLink.setCallback(event -> doSubMenuClick(event, visit, currentVisitId, tempVisitId));
         add(mainMenuLink);
         add(subMenuLink);
+    }
+
+    void setCallback(Callback callback){
+        this.callback = callback;
     }
 }

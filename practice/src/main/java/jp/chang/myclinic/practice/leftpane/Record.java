@@ -46,7 +46,6 @@ class Record extends JPanel {
                 String.format("[%dpx!]%d[%dpx!]", colWidth, gap, colWidth),
                 ""));
         title = new Title(fullVisit.visit, mainExecContext);
-        drugHandler = new DrugHandler(colWidth, this);
         textArea = new TextArea(fullVisit, colWidth);
         add(title, "span, growx, wrap");
         add(textArea, "top");
@@ -68,6 +67,7 @@ class Record extends JPanel {
 
     private JComponent makeRightColumn(VisitFull2DTO fullVisit){
         JPanel panel = new JPanel(new FixedWidthLayout(colWidth));
+        drugHandler = new DrugHandler(colWidth, panel);
         //drugArea = new DrugArea(fullVisit.drugs, fullVisit.visit, colWidth, mainExecContext);
         //bindDrugArea(drugArea);
         panel.add(makeHokenDisp(fullVisit.hoken, fullVisit.visit, panel));

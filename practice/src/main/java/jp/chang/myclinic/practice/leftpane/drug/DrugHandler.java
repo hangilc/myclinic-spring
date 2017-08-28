@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.practice.FixedWidthLayout;
-import jp.chang.myclinic.practice.WorkArea;
+import jp.chang.myclinic.practice.leftpane.WorkArea;
 
 import java.awt.*;
 
@@ -17,7 +17,8 @@ public class DrugHandler {
     }
 
     public void setup(Container container){
-        DrugMenu drugMenu = new DrugMenu(new DrugMenu.Callback(){
+        DrugMenu drugMenu = new DrugMenu();
+        drugMenu.setCallback(new DrugMenu.Callback(){
             @Override
             public void onNewDrug() {
                 if( workarea != null ){
@@ -25,6 +26,8 @@ public class DrugHandler {
                 } else {
                     workarea = makeDrugNewWorkArea();
                     wrapper.add(workarea, new FixedWidthLayout.After(drugMenu));
+                    wrapper.repaint();
+                    wrapper.revalidate();
                 }
             }
         });
