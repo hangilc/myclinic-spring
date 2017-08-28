@@ -25,9 +25,10 @@ public class DrugHandler {
 
                 } else {
                     workarea = makeDrugNewWorkArea();
-                    wrapper.add(workarea, new FixedWidthLayout.After(drugMenu));
-                    wrapper.repaint();
-                    wrapper.revalidate();
+                    System.out.println(container.getWidth());
+                    container.add(workarea, new FixedWidthLayout.After(drugMenu));
+                    workarea.repaint();
+                    workarea.revalidate();
                 }
             }
         });

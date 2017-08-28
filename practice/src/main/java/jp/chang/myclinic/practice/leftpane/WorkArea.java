@@ -10,7 +10,7 @@ public class WorkArea extends JPanel {
     private Component component;
 
     public WorkArea(int width, String title){
-        super(new MigLayout("insets 0, debug", String.format("[%dpx!]", width), ""));
+        super(new MigLayout("insets 0, fill, debug", "[grow]", ""));
 //        Border border = BorderFactory.createCompoundBorder(
 //                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
 //                BorderFactory.createEmptyBorder(3, 3, 3, 3)
@@ -18,7 +18,7 @@ public class WorkArea extends JPanel {
         //setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
         Insets insets = getInsets();
         int innerWidth = width - insets.left - insets.right;
-        add(makeTitle(title), "growx");
+        add(makeTitle(title), "grow");
     }
 
     public Component getComponent(){

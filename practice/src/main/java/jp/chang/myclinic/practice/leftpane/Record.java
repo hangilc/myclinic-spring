@@ -66,7 +66,13 @@ class Record extends JPanel {
     }
 
     private JComponent makeRightColumn(VisitFull2DTO fullVisit){
-        JPanel panel = new JPanel(new FixedWidthLayout(colWidth));
+        JPanel panel = new JPanel(new FixedWidthLayout(colWidth)){
+            @Override
+            public int getWidth() {
+                return colWidth;
+            }
+        };
+        panel.add(new Box());
         drugHandler = new DrugHandler(colWidth, panel);
         //drugArea = new DrugArea(fullVisit.drugs, fullVisit.visit, colWidth, mainExecContext);
         //bindDrugArea(drugArea);
@@ -146,4 +152,12 @@ class Record extends JPanel {
         JOptionPane.showMessageDialog(this, message);
     }
 
+
+    private static class Box extends JPanel {
+        Box() {
+            super(new MigLayout("insets 0, fillx, debug", "[grow]", ""));
+            add(new JLabel("Box"), "");
+        }
+
+    }
 }
