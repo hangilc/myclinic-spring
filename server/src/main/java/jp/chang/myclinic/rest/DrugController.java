@@ -93,7 +93,7 @@ public class DrugController {
 	}
 
 	@RequestMapping(value="/enter-drug", method=RequestMethod.POST)
-	public DrugDTO enterDrug(@RequestBody DrugDTO drug){
+	public int enterDrug(@RequestBody DrugDTO drug){
 		return dbGateway.enterDrug(drug);
 	}
 
@@ -101,8 +101,7 @@ public class DrugController {
 	public List<Integer> batchEnterDrugs(@RequestBody List<DrugDTO> drugs){
 		List<Integer> drugIds = new ArrayList<>();
 		drugs.forEach(drug -> {
-			DrugDTO entered = dbGateway.enterDrug(drug);
-			drugIds.add(entered.drugId);
+			drugIds.add(dbGateway.enterDrug(drug));
 		});
 		return drugIds;
 	}

@@ -91,33 +91,33 @@ class DrugMenu1 extends JPanel {
         if( workPane != null ){
             return;
         }
-        SubMenuPane submenu = new SubMenuPane(visit, currentVisitId, tempVisitId, new SubMenuPane.Callback(){
-            @Override
-            public void onCopyAll(int targetVisitId, List<DrugFullDTO> enteredDrugs) {
-                callback.onDrugsCopied(targetVisitId, enteredDrugs);
-            }
-
-            @Override
-            public void onCopySome(int targetVisitId) {
-                handleCopySome(targetVisitId, visit);
-            }
-
-            @Override
-            public void onModifyDays() {
-                handleModifyDays(visit.visitId);
-            }
-
-            @Override
-            public void onDeleteSome() {
-                handleDeleteSelected(visit.visitId);
-            }
-        });
-        submenu.show(this, event.getX(), event.getY());
+//        SubMenuPane submenu = new SubMenuPane(visit, currentVisitId, tempVisitId, new SubMenuPane.Callback(){
+//            @Override
+//            public void onCopyAll(int targetVisitId, List<DrugFullDTO> enteredDrugs) {
+//                callback.onDrugsCopied(targetVisitId, enteredDrugs);
+//            }
+//
+//            @Override
+//            public void onCopySome(int targetVisitId) {
+//                handleCopySome(targetVisitId, visit);
+//            }
+//
+//            @Override
+//            public void onModifyDays() {
+//                handleModifyDays(visit.visitId);
+//            }
+//
+//            @Override
+//            public void onDeleteSome() {
+//                handleDeleteSelected(visit.visitId);
+//            }
+//        });
+//        submenu.show(this, event.getX(), event.getY());
     }
 
     private CompletableFuture<DrugFullDTO> enterDrug(DrugDTO drug){
         return Service.api.enterDrug(drug)
-                .thenCompose(enteredDrug -> Service.api.getDrugFull(enteredDrug.drugId));
+                .thenCompose(drugId -> Service.api.getDrugFull(drugId));
     }
 
 //    private void doEnterNewDrug(DrugDTO drug, DrugNew1 drugNewPane){

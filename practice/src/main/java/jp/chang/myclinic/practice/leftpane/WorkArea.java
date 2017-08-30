@@ -7,27 +7,42 @@ import java.awt.*;
 
 public class WorkArea extends JPanel {
 
+    private static int borderWidth = 2;
+    private static int insetWidth = 3;
+
+    private static int calcInnerColumnWidth(int width){
+        return width - borderWidth * 2 - insetWidth * 2;
+    }
+
+    private static MigLayout createLayout(int width){
+        return new MigLayout(
+                String.format("insets %d", insetWidth),
+                String.format("[%dpx!]", calcInnerColumnWidth(width)),
+                ""
+        );
+    }
+
+    private int width;
     private Component component;
 
     public WorkArea(int width, String title){
-        super(new MigLayout("insets 0, fill, debug", "[grow]", ""));
-//        Border border = BorderFactory.createCompoundBorder(
-//                BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-//                BorderFactory.createEmptyBorder(3, 3, 3, 3)
-//        );
-        //setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-        Insets insets = getInsets();
-        int innerWidth = width - insets.left - insets.right;
-        add(makeTitle(title), "grow");
+        super(createLayout(width));
+        this.width = width;
+        setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+        add(makeTitle(title), "grow, wrap");
+    }
+
+    public int getInnerColumnWidth(){
+        return calcInnerColumnWidth(width);
     }
 
     public Component getComponent(){
         return component;
     }
 
-    public void setComponent(Component component, Object layoutConstraints){
+    public void setComponent(Component component){
         this.component = component;
-        add(component, layoutConstraints);
+        add(component, "growx");
     }
 
     private JComponent makeTitle(String text){

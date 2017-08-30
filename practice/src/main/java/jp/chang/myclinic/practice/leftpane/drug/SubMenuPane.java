@@ -12,16 +12,15 @@ import java.util.stream.Collectors;
 class SubMenuPane extends JPopupMenu {
 
     interface Callback {
-        void onCopyAll(int targetVisitId, List<DrugFullDTO> enteredDrugs);
-        void onCopySome(int targetVisitId);
-        void onModifyDays();
-        void onDeleteSome();
+        default void onCopyAll(int targetVisitId, List<DrugFullDTO> enteredDrugs){}
+        default void onCopySome(int targetVisitId){}
+        default void onModifyDays(){}
+        default void onDeleteSome(){}
     }
 
-    private Callback callback;
+    private Callback callback = new Callback(){};
 
-    SubMenuPane(VisitDTO visit, int currentVisitId, int tempVisitId, Callback callback){
-        this.callback = callback;
+    SubMenuPane(VisitDTO visit, int currentVisitId, int tempVisitId){
         int targetVisitId = Math.max(currentVisitId, tempVisitId);
         JMenuItem copyAllItem = new JMenuItem("全部コピー");
         copyAllItem.addActionListener(event -> doCopyAll(visit, targetVisitId));
@@ -37,6 +36,10 @@ class SubMenuPane extends JPopupMenu {
         add(modifyDaysItem);
         add(deleteSomeItem);
         add(cancelItem);
+    }
+
+    void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     private void doCopyAll(VisitDTO visit, int targetVisitId){

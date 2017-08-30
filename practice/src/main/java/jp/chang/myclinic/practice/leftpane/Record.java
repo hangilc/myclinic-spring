@@ -20,13 +20,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-class Record extends JPanel {
+class Record extends JPanel implements RecordContext {
 
     interface Callback {
         default void onDrugsCopied(int targetVisitId, List<DrugFullDTO> drugs){}
     }
 
-    //private VisitFull2DTO fullVisit;
     private MainExecContext mainExecContext;
     private int width;
     private int colWidth;
@@ -37,7 +36,6 @@ class Record extends JPanel {
     private Callback callback;
 
     Record(VisitFull2DTO fullVisit, int width, MainExecContext mainExecContext){
-        //this.fullVisit = fullVisit;
         this.mainExecContext = mainExecContext;
         this.width = width;
         this.colWidth = (width - 4) / 2;
@@ -57,12 +55,17 @@ class Record extends JPanel {
         return width;
     }
 
+    @Override
+    public void onDrugsModified(List<DrugFullDTO> modifiedDrugs) {
+        drugHandler.onDrugsModified(modifiedDrugs);
+    }
+
     void setCallback(Callback callback){
         this.callback = callback;
     }
 
-    void addDrugs(List<DrugFullDTO> drugs){
-        drugArea.appendDrugs(drugs);
+    void appendDrugs(List<DrugFullDTO> drugs){
+        drugHandler.appendDrugs(drugs);
     }
 
     private JComponent makeRightColumn(VisitFull2DTO fullVisit){
@@ -72,13 +75,12 @@ class Record extends JPanel {
                 return colWidth;
             }
         };
-        panel.add(new Box());
-        drugHandler = new DrugHandler(colWidth, panel);
+        drugHandler = new DrugHandler(colWidth, panel, fullVisit.visit);
         //drugArea = new DrugArea(fullVisit.drugs, fullVisit.visit, colWidth, mainExecContext);
         //bindDrugArea(drugArea);
         panel.add(makeHokenDisp(fullVisit.hoken, fullVisit.visit, panel));
         //panel.add(drugArea);
-        drugHandler.setup(panel);
+        drugHandler.setup(fullVisit.drugs);
         panel.add(new ShinryouArea(fullVisit.shinryouList, fullVisit.visit, colWidth, mainExecContext), "wrap");
         panel.add(new ConductArea(fullVisit.conducts, colWidth, mainExecContext), "wrap");
         panel.add(makeChargePane(fullVisit.charge));
@@ -152,12 +154,4 @@ class Record extends JPanel {
         JOptionPane.showMessageDialog(this, message);
     }
 
-
-    private static class Box extends JPanel {
-        Box() {
-            super(new MigLayout("insets 0, fillx, debug", "[grow]", ""));
-            add(new JLabel("Box"), "");
-        }
-
-    }
 }

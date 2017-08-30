@@ -458,11 +458,11 @@ public class DbGateway {
 		.collect(Collectors.toList());
 	}
 
-	public DrugDTO enterDrug(DrugDTO drugDTO){
+	public int enterDrug(DrugDTO drugDTO){
 		Drug drug = mapper.fromDrugDTO(drugDTO);
 		drug.setDrugId(null);
 		drug = drugRepository.save(drug);
-		return mapper.toDrugDTO(drug);
+		return drug.getDrugId();
 	}
 
 	public void deleteDrug(int drugId) {

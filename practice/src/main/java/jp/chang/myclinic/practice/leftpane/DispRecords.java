@@ -30,7 +30,7 @@ class DispRecords extends JPanel {
         }
         visits.forEach(visit -> {
             Record record = new Record(visit, width, mainExecContext);
-            bindRecord(record);
+            //bindRecord(record);
             add(record, "growx, wrap");
             recordMap.put(visit.visit.visitId, record);
         });
@@ -45,15 +45,22 @@ class DispRecords extends JPanel {
         revalidate();
     }
 
-    private void bindRecord(Record record){
-        record.setCallback(new Record.Callback(){
-            @Override
-            public void onDrugsCopied(int targetVisitId, List<DrugFullDTO> drugs) {
-                Record target = recordMap.getOrDefault(targetVisitId, null);
-                if( target != null ){
-                    target.addDrugs(drugs);
-                }
-            }
-        });
+    void appendDrugs(int visitId, List<DrugFullDTO> drugs){
+        Record record = recordMap.getOrDefault(visitId, null);
+        if( record != null ){
+            record.appendDrugs(drugs);
+        }
     }
+
+//    private void bindRecord(Record record){
+//        record.setCallback(new Record.Callback(){
+//            @Override
+//            public void onDrugsCopied(int targetVisitId, List<DrugFullDTO> drugs) {
+//                Record target = recordMap.getOrDefault(targetVisitId, null);
+//                if( target != null ){
+//                    target.addDrugs(drugs);
+//                }
+//            }
+//        });
+//    }
 }
