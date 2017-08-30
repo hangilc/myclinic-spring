@@ -111,6 +111,7 @@ public class FixedWidthLayout implements LayoutManager2 {
                 }
             }
         } else {
+            comp.setSize(width, Integer.MAX_VALUE);
             series.add(comp);
         }
     }
