@@ -62,7 +62,7 @@ class Record extends JPanel {
     }
 
     void appendDrugs(List<DrugFullDTO> drugs){
-        drugArea.appendDrugs(drugs);
+        drugHandler.appendDrugs(drugs);
     }
 
     private JComponent makeRightColumn(VisitFull2DTO fullVisit){

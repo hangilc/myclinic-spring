@@ -18,6 +18,7 @@ public class DrugHandler {
     private int width;
     private Container wrapper;
     private VisitDTO visit;
+    private DrugMenu drugMenu;
     private List<DrugElement> elements = new ArrayList<>();
     private WorkArea workarea;
 
@@ -38,8 +39,26 @@ public class DrugHandler {
         }
     }
 
+    private void appendDrug(DrugFullDTO drug){
+        int index = elements.size() + 1;
+        DrugElement element = new DrugElement(index, drug, width);
+        if( elements.size() == 0 ){
+            wrapper.add(element.getDisp(), new FixedWidthLayout.After(drugMenu));
+        } else {
+            Component anchor = elements.get(elements.size()-1).getComponent();
+            wrapper.add(element.getDisp(), new FixedWidthLayout.After(anchor));
+        }
+        elements.add(element);
+    }
+
+    public void appendDrugs(List<DrugFullDTO> drugs){
+        drugs.forEach(this::appendDrug);
+        wrapper.revalidate();
+        wrapper.repaint();
+    }
+
     private DrugMenu makeDrugMenu(){
-        DrugMenu drugMenu = new DrugMenu();
+        drugMenu = new DrugMenu();
         drugMenu.setCallback(new DrugMenu.Callback(){
             @Override
             public void onNewDrug() {
@@ -69,7 +88,6 @@ public class DrugHandler {
     }
 
     private void doSubMenu(MouseEvent event, JComponent triggerComponent){
-        System.out.println("doSubMenu");
         if( workarea != null ){
             return;
         }

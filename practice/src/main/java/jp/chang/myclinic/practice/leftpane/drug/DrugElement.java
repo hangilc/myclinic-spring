@@ -2,6 +2,8 @@ package jp.chang.myclinic.practice.leftpane.drug;
 
 import jp.chang.myclinic.dto.DrugFullDTO;
 
+import java.awt.*;
+
 class DrugElement {
 
     enum Kind { DISP, EDIT }
@@ -16,6 +18,7 @@ class DrugElement {
         this.index = index;
         this.drug = drug;
         this.width = width;
+        this.kind = Kind.DISP;
         this.disp = new DrugDisp(index, drug, width);
     }
 
@@ -23,4 +26,10 @@ class DrugElement {
         return disp;
     }
 
+    Component getComponent(){
+        switch(this.kind){
+            case DISP: return disp;
+            default: throw new RuntimeException("cannot find component");
+        }
+    }
 }

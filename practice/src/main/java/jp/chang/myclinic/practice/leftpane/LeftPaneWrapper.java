@@ -78,7 +78,7 @@ public class LeftPaneWrapper extends JPanel implements LeftPaneContext {
 
     @Override
     public CompletableFuture<Boolean> onDrugsEntered(int visitId, List<DrugFullDTO> drugs) {
-        System.out.println("onDrugsEntered");
+        dispRecords.appendDrugs(visitId, drugs);
         return CompletableFuture.completedFuture(true);
     }
 }
