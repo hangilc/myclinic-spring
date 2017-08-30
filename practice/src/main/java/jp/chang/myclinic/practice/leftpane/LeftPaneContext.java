@@ -5,11 +5,10 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import java.awt.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 public interface LeftPaneContext {
 
-    CompletableFuture<Boolean> onDrugsEntered(int visitId, List<DrugFullDTO> drugs);
+    void onDrugsEntered(int visitId, List<DrugFullDTO> drugs);
 
     static Optional<LeftPaneContext> get(Component comp){
         while( comp != null ){

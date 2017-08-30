@@ -4,6 +4,7 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.MainContext;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.leftpane.LeftPaneContext;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 
@@ -80,10 +81,7 @@ public class DrugHandler {
                 closeWorkArea();
             }
         } else {
-            workarea = makeDrugNewWorkArea();
-            wrapper.add(workarea, new FixedWidthLayout.After(drugMenu));
-            workarea.repaint();
-            workarea.revalidate();
+            setWorkArea(makeDrugNewWorkArea());
         }
     }
 
@@ -98,12 +96,14 @@ public class DrugHandler {
         submenu.setCallback(new SubMenuPane.Callback(){
             @Override
             public void onCopyAll(int targetVisitId, List<DrugFullDTO> enteredDrugs) {
-                LeftPaneContext.get(wrapper).ifPresent(ctx -> ctx.onDrugsEntered(targetVisitId, enteredDrugs));
+                LeftPaneContext.get(wrapper).ifPresent(ctx -> EventQueue.invokeLater(() -> {
+                    ctx.onDrugsEntered(targetVisitId, enteredDrugs);
+                }));
             }
 
             @Override
             public void onCopySome(int targetVisitId) {
-                //handleCopySome(targetVisitId, visit);
+                doCopySome(targetVisitId);
             }
 
             @Override
@@ -118,6 +118,20 @@ public class DrugHandler {
         });
         submenu.show(triggerComponent, event.getX(), event.getY());
 
+    }
+
+    private void doCopySome(int targetVisitId){
+        Service.api.listDrugFull(visit.visitId)
+                .thenAccept(drugs -> {
+                    setWorkArea(makeCopySomeWorkArea(targetVisitId, drugs));
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
 
     private WorkArea makeDrugNewWorkArea(){
@@ -138,10 +152,53 @@ public class DrugHandler {
         return wa;
     }
 
+    private WorkArea makeCopySomeWorkArea(int targetVisitId, List<DrugFullDTO> drugs){
+        CopySomePane copySomePane = new CopySomePane(drugs);
+        WorkArea wa = new WorkArea(width, "薬剤の選択コピー");
+        wa.setComponent(copySomePane);
+        copySomePane.setCallback(new CopySomePane.Callback() {
+            @Override
+            public void onEnter(List<DrugFullDTO> selected) {
+                DrugLib.copyDrugs(targetVisitId, selected)
+                        .thenAccept(result -> {
+                            EventQueue.invokeLater(() -> {
+                                LeftPaneContext.get(wrapper).get().onDrugsEntered(targetVisitId, result);
+                                closeWorkArea();
+                            });
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+
+            @Override
+            public void onCancel() {
+                closeWorkArea();
+            }
+        });
+        return wa;
+    }
+
+    private void setWorkArea(WorkArea wa){
+        workarea = wa;
+        wrapper.add(workarea, new FixedWidthLayout.After(drugMenu));
+        workarea.repaint();
+        workarea.revalidate();
+    }
+
     private void closeWorkArea(){
         wrapper.remove(workarea);
         wrapper.revalidate();
         wrapper.repaint();
         workarea = null;
     }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(wrapper, message);
+    }
+
 }

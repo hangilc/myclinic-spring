@@ -9,7 +9,6 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class LeftPaneWrapper extends JPanel implements LeftPaneContext {
 
@@ -77,8 +76,7 @@ public class LeftPaneWrapper extends JPanel implements LeftPaneContext {
     }
 
     @Override
-    public CompletableFuture<Boolean> onDrugsEntered(int visitId, List<DrugFullDTO> drugs) {
+    public void onDrugsEntered(int visitId, List<DrugFullDTO> drugs) {
         dispRecords.appendDrugs(visitId, drugs);
-        return CompletableFuture.completedFuture(true);
     }
 }

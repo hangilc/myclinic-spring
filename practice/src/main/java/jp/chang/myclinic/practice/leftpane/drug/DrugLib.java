@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 class DrugLib {
 
-    static CompletableFuture<List<Integer>> copyDrugs(int targetVisitId, List<DrugFullDTO> srcFullDrugs) {
+    static CompletableFuture<List<DrugFullDTO>> copyDrugs(int targetVisitId, List<DrugFullDTO> srcFullDrugs) {
         return Service.api.getVisit(targetVisitId)
                 .thenCompose(targetVisit -> {
                     String at = targetVisit.visitedAt.substring(0, 10);
@@ -34,7 +34,8 @@ class DrugLib {
                         dstDrugs.add(dstDrug);
                     });
                     return Service.api.batchEnterDrugs(dstDrugs);
-                });
+                })
+                .thenCompose(Service.api::listDrugFullByDrugIds);
     }
 
     static CompletableFuture<DrugFullDTO> enterDrug(DrugDTO drug){
