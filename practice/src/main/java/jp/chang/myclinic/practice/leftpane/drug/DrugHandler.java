@@ -6,6 +6,7 @@ import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.MainContext;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.leftpane.LeftPaneContext;
+import jp.chang.myclinic.practice.leftpane.RecordContext;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 
 import javax.swing.*;
@@ -13,6 +14,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DrugHandler {
 
@@ -38,6 +41,21 @@ public class DrugHandler {
             elements.add(element);
             index += 1;
         }
+    }
+
+    public void onDrugsModified(List<DrugFullDTO> modifiedDrugs) {
+        modifiedDrugs.forEach(modifiedDrug -> {
+            Optional<DrugElement> optElement = findElement(modifiedDrug.drug.drugId);
+            if( optElement.isPresent() ){
+                optElement.get().onDrugModified(modifiedDrug);
+            } else {
+                throw new RuntimeException("cannot find drug element");
+            }
+        });
+    }
+
+    private Optional<DrugElement> findElement(int drugId){
+        return elements.stream().filter(ele -> ele.getDrugId() == drugId).findFirst();
     }
 
     private void appendDrug(DrugFullDTO drug){
@@ -108,7 +126,7 @@ public class DrugHandler {
 
             @Override
             public void onModifyDays() {
-                //handleModifyDays(visit.visitId);
+                doModifyDays();
             }
 
             @Override
@@ -124,6 +142,20 @@ public class DrugHandler {
         Service.api.listDrugFull(visit.visitId)
                 .thenAccept(drugs -> {
                     setWorkArea(makeCopySomeWorkArea(targetVisitId, drugs));
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
+    private void doModifyDays(){
+        Service.api.listDrugFull(visit.visitId)
+                .thenAccept(fullDrugs -> {
+                    setWorkArea(makeModifyDaysWorkArea(fullDrugs));
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();
@@ -180,6 +212,38 @@ public class DrugHandler {
                 closeWorkArea();
             }
         });
+        return wa;
+    }
+
+    private WorkArea makeModifyDaysWorkArea(List<DrugFullDTO> fullDrugs){
+        ModifyDaysPane modifyDaysPane = new ModifyDaysPane(fullDrugs);
+        modifyDaysPane.setCallback(new ModifyDaysPane.Callback(){
+            @Override
+            public void onEnter(List<DrugFullDTO> selected, int days) {
+                List<Integer> drugIds = selected.stream()
+                        .map(fullDrug -> fullDrug.drug.drugId).collect(Collectors.toList());
+                Service.api.batchUpdateDrugDays(drugIds, days)
+                        .thenCompose(ok -> Service.api.listDrugFullByDrugIds(drugIds))
+                        .thenAccept(modifiedDrugs -> EventQueue.invokeLater(() -> {
+                            RecordContext.get(wrapper).ifPresent(ctx -> ctx.onDrugsModified(modifiedDrugs));
+                            closeWorkArea();
+                        }))
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+
+            @Override
+            public void onCancel() {
+                closeWorkArea();
+            }
+        });
+        WorkArea wa = new WorkArea(width, "処方日数の変更");
+        wa.setComponent(modifyDaysPane);
         return wa;
     }
 

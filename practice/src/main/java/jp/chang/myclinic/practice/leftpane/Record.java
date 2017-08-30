@@ -20,13 +20,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-class Record extends JPanel {
+class Record extends JPanel implements RecordContext {
 
     interface Callback {
         default void onDrugsCopied(int targetVisitId, List<DrugFullDTO> drugs){}
     }
 
-    //private VisitFull2DTO fullVisit;
     private MainExecContext mainExecContext;
     private int width;
     private int colWidth;
@@ -37,7 +36,6 @@ class Record extends JPanel {
     private Callback callback;
 
     Record(VisitFull2DTO fullVisit, int width, MainExecContext mainExecContext){
-        //this.fullVisit = fullVisit;
         this.mainExecContext = mainExecContext;
         this.width = width;
         this.colWidth = (width - 4) / 2;
@@ -55,6 +53,11 @@ class Record extends JPanel {
     @Override
     public int getWidth() {
         return width;
+    }
+
+    @Override
+    public void onDrugsModified(List<DrugFullDTO> modifiedDrugs) {
+        drugHandler.onDrugsModified(modifiedDrugs);
     }
 
     void setCallback(Callback callback){
