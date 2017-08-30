@@ -37,4 +37,9 @@ class DrugLib {
                 });
     }
 
+    static CompletableFuture<DrugFullDTO> enterDrug(DrugDTO drug){
+        return Service.api.enterDrug(drug)
+                .thenCompose(Service.api::getDrugFull);
+    }
+
 }

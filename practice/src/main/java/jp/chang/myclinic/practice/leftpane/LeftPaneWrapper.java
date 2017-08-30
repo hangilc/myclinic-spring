@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.leftpane;
 
+import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2PageDTO;
 import jp.chang.myclinic.practice.MainExecContext;
@@ -7,8 +8,10 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public class LeftPaneWrapper extends JPanel {
+public class LeftPaneWrapper extends JPanel implements LeftPaneContext {
 
     private MainExecContext mainExecContext;
     private PatientInfoPane patientInfoPane;
@@ -54,10 +57,12 @@ public class LeftPaneWrapper extends JPanel {
         topNav.start(patient.patientId, page.totalPages);
         botNav.start(patient.patientId, page.totalPages);
         dispRecords.setVisits(page.visits);
-        EventQueue.invokeLater(() -> dispScroll.getVerticalScrollBar().setValue(0));
-        setVisible(true);
-        repaint();
-        revalidate();
+        EventQueue.invokeLater(() -> {
+            dispScroll.getVerticalScrollBar().setValue(0);
+            setVisible(true);
+            repaint();
+            revalidate();
+        });
     }
 
     private RecordsNav makeNav(){
@@ -69,5 +74,11 @@ public class LeftPaneWrapper extends JPanel {
                 botNav.set(page, visitFullPage.totalPages);
             }
         };
+    }
+
+    @Override
+    public CompletableFuture<Boolean> onDrugsEntered(int visitId, List<DrugFullDTO> drugs) {
+        System.out.println("onDrugsEntered");
+        return CompletableFuture.completedFuture(true);
     }
 }

@@ -61,7 +61,7 @@ class Record extends JPanel {
         this.callback = callback;
     }
 
-    void addDrugs(List<DrugFullDTO> drugs){
+    void appendDrugs(List<DrugFullDTO> drugs){
         drugArea.appendDrugs(drugs);
     }
 
@@ -72,13 +72,12 @@ class Record extends JPanel {
                 return colWidth;
             }
         };
-        panel.add(new Box());
-        drugHandler = new DrugHandler(colWidth, panel);
+        drugHandler = new DrugHandler(colWidth, panel, fullVisit.visit);
         //drugArea = new DrugArea(fullVisit.drugs, fullVisit.visit, colWidth, mainExecContext);
         //bindDrugArea(drugArea);
         panel.add(makeHokenDisp(fullVisit.hoken, fullVisit.visit, panel));
         //panel.add(drugArea);
-        drugHandler.setup(panel);
+        drugHandler.setup(fullVisit.drugs);
         panel.add(new ShinryouArea(fullVisit.shinryouList, fullVisit.visit, colWidth, mainExecContext), "wrap");
         panel.add(new ConductArea(fullVisit.conducts, colWidth, mainExecContext), "wrap");
         panel.add(makeChargePane(fullVisit.charge));
@@ -152,12 +151,4 @@ class Record extends JPanel {
         JOptionPane.showMessageDialog(this, message);
     }
 
-
-    private static class Box extends JPanel {
-        Box() {
-            super(new MigLayout("insets 0, fillx, debug", "[grow]", ""));
-            add(new JLabel("Box"), "");
-        }
-
-    }
 }

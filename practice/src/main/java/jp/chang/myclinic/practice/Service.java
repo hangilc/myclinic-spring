@@ -62,7 +62,7 @@ public class Service {
                                                                              @Query("at") String at);
 
         @POST("enter-drug")
-        CompletableFuture<DrugDTO> enterDrug(@Body DrugDTO drug);
+        CompletableFuture<Integer> enterDrug(@Body DrugDTO drug);
 
         @GET("get-drug-full")
         CompletableFuture<DrugFullDTO> getDrugFull(@Query("drug-id") int drugId);

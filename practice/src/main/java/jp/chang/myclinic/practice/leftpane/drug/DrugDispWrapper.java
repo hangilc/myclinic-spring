@@ -10,14 +10,14 @@ import java.awt.*;
 
 class DrugDispWrapper extends JPanel {
 
-    private DrugDisp drugDisp;
+    private DrugDisp1 drugDisp;
     private WorkArea1 workArea;
     private DrugEditPane drugEditPane;
 
     DrugDispWrapper(DrugFullDTO drugFull, int index, VisitDTO visit, int width, DrugExecContext drugExecContext){
         super(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
-        drugDisp = new DrugDisp(drugFull, index, width);
-        drugDisp.setCallback(new DrugDisp.Callback(){
+        drugDisp = new DrugDisp1(drugFull, index, width);
+        drugDisp.setCallback(new DrugDisp1.Callback(){
             @Override
             public void onClick() {
                 doDrugDispClick(drugFull, visit, drugExecContext);

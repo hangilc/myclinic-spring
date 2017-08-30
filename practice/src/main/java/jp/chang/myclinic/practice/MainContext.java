@@ -8,8 +8,10 @@ import java.awt.*;
 public interface MainContext {
 
     void startExam(PatientDTO patient, VisitDTO visit, Runnable edtCallback);
+    int getCurrentVisitId();
+    int getTempVisitId();
 
-    static MainContext getMainContext(Component comp){
+    static MainContext get(Component comp){
         while( comp != null ){
             if( comp instanceof MainContext ){
                 return (MainContext) comp;

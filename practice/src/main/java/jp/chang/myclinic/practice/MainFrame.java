@@ -38,7 +38,6 @@ class MainFrame extends JFrame implements MainContext {
         suspendCurrentExam()
                 .thenCompose(res -> Service.api.listVisitFull2(patient.patientId, 0))
                 .thenAccept(page -> EventQueue.invokeLater(() -> {
-                    System.out.println(page);
                     currentPatient = patient;
                     currentVisit = visit;
                     tempVisitId = 0;
@@ -52,6 +51,16 @@ class MainFrame extends JFrame implements MainContext {
                     });
                     return null;
                 });
+    }
+
+    @Override
+    public int getCurrentVisitId() {
+        return currentVisit == null ? 0 : currentVisit.visitId;
+    }
+
+    @Override
+    public int getTempVisitId() {
+        return tempVisitId;
     }
 
     private CompletableFuture<Boolean> suspendCurrentExam(){

@@ -56,7 +56,7 @@ public class SelectVisit extends JPanel {
                 if (e.getClickCount() >= 2) {
                     WqueueFullDTO data = searchResult.getSelectedValue();
                     if (data != null) {
-                        MainContext.getMainContext(self).startExam(data.patient, data.visit, () -> {
+                        MainContext.get(self).startExam(data.patient, data.visit, () -> {
                             searchResult.setListData(new WqueueFullDTO[]{});
                             scrollPane.setVisible(false);
                             repaint();
