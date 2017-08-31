@@ -60,6 +60,11 @@ class Record extends JPanel implements RecordContext {
         drugHandler.onDrugsModified(modifiedDrugs);
     }
 
+    @Override
+    public void onDrugsDeleted(List<Integer> drugIds) {
+        drugHandler.onDrugsDeleted(drugIds);
+    }
+
     void setCallback(Callback callback){
         this.callback = callback;
     }

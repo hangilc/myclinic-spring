@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface RecordContext {
     void onDrugsModified(List<DrugFullDTO> modifiedDrugs);
+    void onDrugsDeleted(List<Integer> drugIds);
 
     static Optional<RecordContext> get(Component comp){
         while( comp != null ){

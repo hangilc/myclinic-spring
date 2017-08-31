@@ -14,7 +14,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class DrugHandler {
@@ -45,17 +44,32 @@ public class DrugHandler {
 
     public void onDrugsModified(List<DrugFullDTO> modifiedDrugs) {
         modifiedDrugs.forEach(modifiedDrug -> {
-            Optional<DrugElement> optElement = findElement(modifiedDrug.drug.drugId);
-            if( optElement.isPresent() ){
-                optElement.get().onDrugModified(modifiedDrug);
-            } else {
-                throw new RuntimeException("cannot find drug element");
-            }
+            getElement(modifiedDrug.drug.drugId).onDrugModified(modifiedDrug);
         });
     }
 
-    private Optional<DrugElement> findElement(int drugId){
-        return elements.stream().filter(ele -> ele.getDrugId() == drugId).findFirst();
+    public void onDrugsDeleted(List<Integer> drugIds) {
+        for(int drugId: drugIds){
+            DrugElement element = getElement(drugId);
+            wrapper.remove(element.getComponent());
+            elements.remove(element);
+        }
+        int index = 1;
+        for(DrugElement element: elements){
+            element.setIndex(index);
+            index++;
+        }
+        wrapper.revalidate();
+        wrapper.repaint();
+    }
+
+    private DrugElement getElement(int drugId){
+        for(DrugElement element: elements){
+            if( element.getDrugId() == drugId ){
+                return element;
+            }
+        }
+        throw new RuntimeException("cannot find drug element");
     }
 
     private void appendDrug(DrugFullDTO drug){
@@ -131,11 +145,10 @@ public class DrugHandler {
 
             @Override
             public void onDeleteSome() {
-                //handleDeleteSelected(visit.visitId);
+                doDeleteSome();
             }
         });
         submenu.show(triggerComponent, event.getX(), event.getY());
-
     }
 
     private void doCopySome(int targetVisitId){
@@ -156,6 +169,20 @@ public class DrugHandler {
         Service.api.listDrugFull(visit.visitId)
                 .thenAccept(fullDrugs -> {
                     setWorkArea(makeModifyDaysWorkArea(fullDrugs));
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
+    private void doDeleteSome(){
+        Service.api.listDrugFull(visit.visitId)
+                .thenAccept(fullDrugs -> {
+                    setWorkArea(makeDeleteSomeWorkArea(fullDrugs));
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();
@@ -247,6 +274,40 @@ public class DrugHandler {
         return wa;
     }
 
+    private WorkArea makeDeleteSomeWorkArea(List<DrugFullDTO> fullDrugs){
+        DeleteSomePane deleteSomePane = new DeleteSomePane(fullDrugs);
+        deleteSomePane.setCallback(new DeleteSomePane.Callback() {
+            @Override
+            public void onEnter(List<DrugFullDTO> selected) {
+                List<Integer> drugIds = selected.stream()
+                        .map(fullDrug -> fullDrug.drug.drugId)
+                        .collect(Collectors.toList());
+                Service.api.batchDeleteDrugs(drugIds)
+                        .thenAccept(ok -> EventQueue.invokeLater(() -> {
+                            RecordContext.get(wrapper).ifPresent(ctx -> {
+                                ctx.onDrugsDeleted(drugIds);
+                                closeWorkArea();
+                            });
+                        }))
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+
+            @Override
+            public void onCancel() {
+                closeWorkArea();
+            }
+        });
+        WorkArea wa = new WorkArea(width, "薬剤の選択削除");
+        wa.setComponent(deleteSomePane);
+        return wa;
+    }
+
     private void setWorkArea(WorkArea wa){
         workarea = wa;
         wrapper.add(workarea, new FixedWidthLayout.After(drugMenu));
@@ -264,5 +325,4 @@ public class DrugHandler {
     private void alert(String message){
         JOptionPane.showMessageDialog(wrapper, message);
     }
-
 }

@@ -38,6 +38,11 @@ class DrugElement {
         return drugFull.drug.drugId;
     }
 
+    void setIndex(int index){
+        this.index = index;
+        this.disp.modifyIndex(index);
+    }
+
     void onDrugModified(DrugFullDTO modifiedDrug){
         this.drugFull = modifiedDrug;
         if( kind == Kind.DISP ){
