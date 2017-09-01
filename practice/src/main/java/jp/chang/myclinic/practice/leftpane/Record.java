@@ -6,7 +6,6 @@ import jp.chang.myclinic.practice.MainExecContext;
 import jp.chang.myclinic.practice.PracticeUtil;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.leftpane.conduct.ConductArea;
-import jp.chang.myclinic.practice.leftpane.drug.DrugArea;
 import jp.chang.myclinic.practice.leftpane.drug.DrugHandler;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenChooser;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenDisp;
@@ -32,7 +31,7 @@ class Record extends JPanel implements RecordContext {
     private Title title;
     private TextArea textArea;
     private DrugHandler drugHandler;
-    private DrugArea drugArea;
+    //private DrugArea drugArea;
     private Callback callback;
 
     Record(VisitFull2DTO fullVisit, int width, MainExecContext mainExecContext){
@@ -136,14 +135,14 @@ class Record extends JPanel implements RecordContext {
         return chooser;
     }
 
-    private void bindDrugArea(DrugArea drugArea){
-        drugArea.setCallback(new DrugArea.Callback(){
-            @Override
-            public void onCopyAll(int targetVisitId, List<DrugFullDTO> enteredDrugs) {
-                callback.onDrugsCopied(targetVisitId, enteredDrugs);
-            }
-        });
-    }
+//    private void bindDrugArea(DrugArea drugArea){
+//        drugArea.setCallback(new DrugArea.Callback(){
+//            @Override
+//            public void onCopyAll(int targetVisitId, List<DrugFullDTO> enteredDrugs) {
+//                callback.onDrugsCopied(targetVisitId, enteredDrugs);
+//            }
+//        });
+//    }
 
     private JComponent makeChargePane(ChargeDTO charge){
         String label;

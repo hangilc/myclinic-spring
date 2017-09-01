@@ -6,7 +6,6 @@ import jp.chang.myclinic.practice.leftpane.WorkArea1;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import java.awt.*;
 
 class DrugDispWrapper extends JPanel {
 
@@ -35,36 +34,36 @@ class DrugDispWrapper extends JPanel {
     }
 
     private void doDrugDispClick(DrugFullDTO drugFull, VisitDTO visit, DrugExecContext drugExecContext){
-        drugEditPane = new DrugEditPane(drugFull, visit, drugExecContext);
-        drugEditPane.setCallback(new DrugEditPane.Callback(){
-            @Override
-            public void onUpdated(DrugFullDTO newDrugFull) {
-                remove(workArea);
-                repaint();
-                revalidate();
-                EventQueue.invokeLater(() -> {
-                    drugDisp.update(newDrugFull);
-                    add(drugDisp, "");
-                    workArea = null;
-                    drugEditPane = null;
-                });
-            }
-
-            @Override
-            public void onClose() {
-                remove(workArea);
-                add(drugDisp);
-                repaint();
-                revalidate();
-                workArea = null;
-                drugEditPane = null;
-            }
-        });
-        workArea = new WorkArea1("薬剤の編集", drugEditPane);
-        remove(drugDisp);
-        add(workArea, "");
-        repaint();
-        revalidate();
+//        drugEditPane = new DrugEditPane(drugFull, visit, drugExecContext);
+//        drugEditPane.setCallback(new DrugEditPane.Callback(){
+//            @Override
+//            public void onUpdated(DrugFullDTO newDrugFull) {
+//                remove(workArea);
+//                repaint();
+//                revalidate();
+//                EventQueue.invokeLater(() -> {
+//                    drugDisp.update(newDrugFull);
+//                    add(drugDisp, "");
+//                    workArea = null;
+//                    drugEditPane = null;
+//                });
+//            }
+//
+//            @Override
+//            public void onClose() {
+//                remove(workArea);
+//                add(drugDisp);
+//                repaint();
+//                revalidate();
+//                workArea = null;
+//                drugEditPane = null;
+//            }
+//        });
+//        workArea = new WorkArea1("薬剤の編集", drugEditPane);
+//        remove(drugDisp);
+//        add(workArea, "");
+//        repaint();
+//        revalidate();
     }
 
 }

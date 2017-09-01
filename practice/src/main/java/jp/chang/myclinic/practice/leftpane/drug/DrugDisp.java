@@ -10,16 +10,12 @@ class DrugDisp extends WrappedText {
 
     DrugDisp(int index, DrugFullDTO drug, int width){
         super(width);
-        drugRep = DrugUtil.drugRep(drug);
-        update(index);
+        update(index, drug);
     }
 
-    void modifyIndex(int index){
-        update(index);
-    }
-
-    private void update(int index){
-        setText(index + ")" + drugRep);
+    void update(int index, DrugFullDTO drugFull){
+        String text = String.format("%d)%s", index, DrugUtil.drugRep(drugFull));
+        setText(text);
     }
 
 }

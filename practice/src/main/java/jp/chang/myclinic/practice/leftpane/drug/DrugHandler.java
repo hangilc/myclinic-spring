@@ -35,7 +35,7 @@ public class DrugHandler {
         wrapper.add(makeDrugMenu());
         int index = 1;
         for(DrugFullDTO drug: drugs){
-            DrugElement element = new DrugElement(index, drug, width);
+            DrugElement element = new DrugElement(index, drug, visit, width);
             wrapper.add(element.getDisp());
             elements.add(element);
             index += 1;
@@ -74,7 +74,7 @@ public class DrugHandler {
 
     private void appendDrug(DrugFullDTO drug){
         int index = elements.size() + 1;
-        DrugElement element = new DrugElement(index, drug, width);
+        DrugElement element = new DrugElement(index, drug, visit, width);
         if( elements.size() == 0 ){
             wrapper.add(element.getDisp(), new FixedWidthLayout.After(drugMenu));
         } else {
