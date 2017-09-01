@@ -11,12 +11,12 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
 
 class DrugEditPane extends JPanel {
 
     interface Callback {
         default void onUpdated(DrugFullDTO drugFull){};
+        default void onDeleted(){};
         default void onClose(){};
     }
 
@@ -81,19 +81,19 @@ class DrugEditPane extends JPanel {
         JButton cancelButton = new JButton("キャンセル");
         cancelButton.addActionListener(event -> callback.onClose());
         Link deleteLink = new Link("削除");
-        //deleteLink.setCallback(event -> doDelete(drugFull.drug.drugId, drugExecContext));
+        deleteLink.setCallback(event -> doDelete(drugFull.drug.drugId));
         panel.add(enterButton);
         panel.add(cancelButton);
         panel.add(deleteLink);
         return panel;
     }
 
-    private void doDelete(int drugId, DrugExecContext drugExecContext){
+    private void doDelete(int drugId){
         if( !confirm("この処方を削除していいですか？") ){
             return;
         }
         Service.api.deleteDrug(drugId)
-                .thenAccept(ok -> drugExecContext.onDrugDeleted(Collections.singletonList(drugId)))
+                .thenAccept(ok -> EventQueue.invokeLater(() -> callback.onDeleted()))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> {

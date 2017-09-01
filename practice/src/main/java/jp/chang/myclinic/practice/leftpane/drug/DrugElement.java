@@ -3,11 +3,14 @@ package jp.chang.myclinic.practice.leftpane.drug;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
+import jp.chang.myclinic.practice.leftpane.RecordContext;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
+import java.util.List;
 
 class DrugElement {
 
@@ -38,6 +41,7 @@ class DrugElement {
     Component getComponent(){
         switch(this.kind){
             case DISP: return disp;
+            case EDIT: return editorArea;
             default: throw new RuntimeException("cannot find component");
         }
     }
@@ -75,6 +79,13 @@ class DrugElement {
             }
 
             @Override
+            public void onDeleted() {
+                List<Integer> drugIds = Collections.singletonList(drugFull.drug.drugId);
+                RecordContext.get(getComponent()).ifPresent(ctx -> ctx.onDrugsDeleted(drugIds));
+                closeEditorWorkArea();
+            }
+
+            @Override
             public void onClose() {
                 closeEditorWorkArea();
             }
@@ -96,10 +107,12 @@ class DrugElement {
 
     private void closeEditorWorkArea(){
         Container wrapper = editorArea.getParent();
-        wrapper.add(this.disp, new FixedWidthLayout.Replace(editorArea));
-        kind = Kind.DISP;
-        editorArea = null;
-        wrapper.revalidate();
-        wrapper.repaint();
+        if( wrapper != null ) {
+            wrapper.add(this.disp, new FixedWidthLayout.Replace(editorArea));
+            kind = Kind.DISP;
+            editorArea = null;
+            wrapper.revalidate();
+            wrapper.repaint();
+        }
     }
 }
