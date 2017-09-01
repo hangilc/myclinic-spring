@@ -9,7 +9,7 @@ import jp.chang.myclinic.practice.leftpane.conduct.ConductArea;
 import jp.chang.myclinic.practice.leftpane.drug.DrugHandler;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenChooser;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenDisp;
-import jp.chang.myclinic.practice.leftpane.shinryou.ShinryouArea;
+import jp.chang.myclinic.practice.leftpane.shinryou.ShinryouBox;
 import jp.chang.myclinic.practice.leftpane.text.TextArea;
 import jp.chang.myclinic.practice.leftpane.title.Title;
 import jp.chang.myclinic.util.NumberUtil;
@@ -31,7 +31,7 @@ class Record extends JPanel implements RecordContext {
     private Title title;
     private TextArea textArea;
     private DrugHandler drugHandler;
-    //private DrugArea drugArea;
+    private ShinryouBox shinryouBox;
     private Callback callback;
 
     Record(VisitFull2DTO fullVisit, int width, MainExecContext mainExecContext){
@@ -80,12 +80,11 @@ class Record extends JPanel implements RecordContext {
             }
         };
         drugHandler = new DrugHandler(colWidth, panel, fullVisit.visit);
-        //drugArea = new DrugArea(fullVisit.drugs, fullVisit.visit, colWidth, mainExecContext);
-        //bindDrugArea(drugArea);
+        shinryouBox = new ShinryouBox(colWidth, fullVisit.shinryouList, fullVisit.visit);
         panel.add(makeHokenDisp(fullVisit.hoken, fullVisit.visit, panel));
-        //panel.add(drugArea);
         drugHandler.setup(fullVisit.drugs);
-        panel.add(new ShinryouArea(fullVisit.shinryouList, fullVisit.visit, colWidth, mainExecContext), "wrap");
+        //panel.add(new ShinryouArea(fullVisit.shinryouList, fullVisit.visit, colWidth, mainExecContext), "wrap");
+        panel.add(shinryouBox);
         panel.add(new ConductArea(fullVisit.conducts, colWidth, mainExecContext), "wrap");
         panel.add(makeChargePane(fullVisit.charge));
         return panel;

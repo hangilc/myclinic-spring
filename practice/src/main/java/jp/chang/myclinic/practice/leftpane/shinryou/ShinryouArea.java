@@ -15,7 +15,7 @@ public class ShinryouArea extends JPanel {
     public ShinryouArea(List<ShinryouFullDTO> shinryouList, VisitDTO visit, int currentVisitId, int tempVisitId){
 //        super(new MigLayout("insets 0, gapy 3", "[grow]", ""));
 //        shinryouListDisp = new ShinryouListDisp(shinryouList);
-//        add(new ShinryouMenu(visit.visitId, currentVisitId, tempVisitId), "growx, wrap");
+//        add(new ShinryouMenu1(visit.visitId, currentVisitId, tempVisitId), "growx, wrap");
 //        add(shinryouListDisp, "growx");
     }
 
@@ -25,7 +25,7 @@ public class ShinryouArea extends JPanel {
         int currentVisitId = mainExecContext.getCurrentVisitId();
         int tempVisitId = mainExecContext.getTempVisitId();
         shinryouListDisp = new ShinryouListDisp(shinryouList, width, mainExecContext);
-        add(new ShinryouMenu(visit.visitId, width, mainExecContext), "wrap");
+        add(new ShinryouMenu1(visit.visitId, width, mainExecContext), "wrap");
         add(shinryouListDisp, "growx");
     }
 }
