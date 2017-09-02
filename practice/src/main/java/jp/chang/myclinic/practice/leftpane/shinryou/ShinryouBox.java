@@ -20,7 +20,7 @@ public class ShinryouBox extends JPanel {
         this.width = width;
         this.visit = visit;
         setLayout(new FixedWidthLayout(width));
-        this.menu = new ShinryouMenu();
+        this.menu = makeMenu();
         add(menu);
         shinryouList.forEach(this::append);
     }
@@ -31,6 +31,9 @@ public class ShinryouBox extends JPanel {
             @Override
             public void onMainMenu() {
                 if( workarea != null ){
+                    if( workarea.getComponent() instanceof AddRegularPane ){
+                        closeWorkArea();
+                    }
                     return;
                 }
                 setWorkArea(makeAddRegularWorkArea());
@@ -46,6 +49,8 @@ public class ShinryouBox extends JPanel {
 
      private WorkArea makeAddRegularWorkArea(){
         WorkArea wa = new WorkArea(width, "診療行為入力");
+        AddRegularPane pane = new AddRegularPane();
+        wa.setComponent(pane);
         return wa;
     }
 
@@ -56,6 +61,13 @@ public class ShinryouBox extends JPanel {
     private void setWorkArea(WorkArea wa){
         this.workarea = wa;
         add(wa, new FixedWidthLayout.After(menu));
+        revalidate();
+        repaint();
+    }
+
+    private void closeWorkArea(){
+        remove(workarea);
+        this.workarea = null;
         revalidate();
         repaint();
     }

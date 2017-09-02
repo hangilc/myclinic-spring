@@ -47,7 +47,8 @@ class AddRegularPane extends JPanel {
     AddRegularPane(){
         setLayout(new MigLayout("insets 0", "", ""));
         add(makeLeftCol(), "top, growx");
-        add(makeRightCol(), "top, growx");
+        add(makeRightCol(), "top, growx, wrap");
+        add(makeCommandBox());
     }
 
     private JComponent makeLabel(String text){
@@ -78,6 +79,15 @@ class AddRegularPane extends JPanel {
 
     private JComponent makeRightCol(){
         return makeCol(rightItems);
+    }
+
+    private JComponent makeCommandBox(){
+        JPanel box = new JPanel(new MigLayout("insets 0", "", ""));
+        JButton enterButton = new JButton("入力");
+        JButton cancelButton = new JButton("キャンセル");
+        box.add(enterButton);
+        box.add(cancelButton);
+        return box;
     }
 
 }
