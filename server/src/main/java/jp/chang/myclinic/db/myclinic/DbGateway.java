@@ -63,6 +63,8 @@ public class DbGateway {
 	@Autowired
 	private ShinryouMasterRepository shinryouMasterRepository;
 	@Autowired
+	private KizaiMasterRepository kizaiMasterRepository;
+	@Autowired
 	private HotlineRepository hotlineRepository;
 	@Autowired
 	private PrescExampleRepository prescExampleRepository;
@@ -674,6 +676,17 @@ public class DbGateway {
 		}
 	}
 
+	public void enterGazouLabel(GazouLabelDTO gazoulabelDTO){
+		GazouLabel gazoulabel = mapper.fromGazouLabelDTO(gazoulabelDTO);
+		gazouLabelRepository.save(gazoulabel);
+	}
+
+	public int enterConduct(ConductDTO conductDTO){
+		Conduct conduct = mapper.fromConductDTO(conductDTO);
+		conduct = conductRepository.save(conduct);
+		return conduct.getConductId();
+	}
+
 	public List<ConductDTO> listConducts(int visitId){
 		return conductRepository.findByVisitId(visitId).stream()
 			.map(mapper::toConductDTO)
@@ -692,16 +705,44 @@ public class DbGateway {
 		.collect(Collectors.toList());
 	}
 
+	public int enterConductShinryou(ConductShinryouDTO conductShinryouDTO){
+		ConductShinryou conductShinryou = mapper.fromConductShinryouDTO(conductShinryouDTO);
+		conductShinryou = conductShinryouRepository.save(conductShinryou);
+		return conductShinryou.getConductShinryouId();
+	}
+
 	public List<ConductDrugFullDTO> listConductDrugFull(int conductId){
 		return conductDrugRepository.findByConductIdWithMaster(conductId).stream()
 		.map(this::resulToConductDrugFullDTO)
 		.collect(Collectors.toList());
 	}
 
+	public int enterConductDrug(ConductDrugDTO conductDrugDTO){
+		ConductDrug conductDrug = mapper.fromConductDrugDTO(conductDrugDTO);
+		conductDrug = conductDrugRepository.save(conductDrug);
+		return conductDrug.getConductDrugId();
+	}
+
 	public List<ConductKizaiFullDTO> listConductKizaiFull(int conductId){
 		return conductKizaiRepository.findByConductIdWithMaster(conductId).stream()
 		.map(this::resulToConductKizaiFullDTO)
 		.collect(Collectors.toList());
+	}
+
+	public int enterConductKizai(ConductKizaiDTO conductKizaiDTO){
+		ConductKizai conductKizai = mapper.fromConductKizaiDTO(conductKizaiDTO);
+		conductKizai = conductKizaiRepository.save(conductKizai);
+		return conductKizai.getConductKizaiId();
+	}
+
+	public Optional<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at){
+		Date date = Date.valueOf(at);
+		return kizaiMasterRepository.findByNameAndDate(name, date).map(mapper::toKizaiMasterDTO);
+	}
+
+	public Optional<KizaiMasterDTO> findKizaiMasterByKizaicode(int kizaicode, LocalDate at){
+		Date date = Date.valueOf(at);
+		return kizaiMasterRepository.findByKizaicodeAndDate(kizaicode, date).map(mapper::toKizaiMasterDTO);
 	}
 
 	public HokenDTO getHokenForVisit(VisitDTO visitDTO){

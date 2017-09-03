@@ -111,11 +111,14 @@ public class Service {
         CompletableFuture<Boolean> updateDrug(@Body DrugDTO drug);
 
         @POST("batch-enter-shinryou-by-name")
-        CompletableFuture<List<Integer>> batchEnterShinryouByName(@Query("name") List<String> names,
+        CompletableFuture<BatchEnterResultDTO> batchEnterShinryouByName(@Query("name") List<String> names,
                                                                   @Query("visit-id") int visitId);
 
         @GET("list-shinryou-full-by-ids")
         CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(@Query("shinryou-id") List<Integer> shinryouIds);
+
+        @GET("list-conduct-full-by-ids")
+        CompletableFuture<List<ConductFullDTO>> listConductFullByIds(@Query("conduct-id") List<Integer> conductIds);
     }
 
     public static ServerAPI api;

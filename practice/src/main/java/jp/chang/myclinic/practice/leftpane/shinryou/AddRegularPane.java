@@ -60,6 +60,7 @@ class AddRegularPane extends JPanel {
         setLayout(new MigLayout("insets 0", "", ""));
         add(makeLeftCol(), "top, growx");
         add(makeRightCol(), "top, growx, wrap");
+        add(makeBottomRow(), "span");
         add(makeCommandBox());
     }
 
@@ -96,6 +97,16 @@ class AddRegularPane extends JPanel {
 
     private JComponent makeRightCol(){
         return makeCol(rightItems);
+    }
+
+    private JComponent makeBottomRow() {
+        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+        for (String text : bottomItems) {
+            JCheckBox check = new JCheckBox(text);
+            panel.add(check);
+            inputMap.put(text, check);
+        }
+        return panel;
     }
 
     private List<String> getCheckedNames(){

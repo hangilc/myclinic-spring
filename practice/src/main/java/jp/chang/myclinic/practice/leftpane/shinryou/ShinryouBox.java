@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class ShinryouBox extends JPanel {
 
@@ -52,21 +53,42 @@ public class ShinryouBox extends JPanel {
         return m;
     }
 
+    private static class BatchEnterStore {
+        List<Integer> conductIds;
+        List<ShinryouFullDTO> shinryouList;
+    }
+
      private WorkArea makeAddRegularWorkArea(){
         WorkArea wa = new WorkArea(width, "診療行為入力");
         AddRegularPane pane = new AddRegularPane();
         pane.setCallback(new AddRegularPane.Callback() {
             @Override
             public void onEnter(List<String> names) {
+                BatchEnterStore store = new BatchEnterStore();
                 Service.api.batchEnterShinryouByName(names, visit.visitId)
-                        .thenCompose(Service.api::listShinryouFullByIds)
-                        .thenAccept(shinryouFullList -> EventQueue.invokeLater(() -> {
-                            shinryouFullList.forEach(shinryouFull -> append(shinryouFull));
+                        .thenCompose(result -> {
+                            store.conductIds = result.conductIds;
+                            return Service.api.listShinryouFullByIds(result.shinryouIds);
+                        })
+                        .thenCompose(shinryouList -> {
+                            store.shinryouList = shinryouList;
+                            if( store.conductIds == null || store.conductIds.size() == 0 ){
+                                return CompletableFuture.completedFuture(null);
+                            } else {
+                                return Service.api.listConductFullByIds(store.conductIds);
+                            }
+                        })
+                        .thenAccept(conducts -> {
+                            store.shinryouList.forEach(shinryouFull -> append(shinryouFull));
+                            if( conducts != null ){
+                                // TODO: add conducts
+                                System.out.println("adding conducts not implemented yet");
+                            }
                             reorder();
                             closeWorkArea();
                             revalidate();
                             repaint();
-                        }))
+                        })
                         .exceptionally(t -> {
                             t.printStackTrace();
                             EventQueue.invokeLater(() -> {
