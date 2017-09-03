@@ -24,6 +24,10 @@ class ShinryouElement {
         return disp;
     }
 
+    int getShinryoucode(){
+        return shinryouFull.shinryou.shinryoucode;
+    }
+
     private Component makeDisp(){
         WrappedText wt = new WrappedText(width, shinryouFull.master.name);
         return wt;

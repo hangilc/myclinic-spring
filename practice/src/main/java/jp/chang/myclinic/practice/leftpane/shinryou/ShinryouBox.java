@@ -9,6 +9,8 @@ import jp.chang.myclinic.practice.leftpane.WorkArea;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ShinryouBox extends JPanel {
@@ -16,6 +18,7 @@ public class ShinryouBox extends JPanel {
     private int width;
     private VisitDTO visit;
     private ShinryouMenu menu;
+    private List<ShinryouElement> elements = new ArrayList<>();
     private WorkArea workarea;
 
     public ShinryouBox(int width, List<ShinryouFullDTO> shinryouList,VisitDTO visit){
@@ -59,6 +62,7 @@ public class ShinryouBox extends JPanel {
                         .thenCompose(Service.api::listShinryouFullByIds)
                         .thenAccept(shinryouFullList -> EventQueue.invokeLater(() -> {
                             shinryouFullList.forEach(shinryouFull -> append(shinryouFull));
+                            reorder();
                             closeWorkArea();
                             revalidate();
                             repaint();
@@ -102,6 +106,13 @@ public class ShinryouBox extends JPanel {
     private void append(ShinryouFullDTO shinryouFull){
         ShinryouElement element = new ShinryouElement(width, shinryouFull, visit);
         add(element.getComponent());
+        elements.add(element);
+    }
+
+    private void reorder(){
+        elements.forEach(element -> remove(element.getComponent()));
+        elements.sort(Comparator.comparingInt(ShinryouElement::getShinryoucode));
+        elements.forEach(element -> add(element.getComponent()));
     }
 
     private void alert(String message){
