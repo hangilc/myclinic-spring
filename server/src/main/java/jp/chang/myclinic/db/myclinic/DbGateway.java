@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.sql.Date;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -59,6 +60,8 @@ public class DbGateway {
 	private PharmaDrugRepository pharmaDrugRepository;
 	@Autowired
 	private IyakuhinMasterRepository iyakuhinMasterRepository;
+	@Autowired
+	private ShinryouMasterRepository shinryouMasterRepository;
 	@Autowired
 	private HotlineRepository hotlineRepository;
 	@Autowired
@@ -432,11 +435,13 @@ public class DbGateway {
 	}
 
 	public ShinryouFullDTO getShinryouFull(int shinryouId){
-		Object[] result = shinryouRepository.findOneWithMaster(shinryouId).get(0);
-		if( result == null ){
-			System.out.println("cannot get full shinryou for shinryouId: " + shinryouId);
-		}
+		Object[] result = shinryouRepository.findOneWithMaster(shinryouId);
 		return resultToShinryouFullDTO(result);
+	}
+
+	public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds){
+		return shinryouRepository.findFullByIds(shinryouIds).stream()
+				.map(this::resultToShinryouFullDTO).collect(Collectors.toList());
 	}
 
 	public List<ShinryouFullDTO> listShinryouFull(int visitId){
@@ -444,6 +449,21 @@ public class DbGateway {
 		return shinryouRepository.findByVisitIdWithMaster(visitId, sort).stream()
 		.map(this::resultToShinryouFullDTO)
 		.collect(Collectors.toList());
+	}
+
+	public ShinryouDTO enterShinryou(ShinryouDTO shinryouDTO){
+		Shinryou shinryou = mapper.fromShinryouDTO(shinryouDTO);
+		return mapper.toShinryouDTO(shinryouRepository.save(shinryou));
+	}
+
+	public Optional<ShinryouMasterDTO> findShinryouMasterByName(String name, LocalDate at){
+		Date date = Date.valueOf(at);
+		return shinryouMasterRepository.findByNameAndDate(name, date).map(mapper::toShinryouMasterDTO);
+	}
+
+	public Optional<ShinryouMasterDTO> findShinryouMasterByShinryoucode(int shinryoucode, LocalDate at){
+		Date date = Date.valueOf(at);
+		return shinryouMasterRepository.findByShinryoucodeAndDate(shinryoucode, date).map(mapper::toShinryouMasterDTO);
 	}
 
 	public DrugFullDTO getDrugFull(int drugId){

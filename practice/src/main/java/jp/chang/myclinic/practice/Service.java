@@ -109,6 +109,13 @@ public class Service {
 
         @POST("update-drug")
         CompletableFuture<Boolean> updateDrug(@Body DrugDTO drug);
+
+        @POST("batch-enter-shinryou-by-name")
+        CompletableFuture<List<Integer>> batchEnterShinryouByName(@Query("name") List<String> names,
+                                                                  @Query("visit-id") int visitId);
+
+        @GET("list-shinryou-full-by-ids")
+        CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(@Query("shinryou-id") List<Integer> shinryouIds);
     }
 
     public static ServerAPI api;

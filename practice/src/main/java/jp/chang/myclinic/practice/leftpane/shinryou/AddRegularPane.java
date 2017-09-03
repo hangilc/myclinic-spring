@@ -4,8 +4,17 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 class AddRegularPane extends JPanel {
+
+    interface Callback {
+        default void onEnter(List<String> names){}
+        default void onCancel(){}
+    }
 
     private static String[] leftItems = new String[]{
             "再診",
@@ -44,11 +53,18 @@ class AddRegularPane extends JPanel {
             "骨塩定量",
     };
 
+    private Map<String, JCheckBox> inputMap = new HashMap<>();
+    private Callback callback = new Callback(){};
+
     AddRegularPane(){
         setLayout(new MigLayout("insets 0", "", ""));
         add(makeLeftCol(), "top, growx");
         add(makeRightCol(), "top, growx, wrap");
         add(makeCommandBox());
+    }
+
+    void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     private JComponent makeLabel(String text){
@@ -68,6 +84,7 @@ class AddRegularPane extends JPanel {
             } else {
                 JCheckBox check = new JCheckBox(text);
                 panel.add(check, "wrap");
+                inputMap.put(text, check);
             }
         }
         return panel;
@@ -81,10 +98,23 @@ class AddRegularPane extends JPanel {
         return makeCol(rightItems);
     }
 
+    private List<String> getCheckedNames(){
+        List<String> names = new ArrayList<>();
+        for(String key: inputMap.keySet()){
+            JCheckBox check = inputMap.get(key);
+            if( check.isSelected() ){
+                names.add(key);
+            }
+        }
+        return names;
+    }
+
     private JComponent makeCommandBox(){
         JPanel box = new JPanel(new MigLayout("insets 0", "", ""));
         JButton enterButton = new JButton("入力");
+        enterButton.addActionListener(event -> callback.onEnter(getCheckedNames()));
         JButton cancelButton = new JButton("キャンセル");
+        cancelButton.addActionListener(event -> callback.onCancel());
         box.add(enterButton);
         box.add(cancelButton);
         return box;

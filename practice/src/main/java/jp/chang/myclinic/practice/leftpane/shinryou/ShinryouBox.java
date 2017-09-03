@@ -3,9 +3,11 @@ package jp.chang.myclinic.practice.leftpane.shinryou;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
@@ -50,6 +52,31 @@ public class ShinryouBox extends JPanel {
      private WorkArea makeAddRegularWorkArea(){
         WorkArea wa = new WorkArea(width, "診療行為入力");
         AddRegularPane pane = new AddRegularPane();
+        pane.setCallback(new AddRegularPane.Callback() {
+            @Override
+            public void onEnter(List<String> names) {
+                Service.api.batchEnterShinryouByName(names, visit.visitId)
+                        .thenCompose(Service.api::listShinryouFullByIds)
+                        .thenAccept(shinryouFullList -> EventQueue.invokeLater(() -> {
+                            shinryouFullList.forEach(shinryouFull -> append(shinryouFull));
+                            closeWorkArea();
+                            revalidate();
+                            repaint();
+                        }))
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+
+            @Override
+            public void onCancel() {
+                closeWorkArea();
+            }
+        });
         wa.setComponent(pane);
         return wa;
     }
@@ -76,4 +103,9 @@ public class ShinryouBox extends JPanel {
         ShinryouElement element = new ShinryouElement(width, shinryouFull, visit);
         add(element.getComponent());
     }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
+    }
+
 }
