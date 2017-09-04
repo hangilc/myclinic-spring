@@ -17,7 +17,7 @@ public class ConductBox extends JPanel {
         conducts.forEach(this::append);
     }
 
-    private void append(ConductFullDTO conductFull){
+    public void append(ConductFullDTO conductFull){
         ConductElement element = new ConductElement(width, conductFull);
         add(element.getComponent());
     }

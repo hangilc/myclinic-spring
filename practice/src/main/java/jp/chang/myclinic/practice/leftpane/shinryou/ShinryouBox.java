@@ -4,6 +4,7 @@ import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.leftpane.RecordContext;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 
 import javax.swing.*;
@@ -59,6 +60,7 @@ public class ShinryouBox extends JPanel {
     }
 
      private WorkArea makeAddRegularWorkArea(){
+        JPanel self = this;
         WorkArea wa = new WorkArea(width, "診療行為入力");
         AddRegularPane pane = new AddRegularPane();
         pane.setCallback(new AddRegularPane.Callback() {
@@ -78,17 +80,16 @@ public class ShinryouBox extends JPanel {
                                 return Service.api.listConductFullByIds(store.conductIds);
                             }
                         })
-                        .thenAccept(conducts -> {
+                        .thenAccept(conducts -> EventQueue.invokeLater(() -> {
                             store.shinryouList.forEach(shinryouFull -> append(shinryouFull));
                             if( conducts != null ){
-                                // TODO: add conducts
-                                System.out.println("adding conducts not implemented yet");
+                                RecordContext.get(self).ifPresent(ctx -> ctx.onConductsEntered(conducts));
                             }
                             reorder();
                             closeWorkArea();
                             revalidate();
                             repaint();
-                        })
+                        }))
                         .exceptionally(t -> {
                             t.printStackTrace();
                             EventQueue.invokeLater(() -> {

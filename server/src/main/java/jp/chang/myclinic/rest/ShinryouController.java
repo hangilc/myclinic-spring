@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,8 +33,11 @@ public class ShinryouController {
 	}
 
 	@RequestMapping(value="/list-shinryou-full-by-ids", method=RequestMethod.GET)
-	public List<ShinryouFullDTO> listShinryouFullByIds(@RequestParam("shinryou-id") List<Integer> shinryouIds){
-		return dbGateway.listShinryouFullByIds(shinryouIds);
+	public List<ShinryouFullDTO> listShinryouFullByIds(@RequestParam(value="shinryou-id", required=false) Optional<List<Integer>> shinryouIds){
+		if( !shinryouIds.isPresent() ){
+			return Collections.emptyList();
+		}
+		return dbGateway.listShinryouFullByIds(shinryouIds.get());
 	}
 
 	@RequestMapping(value="/batch-enter-shinryou-by-name", method=RequestMethod.POST)

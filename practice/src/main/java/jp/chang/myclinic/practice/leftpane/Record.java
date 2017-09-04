@@ -65,6 +65,13 @@ class Record extends JPanel implements RecordContext {
         drugHandler.onDrugsDeleted(drugIds);
     }
 
+    @Override
+    public void onConductsEntered(List<ConductFullDTO> conducts) {
+        conducts.forEach(conductBox::append);
+        conductBox.revalidate();
+        conductBox.repaint();
+    }
+
     void setCallback(Callback callback){
         this.callback = callback;
     }

@@ -442,6 +442,9 @@ public class DbGateway {
 	}
 
 	public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds){
+		if( shinryouIds.size() == 0 ){
+			return Collections.emptyList();
+		}
 		return shinryouRepository.findFullByIds(shinryouIds).stream()
 				.map(this::resultToShinryouFullDTO).collect(Collectors.toList());
 	}
@@ -610,6 +613,16 @@ public class DbGateway {
 	public ConductFullDTO getConductFull(int conductId){
 		ConductDTO conductDTO = getConduct(conductId);
 		return extendConduct(conductDTO);
+	}
+
+	public List<ConductFullDTO> listConductFullByIds(List<Integer> conductIds){
+		if( conductIds.size() == 0 ){
+			return Collections.emptyList();
+		}
+		return conductRepository.listConductByIds(conductIds, new Sort("conductId")).stream()
+				.map(mapper::toConductDTO)
+				.map(this::extendConduct)
+				.collect(Collectors.toList());
 	}
 
 	public void deleteVisitFromReception(int visitId){
