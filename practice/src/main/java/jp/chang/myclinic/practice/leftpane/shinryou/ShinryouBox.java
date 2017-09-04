@@ -47,8 +47,8 @@ public class ShinryouBox extends JPanel {
             }
 
             @Override
-            public void onSubMenu(MouseEvent event) {
-                doSubMenu();
+            public void onSubMenu(Component invoker, MouseEvent event) {
+                doSubMenu(invoker, event);
             }
         });
         return m;
@@ -108,8 +108,48 @@ public class ShinryouBox extends JPanel {
         return wa;
     }
 
-    private void doSubMenu(){
+    private void doSubMenu(Component invoker, MouseEvent mouseEvent){
+        JPopupMenu popup = new JPopupMenu();
+        {
+            JMenuItem item = new JMenuItem("検査");
+            item.addActionListener(event -> doKensa());
+            popup.add(item);
+        }
+        {
+            JMenuItem item = new JMenuItem("診療行為検索");
+            item.addActionListener(event -> {
+            });
+            popup.add(item);
+        }
+        {
+            JMenuItem item = new JMenuItem("全部コピー");
+            item.addActionListener(event -> {
+            });
+            popup.add(item);
+        }
+        {
+            JMenuItem item = new JMenuItem("選択コピー");
+            item.addActionListener(event -> {
+            });
+            popup.add(item);
+        }
+        {
+            JMenuItem item = new JMenuItem("複数削除");
+            item.addActionListener(event -> {
+            });
+            popup.add(item);
+        }
+        {
+            JMenuItem item = new JMenuItem("重複削除");
+            item.addActionListener(event -> {
+            });
+            popup.add(item);
+        }
+        popup.show(invoker, mouseEvent.getX(), mouseEvent.getY());
+    }
 
+    private void doKensa(){
+        // TODO: implement kensa
     }
 
     private void setWorkArea(WorkArea wa){
