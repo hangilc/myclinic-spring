@@ -108,11 +108,16 @@ public class ShinryouBox extends JPanel {
         return wa;
     }
 
-    private void doSubMenu(Component invoker, MouseEvent mouseEvent){
+    private void doSubMenu(Component invoker, MouseEvent mouseEvent) {
+        if (workarea != null) {
+            return;
+        }
         JPopupMenu popup = new JPopupMenu();
         {
             JMenuItem item = new JMenuItem("検査");
-            item.addActionListener(event -> doKensa());
+            item.addActionListener(event -> {
+                setWorkArea(makeKensaWorkArea());
+            });
             popup.add(item);
         }
         {
@@ -148,8 +153,18 @@ public class ShinryouBox extends JPanel {
         popup.show(invoker, mouseEvent.getX(), mouseEvent.getY());
     }
 
-    private void doKensa(){
-        // TODO: implement kensa
+    private WorkArea makeKensaWorkArea(){
+        WorkArea wa = new WorkArea(width, "検査の入力");
+        KensaPane kensaPane = new KensaPane();
+        kensaPane.setSize(wa.getInnerColumnWidth(), Integer.MAX_VALUE);
+        kensaPane.setCallback(new KensaPane.Callback(){
+            @Override
+            public void onCancel() {
+                closeWorkArea();
+            }
+        });
+        wa.setComponent(kensaPane);
+        return wa;
     }
 
     private void setWorkArea(WorkArea wa){
