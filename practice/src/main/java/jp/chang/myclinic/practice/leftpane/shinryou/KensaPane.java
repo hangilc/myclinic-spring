@@ -5,6 +5,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 class KensaPane extends JPanel {
@@ -19,35 +20,45 @@ class KensaPane extends JPanel {
     private static class KensaEntry {
         String name;
         String value;
+        boolean preset;
 
         static KensaEntry sep = new KensaEntry("-");
 
         KensaEntry(String name){
-            this(name, name);
+            this(name, name, false);
+        }
+
+        KensaEntry(String name, boolean preset){
+            this(name, name, preset);
         }
 
         KensaEntry(String name, String value){
+            this(name, value, false);
+        }
+
+        KensaEntry(String name, String value, boolean preset){
             this.name = name;
-            this.value = name;
+            this.value = value;
+            this.preset = preset;
         }
     }
 
     private static KensaEntry[] leftEntries = new KensaEntry[]{
-            new KensaEntry("血算"),
+            new KensaEntry("血算", true),
             new KensaEntry("末梢血液像"),
-            new KensaEntry("ＨｂＡ１ｃ"),
+            new KensaEntry("ＨｂＡ１ｃ", true),
             new KensaEntry("ＰＴ"),
             KensaEntry.sep,
-            new KensaEntry("ＧＯＴ"),
-            new KensaEntry("ＧＰＴ"),
-            new KensaEntry("γＧＴＰ"),
+            new KensaEntry("ＧＯＴ", true),
+            new KensaEntry("ＧＰＴ", true),
+            new KensaEntry("γＧＴＰ", true),
             new KensaEntry("ＣＰＫ"),
-            new KensaEntry("クレアチニン"),
-            new KensaEntry("尿酸"),
+            new KensaEntry("クレアチニン", true),
+            new KensaEntry("尿酸", true),
             new KensaEntry("カリウム"),
-            new KensaEntry("ＬＤＬ－Ｃｈ", "ＬＤＬ－コレステロール"),
-            new KensaEntry("ＨＤＬ－Ｃｈ", "ＨＤＬ－コレステロール"),
-            new KensaEntry("ＴＧ"),
+            new KensaEntry("ＬＤＬ－Ｃｈ", "ＬＤＬ－コレステロール", true),
+            new KensaEntry("ＨＤＬ－Ｃｈ", "ＨＤＬ－コレステロール", true),
+            new KensaEntry("ＴＧ", true),
             new KensaEntry("グルコース"),
     };
 
@@ -63,9 +74,19 @@ class KensaPane extends JPanel {
             new KensaEntry("クレアチニン（尿）"),
     };
 
-    private static String[] presetNames = new String[]{"血算", "ＨｂＡ１ｃ", "ＧＯＴ", "ＧＰＴ", "γＧＴＰ",
-            "クレアチニン", "尿酸", "ＬＤＬ－コレステロール", "ＨＤＬ－コレステロール", "ＴＧ"};
+    private static class KensaInput {
+        String value;
+        JCheckBox checkBox;
+        boolean preset;
 
+        KensaInput(String value, JCheckBox checkBox, boolean preset){
+            this.value = value;
+            this.checkBox = checkBox;
+            this.preset = preset;
+        }
+    }
+
+    private List<KensaInput> kensaInputs = new ArrayList<>();
 
     KensaPane(){
         setLayout(new MigLayout("insets 0, fill", "[grow] [grow]", ""));
@@ -87,6 +108,7 @@ class KensaPane extends JPanel {
             } else {
                 JCheckBox check = new JCheckBox(entry.name);
                 col.add(check, "wrap");
+                kensaInputs.add(new KensaInput(entry.value, check, entry.preset));
             }
         }
         return col;
@@ -95,7 +117,13 @@ class KensaPane extends JPanel {
     private Component makeSubcommandBox(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         Link presetLink = new Link("セット検査");
+        presetLink.setCallback(event -> {
+            kensaInputs.stream().filter(input -> input.preset).forEach(input -> input.checkBox.setSelected(true));
+        });
         Link clearLink = new Link("クリア");
+        clearLink.setCallback(event -> {
+            kensaInputs.forEach(kensaInput -> kensaInput.checkBox.setSelected(false));
+        });
         panel.add(presetLink);
         panel.add(clearLink);
         return panel;
@@ -104,10 +132,21 @@ class KensaPane extends JPanel {
     private Component makeCommandBox(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         JButton enterButton = new JButton("入力");
+        enterButton.addActionListener(event -> doEnter());
         JButton cancelButton = new JButton("キャンセル");
         cancelButton.addActionListener(event -> callback.onCancel());
         panel.add(enterButton);
         panel.add(cancelButton);
         return panel;
+    }
+
+    private void doEnter() {
+        List<String> selectedNames = new ArrayList<>();
+        for(KensaInput kensaInput: kensaInputs){
+            if( kensaInput.checkBox.isSelected() ){
+                selectedNames.add(kensaInput.value);
+            }
+        }
+        callback.onEnter(selectedNames);
     }
 }

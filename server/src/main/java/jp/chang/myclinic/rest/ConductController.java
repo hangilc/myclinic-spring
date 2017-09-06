@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/json")
@@ -39,11 +37,8 @@ public class ConductController {
 	}
 
 	@RequestMapping(value="/list-conduct-full-by-ids", method=RequestMethod.GET)
-	public List<ConductFullDTO> listByIds(@RequestParam(value="conduct-id", required=false) Optional<List<Integer>> conductIds){
-		if( !conductIds.isPresent() ){
-			return Collections.emptyList();
-		}
-		return dbGateway.listConductFullByIds(conductIds.get());
+	public List<ConductFullDTO> listByIds(@RequestParam(value="conduct-id", defaultValue="") List<Integer> conductIds){
+		return dbGateway.listConductFullByIds(conductIds);
 	}
 
 }

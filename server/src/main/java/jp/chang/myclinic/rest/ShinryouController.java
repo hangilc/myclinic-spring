@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,11 +32,8 @@ public class ShinryouController {
 	}
 
 	@RequestMapping(value="/list-shinryou-full-by-ids", method=RequestMethod.GET)
-	public List<ShinryouFullDTO> listShinryouFullByIds(@RequestParam(value="shinryou-id", required=false) Optional<List<Integer>> shinryouIds){
-		if( !shinryouIds.isPresent() ){
-			return Collections.emptyList();
-		}
-		return dbGateway.listShinryouFullByIds(shinryouIds.get());
+	public List<ShinryouFullDTO> listShinryouFullByIds(@RequestParam(value="shinryou-id", defaultValue="") List<Integer> shinryouIds){
+		return dbGateway.listShinryouFullByIds(shinryouIds);
 	}
 
 	@RequestMapping(value="/batch-enter-shinryou-by-name", method=RequestMethod.POST)
@@ -63,6 +59,7 @@ public class ShinryouController {
 			}
 		}
 		if( accum.errorMessages.size() > 0 ){
+			accum.errorMessages.forEach(System.out::println);
 			throw new RuntimeException(String.join("", accum.errorMessages));
 		}
 		return accum.toBatchEnterResult();

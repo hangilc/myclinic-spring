@@ -3,7 +3,6 @@ package jp.chang.myclinic.practice.leftpane.shinryou;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
-import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.leftpane.RecordContext;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 
@@ -13,7 +12,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class ShinryouBox extends JPanel {
 
@@ -54,11 +52,6 @@ public class ShinryouBox extends JPanel {
         return m;
     }
 
-    private static class BatchEnterStore {
-        List<Integer> conductIds;
-        List<ShinryouFullDTO> shinryouList;
-    }
-
     private WorkArea makeAddRegularWorkArea() {
         JPanel self = this;
         WorkArea wa = new WorkArea(width, "診療行為入力");
@@ -66,37 +59,7 @@ public class ShinryouBox extends JPanel {
         pane.setCallback(new AddRegularPane.Callback() {
             @Override
             public void onEnter(List<String> names) {
-                BatchEnterStore store = new BatchEnterStore();
-                Service.api.batchEnterShinryouByName(names, visit.visitId)
-                        .thenCompose(result -> {
-                            store.conductIds = result.conductIds;
-                            return Service.api.listShinryouFullByIds(result.shinryouIds);
-                        })
-                        .thenCompose(shinryouList -> {
-                            store.shinryouList = shinryouList;
-                            if (store.conductIds == null || store.conductIds.size() == 0) {
-                                return CompletableFuture.completedFuture(null);
-                            } else {
-                                return Service.api.listConductFullByIds(store.conductIds);
-                            }
-                        })
-                        .thenAccept(conducts -> EventQueue.invokeLater(() -> {
-                            store.shinryouList.forEach(shinryouFull -> append(shinryouFull));
-                            if (conducts != null) {
-                                RecordContext.get(self).ifPresent(ctx -> ctx.onConductsEntered(conducts));
-                            }
-                            reorder();
-                            closeWorkArea();
-                            revalidate();
-                            repaint();
-                        }))
-                        .exceptionally(t -> {
-                            t.printStackTrace();
-                            EventQueue.invokeLater(() -> {
-                                alert(t.toString());
-                            });
-                            return null;
-                        });
+                batchEnterShinryouByNames(names, visit.visitId, () -> closeWorkArea());
             }
 
             @Override
@@ -106,6 +69,27 @@ public class ShinryouBox extends JPanel {
         });
         wa.setComponent(pane);
         return wa;
+    }
+
+    private void batchEnterShinryouByNames(List<String> names, int visitId, Runnable uiCallback){
+        ShinryouLib.batchEnterShinryouByNames(names, visitId)
+                .thenAccept(result -> EventQueue.invokeLater(() ->{
+                    result.shinryouList.forEach(this::append);
+                    if (result.conducts.size() != 0 ){
+                        RecordContext.get(this).ifPresent(ctx -> ctx.onConductsEntered(result.conducts));
+                    }
+                    reorder();
+                    revalidate();
+                    repaint();
+                    uiCallback.run();
+                }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
 
     private void doSubMenu(Component invoker, MouseEvent mouseEvent) {
@@ -158,6 +142,11 @@ public class ShinryouBox extends JPanel {
         KensaPane kensaPane = new KensaPane();
         kensaPane.setSize(wa.getInnerColumnWidth(), Integer.MAX_VALUE);
         kensaPane.setCallback(new KensaPane.Callback() {
+            @Override
+            public void onEnter(List<String> names) {
+                batchEnterShinryouByNames(names, visit.visitId, () -> closeWorkArea());
+            }
+
             @Override
             public void onCancel() {
                 closeWorkArea();
