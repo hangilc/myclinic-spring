@@ -23,7 +23,7 @@ public class ShinryouBox extends JPanel {
     private List<ShinryouElement> elements = new ArrayList<>();
     private WorkArea workarea;
 
-    public ShinryouBox(int width, List<ShinryouFullDTO> shinryouList,VisitDTO visit){
+    public ShinryouBox(int width, List<ShinryouFullDTO> shinryouList, VisitDTO visit) {
         this.width = width;
         this.visit = visit;
         setLayout(new FixedWidthLayout(width));
@@ -32,13 +32,13 @@ public class ShinryouBox extends JPanel {
         shinryouList.forEach(this::append);
     }
 
-    private ShinryouMenu makeMenu(){
+    private ShinryouMenu makeMenu() {
         ShinryouMenu m = new ShinryouMenu();
-        m.setCallback(new ShinryouMenu.Callback(){
+        m.setCallback(new ShinryouMenu.Callback() {
             @Override
             public void onMainMenu() {
-                if( workarea != null ){
-                    if( workarea.getComponent() instanceof AddRegularPane ){
+                if (workarea != null) {
+                    if (workarea.getComponent() instanceof AddRegularPane) {
                         closeWorkArea();
                     }
                     return;
@@ -59,7 +59,7 @@ public class ShinryouBox extends JPanel {
         List<ShinryouFullDTO> shinryouList;
     }
 
-     private WorkArea makeAddRegularWorkArea(){
+    private WorkArea makeAddRegularWorkArea() {
         JPanel self = this;
         WorkArea wa = new WorkArea(width, "診療行為入力");
         AddRegularPane pane = new AddRegularPane();
@@ -74,7 +74,7 @@ public class ShinryouBox extends JPanel {
                         })
                         .thenCompose(shinryouList -> {
                             store.shinryouList = shinryouList;
-                            if( store.conductIds == null || store.conductIds.size() == 0 ){
+                            if (store.conductIds == null || store.conductIds.size() == 0) {
                                 return CompletableFuture.completedFuture(null);
                             } else {
                                 return Service.api.listConductFullByIds(store.conductIds);
@@ -82,7 +82,7 @@ public class ShinryouBox extends JPanel {
                         })
                         .thenAccept(conducts -> EventQueue.invokeLater(() -> {
                             store.shinryouList.forEach(shinryouFull -> append(shinryouFull));
-                            if( conducts != null ){
+                            if (conducts != null) {
                                 RecordContext.get(self).ifPresent(ctx -> ctx.onConductsEntered(conducts));
                             }
                             reorder();
@@ -153,11 +153,11 @@ public class ShinryouBox extends JPanel {
         popup.show(invoker, mouseEvent.getX(), mouseEvent.getY());
     }
 
-    private WorkArea makeKensaWorkArea(){
+    private WorkArea makeKensaWorkArea() {
         WorkArea wa = new WorkArea(width, "検査の入力");
         KensaPane kensaPane = new KensaPane();
         kensaPane.setSize(wa.getInnerColumnWidth(), Integer.MAX_VALUE);
-        kensaPane.setCallback(new KensaPane.Callback(){
+        kensaPane.setCallback(new KensaPane.Callback() {
             @Override
             public void onCancel() {
                 closeWorkArea();
@@ -167,33 +167,33 @@ public class ShinryouBox extends JPanel {
         return wa;
     }
 
-    private void setWorkArea(WorkArea wa){
+    private void setWorkArea(WorkArea wa) {
         this.workarea = wa;
         add(wa, new FixedWidthLayout.After(menu));
         revalidate();
         repaint();
     }
 
-    private void closeWorkArea(){
+    private void closeWorkArea() {
         remove(workarea);
         this.workarea = null;
         revalidate();
         repaint();
     }
 
-    private void append(ShinryouFullDTO shinryouFull){
+    private void append(ShinryouFullDTO shinryouFull) {
         ShinryouElement element = new ShinryouElement(width, shinryouFull, visit);
         add(element.getComponent());
         elements.add(element);
     }
 
-    private void reorder(){
+    private void reorder() {
         elements.forEach(element -> remove(element.getComponent()));
         elements.sort(Comparator.comparingInt(ShinryouElement::getShinryoucode));
         elements.forEach(element -> add(element.getComponent()));
     }
 
-    private void alert(String message){
+    private void alert(String message) {
         JOptionPane.showMessageDialog(this, message);
     }
 
