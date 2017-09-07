@@ -1,5 +1,6 @@
 package jp.chang.myclinic.db.myclinic;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +22,6 @@ public interface ShinryouMasterRepository extends CrudRepository<ShinryouMaster,
 	@Query("select m from ShinryouMaster m where m.name like CONCAT('%', :text, '%') " +
 			" and m.validFrom <= DATE(:at) " +
 			" and (m.validUpto = '0000-00-00' or m.validUpto >= DATE(:at)) ")
-	List<ShinryouMaster> search(@Param("text") String text, Strint at)
+	List<ShinryouMaster> search(@Param("text") String text, @Param("at") String at, Sort sort);
 
 }

@@ -131,4 +131,9 @@ public class ShinryouController {
 		}
 	}
 
+	@RequestMapping(value="/search-shinryou-master", method=RequestMethod.GET)
+	public List<ShinryouMasterDTO> searchShinryouMaster(@RequestParam("text") String text, @RequestParam("at") String at){
+		return dbGateway.searchShinryouMaster(text, at);
+	}
+
 }

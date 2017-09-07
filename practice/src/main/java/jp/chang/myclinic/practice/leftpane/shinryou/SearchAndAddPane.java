@@ -6,8 +6,6 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 class SearchAndAddPane extends JPanel {
 
@@ -16,14 +14,16 @@ class SearchAndAddPane extends JPanel {
     }
 
     //private int width;
+    String at;
     JTextField searchField;
     JButton searchButton;
     SearchResult searchResult;
 
     private Callback callback = new Callback(){};
 
-    SearchAndAddPane(int width){
+    SearchAndAddPane(int width, String at){
         //this.width = width;
+        this.at = at;
         setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
         searchField = new JTextField(4);
         searchButton = new JButton("検索");
@@ -65,15 +65,12 @@ class SearchAndAddPane extends JPanel {
             label.setOpaque(true);
             return label;
         });
-        searchResult.addMouseListener(new MouseAdapter(){
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                ShinryouMasterDTO select = searchResult.getSelectedValue();
-                if( select == null ){
-                    return;
+        searchResult.addListSelectionListener(event -> {
+            if( !event.getValueIsAdjusting() ){
+                ShinryouMasterDTO master = searchResult.getSelectedValue();
+                if( master != null ){
+                    System.out.println(master.name);
                 }
-                System.out.println("search result: " + select);
-                // set disp
             }
         });
         searchButton.addActionListener(event -> {
@@ -81,7 +78,10 @@ class SearchAndAddPane extends JPanel {
             if( text.isEmpty() ){
                 return;
             }
-            Service.api.searchShinryou(text)
+            Service.api.searchShinryouMaster(text, at)
+                    .thenAccept(masters -> EventQueue.invokeLater(() ->{
+                        searchResult.setListData(masters.toArray(new ShinryouMasterDTO[]{}));
+                    }))
                     .exceptionally(t -> {
                         t.printStackTrace();
                         EventQueue.invokeLater(() -> {

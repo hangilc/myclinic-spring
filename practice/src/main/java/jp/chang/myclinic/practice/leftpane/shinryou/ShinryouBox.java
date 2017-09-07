@@ -140,7 +140,7 @@ public class ShinryouBox extends JPanel {
 
     private WorkArea makeSearchAndAddWorkArea() {
         WorkArea wa = new WorkArea(width, "診療行為検索");
-        SearchAndAddPane pane = new SearchAndAddPane(wa.getInnerColumnWidth());
+        SearchAndAddPane pane = new SearchAndAddPane(wa.getInnerColumnWidth(), visit.visitedAt.substring(0, 10));
         pane.setCallback(new SearchAndAddPane.Callback() {
             @Override
             public void onCancel() {

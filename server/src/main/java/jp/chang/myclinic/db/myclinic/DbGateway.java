@@ -547,6 +547,11 @@ public class DbGateway {
 		textRepository.delete(textId);
 	}
 
+	public List<ShinryouMasterDTO> searchShinryouMaster(String text, String at){
+		return shinryouMasterRepository.search(text, at, new Sort("shinryoucode")).stream()
+				.map(mapper::toShinryouMasterDTO).collect(Collectors.toList());
+	}
+
 	public VisitFullDTO getVisitFull(int visitId){
 		VisitDTO visitDTO = getVisit(visitId);
 		return getVisitFull(visitDTO);

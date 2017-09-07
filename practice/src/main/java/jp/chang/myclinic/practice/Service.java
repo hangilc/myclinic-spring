@@ -119,6 +119,9 @@ public class Service {
 
         @GET("list-conduct-full-by-ids")
         CompletableFuture<List<ConductFullDTO>> listConductFullByIds(@Query("conduct-id") List<Integer> conductIds);
+
+        @GET("search-shinryou-master")
+        CompletableFuture<List<ShinryouMasterDTO>> searchShinryouMaster(@Query("text") String text, @Query("at") String at);
     }
 
     public static ServerAPI api;
