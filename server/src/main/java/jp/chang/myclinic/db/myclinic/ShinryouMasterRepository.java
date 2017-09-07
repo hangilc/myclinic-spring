@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.Optional;
 
 public interface ShinryouMasterRepository extends CrudRepository<ShinryouMaster, ShinryouMasterId> {
@@ -16,5 +17,10 @@ public interface ShinryouMasterRepository extends CrudRepository<ShinryouMaster,
 	@Query("select m from ShinryouMaster m where m.name = :name and m.validFrom <= FUNCTION('date', :at) " +
 			"and (m.validUpto = '0000-00-00' or m.validUpto >= FUNCTION('date', :at))")
 	Optional<ShinryouMaster> findByNameAndDate(@Param("name") String name, @Param("at") Date at);
+
+	@Query("select m from ShinryouMaster m where m.name like CONCAT('%', :text, '%') " +
+			" and m.validFrom <= DATE(:at) " +
+			" and (m.validUpto = '0000-00-00' or m.validUpto >= DATE(:at)) ")
+	List<ShinryouMaster> search(@Param("text") String text, Strint at)
 
 }

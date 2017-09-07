@@ -107,6 +107,7 @@ public class ShinryouBox extends JPanel {
         {
             JMenuItem item = new JMenuItem("診療行為検索");
             item.addActionListener(event -> {
+                setWorkArea(makeSearchAndAddWorkArea());
             });
             popup.add(item);
         }
@@ -135,6 +136,19 @@ public class ShinryouBox extends JPanel {
             popup.add(item);
         }
         popup.show(invoker, mouseEvent.getX(), mouseEvent.getY());
+    }
+
+    private WorkArea makeSearchAndAddWorkArea() {
+        WorkArea wa = new WorkArea(width, "診療行為検索");
+        SearchAndAddPane pane = new SearchAndAddPane(wa.getInnerColumnWidth());
+        pane.setCallback(new SearchAndAddPane.Callback() {
+            @Override
+            public void onCancel() {
+                closeWorkArea();
+            }
+        });
+        wa.setComponent(pane);
+        return wa;
     }
 
     private WorkArea makeKensaWorkArea() {
