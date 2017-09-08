@@ -1,8 +1,11 @@
 package jp.chang.myclinic.practice.leftpane.shinryou;
 
+import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
+import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.leftpane.RecordContext;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 
@@ -142,6 +145,29 @@ public class ShinryouBox extends JPanel {
         WorkArea wa = new WorkArea(width, "診療行為検索");
         SearchAndAddPane pane = new SearchAndAddPane(wa.getInnerColumnWidth(), visit.visitedAt.substring(0, 10));
         pane.setCallback(new SearchAndAddPane.Callback() {
+            @Override
+            public void onEnter(ShinryouMasterDTO master) {
+                ShinryouDTO shinryouDTO = new ShinryouDTO();
+                shinryouDTO.visitId = visit.visitId;
+                shinryouDTO.shinryoucode = master.shinryoucode;
+                Service.api.enterShinryou(shinryouDTO)
+                        .thenCompose(shinryouId -> Service.api.getShinryouFull(shinryouId))
+                        .thenAccept(shinryouFull -> EventQueue.invokeLater(() -> {
+                            append(shinryouFull);
+                            closeWorkArea();
+                            reorder();
+                            revalidate();
+                            repaint();
+                        }))
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+
             @Override
             public void onCancel() {
                 closeWorkArea();

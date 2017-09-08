@@ -6,10 +6,7 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.mastermap.MasterMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -134,6 +131,11 @@ public class ShinryouController {
 	@RequestMapping(value="/search-shinryou-master", method=RequestMethod.GET)
 	public List<ShinryouMasterDTO> searchShinryouMaster(@RequestParam("text") String text, @RequestParam("at") String at){
 		return dbGateway.searchShinryouMaster(text, at);
+	}
+
+	@RequestMapping(value="/enter-shinryou", method=RequestMethod.POST)
+	public Integer enterShinryou(@RequestBody ShinryouDTO shinryou){
+		return dbGateway.enterShinryou(shinryou).shinryouId;
 	}
 
 }

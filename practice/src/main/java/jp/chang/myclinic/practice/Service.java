@@ -114,6 +114,9 @@ public class Service {
         CompletableFuture<BatchEnterResultDTO> batchEnterShinryouByName(@Query("name") List<String> names,
                                                                   @Query("visit-id") int visitId);
 
+        @POST("enter-shinryou")
+        CompletableFuture<Integer> enterShinryou(@Body ShinryouDTO shinryou);
+
         @GET("list-shinryou-full-by-ids")
         CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(@Query("shinryou-id") List<Integer> shinryouIds);
 
@@ -122,6 +125,9 @@ public class Service {
 
         @GET("search-shinryou-master")
         CompletableFuture<List<ShinryouMasterDTO>> searchShinryouMaster(@Query("text") String text, @Query("at") String at);
+
+        @GET("get-shinryou-full")
+        CompletableFuture<ShinryouFullDTO> getShinryouFull(@Query("shinryou-id") int shinryouId);
     }
 
     public static ServerAPI api;

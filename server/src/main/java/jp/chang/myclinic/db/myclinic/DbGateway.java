@@ -437,7 +437,7 @@ public class DbGateway {
 	}
 
 	public ShinryouFullDTO getShinryouFull(int shinryouId){
-		Object[] result = shinryouRepository.findOneWithMaster(shinryouId);
+		Object[] result = shinryouRepository.findOneWithMaster(shinryouId).get(0);
 		return resultToShinryouFullDTO(result);
 	}
 

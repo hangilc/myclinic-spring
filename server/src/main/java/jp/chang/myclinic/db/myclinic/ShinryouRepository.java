@@ -14,7 +14,7 @@ public interface ShinryouRepository extends CrudRepository<Shinryou, Integer> {
 		" and s.shinryoucode = m.shinryoucode " + 
 		" and m.validFrom <= DATE(v.visitedAt) " + 
 		" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto) ")
-	Object[] findOneWithMaster(@Param("shinryouId") int shinryouId);
+	List<Object[]> findOneWithMaster(@Param("shinryouId") int shinryouId);
 
 	@Query("select s, m from Shinryou s, ShinryouMaster m, Visit v " +
 		" where s.shinryouId in(:shinryouIds) and s.visitId = v.visitId " +

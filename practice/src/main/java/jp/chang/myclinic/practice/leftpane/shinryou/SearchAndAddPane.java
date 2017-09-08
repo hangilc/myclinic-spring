@@ -11,21 +11,20 @@ import java.awt.*;
 class SearchAndAddPane extends JPanel {
 
     interface Callback {
+        default void onEnter(ShinryouMasterDTO master){}
         default void onCancel(){}
     }
 
-    //private int width;
-    String at;
-    WrappedText dispName;
-    JTextField searchField;
-    JButton searchButton;
-    SearchResult searchResult;
-    ShinryouMasterDTO selectedMaster;
+    private String at;
+    private WrappedText dispName;
+    private JTextField searchField;
+    private  JButton searchButton;
+    private SearchResult searchResult;
+    private ShinryouMasterDTO selectedMaster;
 
     private Callback callback = new Callback(){};
 
     SearchAndAddPane(int width, String at){
-        //this.width = width;
         this.at = at;
         setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
         JLabel nameLabel = new JLabel("名称：");
@@ -52,6 +51,11 @@ class SearchAndAddPane extends JPanel {
         JPanel panel = new JPanel(new MigLayout("insets 2", "", ""));
         panel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         JButton enterButton = new JButton("入力");
+        enterButton.addActionListener(event -> {
+            if( selectedMaster != null ){
+                callback.onEnter(selectedMaster);
+            }
+        });
         JButton cancelButton = new JButton("キャンセル");
         cancelButton.addActionListener(event -> callback.onCancel());
         panel.add(enterButton);
