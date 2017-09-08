@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ShinryouBox extends JPanel {
 
@@ -129,6 +130,7 @@ public class ShinryouBox extends JPanel {
         {
             JMenuItem item = new JMenuItem("複数削除");
             item.addActionListener(event -> {
+                setWorkArea(makeDeleteSomeWorkArea());
             });
             popup.add(item);
         }
@@ -139,6 +141,25 @@ public class ShinryouBox extends JPanel {
             popup.add(item);
         }
         popup.show(invoker, mouseEvent.getX(), mouseEvent.getY());
+    }
+
+    private WorkArea makeDeleteSomeWorkArea() {
+        WorkArea wa = new WorkArea(width, "複数診療削除");
+        List<ShinryouFullDTO> shinryouList = elements.stream().map(ShinryouElement::getShinryouFull).collect(Collectors.toList());
+        DeleteSomePane pane = new DeleteSomePane(wa.getInnerColumnWidth(), shinryouList);
+        pane.setCallback(new DeleteSomePane.Callback() {
+            @Override
+            public void onDelete(List<ShinryouFullDTO> shinryouList) {
+
+            }
+
+            @Override
+            public void onCancel() {
+                closeWorkArea();
+            }
+        });
+        wa.setComponent(pane);
+        return wa;
     }
 
     private WorkArea makeSearchAndAddWorkArea() {
