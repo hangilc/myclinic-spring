@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.leftpane.shinryou;
 
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.WrappedText;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -15,9 +16,11 @@ class SearchAndAddPane extends JPanel {
 
     //private int width;
     String at;
+    WrappedText dispName;
     JTextField searchField;
     JButton searchButton;
     SearchResult searchResult;
+    ShinryouMasterDTO selectedMaster;
 
     private Callback callback = new Callback(){};
 
@@ -25,11 +28,16 @@ class SearchAndAddPane extends JPanel {
         //this.width = width;
         this.at = at;
         setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
+        JLabel nameLabel = new JLabel("名称：");
+        int dispNameWidth = width - nameLabel.getPreferredSize().width - 3;
+        dispName = new WrappedText(dispNameWidth, "");
         searchField = new JTextField(4);
         searchButton = new JButton("検索");
         searchResult = new SearchResult();
         JScrollPane searchScroll = new JScrollPane(searchResult);
         setupSearch();
+        add(nameLabel, "split 2, gapright 3");
+        add(dispName, "right, wrap");
         add(makeCommandBox(), "growx, wrap");
         add(searchField, "split 2, growx");
         add(searchButton, "wrap");
@@ -69,7 +77,8 @@ class SearchAndAddPane extends JPanel {
             if( !event.getValueIsAdjusting() ){
                 ShinryouMasterDTO master = searchResult.getSelectedValue();
                 if( master != null ){
-                    System.out.println(master.name);
+                    dispName.setText(master.name);
+                    selectedMaster = master;
                 }
             }
         });
