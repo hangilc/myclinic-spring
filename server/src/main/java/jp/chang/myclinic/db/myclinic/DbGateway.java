@@ -441,6 +441,10 @@ public class DbGateway {
 		return resultToShinryouFullDTO(result);
 	}
 
+	public void batchDeleteShinryou(List<Integer> shinryouIds){
+		shinryouRepository.batchDelete(shinryouIds);
+	}
+
 	public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds){
 		if( shinryouIds.size() == 0 ){
 			return Collections.emptyList();

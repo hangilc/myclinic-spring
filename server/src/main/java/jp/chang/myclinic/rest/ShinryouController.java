@@ -138,4 +138,10 @@ public class ShinryouController {
 		return dbGateway.enterShinryou(shinryou).shinryouId;
 	}
 
+	@RequestMapping(value="/batch-delete-shinryou", method=RequestMethod.POST)
+	public boolean batchDeleteShinryou(@RequestParam(value="shinryou-id", defaultValue="") List<Integer> shinryouIds){
+		dbGateway.batchDeleteShinryou(shinryouIds);
+		return true;
+	}
+
 }

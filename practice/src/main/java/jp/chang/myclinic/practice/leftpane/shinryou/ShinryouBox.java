@@ -150,7 +150,29 @@ public class ShinryouBox extends JPanel {
         pane.setCallback(new DeleteSomePane.Callback() {
             @Override
             public void onDelete(List<ShinryouFullDTO> shinryouList) {
-
+                List<Integer> shinryouIds = shinryouList.stream().map(s -> s.shinryou.shinryouId)
+                        .collect(Collectors.toList());
+                Service.api.batchDeleteShinryou(shinryouIds)
+                        .thenAccept(res -> EventQueue.invokeLater(() -> {
+                            elements.removeIf(element -> {
+                                if( shinryouIds.contains(element.getShinryouId()) ){
+                                    remove(element.getComponent());
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            });
+                            closeWorkArea();
+                            revalidate();
+                            repaint();
+                        }))
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
             }
 
             @Override

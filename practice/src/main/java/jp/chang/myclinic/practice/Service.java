@@ -128,6 +128,9 @@ public class Service {
 
         @GET("get-shinryou-full")
         CompletableFuture<ShinryouFullDTO> getShinryouFull(@Query("shinryou-id") int shinryouId);
+
+        @POST("batch-delete-shinryou")
+        CompletableFuture<Boolean> batchDeleteShinryou(@Query("shinryou-id") List<Integer> shinryouIds);
     }
 
     public static ServerAPI api;

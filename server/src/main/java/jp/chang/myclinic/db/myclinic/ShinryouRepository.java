@@ -1,6 +1,7 @@
 package jp.chang.myclinic.db.myclinic;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -29,4 +30,8 @@ public interface ShinryouRepository extends CrudRepository<Shinryou, Integer> {
 		" and m.validFrom <= DATE(v.visitedAt) " + 
 		" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto)")
 	List<Object[]> findByVisitIdWithMaster(@Param("visitId") int visitId, Sort sort);
+
+	@Modifying
+	@Query("delete from Shinryou s where s.shinryouId in :shinryouIds")
+    void batchDelete(@Param("shinryouIds") List<Integer> shinryouIds);
 }
