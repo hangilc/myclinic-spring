@@ -148,6 +148,17 @@ public class ShinryouBox extends JPanel {
         {
             JMenuItem item = new JMenuItem("重複削除");
             item.addActionListener(event -> {
+                Service.api.deleteDuplicateShinryou(visit.visitId)
+                        .thenAccept(shinryouIds -> {
+                            // TODO: update UI
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
             });
             popup.add(item);
         }

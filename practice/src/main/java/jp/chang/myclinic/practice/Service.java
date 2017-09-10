@@ -135,6 +135,9 @@ public class Service {
         @POST("batch-copy-shinryou")
         CompletableFuture<List<Integer>> batchCopyShinryou(@Query("visit-id") int visitId,
                                                            @Body List<ShinryouDTO> srcList);
+
+        @POST("delete-duplicate-shinryou")
+        CompletableFuture<List<Integer>> deleteDuplicateShinryou(@Query("visit-id") int visitId);
     }
 
     public static ServerAPI api;

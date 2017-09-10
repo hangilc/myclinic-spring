@@ -162,5 +162,8 @@ public class ShinryouController {
 		return shinryouIds;
 	}
 
-
+	@RequestMapping(value="/delete-duplicate-shinryou", method=RequestMethod.POST)
+	public List<Integer> deleteDuplicate(@RequestParam("visit-id") int visitId){
+		return dbGateway.deleteDuplicateShinryou(visitId);
+	}
 }

@@ -34,4 +34,6 @@ public interface ShinryouRepository extends CrudRepository<Shinryou, Integer> {
 	@Modifying
 	@Query("delete from Shinryou s where s.shinryouId in :shinryouIds")
     void batchDelete(@Param("shinryouIds") List<Integer> shinryouIds);
+
+	List<Shinryou> findByVisitId(int visitId);
 }
