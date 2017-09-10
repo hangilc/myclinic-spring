@@ -128,9 +128,7 @@ public class DrugHandler {
         submenu.setCallback(new SubMenuPane.Callback(){
             @Override
             public void onCopyAll(int targetVisitId, List<DrugFullDTO> enteredDrugs) {
-                LeftPaneContext.get(wrapper).ifPresent(ctx -> EventQueue.invokeLater(() -> {
-                    ctx.onDrugsEntered(targetVisitId, enteredDrugs);
-                }));
+                EventQueue.invokeLater(() -> LeftPaneContext.get(wrapper).onDrugsEntered(targetVisitId, enteredDrugs));
             }
 
             @Override
@@ -221,7 +219,7 @@ public class DrugHandler {
                 DrugLib.copyDrugs(targetVisitId, selected)
                         .thenAccept(result -> {
                             EventQueue.invokeLater(() -> {
-                                LeftPaneContext.get(wrapper).get().onDrugsEntered(targetVisitId, result);
+                                LeftPaneContext.get(wrapper).onDrugsEntered(targetVisitId, result);
                                 closeWorkArea();
                             });
                         })

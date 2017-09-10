@@ -80,6 +80,10 @@ class Record extends JPanel implements RecordContext {
         drugHandler.appendDrugs(drugs);
     }
 
+    void appendShinryou(List<ShinryouFullDTO> entered) {
+        shinryouBox.appendShinryou(entered);
+    }
+
     private JComponent makeRightColumn(VisitFull2DTO fullVisit){
         JPanel panel = new JPanel(new FixedWidthLayout(colWidth)){
             @Override

@@ -556,6 +556,11 @@ public class DbGateway {
 				.map(mapper::toShinryouMasterDTO).collect(Collectors.toList());
 	}
 
+	public ShinryouMasterDTO getShinryouMaster(int shinryoucode, LocalDate at){
+		String atString = at.toString();
+		return mapper.toShinryouMasterDTO(shinryouMasterRepository.findOneByShinryoucodeAndDate(shinryoucode, atString));
+	}
+
 	public VisitFullDTO getVisitFull(int visitId){
 		VisitDTO visitDTO = getVisit(visitId);
 		return getVisitFull(visitDTO);
@@ -1122,4 +1127,5 @@ public class DbGateway {
 		wqueueFullDTO.visit = mapper.toVisitDTO((Visit)result[2]);
 		return wqueueFullDTO;
 	}
+
 }

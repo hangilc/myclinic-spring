@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.leftpane.shinryou;
 
+import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.WrappedText;
@@ -30,6 +31,10 @@ class ShinryouElement {
 
     ShinryouFullDTO getShinryouFull(){
         return shinryouFull;
+    }
+
+    ShinryouDTO getShinryou(){
+        return shinryouFull.shinryou;
     }
 
     int getShinryouId(){

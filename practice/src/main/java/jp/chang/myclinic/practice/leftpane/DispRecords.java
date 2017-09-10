@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.leftpane;
 
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.practice.MainExecContext;
 import net.miginfocom.swing.MigLayout;
@@ -49,6 +50,13 @@ class DispRecords extends JPanel {
         Record record = recordMap.getOrDefault(visitId, null);
         if( record != null ){
             record.appendDrugs(drugs);
+        }
+    }
+
+    void appendShinryou(int visitId, List<ShinryouFullDTO> entered) {
+        Record record = recordMap.getOrDefault(visitId, null);
+        if( record != null ){
+            record.appendShinryou(entered);
         }
     }
 

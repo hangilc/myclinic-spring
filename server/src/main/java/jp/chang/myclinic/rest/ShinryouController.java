@@ -144,4 +144,23 @@ public class ShinryouController {
 		return true;
 	}
 
+	@RequestMapping(value="/batch-copy-shinryou", method=RequestMethod.POST)
+	public List<Integer> batchCopyShinryou(@RequestParam("visit-id") int visitId,
+										   @RequestBody() List<ShinryouDTO> srcList){
+		VisitDTO visit = dbGateway.getVisit(visitId);
+		LocalDate atDate = LocalDate.parse(visit.visitedAt.substring(0, 10));
+		List<Integer> shinryouIds = new ArrayList<>();
+		for(ShinryouDTO src: srcList){
+			int shinryoucode = masterMap.resolveShinryouCode(src.shinryoucode, atDate);
+			ShinryouMasterDTO master = dbGateway.getShinryouMaster(shinryoucode, atDate);
+			ShinryouDTO newShinryou = new ShinryouDTO();
+			newShinryou.visitId = visitId;
+			newShinryou.shinryoucode = master.shinryoucode;
+			newShinryou = dbGateway.enterShinryou(newShinryou);
+			shinryouIds.add(newShinryou.shinryouId);
+		}
+		return shinryouIds;
+	}
+
+
 }

@@ -131,14 +131,18 @@ public class Service {
 
         @POST("batch-delete-shinryou")
         CompletableFuture<Boolean> batchDeleteShinryou(@Query("shinryou-id") List<Integer> shinryouIds);
+
+        @POST("batch-copy-shinryou")
+        CompletableFuture<List<Integer>> batchCopyShinryou(@Query("visit-id") int visitId,
+                                                           @Body List<ShinryouDTO> srcList);
     }
 
     public static ServerAPI api;
 
     static void setServerUrl(String serverUrl){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        //logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         logging.setLevel(HttpLoggingInterceptor.Level.NONE);
+        //logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
 

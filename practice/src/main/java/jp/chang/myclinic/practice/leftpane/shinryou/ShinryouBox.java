@@ -5,7 +5,9 @@ import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
+import jp.chang.myclinic.practice.MainContext;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.leftpane.LeftPaneContext;
 import jp.chang.myclinic.practice.leftpane.RecordContext;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 
@@ -117,8 +119,7 @@ public class ShinryouBox extends JPanel {
         }
         {
             JMenuItem item = new JMenuItem("全部コピー");
-            item.addActionListener(event -> {
-            });
+            item.addActionListener(event -> doCopyAll());
             popup.add(item);
         }
         {
@@ -141,6 +142,31 @@ public class ShinryouBox extends JPanel {
             popup.add(item);
         }
         popup.show(invoker, mouseEvent.getX(), mouseEvent.getY());
+    }
+
+    private void doCopyAll() {
+        int targetVisitId = MainContext.get(this).getTargetVisitId();
+        if( targetVisitId == 0 ){
+            alert("コピー先診察がありません。");
+            return;
+        }
+        if( targetVisitId == visit.visitId ){
+            alert("同じ診察にはコピーできません。");
+            return;
+        }
+        List<ShinryouDTO> srcList = elements.stream().map(s -> s.getShinryou()).collect(Collectors.toList());
+        Service.api.batchCopyShinryou(targetVisitId, srcList)
+                .thenCompose(shinryouIds -> Service.api.listShinryouFullByIds(shinryouIds))
+                .thenAccept(copiedList -> EventQueue.invokeLater(() -> {
+                    LeftPaneContext.get(this).onShinryouEntered(targetVisitId, copiedList);
+                }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
 
     private WorkArea makeDeleteSomeWorkArea() {
@@ -269,4 +295,10 @@ public class ShinryouBox extends JPanel {
         JOptionPane.showMessageDialog(this, message);
     }
 
+    public void appendShinryou(List<ShinryouFullDTO> entered) {
+        entered.forEach(this::append);
+        reorder();
+        revalidate();
+        repaint();
+    }
 }
