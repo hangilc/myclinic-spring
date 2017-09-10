@@ -15,13 +15,13 @@ class ShinryouListPanel extends JPanel {
     private Map<JCheckBox, ShinryouFullDTO> checkMap = new HashMap<>();
 
     ShinryouListPanel(int width, List<ShinryouFullDTO> shinryouList){
-        setLayout(new MigLayout("insets 0, gapy 0, gapx 0", "", ""));
+        setLayout(new MigLayout("insets 0, gapy 0, gapx 0", String.format("[%dpx!]", width), ""));
         shinryouList.forEach(shinryouFull -> {
             JCheckBox check = new JCheckBox("");
             int w = width - check.getPreferredSize().width;
             WrappedText text = new WrappedText(w, shinryouFull.master.name);
             checkMap.put(check, shinryouFull);
-            add(check);
+            add(check, "split 2");
             add(text, "wrap");
         });
     }

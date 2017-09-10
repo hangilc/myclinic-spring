@@ -125,6 +125,16 @@ public class ShinryouBox extends JPanel {
         {
             JMenuItem item = new JMenuItem("選択コピー");
             item.addActionListener(event -> {
+                int targetVisitId = MainContext.get(this).getTargetVisitId();
+                if( targetVisitId == 0 ){
+                    alert("コピー先診察がありません。");
+                    return;
+                }
+                if( targetVisitId == visit.visitId ){
+                    alert("同じ診察にはコピーできません。");
+                    return;
+                }
+                setWorkArea(makeCopySomeWorkArea(targetVisitId));
             });
             popup.add(item);
         }
@@ -144,6 +154,38 @@ public class ShinryouBox extends JPanel {
         popup.show(invoker, mouseEvent.getX(), mouseEvent.getY());
     }
 
+    private WorkArea makeCopySomeWorkArea(int targetVisitId) {
+        WorkArea wa = new WorkArea(width, "診療行為の複数コピー");
+        List<ShinryouFullDTO> shinryouList = elements.stream().map(ShinryouElement::getShinryouFull).collect(Collectors.toList());
+        CopySomePane pane = new CopySomePane(wa.getInnerColumnWidth(), shinryouList);
+        ShinryouBox self = this;
+        pane.setCallback(new CopySomePane.Callback() {
+            @Override
+            public void onCopy(List<ShinryouFullDTO> selected) {
+                List<ShinryouDTO> srcList = selected.stream().map(s -> s.shinryou).collect(Collectors.toList());
+                Service.api.batchCopyShinryou(targetVisitId, srcList)
+                        .thenCompose(shinryouIds -> Service.api.listShinryouFullByIds(shinryouIds))
+                        .thenAccept(copiedList -> EventQueue.invokeLater(() -> {
+                            LeftPaneContext.get(self).onShinryouEntered(targetVisitId, copiedList, () -> closeWorkArea());
+                        }))
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+
+            @Override
+            public void onCancel() {
+                closeWorkArea();
+            }
+        });
+        wa.setComponent(pane);
+        return wa;
+    }
+
     private void doCopyAll() {
         int targetVisitId = MainContext.get(this).getTargetVisitId();
         if( targetVisitId == 0 ){
@@ -158,7 +200,7 @@ public class ShinryouBox extends JPanel {
         Service.api.batchCopyShinryou(targetVisitId, srcList)
                 .thenCompose(shinryouIds -> Service.api.listShinryouFullByIds(shinryouIds))
                 .thenAccept(copiedList -> EventQueue.invokeLater(() -> {
-                    LeftPaneContext.get(this).onShinryouEntered(targetVisitId, copiedList);
+                    LeftPaneContext.get(this).onShinryouEntered(targetVisitId, copiedList, () -> {});
                 }))
                 .exceptionally(t -> {
                     t.printStackTrace();

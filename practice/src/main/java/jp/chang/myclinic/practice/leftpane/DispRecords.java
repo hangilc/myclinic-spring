@@ -53,10 +53,11 @@ class DispRecords extends JPanel {
         }
     }
 
-    void appendShinryou(int visitId, List<ShinryouFullDTO> entered) {
+    void appendShinryou(int visitId, List<ShinryouFullDTO> entered, Runnable uiCallback) {
         Record record = recordMap.getOrDefault(visitId, null);
         if( record != null ){
             record.appendShinryou(entered);
+            uiCallback.run();
         }
     }
 

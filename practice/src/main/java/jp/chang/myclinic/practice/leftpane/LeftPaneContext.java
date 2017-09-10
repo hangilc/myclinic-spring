@@ -9,7 +9,7 @@ import java.util.List;
 public interface LeftPaneContext {
 
     void onDrugsEntered(int visitId, List<DrugFullDTO> drugs);
-    void onShinryouEntered(int visitId, List<ShinryouFullDTO> entered);
+    void onShinryouEntered(int visitId, List<ShinryouFullDTO> entered, Runnable uiCallback);
 
     static LeftPaneContext get(Component comp){
         while( comp != null ){

@@ -82,7 +82,7 @@ public class LeftPaneWrapper extends JPanel implements LeftPaneContext {
     }
 
     @Override
-    public void onShinryouEntered(int visitId, List<ShinryouFullDTO> copied) {
-        dispRecords.appendShinryou(visitId, copied);
+    public void onShinryouEntered(int visitId, List<ShinryouFullDTO> copied, Runnable uiCallback) {
+        dispRecords.appendShinryou(visitId, copied, uiCallback);
     }
 }
