@@ -109,7 +109,7 @@ class IntraclinicController {
     private IntraclinicPostFullDTO toPostFullDTO(Post post){
         IntraclinicPostFullDTO postFullDTO = new IntraclinicPostFullDTO();
         postFullDTO.post = toPostDTO(post);
-        postFullDTO.comments = post.getComments().stream()
+        postFullDTO.comments = commentRepository.findByPostId(post.getId(), new Sort("id")).stream()
                 .map(this::toCommentDTO).collect(Collectors.toList());
         return postFullDTO;
     }
