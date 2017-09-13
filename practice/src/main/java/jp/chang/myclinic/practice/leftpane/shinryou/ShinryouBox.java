@@ -150,7 +150,7 @@ public class ShinryouBox extends JPanel {
             item.addActionListener(event -> {
                 Service.api.deleteDuplicateShinryou(visit.visitId)
                         .thenAccept(shinryouIds -> {
-                            // TODO: update UI
+                            removeShinryou(shinryouIds);
                         })
                         .exceptionally(t -> {
                             t.printStackTrace();
@@ -233,17 +233,19 @@ public class ShinryouBox extends JPanel {
                         .collect(Collectors.toList());
                 Service.api.batchDeleteShinryou(shinryouIds)
                         .thenAccept(res -> EventQueue.invokeLater(() -> {
-                            elements.removeIf(element -> {
-                                if( shinryouIds.contains(element.getShinryouId()) ){
-                                    remove(element.getComponent());
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            });
+                            removeShinryou(shinryouIds);
                             closeWorkArea();
-                            revalidate();
-                            repaint();
+//                            elements.removeIf(element -> {
+//                                if( shinryouIds.contains(element.getShinryouId()) ){
+//                                    remove(element.getComponent());
+//                                    return true;
+//                                } else {
+//                                    return false;
+//                                }
+//                            });
+//                            closeWorkArea();
+//                            revalidate();
+//                            repaint();
                         }))
                         .exceptionally(t -> {
                             t.printStackTrace();
@@ -351,6 +353,19 @@ public class ShinryouBox extends JPanel {
     public void appendShinryou(List<ShinryouFullDTO> entered) {
         entered.forEach(this::append);
         reorder();
+        revalidate();
+        repaint();
+    }
+
+    public void removeShinryou(List<Integer> shinryouIds){
+        elements.removeIf(element -> {
+            if( shinryouIds.contains(element.getShinryouId()) ){
+                remove(element.getComponent());
+                return true;
+            } else {
+                return false;
+            }
+        });
         revalidate();
         repaint();
     }
