@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.leftpane.conduct;
 
 import jp.chang.myclinic.dto.ConductFullDTO;
+import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.Link;
@@ -44,6 +45,7 @@ public class ConductBox extends JPanel {
         }
         {
             JMenuItem item = new JMenuItem("注射追加");
+            item.addActionListener(ev -> doEnterInject(visit.visitId, visit.visitedAt));
             popup.add(item);
         }
         {
@@ -62,6 +64,38 @@ public class ConductBox extends JPanel {
                 String label = form.getLabel();
                 String film = form.getFilm();
                 Service.api.enterXp(visitId, label, film)
+                        .thenCompose(conductId -> Service.api.getConductFull(conductId))
+                        .thenAccept(conductFull -> {
+                            append(conductFull);
+                            closeWorkArea();
+                            revalidate();
+                            repaint();
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+
+            @Override
+            public void onCancel() {
+                closeWorkArea();
+            }
+        });
+        wa.setComponent(form);
+        openWorkArea(wa);
+    }
+
+    private void doEnterInject(int visitId, String visitedAt){
+        WorkArea wa = new WorkArea(width, "処置注射入力");
+        EnterInjectForm form = new EnterInjectForm(wa.getInnerColumnWidth(), visitedAt.substring(0, 10));
+        form.setCallback(new EnterInjectForm.Callback() {
+            @Override
+            public void onEnter(IyakuhinMasterDTO master, double amount, String shinryouName) {
+                Service.api.enterInject(visitId, master.iyakuhincode, amount, shinryouName)
                         .thenCompose(conductId -> Service.api.getConductFull(conductId))
                         .thenAccept(conductFull -> {
                             append(conductFull);

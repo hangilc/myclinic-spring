@@ -60,10 +60,32 @@ public class ConductController {
 		);
 	}
 
+	@RequestMapping(value="/enter-inject", method=RequestMethod.POST)
+	public Integer enterInject(@RequestParam("visit-id") int visitId, @RequestParam("shinryou") String shinryouName,
+							   @RequestParam("iyakuhincode") int iyakuhincode,
+							   @RequestParam("amount") double amount){
+		VisitDTO visit = dbGateway.getVisit(visitId);
+		LocalDate at = LocalDate.parse(visit.visitedAt.substring(0, 10));
+
+		return createConduct(visitId, ConductKind.Gazou.getCode(),
+				null,
+				new ConductShinryouDTO[]{ createConductShinryou(shinryouName, at) },
+				new ConductDrugDTO[]{ createConductDrug(iyakuhincode, amount) },
+				null
+		);
+	}
+
 	private ConductShinryouDTO createConductShinryou(String name, LocalDate at){
 		ConductShinryouDTO shinryou = new ConductShinryouDTO();
 		shinryou.shinryoucode = masterMapUtil.resolveShinryouMaster(name, at).shinryoucode;
 		return shinryou;
+	}
+
+	private ConductDrugDTO createConductDrug(int iyakuhincode, double amount){
+		ConductDrugDTO drug = new ConductDrugDTO();
+		drug.iyakuhincode = iyakuhincode;
+		drug.amount = amount;
+		return drug;
 	}
 
 	private ConductKizaiDTO createConductKizai(String name, LocalDate at, double amount){
