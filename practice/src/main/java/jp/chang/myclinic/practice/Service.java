@@ -144,6 +144,12 @@ public class Service {
 
         @POST("delete-duplicate-shinryou")
         CompletableFuture<List<Integer>> deleteDuplicateShinryou(@Query("visit-id") int visitId);
+
+        @GET("get-conduct-full")
+        CompletableFuture<ConductFullDTO> getConductFull(@Query("conduct-id") int conductId);
+
+        @POST("enter-xp")
+        CompletableFuture<Integer> enterXp(@Query("visit-id") int visitId, @Query("label") String label, @Query("film") String film);
     }
 
     public static ServerAPI api;

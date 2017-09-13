@@ -4,6 +4,7 @@ import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.Link;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 
 import javax.swing.*;
@@ -21,7 +22,7 @@ public class ConductBox extends JPanel {
         this.width = width;
         setLayout(new FixedWidthLayout(width));
         menuLink = new Link("[処置]");
-        menuLink.setCallback(event -> doMenu(menuLink, event));
+        menuLink.setCallback(event -> doMenu(menuLink, event, visit));
         add(menuLink);
         conducts.forEach(this::append);
     }
@@ -31,14 +32,14 @@ public class ConductBox extends JPanel {
         add(element.getComponent());
     }
 
-    private void doMenu(Component invoker, MouseEvent event){
+    private void doMenu(Component invoker, MouseEvent event, VisitDTO visit){
         if( menuWorkArea != null ){
             return;
         }
         JPopupMenu popup = new JPopupMenu();
         {
             JMenuItem item = new JMenuItem("Ｘ線検査追加");
-            item.addActionListener(ev -> doEnterXp());
+            item.addActionListener(ev -> doEnterXp(visit.visitId));
             popup.add(item);
         }
         {
@@ -52,7 +53,7 @@ public class ConductBox extends JPanel {
         popup.show(invoker, event.getX(), event.getY());
     }
 
-    private void doEnterXp(){
+    private void doEnterXp(int visitId){
         WorkArea wa = new WorkArea(width, "Ｘ線入力");
         EnterXpForm form = new EnterXpForm();
         form.setCallback(new EnterXpForm.Callback() {
@@ -60,7 +61,21 @@ public class ConductBox extends JPanel {
             public void onEnter() {
                 String label = form.getLabel();
                 String film = form.getFilm();
-                System.out.println(label + " " + film);
+                Service.api.enterXp(visitId, label, film)
+                        .thenCompose(conductId -> Service.api.getConductFull(conductId))
+                        .thenAccept(conductFull -> {
+                            append(conductFull);
+                            closeWorkArea();
+                            revalidate();
+                            repaint();
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
             }
 
             @Override
@@ -85,4 +100,9 @@ public class ConductBox extends JPanel {
         revalidate();
         repaint();
     }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
+    }
+
 }
