@@ -57,9 +57,15 @@ class ShinryouEditor extends JPanel {
         JButton cancelButton = new JButton("キャンセル");
         cancelButton.addActionListener(event -> callback.onCancel());
         Link deleteLink = new Link("削除");
-        deleteLink.setCallback(event -> callback.onDelete());
+        deleteLink.setCallback(event -> {
+            if( !confirm("この診療行為を削除していいですか？") ){
+                return;
+            }
+            callback.onDelete();
+        });
         box.add(enterButton);
         box.add(cancelButton);
+        box.add(deleteLink);
         return box;
     }
 
@@ -92,6 +98,11 @@ class ShinryouEditor extends JPanel {
 
     private void alert(String message){
         JOptionPane.showMessageDialog(this, message);
+    }
+
+    private boolean confirm(String message){
+        int choice = JOptionPane.showConfirmDialog(this, message, "確認", JOptionPane.YES_NO_OPTION);
+        return choice == JOptionPane.YES_OPTION;
     }
 
 }

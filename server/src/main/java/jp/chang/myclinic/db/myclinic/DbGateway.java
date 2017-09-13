@@ -469,6 +469,10 @@ public class DbGateway {
         shinryouRepository.save(mapper.fromShinryouDTO(shinryouDTO));
     }
 
+    public void deleteShinryou(int shinryouId){
+        shinryouRepository.delete(shinryouId);
+    }
+
     public List<Integer> deleteDuplicateShinryou(int visitId){
         Visit visit = visitRepository.findOne(visitId);
         List<Integer> shinryouIds = new ArrayList<>();

@@ -235,17 +235,6 @@ public class ShinryouBox extends JPanel {
                         .thenAccept(res -> EventQueue.invokeLater(() -> {
                             removeShinryou(shinryouIds);
                             closeWorkArea();
-//                            elements.removeIf(element -> {
-//                                if( shinryouIds.contains(element.getShinryouId()) ){
-//                                    remove(element.getComponent());
-//                                    return true;
-//                                } else {
-//                                    return false;
-//                                }
-//                            });
-//                            closeWorkArea();
-//                            revalidate();
-//                            repaint();
                         }))
                         .exceptionally(t -> {
                             t.printStackTrace();
@@ -336,6 +325,15 @@ public class ShinryouBox extends JPanel {
 
     private void append(ShinryouFullDTO shinryouFull) {
         ShinryouElement element = new ShinryouElement(width, shinryouFull, visit);
+        element.setCallback(new ShinryouElement.Callback(){
+            @Override
+            public void onDelete() {
+                remove(element.getComponent());
+                elements.remove(element);
+                revalidate();
+                repaint();
+            }
+        });
         add(element.getComponent());
         elements.add(element);
     }

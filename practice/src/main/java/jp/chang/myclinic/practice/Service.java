@@ -120,6 +120,9 @@ public class Service {
         @POST("update-shinryou")
         CompletableFuture<Boolean> updateShinryou(@Body ShinryouDTO shinryou);
 
+        @POST("delete-shinryou")
+        CompletableFuture<Boolean> deleteShinryou(@Query("shinryou-id") int shinryouId);
+
         @GET("list-shinryou-full-by-ids")
         CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(@Query("shinryou-id") List<Integer> shinryouIds);
 

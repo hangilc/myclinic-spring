@@ -144,6 +144,12 @@ public class ShinryouController {
 		return true;
 	}
 
+	@RequestMapping(value="/delete-shinryou", method=RequestMethod.POST)
+	public boolean deleteShinryou(@RequestParam("shinryou-id") int shinryouId){
+		dbGateway.deleteShinryou(shinryouId);
+		return true;
+	}
+
 	@RequestMapping(value="/batch-delete-shinryou", method=RequestMethod.POST)
 	public boolean batchDeleteShinryou(@RequestParam(value="shinryou-id", defaultValue="") List<Integer> shinryouIds){
 		dbGateway.batchDeleteShinryou(shinryouIds);

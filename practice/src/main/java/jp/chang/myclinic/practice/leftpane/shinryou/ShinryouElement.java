@@ -18,6 +18,10 @@ import static jp.chang.myclinic.practice.leftpane.shinryou.ShinryouElement.Mode.
 
 class ShinryouElement {
 
+    interface Callback {
+        default void onDelete(){}
+    }
+
     enum Mode { DISP, EDIT };
 
     private int width;
@@ -26,6 +30,7 @@ class ShinryouElement {
     private Mode mode;
     private Component disp;
     private WorkArea editorWorkArea;
+    private Callback callback = new Callback(){};
 
     ShinryouElement(int width, ShinryouFullDTO shinryouFull, VisitDTO visit){
         this.width = width;
@@ -33,6 +38,10 @@ class ShinryouElement {
         this.visit = visit;
         this.mode = DISP;
         disp = makeDisp();
+    }
+
+    void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     Component getComponent(){
@@ -86,7 +95,7 @@ class ShinryouElement {
 
                     @Override
                     public void onDelete() {
-
+                        doDelete();
                     }
 
                     @Override
@@ -114,6 +123,20 @@ class ShinryouElement {
                 .thenAccept(newShinryouFull -> EventQueue.invokeLater(() ->{
                     reset(newShinryouFull);
                 }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
+    private void doDelete(){
+        Service.api.deleteShinryou(shinryouFull.shinryou.shinryouId)
+                .thenAccept(ok -> {
+                    callback.onDelete();
+                })
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> {
