@@ -64,26 +64,33 @@ class SearchAndAddPane extends JPanel {
     }
 
     private void setupSearch(){
-        searchResult.setCellRenderer((list, result, index, isSelected, cellHasFocus) -> {
-            JLabel label = new JLabel();
-            label.setText(result.name);
-            if( isSelected ){
-                label.setBackground(list.getSelectionBackground());
-                label.setForeground(list.getSelectionForeground());
-            } else {
-                label.setBackground(list.getBackground());
-                label.setForeground(list.getForeground());
-            }
-            label.setOpaque(true);
-            return label;
-        });
-        searchResult.addListSelectionListener(event -> {
-            if( !event.getValueIsAdjusting() ){
-                ShinryouMasterDTO master = searchResult.getSelectedValue();
-                if( master != null ){
-                    dispName.setText(master.name);
-                    selectedMaster = master;
-                }
+//        searchResult.setCellRenderer((list, result, index, isSelected, cellHasFocus) -> {
+//            JLabel label = new JLabel();
+//            label.setText(result.name);
+//            if( isSelected ){
+//                label.setBackground(list.getSelectionBackground());
+//                label.setForeground(list.getSelectionForeground());
+//            } else {
+//                label.setBackground(list.getBackground());
+//                label.setForeground(list.getForeground());
+//            }
+//            label.setOpaque(true);
+//            return label;
+//        });
+//        searchResult.addListSelectionListener(event -> {
+//            if( !event.getValueIsAdjusting() ){
+//                ShinryouMasterDTO master = searchResult.getSelectedValue();
+//                if( master != null ){
+//                    dispName.setText(master.name);
+//                    selectedMaster = master;
+//                }
+//            }
+//        });
+        searchResult.setCallback(new SearchResult.Callback() {
+            @Override
+            public void onSelected(ShinryouMasterDTO master) {
+                dispName.setText(master.name);
+                selectedMaster = master;
             }
         });
         searchButton.addActionListener(event -> {

@@ -117,6 +117,9 @@ public class Service {
         @POST("enter-shinryou")
         CompletableFuture<Integer> enterShinryou(@Body ShinryouDTO shinryou);
 
+        @POST("update-shinryou")
+        CompletableFuture<Boolean> updateShinryou(@Body ShinryouDTO shinryou);
+
         @GET("list-shinryou-full-by-ids")
         CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(@Query("shinryou-id") List<Integer> shinryouIds);
 

@@ -465,6 +465,10 @@ public class DbGateway {
         return mapper.toShinryouDTO(shinryouRepository.save(shinryou));
     }
 
+    public void updateShinryou(ShinryouDTO shinryouDTO){
+        shinryouRepository.save(mapper.fromShinryouDTO(shinryouDTO));
+    }
+
     public List<Integer> deleteDuplicateShinryou(int visitId){
         Visit visit = visitRepository.findOne(visitId);
         List<Integer> shinryouIds = new ArrayList<>();
