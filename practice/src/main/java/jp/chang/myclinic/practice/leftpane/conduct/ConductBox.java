@@ -5,6 +5,7 @@ import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.Link;
+import jp.chang.myclinic.practice.MainContext;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 
@@ -50,6 +51,15 @@ public class ConductBox extends JPanel {
         }
         {
             JMenuItem item = new JMenuItem("全部コピー");
+            item.addActionListener(ev -> {
+                MainContext mainContext = MainContext.get(this);
+                int targetVisitId = mainContext.getTargetVisitId();
+                if( targetVisitId > 0 ){
+                    doCopyAll(targetVisitId, visit.visitId);
+                } else {
+                    alert("コピー先が設定されていません。");
+                }
+            });
             popup.add(item);
         }
         popup.show(invoker, event.getX(), event.getY());
@@ -119,6 +129,10 @@ public class ConductBox extends JPanel {
         });
         wa.setComponent(form);
         openWorkArea(wa);
+    }
+
+    private void doCopyAll(int targetVisitId, int sourceVisitId){
+
     }
 
     private void openWorkArea(WorkArea wa){

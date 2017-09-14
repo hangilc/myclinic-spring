@@ -4,6 +4,7 @@ import jp.chang.myclinic.MasterMapUtil;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.mastermap.MasterMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/json")
@@ -73,6 +76,54 @@ public class ConductController {
 				new ConductDrugDTO[]{ createConductDrug(iyakuhincode, amount) },
 				null
 		);
+	}
+
+	@RequestMapping(value="/copy-all-conducts", method=RequestMethod.POST)
+	public List<Integer> copyAllConducts(@RequestParam("target-visit-id") int targetVisitId,
+										 @RequestParam("source-visit-id") int sourceVisitId){
+		List<ConductDTO> sourceConducts = dbGateway.listConducts(sourceVisitId);
+		List<Integer> newConductIds = new ArrayList<>();
+		VisitDTO targetVisit = dbGateway.getVisit(targetVisitId);
+		LocalDate at = LocalDate.parse(targetVisit.visitedAt.substring(0, 10));
+		for(ConductDTO source: sourceConducts){
+			List<ConductShinryouDTO> shinryouList = dbGateway.listConductShinryou(source.conductId).stream()
+					.map(shinryou -> {
+						ConductShinryouDTO newShinryou = ConductShinryouDTO.copy(shinryou);
+						newShinryou.conductId = 0;
+						newShinryou.conductShinryouId = 0;
+						newShinryou.shinryoucode =
+								masterMapUtil.resolveShinryouMaster(shinryou.shinryoucode, at).shinryoucode;
+						return newShinryou;
+					})
+					.collect(Collectors.toList());
+			List<ConductDrugDTO> drugs = dbGateway.listConductDrug(source.conductId).stream()
+					.map(drug -> {
+						ConductDrugDTO newDrug = ConductDrugDTO.copy(drug);
+						newDrug.conductId = 0;
+						newDrug.conductDrugId = 0;
+						return newDrug;
+					})
+					.collect(Collectors.toList());
+
+			List<ConductKizaiDTO> kizaiList = dbGateway.listConductKizai(source.conductId).stream()
+					.map(kizai -> {
+						ConductKizaiDTO newKizai = ConductKizaiDTO.copy(kizai);
+						newKizai.conductId = 0;
+						newKizai.conductKizaiId = 0;
+						return newKizai;
+					})
+					.collect(Collectors.toList());
+			int conductId = createConduct(targetVisitId,
+					source.kind,
+					dbGateway.findGazouLabelString(source.conductId),
+					shinryouList.toArray(new ConductShinryouDTO[]{}),
+					drugs.toArray(new ConductDrugDTO[]{}),
+					kizaiList.toArray(new ConductKizaiDTO[]{})
+			);
+			newConductIds.add(conductId);
+		}
+		return newConductIds;
+
 	}
 
 	private ConductShinryouDTO createConductShinryou(String name, LocalDate at){

@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface ConductRepository extends CrudRepository<Conduct, Integer> {
 
-	List<Conduct> findByVisitId(Integer visitId);
-
 	@Query("select c from Conduct c where c.conductId in :conductIds")
     List<Conduct> listConductByIds(@Param("conductIds") List<Integer> conductIds, Sort sort);
+
+	List<Conduct> findByVisitId(int visitId, Sort sort);
 }

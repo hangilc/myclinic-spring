@@ -1,6 +1,7 @@
 package jp.chang.myclinic;
 
 import jp.chang.myclinic.db.myclinic.DbGateway;
+import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.KizaiMasterDTO;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import jp.chang.myclinic.mastermap.MasterMap;
@@ -18,36 +19,65 @@ public class MasterMapUtil {
     @Autowired
     private DbGateway dbGateway;
 
-    public ShinryouMasterDTO resolveShinryouMaster(String name, LocalDate at){
-        Optional<Integer> optShinryoucode = masterMap.getShinryoucodeByName(name);
-        Optional<ShinryouMasterDTO> opt;
-        if( optShinryoucode.isPresent() ){
-            int shinryoucode = masterMap.resolveShinryouCode(optShinryoucode.get(), at);
-            opt = dbGateway.findShinryouMasterByShinryoucode(shinryoucode, at);
-        } else {
-            opt = dbGateway.findShinryouMasterByName(name, at);
-        }
+    public ShinryouMasterDTO resolveShinryouMaster(int shinryoucode, LocalDate at){
+        int newShinryoucode = masterMap.resolveShinryouCode(shinryoucode, at);
+        Optional<ShinryouMasterDTO> opt = dbGateway.findShinryouMasterByShinryoucode(newShinryoucode, at);
         if( opt.isPresent() ){
             return opt.get();
         } else {
-            throw new RuntimeException("cannot find master for " + name);
+            throw new RuntimeException("cannot find master for " + shinryoucode);
+        }
+    }
+
+    public ShinryouMasterDTO resolveShinryouMaster(String name, LocalDate at){
+        Optional<Integer> optShinryoucode = masterMap.getShinryoucodeByName(name);
+        if( optShinryoucode.isPresent() ){
+            return resolveShinryouMaster(optShinryoucode.get(), at);
+        } else {
+            Optional<ShinryouMasterDTO> opt;
+            opt = dbGateway.findShinryouMasterByName(name, at);
+            if( opt.isPresent() ){
+                return opt.get();
+            } else {
+                throw new RuntimeException("cannot find master for " + name);
+            }
+        }
+    }
+
+    public KizaiMasterDTO resolveKizaiMaster(int kizaicode, LocalDate at){
+        int newKizaicode = masterMap.resolveKizaiCode(kizaicode, at);
+        Optional<KizaiMasterDTO> opt = dbGateway.findKizaiMasterByKizaicode(newKizaicode, at);
+        if( opt.isPresent() ){
+            return opt.get();
+        } else {
+            throw new RuntimeException("cannot find master for " + kizaicode);
         }
     }
 
     public KizaiMasterDTO resolveKizaiMaster(String name, LocalDate at){
         Optional<Integer> optKizaicode = masterMap.getKizaicodeByName(name);
-        Optional<KizaiMasterDTO> opt;
         if( optKizaicode.isPresent() ){
-            int kizaicode = masterMap.resolveKizaiCode(optKizaicode.get(), at);
-            opt = dbGateway.findKizaiMasterByKizaicode(kizaicode, at);
+            return resolveKizaiMaster(optKizaicode.get(), at);
         } else {
+            Optional<KizaiMasterDTO> opt;
             opt = dbGateway.findKizaiMasterByName(name, at);
+            if( opt.isPresent() ){
+                return opt.get();
+            } else {
+                throw new RuntimeException("cannot find master for " + name);
+            }
         }
+    }
+
+    public IyakuhinMasterDTO resolveIyakuhinMaster(int iyakuhincode, LocalDate at){
+        int newIyakuhincode = masterMap.resolveIyakuhinCode(iyakuhincode, at);
+        Optional<IyakuhinMasterDTO> opt = dbGateway.findIyakuhinMasterByIyakuhincode(newIyakuhincode, at);
         if( opt.isPresent() ){
             return opt.get();
         } else {
-            throw new RuntimeException("cannot find master for " + name);
+            throw new RuntimeException("cannot find master for " + iyakuhincode);
         }
     }
+
 
 }

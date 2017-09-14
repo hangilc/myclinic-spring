@@ -726,6 +726,11 @@ public class DbGateway {
         }
     }
 
+    public String findGazouLabelString(int conductId){
+        GazouLabelDTO gazouLabelDTO = findGazouLabel(conductId);
+        return gazouLabelDTO == null ? null : gazouLabelDTO.label;
+    }
+
     public void enterGazouLabel(GazouLabelDTO gazoulabelDTO){
         GazouLabel gazoulabel = mapper.fromGazouLabelDTO(gazoulabelDTO);
         gazouLabelRepository.save(gazoulabel);
@@ -738,7 +743,7 @@ public class DbGateway {
     }
 
     public List<ConductDTO> listConducts(int visitId){
-        return conductRepository.findByVisitId(visitId).stream()
+        return conductRepository.findByVisitId(visitId, new Sort("conductID")).stream()
             .map(mapper::toConductDTO)
             .collect(Collectors.toList());
     }
@@ -747,6 +752,11 @@ public class DbGateway {
         return listConducts(visitId).stream()
             .map(this::extendConduct)
             .collect(Collectors.toList());
+    }
+
+    public List<ConductShinryouDTO> listConductShinryou(int conductId){
+        return conductShinryouRepository.findByConductId(conductId, new Sort("conductShinryouId")).stream()
+                .map(mapper::toConductShinryouDTO).collect(Collectors.toList());
     }
 
     public List<ConductShinryouFullDTO> listConductShinryouFull(int conductId){
@@ -761,6 +771,11 @@ public class DbGateway {
         return conductShinryou.getConductShinryouId();
     }
 
+    public List<ConductDrugDTO> listConductDrug(int conductId){
+        return conductDrugRepository.findByConductId(conductId, new Sort("conductDrugId")).stream()
+                .map(mapper::toConductDrugDTO).collect(Collectors.toList());
+    }
+
     public List<ConductDrugFullDTO> listConductDrugFull(int conductId){
         return conductDrugRepository.findByConductIdWithMaster(conductId).stream()
         .map(this::resulToConductDrugFullDTO)
@@ -771,6 +786,11 @@ public class DbGateway {
         ConductDrug conductDrug = mapper.fromConductDrugDTO(conductDrugDTO);
         conductDrug = conductDrugRepository.save(conductDrug);
         return conductDrug.getConductDrugId();
+    }
+
+    public List<ConductKizaiDTO> listConductKizai(int conductId){
+        return conductKizaiRepository.findByConductId(conductId, new Sort("conductKizaiId")).stream()
+                .map(mapper::toConductKizaiDTO).collect(Collectors.toList());
     }
 
     public List<ConductKizaiFullDTO> listConductKizaiFull(int conductId){
@@ -1027,6 +1047,11 @@ public class DbGateway {
 
     public Optional<IyakuhinMasterDTO> findIyakuhinMaster(int iyakuhincode, String at){
         return iyakuhinMasterRepository.tryFind(iyakuhincode, at).map(mapper::toIyakuhinMasterDTO);
+    }
+
+    public Optional<IyakuhinMasterDTO> findIyakuhinMasterByIyakuhincode(int iyakuhincode, LocalDate at){
+        Date date = Date.valueOf(at);
+        return iyakuhinMasterRepository.findByIyakuhincodeAndDate(iyakuhincode, date).map(mapper::toIyakuhinMasterDTO);
     }
 
     public Integer getLastHotlineId(){

@@ -30,18 +30,6 @@ public class Conduct {
 		this.visitId = visitId;
 	}
 
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="visit_id", insertable=false, updatable=false)
-	private Visit visit;
-
-	public Visit getVisit(){
-		return visit;
-	}
-
-	public void setVisit(Visit visit){
-		this.visit = visit;
-	}
-
 	private Integer kind;
 
 	public Integer getKind(){
@@ -51,19 +39,6 @@ public class Conduct {
 	public void setKind(Integer kind){
 		this.kind = kind;
 	}
-
-	// @OneToOne(fetch=FetchType.EAGER)
-	// @JoinColumn(name="id", insertable=false, updatable=false)
-	// @NotFound(action=NotFoundAction.IGNORE)
-	// private GazouLabel gazouLabel;
-
-	// public GazouLabel getGazouLabel(){
-	// 	return gazouLabel;
-	// }
-
-	// public void setGazouLabel(GazouLabel gazouLabel){
-	// 	this.gazouLabel = gazouLabel;
-	// }
 
 	@Override
 	public String toString(){
