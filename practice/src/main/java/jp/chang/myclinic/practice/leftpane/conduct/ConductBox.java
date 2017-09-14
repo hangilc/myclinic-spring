@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.leftpane.conduct;
 
+import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.VisitDTO;
@@ -7,6 +8,7 @@ import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.MainContext;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.leftpane.LeftPaneContext;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 
 import javax.swing.*;
@@ -32,6 +34,12 @@ public class ConductBox extends JPanel {
     public void append(ConductFullDTO conductFull){
         ConductElement element = new ConductElement(width, conductFull);
         add(element.getComponent());
+    }
+
+    public void appendConduct(List<ConductFullDTO> entered) {
+        entered.forEach(this::append);
+        revalidate();
+        repaint();
     }
 
     private void doMenu(Component invoker, MouseEvent event, VisitDTO visit){
@@ -105,7 +113,15 @@ public class ConductBox extends JPanel {
         form.setCallback(new EnterInjectForm.Callback() {
             @Override
             public void onEnter(IyakuhinMasterDTO master, double amount, String shinryouName) {
-                Service.api.enterInject(visitId, master.iyakuhincode, amount, shinryouName)
+                int conductKindCode;
+                if( "皮下筋注".equals(shinryouName) ){
+                    conductKindCode = ConductKind.HikaChuusha.getCode();
+                } else if( "静注".equals(shinryouName) ){
+                    conductKindCode = ConductKind.JoumyakuChuusha.getCode();
+                } else {
+                    throw new RuntimeException("cannot find conduct kind for " + shinryouName);
+                }
+                Service.api.enterInject(visitId, conductKindCode, master.iyakuhincode, amount)
                         .thenCompose(conductId -> Service.api.getConductFull(conductId))
                         .thenAccept(conductFull -> {
                             append(conductFull);
@@ -132,7 +148,18 @@ public class ConductBox extends JPanel {
     }
 
     private void doCopyAll(int targetVisitId, int sourceVisitId){
-
+        Service.api.copyAllConducts(targetVisitId, sourceVisitId)
+                .thenCompose(conductIds -> Service.api.listConductFullByIds(conductIds))
+                .thenAccept(newConducts -> EventQueue.invokeLater(() ->{
+                    LeftPaneContext.get(this).onConductEntered(targetVisitId, newConducts, () -> {});
+                }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
 
     private void openWorkArea(WorkArea wa){

@@ -84,6 +84,10 @@ class Record extends JPanel implements RecordContext {
         shinryouBox.appendShinryou(entered);
     }
 
+    public void appendConduct(List<ConductFullDTO> entered) {
+        conductBox.appendConduct(entered);
+    }
+
     private JComponent makeRightColumn(VisitFull2DTO fullVisit){
         JPanel panel = new JPanel(new FixedWidthLayout(colWidth)){
             @Override

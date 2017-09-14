@@ -29,6 +29,6 @@ public interface IyakuhinMasterRepository extends CrudRepository<IyakuhinMaster,
 	@Query("select m from IyakuhinMaster m where m.iyakuhincode = :iyakuhincode " +
 			" and m.validFrom <= DATE(:at) " +
 			" and (m.validUpto = '0000-00-00' or m.validUpto >= DATE(:at) )")
-	IyakuhinMaster findByIyakuhincodeAndDate(@Param("iyakuhincode") int iyakuhincode,
+	Optional<IyakuhinMaster> findByIyakuhincodeAndDate(@Param("iyakuhincode") int iyakuhincode,
 											 @Param("at") Date at);
 }

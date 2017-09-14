@@ -152,8 +152,14 @@ public class Service {
         CompletableFuture<Integer> enterXp(@Query("visit-id") int visitId, @Query("label") String label, @Query("film") String film);
 
         @POST("enter-inject")
-        CompletableFuture<Integer> enterInject(@Query("visit-id") int visitId, @Query("iyakuhincode") int iyakuhincode,
-                                               @Query("amount") double amount, @Query("shinryou") String shinryouName);
+        CompletableFuture<Integer> enterInject(@Query("visit-id") int visitId,
+                                               @Query("kind") int conductKindCode,
+                                               @Query("iyakuhincode") int iyakuhincode,
+                                               @Query("amount") double amount);
+
+        @POST("copy-all-conducts")
+        CompletableFuture<List<Integer>> copyAllConducts(@Query("target-visit-id") int targetVisitId,
+                                                         @Query("source-visit-id") int sourceVisitId);
     }
 
     public static ServerAPI api;

@@ -743,7 +743,7 @@ public class DbGateway {
     }
 
     public List<ConductDTO> listConducts(int visitId){
-        return conductRepository.findByVisitId(visitId, new Sort("conductID")).stream()
+        return conductRepository.findByVisitId(visitId, new Sort("conductId")).stream()
             .map(mapper::toConductDTO)
             .collect(Collectors.toList());
     }

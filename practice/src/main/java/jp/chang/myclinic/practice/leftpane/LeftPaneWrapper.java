@@ -1,9 +1,6 @@
 package jp.chang.myclinic.practice.leftpane;
 
-import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.ShinryouFullDTO;
-import jp.chang.myclinic.dto.VisitFull2PageDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.MainExecContext;
 import net.miginfocom.swing.MigLayout;
 
@@ -84,5 +81,10 @@ public class LeftPaneWrapper extends JPanel implements LeftPaneContext {
     @Override
     public void onShinryouEntered(int visitId, List<ShinryouFullDTO> copied, Runnable uiCallback) {
         dispRecords.appendShinryou(visitId, copied, uiCallback);
+    }
+
+    @Override
+    public void onConductEntered(int visitId, List<ConductFullDTO> entered, Runnable uiCallback) {
+        dispRecords.appendConduct(visitId, entered, uiCallback);
     }
 }

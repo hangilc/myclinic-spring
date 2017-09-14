@@ -4,7 +4,6 @@ import jp.chang.myclinic.MasterMapUtil;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.mastermap.MasterMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,15 +63,30 @@ public class ConductController {
 	}
 
 	@RequestMapping(value="/enter-inject", method=RequestMethod.POST)
-	public Integer enterInject(@RequestParam("visit-id") int visitId, @RequestParam("shinryou") String shinryouName,
+	public Integer enterInject(@RequestParam("visit-id") int visitId,
+							   @RequestParam("kind") int conductKindCode,
 							   @RequestParam("iyakuhincode") int iyakuhincode,
 							   @RequestParam("amount") double amount){
 		VisitDTO visit = dbGateway.getVisit(visitId);
 		LocalDate at = LocalDate.parse(visit.visitedAt.substring(0, 10));
+		ConductKind kind = ConductKind.fromCode(conductKindCode);
+		List<ConductShinryouDTO> shinryouList = new ArrayList<>();
+		switch(kind){
+			case HikaChuusha: {
+				shinryouList.add(createConductShinryou("皮下筋注", at));
+				break;
+			}
+			case JoumyakuChuusha: {
+				shinryouList.add(createConductShinryou("静注", at));
+				break;
+			}
+			default: throw new RuntimeException("invalid conduct kind: " + conductKindCode);
+		}
 
-		return createConduct(visitId, ConductKind.Gazou.getCode(),
+		return createConduct(visitId,
+				kind.getCode(),
 				null,
-				new ConductShinryouDTO[]{ createConductShinryou(shinryouName, at) },
+				shinryouList.toArray(new ConductShinryouDTO[]{}),
 				new ConductDrugDTO[]{ createConductDrug(iyakuhincode, amount) },
 				null
 		);

@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.leftpane;
 
+import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
@@ -57,6 +58,14 @@ class DispRecords extends JPanel {
         Record record = recordMap.getOrDefault(visitId, null);
         if( record != null ){
             record.appendShinryou(entered);
+            uiCallback.run();
+        }
+    }
+
+    public void appendConduct(int visitId, List<ConductFullDTO> entered, Runnable uiCallback) {
+        Record record = recordMap.getOrDefault(visitId, null);
+        if( record != null ){
+            record.appendConduct(entered);
             uiCallback.run();
         }
     }
