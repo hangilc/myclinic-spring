@@ -7,29 +7,41 @@ import jp.chang.myclinic.dto.ConductKizaiFullDTO;
 import jp.chang.myclinic.dto.ConductShinryouFullDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.WrappedText;
+import jp.chang.myclinic.practice.leftpane.WorkArea;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.KizaiUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 class ConductElement {
 
+    private enum Mode { DISP, EDIT };
+
     private int width;
+    private Mode mode;
     private ConductFullDTO conductFull;
     private Component disp;
+    private WorkArea editor;
 
     ConductElement(int width, ConductFullDTO conductFull){
         this.width = width;
+        this.mode = Mode.DISP;
         this.conductFull = conductFull;
-        this.disp = makeDisp();
+        this.disp = addClickListener(makeDisp(conductFull));
     }
 
     Component getComponent(){
-        return this.disp;
+        switch(mode){
+            case DISP: return this.disp;
+            case EDIT: return this.editor;
+            default: throw new RuntimeException("invalid mode");
+        }
     }
 
-    private Component makeDisp(){
+    private Component makeDisp(ConductFullDTO conductFull){
         JPanel panel = new JPanel(new FixedWidthLayout(width));
         {
             String kindRep;
@@ -42,20 +54,56 @@ class ConductElement {
             panel.add(new JLabel(kindRep));
         }
         if( conductFull.gazouLabel != null ){
-            panel.add(new WrappedText(width, conductFull.gazouLabel.label));
+            panel.add(addClickListener(new WrappedText(width, conductFull.gazouLabel.label)));
         }
         for(ConductShinryouFullDTO shinryou: conductFull.conductShinryouList){
             String label = shinryou.master.name;
-            panel.add(new WrappedText(width, label));
+            panel.add(addClickListener(new WrappedText(width, label)));
         }
         for(ConductDrugFullDTO drug: conductFull.conductDrugs){
             String label = DrugUtil.conductDrugRep(drug);
-            panel.add(new WrappedText(width, label));
+            panel.add(addClickListener(new WrappedText(width, label)));
         }
         for(ConductKizaiFullDTO kizai: conductFull.conductKizaiList){
             String label = KizaiUtil.kizaiRep(kizai);
-            panel.add(new WrappedText(width, label));
+            panel.add(addClickListener(new WrappedText(width, label)));
         }
         return panel;
+    }
+
+    private Component addClickListener(Component comp){
+        comp.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openEditor();
+            }
+        });
+        return comp;
+    }
+
+    private void openEditor(){
+        WorkArea wa = new WorkArea(width, "処置の編集");
+        ConductEditor conductEditor = new ConductEditor(wa.getInnerColumnWidth(), conductFull);
+        conductEditor.setCallback(new ConductEditor.Callback(){
+            @Override
+            public void onClose() {
+                closeEditor();
+            }
+        });
+        wa.setComponent(conductEditor);
+        Container parent = this.disp.getParent();
+        parent.add(wa, new FixedWidthLayout.Replace(this.disp));
+        editor = wa;
+        mode = Mode.EDIT;
+        parent.revalidate();
+        parent.repaint();
+    }
+
+    private void closeEditor(){
+        Container parent = editor.getParent();
+        this.disp = makeDisp(conductFull);
+        parent.add(this.disp, new FixedWidthLayout.Replace(editor));
+        parent.revalidate();
+        parent.repaint();
     }
 }
