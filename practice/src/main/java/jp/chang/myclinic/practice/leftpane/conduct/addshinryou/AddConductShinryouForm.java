@@ -1,8 +1,10 @@
 package jp.chang.myclinic.practice.leftpane.conduct.addshinryou;
 
+import jp.chang.myclinic.practice.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class AddConductShinryouForm extends JPanel {
 
@@ -26,10 +28,36 @@ public class AddConductShinryouForm extends JPanel {
                 callback.onCancel();
             }
         });
-        add(commandBox, "growx");
+        SearchBox searchBox = new SearchBox();
+        searchBox.setCallback(new SearchBox.Callback() {
+            @Override
+            public void onSearch(String searchText) {
+                if( searchText.isEmpty() ){
+                    return;
+                }
+                Service.api.searchShinryouMaster(searchText, at)
+                        .thenAccept(masters -> {
+
+                        })
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+        });
+        add(commandBox, "growx, wrap");
+        add(searchBox, "growx, wrap");
     }
 
     public void setCallback(Callback callback){
         this.callback = callback;
     }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
+    }
+    
 }
