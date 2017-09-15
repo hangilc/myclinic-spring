@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.leftpane.conduct.addshinryou;
 
+import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import jp.chang.myclinic.practice.Service;
 import net.miginfocom.swing.MigLayout;
 
@@ -28,6 +29,7 @@ public class AddConductShinryouForm extends JPanel {
                 callback.onCancel();
             }
         });
+        SearchResult searchResult = new SearchResult();
         SearchBox searchBox = new SearchBox();
         searchBox.setCallback(new SearchBox.Callback() {
             @Override
@@ -36,9 +38,9 @@ public class AddConductShinryouForm extends JPanel {
                     return;
                 }
                 Service.api.searchShinryouMaster(searchText, at)
-                        .thenAccept(masters -> {
-
-                        })
+                        .thenAccept(masters -> EventQueue.invokeLater(() ->{
+                            searchResult.setListData(masters.toArray(new ShinryouMasterDTO[]{}));
+                        }))
                         .exceptionally(t -> {
                             t.printStackTrace();
                             EventQueue.invokeLater(() -> {
@@ -48,6 +50,7 @@ public class AddConductShinryouForm extends JPanel {
                         });
             }
         });
+
         add(commandBox, "growx, wrap");
         add(searchBox, "growx, wrap");
     }
@@ -59,5 +62,5 @@ public class AddConductShinryouForm extends JPanel {
     private void alert(String message){
         JOptionPane.showMessageDialog(this, message);
     }
-    
+
 }
