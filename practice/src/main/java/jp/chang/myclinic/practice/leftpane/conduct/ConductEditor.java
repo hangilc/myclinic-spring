@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.leftpane.conduct;
 
+import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
@@ -7,6 +8,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 class ConductEditor extends JPanel {
 
@@ -21,11 +23,38 @@ class ConductEditor extends JPanel {
     ConductEditor(int width, ConductFullDTO conductFull){
         this.conductFull = conductFull;
         setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
+        add(makeSubmenu(), "wrap");
+        add(makeKindArea(), "wrap");
         add(makeCommandBox(), "growx");
     }
 
     void setCallback(Callback callback){
         this.callback = callback;
+    }
+
+    private Component makeSubmenu(){
+        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+        Link addShinryouLink = new Link("診療行為の追加");
+        Link addDrugLink = new Link("薬剤の追加");
+        Link addKizaiLink = new Link("器材の追加");
+        panel.add(addShinryouLink);
+        panel.add(new JLabel("|"));
+        panel.add(addDrugLink);
+        panel.add(new JLabel("|"));
+        panel.add(addKizaiLink);
+        return panel;
+    }
+
+    private Component makeKindArea(){
+        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+        JComboBox<String> combo = new JComboBox<>(getConductKindLabels());
+        panel.add(new JLabel("種類："));
+        panel.add(combo);
+        return panel;
+    }
+
+    private String[] getConductKindLabels(){
+        return Arrays.stream(ConductKind.values()).map(ConductKind::getKanjiRep).toArray(String[]::new);
     }
 
     private Component makeCommandBox(){
