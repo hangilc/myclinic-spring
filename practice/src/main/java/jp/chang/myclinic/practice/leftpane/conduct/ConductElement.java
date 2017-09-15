@@ -1,10 +1,7 @@
 package jp.chang.myclinic.practice.leftpane.conduct;
 
 import jp.chang.myclinic.consts.ConductKind;
-import jp.chang.myclinic.dto.ConductDrugFullDTO;
-import jp.chang.myclinic.dto.ConductFullDTO;
-import jp.chang.myclinic.dto.ConductKizaiFullDTO;
-import jp.chang.myclinic.dto.ConductShinryouFullDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.WrappedText;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
@@ -23,11 +20,13 @@ class ConductElement {
     private int width;
     private Mode mode;
     private ConductFullDTO conductFull;
+    private VisitDTO visit;
     private Component disp;
     private WorkArea editor;
 
-    ConductElement(int width, ConductFullDTO conductFull){
+    ConductElement(int width, ConductFullDTO conductFull, VisitDTO visit){
         this.width = width;
+        this.visit = visit;
         this.mode = Mode.DISP;
         this.conductFull = conductFull;
         this.disp = addClickListener(makeDisp(conductFull));
@@ -87,7 +86,7 @@ class ConductElement {
 
     private void openEditor(){
         WorkArea wa = new WorkArea(width, "処置の編集");
-        ConductEditor conductEditor = new ConductEditor(wa.getInnerColumnWidth(), conductFull);
+        ConductEditor conductEditor = new ConductEditor(wa.getInnerColumnWidth(), conductFull, visit);
         conductEditor.setCallback(new ConductEditor.Callback(){
             @Override
             public void onDelete() {

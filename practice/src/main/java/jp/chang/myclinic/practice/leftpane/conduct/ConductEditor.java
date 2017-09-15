@@ -5,6 +5,8 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.WrappedText;
+import jp.chang.myclinic.practice.leftpane.WorkArea;
+import jp.chang.myclinic.practice.leftpane.conduct.addshinryou.AddConductShinryouForm;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.KizaiUtil;
 import net.miginfocom.swing.MigLayout;
@@ -23,14 +25,20 @@ class ConductEditor extends JPanel {
 
     private int width;
     private ConductFullDTO conductFull;
+    private VisitDTO visit;
     private JComboBox<ConductKind> kindCombo;
+    private Container subWorkAreaContainer;
     private Callback callback = new Callback(){};
 
-    ConductEditor(int width, ConductFullDTO conductFull){
+    ConductEditor(int width, ConductFullDTO conductFull, VisitDTO visit){
         this.width = width;
         this.conductFull = conductFull;
+        this.visit = visit;
         setLayout(new MigLayout("insets 0, hidemode 3", String.format("[%dpx!]", width), ""));
+        subWorkAreaContainer = new JPanel(new MigLayout("insets 0", "", ""));
+        subWorkAreaContainer.setVisible(false);
         add(makeSubmenu(), "wrap");
+        add(subWorkAreaContainer, "growx, wrap");
         add(makeKindArea(), "wrap");
         add(makeGazouLabelArea(), "wrap");
         add(makeShinryouArea(), "wrap");
@@ -46,6 +54,7 @@ class ConductEditor extends JPanel {
     private Component makeSubmenu(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         Link addShinryouLink = new Link("診療行為の追加");
+        addShinryouLink.setCallback(evt -> doAddShinryou(panel));
         Link addDrugLink = new Link("薬剤の追加");
         Link addKizaiLink = new Link("器材の追加");
         panel.add(addShinryouLink);
@@ -168,6 +177,37 @@ class ConductEditor extends JPanel {
         panel.add(closeButton);
         panel.add(deleteLink);
         return panel;
+    }
+
+    private void doAddShinryou(Container submenu){
+        WorkArea wa = new WorkArea(width, "診療行為の追加");
+        String at = visit.visitedAt.substring(0, 10);
+        AddConductShinryouForm form = new AddConductShinryouForm(wa.getInnerColumnWidth(), at);
+        form.setCallback(new AddConductShinryouForm.Callback() {
+            @Override
+            public void onCancel() {
+                removeShinryouWorkArea(wa);
+            }
+        });
+        wa.setComponent(form);
+        addSubWorkArea(wa, submenu);
+    }
+
+    private void addSubWorkArea(WorkArea wa, Container submenu){
+        Container parent = subWorkAreaContainer;
+        parent.add(wa, "newline");
+        parent.setVisible(true);
+        parent.revalidate();
+        parent.repaint();
+    }
+
+    private void removeShinryouWorkArea(WorkArea wa){
+        subWorkAreaContainer.remove(wa);
+        if( subWorkAreaContainer.getComponents().length == 0 ){
+            subWorkAreaContainer.setVisible(false);
+        }
+        revalidate();
+        repaint();
     }
 
     private void doDelete(){

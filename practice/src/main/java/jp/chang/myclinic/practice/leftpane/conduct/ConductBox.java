@@ -21,11 +21,13 @@ public class ConductBox extends JPanel implements ConductBoxContext {
 
     private int width;
     Link menuLink;
+    private VisitDTO visit;
     private WorkArea menuWorkArea;
     private List<ConductElement> elements = new ArrayList<>();
 
     public ConductBox(int width, List<ConductFullDTO> conducts, VisitDTO visit){
         this.width = width;
+        this.visit = visit;
         setLayout(new FixedWidthLayout(width));
         menuLink = new Link("[処置]");
         menuLink.setCallback(event -> doMenu(menuLink, event, visit));
@@ -34,7 +36,7 @@ public class ConductBox extends JPanel implements ConductBoxContext {
     }
 
     public void append(ConductFullDTO conductFull){
-        ConductElement element = new ConductElement(width, conductFull);
+        ConductElement element = new ConductElement(width, conductFull, visit);
         add(element.getComponent());
         elements.add(element);
     }
