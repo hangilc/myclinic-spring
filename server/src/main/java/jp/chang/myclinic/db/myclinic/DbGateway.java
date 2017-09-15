@@ -815,6 +815,15 @@ public class DbGateway {
         return kizaiMasterRepository.findByKizaicodeAndDate(kizaicode, date).map(mapper::toKizaiMasterDTO);
     }
 
+    public void deleteConduct(int conductId) {
+        Optional<GazouLabel> optGazouLabel = gazouLabelRepository.findOneByConductId(conductId);
+        optGazouLabel.ifPresent(gazouLabelRepository::delete);
+        conductShinryouRepository.findByConductId(conductId).forEach(conductShinryouRepository::delete);
+        conductDrugRepository.findByConductId(conductId).forEach(conductDrugRepository::delete);
+        conductKizaiRepository.findByConductId(conductId).forEach(conductKizaiRepository::delete);
+        conductRepository.delete(conductId);
+    }
+
     public HokenDTO getHokenForVisit(VisitDTO visitDTO){
         HokenDTO hokenDTO = new HokenDTO();
         if( visitDTO.shahokokuhoId > 0 ){

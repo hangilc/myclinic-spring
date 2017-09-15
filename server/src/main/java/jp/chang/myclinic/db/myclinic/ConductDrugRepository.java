@@ -21,5 +21,6 @@ public interface ConductDrugRepository extends CrudRepository<ConductDrug, Integ
 	List<Object[]> findByConductIdWithMaster(@Param("conductId") int conductId);
 
 	List<ConductDrug> findByConductId(int conductId, Sort sort);
+	List<ConductDrug> findByConductId(int conductId);
 
 }

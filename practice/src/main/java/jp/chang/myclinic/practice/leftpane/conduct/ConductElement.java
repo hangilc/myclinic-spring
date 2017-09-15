@@ -41,6 +41,10 @@ class ConductElement {
         }
     }
 
+    int getConductId(){
+        return conductFull.conduct.conductId;
+    }
+
     private Component makeDisp(ConductFullDTO conductFull){
         JPanel panel = new JPanel(new FixedWidthLayout(width));
         {
@@ -85,6 +89,11 @@ class ConductElement {
         WorkArea wa = new WorkArea(width, "処置の編集");
         ConductEditor conductEditor = new ConductEditor(wa.getInnerColumnWidth(), conductFull);
         conductEditor.setCallback(new ConductEditor.Callback(){
+            @Override
+            public void onDelete() {
+                ConductBoxContext.get(wa).onDelete(conductFull.conduct.conductId);
+            }
+
             @Override
             public void onClose() {
                 closeEditor();

@@ -14,13 +14,15 @@ import jp.chang.myclinic.practice.leftpane.WorkArea;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ConductBox extends JPanel {
+public class ConductBox extends JPanel implements ConductBoxContext {
 
     private int width;
     Link menuLink;
     private WorkArea menuWorkArea;
+    private List<ConductElement> elements = new ArrayList<>();
 
     public ConductBox(int width, List<ConductFullDTO> conducts, VisitDTO visit){
         this.width = width;
@@ -34,6 +36,7 @@ public class ConductBox extends JPanel {
     public void append(ConductFullDTO conductFull){
         ConductElement element = new ConductElement(width, conductFull);
         add(element.getComponent());
+        elements.add(element);
     }
 
     public void appendConduct(List<ConductFullDTO> entered) {
@@ -180,4 +183,21 @@ public class ConductBox extends JPanel {
         JOptionPane.showMessageDialog(this, message);
     }
 
+    private ConductElement getElement(int conductId){
+        for(ConductElement element: elements){
+            if( element.getConductId() == conductId ){
+                return element;
+            }
+        }
+        throw new RuntimeException("cannot find element");
+    }
+
+    @Override
+    public void onDelete(int conductId) {
+        ConductElement element = getElement(conductId);
+        remove(element.getComponent());
+        revalidate();
+        repaint();
+        elements.remove(element);
+    }
 }

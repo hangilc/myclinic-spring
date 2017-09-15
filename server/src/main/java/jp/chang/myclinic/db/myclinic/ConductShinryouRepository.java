@@ -21,4 +21,5 @@ public interface ConductShinryouRepository extends CrudRepository<ConductShinryo
 	List<Object[]> findByConductIdWithMaster(@Param("conductId") Integer conductId);
 
 	List<ConductShinryou> findByConductId(int conductId, Sort sort);
+	List<ConductShinryou> findByConductId(int conductId);
 }

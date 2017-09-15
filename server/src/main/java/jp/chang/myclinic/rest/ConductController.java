@@ -137,7 +137,12 @@ public class ConductController {
 			newConductIds.add(conductId);
 		}
 		return newConductIds;
+	}
 
+	@RequestMapping(value="/delete-conduct", method=RequestMethod.POST)
+	public boolean deleteConduct(@RequestParam("conduct-id") int conductId){
+		dbGateway.deleteConduct(conductId);
+		return true;
 	}
 
 	private ConductShinryouDTO createConductShinryou(String name, LocalDate at){

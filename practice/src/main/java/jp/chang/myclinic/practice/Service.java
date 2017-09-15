@@ -160,6 +160,9 @@ public class Service {
         @POST("copy-all-conducts")
         CompletableFuture<List<Integer>> copyAllConducts(@Query("target-visit-id") int targetVisitId,
                                                          @Query("source-visit-id") int sourceVisitId);
+
+        @POST("delete-conduct")
+        CompletableFuture<Boolean> deleteConduct(@Query("conduct-id") int conductId);
     }
 
     public static ServerAPI api;

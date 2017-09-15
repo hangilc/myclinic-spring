@@ -21,4 +21,5 @@ public interface ConductKizaiRepository extends CrudRepository<ConductKizai, Int
 	List<Object[]> findByConductIdWithMaster(@Param("conductId") Integer conductId);
 
 	List<ConductKizai> findByConductId(int conductId, Sort sort);
+	List<ConductKizai> findByConductId(int conductId);
 }
