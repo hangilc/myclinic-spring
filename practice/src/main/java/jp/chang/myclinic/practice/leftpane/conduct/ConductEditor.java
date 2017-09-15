@@ -2,8 +2,12 @@ package jp.chang.myclinic.practice.leftpane.conduct;
 
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.ConductFullDTO;
+import jp.chang.myclinic.dto.GazouLabelDTO;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.WrappedText;
+import jp.chang.myclinic.util.DrugUtil;
+import jp.chang.myclinic.util.KizaiUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -17,14 +21,21 @@ class ConductEditor extends JPanel {
         default void onClose(){}
     }
 
+    private int width;
     private ConductFullDTO conductFull;
+    private JComboBox<ConductKind> kindCombo;
     private Callback callback = new Callback(){};
 
     ConductEditor(int width, ConductFullDTO conductFull){
+        this.width = width;
         this.conductFull = conductFull;
         setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
         add(makeSubmenu(), "wrap");
         add(makeKindArea(), "wrap");
+        add(makeGazouLabelArea(), "wrap");
+        add(makeShinryouArea(), "wrap");
+        add(makeDrugArea(), "wrap");
+        add(makeKizaiArea(), "wrap");
         add(makeCommandBox(), "growx");
     }
 
@@ -47,14 +58,86 @@ class ConductEditor extends JPanel {
 
     private Component makeKindArea(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        JComboBox<String> combo = new JComboBox<>(getConductKindLabels());
+        this.kindCombo = makeKindCombo();
+        kindCombo.setSelectedItem(ConductKind.fromCode(conductFull.conduct.kind));
         panel.add(new JLabel("種類："));
-        panel.add(combo);
+        panel.add(kindCombo);
         return panel;
+    }
+
+    private JComboBox<ConductKind> makeKindCombo(){
+        JComboBox<ConductKind> combo = new JComboBox<>(ConductKind.values());
+        combo.setRenderer(new ListCellRenderer<ConductKind>(){
+            @Override
+            public Component getListCellRendererComponent(JList<? extends ConductKind> list, ConductKind value,
+                                                          int index, boolean isSelected, boolean cellHasFocus) {
+                return new JLabel(value.getKanjiRep());
+            }
+        });
+        return combo;
     }
 
     private String[] getConductKindLabels(){
         return Arrays.stream(ConductKind.values()).map(ConductKind::getKanjiRep).toArray(String[]::new);
+    }
+
+    private Component makeGazouLabelArea(){
+        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+        JTextField textField = new JTextField(10);
+        textField.setText(getGazouLabelString());
+        panel.add(new JLabel("画像ラベル："));
+        panel.add(textField);
+        return panel;
+    }
+
+    private String getGazouLabelString(){
+        GazouLabelDTO gazouLabelDTO = conductFull.gazouLabel;
+        if( gazouLabelDTO != null ){
+            return gazouLabelDTO.label;
+        } else {
+            return "";
+        }
+    }
+
+    private Component makeShinryouArea(){
+        JPanel panel = new JPanel(new MigLayout("insets 0, gapx 0", "", ""));
+        conductFull.conductShinryouList.forEach(shinryou -> {
+            Link deleteLink = new Link("削除");
+            int rightWidth = deleteLink.getPreferredSize().width;
+            int leftWidth = width - rightWidth - 6;
+            WrappedText text = new WrappedText(leftWidth, shinryou.master.name);
+            panel.add(text, "gapright 4");
+            panel.add(deleteLink, "wrap");
+        });
+        return panel;
+    }
+
+    private Component makeDrugArea(){
+        JPanel panel = new JPanel(new MigLayout("insets 0, gapx 0", "", ""));
+        conductFull.conductDrugs.forEach(drug -> {
+            Link deleteLink = new Link("削除");
+            int rightWidth = deleteLink.getPreferredSize().width;
+            int leftWidth = width - rightWidth - 6;
+            String rep = DrugUtil.conductDrugRep(drug);
+            WrappedText text = new WrappedText(leftWidth, rep);
+            panel.add(text, "gapright 4");
+            panel.add(deleteLink, "wrap");
+        });
+        return panel;
+    }
+
+    private Component makeKizaiArea(){
+        JPanel panel = new JPanel(new MigLayout("insets 0, gapx 0", "", ""));
+        conductFull.conductKizaiList.forEach(kizai -> {
+            Link deleteLink = new Link("削除");
+            int rightWidth = deleteLink.getPreferredSize().width;
+            int leftWidth = width - rightWidth - 6;
+            String rep = KizaiUtil.kizaiRep(kizai);
+            WrappedText text = new WrappedText(leftWidth, rep);
+            panel.add(text, "gapright 4");
+            panel.add(deleteLink, "wrap");
+        });
+        return panel;
     }
 
     private Component makeCommandBox(){
