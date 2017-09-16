@@ -50,9 +50,10 @@ public class AddConductShinryouForm extends JPanel {
                         });
             }
         });
-
+        JScrollPane resultScroll = new JScrollPane(searchResult);
         add(commandBox, "growx, wrap");
         add(searchBox, "growx, wrap");
+        add(resultScroll, "growx");
     }
 
     public void setCallback(Callback callback){
