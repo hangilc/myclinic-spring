@@ -825,6 +825,12 @@ public class DbGateway {
         return kizaiMasterRepository.findByKizaicodeAndDate(kizaicode, date).map(mapper::toKizaiMasterDTO);
     }
 
+    public List<KizaiMasterDTO> searchKizaiMasterByName(String text, LocalDate at){
+        Date date = Date.valueOf(at);
+        return kizaiMasterRepository.searchByName(text, date, new Sort("yomi")).stream()
+                .map(mapper::toKizaiMasterDTO).collect(Collectors.toList());
+    }
+
     public void deleteConduct(int conductId) {
         Optional<GazouLabel> optGazouLabel = gazouLabelRepository.findOneByConductId(conductId);
         optGazouLabel.ifPresent(gazouLabelRepository::delete);

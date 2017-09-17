@@ -175,6 +175,9 @@ public class Service {
 
         @POST("enter-conduct-kizai")
         CompletableFuture<Integer> enterConductKizai(@Body ConductKizaiDTO conductKizai);
+
+        @GET("search-kizai-master-by-name")
+        CompletableFuture<List<KizaiMasterDTO>> searchKizaiMaster(@Query("text") String text, @Query("at") String at);
     }
 
     public static ServerAPI api;

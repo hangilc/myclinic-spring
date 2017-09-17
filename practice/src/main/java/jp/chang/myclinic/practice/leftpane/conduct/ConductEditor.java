@@ -7,6 +7,7 @@ import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.WrappedText;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 import jp.chang.myclinic.practice.leftpane.conduct.adddrug.AddConductDrugForm;
+import jp.chang.myclinic.practice.leftpane.conduct.addkizai.AddConductKizaiForm;
 import jp.chang.myclinic.practice.leftpane.conduct.addshinryou.AddConductShinryouForm;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.KizaiUtil;
@@ -60,6 +61,7 @@ class ConductEditor extends JPanel {
         Link addDrugLink = new Link("薬剤の追加");
         addDrugLink.setCallback(evt -> doAddDrug(panel));
         Link addKizaiLink = new Link("器材の追加");
+        addKizaiLink.setCallback(evt -> doAddKizai(panel));
         panel.add(addShinryouLink);
         panel.add(new JLabel("|"));
         panel.add(addDrugLink);
@@ -208,6 +210,26 @@ class ConductEditor extends JPanel {
         AddConductDrugForm form = new AddConductDrugForm(wa.getInnerColumnWidth(), at,
                 conductFull.conduct.conductId);
         form.setCallback(new AddConductDrugForm.Callback(){
+            @Override
+            public void onEntered() {
+                doModified();
+            }
+
+            @Override
+            public void onCancel() {
+                removeSubWorkArea(wa);
+            }
+        });
+        wa.setComponent(form);
+        addSubWorkArea(wa, submenu);
+    }
+
+    private void doAddKizai(Container submenu){
+        WorkArea wa = new WorkArea(width, "器材の追加");
+        String at = visit.visitedAt.substring(0, 10);
+        AddConductKizaiForm form = new AddConductKizaiForm(wa.getInnerColumnWidth(), at,
+                conductFull.conduct.conductId);
+        form.setCallback(new AddConductKizaiForm.Callback(){
             @Override
             public void onEntered() {
                 doModified();
