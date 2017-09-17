@@ -112,10 +112,32 @@ class ConductEditor extends JPanel {
 
     private Component makeGazouLabelArea(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
-        JTextField textField = new JTextField(10);
-        textField.setText(getGazouLabelString());
+        JComboBox<String> gazouLabelCombo = new JComboBox<>(new String[]{
+                "胸部単純Ｘ線",
+                "腹部単純Ｘ線"
+        });
+        gazouLabelCombo.setEditable(true);
+        String gazouLabel = conductFull.gazouLabel == null ? "" : conductFull.gazouLabel.label;
+        gazouLabelCombo.setSelectedItem(gazouLabel);
+//        gazouLabelCombo.addItemListener(new ItemListener(){
+//
+//            @Override
+//            public void itemStateChanged(ItemEvent e) {
+//                if( e.getStateChange() == ItemEvent.SELECTED ){
+//                    String label = (String)e.getItem();
+//                    System.out.println("item: " + label);
+//                }
+//            }
+//        });
+        gazouLabelCombo.addActionListener(evt -> {
+            if( evt.getActionCommand().equals("comboBoxChanged") ){
+                String label = (String)gazouLabelCombo.getSelectedItem();
+                Service.api.modifyGazouLabel(conductFull.conduct.conductId, label)
+                        
+            }
+        });
         panel.add(new JLabel("画像ラベル："));
-        panel.add(textField);
+        panel.add(gazouLabelCombo);
         return panel;
     }
 
