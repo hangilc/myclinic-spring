@@ -145,6 +145,12 @@ public class ConductController {
 		return true;
 	}
 
+	@RequestMapping(value="/modify-conduct-kind", method=RequestMethod.POST)
+	public boolean modifyConductKind(@RequestParam("conduct-id") int conductId, @RequestParam("kind") int kind){
+		dbGateway.modifyConductKind(conductId, kind);
+		return true;
+	}
+
 	private ConductShinryouDTO createConductShinryou(String name, LocalDate at){
 		ConductShinryouDTO shinryou = new ConductShinryouDTO();
 		shinryou.shinryoucode = masterMapUtil.resolveShinryouMaster(name, at).shinryoucode;

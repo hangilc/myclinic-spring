@@ -840,6 +840,12 @@ public class DbGateway {
         conductRepository.delete(conductId);
     }
 
+    public void modifyConductKind(int conductId, int kind){
+        Conduct c = conductRepository.findOne(conductId);
+        c.setKind(kind);
+        conductRepository.save(c);
+    }
+
     public HokenDTO getHokenForVisit(VisitDTO visitDTO){
         HokenDTO hokenDTO = new HokenDTO();
         if( visitDTO.shahokokuhoId > 0 ){

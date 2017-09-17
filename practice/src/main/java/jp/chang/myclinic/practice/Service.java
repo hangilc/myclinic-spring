@@ -178,6 +178,10 @@ public class Service {
 
         @GET("search-kizai-master-by-name")
         CompletableFuture<List<KizaiMasterDTO>> searchKizaiMaster(@Query("text") String text, @Query("at") String at);
+
+        @POST("modify-conduct-kind")
+        CompletableFuture<Boolean> modifyConductKind(@Query("conduct-id") int conductId,
+                                                     @Query("kind") int kind);
     }
 
     public static ServerAPI api;

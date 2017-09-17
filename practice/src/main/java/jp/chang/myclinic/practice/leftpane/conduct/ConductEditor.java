@@ -74,6 +74,20 @@ class ConductEditor extends JPanel {
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         this.kindCombo = makeKindCombo();
         kindCombo.setSelectedItem(ConductKind.fromCode(conductFull.conduct.kind));
+        kindCombo.setEditable(false);
+        kindCombo.addActionListener(evt -> {
+            int i = kindCombo.getSelectedIndex();
+            ConductKind kind = kindCombo.getItemAt(i);
+            Service.api.modifyConductKind(conductFull.conduct.conductId, kind.getCode())
+                    .thenAccept(ok -> doModified())
+                    .exceptionally(t -> {
+                        t.printStackTrace();
+                        EventQueue.invokeLater(() -> {
+                            alert(t.toString());
+                        });
+                        return null;
+                    });
+        });
         panel.add(new JLabel("種類："));
         panel.add(kindCombo);
         return panel;
@@ -81,6 +95,7 @@ class ConductEditor extends JPanel {
 
     private JComboBox<ConductKind> makeKindCombo(){
         JComboBox<ConductKind> combo = new JComboBox<>(ConductKind.values());
+        combo.setSelectedItem(ConductKind.fromCode(conductFull.conduct.kind));
         combo.setRenderer(new ListCellRenderer<ConductKind>(){
             @Override
             public Component getListCellRendererComponent(JList<? extends ConductKind> list, ConductKind value,
@@ -263,7 +278,9 @@ class ConductEditor extends JPanel {
 
     private void doModified(){
         Service.api.getConductFull(conductFull.conduct.conductId)
-                .thenAccept(modified -> EventQueue.invokeLater(() -> callback.onModified(modified)))
+                .thenAccept(modified -> EventQueue.invokeLater(() -> {
+                    callback.onModified(modified);
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> {
