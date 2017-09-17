@@ -169,6 +169,12 @@ public class Service {
 
         @GET("get-conduct-shinryou-full")
         CompletableFuture<ConductShinryouFullDTO> getConductShinryouFull(@Query("conduct-shinryou-id") int conductShinryouId);
+
+        @POST("enter-conduct-drug")
+        CompletableFuture<Integer> enterConductDrug(@Body ConductDrugDTO conductDrug);
+
+        @POST("enter-conduct-kizai")
+        CompletableFuture<Integer> enterConductKizai(@Body ConductKizaiDTO conductKizai);
     }
 
     public static ServerAPI api;

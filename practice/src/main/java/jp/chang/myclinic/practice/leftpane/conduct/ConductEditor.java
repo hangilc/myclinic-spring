@@ -209,8 +209,8 @@ class ConductEditor extends JPanel {
                 conductFull.conduct.conductId);
         form.setCallback(new AddConductDrugForm.Callback(){
             @Override
-            public void onEntered(ConductDrugFullDTO entered) {
-
+            public void onEntered() {
+                doModified();
             }
 
             @Override
