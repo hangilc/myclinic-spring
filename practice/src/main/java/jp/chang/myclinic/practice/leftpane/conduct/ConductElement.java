@@ -3,7 +3,6 @@ package jp.chang.myclinic.practice.leftpane.conduct;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.FixedWidthLayout;
-import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.WrappedText;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 import jp.chang.myclinic.util.DrugUtil;
@@ -85,13 +84,14 @@ class ConductElement {
         return comp;
     }
 
-    private void openEditor(){
+    private WorkArea makeEditor(){
         WorkArea wa = new WorkArea(width, "処置の編集");
         ConductEditor conductEditor = new ConductEditor(wa.getInnerColumnWidth(), conductFull, visit);
         conductEditor.setCallback(new ConductEditor.Callback(){
             @Override
-            public void onEntered(ConductShinryouFullDTO entered) {
-                reload();
+            public void onModified(ConductFullDTO modified) {
+                conductFull = modified;
+                openEditor();
             }
 
             @Override
@@ -100,39 +100,32 @@ class ConductElement {
             }
 
             @Override
-            public void onClose() {
+            public void onClose(ConductFullDTO current) {
+                conductFull = current;
                 closeEditor();
             }
         });
         wa.setComponent(conductEditor);
-        Container parent = this.disp.getParent();
-        parent.add(wa, new FixedWidthLayout.Replace(this.disp));
+        return wa;
+    }
+
+    private void openEditor(){
+        WorkArea wa = makeEditor();
+        Component curr = getComponent();
+        Container parent = curr.getParent();
+        parent.add(wa, new FixedWidthLayout.Replace(curr));
         editor = wa;
         mode = Mode.EDIT;
         parent.revalidate();
         parent.repaint();
     }
 
-    private void reload(){
-        Service.api.getConductFull(conductFull.conduct.conductId)
-                .thenAccept(newConductFull -> {
-                    this.conductFull = newConductFull;
-                    EventQueue.invokeLater(() -> {
-                        ConductBoxContext.get(this.getComponent()).onModified(newConductFull);
-                    });
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    EventQueue.invokeLater(() -> {
-                        alert(t.toString());
-                    });
-                    return null;
-                });
-    }
-
     private void closeEditor(){
-        Container parent = editor.getParent();
-        parent.add(this.disp, new FixedWidthLayout.Replace(editor));
+        Component curr = getComponent();
+        Container parent = curr.getParent();
+        this.disp = makeDisp();
+        parent.add(this.disp, new FixedWidthLayout.Replace(curr));
+        mode = Mode.DISP;
         parent.revalidate();
         parent.repaint();
     }

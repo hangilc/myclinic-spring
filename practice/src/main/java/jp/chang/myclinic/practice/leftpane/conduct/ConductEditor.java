@@ -6,6 +6,7 @@ import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.WrappedText;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
+import jp.chang.myclinic.practice.leftpane.conduct.adddrug.AddConductDrugForm;
 import jp.chang.myclinic.practice.leftpane.conduct.addshinryou.AddConductShinryouForm;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.KizaiUtil;
@@ -19,9 +20,9 @@ import java.util.List;
 class ConductEditor extends JPanel {
 
     interface Callback {
-        default void onEntered(ConductShinryouFullDTO entered){}
+        default void onModified(ConductFullDTO modified){}
         default void onDelete(){}
-        default void onClose(){}
+        default void onClose(ConductFullDTO conductFull){}
     }
 
     private int width;
@@ -57,6 +58,7 @@ class ConductEditor extends JPanel {
         Link addShinryouLink = new Link("診療行為の追加");
         addShinryouLink.setCallback(evt -> doAddShinryou(panel));
         Link addDrugLink = new Link("薬剤の追加");
+        addDrugLink.setCallback(evt -> doAddDrug(panel));
         Link addKizaiLink = new Link("器材の追加");
         panel.add(addShinryouLink);
         panel.add(new JLabel("|"));
@@ -162,7 +164,7 @@ class ConductEditor extends JPanel {
                 String rep = KizaiUtil.kizaiRep(kizai);
                 WrappedText text = new WrappedText(leftWidth, rep);
                 panel.add(text, "gapright 4");
-                panel.add(deleteLink, "wrap");
+                panel.add(deleteLink, i == kizaiList.size() - 1 ? "" : "wrap");
             };
         }
         return panel;
@@ -172,7 +174,7 @@ class ConductEditor extends JPanel {
         JPanel panel = new JPanel(new MigLayout("insets 2", "", ""));
         panel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         JButton closeButton = new JButton("閉じる");
-        closeButton.addActionListener(event -> callback.onClose());
+        closeButton.addActionListener(event -> callback.onClose(conductFull));
         Link deleteLink = new Link("削除");
         deleteLink.setCallback(event -> doDelete());
         panel.add(closeButton);
@@ -188,12 +190,32 @@ class ConductEditor extends JPanel {
         form.setCallback(new AddConductShinryouForm.Callback() {
             @Override
             public void onEntered(ConductShinryouFullDTO entered) {
-                callback.onEntered(entered);
+                doModified();
             }
 
             @Override
             public void onCancel() {
-                removeShinryouWorkArea(wa);
+                removeSubWorkArea(wa);
+            }
+        });
+        wa.setComponent(form);
+        addSubWorkArea(wa, submenu);
+    }
+
+    private void doAddDrug(Container submenu){
+        WorkArea wa = new WorkArea(width, "薬剤の追加");
+        String at = visit.visitedAt.substring(0, 10);
+        AddConductDrugForm form = new AddConductDrugForm(wa.getInnerColumnWidth(), at,
+                conductFull.conduct.conductId);
+        form.setCallback(new AddConductDrugForm.Callback(){
+            @Override
+            public void onEntered(ConductDrugFullDTO entered) {
+
+            }
+
+            @Override
+            public void onCancel() {
+                removeSubWorkArea(wa);
             }
         });
         wa.setComponent(form);
@@ -208,13 +230,25 @@ class ConductEditor extends JPanel {
         parent.repaint();
     }
 
-    private void removeShinryouWorkArea(WorkArea wa){
+    private void removeSubWorkArea(WorkArea wa){
         subWorkAreaContainer.remove(wa);
         if( subWorkAreaContainer.getComponents().length == 0 ){
             subWorkAreaContainer.setVisible(false);
         }
         revalidate();
         repaint();
+    }
+
+    private void doModified(){
+        Service.api.getConductFull(conductFull.conduct.conductId)
+                .thenAccept(modified -> EventQueue.invokeLater(() -> callback.onModified(modified)))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
 
     private void doDelete(){
