@@ -25,4 +25,10 @@ class ConductShinryouController {
         return dbGateway.getConductShinryouFull(conductShinryouId);
     }
 
+    @RequestMapping(value="/delete-conduct-shinryou", method=RequestMethod.POST)
+    public boolean deleteConductShinryou(@RequestParam("conduct-shinryou-id") int conductShinryouId){
+        dbGateway.deleteConductShinryou(conductShinryouId);
+        return true;
+    }
+
 }

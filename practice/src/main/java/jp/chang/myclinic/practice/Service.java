@@ -186,6 +186,15 @@ public class Service {
         @POST("modify-gazou-label")
         CompletableFuture<Boolean> modifyGazouLabel(@Query("conduct-id") int conductId,
                                                     @Query("label") String label);
+
+        @POST("delete-conduct-shinryou")
+        CompletableFuture<Boolean> deleteConductShinryou(@Query("conduct-shinryou-id") int conductShinryouId);
+
+        @POST("delete-conduct-drug")
+        CompletableFuture<Boolean> deleteConductDrug(@Query("conduct-drug-id") int conductDrugId);
+
+        @POST("delete-conduct-kizai")
+        CompletableFuture<Boolean> deleteConductKizai(@Query("conduct-kizai-id") int conductKizaiId);
     }
 
     public static ServerAPI api;

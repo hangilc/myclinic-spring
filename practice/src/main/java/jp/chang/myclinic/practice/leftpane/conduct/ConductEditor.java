@@ -157,6 +157,7 @@ class ConductEditor extends JPanel {
             for(int i=0;i<shinryouList.size();i++){
                 ConductShinryouFullDTO shinryou = shinryouList.get(i);
                 Link deleteLink = new Link("削除");
+                deleteLink.setCallback(evt -> doDeleteShinryou(shinryou.conductShinryou.conductShinryouId));
                 int rightWidth = deleteLink.getPreferredSize().width;
                 int leftWidth = width - rightWidth - 6;
                 WrappedText text = new WrappedText(leftWidth, shinryou.master.name);
@@ -176,6 +177,7 @@ class ConductEditor extends JPanel {
             for(int i=0;i<drugs.size();i++) {
                 ConductDrugFullDTO drug = drugs.get(i);
                 Link deleteLink = new Link("削除");
+                deleteLink.setCallback(evt -> doDeleteDrug(drug.conductDrug.conductDrugId));
                 int rightWidth = deleteLink.getPreferredSize().width;
                 int leftWidth = width - rightWidth - 6;
                 String rep = DrugUtil.conductDrugRep(drug);
@@ -196,6 +198,7 @@ class ConductEditor extends JPanel {
             for(int i = 0;i<kizaiList.size();i++) {
                 ConductKizaiFullDTO kizai = kizaiList.get(i);
                 Link deleteLink = new Link("削除");
+                deleteLink.setCallback(evt -> doDeleteKizai(kizai.conductKizai.conductKizaiId));
                 int rightWidth = deleteLink.getPreferredSize().width;
                 int leftWidth = width - rightWidth - 6;
                 String rep = KizaiUtil.kizaiRep(kizai);
@@ -239,6 +242,21 @@ class ConductEditor extends JPanel {
         addSubWorkArea(wa, submenu);
     }
 
+    private void doDeleteShinryou(int conductShinryouId){
+        if( !confirm("この診療行為を削除していいですか？") ){
+            return;
+        }
+        Service.api.deleteConductShinryou(conductShinryouId)
+                .thenAccept(ok -> doModified())
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
     private void doAddDrug(Container submenu){
         WorkArea wa = new WorkArea(width, "薬剤の追加");
         String at = visit.visitedAt.substring(0, 10);
@@ -259,6 +277,21 @@ class ConductEditor extends JPanel {
         addSubWorkArea(wa, submenu);
     }
 
+    private void doDeleteDrug(int conductDrugId){
+        if( !confirm("この薬剤を削除していいですか？") ){
+            return;
+        }
+        Service.api.deleteConductDrug(conductDrugId)
+                .thenAccept(ok -> doModified())
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
     private void doAddKizai(Container submenu){
         WorkArea wa = new WorkArea(width, "器材の追加");
         String at = visit.visitedAt.substring(0, 10);
@@ -277,6 +310,21 @@ class ConductEditor extends JPanel {
         });
         wa.setComponent(form);
         addSubWorkArea(wa, submenu);
+    }
+
+    private void doDeleteKizai(int conductKizaiId){
+        if( !confirm("この器材を削除していいですか？") ){
+            return;
+        }
+        Service.api.deleteConductKizai(conductKizaiId)
+                .thenAccept(ok -> doModified())
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
 
     private void addSubWorkArea(WorkArea wa, Container submenu){

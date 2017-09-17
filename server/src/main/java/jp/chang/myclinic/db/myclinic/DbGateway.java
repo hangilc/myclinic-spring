@@ -804,6 +804,10 @@ public class DbGateway {
         return conductShinryou.getConductShinryouId();
     }
 
+    public void deleteConductShinryou(int conductShinryouId){
+        conductShinryouRepository.delete(conductShinryouId);
+    }
+
     public List<ConductDrugDTO> listConductDrug(int conductId){
         return conductDrugRepository.findByConductId(conductId, new Sort("conductDrugId")).stream()
                 .map(mapper::toConductDrugDTO).collect(Collectors.toList());
@@ -821,6 +825,10 @@ public class DbGateway {
         return conductDrug.getConductDrugId();
     }
 
+    public void deleteConductDrug(int conductDrugId){
+        conductDrugRepository.delete(conductDrugId);
+    }
+
     public List<ConductKizaiDTO> listConductKizai(int conductId){
         return conductKizaiRepository.findByConductId(conductId, new Sort("conductKizaiId")).stream()
                 .map(mapper::toConductKizaiDTO).collect(Collectors.toList());
@@ -836,6 +844,10 @@ public class DbGateway {
         ConductKizai conductKizai = mapper.fromConductKizaiDTO(conductKizaiDTO);
         conductKizai = conductKizaiRepository.save(conductKizai);
         return conductKizai.getConductKizaiId();
+    }
+
+    public void deleteConductKizai(int conductKizaiId){
+        conductKizaiRepository.delete(conductKizaiId);
     }
 
     public Optional<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at){
