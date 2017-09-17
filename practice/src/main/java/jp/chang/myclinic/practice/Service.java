@@ -163,6 +163,12 @@ public class Service {
 
         @POST("delete-conduct")
         CompletableFuture<Boolean> deleteConduct(@Query("conduct-id") int conductId);
+
+        @POST("enter-conduct-shinryou")
+        CompletableFuture<Integer> enterConductShinryou(@Body ConductShinryouDTO conductShinryou);
+
+        @GET("get-conduct-shinryou-full")
+        CompletableFuture<ConductShinryouFullDTO> getConductShinryouFull(@Query("conduct-shinryou-id") int conductShinryouId);
     }
 
     public static ServerAPI api;

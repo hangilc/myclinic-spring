@@ -19,6 +19,7 @@ import java.util.List;
 class ConductEditor extends JPanel {
 
     interface Callback {
+        default void onEntered(ConductShinryouFullDTO entered){}
         default void onDelete(){}
         default void onClose(){}
     }
@@ -182,8 +183,14 @@ class ConductEditor extends JPanel {
     private void doAddShinryou(Container submenu){
         WorkArea wa = new WorkArea(width, "診療行為の追加");
         String at = visit.visitedAt.substring(0, 10);
-        AddConductShinryouForm form = new AddConductShinryouForm(wa.getInnerColumnWidth(), at);
+        AddConductShinryouForm form = new AddConductShinryouForm(wa.getInnerColumnWidth(), at,
+                conductFull.conduct.conductId);
         form.setCallback(new AddConductShinryouForm.Callback() {
+            @Override
+            public void onEntered(ConductShinryouFullDTO entered) {
+                callback.onEntered(entered);
+            }
+
             @Override
             public void onCancel() {
                 removeShinryouWorkArea(wa);

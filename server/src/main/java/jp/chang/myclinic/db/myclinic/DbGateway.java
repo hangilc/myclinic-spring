@@ -761,8 +761,18 @@ public class DbGateway {
 
     public List<ConductShinryouFullDTO> listConductShinryouFull(int conductId){
         return conductShinryouRepository.findByConductIdWithMaster(conductId).stream()
-        .map(this::resulToConductShinryouFullDTO)
+        .map(this::resultToConductShinryouFullDTO)
         .collect(Collectors.toList());
+    }
+
+    public ConductShinryouFullDTO getConductShinryouFull(int conductShinryouId){
+        List<Object[]> results = conductShinryouRepository.findFull(conductShinryouId);
+        if( results.size() == 0 ){
+            throw new RuntimeException("canoot find conduct shinryou: " + conductShinryouId);
+        } else if( results.size() != 1 ){
+            throw new RuntimeException("cannot happen in getConductShinryouFull");
+        }
+        return resultToConductShinryouFullDTO(results.get(0));
     }
 
     public int enterConductShinryou(ConductShinryouDTO conductShinryouDTO){
@@ -1122,7 +1132,7 @@ public class DbGateway {
         return drugFullDTO;
     }
 
-    private ConductShinryouFullDTO resulToConductShinryouFullDTO(Object[] result){
+    private ConductShinryouFullDTO resultToConductShinryouFullDTO(Object[] result){
         ConductShinryou conductShinryou = (ConductShinryou)result[0];
         ShinryouMaster master = (ShinryouMaster)result[1];
         ConductShinryouFullDTO conductShinryouFull = new ConductShinryouFullDTO();

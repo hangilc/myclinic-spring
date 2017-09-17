@@ -9,10 +9,6 @@ import java.util.List;
 
 public interface ConductShinryouRepository extends CrudRepository<ConductShinryou, Integer> {
 
-	// @EntityGraph(attributePaths={"master"})
-	// @Query("select c from ConductShinryou c where c.conductId = :conductId")
-	// List<ConductShinryou> findByConductIdWithMaster(@Param("conductId") Integer conductId);
-
 	@Query("select s, m from ConductShinryou s, ShinryouMaster m, Conduct c, Visit v " +
 		" where c.conductId = :conductId and s.conductId = :conductId " +
 		" and v.visitId = c.visitId and m.shinryoucode = s.shinryoucode " +
@@ -22,4 +18,12 @@ public interface ConductShinryouRepository extends CrudRepository<ConductShinryo
 
 	List<ConductShinryou> findByConductId(int conductId, Sort sort);
 	List<ConductShinryou> findByConductId(int conductId);
+
+	@Query("select s, m from ConductShinryou s, ShinryouMaster m, Conduct c, Visit v " +
+			" where s.conductShinryouId = :conductShinryouId " +
+			" and s.conductId = c.conductId and c.visitId = v.visitId " +
+			" and m.shinryoucode = s.shinryoucode " +
+			" and m.validFrom <= DATE(v.visitedAt) " +
+			" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto)")
+	List<Object[]> findFull(@Param("conductShinryouId") int conductShinryouId);
 }

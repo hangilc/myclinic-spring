@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.leftpane.conduct;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.FixedWidthLayout;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.WrappedText;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 import jp.chang.myclinic.util.DrugUtil;
@@ -29,7 +30,7 @@ class ConductElement {
         this.visit = visit;
         this.mode = Mode.DISP;
         this.conductFull = conductFull;
-        this.disp = addClickListener(makeDisp(conductFull));
+        this.disp = addClickListener(makeDisp());
     }
 
     Component getComponent(){
@@ -44,7 +45,7 @@ class ConductElement {
         return conductFull.conduct.conductId;
     }
 
-    private Component makeDisp(ConductFullDTO conductFull){
+    private Component makeDisp(){
         JPanel panel = new JPanel(new FixedWidthLayout(width));
         {
             String kindRep;
@@ -89,6 +90,11 @@ class ConductElement {
         ConductEditor conductEditor = new ConductEditor(wa.getInnerColumnWidth(), conductFull, visit);
         conductEditor.setCallback(new ConductEditor.Callback(){
             @Override
+            public void onEntered(ConductShinryouFullDTO entered) {
+                reload();
+            }
+
+            @Override
             public void onDelete() {
                 ConductBoxContext.get(wa).onDelete(conductFull.conduct.conductId);
             }
@@ -107,11 +113,32 @@ class ConductElement {
         parent.repaint();
     }
 
+    private void reload(){
+        Service.api.getConductFull(conductFull.conduct.conductId)
+                .thenAccept(newConductFull -> {
+                    this.conductFull = newConductFull;
+                    EventQueue.invokeLater(() -> {
+                        ConductBoxContext.get(this.getComponent()).onModified(newConductFull);
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
     private void closeEditor(){
         Container parent = editor.getParent();
-        this.disp = makeDisp(conductFull);
         parent.add(this.disp, new FixedWidthLayout.Replace(editor));
         parent.revalidate();
         parent.repaint();
     }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(getComponent(), message);
+    }
+
 }

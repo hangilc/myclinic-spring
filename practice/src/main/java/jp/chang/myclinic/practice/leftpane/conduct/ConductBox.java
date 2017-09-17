@@ -195,6 +195,17 @@ public class ConductBox extends JPanel implements ConductBoxContext {
     }
 
     @Override
+    public void onModified(ConductFullDTO modified) {
+        ConductElement origElement = getElement(modified.conduct.conductId);
+        ConductElement newElement = new ConductElement(width, modified, visit);
+        add(newElement.getComponent(), new FixedWidthLayout.Replace(origElement.getComponent()));
+        revalidate();
+        repaint();
+        int i = elements.indexOf(origElement);
+        elements.set(i, newElement);
+    }
+
+    @Override
     public void onDelete(int conductId) {
         ConductElement element = getElement(conductId);
         remove(element.getComponent());
