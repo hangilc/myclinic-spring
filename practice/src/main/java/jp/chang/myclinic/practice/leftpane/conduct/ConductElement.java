@@ -56,7 +56,7 @@ class ConductElement {
             }
             panel.add(new JLabel(kindRep));
         }
-        if( conductFull.gazouLabel != null ){
+        if( conductFull.gazouLabel != null && !conductFull.gazouLabel.label.isEmpty() ){
             panel.add(addClickListener(new WrappedText(width, conductFull.gazouLabel.label)));
         }
         for(ConductShinryouFullDTO shinryou: conductFull.conductShinryouList){

@@ -119,21 +119,19 @@ class ConductEditor extends JPanel {
         gazouLabelCombo.setEditable(true);
         String gazouLabel = conductFull.gazouLabel == null ? "" : conductFull.gazouLabel.label;
         gazouLabelCombo.setSelectedItem(gazouLabel);
-//        gazouLabelCombo.addItemListener(new ItemListener(){
-//
-//            @Override
-//            public void itemStateChanged(ItemEvent e) {
-//                if( e.getStateChange() == ItemEvent.SELECTED ){
-//                    String label = (String)e.getItem();
-//                    System.out.println("item: " + label);
-//                }
-//            }
-//        });
         gazouLabelCombo.addActionListener(evt -> {
             if( evt.getActionCommand().equals("comboBoxChanged") ){
                 String label = (String)gazouLabelCombo.getSelectedItem();
                 Service.api.modifyGazouLabel(conductFull.conduct.conductId, label)
-                        
+                        .thenAccept(ok -> doModified())
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+
             }
         });
         panel.add(new JLabel("画像ラベル："));

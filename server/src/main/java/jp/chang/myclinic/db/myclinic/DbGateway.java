@@ -736,6 +736,29 @@ public class DbGateway {
         gazouLabelRepository.save(gazoulabel);
     }
 
+    public void deleteConduct(int conductId) {
+        Optional<GazouLabel> optGazouLabel = gazouLabelRepository.findOneByConductId(conductId);
+        optGazouLabel.ifPresent(gazouLabelRepository::delete);
+        conductShinryouRepository.findByConductId(conductId).forEach(conductShinryouRepository::delete);
+        conductDrugRepository.findByConductId(conductId).forEach(conductDrugRepository::delete);
+        conductKizaiRepository.findByConductId(conductId).forEach(conductKizaiRepository::delete);
+        conductRepository.delete(conductId);
+    }
+
+    public void modifyGazouLabel(int conductId, String label){
+        Optional<GazouLabel> optGazouLabel = gazouLabelRepository.findOneByConductId(conductId);
+        if( optGazouLabel.isPresent() ){
+            GazouLabel gazouLabel = optGazouLabel.get();
+            gazouLabel.setLabel(label);
+            gazouLabelRepository.save(gazouLabel);
+        } else {
+            GazouLabel gazouLabel = new GazouLabel();
+            gazouLabel.setConductId(conductId);
+            gazouLabel.setLabel(label);
+            gazouLabelRepository.save(gazouLabel);
+        }
+    }
+
     public int enterConduct(ConductDTO conductDTO){
         Conduct conduct = mapper.fromConductDTO(conductDTO);
         conduct = conductRepository.save(conduct);
@@ -829,15 +852,6 @@ public class DbGateway {
         Date date = Date.valueOf(at);
         return kizaiMasterRepository.searchByName(text, date, new Sort("yomi")).stream()
                 .map(mapper::toKizaiMasterDTO).collect(Collectors.toList());
-    }
-
-    public void deleteConduct(int conductId) {
-        Optional<GazouLabel> optGazouLabel = gazouLabelRepository.findOneByConductId(conductId);
-        optGazouLabel.ifPresent(gazouLabelRepository::delete);
-        conductShinryouRepository.findByConductId(conductId).forEach(conductShinryouRepository::delete);
-        conductDrugRepository.findByConductId(conductId).forEach(conductDrugRepository::delete);
-        conductKizaiRepository.findByConductId(conductId).forEach(conductKizaiRepository::delete);
-        conductRepository.delete(conductId);
     }
 
     public void modifyConductKind(int conductId, int kind){

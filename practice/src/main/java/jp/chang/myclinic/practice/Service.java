@@ -182,6 +182,10 @@ public class Service {
         @POST("modify-conduct-kind")
         CompletableFuture<Boolean> modifyConductKind(@Query("conduct-id") int conductId,
                                                      @Query("kind") int kind);
+
+        @POST("modify-gazou-label")
+        CompletableFuture<Boolean> modifyGazouLabel(@Query("conduct-id") int conductId,
+                                                    @Query("label") String label);
     }
 
     public static ServerAPI api;
