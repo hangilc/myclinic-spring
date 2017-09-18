@@ -1,5 +1,6 @@
 package jp.chang.myclinic.rest;
 
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
@@ -10,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/json")
@@ -21,6 +24,14 @@ public class WqueueController {
 	@Autowired
 	private DbGateway dbGateway;
 
+	private static Set<WqueueWaitState> forExamStates = new HashSet<>();
+
+	static {
+		forExamStates.add(WqueueWaitState.WaitExam);
+		forExamStates.add(WqueueWaitState.InExam);
+		forExamStates.add(WqueueWaitState.WaitReExam);
+	}
+
 	@RequestMapping(value="/list-wqueue-full", method=RequestMethod.GET)
 	public List<WqueueFullDTO> listWqueueFull(){
 		return dbGateway.listWqueueFull();
@@ -28,11 +39,14 @@ public class WqueueController {
 
 	@RequestMapping(value="/try-delete-wqueue", method=RequestMethod.POST)
 	public boolean tryDeleteWqueue(@RequestParam("visit-id") int visitId){
-		Optional<WqueueDTO> wqueueDTO = dbGateway.findWqueue(visitId);
-		if( wqueueDTO.isPresent() ){
-			dbGateway.deleteWqueue(wqueueDTO.get());
-		}
+		Optional<WqueueDTO> optWqueueDTO = dbGateway.findWqueue(visitId);
+		optWqueueDTO.ifPresent(wqueue -> dbGateway.deleteWqueue(wqueue));
 		return true;
+	}
+
+	@RequestMapping(value="/list-wqueue-full-for-exam", method=RequestMethod.GET)
+	public List<WqueueFullDTO> listWqueueFullForExam(){
+		return dbGateway.listWqueueFullByStates(forExamStates);
 	}
 
 	@RequestMapping(value="/start-exam", method=RequestMethod.POST)

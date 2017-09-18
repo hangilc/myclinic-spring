@@ -15,7 +15,7 @@ import java.util.Map;
 class DispRecords extends JPanel {
 
     private MainExecContext mainExecContext;
-    private Map<Integer, Record> recordMap;
+    private Map<Integer, Record> recordMap = new LinkedHashMap<>();
 
     DispRecords(int width, MainExecContext mainExecContext){
         this.mainExecContext = mainExecContext;
@@ -25,14 +25,9 @@ class DispRecords extends JPanel {
     void setVisits(List<VisitFull2DTO> visits){
         int width = getSize().width;
         removeAll();
-        if( recordMap == null ){
-            this.recordMap = new LinkedHashMap<>();
-        } else {
-            recordMap.clear();
-        }
+        recordMap.clear();
         visits.forEach(visit -> {
             Record record = new Record(visit, width, mainExecContext);
-            //bindRecord(record);
             add(record, "growx, wrap");
             recordMap.put(visit.visit.visitId, record);
         });
@@ -62,7 +57,7 @@ class DispRecords extends JPanel {
         }
     }
 
-    public void appendConduct(int visitId, List<ConductFullDTO> entered, Runnable uiCallback) {
+    void appendConduct(int visitId, List<ConductFullDTO> entered, Runnable uiCallback) {
         Record record = recordMap.getOrDefault(visitId, null);
         if( record != null ){
             record.appendConduct(entered);
@@ -70,15 +65,4 @@ class DispRecords extends JPanel {
         }
     }
 
-//    private void bindRecord(Record record){
-//        record.setCallback(new Record.Callback(){
-//            @Override
-//            public void onDrugsCopied(int targetVisitId, List<DrugFullDTO> drugs) {
-//                Record target = recordMap.getOrDefault(targetVisitId, null);
-//                if( target != null ){
-//                    target.addDrugs(drugs);
-//                }
-//            }
-//        });
-//    }
 }

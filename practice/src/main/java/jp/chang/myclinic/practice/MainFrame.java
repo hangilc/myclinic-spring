@@ -2,7 +2,7 @@ package jp.chang.myclinic.practice;
 
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.practice.leftpane.LeftPaneWrapper;
+import jp.chang.myclinic.practice.leftpane.LeftPane;
 import jp.chang.myclinic.practice.newvisitdialog.NewVisitDialog;
 import jp.chang.myclinic.practice.rightpane.RightPaneWrapper;
 import net.miginfocom.swing.MigLayout;
@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 
 class MainFrame extends JFrame implements MainContext {
 
-    private LeftPaneWrapper leftPaneWrapper;
+    private LeftPane leftPane;
     private RightPaneWrapper rightPaneWrapper;
     private PatientDTO currentPatient;
     private VisitDTO currentVisit;
@@ -24,13 +24,36 @@ class MainFrame extends JFrame implements MainContext {
         setupMenu();
         setLayout(new MigLayout("", "", "[grow]"));
         MainExecContext ctx = makeMainExecContext();
-        leftPaneWrapper = new LeftPaneWrapper(ctx);
+        leftPane = new LeftPane(ctx);
         rightPaneWrapper = new RightPaneWrapper(ctx);
         JScrollPane rightScroll = new JScrollPane(rightPaneWrapper);
         rightScroll.setBorder(null);
-        add(leftPaneWrapper, "w 580!, h 520, growy");
+        add(leftPane, "w 580!, h 520, growy");
         add(rightScroll, "w 220!, h 520, growy");
         pack();
+    }
+
+    @Override
+    public void startBrowse(PatientDTO patient, Runnable uiCallback) {
+        suspendCurrentExam()
+                .thenCompose(res -> Service.api.listVisitFull2(patient.patientId, 0))
+                .thenAccept(page -> EventQueue.invokeLater(() -> {
+                    currentPatient = patient;
+                    leftPane.start(page);
+                    uiCallback.run();
+                }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
+    @Override
+    public void endBrowse() {
+        suspendCurrentExam();
     }
 
     @Override
@@ -40,8 +63,7 @@ class MainFrame extends JFrame implements MainContext {
                 .thenAccept(page -> EventQueue.invokeLater(() -> {
                     currentPatient = patient;
                     currentVisit = visit;
-                    tempVisitId = 0;
-                    leftPaneWrapper.start(page);
+                    leftPane.start(page);
                     edtCallback.run();
                 }))
                 .exceptionally(t -> {
@@ -51,6 +73,43 @@ class MainFrame extends JFrame implements MainContext {
                     });
                     return null;
                 });
+    }
+
+    @Override
+    public void suspendExam(Runnable uiCallback) {
+        suspendCurrentExam()
+                .thenAccept(res -> EventQueue.invokeLater(uiCallback::run))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
+    @Override
+    public void endExam(int charge, Runnable uiCallback) {
+        Service.api.endExam(currentVisit.visitId, charge)
+                .thenAccept(res -> EventQueue.invokeLater(() -> {
+                    currentPatient = null;
+                    currentVisit = null;
+                    tempVisitId = 0;
+                    leftPane.reset();
+                    uiCallback.run();
+                }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
+    @Override
+    public int getCurrentPatientId() {
+        return currentPatient != null ? currentPatient.patientId : 0;
     }
 
     @Override
@@ -75,7 +134,7 @@ class MainFrame extends JFrame implements MainContext {
                 currentPatient = null;
                 currentVisit = null;
                 tempVisitId = 0;
-                //leftPaneWrapper.reset();
+                leftPane.reset();
             });
             return true;
         });
@@ -114,7 +173,7 @@ class MainFrame extends JFrame implements MainContext {
                     return Service.api.listVisitFull2(patient.patientId, 0);
                 })
                 .thenApply(visits -> {
-                    leftPaneWrapper.start(visits);
+                    leftPane.start(visits);
                     return true;
                 });
     }
@@ -136,7 +195,7 @@ class MainFrame extends JFrame implements MainContext {
 //            suspendExam = CompletableFuture.completedFuture(true);
 //        }
 //        return suspendExam.thenApply(ok -> EventQueue.invokeLater(() ->{
-//            leftPaneWrapper.reset();
+//            leftPane.reset();
 //            currentPatient = null;
 //            currentVisit = null;
 //            tempVisitId = 0;

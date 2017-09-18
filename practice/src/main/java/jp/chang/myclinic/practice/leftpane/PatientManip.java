@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.leftpane;
 
+import jp.chang.myclinic.practice.Link;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -8,30 +9,32 @@ import java.awt.*;
 class PatientManip extends JPanel {
 
     interface Callback {
-        void onFinishPatient();
+        default void onCashier(){}
+        default void onFinishPatient(){}
     }
 
     private static Cursor handCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 
-    PatientManip(Callback callback){
-        setLayout(new MigLayout("", "", ""));
+    private Callback callback = new Callback(){};
+
+    PatientManip(){
+        setLayout(new MigLayout("insets 0", "", ""));
         JButton cashierButton = new JButton("会計");
+        cashierButton.addActionListener(evt -> callback.onCashier());
         JButton endPatientButton = new JButton("患者終了");
         endPatientButton.addActionListener(event -> callback.onFinishPatient());
-        JComponent searchTextLink = makeLink("文章検索");
-        JComponent makeReferLink = makeLink("紹介状作成");
+        Link searchTextLink = new Link("文章検索");
+        Link makeReferLink = new Link("紹介状作成");
         add(cashierButton, "sizegroup btn");
         add(endPatientButton, "sizegroup btn");
         add(new JLabel("|" ));
         add(searchTextLink);
+        add(new JLabel("|" ));
         add(makeReferLink);
     }
 
-    private JComponent makeLink(String label){
-        JLabel link = new JLabel(label);
-        link.setForeground(Color.BLUE);
-        link.setOpaque(true);
-        link.setCursor(handCursor);
-        return link;
+    void setCallback(Callback callback){
+        this.callback = callback;
     }
+
 }

@@ -33,7 +33,7 @@ public class SelectVisit extends JPanel {
                 repaint();
                 revalidate();
             } else {
-                Service.api.listWqueueFull()
+                Service.api.listWqueueFullForExam()
                         .thenAccept(list -> EventQueue.invokeLater(() -> {
                             searchResult.setListData(list.toArray(new WqueueFullDTO[]{}));
                             scrollPane.setVisible(true);

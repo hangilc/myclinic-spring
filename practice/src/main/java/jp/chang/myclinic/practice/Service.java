@@ -24,6 +24,9 @@ public class Service {
         @GET("search-patient")
         CompletableFuture<List<PatientDTO>> searchPatient(@Query("text") String text);
 
+        @GET("get-patient")
+        CompletableFuture<PatientDTO> getPatient(@Query("patient-id") int patientId);
+
         @GET("list-visit-full2")
         CompletableFuture<VisitFull2PageDTO> listVisitFull2(@Query("patient-id") int patientId, @Query("page") int page);
 
@@ -72,6 +75,9 @@ public class Service {
 
         @GET("list-wqueue-full")
         CompletableFuture<List<WqueueFullDTO>> listWqueueFull();
+
+        @GET("list-wqueue-full-for-exam")
+        CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam();
 
         @POST("start-exam")
         CompletableFuture<Boolean> startExam(@Query("visit-id") int visitId);
@@ -195,6 +201,9 @@ public class Service {
 
         @POST("delete-conduct-kizai")
         CompletableFuture<Boolean> deleteConductKizai(@Query("conduct-kizai-id") int conductKizaiId);
+
+        @GET("get-visit-meisai")
+        CompletableFuture<MeisaiDTO> getMeisai(@Query("visit-id") int visitId);
     }
 
     public static ServerAPI api;
