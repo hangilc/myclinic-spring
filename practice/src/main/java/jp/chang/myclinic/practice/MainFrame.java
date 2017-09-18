@@ -24,12 +24,13 @@ class MainFrame extends JFrame implements MainContext {
         setupMenu();
         setLayout(new MigLayout("", "", "[grow]"));
         MainExecContext ctx = makeMainExecContext();
+        int rightPaneWidth = 220;
         leftPane = new LeftPane(ctx);
-        rightPane = new RightPane(ctx);
+        rightPane = new RightPane(rightPaneWidth, ctx);
         JScrollPane rightScroll = new JScrollPane(rightPane);
         rightScroll.setBorder(null);
         add(leftPane, "w 580!, h 520, growy");
-        add(rightScroll, "w 220!, h 520, growy");
+        add(rightScroll, String.format("w %d!, h 520, growy", rightPaneWidth));
         pack();
     }
 
