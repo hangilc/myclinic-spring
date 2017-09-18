@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.rightpane.todaysvisits;
 
 import jp.chang.myclinic.dto.VisitPatientDTO;
+import jp.chang.myclinic.practice.MainContext;
 import jp.chang.myclinic.practice.Service;
 
 import javax.swing.*;
@@ -13,10 +14,25 @@ public class TodaysVisits extends JButton {
 
     public TodaysVisits(){
         super("本日の診察");
+        TodaysVisits self = this;
         searchResult = new SearchResult();
+        searchResult.setCallback(new SearchResult.Callback() {
+            @Override
+            public void onSelect(VisitPatientDTO selected) {
+                MainContext.get(self).startBrowse(selected.patient, () -> {});
+            }
+        });
         resultScroll = new JScrollPane(searchResult);
         resultScroll.setVisible(false);
-        addActionListener(evt -> doOpen());
+        addActionListener(evt -> {
+            if( resultScroll.isVisible() ){
+                resultScroll.setVisible(false);
+                revalidate();
+                repaint();
+            } else {
+                doOpen();
+            }
+        });
     }
 
     public Component getWorkArea(){
