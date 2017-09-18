@@ -240,7 +240,7 @@ class MainFrame extends JFrame {
 
 	}
 
-	public void doUpdateWqueue(){
+	void doUpdateWqueue(){
 		WqueueData wqueueData = wqueueList.getSelectedValue();
 		final int selectedVisitId = wqueueData == null ? 0 : wqueueData.getVisitId();
 		Service.api.listWqueue()

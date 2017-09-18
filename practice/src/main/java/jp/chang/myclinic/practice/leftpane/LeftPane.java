@@ -107,8 +107,8 @@ public class LeftPane extends JPanel implements LeftPaneContext {
                     CashierDialog dialog = new CashierDialog(owner, data.meisai, data.patient, data.visit);
                     dialog.setCallback(new CashierDialog.Callback() {
                         @Override
-                        public void onEnter() {
-                            MainContext.get(self).endExam(data.meisai.charge, () -> dialog.dispose());
+                        public void onEnter(int charge) {
+                            MainContext.get(self).endExam(charge, () -> dialog.dispose());
                         }
 
                         @Override
@@ -116,6 +116,7 @@ public class LeftPane extends JPanel implements LeftPaneContext {
                             dialog.dispose();
                         }
                     });
+                    dialog.setLocationByPlatform(true);
                     dialog.setVisible(true);
                 })
                 .exceptionally(t -> {
