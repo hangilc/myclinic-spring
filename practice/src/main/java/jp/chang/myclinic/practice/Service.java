@@ -79,6 +79,9 @@ public class Service {
         @GET("list-wqueue-full-for-exam")
         CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam();
 
+        @GET("list-todays-visits")
+        CompletableFuture<List<VisitPatientDTO>> listTodaysVisits();
+
         @POST("start-exam")
         CompletableFuture<Boolean> startExam(@Query("visit-id") int visitId);
 
