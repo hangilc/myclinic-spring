@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.rightpane.selectvisit;
 
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
 
@@ -10,8 +11,10 @@ class SearchResult extends JList<WqueueFullDTO> {
     SearchResult(){
         setCellRenderer((list, result, index, isSelected, cellHasFocus) -> {
             PatientDTO patient = result.patient;
-            String labelText = String.format("[%04d] %s %s (%s %s)",
+            WqueueWaitState ws = WqueueWaitState.fromCode(result.wqueue.waitState);
+            String labelText = String.format("[%04d] (%s) %s %s (%s %s)",
                     patient.patientId,
+                    ws.getLabel(),
                     patient.lastName,
                     patient.firstName,
                     patient.lastNameYomi,
