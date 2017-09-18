@@ -195,6 +195,11 @@ public class VisitController {
 		return true;
 	}
 
+	@RequestMapping(value="/list-todays-visits", method=RequestMethod.GET)
+	public List<VisitPatientDTO> listTodaysVisits(){
+		return dbGateway.listTodaysVisits();
+	}
+
 	private SectionItemDTO toSectionItemDTO(SectionItem sectionItem) {
 		SectionItemDTO sectionItemDTO = new SectionItemDTO();
 		sectionItemDTO.label = sectionItem.getLabel();

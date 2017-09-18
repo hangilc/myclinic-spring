@@ -4,7 +4,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.leftpane.LeftPane;
 import jp.chang.myclinic.practice.newvisitdialog.NewVisitDialog;
-import jp.chang.myclinic.practice.rightpane.RightPaneWrapper;
+import jp.chang.myclinic.practice.rightpane.RightPane;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 class MainFrame extends JFrame implements MainContext {
 
     private LeftPane leftPane;
-    private RightPaneWrapper rightPaneWrapper;
+    private RightPane rightPane;
     private PatientDTO currentPatient;
     private VisitDTO currentVisit;
     private int tempVisitId;
@@ -25,8 +25,8 @@ class MainFrame extends JFrame implements MainContext {
         setLayout(new MigLayout("", "", "[grow]"));
         MainExecContext ctx = makeMainExecContext();
         leftPane = new LeftPane(ctx);
-        rightPaneWrapper = new RightPaneWrapper(ctx);
-        JScrollPane rightScroll = new JScrollPane(rightPaneWrapper);
+        rightPane = new RightPane(ctx);
+        JScrollPane rightScroll = new JScrollPane(rightPane);
         rightScroll.setBorder(null);
         add(leftPane, "w 580!, h 520, growy");
         add(rightScroll, "w 220!, h 520, growy");

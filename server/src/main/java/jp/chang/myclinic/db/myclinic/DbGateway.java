@@ -91,6 +91,12 @@ public class DbGateway {
                 .map(this::resultToWqueueFull).collect(Collectors.toList());
     }
 
+    public List<VisitPatientDTO> listTodaysVisits(){
+        List<Integer> visitIds = visitRepository.findVisitIdForToday(new Sort("visitId"));
+        return visitRepository.findWithPatient(visitIds, new Sort("visitId")).stream()
+                .map(this::resultToVisitPatientDTO).collect(Collectors.toList());
+    }
+
     public void enterWqueue(WqueueDTO wqueueDTO){
         Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
         wqueueRepository.save(wqueue);
@@ -956,7 +962,7 @@ public class DbGateway {
     }
 
     public List<PharmaQueueFullDTO> listPharmaQueueFullForToday(){
-        List<Integer> visitIds = visitRepository.findVisitIdForToday();
+        List<Integer> visitIds = visitRepository.findVisitIdForToday(new Sort("visitId"));
         if( visitIds.isEmpty() ){
             return Collections.emptyList();
         }

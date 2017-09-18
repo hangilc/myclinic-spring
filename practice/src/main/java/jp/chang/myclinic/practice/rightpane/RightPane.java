@@ -4,16 +4,17 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.practice.MainExecContext;
 import jp.chang.myclinic.practice.rightpane.selectvisit.SelectVisit;
+import jp.chang.myclinic.practice.rightpane.todaysvisits.TodaysVisits;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.concurrent.CompletableFuture;
 
-public class RightPaneWrapper extends JPanel {
+public class RightPane extends JPanel {
 
-    public RightPaneWrapper(MainExecContext mainExecContext){
-        setLayout(new MigLayout("", "[grow]", ""));
+    public RightPane(MainExecContext mainExecContext){
+        setLayout(new MigLayout("hidemode 3", "[grow]", ""));
         SelectVisit selectVisit = new SelectVisit();
         selectVisit.setCallback(new SelectVisit.Callback(){
             @Override
@@ -29,6 +30,7 @@ public class RightPaneWrapper extends JPanel {
 
             }
         });
+        TodaysVisits todaysVisits = new TodaysVisits();
         add(selectVisit, "growx, wrap");
         {
             JPanel frame = new JPanel(new MigLayout("insets 0, fill", "", ""));
@@ -42,6 +44,8 @@ public class RightPaneWrapper extends JPanel {
             frame.add(searchPatientPane, "growx");
             add(frame, "top, growx, wrap");
         }
+        add(todaysVisits, "sizegroup btn, wrap");
+        add(todaysVisits.getWorkArea(), "wrap");
     }
 
     private void alert(String message){
