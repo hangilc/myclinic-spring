@@ -526,6 +526,76 @@ public class DTOMapper {
 		return prescExample;
 	}
 
+	public DiseaseDTO toDiseaseDTO(Disease disease){
+		DiseaseDTO diseaseDTO = new DiseaseDTO();
+		diseaseDTO.diseaseId = disease.getDiseaseId();
+		diseaseDTO.patientId = disease.getPatientId();
+		diseaseDTO.shoubyoumeicode = disease.getShoubyoumeicode();
+		diseaseDTO.startDate = disease.getStartDate();
+		diseaseDTO.endDate = disease.getEndDate();
+		diseaseDTO.endReason = disease.getEndReason();
+		return diseaseDTO;
+	}
+
+	public Disease fromDiseaseDTO(DiseaseDTO diseaseDTO){
+		Disease disease = new Disease();
+		disease.setDiseaseId(diseaseDTO.diseaseId);
+		disease.setPatientId(diseaseDTO.patientId);
+		disease.setShoubyoumeicode(diseaseDTO.shoubyoumeicode);
+		disease.setStartDate(diseaseDTO.startDate);
+		disease.setEndDate(diseaseDTO.endDate);
+		disease.setEndReason(diseaseDTO.endReason);
+		return disease;
+	}
+
+	public DiseaseAdjDTO toDiseaseAdjDTO(DiseaseAdj adj){
+		DiseaseAdjDTO adjDTO = new DiseaseAdjDTO();
+		adjDTO.diseaseAdjId = adj.getDiseaseAdjId();
+		adjDTO.diseaseId = adj.getDiseaseId();
+		adjDTO.shuushokugocode = adj.getShuushokugocode();
+		return adjDTO;
+	}
+
+	public DiseaseAdj fromDiseaseAdjDTO(DiseaseAdjDTO adjDTO){
+		DiseaseAdj adj = new DiseaseAdj();
+		adj.setDiseaseAdjId(adjDTO.diseaseAdjId);
+		adj.setDiseaseId(adjDTO.diseaseId);
+		adj.setShuushokugocode(adjDTO.shuushokugocode);
+		return adj;
+	}
+
+	public ByoumeiMasterDTO toByoumeiMasterDTO(ByoumeiMaster master){
+		ByoumeiMasterDTO dto = new ByoumeiMasterDTO();
+		dto.shoubyoumeicode = master.getShoubyoumeicode();
+		dto.name = master.getName();
+		dto.validFrom = master.getValidFrom();
+		dto.validUpto = master.getValidUpto();
+		return dto;
+	}
+
+	public ByoumeiMaster fromByoumeiMasterDTO(ByoumeiMasterDTO dto){
+		ByoumeiMaster master = new ByoumeiMaster();
+		master.setShoubyoumeicode(dto.shoubyoumeicode);
+		master.setName(dto.name);
+		master.setValidFrom(dto.validFrom);
+		master.setValidUpto(dto.validUpto);
+		return master;
+	}
+
+	public ShuushokugoMasterDTO toShuushokugoMasterDTO(ShuushokugoMaster master){
+		ShuushokugoMasterDTO dto = new ShuushokugoMasterDTO();
+		dto.shuushokugocode = master.getShuushokugocode();
+		dto.name = master.getName();
+		return dto;
+	}
+
+	public ShuushokugoMaster fromShuushokugoMasterDTO(ShuushokugoMasterDTO dto){
+		ShuushokugoMaster master = new ShuushokugoMaster();
+		master.setShuushokugocode(dto.shuushokugocode);
+		master.setName(dto.name);
+		return master;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;
