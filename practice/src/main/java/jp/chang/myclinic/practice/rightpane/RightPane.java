@@ -9,6 +9,7 @@ import jp.chang.myclinic.practice.rightpane.todaysvisits.TodaysVisits;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.time.LocalDate;
 
 public class RightPane extends JPanel {
 
@@ -18,7 +19,7 @@ public class RightPane extends JPanel {
 
     public RightPane(int width){
         this.width = width;
-        setLayout(new MigLayout("hidemode 3", "[grow]", ""));
+        setLayout(new MigLayout("insets 0, hidemode 3", "[grow]", ""));
         setupDisease();
         SelectVisit selectVisit = new SelectVisit();
         RightPane self = this;
@@ -41,6 +42,14 @@ public class RightPane extends JPanel {
         }
         add(todaysVisits, "sizegroup btn, wrap");
         add(todaysVisits.getWorkArea(), "w 10, growx, wrap");
+    }
+
+    public void openDisease(int patientId, LocalDate at){
+        diseaseWorkArea.setVisible(true);
+    }
+
+    public void closeDisease(){
+        diseaseWorkArea.setVisible(false);
     }
 
     private void setupDisease(){

@@ -52,6 +52,7 @@ public class WorkArea extends JPanel {
         Font font = title.getFont().deriveFont(Font.BOLD);
         title.setFont(font);
         title.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        //title.setSize(getInnerColumnWidth(), Integer.MAX_VALUE);
         return title;
     }
 

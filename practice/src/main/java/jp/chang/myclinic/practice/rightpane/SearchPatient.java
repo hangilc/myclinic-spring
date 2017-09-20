@@ -70,7 +70,7 @@ class SearchPatient extends JPanel {
                 if( e.getClickCount() == 2 ){
                     PatientDTO patient = searchResult.getSelectedValue();
                     if( patient != null ){
-                        MainContext.get(self).startExam(patient, null, () -> {
+                        MainContext.get(self).startBrowse(patient, () -> {
 
                         });
                     }

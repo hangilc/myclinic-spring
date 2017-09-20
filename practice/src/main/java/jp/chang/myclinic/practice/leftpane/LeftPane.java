@@ -19,7 +19,7 @@ public class LeftPane extends JPanel implements LeftPaneContext {
     private RecordsNav botNav;
 
     public LeftPane(){
-        setLayout(new MigLayout("insets 0", "[grow]", "[] [] [grow] []"));
+        setLayout(new MigLayout("insets 0", "[grow]", "[] [] [] [grow] []"));
         EventQueue.invokeLater(this::setupComponents);
         setVisible(false);
     }

@@ -10,4 +10,5 @@ public class DiseaseBox extends JPanel {
         setLayout(new FixedWidthLayout(width));
     }
 
+
 }
