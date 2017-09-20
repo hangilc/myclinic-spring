@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.leftpane;
+package jp.chang.myclinic.practice;
 
 import net.miginfocom.swing.MigLayout;
 

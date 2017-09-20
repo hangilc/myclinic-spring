@@ -9,7 +9,7 @@ import jp.chang.myclinic.practice.MainContext;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.leftpane.LeftPaneContext;
 import jp.chang.myclinic.practice.leftpane.RecordContext;
-import jp.chang.myclinic.practice.leftpane.WorkArea;
+import jp.chang.myclinic.practice.WorkArea;
 
 import javax.swing.*;
 import java.awt.*;

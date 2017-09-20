@@ -7,7 +7,7 @@ import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.WrappedText;
-import jp.chang.myclinic.practice.leftpane.WorkArea;
+import jp.chang.myclinic.practice.WorkArea;
 
 import javax.swing.*;
 import java.awt.*;

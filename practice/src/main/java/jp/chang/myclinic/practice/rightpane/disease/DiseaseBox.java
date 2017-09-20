@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.rightpane.disease;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.Link;
+import jp.chang.myclinic.practice.rightpane.disease.addpane.DiseaseAddPane;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -48,6 +49,7 @@ public class DiseaseBox extends JPanel {
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         Link listLink = new Link("現行");
         Link addLink = new Link("追加");
+        addLink.setCallback(evt -> switchPane(new DiseaseAddPane(width)));
         Link endLink = new Link("転帰");
         Link editLink = new Link("編集");
         panel.add(listLink);

@@ -5,7 +5,7 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.WrappedText;
-import jp.chang.myclinic.practice.leftpane.WorkArea;
+import jp.chang.myclinic.practice.WorkArea;
 import jp.chang.myclinic.practice.leftpane.conduct.adddrug.AddConductDrugForm;
 import jp.chang.myclinic.practice.leftpane.conduct.addkizai.AddConductKizaiForm;
 import jp.chang.myclinic.practice.leftpane.conduct.addshinryou.AddConductShinryouForm;

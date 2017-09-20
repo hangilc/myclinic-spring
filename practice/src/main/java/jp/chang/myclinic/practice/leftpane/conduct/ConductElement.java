@@ -4,7 +4,7 @@ import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.WrappedText;
-import jp.chang.myclinic.practice.leftpane.WorkArea;
+import jp.chang.myclinic.practice.WorkArea;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.KizaiUtil;
 

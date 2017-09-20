@@ -4,7 +4,7 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.leftpane.RecordContext;
-import jp.chang.myclinic.practice.leftpane.WorkArea;
+import jp.chang.myclinic.practice.WorkArea;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;

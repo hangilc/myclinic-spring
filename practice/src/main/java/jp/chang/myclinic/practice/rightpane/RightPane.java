@@ -3,7 +3,7 @@ package jp.chang.myclinic.practice.rightpane;
 import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.practice.MainContext;
 import jp.chang.myclinic.practice.Service;
-import jp.chang.myclinic.practice.leftpane.WorkArea;
+import jp.chang.myclinic.practice.WorkArea;
 import jp.chang.myclinic.practice.rightpane.disease.DiseaseBox;
 import jp.chang.myclinic.practice.rightpane.selectvisit.SelectVisit;
 import jp.chang.myclinic.practice.rightpane.todaysvisits.TodaysVisits;
