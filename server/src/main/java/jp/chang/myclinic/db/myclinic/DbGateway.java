@@ -1168,7 +1168,16 @@ public class DbGateway {
     public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId, LocalDate at){
         Date atDate = Date.valueOf(at);
         return diseaseRepository.findCurrentWithMaster(patientId, atDate, new Sort("diseaseId")).stream()
-                .map(this::resultToDiseaseFullDTO).collect(Collectors.toList());
+                .map(this::resultToDiseaseFullDTO)
+                .map(diseaseFullDTO -> {
+                    diseaseFullDTO.adjList =
+                            diseaseAdjRepository.findByDiseaseIdWithMaster(diseaseFullDTO.disease.diseaseId, new Sort("diseaseAdjId"))
+                            .stream()
+                            .map(this::resultToDiseaseAdjFullDTO)
+                            .collect(Collectors.toList());
+                    return diseaseFullDTO;
+                })
+                .collect(Collectors.toList());
     }
 
     private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
@@ -1260,6 +1269,13 @@ public class DbGateway {
         diseaseFull.master = master;
         diseaseFull.adjList = new ArrayList<>();
         return diseaseFull;
+    }
+
+    private DiseaseAdjFullDTO resultToDiseaseAdjFullDTO(Object[] result){
+        DiseaseAdjFullDTO dto = new DiseaseAdjFullDTO();
+        dto.diseaseAdj = mapper.toDiseaseAdjDTO((DiseaseAdj)result[0]);
+        dto.master = mapper.toShuushokugoMasterDTO((ShuushokugoMaster)result[1]);
+        return dto;
     }
 
 }

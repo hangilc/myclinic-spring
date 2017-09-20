@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.rightpane;
 
 import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.practice.MainContext;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.leftpane.WorkArea;
 import jp.chang.myclinic.practice.rightpane.disease.DiseaseBox;
 import jp.chang.myclinic.practice.rightpane.selectvisit.SelectVisit;
@@ -9,6 +10,7 @@ import jp.chang.myclinic.practice.rightpane.todaysvisits.TodaysVisits;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.time.LocalDate;
 
 public class RightPane extends JPanel {
@@ -45,16 +47,30 @@ public class RightPane extends JPanel {
     }
 
     public void openDisease(int patientId, LocalDate at){
+        Service.api.listCurrentDiseaseFull(patientId, at.toString())
+                .thenAccept(list -> EventQueue.invokeLater(() -> {
+                    diseaseBox.reset(list);
+                    diseaseWorkArea.setVisible(true);
+                }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
         diseaseWorkArea.setVisible(true);
     }
 
     public void closeDisease(){
+        diseaseBox.clear();
         diseaseWorkArea.setVisible(false);
     }
 
     private void setupDisease(){
         diseaseWorkArea = new WorkArea(width, "症病名");
         diseaseBox = new DiseaseBox(diseaseWorkArea.getInnerColumnWidth());
+        diseaseWorkArea.setComponent(diseaseBox);
         diseaseWorkArea.setVisible(false);
     }
 

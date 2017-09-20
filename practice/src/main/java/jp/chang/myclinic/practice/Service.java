@@ -209,7 +209,7 @@ public class Service {
         CompletableFuture<MeisaiDTO> getMeisai(@Query("visit-id") int visitId);
 
         @GET("list-current-disease-full")
-        CompletableFuture<DiseaseFullDTO> listCurrentDiseaseFull(@Query("patient-id") int patientId,
+        CompletableFuture<List<DiseaseFullDTO>> listCurrentDiseaseFull(@Query("patient-id") int patientId,
                                                                  @Query("at") String at);
     }
 
