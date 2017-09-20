@@ -72,6 +72,10 @@ public class DbGateway {
     private DiseaseRepository diseaseRepository;
     @Autowired
     private DiseaseAdjRepository diseaseAdjRepository;
+    @Autowired
+    private ByoumeiMasterRepository byoumeiMasterRepository;
+    @Autowired
+    private ShuushokugoMasterRepository shuushokugoMasterRepository;
 
     public List<WqueueFullDTO> listWqueueFull(){
         try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
@@ -1178,6 +1182,17 @@ public class DbGateway {
                     return diseaseFullDTO;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at){
+        Date atDate = Date.valueOf(at);
+        return byoumeiMasterRepository.searchByName(text, atDate).stream()
+                .map(mapper::toByoumeiMasterDTO).collect(Collectors.toList());
+    }
+
+    public List<ShuushokugoMasterDTO> searchShuushokugoMaster(String text){
+        return shuushokugoMasterRepository.searchByName(text).stream()
+                .map(mapper::toShuushokugoMasterDTO).collect(Collectors.toList());
     }
 
     private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
