@@ -1,10 +1,7 @@
 package jp.chang.myclinic.practice.leftpane;
 
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.practice.FixedWidthLayout;
-import jp.chang.myclinic.practice.MainExecContext;
-import jp.chang.myclinic.practice.PracticeUtil;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.*;
 import jp.chang.myclinic.practice.leftpane.conduct.ConductBox;
 import jp.chang.myclinic.practice.leftpane.drug.DrugHandler;
 import jp.chang.myclinic.practice.leftpane.hoken.HokenChooser;
@@ -25,7 +22,6 @@ class Record extends JPanel implements RecordContext {
         default void onDrugsCopied(int targetVisitId, List<DrugFullDTO> drugs){}
     }
 
-    private MainExecContext mainExecContext;
     private int width;
     private int colWidth;
     private Title title;
@@ -35,15 +31,14 @@ class Record extends JPanel implements RecordContext {
     private ConductBox conductBox;
     private Callback callback;
 
-    Record(VisitFull2DTO fullVisit, int width, MainExecContext mainExecContext){
-        this.mainExecContext = mainExecContext;
+    Record(VisitFull2DTO fullVisit, int width, int currentVisitId, int tempVisitId){
         this.width = width;
         this.colWidth = (width - 4) / 2;
         int gap = width - colWidth * 2;
         setLayout(new MigLayout("insets 0",
                 String.format("[%dpx!]%d[%dpx!]", colWidth, gap, colWidth),
                 ""));
-        title = new Title(fullVisit.visit, mainExecContext);
+        title = new Title(fullVisit.visit, currentVisitId, tempVisitId);
         textArea = new TextArea(fullVisit, colWidth);
         add(title, "span, growx, wrap");
         add(textArea, "top");

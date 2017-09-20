@@ -4,7 +4,7 @@ import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
-import jp.chang.myclinic.practice.MainExecContext;
+import jp.chang.myclinic.practice.MainContext;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -14,11 +14,9 @@ import java.util.Map;
 
 class DispRecords extends JPanel {
 
-    private MainExecContext mainExecContext;
     private Map<Integer, Record> recordMap = new LinkedHashMap<>();
 
-    DispRecords(int width, MainExecContext mainExecContext){
-        this.mainExecContext = mainExecContext;
+    DispRecords(int width){
         setLayout(new MigLayout("insets 0", "[grow]", ""));
     }
 
@@ -26,8 +24,11 @@ class DispRecords extends JPanel {
         int width = getSize().width;
         removeAll();
         recordMap.clear();
+        MainContext mainContext = MainContext.get(this);
+        int currentVisitId = mainContext.getCurrentVisitId();
+        int tempVisitId = mainContext.getTempVisitId();
         visits.forEach(visit -> {
-            Record record = new Record(visit, width, mainExecContext);
+            Record record = new Record(visit, width, currentVisitId, tempVisitId);
             add(record, "growx, wrap");
             recordMap.put(visit.visit.visitId, record);
         });

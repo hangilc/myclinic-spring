@@ -13,7 +13,7 @@ public interface MainContext {
     void suspendExam(Runnable uiCallback);
     void endExam(int charge, Runnable uiCallback);
 
-    int getCurrentPatientId();
+    PatientDTO getCurrentPatient();
     int getCurrentVisitId();
     int getTempVisitId();
 

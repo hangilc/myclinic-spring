@@ -9,13 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.concurrent.CompletableFuture;
 
 class SearchPatient extends JPanel {
-
-    public interface Context {
-        CompletableFuture<Boolean> startPatient(PatientDTO patient);
-    }
 
    private JTextField searchTextField = new JTextField();
     private JList<PatientDTO> searchResult = new JList<PatientDTO>(){
@@ -26,10 +21,8 @@ class SearchPatient extends JPanel {
         }
     };
     private JScrollPane scrollPane;
-    private Context context;
 
-    SearchPatient(Context context){
-        this.context = context;
+    SearchPatient(){
         setLayout(new MigLayout("insets 0, fill", "[grow] []", ""));
         setupSearchTextField();
         setupSearchResult();

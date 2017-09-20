@@ -23,10 +23,9 @@ class MainFrame extends JFrame implements MainContext {
         setTitle("診察");
         setupMenu();
         setLayout(new MigLayout("", "", "[grow]"));
-        MainExecContext ctx = makeMainExecContext();
         int rightPaneWidth = 220;
-        leftPane = new LeftPane(ctx);
-        rightPane = new RightPane(rightPaneWidth, ctx);
+        leftPane = new LeftPane();
+        rightPane = new RightPane(rightPaneWidth);
         JScrollPane rightScroll = new JScrollPane(rightPane);
         rightScroll.setBorder(null);
         add(leftPane, "w 580!, h 520, growy");
@@ -109,8 +108,8 @@ class MainFrame extends JFrame implements MainContext {
     }
 
     @Override
-    public int getCurrentPatientId() {
-        return currentPatient != null ? currentPatient.patientId : 0;
+    public PatientDTO getCurrentPatient(){
+        return currentPatient;
     }
 
     @Override
@@ -139,30 +138,6 @@ class MainFrame extends JFrame implements MainContext {
             });
             return true;
         });
-    }
-
-    private MainExecContext makeMainExecContext(){
-        return new MainExecContext(){
-            @Override
-            public CompletableFuture<Boolean> startExam(VisitDTO visit, PatientDTO patient) {
-                return doStartExam(visit, patient);
-            }
-
-            @Override
-            public PatientDTO getCurrentPatient() {
-                return currentPatient;
-            }
-
-            @Override
-            public VisitDTO getCurrentVisit() {
-                return currentVisit;
-            }
-
-            @Override
-            public int getTempVisitId() {
-                return tempVisitId;
-            }
-        };
     }
 
     private CompletableFuture<Boolean> doStartExam(VisitDTO visit, PatientDTO patient) {

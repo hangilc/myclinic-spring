@@ -2,7 +2,6 @@ package jp.chang.myclinic.practice.leftpane;
 
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.MainContext;
-import jp.chang.myclinic.practice.MainExecContext;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.cashierdialog.CashierDialog;
 import net.miginfocom.swing.MigLayout;
@@ -13,16 +12,14 @@ import java.util.List;
 
 public class LeftPane extends JPanel implements LeftPaneContext {
 
-    private MainExecContext mainExecContext;
     private PatientInfoPane patientInfoPane;
     private RecordsNav topNav;
     private DispRecords dispRecords;
     private JScrollPane dispScroll;
     private RecordsNav botNav;
 
-    public LeftPane(MainExecContext mainExecContext){
+    public LeftPane(){
         setLayout(new MigLayout("insets 0", "[grow]", "[] [] [grow] []"));
-        this.mainExecContext = mainExecContext;
         EventQueue.invokeLater(this::setupComponents);
         setVisible(false);
     }
@@ -34,7 +31,7 @@ public class LeftPane extends JPanel implements LeftPaneContext {
         bindPatientManip(patientManip);
         this.topNav = makeNav();
         this.botNav = makeNav();
-        dispRecords = new DispRecords(width, mainExecContext);
+        dispRecords = new DispRecords(width);
         dispScroll = new JScrollPane(dispRecords);
         dispScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         dispScroll.setBorder(null);
@@ -136,7 +133,7 @@ public class LeftPane extends JPanel implements LeftPaneContext {
     }
 
     public void start(VisitFull2PageDTO page){
-        PatientDTO patient = mainExecContext.getCurrentPatient();
+        PatientDTO patient = MainContext.get(this).getCurrentPatient();
         patientInfoPane.setPatient(patient);
         topNav.start(patient.patientId, page.totalPages);
         botNav.start(patient.patientId, page.totalPages);
