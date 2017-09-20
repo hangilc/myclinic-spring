@@ -68,6 +68,10 @@ public class DbGateway {
     private HotlineRepository hotlineRepository;
     @Autowired
     private PrescExampleRepository prescExampleRepository;
+    @Autowired
+    private DiseaseRepository diseaseRepository;
+    @Autowired
+    private DiseaseAdjRepository diseaseAdjRepository;
 
     public List<WqueueFullDTO> listWqueueFull(){
         try(Stream<Wqueue> stream = wqueueRepository.findAllAsStream()){
@@ -1158,6 +1162,12 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
+    public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId, LocalDate at){
+        Date atDate = Date.valueOf(at);
+        return diseaseRepository.findCurrentWithMaster(patientId, atDate, new Sort("diseaseId")).stream()
+                .map(this::resultToDiseaseFullDTO).collect(Collectors.toList());
+    }
+
     private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
         Shinryou shinryou = (Shinryou)result[0];
         ShinryouMaster master = (ShinryouMaster)result[1];
@@ -1237,6 +1247,16 @@ public class DbGateway {
         wqueueFullDTO.patient = mapper.toPatientDTO((Patient)result[1]);
         wqueueFullDTO.visit = mapper.toVisitDTO((Visit)result[2]);
         return wqueueFullDTO;
+    }
+
+    private DiseaseFullDTO resultToDiseaseFullDTO(Object[] result){
+        DiseaseDTO disease = mapper.toDiseaseDTO(((Disease)result[0]));
+        ByoumeiMasterDTO master = mapper.toByoumeiMasterDTO((ByoumeiMaster)result[1]);
+        DiseaseFullDTO diseaseFull = new DiseaseFullDTO();
+        diseaseFull.disease = disease;
+        diseaseFull.master = master;
+        diseaseFull.adjList = new ArrayList<>();
+        return diseaseFull;
     }
 
 }
