@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.rightpane.disease.addpane;
 
 import jp.chang.myclinic.practice.Link;
+import jp.chang.myclinic.practice.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -23,6 +24,12 @@ class SearchArea extends JPanel {
         JPanel panel = new JPanel(new MigLayout("insets 0", "[grow] [] []", ""));
         JTextField searchTextField = new JTextField();
         JButton searchButton = new JButton("検索");
+        searchButton.addActionListener(evt -> {
+            String text = searchTextField.getText();
+            if( !text.isEmpty() ){
+                doSearch(searchTextField.getText());
+            }
+        });
         Link exampleLink = new Link("例");
         panel.add(searchTextField, "growx");
         panel.add(searchButton);
@@ -39,6 +46,13 @@ class SearchArea extends JPanel {
         panel.add(byoumeiButton);
         panel.add(shuushokuButton);
         return panel;
+    }
+
+    private void doSearch(String text){
+        Mode mode = getMode();
+        if( mode == Mode.BYOUMEI ){
+            Service.api.
+        }
     }
 
     private Mode getMode(){

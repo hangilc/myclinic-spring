@@ -211,6 +211,10 @@ public class Service {
         @GET("list-current-disease-full")
         CompletableFuture<List<DiseaseFullDTO>> listCurrentDiseaseFull(@Query("patient-id") int patientId,
                                                                  @Query("at") String at);
+
+        @GET("search-byoumei")
+        CompletableFuture<List<ByoumeiMasterDTO>> searchByoumei(@Query("text") String text,
+                                                                @Query("at") String at);
     }
 
     public static ServerAPI api;
