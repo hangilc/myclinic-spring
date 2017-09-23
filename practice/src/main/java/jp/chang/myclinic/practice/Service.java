@@ -212,9 +212,12 @@ public class Service {
         CompletableFuture<List<DiseaseFullDTO>> listCurrentDiseaseFull(@Query("patient-id") int patientId,
                                                                  @Query("at") String at);
 
-        @GET("search-byoumei")
+        @GET("search-byoumei-master")
         CompletableFuture<List<ByoumeiMasterDTO>> searchByoumei(@Query("text") String text,
                                                                 @Query("at") String at);
+
+        @GET("search-shuushokugo-master")
+        CompletableFuture<List<ShuushokugoMasterDTO>> searchShuushokugo(@Query("text") String text);
     }
 
     public static ServerAPI api;

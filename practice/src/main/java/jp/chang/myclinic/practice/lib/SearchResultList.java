@@ -1,5 +1,7 @@
 package jp.chang.myclinic.practice.lib;
 
+import jp.chang.myclinic.dto.ShinryouMasterDTO;
+
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -28,7 +30,7 @@ public class SearchResultList<T> extends JList<T> {
         return data.toString();
     }
 
-    protected void setDoubleClickHandler(Consumer<T> handler){
+    public void setDoubleClickHandler(Consumer<T> handler){
         addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -37,6 +39,17 @@ public class SearchResultList<T> extends JList<T> {
                     if (data != null) {
                         handler.accept(data);
                     }
+                }
+            }
+        });
+    }
+
+    public void setSelectionHandler(Consumer<T> handler){
+        addListSelectionListener(event -> {
+            if( !event.getValueIsAdjusting() ){
+                T item = getSelectedValue();
+                if( item != null ){
+                    handler.accept(item);
                 }
             }
         });
