@@ -1184,6 +1184,33 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
+    public DiseaseFullDTO getDiseaseFull(int diseaseId){
+        Object[] result = diseaseRepository.findFull(diseaseId).get(0);
+        DiseaseFullDTO diseaseFullDTO = new DiseaseFullDTO();
+        diseaseFullDTO.disease = mapper.toDiseaseDTO((Disease)result[0]);
+        diseaseFullDTO.master = mapper.toByoumeiMasterDTO(((ByoumeiMaster)result[1]));
+        diseaseFullDTO.adjList =
+                diseaseAdjRepository.findByDiseaseIdWithMaster(diseaseFullDTO.disease.diseaseId, new Sort("diseaseAdjId"))
+                        .stream()
+                        .map(this::resultToDiseaseAdjFullDTO)
+                        .collect(Collectors.toList());
+        return diseaseFullDTO;
+    }
+
+    public int enterDisease(DiseaseDTO diseaseDTO, List<DiseaseAdjDTO> adjDTOList){
+        Disease disease = mapper.fromDiseaseDTO(diseaseDTO);
+        disease.setDiseaseId(null);
+        disease = diseaseRepository.save(disease);
+        int diseaseId = disease.getDiseaseId();
+        adjDTOList.forEach(adjDTO -> {
+            DiseaseAdj adj = mapper.fromDiseaseAdjDTO(adjDTO);
+            adj.setDiseaseAdjId(null);
+            adj.setDiseaseId(diseaseId);
+            diseaseAdjRepository.save(adj);
+        });
+        return diseaseId;
+    }
+
     public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at){
         Date atDate = Date.valueOf(at);
         return byoumeiMasterRepository.searchByName(text, atDate).stream()

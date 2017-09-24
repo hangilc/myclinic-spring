@@ -16,4 +16,10 @@ public interface DiseaseRepository extends CrudRepository<Disease, Integer> {
             " and m.validFrom <= DATE(:at) " +
             " and (m.validUpto = '0000-00-00' or m.validUpto >= DATE(:at)) ")
     List<Object[]> findCurrentWithMaster(@Param("patientId") int patientId, @Param("at") Date at, Sort sort);
+
+    @Query("select d, m from Disease d, ByoumeiMaster m, Visit v " +
+            " where d.diseaseId = :diseaseId and m.shoubyoumeicode = d.shoubyoumeicode " +
+            " and m.validFrom <= d.startDate " +
+            " and (m.validUpto = '0000-00-00' or m.validUpto >= d.startDate) ")
+    List<Object[]> findFull(@Param("diseaseId") int diseaseId);
 }

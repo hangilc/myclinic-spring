@@ -14,6 +14,7 @@ import java.util.List;
 public class DiseaseBox extends JPanel {
 
     private int width;
+    private int patientId;
     private Component workPane;
     private List<DiseaseFullDTO> currentDiseases;
 
@@ -26,10 +27,11 @@ public class DiseaseBox extends JPanel {
     }
 
     public void clear(){
-        reset(Collections.emptyList());
+        reset(0, Collections.emptyList());
     }
 
-    public void reset(List<DiseaseFullDTO> diseaseList){
+    public void reset(int patientId, List<DiseaseFullDTO> diseaseList){
+        this.patientId = patientId;
         this.currentDiseases = diseaseList;
         gotoListMode();
     }
@@ -49,7 +51,11 @@ public class DiseaseBox extends JPanel {
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         Link listLink = new Link("現行");
         Link addLink = new Link("追加");
-        addLink.setCallback(evt -> switchPane(new DiseaseAddPane(width)));
+        addLink.setCallback(evt -> {
+            if( patientId > 0 ) {
+                switchPane(new DiseaseAddPane(width, patientId));
+            }
+        });
         Link endLink = new Link("転帰");
         Link editLink = new Link("編集");
         panel.add(listLink);

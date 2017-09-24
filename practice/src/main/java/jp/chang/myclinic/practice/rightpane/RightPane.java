@@ -49,7 +49,7 @@ public class RightPane extends JPanel {
     public void openDisease(int patientId, LocalDate at){
         Service.api.listCurrentDiseaseFull(patientId, at.toString())
                 .thenAccept(list -> EventQueue.invokeLater(() -> {
-                    diseaseBox.reset(list);
+                    diseaseBox.reset(patientId, list);
                     diseaseWorkArea.setVisible(true);
                 }))
                 .exceptionally(t -> {
