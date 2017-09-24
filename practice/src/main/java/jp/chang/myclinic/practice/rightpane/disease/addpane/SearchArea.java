@@ -23,6 +23,7 @@ class SearchArea extends JPanel {
     private ByoumeiMasterDTO byoumeiMaster;
     private List<ShuushokugoMasterDTO> adjList = new ArrayList<>();
     private WrappedText nameText;
+    private DateInput dateInput;
     private JRadioButton byoumeiButton = new JRadioButton("病名");
     private JRadioButton shuushokuButton = new JRadioButton("修飾語");
     private SearchResult searchResult = new SearchResult();
@@ -38,8 +39,9 @@ class SearchArea extends JPanel {
             }
             updateName();
         });
-        add(makeNameArea(), "wrap");
+        dateInput = new DateInput();
         JScrollPane searchScroll = new JScrollPane(searchResult);
+        add(makeNameArea(), "wrap");
         add(makeSearchBox(), "growx, wrap");
         add(makeSearchOpt(), "wrap");
         add(searchScroll, "w 10, grow");
