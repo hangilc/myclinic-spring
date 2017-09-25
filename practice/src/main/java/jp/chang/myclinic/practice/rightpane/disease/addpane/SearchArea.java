@@ -3,10 +3,8 @@ package jp.chang.myclinic.practice.rightpane.disease.addpane;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
-import jp.chang.myclinic.practice.WrappedText;
 import jp.chang.myclinic.practice.lib.dateinput.DateInput;
 import jp.chang.myclinic.practice.lib.dateinput.Gengou;
-import jp.chang.myclinic.util.DiseaseUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -20,48 +18,38 @@ import java.util.stream.Collectors;
 
 class SearchArea extends JPanel {
 
+    interface Callback {
+        default void onByoumeiSelect(ByoumeiMasterDTO byoumeiMaster){}
+        default void onShuushokugoSelect(ShuushokugoMasterDTO shuushokugoMaster){}
+    }
+
     private enum Mode { BYOUMEI, SHUUSHOKUGO };
 
-    private int width;
-    private int patientId;
-    private ByoumeiMasterDTO byoumeiMaster;
-    private List<ShuushokugoMasterDTO> adjList = new ArrayList<>();
-    private WrappedText nameText;
     private DateInput startDateInput;
     private JRadioButton byoumeiButton = new JRadioButton("病名");
     private JRadioButton shuushokuButton = new JRadioButton("修飾語");
     private SearchResult searchResult = new SearchResult();
+    private Callback callback = new Callback(){};
 
-    SearchArea(int width, int patientId){
-        this.width = width;
-        this.patientId = patientId;
+    SearchArea(int width){
         setLayout(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
         startDateInput = new DateInput(Collections.singletonList(Gengou.HEISEI));
         System.out.println(startDateInput.getValue());
         searchResult.setSelectionHandler(sel -> {
             if( sel instanceof ByoumeiResultData ){
-                this.byoumeiMaster = ((ByoumeiResultData)sel).getMaster();
+                ByoumeiMasterDTO byoumeiMaster = ((ByoumeiResultData)sel).getMaster();
+                callback.onByoumeiSelect(byoumeiMaster);
             } else if( sel instanceof ShuushokugoResultData ){
-                this.adjList.add(((ShuushokugoResultData)sel).getMaster());
+                ShuushokugoMasterDTO shuushookugoMaster = (((ShuushokugoResultData)sel).getMaster());
+                callback.onShuushokugoSelect(shuushookugoMaster);
             }
-            updateName();
         });
         JScrollPane searchScroll = new JScrollPane(searchResult);
-        add(makeNameArea(), "wrap");
         add(startDateInput, "wrap");
         add(makeCommandBox(), "gap top 4, gap bottom 4, wrap");
         add(makeSearchBox(), "growx, wrap");
         add(makeSearchOpt(), "wrap");
         add(searchScroll, "w 10, grow");
-    }
-
-    private Component makeNameArea(){
-        JPanel panel = new JPanel(new MigLayout("insets 0", "[]4[]", ""));
-        JLabel nameLabel = new JLabel("名称：");
-        nameText = new WrappedText(width - nameLabel.getPreferredSize().width - 4, "");
-        panel.add(nameLabel);
-        panel.add(nameText);
-        return panel;
     }
 
     private Component makeCommandBox(){
@@ -109,10 +97,6 @@ class SearchArea extends JPanel {
     private LocalDate getStartDate(){
         // TODO: fix start date
         return LocalDate.now();
-    }
-
-    private void updateName(){
-        nameText.setText(DiseaseUtil.getFullName(byoumeiMaster, adjList));
     }
 
     private void setByoumei(ByoumeiMasterDTO byoumeiMaster){
