@@ -3,14 +3,13 @@ package jp.chang.myclinic.practice.rightpane.disease.addpane;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
-import jp.chang.myclinic.practice.lib.dateinput.DateInput;
+import jp.chang.myclinic.practice.lib.dateinput.DateInputForm;
 import jp.chang.myclinic.practice.lib.dateinput.Gengou;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +24,7 @@ class SearchArea extends JPanel {
 
     private enum Mode { BYOUMEI, SHUUSHOKUGO };
 
-    private DateInput startDateInput;
+    private DateInputForm startDateInput;
     private JRadioButton byoumeiButton = new JRadioButton("病名");
     private JRadioButton shuushokuButton = new JRadioButton("修飾語");
     private SearchResult searchResult = new SearchResult();
@@ -33,7 +32,7 @@ class SearchArea extends JPanel {
 
     SearchArea(int width){
         setLayout(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
-        startDateInput = new DateInput(Collections.singletonList(Gengou.HEISEI));
+        startDateInput = new DateInputForm(Collections.singletonList(Gengou.HEISEI));
         System.out.println(startDateInput.getValue());
         searchResult.setSelectionHandler(sel -> {
             if( sel instanceof ByoumeiResultData ){
