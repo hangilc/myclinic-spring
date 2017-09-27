@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.lib.dateinput;
 
+import jp.chang.myclinic.consts.Gengou;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -10,8 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.time.temporal.ChronoField;
 
-public class DateInputForm extends JPanel {
+public class DateInputForm extends JPanel implements DateInput {
 
     private GengouInput gengouInput;
     private JTextField nenInput = new JTextField(2);
@@ -33,6 +35,17 @@ public class DateInputForm extends JPanel {
 
     public DateInputForm(Gengou gengou){
         this(Collections.singletonList(gengou));
+    }
+
+    public void setValue(LocalDate value){
+        JapaneseDate jd = JapaneseDate.from(value);
+        gengouInput.setEra(jd.getEra());
+        int nen = jd.get(ChronoField.YEAR_OF_ERA);
+        int month = value.getMonthValue();
+        int day = value.getDayOfMonth();
+        nenInput.setText("" + nen);
+        monthInput.setText("" + month);
+        dayInput.setText("" + day);
     }
 
     public Optional<LocalDate> getValue(){
@@ -59,12 +72,17 @@ public class DateInputForm extends JPanel {
         if( errors.size() == 0 ){
             return Optional.of(LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay()));
         } else {
+            alert(String.join("\n", errors));
             return Optional.empty();
         }
     }
 
-    public List<String> getErrors(){
-        return errors;
+    public boolean isEmpty(){
+        return nenInput.getText().isEmpty() && monthInput.getText().isEmpty() && dayInput.getText().isEmpty();
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
     }
 
 }
