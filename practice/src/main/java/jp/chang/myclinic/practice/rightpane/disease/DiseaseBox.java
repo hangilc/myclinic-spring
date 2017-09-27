@@ -50,10 +50,21 @@ public class DiseaseBox extends JPanel {
     private Component makeCommandBox(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         Link listLink = new Link("現行");
+        listLink.setCallback(evt -> {
+            DiseaseListPane diseaseListPane = new DiseaseListPane(width, currentDiseases);
+            switchPane(diseaseListPane);
+        });
         Link addLink = new Link("追加");
         addLink.setCallback(evt -> {
             if( patientId > 0 ) {
-                switchPane(new DiseaseAddPane(width, patientId));
+                DiseaseAddPane diseaseAddPane = new DiseaseAddPane(width, patientId);
+                diseaseAddPane.setCallback(new DiseaseAddPane.Callback() {
+                    @Override
+                    public void onEnter(DiseaseFullDTO entered) {
+                        currentDiseases.add(entered);
+                    }
+                });
+                switchPane(diseaseAddPane);
             }
         });
         Link endLink = new Link("転帰");
