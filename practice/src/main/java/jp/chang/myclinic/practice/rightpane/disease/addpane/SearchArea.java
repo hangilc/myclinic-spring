@@ -31,13 +31,11 @@ class SearchArea extends JPanel {
         this.startDateInput = startDateInput;
         setLayout(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
         searchResult.setSelectionHandler(sel -> {
-            if (sel instanceof ByoumeiResultData) {
-                ByoumeiMasterDTO byoumeiMaster = ((ByoumeiResultData) sel).getMaster();
+            ByoumeiMasterDTO byoumeiMaster = sel.getByoumeiMaster();
+            if( byoumeiMaster != null ){
                 callback.onByoumeiSelect(byoumeiMaster);
-            } else if (sel instanceof ShuushokugoResultData) {
-                ShuushokugoMasterDTO shuushookugoMaster = (((ShuushokugoResultData) sel).getMaster());
-                callback.onShuushokugoSelect(shuushookugoMaster);
             }
+            sel.getAdjList().forEach(callback::onShuushokugoSelect);
         });
         JScrollPane searchScroll = new JScrollPane(searchResult);
         add(makeSearchBox(), "growx, wrap");
@@ -83,7 +81,9 @@ class SearchArea extends JPanel {
             startDateInput.getValue().ifPresent(startDate -> {
                 Service.api.searchByoumei(text, startDate.toString())
                         .thenAccept(masters -> EventQueue.invokeLater(() ->{
-                            List<SearchResultData> dataList = masters.stream().map(ByoumeiResultData::new).collect(Collectors.toList());
+                            List<SearchResultData> dataList = masters.stream()
+                                    .map(SearchResultData::of)
+                                    .collect(Collectors.toList());
                             searchResult.setListData(dataList.toArray(new SearchResultData[]{}));
                         }))
                         .exceptionally(t -> {
@@ -97,7 +97,9 @@ class SearchArea extends JPanel {
         } else if( mode == Mode.SHUUSHOKUGO ){
             Service.api.searchShuushokugo(text)
                     .thenAccept(masters -> EventQueue.invokeLater(() ->{
-                        List<SearchResultData> dataList = masters.stream().map(ShuushokugoResultData::new).collect(Collectors.toList());
+                        List<SearchResultData> dataList = masters.stream()
+                                .map(SearchResultData::of)
+                                .collect(Collectors.toList());
                         searchResult.setListData(dataList.toArray(new SearchResultData[]{}));
                     }))
                     .exceptionally(t -> {
