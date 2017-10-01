@@ -1,8 +1,9 @@
 package jp.chang.myclinic.server.rest;
 
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.DiseaseNewDTO;
+import jp.chang.myclinic.server.DiseaseExample;
+import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,8 @@ class DiseaseController {
 
     @Autowired
     private DbGateway dbGateway;
+    @Autowired
+    private DiseaseExample diseaseExample;
 
     @RequestMapping(value="/list-current-disease-full", method= RequestMethod.GET)
     public List<DiseaseFullDTO> listCurrentDiseaseFull(@RequestParam("patient-id") int patientId,
@@ -33,6 +36,11 @@ class DiseaseController {
     @RequestMapping(value="/enter-disease", method=RequestMethod.POST)
     public int enterDisease(@RequestBody DiseaseNewDTO diseaseNew){
         return dbGateway.enterDisease(diseaseNew.disease, diseaseNew.adjList);
+    }
+
+    @RequestMapping(value="/list-disease-example", method=RequestMethod.GET)
+    public List<DiseaseExample.Entry> listDiseaseExample(){
+        return diseaseExample.getDiseaseExample();
     }
 
 }
