@@ -1,5 +1,6 @@
 package jp.chang.myclinic.server.rest;
 
+import jp.chang.myclinic.dto.DiseaseExampleDTO;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.DiseaseNewDTO;
 import jp.chang.myclinic.server.DiseaseExample;
@@ -9,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/json")
@@ -39,8 +42,40 @@ class DiseaseController {
     }
 
     @RequestMapping(value="/list-disease-example", method=RequestMethod.GET)
-    public List<DiseaseExample.Entry> listDiseaseExample(){
-        return diseaseExample.getDiseaseExample();
+    public List<DiseaseExampleDTO> listDiseaseExample(){
+        return diseaseExample.getDiseaseExample().stream()
+                .map(this::toDiseaseExampleDTO)
+                .collect(Collectors.toList());
+    }
+
+    private DiseaseExampleDTO toDiseaseExampleDTO(DiseaseExample.Entry entry){
+        DiseaseExampleDTO dto = new DiseaseExampleDTO();
+        String label = entry.getLabel();
+        List<String> pre = entry.getPre();
+        List<String> post = entry.getPost();
+        if( label == null ){
+            label = entry.getByoumei();
+            if( label == null ){
+                label = "";
+            }
+            if( pre != null ){
+                label = String.join("", pre) + label;
+            }
+            if( post != null ){
+                label = label + String.join("", post);
+            }
+        }
+        List<String> adjList = new ArrayList<>();
+        if( pre != null ){
+            adjList.addAll(pre);
+        }
+        if( post != null ){
+            adjList.addAll(post);
+        }
+        dto.label = label;
+        dto.byoumei = entry.getByoumei();
+        dto.adjList = adjList;
+        return dto;
     }
 
 }

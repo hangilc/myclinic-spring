@@ -30,13 +30,7 @@ class SearchArea extends JPanel {
     SearchArea(int width, DateInput startDateInput) {
         this.startDateInput = startDateInput;
         setLayout(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
-        searchResult.setSelectionHandler(sel -> {
-            ByoumeiMasterDTO byoumeiMaster = sel.getByoumeiMaster();
-            if( byoumeiMaster != null ){
-                callback.onByoumeiSelect(byoumeiMaster);
-            }
-            sel.getAdjList().forEach(callback::onShuushokugoSelect);
-        });
+        searchResult.setSelectionHandler(this::doSelected);
         JScrollPane searchScroll = new JScrollPane(searchResult);
         add(makeSearchBox(), "growx, wrap");
         add(makeSearchOpt(), "wrap");
@@ -45,6 +39,24 @@ class SearchArea extends JPanel {
 
     void setCallback(Callback callback){
         this.callback = callback;
+    }
+
+    private void doSelected(SearchResultData data){
+        data.getData()
+                .thenAccept(d -> EventQueue.invokeLater(() ->{
+                    ByoumeiMasterDTO byoumeiMaster = d.byoumeiMaster;
+                    if( byoumeiMaster != null ){
+                        callback.onByoumeiSelect(byoumeiMaster);
+                    }
+                    d.adjList.forEach(callback::onShuushokugoSelect);
+                }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
 
     private Component makeSearchBox(){
@@ -82,7 +94,7 @@ class SearchArea extends JPanel {
                 Service.api.searchByoumei(text, startDate.toString())
                         .thenAccept(masters -> EventQueue.invokeLater(() ->{
                             List<SearchResultData> dataList = masters.stream()
-                                    .map(SearchResultData::of)
+                                    .map(SearchResultMaster::of)
                                     .collect(Collectors.toList());
                             searchResult.setListData(dataList.toArray(new SearchResultData[]{}));
                         }))
@@ -98,7 +110,7 @@ class SearchArea extends JPanel {
             Service.api.searchShuushokugo(text)
                     .thenAccept(masters -> EventQueue.invokeLater(() ->{
                         List<SearchResultData> dataList = masters.stream()
-                                .map(SearchResultData::of)
+                                .map(SearchResultMaster::of)
                                 .collect(Collectors.toList());
                         searchResult.setListData(dataList.toArray(new SearchResultData[]{}));
                     }))

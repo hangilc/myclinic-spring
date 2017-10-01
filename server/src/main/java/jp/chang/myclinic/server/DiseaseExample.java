@@ -11,7 +11,8 @@ import java.util.List;
 public class DiseaseExample {
     public static class Entry {
         private String byoumei;
-        private List<String> adjList;
+        private List<String> pre;
+        private List<String> post;
         private String label;
 
         public String getByoumei() {
@@ -22,12 +23,20 @@ public class DiseaseExample {
             this.byoumei = byoumei;
         }
 
-        public List<String> getAdjList() {
-            return adjList;
+        public List<String> getPre() {
+            return pre;
         }
 
-        public void setAdjList(List<String> adjList) {
-            this.adjList = adjList;
+        public void setPre(List<String> pre) {
+            this.pre = pre;
+        }
+
+        public List<String> getPost() {
+            return post;
+        }
+
+        public void setPost(List<String> post) {
+            this.post = post;
         }
 
         public String getLabel() {
