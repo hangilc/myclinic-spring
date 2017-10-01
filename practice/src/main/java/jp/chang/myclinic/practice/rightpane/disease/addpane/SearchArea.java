@@ -70,6 +70,7 @@ class SearchArea extends JPanel {
             }
         });
         Link exampleLink = new Link("例");
+        exampleLink.setCallback(evt -> doExample());
         panel.add(searchTextField, "growx");
         panel.add(searchButton);
         panel.add(exampleLink);
@@ -122,6 +123,22 @@ class SearchArea extends JPanel {
                         return null;
                     });
         }
+    }
+
+    private void doExample(){
+        Service.api.listDiseaseExample()
+                .thenAccept(examples -> EventQueue.invokeLater(() ->{
+                    List<SearchResultData> dataList = examples.stream()
+                            .map(ex -> new SearchResultExample(ex, startDateInput)).collect(Collectors.toList());
+                    searchResult.setListData(dataList.toArray(new SearchResultData[]{}));
+                }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
 
     private Mode getMode(){

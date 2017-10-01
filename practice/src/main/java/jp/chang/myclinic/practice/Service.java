@@ -219,11 +219,21 @@ public class Service {
         CompletableFuture<List<ByoumeiMasterDTO>> searchByoumei(@Query("text") String text,
                                                                 @Query("at") String at);
 
+        @GET("find-byoumei-master-by-name")
+        CompletableFuture<ByoumeiMasterDTO> findByoumeiMasterByName(@Query("name") String name,
+                                                                    @Query("at") String at);
+
         @GET("search-shuushokugo-master")
         CompletableFuture<List<ShuushokugoMasterDTO>> searchShuushokugo(@Query("text") String text);
 
+        @GET("find-shuushokugo-master-by-name")
+        CompletableFuture<ShuushokugoMasterDTO> findShuushokugoMasterByName(@Query("name") String name);
+
         @POST("enter-disease")
         CompletableFuture<Integer> enterDisease(@Body DiseaseNewDTO diseaseNew);
+
+        @GET("list-disease-example")
+        CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample();
     }
 
     public static ServerAPI api;

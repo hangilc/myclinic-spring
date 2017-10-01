@@ -1217,9 +1217,18 @@ public class DbGateway {
                 .map(mapper::toByoumeiMasterDTO).collect(Collectors.toList());
     }
 
+    public Optional<ByoumeiMasterDTO> findByoumeiMasterByName(String name, LocalDate at ){
+        Date atDate = Date.valueOf(at);
+        return byoumeiMasterRepository.findByName(name, atDate).map(mapper::toByoumeiMasterDTO);
+    }
+
     public List<ShuushokugoMasterDTO> searchShuushokugoMaster(String text){
         return shuushokugoMasterRepository.searchByName(text).stream()
                 .map(mapper::toShuushokugoMasterDTO).collect(Collectors.toList());
+    }
+
+    public Optional<ShuushokugoMasterDTO> findShuushokugoMasterByName(String name){
+        return shuushokugoMasterRepository.findByName(name).map(mapper::toShuushokugoMasterDTO);
     }
 
     private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){

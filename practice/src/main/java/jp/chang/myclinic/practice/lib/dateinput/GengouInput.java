@@ -30,7 +30,6 @@ public class GengouInput extends JComboBox<Gengou> {
     }
 
     public JapaneseEra getEra(){
-        System.out.println("selected item: " + ((Gengou)getSelectedItem()).getEra());
         return ((Gengou)getSelectedItem()).getEra();
     }
 
