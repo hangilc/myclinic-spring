@@ -2,6 +2,7 @@ package jp.chang.myclinic.server.rest;
 
 import jp.chang.myclinic.dto.DiseaseExampleDTO;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
+import jp.chang.myclinic.dto.DiseaseModifyEndReasonDTO;
 import jp.chang.myclinic.dto.DiseaseNewDTO;
 import jp.chang.myclinic.server.DiseaseExample;
 import jp.chang.myclinic.server.db.myclinic.DbGateway;
@@ -46,6 +47,15 @@ class DiseaseController {
         return diseaseExample.getDiseaseExample().stream()
                 .map(this::toDiseaseExampleDTO)
                 .collect(Collectors.toList());
+    }
+
+    @RequestMapping(value="/batch-update-disease-end-reason", method=RequestMethod.POST)
+    public boolean batchUpdateEndReason(@RequestBody List<DiseaseModifyEndReasonDTO> args){
+        args.forEach(arg -> {
+            LocalDate endDate = LocalDate.parse(arg.endDate);
+            dbGateway.modifyDiseaseEndReason(arg.diseaseId, endDate, arg.endReason);
+        });
+        return true;
     }
 
     private DiseaseExampleDTO toDiseaseExampleDTO(DiseaseExample.Entry entry){

@@ -1211,6 +1211,13 @@ public class DbGateway {
         return diseaseId;
     }
 
+    public void modifyDiseaseEndReason(int diseaseId, LocalDate endDate, char reason){
+        Disease d = diseaseRepository.findOne(diseaseId);
+        d.setEndReason(reason);
+        d.setEndDate(endDate.toString());
+        diseaseRepository.save(d);
+    }
+
     public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at){
         Date atDate = Date.valueOf(at);
         return byoumeiMasterRepository.searchByName(text, atDate).stream()

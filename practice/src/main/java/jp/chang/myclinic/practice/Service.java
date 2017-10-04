@@ -234,6 +234,9 @@ public class Service {
 
         @GET("list-disease-example")
         CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample();
+
+        @POST("batch-update-disease-end-reason")
+        CompletableFuture<Boolean> batchUpdateDiseaseEndReason(@Body List<DiseaseModifyEndReasonDTO> args);
     }
 
     public static ServerAPI api;

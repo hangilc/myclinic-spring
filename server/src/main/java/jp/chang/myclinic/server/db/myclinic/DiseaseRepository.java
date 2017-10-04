@@ -22,4 +22,5 @@ public interface DiseaseRepository extends CrudRepository<Disease, Integer> {
             " and m.validFrom <= d.startDate " +
             " and (m.validUpto = '0000-00-00' or m.validUpto >= d.startDate) ")
     List<Object[]> findFull(@Param("diseaseId") int diseaseId);
+
 }
