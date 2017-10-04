@@ -34,6 +34,11 @@ class Disp extends JPanel {
         updateName();
     }
 
+    void delAdj(){
+        adjList.clear();
+        updateName();
+    }
+
     public ByoumeiMasterDTO getByoumeiMaster() {
         return byoumeiMaster;
     }

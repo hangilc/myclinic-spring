@@ -42,7 +42,7 @@ public class DiseaseAddPane extends JPanel {
 
             @Override
             public void onDeleteAdj() {
-
+                disp.delAdj();
             }
         });
         SearchArea searchArea = new SearchArea(width, startDateInput);
