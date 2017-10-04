@@ -3,12 +3,14 @@ package jp.chang.myclinic.practice.rightpane.disease;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.Link;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.rightpane.disease.addpane.DiseaseAddPane;
 import jp.chang.myclinic.practice.rightpane.disease.endpane.DiseaseEndPane;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,9 +71,7 @@ public class DiseaseBox extends JPanel {
             }
         });
         Link endLink = new Link("転帰");
-        endLink.setCallback(evt -> {
-            switchPane(new DiseaseEndPane(width, currentDiseases));
-        });
+        endLink.setCallback(evt -> openEndPanel());
         Link editLink = new Link("編集");
         panel.add(listLink);
         panel.add(new JLabel("|"));
@@ -82,4 +82,32 @@ public class DiseaseBox extends JPanel {
         panel.add(editLink);
         return panel;
     }
+
+    private void openEndPanel(){
+        DiseaseEndPane pane = new DiseaseEndPane(width, currentDiseases);
+        pane.setCallback(new DiseaseEndPane.Callback(){
+            @Override
+            public void onModified(List<Integer> diseaseIds) {
+                Service.api.listCurrentDiseaseFull(patientId, LocalDate.now().toString())
+                        .thenAccept(currents -> EventQueue.invokeLater(() ->{
+                            currentDiseases = currents;
+                            openEndPanel();
+                        }))
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+        });
+        switchPane(pane);
+    }
+
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
+    }
+
 }

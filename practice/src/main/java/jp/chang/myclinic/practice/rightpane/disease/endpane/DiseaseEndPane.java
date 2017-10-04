@@ -18,7 +18,7 @@ public class DiseaseEndPane extends JPanel {
         default void onModified(List<Integer> diseaseIds){}
     }
 
-    private Callback callback = new Callback(){}
+    private Callback callback = new Callback(){};
 
     public DiseaseEndPane(int width, List<DiseaseFullDTO> diseases){
         setLayout(new MigLayout("insets 0, gapy 2", String.format("[%dpx!]", width), ""));
@@ -62,6 +62,10 @@ public class DiseaseEndPane extends JPanel {
         add(dateManipPart, "wrap");
         add(reasonPart, "wrap");
         add(commandPart);
+    }
+
+    public void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     private void alert(String message){
