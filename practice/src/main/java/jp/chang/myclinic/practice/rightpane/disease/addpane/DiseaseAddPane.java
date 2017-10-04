@@ -37,7 +37,7 @@ public class DiseaseAddPane extends JPanel {
 
             @Override
             public void onAddSusp() {
-
+                doAddSusp();
             }
 
             @Override
@@ -102,6 +102,20 @@ public class DiseaseAddPane extends JPanel {
                         return null;
                     });
         });
+    }
+
+    private void doAddSusp(){
+        Service.api.findShuushokugoMasterByName("の疑い")
+                .thenAccept(master -> EventQueue.invokeLater(() -> {
+                    disp.addShuushokugoMaster(master);
+                }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
 
     private void alert(String message){
