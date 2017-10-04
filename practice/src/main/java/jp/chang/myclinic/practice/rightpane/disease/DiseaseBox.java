@@ -4,6 +4,7 @@ import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.rightpane.disease.addpane.DiseaseAddPane;
+import jp.chang.myclinic.practice.rightpane.disease.endpane.DiseaseEndPane;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -68,6 +69,9 @@ public class DiseaseBox extends JPanel {
             }
         });
         Link endLink = new Link("転帰");
+        endLink.setCallback(evt -> {
+            switchPane(new DiseaseEndPane(width, currentDiseases));
+        });
         Link editLink = new Link("編集");
         panel.add(listLink);
         panel.add(new JLabel("|"));

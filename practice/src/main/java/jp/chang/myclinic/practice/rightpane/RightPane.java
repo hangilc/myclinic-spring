@@ -19,6 +19,37 @@ public class RightPane extends JPanel {
     private WorkArea diseaseWorkArea;
     private DiseaseBox diseaseBox;
 
+    public RightPane(){
+        setLayout(new MigLayout("insets 0, hidemode 3, debug", "[grow]", ""));
+        EventQueue.invokeLater(this::setupComponents);
+    }
+
+    private void setupComponents(){
+        this.width = getWidth();
+        setupDisease();
+        SelectVisit selectVisit = new SelectVisit();
+        RightPane self = this;
+        selectVisit.setCallback(new SelectVisit.Callback(){
+            @Override
+            public void onSelect(WqueueFullDTO wqueue) {
+                MainContext mainContext = MainContext.get(self);
+                mainContext.startExam(wqueue.patient, wqueue.visit, () -> {});
+            }
+        });
+        TodaysVisits todaysVisits = new TodaysVisits();
+        add(diseaseWorkArea, "wrap");
+        add(selectVisit, "growx, wrap");
+        {
+            JPanel frame = new JPanel(new MigLayout("insets 0, fill", "", ""));
+            frame.setBorder(BorderFactory.createTitledBorder("患者検索"));
+            SearchPatient searchPatientPane = new SearchPatient();
+            frame.add(searchPatientPane, "growx");
+            add(frame, "growx, wrap");
+        }
+        add(todaysVisits, "sizegroup btn, wrap");
+        add(todaysVisits.getWorkArea(), "w 10, growx, wrap");
+    }
+
     public RightPane(int width){
         this.width = width;
         setLayout(new MigLayout("insets 0, hidemode 3", "[grow]", ""));
