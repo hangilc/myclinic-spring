@@ -20,7 +20,7 @@ public class RightPane extends JPanel {
     private DiseaseBox diseaseBox;
 
     public RightPane(){
-        setLayout(new MigLayout("insets 0, hidemode 3, debug", "[grow]", ""));
+        setLayout(new MigLayout("insets 0, hidemode 3", "[grow]", ""));
         EventQueue.invokeLater(this::setupComponents);
     }
 
@@ -50,32 +50,32 @@ public class RightPane extends JPanel {
         add(todaysVisits.getWorkArea(), "w 10, growx, wrap");
     }
 
-    public RightPane(int width){
-        this.width = width;
-        setLayout(new MigLayout("insets 0, hidemode 3", "[grow]", ""));
-        setupDisease();
-        SelectVisit selectVisit = new SelectVisit();
-        RightPane self = this;
-        selectVisit.setCallback(new SelectVisit.Callback(){
-            @Override
-            public void onSelect(WqueueFullDTO wqueue) {
-                MainContext mainContext = MainContext.get(self);
-                mainContext.startExam(wqueue.patient, wqueue.visit, () -> {});
-            }
-        });
-        TodaysVisits todaysVisits = new TodaysVisits();
-        add(diseaseWorkArea, "wrap");
-        add(selectVisit, "growx, wrap");
-        {
-            JPanel frame = new JPanel(new MigLayout("insets 0, fill", "", ""));
-            frame.setBorder(BorderFactory.createTitledBorder("患者検索"));
-            SearchPatient searchPatientPane = new SearchPatient();
-            frame.add(searchPatientPane, "growx");
-            add(frame, "top, growx, wrap");
-        }
-        add(todaysVisits, "sizegroup btn, wrap");
-        add(todaysVisits.getWorkArea(), "w 10, growx, wrap");
-    }
+//    public RightPane(int width){
+//        this.width = width;
+//        setLayout(new MigLayout("insets 0, hidemode 3", "[grow]", ""));
+//        setupDisease();
+//        SelectVisit selectVisit = new SelectVisit();
+//        RightPane self = this;
+//        selectVisit.setCallback(new SelectVisit.Callback(){
+//            @Override
+//            public void onSelect(WqueueFullDTO wqueue) {
+//                MainContext mainContext = MainContext.get(self);
+//                mainContext.startExam(wqueue.patient, wqueue.visit, () -> {});
+//            }
+//        });
+//        TodaysVisits todaysVisits = new TodaysVisits();
+//        add(diseaseWorkArea, "wrap");
+//        add(selectVisit, "growx, wrap");
+//        {
+//            JPanel frame = new JPanel(new MigLayout("insets 0, fill", "", ""));
+//            frame.setBorder(BorderFactory.createTitledBorder("患者検索"));
+//            SearchPatient searchPatientPane = new SearchPatient();
+//            frame.add(searchPatientPane, "growx");
+//            add(frame, "top, growx, wrap");
+//        }
+//        add(todaysVisits, "sizegroup btn, wrap");
+//        add(todaysVisits.getWorkArea(), "w 10, growx, wrap");
+//    }
 
     public void openDisease(int patientId, LocalDate at){
         Service.api.listCurrentDiseaseFull(patientId, at.toString())
