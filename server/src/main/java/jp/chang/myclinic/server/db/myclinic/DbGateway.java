@@ -1184,6 +1184,8 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
+
+
     public DiseaseFullDTO getDiseaseFull(int diseaseId){
         Object[] result = diseaseRepository.findFull(diseaseId).get(0);
         DiseaseFullDTO diseaseFullDTO = new DiseaseFullDTO();

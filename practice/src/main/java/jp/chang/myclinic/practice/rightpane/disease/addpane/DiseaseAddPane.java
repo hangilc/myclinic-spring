@@ -28,6 +28,7 @@ public class DiseaseAddPane extends JPanel {
         disp = new Disp(width);
         startDateInput = new DateInputForm(Gengou.Current);
         startDateInput.setValue(LocalDate.now());
+        startDateInput.setValue(LocalDate.now());
         CommandBox commandBox = new CommandBox();
         commandBox.setCallback(new CommandBox.Callback() {
             @Override

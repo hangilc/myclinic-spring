@@ -1,6 +1,8 @@
 package jp.chang.myclinic.practice.rightpane.disease.endpane;
 
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.consts.Shuushokugo;
+import jp.chang.myclinic.dto.DiseaseAdjFullDTO;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.DiseaseModifyEndReasonDTO;
 import jp.chang.myclinic.practice.Service;
@@ -9,6 +11,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +27,7 @@ public class DiseaseEndPane extends JPanel {
         setLayout(new MigLayout("insets 0, gapy 2", String.format("[%dpx!]", width), ""));
         ListPart listPart = new ListPart(width, diseases);
         DateInputForm endDateInput = new DateInputForm(Gengou.Current);
+        endDateInput.setValue(LocalDate.now());
         DateManipPart dateManipPart = new DateManipPart();
         ReasonPart reasonPart = new ReasonPart();
         CommandPart commandPart = new CommandPart();
@@ -33,18 +37,20 @@ public class DiseaseEndPane extends JPanel {
                 endDateInput.getValue().ifPresent(endDate -> {
                     char reason = reasonPart.getReason();
                     String endDateStr = endDate.toString();
-                    List<Integer> diseaseIds = listPart.getSelected().stream().map(d -> d.disease.diseaseId).collect(Collectors.toList());
-                    List<DiseaseModifyEndReasonDTO> args = diseaseIds.stream()
-                            .map(diseaseId -> {
+                    List<DiseaseFullDTO> selected = listPart.getSelected();
+                    List<DiseaseModifyEndReasonDTO> args = selected.stream()
+                            .map(d -> {
                                 DiseaseModifyEndReasonDTO arg = new DiseaseModifyEndReasonDTO();
-                                arg.diseaseId = diseaseId;
+                                arg.diseaseId = d.disease.diseaseId;
                                 arg.endDate = endDateStr;
-                                arg.endReason = reason;
+                                arg.endReason = adaptReason(d, reason);
                                 return arg;
                             })
                             .collect(Collectors.toList());
                     Service.api.batchUpdateDiseaseEndReason(args)
                             .thenAccept(ret -> EventQueue.invokeLater(() ->{
+                                List<Integer> diseaseIds = diseases.stream()
+                                        .map(d -> d.disease.diseaseId).collect(Collectors.toList());
                                 callback.onModified(diseaseIds);
                             }))
                             .exceptionally(t -> {
@@ -66,6 +72,29 @@ public class DiseaseEndPane extends JPanel {
 
     public void setCallback(Callback callback){
         this.callback = callback;
+    }
+
+    private char adaptReason(DiseaseFullDTO disease, char origReason){
+        if( origReason == 'C' && hasSusp(disease) ){
+            return 'S';
+        } else {
+            return origReason;
+        }
+    }
+
+    private boolean hasSusp(DiseaseFullDTO disease){
+        List<DiseaseAdjFullDTO> adjList = disease.adjList;
+        int susp = Shuushokugo.Susp;
+        if( adjList == null ){
+            return false;
+        } else {
+            for(DiseaseAdjFullDTO adj: adjList){
+                if( adj.diseaseAdj.shuushokugocode == susp ){
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     private void alert(String message){
