@@ -1184,7 +1184,11 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
-
+    public Page<DiseaseFullDTO> listDiseaseFull(int patientId, int page){
+        int itemsPerPage = 10;
+        PageRequest pageRequest = new PageRequest(page, itemsPerPage, Sort.Direction.DESC, "diseaseId");
+        return diseaseRepository.findAllWithMaster(patientId, pageRequest).map(this::resultToDiseaseFullDTO);
+    }
 
     public DiseaseFullDTO getDiseaseFull(int diseaseId){
         Object[] result = diseaseRepository.findFull(diseaseId).get(0);
