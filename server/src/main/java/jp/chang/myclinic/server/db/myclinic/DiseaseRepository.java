@@ -11,14 +11,13 @@ import java.util.List;
 public interface DiseaseRepository extends CrudRepository<Disease, Integer> {
 
     @Query("select d, m from Disease d, ByoumeiMaster m where d.patientId = :patientId " +
-            " d.endReason = 'N' and m.shoubyoumeicode = m.shoubyoumeicode " +
+            " and d.endReason = 'N' " +
             " and m.shoubyoumeicode = d.shoubyoumeicode " +
             " and m.validFrom <= d.startDate " +
-            " and (m.validUpto = '0000-00-00' or m.validUpto >= d.startDate ")
+            " and (m.validUpto = '0000-00-00' or m.validUpto >= d.startDate) ")
     List<Object[]> findCurrentWithMaster(@Param("patientId") int patientId, Sort sort);
 
     @Query("select d, m from Disease d, ByoumeiMaster m where d.patientId = :patientId " +
-            " and m.shoubyoumeicode = m.shoubyoumeicode " +
             " and m.shoubyoumeicode = d.shoubyoumeicode " +
             " and m.validFrom <= d.startDate " +
             " and (m.validUpto = '0000-00-00' or m.validUpto >= d.startDate) ")
