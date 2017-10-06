@@ -10,7 +10,6 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -88,7 +87,7 @@ public class DiseaseBox extends JPanel {
         pane.setCallback(new DiseaseEndPane.Callback(){
             @Override
             public void onModified(List<Integer> diseaseIds) {
-                Service.api.listCurrentDiseaseFull(patientId, LocalDate.now().toString())
+                Service.api.listCurrentDiseaseFull(patientId)
                         .thenAccept(currents -> EventQueue.invokeLater(() ->{
                             currentDiseases = currents;
                             openEndPanel();

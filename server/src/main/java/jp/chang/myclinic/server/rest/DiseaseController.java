@@ -26,10 +26,22 @@ class DiseaseController {
     private DiseaseExample diseaseExample;
 
     @RequestMapping(value="/list-current-disease-full", method= RequestMethod.GET)
-    public List<DiseaseFullDTO> listCurrentDiseaseFull(@RequestParam("patient-id") int patientId,
-                                                @RequestParam("at") String at){
-        LocalDate atDate = LocalDate.parse(at);
-        return dbGateway.listCurrentDiseaseFull(patientId, atDate);
+    public List<DiseaseFullDTO> listCurrentDiseaseFull(@RequestParam("patient-id") int patientId){
+        return dbGateway.listCurrentDiseaseFull(patientId);
+    }
+
+    @RequestMapping(value="/count-page-of-disease-by-patient", method=RequestMethod.GET)
+    public int countPageOfDiseaseByPatient(@RequestParam("patient-id") int patientId,
+                                           @RequestParam("items-per-page") int itemsPerPage){
+        long count = dbGateway.countDiseaseByPatient(patientId);
+        return (int)((count + itemsPerPage - 1) / itemsPerPage);
+    }
+
+    @RequestMapping(value="/page-disease-full", method=RequestMethod.GET)
+    public List<DiseaseFullDTO> pageDiseaseFull(@RequestParam("patient-id") int patientId,
+                                                @RequestParam("page") int page,
+                                                @RequestParam("items-per-page") int itemsPerPage){
+        return dbGateway.pageDiseaseFull(patientId, page, itemsPerPage);
     }
 
     @RequestMapping(value="/get-disease-full", method=RequestMethod.GET)

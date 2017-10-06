@@ -1169,9 +1169,8 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
-    public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId, LocalDate at){
-        Date atDate = Date.valueOf(at);
-        return diseaseRepository.findCurrentWithMaster(patientId, atDate, new Sort("diseaseId")).stream()
+    public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId){
+        return diseaseRepository.findCurrentWithMaster(patientId, new Sort("diseaseId")).stream()
                 .map(this::resultToDiseaseFullDTO)
                 .map(diseaseFullDTO -> {
                     diseaseFullDTO.adjList =
@@ -1184,10 +1183,15 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
-    public Page<DiseaseFullDTO> listDiseaseFull(int patientId, int page){
-        int itemsPerPage = 10;
+    public long countDiseaseByPatient(int patientId){
+        return diseaseRepository.countByPatientId(patientId);
+    }
+
+    public List<DiseaseFullDTO> pageDiseaseFull(int patientId, int page, int itemsPerPage){
         PageRequest pageRequest = new PageRequest(page, itemsPerPage, Sort.Direction.DESC, "diseaseId");
-        return diseaseRepository.findAllWithMaster(patientId, pageRequest).map(this::resultToDiseaseFullDTO);
+        return diseaseRepository.findAllWithMaster(patientId, pageRequest).stream()
+                .map(this::resultToDiseaseFullDTO)
+                .collect(Collectors.toList());
     }
 
     public DiseaseFullDTO getDiseaseFull(int diseaseId){

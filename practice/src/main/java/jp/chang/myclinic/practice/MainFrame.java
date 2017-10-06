@@ -9,7 +9,6 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
 
 class MainFrame extends JFrame implements MainContext {
@@ -41,7 +40,7 @@ class MainFrame extends JFrame implements MainContext {
                 .thenAccept(page -> EventQueue.invokeLater(() -> {
                     currentPatient = patient;
                     leftPane.start(page);
-                    rightPane.openDisease(patient.patientId, LocalDate.now());
+                    rightPane.openDisease(patient.patientId);
                     uiCallback.run();
                 }))
                 .exceptionally(t -> {
@@ -67,7 +66,7 @@ class MainFrame extends JFrame implements MainContext {
                     currentPatient = patient;
                     currentVisit = visit;
                     leftPane.start(page);
-                    rightPane.openDisease(patient.patientId, LocalDate.parse(visit.visitedAt.substring(0, 10)));
+                    rightPane.openDisease(patient.patientId);
                     edtCallback.run();
                 }))
                 .exceptionally(t -> {

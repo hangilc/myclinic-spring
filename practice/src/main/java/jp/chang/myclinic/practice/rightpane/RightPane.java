@@ -11,7 +11,6 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
 
 public class RightPane extends JPanel {
 
@@ -77,8 +76,8 @@ public class RightPane extends JPanel {
 //        add(todaysVisits.getWorkArea(), "w 10, growx, wrap");
 //    }
 
-    public void openDisease(int patientId, LocalDate at){
-        Service.api.listCurrentDiseaseFull(patientId, at.toString())
+    public void openDisease(int patientId){
+        Service.api.listCurrentDiseaseFull(patientId)
                 .thenAccept(list -> EventQueue.invokeLater(() -> {
                     diseaseBox.reset(patientId, list);
                     diseaseWorkArea.setVisible(true);
