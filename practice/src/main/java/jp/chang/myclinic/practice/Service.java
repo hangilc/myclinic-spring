@@ -211,6 +211,15 @@ public class Service {
         @GET("list-current-disease-full")
         CompletableFuture<List<DiseaseFullDTO>> listCurrentDiseaseFull(@Query("patient-id") int patientId);
 
+        @GET("count-page-of-disease-by-patient")
+        CompletableFuture<Integer> countPageOfDiseaseByPatient(@Query("patient-id") int patientId,
+                                                               @Query("items-per-page") int itemsPerPage);
+
+        @GET("page-disease-full")
+        CompletableFuture<List<DiseaseFullDTO>> pageDiseaseFull(@Query("patient-id") int patientId,
+                                                                @Query("page") int page,
+                                                                @Query("items-per-page") int itemsPerPage);
+
         @GET("get-disease-full")
         CompletableFuture<DiseaseFullDTO> getDiseaseFull(@Query("disease-id") int diseaseId);
 

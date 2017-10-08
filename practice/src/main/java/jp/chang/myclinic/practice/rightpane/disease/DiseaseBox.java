@@ -5,6 +5,7 @@ import jp.chang.myclinic.practice.FixedWidthLayout;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.rightpane.disease.addpane.DiseaseAddPane;
+import jp.chang.myclinic.practice.rightpane.disease.browsepane.DiseaseBrowsePane;
 import jp.chang.myclinic.practice.rightpane.disease.endpane.DiseaseEndPane;
 import net.miginfocom.swing.MigLayout;
 
@@ -14,6 +15,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class DiseaseBox extends JPanel {
+
+    private static final int itemsPerPage = 10;
 
     private int width;
     private int patientId;
@@ -70,8 +73,9 @@ public class DiseaseBox extends JPanel {
             }
         });
         Link endLink = new Link("転帰");
-        endLink.setCallback(evt -> openEndPanel());
+        endLink.setCallback(evt -> openEndPane());
         Link editLink = new Link("編集");
+        editLink.setCallback(evt -> openBrowsePane());
         panel.add(listLink);
         panel.add(new JLabel("|"));
         panel.add(addLink);
@@ -82,7 +86,7 @@ public class DiseaseBox extends JPanel {
         return panel;
     }
 
-    private void openEndPanel(){
+    private void openEndPane(){
         DiseaseEndPane pane = new DiseaseEndPane(width, currentDiseases);
         pane.setCallback(new DiseaseEndPane.Callback(){
             @Override
@@ -90,7 +94,7 @@ public class DiseaseBox extends JPanel {
                 Service.api.listCurrentDiseaseFull(patientId)
                         .thenAccept(currents -> EventQueue.invokeLater(() ->{
                             currentDiseases = currents;
-                            openEndPanel();
+                            openEndPane();
                         }))
                         .exceptionally(t -> {
                             t.printStackTrace();
@@ -104,6 +108,29 @@ public class DiseaseBox extends JPanel {
         switchPane(pane);
     }
 
+    private static class BrowseData {
+        int count;
+    }
+
+    private void openBrowsePane(){
+        BrowseData data = new BrowseData();
+        Service.api.countPageOfDiseaseByPatient(patientId, itemsPerPage)
+                .thenCompose(count -> {
+                    data.count = count;
+                    return Service.api.pageDiseaseFull(patientId, 0, itemsPerPage);
+                })
+                .thenAccept(diseases -> {
+                    DiseaseBrowsePane pane = new DiseaseBrowsePane(width, diseases, patientId, itemsPerPage, data.count);
+                    switchPane(pane);
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
 
     private void alert(String message){
         JOptionPane.showMessageDialog(this, message);

@@ -1191,6 +1191,14 @@ public class DbGateway {
         PageRequest pageRequest = new PageRequest(page, itemsPerPage, Sort.Direction.DESC, "diseaseId");
         return diseaseRepository.findAllWithMaster(patientId, pageRequest).stream()
                 .map(this::resultToDiseaseFullDTO)
+                .map(diseaseFullDTO -> {
+                    diseaseFullDTO.adjList =
+                            diseaseAdjRepository.findByDiseaseIdWithMaster(diseaseFullDTO.disease.diseaseId, new Sort("diseaseAdjId"))
+                                    .stream()
+                                    .map(this::resultToDiseaseAdjFullDTO)
+                                    .collect(Collectors.toList());
+                    return diseaseFullDTO;
+                })
                 .collect(Collectors.toList());
     }
 
