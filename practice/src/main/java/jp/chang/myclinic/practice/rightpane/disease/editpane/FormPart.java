@@ -14,6 +14,7 @@ class FormPart extends JPanel {
     private NameLabel nameLabel = new NameLabel();
     private DateInputForm startDateInput = new DateInputForm(Gengou.Current);
     private ReasonSelector reasonSelector = new ReasonSelector();
+    private DateInputForm endDateInput = new DateInputForm(Gengou.Current);
 
     FormPart(){
         setLayout(new MigLayout("insets 0", "[] [grow]", ""));
@@ -23,6 +24,8 @@ class FormPart extends JPanel {
         add(startDateInput, "wrap");
         add(new JLabel("転帰："));
         add(reasonSelector, "w 50, wrap");
+        add(new JLabel("終了日；"));
+        add(endDateInput);
     }
 
     void setDisease(DiseaseFullDTO disease){
@@ -30,6 +33,12 @@ class FormPart extends JPanel {
         nameLabel.setText(label);
         startDateInput.setValue(LocalDate.parse(disease.disease.startDate));
         reasonSelector.setSelectedItem(DiseaseEndReason.fromCode(disease.disease.endReason));
+        String endDate = disease.disease.endDate;
+        if( "0000-00-00".equals(endDate) || endDate == null ){
+            endDateInput.clear();
+        } else {
+            endDateInput.setValue(LocalDate.parse(endDate));
+        }
         revalidate();
         repaint();
     }

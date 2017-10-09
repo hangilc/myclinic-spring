@@ -81,6 +81,12 @@ public class DateInputForm extends JPanel implements DateInput {
         return nenInput.getText().isEmpty() && monthInput.getText().isEmpty() && dayInput.getText().isEmpty();
     }
 
+    public void clear(){
+        nenInput.setText("");
+        monthInput.setText("");
+        dayInput.setText("");
+    }
+
     private void alert(String message){
         JOptionPane.showMessageDialog(this, message);
     }

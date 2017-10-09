@@ -12,7 +12,7 @@ public class DiseaseEditPane extends JPanel {
     public DiseaseEditPane(int width, DiseaseFullDTO disease){
         setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
         formPart = new FormPart();
-        add(formPart, String.format("w %d, wrap", width));
+        add(formPart, "growx, wrap");
     }
 
     public void setDisease(DiseaseFullDTO disease){
