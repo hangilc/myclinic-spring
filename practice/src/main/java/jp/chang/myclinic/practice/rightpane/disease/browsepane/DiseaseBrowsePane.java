@@ -33,7 +33,7 @@ public class DiseaseBrowsePane extends JPanel {
                         });
             }
         });
-        add(dispPart, "wrap");
+        add(dispPart, "growx, wrap");
         add(navPart, "wrap");
         add(listPart, "growx");
     }
