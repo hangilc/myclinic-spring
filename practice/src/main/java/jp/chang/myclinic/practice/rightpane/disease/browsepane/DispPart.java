@@ -14,6 +14,7 @@ class DispPart extends JPanel {
     private JLabel startDateLabel = new JLabel();
     private JLabel endReasonLabel = new JLabel();
     private JLabel endDateLabel = new JLabel();
+    private DiseaseFullDTO currentDisease;
 
     DispPart(int width){
         setLayout(new MigLayout("insets 0", "[] [grow]", ""));
@@ -28,7 +29,7 @@ class DispPart extends JPanel {
     }
 
     void setData(DiseaseFullDTO disease){
-        System.out.println(disease);
+        currentDisease = disease;
         startDateLabel.setText(DateTimeUtil.sqlDateToKanji(disease.disease.startDate, DateTimeUtil.kanjiFormatter1));
         nameLabel.setText(DiseaseUtil.getFullName(disease));
         endReasonLabel.setText(DiseaseEndReason.fromCode(disease.disease.endReason).getKanjiRep());
@@ -38,5 +39,9 @@ class DispPart extends JPanel {
         } else {
             endDateLabel.setText(DateTimeUtil.sqlDateToKanji(endDate, DateTimeUtil.kanjiFormatter1));
         }
+    }
+
+    DiseaseFullDTO getData(){
+        return currentDisease;
     }
 }

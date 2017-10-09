@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.rightpane.disease.browsepane;
+package jp.chang.myclinic.practice.rightpane.disease.editpane;
 
 import jp.chang.myclinic.practice.WrappedText;
 import net.miginfocom.swing.MigLayout;

@@ -6,6 +6,7 @@ import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.rightpane.disease.addpane.DiseaseAddPane;
 import jp.chang.myclinic.practice.rightpane.disease.browsepane.DiseaseBrowsePane;
+import jp.chang.myclinic.practice.rightpane.disease.editpane.DiseaseEditPane;
 import jp.chang.myclinic.practice.rightpane.disease.endpane.DiseaseEndPane;
 import net.miginfocom.swing.MigLayout;
 
@@ -46,10 +47,17 @@ public class DiseaseBox extends JPanel {
     }
 
     private void switchPane(Component pane){
+        switchPane(pane, null);
+    }
+
+    private void switchPane(Component pane, Runnable uiCallback){
         add(pane, new FixedWidthLayout.Replace(this.workPane));
         this.workPane = pane;
         revalidate();
         repaint();
+        if( uiCallback != null ){
+            EventQueue.invokeLater(uiCallback::run);
+        }
     }
 
     private Component makeCommandBox(){
@@ -121,6 +129,12 @@ public class DiseaseBox extends JPanel {
                 })
                 .thenAccept(diseases -> {
                     DiseaseBrowsePane pane = new DiseaseBrowsePane(width, diseases, patientId, itemsPerPage, data.count);
+                    pane.setCallback(new DiseaseBrowsePane.Callback() {
+                        @Override
+                        public void onEdit(DiseaseFullDTO disease) {
+                            openEditPane(disease);
+                        }
+                    });
                     switchPane(pane);
                 })
                 .exceptionally(t -> {
@@ -130,6 +144,11 @@ public class DiseaseBox extends JPanel {
                     });
                     return null;
                 });
+    }
+
+    private void openEditPane(DiseaseFullDTO disease){
+        DiseaseEditPane pane = new DiseaseEditPane(width, disease);
+        switchPane(pane, () -> pane.setDisease(disease));
     }
 
     private void alert(String message){
