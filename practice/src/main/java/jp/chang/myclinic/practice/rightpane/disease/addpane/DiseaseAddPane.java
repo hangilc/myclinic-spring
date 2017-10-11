@@ -74,7 +74,7 @@ public class DiseaseAddPane extends JPanel {
             alert("疾患名が入力されていません。");
             return;
         }
-        startDateInput.getValue().ifPresent(startDate -> {
+        startDateInput.apply(startDate -> {
             DiseaseDTO disease = new DiseaseDTO();
             disease.patientId = patientId;
             disease.shoubyoumeicode = byoumeiMaster.shoubyoumeicode;
@@ -102,6 +102,9 @@ public class DiseaseAddPane extends JPanel {
                         });
                         return null;
                     });
+        }, errors -> {
+            String message = "開始日：\n" + String.join("\n", errors);
+            alert(message);
         });
     }
 

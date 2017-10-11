@@ -6,6 +6,7 @@ import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.lib.dateinput.DateInput;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,8 +48,13 @@ class SearchResultExample extends SearchResultData {
         if( name == null ){
             return CompletableFuture.completedFuture(null);
         } else {
-            return dateInput.getValue().map(at -> Service.api.findByoumeiMasterByName(name, at.toString()))
-            .orElse(CompletableFuture.completedFuture(null));
+            return dateInput.map(
+                    at -> Service.api.findByoumeiMasterByName(name, at.toString()),
+                    errors -> {
+                        String message = "開始日：\n" + String.join("\n", errors);
+                        alert(message);
+                        return CompletableFuture.completedFuture(null);
+                    });
         }
     }
 
@@ -59,4 +65,9 @@ class SearchResultExample extends SearchResultData {
             return names.stream().map(Service.api::findShuushokugoMasterByName).collect(Collectors.toList());
         }
     }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(null, message);
+    }
+
 }

@@ -91,7 +91,7 @@ class SearchArea extends JPanel {
     private void doSearch(String text){
         Mode mode = getMode();
         if( mode == Mode.BYOUMEI ){
-            startDateInput.getValue().ifPresent(startDate -> {
+            startDateInput.apply(startDate -> {
                 Service.api.searchByoumei(text, startDate.toString())
                         .thenAccept(masters -> EventQueue.invokeLater(() ->{
                             List<SearchResultData> dataList = masters.stream()
@@ -106,6 +106,9 @@ class SearchArea extends JPanel {
                             });
                             return null;
                         });
+            }, errors -> {
+                String message = "開始日：\n" + String.join("\n", errors);
+                alert(message);
             });
         } else if( mode == Mode.SHUUSHOKUGO ){
             Service.api.searchShuushokugo(text)

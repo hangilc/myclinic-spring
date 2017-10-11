@@ -7,11 +7,12 @@ import javax.swing.*;
 import java.time.LocalDate;
 import java.time.chrono.JapaneseDate;
 import java.time.chrono.JapaneseEra;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.time.temporal.ChronoField;
+import java.util.function.Consumer;
 
 public class DateInputForm extends JPanel implements DateInput {
 
@@ -74,6 +75,38 @@ public class DateInputForm extends JPanel implements DateInput {
         } else {
             alert(String.join("\n", errors));
             return Optional.empty();
+        }
+    }
+
+    @Override
+    public boolean apply(Consumer<LocalDate> dateConsumer, Consumer<List<String>> errorConsumer){
+        List<String> errs = new ArrayList<>();
+        JapaneseEra era = gengouInput.getEra();
+        Integer nen = null;
+        try {
+            nen = Integer.parseInt(nenInput.getText());
+        } catch(NumberFormatException ex){
+            errs.add("年の入力が不適切です。");
+        }
+        Integer month = null;
+        try {
+            month = Integer.parseInt(monthInput.getText());
+        } catch(NumberFormatException ex){
+            errs.add("月の入力が不適切です。");
+        }
+        Integer day = null;
+        try {
+            day = Integer.parseInt(dayInput.getText());
+        } catch(NumberFormatException ex){
+            errs.add("日の入力が不適切です。");
+        }
+        if( nen != null && month != null && day != null ){
+            LocalDate date = LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay());
+            dateConsumer.accept(date);
+            return true;
+        } else {
+            errorConsumer.accept(errs);
+            return false;
         }
     }
 
