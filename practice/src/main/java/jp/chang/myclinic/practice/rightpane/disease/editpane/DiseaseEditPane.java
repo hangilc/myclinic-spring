@@ -8,8 +8,6 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class DiseaseEditPane extends JPanel {
 
@@ -38,9 +36,8 @@ public class DiseaseEditPane extends JPanel {
         });
         SearchArea searchArea = new SearchArea(width, new DateInput(){
             @Override
-            public boolean apply(Consumer<LocalDate>dateConsumer, Consumer<List<String>> errorConsumer){
-                dateConsumer.accept(startDate);
-                return true;
+            public LocalDate getValue(){
+                return startDate;
             }
 
             @Override

@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.rightpane.disease.addpane;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.lib.dateinput.DateInputException;
 import jp.chang.myclinic.practice.lib.dateinput.DateInputForm;
 import net.miginfocom.swing.MigLayout;
 
@@ -74,7 +75,8 @@ public class DiseaseAddPane extends JPanel {
             alert("疾患名が入力されていません。");
             return;
         }
-        startDateInput.apply(startDate -> {
+        try {
+            LocalDate startDate = startDateInput.getValue();
             DiseaseDTO disease = new DiseaseDTO();
             disease.patientId = patientId;
             disease.shoubyoumeicode = byoumeiMaster.shoubyoumeicode;
@@ -101,11 +103,41 @@ public class DiseaseAddPane extends JPanel {
                             alert(t.toString());
                         });
                         return null;
-                    });
-        }, errors -> {
-            String message = "開始日：\n" + String.join("\n", errors);
-            alert(message);
-        });
+                    });        } catch(DateInputException ex){
+            alert("開始日：\n" + String.join("\n", ex.getErrorMessages()));
+        }
+//        startDateInput.apply(startDate -> {
+//            DiseaseDTO disease = new DiseaseDTO();
+//            disease.patientId = patientId;
+//            disease.shoubyoumeicode = byoumeiMaster.shoubyoumeicode;
+//            disease.startDate = startDate.toString();
+//            disease.endDate = "0000-00-00";
+//            disease.endReason = 'N';
+//            DiseaseNewDTO diseaseNew = new DiseaseNewDTO();
+//            diseaseNew.disease = disease;
+//            diseaseNew.adjList = disp.getAdjList().stream()
+//                    .map(m -> {
+//                        DiseaseAdjDTO adjDTO = new DiseaseAdjDTO();
+//                        adjDTO.shuushokugocode = m.shuushokugocode;
+//                        return adjDTO;
+//                    })
+//                    .collect(Collectors.toList());
+//            Service.api.enterDisease(diseaseNew)
+//                    .thenCompose(diseaseId -> Service.api.getDiseaseFull(diseaseId))
+//                    .thenAccept(diseaseFull -> EventQueue.invokeLater(() ->{
+//                        callback.onEnter(diseaseFull);
+//                    }))
+//                    .exceptionally(t -> {
+//                        t.printStackTrace();
+//                        EventQueue.invokeLater(() -> {
+//                            alert(t.toString());
+//                        });
+//                        return null;
+//                    });
+//        }, errors -> {
+//            String message = "開始日：\n" + String.join("\n", errors);
+//            alert(message);
+//        });
     }
 
     private void doAddSusp(){

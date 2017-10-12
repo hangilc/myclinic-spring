@@ -5,10 +5,12 @@ import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.lib.dateinput.DateInput;
+import jp.chang.myclinic.practice.lib.dateinput.DateInputException;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,7 +93,8 @@ class SearchArea extends JPanel {
     private void doSearch(String text){
         Mode mode = getMode();
         if( mode == Mode.BYOUMEI ){
-            startDateInput.apply(startDate -> {
+            try {
+                LocalDate startDate = startDateInput.getValue();
                 Service.api.searchByoumei(text, startDate.toString())
                         .thenAccept(masters -> EventQueue.invokeLater(() ->{
                             List<SearchResultData> dataList = masters.stream()
@@ -106,10 +109,9 @@ class SearchArea extends JPanel {
                             });
                             return null;
                         });
-            }, errors -> {
-                String message = "開始日：\n" + String.join("\n", errors);
-                alert(message);
-            });
+            } catch(DateInputException ex){
+                alert("開始日：\n" + String.join("\n", ex.getErrorMessages()));
+            }
         } else if( mode == Mode.SHUUSHOKUGO ){
             Service.api.searchShuushokugo(text)
                     .thenAccept(masters -> EventQueue.invokeLater(() ->{

@@ -4,15 +4,13 @@ import jp.chang.myclinic.consts.Gengou;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.chrono.JapaneseDate;
 import java.time.chrono.JapaneseEra;
 import java.time.temporal.ChronoField;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 public class DateInputForm extends JPanel implements DateInput {
 
@@ -20,7 +18,7 @@ public class DateInputForm extends JPanel implements DateInput {
     private JTextField nenInput = new JTextField(2);
     private JTextField monthInput = new JTextField(2);
     private JTextField dayInput = new JTextField(2);
-    private List<String> errors = new ArrayList<>();
+    //private List<String> errors = new ArrayList<>();
 
     public DateInputForm(List<Gengou> gengouList){
         setLayout(new MigLayout("insets 0, gapx 1", "", ""));
@@ -49,66 +47,99 @@ public class DateInputForm extends JPanel implements DateInput {
         dayInput.setText("" + day);
     }
 
-    public Optional<LocalDate> getValue(){
-        errors.clear();
+    public LocalDate getValue(){
+        DateInputException err = new DateInputException();
         JapaneseEra era = gengouInput.getEra();
         Integer nen = null;
         try {
             nen = Integer.parseInt(nenInput.getText());
         } catch(NumberFormatException ex){
-            errors.add("年の入力が不適切です。");
+            err.addError("年の入力が不適切です。");
         }
         Integer month = null;
         try {
             month = Integer.parseInt(monthInput.getText());
         } catch(NumberFormatException ex){
-            errors.add("月の入力が不適切です。");
+            err.addError("月の入力が不適切です。");
         }
         Integer day = null;
         try {
             day = Integer.parseInt(dayInput.getText());
         } catch(NumberFormatException ex){
-            errors.add("日の入力が不適切です。");
+            err.addError("日の入力が不適切です。");
         }
-        if( errors.size() == 0 ){
-            return Optional.of(LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay()));
+        if( nen != null && month != null && day != null ){
+            try {
+                return LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay());
+            } catch(DateTimeException ex){
+                err.addError("不適切な月日です。");
+                throw err;
+            }
         } else {
-            alert(String.join("\n", errors));
-            return Optional.empty();
+            throw err;
         }
     }
 
-    @Override
-    public boolean apply(Consumer<LocalDate> dateConsumer, Consumer<List<String>> errorConsumer){
-        List<String> errs = new ArrayList<>();
-        JapaneseEra era = gengouInput.getEra();
-        Integer nen = null;
-        try {
-            nen = Integer.parseInt(nenInput.getText());
-        } catch(NumberFormatException ex){
-            errs.add("年の入力が不適切です。");
-        }
-        Integer month = null;
-        try {
-            month = Integer.parseInt(monthInput.getText());
-        } catch(NumberFormatException ex){
-            errs.add("月の入力が不適切です。");
-        }
-        Integer day = null;
-        try {
-            day = Integer.parseInt(dayInput.getText());
-        } catch(NumberFormatException ex){
-            errs.add("日の入力が不適切です。");
-        }
-        if( nen != null && month != null && day != null ){
-            LocalDate date = LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay());
-            dateConsumer.accept(date);
-            return true;
-        } else {
-            errorConsumer.accept(errs);
-            return false;
-        }
-    }
+//    public Optional<LocalDate> getValue(){
+//        errors.clear();
+//        JapaneseEra era = gengouInput.getEra();
+//        Integer nen = null;
+//        try {
+//            nen = Integer.parseInt(nenInput.getText());
+//        } catch(NumberFormatException ex){
+//            errors.add("年の入力が不適切です。");
+//        }
+//        Integer month = null;
+//        try {
+//            month = Integer.parseInt(monthInput.getText());
+//        } catch(NumberFormatException ex){
+//            errors.add("月の入力が不適切です。");
+//        }
+//        Integer day = null;
+//        try {
+//            day = Integer.parseInt(dayInput.getText());
+//        } catch(NumberFormatException ex){
+//            errors.add("日の入力が不適切です。");
+//        }
+//        if( errors.size() == 0 ){
+//            return Optional.of(LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay()));
+//        } else {
+//            alert(String.join("\n", errors));
+//            return Optional.empty();
+//        }
+//    }
+//
+//    @Override
+//    public boolean apply(Consumer<LocalDate> dateConsumer, Consumer<List<String>> errorConsumer){
+//        List<String> errs = new ArrayList<>();
+//        JapaneseEra era = gengouInput.getEra();
+//        Integer nen = null;
+//        try {
+//            nen = Integer.parseInt(nenInput.getText());
+//        } catch(NumberFormatException ex){
+//            errs.add("年の入力が不適切です。");
+//        }
+//        Integer month = null;
+//        try {
+//            month = Integer.parseInt(monthInput.getText());
+//        } catch(NumberFormatException ex){
+//            errs.add("月の入力が不適切です。");
+//        }
+//        Integer day = null;
+//        try {
+//            day = Integer.parseInt(dayInput.getText());
+//        } catch(NumberFormatException ex){
+//            errs.add("日の入力が不適切です。");
+//        }
+//        if( nen != null && month != null && day != null ){
+//            LocalDate date = LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay());
+//            dateConsumer.accept(date);
+//            return true;
+//        } else {
+//            errorConsumer.accept(errs);
+//            return false;
+//        }
+//    }
 
     public boolean isEmpty(){
         return nenInput.getText().isEmpty() && monthInput.getText().isEmpty() && dayInput.getText().isEmpty();

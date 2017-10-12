@@ -5,8 +5,10 @@ import jp.chang.myclinic.dto.DiseaseExampleDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.lib.dateinput.DateInput;
+import jp.chang.myclinic.practice.lib.dateinput.DateInputException;
 
 import javax.swing.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,13 +50,13 @@ class SearchResultExample extends SearchResultData {
         if( name == null ){
             return CompletableFuture.completedFuture(null);
         } else {
-            return dateInput.map(
-                    at -> Service.api.findByoumeiMasterByName(name, at.toString()),
-                    errors -> {
-                        String message = "開始日：\n" + String.join("\n", errors);
-                        alert(message);
-                        return CompletableFuture.completedFuture(null);
-                    });
+            try {
+                LocalDate at = dateInput.getValue();
+                return Service.api.findByoumeiMasterByName(name, at.toString());
+            } catch(DateInputException ex){
+                alert("開始日：\n" + String.join("\n", ex.getErrorMessages()));
+                return CompletableFuture.completedFuture(null);
+            }
         }
     }
 
