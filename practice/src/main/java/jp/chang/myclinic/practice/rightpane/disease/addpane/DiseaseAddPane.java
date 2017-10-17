@@ -3,7 +3,6 @@ package jp.chang.myclinic.practice.rightpane.disease.addpane;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Service;
-import jp.chang.myclinic.practice.lib.dateinput.DateInputException;
 import jp.chang.myclinic.practice.lib.dateinput.DateInputForm;
 import net.miginfocom.swing.MigLayout;
 

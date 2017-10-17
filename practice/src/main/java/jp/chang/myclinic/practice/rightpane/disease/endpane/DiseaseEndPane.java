@@ -6,7 +6,6 @@ import jp.chang.myclinic.dto.DiseaseAdjFullDTO;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.DiseaseModifyEndReasonDTO;
 import jp.chang.myclinic.practice.Service;
-import jp.chang.myclinic.practice.lib.dateinput.DateInputException;
 import jp.chang.myclinic.practice.lib.dateinput.DateInputForm;
 import net.miginfocom.swing.MigLayout;
 

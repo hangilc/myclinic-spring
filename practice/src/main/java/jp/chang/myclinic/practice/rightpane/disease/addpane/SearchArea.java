@@ -5,7 +5,6 @@ import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.lib.dateinput.DateInput;
-import jp.chang.myclinic.practice.lib.dateinput.DateInputException;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;

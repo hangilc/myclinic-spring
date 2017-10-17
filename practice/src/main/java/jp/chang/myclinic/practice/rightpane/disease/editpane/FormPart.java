@@ -2,7 +2,10 @@ package jp.chang.myclinic.practice.rightpane.disease.editpane;
 
 import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.Gengou;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.dto.ByoumeiMasterDTO;
+import jp.chang.myclinic.dto.DiseaseDTO;
+import jp.chang.myclinic.dto.DiseaseFullDTO;
+import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
 import jp.chang.myclinic.practice.lib.dateinput.DateInputForm;
 import jp.chang.myclinic.util.DiseaseUtil;
 import net.miginfocom.swing.MigLayout;
@@ -10,7 +13,6 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 class FormPart extends JPanel {
@@ -70,9 +72,9 @@ class FormPart extends JPanel {
         repaint();
     }
 
-    DiseaseModifyDTO getModifyDTO(){
-        DiseaseDTO disease = DiseaseDTO.copy(this.diseaseDTO);
-
-    }
+//    DiseaseModifyDTO getModifyDTO(){
+//        DiseaseDTO disease = DiseaseDTO.copy(this.diseaseDTO);
+//
+//    }
 
 }

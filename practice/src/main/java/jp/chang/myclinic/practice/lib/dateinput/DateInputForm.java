@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.lib.dateinput;
 
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.practice.lib.Result;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.time.chrono.JapaneseDate;
 import java.time.chrono.JapaneseEra;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,7 +20,6 @@ public class DateInputForm extends JPanel implements DateInput {
     private JTextField nenInput = new JTextField(2);
     private JTextField monthInput = new JTextField(2);
     private JTextField dayInput = new JTextField(2);
-    //private List<String> errors = new ArrayList<>();
 
     public DateInputForm(List<Gengou> gengouList){
         setLayout(new MigLayout("insets 0, gapx 1", "", ""));
@@ -47,37 +48,35 @@ public class DateInputForm extends JPanel implements DateInput {
         dayInput.setText("" + day);
     }
 
-    public LocalDate getValue(){
-        DateInputException err = new DateInputException();
+    public Result<LocalDate, List<String>> getValue(){
+        List<String> err = new ArrayList<>();
         JapaneseEra era = gengouInput.getEra();
         Integer nen = null;
         try {
             nen = Integer.parseInt(nenInput.getText());
         } catch(NumberFormatException ex){
-            err.addError("年の入力が不適切です。");
+            err.add("年の入力が不適切です。");
         }
         Integer month = null;
         try {
             month = Integer.parseInt(monthInput.getText());
         } catch(NumberFormatException ex){
-            err.addError("月の入力が不適切です。");
+            err.add("月の入力が不適切です。");
         }
         Integer day = null;
         try {
             day = Integer.parseInt(dayInput.getText());
         } catch(NumberFormatException ex){
-            err.addError("日の入力が不適切です。");
+            err.add("日の入力が不適切です。");
         }
         if( nen != null && month != null && day != null ){
             try {
-                return LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay());
+                return new Result<>(LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay()));
             } catch(DateTimeException ex){
-                err.addError("不適切な月日です。");
-                throw err;
+                err.add("不適切な月日です。");
             }
-        } else {
-            throw err;
         }
+        return new Result<>(null, err);
     }
 
 //    public Optional<LocalDate> getValue(){
