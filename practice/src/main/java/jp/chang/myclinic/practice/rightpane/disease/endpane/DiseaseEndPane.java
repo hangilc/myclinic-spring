@@ -34,36 +34,37 @@ public class DiseaseEndPane extends JPanel {
         commandPart.setCallback(new CommandPart.Callback() {
             @Override
             public void onEnter() {
-                try {
-                    LocalDate endDate = endDateInput.getValue();
-                    char reason = reasonPart.getReason();
-                    String endDateStr = endDate.toString();
-                    List<DiseaseFullDTO> selected = listPart.getSelected();
-                    List<DiseaseModifyEndReasonDTO> args = selected.stream()
-                            .map(d -> {
-                                DiseaseModifyEndReasonDTO arg = new DiseaseModifyEndReasonDTO();
-                                arg.diseaseId = d.disease.diseaseId;
-                                arg.endDate = endDateStr;
-                                arg.endReason = adaptReason(d, reason);
-                                return arg;
-                            })
-                            .collect(Collectors.toList());
-                    Service.api.batchUpdateDiseaseEndReason(args)
-                            .thenAccept(ret -> EventQueue.invokeLater(() ->{
-                                List<Integer> diseaseIds = diseases.stream()
-                                        .map(d -> d.disease.diseaseId).collect(Collectors.toList());
-                                callback.onModified(diseaseIds);
-                            }))
-                            .exceptionally(t -> {
-                                t.printStackTrace();
-                                EventQueue.invokeLater(() -> {
-                                    alert(t.toString());
-                                });
-                                return null;
-                            });
-                } catch(DateInputException err){
-                    alert("終了日：\n" + String.join("\n", err.getErrorMessages()));
-                }
+                endDateInput.getValue()
+                        .ifPresent(endDate -> {
+                            char reason = reasonPart.getReason();
+                            String endDateStr = endDate.toString();
+                            List<DiseaseFullDTO> selected = listPart.getSelected();
+                            List<DiseaseModifyEndReasonDTO> args = selected.stream()
+                                    .map(d -> {
+                                        DiseaseModifyEndReasonDTO arg = new DiseaseModifyEndReasonDTO();
+                                        arg.diseaseId = d.disease.diseaseId;
+                                        arg.endDate = endDateStr;
+                                        arg.endReason = adaptReason(d, reason);
+                                        return arg;
+                                    })
+                                    .collect(Collectors.toList());
+                            Service.api.batchUpdateDiseaseEndReason(args)
+                                    .thenAccept(ret -> EventQueue.invokeLater(() ->{
+                                        List<Integer> diseaseIds = diseases.stream()
+                                                .map(d -> d.disease.diseaseId).collect(Collectors.toList());
+                                        callback.onModified(diseaseIds);
+                                    }))
+                                    .exceptionally(t -> {
+                                        t.printStackTrace();
+                                        EventQueue.invokeLater(() -> {
+                                            alert(t.toString());
+                                        });
+                                        return null;
+                                    });
+                       })
+                        .ifError(errs -> {
+                            alert("終了日：\n" + String.join("\n", errs));
+                        });
             }
         });
         add(listPart, "wrap");

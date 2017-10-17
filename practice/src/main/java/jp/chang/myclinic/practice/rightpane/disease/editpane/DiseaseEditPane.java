@@ -3,11 +3,14 @@ package jp.chang.myclinic.practice.rightpane.disease.editpane;
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
+import jp.chang.myclinic.practice.lib.Result;
 import jp.chang.myclinic.practice.lib.dateinput.DateInput;
+import jp.chang.myclinic.practice.lib.searcharea.SearchArea;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.time.LocalDate;
+import java.util.List;
 
 public class DiseaseEditPane extends JPanel {
 
@@ -36,8 +39,8 @@ public class DiseaseEditPane extends JPanel {
         });
         SearchArea searchArea = new SearchArea(width, new DateInput(){
             @Override
-            public LocalDate getValue(){
-                return startDate;
+            public Result<LocalDate, List<String>> getValue(){
+                return new Result<>(startDate, null);
             }
 
             @Override

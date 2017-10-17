@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.rightpane.disease.editpane;
+package jp.chang.myclinic.practice.lib.searcharea;
 
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;

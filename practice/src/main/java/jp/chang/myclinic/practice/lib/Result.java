@@ -1,5 +1,7 @@
 package jp.chang.myclinic.practice.lib;
 
+import java.util.function.Consumer;
+
 public class Result<T,E> {
 
     private T value;
@@ -24,5 +26,19 @@ public class Result<T,E> {
 
     public E getError(){
         return error;
+    }
+
+    public Result<T,E> ifPresent(Consumer<T> consumer){
+        if( hasValue() ){
+            consumer.accept(getValue());
+        }
+        return this;
+    }
+
+    public Result<T,E> ifError(Consumer<E> consumer){
+        if( !hasValue() ){
+            consumer.accept(getError());
+        }
+        return this;
     }
 }

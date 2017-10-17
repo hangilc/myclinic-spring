@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.rightpane.disease.addpane;
+package jp.chang.myclinic.practice.lib.searcharea;
 
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
@@ -9,13 +9,12 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class SearchArea extends JPanel {
+public class SearchArea extends JPanel {
 
-    interface Callback {
+    public interface Callback {
         default void onByoumeiSelect(ByoumeiMasterDTO byoumeiMaster){}
         default void onShuushokugoSelect(ShuushokugoMasterDTO shuushokugoMaster){}
     }
@@ -28,7 +27,7 @@ class SearchArea extends JPanel {
     private SearchResult searchResult = new SearchResult();
     private Callback callback = new Callback(){};
 
-    SearchArea(int width, DateInput startDateInput) {
+    public SearchArea(int width, DateInput startDateInput) {
         this.startDateInput = startDateInput;
         setLayout(new MigLayout("insets 0, gapy 0", String.format("[%dpx!]", width), ""));
         searchResult.setSelectionHandler(this::doSelected);
@@ -38,7 +37,7 @@ class SearchArea extends JPanel {
         add(searchScroll, "w 10, grow");
     }
 
-    void setCallback(Callback callback){
+    public void setCallback(Callback callback){
         this.callback = callback;
     }
 
@@ -92,25 +91,26 @@ class SearchArea extends JPanel {
     private void doSearch(String text){
         Mode mode = getMode();
         if( mode == Mode.BYOUMEI ){
-            try {
-                LocalDate startDate = startDateInput.getValue();
-                Service.api.searchByoumei(text, startDate.toString())
-                        .thenAccept(masters -> EventQueue.invokeLater(() ->{
-                            List<SearchResultData> dataList = masters.stream()
-                                    .map(SearchResultMaster::of)
-                                    .collect(Collectors.toList());
-                            searchResult.setListData(dataList.toArray(new SearchResultData[]{}));
-                        }))
-                        .exceptionally(t -> {
-                            t.printStackTrace();
-                            EventQueue.invokeLater(() -> {
-                                alert(t.toString());
-                            });
-                            return null;
-                        });
-            } catch(DateInputException ex){
-                alert("開始日：\n" + String.join("\n", ex.getErrorMessages()));
-            }
+            startDateInput.getValue()
+                    .ifPresent(startDate -> {
+                        Service.api.searchByoumei(text, startDate.toString())
+                                .thenAccept(masters -> EventQueue.invokeLater(() ->{
+                                    List<SearchResultData> dataList = masters.stream()
+                                            .map(SearchResultMaster::of)
+                                            .collect(Collectors.toList());
+                                    searchResult.setListData(dataList.toArray(new SearchResultData[]{}));
+                                }))
+                                .exceptionally(t -> {
+                                    t.printStackTrace();
+                                    EventQueue.invokeLater(() -> {
+                                        alert(t.toString());
+                                    });
+                                    return null;
+                                });
+                    })
+                    .ifError(errs -> {
+                        alert("開始日：\n" + String.join("\n", errs));
+                    });
         } else if( mode == Mode.SHUUSHOKUGO ){
             Service.api.searchShuushokugo(text)
                     .thenAccept(masters -> EventQueue.invokeLater(() ->{

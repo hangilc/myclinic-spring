@@ -1,9 +1,10 @@
-package jp.chang.myclinic.practice.rightpane.disease.addpane;
+package jp.chang.myclinic.practice.lib.searcharea;
 
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.DiseaseExampleDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.lib.Result;
 import jp.chang.myclinic.practice.lib.dateinput.DateInput;
 
 import javax.swing.*;
@@ -49,11 +50,11 @@ class SearchResultExample extends SearchResultData {
         if( name == null ){
             return CompletableFuture.completedFuture(null);
         } else {
-            try {
-                LocalDate at = dateInput.getValue();
-                return Service.api.findByoumeiMasterByName(name, at.toString());
-            } catch(DateInputException ex){
-                alert("開始日：\n" + String.join("\n", ex.getErrorMessages()));
+            Result<LocalDate, List<String>> dateInputResult = dateInput.getValue();
+            if( dateInputResult.hasValue() ){
+                return Service.api.findByoumeiMasterByName(name, dateInputResult.getValue().toString());
+            } else {
+                alert("開始日：\n" + String.join("\n", dateInputResult.getError()));
                 return CompletableFuture.completedFuture(null);
             }
         }

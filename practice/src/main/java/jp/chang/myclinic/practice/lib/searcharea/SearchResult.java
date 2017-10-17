@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.rightpane.disease.addpane;
+package jp.chang.myclinic.practice.lib.searcharea;
 
 import jp.chang.myclinic.practice.lib.SearchResultList;
 
