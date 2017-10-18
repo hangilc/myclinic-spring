@@ -1255,6 +1255,11 @@ public class DbGateway {
         }
     }
 
+    public void deleteDisease(int diseaseId) {
+        diseaseRepository.delete(diseaseId);
+        diseaseAdjRepository.deleteByDiseaseId(diseaseId);
+    }
+
     public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at){
         Date atDate = Date.valueOf(at);
         return byoumeiMasterRepository.searchByName(text, atDate).stream()

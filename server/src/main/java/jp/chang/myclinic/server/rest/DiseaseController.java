@@ -73,6 +73,12 @@ class DiseaseController {
         return true;
     }
 
+    @RequestMapping(value="/delete-disease", method=RequestMethod.POST)
+    public boolean deleteDisease(@RequestParam("disease-id") int diseaseId){
+        dbGateway.deleteDisease(diseaseId);
+        return true;
+    }
+
     private DiseaseExampleDTO toDiseaseExampleDTO(DiseaseExample.Entry entry){
         DiseaseExampleDTO dto = new DiseaseExampleDTO();
         String label = entry.getLabel();

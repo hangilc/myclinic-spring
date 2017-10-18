@@ -248,6 +248,9 @@ public class Service {
 
         @POST("modify-disease")
         CompletableFuture<Boolean> modifyDisease(@Body DiseaseModifyDTO diseaseModifyDTO);
+
+        @POST("delete-disease")
+        CompletableFuture<Boolean> deleteDisease(@Query("disease-id") int diseaseId);
     }
 
     public static ServerAPI api;

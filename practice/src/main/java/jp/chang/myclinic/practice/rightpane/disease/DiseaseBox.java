@@ -153,26 +153,30 @@ public class DiseaseBox extends JPanel {
         pane.setCallback(new DiseaseEditPane.Callback() {
             @Override
             public void onModified(int diseaseId) {
-                Service.api.listCurrentDiseaseFull(patientId)
-                        .thenAccept(list -> EventQueue.invokeLater(() ->{
-                            currentDiseases = list;
-                            openListPane();
-                        }))
-                        .exceptionally(t -> {
-                            t.printStackTrace();
-                            EventQueue.invokeLater(() -> {
-                                alert(t.toString());
-                            });
-                            return null;
-                        });
+                refreshAndOpenListPane();
             }
 
             @Override
             public void onDeleted(int diseaseId) {
-
+                refreshAndOpenListPane();
             }
         });
         switchPane(pane, () -> pane.setDisease(disease));
+    }
+
+    private void refreshAndOpenListPane(){
+        Service.api.listCurrentDiseaseFull(patientId)
+                .thenAccept(list -> EventQueue.invokeLater(() ->{
+                    currentDiseases = list;
+                    openListPane();
+                }))
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
     }
 
     private void alert(String message){

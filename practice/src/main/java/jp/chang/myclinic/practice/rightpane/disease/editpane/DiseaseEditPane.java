@@ -58,7 +58,16 @@ public class DiseaseEditPane extends JPanel {
 
             @Override
             public void onDelete() {
-
+                int diseaseId = disease.disease.diseaseId;
+                Service.api.deleteDisease(diseaseId)
+                        .thenAccept(ok -> EventQueue.invokeLater(() -> callback.onDeleted(diseaseId)))
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
             }
         });
         SearchArea searchArea = new SearchArea(width, new DateInput(){
