@@ -24,4 +24,8 @@ class ReasonSelector extends JComboBox<DiseaseEndReason> {
             addItem(r);
         }
     }
+
+    DiseaseEndReason getReason(){
+        return (DiseaseEndReason) getSelectedItem();
+    }
 }

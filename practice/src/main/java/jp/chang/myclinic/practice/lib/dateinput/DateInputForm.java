@@ -20,6 +20,7 @@ public class DateInputForm extends JPanel implements DateInput {
     private JTextField nenInput = new JTextField(2);
     private JTextField monthInput = new JTextField(2);
     private JTextField dayInput = new JTextField(2);
+    private boolean allowEmpty;
 
     public DateInputForm(List<Gengou> gengouList){
         setLayout(new MigLayout("insets 0, gapx 1", "", ""));
@@ -38,17 +39,30 @@ public class DateInputForm extends JPanel implements DateInput {
     }
 
     public void setValue(LocalDate value){
-        JapaneseDate jd = JapaneseDate.from(value);
-        gengouInput.setEra(jd.getEra());
-        int nen = jd.get(ChronoField.YEAR_OF_ERA);
-        int month = value.getMonthValue();
-        int day = value.getDayOfMonth();
-        nenInput.setText("" + nen);
-        monthInput.setText("" + month);
-        dayInput.setText("" + day);
+        if( value == null ){
+            nenInput.setText("");
+            monthInput.setText("");
+            dayInput.setText("");
+        } else {
+            JapaneseDate jd = JapaneseDate.from(value);
+            gengouInput.setEra(jd.getEra());
+            int nen = jd.get(ChronoField.YEAR_OF_ERA);
+            int month = value.getMonthValue();
+            int day = value.getDayOfMonth();
+            nenInput.setText("" + nen);
+            monthInput.setText("" + month);
+            dayInput.setText("" + day);
+        }
+    }
+
+    public void setAllowEmpty(boolean allowEmpty){
+        this.allowEmpty = allowEmpty;
     }
 
     public Result<LocalDate, List<String>> getValue(){
+        if( allowEmpty && isEmpty() ){
+            return new Result<>(null, null);
+        }
         List<String> err = new ArrayList<>();
         JapaneseEra era = gengouInput.getEra();
         Integer nen = null;
@@ -78,67 +92,6 @@ public class DateInputForm extends JPanel implements DateInput {
         }
         return new Result<>(null, err);
     }
-
-//    public Optional<LocalDate> getValue(){
-//        errors.clear();
-//        JapaneseEra era = gengouInput.getEra();
-//        Integer nen = null;
-//        try {
-//            nen = Integer.parseInt(nenInput.getText());
-//        } catch(NumberFormatException ex){
-//            errors.add("年の入力が不適切です。");
-//        }
-//        Integer month = null;
-//        try {
-//            month = Integer.parseInt(monthInput.getText());
-//        } catch(NumberFormatException ex){
-//            errors.add("月の入力が不適切です。");
-//        }
-//        Integer day = null;
-//        try {
-//            day = Integer.parseInt(dayInput.getText());
-//        } catch(NumberFormatException ex){
-//            errors.add("日の入力が不適切です。");
-//        }
-//        if( errors.size() == 0 ){
-//            return Optional.of(LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay()));
-//        } else {
-//            alert(String.join("\n", errors));
-//            return Optional.empty();
-//        }
-//    }
-//
-//    @Override
-//    public boolean apply(Consumer<LocalDate> dateConsumer, Consumer<List<String>> errorConsumer){
-//        List<String> errs = new ArrayList<>();
-//        JapaneseEra era = gengouInput.getEra();
-//        Integer nen = null;
-//        try {
-//            nen = Integer.parseInt(nenInput.getText());
-//        } catch(NumberFormatException ex){
-//            errs.add("年の入力が不適切です。");
-//        }
-//        Integer month = null;
-//        try {
-//            month = Integer.parseInt(monthInput.getText());
-//        } catch(NumberFormatException ex){
-//            errs.add("月の入力が不適切です。");
-//        }
-//        Integer day = null;
-//        try {
-//            day = Integer.parseInt(dayInput.getText());
-//        } catch(NumberFormatException ex){
-//            errs.add("日の入力が不適切です。");
-//        }
-//        if( nen != null && month != null && day != null ){
-//            LocalDate date = LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay());
-//            dateConsumer.accept(date);
-//            return true;
-//        } else {
-//            errorConsumer.accept(errs);
-//            return false;
-//        }
-//    }
 
     public boolean isEmpty(){
         return nenInput.getText().isEmpty() && monthInput.getText().isEmpty() && dayInput.getText().isEmpty();

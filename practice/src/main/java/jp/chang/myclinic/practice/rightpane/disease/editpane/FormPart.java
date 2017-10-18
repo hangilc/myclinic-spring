@@ -2,16 +2,15 @@ package jp.chang.myclinic.practice.rightpane.disease.editpane;
 
 import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.Gengou;
-import jp.chang.myclinic.dto.ByoumeiMasterDTO;
-import jp.chang.myclinic.dto.DiseaseDTO;
-import jp.chang.myclinic.dto.DiseaseFullDTO;
-import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
+import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.lib.Result;
 import jp.chang.myclinic.practice.lib.dateinput.DateInputForm;
 import jp.chang.myclinic.util.DiseaseUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +19,9 @@ class FormPart extends JPanel {
     private DateInputForm startDateInput = new DateInputForm(Gengou.Current);
     private ReasonSelector reasonSelector = new ReasonSelector();
     private DateInputForm endDateInput = new DateInputForm(Gengou.Current);
+    {
+        endDateInput.setAllowEmpty(true);
+    }
     private DiseaseDTO diseaseDTO;
     private ByoumeiMasterDTO byoumeiMaster;
     private List<ShuushokugoMasterDTO> shuushokugoMasters;
@@ -72,9 +74,43 @@ class FormPart extends JPanel {
         repaint();
     }
 
-//    DiseaseModifyDTO getModifyDTO(){
-//        DiseaseDTO disease = DiseaseDTO.copy(this.diseaseDTO);
-//
-//    }
+    Result<DiseaseModifyDTO, List<String>> getModifyDTO(){
+        List<String> errs = new ArrayList<>();
+        DiseaseDTO disease = DiseaseDTO.copy(this.diseaseDTO);
+        if( byoumeiMaster == null ){
+            errs.add("病名が設定されていません。");
+        } else {
+            disease.shoubyoumeicode = byoumeiMaster.shoubyoumeicode;
+        }
+        startDateInput.getValue().accept(
+                startDate -> {
+                    disease.startDate = startDate.toString();
+                },
+                startDateErrors -> {
+                    errs.add("開始日が不適切です。（" + String.join("", startDateErrors) + "）");
+                }
+        );
+        endDateInput.getValue().accept(
+                endDate -> {
+                    if (endDate == null) {
+                        disease.endDate = "0000-00-00";
+                    } else {
+                        disease.endDate = endDate.toString();
+                    }
+                },
+                endDateErrors -> {
+                    errs.add("終了日が不適切です。（" + String.join("", endDateErrors) + "）");
+                }
+        );
+        disease.endReason = reasonSelector.getReason().getCode();
+        if( errs.size() > 0 ){
+            return new Result<>(null, errs);
+        } else {
+            DiseaseModifyDTO modifyDTO = new DiseaseModifyDTO();
+            modifyDTO.disease = disease;
+            modifyDTO.shuushokugocodes = shuushokugoMasters.stream().map(m -> m.shuushokugocode).collect(Collectors.toList());
+            return new Result<>(modifyDTO, null);
+        }
+    }
 
 }

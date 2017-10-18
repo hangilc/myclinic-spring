@@ -17,7 +17,7 @@ public class Result<T,E> {
     }
 
     public boolean hasValue(){
-        return error != null;
+        return error == null;
     }
 
     public T getValue(){
@@ -40,5 +40,13 @@ public class Result<T,E> {
             consumer.accept(getError());
         }
         return this;
+    }
+
+    public void accept(Consumer<T> valueConsumer, Consumer<E> errorConsumer){
+        if( hasValue() ){
+            valueConsumer.accept(getValue());
+        } else {
+            errorConsumer.accept(getError());
+        }
     }
 }

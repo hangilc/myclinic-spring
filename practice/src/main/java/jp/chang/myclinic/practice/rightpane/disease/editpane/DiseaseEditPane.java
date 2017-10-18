@@ -24,7 +24,14 @@ public class DiseaseEditPane extends JPanel {
         commandBox.setCallback(new CommandBox.Callback() {
             @Override
             public void onEnter() {
-
+                formPart.getModifyDTO().accept(
+                        modifyDTO -> {
+                            System.out.println(modifyDTO);
+                        },
+                        errs -> {
+                            alert(String.join("\n", errs));
+                        }
+                );
             }
 
             @Override
@@ -67,4 +74,9 @@ public class DiseaseEditPane extends JPanel {
     public void setDisease(DiseaseFullDTO disease){
         formPart.setDisease(disease);
     }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
+    }
+
 }
