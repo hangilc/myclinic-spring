@@ -39,11 +39,7 @@ public class DiseaseBox extends JPanel {
     public void reset(int patientId, List<DiseaseFullDTO> diseaseList){
         this.patientId = patientId;
         this.currentDiseases = diseaseList;
-        gotoListMode();
-    }
-
-    private void gotoListMode(){
-        switchPane(new DiseaseListPane(width, currentDiseases));
+        openListPane();
     }
 
     private void switchPane(Component pane){
@@ -61,7 +57,7 @@ public class DiseaseBox extends JPanel {
     }
 
     private Component makeCommandBox(){
-        JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
+        JPanel panel = new JPanel(new MigLayout("insets 4 0 0 0", "", ""));
         Link listLink = new Link("現行");
         listLink.setCallback(evt -> openListPane());
         Link addLink = new Link("追加");
@@ -93,6 +89,12 @@ public class DiseaseBox extends JPanel {
 
     private void openListPane(){
         DiseaseListPane diseaseListPane = new DiseaseListPane(width, currentDiseases);
+        diseaseListPane.setCallback(new DiseaseListPane.Callback(){
+            @Override
+            public void onClick(DiseaseFullDTO disease) {
+                openEditPane(disease);
+            }
+        });
         switchPane(diseaseListPane);
     }
 
