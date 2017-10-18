@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.lib.searcharea;
+package jp.chang.myclinic.practice.rightpane.disease.searcharea;
 
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
@@ -63,6 +63,7 @@ public class SearchArea extends JPanel {
         JPanel panel = new JPanel(new MigLayout("insets 0", "[grow] [] []", ""));
         JTextField searchTextField = new JTextField();
         JButton searchButton = new JButton("検索");
+        searchTextField.addActionListener(evt -> searchButton.doClick());
         searchButton.addActionListener(evt -> {
             String text = searchTextField.getText();
             if( !text.isEmpty() ){

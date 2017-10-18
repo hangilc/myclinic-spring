@@ -6,7 +6,7 @@ import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.lib.Result;
 import jp.chang.myclinic.practice.lib.dateinput.DateInput;
-import jp.chang.myclinic.practice.lib.searcharea.SearchArea;
+import jp.chang.myclinic.practice.rightpane.disease.searcharea.SearchArea;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;

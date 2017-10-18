@@ -4,7 +4,7 @@ import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.lib.dateinput.DateInputForm;
-import jp.chang.myclinic.practice.lib.searcharea.SearchArea;
+import jp.chang.myclinic.practice.rightpane.disease.searcharea.SearchArea;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
