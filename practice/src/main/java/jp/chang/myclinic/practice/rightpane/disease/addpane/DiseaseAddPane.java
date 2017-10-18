@@ -24,6 +24,10 @@ public class DiseaseAddPane extends JPanel {
     private Callback callback = new Callback(){};
 
     public DiseaseAddPane(int width, int patientId) {
+        this(width, patientId, null);
+    }
+
+    public DiseaseAddPane(int width, int patientId, DiseaseFullDTO lastEntered) {
         this.patientId = patientId;
         setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
         disp = new Disp(width);
@@ -65,7 +69,7 @@ public class DiseaseAddPane extends JPanel {
         add(searchArea);
     }
 
-    public void setCallback(Callback callback){
+        public void setCallback(Callback callback){
         this.callback = callback;
     }
 
