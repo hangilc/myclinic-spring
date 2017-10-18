@@ -93,11 +93,11 @@ class MainFrame extends JFrame {
             drugInfoMenu.add(item);
             item.addActionListener(event -> {
                 Service.api.listAllPharmaDrugNames()
-                        .thenAccept(list -> {
+                        .thenAccept(list -> EventQueue.invokeLater(() -> {
                             ListAllPharmaDrugDialog dialog = new ListAllPharmaDrugDialog(list);
                             dialog.setLocationByPlatform(true);
                             dialog.setVisible(true);
-                        })
+                        }))
                         .exceptionally(t -> {
                             t.printStackTrace();
                             EventQueue.invokeLater(() -> {
@@ -137,7 +137,7 @@ class MainFrame extends JFrame {
 
     private void printBlankDrugBag(DrugCategory category){
         Service.api.getClinicInfo()
-                .thenAccept(clinicInfo -> {
+                .thenAccept(clinicInfo -> EventQueue.invokeLater(() -> {
                     DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
                     previewDialog.setImageSize(128, 182);
                     previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getDrugbagPrinterSetting());
@@ -148,7 +148,7 @@ class MainFrame extends JFrame {
                     List<Op> ops = new DrugBagDrawer(data).getOps();
                     previewDialog.render(ops);
                     previewDialog.setVisible(true);
-                })
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> alert(t.toString()));

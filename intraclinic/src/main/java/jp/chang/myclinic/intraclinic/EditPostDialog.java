@@ -70,13 +70,15 @@ class EditPostDialog extends JDialog {
         newPost.content = textarea.getText();
         newPost.createdAt = post.createdAt;
         Service.api.updatePost(newPost)
-                .thenAccept(result -> {
+                .thenAccept(result -> EventQueue.invokeLater(() -> {
                     dispose();
                     callback.onUpdate();
-                })
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
-                    alert(t.toString());
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
                     return null;
                 });
     }

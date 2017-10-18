@@ -8,16 +8,16 @@ public enum Gengou {
 	Shouwa(JapaneseEra.SHOWA, "昭和"),
 	Heisei(JapaneseEra.HEISEI, "平成");
 
-	private JapaneseEra code;
+	private JapaneseEra era;
 	private String kanji;
 
-	Gengou(JapaneseEra code, String kanji){
-		this.code = code;
+	Gengou(JapaneseEra era, String kanji){
+		this.era = era;
 		this.kanji = kanji;
 	}
 
-	public JapaneseEra getCode(){
-		return code;
+	public JapaneseEra getEra(){
+		return era;
 	}
 
 	public String getKanji(){
@@ -35,10 +35,12 @@ public enum Gengou {
 
 	public static Gengou fromEra(JapaneseEra era){
 		for(Gengou gengou: values()){
-			if( gengou.code == era ){
+			if( gengou.era == era ){
 				return gengou;
 			}
 		}
 		return null;
 	}
+
+	public static Gengou Current = Heisei;
 }

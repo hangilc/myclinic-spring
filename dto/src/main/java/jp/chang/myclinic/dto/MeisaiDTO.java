@@ -11,4 +11,15 @@ public class MeisaiDTO {
     public int futanWari;
     public int charge;
     public HokenDTO hoken;
+
+    @Override
+    public String toString() {
+        return "MeisaiDTO{" +
+                "sections=" + sections +
+                ", totalTen=" + totalTen +
+                ", futanWari=" + futanWari +
+                ", charge=" + charge +
+                ", hoken=" + hoken +
+                '}';
+    }
 }

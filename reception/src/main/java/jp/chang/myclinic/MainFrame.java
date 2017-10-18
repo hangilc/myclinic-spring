@@ -149,7 +149,9 @@ class MainFrame extends JFrame {
 					.exceptionally(t -> {
 						if (!(isCancellation(t))) {
 							t.printStackTrace();
-							alert(t.toString());
+							EventQueue.invokeLater(() -> {
+								alert(t.toString());
+							});
 						}
 						return null;
 					});
@@ -172,12 +174,12 @@ class MainFrame extends JFrame {
 		try {
 			int patientId = Integer.parseInt(patientIdField.getText());
 			Service.api.getPatient(patientId)
-					.thenAccept((PatientDTO patient) -> {
+					.thenAccept((PatientDTO patient) -> EventQueue.invokeLater(() -> {
 						PatientInfoDialog patientInfoDialog = new PatientInfoDialog(this, patient, true);
 						patientInfoDialog.setLocationByPlatform(true);
 						patientInfoDialog.setVisible(true);
 						patientIdField.setText("");
-					})
+					}))
 					.exceptionally(t -> {
 						t.printStackTrace();
 						EventQueue.invokeLater(() -> {
@@ -216,7 +218,7 @@ class MainFrame extends JFrame {
 
 	private void doPrintBlankReceipt(){
 		Service.api.getClinicInfo()
-				.thenAccept((ClinicInfoDTO clinicInfo) -> {
+				.thenAccept((ClinicInfoDTO clinicInfo) -> EventQueue.invokeLater(() -> {
 					ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
 					creator.setClinicInfo(clinicInfo);
 					ReceiptDrawerData data = creator.getData();
@@ -227,7 +229,7 @@ class MainFrame extends JFrame {
 						dialog.setLocationByPlatform(true);
 						dialog.setVisible(true);
 					});
-				})
+				}))
 				.exceptionally(t -> {
 					t.printStackTrace();
 					EventQueue.invokeLater(() -> {
@@ -238,7 +240,7 @@ class MainFrame extends JFrame {
 
 	}
 
-	public void doUpdateWqueue(){
+	void doUpdateWqueue(){
 		WqueueData wqueueData = wqueueList.getSelectedValue();
 		final int selectedVisitId = wqueueData == null ? 0 : wqueueData.getVisitId();
 		Service.api.listWqueue()
@@ -309,12 +311,13 @@ class MainFrame extends JFrame {
 		int visitId = wq.getVisitId() ;
 		Service.api.deleteVisitFromReception(visitId)
 				.thenAccept(r -> {
-					System.out.println("done");
-					doUpdateWqueue();
+					EventQueue.invokeLater(() -> doUpdateWqueue());
 				})
 				.exceptionally(t -> {
 					t.printStackTrace();
-					alert(t.toString());
+					EventQueue.invokeLater(() -> {
+						alert(t.toString());
+					});
 					return null;
 				});
 	}

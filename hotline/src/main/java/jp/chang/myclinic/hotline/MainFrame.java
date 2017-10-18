@@ -105,14 +105,14 @@ class MainFrame extends JFrame {
         hotline.recipient = recipient.getName();
         hotline.postedAt = LocalDate.now().toString();
         Service.api.enterHotline(hotline)
-                .thenAccept(hotlineId -> {
+                .thenAccept(hotlineId -> EventQueue.invokeLater(() -> {
                     if( clearTextArea ) {
                         textArea.setText("");
                     }
                     if( reloader != null ){
                         reloader.trigger();
                     }
-                })
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> alert(t.toString()));

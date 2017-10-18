@@ -1,10 +1,7 @@
 package jp.chang.myclinic.mastermap;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.stream.Stream;
 
 /**
@@ -20,7 +17,7 @@ public class MasterMap {
     private NameMap diseaseNameMap;
     private NameMap diseaseAdjNameMap;
 
-    MasterMap() {
+    public MasterMap() {
         this.iyakuhinCodeMap = new CodeMap();
         this.shinryouCodeMap = new CodeMap();
         this.kizaiCodeMap = new CodeMap();
@@ -87,7 +84,7 @@ public class MasterMap {
         kizaiCodeMap.sortByDate();
     }
 
-    void loadNameMap(Stream<String> lines) {
+    public void loadNameMap(Stream<String> lines) {
         lines.forEach(line -> {
             if (line.isEmpty()) return;
             char kind = line.charAt(0);

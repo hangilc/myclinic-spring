@@ -66,7 +66,7 @@ class CashierDialog extends JDialog {
 		panel.add(new MeisaiDetailPane(meisai), "gaptop 5, wrap");
 		panel.add(new JLabel("総点：" + NumberUtil.formatNumber(meisai.totalTen) + "点"), "gaptop 5, wrap");
 		panel.add(new JLabel("負担割：" + meisai.futanWari + "割"), "wrap");
-		panel.add(new JLabel("請求額：" + NumberUtil.formatNumber(meisai.charge) + "円"), "wrap");
+		panel.add(new JLabel("請求額：" + NumberUtil.formatNumber(charge.charge) + "円"), "wrap");
 		if( payments.size() > 0 ){
 			PaymentDTO payment = payments.get(0);
 			panel.add(new JLabel("前回徴収額：" + NumberUtil.formatNumber(payment.amount) + "円"), "wrap");
@@ -85,7 +85,7 @@ class CashierDialog extends JDialog {
 		panel.setBorder(BorderFactory.createLineBorder(diff >= 0 ? Color.BLACK : Color.RED, 2));
 		Font curFont = getFont();
 		Font font = curFont.deriveFont(BOLD, curFont.getSize() * 1.5f);
-		String labelString = "請求額：" + NumberUtil.formatNumber(meisai.charge) + "円";
+		String labelString = "請求額：" + NumberUtil.formatNumber(charge.charge) + "円";
 		if( diff > 0 ){
 			labelString += "（" + NumberUtil.formatNumber(diff) + "円 追加徴収）";
 		} else if( diff < 0 ){
@@ -129,7 +129,9 @@ class CashierDialog extends JDialog {
 					})
 					.exceptionally(t -> {
 						t.printStackTrace();
-						alert(t.toString());
+						EventQueue.invokeLater(() -> {
+							alert(t.toString());
+						});
 						return null;
 					});
 		});
@@ -151,7 +153,9 @@ class CashierDialog extends JDialog {
 				})
 				.exceptionally(t -> {
 					t.printStackTrace();
-					alert(t.toString());
+					EventQueue.invokeLater(() -> {
+						alert(t.toString());
+					});
 					return null;
 				});
 	}

@@ -28,6 +28,7 @@
     <module>pharma</module>
     <module>hotline</module>
     <module>intraclinic</module>
+    <module>practice</module>
   </modules>
 
 </project>

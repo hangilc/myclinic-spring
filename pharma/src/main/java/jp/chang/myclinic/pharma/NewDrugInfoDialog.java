@@ -87,7 +87,7 @@ public class NewDrugInfoDialog extends JDialog {
 
     private void doTransitToEdit(IyakuhinMasterDTO master) {
         Service.api.findPharmaDrug(master.iyakuhincode)
-                .thenAccept(pharma -> {
+                .thenAccept(pharma -> EventQueue.invokeLater(() -> {
                     if (pharma == null) {
                         String description = "";
                         String sideeffect = "";
@@ -109,7 +109,7 @@ public class NewDrugInfoDialog extends JDialog {
                             }
                         });
                     }
-                })
+                }))
                 .exceptionally(t -> {
                     t.printStackTrace();
                     EventQueue.invokeLater(() -> {

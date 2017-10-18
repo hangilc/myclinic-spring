@@ -111,6 +111,15 @@ class SearchPaymentDialog extends JDialog {
 		});
 	}
 
+	private static class DataStore {
+		ChargeDTO charge;
+		ClinicInfoDTO clinicInfo;
+
+		int getChargeValue(){
+			return charge == null ? 0 : charge.charge;
+		}
+	}
+
 	private void doDispMeisai() {
 		PaymentVisitPatientDTO selection = resultList.getSelectedValue();
 		if( selection == null ){
@@ -122,13 +131,16 @@ class SearchPaymentDialog extends JDialog {
 		Service.api.findCharge(visitId)
 				.thenCompose(charge -> {
 					dataStore.charge = charge.charge;
+					if( dataStore.charge == null ){
+						throw new RuntimeException("cannot find charge");
+					}
 					return Service.api.getVisitMeisai(visitId);
 				})
-				.thenAccept(meisai -> {
+				.thenAccept(meisai -> EventQueue.invokeLater(() ->{
 					MeisaiDetailDialog meisaiDetailDialog = new MeisaiDetailDialog(this, meisai, patient, selection.visit);
 					meisaiDetailDialog.setLocationByPlatform(true);
 					meisaiDetailDialog.setVisible(true);
-				})
+				}))
 				.exceptionally(t -> {
 					t.printStackTrace();
 					EventQueue.invokeLater(() -> {
@@ -169,12 +181,4 @@ class SearchPaymentDialog extends JDialog {
 		JOptionPane.showMessageDialog(this, message);
 	}
 
-	private static class DataStore {
-		ChargeDTO charge;
-		ClinicInfoDTO clinicInfo;
-
-		int getChargeValue(){
-			return charge == null ? 0 : charge.charge;
-		}
-	}
 }

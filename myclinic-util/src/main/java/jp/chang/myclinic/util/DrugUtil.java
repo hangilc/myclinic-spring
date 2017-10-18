@@ -1,6 +1,7 @@
 package jp.chang.myclinic.util;
 
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.dto.ConductDrugFullDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
@@ -44,5 +45,10 @@ public class DrugUtil {
             }
             default: return "Unknown drug category: " + drug.category;
         }
+    }
+
+    public static String conductDrugRep(ConductDrugFullDTO drugFull){
+        return String.format("%s %s%s", drugFull.master.name, numberFormat.format(drugFull.conductDrug.amount),
+                drugFull.master.unit);
     }
 }

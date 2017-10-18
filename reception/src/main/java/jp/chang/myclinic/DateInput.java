@@ -70,7 +70,7 @@ class DateInput extends JPanel {
 
 	public LocalDate getValue() throws DateInputException {
 		String gengou = gengouList.getItemAt(gengouList.getSelectedIndex());
-		JapaneseEra era = Gengou.fromKanji(gengou).getCode();
+		JapaneseEra era = Gengou.fromKanji(gengou).getEra();
 		int nen, month, day;
 		try {
 			nen = Integer.parseInt(nenField.getText());

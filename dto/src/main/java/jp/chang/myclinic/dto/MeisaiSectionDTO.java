@@ -11,4 +11,14 @@ public class MeisaiSectionDTO {
     public String label;
     public List<SectionItemDTO> items;
     public int sectionTotalTen;
+
+    @Override
+    public String toString() {
+        return "MeisaiSectionDTO{" +
+                "name='" + name + '\'' +
+                ", label='" + label + '\'' +
+                ", items=" + items +
+                ", sectionTotalTen=" + sectionTotalTen +
+                '}';
+    }
 }
