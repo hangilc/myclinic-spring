@@ -22,7 +22,11 @@ class CommandBox extends JPanel {
         Link delAdjLink = new Link("修飾語削除");
         delAdjLink.setCallback(evt -> callback.onDelAdj());
         Link delLink = new Link("削除");
-        delLink.setCallback(evt -> callback.onDelete());
+        delLink.setCallback(evt -> {
+            if( confirm("この病名を削除していいですか？") ){
+                callback.onDelete();
+            }
+        });
         add(enterButton);
         add(delAdjLink);
         add(new JLabel("|"));
@@ -31,6 +35,11 @@ class CommandBox extends JPanel {
 
     void setCallback(Callback callback){
         this.callback = callback;
+    }
+
+    private boolean confirm(String message){
+        int choice = JOptionPane.showConfirmDialog(this, message, "確認", JOptionPane.YES_NO_OPTION);
+        return choice == JOptionPane.YES_OPTION;
     }
 
 }

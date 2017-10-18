@@ -53,7 +53,7 @@ public class DiseaseEditPane extends JPanel {
 
             @Override
             public void onDelAdj() {
-
+                formPart.deleteAdj();
             }
 
             @Override

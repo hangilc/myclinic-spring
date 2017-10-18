@@ -74,6 +74,13 @@ class FormPart extends JPanel {
         repaint();
     }
 
+    void deleteAdj(){
+        shuushokugoMasters.clear();
+        nameLabel.setText(composeFullName());
+        revalidate();
+        repaint();
+    }
+
     Result<DiseaseModifyDTO, List<String>> getModifyDTO(){
         List<String> errs = new ArrayList<>();
         DiseaseDTO disease = DiseaseDTO.copy(this.diseaseDTO);
