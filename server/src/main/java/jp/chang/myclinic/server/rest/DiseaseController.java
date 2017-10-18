@@ -1,9 +1,6 @@
 package jp.chang.myclinic.server.rest;
 
-import jp.chang.myclinic.dto.DiseaseExampleDTO;
-import jp.chang.myclinic.dto.DiseaseFullDTO;
-import jp.chang.myclinic.dto.DiseaseModifyEndReasonDTO;
-import jp.chang.myclinic.dto.DiseaseNewDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.server.DiseaseExample;
 import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +64,12 @@ class DiseaseController {
             LocalDate endDate = LocalDate.parse(arg.endDate);
             dbGateway.modifyDiseaseEndReason(arg.diseaseId, endDate, arg.endReason);
         });
+        return true;
+    }
+
+    @RequestMapping(value="/modify-disease", method=RequestMethod.POST)
+    public boolean modifyDisease(@RequestBody DiseaseModifyDTO diseaseModifyDTO){
+        dbGateway.modifyDisease(diseaseModifyDTO);
         return true;
     }
 

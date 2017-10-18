@@ -12,4 +12,6 @@ public interface DiseaseAdjRepository extends CrudRepository<DiseaseAdj, Integer
     @Query("select a, m from DiseaseAdj a, ShuushokugoMaster m where a.diseaseId = :diseaseId " +
             " and a.shuushokugocode = m.shuushokugocode ")
     List<Object[]> findByDiseaseIdWithMaster(@Param("diseaseId") int diseaseId, Sort sort);
+
+    void deleteByDiseaseId(int diseaseId);
 }

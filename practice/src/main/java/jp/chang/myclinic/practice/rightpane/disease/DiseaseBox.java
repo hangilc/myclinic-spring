@@ -63,10 +63,7 @@ public class DiseaseBox extends JPanel {
     private Component makeCommandBox(){
         JPanel panel = new JPanel(new MigLayout("insets 0", "", ""));
         Link listLink = new Link("現行");
-        listLink.setCallback(evt -> {
-            DiseaseListPane diseaseListPane = new DiseaseListPane(width, currentDiseases);
-            switchPane(diseaseListPane);
-        });
+        listLink.setCallback(evt -> openListPane());
         Link addLink = new Link("追加");
         addLink.setCallback(evt -> {
             if( patientId > 0 ) {
@@ -92,6 +89,11 @@ public class DiseaseBox extends JPanel {
         panel.add(new JLabel("|"));
         panel.add(editLink);
         return panel;
+    }
+
+    private void openListPane(){
+        DiseaseListPane diseaseListPane = new DiseaseListPane(width, currentDiseases);
+        switchPane(diseaseListPane);
     }
 
     private void openEndPane(){
@@ -148,6 +150,28 @@ public class DiseaseBox extends JPanel {
 
     private void openEditPane(DiseaseFullDTO disease){
         DiseaseEditPane pane = new DiseaseEditPane(width, disease);
+        pane.setCallback(new DiseaseEditPane.Callback() {
+            @Override
+            public void onModified(int diseaseId) {
+                Service.api.listCurrentDiseaseFull(patientId)
+                        .thenAccept(list -> EventQueue.invokeLater(() ->{
+                            currentDiseases = list;
+                            openListPane();
+                        }))
+                        .exceptionally(t -> {
+                            t.printStackTrace();
+                            EventQueue.invokeLater(() -> {
+                                alert(t.toString());
+                            });
+                            return null;
+                        });
+            }
+
+            @Override
+            public void onDeleted(int diseaseId) {
+
+            }
+        });
         switchPane(pane, () -> pane.setDisease(disease));
     }
 

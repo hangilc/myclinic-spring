@@ -1236,6 +1236,25 @@ public class DbGateway {
         diseaseRepository.save(d);
     }
 
+    public void modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
+        DiseaseDTO diseaseDTO = diseaseModifyDTO.disease;
+        Disease d = diseaseRepository.findOne(diseaseDTO.diseaseId);
+        d.setShoubyoumeicode(diseaseDTO.shoubyoumeicode);
+        d.setStartDate(diseaseDTO.startDate);
+        d.setEndDate(diseaseDTO.endDate);
+        d.setEndReason(diseaseDTO.endReason);
+        diseaseRepository.save(d);
+        diseaseAdjRepository.deleteByDiseaseId(diseaseDTO.diseaseId);
+        if( diseaseModifyDTO.shuushokugocodes != null ){
+            diseaseModifyDTO.shuushokugocodes.forEach(shuushokugocode -> {
+                DiseaseAdj adj = new DiseaseAdj();
+                adj.setDiseaseId(diseaseDTO.diseaseId);
+                adj.setShuushokugocode(shuushokugocode);
+                diseaseAdjRepository.save(adj);
+            });
+        }
+    }
+
     public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at){
         Date atDate = Date.valueOf(at);
         return byoumeiMasterRepository.searchByName(text, atDate).stream()

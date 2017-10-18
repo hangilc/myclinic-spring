@@ -245,6 +245,9 @@ public class Service {
 
         @POST("batch-update-disease-end-reason")
         CompletableFuture<Boolean> batchUpdateDiseaseEndReason(@Body List<DiseaseModifyEndReasonDTO> args);
+
+        @POST("modify-disease")
+        CompletableFuture<Boolean> modifyDisease(@Body DiseaseModifyDTO diseaseModifyDTO);
     }
 
     public static ServerAPI api;

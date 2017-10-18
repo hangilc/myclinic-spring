@@ -3,18 +3,27 @@ package jp.chang.myclinic.practice.rightpane.disease.editpane;
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.lib.Result;
 import jp.chang.myclinic.practice.lib.dateinput.DateInput;
 import jp.chang.myclinic.practice.lib.searcharea.SearchArea;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 import java.time.LocalDate;
 import java.util.List;
 
 public class DiseaseEditPane extends JPanel {
 
+    public interface Callback {
+        default void onModified(int diseaseId){}
+        default void onDeleted(int diseaseId){}
+    }
+
     private FormPart formPart;
+
+    private Callback callback = new Callback(){};
 
     public DiseaseEditPane(int width, DiseaseFullDTO disease){
         setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
@@ -26,7 +35,15 @@ public class DiseaseEditPane extends JPanel {
             public void onEnter() {
                 formPart.getModifyDTO().accept(
                         modifyDTO -> {
-                            System.out.println(modifyDTO);
+                            Service.api.modifyDisease(modifyDTO)
+                                    .thenAccept(ok -> EventQueue.invokeLater(() -> callback.onModified(disease.disease.diseaseId)))
+                                    .exceptionally(t -> {
+                                        t.printStackTrace();
+                                        EventQueue.invokeLater(() -> {
+                                            alert(t.toString());
+                                        });
+                                        return null;
+                                    });
                         },
                         errs -> {
                             alert(String.join("\n", errs));
@@ -69,6 +86,10 @@ public class DiseaseEditPane extends JPanel {
         add(formPart, "growx, wrap");
         add(commandBox, "wrap");
         add(searchArea);
+    }
+
+    public void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     public void setDisease(DiseaseFullDTO disease){
