@@ -13,6 +13,10 @@ import java.util.stream.Collectors;
 
 class ListPart extends JPanel {
 
+    interface Callback {
+        default void onChange(){}
+    }
+
     private static class Item {
         JCheckBox check;
         DiseaseFullDTO diseaseFull;
@@ -32,13 +36,14 @@ class ListPart extends JPanel {
     }
 
     private List<Item> items = new ArrayList<>();
+    private Callback callback = new Callback(){};
 
     ListPart(int width, List<DiseaseFullDTO> diseases){
         setLayout(new MigLayout("insets 0, gapy 0", "[]2[]", ""));
         diseases.forEach(disease -> {
             JCheckBox check = new JCheckBox("");
             check.addActionListener(evt -> {
-                System.out.println("action");
+                callback.onChange();
             });
             check.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
             int w = width - check.getPreferredSize().width - 2;
@@ -47,6 +52,10 @@ class ListPart extends JPanel {
             add(check);
             add(t, "wrap");
         });
+    }
+
+    void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     List<DiseaseFullDTO> getSelected(){
