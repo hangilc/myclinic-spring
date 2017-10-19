@@ -61,18 +61,7 @@ public class DiseaseBox extends JPanel {
         Link listLink = new Link("現行");
         listLink.setCallback(evt -> openListPane());
         Link addLink = new Link("追加");
-        addLink.setCallback(evt -> {
-            if( patientId > 0 ) {
-                DiseaseAddPane diseaseAddPane = new DiseaseAddPane(width, patientId);
-                diseaseAddPane.setCallback(new DiseaseAddPane.Callback() {
-                    @Override
-                    public void onEnter(DiseaseFullDTO entered) {
-                        currentDiseases.add(entered);
-                    }
-                });
-                switchPane(diseaseAddPane);
-            }
-        });
+        addLink.setCallback(evt -> openAddPane(null));
         Link endLink = new Link("転帰");
         endLink.setCallback(evt -> openEndPane());
         Link editLink = new Link("編集");
@@ -96,6 +85,20 @@ public class DiseaseBox extends JPanel {
             }
         });
         switchPane(diseaseListPane);
+    }
+
+    private void openAddPane(DiseaseFullDTO lastEntered){
+        if( patientId > 0 ) {
+            DiseaseAddPane diseaseAddPane = new DiseaseAddPane(width, patientId, lastEntered);
+            diseaseAddPane.setCallback(new DiseaseAddPane.Callback() {
+                @Override
+                public void onEnter(DiseaseFullDTO entered) {
+                    currentDiseases.add(entered);
+                    openAddPane(entered);
+                }
+            });
+            switchPane(diseaseAddPane);
+        }
     }
 
     private void openEndPane(){

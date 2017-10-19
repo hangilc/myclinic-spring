@@ -5,6 +5,7 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.lib.dateinput.DateInputForm;
 import jp.chang.myclinic.practice.rightpane.disease.searcharea.SearchArea;
+import jp.chang.myclinic.util.DiseaseUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -30,6 +31,11 @@ public class DiseaseAddPane extends JPanel {
     public DiseaseAddPane(int width, int patientId, DiseaseFullDTO lastEntered) {
         this.patientId = patientId;
         setLayout(new MigLayout("insets 0", String.format("[%dpx!]", width), ""));
+        Notice notice = null;
+        if( lastEntered != null ){
+            String message = DiseaseUtil.getFullName(lastEntered) + "が入力されました。";
+            notice = new Notice(width, message);
+        }
         disp = new Disp(width);
         startDateInput = new DateInputForm(Gengou.Current);
         startDateInput.setValue(LocalDate.now());
@@ -63,6 +69,9 @@ public class DiseaseAddPane extends JPanel {
                 disp.addShuushokugoMaster(shuushokugoMaster);
             }
         });
+        if( notice != null ){
+            add(notice, "wrap");
+        }
         add(disp, "wrap");
         add(startDateInput, "wrap");
         add(commandBox, "wrap");
