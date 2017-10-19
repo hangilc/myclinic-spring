@@ -10,7 +10,7 @@ class Notice extends JPanel {
     Notice(int width, String message){
         setLayout(new MigLayout("insets 4", "", ""));
         setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        WrappedText text = new WrappedText(width - 8, message);
+        WrappedText text = new WrappedText(width - 8 - 2, message);
         add(text);
     }
 }

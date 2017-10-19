@@ -74,7 +74,7 @@ public class DiseaseAddPane extends JPanel {
         }
         add(disp, "wrap");
         add(startDateInput, "wrap");
-        add(commandBox, "wrap");
+        add(commandBox, "growx, wrap");
         add(searchArea);
     }
 
