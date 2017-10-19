@@ -76,6 +76,7 @@ public class DiseaseAddPane extends JPanel {
         add(startDateInput, "wrap");
         add(commandBox, "growx, wrap");
         add(searchArea);
+        searchArea.showExamples();
     }
 
         public void setCallback(Callback callback){

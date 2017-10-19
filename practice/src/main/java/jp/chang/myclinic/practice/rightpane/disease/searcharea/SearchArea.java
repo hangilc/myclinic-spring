@@ -41,6 +41,10 @@ public class SearchArea extends JPanel {
         this.callback = callback;
     }
 
+    public void showExamples(){
+        doExample();
+    }
+
     private void doSelected(SearchResultData data){
         data.getData()
                 .thenAccept(d -> EventQueue.invokeLater(() ->{
