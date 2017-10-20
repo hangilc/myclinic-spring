@@ -13,6 +13,7 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 
+// TODO: speedup enter
 public class DiseaseAddPane extends JPanel {
 
     public interface Callback {
@@ -22,11 +23,8 @@ public class DiseaseAddPane extends JPanel {
     private int patientId;
     private Disp disp;
     private DateInputForm startDateInput;
+    private SearchArea searchArea;
     private Callback callback = new Callback(){};
-
-    public DiseaseAddPane(int width, int patientId) {
-        this(width, patientId, null);
-    }
 
     public DiseaseAddPane(int width, int patientId, DiseaseFullDTO lastEntered) {
         this.patientId = patientId;
@@ -57,7 +55,7 @@ public class DiseaseAddPane extends JPanel {
                 disp.delAdj();
             }
         });
-        SearchArea searchArea = new SearchArea(width, startDateInput);
+        searchArea = new SearchArea(width, startDateInput);
         searchArea.setCallback(new SearchArea.Callback() {
             @Override
             public void onByoumeiSelect(ByoumeiMasterDTO byoumeiMaster) {
@@ -110,6 +108,7 @@ public class DiseaseAddPane extends JPanel {
                             .thenCompose(diseaseId -> Service.api.getDiseaseFull(diseaseId))
                             .thenAccept(diseaseFull -> EventQueue.invokeLater(() ->{
                                 callback.onEnter(diseaseFull);
+                                searchArea.showExamples();
                             }))
                             .exceptionally(t -> {
                                 t.printStackTrace();

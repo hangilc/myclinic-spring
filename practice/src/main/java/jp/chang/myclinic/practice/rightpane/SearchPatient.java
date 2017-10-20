@@ -10,6 +10,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+// TODO: search by patientId
+// TODO: open patient where serach result is single
+// TODO: close searc result when selected
 class SearchPatient extends JPanel {
 
    private JTextField searchTextField = new JTextField();

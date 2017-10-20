@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.util.List;
 import java.util.function.Consumer;
 
+// TODO: show end reason
 class ListPart extends JScrollPane {
 
     private ResultList resultList;
