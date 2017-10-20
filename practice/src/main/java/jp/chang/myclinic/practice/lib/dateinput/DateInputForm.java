@@ -38,6 +38,7 @@ public class DateInputForm extends JPanel implements DateInput {
         this(Collections.singletonList(gengou));
     }
 
+    @Override
     public void setValue(LocalDate value){
         if( value == null ){
             nenInput.setText("");

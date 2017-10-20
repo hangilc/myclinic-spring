@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface DateInput {
     Result<LocalDate, List<String>> getValue();
+    void setValue(LocalDate date);
     boolean isEmpty();
 }

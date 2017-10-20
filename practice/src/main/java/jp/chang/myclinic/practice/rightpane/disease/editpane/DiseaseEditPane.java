@@ -77,6 +77,11 @@ public class DiseaseEditPane extends JPanel {
             }
 
             @Override
+            public void setValue(LocalDate date) {
+                throw new RuntimeException("cannot setValue");
+            }
+
+            @Override
             public boolean isEmpty() {
                 return false;
             }

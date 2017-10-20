@@ -28,7 +28,7 @@ public class DiseaseEndPane extends JPanel {
         setLayout(new MigLayout("insets 0, gapy 2", String.format("[%dpx!]", width), ""));
         DateInputForm endDateInput = new DateInputForm(Gengou.Current);
         endDateInput.setValue(LocalDate.now());
-        DateManipPart dateManipPart = new DateManipPart();
+        DateManipPart dateManipPart = new DateManipPart(endDateInput);
         ListPart listPart = new ListPart(width, diseases);
         listPart.setCallback(new ListPart.Callback(){
             @Override
