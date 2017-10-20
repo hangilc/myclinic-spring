@@ -1,15 +1,19 @@
 package jp.chang.myclinic.practice.lib.dateinput;
 
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.lib.Result;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.chrono.JapaneseDate;
 import java.time.chrono.JapaneseEra;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,13 +29,19 @@ public class DateInputForm extends JPanel implements DateInput {
     public DateInputForm(List<Gengou> gengouList){
         setLayout(new MigLayout("insets 0, gapx 1", "", ""));
         gengouInput = new GengouInput(gengouList);
+        Link yearLink = new Link("年");
+        yearLink.setCallback(evt -> doAdvance(evt, ChronoUnit.YEARS));
+        Link monthLink = new Link("月");
+        monthLink.setCallback(evt -> doAdvance(evt, ChronoUnit.MONTHS));
+        Link dayLink = new Link("日");
+        dayLink.setCallback(evt -> doAdvance(evt, ChronoUnit.DAYS));
         add(gengouInput, "w 50");
         add(nenInput);
-        add(new JLabel("年"));
+        add(yearLink);
         add(monthInput);
-        add(new JLabel("月"));
+        add(monthLink);
         add(dayInput);
-        add(new JLabel("日"));
+        add(dayLink);
     }
 
     public DateInputForm(Gengou gengou){
@@ -102,6 +112,17 @@ public class DateInputForm extends JPanel implements DateInput {
         nenInput.setText("");
         monthInput.setText("");
         dayInput.setText("");
+    }
+
+    private void doAdvance(MouseEvent evt, TemporalUnit unit){
+        getValue()
+                .ifPresent(date -> {
+                    int amount = evt.isShiftDown() ? -1 : 1;
+                    LocalDate newDate = date.plus(amount, unit);
+                    setValue(newDate);
+                })
+                .ifError(errs -> alert("日付の設定が不適切です。"));
+
     }
 
     private void alert(String message){
