@@ -46,7 +46,7 @@ public class RightPane extends JPanel {
             add(frame, "growx, wrap");
         }
         add(todaysVisits, "sizegroup btn, wrap");
-        add(todaysVisits.getWorkArea(), "w 10, growx, wrap");
+        add(todaysVisits.getWorkArea(), "w 10, h 260, growx, wrap");
     }
 
 //    public RightPane(int width){
