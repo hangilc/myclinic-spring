@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO: add space between texts
 public class TextArea extends JPanel implements TextAreaContext {
 
     private int width;

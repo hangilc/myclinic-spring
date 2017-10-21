@@ -1,9 +1,9 @@
 package jp.chang.myclinic.server.rest;
 
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PatientHokenListDTO;
+import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/json")
@@ -19,6 +21,8 @@ public class PatientController {
 
 	@Autowired
 	private DbGateway dbGateway;
+
+	private static Pattern allDigitsPattern = Pattern.compile("^\\d+$");
 
 	@RequestMapping(value="/get-patient", method=RequestMethod.GET)
 	public PatientDTO getPatient(@RequestParam("patient-id") int patientId){
@@ -91,6 +95,11 @@ public class PatientController {
 	public List<PatientDTO> searchPatient(@RequestParam("text") String text){
 		if( text.isEmpty() ){
 			return Collections.emptyList();
+		}
+		Matcher m = allDigitsPattern.matcher(text);
+		if( m.matches() ){
+			int patientId = Integer.parseInt(text);
+			return Collections.singletonList(dbGateway.getPatient(patientId));
 		}
 		String[] parts = text.split("\\p{Z}", 2);
 		if( parts.length == 1 ){
