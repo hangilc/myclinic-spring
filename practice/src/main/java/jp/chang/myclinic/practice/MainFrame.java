@@ -27,6 +27,7 @@ class MainFrame extends JFrame implements MainContext {
         rightPane = new RightPane();
         JScrollPane rightScroll = new JScrollPane(rightPane);
         rightScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        rightScroll.getVerticalScrollBar().setUnitIncrement(16);
         rightScroll.setBorder(null);
         add(leftPane, "w 580!, h 520, growy");
         add(rightScroll, "w 240!, h 520, growy");

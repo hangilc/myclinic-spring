@@ -5,6 +5,7 @@ import jp.chang.myclinic.practice.MainContext;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.WorkArea;
 import jp.chang.myclinic.practice.rightpane.disease.DiseaseBox;
+import jp.chang.myclinic.practice.rightpane.searchpatient.SearchPatient;
 import jp.chang.myclinic.practice.rightpane.selectvisit.SelectVisit;
 import jp.chang.myclinic.practice.rightpane.todaysvisits.TodaysVisits;
 import net.miginfocom.swing.MigLayout;
@@ -35,16 +36,18 @@ public class RightPane extends JPanel {
                 mainContext.startExam(wqueue.patient, wqueue.visit, () -> {});
             }
         });
+        SearchPatient searchPatient = new SearchPatient();
         TodaysVisits todaysVisits = new TodaysVisits();
         add(diseaseWorkArea, "wrap");
         add(selectVisit, "growx, wrap");
-        {
-            JPanel frame = new JPanel(new MigLayout("insets 0, fill", "", ""));
-            frame.setBorder(BorderFactory.createTitledBorder("患者検索"));
-            SearchPatient searchPatientPane = new SearchPatient();
-            frame.add(searchPatientPane, "growx");
-            add(frame, "growx, wrap");
-        }
+        add(searchPatient, "growx, wrap");
+//        {
+//            JPanel frame = new JPanel(new MigLayout("insets 0, fill", "", ""));
+//            frame.setBorder(BorderFactory.createTitledBorder("患者検索"));
+//            SearchPatient searchPatientPane = new SearchPatient();
+//            frame.add(searchPatientPane, "growx");
+//            add(frame, "growx, wrap");
+//        }
         add(todaysVisits, "sizegroup btn, wrap");
         add(todaysVisits.getWorkArea(), "w 10, h 260, growx, wrap");
     }

@@ -1,7 +1,5 @@
 package jp.chang.myclinic.practice.lib;
 
-import jp.chang.myclinic.dto.ShinryouMasterDTO;
-
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
