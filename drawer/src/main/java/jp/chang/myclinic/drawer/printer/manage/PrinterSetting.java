@@ -131,8 +131,7 @@ public class PrinterSetting {
                 devnames = readDevnames(settingName);
                 auxSetting = readAuxSetting(settingName);
             }
-            // TODO: apply auxSetting
-            drawerPrinter.printPages(pages, devmode, devnames);
+            drawerPrinter.printPages(pages, devmode, devnames, auxSetting);
         } catch(IOException ex){
             throw new UncheckedIOException(ex);
         }

@@ -5,8 +5,9 @@ package jp.chang.myclinic.drawer.printer;
  */
 public class AuxSetting {
 
-    private double dx;
-    private double dy;
+    private double dx = 0.0;
+    private double dy = 0.0;
+    private double scale = 1.0;
 
     public double getDx() {
         return dx;
@@ -22,5 +23,13 @@ public class AuxSetting {
 
     public void setDy(double dy) {
         this.dy = dy;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
     }
 }

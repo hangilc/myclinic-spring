@@ -159,6 +159,7 @@ public class SettingEditorDialog extends JDialog {
         void setup(AuxSetting auxSetting){
             add(new JLabel(String.format("%s: %s", "dx", auxSetting.getDx())), "wrap");
             add(new JLabel(String.format("%s: %s", "dx", auxSetting.getDy())), "wrap");
+            add(new JLabel(String.format("scale: %s", auxSetting.getScale())), "wrap");
         }
 
         void update(AuxSetting auxSetting){

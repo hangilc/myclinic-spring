@@ -15,6 +15,7 @@ public class AuxSettingEditor extends JDialog {
     private AuxSetting auxSetting;
     private JTextField dxField;
     private JTextField dyField;
+    private JTextField scaleField;
     private JButton enterButton;
     private JButton cancelButton;
     private boolean canceled;
@@ -44,12 +45,17 @@ public class AuxSettingEditor extends JDialog {
         dxField.setText(numberFormat.format(auxSetting.getDx()));
         dyField = new JTextField(6);
         dyField.setText(numberFormat.format(auxSetting.getDy()));
+        scaleField = new JTextField(6);
+        scaleField.setText(numberFormat.format(auxSetting.getScale()));
         panel.add(new JLabel("dx"));
         panel.add(dxField);
         panel.add(new JLabel("mm"), "wrap");
         panel.add(new JLabel("dy"));
         panel.add(dyField);
         panel.add(new JLabel("mm"), "wrap");
+        panel.add(new JLabel("scale"));
+        panel.add(scaleField);
+        panel.add(new JLabel(""), "wrap");
         return panel;
     }
 
@@ -64,7 +70,7 @@ public class AuxSettingEditor extends JDialog {
 
     private void bind(){
         enterButton.addActionListener(event -> {
-            double dx, dy;
+            double dx, dy, scale;
             try {
                 dx = Double.parseDouble(dxField.getText());
             } catch(NumberFormatException ex){
@@ -77,8 +83,15 @@ public class AuxSettingEditor extends JDialog {
                 alert("dy の入力が不適切です。");
                 return;
             }
+            try {
+                scale = Double.parseDouble(scaleField.getText());
+            } catch(NumberFormatException ex){
+                alert("scale の入力が不適切です。");
+                return;
+            }
             auxSetting.setDx(dx);
             auxSetting.setDy(dy);
+            auxSetting.setScale(scale);
             canceled = false;
             dispose();
         });

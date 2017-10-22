@@ -23,6 +23,7 @@ public class DrawerPrinter {
 
     private double dx = 0;
     private double dy = 0;
+    private double scale = 1.0;
 
     public void print(List<Op> ops){
         DialogResult dialogResult = printDialog(null, null);
@@ -32,31 +33,21 @@ public class DrawerPrinter {
     }
 
     public void print(List<Op> ops, byte[] devmode, byte[] devnames){
-        List<List<Op>> pages = new ArrayList<>();
-        pages.add(ops);
-        printPages(pages, devmode, devnames);
-//        HDC hdc = createDC(devnames, devmode);
-//        if( hdc.getPointer() == Pointer.NULL ){
-//            throw new RuntimeException("createDC faield");
-//        }
-//        int jobId = beginPrint(hdc);
-//        if( jobId <= 0 ){
-//            throw new RuntimeException("StartDoc failed");
-//        }
-//        int dpix = getDpix(hdc);
-//        int dpiy = getDpiy(hdc);
-//        startPage(hdc);
-//        MyGdi32.INSTANCE.SetBkMode(hdc, PrinterConsts.TRANSPARENT);
-//        execOps(hdc, ops, dpix, dpiy);
-//        endPage(hdc);
-//        int endDocResult = endPrint(hdc);
-//        if( endDocResult <= 0 ){
-//            throw new RuntimeException("EndDoc failed");
-//        }
-//        deleteDC(hdc);
+        print(ops, devmode, devnames, null);
     }
 
-    public void printPages(List<List<Op>> pages, byte[] devmode, byte[] devnames){
+    public void print(List<Op> ops, byte[] devmode, byte[] devnames, AuxSetting auxSetting){
+        List<List<Op>> pages = new ArrayList<>();
+        pages.add(ops);
+        printPages(pages, devmode, devnames, auxSetting);
+    }
+
+    public void printPages(List<List<Op>> pages, byte[] devmode, byte[] devnames, AuxSetting auxSetting){
+        if( auxSetting != null ){
+            setDx(auxSetting.getDx());
+            setDy(auxSetting.getDy());
+            setScale(auxSetting.getScale());
+        }
         HDC hdc = createDC(devnames, devmode);
         if( hdc.getPointer() == Pointer.NULL ){
             throw new RuntimeException("createDC faield");
@@ -86,6 +77,10 @@ public class DrawerPrinter {
 
     public void setDy(double dy) {
         this.dy = dy;
+    }
+
+    public void setScale(double scale){
+        this.scale = scale;
     }
 
     public static final int PD_ALLPAGES = 0x00000000;
@@ -329,21 +324,21 @@ public class DrawerPrinter {
             switch(op.getOpCode()){
                 case MoveTo: {
                     OpMoveTo opMoveTo = (OpMoveTo)op;
-                    int x = calcCoord(opMoveTo.getX() + dx, dpix);
-                    int y = calcCoord(opMoveTo.getY() + dy, dpiy);
+                    int x = calcCoord(opMoveTo.getX() * scale + dx, dpix);
+                    int y = calcCoord(opMoveTo.getY() * scale + dy, dpiy);
                     moveTo(hdc, x, y);
                     break;
                 }
                 case LineTo: {
                     OpLineTo opLineTo = (OpLineTo)op;
-                    int x = calcCoord(opLineTo.getX() + dx, dpix);
-                    int y = calcCoord(opLineTo.getY() + dy, dpiy);
+                    int x = calcCoord(opLineTo.getX() * scale + dx, dpix);
+                    int y = calcCoord(opLineTo.getY() * scale + dy, dpiy);
                     lineTo(hdc, x, y);
                     break;
                 }
                 case CreateFont: {
                     OpCreateFont opCreateFont = (OpCreateFont)op;
-                    int size = (int)(mmToInch(opCreateFont.getSize()) * dpiy);
+                    int size = (int)(mmToInch(opCreateFont.getSize() * scale) * dpiy);
                     HFONT font = createFont(opCreateFont.getFontName(), size, opCreateFont.getWeight(),
                             opCreateFont.isItalic());
                     fontMap.put(opCreateFont.getName(), font);
@@ -363,14 +358,14 @@ public class DrawerPrinter {
                     for(int i=0;i<chars.length;i++){
                         double cx, cy;
                         if( i >= xs.size() ){
-                            cx = xs.get(xs.size()-1) + dx;
+                            cx = xs.get(xs.size()-1) * scale + dx;
                         } else {
-                            cx = xs.get(i) + dx;
+                            cx = xs.get(i) * scale + dx;
                         }
                         if( i >= ys.size() ){
-                            cy = ys.get(ys.size()-1) + dy;
+                            cy = ys.get(ys.size()-1) * scale + dy;
                         } else {
-                            cy = ys.get(i) + dy;
+                            cy = ys.get(i) * scale + dy;
                         }
                         int x = calcCoord(cx, dpix);
                         int y = calcCoord(cy, dpiy);
@@ -386,7 +381,7 @@ public class DrawerPrinter {
                 }
                 case CreatePen: {
                     OpCreatePen opCreatePen = (OpCreatePen)op;
-                    int width = calcCoord(opCreatePen.getWidth(), dpix);
+                    int width = calcCoord(opCreatePen.getWidth() * scale, dpix);
                     int rgb = RGB(opCreatePen.getR(), opCreatePen.getG(), opCreatePen.getB());
                     HPEN pen = createPen(PrinterConsts.PS_SOLID, width, rgb);
                     penMap.put(opCreatePen.getName(), pen);
