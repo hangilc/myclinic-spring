@@ -9,7 +9,7 @@
   </parent>
   <groupId>jp.chang.myclinic</groupId>
   <artifactId>myclinic-lib</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>myclinic-lib</name>
   <url>http://maven.apache.org</url>
   <dependencies>
