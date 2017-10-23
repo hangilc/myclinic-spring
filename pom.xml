@@ -29,6 +29,7 @@
     <module>hotline</module>
     <module>intraclinic</module>
     <module>practice</module>
+    <module>myclinic-lib</module>
   </modules>
 
 </project>
