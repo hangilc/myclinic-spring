@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+// TODO: improve advance end of month (set day to 1 before advance)
 public class DiseaseEndPane extends JPanel {
 
     public interface Callback {

@@ -11,6 +11,10 @@ public class Result<T,E> {
         this.error = error;
     }
 
+    public Result(T value){
+        this(value, null);
+    }
+
     public boolean hasError(){
         return error != null;
     }
