@@ -6,6 +6,8 @@ import jp.chang.myclinic.util.DateTimeUtil;
 import javax.swing.*;
 import java.awt.*;
 
+// TODO: implement delete visit
+// TODO: implement temp visit
 public class Title extends JLabel {
 
     public Title(VisitDTO visit, int currentVisitId, int tempVisitId){
