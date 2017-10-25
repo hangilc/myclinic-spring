@@ -2,7 +2,7 @@ package jp.chang.myclinic.reception;
 
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.drawer.Op;
-import jp.chang.myclinic.drawer.printer.manager.PreviewDialog;
+import jp.chang.myclinic.drawer.preview.PreviewDialog;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;

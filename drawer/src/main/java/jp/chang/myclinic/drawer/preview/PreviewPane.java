@@ -1,4 +1,4 @@
-package jp.chang.myclinic.drawer.printer.manager;
+package jp.chang.myclinic.drawer.preview;
 
 import jp.chang.myclinic.drawer.*;
 
