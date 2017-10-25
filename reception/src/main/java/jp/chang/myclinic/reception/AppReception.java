@@ -1,5 +1,7 @@
 package jp.chang.myclinic.reception;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -12,8 +14,23 @@ import java.util.Properties;
 public class AppReception
 {
     public static void main( String[] args ) throws IOException {
-    	ReceptionArgs options = ReceptionArgs.parseArgs(args);
-    	System.out.println(options);
+    	ReceptionArgs receptionArgs = ReceptionArgs.parseArgs(args);
+    	Service.setServerUrl(receptionArgs.serverUrl);
+        EventQueue.invokeLater(() -> {
+        	try{
+	        	UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+	        } catch(Exception ex){
+	        	ex.printStackTrace();
+	        }
+        	MainFrame mainFrame = new MainFrame();
+        	mainFrame.setLocationByPlatform(true);
+        	mainFrame.setVisible(true);
+        	mainFrame.doUpdateWqueue();
+			new Timer(2000, event -> {
+				mainFrame.doUpdateWqueue();
+			}).start();
+        });
+
 //    	if( args.length == 0 ){
 //    		System.out.println("Usage: server-url");
 //    		System.exit(1);

@@ -49,7 +49,11 @@ class ReceptionArgs {
             System.out.println("サーバーの URL が設定されていません。");
             System.exit(1);
         } else if( rem.length == 1 ){
-            receptionArgs.serverUrl = rem[0];
+            String arg = rem[0];
+            if( !arg.endsWith("/") ){
+                arg += "/";
+            }
+            receptionArgs.serverUrl = arg;
         } else {
             System.out.println("コマンドライン引数が多すぎます。");
             System.exit(1);
