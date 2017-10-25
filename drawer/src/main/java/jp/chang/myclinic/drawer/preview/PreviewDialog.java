@@ -1,23 +1,35 @@
-package jp.chang.myclinic.drawer.printer.manager;
+package jp.chang.myclinic.drawer.preview;
 
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class PreviewDialog extends JDialog {
 
     private PreviewPane previewPane = new PreviewPane(14.8, 21.0);
     private List<List<Op>> pages = new ArrayList<>();
+    private PrintManager printManager;
+    private String settingName;
 
-    public PreviewDialog(Window owner, String title){
+    public PreviewDialog(Window owner, String title, PrintManager printManager, String settingName){
         super(owner, title, ModalityType.DOCUMENT_MODAL);
-        setLayout(new MigLayout("insets 0", "[grow]", "[grow]"));
+        this.printManager = printManager;
+        this.settingName = settingName;
+        setLayout(new MigLayout("", "[grow]", "[grow]"));
+        CommandBox commandBox = new CommandBox();
+        commandBox.setCallback(new CommandBox.Callback() {
+            @Override
+            public void onPrint() {
+
+            }
+        });
         JScrollPane previewScroll = new JScrollPane(previewPane);
+        add(commandBox, "wrap");
         add(previewScroll, "grow");
     }
 
