@@ -227,7 +227,10 @@ class MainFrame extends JFrame {
 					final List<Op> ops = receiptDrawer.getOps();
 					EventQueue.invokeLater(() -> {
 						//ReceiptPreviewDialog dialog = new ReceiptPreviewDialog(this, ops);
-						PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー", 148, 105, 1);
+						PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー")
+								.setPageSize(148, 105);
+						dialog.setPage(ops);
+						dialog.pack();
 						dialog.setLocationByPlatform(true);
 						dialog.setVisible(true);
 					});
