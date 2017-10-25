@@ -16,6 +16,10 @@ public class PreviewDialog extends JDialog {
     private PrintManager printManager;
     private String settingName;
 
+    public PreviewDialog(Window owner, String title){
+        this(owner, title, new PrintManager(null), null);
+    }
+
     public PreviewDialog(Window owner, String title, PrintManager printManager, String settingName){
         super(owner, title, ModalityType.DOCUMENT_MODAL);
         this.printManager = printManager;
@@ -25,7 +29,7 @@ public class PreviewDialog extends JDialog {
         commandBox.setCallback(new CommandBox.Callback() {
             @Override
             public void onPrint() {
-
+                doPrint();
             }
         });
         JScrollPane previewScroll = new JScrollPane(previewPane);
@@ -56,6 +60,10 @@ public class PreviewDialog extends JDialog {
         List<List<Op>> pages = new ArrayList<>();
         pages.add(ops);
         return setPages(pages);
+    }
+
+    private void doPrint(){
+        printManager.print(pages, settingName);
     }
 
 }
