@@ -2,6 +2,7 @@ package jp.chang.myclinic.reception;
 
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.printer.manager.PreviewDialog;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
@@ -225,7 +226,8 @@ class MainFrame extends JFrame {
 					ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
 					final List<Op> ops = receiptDrawer.getOps();
 					EventQueue.invokeLater(() -> {
-						ReceiptPreviewDialog dialog = new ReceiptPreviewDialog(this, ops);
+						//ReceiptPreviewDialog dialog = new ReceiptPreviewDialog(this, ops);
+						PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー", 148, 105, 1);
 						dialog.setLocationByPlatform(true);
 						dialog.setVisible(true);
 					});
