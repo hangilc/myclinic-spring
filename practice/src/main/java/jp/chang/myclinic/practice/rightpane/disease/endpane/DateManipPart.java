@@ -53,7 +53,7 @@ class DateManipPart extends JPanel {
         dateInput.getValue()
                 .ifError(errs -> alert("日付の設定が不適切です。"))
                 .ifPresent(date -> {
-                    LocalDate lastMonth = LocalDate.now().plus(-1, ChronoUnit.WEEKS);
+                    LocalDate lastMonth = LocalDate.now().plus(-1, ChronoUnit.MONTHS);
                     int day = lastMonth.lengthOfMonth();
                     LocalDate newDate = lastMonth.withDayOfMonth(day);
                     dateInput.setValue(newDate);
