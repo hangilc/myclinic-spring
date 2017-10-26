@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+// TODO: make charge editable
 class Record extends JPanel implements RecordContext {
 
     interface Callback {
