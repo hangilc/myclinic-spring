@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-// TODO: fix end of last month
 class DateManipPart extends JPanel {
     DateManipPart(DateInput dateInput){
         setLayout(new MigLayout("insets 0", "", ""));
