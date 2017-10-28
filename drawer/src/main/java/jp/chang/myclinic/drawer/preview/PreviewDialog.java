@@ -24,6 +24,9 @@ public class PreviewDialog extends JDialog {
         super(owner, title, ModalityType.DOCUMENT_MODAL);
         this.printManager = printManager;
         this.settingName = settingName;
+        if( printManager != null ){
+            setupMenu();
+        }
         setLayout(new MigLayout("", "[grow]", "[grow]"));
         CommandBox commandBox = new CommandBox();
         commandBox.setCallback(new CommandBox.Callback() {
@@ -64,6 +67,17 @@ public class PreviewDialog extends JDialog {
 
     private void doPrint(){
         printManager.print(pages, settingName);
+    }
+
+    private void setupMenu(){
+        JMenuBar bar = new JMenuBar();
+        bar.add(makeManageMenu("印刷設定"));
+        setJMenuBar(bar);
+    }
+
+    private JMenu makeManageMenu(String label){
+        JMenu manageMenu = new JMenu(label);
+        return manageMenu;
     }
 
 }
