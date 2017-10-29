@@ -8,19 +8,25 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-class ReceptionArgs {
+public class ReceptionArgs {
 
     private static final Logger logger = LoggerFactory.getLogger(ReceptionArgs.class);
+    public static String defaultConfigFileName = "myclinic-reception.properties";
+    public static String defaultPrinterSettingsDirName = "printer-settings";
 
+    public Path workingDirPath;
     public Path configFilePath;
     public Path printerSettingsDir;
     public String serverUrl;
 
-    static ReceptionArgs parseArgs(String[] args){
+    public static ReceptionArgs parseArgs(String[] args){
         ReceptionArgs receptionArgs = new ReceptionArgs();
         Options options = new Options();
-        options.addOption("c", "config", true, "configuration file");
-        options.addOption("p", "printer-settings-dir", true, "directory containing printer settings");
+        options.addOption("d", "workdir", true, "working directory (default: current directory)");
+        options.addOption("c", "config", true, "configuration file (default: " + defaultConfigFileName + " in working directory)");
+        options.addOption("p", "printer-settings-dir", true, "directory containing printer settings " +
+                "(default: " + defaultPrinterSettingsDirName + " in working directory)");
+        options.addOption("h", "help", false, "print this help");
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = null;
         try {
@@ -28,6 +34,19 @@ class ReceptionArgs {
         } catch (ParseException e) {
             logger.error("Command line parsing failed.", e);
             System.exit(1);
+        }
+        if( cmd.hasOption("h") ){
+            HelpFormatter helpFormatter = new HelpFormatter();
+            helpFormatter.printHelp("reception", options);
+            System.exit(0);
+        }
+        if( cmd.hasOption("d") ){
+            try {
+                receptionArgs.workingDirPath = Paths.get(cmd.getOptionValue("d"));
+            } catch(InvalidPathException ex){
+                logger.error("-d (--workdir) の値が不適切です。", ex);
+                System.exit(1);
+            }
         }
         if( cmd.hasOption('c') ){
             try {

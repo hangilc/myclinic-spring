@@ -16,16 +16,9 @@ public class AppReception
 	public static void main(String[] args) throws IOException {
 		ReceptionArgs receptionArgs = ReceptionArgs.parseArgs(args);
 		Service.setServerUrl(receptionArgs.serverUrl);
-		ReceptionEnv receptionEnv = new ReceptionEnv();
-		receptionEnv.setConfigFilePath(receptionArgs.configFilePath);
-		receptionEnv.setPrinterSettingsDir(receptionArgs.printerSettingsDir);
-		if( receptionEnv.getConfigFilePath() != null ){
-			receptionEnv.setPrinterSettingsDir(getDefaultPrinterSettingsDir());
-			receptionEnv.loadConfig();
-		}
-		if( receptionEnv.getPrinterSettingsDir() == null ){
-			receptionEnv.setPrinterSettingsDir(getDefaultPrinterSettingsDir());
-		}
+		ReceptionEnv receptionEnv = new ReceptionEnv(receptionArgs);
+		System.out.println(receptionEnv.getWorkdir().toString());
+		System.setProperty("jp.chang.myclinic.reception.workdir", receptionEnv.getWorkdir().toString() + "/");
 		EventQueue.invokeLater(() -> {
 			try {
 				UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
