@@ -5,11 +5,10 @@ import org.apache.commons.cli.*;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 class ReceptionArgs {
 
-    public Path configFile;
+    public Path configFilePath;
     public Path printerSettingsDir;
     public String serverUrl;
 
@@ -27,10 +26,9 @@ class ReceptionArgs {
             System.out.println(e.getMessage());
             System.exit(1);
         }
-        System.out.println("-c: " + cmd.getOptionValue('c'));
         if( cmd.hasOption('c') ){
             try {
-                receptionArgs.configFile = Paths.get(cmd.getOptionValue('c'));
+                receptionArgs.configFilePath = Paths.get(cmd.getOptionValue('c'));
             } catch(InvalidPathException ex){
                 System.out.println("-c (--config) の値が不適切です。");
                 System.exit(1);
@@ -64,7 +62,7 @@ class ReceptionArgs {
     @Override
     public String toString() {
         return "ReceptionArgs{" +
-                "configFile=" + configFile +
+                "configFilePath=" + configFilePath +
                 ", printerSettingsDir=" + printerSettingsDir +
                 ", serverUrl='" + serverUrl + '\'' +
                 '}';

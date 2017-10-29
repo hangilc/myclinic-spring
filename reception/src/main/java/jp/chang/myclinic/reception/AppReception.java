@@ -2,34 +2,45 @@ package jp.chang.myclinic.reception;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Properties;
+
+import jp.chang.myclinic.reception.config.ReceptionConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AppReception
 {
-    public static void main( String[] args ) throws IOException {
-    	ReceptionArgs receptionArgs = ReceptionArgs.parseArgs(args);
-    	Service.setServerUrl(receptionArgs.serverUrl);
-        EventQueue.invokeLater(() -> {
-        	try{
-	        	UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-	        } catch(Exception ex){
-	        	ex.printStackTrace();
-	        }
-        	MainFrame mainFrame = new MainFrame();
-        	mainFrame.setLocationByPlatform(true);
-        	mainFrame.setVisible(true);
-        	mainFrame.doUpdateWqueue();
+	private final static Logger logger = LoggerFactory.getLogger(AppReception.class);
+
+	public static void main(String[] args) throws IOException {
+		ReceptionArgs receptionArgs = ReceptionArgs.parseArgs(args);
+		Service.setServerUrl(receptionArgs.serverUrl);
+		ReceptionConfig config = new ReceptionConfig();
+		if( receptionArgs.configFilePath != null ){
+			config.setConfigPath(receptionArgs.configFilePath);
+			try {
+				config.loadFromFile();
+			} catch(Exception ex){
+				logger.error("設定ファイルの読み取りに失敗しました。", ex);
+				System.exit(1);
+			}
+		}
+		EventQueue.invokeLater(() -> {
+			try {
+				UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			MainFrame mainFrame = new MainFrame();
+			mainFrame.setLocationByPlatform(true);
+			mainFrame.setVisible(true);
+			mainFrame.doUpdateWqueue();
 			new Timer(2000, event -> {
 				mainFrame.doUpdateWqueue();
 			}).start();
-        });
+		});
 
 //    	if( args.length == 0 ){
 //    		System.out.println("Usage: server-url");
@@ -68,22 +79,22 @@ public class AppReception
 	}
 
     private static void readConfig() throws IOException {
-    	Path configPath = Paths.get(System.getProperty("user.home"), "myclinic-reception.properties");
-    	if( Files.exists(configPath) ){
-    		try(BufferedReader reader = Files.newBufferedReader(configPath, StandardCharsets.UTF_8)){
-    			Properties props = new Properties();
-    			props.load(reader);
-				String settingName = props.getProperty("printer-setting-name");
-				if( settingName != null ){
-					ReceptionConfig.INSTANCE.setCurrentSetting(settingName);
-				}
-			}
-		} else {
-    		try(BufferedWriter writer = Files.newBufferedWriter(configPath, StandardCharsets.UTF_8)){
-				Properties props = new Properties();
-				props.setProperty("printer-setting-name", "");
-				props.store(writer, "");
-			}
-		}
+//    	Path configPath = Paths.get(System.getProperty("user.home"), "myclinic-reception.properties");
+//    	if( Files.exists(configPath) ){
+//    		try(BufferedReader reader = Files.newBufferedReader(configPath, StandardCharsets.UTF_8)){
+//    			Properties props = new Properties();
+//    			props.load(reader);
+//				String settingName = props.getProperty("printer-setting-name");
+//				if( settingName != null ){
+//					ReceptionConfig.INSTANCE.setCurrentSetting(settingName);
+//				}
+//			}
+//		} else {
+//    		try(BufferedWriter writer = Files.newBufferedWriter(configPath, StandardCharsets.UTF_8)){
+//				Properties props = new Properties();
+//				props.setProperty("printer-setting-name", "");
+//				props.store(writer, "");
+//			}
+//		}
 	}
 }
