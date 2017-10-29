@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PrintManager {
+
+    public static class SettingDirNotSuppliedException extends Exception {}
+
     private Path settingDir;
 
     public PrintManager(Path settingDir){
@@ -52,20 +55,31 @@ public class PrintManager {
         }
     }
 
-    public SaveSettingResult saveSetting(String name, byte[] devnames, byte[] devmode, AuxSetting auxSetting) {
-        if( settingDir == null ){
-            return SaveSettingResult.SettingDirNotSpecified;
+    public boolean createNewSetting(String name) throws IOException, SettingDirNotSuppliedException {
+        if (settingDir == null) {
+            throw new SettingDirNotSuppliedException();
         }
-        try {
-            Files.write(devnamesSettingPath(name), devnames);
-            Files.write(devmodeSettingPath(name), devmode);
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(new File(auxSettingPath(name).toString()), auxSetting);
-            return SaveSettingResult.OK;
-        } catch(IOException ex){
-            ex.printStackTrace();
-            return SaveSettingResult.IOException;
+        DrawerPrinter drawerPrinter = new DrawerPrinter();
+        DrawerPrinter.DialogResult result = drawerPrinter.printDialog(null, null);
+        if( !result.ok ){
+            return false;
         }
+        byte[] devmode = result.devmodeData;
+        byte[] devnames = result.devnamesData;
+        AuxSetting auxSetting = new AuxSetting();
+        saveSetting(name, devnames, devmode, auxSetting);
+        return true;
+    }
+
+    public void saveSetting(String name, byte[] devnames, byte[] devmode, AuxSetting auxSetting)
+            throws SettingDirNotSuppliedException, IOException {
+        if (settingDir == null) {
+            throw new SettingDirNotSuppliedException();
+        }
+        Files.write(devnamesSettingPath(name), devnames);
+        Files.write(devmodeSettingPath(name), devmode);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(new File(auxSettingPath(name).toString()), auxSetting);
     }
 
     public Result<List<String>, ListSettingNamesError> listNames() {

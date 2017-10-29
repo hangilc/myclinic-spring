@@ -1,12 +1,16 @@
 package jp.chang.myclinic.reception;
 
 import org.apache.commons.cli.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 class ReceptionArgs {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReceptionArgs.class);
 
     public Path configFilePath;
     public Path printerSettingsDir;
@@ -22,15 +26,14 @@ class ReceptionArgs {
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
-            System.out.println("Command line parsing failed.");
-            System.out.println(e.getMessage());
+            logger.error("Command line parsing failed.", e);
             System.exit(1);
         }
         if( cmd.hasOption('c') ){
             try {
                 receptionArgs.configFilePath = Paths.get(cmd.getOptionValue('c'));
             } catch(InvalidPathException ex){
-                System.out.println("-c (--config) の値が不適切です。");
+                logger.error("-c (--config) の値が不適切です。", ex);
                 System.exit(1);
             }
         }
@@ -38,13 +41,13 @@ class ReceptionArgs {
             try {
                 receptionArgs.printerSettingsDir = Paths.get(cmd.getOptionValue('p'));
             } catch(InvalidPathException ex){
-                System.out.println("-p (--printer-settings-dir) の値が不適切です。");
+                logger.error("-p (--printer-settings-dir) の値が不適切です。", ex);
                 System.exit(1);
             }
         }
         String[] rem = cmd.getArgs();
         if( rem.length == 0 ){
-            System.out.println("サーバーの URL が設定されていません。");
+            logger.error("サーバーの URL が設定されていません。");
             System.exit(1);
         } else if( rem.length == 1 ){
             String arg = rem[0];
@@ -53,7 +56,7 @@ class ReceptionArgs {
             }
             receptionArgs.serverUrl = arg;
         } else {
-            System.out.println("コマンドライン引数が多すぎます。");
+            logger.error("コマンドライン引数が多すぎます。");
             System.exit(1);
         }
         return receptionArgs;

@@ -3,6 +3,7 @@ package jp.chang.myclinic.reception;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.preview.PreviewDialog;
+import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
@@ -37,8 +38,10 @@ class MainFrame extends JFrame {
 	private JLabel messageBox = new JLabel("");
 	private JButton closeButton = new JButton("終了");
 	private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+	private ReceptionEnv receptionEnv;
 
-	MainFrame(){
+	MainFrame(ReceptionEnv receptionEnv){
+		this.receptionEnv = receptionEnv;
 		setTitle("受付");
 		setLayout(new MigLayout("fill", "[grow]", ""));
 		add(makeRow1(), "wrap");
@@ -226,8 +229,9 @@ class MainFrame extends JFrame {
 					ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
 					final List<Op> ops = receiptDrawer.getOps();
 					EventQueue.invokeLater(() -> {
-						//ReceiptPreviewDialog dialog = new ReceiptPreviewDialog(this, ops);
-						PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー")
+						PrintManager printManager = new PrintManager(receptionEnv.getPrinterSettingsDir());
+						String settingName = receptionEnv.getPrinterSettingName();
+						PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー", printManager, settingName)
 								.setPageSize(148, 105);
 						dialog.setPage(ops);
 						dialog.pack();

@@ -65,8 +65,8 @@ public class ReceiptPreviewDialog extends JDialog {
     private void bind(){
         printButton.addActionListener(event -> {
             DrawerPrinter printer = new DrawerPrinter();
-            String currentSetting = ReceptionConfig.INSTANCE.getCurrentSetting();
-            PrinterSetting printerSetting = new PrinterSetting(ReceptionConfig.INSTANCE.getSettingDir());
+            String currentSetting = ReceptionConfigOld.INSTANCE.getCurrentSetting();
+            PrinterSetting printerSetting = new PrinterSetting(ReceptionConfigOld.INSTANCE.getSettingDir());
             if( currentSetting == null || !printerSetting.nameExists(currentSetting) ){
                 alert("設定が有効でないので、プリンターを選択して印刷します。");
                 currentSetting = null;
@@ -92,20 +92,20 @@ public class ReceiptPreviewDialog extends JDialog {
             dispose();
         });
         itemSelectPrinter.addActionListener(event -> {
-            PrinterSetting printerSetting = new PrinterSetting(ReceptionConfig.INSTANCE.getSettingDir());
+            PrinterSetting printerSetting = new PrinterSetting(ReceptionConfigOld.INSTANCE.getSettingDir());
             try {
                 List<String> names = printerSetting.listNames();
                 if( names.size() == 0 ){
                     alert("選択できる印刷設定がありません。");
                     return;
                 }
-                SettingSelectorDialog selector = new SettingSelectorDialog(this, names, ReceptionConfig.INSTANCE.getCurrentSetting());
+                SettingSelectorDialog selector = new SettingSelectorDialog(this, names, ReceptionConfigOld.INSTANCE.getCurrentSetting());
                 selector.setLocationByPlatform(true);
                 selector.setVisible(true);
                 if( !selector.isCanceled() ){
                     String selectedName = selector.getSelectedItem();
-                    ReceptionConfig.INSTANCE.setCurrentSetting(selectedName);
-                    ReceptionConfig.INSTANCE.writeToConfigFile();
+                    ReceptionConfigOld.INSTANCE.setCurrentSetting(selectedName);
+                    ReceptionConfigOld.INSTANCE.writeToConfigFile();
                 }
             } catch(IOException ex){
                 ex.printStackTrace();
@@ -121,9 +121,9 @@ public class ReceiptPreviewDialog extends JDialog {
             if( !confirm("印刷設定をクリアしていいですか？") ){
                 return;
             }
-            ReceptionConfig.INSTANCE.setCurrentSetting("");
+            ReceptionConfigOld.INSTANCE.setCurrentSetting("");
             try {
-                ReceptionConfig.INSTANCE.writeToConfigFile();
+                ReceptionConfigOld.INSTANCE.writeToConfigFile();
             } catch(IOException ex){
                 ex.printStackTrace();
                 alert(ex.toString());

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import jp.chang.myclinic.reception.config.ReceptionConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,15 +16,15 @@ public class AppReception
 	public static void main(String[] args) throws IOException {
 		ReceptionArgs receptionArgs = ReceptionArgs.parseArgs(args);
 		Service.setServerUrl(receptionArgs.serverUrl);
-		ReceptionConfig config = new ReceptionConfig();
-		if( receptionArgs.configFilePath != null ){
-			config.setConfigPath(receptionArgs.configFilePath);
-			try {
-				config.loadFromFile();
-			} catch(Exception ex){
-				logger.error("設定ファイルの読み取りに失敗しました。", ex);
-				System.exit(1);
-			}
+		ReceptionEnv receptionEnv = new ReceptionEnv();
+		receptionEnv.setConfigFilePath(receptionArgs.configFilePath);
+		receptionEnv.setPrinterSettingsDir(receptionArgs.printerSettingsDir);
+		if( receptionEnv.getConfigFilePath() != null ){
+			receptionEnv.setPrinterSettingsDir(getDefaultPrinterSettingsDir());
+			receptionEnv.loadConfig();
+		}
+		if( receptionEnv.getPrinterSettingsDir() == null ){
+			receptionEnv.setPrinterSettingsDir(getDefaultPrinterSettingsDir());
 		}
 		EventQueue.invokeLater(() -> {
 			try {
@@ -33,7 +32,7 @@ public class AppReception
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			MainFrame mainFrame = new MainFrame();
+			MainFrame mainFrame = new MainFrame(receptionEnv);
 			mainFrame.setLocationByPlatform(true);
 			mainFrame.setVisible(true);
 			mainFrame.doUpdateWqueue();
@@ -75,7 +74,7 @@ public class AppReception
 	}
 
 	private static Path getDefaultPrinterSettingsDir(){
-		return Paths.get(System.getProperty("user.dir"), "printer-settings");
+		return Paths.get(System.getProperty("user.dir"));
 	}
 
     private static void readConfig() throws IOException {
@@ -86,7 +85,7 @@ public class AppReception
 //    			props.load(reader);
 //				String settingName = props.getProperty("printer-setting-name");
 //				if( settingName != null ){
-//					ReceptionConfig.INSTANCE.setCurrentSetting(settingName);
+//					ReceptionConfigOld.INSTANCE.setCurrentSetting(settingName);
 //				}
 //			}
 //		} else {

@@ -1,15 +1,21 @@
 package jp.chang.myclinic.drawer.preview;
 
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.printer.AuxSetting;
+import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import net.miginfocom.swing.MigLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PreviewDialog extends JDialog {
+    private static final Logger logger = LoggerFactory.getLogger(PreviewDialog.class);
 
     private PreviewPane previewPane = new PreviewPane(14.8, 21.0);
     private List<List<Op>> pages = new ArrayList<>();
@@ -76,8 +82,36 @@ public class PreviewDialog extends JDialog {
     }
 
     private JMenu makeManageMenu(String label){
-        JMenu manageMenu = new JMenu(label);
-        return manageMenu;
+        JMenu menu = new JMenu(label);
+        {
+            JMenuItem item = new JMenuItem("印刷設定の新規作成");
+            item.addActionListener(evt -> doNewSetting());
+            menu.add(item);
+        }
+        return menu;
+    }
+
+    private void doNewSetting(){
+        if( printManager == null ){
+            alert("No printManager supplied");
+            return;
+        }
+        String name = JOptionPane.showInputDialog(this, "新しい設定の名前");
+        if( name == null ){
+            return;
+        }
+        try {
+            printManager.createNewSetting(name);
+        } catch(PrintManager.SettingDirNotSuppliedException ex){
+            logger.error("Setting dir not specified", ex);
+            alert("Setting dir is not specified.");
+        } catch(IOException ex){
+            logger.error("", ex);
+        }
+    }
+
+    private void alert(String message){
+        JOptionPane.showMessageDialog(this, message);
     }
 
 }
