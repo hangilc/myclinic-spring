@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
-import jp.chang.myclinic.lib.Result;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PrintManager {
@@ -82,23 +82,18 @@ public class PrintManager {
         mapper.writeValue(new File(auxSettingPath(name).toString()), auxSetting);
     }
 
-    public Result<List<String>, ListSettingNamesError> listNames() {
-        if( settingDir == null ){
-            return new Result<>(null, ListSettingNamesError.SettingDirNotSpecified);
+    public List<String> listNames() throws IOException {
+        if (settingDir == null) {
+            return Collections.emptyList();
         }
         List<String> names = new ArrayList<>();
-        try {
-            for (Path path : Files.newDirectoryStream(settingDir, "*.devnames")) {
-                String fileName = path.getFileName().toString();
-                int pos = fileName.lastIndexOf('.');
-                String name = fileName.substring(0, pos);
-                names.add(name);
-            }
-            return new Result<>(names);
-        } catch(IOException ex){
-            ex.printStackTrace();
-            return new Result<>(null, ListSettingNamesError.IOException);
+        for (Path path : Files.newDirectoryStream(settingDir, "*.devnames")) {
+            String fileName = path.getFileName().toString();
+            int pos = fileName.lastIndexOf('.');
+            String name = fileName.substring(0, pos);
+            names.add(name);
         }
+        return names;
     }
 
     private boolean nameExists(String name){

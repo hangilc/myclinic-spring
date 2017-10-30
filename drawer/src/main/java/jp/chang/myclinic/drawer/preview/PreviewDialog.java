@@ -1,8 +1,6 @@
 package jp.chang.myclinic.drawer.preview;
 
 import jp.chang.myclinic.drawer.Op;
-import jp.chang.myclinic.drawer.printer.AuxSetting;
-import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
@@ -21,6 +19,7 @@ public class PreviewDialog extends JDialog {
     private List<List<Op>> pages = new ArrayList<>();
     private PrintManager printManager;
     private String settingName;
+    private JMenu selectionMenu = new JMenu("印刷選択");
 
     public PreviewDialog(Window owner, String title){
         this(owner, title, new PrintManager(null), null);
@@ -77,8 +76,10 @@ public class PreviewDialog extends JDialog {
 
     private void setupMenu(){
         JMenuBar bar = new JMenuBar();
-        bar.add(makeManageMenu("印刷設定"));
+        bar.add(makeManageMenu("設定管理"));
+        bar.add(selectionMenu);
         setJMenuBar(bar);
+        updateSelectionMenu();
     }
 
     private JMenu makeManageMenu(String label){
@@ -89,6 +90,42 @@ public class PreviewDialog extends JDialog {
             menu.add(item);
         }
         return menu;
+    }
+
+    private void updateSelectionMenu(){
+        if( printManager == null ){
+            return;
+        }
+        try {
+            selectionMenu.removeAll();
+            printManager.listNames().forEach(name -> {
+                boolean selected = name.equals(settingName);
+                JCheckBoxMenuItem item = new JCheckBoxMenuItem(name, selected);
+                item.addActionListener(evt -> {
+                    setSelectedSettingName(name);
+                });
+                selectionMenu.add(item);
+            });
+        } catch(IOException ex){
+            logger.error("failed to list setting names", ex);
+            alert("設定の読み込みに失敗しました。\n" + ex.toString());
+        }
+    }
+
+    private void setSelectedSettingName(String name){
+        this.settingName = name;
+        markSelectedMenuItem(name);
+    }
+
+    private void markSelectedMenuItem(String name){
+        int n = selectionMenu.getItemCount();
+        for(int i=0;i<n;i++){
+            JCheckBoxMenuItem item = (JCheckBoxMenuItem)selectionMenu.getItem(i);
+            if( item == null ){
+                continue;
+            }
+            item.setState(item.getText().equals(name));
+        }
     }
 
     private void doNewSetting(){
