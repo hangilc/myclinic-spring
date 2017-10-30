@@ -1,4 +1,6 @@
 <configuration>
+    <property name="logfolder" value="${logdir:-${HOME}/log}" />
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>[%thread] %-5level %logger{36} - %msg%n</pattern>
@@ -6,9 +8,9 @@
     </appender>
 
     <appender name="FILE" class ="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${jp.chang.myclinic.reception.workdir}myclinic-reception.log</file>
+        <file>${logfolder}/myclinic-reception.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${jp.chang.myclinic.reception.workdir}myclinic-reception-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${logfolder}/myclinic-reception-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>5</maxHistory>
         </rollingPolicy>
         <encoder>
