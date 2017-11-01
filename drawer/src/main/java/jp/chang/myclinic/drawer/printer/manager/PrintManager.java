@@ -113,15 +113,15 @@ public class PrintManager {
         return settingDir.resolve(name + ".json");
     }
 
-    private byte[] readDevnames(String name) throws IOException {
+    public byte[] readDevnames(String name) throws IOException {
         return Files.readAllBytes(devnamesSettingPath(name));
     }
 
-    private byte[] readDevmode(String name) throws IOException {
+    public byte[] readDevmode(String name) throws IOException {
         return Files.readAllBytes(devmodeSettingPath(name));
     }
 
-    private AuxSetting readAuxSetting(String name) throws IOException {
+    public AuxSetting readAuxSetting(String name) throws IOException {
         Path path = auxSettingPath(name);
         if( Files.exists(path) ) {
             ObjectMapper mapper = new ObjectMapper();

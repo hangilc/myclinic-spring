@@ -1,6 +1,7 @@
 package jp.chang.myclinic.drawer.preview;
 
 import jp.chang.myclinic.drawer.lib.Link;
+import jp.chang.myclinic.drawer.preview.manage.ManageDialog;
 import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.List;
 
 class BottomBox extends JPanel {
 
@@ -32,10 +34,13 @@ class BottomBox extends JPanel {
         selectLink.setCallback(this::doSelect);
         Link createLink = new Link("新規");
         createLink.setCallback(evt -> doNewSetting());
+        Link manageLink = new Link("管理");
+        manageLink.setCallback(evt -> doManage());
         add(new JLabel("印刷設定："));
         add(nameLabel);
         add(selectLink, "gap right 12");
         add(createLink);
+        add(manageLink);
     }
 
     void setCallback(Callback callback){
@@ -88,6 +93,25 @@ class BottomBox extends JPanel {
             alert("Setting dir is not specified.");
         } catch(IOException ex){
             logger.error("", ex);
+        }
+    }
+
+    private void doManage(){
+        if( printManager == null ){
+            return;
+        }
+        try {
+            List<String> names = printManager.listNames();
+            if( names.size() == 0 ){
+                alert("登録されている印刷設定がありません。");
+                return;
+            }
+            ManageDialog manageDialog = new ManageDialog(printManager, names, settingName);
+            manageDialog.setLocationByPlatform(true);
+            manageDialog.setVisible(true);
+        } catch(IOException ex){
+            logger.error("Failed to list print setting names.", ex);
+            alert("設定名リストの取得に失敗しました。");
         }
     }
 
