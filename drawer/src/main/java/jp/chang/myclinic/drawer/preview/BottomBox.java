@@ -12,11 +12,16 @@ import java.io.IOException;
 
 class BottomBox extends JPanel {
 
+    interface Callback {
+        default void onSelectionChange(String newSettingName){}
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(BottomBox.class);
 
     private String settingName;
     private PrintManager printManager;
     private JLabel nameLabel;
+    private Callback callback = new Callback(){};
 
     BottomBox(String settingName, PrintManager printManager){
         this.settingName = settingName;
@@ -31,6 +36,10 @@ class BottomBox extends JPanel {
         add(nameLabel);
         add(selectLink, "gap right 12");
         add(createLink);
+    }
+
+    void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     private String makeSettingLabel(){
@@ -49,7 +58,12 @@ class BottomBox extends JPanel {
         try {
             printManager.listNames().forEach(name -> {
                 JMenuItem item = new JMenuItem(name);
-                popup.add(name);
+                item.addActionListener(e -> {
+                    settingName = name;
+                    nameLabel.setText(name);
+                    callback.onSelectionChange(name);
+                });
+                popup.add(item);
             });
             popup.show(this, evt.getX(), evt.getY());
         } catch(IOException ex){

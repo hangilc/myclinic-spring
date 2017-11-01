@@ -39,9 +39,19 @@ public class PreviewDialog extends JDialog {
         });
         JScrollPane previewScroll = new JScrollPane(previewPane);
         BottomBox bottomBox = new BottomBox(settingName, printManager);
+        bottomBox.setCallback(new BottomBox.Callback() {
+            @Override
+            public void onSelectionChange(String newSettingName) {
+                setSettingName(newSettingName);
+            }
+        });
         add(commandBox, "wrap");
         add(previewScroll, "grow, wrap");
         add(bottomBox, "growx");
+    }
+
+    private void setSettingName(String settingName){
+        this.settingName = settingName;
     }
 
     public PreviewDialog setPageSize(double width, double height){
