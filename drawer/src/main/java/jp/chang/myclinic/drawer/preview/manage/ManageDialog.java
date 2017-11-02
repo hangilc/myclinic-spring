@@ -1,5 +1,6 @@
 package jp.chang.myclinic.drawer.preview.manage;
 
+import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
@@ -16,9 +17,10 @@ public class ManageDialog extends JDialog {
 
     private PrintManager printManager;
     private JComboBox<String> namesCombo;
-    private DevDisp devDisp = new DevDisp();
+    private DevPart devPart = new DevPart();
+    private AuxPart auxPart = new AuxPart();
 
-    public ManageDialog(PrintManager printManager, List<String> names,  String settingName){
+    public ManageDialog(PrintManager printManager, List<String> names, String settingName){
         this.printManager = printManager;
         setLayout(new MigLayout("", "", ""));
         setTitle("印刷設定の管理");
@@ -26,8 +28,16 @@ public class ManageDialog extends JDialog {
         namesCombo.setEditable(false);
         names.forEach(name -> namesCombo.addItem(name));
         setSelectedSettingName(settingName);
+        namesCombo.addActionListener(evt -> {
+            int i = namesCombo.getSelectedIndex();
+            String name = namesCombo.getItemAt(i);
+            if( name == null ){
+                setSelectedSettingName(name);
+            }
+        });
         add(makeSelectBox(), "wrap");
-        add(devDisp, "wrap");
+        add(devPart, "wrap");
+        add(auxPart);
         pack();
     }
 
@@ -45,14 +55,31 @@ public class ManageDialog extends JDialog {
                 break;
             }
         }
-        if( name == null ){
-            return;
+    }
+
+    private String getSelectedSettingName(){
+        int i = namesCombo.getSelectedIndex();
+        return namesCombo.getItemAt(i);
+    }
+
+    private void start(String settingName){
+        if( settingName == null ){
+            int i = namesCombo.getSelectedIndex();
+            settingName = namesCombo.getItemAt(i);
+            if( settingName == null ){
+                devPart.clear();
+                auxPart.clear();
+                return;
+            }
         }
         try {
-            byte[] devnames = printManager.readDevnames(name);
-
+            byte[] devnames = printManager.readDevnames(settingName);
+            byte[] devmode = printManager.readDevmode(settingName);
+            AuxSetting auxSetting = printManager.readAuxSetting(settingName);
+            devPart.setData(devnames, devmode);
+            auxPart.setData(auxSetting);
         } catch(IOException ex){
-            logger.error("印刷設定の取得に失敗しました（{}）。", name, ex);
+            logger.error("印刷設定の取得に失敗しました（{}）。", settingName, ex);
             alert("印刷設定の取得に失敗しました");
         }
     }
