@@ -46,7 +46,7 @@ public class DevnamesInfo {
 		return "DevnamesInfo[" +
 			"driver=" + driver + ", " +
 			"device=" + device + ", " +
-			"ouotput=" + output +
+			"output=" + output +
 		"]";
 	}
 }

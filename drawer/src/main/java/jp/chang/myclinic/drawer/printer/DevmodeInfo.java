@@ -31,12 +31,22 @@ public class DevmodeInfo {
 
 	private void init(Pointer pDevMode){
 		DEVMODE devmode = new DEVMODE(pDevMode);
-		setDeviceName(new String(devmode.dmDeviceName));
+		setDeviceName(zeroTerminatedString(devmode.dmDeviceName));
 		setOrientation(devmode.dmOrientation);
 		setPaperSize(devmode.dmPaperSize);
 		setCopies(devmode.dmCopies);
 		setPrintQuality(devmode.dmPrintQuality);
 		setDefaultSource(devmode.dmDefaultSource);
+	}
+
+	private String zeroTerminatedString(char[] src){
+		int i;
+		for(i=0;i<src.length;i++){
+			if( src[i] == 0 ){
+				break;
+			}
+		}
+		return new String(src, 0, i);
 	}
 
 	public String getDeviceName(){

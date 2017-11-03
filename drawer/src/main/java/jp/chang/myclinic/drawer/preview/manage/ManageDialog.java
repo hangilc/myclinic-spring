@@ -20,21 +20,15 @@ public class ManageDialog extends JDialog {
     private DevPart devPart = new DevPart();
     private AuxPart auxPart = new AuxPart();
 
-    public ManageDialog(PrintManager printManager, List<String> names, String settingName){
+    public ManageDialog(PrintManager printManager, List<String> names){
         this.printManager = printManager;
         setLayout(new MigLayout("", "", ""));
         setTitle("印刷設定の管理");
         namesCombo = new JComboBox<>();
         namesCombo.setEditable(false);
         names.forEach(name -> namesCombo.addItem(name));
-        setSelectedSettingName(settingName);
-        namesCombo.addActionListener(evt -> {
-            int i = namesCombo.getSelectedIndex();
-            String name = namesCombo.getItemAt(i);
-            if( name == null ){
-                setSelectedSettingName(name);
-            }
-        });
+        start(getSelectedSettingName());
+        namesCombo.addActionListener(evt -> start(getSelectedSettingName()));
         add(makeSelectBox(), "wrap");
         add(devPart, "wrap");
         add(auxPart);
@@ -47,16 +41,6 @@ public class ManageDialog extends JDialog {
         return panel;
     }
 
-    private void setSelectedSettingName(String name){
-        for(int i=0;i<namesCombo.getItemCount();i++){
-            String item = namesCombo.getItemAt(i);
-            if( item.equals(name) ){
-                namesCombo.setSelectedIndex(i);
-                break;
-            }
-        }
-    }
-
     private String getSelectedSettingName(){
         int i = namesCombo.getSelectedIndex();
         return namesCombo.getItemAt(i);
@@ -64,13 +48,9 @@ public class ManageDialog extends JDialog {
 
     private void start(String settingName){
         if( settingName == null ){
-            int i = namesCombo.getSelectedIndex();
-            settingName = namesCombo.getItemAt(i);
-            if( settingName == null ){
-                devPart.clear();
-                auxPart.clear();
-                return;
-            }
+            devPart.clear();
+            auxPart.clear();
+            return;
         }
         try {
             byte[] devnames = printManager.readDevnames(settingName);

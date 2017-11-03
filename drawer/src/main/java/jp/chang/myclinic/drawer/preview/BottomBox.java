@@ -106,7 +106,7 @@ class BottomBox extends JPanel {
                 alert("登録されている印刷設定がありません。");
                 return;
             }
-            ManageDialog manageDialog = new ManageDialog(printManager, names, settingName);
+            ManageDialog manageDialog = new ManageDialog(printManager, names);
             manageDialog.setLocationByPlatform(true);
             manageDialog.setVisible(true);
         } catch(IOException ex){
