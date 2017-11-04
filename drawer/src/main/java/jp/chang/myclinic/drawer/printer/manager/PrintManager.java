@@ -71,15 +71,28 @@ public class PrintManager {
         return true;
     }
 
-    public void saveSetting(String name, byte[] devnames, byte[] devmode, AuxSetting auxSetting)
+    public void saveSetting(String name, byte[] devnames, byte[] devmode)
             throws SettingDirNotSuppliedException, IOException {
         if (settingDir == null) {
             throw new SettingDirNotSuppliedException();
         }
         Files.write(devnamesSettingPath(name), devnames);
         Files.write(devmodeSettingPath(name), devmode);
+    }
+
+    public void saveSetting(String name, AuxSetting auxSetting) throws SettingDirNotSuppliedException, IOException {
+        if (settingDir == null) {
+            throw new SettingDirNotSuppliedException();
+        }
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(new File(auxSettingPath(name).toString()), auxSetting);
+    }
+
+
+    public void saveSetting(String name, byte[] devnames, byte[] devmode, AuxSetting auxSetting)
+            throws SettingDirNotSuppliedException, IOException {
+        saveSetting(name, devnames, devmode);
+        saveSetting(name, auxSetting);
     }
 
     public List<String> listNames() throws IOException {

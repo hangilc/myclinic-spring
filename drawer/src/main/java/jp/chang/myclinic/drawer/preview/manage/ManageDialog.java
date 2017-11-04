@@ -1,12 +1,14 @@
 package jp.chang.myclinic.drawer.preview.manage;
 
 import jp.chang.myclinic.drawer.printer.AuxSetting;
+import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.border.CompoundBorder;
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
@@ -24,6 +26,36 @@ public class ManageDialog extends JDialog {
         this.printManager = printManager;
         setLayout(new MigLayout("", "", ""));
         setTitle("印刷設定の管理");
+        devPart.setBorder(new CompoundBorder(
+                BorderFactory.createTitledBorder("プリンター設定"),
+                BorderFactory.createEmptyBorder(4, 4, 4, 4)));
+        devPart.setCallback(new DevPart.Callback(){
+            @Override
+            public void onModify(byte[] devnames, byte[] devmode) {
+                String name = getSelectedSettingName();
+                if( name == null || printManager == null ){
+                    return;
+                }
+                DrawerPrinter drawerPrinter = new DrawerPrinter();
+                DrawerPrinter.DialogResult result = drawerPrinter.printDialog(devmode, devnames);
+                if( !result.ok ){
+                    return;
+                }
+                devnames = result.devnamesData;
+                devmode = result.devmodeData;
+                try {
+                    printManager.saveSetting(name, devnames, devmode);
+                    devPart.setData(devnames, devmode);
+                    pack();
+                } catch (PrintManager.SettingDirNotSuppliedException e) {
+                    logger.error("printer setting dir not specified", e);
+                    alert("印刷設定の保存場所が設定されていません。");
+                } catch (IOException e) {
+                    logger.error("Failed to save printer setting", e);
+                    alert("印刷設定の保存に失敗しました。");
+                }
+            }
+        });
         namesCombo = new JComboBox<>();
         namesCombo.setEditable(false);
         names.forEach(name -> namesCombo.addItem(name));

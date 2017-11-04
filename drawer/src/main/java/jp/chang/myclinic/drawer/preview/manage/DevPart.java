@@ -3,20 +3,47 @@ package jp.chang.myclinic.drawer.preview.manage;
 import jp.chang.myclinic.drawer.printer.DevmodeInfo;
 import jp.chang.myclinic.drawer.printer.DevnamesInfo;
 import net.miginfocom.swing.MigLayout;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 class DevPart extends JPanel {
 
+    interface Callback {
+        default void onModify(byte[] devnames, byte[] devmode){}
+    }
+
     private JLabel label = new JLabel();
+    private Callback callback = new Callback(){};
+    private byte[] devnames;
+    private byte[] devmode;
+    private JLabel deviceLabel = new JLabel();
+    private JLabel orientationLabel = new JLabel();
+    private JLabel paperSizeLabel = new JLabel();
+    private JLabel defaultSourceLabel = new JLabel();
+    private JLabel printQualityLabel = new JLabel();
+    private JLabel copiesLabel = new JLabel();
 
     DevPart(){
-        setLayout(new MigLayout("insets 0", "", ""));
-        add(label);
+        setLayout(new MigLayout("insets 0, gapy 3", "", ""));
+        JButton modifyButton = new JButton("変更");
+        modifyButton.addActionListener(evt -> callback.onModify(devnames, devmode));
+        add(new JLabel("デバイス名"), "right");
+        add(deviceLabel, "wrap");
+        add(new JLabel("向き"), "right");
+        add(orientationLabel, "wrap");
+        add(new JLabel("用紙サイズ"), "right");
+        add(paperSizeLabel, "wrap");
+        add(new JLabel("トレイ"), "right");
+        add(defaultSourceLabel, "wrap");
+        add(new JLabel("印刷品質"), "right");
+        add(printQualityLabel, "wrap");
+        add(new JLabel("コピー数"), "right");
+        add(copiesLabel, "wrap");
+        add(modifyButton);
+    }
+
+    void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     void clear(){
@@ -24,25 +51,16 @@ class DevPart extends JPanel {
     }
 
     void setData(byte[] devnames, byte[] devmode){
-        List<String> lines = new ArrayList<>();
+        this.devnames = devnames;
+        this.devmode = devmode;
         DevnamesInfo devnamesInfo = new DevnamesInfo(devnames);
         DevmodeInfo devmodeInfo = new DevmodeInfo(devmode);
-        lines.add(String.format("デバイス名：%s", devnamesInfo.getDevice()));
-        lines.add(String.format("向き：%s", devmodeInfo.getOrientationLabel()));
-        lines.add(String.format("用紙サイズ：%s", devmodeInfo.getPaperSizeLabel()));
-        lines.add(String.format("トレイ：%s", devmodeInfo.getDefaultSourceLabel()));
-        lines.add(String.format("印刷品質：%s", devmodeInfo.getPrintQualityLabel()));
-        lines.add(String.format("コピー数：%d", devmodeInfo.getCopies()));
-        label.setText(compileLabel(lines));
+        deviceLabel.setText(devnamesInfo.getDevice());
+        orientationLabel.setText(devmodeInfo.getOrientationLabel());
+        paperSizeLabel.setText(devmodeInfo.getPaperSizeLabel());
+        defaultSourceLabel.setText(devmodeInfo.getDefaultSourceLabel());
+        printQualityLabel.setText(devmodeInfo.getPrintQualityLabel());
+        copiesLabel.setText("" + devmodeInfo.getCopies());
     }
 
-    private String compileLabel(List<String> lines){
-        return "<html>" +
-                lines.stream().map(this::escapeHtml).collect(Collectors.joining("<br />")) +
-                "</html>";
-    }
-
-    private String escapeHtml(String src){
-        return src.replace("<", "&lt;");
-    }
 }
