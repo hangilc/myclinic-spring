@@ -29,6 +29,9 @@ public class ManageDialog extends JDialog {
         devPart.setBorder(new CompoundBorder(
                 BorderFactory.createTitledBorder("プリンター設定"),
                 BorderFactory.createEmptyBorder(4, 4, 4, 4)));
+        auxPart.setBorder(new CompoundBorder(
+                BorderFactory.createTitledBorder("その他の設定"),
+                BorderFactory.createEmptyBorder(4, 4, 4, 4)));
         devPart.setCallback(new DevPart.Callback(){
             @Override
             public void onModify(byte[] devnames, byte[] devmode) {
@@ -56,14 +59,40 @@ public class ManageDialog extends JDialog {
                 }
             }
         });
+        auxPart.setCallback(new AuxPart.Callback(){
+            @Override
+            public void onModify(AuxSetting newSetting) {
+                String name = getSelectedSettingName();
+                if( name == null || printManager == null ){
+                    return;
+                }
+                try {
+                    printManager.saveSetting(name, newSetting);
+                    auxPart.clear();
+                    auxPart.setData(newSetting);
+                    pack();
+                } catch (PrintManager.SettingDirNotSuppliedException e) {
+                    logger.error("printer setting dir not specified", e);
+                    alert("印刷設定の保存場所が設定されていません。");
+                } catch (IOException e) {
+                    logger.error("Failed to save printer setting", e);
+                    alert("印刷設定の保存に失敗しました。");
+                }
+            }
+
+            @Override
+            public void repackRequired() {
+                pack();
+            }
+        });
         namesCombo = new JComboBox<>();
         namesCombo.setEditable(false);
         names.forEach(name -> namesCombo.addItem(name));
         start(getSelectedSettingName());
         namesCombo.addActionListener(evt -> start(getSelectedSettingName()));
         add(makeSelectBox(), "wrap");
-        add(devPart, "wrap");
-        add(auxPart);
+        add(devPart, "growx, wrap");
+        add(auxPart, "growx");
         pack();
     }
 

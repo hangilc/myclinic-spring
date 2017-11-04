@@ -32,4 +32,13 @@ public class AuxSetting {
     public void setScale(double scale) {
         this.scale = scale;
     }
+
+    @Override
+    public String toString() {
+        return "AuxSetting{" +
+                "dx=" + dx +
+                ", dy=" + dy +
+                ", scale=" + scale +
+                '}';
+    }
 }
