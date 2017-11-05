@@ -42,7 +42,9 @@ public class ReceptionArgs {
         }
         if( cmd.hasOption("d") ){
             try {
-                receptionArgs.workingDirPath = Paths.get(cmd.getOptionValue("d"));
+                String d = cmd.getOptionValue("d");
+                receptionArgs.workingDirPath = Paths.get(d);
+                receptionArgs.configFilePath = Paths.get(d, defaultConfigFileName);
             } catch(InvalidPathException ex){
                 logger.error("-d (--workdir) の値が不適切です。", ex);
                 System.exit(1);

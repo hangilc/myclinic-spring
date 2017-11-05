@@ -8,12 +8,15 @@ import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
 import net.miginfocom.swing.MigLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -22,6 +25,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 class MainFrame extends JFrame {
+
+	private static final Logger logger = LoggerFactory.getLogger(MainFrame.class);
 
 	private WqueueList wqueueList;
 	private JButton newPatientButton = new JButton("新規患者");
@@ -233,6 +238,20 @@ class MainFrame extends JFrame {
 						String settingName = receptionEnv.getPrinterSettingName();
 						PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー", printManager, settingName)
 								.setPageSize(148, 105);
+						dialog.setCallback(new PreviewDialog.Callback() {
+							@Override
+							public void onRememberSetting(String settingName) {
+								ReceptionConfig config = receptionEnv.getConfig();
+								config.setPrinterSettingName(settingName);
+								try {
+									receptionEnv.saveConfig();
+									alert("印刷設定(" + settingName + ")を記憶しました。");
+								} catch (IOException e) {
+									logger.error("Failed to save config.", e);
+									alert("設定ファイルの保存に失敗しました。");
+								}
+							}
+						});
 						dialog.setPage(ops);
 						dialog.pack();
 						dialog.setLocationByPlatform(true);

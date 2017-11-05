@@ -14,12 +14,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PreviewDialog extends JDialog {
+
+    public interface Callback {
+        default void onRememberSetting(String settingName){}
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(PreviewDialog.class);
 
     private PreviewPane previewPane = new PreviewPane(14.8, 21.0);
     private List<List<Op>> pages = new ArrayList<>();
     private PrintManager printManager;
     private String settingName;
+    private Callback callback = new Callback(){};
 
     public PreviewDialog(Window owner, String title){
         this(owner, title, new PrintManager(null), null);
@@ -41,6 +47,11 @@ public class PreviewDialog extends JDialog {
         BottomBox bottomBox = new BottomBox(settingName, printManager);
         bottomBox.setCallback(new BottomBox.Callback() {
             @Override
+            public void onRememberSetting(String settingName) {
+                callback.onRememberSetting(settingName);
+            }
+
+            @Override
             public void onSelectionChange(String newSettingName) {
                 setSettingName(newSettingName);
             }
@@ -48,6 +59,10 @@ public class PreviewDialog extends JDialog {
         add(commandBox, "wrap");
         add(previewScroll, "grow, wrap");
         add(bottomBox, "growx");
+    }
+
+    public void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     private void setSettingName(String settingName){

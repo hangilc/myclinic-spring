@@ -17,7 +17,7 @@ public class AppReception
 		ReceptionArgs receptionArgs = ReceptionArgs.parseArgs(args);
 		Service.setServerUrl(receptionArgs.serverUrl);
 		ReceptionEnv receptionEnv = new ReceptionEnv(receptionArgs);
-		System.out.println(receptionEnv.getWorkdir().toString());
+		System.out.println(receptionEnv);
 		System.setProperty("jp.chang.myclinic.reception.workdir", receptionEnv.getWorkdir().toString() + "/");
 		EventQueue.invokeLater(() -> {
 			try {

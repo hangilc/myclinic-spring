@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -22,7 +23,7 @@ public class ReceptionEnv {
         }
         this.configFilePath = args.configFilePath;
         this.config = new ReceptionConfig();
-        if( this.configFilePath != null ){
+        if( this.configFilePath != null && Files.exists(this.configFilePath) ){
             try {
                 loadConfig();
             } catch(IOException ex){
@@ -46,6 +47,10 @@ public class ReceptionEnv {
 
     public void setConfigFilePath(Path configFilePath) {
         this.configFilePath = configFilePath;
+    }
+
+    public ReceptionConfig getConfig(){
+        return config;
     }
 
     public void loadConfig() throws IOException {

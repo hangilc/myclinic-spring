@@ -6,6 +6,7 @@ import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -16,6 +17,7 @@ class BottomBox extends JPanel {
 
     interface Callback {
         default void onSelectionChange(String newSettingName){}
+        default void onRememberSetting(String settingName){}
     }
 
     private static final Logger logger = LoggerFactory.getLogger(BottomBox.class);
@@ -32,11 +34,14 @@ class BottomBox extends JPanel {
         nameLabel = new JLabel(makeSettingLabel());
         Link selectLink = new Link("選択");
         selectLink.setCallback(this::doSelect);
+        Link rememberLink = new Link("記憶");
+        rememberLink.setCallback(evt -> doRemember());
         Link manageLink = new Link("管理");
         manageLink.setCallback(evt -> doManage());
         add(new JLabel("印刷設定："));
         add(nameLabel);
         add(selectLink, "gap right 12");
+        add(rememberLink);
         add(manageLink);
     }
 
@@ -57,6 +62,13 @@ class BottomBox extends JPanel {
             return;
         }
         JPopupMenu popup = new JPopupMenu();
+        JMenuItem unselectItem = new JMenuItem("[設定解除]");
+        unselectItem.addActionListener(e -> {
+            settingName = null;
+            nameLabel.setText("(未選択)");
+            callback.onSelectionChange(null);
+        });
+        popup.add(unselectItem);
         try {
             printManager.listNames().forEach(name -> {
                 JMenuItem item = new JMenuItem(name);
@@ -72,6 +84,10 @@ class BottomBox extends JPanel {
             logger.error("Failed to list setting names.", ex);
             alert("設定名リストの取得に失敗しました。");
         }
+    }
+
+    private void doRemember(){
+        callback.onRememberSetting(settingName);
     }
 
     private void doManage(){
