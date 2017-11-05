@@ -71,6 +71,12 @@ public class PrintManager {
         return true;
     }
 
+    public void deleteSetting(String name) throws IOException {
+        Files.delete(devnamesSettingPath(name));
+        Files.delete(devmodeSettingPath(name));
+        Files.delete(auxSettingPath(name));
+    }
+
     public void saveSetting(String name, byte[] devnames, byte[] devmode)
             throws SettingDirNotSuppliedException, IOException {
         if (settingDir == null) {

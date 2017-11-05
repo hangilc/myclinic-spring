@@ -99,11 +99,36 @@ public class ManageDialog extends JDialog {
 
     private Component makeSelectBox(){
         JPanel panel = new JPanel(new MigLayout("", "", ""));
+        Link delLink = new Link("削除");
+        delLink.setCallback(evt -> doDel());
         Link newLink = new Link("新規");
         newLink.setCallback(evt -> doNew());
         panel.add(namesCombo);
+        panel.add(delLink);
         panel.add(newLink);
         return panel;
+    }
+
+    private void doDel(){
+        if( printManager == null ){
+            logger.error("No printManager supplied");
+            alert("No printManager supplied");
+            return;
+        }
+        String name = getSelectedSettingName();
+        if( name == null ){
+            return;
+        }
+        if( !confirm("本当に " + name + " 設定を削除しますか？") ){
+            return;
+        }
+        try {
+            printManager.deleteSetting(name);
+            updateSettingNames();
+        } catch (IOException e) {
+            logger.error("Failed to delete setting {}", name, e);
+            alert("設定の削除に失敗しました。");
+        }
     }
 
     private void doNew(){
@@ -174,6 +199,11 @@ public class ManageDialog extends JDialog {
 
     private void alert(String message){
         JOptionPane.showMessageDialog(this, message);
+    }
+
+    private boolean confirm(String message){
+        int choice = JOptionPane.showConfirmDialog(this, message, "確認", JOptionPane.YES_NO_OPTION);
+        return choice == JOptionPane.YES_OPTION;
     }
 
 }
