@@ -1,5 +1,6 @@
 package jp.chang.myclinic.drawer.preview.manage;
 
+import jp.chang.myclinic.drawer.lib.Link;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.drawer.printer.manager.PrintManager;
@@ -98,8 +99,52 @@ public class ManageDialog extends JDialog {
 
     private Component makeSelectBox(){
         JPanel panel = new JPanel(new MigLayout("", "", ""));
+        Link newLink = new Link("新規");
+        newLink.setCallback(evt -> doNew());
         panel.add(namesCombo);
+        panel.add(newLink);
         return panel;
+    }
+
+    private void doNew(){
+        if( printManager == null ){
+            logger.error("No printManager supplied");
+            alert("No printManager supplied");
+            return;
+        }
+        String name = JOptionPane.showInputDialog(this, "新しい設定の名前");
+        if( name == null ){
+            return;
+        }
+        try {
+            printManager.createNewSetting(name);
+            updateSettingNames();
+            alert(name + "が追加されました。");
+        } catch(PrintManager.SettingDirNotSuppliedException ex){
+            logger.error("Setting dir not specified", ex);
+            alert("Setting dir is not specified.");
+        } catch(IOException ex){
+            logger.error("", ex);
+        }
+    }
+
+    private void updateSettingNames(){
+        if( printManager == null ){
+            logger.error("No printManager supplied");
+            alert("No printManager supplied");
+            return;
+        }
+        try {
+            List<String> names = printManager.listNames();
+            namesCombo.removeAllItems();
+            names.forEach(name -> {
+                namesCombo.addItem(name);
+            });
+            start(getSelectedSettingName());
+        } catch (IOException e) {
+            logger.error("IOException while listing setting names.", e);
+        }
+
     }
 
     private String getSelectedSettingName(){
@@ -111,6 +156,7 @@ public class ManageDialog extends JDialog {
         if( settingName == null ){
             devPart.clear();
             auxPart.clear();
+            pack();
             return;
         }
         try {
@@ -119,6 +165,7 @@ public class ManageDialog extends JDialog {
             AuxSetting auxSetting = printManager.readAuxSetting(settingName);
             devPart.setData(devnames, devmode);
             auxPart.setData(auxSetting);
+            pack();
         } catch(IOException ex){
             logger.error("印刷設定の取得に失敗しました（{}）。", settingName, ex);
             alert("印刷設定の取得に失敗しました");

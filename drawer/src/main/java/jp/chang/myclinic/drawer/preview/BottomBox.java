@@ -32,14 +32,11 @@ class BottomBox extends JPanel {
         nameLabel = new JLabel(makeSettingLabel());
         Link selectLink = new Link("選択");
         selectLink.setCallback(this::doSelect);
-        Link createLink = new Link("新規");
-        createLink.setCallback(evt -> doNewSetting());
         Link manageLink = new Link("管理");
         manageLink.setCallback(evt -> doManage());
         add(new JLabel("印刷設定："));
         add(nameLabel);
         add(selectLink, "gap right 12");
-        add(createLink);
         add(manageLink);
     }
 
@@ -74,25 +71,6 @@ class BottomBox extends JPanel {
         } catch(IOException ex){
             logger.error("Failed to list setting names.", ex);
             alert("設定名リストの取得に失敗しました。");
-        }
-    }
-
-    private void doNewSetting(){
-        if( printManager == null ){
-            alert("No printManager supplied");
-            return;
-        }
-        String name = JOptionPane.showInputDialog(this, "新しい設定の名前");
-        if( name == null ){
-            return;
-        }
-        try {
-            printManager.createNewSetting(name);
-        } catch(PrintManager.SettingDirNotSuppliedException ex){
-            logger.error("Setting dir not specified", ex);
-            alert("Setting dir is not specified.");
-        } catch(IOException ex){
-            logger.error("", ex);
         }
     }
 
