@@ -119,7 +119,7 @@ class MainFrame extends JFrame {
             dialog.setVisible(true);
         });
         searchPaymentButton.addActionListener(event -> {
-            SearchPaymentDialog dialog = new SearchPaymentDialog(this);
+            SearchPaymentDialog dialog = new SearchPaymentDialog(this, receptionEnv);
             dialog.setLocationByPlatform(true);
             dialog.setVisible(true);
         });
