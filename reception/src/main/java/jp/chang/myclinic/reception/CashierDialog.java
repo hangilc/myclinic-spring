@@ -1,6 +1,8 @@
 package jp.chang.myclinic.reception;
 
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.preview.PreviewDialog;
+import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
 import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
@@ -22,19 +24,21 @@ class CashierDialog extends JDialog {
 	private ChargeDTO charge;
 	private List<PaymentDTO> payments;
 	private int visitId;
+	private ReceptionEnv receptionEnv;
 	private JButton printReceiptButton;
 	private JButton doneButton = new JButton("会計終了");
 	private JButton cancelButton = new JButton("キャンセル");
 	private boolean canceled = true;
 
 	CashierDialog(JFrame owner, MeisaiDTO meisai, PatientDTO patient, ChargeDTO charge,
-				  List<PaymentDTO> payments, int visitId){
+				  List<PaymentDTO> payments, int visitId, ReceptionEnv receptionEnv){
 		super(owner, "会計", true);
 		this.meisai = meisai;
 		this.patient = patient;
 		this.charge = charge;
 		this.payments = payments;
 		this.visitId = visitId;
+		this.receptionEnv = receptionEnv;
 		setLayout(new MigLayout("fill", "[fill]", "[] []"));
 		add(makeCenter(), "wrap");
 		add(makeSouth());
@@ -122,7 +126,12 @@ class CashierDialog extends JDialog {
 						ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
 						List<Op> ops = receiptDrawer.getOps();
 						EventQueue.invokeLater(() -> {
-							ReceiptPreviewDialog dialog = new ReceiptPreviewDialog(this, ops);
+//							ReceiptPreviewDialog dialog = new ReceiptPreviewDialog(this, ops);
+							PrintManager printManager = new PrintManager(receptionEnv.getPrinterSettingsDir());
+							PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー", printManager, receptionEnv.getPrinterSettingName())
+									.setPageSize(148, 105);
+							dialog.setPage(ops);
+							dialog.pack();
 							dialog.setLocationByPlatform(true);
 							dialog.setVisible(true);
 						});
@@ -135,6 +144,7 @@ class CashierDialog extends JDialog {
 						return null;
 					});
 		});
+		// TODO: implement printBlankButton
 		doneButton.addActionListener(event -> doDone());
 		cancelButton.addActionListener(event -> doCancel());
 	}

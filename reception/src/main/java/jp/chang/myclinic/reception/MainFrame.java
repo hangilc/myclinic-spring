@@ -312,7 +312,7 @@ class MainFrame extends JFrame {
 					ChargeDTO charge = chargeFetcher.join();
 					List<PaymentDTO> payments = paymentsFetcher.join();
 					EventQueue.invokeLater(() -> {
-						CashierDialog dialog = new CashierDialog(this, meisai, wq.getPatient(), charge, payments, visitId);
+						CashierDialog dialog = new CashierDialog(this, meisai, wq.getPatient(), charge, payments, visitId, receptionEnv);
 						dialog.setLocationByPlatform(true);
 						dialog.setVisible(true);
 						if( !dialog.isCanceled() ){
