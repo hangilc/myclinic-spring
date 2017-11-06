@@ -29,7 +29,7 @@ public class TextEditor extends JPanel {
         JButton cancelButton = new JButton("キャンセル");
         cancelButton.addActionListener(event -> TextAreaContext.get(this).onEditorCancel(this));
         Link deleteLink = new Link("削除", event -> doDelete());
-        Link prescLink = new Link("処方箋発行", event -> {});
+        Link prescLink = new Link("処方箋発行", event -> doPresc());
         Link copyLink = new Link("コピー", event -> {});
         add(new JScrollPane(ep), "growx, h 200:n:n, wrap");
         add(enterButton, "split 2");
@@ -58,6 +58,10 @@ public class TextEditor extends JPanel {
                     });
                     return null;
                 });
+    }
+
+    private void doPresc(){
+        
     }
 
     private void doDelete(){
