@@ -1,5 +1,5 @@
 <configuration>
-    <property name="logfolder" value="${logdir:-${HOME}/log}" />
+    <property name="logfolder" value="${logdir:-${user.home}/log}" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
