@@ -61,7 +61,7 @@ public class TextEditor extends JPanel {
     }
 
     private void doPresc(){
-        
+
     }
 
     private void doDelete(){
