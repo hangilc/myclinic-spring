@@ -7,17 +7,20 @@ public class AppPractice
 {
     public static void main( String[] args )
     {
-        if( args.length == 0 ){
-            System.out.println("Usage: server-url");
-            System.exit(1);
-        }
-        {
-            String serverUrl = args[0];
-            if( !serverUrl.endsWith("/") ){
-                serverUrl = serverUrl + "/";
-            }
-            Service.setServerUrl(serverUrl);
-        }
+        CommandArgs commandArgs = new CommandArgs(args);
+        Service.setServerUrl(commandArgs.getServerUrl());
+//        System.out.println(commandArgs);
+//        if( args.length == 0 ){
+//            System.out.println("Usage: server-url");
+//            System.exit(1);
+//        }
+//        {
+//            String serverUrl = args[0];
+//            if( !serverUrl.endsWith("/") ){
+//                serverUrl = serverUrl + "/";
+//            }
+//            Service.setServerUrl(serverUrl);
+//        }
         EventQueue.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
