@@ -3,8 +3,10 @@ package jp.chang.myclinic.practice.leftpane.text;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.drawer.preview.PreviewDialog;
+import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.Link;
+import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.shohousen.ShohousenData;
 import jp.chang.myclinic.practice.shohousen.ShohousenDrawer;
@@ -68,7 +70,8 @@ public class TextEditor extends JPanel {
     }
 
     private void doPresc(){
-        PreviewDialog previewDialog = new PreviewDialog(SwingUtilities.getWindowAncestor(this), "処方箋印刷", null, null);
+        PrintManager pringManager = new PrintManager(PracticeEnv.INSTANCE.getPrinterSettingsDir());
+        PreviewDialog previewDialog = new PreviewDialog(SwingUtilities.getWindowAncestor(this), "処方箋印刷", pringManager, null);
         ShohousenData shohousenData = new ShohousenData();
         ShohousenDrawer shohousenDrawer = new ShohousenDrawer(shohousenData);
         List<Op> ops = shohousenDrawer.getOps();
