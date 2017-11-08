@@ -302,6 +302,12 @@ public class DrawerCompiler {
         }
     }
 
+    public void frameInnerColumnBorders(Box[] cols){
+        for(int i=1;i<cols.length;i++){
+            frameLeft(cols[i]);
+        }
+    }
+
     public void frameInnerColumnBorders(Box[][] cells){
         int nCol = cells[0].length;
         Box[] firstRow = cells[0];
@@ -384,7 +390,7 @@ public class DrawerCompiler {
         List<Double> ys = new ArrayList<>();
         for(int i=0;i<nchar;i++){
             ys.add(top);
-            top += fontSize * extraSpace;
+            top += fontSize + extraSpace;
         }
         return ys;
     }

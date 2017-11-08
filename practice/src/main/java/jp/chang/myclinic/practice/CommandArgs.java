@@ -28,12 +28,6 @@ class CommandArgs {
             }
             if( commandLine.hasOption("d") ){
                 workingDirectory = Paths.get(commandLine.getOptionValue("d"));
-            } else {
-                workingDirectory = Paths.get(System.getProperty("user.dir"));
-            }
-            if( !(Files.exists(workingDirectory) && Files.isDirectory(workingDirectory)) ){
-                logger.error("Invalid working directory: " + workingDirectory);
-                System.exit(1);
             }
             String[] rem = commandLine.getArgs();
             if( rem.length == 0 ){

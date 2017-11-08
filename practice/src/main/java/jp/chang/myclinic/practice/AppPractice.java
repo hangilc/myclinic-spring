@@ -9,21 +9,10 @@ public class AppPractice
     {
         CommandArgs commandArgs = new CommandArgs(args);
         Service.setServerUrl(commandArgs.getServerUrl());
-//        System.out.println(commandArgs);
-//        if( args.length == 0 ){
-//            System.out.println("Usage: server-url");
-//            System.exit(1);
-//        }
-//        {
-//            String serverUrl = args[0];
-//            if( !serverUrl.endsWith("/") ){
-//                serverUrl = serverUrl + "/";
-//            }
-//            Service.setServerUrl(serverUrl);
-//        }
+        PracticeEnv.INSTANCE = new PracticeEnv(commandArgs);
         EventQueue.invokeLater(() -> {
             try {
-                UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (Exception ex) {
                 ex.printStackTrace();
                 System.exit(1);

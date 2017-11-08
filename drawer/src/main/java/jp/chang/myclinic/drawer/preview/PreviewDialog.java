@@ -1,6 +1,7 @@
 package jp.chang.myclinic.drawer.preview;
 
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.drawer.lib.Link;
 import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import net.miginfocom.swing.MigLayout;
@@ -27,12 +28,17 @@ public class PreviewDialog extends JDialog {
     private String settingName;
     private Callback callback = new Callback(){};
 
-    public PreviewDialog(Window owner, String title){
-        this(owner, title, new PrintManager(null), null);
+    public PreviewDialog(JDialog owner, String title, PrintManager printManager, String settingName){
+        super(owner, title, ModalityType.DOCUMENT_MODAL);
+        setupDialog(title, printManager, settingName);
     }
 
     public PreviewDialog(Window owner, String title, PrintManager printManager, String settingName){
         super(owner, title, ModalityType.DOCUMENT_MODAL);
+        setupDialog(title, printManager, settingName);
+    }
+
+    private void setupDialog(String title, PrintManager printManager, String settingName){
         this.printManager = printManager;
         this.settingName = settingName;
         setLayout(new MigLayout("insets 4", "[grow]", "[] [grow] []"));
@@ -71,6 +77,11 @@ public class PreviewDialog extends JDialog {
 
     public PreviewDialog setPageSize(double width, double height){
         previewPane.setPageSize(width, height);
+        return this;
+    }
+
+    public PreviewDialog setPageSize(PaperSize pageSize){
+        setPageSize(pageSize.getWidth(), pageSize.getHeight());
         return this;
     }
 

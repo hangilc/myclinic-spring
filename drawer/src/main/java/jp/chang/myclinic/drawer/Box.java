@@ -188,7 +188,7 @@ public class Box {
         Box[] cols = new Box[borders.length + 1];
         double colLeft = left;
         for(int i=0;i<borders.length;i++){
-            double colRight = borders[i];
+            double colRight = left + borders[i];
             cols[i] = new Box(colLeft, top, colRight, bottom);
             colLeft = colRight;
         }

@@ -1,12 +1,19 @@
 package jp.chang.myclinic.practice.leftpane.text;
 
+import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.drawer.preview.PreviewDialog;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.shohousen.ShohousenData;
+import jp.chang.myclinic.practice.shohousen.ShohousenDrawer;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
+import java.util.ArrayList;
 
 public class TextEditor extends JPanel {
 
@@ -61,7 +68,15 @@ public class TextEditor extends JPanel {
     }
 
     private void doPresc(){
-
+        PreviewDialog previewDialog = new PreviewDialog(SwingUtilities.getWindowAncestor(this), "処方箋印刷", null, null);
+        ShohousenData shohousenData = new ShohousenData();
+        ShohousenDrawer shohousenDrawer = new ShohousenDrawer(shohousenData);
+        List<Op> ops = shohousenDrawer.getOps();
+        previewDialog.setPageSize(PaperSize.A5);
+        previewDialog.setPage(ops);
+        previewDialog.pack();
+        previewDialog.setLocationByPlatform(true);
+        previewDialog.setVisible(true);
     }
 
     private void doDelete(){
