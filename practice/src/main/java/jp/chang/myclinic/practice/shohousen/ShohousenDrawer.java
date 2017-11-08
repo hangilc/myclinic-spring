@@ -43,12 +43,12 @@ public class ShohousenDrawer {
         drawPatient(patient);
         drawClinic(clinic);
         drawIssue(issue);
-//        drawDrugs(drugs);
-//        drawMemo(memo);
-//        drawChouzai1(chouzai1);
-//        drawChouzai2(chouzai2);
-//        Box pharma = wrap.setTop(box2.getBottom() + 1).setHeight(24.5, VertAnchor.Top);
-//        drawPharmacy(pharma);
+        drawDrugs(drugs);
+        drawMemo(memo);
+        drawChouzai1(chouzai1);
+        drawChouzai2(chouzai2);
+        Box pharma = wrap.setTop(box2.getBottom() + 1).setHeight(24.5, VertAnchor.Top);
+        drawPharmacy(pharma);
     }
 
     public List<Op> getOps(){
@@ -244,6 +244,69 @@ public class ShohousenDrawer {
         c.textIn("特に記載のある場合を除き、", rr[0], HAlign.Center, VAlign.Center);
         c.textIn("交付の日を含めて４日以内に保", rr[1], HAlign.Center, VAlign.Center);
         c.textIn("険薬局に提出すること。", rr[2], HAlign.Center, VAlign.Center);
+    }
+
+    private void drawDrugs(Box box){
+        DrawerCompiler c = this.compiler;
+        c.box(box);
+        Box[] rr = box.splitToColumns(4);
+        c.frameRight(rr[0]);
+        c.setFont("mincho-2.5");
+        c.textInVertJustified("処方", rr[0].inset(0, 24), HAlign.Center);
+        c.setBox("drugsPane", rr[1]);
+    }
+
+    private void drawMemo(Box r){
+        DrawerCompiler c = this.compiler;
+        c.box(r);
+        Box[] rr = r.splitToColumns(4);
+        c.frameRight(rr[0]);
+        c.setFont("mincho-2.5");
+        c.textInVertJustified("備考", rr[0].inset(0, 7), HAlign.Center);
+        c.setBox("memoPane", rr[1]);
+    }
+
+    private void drawChouzai1(Box r){
+        DrawerCompiler c = this.compiler;
+        c.box(r);
+        Box[] rr = r.splitToColumns(14.5, 82, 95.5);
+        c.frameInnerColumnBorders(rr);
+        c.setFont("mincho-2");
+        c.textInJustified("調剤年月日", rr[0].inset(1, 0), VAlign.Center);
+        Box[] dd = rr[1].splitToColumns(28, 41, 53);
+        frameDate(dd);
+        c.setFont("mincho-1.5");
+        c.textInJustified("公費負担者番号", rr[2].inset(0.5, 0), VAlign.Center);
+        c.setBox("futanshaBangou2", rr[3]);
+        c.frameInnerColumnBorders(rr[3], 8);
+    }
+
+    private void drawChouzai2(Box r){
+        DrawerCompiler c = this.compiler;
+        Box[] rr = r.splitToColumns(14.5, 82, 95.5);
+        c.frameInnerColumnBorders(rr);
+        c.setFont("mincho-2");
+        Box[] cc = rr[0].splitToEvenRows(3);
+        c.setFont("mincho-1.5");
+        c.textInJustified("保険薬局の所在", cc[0].inset(0.5, 0), VAlign.Center);
+        c.textInJustified("地及び名称", cc[1].inset(0.5, 0), VAlign.Center);
+        c.textInJustified("保険薬剤師氏名", cc[2].inset(0.5, 0), VAlign.Center);
+        c.setFont("mincho-2");
+        c.textIn("印", rr[1].shiftToRight(59), HAlign.Left, VAlign.Center);
+        c.setFont("mincho-1.5");
+        cc = rr[2].inset(0.5, 0).splitToEvenRows(2);
+        c.textInJustified("公費負担医療", cc[0], VAlign.Center);
+        c.textInJustified("の受給者番号", cc[1], VAlign.Center);
+        Box[] bb = rr[3].splitToEvenColumns(8);
+        Box jukyuushaBangou2 = rr[3].setRight(bb[7].getLeft());
+        c.setBox("jukyuushaBangou2", jukyuushaBangou2);
+        c.frameInnerColumnBorders(jukyuushaBangou2, 7);
+        r = r.setRight(bb[7].getLeft());
+        c.box(r);
+    }
+
+    private void drawPharmacy(Box box){
+
     }
 
 }
