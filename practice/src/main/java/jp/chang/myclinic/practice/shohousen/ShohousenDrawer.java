@@ -305,8 +305,62 @@ public class ShohousenDrawer {
         c.box(r);
     }
 
-    private void drawPharmacy(Box box){
+    private void drawPharmacy(Box r){
+        DrawerCompiler c = this.compiler;
+        Box[] rr = r.splitToColumns(85);
+        Box left = rr[0];
+        Box right = rr[1];
+        c.box(left);
+        c.box(right);
+        c.setFont("mincho-2");
 
+        Box[] pp = left.splitToRows(3, 10, 17);
+        c.frameBottom(pp[0]);
+        c.frameBottom(pp[1]);
+        c.frameBottom(pp[2]);
+        Box[] qq = pp[0].splitToColumns(11.5, 27.8, 47, 57.3, 76.5);
+        for (int i = 0; i < 5; i++) {
+            c.frameRight(qq[i]);
+        }
+        c.textInJustified("調剤料", qq[0].inset(1, 0), VAlign.Center);
+        c.textInJustified("薬剤料", qq[1].inset(3, 0), VAlign.Center);
+        c.textIn("計", qq[2], HAlign.Center, VAlign.Center);
+        c.textInJustified("調剤数量", qq[3].inset(0.5, 0), VAlign.Center);
+        c.textInJustified("合計", qq[4].inset(4, 0), VAlign.Center);
+        c.textInJustified("加算", qq[5].inset(1.5, 0), VAlign.Center);
+        for (int j = 1; j <= 3; j++) {
+            qq = pp[j].splitToColumns(11.5, 27.8, 47, 57.3, 76.5);
+            for (int i = 0; i < 5; i++) {
+                c.frameRight(qq[i]);
+            }
+        }
+
+        pp = right.splitToRows(3, 10, 13);
+        for (int i = 0; i < 3; i++) {
+            c.frameBottom(pp[i]);
+        }
+        qq = pp[0].splitToColumns(19.5, 39);
+        for (int i = 0; i < 2; i++) {
+            c.frameRight(qq[i]);
+        }
+        c.textInJustified("調剤基本料", qq[0].inset(2, 0), VAlign.Center);
+        c.textInJustified("管理指導料", qq[1].inset(2, 0), VAlign.Center);
+        c.textInJustified("総合計", qq[2].inset(2, 0), VAlign.Center);
+        qq = pp[1].splitToColumns(19.5, 39);
+        for (int i = 0; i < 2; i++) {
+            c.frameRight(qq[i]);
+        }
+        qq = pp[2].splitToColumns(19.5, 39);
+        for (int i = 0; i < 2; i++) {
+            c.frameRight(qq[i]);
+        }
+        c.textInJustified("患者負担金", qq[0].inset(2, 0), VAlign.Center);
+        c.textInJustified("請求金額", qq[1].inset(2, 0), VAlign.Center);
+        c.textInJustified("調剤済印", qq[2].inset(2, 0), VAlign.Center);
+        qq = pp[3].splitToColumns(19.5, 39);
+        for (int i = 0; i < 2; i++) {
+            c.frameRight(qq[i]);
+        }
     }
 
 }
