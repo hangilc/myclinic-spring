@@ -42,7 +42,7 @@ public class ShohousenDrawer {
         Box clinic = rr3[1].shrinkWidth(1, HorizAnchor.Right);
         drawPatient(patient);
         drawClinic(clinic);
-//        drawIssue(issue);
+        drawIssue(issue);
 //        drawDrugs(drugs);
 //        drawMemo(memo);
 //        drawChouzai1(chouzai1);
@@ -124,8 +124,6 @@ public class ShohousenDrawer {
         c.setBox("hokenshaBangou", right);
         c.frameInnerColumnBorders(right, 8);
         c.box(lower);
-        System.out.println(lower);
-        System.out.println(PaperSize.A5);
         rr = lower.splitToColumns(13);
         left = rr[0];
         right = rr[1];
@@ -213,6 +211,39 @@ public class ShohousenDrawer {
         c.setBox("clinicHanko", new Box(
                 box.getLeft() + 53.5+7, box.getBottom() - 5.5, box.getLeft() + 56.5+7, box.getBottom() - 2.5));
         c.textIn("印", c.getBox("clinicHanko"), HAlign.Center, VAlign.Center);
+    }
+
+    private void drawIssue(Box box){
+        DrawerCompiler c = this.compiler;
+        c.box(box);
+        Box[] rr = box.splitToColumns(14.5, 55, 71.5);
+        c.setFont("mincho-2.5");
+        c.frameRight(rr[0]);
+        c.frameRight(rr[1]);
+        c.frameRight(rr[2]);
+        c.textInJustified("交付年月日", rr[0].inset(0.5, 0), VAlign.Center);
+        Box[] pp = rr[1].splitToColumns(16, 24, 32);
+        c.setBox("issueYear", pp[0]);
+        c.setBox("issueMonth", pp[1]);
+        c.setBox("issueDay", pp[2]);
+        c.setFont("mincho-2");
+        frameDate(pp);
+        pp = rr[2].splitToEvenRows(2);
+        c.textInJustified("処方せんの", pp[0].inset(0.5, 0), VAlign.Center);
+        c.textInJustified("使用期間", pp[1].inset(0.5, 0), VAlign.Center);
+        Box b = rr[3];
+        rr = b.splitToColumns(16, 25, 35);
+        c.setBox("validYear", rr[0]);
+        c.setBox("validMonth", rr[1]);
+        c.setBox("validDay", rr[2]);
+        frameDate(rr);
+        b = b.shrinkWidth(40, HorizAnchor.Right);
+        b = b.inset(1.5, 0);
+        rr = b.splitToEvenRows(3);
+        c.setFont("mincho-1.8");
+        c.textIn("特に記載のある場合を除き、", rr[0], HAlign.Center, VAlign.Center);
+        c.textIn("交付の日を含めて４日以内に保", rr[1], HAlign.Center, VAlign.Center);
+        c.textIn("険薬局に提出すること。", rr[2], HAlign.Center, VAlign.Center);
     }
 
 }
