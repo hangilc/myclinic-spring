@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice;
 
+import jp.chang.myclinic.dto.ClinicInfoDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +15,7 @@ public class PracticeEnv {
     public static PracticeEnv INSTANCE;
 
     private Path printerSettingsDir;
+    private ClinicInfoDTO clinicInfo;
 
     public PracticeEnv(CommandArgs commandArgs){
         printerSettingsDir = commandArgs.getWorkingDirectory();
@@ -34,10 +36,19 @@ public class PracticeEnv {
         this.printerSettingsDir = printerSettingsDir;
     }
 
+    public ClinicInfoDTO getClinicInfo() {
+        return clinicInfo;
+    }
+
+    public void setClinicInfo(ClinicInfoDTO clinicInfo) {
+        this.clinicInfo = clinicInfo;
+    }
+
     @Override
     public String toString() {
         return "PracticeEnv{" +
                 "printerSettingsDir=" + printerSettingsDir +
+                ", clinicInfo=" + clinicInfo +
                 '}';
     }
 }

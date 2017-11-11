@@ -13,12 +13,14 @@ import java.util.List;
 
 public class ShohousenDrawer {
 
-    private ShohousenData data;
     private DrawerCompiler compiler = new DrawerCompiler();
     private Box wrap;
+    private Box clinicInfoBox;
+    private Box clinicPhoneBox;
+    private Box clinicDoctorBox;
+    private Box clinicHankoBox;
 
-    public ShohousenDrawer(ShohousenData data){
-        this.data = data;
+    public ShohousenDrawer(){
         setupFonts();
         compiler.setTextColor(0, 255, 0);
         compiler.createPen("default-pen", 0, 255, 0, 0.1);
@@ -53,6 +55,35 @@ public class ShohousenDrawer {
 
     public List<Op> getOps(){
         return compiler.getOps();
+    }
+
+    public void setHakkouKikan(String address, String name, String phone, String kikancode){
+        DrawerCompiler c = this.compiler;
+        Box clinic_info = clinicInfoBox;
+        Box clinic_phone = clinicPhoneBox;
+        Box r = clinic_info.shift(2, 1);
+        c.setTextColor(0, 255, 0);
+        c.setFont("mincho-3");
+        c.textIn(address, r, HAlign.Left, VAlign.Top);
+        r = r.shift(4, 4);
+        c.setFont("mincho-4");
+        c.textIn(name, r, HAlign.Left, VAlign.Top);
+        Box rr = r;
+        rr = rr.shrinkWidth(34, HorizAnchor.Right);
+        rr = rr.shrinkHeight(0.5, VertAnchor.Bottom);
+        c.setFont("mincho-3");
+        c.textIn("(機関コード " + kikancode + ")", rr, HAlign.Left, VAlign.Top);
+        r = clinic_phone.shift(6, 0);
+        c.setFont("mincho-3");
+        c.textIn(phone, r, HAlign.Left, VAlign.Top);
+    }
+
+    public void setDoctorName(String name){
+        DrawerCompiler c = this.compiler;
+        Box r = clinicDoctorBox.shift(35, 0);
+        c.setTextColor(0, 255, 0);
+        c.setFont("mincho-3.5");
+        c.textIn(name, r, HAlign.Left, VAlign.Top);
     }
 
     private void frameDate(Box[] cols){
@@ -193,7 +224,7 @@ public class ShohousenDrawer {
         Box lower = rr[2];
         rr = upper.splitToColumns(11);
         Box p = rr[0];
-        c.setBox("clinicInfo", rr[1]);
+        this.clinicInfoBox = rr[1];
         p.shrinkHeight(1.5, VertAnchor.Bottom);
         p.shrinkHeight(0.5, VertAnchor.Bottom);
         Box[] pp = p.splitToEvenRows(3);
@@ -203,14 +234,15 @@ public class ShohousenDrawer {
         c.textInJustified("の所在地", pp[1], VAlign.Center);
         c.textInJustified("及び名称", pp[2], VAlign.Bottom);
         rr = middle.splitToColumns(11);
-        c.setBox("clinicPhone", rr[1]);
+        this.clinicPhoneBox = rr[1];
         c.textInJustified("電話番号", rr[0], VAlign.Center);
         rr = lower.splitToColumns(11);
-        c.setBox("clinicDoctor", rr[1]);
+        this.clinicDoctorBox = rr[1];
         c.textInJustified("保険医氏名", rr[0], VAlign.Center);
-        c.setBox("clinicHanko", new Box(
-                box.getLeft() + 53.5+7, box.getBottom() - 5.5, box.getLeft() + 56.5+7, box.getBottom() - 2.5));
-        c.textIn("印", c.getBox("clinicHanko"), HAlign.Center, VAlign.Center);
+        this.clinicHankoBox = new Box(
+                box.getLeft() + 53.5+7, box.getBottom() - 5.5, box.getLeft() + 56.5+7, box.getBottom() - 2.5
+        );
+        c.textIn("印", clinicHankoBox, HAlign.Center, VAlign.Center);
     }
 
     private void drawIssue(Box box){

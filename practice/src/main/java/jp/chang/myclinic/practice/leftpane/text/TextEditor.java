@@ -15,7 +15,6 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.ArrayList;
 
 public class TextEditor extends JPanel {
 
@@ -73,7 +72,9 @@ public class TextEditor extends JPanel {
         PrintManager pringManager = new PrintManager(PracticeEnv.INSTANCE.getPrinterSettingsDir());
         PreviewDialog previewDialog = new PreviewDialog(SwingUtilities.getWindowAncestor(this), "処方箋印刷", pringManager, null);
         ShohousenData shohousenData = new ShohousenData();
-        ShohousenDrawer shohousenDrawer = new ShohousenDrawer(shohousenData);
+        shohousenData.setClinicInfo(PracticeEnv.INSTANCE.getClinicInfo());
+        ShohousenDrawer shohousenDrawer = new ShohousenDrawer();
+        shohousenData.applyTo(shohousenDrawer);
         List<Op> ops = shohousenDrawer.getOps();
         previewDialog.setPageSize(PaperSize.A5);
         previewDialog.setPage(ops);

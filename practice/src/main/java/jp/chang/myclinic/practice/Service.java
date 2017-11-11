@@ -251,6 +251,9 @@ public class Service {
 
         @POST("delete-disease")
         CompletableFuture<Boolean> deleteDisease(@Query("disease-id") int diseaseId);
+
+        @GET("get-clinic-info")
+        CompletableFuture<ClinicInfoDTO> getClinicInfo();
     }
 
     public static ServerAPI api;

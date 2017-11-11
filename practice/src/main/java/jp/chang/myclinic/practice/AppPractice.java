@@ -10,6 +10,21 @@ public class AppPractice
         CommandArgs commandArgs = new CommandArgs(args);
         Service.setServerUrl(commandArgs.getServerUrl());
         PracticeEnv.INSTANCE = new PracticeEnv(commandArgs);
+        Service.api.getClinicInfo()
+                .thenAccept(clinicInfo -> {
+                    PracticeEnv.INSTANCE.setClinicInfo(clinicInfo);
+                    startApp();
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+    }
+
+    private static void startApp(){
         EventQueue.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -23,4 +38,9 @@ public class AppPractice
             mainFrame.setVisible(true);
         });
     }
+
+    private static void alert(String message){
+        JOptionPane.showMessageDialog(null, message);
+    }
+
 }

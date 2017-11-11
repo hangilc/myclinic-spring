@@ -14,6 +14,7 @@ public class ClinicInfo {
     private String fax = "";
     private String homepage = "";
     private String doctorName = "";
+    private String kikancode = "";
 
     public String getName(){
         return name;
@@ -69,5 +70,13 @@ public class ClinicInfo {
 
     public void setDoctorName(String doctorName) {
         this.doctorName = doctorName;
+    }
+
+    public String getKikancode() {
+        return kikancode;
+    }
+
+    public void setKikancode(String kikancode) {
+        this.kikancode = kikancode;
     }
 }
