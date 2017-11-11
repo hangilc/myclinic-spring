@@ -1,8 +1,6 @@
-package jp.chang.myclinic.drawer.receipt;
+package jp.chang.myclinic.reception.receipt;
 
 import java.text.NumberFormat;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by hangil on 2017/05/21.

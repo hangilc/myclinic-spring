@@ -1,4 +1,4 @@
-package jp.chang.myclinic.drawer.receipt;
+package jp.chang.myclinic.reception.receipt;
 
 import jp.chang.myclinic.drawer.Box;
 import jp.chang.myclinic.drawer.Box.HorizAnchor;

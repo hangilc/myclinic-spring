@@ -4,9 +4,10 @@ import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.preview.PreviewDialog;
 import jp.chang.myclinic.drawer.printer.manager.PrintManager;
-import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
-import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
+import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
+import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +44,8 @@ class MainFrame extends JFrame {
 	private JLabel messageBox = new JLabel("");
 	private JButton closeButton = new JButton("終了");
 	private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-	private ReceptionEnv receptionEnv;
 
-	MainFrame(ReceptionEnv receptionEnv){
-		this.receptionEnv = receptionEnv;
+	MainFrame(){
 		setTitle("受付");
 		setLayout(new MigLayout("fill", "[grow]", ""));
 		add(makeRow1(), "wrap");
@@ -119,7 +118,7 @@ class MainFrame extends JFrame {
             dialog.setVisible(true);
         });
         searchPaymentButton.addActionListener(event -> {
-            SearchPaymentDialog dialog = new SearchPaymentDialog(this, receptionEnv);
+            SearchPaymentDialog dialog = new SearchPaymentDialog(this);
             dialog.setLocationByPlatform(true);
             dialog.setVisible(true);
         });
@@ -226,46 +225,35 @@ class MainFrame extends JFrame {
 	}
 
 	private void doPrintBlankReceipt(){
-		Service.api.getClinicInfo()
-				.thenAccept((ClinicInfoDTO clinicInfo) -> EventQueue.invokeLater(() -> {
-					ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
-					creator.setClinicInfo(clinicInfo);
-					ReceiptDrawerData data = creator.getData();
-					ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
-					final List<Op> ops = receiptDrawer.getOps();
-					EventQueue.invokeLater(() -> {
-						PrintManager printManager = new PrintManager(receptionEnv.getPrinterSettingsDir());
-						String settingName = receptionEnv.getPrinterSettingName();
-						PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー", printManager, settingName)
-								.setPageSize(148, 105);
-						dialog.setCallback(new PreviewDialog.Callback() {
-							@Override
-							public void onRememberSetting(String settingName) {
-								ReceptionConfig config = receptionEnv.getConfig();
-								config.setPrinterSettingName(settingName);
-								try {
-									receptionEnv.saveConfig();
-									alert("印刷設定(" + settingName + ")を記憶しました。");
-								} catch (IOException e) {
-									logger.error("Failed to save config.", e);
-									alert("設定ファイルの保存に失敗しました。");
-								}
-							}
-						});
-						dialog.setPage(ops);
-						dialog.pack();
-						dialog.setLocationByPlatform(true);
-						dialog.setVisible(true);
-					});
-				}))
-				.exceptionally(t -> {
-					t.printStackTrace();
-					EventQueue.invokeLater(() -> {
-						alert(t.toString());
-					});
-					return null;
-				});
-
+		ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
+		creator.setClinicInfo(ReceptionEnv.INSTANCE.getClinicInfo());
+		ReceiptDrawerData data = creator.getData();
+		ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
+		final List<Op> ops = receiptDrawer.getOps();
+		EventQueue.invokeLater(() -> {
+			PrintManager printManager = new PrintManager(ReceptionEnv.INSTANCE.getPrinterSettingsDir());
+			String settingName = ReceptionEnv.INSTANCE.getPrinterSettingName();
+			PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー", printManager, settingName)
+					.setPageSize(148, 105);
+			dialog.setCallback(new PreviewDialog.Callback() {
+				@Override
+				public void onRememberSetting(String settingName) {
+					ReceptionConfig config = ReceptionEnv.INSTANCE.getConfig();
+					config.setPrinterSettingName(settingName);
+					try {
+						ReceptionEnv.INSTANCE.saveConfig();
+						alert("印刷設定(" + settingName + ")を記憶しました。");
+					} catch (IOException e) {
+						logger.error("Failed to save config.", e);
+						alert("設定ファイルの保存に失敗しました。");
+					}
+				}
+			});
+			dialog.setPage(ops);
+			dialog.pack();
+			dialog.setLocationByPlatform(true);
+			dialog.setVisible(true);
+		});
 	}
 
 	void doUpdateWqueue(){
@@ -312,7 +300,7 @@ class MainFrame extends JFrame {
 					ChargeDTO charge = chargeFetcher.join();
 					List<PaymentDTO> payments = paymentsFetcher.join();
 					EventQueue.invokeLater(() -> {
-						CashierDialog dialog = new CashierDialog(this, meisai, wq.getPatient(), charge, payments, visitId, receptionEnv);
+						CashierDialog dialog = new CashierDialog(this, meisai, wq.getPatient(), charge, payments, visitId);
 						dialog.setLocationByPlatform(true);
 						dialog.setVisible(true);
 						if( !dialog.isCanceled() ){

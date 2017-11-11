@@ -1,5 +1,6 @@
 package jp.chang.myclinic.reception;
 
+import jp.chang.myclinic.dto.ClinicInfoDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,14 +10,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ReceptionEnv {
+    public static ReceptionEnv INSTANCE = new ReceptionEnv();
+
     private static final Logger logger = LoggerFactory.getLogger(ReceptionEnv.class);
 
     private Path workdir;
     private Path configFilePath;
     private ReceptionConfig config;
     private Path printerSettingsDir;
+    private ClinicInfoDTO clinicInfo;
 
-    public ReceptionEnv(ReceptionArgs args){
+    public void updateWithArgs(ReceptionArgs args){
         this.workdir = args.workingDirPath;
         if( this.workdir == null ){
             this.workdir = Paths.get(System.getProperty("user.dir"));
@@ -73,12 +77,22 @@ public class ReceptionEnv {
         return config.getPrinterSettingName();
     }
 
+    public ClinicInfoDTO getClinicInfo() {
+        return clinicInfo;
+    }
+
+    public void setClinicInfo(ClinicInfoDTO clinicInfo) {
+        this.clinicInfo = clinicInfo;
+    }
+
     @Override
     public String toString() {
         return "ReceptionEnv{" +
-                "configFilePath=" + configFilePath +
+                "workdir=" + workdir +
+                ", configFilePath=" + configFilePath +
                 ", config=" + config +
                 ", printerSettingsDir=" + printerSettingsDir +
+                ", clinicInfo=" + clinicInfo +
                 '}';
     }
 }

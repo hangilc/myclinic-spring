@@ -1,13 +1,11 @@
 package jp.chang.myclinic.reception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AppReception
 {
@@ -16,16 +14,22 @@ public class AppReception
 	public static void main(String[] args) throws IOException {
 		ReceptionArgs receptionArgs = ReceptionArgs.parseArgs(args);
 		Service.setServerUrl(receptionArgs.serverUrl);
-		ReceptionEnv receptionEnv = new ReceptionEnv(receptionArgs);
-		System.out.println(receptionEnv);
-		System.setProperty("jp.chang.myclinic.reception.workdir", receptionEnv.getWorkdir().toString() + "/");
+		ReceptionEnv.INSTANCE.updateWithArgs(receptionArgs);
+		Service.api.getClinicInfo()
+				.thenAccept(clinicInfo -> {
+					ReceptionEnv.INSTANCE.setClinicInfo(clinicInfo);
+					startApp();
+				});
+    }
+
+	private static void startApp(){
 		EventQueue.invokeLater(() -> {
 			try {
 				UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-			MainFrame mainFrame = new MainFrame(receptionEnv);
+			MainFrame mainFrame = new MainFrame();
 			mainFrame.setLocationByPlatform(true);
 			mainFrame.setVisible(true);
 			mainFrame.doUpdateWqueue();
@@ -33,7 +37,6 @@ public class AppReception
 				mainFrame.doUpdateWqueue();
 			}).start();
 		});
-
-    }
+	}
 
 }

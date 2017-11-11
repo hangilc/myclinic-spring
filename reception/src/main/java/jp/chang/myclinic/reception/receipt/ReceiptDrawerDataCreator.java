@@ -1,7 +1,6 @@
-package jp.chang.myclinic.reception;
+package jp.chang.myclinic.reception.receipt;
 
 import jp.chang.myclinic.consts.MeisaiSection;
-import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.HokenUtil;
@@ -9,9 +8,6 @@ import jp.chang.myclinic.util.HokenUtil;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 
-/**
- * Created by hangil on 2017/05/21.
- */
 public class ReceiptDrawerDataCreator {
 
     private NumberFormat numberFormat = NumberFormat.getNumberInstance();

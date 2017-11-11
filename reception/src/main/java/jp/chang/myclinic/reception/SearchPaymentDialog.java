@@ -3,9 +3,10 @@ package jp.chang.myclinic.reception;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.preview.PreviewDialog;
 import jp.chang.myclinic.drawer.printer.manager.PrintManager;
-import jp.chang.myclinic.drawer.receipt.ReceiptDrawer;
-import jp.chang.myclinic.drawer.receipt.ReceiptDrawerData;
+import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
+import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -21,11 +22,9 @@ class SearchPaymentDialog extends JDialog {
 	private JButton reprintReceiptButton = new JButton("領収書再発行");
 	private JButton dispMeisaiButton = new JButton("明細情報表示");
 	private JButton closeButton = new JButton("閉じる");
-	private ReceptionEnv receptionEnv;
 
-	SearchPaymentDialog(Window owner, ReceptionEnv receptionEnv) {
+	SearchPaymentDialog(Window owner) {
 		super(owner, "会計検索", Dialog.ModalityType.DOCUMENT_MODAL);
-		this.receptionEnv = receptionEnv;
 		setLayout(new MigLayout("fill", "[grow]", "[] [grow]"));
 		add(makeSearchInputPane(), "wrap");
 		add(makeSearchResultPane(), "grow, wrap");
@@ -96,8 +95,8 @@ class SearchPaymentDialog extends JDialog {
 						final List<Op> ops = receiptDrawer.getOps();
 						EventQueue.invokeLater(() -> {
 							//ReceiptPreviewDialog dialog = new ReceiptPreviewDialog(this, ops);
-							PrintManager printManager = new PrintManager(receptionEnv.getPrinterSettingsDir());
-							PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー", printManager, receptionEnv.getPrinterSettingName())
+							PrintManager printManager = new PrintManager(ReceptionEnv.INSTANCE.getPrinterSettingsDir());
+							PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー", printManager, ReceptionEnv.INSTANCE.getPrinterSettingName())
 									.setPageSize(148, 105);
 							dialog.setPage(ops);
 							dialog.pack();
