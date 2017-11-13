@@ -74,13 +74,28 @@ public class TextEditor extends JPanel {
         ShohousenData shohousenData = new ShohousenData();
         shohousenData.setClinicInfo(PracticeEnv.INSTANCE.getClinicInfo());
         ShohousenDrawer shohousenDrawer = new ShohousenDrawer();
-        shohousenData.applyTo(shohousenDrawer);
-        List<Op> ops = shohousenDrawer.getOps();
-        previewDialog.setPageSize(PaperSize.A5);
-        previewDialog.setPage(ops);
-        previewDialog.pack();
-        previewDialog.setLocationByPlatform(true);
-        previewDialog.setVisible(true);
+        int visitId = textDTO.visitId;
+        Service.api.getHoken(visitId)
+                .thenAccept(hoken -> {
+                    shohousenData.setHoken(hoken);
+                    shohousenData.applyTo(shohousenDrawer);
+                    List<Op> ops = shohousenDrawer.getOps();
+                    EventQueue.invokeLater(() -> {
+                        previewDialog.setPageSize(PaperSize.A5);
+                        previewDialog.setPage(ops);
+                        previewDialog.pack();
+                        previewDialog.setLocationByPlatform(true);
+                        previewDialog.setVisible(true);
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                });
+
     }
 
     private void doDelete(){

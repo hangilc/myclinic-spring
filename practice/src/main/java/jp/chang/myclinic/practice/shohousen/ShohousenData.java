@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.shohousen;
 
 import jp.chang.myclinic.dto.ClinicInfoDTO;
+import jp.chang.myclinic.dto.HokenDTO;
 
 public class ShohousenData {
 
@@ -9,10 +10,12 @@ public class ShohousenData {
     private String clinicPhone = "";
     private String kikancode = "";
     private String doctorName = "";
+    private String hokenshaBangou = "";
 
     public void applyTo(ShohousenDrawer drawer){
         drawer.setHakkouKikan(clinicAddress, clinicName, clinicPhone, kikancode);
         drawer.setDoctorName(doctorName);
+        drawer.setHokenshaBangou(hokenshaBangou);
     }
 
     public void setClinicInfo(ClinicInfoDTO clinicInfo){
@@ -22,6 +25,14 @@ public class ShohousenData {
             clinicPhone = "電話 " + clinicInfo.tel;
             kikancode = clinicInfo.kikancode;
             doctorName = clinicInfo.doctorName;
+        }
+    }
+
+    public void setHoken(HokenDTO hoken){
+        if( hoken != null ){
+            if( hoken.shahokokuho != null ){
+                hokenshaBangou = hoken.shahokokuho.hokenshaBangou + "";
+            }
         }
     }
 }

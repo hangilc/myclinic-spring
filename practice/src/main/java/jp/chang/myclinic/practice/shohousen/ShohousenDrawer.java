@@ -19,6 +19,7 @@ public class ShohousenDrawer {
     private Box clinicPhoneBox;
     private Box clinicDoctorBox;
     private Box clinicHankoBox;
+    private Box hokenshaBangouBox;
 
     public ShohousenDrawer(){
         setupFonts();
@@ -84,6 +85,14 @@ public class ShohousenDrawer {
         c.setTextColor(0, 255, 0);
         c.setFont("mincho-3.5");
         c.textIn(name, r, HAlign.Left, VAlign.Top);
+    }
+
+    public void setHokenshaBangou(String bangou){
+        DrawerCompiler c = this.compiler;
+        Box box = hokenshaBangouBox;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-4");
+        c.textInEvenColumns(bangou, box, 8, DrawerCompiler.TextInEvenColumnsJustification.Right);
     }
 
     private void frameDate(Box[] cols){
@@ -152,7 +161,8 @@ public class ShohousenDrawer {
         c.frameRight(left);
         c.setFont("mincho-2");
         c.textAtJustified("保険者番号", left.getLeft()+0.5, left.getRight()-0.5, left.getCy(), VAlign.Center);
-        c.setBox("hokenshaBangou", right);
+        this.hokenshaBangouBox = right;
+        //c.setBox("hokenshaBangou", right);
         c.frameInnerColumnBorders(right, 8);
         c.box(lower);
         rr = lower.splitToColumns(13);
