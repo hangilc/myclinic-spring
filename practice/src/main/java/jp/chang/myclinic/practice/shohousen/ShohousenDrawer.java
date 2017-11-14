@@ -20,6 +20,9 @@ public class ShohousenDrawer {
     private Box clinicDoctorBox;
     private Box clinicHankoBox;
     private Box hokenshaBangouBox;
+    private Box hihokenshaBox;
+    private Box futanshaBangouBox;
+    private Box jukyuushaBangouBox;
 
     public ShohousenDrawer(){
         setupFonts();
@@ -95,6 +98,32 @@ public class ShohousenDrawer {
         c.textInEvenColumns(bangou, box, 8, DrawerCompiler.TextInEvenColumnsJustification.Right);
     }
 
+    public void setHihokensha(String str){
+        DrawerCompiler c = this.compiler;
+        Box box = hihokenshaBox;
+        box = box.shrinkWidth(5, HorizAnchor.Right);
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-4");
+        c.textIn(str, box, HAlign.Left, VAlign.Center);
+    }
+
+    public void setKouhi1Futansha(String str){
+        DrawerCompiler c = this.compiler;
+        Box box = futanshaBangouBox;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-4");
+        c.textInEvenColumns(str, box, 8, DrawerCompiler.TextInEvenColumnsJustification.Right);
+    }
+
+    public void setKouhi1Jukyuusha(String str){
+        DrawerCompiler c = this.compiler;
+        Box box = jukyuushaBangouBox;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-4");
+        c.textInEvenColumns(str, box, 7, DrawerCompiler.TextInEvenColumnsJustification.Right);
+
+    }
+
     private void frameDate(Box[] cols){
         double offset = 1;
         compiler.textIn("年", cols[0].flipRight().shiftToRight(offset), HAlign.Left, VAlign.Center);
@@ -136,6 +165,7 @@ public class ShohousenDrawer {
         compiler.frameRight(cc1[0]);
         compiler.setFont("mincho-2");
         compiler.textAtJustified("公費負担者番号", cc1[0].getLeft()+0.5, cc1[0].getRight()-0.5, cc1[0].getCy(), VAlign.Center);
+        this.futanshaBangouBox = cc1[1];
         //compiler.setBox("futanshaBangou", cc[1]);
         compiler.frameInnerColumnBorders(cc1[1], 8);
         Box row2 = rr[1].shrinkWidth(cc1[1].getWidth()/8, HorizAnchor.Left);
@@ -145,6 +175,7 @@ public class ShohousenDrawer {
         compiler.textAtJustified("公費負担医療", cc2[0].getLeft()+0.5, cc2[0].getRight()-0.5, cc2[0].getTop()+cc2[0].getHeight()/4, VAlign.Center);
         compiler.textAtJustified("の受給者番号", cc2[0].getLeft()+0.5, cc2[0].getRight()-0.5, cc2[0].getTop()+cc2[0].getHeight()/4*3, VAlign.Center);
         //compiler.setBox("jukyuushaBangou", cc2[1]);
+        this.jukyuushaBangouBox = cc2[1];
         compiler.frameInnerColumnBorders(cc2[1], 7);
     }
 
@@ -168,7 +199,8 @@ public class ShohousenDrawer {
         rr = lower.splitToColumns(13);
         left = rr[0];
         right = rr[1];
-        c.setBox("hihokensha", right);
+        this.hihokenshaBox = right;
+        //c.setBox("hihokensha", right);
         c.frameRight(left);
         c.setFont("mincho-1.4");
         c.textAtJustified("被保険者証・被保険", left.getLeft()+0.5, left.getRight()-0.5, left.getTop()+left.getHeight()/4, VAlign.Center);
