@@ -74,10 +74,10 @@ public class TextEditor extends JPanel {
         ShohousenData shohousenData = new ShohousenData();
         shohousenData.setClinicInfo(PracticeEnv.INSTANCE.getClinicInfo());
         ShohousenDrawer shohousenDrawer = new ShohousenDrawer();
-        int visitId = textDTO.visitId;
-        Service.api.getHoken(visitId)
-                .thenAccept(hoken -> {
-                    shohousenData.setHoken(hoken);
+        PrescData.fetch(textDTO)
+                .thenAccept(prescData -> {
+                    shohousenData.setHoken(prescData.getHoken());
+                    shohousenData.setPatient(prescData.getPatient());
                     shohousenData.applyTo(shohousenDrawer);
                     List<Op> ops = shohousenDrawer.getOps();
                     EventQueue.invokeLater(() -> {
@@ -95,7 +95,6 @@ public class TextEditor extends JPanel {
                     });
                     return null;
                 });
-
     }
 
     private void doDelete(){

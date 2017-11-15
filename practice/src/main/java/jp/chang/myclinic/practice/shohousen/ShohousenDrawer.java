@@ -23,6 +23,25 @@ public class ShohousenDrawer {
     private Box hihokenshaBox;
     private Box futanshaBangouBox;
     private Box jukyuushaBangouBox;
+    private Box futanshaBangou2Box;
+    private Box jukyuushaBangou2Box;
+    private Box patientNameBox;
+    private Box birthdayYearBox;
+    private Box birthdayMonthBox;
+    private Box birthdayDayBox;
+    private Box sexMaleBox;
+    private Box sexFemaleBox;
+    private Box patientHihokenshaBox;
+    private Box patientHifuyoushaBox;
+    private Box patientFutanBox;
+    private Box issueYearBox;
+    private Box issueMonthBox;
+    private Box issueDayBox;
+    private Box validYearBox;
+    private Box validMonthBox;
+    private Box validDayBox;
+    private Box drugsPaneBox;
+    private Box memoPaneBox;
 
     public ShohousenDrawer(){
         setupFonts();
@@ -121,7 +140,36 @@ public class ShohousenDrawer {
         c.setTextColor(0, 0, 0);
         c.setFont("gothic-4");
         c.textInEvenColumns(str, box, 7, DrawerCompiler.TextInEvenColumnsJustification.Right);
+    }
 
+    public void setKouhi2Futansha(String str){
+        DrawerCompiler c = this.compiler;
+        Box box = futanshaBangou2Box;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-4");
+        c.textInEvenColumns(str, box, 8, DrawerCompiler.TextInEvenColumnsJustification.Right);
+    }
+
+    public void setKouhi2Jukyuusha(String str){
+        DrawerCompiler c = this.compiler;
+        Box box = jukyuushaBangou2Box;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-4");
+        c.textInEvenColumns(str, box, 7, DrawerCompiler.TextInEvenColumnsJustification.Right);
+    }
+
+    public void setShimei(String name){
+        DrawerCompiler c = this.compiler;
+        Box box = patientNameBox;
+        box = box.shrinkWidth(2, HorizAnchor.Right);
+        String font = "mincho-4.5";
+//        boolean smaller = false;
+//        if( smaller ){
+//            font = "mincho-3.5";
+//        }
+        c.setTextColor(0, 0, 0);
+        c.setFont(font);
+        c.textIn(name, box, HAlign.Left, VAlign.Center);
     }
 
     private void frameDate(Box[] cols){
@@ -222,7 +270,8 @@ public class ShohousenDrawer {
         Box lower = rr[2];
         rr = upper.splitToColumns(10.5);
         p = rr[0];
-        c.setBox("patientName", rr[1]);
+        this.patientNameBox = rr[1];
+        //c.setBox("patientName", rr[1]);
         c.frameRight(p);
         c.setFont("mincho-2.5");
         c.textAtJustified("氏名", p.getLeft()+2, p.getRight()-2, p.getCy(), VAlign.Center);
@@ -234,22 +283,30 @@ public class ShohousenDrawer {
         p = rr[1];
         c.frameRight(p);
         Box[] dd = p.splitToColumns(9, 17, 25);
-        c.setBox("birthdayYear", dd[0]);
-        c.setBox("birthdayMonth", dd[1]);
-        c.setBox("birthdayDay", dd[2]);
+        birthdayYearBox = dd[0];
+        birthdayMonthBox = dd[1];
+        birthdayDayBox = dd[2];
+//        c.setBox("birthdayYear", dd[0]);
+//        c.setBox("birthdayMonth", dd[1]);
+//        c.setBox("birthdayDay", dd[2]);
         frameDate(dd);
         p = rr[2];
         dd = p.splitToEvenColumns(3);
-        c.setBox("sexMale", dd[0]);
-        c.setBox("sexFemale", dd[2]);
+        sexMaleBox = dd[0];
+        sexFemaleBox = dd[2];
+//        c.setBox("sexMale", dd[0]);
+//        c.setBox("sexFemale", dd[2]);
         c.textIn("男", dd[0], HAlign.Center, VAlign.Center);
         c.textIn("・", dd[1], HAlign.Center, VAlign.Center);
         c.textIn("女", dd[2], HAlign.Center, VAlign.Center);
         rr = lower.splitToColumns(10.5, 24, 37.3);
-        c.setBox("patientHihokensha", rr[1]);
-        c.setBox("patientHifuyousha", rr[2]);
+        patientHihokenshaBox = rr[1];
+        patientHifuyoushaBox = rr[2];
+//        c.setBox("patientHihokensha", rr[1]);
+//        c.setBox("patientHifuyousha", rr[2]);
         Box futanBox = rr[3].shrinkWidth(4, HorizAnchor.Left);
-        c.setBox("patientFutan", futanBox);
+        patientFutanBox = futanBox;
+        //c.setBox("patientFutan", futanBox);
         c.frameInnerColumnBorders(rr);
         c.setFont("mincho-2.5");
         c.textAtJustified("区分", rr[0].getLeft()+2, rr[0].getRight()-2, rr[0].getCy(), VAlign.Center);
@@ -297,9 +354,12 @@ public class ShohousenDrawer {
         c.frameRight(rr[2]);
         c.textInJustified("交付年月日", rr[0].inset(0.5, 0), VAlign.Center);
         Box[] pp = rr[1].splitToColumns(16, 24, 32);
-        c.setBox("issueYear", pp[0]);
-        c.setBox("issueMonth", pp[1]);
-        c.setBox("issueDay", pp[2]);
+        issueYearBox = pp[0];
+        issueMonthBox = pp[0];
+        issueDayBox = pp[0];
+//        c.setBox("issueYear", pp[0]);
+//        c.setBox("issueMonth", pp[1]);
+//        c.setBox("issueDay", pp[2]);
         c.setFont("mincho-2");
         frameDate(pp);
         pp = rr[2].splitToEvenRows(2);
@@ -307,9 +367,12 @@ public class ShohousenDrawer {
         c.textInJustified("使用期間", pp[1].inset(0.5, 0), VAlign.Center);
         Box b = rr[3];
         rr = b.splitToColumns(16, 25, 35);
-        c.setBox("validYear", rr[0]);
-        c.setBox("validMonth", rr[1]);
-        c.setBox("validDay", rr[2]);
+        validYearBox = rr[0];
+        validMonthBox = rr[0];
+        validDayBox = rr[0];
+//        c.setBox("validYear", rr[0]);
+//        c.setBox("validMonth", rr[1]);
+//        c.setBox("validDay", rr[2]);
         frameDate(rr);
         b = b.shrinkWidth(40, HorizAnchor.Right);
         b = b.inset(1.5, 0);
@@ -327,7 +390,8 @@ public class ShohousenDrawer {
         c.frameRight(rr[0]);
         c.setFont("mincho-2.5");
         c.textInVertJustified("処方", rr[0].inset(0, 24), HAlign.Center);
-        c.setBox("drugsPane", rr[1]);
+        drugsPaneBox = rr[1];
+        //c.setBox("drugsPane", rr[1]);
     }
 
     private void drawMemo(Box r){
@@ -337,7 +401,8 @@ public class ShohousenDrawer {
         c.frameRight(rr[0]);
         c.setFont("mincho-2.5");
         c.textInVertJustified("備考", rr[0].inset(0, 7), HAlign.Center);
-        c.setBox("memoPane", rr[1]);
+        memoPaneBox = rr[1];
+        //c.setBox("memoPane", rr[1]);
     }
 
     private void drawChouzai1(Box r){
@@ -351,7 +416,8 @@ public class ShohousenDrawer {
         frameDate(dd);
         c.setFont("mincho-1.5");
         c.textInJustified("公費負担者番号", rr[2].inset(0.5, 0), VAlign.Center);
-        c.setBox("futanshaBangou2", rr[3]);
+        this.futanshaBangou2Box = rr[3];
+        //c.setBox("futanshaBangou2", rr[3]);
         c.frameInnerColumnBorders(rr[3], 8);
     }
 
@@ -373,7 +439,8 @@ public class ShohousenDrawer {
         c.textInJustified("の受給者番号", cc[1], VAlign.Center);
         Box[] bb = rr[3].splitToEvenColumns(8);
         Box jukyuushaBangou2 = rr[3].setRight(bb[7].getLeft());
-        c.setBox("jukyuushaBangou2", jukyuushaBangou2);
+        this.jukyuushaBangou2Box = jukyuushaBangou2;
+        //c.setBox("jukyuushaBangou2", jukyuushaBangou2);
         c.frameInnerColumnBorders(jukyuushaBangou2, 7);
         r = r.setRight(bb[7].getLeft());
         c.box(r);

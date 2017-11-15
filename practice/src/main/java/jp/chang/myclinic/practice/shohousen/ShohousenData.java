@@ -1,9 +1,6 @@
 package jp.chang.myclinic.practice.shohousen;
 
-import jp.chang.myclinic.dto.ClinicInfoDTO;
-import jp.chang.myclinic.dto.HokenDTO;
-import jp.chang.myclinic.dto.KouhiDTO;
-import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.dto.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +16,9 @@ public class ShohousenData {
     private String hihokensha = "";
     private String futansha = "";
     private String jukyuusha = "";
+    private String futansha2 = "";
+    private String jukyuusha2 = "";
+    private String shimei = "";
 
     public void applyTo(ShohousenDrawer drawer){
         drawer.setHakkouKikan(clinicAddress, clinicName, clinicPhone, kikancode);
@@ -27,6 +27,9 @@ public class ShohousenData {
         drawer.setHihokensha(hihokensha);
         drawer.setKouhi1Futansha(futansha);
         drawer.setKouhi1Jukyuusha(jukyuusha);
+        drawer.setKouhi2Futansha(futansha2);
+        drawer.setKouhi2Jukyuusha(jukyuusha2);
+        drawer.setShimei(shimei);
     }
 
     public void setClinicInfo(ClinicInfoDTO clinicInfo){
@@ -59,8 +62,17 @@ public class ShohousenData {
                 KouhiDTO kouhi = kouhiList.get(0);
                 futansha = kouhi.futansha + "";
                 jukyuusha = kouhi.jukyuusha + "";
+                if( kouhiList.size() > 1 ){
+                    KouhiDTO kouhi2 = kouhiList.get(1);
+                    futansha2 = kouhi2.futansha + "";
+                    jukyuusha2 = kouhi2.jukyuusha + "";
+                }
             }
         }
+    }
+
+    public void setPatient(PatientDTO patient){
+        shimei = patient.lastName + patient.firstName;
     }
 
     private String composeHihokensha(ShahokokuhoDTO shahokokuho){
