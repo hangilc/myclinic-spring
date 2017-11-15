@@ -30,6 +30,7 @@
     <module>intraclinic</module>
     <module>practice</module>
     <module>myclinic-lib</module>
+    <module>reportwaiting</module>
   </modules>
 
 </project>
