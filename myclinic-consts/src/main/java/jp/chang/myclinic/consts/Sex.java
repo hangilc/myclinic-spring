@@ -19,4 +19,16 @@ public enum Sex {
 	public String getKanji(){
 		return kanji;
 	}
+
+	public static Sex fromCode(String code){
+		if( code != null ){
+			if( code.equals("M") ){
+				return Male;
+			}
+			if( code.equals("F") ){
+				return Female;
+			}
+		}
+		return null;
+	}
 }

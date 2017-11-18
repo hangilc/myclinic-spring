@@ -14,6 +14,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.List;
 
 public class TextEditor extends JPanel {
@@ -76,8 +77,13 @@ public class TextEditor extends JPanel {
         ShohousenDrawer shohousenDrawer = new ShohousenDrawer();
         PrescData.fetch(textDTO)
                 .thenAccept(prescData -> {
+                    LocalDate visitedAt = LocalDate.parse(prescData.getVisit().visitedAt.substring(0, 10));
                     shohousenData.setHoken(prescData.getHoken());
                     shohousenData.setPatient(prescData.getPatient());
+                    shohousenData.setFutanWari(prescData.getHoken(), prescData.getPatient(), visitedAt);
+                    shohousenData.setKoufuDate(visitedAt);
+                    shohousenData.setValidUptoDate(visitedAt.plusDays(3));
+                    shohousenData.setDrugs(textDTO.content);
                     shohousenData.applyTo(shohousenDrawer);
                     List<Op> ops = shohousenDrawer.getOps();
                     EventQueue.invokeLater(() -> {

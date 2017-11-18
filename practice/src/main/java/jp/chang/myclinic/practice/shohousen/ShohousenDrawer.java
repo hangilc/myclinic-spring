@@ -172,6 +172,79 @@ public class ShohousenDrawer {
         c.textIn(name, box, HAlign.Left, VAlign.Center);
     }
 
+    public void setBirthday(int year, int month, int day){
+        DrawerCompiler c = this.compiler;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-2.5");
+        c.textIn("" + year, birthdayYearBox, HAlign.Right, VAlign.Center);
+        c.textIn("" + month, birthdayMonthBox, HAlign.Right, VAlign.Center);
+        c.textIn("" + day, birthdayDayBox, HAlign.Right, VAlign.Center);
+    }
+
+    public void setSexMale(){
+        DrawerCompiler c = this.compiler;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-3");
+        Box box = sexMaleBox;
+        c.textIn("○", box.shiftUp(0.3), HAlign.Center, VAlign.Center);
+    }
+
+    public void setSexFemale(){
+        DrawerCompiler c = this.compiler;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-3");
+        Box box = sexFemaleBox;
+        c.textIn("○", box.shiftUp(0.3), HAlign.Center, VAlign.Center);
+    }
+
+    public void setKubunHihokensha(){
+        DrawerCompiler c = this.compiler;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-3");
+        Box box = patientHihokenshaBox;
+        c.textIn("○", box.shiftUp(0.3), HAlign.Center, VAlign.Center);
+    }
+
+    public void setKubunHifuyousha(){
+        DrawerCompiler c = this.compiler;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-3");
+        Box box = patientHifuyoushaBox;
+        c.textIn("○", box.shiftUp(0.3), HAlign.Center, VAlign.Center);
+    }
+
+    public void setFutanWari(int futanWari){
+        DrawerCompiler c = this.compiler;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-3");
+        c.textIn("" + futanWari, patientFutanBox, HAlign.Right, VAlign.Center);
+    }
+
+    public void setKoufuDate(int year, int month, int day){
+        DrawerCompiler c = this.compiler;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-2.5");
+        c.textIn("" + year, issueYearBox, HAlign.Right, VAlign.Center);
+        c.textIn("" + month, issueMonthBox, HAlign.Right, VAlign.Center);
+        c.textIn("" + day, issueDayBox, HAlign.Right, VAlign.Center);
+    }
+
+    public void setValidUptoDate(int year, int month, int day){
+        DrawerCompiler c = this.compiler;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-2.5");
+        c.textIn("" + year, validYearBox, HAlign.Right, VAlign.Center);
+        c.textIn("" + month, validMonthBox, HAlign.Right, VAlign.Center);
+        c.textIn("" + day, validDayBox, HAlign.Right, VAlign.Center);
+    }
+
+    public void setDrugLines(List<String> drugLines){
+        DrawerCompiler c = this.compiler;
+        c.setTextColor(0, 0, 0);
+        c.setFont("gothic-4.5");
+        c.multilineText(drugLines, drugsPaneBox, HAlign.Left, VAlign.Top, 0);
+    }
+
     private void frameDate(Box[] cols){
         double offset = 1;
         compiler.textIn("年", cols[0].flipRight().shiftToRight(offset), HAlign.Left, VAlign.Center);
@@ -355,8 +428,8 @@ public class ShohousenDrawer {
         c.textInJustified("交付年月日", rr[0].inset(0.5, 0), VAlign.Center);
         Box[] pp = rr[1].splitToColumns(16, 24, 32);
         issueYearBox = pp[0];
-        issueMonthBox = pp[0];
-        issueDayBox = pp[0];
+        issueMonthBox = pp[1];
+        issueDayBox = pp[2];
 //        c.setBox("issueYear", pp[0]);
 //        c.setBox("issueMonth", pp[1]);
 //        c.setBox("issueDay", pp[2]);
@@ -368,8 +441,8 @@ public class ShohousenDrawer {
         Box b = rr[3];
         rr = b.splitToColumns(16, 25, 35);
         validYearBox = rr[0];
-        validMonthBox = rr[0];
-        validDayBox = rr[0];
+        validMonthBox = rr[1];
+        validDayBox = rr[2];
 //        c.setBox("validYear", rr[0]);
 //        c.setBox("validMonth", rr[1]);
 //        c.setBox("validDay", rr[2]);

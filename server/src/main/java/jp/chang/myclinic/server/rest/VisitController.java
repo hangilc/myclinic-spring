@@ -2,10 +2,11 @@ package jp.chang.myclinic.server.rest;
 
 import jp.chang.myclinic.consts.MeisaiSection;
 import jp.chang.myclinic.consts.MyclinicConsts;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.server.rcpt.*;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.HokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -134,9 +135,9 @@ public class VisitController {
 			meisaiDTO.hoken = hokenDTO;
 			LocalDateTime atDateTime = DateTimeUtil.parseSqlDateTime(visit.visitedAt);
 			LocalDate birthdayDate = DateTimeUtil.parseSqlDate(patientDTO.birthday);
-			int rcptAge = RcptUtil.calcRcptAge(birthdayDate.getYear(), birthdayDate.getMonth().getValue(),
+			int rcptAge = HokenUtil.calcRcptAge(birthdayDate.getYear(), birthdayDate.getMonth().getValue(),
 					birthdayDate.getDayOfMonth(), at.getYear(), at.getMonth().getValue());
-			meisaiDTO.futanWari = FutanWari.calcFutanWari(hokenDTO, rcptAge);
+			meisaiDTO.futanWari = HokenUtil.calcFutanWari(hokenDTO, rcptAge);
 		} else {
 			meisaiDTO.futanWari = 10;
 		}
