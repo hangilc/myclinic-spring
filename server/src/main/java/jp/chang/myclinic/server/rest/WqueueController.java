@@ -4,7 +4,9 @@ import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
+import jp.chang.myclinic.server.db.myclinic.Wqueue;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,6 +49,11 @@ public class WqueueController {
 	@RequestMapping(value="/list-wqueue-full-for-exam", method=RequestMethod.GET)
 	public List<WqueueFullDTO> listWqueueFullForExam(){
 		return dbGateway.listWqueueFullByStates(forExamStates);
+	}
+
+	@RequestMapping(value="/list-wqueue-for-exam", method=RequestMethod.GET)
+	public List<WqueueDTO> listWqueueForExam(){
+		return dbGateway.listWqueueByStates(forExamStates, new Sort(Sort.Direction.DESC, "visitId"));
 	}
 
 	@RequestMapping(value="/start-exam", method=RequestMethod.POST)
