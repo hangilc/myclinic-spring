@@ -27,11 +27,16 @@ public class WqueueController {
 	private DbGateway dbGateway;
 
 	private static Set<WqueueWaitState> forExamStates = new HashSet<>();
-
 	static {
 		forExamStates.add(WqueueWaitState.WaitExam);
 		forExamStates.add(WqueueWaitState.InExam);
 		forExamStates.add(WqueueWaitState.WaitReExam);
+	}
+
+	private static Set<WqueueWaitState> inWaitingExamStates = new HashSet<>();
+	static {
+		inWaitingExamStates.add(WqueueWaitState.WaitExam);
+		inWaitingExamStates.add(WqueueWaitState.WaitReExam);
 	}
 
 	@RequestMapping(value="/list-wqueue-full", method=RequestMethod.GET)
@@ -49,6 +54,11 @@ public class WqueueController {
 	@RequestMapping(value="/list-wqueue-full-for-exam", method=RequestMethod.GET)
 	public List<WqueueFullDTO> listWqueueFullForExam(){
 		return dbGateway.listWqueueFullByStates(forExamStates);
+	}
+
+	@RequestMapping(value="/list-wqueue-full-in-waiting-exam", method=RequestMethod.GET)
+	public List<WqueueFullDTO> listWqueueFullInWaitingExam(){
+		return dbGateway.listWqueueFullByStates(inWaitingExamStates);
 	}
 
 	@RequestMapping(value="/list-wqueue-for-exam", method=RequestMethod.GET)

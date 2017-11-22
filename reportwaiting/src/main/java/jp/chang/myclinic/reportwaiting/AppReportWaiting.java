@@ -10,6 +10,7 @@ import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.UpdateItemOutcome;
 import jp.chang.myclinic.dto.WqueueDTO;
+import jp.chang.myclinic.dto.WqueueFullDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,12 +24,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class AppReportWaiting implements CommandLineRunner {
     public static void main( String[] args )
     {
-        //SpringApplication.run(AppReportWaiting.class, args);
         new SpringApplicationBuilder(AppReportWaiting.class).web(false).run(args);
     }
 
@@ -44,6 +45,7 @@ public class AppReportWaiting implements CommandLineRunner {
         expressionAttributeNames.put("#C", "value");
         expressionAttributeNames.put("#D", "issueDate");
         expressionAttributeNames.put("#T", "issueTime");
+        expressionAttributeNames.put("#L", "visitIds");
     }
 
 
@@ -57,31 +59,33 @@ public class AppReportWaiting implements CommandLineRunner {
         Table table = dynamoDB.getTable(tableName);
         while(true){
             try {
-                List<WqueueDTO> wqueue = getWqueue();
+                List<WqueueFullDTO> wqueue = getWqueue();
                 LocalDateTime now = LocalDateTime.now();
                 String date = dateFormatter.format(now);
                 String time = timeFormatter.format(now);
-                updateDynamoDB(table, wqueue.size(), date, time);
+                List<Integer> visitIds = wqueue.stream().map(w -> w.visit.visitId).collect(Collectors.toList());
+                updateDynamoDB(table, wqueue.size(), date, time, visitIds);
                 System.out.printf("reportwaiting %d %s %s\n", wqueue.size(), date, time);
             } catch(Exception ex){
                 ex.printStackTrace();
             }
-            Thread.sleep(2 * 60 * 1000);
+            Thread.sleep(1 * 60 * 1000);
         }
     }
 
-    private void updateDynamoDB(Table table, int waitingCount, String date, String time){
+    private void updateDynamoDB(Table table, int waitingCount, String date, String time, List<Integer> visitIds){
         Map<String, Object> expressiontAttributeValues = new HashMap<String, Object>();
         expressiontAttributeValues.put(":c", waitingCount);
         expressiontAttributeValues.put(":d", date);
         expressiontAttributeValues.put(":t", time);
-        table.updateItem("name", "waiting-count", "set #C = :c, #D = :d, #T = :t",
+        expressiontAttributeValues.put(":l", visitIds);
+        table.updateItem("name", "waiting-count", "set #C = :c, #D = :d, #T = :t, #L = :l",
                 expressionAttributeNames, expressiontAttributeValues);
     }
 
-    private List<WqueueDTO> getWqueue(){
+    private List<WqueueFullDTO> getWqueue(){
         RestTemplate restTemplate = new RestTemplate();
-        WqueueDTO[] arr = restTemplate.getForObject("http://localhost:18080/json/list-wqueue-for-exam", WqueueDTO[].class);
+        WqueueFullDTO[] arr = restTemplate.getForObject("http://localhost:18080/json/list-wqueue-full-in-waiting-exam", WqueueFullDTO[].class);
         return Arrays.asList(arr);
     }
 }

@@ -95,7 +95,7 @@ public class DbGateway {
             return Collections.emptyList();
         }
         Set<Integer> waitSets = states.stream().mapToInt(WqueueWaitState::getCode).boxed().collect(Collectors.toSet());
-        return wqueueRepository.findFullByStateSet(waitSets).stream()
+        return wqueueRepository.findFullByStateSet(waitSets, new Sort(Sort.Direction.ASC, "visitId")).stream()
                 .map(this::resultToWqueueFull).collect(Collectors.toList());
     }
 
