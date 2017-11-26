@@ -20,7 +20,7 @@ public class PracticeEnv {
     public PracticeEnv(CommandArgs commandArgs){
         printerSettingsDir = commandArgs.getWorkingDirectory();
         if( printerSettingsDir == null ){
-            printerSettingsDir = Paths.get(System.getProperty("user.dir"));
+            printerSettingsDir = Paths.get(System.getProperty("user.home"), "practice-home");
         }
         if( !(Files.exists(printerSettingsDir) && Files.isDirectory(printerSettingsDir)) ){
             logger.error("Invalid printer settings directory: " + printerSettingsDir);

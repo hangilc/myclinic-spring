@@ -1,13 +1,21 @@
 package jp.chang.myclinic.practice.leftpane;
 
+import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.drawer.preview.PreviewDialog;
+import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.MainContext;
+import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.cashierdialog.CashierDialog;
+import jp.chang.myclinic.practice.leftpane.text.PrescData;
+import jp.chang.myclinic.practice.refer.ReferDrawer;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.List;
 
 public class LeftPane extends JPanel implements LeftPaneContext {
@@ -77,6 +85,11 @@ public class LeftPane extends JPanel implements LeftPaneContext {
                     mainContext.suspendExam(() -> {});
                 }
             }
+
+            @Override
+            public void onRefer(){
+                doRefer();
+            }
         });
     }
 
@@ -123,6 +136,52 @@ public class LeftPane extends JPanel implements LeftPaneContext {
                     });
                     return null;
                 });
+    }
+
+    private void doRefer(){
+        ReferDrawer drawer = new ReferDrawer();
+        MainContext mainContext = MainContext.get(this);
+        PatientDTO patient = mainContext.getCurrentPatient();
+        if( patient == null ){
+            return;
+        }
+        drawer.setPatient(patient);
+        List<Op> ops = drawer.getOps();
+        PrintManager pringManager = new PrintManager(PracticeEnv.INSTANCE.getPrinterSettingsDir());
+        PreviewDialog previewDialog = new PreviewDialog(SwingUtilities.getWindowAncestor(this), "紹介状", pringManager, null);
+        previewDialog.setPageSize(PaperSize.A4);
+        previewDialog.setScale(0.5);
+        previewDialog.setPage(ops);
+        previewDialog.pack();
+        previewDialog.setLocationByPlatform(true);
+        previewDialog.setVisible(true);
+/*
+        PrescData.fetch(textDTO)
+                .thenAccept(prescData -> {
+                    LocalDate visitedAt = LocalDate.parse(prescData.getVisit().visitedAt.substring(0, 10));
+                    shohousenData.setHoken(prescData.getHoken());
+                    shohousenData.setPatient(prescData.getPatient());
+                    shohousenData.setFutanWari(prescData.getHoken(), prescData.getPatient(), visitedAt);
+                    shohousenData.setKoufuDate(visitedAt);
+                    shohousenData.setValidUptoDate(visitedAt.plusDays(3));
+                    shohousenData.setDrugs(textDTO.content);
+                    shohousenData.applyTo(shohousenDrawer);
+                    List<Op> ops = shohousenDrawer.getOps();
+                    EventQueue.invokeLater(() -> {
+                        previewDialog.setPageSize(PaperSize.A5);
+                        previewDialog.setPage(ops);
+                        previewDialog.pack();
+                        previewDialog.setLocationByPlatform(true);
+                        previewDialog.setVisible(true);
+                    });
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    EventQueue.invokeLater(() -> {
+                        alert(t.toString());
+                    });
+                    return null;
+                }); */
     }
 
     public void reset(){

@@ -1,16 +1,28 @@
 package jp.chang.myclinic.practice.leftpane;
 
+import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.drawer.preview.PreviewDialog;
+import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import jp.chang.myclinic.practice.Link;
+import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.leftpane.text.PrescData;
+import jp.chang.myclinic.practice.refer.ReferDrawer;
+import jp.chang.myclinic.practice.shohousen.ShohousenData;
+import jp.chang.myclinic.practice.shohousen.ShohousenDrawer;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
+import java.util.List;
 
 class PatientManip extends JPanel {
 
     interface Callback {
         default void onCashier(){}
         default void onFinishPatient(){}
+        default void onRefer(){}
     }
 
     private static Cursor handCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
@@ -25,6 +37,7 @@ class PatientManip extends JPanel {
         endPatientButton.addActionListener(event -> callback.onFinishPatient());
         Link searchTextLink = new Link("文章検索");
         Link makeReferLink = new Link("紹介状作成");
+        makeReferLink.setCallback(evt -> callback.onRefer());
         add(cashierButton, "sizegroup btn");
         add(endPatientButton, "sizegroup btn");
         add(new JLabel("|" ));

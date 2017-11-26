@@ -14,7 +14,7 @@ public class DrawerCompiler {
     }
 
     public static class TextAtOpt {
-        double extraSpace;
+        public double extraSpace;
     }
 
     public enum TextInEvenColumnsJustification {
