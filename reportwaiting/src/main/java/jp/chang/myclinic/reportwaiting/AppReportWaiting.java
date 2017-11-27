@@ -1,19 +1,16 @@
 package jp.chang.myclinic.reportwaiting;
 
 
-import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.document.UpdateItemOutcome;
-import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.web.client.RestTemplate;
@@ -28,6 +25,9 @@ import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class AppReportWaiting implements CommandLineRunner {
+    private static final Logger logger = LoggerFactory.getLogger(AppReportWaiting.class);
+    private String serverUrl;
+
     public static void main( String[] args )
     {
         new SpringApplicationBuilder(AppReportWaiting.class).web(false).run(args);
@@ -51,6 +51,14 @@ public class AppReportWaiting implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
+        if( strings.length != 1 ){
+            logger.error("Usage: reportwaiting server-url");
+            System.exit(1);
+        }
+        serverUrl = strings[0];
+        if( serverUrl.endsWith("/") ){
+            serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
+        }
         AmazonDynamoDB client = AmazonDynamoDBClientBuilder
                 .standard()
                 .withRegion(Regions.fromName(tableRegion))
@@ -85,7 +93,7 @@ public class AppReportWaiting implements CommandLineRunner {
 
     private List<WqueueFullDTO> getWqueue(){
         RestTemplate restTemplate = new RestTemplate();
-        WqueueFullDTO[] arr = restTemplate.getForObject("http://localhost:18080/json/list-wqueue-full-in-waiting-exam", WqueueFullDTO[].class);
+        WqueueFullDTO[] arr = restTemplate.getForObject(serverUrl + "/list-wqueue-full-in-waiting-exam", WqueueFullDTO[].class);
         return Arrays.asList(arr);
     }
 }
