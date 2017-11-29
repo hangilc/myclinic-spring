@@ -42,10 +42,10 @@ public class AppReportWaiting implements CommandLineRunner {
     private DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     private Map<String, String> expressionAttributeNames = new HashMap<String, String>();
     {
-        expressionAttributeNames.put("#C", "value");
-        expressionAttributeNames.put("#D", "issueDate");
-        expressionAttributeNames.put("#T", "issueTime");
-        expressionAttributeNames.put("#L", "visitIds");
+        expressionAttributeNames.put("#V", "value");
+//        expressionAttributeNames.put("#D", "issueDate");
+//        expressionAttributeNames.put("#T", "issueTime");
+//        expressionAttributeNames.put("#L", "visitIds");
     }
 
 
@@ -82,12 +82,18 @@ public class AppReportWaiting implements CommandLineRunner {
     }
 
     private void updateDynamoDB(Table table, int waitingCount, String date, String time, List<Integer> visitIds){
+        Map<String, Object> valueMap = new HashMap<>();
+        valueMap.put("count", waitingCount);
+        valueMap.put("issueDate", date);
+        valueMap.put("issueTime", time);
+        valueMap.put("visitIds", visitIds);
         Map<String, Object> expressiontAttributeValues = new HashMap<String, Object>();
-        expressiontAttributeValues.put(":c", waitingCount);
-        expressiontAttributeValues.put(":d", date);
-        expressiontAttributeValues.put(":t", time);
-        expressiontAttributeValues.put(":l", visitIds);
-        table.updateItem("name", "waiting-count", "set #C = :c, #D = :d, #T = :t, #L = :l",
+        expressiontAttributeValues.put(":v", valueMap);
+//        expressiontAttributeValues.put(":c", waitingCount);
+//        expressiontAttributeValues.put(":d", date);
+//        expressiontAttributeValues.put(":t", time);
+//        expressiontAttributeValues.put(":l", visitIds);
+        table.updateItem("name", "waiting-count", "set #V = :v",
                 expressionAttributeNames, expressiontAttributeValues);
     }
 
