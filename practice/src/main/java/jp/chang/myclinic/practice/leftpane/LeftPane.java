@@ -142,10 +142,13 @@ public class LeftPane extends JPanel implements LeftPaneContext {
         ReferDrawer drawer = new ReferDrawer();
         MainContext mainContext = MainContext.get(this);
         PatientDTO patient = mainContext.getCurrentPatient();
-        if( patient == null ){
-            return;
-        }
         drawer.setPatient(patient);
+        drawer.setReferHospital("〇〇病院");
+        drawer.setReferDoctor("〇〇 先生");
+        drawer.setPatientName("〇〇 〇〇 様");
+        drawer.setPatientInfo("昭和〇〇年〇月〇日生 〇〇才 女性");
+        drawer.setDiagnosis("診断");
+        drawer.setIssueDate("平成29年12月6日");
         List<Op> ops = drawer.getOps();
         PrintManager pringManager = new PrintManager(PracticeEnv.INSTANCE.getPrinterSettingsDir());
         PreviewDialog previewDialog = new PreviewDialog(SwingUtilities.getWindowAncestor(this), "紹介状", pringManager, null);
