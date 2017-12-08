@@ -1,20 +1,13 @@
 package jp.chang.myclinic;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.Files;
-import java.nio.file.DirectoryStream;
+import org.apache.commons.cli.*;
+
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.io.IOException;
-
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.ParseException;
+import java.util.regex.Pattern;
 
 public class AppScannerBackup
 {
@@ -93,6 +86,6 @@ public class AppScannerBackup
     	ensureDir(patientDir);
     	Path dstFile = patientDir.resolve(srcFile.path.getFileName());
     	System.out.printf("copying %s -> %s\n", srcFile.path, dstFile);
-    	Files.copy(srcFile.path, dstFile);
+    	Files.copy(srcFile.path, dstFile, StandardCopyOption.REPLACE_EXISTING);
     }
 }
