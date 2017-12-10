@@ -7,23 +7,24 @@ import jp.chang.myclinic.drawer.DrawerCompiler.TextAtOpt;
 import jp.chang.myclinic.drawer.printer.PrinterConsts;
 import jp.chang.myclinic.dto.PatientDTO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReferDrawer {
     private DrawerCompiler compiler = new DrawerCompiler();
-    private Point titlePoint = new Point(105, 41);
-	private Point referHospitalPoint = new Point(30, 58);
-	private Point referDoctorPoint = new Point(30, 58+6);
-	private Point patientNamePoint = new Point(30, 80);
-	private Point patientInfoPoint = new Point(50, 90);
-	private Point diagnosisPoint = new Point(30, 102);
-	private Point issueDatePoint = new Point(30, 220);
-	private Point addressPoint = new Point(118, 220);
+    private Box contentBox = new Box(30, 115, 170, 210);
+    private Point titlePoint = new Point(contentBox.getCx(), 41);
+    private Point referHospitalPoint = new Point(30, 58);
+    private Point referDoctorPoint = new Point(30, 58+6);
+    private Point patientNamePoint = new Point(30, 80);
+    private Point patientInfoPoint = new Point(50, 90);
+    private Point diagnosisPoint = new Point(30, 102);
+    private Point issueDatePoint = new Point(30, 220);
+    private Point addressPoint = new Point(118, 220);
 
     public ReferDrawer(){
         Box page = Box.of(PaperSize.A4);
         setupFonts();
-        setTitle("紹介状");
     }
 
     public List<Op> getOps(){
@@ -90,7 +91,7 @@ public class ReferDrawer {
     }
 
     public void setAddress(String addr1, String addr2, String addr3, String addr4, String clinicName, String doctorName){
-        DrawerCompiler c = this.compiler,
+        DrawerCompiler c = this.compiler;
         Point p = addressPoint;
         c.setFont("serif-4");
         double x = p.getX();
@@ -108,7 +109,7 @@ public class ReferDrawer {
         c.textAt(clinicName, x, y, HAlign.Left, VAlign.Bottom);
         y += lineHeight;
         String txt = "院長";
-        String mes = c.measureText(txt);
+        DrawerCompiler.Measure mes = c.measureText(txt);
         c.textAt(txt, x, y, HAlign.Left, VAlign.Center);
         x += mes.cx + 4;
         c.setFont("serif-6");
@@ -117,6 +118,19 @@ public class ReferDrawer {
         x += mes.cx + 8;
         c.setFont("serif-4");
         c.textAt("㊞", x, y, HAlign.Left, VAlign.Center);
+    }
+
+    public void setContent(String content){
+        DrawerCompiler c = this.compiler;
+        Box box = contentBox;
+        String[] contentLines = content.split("\\r\\n|\\r|\\n");
+        c.setFont("serif-4");
+        List<String> lines = new ArrayList<>();
+        for(String contentLine: contentLines){
+            c.breakLine(contentLine, box.getWidth()).forEach(lines::add);
+        }
+        double leading = 0.8;
+        c.multilineText(lines, box, HAlign.Left, VAlign.Top, leading);
     }
 
     private void setupFonts(){
