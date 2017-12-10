@@ -11,6 +11,7 @@ import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.cashierdialog.CashierDialog;
 import jp.chang.myclinic.practice.leftpane.text.PrescData;
 import jp.chang.myclinic.practice.refer.ReferDrawer;
+import jp.chang.myclinic.practice.refer.ReferPreviewDialog;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -153,41 +154,18 @@ public class LeftPane extends JPanel implements LeftPaneContext {
         drawer.setAddress("addr1", "addr2", "addr3", "addr4", "Clinic Name", "Doctor Name");
         drawer.setContent("いつもお世話になっております。\n高血圧症にて当院に通院されている方です。高血圧症にて当院に通院されている方です。高血圧症にて当院に通院されている方です。高血圧症にて当院に通院されている方です。");
         List<Op> ops = drawer.getOps();
-        PrintManager pringManager = new PrintManager(PracticeEnv.INSTANCE.getPrinterSettingsDir());
-        PreviewDialog previewDialog = new PreviewDialog(SwingUtilities.getWindowAncestor(this), "紹介状", pringManager, null);
-        previewDialog.setPageSize(PaperSize.A4);
-        previewDialog.setScale(0.5);
-        previewDialog.setPage(ops);
-        previewDialog.pack();
-        previewDialog.setLocationByPlatform(true);
-        previewDialog.setVisible(true);
-/*
-        PrescData.fetch(textDTO)
-                .thenAccept(prescData -> {
-                    LocalDate visitedAt = LocalDate.parse(prescData.getVisit().visitedAt.substring(0, 10));
-                    shohousenData.setHoken(prescData.getHoken());
-                    shohousenData.setPatient(prescData.getPatient());
-                    shohousenData.setFutanWari(prescData.getHoken(), prescData.getPatient(), visitedAt);
-                    shohousenData.setKoufuDate(visitedAt);
-                    shohousenData.setValidUptoDate(visitedAt.plusDays(3));
-                    shohousenData.setDrugs(textDTO.content);
-                    shohousenData.applyTo(shohousenDrawer);
-                    List<Op> ops = shohousenDrawer.getOps();
-                    EventQueue.invokeLater(() -> {
-                        previewDialog.setPageSize(PaperSize.A5);
-                        previewDialog.setPage(ops);
-                        previewDialog.pack();
-                        previewDialog.setLocationByPlatform(true);
-                        previewDialog.setVisible(true);
-                    });
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    EventQueue.invokeLater(() -> {
-                        alert(t.toString());
-                    });
-                    return null;
-                }); */
+        PrintManager printManager = new PrintManager(PracticeEnv.INSTANCE.getPrinterSettingsDir());
+        ReferPreviewDialog dialog = new ReferPreviewDialog(printManager, null);
+        dialog.render(ops);
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
+//        PreviewDialog previewDialog = new PreviewDialog(SwingUtilities.getWindowAncestor(this), "紹介状", pringManager, null);
+//        previewDialog.setPageSize(PaperSize.A4);
+//        previewDialog.setScale(0.5);
+//        previewDialog.setPage(ops);
+//        previewDialog.pack();
+//        previewDialog.setLocationByPlatform(true);
+//        previewDialog.setVisible(true);
     }
 
     public void reset(){
