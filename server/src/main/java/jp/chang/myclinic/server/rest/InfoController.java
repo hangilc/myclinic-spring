@@ -23,6 +23,8 @@ public class InfoController {
         clinicInfoDTO.address = clinicInfo.getAddress();
         clinicInfoDTO.tel = clinicInfo.getTel();
         clinicInfoDTO.fax = clinicInfo.getFax();
+        clinicInfoDTO.todoufukencode = clinicInfo.getTodoufukencode();
+        clinicInfoDTO.tensuuhyoucode = clinicInfo.getTensuuhyoucode();
         clinicInfoDTO.kikancode = clinicInfo.getKikancode();
         clinicInfoDTO.homepage = clinicInfo.getHomepage();
         clinicInfoDTO.doctorName = clinicInfo.getDoctorName();

@@ -14,6 +14,8 @@ public class ClinicInfo {
     private String fax = "";
     private String homepage = "";
     private String doctorName = "";
+    private String todoufukencode = "";
+    private String tensuuhyoucode = "";
     private String kikancode = "";
 
     public String getName(){
@@ -78,5 +80,21 @@ public class ClinicInfo {
 
     public void setKikancode(String kikancode) {
         this.kikancode = kikancode;
+    }
+
+    public String getTodoufukencode() {
+        return todoufukencode;
+    }
+
+    public void setTodoufukencode(String todoufukencode) {
+        this.todoufukencode = todoufukencode;
+    }
+
+    public String getTensuuhyoucode() {
+        return tensuuhyoucode;
+    }
+
+    public void setTensuuhyoucode(String tensuuhyoucode) {
+        this.tensuuhyoucode = tensuuhyoucode;
     }
 }

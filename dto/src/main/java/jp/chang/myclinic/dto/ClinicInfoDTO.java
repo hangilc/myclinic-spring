@@ -7,6 +7,8 @@ public class ClinicInfoDTO {
     public String address;
     public String tel;
     public String fax;
+    public String todoufukencode;
+    public String tensuuhyoucode;
     public String kikancode;
     public String homepage;
     public String doctorName;
@@ -19,6 +21,8 @@ public class ClinicInfoDTO {
                 ", address='" + address + '\'' +
                 ", tel='" + tel + '\'' +
                 ", fax='" + fax + '\'' +
+                ", todoufukencode='" + todoufukencode + '\'' +
+                ", tensuuhyoucode='" + tensuuhyoucode + '\'' +
                 ", kikancode='" + kikancode + '\'' +
                 ", homepage='" + homepage + '\'' +
                 ", doctorName='" + doctorName + '\'' +

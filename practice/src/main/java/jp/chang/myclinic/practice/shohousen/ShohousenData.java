@@ -87,7 +87,7 @@ public class ShohousenData {
             clinicAddress = clinicInfo.postalCode + " " + clinicInfo.address;
             clinicName = clinicInfo.name;
             clinicPhone = "電話 " + clinicInfo.tel;
-            kikancode = clinicInfo.kikancode;
+            kikancode = clinicInfo.todoufukencode + clinicInfo.tensuuhyoucode + clinicInfo.kikancode;
             doctorName = clinicInfo.doctorName;
         }
     }
