@@ -94,9 +94,15 @@ public class DbGateway {
         if( states.size() == 0 ){
             return Collections.emptyList();
         }
-        Set<Integer> waitSets = states.stream().mapToInt(s -> s.getCode()).boxed().collect(Collectors.toSet());
-        return wqueueRepository.findFullByStateSet(waitSets).stream()
+        Set<Integer> waitSets = states.stream().mapToInt(WqueueWaitState::getCode).boxed().collect(Collectors.toSet());
+        return wqueueRepository.findFullByStateSet(waitSets, new Sort(Sort.Direction.ASC, "visitId")).stream()
                 .map(this::resultToWqueueFull).collect(Collectors.toList());
+    }
+
+    public List<WqueueDTO> listWqueueByStates(Set<WqueueWaitState> states, Sort sort){
+        Set<Integer> waitSets = states.stream().mapToInt(WqueueWaitState::getCode).boxed().collect(Collectors.toSet());
+        return wqueueRepository.findByStateSet(waitSets, sort).stream()
+                .map(mapper::toWqueueDTO).collect(Collectors.toList());
     }
 
     public List<VisitPatientDTO> listTodaysVisits(){
