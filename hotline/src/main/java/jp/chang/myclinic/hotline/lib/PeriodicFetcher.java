@@ -42,8 +42,6 @@ public class PeriodicFetcher implements Runnable {
                         lastHotlineId = hotlines.get(hotlines.size() - 1).hotlineId;
                     }
                 }
-            } catch (InterruptedException ex){
-                return;
             } catch (Exception e) {
                 String message = "サーバーからの読み込みに失敗しました。";
                 logger.error(message, e);

@@ -79,8 +79,7 @@ public class AppMain extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        if( fetcherThread != null ){
-            fetcherThread.interrupt();
-        }
+        Platform.exit();
+        System.exit(0);
     }
 }
