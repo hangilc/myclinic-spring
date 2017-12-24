@@ -2,10 +2,10 @@ package jp.chang.myclinic.hotline.javafx;
 
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.hotline.Context;
+import jp.chang.myclinic.hotline.lib.HotlineUtil;
 
 public class MainSceneController {
 
@@ -13,14 +13,15 @@ public class MainSceneController {
     public TextArea inputText;
 
     public void onSubmit(Event event){
-        String text = inputText.getText();
-        if( text.isEmpty() ){
+        String message = inputText.getText();
+        if( message.isEmpty() ){
             return;
         }
-        Label label = new Label(text);
-        label.setAlignment(Pos.TOP_LEFT);
-        label.setWrapText(true);
-        messageBox.getChildren().add(label);
+        HotlineUtil.postMessge(Context.INSTANCE.getSender().getName(), Context.INSTANCE.getRecipient().getName(), message);
+//        Label label = new Label(text);
+//        label.setAlignment(Pos.TOP_LEFT);
+//        label.setWrapText(true);
+//        messageBox.getChildren().add(label);
     }
 
     public void onRaja(ActionEvent actionEvent) {
