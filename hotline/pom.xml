@@ -67,7 +67,7 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>1.5.1.RELEASE</version>
         <configuration>
-          <mainClass>jp.chang.myclinic.hotline.AppHotline</mainClass>
+          <mainClass>jp.chang.myclinic.hotline.javafx.AppMain</mainClass>
         </configuration>
         <executions>
           <execution>

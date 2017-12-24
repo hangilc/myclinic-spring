@@ -1,6 +1,6 @@
 package jp.chang.myclinic.hotline;
 
-enum User {
+public enum User {
     Practice("診察"),
     Pharmacy("薬局"),
     Reception("受付");
@@ -13,11 +13,11 @@ enum User {
         this.dispName = dispName;
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
-    String getDispName() {
+    public String getDispName() {
         return dispName;
     }
 }
