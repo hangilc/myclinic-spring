@@ -17,7 +17,7 @@ import java.util.List;
 
 public class AppMain extends Application {
     private static Logger logger = LoggerFactory.getLogger(AppMain.class);
-
+    private Thread fetcherThread;
     public static void main(String[] args){
         launch(args);
     }
@@ -36,13 +36,17 @@ public class AppMain extends Application {
             serverUrl = serverUrl + "/";
         }
         Service.setServerUrl(serverUrl);
-        try {
-            User sender = resolveUser(args.get(1));
-            User recipient = resolveUser(args.get(2));
-            Context.INSTANCE = new Context(sender, recipient);
-        } catch(Exception ex){
-            logger.error("invalid user", ex);
+        User sender = User.fromNameIgnoreCase(args.get(1));
+        User recipient = User.fromNameIgnoreCase(args.get(2));
+        if( sender == null ){
+            logger.error("invalid sender name");
+            System.exit(1);
         }
+        if( recipient == null ){
+            logger.error("invalid recipient name");
+            System.exit(1);
+        }
+        Context.INSTANCE = new Context(sender, recipient);
     }
 
     @Override
@@ -53,31 +57,30 @@ public class AppMain extends Application {
             MainSceneController controller = (MainSceneController)loader.getController();
             PeriodicFetcher fetcher = new PeriodicFetcher(hotlines -> {
                 Platform.runLater(() -> {
-                    System.out.println(hotlines);
+                    controller.addHotlinePosts(hotlines);
                 });
             }, error -> {
                 logger.error(error);
             });
-            Thread fetcherThread = new Thread(fetcher);
-            fetcherThread.setDaemon(true);
-            fetcherThread.start();
+            Context.INSTANCE.setPeriodicFetcher(fetcher);
             Scene scene = new Scene(root);
             primaryStage.setTitle("Hotline");
             primaryStage.setScene(scene);
             primaryStage.show();
+            fetcherThread = new Thread(fetcher);
+            fetcherThread.setDaemon(true);
+            fetcherThread.start();
         } catch(Exception ex){
             logger.error("failed to start hotline", ex);
             System.exit(1);
         }
     }
 
-    private static User resolveUser(String arg) throws IllegalArgumentException {
-        for(User user: User.values()){
-            if( user.getName().equalsIgnoreCase(arg) ){
-                return user;
-            }
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        if( fetcherThread != null ){
+            fetcherThread.interrupt();
         }
-        throw new IllegalArgumentException("invalid user name: " + arg);
     }
-
 }

@@ -20,4 +20,22 @@ public enum User {
     public String getDispName() {
         return dispName;
     }
+
+    public static User fromName(String name){
+        for(User user: values()){
+            if( user.getName().equals(name) ){
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public static User fromNameIgnoreCase(String name){
+        for(User user: values()){
+            if( user.getName().equalsIgnoreCase(name) ){
+                return user;
+            }
+        }
+        return null;
+    }
 }

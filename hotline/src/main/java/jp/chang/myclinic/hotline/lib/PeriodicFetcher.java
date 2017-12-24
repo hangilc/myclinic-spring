@@ -35,13 +35,15 @@ public class PeriodicFetcher implements Runnable {
             try {
                 triggerQueue.poll(lastHotlineId <= 0 ? 0 : 2000, TimeUnit.MILLISECONDS);
                 Response<List<HotlineDTO>> response = reload();
-                if( response.isSuccessful() ){
+                if (response.isSuccessful()) {
                     List<HotlineDTO> hotlines = response.body();
-                    if( hotlines.size() > 0 ){
+                    if (hotlines.size() > 0) {
                         consumer.accept(hotlines);
-                        lastHotlineId = hotlines.get(hotlines.size()-1).hotlineId;
+                        lastHotlineId = hotlines.get(hotlines.size() - 1).hotlineId;
                     }
                 }
+            } catch (InterruptedException ex){
+                return;
             } catch (Exception e) {
                 String message = "サーバーからの読み込みに失敗しました。";
                 logger.error(message, e);
