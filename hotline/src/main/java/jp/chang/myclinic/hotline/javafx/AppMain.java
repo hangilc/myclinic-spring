@@ -10,6 +10,8 @@ import jp.chang.myclinic.hotline.Context;
 import jp.chang.myclinic.hotline.Service;
 import jp.chang.myclinic.hotline.User;
 import jp.chang.myclinic.hotline.lib.PeriodicFetcher;
+import okhttp3.Cache;
+import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +81,14 @@ public class AppMain extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        Platform.exit();
-        System.exit(0);
+//        Set<Thread> threads = Thread.getAllStackTraces().keySet();
+//        System.out.println(threads);
+        OkHttpClient client = Service.client;
+        client.dispatcher().executorService().shutdown();
+        client.connectionPool().evictAll();
+        Cache cache = client.cache();
+        if( cache != null ){
+            cache.close();
+        }
     }
 }
