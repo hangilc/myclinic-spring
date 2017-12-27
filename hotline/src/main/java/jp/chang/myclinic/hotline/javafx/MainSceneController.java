@@ -3,6 +3,7 @@ package jp.chang.myclinic.hotline.javafx;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.geometry.Pos;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
@@ -47,6 +48,7 @@ public class MainSceneController {
                 Label label = new Label(text);
                 label.setAlignment(Pos.TOP_LEFT);
                 label.setWrapText(true);
+                label.setMinHeight(Control.USE_PREF_SIZE);
                 messageBox.getChildren().add(label);
             }
         });
