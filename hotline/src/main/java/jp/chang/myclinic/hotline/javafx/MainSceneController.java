@@ -1,10 +1,13 @@
 package jp.chang.myclinic.hotline.javafx;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.geometry.Pos;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.HotlineDTO;
@@ -19,7 +22,21 @@ import java.util.List;
 public class MainSceneController {
     private static Logger logger = LoggerFactory.getLogger(MainSceneController.class);
     public VBox messageBox;
+    public ScrollPane messageScroll;
     public TextArea inputText;
+
+    public MainSceneController(){
+        System.out.println(messageScroll);
+    }
+
+    public void initialize(){
+        messageBox.heightProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                messageScroll.setVvalue(1.0);
+            }
+        });
+    }
 
     public void onSubmit(Event event){
         String message = inputText.getText();
