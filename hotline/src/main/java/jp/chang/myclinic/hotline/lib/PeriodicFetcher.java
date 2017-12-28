@@ -15,12 +15,12 @@ import java.util.function.Consumer;
 
 public class PeriodicFetcher implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(PeriodicFetcher.class);
-    private Consumer<List<HotlineDTO>> consumer;
+    private PeriodicFetcherCallback consumer;
     private Consumer<String> errorConsumer;
     private int lastHotlineId;
     private BlockingQueue<Integer> triggerQueue = new ArrayBlockingQueue<>(1);
 
-    public PeriodicFetcher(Consumer<List<HotlineDTO>> consumer, Consumer<String> errorConsumer){
+    public PeriodicFetcher(PeriodicFetcherCallback consumer, Consumer<String> errorConsumer){
         this.consumer = consumer;
         this.errorConsumer = errorConsumer;
     }
@@ -38,7 +38,7 @@ public class PeriodicFetcher implements Runnable {
                 if (response.isSuccessful()) {
                     List<HotlineDTO> hotlines = response.body();
                     if (hotlines.size() > 0) {
-                        consumer.accept(hotlines);
+                        consumer.onPosts(hotlines, lastHotlineId == 0);
                         lastHotlineId = hotlines.get(hotlines.size() - 1).hotlineId;
                     }
                 }

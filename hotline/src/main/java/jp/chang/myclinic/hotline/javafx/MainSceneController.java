@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.hotline.Context;
 import jp.chang.myclinic.hotline.User;
+import jp.chang.myclinic.hotline.lib.Beeper;
 import jp.chang.myclinic.hotline.lib.HotlineUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +25,7 @@ public class MainSceneController {
     public VBox messageBox;
     public ScrollPane messageScroll;
     public TextArea inputText;
-
-    public MainSceneController(){
-        System.out.println(messageScroll);
-    }
+    private static String beepMessage = "[BEEP]";
 
     public void initialize(){
         messageBox.heightProperty().addListener(new ChangeListener<Number>() {
@@ -44,6 +42,7 @@ public class MainSceneController {
             return;
         }
         postMessage(message);
+        inputText.setText("");
     }
 
     public void onRaja(ActionEvent actionEvent) {
@@ -51,16 +50,29 @@ public class MainSceneController {
     }
 
     public void onBeep(ActionEvent actionEvent) {
-        System.out.println("on beep");
+        postMessage(beepMessage);
     }
 
-    public void addHotlinePosts(List<HotlineDTO> posts){
+    private void playBeep(){
+        //Toolkit.getDefaultToolkit().beep();
+        Beeper.INSTANCE.MessageBeep(0);
+    }
+
+    public void addHotlinePosts(List<HotlineDTO> posts, boolean initialSetup){
         posts.forEach(post -> {
             User postSender = User.fromName(post.sender);
-            if( postSender == null ){
+            User postRecipient = User.fromName(post.recipient);
+            if( postSender == null || postRecipient == null ){
                 return;
             }
-            if( postSender == Context.INSTANCE.getSender() || postSender == Context.INSTANCE.getRecipient() ){
+            if( isMyPost(postSender, postRecipient) ){
+                if( isBeepPost(post.message) ){
+                    if( !initialSetup && postRecipient == Context.INSTANCE.getSender() ){
+                        System.out.println("beep");
+                        playBeep();
+                    }
+                    return;
+                }
                 String text = HotlineUtil.makeHotlineText(postSender.getDispName(), post.hotlineId, post.message);
                 Label label = new Label(text);
                 label.setAlignment(Pos.TOP_LEFT);
@@ -69,6 +81,17 @@ public class MainSceneController {
                 messageBox.getChildren().add(label);
             }
         });
+    }
+
+    private boolean isMyPost(User postSender, User postRecipient){
+        User sender = Context.INSTANCE.getSender();
+        User recipient = Context.INSTANCE.getRecipient();
+        return (postSender == sender && postRecipient == recipient) ||
+                (postSender == recipient && postRecipient == sender);
+    }
+
+    private boolean isBeepPost(String message){
+        return beepMessage.equals(message);
     }
 
     private void postMessage(String message){

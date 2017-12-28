@@ -56,10 +56,10 @@ public class AppMain extends Application {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainScene.fxml"));
             Parent root = loader.load();
-            MainSceneController controller = (MainSceneController)loader.getController();
-            PeriodicFetcher fetcher = new PeriodicFetcher(hotlines -> {
+            MainSceneController controller = loader.getController();
+            PeriodicFetcher fetcher = new PeriodicFetcher((hotlines, initialSetup) -> {
                 Platform.runLater(() -> {
-                    controller.addHotlinePosts(hotlines);
+                    controller.addHotlinePosts(hotlines, initialSetup);
                 });
             }, error -> {
                 logger.error(error);

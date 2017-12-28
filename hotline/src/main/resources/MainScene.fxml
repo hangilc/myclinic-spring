@@ -13,7 +13,7 @@
       <Button layoutX="14.0" layoutY="375.0" mnemonicParsing="false" onAction="#onSubmit" text="送信" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="10.0" />
       <Button layoutX="59.0" layoutY="475.0" mnemonicParsing="false" onAction="#onRaja" text="了解" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="59.0" />
       <Button layoutX="110.0" layoutY="475.0" mnemonicParsing="false" onAction="#onBeep" text="ビープ" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="110.0" />
-      <ScrollPane fx:id="messageScroll" hbarPolicy="NEVER" layoutX="11.0" layoutY="8.0" maxHeight="405.0" maxWidth="246.0" minHeight="405.0" minWidth="246.0" prefHeight="405.0" prefWidth="246.0" vbarPolicy="ALWAYS" vvalue="1.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+      <ScrollPane fx:id="messageScroll" fitToWidth="true" focusTraversable="false" hbarPolicy="NEVER" layoutX="11.0" layoutY="8.0" maxHeight="405.0" maxWidth="246.0" minHeight="405.0" minWidth="246.0" prefHeight="405.0" prefWidth="246.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <content>
             <VBox fx:id="messageBox" prefHeight="293.0" prefWidth="240.0" />
          </content>
