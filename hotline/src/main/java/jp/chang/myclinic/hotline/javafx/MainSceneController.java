@@ -17,7 +17,8 @@ import jp.chang.myclinic.hotline.lib.HotlineUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
+import javax.sound.sampled.*;
+import java.io.File;
 import java.util.List;
 
 public class MainSceneController {
@@ -54,7 +55,21 @@ public class MainSceneController {
     }
 
     private void playBeep(){
-        Toolkit.getDefaultToolkit().beep();
+        //Toolkit.getDefaultToolkit().beep();
+        File wavFile = new File("C:\\Windows\\Media\\notify.wav");
+        try {
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(wavFile);
+            AudioFormat audioFormat = audioInputStream.getFormat();
+            DataLine.Info info = new DataLine.Info(Clip.class, audioFormat);
+            Clip clip = (Clip)AudioSystem.getLine(info);
+            clip.open(audioInputStream);
+            clip.setFramePosition(0);
+            clip.start();
+            //clip.stop();
+        } catch(Exception ex){
+            logger.error("cannot play sound", ex);
+        }
+
     }
 
     public void addHotlinePosts(List<HotlineDTO> posts, boolean initialSetup){
