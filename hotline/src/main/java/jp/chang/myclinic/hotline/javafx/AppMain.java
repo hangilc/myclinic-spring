@@ -66,7 +66,7 @@ public class AppMain extends Application {
             });
             Context.INSTANCE.setPeriodicFetcher(fetcher);
             Scene scene = new Scene(root);
-            primaryStage.setTitle("Hotline");
+            primaryStage.setTitle("Hotline to " + Context.INSTANCE.getRecipient().getDispName());
             primaryStage.setScene(scene);
             primaryStage.show();
             fetcherThread = new Thread(fetcher);
