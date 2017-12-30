@@ -8,4 +8,9 @@ public class MainSceneController {
         Stage stage = new EditPatientStage();
         stage.show();
     }
+
+    public void onSearchPatientClick(ActionEvent actionEvent) {
+        SearchPatientStage stage = new SearchPatientStage();
+        stage.show();
+    }
 }
