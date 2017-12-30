@@ -9,7 +9,7 @@
 
 <AnchorPane prefHeight="404.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jp.chang.myclinic.reception.javafx.MainSceneController">
    <children>
-      <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="新規患者" />
+      <Button fx:id="newPatientButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onNewPatientClick" text="新規患者" />
       <Button layoutX="85.0" layoutY="14.0" mnemonicParsing="false" text="患者検索" />
       <Button layoutX="156.0" layoutY="14.0" mnemonicParsing="false" text="会計検索" />
       <Button layoutX="248.0" layoutY="14.0" mnemonicParsing="false" text="領収書用紙" />
