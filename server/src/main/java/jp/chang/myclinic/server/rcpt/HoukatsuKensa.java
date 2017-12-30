@@ -1,23 +1,17 @@
 package jp.chang.myclinic.server.rcpt;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.Collections;
+import jp.chang.myclinic.consts.HoukatsuKensaKind;
 
 import javax.xml.bind.JAXB;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.File;
-
-import jp.chang.myclinic.consts.HoukatsuKensaKind;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class HoukatsuKensa {
 
@@ -207,7 +201,7 @@ public class HoukatsuKensa {
 	}
 
 	public static HoukatsuKensa load(){
-		return JAXB.unmarshal(new File("./houkatsu-kensa.xml"), HoukatsuKensa.class);
+		return JAXB.unmarshal(new File("./config/houkatsu-kensa.xml"), HoukatsuKensa.class);
 	}
 
 	public static void read(){
