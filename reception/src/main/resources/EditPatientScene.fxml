@@ -52,7 +52,7 @@
                   <Button layoutX="518.0" layoutY="45.0" mnemonicParsing="false" text="削除" />
                   <CheckBox layoutX="14.0" layoutY="211.0" mnemonicParsing="false" selected="true" text="現在有効のみ" />
                   <Button layoutX="14.0" layoutY="235.0" mnemonicParsing="false" onAction="#onNewShahokokuhoClick" text="新規社保国保" />
-                  <Button layoutX="111.0" layoutY="235.0" mnemonicParsing="false" text="新規後期高齢" />
+                  <Button layoutX="111.0" layoutY="235.0" mnemonicParsing="false" onAction="#onNewKoukikoureiClick" text="新規後期高齢" />
                   <Button layoutX="209.0" layoutY="235.0" mnemonicParsing="false" text="新規公費負担" />
                </children>
             </AnchorPane>

@@ -7,4 +7,9 @@ public class EditPatientSceneController {
         EditShahokokuhoStage stage = new EditShahokokuhoStage();
         stage.show();
     }
+
+    public void onNewKoukikoureiClick(ActionEvent actionEvent) {
+        EditKoureiStage stage = new EditKoureiStage();
+        stage.show();
+    }
 }
