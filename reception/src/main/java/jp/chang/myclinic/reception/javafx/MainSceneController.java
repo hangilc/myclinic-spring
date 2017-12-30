@@ -18,4 +18,9 @@ public class MainSceneController {
         SearchPaymentStage stage = new SearchPaymentStage();
         stage.show();
     }
+
+    public void onReceiptPreviewClick(ActionEvent actionEvent) {
+        ReceiptPreviewStage stage = new ReceiptPreviewStage();
+        stage.show();
+    }
 }

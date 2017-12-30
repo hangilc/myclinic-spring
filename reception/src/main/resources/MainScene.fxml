@@ -11,7 +11,7 @@
       <Button fx:id="newPatientButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onNewPatientClick" text="新規患者" />
       <Button layoutX="85.0" layoutY="14.0" mnemonicParsing="false" onAction="#onSearchPatientClick" text="患者検索" />
       <Button layoutX="156.0" layoutY="14.0" mnemonicParsing="false" onAction="#onSearchPaymentClick" text="会計検索" />
-      <Button layoutX="248.0" layoutY="14.0" mnemonicParsing="false" text="領収書用紙" />
+      <Button layoutX="248.0" layoutY="14.0" mnemonicParsing="false" onAction="#onReceiptPreviewClick" text="領収書用紙" />
       <Label layoutX="14.0" layoutY="50.0" text="患者番号" />
       <TextField layoutX="65.0" layoutY="46.0" prefHeight="25.0" prefWidth="70.0" />
       <Button layoutX="142.0" layoutY="46.0" mnemonicParsing="false" text="診療受付" />
