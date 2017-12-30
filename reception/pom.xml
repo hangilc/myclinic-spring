@@ -82,7 +82,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>1.5.1.RELEASE</version>
                 <configuration>
-                    <mainClass>jp.chang.myclinic.reception.AppReception</mainClass>
+                    <mainClass>jp.chang.myclinic.reception.javafx.Main</mainClass>
                 </configuration>
                 <executions>
                     <execution>
