@@ -13,4 +13,9 @@ public class MainSceneController {
         SearchPatientStage stage = new SearchPatientStage();
         stage.show();
     }
+
+    public void onSearchPaymentClick(ActionEvent actionEvent) {
+        SearchPaymentStage stage = new SearchPaymentStage();
+        stage.show();
+    }
 }
