@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="262.0" prefWidth="319.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <padding>
+      <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
+   </padding>
+   <children>
+      <TextArea maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="370.0" VBox.vgrow="ALWAYS" />
+      <HBox alignment="TOP_RIGHT" fillHeight="false" maxHeight="-Infinity" minWidth="-Infinity" prefWidth="291.0" spacing="4.0" VBox.vgrow="NEVER">
+         <VBox.margin>
+            <Insets top="10.0" />
+         </VBox.margin>
+         <children>
+            <Button mnemonicParsing="false" text="編集" />
+            <Button mnemonicParsing="false" text="閉じる" />
+         </children>
+      </HBox>
+   </children>
+</VBox>
