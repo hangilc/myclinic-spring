@@ -6,8 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane prefHeight="188.0" prefWidth="399.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jp.chang.myclinic.reception.javafx.EditKoureiSceneController">
+<AnchorPane prefHeight="188.0" prefWidth="399.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="EditKoureiSceneController">
    <children>
       <Label layoutX="26.0" layoutY="14.0" text="保険者番号" />
       <TextField layoutX="93.0" layoutY="10.0" />

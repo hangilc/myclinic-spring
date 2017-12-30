@@ -12,4 +12,9 @@ public class EditPatientSceneController {
         EditKoureiStage stage = new EditKoureiStage();
         stage.show();
     }
+
+    public void onNewKouhiClick(ActionEvent actionEvent) {
+        EditKouhiStage stage = new EditKouhiStage();
+        stage.show();
+    }
 }

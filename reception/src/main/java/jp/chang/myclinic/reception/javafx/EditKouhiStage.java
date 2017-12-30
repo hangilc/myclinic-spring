@@ -7,16 +7,16 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EditKoureiStage extends Stage {
-    private static Logger logger = LoggerFactory.getLogger(EditKoureiStage.class);
+public class EditKouhiStage extends Stage {
+    private static Logger logger = LoggerFactory.getLogger(EditKouhiStage.class);
 
-    public EditKoureiStage(){
+    public EditKouhiStage(){
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/EditKoureiScene.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/EditKouhiScene.fxml"));
             Parent root = loader.load();
-            EditKoureiSceneController controller = loader.getController();
+            EditKouhiSceneController controller = loader.getController();
             Scene scene = new Scene(root);
-            setTitle("新規後期高齢入力");
+            setTitle("新規公費負担入力");
             setScene(scene);
         } catch(Exception ex){
             logger.error("failed to start hotline", ex);
