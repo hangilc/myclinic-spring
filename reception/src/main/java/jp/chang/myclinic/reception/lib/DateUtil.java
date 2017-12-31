@@ -24,7 +24,7 @@ public class DateUtil {
         }
     }
 
-    public Result<LocalDate> convertToLocalDate(String gengou, String nen, String month, String day){
+    public static Result<LocalDate> convertToLocalDate(String gengou, String nen, String month, String day){
         Result<LocalDate> result = new Result<>();
         JapaneseEra era = Gengou.fromKanji(gengou).getEra();
         int nenValue = 0, monthValue = 0, dayValue = 9;
