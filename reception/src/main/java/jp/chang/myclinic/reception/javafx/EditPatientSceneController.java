@@ -2,9 +2,7 @@ package jp.chang.myclinic.reception.javafx;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.lib.DateUtil;
@@ -62,7 +60,15 @@ public class EditPatientSceneController {
     }
 
     public void onEnterPatientClick(ActionEvent actionEvent) {
-        System.out.println(lastNameInput.getText());
+        PatientDTO patient = new PatientDTO();
+        List<String> errs = save(patient);
+        if( errs.size() > 0 ){
+            String message = String.join("\n", errs);
+            Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+            alert.showAndWait();
+        } else {
+            System.out.println(patient);
+        }
     }
 
     private List<String> save(PatientDTO patient){
@@ -113,5 +119,5 @@ public class EditPatientSceneController {
         patient.phone = phoneInput.getText();
         return errs;
     }
-    
+
 }
