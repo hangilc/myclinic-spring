@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<!-- <?import jp.chang.myclinic.reception.javafx.DateInput?> -->
+
+<fx:root hgap="4.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+  <columnConstraints>
+    <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" />
+    <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <Label text="名前" />
+      <HBox maxHeight="-Infinity" minHeight="-Infinity" prefWidth="200.0" spacing="4.0" GridPane.columnIndex="1">
+         <children>
+            <TextField fx:id="lastNameInput" promptText="姓" />
+            <TextField fx:id="firstNameInput" promptText="名" />
+         </children>
+      </HBox>
+      <Label text="よみ" GridPane.rowIndex="1" />
+      <HBox prefHeight="100.0" prefWidth="200.0" spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <TextField fx:id="lastNameYomiInput" promptText="姓のよみ" />
+            <TextField fx:id="firstNameYomiInput" promptText="名のよみ" />
+         </children>
+      </HBox>
+      <Label text="生年月日" GridPane.rowIndex="2" />
+      <!-- <DateInput fx:id="birthdayInput" GridPane.columnIndex="1" GridPane.rowIndex="2"/> -->
+      <Label fx:id="birthdayInput" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+      <Label text="性別" GridPane.rowIndex="3" />
+      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+         <children>
+            <RadioButton fx:id="sexMaleRadio" mnemonicParsing="false" text="男">
+               <toggleGroup>
+                  <ToggleGroup fx:id="sexGroup" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="sexFemaleRadio" mnemonicParsing="false" selected="true" text="女" toggleGroup="$sexGroup" />
+         </children>
+      </HBox>
+      <Label text="住所" GridPane.rowIndex="4" />
+      <TextField fx:id="addressInput" prefWidth="460.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+         <GridPane.margin>
+            <Insets right="4.0" />
+         </GridPane.margin>
+      </TextField>
+      <Label text="電話" GridPane.rowIndex="5" />
+      <TextField fx:id="phoneInput" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+   </children>
+</fx:root>

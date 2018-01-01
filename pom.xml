@@ -31,6 +31,7 @@
     <module>practice</module>
     <module>myclinic-lib</module>
     <module>reportwaiting</module>
+    <module>myclinic-javafx-components</module>
   </modules>
 
 </project>

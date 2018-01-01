@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<fx:root alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="HBox" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ChoiceBox fx:id="gengouChoice" prefHeight="25.0" prefWidth="64.0" />
+      <TextField fx:id="nenInput" prefHeight="25.0" prefWidth="46.0">
+         <HBox.margin>
+            <Insets left="2.0" />
+         </HBox.margin>
+      </TextField>
+      <Label text="年" />
+      <TextField fx:id="monthInput" prefHeight="25.0" prefWidth="46.0">
+         <padding>
+            <Insets left="4.0" />
+         </padding>
+         <HBox.margin>
+            <Insets left="4.0" />
+         </HBox.margin>
+      </TextField>
+      <Label text="月" />
+      <TextField fx:id="dayInput" prefHeight="25.0" prefWidth="46.0">
+         <padding>
+            <Insets left="4.0" />
+         </padding>
+         <HBox.margin>
+            <Insets left="4.0" />
+         </HBox.margin>
+      </TextField>
+      <Label text="日" />
+   </children>
+</fx:root>

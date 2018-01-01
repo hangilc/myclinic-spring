@@ -2,14 +2,9 @@ package jp.chang.myclinic.reception.javafx;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import jp.chang.myclinic.consts.Sex;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.reception.lib.DateUtil;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 
 public class EditPatientSceneController {
 
@@ -60,64 +55,64 @@ public class EditPatientSceneController {
     }
 
     public void onEnterPatientClick(ActionEvent actionEvent) {
-        PatientDTO patient = new PatientDTO();
-        List<String> errs = save(patient);
-        if( errs.size() > 0 ){
-            String message = String.join("\n", errs);
-            Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
-            alert.showAndWait();
-        } else {
-            System.out.println(patient);
-        }
+//        PatientDTO patient = new PatientDTO();
+//        List<String> errs = save(patient);
+//        if( errs.size() > 0 ){
+//            String message = String.join("\n", errs);
+//            Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+//            alert.showAndWait();
+//        } else {
+//            System.out.println(patient);
+//        }
     }
 
-    private List<String> save(PatientDTO patient){
-        List<String> errs = new ArrayList<>();
-        String lastName = lastNameInput.getText();
-        if( lastName.isEmpty() ){
-            errs.add("性が入力されていません。");
-        } else {
-            patient.lastName = lastName;
-        }
-        String firstName = firstNameInput.getText();
-        if( firstName.isEmpty() ){
-            errs.add("名が入力されていません。");
-        } else {
-            patient.firstName = firstName;
-        }
-        String lastNameYomi = lastNameYomiInput.getText();
-        if( lastNameYomi.isEmpty() ){
-            errs.add("性のよみが入力されていません。");
-        } else {
-            patient.lastNameYomi = lastNameYomi;
-        }
-        String firstNameYomi = firstNameYomiInput.getText();
-        if( firstNameYomi.isEmpty() ){
-            errs.add("名のよみが入力されていません。");
-        } else {
-            patient.firstNameYomi = firstNameYomi;
-        }
-        DateUtil.Result<LocalDate> birthdayResult = DateUtil.convertToLocalDate(
-                birthdayGengouInput.getSelectionModel().getSelectedItem(),
-                birthdayNenInput.getText(),
-                birthdayMonthInput.getText(),
-                birthdayDayInput.getText()
-        );
-        if( birthdayResult.hasError() ){
-            errs.add("誕生日の" + String.join("", birthdayResult.errors));
-        } else {
-            patient.birthday = birthdayResult.value.toString();
-        }
-        if( sexMaleRadio.isSelected() ){
-            patient.sex = Sex.Male.getCode();
-        } else if( sexFemaleRadio.isSelected() ){
-            patient.sex = Sex.Female.getCode();
-        } else {
-            errs.add("Cannot happen in sex input");
-        }
-        patient.address = addressInput.getText();
-        patient.phone = phoneInput.getText();
-        return errs;
-    }
+//    private List<String> save(PatientDTO patient){
+//        List<String> errs = new ArrayList<>();
+//        String lastName = lastNameInput.getText();
+//        if( lastName.isEmpty() ){
+//            errs.add("性が入力されていません。");
+//        } else {
+//            patient.lastName = lastName;
+//        }
+//        String firstName = firstNameInput.getText();
+//        if( firstName.isEmpty() ){
+//            errs.add("名が入力されていません。");
+//        } else {
+//            patient.firstName = firstName;
+//        }
+//        String lastNameYomi = lastNameYomiInput.getText();
+//        if( lastNameYomi.isEmpty() ){
+//            errs.add("性のよみが入力されていません。");
+//        } else {
+//            patient.lastNameYomi = lastNameYomi;
+//        }
+//        String firstNameYomi = firstNameYomiInput.getText();
+//        if( firstNameYomi.isEmpty() ){
+//            errs.add("名のよみが入力されていません。");
+//        } else {
+//            patient.firstNameYomi = firstNameYomi;
+//        }
+//        DateUtil.Result<LocalDate> birthdayResult = DateUtil.convertToLocalDate(
+//                birthdayGengouInput.getSelectionModel().getSelectedItem(),
+//                birthdayNenInput.getText(),
+//                birthdayMonthInput.getText(),
+//                birthdayDayInput.getText()
+//        );
+//        if( birthdayResult.hasError() ){
+//            errs.add("誕生日の" + String.join("", birthdayResult.errors));
+//        } else {
+//            patient.birthday = birthdayResult.value.toString();
+//        }
+//        if( sexMaleRadio.isSelected() ){
+//            patient.sex = Sex.Male.getCode();
+//        } else if( sexFemaleRadio.isSelected() ){
+//            patient.sex = Sex.Female.getCode();
+//        } else {
+//            errs.add("Cannot happen in sex input");
+//        }
+//        patient.address = addressInput.getText();
+//        patient.phone = phoneInput.getText();
+//        return errs;
+//    }
 
 }
