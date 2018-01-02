@@ -7,6 +7,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.reception.javafx.MainPane;
 import jp.chang.myclinic.reception.javafx.PatientForm;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class AppDevUI extends Application {
     public void start(Stage primaryStage) {
         VBox vbox = new VBox();
         Button testButton = new Button("テスト");
-        vbox.getChildren().addAll(patientForm(testButton), testButton);
+        vbox.getChildren().addAll(mainPane(testButton), testButton);
         Scene scene = new Scene(vbox);
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();
@@ -44,6 +45,11 @@ public class AppDevUI extends Application {
             }
         });
         return patientForm;
+    }
+
+    private static Pane mainPane(Button testButton){
+        MainPane pane = new MainPane();
+        return pane;
     }
 
 
