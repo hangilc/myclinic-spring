@@ -1,8 +1,10 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
@@ -15,23 +17,33 @@ import java.time.LocalDate;
 
 public class DateInput extends HBox {
 
-    @FXML
-    private ChoiceBox<Gengou> gengouChoice;
-    @FXML
-    private TextField nenInput;
-    @FXML
-    private TextField monthInput;
-    @FXML
-    private TextField dayInput;
+    private ChoiceBox<Gengou> gengouChoice = new ChoiceBox<>();
+    private TextField nenInput = new TextField();
+    private TextField monthInput = new TextField();
+    private TextField dayInput = new TextField();
 
     public DateInput() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/DateInput.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-        loader.load();
+        getChildren().addAll(gengouChoice, nenInput, new Label("年"), monthInput, new Label("月"),
+                dayInput, new Label("日"));
+        setAlignment(Pos.CENTER_LEFT);
+        setMargin(nenInput, new Insets(0, 0, 0, 2));
+        setMargin(monthInput, new Insets(0, 0, 0, 4));
+        setMargin(dayInput, new Insets(0, 0, 0, 4));
+        gengouChoice.setPrefWidth(64);
+        gengouChoice.setMaxWidth(Control.USE_PREF_SIZE);
+        gengouChoice.setMinWidth(Control.USE_PREF_SIZE);
+        setTextFieldWidths(nenInput);
+        setTextFieldWidths(monthInput);
+        setTextFieldWidths(dayInput);
+        initialize();
     }
 
-    @FXML
+    private void setTextFieldWidths(TextField tf){
+        tf.setPrefWidth(40);
+        tf.setMaxWidth(Control.USE_PREF_SIZE);
+        tf.setMinWidth(Control.USE_PREF_SIZE);
+    }
+
     private void initialize(){
         gengouChoice.setConverter(new StringConverter<Gengou>(){
 

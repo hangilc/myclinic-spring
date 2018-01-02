@@ -8,9 +8,7 @@ import javafx.util.StringConverter;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.reception.lib.DateUtil;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,17 +82,17 @@ public class PatientFormSceneController {
         } else {
             patient.firstNameYomi = firstNameYomi;
         }
-        DateUtil.Result<LocalDate> birthdayResult = DateUtil.convertToLocalDate(
-                birthdayGengouInput.getSelectionModel().getSelectedItem(),
-                birthdayNenInput.getText(),
-                birthdayMonthInput.getText(),
-                birthdayDayInput.getText()
-        );
-        if( birthdayResult.hasError() ){
-            errs.add("誕生日の" + String.join("", birthdayResult.errors));
-        } else {
-            patient.birthday = birthdayResult.value.toString();
-        }
+//        DateUtil.Result<LocalDate> birthdayResult = DateUtil.convertToLocalDate(
+//                birthdayGengouInput.getSelectionModel().getSelectedItem(),
+//                birthdayNenInput.getText(),
+//                birthdayMonthInput.getText(),
+//                birthdayDayInput.getText()
+//        );
+//        if( birthdayResult.hasError() ){
+//            errs.add("誕生日の" + String.join("", birthdayResult.errors));
+//        } else {
+//            patient.birthday = birthdayResult.value.toString();
+//        }
         if( sexMaleRadio.isSelected() ){
             patient.sex = Sex.Male.getCode();
         } else if( sexFemaleRadio.isSelected() ){
