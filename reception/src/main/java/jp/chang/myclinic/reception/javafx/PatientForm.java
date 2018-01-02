@@ -1,11 +1,9 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.Control;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.lib.Result;
@@ -14,73 +12,47 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PatientForm extends GridPane {
+public class PatientForm extends Form {
 
     private TextField lastNameInput = new TextField();
+    {
+        lastNameInput.setPromptText("姓");
+    }
     private TextField firstNameInput = new TextField();
+    {
+        firstNameInput.setPromptText("名");
+    }
     private TextField lastNameYomiInput = new TextField();
+    {
+        lastNameYomiInput.setPromptText("姓のよみ");
+    }
     private TextField firstNameYomiInput = new TextField();
+    {
+        firstNameYomiInput.setPromptText("名のよみ");
+    }
     private DateInput birthdayInput = new DateInput();
     private RadioButton maleButton = new RadioButton("男");
     private RadioButton femaleButton = new RadioButton("女");
+    private ToggleGroup sexGroup = new ToggleGroup();
+    {
+        sexGroup.getToggles().addAll(maleButton, femaleButton);
+        femaleButton.setSelected(true);
+    }
     private TextField addressInput = new TextField();
     private TextField phoneInput = new TextField();
-    private ColumnConstraints firstColumnConstraints = new ColumnConstraints();
     {
-        firstColumnConstraints.setPrefWidth(Control.USE_COMPUTED_SIZE);
-        firstColumnConstraints.setMinWidth(Control.USE_PREF_SIZE);
-        firstColumnConstraints.setMaxWidth(Control.USE_PREF_SIZE);
-        firstColumnConstraints.setHalignment(HPos.RIGHT);
+        phoneInput.setPrefWidth(200);
+        phoneInput.setMaxWidth(Control.USE_PREF_SIZE);
+        phoneInput.setMinWidth(Control.USE_PREF_SIZE);
     }
 
     public PatientForm(){
-        getColumnConstraints().addAll(firstColumnConstraints);
-        setHgap(4);
-        setVgap(4);
-        int rowIndex = 0;
-        add(new Label("名前"), 0, rowIndex);
-        {
-            HBox hbox = new HBox(4);
-            hbox.setAlignment(Pos.CENTER_LEFT);
-            lastNameInput.setPromptText("姓");
-            firstNameInput.setPromptText("名");
-            hbox.getChildren().addAll(lastNameInput, firstNameInput);
-            add(hbox, 1, rowIndex);
-        }
-        add(new Label("よみ"), 0, ++rowIndex);
-        {
-            HBox hbox = new HBox(4);
-            hbox.setAlignment(Pos.CENTER_LEFT);
-            lastNameYomiInput.setPromptText("姓のよみ");
-            firstNameYomiInput.setPromptText("名のよみ");
-            hbox.getChildren().addAll(lastNameYomiInput, firstNameYomiInput);
-            add(hbox, 1, rowIndex);
-        }
-        add(new Label("生年月日"), 0, ++rowIndex);
-        {
-            add(birthdayInput, 1, rowIndex);
-        }
-        add(new Label("性別"), 0, ++rowIndex);
-        {
-            HBox hbox = new HBox(4);
-            hbox.setAlignment(Pos.CENTER_LEFT);
-            ToggleGroup group = new ToggleGroup();
-            group.getToggles().addAll(maleButton, femaleButton);
-            femaleButton.setSelected(true);
-            hbox.getChildren().addAll(maleButton, femaleButton);
-            add(hbox, 1, rowIndex);
-        }
-        add(new Label("住所"), 0, ++rowIndex);
-        {
-            add(addressInput, 1, rowIndex);
-        }
-        add(new Label("電話"), 0, ++rowIndex);
-        {
-            phoneInput.setPrefWidth(200);
-            phoneInput.setMaxWidth(Control.USE_PREF_SIZE);
-            phoneInput.setMinWidth(Control.USE_PREF_SIZE);
-            add(phoneInput, 1, rowIndex);
-        }
+        addWithHbox("名前", lastNameInput, firstNameInput);
+        addWithHbox("よみ", lastNameYomiInput, firstNameYomiInput);
+        add("生年月日", birthdayInput);
+        addWithHbox("性別", maleButton, femaleButton);
+        add("住所", addressInput);
+        add("電話", phoneInput);
     }
 
     public List<String> save(PatientDTO patient){

@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+
 <!-- <?import jp.chang.myclinic.reception.javafx.DateInput?> -->
 
-<fx:root hgap="4.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root hgap="4.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" type="GridPane" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
   <columnConstraints>
     <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" />
     <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" />
@@ -35,8 +41,9 @@
          </children>
       </HBox>
       <Label text="生年月日" GridPane.rowIndex="2" />
+       <fx:include source="DateInput.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
       <!-- <DateInput fx:id="birthdayInput" GridPane.columnIndex="1" GridPane.rowIndex="2"/> -->
-      <Label fx:id="birthdayInput" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+      <Label fx:id="birthdayInput" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <Label text="性別" GridPane.rowIndex="3" />
       <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <children>

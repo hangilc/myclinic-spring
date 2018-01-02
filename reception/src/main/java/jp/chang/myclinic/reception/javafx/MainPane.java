@@ -3,6 +3,7 @@ package jp.chang.myclinic.reception.javafx;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
 
 public class MainPane extends VBox {
@@ -45,6 +46,16 @@ public class MainPane extends VBox {
             HBox hbox = new HBox(4);
             hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton);
             getChildren().add(hbox);
+        }
+        newPatientButton.setOnAction(event -> doNewPatient());
+    }
+
+    private void doNewPatient(){
+        NewPatientStage stage = new NewPatientStage();
+        stage.showAndWait();
+        PatientDTO patient = stage.getPatient();
+        if( patient != null ){
+            System.out.println(patient);
         }
     }
 }
