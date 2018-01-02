@@ -12,7 +12,6 @@ import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.reception.lib.DateUtil;
 import jp.chang.myclinic.reception.lib.Result;
 
-import java.io.IOException;
 import java.time.LocalDate;
 
 public class DateInput extends HBox {
@@ -22,7 +21,7 @@ public class DateInput extends HBox {
     private TextField monthInput = new TextField();
     private TextField dayInput = new TextField();
 
-    public DateInput() throws IOException {
+    public DateInput() {
         getChildren().addAll(gengouChoice, nenInput, new Label("年"), monthInput, new Label("月"),
                 dayInput, new Label("日"));
         setAlignment(Pos.CENTER_LEFT);
