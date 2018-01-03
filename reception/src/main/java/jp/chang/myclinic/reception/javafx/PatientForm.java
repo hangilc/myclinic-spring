@@ -6,7 +6,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.reception.lib.Result;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -81,11 +80,11 @@ public class PatientForm extends Form {
         } else {
             patient.firstNameYomi = firstNameYomi;
         }
-        Result<LocalDate> birthdayResult = birthdayInput.getResultValue();
-        if( birthdayResult.hasError() ){
-            errs.add("生年月日の入力が不適切です。" + String.join("", birthdayResult.errors));
+        LocalDate birthdayDate = birthdayInput.getValue();
+        if( birthdayDate == null ){
+            errs.add("生年月日の入力が不適切です。");
         } else {
-            patient.birthday = birthdayResult.value.toString();
+            patient.birthday = birthdayDate.toString();
         }
         if( maleButton.isSelected() ){
             patient.sex = Sex.Male.getCode();

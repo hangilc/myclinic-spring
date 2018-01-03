@@ -98,7 +98,7 @@ public class DateInput extends HBox {
         }
     }
 
-    public Result<LocalDate> getResultValue(){
+    private Result<LocalDate> getResultValue(){
         return DateUtil.convertToLocalDate(gengouChoice.getValue(), nenInput.getText(), monthInput.getText(),
                 dayInput.getText());
     }
