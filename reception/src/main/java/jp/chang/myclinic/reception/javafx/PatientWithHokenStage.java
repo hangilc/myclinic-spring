@@ -1,5 +1,6 @@
 package jp.chang.myclinic.reception.javafx;
 
+import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
@@ -14,11 +15,16 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 
+import java.time.LocalDate;
+import java.util.stream.Collectors;
+
 public class PatientWithHokenStage extends Stage {
 
     private BooleanProperty currentActiveOnly = new SimpleBooleanProperty(true);
+    private HokenListDTO hokenList;
 
     public PatientWithHokenStage(PatientDTO patient, HokenListDTO hokenList){
+        this.hokenList = hokenList;
         VBox root = new VBox(4);
         root.setFillWidth(true);
         {
@@ -38,10 +44,11 @@ public class PatientWithHokenStage extends Stage {
         {
             VBox vbox = new VBox(4);
             vbox.setFillWidth(true);
+            HokenTable hokenTable = new HokenTable();
             {
                 HBox hbox = new HBox(4);
                 hbox.setMaxWidth(Double.MAX_VALUE);
-                HokenTable hokenTable = new HokenTable(hokenList);
+                hokenTable.setHokenList(currentActiveOnly.get() ? filteredHokenList() : hokenList);
                 hbox.getChildren().add(hokenTable);
                 {
                     VBox buttons = new VBox(4);
@@ -56,6 +63,9 @@ public class PatientWithHokenStage extends Stage {
             {
                 CheckBox checkBox = new CheckBox("現在有効のみ");
                 checkBox.selectedProperty().bindBidirectional(currentActiveOnly);
+                currentActiveOnly.addListener((Observable observable) -> {
+                    hokenTable.setHokenList(currentActiveOnly.get() ? filteredHokenList() : hokenList);
+                });
                 vbox.getChildren().add(checkBox);
             }
             {
@@ -67,7 +77,6 @@ public class PatientWithHokenStage extends Stage {
                 vbox.getChildren().add(row);
             }
             TitledPane titledPane = new TitledPane("保険情報", vbox);
-            System.out.printf("titledPane, %f, %f\n", titledPane.getPrefWidth(), titledPane.getMaxWidth());
             titledPane.setCollapsible(false);
             root.getChildren().add(titledPane);
         }
@@ -75,6 +84,7 @@ public class PatientWithHokenStage extends Stage {
             HBox row = new HBox(4);
             row.setAlignment(Pos.CENTER_RIGHT);
             Button closeButton = new Button("閉じる");
+            closeButton.setOnAction(event -> close());
             row.getChildren().add(closeButton);
             root.getChildren().add(row);
         }
@@ -82,6 +92,33 @@ public class PatientWithHokenStage extends Stage {
         Scene scene = new Scene(root, 500, 660);
         setScene(scene);
         sizeToScene();
+    }
+
+    private HokenListDTO filteredHokenList(){
+        HokenListDTO filtered = new HokenListDTO();
+        String curr = LocalDate.now().toString();
+        if( hokenList.shahokokuhoListDTO != null ) {
+            filtered.shahokokuhoListDTO = hokenList.shahokokuhoListDTO.stream()
+                    .filter(h -> isCurrent(h.validFrom, h.validUpto, curr)).collect(Collectors.toList());
+        }
+        if( hokenList.koukikoureiListDTO != null ) {
+            filtered.koukikoureiListDTO = hokenList.koukikoureiListDTO.stream()
+                    .filter(h -> isCurrent(h.validFrom, h.validUpto, curr)).collect(Collectors.toList());
+        }
+        if( hokenList.roujinListDTO != null ) {
+            filtered.roujinListDTO = hokenList.roujinListDTO.stream()
+                    .filter(h -> isCurrent(h.validFrom, h.validUpto, curr)).collect(Collectors.toList());
+        }
+        if( hokenList.kouhiListDTO != null ) {
+            filtered.kouhiListDTO = hokenList.kouhiListDTO.stream()
+                    .filter(h -> isCurrent(h.validFrom, h.validUpto, curr)).collect(Collectors.toList());
+        }
+        return filtered;
+    }
+
+    private boolean isCurrent(String validFrom, String validUpto, String current){
+        return validFrom.compareTo(current) <= 0 &&
+                (validUpto == null || validUpto.equals("0000-00-00") || validUpto.compareTo(current) >= 0);
     }
 
 }

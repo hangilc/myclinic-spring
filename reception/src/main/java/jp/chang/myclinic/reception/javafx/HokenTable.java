@@ -22,7 +22,6 @@ public class HokenTable extends TableView<HokenTable.Model> {
         private StringProperty validFrom = new SimpleStringProperty("");
         private StringProperty validUpto = new SimpleStringProperty("");
         private StringProperty honninKazoku = new SimpleStringProperty("");
-        private StringProperty futanWari = new SimpleStringProperty("");
 
         public static Model fromShahokokuho(ShahokokuhoDTO hoken){
             Model model = new Model();
@@ -30,7 +29,6 @@ public class HokenTable extends TableView<HokenTable.Model> {
             model.setValidFrom(validDateToString(hoken.validFrom));
             model.setValidUpto(validDateToString(hoken.validUpto));
             model.setHonninKazoku(hoken.honnin != 0 ? "本人" : "家族");
-            model.setFutanWari(hoken.kourei > 0 ? String.format("高齢%d割", hoken.kourei) : "");
             return model;
         }
 
@@ -39,7 +37,6 @@ public class HokenTable extends TableView<HokenTable.Model> {
             model.setName(KoukikoureiUtil.rep(hoken));
             model.setValidFrom(validDateToString(hoken.validFrom));
             model.setValidUpto(validDateToString(hoken.validUpto));
-            model.setFutanWari(String.format("%d割", hoken.futanWari));
             return model;
         }
 
@@ -48,7 +45,6 @@ public class HokenTable extends TableView<HokenTable.Model> {
             model.setName(RoujinUtil.rep(hoken));
             model.setValidFrom(validDateToString(hoken.validFrom));
             model.setValidUpto(validDateToString(hoken.validUpto));
-            model.setFutanWari(String.format("%d割", hoken.futanWari));
             return model;
         }
 
@@ -115,21 +111,9 @@ public class HokenTable extends TableView<HokenTable.Model> {
         public void setHonninKazoku(String honninKazoku) {
             this.honninKazoku.set(honninKazoku);
         }
-
-        public String getFutanWari() {
-            return futanWari.get();
-        }
-
-        public StringProperty futanWariProperty() {
-            return futanWari;
-        }
-
-        public void setFutanWari(String futanWari) {
-            this.futanWari.set(futanWari);
-        }
     }
 
-    public HokenTable(HokenListDTO hokenList){
+    public HokenTable(){
         setMaxWidth(Double.MAX_VALUE);
 
         TableColumn<Model, String> nameColumn = new TableColumn<>("種別");
@@ -144,19 +128,22 @@ public class HokenTable extends TableView<HokenTable.Model> {
         TableColumn<Model, String> honninKazokuColumn = new TableColumn<>("本人・家族");
         honninKazokuColumn.setCellValueFactory((new PropertyValueFactory<>("honninKazoku")));
 
-        TableColumn<Model, String> futanWariColumn = new TableColumn<>("負担割");
-        futanWariColumn.setCellValueFactory((new PropertyValueFactory<>("futanWari")));
-
-        getColumns().addAll(Arrays.asList(nameColumn, validFromColumn, validUptoColumn,
-                honninKazokuColumn, futanWariColumn));
-
-        setHokenList(hokenList);
+        getColumns().addAll(Arrays.asList(nameColumn, validFromColumn, validUptoColumn, honninKazokuColumn));
     }
 
-    private void setHokenList(HokenListDTO hokenList){
+    public void setHokenList(HokenListDTO hokenList){
         List<Model> models = new ArrayList<>();
         if( hokenList.shahokokuhoListDTO != null ){
             models.addAll(hokenList.shahokokuhoListDTO.stream().map(Model::fromShahokokuho).collect(Collectors.toList()));
+        }
+        if( hokenList.koukikoureiListDTO != null ){
+            models.addAll(hokenList.koukikoureiListDTO.stream().map(Model::fromKoukikourei).collect(Collectors.toList()));
+        }
+        if( hokenList.roujinListDTO != null ){
+            models.addAll(hokenList.roujinListDTO.stream().map(Model::fromRoujin).collect(Collectors.toList()));
+        }
+        if( hokenList.kouhiListDTO != null ){
+            models.addAll(hokenList.kouhiListDTO.stream().map(Model::fromKouhi).collect(Collectors.toList()));
         }
         ObservableList<Model> items = FXCollections.observableList(models);
         setItems(items);
