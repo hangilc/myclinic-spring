@@ -12,24 +12,20 @@ public class PatientInfo extends Form {
     private Label nameLabel = new Label();
     {
         nameLabel.setWrapText(true);
-        nameLabel.setMaxWidth(300);
     }
     private Label yomiLabel = new Label();
     {
         yomiLabel.setWrapText(true);
-        yomiLabel.setMaxWidth(300);
     }
     private Label birthdayLabel = new Label();
     private Label sexLabel = new Label();
     private Label addressLabel = new Label();
     {
         addressLabel.setWrapText(true);
-        addressLabel.setMaxWidth(300);
     }
     private Label phoneLabel = new Label();
     {
         phoneLabel.setWrapText(true);
-        phoneLabel.setMaxWidth(300);
     }
 
     public PatientInfo(){
