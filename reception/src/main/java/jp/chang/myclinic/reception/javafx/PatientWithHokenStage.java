@@ -73,6 +73,7 @@ public class PatientWithHokenStage extends Stage {
                 Button newShahokokuhoButton = new Button("新規社保国保");
                 Button newKoukikoureiButton = new Button("新規後期高齢");
                 Button newKouhiButton = new Button("新規公費負担");
+                newShahokokuhoButton.setOnAction(event -> doNewShahokokuho());
                 row.getChildren().addAll(newShahokokuhoButton, newKoukikoureiButton, newKouhiButton);
                 vbox.getChildren().add(row);
             }
@@ -119,6 +120,11 @@ public class PatientWithHokenStage extends Stage {
     private boolean isCurrent(String validFrom, String validUpto, String current){
         return validFrom.compareTo(current) <= 0 &&
                 (validUpto == null || validUpto.equals("0000-00-00") || validUpto.compareTo(current) >= 0);
+    }
+
+    private void doNewShahokokuho(){
+        EditShahokokuhoStage stage = new EditShahokokuhoStage();
+        stage.showAndWait();
     }
 
 }

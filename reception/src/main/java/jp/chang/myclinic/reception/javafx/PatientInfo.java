@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 public class PatientInfo extends Form {
+    private Label patientIdLabel = new Label();
     private Label nameLabel = new Label();
     {
         nameLabel.setWrapText(true);
@@ -29,6 +30,7 @@ public class PatientInfo extends Form {
     }
 
     public PatientInfo(){
+        add("患者番号：", patientIdLabel);
         add("名前：", nameLabel);
         add("読み：", yomiLabel);
         add("生年月日：", birthdayLabel);
@@ -38,6 +40,7 @@ public class PatientInfo extends Form {
     }
 
     public void setPatient(PatientDTO patient){
+        patientIdLabel.setText("" + patient.patientId);
         nameLabel.setText(patient.lastName + " " + patient.firstName);
         yomiLabel.setText(patient.lastNameYomi + " " + patient.firstNameYomi);
         birthdayLabel.setText(birthdayText(patient.birthday));
