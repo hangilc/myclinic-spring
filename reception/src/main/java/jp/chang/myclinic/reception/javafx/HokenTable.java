@@ -23,38 +23,38 @@ public class HokenTable extends TableView<HokenTable.Model> {
         private StringProperty validUpto = new SimpleStringProperty("");
         private StringProperty honninKazoku = new SimpleStringProperty("");
 
-        public static Model fromShahokokuho(ShahokokuhoDTO hoken){
-            Model model = new Model();
-            model.setName(ShahokokuhoUtil.rep(hoken));
-            model.setValidFrom(validDateToString(hoken.validFrom));
-            model.setValidUpto(validDateToString(hoken.validUpto));
-            model.setHonninKazoku(hoken.honnin != 0 ? "本人" : "家族");
-            return model;
-        }
-
-        public static Model fromKoukikourei(KoukikoureiDTO hoken){
-            Model model = new Model();
-            model.setName(KoukikoureiUtil.rep(hoken));
-            model.setValidFrom(validDateToString(hoken.validFrom));
-            model.setValidUpto(validDateToString(hoken.validUpto));
-            return model;
-        }
-
-        public static Model fromRoujin(RoujinDTO hoken){
-            Model model = new Model();
-            model.setName(RoujinUtil.rep(hoken));
-            model.setValidFrom(validDateToString(hoken.validFrom));
-            model.setValidUpto(validDateToString(hoken.validUpto));
-            return model;
-        }
-
-        public static Model fromKouhi(KouhiDTO hoken){
-            Model model = new Model();
-            model.setName(KouhiUtil.rep(hoken));
-            model.setValidFrom(validDateToString(hoken.validFrom));
-            model.setValidUpto(validDateToString(hoken.validUpto));
-            return model;
-        }
+//        public static Model fromShahokokuho(ShahokokuhoDTO hoken){
+//            Model model = new Model();
+//            model.setName(ShahokokuhoUtil.rep(hoken));
+//            model.setValidFrom(validDateToString(hoken.validFrom));
+//            model.setValidUpto(validDateToString(hoken.validUpto));
+//            model.setHonninKazoku(hoken.honnin != 0 ? "本人" : "家族");
+//            return model;
+//        }
+//
+//        public static Model fromKoukikourei(KoukikoureiDTO hoken){
+//            Model model = new Model();
+//            model.setName(KoukikoureiUtil.rep(hoken));
+//            model.setValidFrom(validDateToString(hoken.validFrom));
+//            model.setValidUpto(validDateToString(hoken.validUpto));
+//            return model;
+//        }
+//
+//        public static Model fromRoujin(RoujinDTO hoken){
+//            Model model = new Model();
+//            model.setName(RoujinUtil.rep(hoken));
+//            model.setValidFrom(validDateToString(hoken.validFrom));
+//            model.setValidUpto(validDateToString(hoken.validUpto));
+//            return model;
+//        }
+//
+//        public static Model fromKouhi(KouhiDTO hoken){
+//            Model model = new Model();
+//            model.setName(KouhiUtil.rep(hoken));
+//            model.setValidFrom(validDateToString(hoken.validFrom));
+//            model.setValidUpto(validDateToString(hoken.validUpto));
+//            return model;
+//        }
 
         private static String validDateToString(String sqlDate){
             if( sqlDate == null || sqlDate.equals("0000-00-00") ){
@@ -113,6 +113,51 @@ public class HokenTable extends TableView<HokenTable.Model> {
         }
     }
 
+    public static class ShahokokuhoModel extends Model {
+        public ShahokokuhoDTO orig;
+
+        public ShahokokuhoModel(ShahokokuhoDTO hoken){
+            this.orig = hoken;
+            this.setName(ShahokokuhoUtil.rep(hoken));
+            this.setValidFrom(Model.validDateToString(hoken.validFrom));
+            this.setValidUpto(Model.validDateToString(hoken.validUpto));
+            this.setHonninKazoku(hoken.honnin != 0 ? "本人" : "家族");
+        }
+    }
+
+    public static class KoukikoureiModel extends Model {
+        public KoukikoureiDTO orig;
+
+        public KoukikoureiModel(KoukikoureiDTO hoken){
+            this.orig = hoken;
+            this.setName(KoukikoureiUtil.rep(hoken));
+            this.setValidFrom(Model.validDateToString(hoken.validFrom));
+            this.setValidUpto(Model.validDateToString(hoken.validUpto));
+        }
+    }
+
+    public static class RoujinModel extends Model {
+        public RoujinDTO orig;
+
+        public RoujinModel(RoujinDTO hoken){
+            this.orig = hoken;
+            this.setName(RoujinUtil.rep(hoken));
+            this.setValidFrom(Model.validDateToString(hoken.validFrom));
+            this.setValidUpto(Model.validDateToString(hoken.validUpto));
+        }
+    }
+
+    public static class KouhiModel extends Model {
+        public KouhiDTO orig;
+
+        public KouhiModel(KouhiDTO hoken){
+            this.orig = hoken;
+            this.setName(KouhiUtil.rep(hoken));
+            this.setValidFrom(Model.validDateToString(hoken.validFrom));
+            this.setValidUpto(Model.validDateToString(hoken.validUpto));
+        }
+    }
+
     public HokenTable(){
         setMaxWidth(Double.MAX_VALUE);
 
@@ -134,16 +179,16 @@ public class HokenTable extends TableView<HokenTable.Model> {
     public void setHokenList(HokenListDTO hokenList){
         List<Model> models = new ArrayList<>();
         if( hokenList.shahokokuhoListDTO != null ){
-            models.addAll(hokenList.shahokokuhoListDTO.stream().map(Model::fromShahokokuho).collect(Collectors.toList()));
+            models.addAll(hokenList.shahokokuhoListDTO.stream().map(ShahokokuhoModel::new).collect(Collectors.toList()));
         }
         if( hokenList.koukikoureiListDTO != null ){
-            models.addAll(hokenList.koukikoureiListDTO.stream().map(Model::fromKoukikourei).collect(Collectors.toList()));
+            models.addAll(hokenList.koukikoureiListDTO.stream().map(KoukikoureiModel::new).collect(Collectors.toList()));
         }
         if( hokenList.roujinListDTO != null ){
-            models.addAll(hokenList.roujinListDTO.stream().map(Model::fromRoujin).collect(Collectors.toList()));
+            models.addAll(hokenList.roujinListDTO.stream().map(RoujinModel::new).collect(Collectors.toList()));
         }
         if( hokenList.kouhiListDTO != null ){
-            models.addAll(hokenList.kouhiListDTO.stream().map(Model::fromKouhi).collect(Collectors.toList()));
+            models.addAll(hokenList.kouhiListDTO.stream().map(KouhiModel::new).collect(Collectors.toList()));
         }
         ObservableList<Model> items = FXCollections.observableList(models);
         setItems(items);
