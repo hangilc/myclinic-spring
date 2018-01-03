@@ -1,5 +1,7 @@
 package jp.chang.myclinic.reception.javafx;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
@@ -8,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +21,7 @@ public class EditShahokokuhoStage extends Stage {
     private StringProperty hokenshaBangou = new SimpleStringProperty();
     private StringProperty hihokenshaKigou = new SimpleStringProperty();
     private StringProperty hihokenshaBangou = new SimpleStringProperty();
+    private IntegerProperty honnin = new SimpleIntegerProperty();
 
     public EditShahokokuhoStage(){
         setTitle("新規社保国保入力");
@@ -49,11 +53,11 @@ public class EditShahokokuhoStage extends Stage {
             {
                 HBox row = new HBox(4);
                 row.setAlignment(Pos.CENTER_LEFT);
-                RadioButton honninButton = new RadioButton("本人");
-                RadioButton kazokuButton = new RadioButton("家族");
-                ToggleGroup group = new ToggleGroup();
+                RadioButtonGroup<Number> group = new RadioButtonGroup<>();
+                RadioButton honninButton = group.createRadioButton("本人", 1);
+                RadioButton kazokuButton = group.createRadioButton("家族", 0);
                 kazokuButton.setSelected(true);
-                group.getToggles().addAll(honninButton, kazokuButton);
+                honnin.bindBidirectional(group.valueProperty());
                 row.getChildren().addAll(honninButton, kazokuButton);
                 form.add("本人・家族", row);
             }
@@ -100,6 +104,7 @@ public class EditShahokokuhoStage extends Stage {
         System.out.println(hokenshaBangou.get());
         System.out.println(hihokenshaKigou.get());
         System.out.println(hihokenshaBangou.get());
+        System.out.println(honnin.get());
     }
 
 }
