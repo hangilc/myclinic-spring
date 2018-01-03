@@ -1,6 +1,5 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -41,33 +40,20 @@ public class DateInput extends HBox {
         setTextFieldWidths(monthInput);
         setTextFieldWidths(dayInput);
         initialize();
-        ObjectBinding<LocalDate> dateBinding = new ObjectBinding<LocalDate>() {
-            {
-                super.bind(gengouChoice.valueProperty(), nenInput.textProperty(), monthInput.textProperty(),
-                        dayInput.textProperty());
-            }
-
-            @Override
-            protected LocalDate computeValue() {
-                Result<LocalDate> result = DateUtil.convertToLocalDate(gengouChoice.getValue(), nenInput.getText(), monthInput.getText(),
-                        dayInput.getText());
-                if (result.hasError()) {
-                    return null;
-                } else {
-                    return result.value;
-                }
-            }
-        };
-        dateBinding.addListener((observable, oldValue, newValue) -> {
-            value.setValue(newValue);
-        });
+        gengouChoice.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> updateValue());
+        nenInput.textProperty().addListener((obs, oldValue, newValue) -> updateValue());
+        monthInput.textProperty().addListener((obs, oldValue, newValue) -> updateValue());
+        dayInput.textProperty().addListener((obs, oldValue, newValue) -> updateValue());
         value.addListener((observable, oldValue, newValue) -> {
+            System.out.println("dateinput value: " + newValue);
             if( newValue != null ){
                 JapaneseEra era = DateTimeUtil.getEra(newValue);
                 int nen = DateTimeUtil.getNen(newValue);
                 Gengou gengou = Gengou.fromEra(era);
                 gengouChoice.getSelectionModel().select(gengou);
                 nenInput.setText("" + nen);
+                monthInput.setText("" + newValue.getMonth().getValue());
+                dayInput.setText("" + newValue.getDayOfMonth());
             }
         });
     }
@@ -103,6 +89,15 @@ public class DateInput extends HBox {
         gengouChoice.getSelectionModel().select(gengou);
     }
 
+    private void updateValue(){
+        Result<LocalDate> result = getResultValue();
+        if( !result.hasError() ){
+            value.setValue(result.value);
+        } else {
+            value.setValue(null);
+        }
+    }
+
     public Result<LocalDate> getResultValue(){
         return DateUtil.convertToLocalDate(gengouChoice.getValue(), nenInput.getText(), monthInput.getText(),
                 dayInput.getText());
@@ -118,5 +113,9 @@ public class DateInput extends HBox {
 
     public void setValue(LocalDate value) {
         this.value.setValue(value);
+    }
+
+    public boolean isEmpty(){
+        return nenInput.getText().isEmpty() && monthInput.getText().isEmpty() && dayInput.getText().isEmpty();
     }
 }
