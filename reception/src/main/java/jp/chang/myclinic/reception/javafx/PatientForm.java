@@ -81,7 +81,7 @@ public class PatientForm extends Form {
         } else {
             patient.firstNameYomi = firstNameYomi;
         }
-        Result<LocalDate> birthdayResult = birthdayInput.getValue();
+        Result<LocalDate> birthdayResult = birthdayInput.getResultValue();
         if( birthdayResult.hasError() ){
             errs.add("生年月日の入力が不適切です。" + String.join("", birthdayResult.errors));
         } else {

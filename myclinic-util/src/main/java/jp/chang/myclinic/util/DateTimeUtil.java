@@ -3,8 +3,11 @@ package jp.chang.myclinic.util;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.chrono.JapaneseDate;
+import java.time.chrono.JapaneseEra;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+
+import static java.time.temporal.ChronoField.YEAR_OF_ERA;
 
 public class DateTimeUtil {
 
@@ -77,6 +80,16 @@ public class DateTimeUtil {
 
 	public static String toSqlDateTime(LocalDateTime at){
 		return at.format(sqlDateTimeFormatter);
+	}
+
+	public static JapaneseEra getEra(LocalDate localDate){
+		JapaneseDate jd = JapaneseDate.from(localDate);
+		return jd.getEra();
+	}
+
+	public static int getNen(LocalDate localDate){
+		JapaneseDate jd = JapaneseDate.from(localDate);
+		return jd.get(YEAR_OF_ERA);
 	}
 
 	public static int calcAge(LocalDate birthday, LocalDate at){

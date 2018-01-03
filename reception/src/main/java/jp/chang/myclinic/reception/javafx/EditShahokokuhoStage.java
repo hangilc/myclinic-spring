@@ -1,9 +1,6 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,6 +11,8 @@ import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+
 public class EditShahokokuhoStage extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(EditShahokokuhoStage.class);
@@ -22,6 +21,7 @@ public class EditShahokokuhoStage extends Stage {
     private StringProperty hihokenshaKigou = new SimpleStringProperty();
     private StringProperty hihokenshaBangou = new SimpleStringProperty();
     private IntegerProperty honnin = new SimpleIntegerProperty();
+    private Property<LocalDate> validFrom = new SimpleObjectProperty<LocalDate>();
 
     public EditShahokokuhoStage(){
         setTitle("新規社保国保入力");
@@ -63,6 +63,7 @@ public class EditShahokokuhoStage extends Stage {
             }
             {
                 DateInput validFromInput = new DateInput();
+                validFrom.bindBidirectional(validFromInput.valueProperty());
                 form.add("資格取得日", validFromInput);
             }
             {
@@ -105,6 +106,7 @@ public class EditShahokokuhoStage extends Stage {
         System.out.println(hihokenshaKigou.get());
         System.out.println(hihokenshaBangou.get());
         System.out.println(honnin.get());
+        System.out.println(validFrom.getValue());
     }
 
 }
