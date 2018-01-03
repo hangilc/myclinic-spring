@@ -1,5 +1,6 @@
 package jp.chang.myclinic.reception.javafx;
 
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -40,7 +41,11 @@ public class PatientInfoStage extends Stage {
     private void doEdit(PatientDTO patient){
         Service.api.listHoken(patient.patientId)
                 .thenAccept(hokenList -> {
-                    System.out.println(hokenList);
+                    Platform.runLater(() -> {
+                        close();
+                        PatientWithHokenStage stage = new PatientWithHokenStage(patient, hokenList);
+                        stage.showAndWait();
+                    });
                 })
                 .exceptionally(ex -> {
                     logger.error("Failed to fetch hoken list.", ex);

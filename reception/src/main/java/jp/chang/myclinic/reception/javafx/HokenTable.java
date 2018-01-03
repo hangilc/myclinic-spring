@@ -2,16 +2,18 @@ package jp.chang.myclinic.reception.javafx;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import jp.chang.myclinic.dto.KouhiDTO;
-import jp.chang.myclinic.dto.KoukikoureiDTO;
-import jp.chang.myclinic.dto.RoujinDTO;
-import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class HokenTable extends TableView<HokenTable.Model> {
 
@@ -127,7 +129,9 @@ public class HokenTable extends TableView<HokenTable.Model> {
         }
     }
 
-    public HokenTable(){
+    public HokenTable(HokenListDTO hokenList){
+        setMaxWidth(Double.MAX_VALUE);
+
         TableColumn<Model, String> nameColumn = new TableColumn<>("種別");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
@@ -145,5 +149,16 @@ public class HokenTable extends TableView<HokenTable.Model> {
 
         getColumns().addAll(Arrays.asList(nameColumn, validFromColumn, validUptoColumn,
                 honninKazokuColumn, futanWariColumn));
+
+        setHokenList(hokenList);
+    }
+
+    private void setHokenList(HokenListDTO hokenList){
+        List<Model> models = new ArrayList<>();
+        if( hokenList.shahokokuhoListDTO != null ){
+            models.addAll(hokenList.shahokokuhoListDTO.stream().map(Model::fromShahokokuho).collect(Collectors.toList()));
+        }
+        ObservableList<Model> items = FXCollections.observableList(models);
+        setItems(items);
     }
 }
