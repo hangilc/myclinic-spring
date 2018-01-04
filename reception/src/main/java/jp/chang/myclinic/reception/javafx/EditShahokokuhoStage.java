@@ -63,6 +63,7 @@ public class EditShahokokuhoStage extends Stage {
             }
             {
                 DateInput validFromInput = new DateInput();
+                validFromInput.setValue(LocalDate.of(1957, 6, 2));
                 validFrom.bindBidirectional(validFromInput.valueProperty());
                 form.add("資格取得日", validFromInput);
             }
