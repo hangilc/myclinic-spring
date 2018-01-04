@@ -1,10 +1,8 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.Observable;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ChoiceBox;
@@ -28,50 +26,20 @@ public class DateInput extends HBox {
     private TextField dayInput = new TextField();
     private Property<LocalDate> value = new SimpleObjectProperty<>();
     public static LocalDate EMPTY_VALUE = LocalDate.MAX;
-    Observable[] inputs;
-    InputBinding inputBinding;
-    ChangeListener<LocalDate> valueListener;
-
-    private class InputBinding extends ObjectBinding<LocalDate> {
-        private Observable[] deps;
-
-        InputBinding(Observable[] deps){
-            this.deps = deps;
-            link();
-        }
-
-        @Override
-        protected LocalDate computeValue() {
-            return computeDate();
-        }
-
-        public void link(){
-            bind(deps);
-        }
-
-        public void unlink(){
-            unbind(deps);
-        }
-    }
 
     public DateInput() {
-        getChildren().addAll(gengouChoice, nenInput, new Label("年"), monthInput, new Label("月"),
-                dayInput, new Label("日"));
-        setAlignment(Pos.CENTER_LEFT);
-        setMargin(nenInput, new Insets(0, 0, 0, 2));
-        setMargin(monthInput, new Insets(0, 0, 0, 4));
-        setMargin(dayInput, new Insets(0, 0, 0, 4));
-        gengouChoice.setPrefWidth(64);
-        gengouChoice.setMaxWidth(Control.USE_PREF_SIZE);
-        gengouChoice.setMinWidth(Control.USE_PREF_SIZE);
-        setTextFieldWidths(nenInput);
-        setTextFieldWidths(monthInput);
-        setTextFieldWidths(dayInput);
-        initialize();
-        inputs = new Observable[]{gengouChoice.valueProperty(), nenInput.textProperty(),
-                monthInput.textProperty(), dayInput.textProperty()};
-        inputBinding = new InputBinding(inputs);
-        valueListener = (obs, oldValue, newValue) -> {
+        setupUI();
+        value.bind(new ObjectBinding<LocalDate>(){
+            {
+                bind(gengouChoice.valueProperty(), nenInput.textProperty(),
+                        monthInput.textProperty(), dayInput.textProperty());
+            }
+            @Override
+            protected LocalDate computeValue() {
+                return computeDate();
+            }
+        });
+        value.addListener((obs, oldValue, newValue) -> {
             if( newValue == EMPTY_VALUE ){
                 nenInput.setText("");
                 monthInput.setText("");
@@ -85,8 +53,35 @@ public class DateInput extends HBox {
                 monthInput.setText("" + newValue.getMonth().getValue());
                 dayInput.setText("" + newValue.getDayOfMonth());
             }
-        };
-        value.bind(inputBinding);
+        });
+    }
+
+    private void setupUI(){
+        getChildren().addAll(gengouChoice, nenInput, new Label("年"), monthInput, new Label("月"),
+                dayInput, new Label("日"));
+        setAlignment(Pos.CENTER_LEFT);
+        setMargin(nenInput, new Insets(0, 0, 0, 2));
+        setMargin(monthInput, new Insets(0, 0, 0, 4));
+        setMargin(dayInput, new Insets(0, 0, 0, 4));
+        gengouChoice.setPrefWidth(64);
+        gengouChoice.setMaxWidth(Control.USE_PREF_SIZE);
+        gengouChoice.setMinWidth(Control.USE_PREF_SIZE);
+        setTextFieldWidths(nenInput);
+        setTextFieldWidths(monthInput);
+        setTextFieldWidths(dayInput);
+        gengouChoice.setConverter(new StringConverter<Gengou>(){
+            @Override
+            public String toString(Gengou gengou) {
+                return gengou.getKanji();
+            }
+
+            @Override
+            public Gengou fromString(String string) {
+                return Gengou.fromKanji(string);
+            }
+        });
+        setGengouItems(Gengou.Heisei, Gengou.Shouwa, Gengou.Taishou, Gengou.Meiji);
+        selectGengou(Gengou.Shouwa);
     }
 
     private LocalDate computeDate(){
@@ -115,22 +110,6 @@ public class DateInput extends HBox {
         tf.setMinWidth(Control.USE_PREF_SIZE);
     }
 
-    private void initialize(){
-        gengouChoice.setConverter(new StringConverter<Gengou>(){
-            @Override
-            public String toString(Gengou gengou) {
-                return gengou.getKanji();
-            }
-
-            @Override
-            public Gengou fromString(String string) {
-                return Gengou.fromKanji(string);
-            }
-        });
-        setGengouItems(Gengou.Heisei, Gengou.Shouwa, Gengou.Taishou, Gengou.Meiji);
-        selectGengou(Gengou.Shouwa);
-    }
-
     public void setGengouItems(Gengou... gengouItems){
         gengouChoice.getItems().clear();
         gengouChoice.getItems().addAll(gengouItems);
@@ -149,14 +128,7 @@ public class DateInput extends HBox {
     }
 
     public void setValue(LocalDate value) {
-        this.value.addListener(valueListener);
-        this.value.unbind();
         this.value.setValue(value);
-        this.value.removeListener(valueListener);
-        this.value.bind(inputBinding);
     }
 
-    public boolean isEmpty(){
-        return nenInput.getText().isEmpty() && monthInput.getText().isEmpty() && dayInput.getText().isEmpty();
-    }
 }
