@@ -7,21 +7,28 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
+import jp.chang.myclinic.reception.lib.ShahokokuhoConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditShahokokuhoStage extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(EditShahokokuhoStage.class);
 
-    private StringProperty hokenshaBangou = new SimpleStringProperty();
-    private StringProperty hihokenshaKigou = new SimpleStringProperty();
-    private StringProperty hihokenshaBangou = new SimpleStringProperty();
+    private StringProperty hokenshaBangou = new SimpleStringProperty("");
+    private StringProperty hihokenshaKigou = new SimpleStringProperty("");
+    private StringProperty hihokenshaBangou = new SimpleStringProperty("");
     private IntegerProperty honnin = new SimpleIntegerProperty();
     private Property<LocalDate> validFrom = new SimpleObjectProperty<LocalDate>();
+    private Property<LocalDate> validUpto = new SimpleObjectProperty<LocalDate>();
+    private IntegerProperty kourei = new SimpleIntegerProperty();
 
     public EditShahokokuhoStage(){
         setTitle("新規社保国保入力");
@@ -63,24 +70,28 @@ public class EditShahokokuhoStage extends Stage {
             }
             {
                 DateInput validFromInput = new DateInput();
-                validFromInput.setValue(LocalDate.of(1957, 6, 2));
+                validFromInput.setGengouItems(Gengou.Recent.toArray(new Gengou[]{}));
+                validFromInput.selectGengou(Gengou.Current);
                 validFrom.bindBidirectional(validFromInput.valueProperty());
                 form.add("資格取得日", validFromInput);
             }
             {
                 DateInput validUptoInput = new DateInput();
+                validUptoInput.setGengouItems(Gengou.Recent.toArray(new Gengou[]{}));
+                validUptoInput.selectGengou(Gengou.Current);
+                validUpto.bindBidirectional(validUptoInput.valueProperty());
                 form.add("有効期限", validUptoInput);
             }
             {
                 HBox row = new HBox(4);
                 row.setAlignment(Pos.CENTER_LEFT);
-                RadioButton noKoureiButton = new RadioButton("高齢でない");
-                RadioButton futan1Button = new RadioButton("1割");
-                RadioButton futan2Button = new RadioButton("2割");
-                RadioButton futan3Button = new RadioButton("3割");
-                ToggleGroup group = new ToggleGroup();
+                RadioButtonGroup<Number> group = new RadioButtonGroup<>();
+                RadioButton noKoureiButton = group.createRadioButton("高齢でない", 0);
+                RadioButton futan1Button = group.createRadioButton("1割", 1);
+                RadioButton futan2Button = group.createRadioButton("2割", 2);
+                RadioButton futan3Button = group.createRadioButton("3割", 3);
                 noKoureiButton.setSelected(true);
-                group.getToggles().addAll(noKoureiButton, futan1Button, futan2Button, futan3Button);
+                kourei.bindBidirectional(group.valueProperty());
                 row.getChildren().addAll(noKoureiButton, futan1Button, futan2Button, futan3Button);
                 form.add("高齢", row);
             }
@@ -103,11 +114,23 @@ public class EditShahokokuhoStage extends Stage {
     }
 
     private void doEnter(){
-        System.out.println(hokenshaBangou.get());
-        System.out.println(hihokenshaKigou.get());
-        System.out.println(hihokenshaBangou.get());
-        System.out.println(honnin.get());
-        System.out.println(validFrom.getValue());
+        ShahokokuhoDTO data = new ShahokokuhoDTO();
+        ShahokokuhoConverter cvt = new ShahokokuhoConverter();
+        List<String> errs = new ArrayList<>();
+        cvt.convertToHokenshaBangou(hokenshaBangou.get(), errs, val -> { data.hokenshaBangou = val; });
+        cvt.convertToHihokenshaKigou(hihokenshaKigou.get(), errs, val -> { data.hihokenshaKigou = val; });
+        cvt.convertToHihokenshaBangou(hihokenshaBangou.get(), errs, val -> { data.hihokenshaBangou = val; });
+        cvt.convertToHonninKazoku(honnin.getValue(), errs, val -> { data.honnin = val; });
+        cvt.convertToValidFrom(validFrom.getValue(), errs, val -> {  data.validFrom = val; });
+        cvt.convertToValidUpto(validUpto.getValue(), errs, val -> { data.validUpto = val; });
+        cvt.convertToKourei(kourei.getValue(), errs, val -> { data.kourei = val; });
+        cvt.integrationCheck(data, errs);
+        if( errs.size() > 0 ){
+            System.out.println(data);
+            System.out.println(errs);
+        } else {
+            System.out.println(data);
+        }
     }
 
 }

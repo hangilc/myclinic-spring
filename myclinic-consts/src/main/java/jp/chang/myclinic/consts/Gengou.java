@@ -1,6 +1,8 @@
 package jp.chang.myclinic.consts;
 
 import java.time.chrono.JapaneseEra;
+import java.util.ArrayList;
+import java.util.List;
 
 public enum Gengou {
 	Meiji(JapaneseEra.MEIJI, "明治"),
@@ -43,4 +45,10 @@ public enum Gengou {
 	}
 
 	public static Gengou Current = Heisei;
+
+	public static List<Gengou> Recent = new ArrayList<Gengou>();
+	static {
+		Recent.add(Heisei);
+	}
+
 }
