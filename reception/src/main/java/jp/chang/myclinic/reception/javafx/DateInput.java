@@ -1,6 +1,5 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -29,15 +28,17 @@ public class DateInput extends HBox {
 
     public DateInput() {
         setupUI();
-        value.bind(new ObjectBinding<LocalDate>(){
-            {
-                bind(gengouChoice.valueProperty(), nenInput.textProperty(),
-                        monthInput.textProperty(), dayInput.textProperty());
-            }
-            @Override
-            protected LocalDate computeValue() {
-                return computeDate();
-            }
+        gengouChoice.valueProperty().addListener(obs -> {
+            value.setValue(computeDate());
+        });
+        nenInput.textProperty().addListener(obs -> {
+            value.setValue(computeDate());
+        });
+        monthInput.textProperty().addListener(obs -> {
+            value.setValue(computeDate());
+        });
+        dayInput.textProperty().addListener(obs -> {
+            value.setValue(computeDate());
         });
         value.addListener((obs, oldValue, newValue) -> {
             if( newValue == EMPTY_VALUE ){
