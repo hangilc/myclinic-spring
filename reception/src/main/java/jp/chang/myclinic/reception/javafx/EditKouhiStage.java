@@ -1,7 +1,6 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -10,11 +9,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.dto.KouhiDTO;
+import jp.chang.myclinic.reception.converter.KouhiConverter;
 
 import java.time.LocalDate;
 
 public class EditKouhiStage extends Stage {
 
+    private StringProperty futansha = new SimpleStringProperty();
+    private StringProperty jukyuusha = new SimpleStringProperty();
     private ObjectProperty<LocalDate> validFrom = new SimpleObjectProperty<LocalDate>();
     private ObjectProperty<LocalDate> validUpto = new SimpleObjectProperty<LocalDate>();
 
@@ -23,13 +26,15 @@ public class EditKouhiStage extends Stage {
         {
             Form form = new Form();
             {
-                TextField futanshaBangou = new TextField();
-                futanshaBangou.setPrefWidth(160);
-                form.add("負担者番号", futanshaBangou);
+                TextField futanshaBangouInput = new TextField();
+                futanshaBangouInput.setPrefWidth(160);
+                futansha.bindBidirectional(futanshaBangouInput.textProperty());
+                form.add("負担者番号", futanshaBangouInput);
             }
             {
                 TextField jukyuushaBangouInput = new TextField();
                 jukyuushaBangouInput.setPrefWidth(160);
+                jukyuusha.bindBidirectional(jukyuushaBangouInput.textProperty());
                 form.add("受給者番号", jukyuushaBangouInput);
             }
             {
@@ -65,7 +70,22 @@ public class EditKouhiStage extends Stage {
     }
 
     private void doEnter(){
+        KouhiDTO data = new KouhiDTO();
+        KouhiConverter cvt = new KouhiConverter();
+        cvt.convertToFutansha(futansha.get(), value -> { data.futansha = value; });
+        cvt.convertToJukyuusha(jukyuusha.get(), value -> { data.jukyuusha = value; });
+        cvt.convertToValidFrom(validFrom.getValue(), value -> { data.validFrom = value; });
+        cvt.convertToValidUpto(validUpto.getValue(), value -> { data.validUpto = value; });
+        if( cvt.hasError() ){
+            System.out.println(cvt.getErrors());
+            System.out.println(data);
+        } else {
+            processData(data);
+        }
+    }
 
+    protected void processData(KouhiDTO data){
+        System.out.println(data);
     }
 
 }

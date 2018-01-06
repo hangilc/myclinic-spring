@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 class ConverterBase {
     private List<String> errors = new ArrayList<>();
@@ -36,6 +37,34 @@ class ConverterBase {
         } else {
             cb.accept(src.toString());
         }
+    }
+
+    protected void convertToInt(String src, String name, Function<Integer, String> check, Consumer<Integer> cb){
+        if( src == null || src.isEmpty() ){
+            addError(name + "の値が入力されていません。");
+        } else {
+            try {
+                Integer value = Integer.parseInt(src);
+                String err = check.apply(value);
+                if (err == null) {
+                    cb.accept(value);
+                } else {
+                    addError(err);
+                }
+            } catch (NumberFormatException ex) {
+                addError(name + "の値が数値でありません。");
+            }
+        }
+    }
+
+    protected void convertToPositiveInt(String src, String name, Consumer<Integer> cb){
+        convertToInt(src, name, ival -> {
+            if( !(ival > 0) ){
+                return name + "の値が正の値でありません。";
+            } else {
+                return null;
+            }
+        }, cb);
     }
 
     protected void validPeriodCheck(String validFrom, String validUpto, String validFromName, String validUptoName){
