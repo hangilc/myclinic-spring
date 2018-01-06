@@ -35,6 +35,8 @@ public class MainPane extends VBox {
         {
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.CENTER_LEFT);
+            searchPatientButton.setOnAction(event -> doSearchPatient());
+            blankReceiptButton.setOnAction(event -> doBlankReceipt());
             hbox.getChildren().addAll(newPatientButton, searchPatientButton, searchPaymentButton, blankReceiptButton);
             getChildren().add(hbox);
         }
@@ -68,6 +70,11 @@ public class MainPane extends VBox {
         }
     }
 
+    private void doSearchPatient(){
+        SearchPatientStage stage = new SearchPatientStage();
+        stage.show();
+    }
+
     private void doPatientInfo(){
         String text = patientIdField.getText().trim();
         if( text.isEmpty() ){
@@ -92,5 +99,10 @@ public class MainPane extends VBox {
             Alert alert = new Alert(Alert.AlertType.ERROR, "患者番号の入力が適切でありません。", ButtonType.OK);
             alert.showAndWait();
         }
+    }
+
+    private void doBlankReceipt(){
+        ReceiptPreviewStage stage = new ReceiptPreviewStage();
+        stage.show();
     }
 }

@@ -19,6 +19,7 @@ public class EditPatientStage extends Stage {
             Scene scene = new Scene(root);
             setTitle("受付");
             setScene(scene);
+            System.out.println("EditPatientStage");
         } catch(Exception ex){
             logger.error("failed to start hotline", ex);
             System.exit(1);

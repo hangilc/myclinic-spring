@@ -74,6 +74,8 @@ public class PatientWithHokenStage extends Stage {
                 Button newKoukikoureiButton = new Button("新規後期高齢");
                 Button newKouhiButton = new Button("新規公費負担");
                 newShahokokuhoButton.setOnAction(event -> doNewShahokokuho());
+                newKoukikoureiButton.setOnAction(event -> doNewKoukikourei());
+                newKouhiButton.setOnAction(event -> doNewKouhi());
                 row.getChildren().addAll(newShahokokuhoButton, newKoukikoureiButton, newKouhiButton);
                 vbox.getChildren().add(row);
             }
@@ -124,6 +126,16 @@ public class PatientWithHokenStage extends Stage {
 
     private void doNewShahokokuho(){
         EditShahokokuhoStage stage = new EditShahokokuhoStage();
+        stage.showAndWait();
+    }
+
+    private void doNewKoukikourei(){
+        EditKoukikoureiStage stage = new EditKoukikoureiStage();
+        stage.showAndWait();
+    }
+
+    private void doNewKouhi(){
+        EditKouhiStage stage = new EditKouhiStage();
         stage.showAndWait();
     }
 

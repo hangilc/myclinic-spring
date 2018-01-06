@@ -1,31 +1,36 @@
 package jp.chang.myclinic.reception.javafx;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 
 import java.time.LocalDate;
 
-public class EditKouhiStage extends Stage {
+class EditRoujinStage extends Stage {
 
     private ObjectProperty<LocalDate> validFrom = new SimpleObjectProperty<LocalDate>();
     private ObjectProperty<LocalDate> validUpto = new SimpleObjectProperty<LocalDate>();
+    private IntegerProperty futanWari = new SimpleIntegerProperty();
 
-    public EditKouhiStage(){
+    public EditRoujinStage(){
         VBox root = new VBox(4);
         {
             Form form = new Form();
             {
-                TextField futanshaBangou = new TextField();
-                futanshaBangou.setPrefWidth(160);
-                form.add("負担者番号", futanshaBangou);
+                TextField shichousonBangouInput = new TextField();
+                shichousonBangouInput.setPrefWidth(160);
+                form.add("市町村番号", shichousonBangouInput);
             }
             {
                 TextField jukyuushaBangouInput = new TextField();
@@ -45,6 +50,18 @@ public class EditKouhiStage extends Stage {
                 validUptoInput.selectGengou(Gengou.Current);
                 validUpto.bindBidirectional(validUptoInput.valueProperty());
                 form.add("有効期限", validUptoInput);
+            }
+            {
+                HBox row = new HBox(4);
+                row.setAlignment(Pos.CENTER_LEFT);
+                RadioButtonGroup<Number> group = new RadioButtonGroup<>();
+                RadioButton futan1Button = group.createRadioButton("1割", 1);
+                RadioButton futan2Button = group.createRadioButton("2割", 2);
+                RadioButton futan3Button = group.createRadioButton("3割", 3);
+                futan1Button.setSelected(true);
+                futanWari.bindBidirectional(group.valueProperty());
+                row.getChildren().addAll(futan1Button, futan2Button, futan3Button);
+                form.add("負担割", row);
             }
             root.getChildren().add(form);
         }
@@ -67,5 +84,4 @@ public class EditKouhiStage extends Stage {
     private void doEnter(){
 
     }
-
 }

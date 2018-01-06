@@ -45,7 +45,8 @@ public class EditPatientSceneController {
     }
 
     public void onNewKoukikoureiClick(ActionEvent actionEvent) {
-        EditKoureiStage stage = new EditKoureiStage();
+        System.out.println("Koukikourei");
+        EditKoukikoureiStage stage = new EditKoukikoureiStage();
         stage.show();
     }
 
