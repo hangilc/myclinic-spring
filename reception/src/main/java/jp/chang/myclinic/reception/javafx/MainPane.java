@@ -36,6 +36,7 @@ public class MainPane extends VBox {
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.CENTER_LEFT);
             searchPatientButton.setOnAction(event -> doSearchPatient());
+            searchPaymentButton.setOnAction(event -> doSearchPayment());
             blankReceiptButton.setOnAction(event -> doBlankReceipt());
             hbox.getChildren().addAll(newPatientButton, searchPatientButton, searchPaymentButton, blankReceiptButton);
             getChildren().add(hbox);
@@ -72,6 +73,11 @@ public class MainPane extends VBox {
 
     private void doSearchPatient(){
         SearchPatientStage stage = new SearchPatientStage();
+        stage.show();
+    }
+
+    private void doSearchPayment(){
+        SearchPaymentStage stage = new SearchPaymentStage();
         stage.show();
     }
 
