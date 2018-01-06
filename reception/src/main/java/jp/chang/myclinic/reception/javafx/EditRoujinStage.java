@@ -1,9 +1,6 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -13,12 +10,16 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.dto.RoujinDTO;
+import jp.chang.myclinic.reception.converter.RoujinConverter;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 
 import java.time.LocalDate;
 
 class EditRoujinStage extends Stage {
 
+    private StringProperty shichouson = new SimpleStringProperty();
+    private StringProperty jukyuusha = new SimpleStringProperty();
     private ObjectProperty<LocalDate> validFrom = new SimpleObjectProperty<LocalDate>();
     private ObjectProperty<LocalDate> validUpto = new SimpleObjectProperty<LocalDate>();
     private IntegerProperty futanWari = new SimpleIntegerProperty();
@@ -30,11 +31,13 @@ class EditRoujinStage extends Stage {
             {
                 TextField shichousonBangouInput = new TextField();
                 shichousonBangouInput.setPrefWidth(160);
+                shichouson.bindBidirectional(shichousonBangouInput.textProperty());
                 form.add("市町村番号", shichousonBangouInput);
             }
             {
                 TextField jukyuushaBangouInput = new TextField();
                 jukyuushaBangouInput.setPrefWidth(160);
+                jukyuusha.bindBidirectional(jukyuushaBangouInput.textProperty());
                 form.add("受給者番号", jukyuushaBangouInput);
             }
             {
@@ -82,6 +85,22 @@ class EditRoujinStage extends Stage {
     }
 
     private void doEnter(){
+        RoujinDTO data = new RoujinDTO();
+        RoujinConverter cvt = new RoujinConverter();
+        cvt.convertToShichouson(shichouson.getValue(), value -> { data.shichouson = value; });
+        cvt.convertToJukyuusha(jukyuusha.getValue(), value -> { data.jukyuusha = value; });
+        cvt.convertToValidFrom(validFrom.getValue(), value -> { data.validFrom = value; });
+        cvt.convertToValidUpto(validUpto.getValue(), value -> { data.validUpto = value; });
+        cvt.convertToFutanWari(futanWari.getValue(), value -> { data.futanWari = value; });
+        if( cvt.hasError() ){
+            System.out.println(cvt.getErrors());
+            System.out.println(data);
+        } else {
+            processData(data);
+        }
+    }
 
+    protected void processData(RoujinDTO data){
+        System.out.println(data);
     }
 }
