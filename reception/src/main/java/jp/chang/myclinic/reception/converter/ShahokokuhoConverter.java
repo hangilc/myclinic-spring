@@ -1,4 +1,4 @@
-package jp.chang.myclinic.reception.lib;
+package jp.chang.myclinic.reception.converter;
 
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 

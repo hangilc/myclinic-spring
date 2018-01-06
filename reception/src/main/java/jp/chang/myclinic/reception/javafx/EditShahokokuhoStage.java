@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
-import jp.chang.myclinic.reception.lib.ShahokokuhoConverter;
+import jp.chang.myclinic.reception.converter.ShahokokuhoConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

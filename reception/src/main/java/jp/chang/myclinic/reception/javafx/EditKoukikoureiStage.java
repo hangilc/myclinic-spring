@@ -1,9 +1,6 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -13,12 +10,16 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.dto.KoukikoureiDTO;
+import jp.chang.myclinic.reception.converter.KoukikoureiConverter;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 
 import java.time.LocalDate;
 
 public class EditKoukikoureiStage extends Stage {
 
+    private StringProperty hokenshaBangou = new SimpleStringProperty();
+    private StringProperty hihokenshaBangou = new SimpleStringProperty();
     private ObjectProperty<LocalDate> validFrom = new SimpleObjectProperty<LocalDate>();
     private ObjectProperty<LocalDate> validUpto = new SimpleObjectProperty<LocalDate>();
     private IntegerProperty futanWari = new SimpleIntegerProperty();
@@ -30,11 +31,13 @@ public class EditKoukikoureiStage extends Stage {
             {
                 TextField hokenshaBangouInput = new TextField();
                 hokenshaBangouInput.setPrefWidth(160);
+                hokenshaBangou.bindBidirectional(hokenshaBangouInput.textProperty());
                 form.add("保険者番号", hokenshaBangouInput);
             }
             {
                 TextField hihokenshaBangouInput = new TextField();
                 hihokenshaBangouInput.setPrefWidth(160);
+                hihokenshaBangou.bindBidirectional(hihokenshaBangouInput.textProperty());
                 form.add("被保険者番号", hihokenshaBangouInput);
             }
             {
@@ -82,6 +85,23 @@ public class EditKoukikoureiStage extends Stage {
     }
 
     private void doEnter(){
+        KoukikoureiDTO data = new KoukikoureiDTO();
+        KoukikoureiConverter cvt = new KoukikoureiConverter();
+        cvt.convertToHokenshaBangou(hokenshaBangou.get(), value -> { data.hokenshaBangou = value; });
+        cvt.convertToHihokenshaBangou(hihokenshaBangou.get(), value -> { data.hihokenshaBangou = value; });
+        cvt.convertToValidFrom(validFrom.getValue(), value -> { data.validFrom = value; });
+        cvt.convertToValidUpto(validUpto.getValue(), value -> { data.validUpto = value; });
+        cvt.convertToFutanWari(futanWari.get(), value -> { data.futanWari = value; });
+        cvt.integralCheck(data);
+        if( cvt.hasError() ){
+            System.out.println(cvt.getErrors());
+            System.out.println(data);
+        } else {
+            processData(data);
+        }
+    }
 
+    protected void processData(KoukikoureiDTO data){
+        System.out.println(data);
     }
 }
