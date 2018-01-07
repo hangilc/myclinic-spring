@@ -19,6 +19,7 @@ import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.Service;
 import jp.chang.myclinic.util.KoukikoureiUtil;
+import jp.chang.myclinic.util.RoujinUtil;
 import jp.chang.myclinic.util.ShahokokuhoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -269,6 +270,23 @@ public class PatientWithHokenStage extends Stage {
                         })
                         .exceptionally(ex -> {
                             logger.error("Failed to delete koukikourei.", ex);
+                            Platform.runLater(() -> GuiUtil.alertException(ex));
+                            return null;
+                        });
+            }
+        }
+        else if( model instanceof HokenTable.RoujinModel ){
+            HokenTable.RoujinModel roujinModel = (HokenTable.RoujinModel)model;
+            String rep = RoujinUtil.rep(roujinModel.orig);
+            if( GuiUtil.confirm("この保険情報を削除しますか？\n" + rep) ){
+                Service.api.deleteRoujin(roujinModel.orig)
+                        .thenAccept(ok -> {
+                            if( ok ){
+                                Platform.runLater(this::fetchAndUpdateHokenList);
+                            }
+                        })
+                        .exceptionally(ex -> {
+                            logger.error("Failed to delete roujin.", ex);
                             Platform.runLater(() -> GuiUtil.alertException(ex));
                             return null;
                         });
