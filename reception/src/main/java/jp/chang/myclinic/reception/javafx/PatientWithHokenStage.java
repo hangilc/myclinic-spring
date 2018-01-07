@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.Service;
+import jp.chang.myclinic.util.ShahokokuhoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +35,12 @@ public class PatientWithHokenStage extends Stage {
     private HokenListDTO hokenList;
     private ObjectProperty<ObservableList<HokenTable.Model>> tableModels =
             new SimpleObjectProperty<>(FXCollections.emptyObservableList());
+    private ObjectProperty<HokenTable.Model> tableSelection = new SimpleObjectProperty<>();
 
     public PatientWithHokenStage(PatientDTO patient, HokenListDTO hokenList) {
         this.patientId = patient.patientId;
         this.hokenList = hokenList;
+        HokenTable hokenTable = new HokenTable();
         VBox root = new VBox(4);
         root.setFillWidth(true);
         {
@@ -57,8 +60,8 @@ public class PatientWithHokenStage extends Stage {
         {
             VBox vbox = new VBox(4);
             vbox.setFillWidth(true);
-            HokenTable hokenTable = new HokenTable();
             hokenTable.itemsProperty().bind(tableModels);
+            tableSelection.bind(hokenTable.getSelectionModel().selectedItemProperty());
             {
                 HBox hbox = new HBox(4);
                 hbox.setMaxWidth(Double.MAX_VALUE);
@@ -68,6 +71,13 @@ public class PatientWithHokenStage extends Stage {
                     VBox buttons = new VBox(4);
                     Button editButton = new Button("編集");
                     Button deleteButton = new Button("削除");
+                    editButton.setDisable(true);
+                    deleteButton.setDisable(true);
+                    tableSelection.addListener((obs, oldValue, newValue) -> {
+                        editButton.setDisable(newValue == null);
+                        deleteButton.setDisable(newValue == null);
+                    });
+                    deleteButton.setOnAction(event -> doDeleteHoken(tableSelection.get()));
                     buttons.getChildren().addAll(editButton, deleteButton);
                     hbox.getChildren().add(buttons);
                 }
@@ -212,6 +222,26 @@ public class PatientWithHokenStage extends Stage {
                     alert.showAndWait();
                     return null;
                 });
+    }
+
+    private void doDeleteHoken(HokenTable.Model model){
+        if( model instanceof HokenTable.ShahokokuhoModel ){
+            HokenTable.ShahokokuhoModel shahokokuhoModel = (HokenTable.ShahokokuhoModel)model;
+            String rep = ShahokokuhoUtil.rep(shahokokuhoModel.orig);
+            if( GuiUtil.confirm("この保険情報を削除しますか？\n" + rep) ){
+                Service.api.deleteShahokokuho(shahokokuhoModel.orig)
+                        .thenAccept(ok -> {
+                            if( ok ){
+                                Platform.runLater(this::fetchAndUpdateHokenList);
+                            }
+                        })
+                        .exceptionally(ex -> {
+                            logger.error("Failed to delete shahokokuho.", ex);
+                            GuiUtil.alertError("社保・国保の削除に失敗しました。" + ex);
+                            return null;
+                        });
+            }
+        }
     }
 
 }
