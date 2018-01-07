@@ -237,7 +237,7 @@ public class PatientWithHokenStage extends Stage {
                         })
                         .exceptionally(ex -> {
                             logger.error("Failed to delete shahokokuho.", ex);
-                            GuiUtil.alertError("社保・国保の削除に失敗しました。" + ex);
+                            Platform.runLater(() -> GuiUtil.alertError("社保・国保の削除に失敗しました。\n" + ex));
                             return null;
                         });
             }

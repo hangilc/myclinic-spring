@@ -16,4 +16,6 @@ public interface ShahokokuhoRepository extends CrudRepository<Shahokokuho, Integ
     Stream<Shahokokuho> findAvailable(int patientId, String at, Sort sort);
 
     List<Shahokokuho> findByPatientId(int patientId, Sort sort);
+
+    Integer countByShahokokuhoId(int shahokokuhoId);
 }

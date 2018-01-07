@@ -252,6 +252,10 @@ public class DbGateway {
     }
 
     public void deleteShahokokuho(int shahokokuhoId){
+        int usage = shahokokuhoRepository.countByShahokokuhoId(shahokokuhoId);
+        if( usage != 0 ){
+            throw new RuntimeException("この社保・国保はすでに使用されているので、削除できません。");
+        }
         shahokokuhoRepository.delete(shahokokuhoId);
     }
 
