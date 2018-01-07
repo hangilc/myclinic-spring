@@ -1,12 +1,15 @@
 package jp.chang.myclinic.reception.javafx;
 
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -17,10 +20,15 @@ import jp.chang.myclinic.reception.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class SearchPatientStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(SearchPatientStage.class);
 
     private StringProperty searchText = new SimpleStringProperty();
+    private ObjectProperty<ObservableList<PatientTable.Model>> searchResult =
+            new SimpleObjectProperty<>(FXCollections.emptyObservableList());
 
     public SearchPatientStage(){
         VBox root = new VBox(4);
@@ -38,7 +46,8 @@ public class SearchPatientStage extends Stage {
             root.getChildren().add(hbox);
         }
         {
-            TableView tableView = new TableView();
+            PatientTable tableView = new PatientTable();
+            tableView.itemsProperty().bindBidirectional(searchResult);
             tableView.setPrefWidth(425);
             tableView.setPrefHeight(250);
             root.getChildren().add(tableView);
@@ -73,7 +82,12 @@ public class SearchPatientStage extends Stage {
         }
         Service.api.searchPatient(text)
                 .thenAccept(list -> {
-                    System.out.println(list);
+                    Platform.runLater(() -> {
+                        List<PatientTable.Model> models = list.stream()
+                                .map(PatientTable.Model::fromPatient)
+                                .collect(Collectors.toList());
+                        searchResult.setValue(FXCollections.observableArrayList(models));
+                    });
                 })
                 .exceptionally(ex -> {
                     logger.error("Search patient failed.", ex);
