@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.Service;
+import jp.chang.myclinic.util.KouhiUtil;
 import jp.chang.myclinic.util.KoukikoureiUtil;
 import jp.chang.myclinic.util.RoujinUtil;
 import jp.chang.myclinic.util.ShahokokuhoUtil;
@@ -194,6 +195,22 @@ public class PatientWithHokenStage extends Stage {
 
     private void doNewKouhi() {
         EditKouhiStage stage = new EditKouhiStage();
+        stage.setOnEnter(data -> {
+            data.patientId = patientId;
+            Service.api.enterKouhi(data)
+                    .thenAccept(kouhiId -> {
+                        Platform.runLater(() -> {
+                            data.kouhiId = kouhiId;
+                            fetchAndUpdateHokenList();
+                            stage.close();
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        logger.error("Failed to enter kouhi.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException("公費負担の新規登録に失敗しました。", ex));
+                        return null;
+                    });
+        });
         stage.showAndWait();
     }
 
@@ -287,6 +304,23 @@ public class PatientWithHokenStage extends Stage {
                         })
                         .exceptionally(ex -> {
                             logger.error("Failed to delete roujin.", ex);
+                            Platform.runLater(() -> GuiUtil.alertException(ex));
+                            return null;
+                        });
+            }
+        }
+        else if( model instanceof HokenTable.KouhiModel ){
+            HokenTable.KouhiModel kouhiModel = (HokenTable.KouhiModel)model;
+            String rep = KouhiUtil.rep(kouhiModel.orig);
+            if( GuiUtil.confirm("この保険情報を削除しますか？\n" + rep) ){
+                Service.api.deleteKouhi(kouhiModel.orig)
+                        .thenAccept(ok -> {
+                            if( ok ){
+                                Platform.runLater(this::fetchAndUpdateHokenList);
+                            }
+                        })
+                        .exceptionally(ex -> {
+                            logger.error("Failed to delete kouhi.", ex);
                             Platform.runLater(() -> GuiUtil.alertException(ex));
                             return null;
                         });

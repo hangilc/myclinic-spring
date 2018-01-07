@@ -1,20 +1,22 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.property.*;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.KouhiDTO;
 import jp.chang.myclinic.reception.converter.KouhiConverter;
 
 import java.time.LocalDate;
 
-public class EditKouhiStage extends Stage {
+public class EditKouhiStage extends EditHokenBaseStage<KouhiDTO> {
 
     private StringProperty futansha = new SimpleStringProperty();
     private StringProperty jukyuusha = new SimpleStringProperty();
@@ -80,12 +82,8 @@ public class EditKouhiStage extends Stage {
             System.out.println(cvt.getErrors());
             System.out.println(data);
         } else {
-            processData(data);
+            getEnterProcessor().accept(data);
         }
-    }
-
-    protected void processData(KouhiDTO data){
-        System.out.println(data);
     }
 
 }
