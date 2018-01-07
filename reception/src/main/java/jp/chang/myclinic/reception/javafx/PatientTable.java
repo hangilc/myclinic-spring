@@ -21,6 +21,7 @@ public class PatientTable extends TableView<PatientTable.Model> {
         private StringProperty yomi = new SimpleStringProperty();
         private StringProperty birthday = new SimpleStringProperty();
         private StringProperty sex = new SimpleStringProperty();
+        public PatientDTO orig;
 
         public static Model fromPatient(PatientDTO src){
             Model model = new Model();
@@ -40,6 +41,7 @@ public class PatientTable extends TableView<PatientTable.Model> {
             model.birthday.setValue(birthdayRep);
             Sex sex = Sex.fromCode(src.sex);
             model.sex.setValue(sex == null ? "(不明)" : sex.getKanji());
+            model.orig = src;
             return model;
         }
 

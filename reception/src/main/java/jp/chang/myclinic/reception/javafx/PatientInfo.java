@@ -1,14 +1,18 @@
 package jp.chang.myclinic.reception.javafx;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.reception.model.PatientModel;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 public class PatientInfo extends Form {
+    private ObjectProperty<PatientModel> model = new SimpleObjectProperty<>();
     private Label patientIdLabel = new Label();
     private Label nameLabel = new Label();
     {
@@ -47,6 +51,18 @@ public class PatientInfo extends Form {
         sexLabel.setText(sexText(patient.sex));
         addressLabel.setText(patient.address);
         phoneLabel.setText(patient.phone);
+    }
+
+    public PatientModel getModel() {
+        return model.get();
+    }
+
+    public ObjectProperty<PatientModel> modelProperty() {
+        return model;
+    }
+
+    public void setModel(PatientModel model) {
+        this.model.set(model);
     }
 
     private String birthdayText(String birthdayRep){

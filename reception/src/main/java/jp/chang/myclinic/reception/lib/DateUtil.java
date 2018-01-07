@@ -39,4 +39,14 @@ public class DateUtil {
         return result;
     }
 
+    public static LocalDate sqlDateToLocalDate(String sqlDate){
+        if( sqlDate == null ){
+            return null;
+        } else if( sqlDate.equals("0000-00-00") ){
+            return LocalDate.MAX;
+        } else {
+            return LocalDate.parse(sqlDate);
+        }
+    }
+
 }
