@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 public class MainPane extends VBox {
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
 
-    private Button newPatientButton = new Button("新規患者");
     private Button searchPatientButton = new Button("患者検索");
     private Button searchPaymentButton = new Button("会計検索");
     private Button blankReceiptButton = new Button("領収書用紙");
@@ -35,6 +34,8 @@ public class MainPane extends VBox {
         {
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.CENTER_LEFT);
+            Button newPatientButton = new Button("新規患者");
+            newPatientButton.setOnAction(event -> doNewPatient());
             searchPatientButton.setOnAction(event -> doSearchPatient());
             searchPaymentButton.setOnAction(event -> doSearchPayment());
             blankReceiptButton.setOnAction(event -> doBlankReceipt());
@@ -58,7 +59,6 @@ public class MainPane extends VBox {
             hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton);
             getChildren().add(hbox);
         }
-        newPatientButton.setOnAction(event -> doNewPatient());
         patientInfoButton.setOnAction(event -> doPatientInfo());
     }
 
@@ -67,7 +67,18 @@ public class MainPane extends VBox {
         stage.showAndWait();
         PatientDTO patient = stage.getPatient();
         if( patient != null ){
-            System.out.println(patient);
+            Service.api.listHoken(patient.patientId)
+                    .thenAccept(hokenList -> {
+                        Platform.runLater(() -> {
+                            PatientWithHokenStage patientWithHokenStage = new PatientWithHokenStage(patient, hokenList);
+                            patientWithHokenStage.showAndWait();
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        logger.error("List hoken failed.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        return null;
+                    });
         }
     }
 

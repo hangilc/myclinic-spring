@@ -113,9 +113,11 @@ public class PatientWithHokenStage extends Stage {
         {
             HBox row = new HBox(4);
             row.setAlignment(Pos.CENTER_RIGHT);
+            Button registerButton = new Button("診療受付");
             Button closeButton = new Button("閉じる");
+            registerButton.setOnAction(event -> doRegister());
             closeButton.setOnAction(event -> close());
-            row.getChildren().add(closeButton);
+            row.getChildren().addAll(registerButton, closeButton);
             root.getChildren().add(row);
         }
         root.setStyle("-fx-padding: 10");
@@ -326,6 +328,19 @@ public class PatientWithHokenStage extends Stage {
                         });
             }
         }
+    }
+
+    private void doRegister(){
+        Service.api.startVisit(patientId)
+                .thenAccept(visitId -> {
+                    logger.info("Started visit: {}.", visitId);
+                    Platform.runLater(() -> close());
+                })
+                .exceptionally(ex -> {
+                    logger.error("Failed to start visit.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException(ex));
+                    return null;
+                });
     }
 
 }
