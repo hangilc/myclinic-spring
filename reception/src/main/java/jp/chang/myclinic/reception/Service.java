@@ -101,6 +101,7 @@ public class Service {
 
     public static ServerAPI api;
     public static OkHttpClient client;
+    public static ObjectMapper mapper;
 
     public static void setServerUrl(String serverUrl) {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -109,7 +110,7 @@ public class Service {
         httpClient.addInterceptor(logging);
         client = httpClient.build();
 
-        ObjectMapper mapper = new ObjectMapper();
+        mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Op.class, new JacksonOpDeserializer());
         mapper.registerModule(module);
