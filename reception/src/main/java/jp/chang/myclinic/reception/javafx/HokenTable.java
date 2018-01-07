@@ -23,39 +23,6 @@ public class HokenTable extends TableView<HokenTable.Model> {
         private StringProperty validUpto = new SimpleStringProperty("");
         private StringProperty honninKazoku = new SimpleStringProperty("");
 
-//        public static Model fromShahokokuho(ShahokokuhoDTO hoken){
-//            Model model = new Model();
-//            model.setName(ShahokokuhoUtil.rep(hoken));
-//            model.setValidFrom(validDateToString(hoken.validFrom));
-//            model.setValidUpto(validDateToString(hoken.validUpto));
-//            model.setHonninKazoku(hoken.honnin != 0 ? "本人" : "家族");
-//            return model;
-//        }
-//
-//        public static Model fromKoukikourei(KoukikoureiDTO hoken){
-//            Model model = new Model();
-//            model.setName(KoukikoureiUtil.rep(hoken));
-//            model.setValidFrom(validDateToString(hoken.validFrom));
-//            model.setValidUpto(validDateToString(hoken.validUpto));
-//            return model;
-//        }
-//
-//        public static Model fromRoujin(RoujinDTO hoken){
-//            Model model = new Model();
-//            model.setName(RoujinUtil.rep(hoken));
-//            model.setValidFrom(validDateToString(hoken.validFrom));
-//            model.setValidUpto(validDateToString(hoken.validUpto));
-//            return model;
-//        }
-//
-//        public static Model fromKouhi(KouhiDTO hoken){
-//            Model model = new Model();
-//            model.setName(KouhiUtil.rep(hoken));
-//            model.setValidFrom(validDateToString(hoken.validFrom));
-//            model.setValidUpto(validDateToString(hoken.validUpto));
-//            return model;
-//        }
-
         private static String validDateToString(String sqlDate){
             if( sqlDate == null || sqlDate.equals("0000-00-00") ){
                 return "";

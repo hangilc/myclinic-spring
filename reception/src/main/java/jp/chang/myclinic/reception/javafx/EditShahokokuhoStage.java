@@ -9,14 +9,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
-import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 import jp.chang.myclinic.reception.converter.ShahokokuhoConverter;
+import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class EditShahokokuhoStage extends Stage {
 
@@ -29,6 +30,7 @@ public class EditShahokokuhoStage extends Stage {
     private Property<LocalDate> validFrom = new SimpleObjectProperty<LocalDate>();
     private Property<LocalDate> validUpto = new SimpleObjectProperty<LocalDate>();
     private IntegerProperty kourei = new SimpleIntegerProperty();
+    private Consumer<ShahokokuhoDTO> dataProcessor = System.out::println;
 
     public EditShahokokuhoStage(){
         setTitle("新規社保国保入力");
@@ -113,23 +115,28 @@ public class EditShahokokuhoStage extends Stage {
         sizeToScene();
     }
 
+    public void setOnEnter(Consumer<ShahokokuhoDTO> cb){
+        dataProcessor = cb;
+    }
+
     private void doEnter(){
         ShahokokuhoDTO data = new ShahokokuhoDTO();
         ShahokokuhoConverter cvt = new ShahokokuhoConverter();
         List<String> errs = new ArrayList<>();
-        cvt.convertToHokenshaBangou(hokenshaBangou.get(), errs, val -> { data.hokenshaBangou = val; });
-        cvt.convertToHihokenshaKigou(hihokenshaKigou.get(), errs, val -> { data.hihokenshaKigou = val; });
-        cvt.convertToHihokenshaBangou(hihokenshaBangou.get(), errs, val -> { data.hihokenshaBangou = val; });
-        cvt.convertToHonninKazoku(honnin.getValue(), errs, val -> { data.honnin = val; });
-        cvt.convertToValidFrom(validFrom.getValue(), errs, val -> {  data.validFrom = val; });
-        cvt.convertToValidUpto(validUpto.getValue(), errs, val -> { data.validUpto = val; });
-        cvt.convertToKourei(kourei.getValue(), errs, val -> { data.kourei = val; });
+        cvt.convertToHokenshaBangou(hokenshaBangou.get(), errs, val -> data.hokenshaBangou = val );
+        cvt.convertToHihokenshaKigou(hihokenshaKigou.get(), errs, val -> data.hihokenshaKigou = val );
+        cvt.convertToHihokenshaBangou(hihokenshaBangou.get(), errs, val -> data.hihokenshaBangou = val);
+        cvt.convertToHonninKazoku(honnin.getValue(), errs, val -> data.honnin = val );
+        cvt.convertToValidFrom(validFrom.getValue(), errs, val -> data.validFrom = val );
+        cvt.convertToValidUpto(validUpto.getValue(), errs, val -> data.validUpto = val );
+        cvt.convertToKourei(kourei.getValue(), errs, val -> data.kourei = val );
         cvt.integrationCheck(data, errs);
         if( errs.size() > 0 ){
-            System.out.println(data);
-            System.out.println(errs);
+            String message = String.join("\n", errs);
+            Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+            alert.showAndWait();
         } else {
-            System.out.println(data);
+            dataProcessor.accept(data);
         }
     }
 

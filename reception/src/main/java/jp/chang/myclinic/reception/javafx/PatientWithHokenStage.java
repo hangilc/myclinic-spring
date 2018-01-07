@@ -1,29 +1,42 @@
 package jp.chang.myclinic.reception.javafx;
 
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.reception.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class PatientWithHokenStage extends Stage {
+    private static Logger logger = LoggerFactory.getLogger(PatientWithHokenStage.class);
 
+    private int patientId;
     private BooleanProperty currentActiveOnly = new SimpleBooleanProperty(true);
     private HokenListDTO hokenList;
+    private ObjectProperty<ObservableList<HokenTable.Model>> tableModels =
+            new SimpleObjectProperty<>(FXCollections.emptyObservableList());
 
-    public PatientWithHokenStage(PatientDTO patient, HokenListDTO hokenList){
+    public PatientWithHokenStage(PatientDTO patient, HokenListDTO hokenList) {
+        this.patientId = patient.patientId;
         this.hokenList = hokenList;
         VBox root = new VBox(4);
         root.setFillWidth(true);
@@ -45,10 +58,11 @@ public class PatientWithHokenStage extends Stage {
             VBox vbox = new VBox(4);
             vbox.setFillWidth(true);
             HokenTable hokenTable = new HokenTable();
+            hokenTable.itemsProperty().bind(tableModels);
             {
                 HBox hbox = new HBox(4);
                 hbox.setMaxWidth(Double.MAX_VALUE);
-                hokenTable.setHokenList(currentActiveOnly.get() ? filteredHokenList() : hokenList);
+                updateHokenTable();
                 hbox.getChildren().add(hokenTable);
                 {
                     VBox buttons = new VBox(4);
@@ -64,7 +78,7 @@ public class PatientWithHokenStage extends Stage {
                 CheckBox checkBox = new CheckBox("現在有効のみ");
                 checkBox.selectedProperty().bindBidirectional(currentActiveOnly);
                 currentActiveOnly.addListener((Observable observable) -> {
-                    hokenTable.setHokenList(currentActiveOnly.get() ? filteredHokenList() : hokenList);
+                    updateHokenTable();
                 });
                 vbox.getChildren().add(checkBox);
             }
@@ -97,46 +111,107 @@ public class PatientWithHokenStage extends Stage {
         sizeToScene();
     }
 
-    private HokenListDTO filteredHokenList(){
+    private HokenListDTO currentActiveHokenList() {
         HokenListDTO filtered = new HokenListDTO();
         String curr = LocalDate.now().toString();
-        if( hokenList.shahokokuhoListDTO != null ) {
+        if (hokenList.shahokokuhoListDTO != null) {
             filtered.shahokokuhoListDTO = hokenList.shahokokuhoListDTO.stream()
                     .filter(h -> isCurrent(h.validFrom, h.validUpto, curr)).collect(Collectors.toList());
         }
-        if( hokenList.koukikoureiListDTO != null ) {
+        if (hokenList.koukikoureiListDTO != null) {
             filtered.koukikoureiListDTO = hokenList.koukikoureiListDTO.stream()
                     .filter(h -> isCurrent(h.validFrom, h.validUpto, curr)).collect(Collectors.toList());
         }
-        if( hokenList.roujinListDTO != null ) {
+        if (hokenList.roujinListDTO != null) {
             filtered.roujinListDTO = hokenList.roujinListDTO.stream()
                     .filter(h -> isCurrent(h.validFrom, h.validUpto, curr)).collect(Collectors.toList());
         }
-        if( hokenList.kouhiListDTO != null ) {
+        if (hokenList.kouhiListDTO != null) {
             filtered.kouhiListDTO = hokenList.kouhiListDTO.stream()
                     .filter(h -> isCurrent(h.validFrom, h.validUpto, curr)).collect(Collectors.toList());
         }
         return filtered;
     }
 
-    private boolean isCurrent(String validFrom, String validUpto, String current){
+    private boolean isCurrent(String validFrom, String validUpto, String current) {
         return validFrom.compareTo(current) <= 0 &&
                 (validUpto == null || validUpto.equals("0000-00-00") || validUpto.compareTo(current) >= 0);
     }
 
-    private void doNewShahokokuho(){
+    private void doNewShahokokuho() {
         EditShahokokuhoStage stage = new EditShahokokuhoStage();
+        stage.setOnEnter(data -> {
+            data.patientId = patientId;
+            Service.api.enterShahokokuho(data)
+                    .thenAccept(shahokokuhoId -> {
+                        Platform.runLater(() -> {
+                            data.shahokokuhoId = shahokokuhoId;
+                            fetchAndUpdateHokenList();
+                            stage.close();
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        logger.error("Failed to enter shahokokuho.", ex);
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "社保・国保の新規登録に失敗しました。" + ex,
+                                ButtonType.OK);
+                        alert.showAndWait();
+                        return null;
+                    });
+        });
         stage.showAndWait();
     }
 
-    private void doNewKoukikourei(){
+    private void doNewKoukikourei() {
         EditKoukikoureiStage stage = new EditKoukikoureiStage();
         stage.showAndWait();
     }
 
-    private void doNewKouhi(){
+    private void doNewKouhi() {
         EditKouhiStage stage = new EditKouhiStage();
         stage.showAndWait();
+    }
+
+    private List<HokenTable.Model> hokenListToModelList(HokenListDTO hokenList) {
+        List<HokenTable.Model> models = new ArrayList<>();
+        if (hokenList.shahokokuhoListDTO != null) {
+            models.addAll(hokenList.shahokokuhoListDTO.stream().map(HokenTable.ShahokokuhoModel::new).collect(Collectors.toList()));
+        }
+        if (hokenList.koukikoureiListDTO != null) {
+            models.addAll(hokenList.koukikoureiListDTO.stream().map(HokenTable.KoukikoureiModel::new).collect(Collectors.toList()));
+        }
+        if (hokenList.roujinListDTO != null) {
+            models.addAll(hokenList.roujinListDTO.stream().map(HokenTable.RoujinModel::new).collect(Collectors.toList()));
+        }
+        if (hokenList.kouhiListDTO != null) {
+            models.addAll(hokenList.kouhiListDTO.stream().map(HokenTable.KouhiModel::new).collect(Collectors.toList()));
+        }
+        return models;
+    }
+
+    private ObservableList<HokenTable.Model> composeTableModels(){
+        List<HokenTable.Model> models = hokenListToModelList(currentActiveOnly.get() ? currentActiveHokenList() : hokenList);
+        return FXCollections.observableArrayList(models);
+    }
+
+    private void updateHokenTable(){
+        tableModels.setValue(composeTableModels());
+    }
+
+    private void fetchAndUpdateHokenList() {
+        Service.api.listHoken(patientId)
+                .thenAccept(newHokenList -> {
+                    Platform.runLater(() -> {
+                        hokenList = newHokenList;
+                        updateHokenTable();
+                    });
+                })
+                .exceptionally(ex -> {
+                    logger.error("Failed to list hoken.", ex);
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "保険情報の取得に失敗しました。" + ex,
+                            ButtonType.OK);
+                    alert.showAndWait();
+                    return null;
+                });
     }
 
 }

@@ -44,7 +44,7 @@ public class ShahokokuhoDTO {
 			"patientId=" + patientId + "," +
 			"hokenshaBangou=" + hokenshaBangou + "," +
 			"hihokenshaKigou=" + hihokenshaKigou + "," +
-			"hihokenshaBangou=" + shahokokuhoId + "," +
+			"hihokenshaBangou=" + hihokenshaBangou + "," +
 			"honnin=" + honnin + "," +
 			"kourei=" + kourei + "," +
 			"validFrom=" + validFrom + "," +
