@@ -26,7 +26,7 @@ public class GuiUtil {
         alert.showAndWait();
     }
 
-    public static void alertException(Throwable ex, String prefix){
+    public static void alertException(String prefix, Throwable ex){
         if( prefix == null ){
             prefix = "";
         }
@@ -52,7 +52,7 @@ public class GuiUtil {
     }
 
     public static void alertException(Throwable ex) {
-        alertException(ex, "");
+        alertException("", ex);
     }
         public static boolean confirm(String message){
         Optional<ButtonType> response = new Alert(Alert.AlertType.CONFIRMATION, message, ButtonType.OK, ButtonType.CANCEL)

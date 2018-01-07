@@ -252,7 +252,7 @@ public class DbGateway {
     }
 
     public void deleteShahokokuho(int shahokokuhoId){
-        int usage = shahokokuhoRepository.countByShahokokuhoId(shahokokuhoId);
+        int usage = visitRepository.countByShahokokuhoId(shahokokuhoId);
         if( usage != 0 ){
             throw new RuntimeException("この社保・国保はすでに使用されているので、削除できません。");
         }
@@ -279,6 +279,9 @@ public class DbGateway {
     }
 
     public void deleteKoukikourei(int koukikoureiId){
+        if( visitRepository.countByKoukikoureiId(koukikoureiId) > 0 ){
+            throw new RuntimeException("この後期高齢保険はすでに使用されているので、削除できません。");
+        }
         koukikoureiRepository.delete(koukikoureiId);
     }
 
@@ -303,6 +306,9 @@ public class DbGateway {
     }
 
     public void deleteRoujin(int roujinId){
+        if( visitRepository.countByRoujinId(roujinId) > 0 ){
+            throw new RuntimeException("この老人保険はすでに使用されているので、削除できません。");
+        }
         roujinRepository.delete(roujinId);
     }
 
@@ -327,6 +333,9 @@ public class DbGateway {
     }
 
     public void deleteKouhi(int kouhiId){
+        if( visitRepository.countByKouhi1IdOrKouhi2IdOrKouhi3Id(kouhiId, kouhiId, kouhiId) > 0 ){
+            throw new RuntimeException("この公費負担はすでに使われているので、削除できません。");
+        }
         kouhiRepository.delete(kouhiId);
     }
 

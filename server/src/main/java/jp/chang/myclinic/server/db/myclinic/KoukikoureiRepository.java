@@ -16,4 +16,5 @@ public interface KoukikoureiRepository extends CrudRepository<Koukikourei, Integ
     Stream<Koukikourei> findAvailable(int patientId, String at, Sort sort);
 
     List<Koukikourei> findByPatientId(int patientId, Sort sort);
+
 }

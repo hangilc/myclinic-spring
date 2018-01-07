@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.Service;
+import jp.chang.myclinic.util.KoukikoureiUtil;
 import jp.chang.myclinic.util.ShahokokuhoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -162,9 +163,7 @@ public class PatientWithHokenStage extends Stage {
                     })
                     .exceptionally(ex -> {
                         logger.error("Failed to enter shahokokuho.", ex);
-                        Alert alert = new Alert(Alert.AlertType.ERROR, "社保・国保の新規登録に失敗しました。" + ex,
-                                ButtonType.OK);
-                        alert.showAndWait();
+                        Platform.runLater(() -> GuiUtil.alertException("社保・国保の新規登録に失敗しました。", ex));
                         return null;
                     });
         });
@@ -173,6 +172,22 @@ public class PatientWithHokenStage extends Stage {
 
     private void doNewKoukikourei() {
         EditKoukikoureiStage stage = new EditKoukikoureiStage();
+        stage.setOnEnter(data -> {
+            data.patientId = patientId;
+            Service.api.enterKoukikourei(data)
+                    .thenAccept(koukikoureiId -> {
+                        Platform.runLater(() -> {
+                            data.koukikoureiId = koukikoureiId;
+                            fetchAndUpdateHokenList();
+                            stage.close();
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        logger.error("Failed to enter koukikourei.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException("後期高齢保険の新規登録に失敗しました。", ex));
+                        return null;
+                    });
+        });
         stage.showAndWait();
     }
 
@@ -237,6 +252,23 @@ public class PatientWithHokenStage extends Stage {
                         })
                         .exceptionally(ex -> {
                             logger.error("Failed to delete shahokokuho.", ex);
+                            Platform.runLater(() -> GuiUtil.alertException(ex));
+                            return null;
+                        });
+            }
+        }
+        else if( model instanceof HokenTable.KoukikoureiModel ){
+            HokenTable.KoukikoureiModel koukikoureiModel = (HokenTable.KoukikoureiModel)model;
+            String rep = KoukikoureiUtil.rep(koukikoureiModel.orig);
+            if( GuiUtil.confirm("この保険情報を削除しますか？\n" + rep) ){
+                Service.api.deleteKoukikourei(koukikoureiModel.orig)
+                        .thenAccept(ok -> {
+                            if( ok ){
+                                Platform.runLater(this::fetchAndUpdateHokenList);
+                            }
+                        })
+                        .exceptionally(ex -> {
+                            logger.error("Failed to delete koukikourei.", ex);
                             Platform.runLater(() -> GuiUtil.alertException(ex));
                             return null;
                         });

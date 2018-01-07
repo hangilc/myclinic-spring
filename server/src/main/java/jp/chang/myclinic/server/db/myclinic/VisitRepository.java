@@ -39,4 +39,12 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
 	@Query("select v, p from Visit v, Patient p where v.visitId in :visitIds and p.patientId = v.patientId")
 	List<Object[]> findWithPatient(@Param("visitIds") List<Integer> visitIds, Sort sort);
+
+	Integer countByShahokokuhoId(int shahokokuhoId);
+
+	Integer countByKoukikoureiId(int koukikoureiId);
+
+	Integer countByRoujinId(int roujinId);
+
+	Integer countByKouhi1IdOrKouhi2IdOrKouhi3Id(int kouhi1Id, int kouhi2Id, int kouhi3Id);
 }

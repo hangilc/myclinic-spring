@@ -8,7 +8,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.KoukikoureiDTO;
 import jp.chang.myclinic.reception.converter.KoukikoureiConverter;
@@ -16,7 +15,7 @@ import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 
 import java.time.LocalDate;
 
-public class EditKoukikoureiStage extends Stage {
+public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
 
     private StringProperty hokenshaBangou = new SimpleStringProperty();
     private StringProperty hihokenshaBangou = new SimpleStringProperty();
@@ -97,11 +96,8 @@ public class EditKoukikoureiStage extends Stage {
             System.out.println(cvt.getErrors());
             System.out.println(data);
         } else {
-            processData(data);
+            getEnterProcessor().accept(data);
         }
     }
 
-    protected void processData(KoukikoureiDTO data){
-        System.out.println(data);
-    }
 }
