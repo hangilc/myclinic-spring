@@ -48,6 +48,7 @@ public class MainPane extends VBox {
             patientIdField.setPrefWidth(60);
             patientIdField.setMaxWidth(Control.USE_PREF_SIZE);
             patientIdField.setMinWidth(Control.USE_PREF_SIZE);
+            patientIdField.setOnAction(event -> doPatientInfo());
             hbox.getChildren().addAll(new Label("患者番号"), patientIdField, registerForPracticeButton, patientInfoButton);
             getChildren().add(hbox);
         }
@@ -102,6 +103,7 @@ public class MainPane extends VBox {
             Service.api.getPatient(patientId)
                     .thenAccept(patient -> {
                         Platform.runLater(() -> {
+                            patientIdField.setText("");
                             PatientInfoStage stage = new PatientInfoStage(patient);
                             stage.show();
                         });

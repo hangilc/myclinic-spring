@@ -1,18 +1,18 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.binding.StringBinding;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import jp.chang.myclinic.reception.model.PatientModel;
-import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.consts.Sex;
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.reception.lib.DateUtil;
 
-import java.time.LocalDate;
-import java.util.Arrays;
+public class PatientTable extends TableView<PatientTable.Model> {
 
-public class PatientTable extends TableView<PatientModel> {
-
-    /*
     public static class Model {
         private IntegerProperty patientId = new SimpleIntegerProperty();
         private StringProperty name = new SimpleStringProperty();
@@ -26,19 +26,8 @@ public class PatientTable extends TableView<PatientModel> {
             model.patientId.set(src.patientId);
             model.name.setValue(src.lastName + " " + src.firstName);
             model.yomi.setValue(src.lastNameYomi + " " + src.firstNameYomi);
-            String birthdayRep = "";
-            {
-                if( src.birthday != null && !src.birthday.equals("0000-00-00") ){
-                    try {
-                        birthdayRep = DateTimeUtil.sqlDateToKanji(src.birthday, DateTimeUtil.kanjiFormatter1);
-                    } catch(Exception ex){
-                        birthdayRep = "(Invalid)";
-                    }
-                }
-            }
-            model.birthday.setValue(birthdayRep);
-            Sex sex = Sex.fromCode(src.sex);
-            model.sex.setValue(sex == null ? "(不明)" : sex.getKanji());
+            model.birthday.setValue(DateUtil.sqlDateToString(src.birthday));
+            model.sex.setValue(Sex.codeToKanji(src.sex));
             model.orig = src;
             return model;
         }
@@ -103,54 +92,30 @@ public class PatientTable extends TableView<PatientModel> {
             this.sex.set(sex);
         }
     }
-    */
 
     public PatientTable(){
         setMaxWidth(Double.MAX_VALUE);
 
-        TableColumn<PatientModel, Integer> patientIdColumn = new TableColumn<>("患者番号");
+        TableColumn<PatientTable.Model, Integer> patientIdColumn = new TableColumn<>("患者番号");
         patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("patientId"));
 
-        TableColumn<PatientModel, String> nameColumn = new TableColumn<>("名前");
-        nameColumn.setCellValueFactory(value -> {
-            PatientModel model = value.getValue();
-            return model.lastNameProperty().concat(" ").concat(model.firstNameProperty());
-        });
+        TableColumn<PatientTable.Model, String> nameColumn = new TableColumn<>("名前");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableColumn<PatientModel, String> yomiColumn = new TableColumn<>("よみ");
-        yomiColumn.setCellValueFactory(value -> {
-            PatientModel model = value.getValue();
-            return model.lastNameYomiProperty().concat(" ").concat(model.firstNameYomiProperty());
+        TableColumn<PatientTable.Model, String> yomiColumn = new TableColumn<>("よみ");
+        yomiColumn.setCellValueFactory(new PropertyValueFactory<>("yomi"));
 
-        });
+        TableColumn<PatientTable.Model, String> birthdayColumn = new TableColumn<>("生年月日");
+        birthdayColumn.setCellValueFactory(new PropertyValueFactory<>("birthday"));
 
-        TableColumn<PatientModel, String> birthdayColumn = new TableColumn<>("生年月日");
-        birthdayColumn.setCellValueFactory(value -> new StringBinding(){
+        TableColumn<PatientTable.Model, String> sexColumn = new TableColumn<>("性別");
+        sexColumn.setCellValueFactory(new PropertyValueFactory<>("sex"));
 
-            { bind(value.getValue().birthdayProperty()); }
-
-            @Override
-            protected String computeValue() {
-                LocalDate date = value.getValue().birthdayProperty().getValue();
-                if( date == null || date == LocalDate.MAX ){
-                    return "";
-                } else {
-                    return DateTimeUtil.toKanji(date, DateTimeUtil.kanjiFormatter1);
-                }
-            }
-        });
-
-        TableColumn<PatientModel, String> sexColumn = new TableColumn<>("性別");
-        sexColumn.setCellValueFactory(value -> new StringBinding(){
-            { bind(value.getValue().sexProperty()); }
-
-            @Override
-            protected String computeValue(){
-                return value.getValue().getSex().getKanji();
-            }
-        });
-
-        getColumns().addAll(Arrays.asList(patientIdColumn, nameColumn, yomiColumn, birthdayColumn, sexColumn));
+        getColumns().add(patientIdColumn);
+        getColumns().add(nameColumn);
+        getColumns().add(yomiColumn);
+        getColumns().add(birthdayColumn);
+        getColumns().add(sexColumn);
     }
 
 }

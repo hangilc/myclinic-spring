@@ -32,6 +32,9 @@ public class Service {
         @POST("enter-patient")
         CompletableFuture<Integer> enterPatient(@Body PatientDTO patientDTO);
 
+        @POST("update-patient")
+        CompletableFuture<Boolean> updatePatient(@Body PatientDTO patientDTO);
+
         @GET("list-hoken")
         CompletableFuture<HokenListDTO> listHoken(@Query("patient-id") int patientId);
 

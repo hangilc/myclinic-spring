@@ -31,4 +31,14 @@ public enum Sex {
 		}
 		return null;
 	}
+
+	public static String codeToKanji(String code){
+		Sex sex = fromCode(code);
+		if( sex == null ){
+			return "??";
+		} else {
+			return sex.getKanji();
+		}
+	}
+
 }

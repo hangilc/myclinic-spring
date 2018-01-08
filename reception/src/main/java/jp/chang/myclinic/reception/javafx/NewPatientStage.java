@@ -20,7 +20,7 @@ import java.util.List;
 public class NewPatientStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(NewPatientStage.class);
 
-    private PatientForm patientForm = new PatientForm();
+    private PatientForm patientForm = new PatientForm(new PatientDTO());
     private PatientDTO patient;
 
     public NewPatientStage(){

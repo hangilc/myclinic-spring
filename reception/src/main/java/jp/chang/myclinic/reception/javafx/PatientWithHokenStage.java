@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class PatientWithHokenStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(PatientWithHokenStage.class);
 
-    private int patientId;
+    private ObjectProperty<PatientDTO> thePatient = new SimpleObjectProperty<>();
     private BooleanProperty currentActiveOnly = new SimpleBooleanProperty(true);
     private HokenListDTO hokenList;
     private ObjectProperty<ObservableList<HokenTable.Model>> tableModels =
@@ -41,7 +41,7 @@ public class PatientWithHokenStage extends Stage {
     private ObjectProperty<HokenTable.Model> tableSelection = new SimpleObjectProperty<>();
 
     public PatientWithHokenStage(PatientDTO patient, HokenListDTO hokenList) {
-        this.patientId = patient.patientId;
+        thePatient.setValue(patient);
         this.hokenList = hokenList;
         HokenTable hokenTable = new HokenTable();
         VBox root = new VBox(4);
@@ -50,9 +50,30 @@ public class PatientWithHokenStage extends Stage {
             VBox vbox = new VBox(4);
             vbox.setMaxWidth(360);
             PatientInfo patientInfo = new PatientInfo(patient);
+            thePatient.addListener((obs, oldValue, newValue) -> {
+                patientInfo.setPatient(newValue);
+            });
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.CENTER_RIGHT);
             Button editPatientButton = new Button("編集");
+            editPatientButton.setOnAction(event -> {
+                EditPatientStage editStage = new EditPatientStage(thePatient.getValue());
+                editStage.setDataProcessor(data -> {
+                    Service.api.updatePatient(data)
+                            .thenAccept(ok -> {
+                                Platform.runLater(() -> {
+                                    editStage.close();
+                                    thePatient.setValue(data);
+                                });
+                            })
+                            .exceptionally(ex -> {
+                                logger.error("Failed to update patient.", ex);
+                                Platform.runLater(() -> GuiUtil.alertException(ex));
+                                return null;
+                            });
+                });
+                editStage.showAndWait();
+            });
             hbox.getChildren().add(editPatientButton);
             vbox.getChildren().addAll(patientInfo, hbox);
             TitledPane titledPane = new TitledPane("基本情報", vbox);
@@ -155,7 +176,7 @@ public class PatientWithHokenStage extends Stage {
     private void doNewShahokokuho() {
         EditShahokokuhoStage stage = new EditShahokokuhoStage();
         stage.setOnEnter(data -> {
-            data.patientId = patientId;
+            data.patientId = thePatient.getValue().patientId;
             Service.api.enterShahokokuho(data)
                     .thenAccept(shahokokuhoId -> {
                         Platform.runLater(() -> {
@@ -176,7 +197,7 @@ public class PatientWithHokenStage extends Stage {
     private void doNewKoukikourei() {
         EditKoukikoureiStage stage = new EditKoukikoureiStage();
         stage.setOnEnter(data -> {
-            data.patientId = patientId;
+            data.patientId = thePatient.getValue().patientId;
             Service.api.enterKoukikourei(data)
                     .thenAccept(koukikoureiId -> {
                         Platform.runLater(() -> {
@@ -197,7 +218,7 @@ public class PatientWithHokenStage extends Stage {
     private void doNewKouhi() {
         EditKouhiStage stage = new EditKouhiStage();
         stage.setOnEnter(data -> {
-            data.patientId = patientId;
+            data.patientId = thePatient.getValue().patientId;
             Service.api.enterKouhi(data)
                     .thenAccept(kouhiId -> {
                         Platform.runLater(() -> {
@@ -242,7 +263,7 @@ public class PatientWithHokenStage extends Stage {
     }
 
     private void fetchAndUpdateHokenList() {
-        Service.api.listHoken(patientId)
+        Service.api.listHoken(thePatient.getValue().patientId)
                 .thenAccept(newHokenList -> {
                     Platform.runLater(() -> {
                         hokenList = newHokenList;
@@ -330,10 +351,10 @@ public class PatientWithHokenStage extends Stage {
     }
 
     private void doRegister(){
-        Service.api.startVisit(patientId)
+        Service.api.startVisit(thePatient.getValue().patientId)
                 .thenAccept(visitId -> {
                     logger.info("Started visit: {}.", visitId);
-                    Platform.runLater(() -> close());
+                    Platform.runLater(this::close);
                 })
                 .exceptionally(ex -> {
                     logger.error("Failed to start visit.", ex);

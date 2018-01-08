@@ -1,6 +1,7 @@
 package jp.chang.myclinic.reception.lib;
 
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -39,13 +40,33 @@ public class DateUtil {
         return result;
     }
 
+    public static String sqlDateToString(String sqlDate){
+        return localDateToString(sqlDateToLocalDate(sqlDate));
+    }
+
     public static LocalDate sqlDateToLocalDate(String sqlDate){
         if( sqlDate == null ){
             return null;
         } else if( sqlDate.equals("0000-00-00") ){
             return LocalDate.MAX;
         } else {
-            return LocalDate.parse(sqlDate);
+            try {
+                return LocalDate.parse(sqlDate);
+            } catch(Exception ex){
+                return null;
+            }
+        }
+    }
+
+    public static String localDateToString(LocalDate date){
+        if( date == null || date == LocalDate.MAX ){
+            return "";
+        } else {
+            try {
+                return DateTimeUtil.toKanji(date, DateTimeUtil.kanjiFormatter1);
+            } catch (Exception ex) {
+                return "(Invalid)";
+            }
         }
     }
 

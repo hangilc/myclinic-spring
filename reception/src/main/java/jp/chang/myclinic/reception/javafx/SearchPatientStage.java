@@ -1,12 +1,7 @@
 package jp.chang.myclinic.reception.javafx;
 
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -17,7 +12,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.Service;
-import jp.chang.myclinic.reception.model.PatientModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,10 +21,8 @@ import java.util.stream.Collectors;
 public class SearchPatientStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(SearchPatientStage.class);
 
-    private StringProperty searchText = new SimpleStringProperty();
-    private ObjectProperty<ObservableList<PatientModel>> searchResult =
-            new SimpleObjectProperty<>(FXCollections.emptyObservableList());
-    private ObjectProperty<PatientModel> selectedItem = new SimpleObjectProperty<>();
+    private TextField searchTextInput = new TextField();
+    private PatientTable tableView = new PatientTable();
 
     public SearchPatientStage(){
         VBox root = new VBox(4);
@@ -38,8 +30,6 @@ public class SearchPatientStage extends Stage {
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.CENTER_LEFT);
             {
-                TextField searchTextInput = new TextField();
-                searchTextInput.textProperty().bindBidirectional(searchText);
                 searchTextInput.setOnAction(event -> doSearch());
                 Button searchButton = new Button("検索");
                 Button recentlyRegisteredButton = new Button("最近の登録");
@@ -49,9 +39,8 @@ public class SearchPatientStage extends Stage {
             root.getChildren().add(hbox);
         }
         {
-            PatientTable tableView = new PatientTable();
-            tableView.itemsProperty().bindBidirectional(searchResult);
-            selectedItem.bind(tableView.getSelectionModel().selectedItemProperty());
+//            tableView.itemsProperty().bindBidirectional(searchResult);
+//            selectedItem.bind(tableView.getSelectionModel().selectedItemProperty());
             tableView.setPrefWidth(425);
             tableView.setPrefHeight(250);
             root.getChildren().add(tableView);
@@ -60,7 +49,13 @@ public class SearchPatientStage extends Stage {
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.TOP_LEFT);
             PatientInfo infoLabel = new PatientInfo();
-            infoLabel.modelProperty().bindBidirectional(selectedItem);
+            tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+                if( newValue == null ){
+                    infoLabel.clear();
+                } else {
+                    infoLabel.setPatient(newValue.orig);
+                }
+            });
             infoLabel.setPrefWidth(314);
             infoLabel.setPrefHeight(182);
             VBox commandBox = new VBox(4);
@@ -72,7 +67,7 @@ public class SearchPatientStage extends Stage {
             registerButton.setMaxWidth(300);
             editButton.setDisable(true);
             registerButton.setDisable(true);
-            selectedItem.addListener((obs, oldValue, newValue) -> {
+            tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
                 boolean disable = newValue == null;
                 editButton.setDisable(disable);
                 registerButton.setDisable(disable);
@@ -90,9 +85,9 @@ public class SearchPatientStage extends Stage {
     }
 
     private void onEdit() {
-        PatientModel model = selectedItem.getValue();
-        if( model != null ){
-            PatientDTO patient = model.orig;
+        PatientTable.Model tableModel = tableView.getSelectionModel().getSelectedItem();
+        if( tableModel != null && tableModel.orig != null ){
+            PatientDTO patient = tableModel.orig;
             Service.api.listHoken(patient.patientId)
                     .thenAccept(list -> {
                         Platform.runLater(() -> {
@@ -113,17 +108,17 @@ public class SearchPatientStage extends Stage {
     }
 
     private void doSearch() {
-        String text = searchText.getValue();
+        String text = searchTextInput.getText();
         if( text == null || text.isEmpty() ){
             return;
         }
         Service.api.searchPatient(text)
                 .thenAccept(list -> {
                     Platform.runLater(() -> {
-                        List<PatientModel> models = list.stream()
-                                .map(PatientModel::fromPatient)
+                        List<PatientTable.Model> models = list.stream()
+                                .map(PatientTable.Model::fromPatient)
                                 .collect(Collectors.toList());
-                        searchResult.setValue(FXCollections.observableArrayList(models));
+                        tableView.itemsProperty().setValue(FXCollections.observableArrayList(models));
                     });
                 })
                 .exceptionally(ex -> {

@@ -1,11 +1,12 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.reception.lib.DateUtil;
+import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -13,86 +14,81 @@ import java.util.List;
 
 public class PatientForm extends Form {
 
+    private int patientId;
     private TextField lastNameInput = new TextField();
-    {
-        lastNameInput.setPromptText("姓");
-    }
     private TextField firstNameInput = new TextField();
-    {
-        firstNameInput.setPromptText("名");
-    }
     private TextField lastNameYomiInput = new TextField();
-    {
-        lastNameYomiInput.setPromptText("姓のよみ");
-    }
     private TextField firstNameYomiInput = new TextField();
-    {
-        firstNameYomiInput.setPromptText("名のよみ");
-    }
     private DateInput birthdayInput = new DateInput();
-    private RadioButton maleButton = new RadioButton("男");
-    private RadioButton femaleButton = new RadioButton("女");
-    private ToggleGroup sexGroup = new ToggleGroup();
-    {
-        sexGroup.getToggles().addAll(maleButton, femaleButton);
-        femaleButton.setSelected(true);
-    }
+    private RadioButtonGroup<Sex> sexInput = new RadioButtonGroup<>();
     private TextField addressInput = new TextField();
     private TextField phoneInput = new TextField();
-    {
-        phoneInput.setPrefWidth(200);
-        phoneInput.setMaxWidth(Control.USE_PREF_SIZE);
-        phoneInput.setMinWidth(Control.USE_PREF_SIZE);
-    }
 
-    public PatientForm(){
+    public PatientForm(PatientDTO patient) {
+        lastNameInput.setPromptText("姓");
+        firstNameInput.setPromptText("名");
+        lastNameYomiInput.setPromptText("姓のよみ");
+        firstNameYomiInput.setPromptText("名のよみ");
+        RadioButton maleButton = sexInput.createRadioButton("男", Sex.Male);
+        RadioButton femaleButton = sexInput.createRadioButton("女", Sex.Female);
+        sexInput.setValue(Sex.Female);
+        phoneInput.setPrefWidth(200);
+        if (patient != null && patient.patientId > 0) {
+            add("患者番号", new Label("" + patient.patientId));
+        }
         addWithHbox("名前", lastNameInput, firstNameInput);
         addWithHbox("よみ", lastNameYomiInput, firstNameYomiInput);
         add("生年月日", birthdayInput);
         addWithHbox("性別", maleButton, femaleButton);
         add("住所", addressInput);
         add("電話", phoneInput);
+        if (patient != null) {
+            patientId = patient.patientId;
+            lastNameInput.setText(patient.lastName);
+            firstNameInput.setText(patient.firstName);
+            lastNameYomiInput.setText(patient.lastNameYomi);
+            firstNameYomiInput.setText(patient.firstNameYomi);
+            birthdayInput.setValue(DateUtil.sqlDateToLocalDate(patient.birthday));
+            sexInput.setValue(Sex.fromCode(patient.sex));
+            addressInput.setText(patient.address);
+            phoneInput.setText(patient.phone);
+        }
     }
 
-    public List<String> save(PatientDTO patient){
+    public List<String> save(PatientDTO patient) {
+        patient.patientId = patientId;
         List<String> errs = new ArrayList<>();
         String lastName = lastNameInput.getText();
-        if( lastName.isEmpty() ){
+        if (lastName.isEmpty()) {
             errs.add("姓が入力されていません。");
         } else {
             patient.lastName = lastName;
         }
         String firstName = firstNameInput.getText();
-        if( firstName.isEmpty() ){
+        if (firstName.isEmpty()) {
             errs.add("名が入力されていません。");
         } else {
             patient.firstName = firstName;
         }
         String lastNameYomi = lastNameYomiInput.getText();
-        if( lastNameYomi.isEmpty() ){
+        if (lastNameYomi.isEmpty()) {
             errs.add("姓のよみが入力されていません。");
         } else {
             patient.lastNameYomi = lastNameYomi;
         }
         String firstNameYomi = firstNameYomiInput.getText();
-        if( firstNameYomi.isEmpty() ){
+        if (firstNameYomi.isEmpty()) {
             errs.add("名のよみが入力されていません。");
         } else {
             patient.firstNameYomi = firstNameYomi;
         }
         LocalDate birthdayDate = birthdayInput.getValue();
-        if( birthdayDate == null ){
+        if (birthdayDate == null) {
             errs.add("生年月日の入力が不適切です。");
         } else {
             patient.birthday = birthdayDate.toString();
         }
-        if( maleButton.isSelected() ){
-            patient.sex = Sex.Male.getCode();
-        } else if( femaleButton.isSelected() ){
-            patient.sex = Sex.Female.getCode();
-        } else {
-            errs.add("Cannot happen in sex input");
-        }
+        patient.sex = sexInput.getValue().getCode();
         patient.address = addressInput.getText();
         patient.phone = phoneInput.getText();
         return errs;

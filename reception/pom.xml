@@ -88,7 +88,6 @@
                 <version>1.5.1.RELEASE</version>
                 <configuration>
                     <mainClass>jp.chang.myclinic.reception.Main</mainClass>
-                    <!--<mainClass>jp.chang.myclinic.reception.AppDevUI</mainClass>-->
                 </configuration>
                 <executions>
                     <execution>
