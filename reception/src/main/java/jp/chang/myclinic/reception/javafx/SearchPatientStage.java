@@ -101,6 +101,31 @@ public class SearchPatientStage extends Stage {
                     .thenAccept(list -> {
                         Platform.runLater(() -> {
                             PatientWithHokenStage stage = new PatientWithHokenStage(patient, list);
+                            stage.patientProperty().addListener((obs, oldValue, newValue) -> {
+                                PatientDTO data = newValue;
+                                List<PatientTable.Model> models = tableView.getItems();
+                                boolean found = false;
+                                int index = 0;
+                                PatientTable.Model origModel = null;
+                                PatientTable.Model newModel = null;
+                                for(;index<models.size();index++){
+                                    PatientTable.Model m = models.get(index);
+                                    if( m.getPatientId() == data.patientId ){
+                                        origModel = m;
+                                        newModel = PatientTable.Model.fromPatient(data);
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if( found ){
+                                    PatientTable.Model currentSelection = tableView.getSelectionModel().getSelectedItem();
+                                    if( currentSelection == origModel ){
+                                        currentSelection = newModel;
+                                    }
+                                    tableView.getItems().set(index, newModel);
+                                    tableView.getSelectionModel().select(currentSelection);
+                                }
+                            });
                             stage.show();
                         });
                     })

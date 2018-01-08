@@ -147,6 +147,10 @@ public class PatientWithHokenStage extends Stage {
         sizeToScene();
     }
 
+    public ObjectProperty<PatientDTO> patientProperty(){
+        return thePatient;
+    }
+
     private HokenListDTO currentActiveHokenList() {
         HokenListDTO filtered = new HokenListDTO();
         String curr = LocalDate.now().toString();
