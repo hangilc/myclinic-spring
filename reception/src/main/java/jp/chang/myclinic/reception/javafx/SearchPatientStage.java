@@ -115,6 +115,7 @@ public class SearchPatientStage extends Stage {
         Service.api.searchPatient(text)
                 .thenAccept(list -> {
                     Platform.runLater(() -> {
+                        searchTextInput.setText("");
                         List<PatientTable.Model> models = list.stream()
                                 .map(PatientTable.Model::fromPatient)
                                 .collect(Collectors.toList());

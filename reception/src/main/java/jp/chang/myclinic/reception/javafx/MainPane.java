@@ -64,14 +64,19 @@ public class MainPane extends VBox {
     }
 
     private void doNewPatient(){
-        NewPatientStage stage = new NewPatientStage();
+        EditPatientStage stage = new EditPatientStage(null);
+        stage.setTitle("新規患者入力");
         stage.showAndWait();
-        PatientDTO patient = stage.getPatient();
-        if( patient != null ){
-            Service.api.listHoken(patient.patientId)
+        PatientDTO formValue = stage.getFormValue();
+        if( formValue != null ){
+            Service.api.enterPatient(formValue)
+                    .thenCompose(patientId -> {
+                        formValue.patientId = patientId;
+                        return Service.api.listHoken(patientId);
+                    })
                     .thenAccept(hokenList -> {
                         Platform.runLater(() -> {
-                            PatientWithHokenStage patientWithHokenStage = new PatientWithHokenStage(patient, hokenList);
+                            PatientWithHokenStage patientWithHokenStage = new PatientWithHokenStage(formValue, hokenList);
                             patientWithHokenStage.showAndWait();
                         });
                     })

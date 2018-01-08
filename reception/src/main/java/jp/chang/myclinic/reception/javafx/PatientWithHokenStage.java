@@ -58,7 +58,9 @@ public class PatientWithHokenStage extends Stage {
             Button editPatientButton = new Button("編集");
             editPatientButton.setOnAction(event -> {
                 EditPatientStage editStage = new EditPatientStage(thePatient.getValue());
-                editStage.setDataProcessor(data -> {
+                editStage.showAndWait();
+                if( editStage.getFormValue() != null ){
+                    PatientDTO data = editStage.getFormValue();
                     Service.api.updatePatient(data)
                             .thenAccept(ok -> {
                                 Platform.runLater(() -> {
@@ -71,8 +73,7 @@ public class PatientWithHokenStage extends Stage {
                                 Platform.runLater(() -> GuiUtil.alertException(ex));
                                 return null;
                             });
-                });
-                editStage.showAndWait();
+                }
             });
             hbox.getChildren().add(editPatientButton);
             vbox.getChildren().addAll(patientInfo, hbox);

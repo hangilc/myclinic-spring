@@ -11,13 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class EditPatientStage extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(EditPatientStage.class);
-
-    private Consumer<PatientDTO> dataProcessor = System.out::println;
+    private PatientDTO formValue;
 
     public EditPatientStage(PatientDTO patient){
         VBox root = new VBox(4);
@@ -36,7 +34,8 @@ public class EditPatientStage extends Stage {
                 if( errs.size() > 0 ){
                     GuiUtil.alertError(String.join("\n", errs));
                 } else {
-                    dataProcessor.accept(data);
+                    formValue = data;
+                    close();
                 }
             });
             cancelButton.setOnAction(event -> close());
@@ -48,7 +47,7 @@ public class EditPatientStage extends Stage {
         sizeToScene();
     }
 
-    public void setDataProcessor(Consumer<PatientDTO> processor){
-        dataProcessor = processor;
+    public PatientDTO getFormValue() {
+        return formValue;
     }
 }
