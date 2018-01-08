@@ -34,13 +34,12 @@ public class SearchPatientStage extends Stage {
                 Button searchButton = new Button("検索");
                 Button recentlyRegisteredButton = new Button("最近の登録");
                 searchButton.setOnAction(event -> doSearch());
+                recentlyRegisteredButton.setOnAction(event -> doRecent());
                 hbox.getChildren().addAll(searchTextInput, searchButton, recentlyRegisteredButton);
             }
             root.getChildren().add(hbox);
         }
         {
-//            tableView.itemsProperty().bindBidirectional(searchResult);
-//            selectedItem.bind(tableView.getSelectionModel().selectedItemProperty());
             tableView.setPrefWidth(425);
             tableView.setPrefHeight(250);
             root.getChildren().add(tableView);
@@ -84,6 +83,16 @@ public class SearchPatientStage extends Stage {
         sizeToScene();
     }
 
+    private void doRecent() {
+        Service.api.listRecentlyRegisteredPatients()
+                .thenAccept(this::setSearchResult)
+                .exceptionally(ex -> {
+                    logger.error("Listing recently registered patient failed.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException(ex));
+                    return null;
+                });
+    }
+
     private void onEdit() {
         PatientTable.Model tableModel = tableView.getSelectionModel().getSelectedItem();
         if( tableModel != null && tableModel.orig != null ){
@@ -107,6 +116,13 @@ public class SearchPatientStage extends Stage {
 
     }
 
+    private void setSearchResult(List<PatientDTO> list){
+        List<PatientTable.Model> models = list.stream()
+                .map(PatientTable.Model::fromPatient)
+                .collect(Collectors.toList());
+        tableView.itemsProperty().setValue(FXCollections.observableArrayList(models));
+    }
+
     private void doSearch() {
         String text = searchTextInput.getText();
         if( text == null || text.isEmpty() ){
@@ -116,10 +132,7 @@ public class SearchPatientStage extends Stage {
                 .thenAccept(list -> {
                     Platform.runLater(() -> {
                         searchTextInput.setText("");
-                        List<PatientTable.Model> models = list.stream()
-                                .map(PatientTable.Model::fromPatient)
-                                .collect(Collectors.toList());
-                        tableView.itemsProperty().setValue(FXCollections.observableArrayList(models));
+                        setSearchResult(list);
                     });
                 })
                 .exceptionally(ex -> {
