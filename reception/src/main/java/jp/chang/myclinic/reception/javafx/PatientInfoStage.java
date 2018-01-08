@@ -21,8 +21,8 @@ public class PatientInfoStage extends Stage {
     public PatientInfoStage(PatientDTO patient){
         setTitle("患者情報");
         VBox vbox = new VBox(4);
-        PatientInfo patientInfo = new PatientInfo();
-        patientInfo.setPatient(patient);
+        PatientInfo patientInfo = new PatientInfo(patient);
+        //patientInfo.setPatient(patient);
         patientInfo.setPrefWidth(300);
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_RIGHT);

@@ -49,8 +49,7 @@ public class PatientWithHokenStage extends Stage {
         {
             VBox vbox = new VBox(4);
             vbox.setMaxWidth(360);
-            PatientInfo patientInfo = new PatientInfo();
-            patientInfo.setPatient(patient);
+            PatientInfo patientInfo = new PatientInfo(patient);
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.CENTER_RIGHT);
             Button editPatientButton = new Button("編集");

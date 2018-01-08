@@ -64,7 +64,7 @@ public class AppDevUI extends Application {
         patient.sex = "M";
         patient.address = "東京都東京都東京都東京都東京都東京都東京都東京都東京都東京都";
         patient.phone = "03-1234-5678";
-        patientInfo.setPatient(patient);
+        //patientInfo.setPatient(patient);
         return patientInfo;
     }
 

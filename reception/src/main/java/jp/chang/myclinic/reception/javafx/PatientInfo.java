@@ -23,6 +23,11 @@ public class PatientInfo extends Form {
     private Label addressLabel = new Label();
     private Label phoneLabel = new Label();
 
+    public PatientInfo(PatientDTO patient){
+        this();
+        model.setValue(PatientModel.fromPatient(patient));
+    }
+
     public PatientInfo(){
         patientIdLabel.textProperty().bind(new StringBinding(){
             { bind(model); }
@@ -109,15 +114,15 @@ public class PatientInfo extends Form {
         add("電話：", phoneLabel);
     }
 
-    public void setPatient(PatientDTO patient){
-        patientIdLabel.setText("" + patient.patientId);
-        nameLabel.setText(patient.lastName + " " + patient.firstName);
-        yomiLabel.setText(patient.lastNameYomi + " " + patient.firstNameYomi);
-        birthdayLabel.setText(birthdayText(patient.birthday));
-        sexLabel.setText(sexText(patient.sex));
-        addressLabel.setText(patient.address);
-        phoneLabel.setText(patient.phone);
-    }
+//    public void setPatient(PatientDTO patient){
+//        patientIdLabel.setText("" + patient.patientId);
+//        nameLabel.setText(patient.lastName + " " + patient.firstName);
+//        yomiLabel.setText(patient.lastNameYomi + " " + patient.firstNameYomi);
+//        birthdayLabel.setText(birthdayText(patient.birthday));
+//        sexLabel.setText(sexText(patient.sex));
+//        addressLabel.setText(patient.address);
+//        phoneLabel.setText(patient.phone);
+//    }
 
     public PatientModel getModel() {
         return model.get();
