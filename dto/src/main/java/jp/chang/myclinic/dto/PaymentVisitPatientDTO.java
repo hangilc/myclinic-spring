@@ -7,4 +7,13 @@ public class PaymentVisitPatientDTO {
     public PaymentDTO payment;
     public VisitDTO visit;
     public PatientDTO patient;
+
+    @Override
+    public String toString() {
+        return "PaymentVisitPatientDTO{" +
+                "payment=" + payment +
+                ", visit=" + visit +
+                ", patient=" + patient +
+                '}';
+    }
 }
