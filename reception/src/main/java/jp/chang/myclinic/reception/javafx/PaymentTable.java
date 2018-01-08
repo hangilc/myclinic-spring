@@ -19,7 +19,7 @@ public class PaymentTable extends TableView<PaymentTable.Model> {
     public static class Model {
         private IntegerProperty patientId = new SimpleIntegerProperty();
         private StringProperty name = new SimpleStringProperty();
-        private IntegerProperty amount = new SimpleIntegerProperty();
+        private StringProperty amount = new SimpleStringProperty();
         private StringProperty at = new SimpleStringProperty();
 
         public int getPatientId() {
@@ -46,15 +46,15 @@ public class PaymentTable extends TableView<PaymentTable.Model> {
             this.name.set(name);
         }
 
-        public int getAmount() {
+        public String getAmount() {
             return amount.get();
         }
 
-        public IntegerProperty amountProperty() {
+        public StringProperty amountProperty() {
             return amount;
         }
 
-        public void setAmount(int amount) {
+        public void setAmount(String amount) {
             this.amount.set(amount);
         }
 
@@ -74,7 +74,7 @@ public class PaymentTable extends TableView<PaymentTable.Model> {
             Model model = new Model();
             model.patientId.set(payment.patient.patientId);
             model.name.setValue(payment.patient.lastName + " " + payment.patient.firstName);
-            model.amount.set(payment.payment.amount);
+            model.amount.setValue(String.format("%,d", payment.payment.amount));
             model.at.setValue(DateTimeUtil.sqlDateTimeToKanji(payment.payment.paytime,
                     DateTimeUtil.kanjiFormatter2,
                     DateTimeUtil.kanjiFormatter4));
@@ -85,16 +85,22 @@ public class PaymentTable extends TableView<PaymentTable.Model> {
     public PaymentTable(){
         TableColumn<Model, Integer> patientIdColumn = new TableColumn<>("患者番号");
         patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("patientId"));
+        patientIdColumn.setPrefWidth(65);
 
         TableColumn<Model, String> nameColumn = new TableColumn<>("氏名");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        nameColumn.setPrefWidth(80);
 
         TableColumn<Model, Integer> amountColumn = new TableColumn<>("金額");
         amountColumn.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        amountColumn.setPrefWidth(52);
+        amountColumn.setStyle("-fx-alignment: center-right");
 
         TableColumn<Model, String> atColumn = new TableColumn<>("日時");
         atColumn.setCellValueFactory(new PropertyValueFactory<>("at"));
         atColumn.setComparator(String::compareTo);
+        atColumn.setPrefWidth(166);
+        atColumn.setStyle("-fx-alignment: center");
 
         getColumns().add(patientIdColumn);
         getColumns().add(nameColumn);
@@ -105,5 +111,11 @@ public class PaymentTable extends TableView<PaymentTable.Model> {
     public void setRows(List<PaymentVisitPatientDTO> list){
         List<Model> models = list.stream().map(Model::fromPayment).collect(Collectors.toList());
         setItems(FXCollections.observableArrayList(models));
+    }
+
+    public void printColumnWidths(){
+        for(TableColumn<Model,?> column: getColumns()){
+            System.out.println(column.getId() + ":" + column.getWidth());
+        }
     }
 }

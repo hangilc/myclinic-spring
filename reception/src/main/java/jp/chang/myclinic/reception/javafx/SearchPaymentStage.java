@@ -35,7 +35,7 @@ public class SearchPaymentStage extends Stage {
             root.getChildren().add(hbox);
         }
         {
-            paymentTable.setPrefWidth(360);
+            paymentTable.setPrefWidth(460);
             paymentTable.setPrefHeight(226);
             root.getChildren().add(paymentTable);
         }
@@ -44,6 +44,7 @@ public class SearchPaymentStage extends Stage {
             hbox.setAlignment(Pos.CENTER_LEFT);
             Button printReceiptAgainButton = new Button("領収書再発行");
             Button rcptDetailButton = new Button("明細情報表示");
+            rcptDetailButton.setOnAction(event -> paymentTable.printColumnWidths());
             hbox.getChildren().addAll(printReceiptAgainButton, rcptDetailButton);
             root.getChildren().add(hbox);
         }
