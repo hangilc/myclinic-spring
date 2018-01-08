@@ -45,6 +45,13 @@ public class SearchPaymentStage extends Stage {
             hbox.setAlignment(Pos.CENTER_LEFT);
             Button printReceiptAgainButton = new Button("領収書再発行");
             Button rcptDetailButton = new Button("明細情報表示");
+            printReceiptAgainButton.setDisable(true);
+            rcptDetailButton.setDisable(true);
+            paymentTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+                boolean disable = newValue == null;
+                printReceiptAgainButton.setDisable(disable);
+                rcptDetailButton.setDisable(disable);
+            });
             rcptDetailButton.setOnAction(event -> paymentTable.printColumnWidths());
             hbox.getChildren().addAll(printReceiptAgainButton, rcptDetailButton);
             root.getChildren().add(hbox);
