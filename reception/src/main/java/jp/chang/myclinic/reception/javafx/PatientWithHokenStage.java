@@ -356,16 +356,25 @@ public class PatientWithHokenStage extends Stage {
     }
 
     private void doRegister(){
-        Service.api.startVisit(thePatient.getValue().patientId)
-                .thenAccept(visitId -> {
-                    logger.info("Started visit: {}.", visitId);
-                    Platform.runLater(this::close);
-                })
-                .exceptionally(ex -> {
-                    logger.error("Failed to start visit.", ex);
-                    Platform.runLater(() -> GuiUtil.alertException(ex));
-                    return null;
-                });
+        System.out.println("enter doRegister");
+        PatientDTO patient = thePatient.getValue();
+        System.out.println("register patient: " + patient);
+        if( patient == null ){
+            return;
+        }
+        ConfirmRegisterForPracticeStage confirmStage = new ConfirmRegisterForPracticeStage(patient);
+        confirmStage.showAndWait();
+        if( confirmStage.isOk() ){
+            Service.api.startVisit(thePatient.getValue().patientId)
+                    .thenAccept(visitId -> {
+                        logger.info("Started visit: {}.", visitId);
+                    })
+                    .exceptionally(ex -> {
+                        logger.error("Failed to start visit.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        return null;
+                    });
+        }
     }
 
 }

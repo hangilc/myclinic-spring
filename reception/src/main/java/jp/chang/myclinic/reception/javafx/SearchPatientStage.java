@@ -116,7 +116,23 @@ public class SearchPatientStage extends Stage {
     }
 
     private void onRegister() {
+        PatientTable.Model model = tableView.getSelectionModel().getSelectedItem();
+        if( model != null ){
+            PatientDTO patient = model.orig;
+            ConfirmRegisterForPracticeStage confirm = new ConfirmRegisterForPracticeStage(patient);
+            confirm.showAndWait();
+            if( confirm.isOk() ){
+                Service.api.startVisit(patient.patientId)
+                        .thenAccept(visitId -> {
 
+                        })
+                        .exceptionally(ex -> {
+                            logger.error("Failed to start visit.", ex);
+                            Platform.runLater(() -> GuiUtil.alertException(ex));
+                            return null;
+                        });
+            }
+        }
     }
 
     private void setSearchResult(List<PatientDTO> list){
