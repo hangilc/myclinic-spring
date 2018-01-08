@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 public class SearchPaymentStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(SearchPaymentStage.class);
 
+    private TextField patientIdInput = new TextField();
     private PaymentTable paymentTable = new PaymentTable();
 
     public SearchPaymentStage(){
@@ -28,9 +29,9 @@ public class SearchPaymentStage extends Stage {
         {
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.CENTER_LEFT);
-            TextField patientIdInput = new TextField();
             patientIdInput.setPrefWidth(100);
             Button searchButton = new Button("検索");
+            searchButton.setOnAction(event -> doSearch());
             hbox.getChildren().addAll(new Label("患者番号"), patientIdInput, searchButton);
             root.getChildren().add(hbox);
         }
@@ -51,6 +52,34 @@ public class SearchPaymentStage extends Stage {
         root.setStyle("-fx-padding: 10");
         setScene(new Scene(root));
         sizeToScene();
+    }
+
+    private void doSearch() {
+        String text = patientIdInput.getText().trim();
+        if( text.isEmpty() ){
+            return;
+        }
+        try {
+            int patientId = Integer.parseInt(text);
+            if( patientId <= 0 ){
+                GuiUtil.alertError("患者番号が正の値でありません。");
+                return;
+            }
+            Service.api.listPaymentByPatient(patientId, 20)
+                    .thenAccept(list -> {
+                        Platform.runLater(() -> {
+                            patientIdInput.setText("");
+                            paymentTable.setRows(list);
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        logger.error("Failed ", ex);
+                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        return null;
+                    });
+        } catch(NumberFormatException ex){
+            GuiUtil.alertError("患者番号が適切でありません。");
+        }
     }
 
     private void doRecentPayment(){
