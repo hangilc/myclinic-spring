@@ -11,6 +11,8 @@ import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.lib.DateUtil;
 
+import java.util.List;
+
 public class PatientTable extends TableView<PatientTable.Model> {
 
     public static class Model {
@@ -104,6 +106,7 @@ public class PatientTable extends TableView<PatientTable.Model> {
 
         TableColumn<PatientTable.Model, String> yomiColumn = new TableColumn<>("よみ");
         yomiColumn.setCellValueFactory(new PropertyValueFactory<>("yomi"));
+        yomiColumn.setComparator(String::compareTo);
 
         TableColumn<PatientTable.Model, String> birthdayColumn = new TableColumn<>("生年月日");
         birthdayColumn.setCellValueFactory(new PropertyValueFactory<>("birthday"));
@@ -116,6 +119,32 @@ public class PatientTable extends TableView<PatientTable.Model> {
         getColumns().add(yomiColumn);
         getColumns().add(birthdayColumn);
         getColumns().add(sexColumn);
+    }
+
+    public void updateData(PatientDTO data){
+        List<Model> models = getItems();
+        boolean found = false;
+        int index = 0;
+        PatientTable.Model origModel = null;
+        PatientTable.Model newModel = null;
+        for(;index<models.size();index++){
+            PatientTable.Model m = models.get(index);
+            if( m.getPatientId() == data.patientId ){
+                origModel = m;
+                newModel = PatientTable.Model.fromPatient(data);
+                found = true;
+                break;
+            }
+        }
+        if( found ){
+            PatientTable.Model currentSelection = getSelectionModel().getSelectedItem();
+            if( currentSelection == origModel ){
+                currentSelection = newModel;
+            }
+            getItems().set(index, newModel);
+            getSelectionModel().select(currentSelection);
+            sort();
+        }
     }
 
 }
