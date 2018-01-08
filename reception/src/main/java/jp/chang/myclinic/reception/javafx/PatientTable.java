@@ -1,20 +1,18 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.binding.StringBinding;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import jp.chang.myclinic.consts.Sex;
-import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.reception.model.PatientModel;
 import jp.chang.myclinic.util.DateTimeUtil;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 
-public class PatientTable extends TableView<PatientTable.Model> {
+public class PatientTable extends TableView<PatientModel> {
 
+    /*
     public static class Model {
         private IntegerProperty patientId = new SimpleIntegerProperty();
         private StringProperty name = new SimpleStringProperty();
@@ -105,24 +103,52 @@ public class PatientTable extends TableView<PatientTable.Model> {
             this.sex.set(sex);
         }
     }
+    */
 
     public PatientTable(){
         setMaxWidth(Double.MAX_VALUE);
 
-        TableColumn<Model, Integer> patientIdColumn = new TableColumn<>("患者番号");
-        patientIdColumn.setCellValueFactory((new PropertyValueFactory<>("patientId")));
+        TableColumn<PatientModel, Integer> patientIdColumn = new TableColumn<>("患者番号");
+        patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("patientId"));
 
-        TableColumn<Model, String> nameColumn = new TableColumn<>("名前");
-        nameColumn.setCellValueFactory((new PropertyValueFactory<>("name")));
+        TableColumn<PatientModel, String> nameColumn = new TableColumn<>("名前");
+        nameColumn.setCellValueFactory(value -> {
+            PatientModel model = value.getValue();
+            return model.lastNameProperty().concat(" ").concat(model.firstNameProperty());
+        });
 
-        TableColumn<Model, String> yomiColumn = new TableColumn<>("よみ");
-        yomiColumn.setCellValueFactory((new PropertyValueFactory<>("yomi")));
+        TableColumn<PatientModel, String> yomiColumn = new TableColumn<>("よみ");
+        yomiColumn.setCellValueFactory(value -> {
+            PatientModel model = value.getValue();
+            return model.lastNameYomiProperty().concat(" ").concat(model.firstNameYomiProperty());
 
-        TableColumn<Model, String> birthdayColumn = new TableColumn<>("生年月日");
-        birthdayColumn.setCellValueFactory((new PropertyValueFactory<>("birthday")));
+        });
 
-        TableColumn<Model, String> sexColumn = new TableColumn<>("性別");
-        sexColumn.setCellValueFactory((new PropertyValueFactory<>("sex")));
+        TableColumn<PatientModel, String> birthdayColumn = new TableColumn<>("生年月日");
+        birthdayColumn.setCellValueFactory(value -> new StringBinding(){
+
+            { bind(value.getValue().birthdayProperty()); }
+
+            @Override
+            protected String computeValue() {
+                LocalDate date = value.getValue().birthdayProperty().getValue();
+                if( date == null || date == LocalDate.MAX ){
+                    return "";
+                } else {
+                    return DateTimeUtil.toKanji(date, DateTimeUtil.kanjiFormatter1);
+                }
+            }
+        });
+
+        TableColumn<PatientModel, String> sexColumn = new TableColumn<>("性別");
+        sexColumn.setCellValueFactory(value -> new StringBinding(){
+            { bind(value.getValue().sexProperty()); }
+
+            @Override
+            protected String computeValue(){
+                return value.getValue().getSex().getKanji();
+            }
+        });
 
         getColumns().addAll(Arrays.asList(patientIdColumn, nameColumn, yomiColumn, birthdayColumn, sexColumn));
     }

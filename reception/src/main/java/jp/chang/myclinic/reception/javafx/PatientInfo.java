@@ -1,5 +1,7 @@
 package jp.chang.myclinic.reception.javafx;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Label;
@@ -12,28 +14,92 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 public class PatientInfo extends Form {
-    private ObjectProperty<PatientModel> model = new SimpleObjectProperty<>();
+    private ObjectProperty<PatientModel> model = new SimpleObjectProperty<>(new PatientModel());
     private Label patientIdLabel = new Label();
     private Label nameLabel = new Label();
-    {
-        nameLabel.setWrapText(true);
-    }
     private Label yomiLabel = new Label();
-    {
-        yomiLabel.setWrapText(true);
-    }
     private Label birthdayLabel = new Label();
     private Label sexLabel = new Label();
     private Label addressLabel = new Label();
-    {
-        addressLabel.setWrapText(true);
-    }
     private Label phoneLabel = new Label();
-    {
-        phoneLabel.setWrapText(true);
-    }
 
     public PatientInfo(){
+        patientIdLabel.textProperty().bind(new StringBinding(){
+            { bind(model); }
+
+            @Override
+            protected String computeValue() {
+                PatientModel patientModel = model.getValue();
+                if( patientModel == null ){
+                    return "";
+                }
+                int patientId = patientModel.getPatientId();
+                return patientId == 0 ? "" : "" + patientId;
+            }
+        });
+        nameLabel.setWrapText(true);
+        nameLabel.textProperty().bind(new StringBinding(){
+            { bind(model); }
+
+            @Override
+            protected String computeValue() {
+                PatientModel patientModel = model.getValue();
+                if( patientModel == null ){
+                    return "";
+                }
+                return patientModel.getLastName() + " " + patientModel.getFirstName();
+            }
+        });
+        yomiLabel.setWrapText(true);
+        yomiLabel.textProperty().bind(new StringBinding(){
+            { bind(model); }
+
+            @Override
+            protected String computeValue() {
+                PatientModel patientModel = model.getValue();
+                if( patientModel == null ){
+                    return "";
+                }
+                return patientModel.getLastNameYomi() + " " + patientModel.getFirstNameYomi();
+            }
+        });
+        birthdayLabel.textProperty().bind(new StringBinding(){
+            { bind(model); }
+
+            @Override
+            protected String computeValue() {
+                if( model.getValue() == null ){
+                    return "";
+                }
+                LocalDate date = model.getValue().getBirthday();
+                if( date == null || date == LocalDate.MAX ){
+                    return "";
+                } else {
+                    return date.toString();
+                }
+            }
+        });
+        sexLabel.textProperty().bind(new StringBinding(){
+            { bind(model); }
+
+            @Override
+            protected String computeValue() {
+                if( model.getValue() == null ){
+                    return "";
+                } else {
+                    Sex sex = model.getValue().getSex();
+                    if( sex == null ){
+                        return "";
+                    } else {
+                        return sex.getKanji();
+                    }
+                }
+            }
+        });
+        addressLabel.setWrapText(true);
+        addressLabel.textProperty().bind(Bindings.select(model, "address"));
+        phoneLabel.setWrapText(true);
+        phoneLabel.textProperty().bind(Bindings.select(model, "phone"));
         add("患者番号：", patientIdLabel);
         add("名前：", nameLabel);
         add("読み：", yomiLabel);

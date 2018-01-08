@@ -10,7 +10,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -18,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.Service;
+import jp.chang.myclinic.reception.model.PatientModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +28,9 @@ public class SearchPatientStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(SearchPatientStage.class);
 
     private StringProperty searchText = new SimpleStringProperty();
-    private ObjectProperty<ObservableList<PatientTable.Model>> searchResult =
+    private ObjectProperty<ObservableList<PatientModel>> searchResult =
             new SimpleObjectProperty<>(FXCollections.emptyObservableList());
-    private ObjectProperty<PatientTable.Model> selectedItem = new SimpleObjectProperty<>();
+    private ObjectProperty<PatientModel> selectedItem = new SimpleObjectProperty<>();
 
     public SearchPatientStage(){
         VBox root = new VBox(4);
@@ -40,6 +40,7 @@ public class SearchPatientStage extends Stage {
             {
                 TextField searchTextInput = new TextField();
                 searchTextInput.textProperty().bindBidirectional(searchText);
+                searchTextInput.setOnAction(event -> doSearch());
                 Button searchButton = new Button("検索");
                 Button recentlyRegisteredButton = new Button("最近の登録");
                 searchButton.setOnAction(event -> doSearch());
@@ -58,7 +59,8 @@ public class SearchPatientStage extends Stage {
         {
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.TOP_LEFT);
-            TextArea infoLabel = new TextArea("");
+            PatientInfo infoLabel = new PatientInfo();
+            infoLabel.modelProperty().bindBidirectional(selectedItem);
             infoLabel.setPrefWidth(314);
             infoLabel.setPrefHeight(182);
             VBox commandBox = new VBox(4);
@@ -82,16 +84,13 @@ public class SearchPatientStage extends Stage {
             HBox.setHgrow(infoLabel, Priority.ALWAYS);
             root.getChildren().add(hbox);
         }
-        selectedItem.addListener((obs, oldValue, newValue) -> {
-
-        });
         root.setStyle("-fx-padding: 10");
         setScene(new Scene(root));
         sizeToScene();
     }
 
     private void onEdit() {
-        PatientTable.Model model = selectedItem.getValue();
+        PatientModel model = selectedItem.getValue();
         if( model != null ){
             PatientDTO patient = model.orig;
             Service.api.listHoken(patient.patientId)
@@ -121,8 +120,8 @@ public class SearchPatientStage extends Stage {
         Service.api.searchPatient(text)
                 .thenAccept(list -> {
                     Platform.runLater(() -> {
-                        List<PatientTable.Model> models = list.stream()
-                                .map(PatientTable.Model::fromPatient)
+                        List<PatientModel> models = list.stream()
+                                .map(PatientModel::fromPatient)
                                 .collect(Collectors.toList());
                         searchResult.setValue(FXCollections.observableArrayList(models));
                     });

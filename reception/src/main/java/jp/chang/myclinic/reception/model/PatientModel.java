@@ -17,6 +17,7 @@ public class PatientModel {
     private ObjectProperty<Sex> sex = new SimpleObjectProperty<>();
     private StringProperty address = new SimpleStringProperty();
     private StringProperty phone = new SimpleStringProperty();
+    public PatientDTO orig;
 
     public static PatientModel fromPatient(PatientDTO patient){
         PatientModel model = new PatientModel();
@@ -29,6 +30,7 @@ public class PatientModel {
         model.sex.setValue(Sex.fromCode(patient.sex));
         model.address.setValue(patient.address);
         model.phone.setValue(patient.phone);
+        model.orig = patient;
         return model;
     }
 
@@ -104,6 +106,18 @@ public class PatientModel {
         this.birthday.set(birthday);
     }
 
+    public Sex getSex() {
+        return sex.get();
+    }
+
+    public ObjectProperty<Sex> sexProperty() {
+        return sex;
+    }
+
+    public void setSex(Sex sex) {
+        this.sex.set(sex);
+    }
+
     public String getAddress() {
         return address.get();
     }
@@ -128,4 +142,19 @@ public class PatientModel {
         this.phone.set(phone);
     }
 
+    @Override
+    public String toString() {
+        return "PatientModel{" +
+                "patientId=" + patientId +
+                ", lastName=" + lastName +
+                ", firstName=" + firstName +
+                ", lastNameYomi=" + lastNameYomi +
+                ", firstNameYomi=" + firstNameYomi +
+                ", birthday=" + birthday +
+                ", sex=" + sex +
+                ", address=" + address +
+                ", phone=" + phone +
+                ", orig=" + orig +
+                '}';
+    }
 }
