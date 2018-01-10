@@ -33,6 +33,18 @@ public class DrawerPreviewStage extends Stage {
                 file.getItems().addAll(printItem, closeItem);
                 mbar.getMenus().add(file);
             }
+            {
+                Menu setting = new Menu("印刷設定");
+                Menu settingNameItem = new Menu("既定の印刷設定");
+                settingNameItem.setOnShowing(event -> {
+
+                });
+                settingNameItem.setOnAction(event -> {
+
+                });
+                setting.getItems().addAll(settingNameItem);
+                mbar.getMenus().add(setting);
+            }
             root.setTop(mbar);
         }
         {
