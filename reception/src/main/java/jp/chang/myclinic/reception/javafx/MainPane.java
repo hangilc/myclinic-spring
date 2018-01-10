@@ -5,18 +5,25 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
+import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.Service;
+import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
+import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
+import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
+import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class MainPane extends VBox {
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
 
     private Button searchPatientButton = new Button("患者検索");
     private Button searchPaymentButton = new Button("会計検索");
-    private Button blankReceiptButton = new Button("領収書用紙");
 
     private TextField patientIdField = new TextField();
     private Button registerForPracticeButton = new Button("診療受付");
@@ -35,6 +42,7 @@ public class MainPane extends VBox {
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.CENTER_LEFT);
             Button newPatientButton = new Button("新規患者");
+            Button blankReceiptButton = new Button("領収書用紙");
             newPatientButton.setOnAction(event -> doNewPatient());
             searchPatientButton.setOnAction(event -> doSearchPatient());
             searchPaymentButton.setOnAction(event -> doSearchPayment());
@@ -126,7 +134,13 @@ public class MainPane extends VBox {
     }
 
     private void doBlankReceipt(){
-        ReceiptPreviewStage stage = new ReceiptPreviewStage();
+        //ReceiptPreviewStage stage = new ReceiptPreviewStage();
+        ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
+        creator.setClinicInfo(ReceptionEnv.INSTANCE.getClinicInfo());
+        ReceiptDrawerData data = creator.getData();
+        ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
+        final List<Op> ops = receiptDrawer.getOps();
+        DrawerPreviewStage stage = new DrawerPreviewStage(ops);
         stage.show();
     }
 }
