@@ -7,6 +7,7 @@ import jp.chang.myclinic.drawer.DrawerCompiler;
 import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
 import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.PaperSize;
 
 import java.util.List;
 
@@ -23,7 +24,8 @@ public class ReceiptDrawer {
         setupFonts();
         compiler.createPen("regular", 0, 0, 0, 0.1);
         compiler.setPen("regular");
-        Box frameBox = new Box(0, 0, 148, 105);
+        //Box frameBox = new Box(0, 0, 148, 105);
+        Box frameBox = new Box(PaperSize.A6_Landscape);
         Box titleBox = frameBox.shiftDown(4).setWidth(28, HorizAnchor.Center)
                 .setHeight(6, VertAnchor.Top);
         Box row1 = frameBox.innerBox(13, 14, 73, 23);

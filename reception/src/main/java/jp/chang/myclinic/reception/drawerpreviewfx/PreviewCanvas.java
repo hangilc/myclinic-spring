@@ -57,8 +57,13 @@ public class PreviewCanvas extends Canvas {
     private StrokeEnv savedTextStrokeEnv;
     private StrokeEnv savedLineStrokeEnv;
 
-    public PreviewCanvas(List<Op> ops){
-        super(600, 600);
+    public PreviewCanvas(List<Op> ops, PaperSize paperSize) {
+        this(ops, paperSize.getWidth(), paperSize.getHeight());
+    }
+
+    public PreviewCanvas(List<Op> ops, double mmWidth, double mmHeight){
+        setWidth(scale(mmWidth));
+        setHeight(scale(mmHeight));
         gc = getGraphicsContext2D();
         gc.setTextBaseline(VPos.TOP);
         gc.setLineWidth(0.5);

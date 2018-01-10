@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.reception.ReceptionEnv;
@@ -140,7 +141,7 @@ public class MainPane extends VBox {
         ReceiptDrawerData data = creator.getData();
         ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
         final List<Op> ops = receiptDrawer.getOps();
-        DrawerPreviewStage stage = new DrawerPreviewStage(ops);
+        DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape);
         stage.show();
     }
 }

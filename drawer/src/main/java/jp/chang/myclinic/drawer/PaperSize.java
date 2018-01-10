@@ -11,6 +11,7 @@ public class PaperSize {
     public static PaperSize A5 = new PaperSize(148, 210);
     public static PaperSize A5_Lanscape = A5.transpose();
     public static PaperSize A6 = new PaperSize(105, 148);
+    public static PaperSize A6_Landscape = A6.transpose();
     public static PaperSize B4 = new PaperSize(257, 364);
     public static PaperSize B5 = new PaperSize(182, 257);
 

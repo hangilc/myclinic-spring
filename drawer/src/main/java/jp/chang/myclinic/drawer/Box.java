@@ -24,6 +24,10 @@ public class Box {
         this.bottom = bottom;
     }
 
+    public Box(PaperSize paperSize){
+        this(0, 0, paperSize.getWidth(), paperSize.getHeight());
+    }
+
     @Override
     public String toString() {
         return "Box{" +
