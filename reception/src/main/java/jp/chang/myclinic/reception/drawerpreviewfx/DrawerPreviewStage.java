@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -11,16 +12,24 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
+import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.reception.javafx.GuiUtil;
 
 import java.util.List;
+import java.util.Optional;
 
 public class DrawerPreviewStage extends Stage {
 
-    public DrawerPreviewStage(List<Op> ops, PaperSize paperSize) {
-        this(ops, paperSize.getWidth(), paperSize.getHeight());
+    private PrinterEnv printerEnv;
+    private String settingKey;
+
+    public DrawerPreviewStage(List<Op> ops, PaperSize paperSize, PrinterEnv printerEnv, String settingKey) {
+        this(ops, paperSize.getWidth(), paperSize.getHeight(), printerEnv, settingKey);
     }
 
-    public DrawerPreviewStage(List<Op> ops, double mmWidth, double mmHeight){
+    public DrawerPreviewStage(List<Op> ops, double mmWidth, double mmHeight, PrinterEnv printerEnv, String settingKey){
+        this.printerEnv = printerEnv;
+        this.settingKey = settingKey;
         BorderPane root = new BorderPane();
         {
             MenuBar mbar = new MenuBar();
@@ -35,14 +44,16 @@ public class DrawerPreviewStage extends Stage {
             }
             {
                 Menu setting = new Menu("印刷設定");
+                MenuItem createItem = new MenuItem("印刷設定の新規作成");
                 Menu settingNameItem = new Menu("既定の印刷設定");
+                createItem.setOnAction(event -> doCreate());
                 settingNameItem.setOnShowing(event -> {
 
                 });
                 settingNameItem.setOnAction(event -> {
 
                 });
-                setting.getItems().addAll(settingNameItem);
+                setting.getItems().addAll(createItem, settingNameItem);
                 mbar.getMenus().add(setting);
             }
             root.setTop(mbar);
@@ -58,6 +69,21 @@ public class DrawerPreviewStage extends Stage {
             root.setCenter(center);
         }
         setScene(new Scene(root));
+    }
+
+    private void doCreate(){
+        if( printerEnv == null ){
+            GuiUtil.alertError("PrinterEnv が指定されていません。");
+            return;
+        }
+        TextInputDialog nameInputDialog = new TextInputDialog();
+        nameInputDialog.setHeaderText("新規印刷設定の名前を入力してください。");
+        Optional<String> optName = nameInputDialog.showAndWait();
+        if( !optName.isPresent() ){
+            return;
+        }
+        String settingName = optName.get();
+
     }
 
     private void doPrint(List<Op> ops){

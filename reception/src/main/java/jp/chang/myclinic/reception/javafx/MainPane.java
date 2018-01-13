@@ -141,7 +141,7 @@ public class MainPane extends VBox {
         ReceiptDrawerData data = creator.getData();
         ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
         final List<Op> ops = receiptDrawer.getOps();
-        DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape);
+        DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape, null, null);
         stage.show();
     }
 }
