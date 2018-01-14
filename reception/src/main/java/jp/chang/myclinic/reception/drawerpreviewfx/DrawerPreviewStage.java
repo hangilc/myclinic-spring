@@ -4,7 +4,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -13,10 +12,10 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.reception.drawerpreviewfx.create.CreatePrinterSettingStage;
 import jp.chang.myclinic.reception.javafx.GuiUtil;
 
 import java.util.List;
-import java.util.Optional;
 
 public class DrawerPreviewStage extends Stage {
 
@@ -76,14 +75,8 @@ public class DrawerPreviewStage extends Stage {
             GuiUtil.alertError("PrinterEnv が指定されていません。");
             return;
         }
-        TextInputDialog nameInputDialog = new TextInputDialog();
-        nameInputDialog.setHeaderText("新規印刷設定の名前を入力してください。");
-        Optional<String> optName = nameInputDialog.showAndWait();
-        if( !optName.isPresent() ){
-            return;
-        }
-        String settingName = optName.get();
-
+        CreatePrinterSettingStage stage = new CreatePrinterSettingStage();
+        stage.showAndWait();
     }
 
     private void doPrint(List<Op> ops){

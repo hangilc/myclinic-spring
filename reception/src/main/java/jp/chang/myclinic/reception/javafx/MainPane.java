@@ -9,6 +9,7 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
+import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.Service;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
@@ -18,6 +19,7 @@ import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
 
 public class MainPane extends VBox {
@@ -141,7 +143,16 @@ public class MainPane extends VBox {
         ReceiptDrawerData data = creator.getData();
         ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
         final List<Op> ops = receiptDrawer.getOps();
-        DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape, null, null);
+        PrinterEnv printerEnv = null;
+        try {
+            printerEnv = ReceptionEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
+        } catch(IOException ex){
+            logger.error("Failed to get PrinterEnv", ex);
+            GuiUtil.alertError("Failed to get PrinterEnv");
+        }
+        DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
+                printerEnv, "reception-receipt");
         stage.show();
+
     }
 }

@@ -10,11 +10,13 @@ import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         ReceptionArgs receptionArgs = ReceptionArgs.parseArgs(args);
         Service.setServerUrl(receptionArgs.serverUrl);
         ReceptionEnv.INSTANCE.updateWithArgs(receptionArgs);

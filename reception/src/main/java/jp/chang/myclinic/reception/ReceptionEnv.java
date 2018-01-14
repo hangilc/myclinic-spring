@@ -1,6 +1,7 @@
 package jp.chang.myclinic.reception;
 
 import jp.chang.myclinic.dto.ClinicInfoDTO;
+import jp.chang.myclinic.myclinicenv.MyclinicEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +20,9 @@ public class ReceptionEnv {
     private ReceptionConfig config;
     private Path printerSettingsDir;
     private ClinicInfoDTO clinicInfo;
+    private MyclinicEnv myclinicEnv;
 
-    public void updateWithArgs(ReceptionArgs args){
+    public void updateWithArgs(ReceptionArgs args) throws IOException {
         this.workdir = args.workingDirPath;
         if( this.workdir == null ){
             this.workdir = Paths.get(System.getProperty("user.dir"));
@@ -39,6 +41,7 @@ public class ReceptionEnv {
         if( this.printerSettingsDir == null ){
             this.printerSettingsDir = workdir;
         }
+        myclinicEnv = new MyclinicEnv();
     }
 
     public Path getWorkdir(){
@@ -83,6 +86,10 @@ public class ReceptionEnv {
 
     public void setClinicInfo(ClinicInfoDTO clinicInfo) {
         this.clinicInfo = clinicInfo;
+    }
+
+    public MyclinicEnv getMyclinicEnv() {
+        return myclinicEnv;
     }
 
     @Override
