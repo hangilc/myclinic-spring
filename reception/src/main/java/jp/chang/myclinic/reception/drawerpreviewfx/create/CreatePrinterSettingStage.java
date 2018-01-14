@@ -18,6 +18,8 @@ import jp.chang.myclinic.reception.javafx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class CreatePrinterSettingStage extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(CreatePrinterSettingStage.class);
@@ -110,6 +112,11 @@ public class CreatePrinterSettingStage extends Stage {
         auxSetting.setScale(scale);
         try {
             PrinterEnv printerEnv = ReceptionEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
+            List<String> existingNames = printerEnv.listSettingNames();
+            if( existingNames.contains(name) ){
+                GuiUtil.alertError(name + " という設定はすでに存在します。");
+                return;
+            }
             printerEnv.createPrintSetting(name, devnames, devmode, auxSetting);
             close();
         } catch(Exception ex){
