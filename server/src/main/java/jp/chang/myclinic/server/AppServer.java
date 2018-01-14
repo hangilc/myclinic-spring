@@ -23,7 +23,7 @@ public class AppServer {
     }
 
     @Bean
-    public HoukatsuKensa makeHoukatsuKensa(){
+    public HoukatsuKensa makeHoukatsuKensa() throws IOException {
     	return HoukatsuKensa.load();
     }
 

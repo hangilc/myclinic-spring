@@ -1,23 +1,58 @@
 package jp.chang.myclinic.server.rcpt;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import jp.chang.myclinic.consts.HoukatsuKensaKind;
 
-import javax.xml.bind.JAXB;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+//import javax.xml.bind.JAXB;
+
+//import javax.xml.bind.JAXB;
 
 public class HoukatsuKensa {
 
-	@XmlElementWrapper
-	@XmlElement(name = "revision")
 	public Revision[] revisions;
+
+	public static class LocalDateDeserializer extends StdDeserializer<LocalDate> {
+
+		protected LocalDateDeserializer(){
+			super(LocalDate.class);
+		}
+
+		@Override
+		public LocalDate deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+			return LocalDate.parse(jsonParser.readValueAs(String.class));
+		}
+	}
+
+	public static class KensaMapDeserializer extends StdDeserializer<KensaMapWrapper>{
+
+		protected KensaMapDeserializer(){
+			super(KensaMapWrapper.class);
+		}
+
+		@Override
+		public KensaMapWrapper deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+			KensaMapWrapper kensaMapWrapper = new KensaMapWrapper();
+			List<Group> groups = jsonParser.readValueAs(new TypeReference<List<Group>>(){});
+			for(Group group: groups){
+				HoukatsuKensaKind kind = HoukatsuKensaKind.fromCode(group.getKey());
+				kensaMapWrapper.put(kind, group.getSteps());
+			}
+			return kensaMapWrapper;
+		}
+	}
 
 	public Optional<Integer> calcTen(HoukatsuKensaKind kind, int n, LocalDate at){
 		Revision r = findRevision(at);
@@ -40,12 +75,12 @@ public class HoukatsuKensa {
 	public static class Revision {
 
 		private LocalDate validFrom;
-		private Map<HoukatsuKensaKind, List<Step>> map;
+		private KensaMapWrapper mapWrapper;
 
 		public Revision(){}
 
-		@XmlJavaTypeAdapter(LocalDateAdapter.class)
-		@XmlAttribute(name = "valid-from")
+		@JsonDeserialize(using = LocalDateDeserializer.class)
+		@JacksonXmlProperty(localName="valid-from")
 		public LocalDate getValidFrom(){
 			return validFrom;
 		}
@@ -54,18 +89,22 @@ public class HoukatsuKensa {
 			this.validFrom = validFrom;
 		}
 
-		@XmlJavaTypeAdapter(GroupMapAdapter.class)
-		@XmlElement(name = "groups")
-		public Map<HoukatsuKensaKind, List<Step>> getMap(){
-			return map;
+		@JacksonXmlProperty(localName="groups")
+		@JsonDeserialize(using = KensaMapDeserializer.class)
+		public KensaMapWrapper getMapWrapper(){
+			return mapWrapper;
 		}
 
-		public void setMap(Map<HoukatsuKensaKind, List<Step>> map){
-			this.map = map;
+		public void setMapWrapper(KensaMapWrapper map){
+			this.mapWrapper = map;
+		}
+
+		public Map<HoukatsuKensaKind, List<Step>> getMap(){
+			return mapWrapper.getMap();
 		}
 
 		public List<Step> getSteps(HoukatsuKensaKind kind){
-			List<Step> steps = map.get(kind);
+			List<Step> steps = mapWrapper.get(kind);
 			if( steps == null ){
 				return Collections.emptyList();
 			} else {
@@ -84,14 +123,30 @@ public class HoukatsuKensa {
 
 	}
 
-	public static class GroupEntry {
+	public static class KensaMapWrapper {
+		private  Map<HoukatsuKensaKind, List<Step>> map = new HashMap<>();
+
+		public void put(HoukatsuKensaKind kind, List<Step> steps){
+			map.put(kind, steps);
+		}
+
+		public List<Step> get(HoukatsuKensaKind kind){
+			return map.get(kind);
+		}
+
+		public Map<HoukatsuKensaKind, List<Step>> getMap(){
+			return map;
+		}
+	}
+
+	public static class Group {
 
 		private String key;
 		private List<Step> steps;
 
-		public GroupEntry(){ }
+		public Group(){ }
 
-		@XmlAttribute
+		@JacksonXmlProperty(isAttribute = true)
 		public String getKey(){
 			return key;
 		}
@@ -100,7 +155,8 @@ public class HoukatsuKensa {
 			this.key = key;
 		}
 
-		@XmlElement(name = "step")
+		@JacksonXmlElementWrapper(useWrapping = false)
+		@JacksonXmlProperty(localName = "step")
 		public List<Step> getSteps(){
 			return steps;
 		}
@@ -109,21 +165,12 @@ public class HoukatsuKensa {
 			this.steps = steps;
 		}
 
-	}
-
-	public static class Group {
-
-		private List<GroupEntry> entries;
-
-		public Group(){}
-
-		@XmlElement(name = "group")
-		public List<GroupEntry> getEntries(){
-			return entries;
-		}
-
-		public void setEntries(List<GroupEntry> entries){
-			this.entries = entries;
+		@Override
+		public String toString() {
+			return "Group{" +
+					"key='" + key + '\'' +
+					", steps=" + steps +
+					'}';
 		}
 	}
 
@@ -161,52 +208,10 @@ public class HoukatsuKensa {
 		}
 	}
 
-	public static class LocalDateAdapter extends XmlAdapter<String, LocalDate> {
-		@Override
-		public LocalDate unmarshal(String v) throws Exception {
-			return LocalDate.parse(v, DateTimeFormatter.ISO_LOCAL_DATE);
-		}
-
-		@Override
-		public String marshal(LocalDate v) throws Exception {
-			return v.format(DateTimeFormatter.ISO_LOCAL_DATE);
-		}
-	}
-
-	public static class GroupMapAdapter extends XmlAdapter<Group, Map<HoukatsuKensaKind, List<Step>>> {
-		@Override
-		public Map<HoukatsuKensaKind, List<Step>> unmarshal(Group group){
-			Map<HoukatsuKensaKind, List<Step>> map = new HashMap<>();
-			group.entries.forEach(entry -> {
-				String key = entry.getKey();
-				List<Step> steps = entry.getSteps();
-				map.put(HoukatsuKensaKind.fromCode(key), steps);
-			});
-			return map;
-		}
-
-		@Override 
-		public Group marshal(Map<HoukatsuKensaKind, List<Step>> map){
-			List<GroupEntry> entries = new ArrayList<>();
-			map.forEach((k, v) -> {
-				GroupEntry entry = new GroupEntry();
-				entry.setKey(k.getCode());
-				entry.setSteps(v);
-				entries.add(entry);
-			});
-			Group group = new Group();
-			group.entries = entries;
-			return group;
-		}
-	}
-
-	public static HoukatsuKensa load(){
-		return JAXB.unmarshal(new File("./config/houkatsu-kensa.xml"), HoukatsuKensa.class);
-	}
-
-	public static void read(){
-		HoukatsuKensa houkatsu = JAXB.unmarshal(new File("./houkatsu-kensa.xml"), HoukatsuKensa.class);
-		for(Revision r: houkatsu.revisions){
+	public static HoukatsuKensa load() throws IOException {
+		XmlMapper xmlMapper = new XmlMapper();
+		HoukatsuKensa houkatsuKensa = xmlMapper.readValue(new File("./config/houkatsu-kensa.xml"), HoukatsuKensa.class);
+		for(Revision r: houkatsuKensa.revisions){
 			System.out.println("Revision");
 			System.out.println("validFrom:" + r.getValidFrom());
 			r.getMap().forEach((key, val) -> {
@@ -214,6 +219,21 @@ public class HoukatsuKensa {
 				System.out.println("steps:" + val);
 			});
 		}
-		JAXB.marshal(houkatsu, System.out);
+		System.exit(1);
+		return houkatsuKensa;
+//		return JAXB.unmarshal(new File("./config/houkatsu-kensa.xml"), HoukatsuKensa.class);
+	}
+
+	public static void read(){
+//		HoukatsuKensa houkatsu = JAXB.unmarshal(new File("./houkatsu-kensa.xml"), HoukatsuKensa.class);
+//		for(Revision r: houkatsu.revisions){
+//			System.out.println("Revision");
+//			System.out.println("validFrom:" + r.getValidFrom());
+//			r.getMap().forEach((key, val) -> {
+//				System.out.println("key:" + key);
+//				System.out.println("steps:" + val);
+//			});
+//		}
+//		JAXB.marshal(houkatsu, System.out);
 	}
 }
