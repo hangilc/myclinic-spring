@@ -219,7 +219,6 @@ public class HoukatsuKensa {
 				System.out.println("steps:" + val);
 			});
 		}
-		System.exit(1);
 		return houkatsuKensa;
 //		return JAXB.unmarshal(new File("./config/houkatsu-kensa.xml"), HoukatsuKensa.class);
 	}
