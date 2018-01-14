@@ -122,13 +122,8 @@ public class ManageDialog extends JDialog {
         if( !confirm("本当に " + name + " 設定を削除しますか？") ){
             return;
         }
-        try {
-            printManager.deleteSetting(name);
-            updateSettingNames();
-        } catch (IOException e) {
-            logger.error("Failed to delete setting {}", name, e);
-            alert("設定の削除に失敗しました。");
-        }
+        printManager.deleteSetting(name);
+        updateSettingNames();
     }
 
     private void doNew(){

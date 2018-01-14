@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
 
 public class Form extends GridPane {
 
@@ -25,9 +26,16 @@ public class Form extends GridPane {
     }
 
     public void add(String name, Node node){
+        add(name, node, new RowConstraints());
+    }
+
+    public void add(String name, Node node, RowConstraints rowConstraints){
         Label label = new Label(name);
         add(label, 0, currentRow);
         add(node, 1, currentRow);
+        if( rowConstraints != null ){
+            getRowConstraints().add(currentRow, rowConstraints);
+        }
         currentRow += 1;
     }
 
@@ -37,7 +45,7 @@ public class Form extends GridPane {
         add(name, hbox);
     }
 
-    public HBox makeHbox(){
+    private HBox makeHbox(){
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         return hbox;

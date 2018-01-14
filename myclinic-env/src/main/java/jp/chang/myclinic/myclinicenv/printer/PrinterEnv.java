@@ -1,6 +1,11 @@
 package jp.chang.myclinic.myclinicenv.printer;
 
 
+import jp.chang.myclinic.drawer.printer.AuxSetting;
+import jp.chang.myclinic.drawer.printer.manager.PrintManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,6 +15,7 @@ import java.util.List;
 
 public class PrinterEnv {
 
+    private static Logger logger = LoggerFactory.getLogger(PrinterEnv.class);
     private Path baseDir;
 
     public PrinterEnv(Path baseDir){
@@ -40,6 +46,24 @@ public class PrinterEnv {
             names.add(name);
         }
         return names;
+    }
+
+    public void createPrintSetting(String name, byte[] devnames, byte[] devmode, AuxSetting auxSetting)
+            throws IOException, PrintManager.SettingDirNotSuppliedException {
+        PrintManager manager = new PrintManager(baseDir);
+        try {
+            manager.saveSetting(name, devnames, devmode);
+        } catch(Exception ex){
+            logger.error("Failed to carete printer setting.", ex);
+            throw ex;
+        }
+        try {
+            manager.saveSetting(name, auxSetting);
+        } catch(Exception ex){
+            logger.error("Failed to create auxSetting.", ex);
+            manager.deleteSetting(name);
+            throw ex;
+        }
     }
 
 

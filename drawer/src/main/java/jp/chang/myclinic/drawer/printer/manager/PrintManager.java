@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +19,7 @@ public class PrintManager {
 
     public static class SettingDirNotSuppliedException extends Exception {}
 
+    private static Logger logger = LoggerFactory.getLogger(PrintManager.class);
     private Path settingDir;
 
     public PrintManager(Path settingDir){
@@ -71,10 +74,22 @@ public class PrintManager {
         return true;
     }
 
-    public void deleteSetting(String name) throws IOException {
-        Files.delete(devnamesSettingPath(name));
-        Files.delete(devmodeSettingPath(name));
-        Files.delete(auxSettingPath(name));
+    public void deleteSetting(String name) {
+        try {
+            Files.delete(devnamesSettingPath(name));
+        } catch(Exception ex){
+            logger.error("Failed to delete devnames.", ex);
+        }
+        try {
+            Files.delete(devmodeSettingPath(name));
+        } catch(Exception ex){
+            logger.error("Failed to delete devmode.", ex);
+        }
+        try {
+            Files.delete(auxSettingPath(name));
+        } catch(Exception ex){
+            logger.error("Failed to delete auxSetting.", ex);
+        }
     }
 
     public void saveSetting(String name, byte[] devnames, byte[] devmode)
@@ -83,7 +98,16 @@ public class PrintManager {
             throw new SettingDirNotSuppliedException();
         }
         Files.write(devnamesSettingPath(name), devnames);
-        Files.write(devmodeSettingPath(name), devmode);
+        try {
+            Files.write(devmodeSettingPath(name), devmode);
+        } catch(Exception ex){
+            try {
+                Files.delete(devnamesSettingPath(name));
+            } catch(Exception ex2){
+                logger.error("double exception");
+            }
+            throw ex;
+        }
     }
 
     public void saveSetting(String name, AuxSetting auxSetting) throws SettingDirNotSuppliedException, IOException {
