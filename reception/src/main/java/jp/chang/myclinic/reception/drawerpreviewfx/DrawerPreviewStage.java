@@ -1,9 +1,12 @@
 package jp.chang.myclinic.reception.drawerpreviewfx;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -14,13 +17,21 @@ import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.drawerpreviewfx.create.CreatePrinterSettingStage;
 import jp.chang.myclinic.reception.javafx.GuiUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class DrawerPreviewStage extends Stage {
 
+    private static Logger logger = LoggerFactory.getLogger(DrawerPreviewStage.class);
     private PrinterEnv printerEnv;
     private String settingKey;
+    private ObservableList<String> printerSettingNames = FXCollections.observableArrayList();
+    private StringProperty currentSettingName = new SimpleStringProperty();
 
     public DrawerPreviewStage(List<Op> ops, PaperSize paperSize, PrinterEnv printerEnv, String settingKey) {
         this(ops, paperSize.getWidth(), paperSize.getHeight(), printerEnv, settingKey);
@@ -41,21 +52,41 @@ public class DrawerPreviewStage extends Stage {
                 file.getItems().addAll(printItem, closeItem);
                 mbar.getMenus().add(file);
             }
-            {
+            if( printerEnv != null ){
                 Menu setting = new Menu("印刷設定");
                 MenuItem createItem = new MenuItem("印刷設定の新規作成");
                 Menu settingNameItem = new Menu("既定の印刷設定");
                 createItem.setOnAction(event -> doCreate());
-                settingNameItem.setOnShowing(event -> {
+                printerSettingNames.addListener(new ListChangeListener<String>(){
 
+                    @Override
+                    public void onChanged(Change<? extends String> c) {
+                        setupPrinterSettingMenu(c, settingNameItem);
+                    }
                 });
-                settingNameItem.setOnAction(event -> {
-
+                currentSettingName.addListener((obs, oldValue, newValue) -> {
+                    System.out.println("setting changed to " + newValue);
+                    for(MenuItem item: settingNameItem.getItems()){
+                        String name = (String)item.getUserData();
+                        if( Objects.equals(name, newValue) ){
+                            RadioMenuItem radioItem = (RadioMenuItem)item;
+                            radioItem.setSelected(true);
+                            return;
+                        }
+                    }
                 });
                 setting.getItems().addAll(createItem, settingNameItem);
                 mbar.getMenus().add(setting);
             }
             root.setTop(mbar);
+            if( printerEnv != null ){
+                try {
+                    List<String> names = printerEnv.listSettingNames();
+                    printerSettingNames.setAll(names);
+                } catch(Exception ex){
+                    logger.error("Failed to fetch printer setting names", ex);
+                }
+            }
         }
         {
             VBox center = new VBox(4);
@@ -68,6 +99,28 @@ public class DrawerPreviewStage extends Stage {
             root.setCenter(center);
         }
         setScene(new Scene(root));
+    }
+
+    private void setupPrinterSettingMenu(ListChangeListener.Change<? extends String> change, Menu menu){
+        ToggleGroup group = new ToggleGroup();
+        RadioMenuItem cancelItem = new RadioMenuItem("既定印刷設定なし");
+        cancelItem.setUserData(null);
+        List<RadioMenuItem> items = change.getList().stream().map(name -> {
+            RadioMenuItem item = new RadioMenuItem(name);
+            item.setUserData(name);
+            return item;
+        }).collect(Collectors.toList());
+        List<RadioMenuItem> allItems = new ArrayList<>();
+        allItems.add(cancelItem);
+        allItems.addAll(items);
+        allItems.forEach(item -> {
+            item.setOnAction(event -> {
+                String name = (String)item.getUserData();
+                currentSettingName.setValue(name);
+            });
+        });
+        group.getToggles().addAll(allItems);
+        menu.getItems().setAll(allItems);
     }
 
     private void doCreate(){
