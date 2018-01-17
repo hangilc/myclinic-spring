@@ -20,6 +20,7 @@ import jp.chang.myclinic.reception.javafx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -65,7 +66,6 @@ public class DrawerPreviewStage extends Stage {
                     }
                 });
                 currentSettingName.addListener((obs, oldValue, newValue) -> {
-                    System.out.println("setting changed to " + newValue);
                     for(MenuItem item: settingNameItem.getItems()){
                         String name = (String)item.getUserData();
                         if( Objects.equals(name, newValue) ){
@@ -83,8 +83,13 @@ public class DrawerPreviewStage extends Stage {
                 try {
                     List<String> names = printerEnv.listSettingNames();
                     printerSettingNames.setAll(names);
+                    String defaultName = printerEnv.getDefaultSettingName(settingKey);
+                    if( defaultName == null ){
+                        defaultName = "";
+                    }
+                    currentSettingName.setValue(defaultName);
                 } catch(Exception ex){
-                    logger.error("Failed to fetch printer setting names", ex);
+                    logger.error("Failed to fetch printer settings", ex);
                 }
             }
         }
@@ -104,7 +109,7 @@ public class DrawerPreviewStage extends Stage {
     private void setupPrinterSettingMenu(ListChangeListener.Change<? extends String> change, Menu menu){
         ToggleGroup group = new ToggleGroup();
         RadioMenuItem cancelItem = new RadioMenuItem("既定印刷設定なし");
-        cancelItem.setUserData(null);
+        cancelItem.setUserData("");
         List<RadioMenuItem> items = change.getList().stream().map(name -> {
             RadioMenuItem item = new RadioMenuItem(name);
             item.setUserData(name);
@@ -116,7 +121,12 @@ public class DrawerPreviewStage extends Stage {
         allItems.forEach(item -> {
             item.setOnAction(event -> {
                 String name = (String)item.getUserData();
-                currentSettingName.setValue(name);
+                try {
+                    printerEnv.saveDefaultSettingName(this.settingKey, name);
+                    currentSettingName.setValue(name);
+                } catch(IOException ex){
+                    GuiUtil.alertException("既定の印刷設定の保存に失敗しました。", ex);
+                }
             });
         });
         group.getToggles().addAll(allItems);
