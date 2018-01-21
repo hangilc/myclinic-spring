@@ -58,6 +58,7 @@ public class SearchPaymentStage extends Stage {
             Button printReceiptAgainButton = new Button("領収書再発行");
             Button rcptDetailButton = new Button("明細情報表示");
             printReceiptAgainButton.setOnAction(event -> doPrintReceiptAgain());
+            rcptDetailButton.setOnAction(event -> doRcptDetail());
             printReceiptAgainButton.setDisable(true);
             rcptDetailButton.setDisable(true);
             paymentTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
@@ -65,7 +66,6 @@ public class SearchPaymentStage extends Stage {
                 printReceiptAgainButton.setDisable(disable);
                 rcptDetailButton.setDisable(disable);
             });
-            rcptDetailButton.setOnAction(event -> paymentTable.printColumnWidths());
             hbox.getChildren().addAll(printReceiptAgainButton, rcptDetailButton);
             root.getChildren().add(hbox);
         }
@@ -102,6 +102,13 @@ public class SearchPaymentStage extends Stage {
                         Platform.runLater(() -> GuiUtil.alertException(ex));
                         return null;
                     });
+        }
+    }
+
+    private void doRcptDetail(){
+        PaymentTable.Model model = paymentTable.getSelectionModel().getSelectedItem();
+        if( model != null ) {
+            System.out.println(model);
         }
     }
 
