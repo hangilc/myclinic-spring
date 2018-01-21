@@ -17,7 +17,7 @@ import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.drawerpreviewfx.printersetting.CreatePrinterSettingStage;
-import jp.chang.myclinic.reception.drawerpreviewfx.printersetting.PrinterSettingFormStage;
+import jp.chang.myclinic.reception.drawerpreviewfx.printersetting.EditPrinterSettingStage;
 import jp.chang.myclinic.reception.javafx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,33 +179,61 @@ public class DrawerPreviewStage extends Stage {
     }
 
     private void doEditSetting(String name){
-        if( printerEnv == null ){
+        if( printerEnv == null || name == null || name.isEmpty() ){
             return;
         }
         try {
             byte[] devnames = printerEnv.getDevnames(name);
             byte[] devmode = printerEnv.getDevmode(name);
             AuxSetting auxSetting = printerEnv.getAuxSetting(name);
-            PrinterSettingFormStage stage = new PrinterSettingFormStage(name, devnames, devmode, auxSetting);
-            stage.setDoEnterAction(result -> {
-                try {
-                    printerEnv.savePrintSetting(result.name, result.devnames, result.devmode, result.auxSetting);
-                    if( !result.name.equals(name) ){
-                        printerEnv.deletePrintSetting(name);
-                        printerSettingNames.setAll(printerEnv.listSettingNames());
+            EditPrinterSettingStage editStage = new EditPrinterSettingStage(printerEnv, name, devnames,
+                    devmode, auxSetting);
+            editStage.setCallback(new EditPrinterSettingStage.Callback() {
+                @Override
+                public void onEnter(String newName) {
+                    if( !name.equals(newName) ){
+                        try {
+                            printerSettingNames.setAll(printerEnv.listSettingNames());
+                        } catch (IOException e) {
+                            logger.error("Failed to list printer setting names.", e);
+                            GuiUtil.alertException("Failed to list printer setting names.", e);
+                        }
                         String currentName = currentSettingName.getValue();
                         if( currentName != null && currentName.equals(name) ){
-                            printerEnv.saveDefaultSettingName(settingKey, result.name);
-                            currentSettingName.setValue(result.name);
+                            try {
+                                printerEnv.saveDefaultSettingName(settingKey, newName);
+                            } catch (IOException e) {
+                                logger.error("Failed to save current printer setting name.", e);
+                                GuiUtil.alertException("Failed to save current printer setting name.", e);
+                            }
+                            currentSettingName.setValue(newName);
                         }
-                        stage.close();
                     }
-                } catch (Exception ex) {
-                    logger.error("Failed to save printer setting.", ex);
-                    GuiUtil.alertException("Failed to save printer setting.", ex);
+                    editStage.close();
+                }
+
+                @Override
+                public void onDelete() {
+                    try {
+                        printerSettingNames.setAll(printerEnv.listSettingNames());
+                    } catch (IOException e) {
+                        logger.error("Failed to list printer setting names.", e);
+                        GuiUtil.alertException("Failed to list printer setting names.", e);
+                    }
+                    String currentName = currentSettingName.getValue();
+                    if( currentName != null && currentName.equals(name) ){
+                        try {
+                            printerEnv.saveDefaultSettingName(settingKey, "");
+                        } catch (IOException e) {
+                            logger.error("Failed to save current printer setting name.", e);
+                            GuiUtil.alertException("Failed to save current printer setting name.", e);
+                        }
+                        currentSettingName.setValue("");
+                    }
+                    editStage.close();
                 }
             });
-            stage.showAndWait();
+            editStage.showAndWait();
         } catch (IOException ex) {
             logger.error("Failed to get printer setting data.", ex);
             GuiUtil.alertException("Failed to get printer setting data.", ex);
