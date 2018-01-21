@@ -9,9 +9,21 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
+import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.Service;
+import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
+import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
+import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
+import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
 
 public class SearchPaymentStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(SearchPaymentStage.class);
@@ -45,6 +57,7 @@ public class SearchPaymentStage extends Stage {
             hbox.setAlignment(Pos.CENTER_LEFT);
             Button printReceiptAgainButton = new Button("領収書再発行");
             Button rcptDetailButton = new Button("明細情報表示");
+            printReceiptAgainButton.setOnAction(event -> doPrintReceiptAgain());
             printReceiptAgainButton.setDisable(true);
             rcptDetailButton.setDisable(true);
             paymentTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
@@ -59,6 +72,37 @@ public class SearchPaymentStage extends Stage {
         root.setStyle("-fx-padding: 10");
         setScene(new Scene(root));
         sizeToScene();
+    }
+
+    private void doPrintReceiptAgain(){
+        PaymentTable.Model model = paymentTable.getSelectionModel().getSelectedItem();
+        if( model != null ){
+            int visitId = model.getVisitId();
+            Service.api.getVisitMeisai(visitId)
+                    .thenAccept(meisai -> {
+                        ClinicInfoDTO clinicInfo = ReceptionEnv.INSTANCE.getClinicInfo();
+                        ReceiptDrawerData data = ReceiptDrawerDataCreator.create(meisai.charge,
+                                model.getPatient(), model.getVisit(), meisai, clinicInfo);
+                        ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
+                        List<Op> ops = receiptDrawer.getOps();
+                        try {
+                            PrinterEnv printerEnv = ReceptionEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
+                            Platform.runLater(() -> {
+                                DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
+                                        printerEnv, "reception-receipt");
+                                stage.show();
+                            });
+                        } catch (IOException e) {
+                            logger.error("Failed to get printer env.", e);
+                            GuiUtil.alertException("Failed to get printer env.", e);
+                        }
+                    })
+                    .exceptionally(ex -> {
+                        logger.error("Failed to get meisai.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        return null;
+                    });
+        }
     }
 
     private void doSearch() {
@@ -99,6 +143,5 @@ public class SearchPaymentStage extends Stage {
                     Platform.runLater(() -> GuiUtil.alertException(ex));
                     return null;
                 });
-
     }
 }

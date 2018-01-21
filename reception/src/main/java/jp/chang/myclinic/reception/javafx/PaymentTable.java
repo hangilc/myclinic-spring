@@ -8,7 +8,9 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PaymentVisitPatientDTO;
+import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.util.List;
@@ -21,6 +23,9 @@ public class PaymentTable extends TableView<PaymentTable.Model> {
         private StringProperty name = new SimpleStringProperty();
         private StringProperty amount = new SimpleStringProperty();
         private StringProperty at = new SimpleStringProperty();
+        private int visitId;
+        private PatientDTO patient;
+        private VisitDTO visit;
 
         public int getPatientId() {
             return patientId.get();
@@ -70,6 +75,18 @@ public class PaymentTable extends TableView<PaymentTable.Model> {
             this.at.set(at);
         }
 
+        public int getVisitId() {
+            return visitId;
+        }
+
+        public PatientDTO getPatient() {
+            return patient;
+        }
+
+        public VisitDTO getVisit() {
+            return visit;
+        }
+
         public static Model fromPayment(PaymentVisitPatientDTO payment){
             Model model = new Model();
             model.patientId.set(payment.patient.patientId);
@@ -78,6 +95,9 @@ public class PaymentTable extends TableView<PaymentTable.Model> {
             model.at.setValue(DateTimeUtil.sqlDateTimeToKanji(payment.payment.paytime,
                     DateTimeUtil.kanjiFormatter2,
                     DateTimeUtil.kanjiFormatter4));
+            model.visitId = payment.visit.visitId;
+            model.patient = payment.patient;
+            model.visit = payment.visit;
             return model;
         }
     }
