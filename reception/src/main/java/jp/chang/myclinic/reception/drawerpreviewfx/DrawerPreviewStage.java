@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.drawerpreviewfx.create.CreatePrinterSettingStage;
@@ -33,6 +34,9 @@ public class DrawerPreviewStage extends Stage {
     private String settingKey;
     private ObservableList<String> printerSettingNames = FXCollections.observableArrayList();
     private StringProperty currentSettingName = new SimpleStringProperty();
+    private byte[] devnamesCache;
+    private byte[] devmodeCache;
+    private AuxSetting auxSettingCache;
 
     public DrawerPreviewStage(List<Op> ops, PaperSize paperSize, PrinterEnv printerEnv, String settingKey) {
         this(ops, paperSize.getWidth(), paperSize.getHeight(), printerEnv, settingKey);
@@ -91,6 +95,7 @@ public class DrawerPreviewStage extends Stage {
                 } catch(Exception ex){
                     logger.error("Failed to fetch printer settings", ex);
                 }
+                currentSettingName.addListener((obs, oldValue, newValue) -> clearSettingCache());
             }
         }
         {
@@ -104,6 +109,34 @@ public class DrawerPreviewStage extends Stage {
             root.setCenter(center);
         }
         setScene(new Scene(root));
+    }
+
+    private void clearSettingCache(){
+        devnamesCache = null;
+        devmodeCache = null;
+        auxSettingCache = null;
+    }
+
+    private void ensureSettingCache(){
+        if( printerEnv == null ){
+            return;
+        }
+        String settingName = currentSettingName.getValue();
+        if( devnamesCache == null && devmodeCache == null && auxSettingCache == null ){
+            try {
+                devnamesCache = printerEnv.getDevnames(settingName);
+                devmodeCache = printerEnv.getDevmode(settingName);
+                auxSettingCache = printerEnv.getAuxSetting(settingName);
+            } catch (IOException e) {
+                logger.error("Failed to get printer setting data.", e);
+                GuiUtil.alertException("印刷設定データの取得に失敗しました。", e);
+            }
+        } else {
+            if( devnamesCache == null || devmodeCache == null || auxSettingCache == null ){
+                logger.error("Inconsistent printer setting cache.");
+                GuiUtil.alertError("Inconsistent printer setting cache.");
+            }
+        }
     }
 
     private void setupPrinterSettingMenu(ListChangeListener.Change<? extends String> change, Menu menu){
@@ -143,7 +176,8 @@ public class DrawerPreviewStage extends Stage {
     }
 
     private void doPrint(List<Op> ops){
+        ensureSettingCache();
         DrawerPrinter printer = new DrawerPrinter();
-        printer.print(ops);
+        printer.print(ops, devmodeCache, devnamesCache, auxSettingCache);
     }
 }

@@ -122,8 +122,27 @@ public class PrinterEnv {
             return null;
         } else {
             Properties props = readSettingMap();
-            return props.getProperty(settingKey);
+            if( props != null ) {
+                return props.getProperty(settingKey);
+            } else {
+                return null;
+            }
         }
+    }
+
+    public byte[] getDevnames(String settingName) throws IOException {
+        PrintManager manager = new PrintManager(baseDir);
+        return manager.readDevnames(settingName);
+    }
+
+    public byte[] getDevmode(String settingName) throws IOException {
+        PrintManager manager = new PrintManager(baseDir);
+        return manager.readDevmode(settingName);
+    }
+
+    public AuxSetting getAuxSetting(String settingName) throws IOException {
+        PrintManager manager = new PrintManager(baseDir);
+        return manager.readAuxSetting(settingName);
     }
 
 }

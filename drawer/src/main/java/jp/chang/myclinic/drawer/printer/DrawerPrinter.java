@@ -43,6 +43,15 @@ public class DrawerPrinter {
     }
 
     public void printPages(List<List<Op>> pages, byte[] devmode, byte[] devnames, AuxSetting auxSetting){
+        if( devmode == null &&  devnames == null ){
+            DialogResult dialogResult = printDialog(null, null);
+            if( dialogResult.ok ){
+                devmode = dialogResult.devmodeData;
+                devnames = dialogResult.devnamesData;
+            } else {
+                return;
+            }
+        }
         if( auxSetting != null ){
             setDx(auxSetting.getDx());
             setDy(auxSetting.getDy());
