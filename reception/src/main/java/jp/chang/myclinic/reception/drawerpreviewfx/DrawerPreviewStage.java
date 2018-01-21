@@ -247,6 +247,14 @@ public class DrawerPreviewStage extends Stage {
         }
         CreatePrinterSettingStage stage = new CreatePrinterSettingStage(printerEnv);
         stage.showAndWait();
+        if( stage.isCreated() ){
+            try {
+                printerSettingNames.setAll(printerEnv.listSettingNames());
+            } catch (IOException e) {
+                logger.error("Failed to list printer setting names.", e);
+                GuiUtil.alertException("Failed to list printer setting names.", e);
+            }
+        }
     }
 
     private void doPrint(List<Op> ops){

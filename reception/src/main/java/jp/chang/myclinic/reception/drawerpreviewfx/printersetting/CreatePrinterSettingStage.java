@@ -28,6 +28,7 @@ public class CreatePrinterSettingStage extends Stage {
     private TextField dxInput;
     private TextField dyInput;
     private TextField scaleInput;
+    private boolean created;
 
     public CreatePrinterSettingStage(PrinterEnv printerEnv) {
         this.printerEnv = printerEnv;
@@ -74,6 +75,10 @@ public class CreatePrinterSettingStage extends Stage {
         setScene(new Scene(root));
     }
 
+    public boolean isCreated() {
+        return created;
+    }
+
     private void doEnter(){
         String name = nameInput.getText().trim();
         if( name.isEmpty() ){
@@ -118,6 +123,7 @@ public class CreatePrinterSettingStage extends Stage {
                 return;
             }
             printerEnv.savePrintSetting(name, devnames, devmode, auxSetting);
+            created = true;
             close();
         } catch(Exception ex){
             logger.error("Failed to printersetting printer setting.", ex);
