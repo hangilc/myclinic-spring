@@ -1,4 +1,4 @@
-package jp.chang.myclinic.reception.drawerpreviewfx.create;
+package jp.chang.myclinic.reception.drawerpreviewfx.printersetting;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -29,19 +29,15 @@ class PrinterInputPane extends VBox {
         getChildren().addAll(dispLabel, choosePrinterButton);
     }
 
-    public byte[] getDevmode() {
+    byte[] getDevmode() {
         return devmode;
     }
 
-    public void setDevmode(byte[] devmode) {
-        this.devmode = devmode;
-    }
-
-    public byte[] getDevnames() {
+    byte[] getDevnames() {
         return devnames;
     }
 
-    public void setData(byte[] devmodeData, byte[] devnamesData){
+    void setData(byte[] devmodeData, byte[] devnamesData){
         this.devmode = devmodeData;
         this.devnames = devnamesData;
         updateLabel();

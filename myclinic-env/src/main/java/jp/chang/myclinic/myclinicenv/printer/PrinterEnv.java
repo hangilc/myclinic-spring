@@ -85,7 +85,7 @@ public class PrinterEnv {
         }
     }
 
-    public void createPrintSetting(String name, byte[] devnames, byte[] devmode, AuxSetting auxSetting)
+    public void savePrintSetting(String name, byte[] devnames, byte[] devmode, AuxSetting auxSetting)
             throws IOException, PrintManager.SettingDirNotSuppliedException {
         PrintManager manager = new PrintManager(baseDir);
         try {
@@ -97,10 +97,15 @@ public class PrinterEnv {
         try {
             manager.saveSetting(name, auxSetting);
         } catch(Exception ex){
-            logger.error("Failed to create auxSetting.", ex);
+            logger.error("Failed to printersetting auxSetting.", ex);
             manager.deleteSetting(name);
             throw ex;
         }
+    }
+
+    public void deletePrintSetting(String name) throws IOException {
+        PrintManager manager = new PrintManager(baseDir);
+        manager.deleteSetting(name);
     }
 
     public void saveDefaultSettingName(String settingKey, String settingName) throws IOException {

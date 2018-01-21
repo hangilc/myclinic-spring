@@ -1,4 +1,4 @@
-package jp.chang.myclinic.reception.drawerpreviewfx.create;
+package jp.chang.myclinic.reception.drawerpreviewfx.printersetting;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -12,7 +12,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
-import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.javafx.Form;
 import jp.chang.myclinic.reception.javafx.GuiUtil;
 import org.slf4j.Logger;
@@ -23,13 +22,15 @@ import java.util.List;
 public class CreatePrinterSettingStage extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(CreatePrinterSettingStage.class);
+    private PrinterEnv printerEnv;
     private TextField nameInput;
     private PrinterInputPane printerInputPane;
     private TextField dxInput;
     private TextField dyInput;
     private TextField scaleInput;
 
-    public CreatePrinterSettingStage() {
+    public CreatePrinterSettingStage(PrinterEnv printerEnv) {
+        this.printerEnv = printerEnv;
         setTitle("新規印刷設定の入力");
         VBox root = new VBox(4);
         root.setStyle("-fx-padding: 10");
@@ -111,17 +112,16 @@ public class CreatePrinterSettingStage extends Stage {
         auxSetting.setDy(dy);
         auxSetting.setScale(scale);
         try {
-            PrinterEnv printerEnv = ReceptionEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
             List<String> existingNames = printerEnv.listSettingNames();
             if( existingNames.contains(name) ){
                 GuiUtil.alertError(name + " という設定はすでに存在します。");
                 return;
             }
-            printerEnv.createPrintSetting(name, devnames, devmode, auxSetting);
+            printerEnv.savePrintSetting(name, devnames, devmode, auxSetting);
             close();
         } catch(Exception ex){
-            logger.error("Failed to create printer setting.", ex);
-            GuiUtil.alertException("Failed to create printer setting.", ex);
+            logger.error("Failed to printersetting printer setting.", ex);
+            GuiUtil.alertException("Failed to printersetting printer setting.", ex);
         }
     }
 

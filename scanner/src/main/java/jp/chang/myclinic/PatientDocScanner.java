@@ -173,7 +173,7 @@ public class PatientDocScanner extends JDialog {
         try{
             savePath = File.createTempFile("rescan", ".bmp").toPath();
         } catch(IOException ex) {
-            JOptionPane.showMessageDialog(this, "failed to create temporary file");
+            JOptionPane.showMessageDialog(this, "failed to printersetting temporary file");
             return;
         }
         ScannerDialog dialog = new ScannerDialog(this, deviceId, savePath);

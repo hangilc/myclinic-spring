@@ -74,22 +74,10 @@ public class PrintManager {
         return true;
     }
 
-    public void deleteSetting(String name) {
-        try {
-            Files.delete(devnamesSettingPath(name));
-        } catch(Exception ex){
-            logger.error("Failed to delete devnames.", ex);
-        }
-        try {
-            Files.delete(devmodeSettingPath(name));
-        } catch(Exception ex){
-            logger.error("Failed to delete devmode.", ex);
-        }
-        try {
-            Files.delete(auxSettingPath(name));
-        } catch(Exception ex){
-            logger.error("Failed to delete auxSetting.", ex);
-        }
+    public void deleteSetting(String name) throws IOException {
+        Files.delete(devnamesSettingPath(name));
+        Files.delete(devmodeSettingPath(name));
+        Files.delete(auxSettingPath(name));
     }
 
     public void saveSetting(String name, byte[] devnames, byte[] devmode)

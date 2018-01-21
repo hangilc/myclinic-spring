@@ -122,7 +122,7 @@ public class App
                 devMgr.Release();
                 break;
             }
-            case "create-device": {
+            case "printersetting-device": {
                 WiaDevMgr devMgr = Wia.createWiaDevMgr();
                 HWND hwnd = Kernel32.INSTANCE.GetConsoleWindow();
                 PointerByReference pp = new PointerByReference();
@@ -571,7 +571,7 @@ public class App
      //                stgmediumGunionValue.setType(Pointer.class);
      //                String fileName = System.getenv("HOME") + File.separator + "scan.bmp";
      //                stgmedium.unionValue.pointer = new LPOLESTR(fileName).getPointer();
-     //                WiaDataCallback dataCallback = WiaDataCallbackImpl.create(new WiaDataCallbackImpl.BandedDataCallbackCallback(){
+     //                WiaDataCallback dataCallback = WiaDataCallbackImpl.printersetting(new WiaDataCallbackImpl.BandedDataCallbackCallback(){
      //                    @Override
      //                    public HRESULT invoke(Pointer thisPointer, LONG lMessage, LONG lStatus, LONG lPercentComplete,
      //                        LONG lOffset, LONG lLength, LONG lReserved, LONG lResLength, PointerByReference pbBuffer){

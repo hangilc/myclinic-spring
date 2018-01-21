@@ -122,7 +122,12 @@ public class ManageDialog extends JDialog {
         if( !confirm("本当に " + name + " 設定を削除しますか？") ){
             return;
         }
-        printManager.deleteSetting(name);
+        try {
+            printManager.deleteSetting(name);
+        } catch (IOException e) {
+            logger.error("Failed to delete printer setting ({})", name, e);
+            alert("Failed to delete printer setting.");
+        }
         updateSettingNames();
     }
 

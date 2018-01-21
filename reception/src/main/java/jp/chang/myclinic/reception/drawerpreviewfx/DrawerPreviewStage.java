@@ -16,7 +16,8 @@ import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
-import jp.chang.myclinic.reception.drawerpreviewfx.create.CreatePrinterSettingStage;
+import jp.chang.myclinic.reception.drawerpreviewfx.printersetting.CreatePrinterSettingStage;
+import jp.chang.myclinic.reception.drawerpreviewfx.printersetting.PrinterSettingFormStage;
 import jp.chang.myclinic.reception.javafx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,13 +61,15 @@ public class DrawerPreviewStage extends Stage {
             if( printerEnv != null ){
                 Menu setting = new Menu("印刷設定");
                 MenuItem createItem = new MenuItem("印刷設定の新規作成");
-                Menu settingNameItem = new Menu("既定の印刷設定");
+                Menu settingNameItem = new Menu("既定の印刷設定を選択");
+                Menu editSettingItem = new Menu("印刷設定の編集");
                 createItem.setOnAction(event -> doCreate());
                 printerSettingNames.addListener(new ListChangeListener<String>(){
 
                     @Override
                     public void onChanged(Change<? extends String> c) {
                         setupPrinterSettingMenu(c, settingNameItem);
+                        setupEditSettingMenu(c, editSettingItem);
                     }
                 });
                 currentSettingName.addListener((obs, oldValue, newValue) -> {
@@ -79,7 +82,7 @@ public class DrawerPreviewStage extends Stage {
                         }
                     }
                 });
-                setting.getItems().addAll(createItem, settingNameItem);
+                setting.getItems().addAll(createItem, settingNameItem, editSettingItem);
                 mbar.getMenus().add(setting);
             }
             root.setTop(mbar);
@@ -166,12 +169,55 @@ public class DrawerPreviewStage extends Stage {
         menu.getItems().setAll(allItems);
     }
 
+    private void setupEditSettingMenu(ListChangeListener.Change<? extends String> change, Menu menu){
+        List<MenuItem> items = change.getList().stream().map(name -> {
+            MenuItem item = new MenuItem(name);
+            item.setOnAction(event -> doEditSetting(name));
+            return item;
+        }).collect(Collectors.toList());
+        menu.getItems().setAll(items);
+    }
+
+    private void doEditSetting(String name){
+        if( printerEnv == null ){
+            return;
+        }
+        try {
+            byte[] devnames = printerEnv.getDevnames(name);
+            byte[] devmode = printerEnv.getDevmode(name);
+            AuxSetting auxSetting = printerEnv.getAuxSetting(name);
+            PrinterSettingFormStage stage = new PrinterSettingFormStage(name, devnames, devmode, auxSetting);
+            stage.setDoEnterAction(result -> {
+                try {
+                    printerEnv.savePrintSetting(result.name, result.devnames, result.devmode, result.auxSetting);
+                    if( !result.name.equals(name) ){
+                        printerEnv.deletePrintSetting(name);
+                        printerSettingNames.setAll(printerEnv.listSettingNames());
+                        String currentName = currentSettingName.getValue();
+                        if( currentName != null && currentName.equals(name) ){
+                            printerEnv.saveDefaultSettingName(settingKey, result.name);
+                            currentSettingName.setValue(result.name);
+                        }
+                        stage.close();
+                    }
+                } catch (Exception ex) {
+                    logger.error("Failed to save printer setting.", ex);
+                    GuiUtil.alertException("Failed to save printer setting.", ex);
+                }
+            });
+            stage.showAndWait();
+        } catch (IOException ex) {
+            logger.error("Failed to get printer setting data.", ex);
+            GuiUtil.alertException("Failed to get printer setting data.", ex);
+        }
+    }
+
     private void doCreate(){
         if( printerEnv == null ){
             GuiUtil.alertError("PrinterEnv が指定されていません。");
             return;
         }
-        CreatePrinterSettingStage stage = new CreatePrinterSettingStage();
+        CreatePrinterSettingStage stage = new CreatePrinterSettingStage(printerEnv);
         stage.showAndWait();
     }
 
