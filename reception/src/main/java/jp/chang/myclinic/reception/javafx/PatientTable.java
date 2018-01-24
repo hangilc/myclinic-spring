@@ -4,6 +4,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -12,6 +13,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.lib.DateUtil;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PatientTable extends TableView<PatientTable.Model> {
 
@@ -95,6 +97,11 @@ public class PatientTable extends TableView<PatientTable.Model> {
         }
     }
 
+    public PatientTable(List<PatientDTO> patients){
+        this();
+        setList(patients);
+    }
+
     public PatientTable(){
         setMaxWidth(Double.MAX_VALUE);
 
@@ -119,6 +126,13 @@ public class PatientTable extends TableView<PatientTable.Model> {
         getColumns().add(yomiColumn);
         getColumns().add(birthdayColumn);
         getColumns().add(sexColumn);
+    }
+
+    public void setList(List<PatientDTO> list){
+        List<PatientTable.Model> models = list.stream()
+                .map(PatientTable.Model::fromPatient)
+                .collect(Collectors.toList());
+        itemsProperty().setValue(FXCollections.observableArrayList(models));
     }
 
     public void updateData(PatientDTO data){

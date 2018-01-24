@@ -29,7 +29,6 @@ public class MainPane extends VBox {
     private Button searchPaymentButton = new Button("会計検索");
 
     private TextField patientIdField = new TextField();
-    private Button patientInfoButton = new Button("患者情報");
 
     private TableView<WqueueFullDTO> wqueueTable = new TableView<>();
 
@@ -58,9 +57,11 @@ public class MainPane extends VBox {
             patientIdField.setPrefWidth(60);
             patientIdField.setMaxWidth(Control.USE_PREF_SIZE);
             patientIdField.setMinWidth(Control.USE_PREF_SIZE);
-            patientIdField.setOnAction(event -> doPatientInfo());
+            patientIdField.setOnAction(event -> doRegisterForPractice());
             Button registerForPracticeButton = new Button("診療受付");
+            Button patientInfoButton = new Button("患者情報");
             registerForPracticeButton.setOnAction(event -> doRegisterForPractice());
+            patientInfoButton.setOnAction(event -> doPatientInfo());
             hbox.getChildren().addAll(new Label("患者番号"), patientIdField, registerForPracticeButton, patientInfoButton);
             getChildren().add(hbox);
         }
@@ -72,7 +73,6 @@ public class MainPane extends VBox {
             hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton);
             getChildren().add(hbox);
         }
-        patientInfoButton.setOnAction(event -> doPatientInfo());
     }
 
     private void doNewPatient(){
@@ -156,49 +156,68 @@ public class MainPane extends VBox {
     }
 
     private void doRegisterForPractice(){
-        Integer patientId = getPatientIdForRegister();
-        if( patientId == null ){
-            return;
-        }
-        Service.api.getPatient(patientId)
-                .thenAccept(patient -> {
-                    Platform.runLater(() -> {
-                        ConfirmRegisterForPracticeStage dialog = new ConfirmRegisterForPracticeStage(patient);
-                        dialog.showAndWait();
-                        if( dialog.isOk() ){
-                            Service.api.startVisit(patientId)
-                                    .thenAccept(visitId -> {
-                                        patientIdField.setText("");
-                                        // TODO: trigger wqueue table update
-                                    })
-                                    .exceptionally(ex -> {
-                                        logger.error("Failed to start visit", ex);
-                                        Platform.runLater(() -> GuiUtil.alertException(ex));
-                                        return null;
-                                    });
-                        }
-                    });
-                })
-                .exceptionally(ex -> {
-                    logger.error("Failed to get patient", ex);
-                    Platform.runLater(() -> GuiUtil.alertError("該当する患者を見つけられませんでした。"));
-                    return null;
-                });
-    }
-
-    private Integer getPatientIdForRegister(){
         String patientIdInput = patientIdField.getText().trim();
         if( patientIdInput.isEmpty() ){
-            return null;
+            return;
         }
         try {
-            return Integer.parseInt(patientIdInput);
-        } catch(NumberFormatException numberFormatException){
-            GuiUtil.alertError("患者番号の入力が不適切です。");
-            return null;
+            int patientId = Integer.parseInt(patientIdInput);
+            Service.api.getPatient(patientId)
+                    .thenAccept(patient -> {
+                        Platform.runLater(() -> {
+                            patientIdField.setText("");
+                            registerForPractice(patient);
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        logger.error("Failed get patient.", ex);
+                        Platform.runLater(() -> GuiUtil.alertError("該当する患者を見つけられませんでした。"));
+                        return null;
+                    });
+        } catch(NumberFormatException numberFormatEsception){
+            Service.api.searchPatient(patientIdInput)
+                    .thenAccept(patients -> {
+                        if( patients.size() == 0 ){
+                            Platform.runLater(() -> {
+                                GuiUtil.alertError("該当する患者が見つかりませんでした。");
+                            });
+                        } else {
+                            Platform.runLater(() -> {
+                                SelectPatientDialog dialog = new SelectPatientDialog("診療受付をする患者を選択してください。", patients);
+                                dialog.showAndWait();
+                                PatientDTO selection = dialog.getSelection();
+                                if( selection != null ){
+                                    patientIdField.setText("");
+                                    registerForPractice(selection);
+                                }
+                            });
+                        }
+                    })
+                    .exceptionally(ex -> {
+                        logger.error("Failed search patient", ex);
+                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        return null;
+                    });
         } catch(Exception ex){
-            logger.error("Unexpected error", ex);
-            return null;
+            logger.error("Unexpected exception", ex);
+            GuiUtil.alertException(ex);
         }
     }
+
+    private void registerForPractice(PatientDTO patient){
+        ConfirmRegisterForPracticeStage dialog = new ConfirmRegisterForPracticeStage(patient);
+        dialog.showAndWait();
+        if( dialog.isOk() ){
+            Service.api.startVisit(patient.patientId)
+                    .thenAccept(visitId -> {
+                        // TODO: update wqueue table
+                    })
+                    .exceptionally(ex -> {
+                        logger.error("Failed start visit.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        return null;
+                    });
+        }
+    }
+
 }

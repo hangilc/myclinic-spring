@@ -1,7 +1,6 @@
 package jp.chang.myclinic.reception.javafx;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SearchPatientStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(SearchPatientStage.class);
@@ -136,10 +134,11 @@ public class SearchPatientStage extends Stage {
     }
 
     private void setSearchResult(List<PatientDTO> list){
-        List<PatientTable.Model> models = list.stream()
-                .map(PatientTable.Model::fromPatient)
-                .collect(Collectors.toList());
-        tableView.itemsProperty().setValue(FXCollections.observableArrayList(models));
+        tableView.setList(list);
+//        List<PatientTable.Model> models = list.stream()
+//                .map(PatientTable.Model::fromPatient)
+//                .collect(Collectors.toList());
+//        tableView.itemsProperty().setValue(FXCollections.observableArrayList(models));
     }
 
     private void doSearch() {
