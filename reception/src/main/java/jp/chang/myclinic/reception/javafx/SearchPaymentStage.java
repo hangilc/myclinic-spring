@@ -108,7 +108,19 @@ public class SearchPaymentStage extends Stage {
     private void doRcptDetail(){
         PaymentTable.Model model = paymentTable.getSelectionModel().getSelectedItem();
         if( model != null ) {
-            System.out.println(model);
+            int visitId = model.getVisitId();
+            Service.api.getVisitMeisai(visitId)
+                    .thenAccept(meisai -> {
+                        Platform.runLater(() -> {
+                            MeisaiDispStage dialog = new MeisaiDispStage(meisai);
+                            dialog.show();
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        logger.error("Failed to get meisai", ex);
+                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        return null;
+                    });
         }
     }
 
