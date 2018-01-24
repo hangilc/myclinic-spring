@@ -29,7 +29,6 @@ public class MainPane extends VBox {
     private Button searchPaymentButton = new Button("会計検索");
 
     private TextField patientIdField = new TextField();
-    private Button registerForPracticeButton = new Button("診療受付");
     private Button patientInfoButton = new Button("患者情報");
 
     private TableView<WqueueFullDTO> wqueueTable = new TableView<>();
@@ -60,6 +59,8 @@ public class MainPane extends VBox {
             patientIdField.setMaxWidth(Control.USE_PREF_SIZE);
             patientIdField.setMinWidth(Control.USE_PREF_SIZE);
             patientIdField.setOnAction(event -> doPatientInfo());
+            Button registerForPracticeButton = new Button("診療受付");
+            registerForPracticeButton.setOnAction(event -> doRegisterForPractice());
             hbox.getChildren().addAll(new Label("患者番号"), patientIdField, registerForPracticeButton, patientInfoButton);
             getChildren().add(hbox);
         }
@@ -137,7 +138,6 @@ public class MainPane extends VBox {
     }
 
     private void doBlankReceipt(){
-        //ReceiptPreviewStage stage = new ReceiptPreviewStage();
         ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
         creator.setClinicInfo(ReceptionEnv.INSTANCE.getClinicInfo());
         ReceiptDrawerData data = creator.getData();
@@ -153,6 +153,52 @@ public class MainPane extends VBox {
         DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
                 printerEnv, "reception-receipt");
         stage.show();
+    }
 
+    private void doRegisterForPractice(){
+        Integer patientId = getPatientIdForRegister();
+        if( patientId == null ){
+            return;
+        }
+        Service.api.getPatient(patientId)
+                .thenAccept(patient -> {
+                    Platform.runLater(() -> {
+                        ConfirmRegisterForPracticeStage dialog = new ConfirmRegisterForPracticeStage(patient);
+                        dialog.showAndWait();
+                        if( dialog.isOk() ){
+                            Service.api.startVisit(patientId)
+                                    .thenAccept(visitId -> {
+                                        patientIdField.setText("");
+                                        // TODO: trigger wqueue table update
+                                    })
+                                    .exceptionally(ex -> {
+                                        logger.error("Failed to start visit", ex);
+                                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                                        return null;
+                                    });
+                        }
+                    });
+                })
+                .exceptionally(ex -> {
+                    logger.error("Failed to get patient", ex);
+                    Platform.runLater(() -> GuiUtil.alertError("該当する患者を見つけられませんでした。"));
+                    return null;
+                });
+    }
+
+    private Integer getPatientIdForRegister(){
+        String patientIdInput = patientIdField.getText().trim();
+        if( patientIdInput.isEmpty() ){
+            return null;
+        }
+        try {
+            return Integer.parseInt(patientIdInput);
+        } catch(NumberFormatException numberFormatException){
+            GuiUtil.alertError("患者番号の入力が不適切です。");
+            return null;
+        } catch(Exception ex){
+            logger.error("Unexpected error", ex);
+            return null;
+        }
     }
 }
