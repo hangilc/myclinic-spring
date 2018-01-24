@@ -112,7 +112,7 @@ public class SearchPaymentStage extends Stage {
             Service.api.getVisitMeisai(visitId)
                     .thenAccept(meisai -> {
                         Platform.runLater(() -> {
-                            MeisaiDispStage dialog = new MeisaiDispStage(meisai);
+                            MeisaiDispStage dialog = new MeisaiDispStage(model.getPatient(), model.getVisit(), meisai);
                             dialog.show();
                         });
                     })
