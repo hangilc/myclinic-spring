@@ -1,6 +1,7 @@
 package jp.chang.myclinic.reception.javafx;
 
 import javafx.geometry.HPos;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
@@ -24,12 +25,14 @@ public class MeisaiDetailPane extends GridPane {
             for(SectionItemDTO item: section.items){
                 Label label = new Label(item.label);
                 label.setWrapText(true);
-                label.setMaxWidth(200);
+                label.setMaxWidth(260);
                 add(label, 1, row);
                 Label tankaTimesCount = new Label(String.format("%dx%d =", item.tanka, item.count));
                 setHalignment(tankaTimesCount, HPos.RIGHT);
+                setValignment(tankaTimesCount, VPos.TOP);
                 Label subtotal = new Label(String.format("%,d", item.tanka * item.count));
                 setHalignment(subtotal, HPos.RIGHT);
+                setValignment(subtotal, VPos.TOP);
                 add(tankaTimesCount, 2, row);
                 add(subtotal, 3, row);
                 row += 1;
