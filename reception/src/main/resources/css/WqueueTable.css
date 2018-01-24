@@ -1,0 +1,16 @@
+.wait-cashier {
+    -fx-text-fill: red;
+}
+
+.wait-drug {
+    -fx-text-fill: green;
+}
+
+.state-column {
+    -fx-pref-width: 38;
+    -fx-alignment: center;
+}
+
+.wait-cashier:selected .text {
+    -fx-text-fill: blue;
+}

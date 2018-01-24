@@ -17,26 +17,32 @@ import java.time.LocalDate;
 public class WqueueTable extends TableView<WqueueFullDTO> {
 
     public WqueueTable(){
+        getStyleClass().add("wqueue-table");
         TableColumn<WqueueFullDTO, String> waitStateColumn = new TableColumn<>("状態");
         waitStateColumn.setCellValueFactory(feature -> {
             String label = WqueueWaitState.codeToLabel(feature.getValue().wqueue.waitState);
             return new SimpleStringProperty(label);
         });
-        waitStateColumn.setPrefWidth(38);
+        waitStateColumn.getStyleClass().add("state-column");
         waitStateColumn.setCellFactory(param -> new TableCell<WqueueFullDTO, String>(){
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 setText(empty ? "" : item);
-                String colorPart = "";
-                WqueueWaitState state = WqueueWaitState.fromCode(getTableRow().getItem().wqueue.waitState);
-                if( state != null ){
-                    switch(state){
-                        case WaitCashier: colorPart = "-fx-color: red;"; break;
-                        case WaitDrug: colorPart = "-fx-color: green;"; break;
+                getStyleClass().removeAll("wait-cashier", "wait-drug");
+                if( !empty ){
+                    WqueueWaitState state = WqueueWaitState.fromCode(getTableRow().getItem().wqueue.waitState);
+                    if( state != null ) {
+                        switch (state) {
+                            case WaitCashier:
+                                getStyleClass().add("wait-cashier");
+                                break;
+                            case WaitDrug:
+                                getStyleClass().add("wait-drug");
+                                break;
+                        }
                     }
                 }
-                setStyle("-fx-alignment: center;" + colorPart);
             }
         });
         getColumns().add(waitStateColumn);
