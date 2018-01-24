@@ -28,7 +28,15 @@ public class WqueueTable extends TableView<WqueueFullDTO> {
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 setText(empty ? "" : item);
-                setStyle("-fx-alignment: center");
+                String colorPart = "";
+                WqueueWaitState state = WqueueWaitState.fromCode(getTableRow().getItem().wqueue.waitState);
+                if( state != null ){
+                    switch(state){
+                        case WaitCashier: colorPart = "-fx-color: red;"; break;
+                        case WaitDrug: colorPart = "-fx-color: green;"; break;
+                    }
+                }
+                setStyle("-fx-alignment: center;" + colorPart);
             }
         });
         getColumns().add(waitStateColumn);
