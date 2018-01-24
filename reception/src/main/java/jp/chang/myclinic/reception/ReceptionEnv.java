@@ -1,6 +1,9 @@
 package jp.chang.myclinic.reception;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
+import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.myclinicenv.MyclinicEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +12,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 
 public class ReceptionEnv {
     public static ReceptionEnv INSTANCE = new ReceptionEnv();
@@ -21,6 +26,7 @@ public class ReceptionEnv {
     private Path printerSettingsDir;
     private ClinicInfoDTO clinicInfo;
     private MyclinicEnv myclinicEnv;
+    private ObjectProperty<List<WqueueFullDTO>> wqueueList = new SimpleObjectProperty<>(Collections.emptyList());
 
     public void updateWithArgs(ReceptionArgs args) throws IOException {
         this.workdir = args.workingDirPath;
@@ -90,6 +96,18 @@ public class ReceptionEnv {
 
     public MyclinicEnv getMyclinicEnv() {
         return myclinicEnv;
+    }
+
+    public List<WqueueFullDTO> getWqueueList() {
+        return wqueueList.get();
+    }
+
+    public ObjectProperty<List<WqueueFullDTO>> wqueueListProperty() {
+        return wqueueList;
+    }
+
+    public void setWqueueList(List<WqueueFullDTO> wqueueList) {
+        this.wqueueList.set(wqueueList);
     }
 
     @Override

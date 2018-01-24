@@ -8,7 +8,6 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.Service;
@@ -30,9 +29,8 @@ public class MainPane extends VBox {
 
     private TextField patientIdField = new TextField();
 
-    private TableView<WqueueFullDTO> wqueueTable = new TableView<>();
+    private WqueueTable wqueueTable = new WqueueTable();
 
-    private Button refreshButton = new Button("更新");
     private Button cashierButton = new Button("会計");
     private Button deselectButton = new Button("選択解除");
     private Button deleteButton = new Button("削除");
@@ -70,9 +68,14 @@ public class MainPane extends VBox {
         }
         {
             HBox hbox = new HBox(4);
+            Button refreshButton = new Button("更新");
+            refreshButton.setOnAction(event -> doRefresh());
             hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton);
             getChildren().add(hbox);
         }
+        ReceptionEnv.INSTANCE.wqueueListProperty().addListener((obs, oldValue, newValue) -> {
+            wqueueTable.getItems().setAll(newValue);
+        });
     }
 
     private void doNewPatient(){
@@ -218,6 +221,21 @@ public class MainPane extends VBox {
                         return null;
                     });
         }
+    }
+
+    private void doRefresh(){
+        Service.api.listWqueue()
+                .thenAccept(wqueueList -> {
+                    Platform.runLater(() -> {
+                        ReceptionEnv.INSTANCE.setWqueueList(wqueueList);
+                        wqueueTable.printColumnWidths();
+                    });
+                })
+                .exceptionally(ex -> {
+                    logger.error("Failed list wqueue.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException(ex));
+                    return null;
+                });
     }
 
 }

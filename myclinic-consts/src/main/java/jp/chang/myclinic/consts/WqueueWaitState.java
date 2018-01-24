@@ -33,6 +33,15 @@ public enum WqueueWaitState
 		return null;
 	}
 
+	public static String codeToLabel(int code){
+		WqueueWaitState state = fromCode(code);
+		if( state == null ){
+			return "不明";
+		} else {
+			return state.getLabel();
+		}
+	}
+
 	@Override
 	public String toString(){
 		return label;
