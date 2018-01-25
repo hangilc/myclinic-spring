@@ -228,7 +228,7 @@ public class MainPane extends VBox {
                 .thenAccept(wqueueList -> {
                     Platform.runLater(() -> {
                         ReceptionEnv.INSTANCE.setWqueueList(wqueueList);
-                        wqueueTable.printColumnWidths();
+                        //wqueueTable.printColumnWidths();
                     });
                 })
                 .exceptionally(ex -> {

@@ -31,15 +31,18 @@ public class WqueueTable extends TableView<WqueueFullDTO> {
                 setText(empty ? "" : item);
                 getStyleClass().removeAll("wait-cashier", "wait-drug");
                 if( !empty ){
-                    WqueueWaitState state = WqueueWaitState.fromCode(getTableRow().getItem().wqueue.waitState);
-                    if( state != null ) {
-                        switch (state) {
-                            case WaitCashier:
-                                getStyleClass().add("wait-cashier");
-                                break;
-                            case WaitDrug:
-                                getStyleClass().add("wait-drug");
-                                break;
+                    WqueueFullDTO wqueue = (WqueueFullDTO)getTableRow().getItem();
+                    if( wqueue != null ) {
+                        WqueueWaitState state = WqueueWaitState.fromCode(wqueue.wqueue.waitState);
+                        if (state != null) {
+                            switch (state) {
+                                case WaitCashier:
+                                    getStyleClass().add("wait-cashier");
+                                    break;
+                                case WaitDrug:
+                                    getStyleClass().add("wait-drug");
+                                    break;
+                            }
                         }
                     }
                 }

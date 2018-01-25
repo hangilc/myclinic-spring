@@ -11,6 +11,7 @@
     -fx-alignment: center;
 }
 
-.wait-cashier:selected .text {
-    -fx-text-fill: blue;
+.table-row-cell.wait-cashier:selected {
+    -fx-fill: blue;
+    -fx-background-color: red;
 }
