@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class Main extends Application {
 
@@ -47,7 +48,10 @@ public class Main extends Application {
             @Override
             public void onLoad(List<WqueueFullDTO> list) {
                 Platform.runLater(() -> {
-                    ReceptionEnv.INSTANCE.setWqueueList(list);
+                    List<WqueueFullDTO> curr = ReceptionEnv.INSTANCE.getWqueueList();
+                    if( !Objects.equals(list, curr) ){
+                        ReceptionEnv.INSTANCE.setWqueueList(list);
+                    }
                 });
             }
 
@@ -61,6 +65,7 @@ public class Main extends Application {
         reloaderThread.start();
         ReceptionEnv.INSTANCE.setWqueueReloader(reloader);
         primaryStage.show();
+        reloader.trigger();
     }
 
     @Override

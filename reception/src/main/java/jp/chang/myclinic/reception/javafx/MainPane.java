@@ -8,6 +8,7 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.Service;
@@ -74,7 +75,21 @@ public class MainPane extends VBox {
             getChildren().add(hbox);
         }
         ReceptionEnv.INSTANCE.wqueueListProperty().addListener((obs, oldValue, newValue) -> {
+            WqueueFullDTO newSelection = null;
+            WqueueFullDTO oldSelection = wqueueTable.getSelectionModel().getSelectedItem();
+            if( oldSelection != null ){
+                int visitId = oldSelection.visit.visitId;
+                for(WqueueFullDTO wq: newValue){
+                    if( wq.visit.visitId == visitId ){
+                        newSelection = wq;
+                        break;
+                    }
+                }
+            }
             wqueueTable.getItems().setAll(newValue);
+            if( newSelection != null ){
+                wqueueTable.getSelectionModel().select(newSelection);
+            }
         });
     }
 
@@ -225,18 +240,6 @@ public class MainPane extends VBox {
 
     private void doRefresh(){
         ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
-//        Service.api.listWqueue()
-//                .thenAccept(wqueueList -> {
-//                    Platform.runLater(() -> {
-//                        ReceptionEnv.INSTANCE.setWqueueList(wqueueList);
-//                        //wqueueTable.printColumnWidths();
-//                    });
-//                })
-//                .exceptionally(ex -> {
-//                    logger.error("Failed list wqueue.", ex);
-//                    Platform.runLater(() -> GuiUtil.alertException(ex));
-//                    return null;
-//                });
     }
 
 }
