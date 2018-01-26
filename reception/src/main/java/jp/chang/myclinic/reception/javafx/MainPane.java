@@ -223,7 +223,7 @@ public class MainPane extends VBox {
     }
 
     private void registerForPractice(PatientDTO patient){
-        ConfirmRegisterForPracticeStage dialog = new ConfirmRegisterForPracticeStage(patient);
+        RegisterForPracticeDialog dialog = new RegisterForPracticeDialog(patient);
         dialog.showAndWait();
         if( dialog.isOk() ){
             Service.api.startVisit(patient.patientId)

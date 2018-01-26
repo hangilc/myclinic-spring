@@ -117,7 +117,7 @@ public class SearchPatientStage extends Stage {
         PatientTable.Model model = tableView.getSelectionModel().getSelectedItem();
         if( model != null ){
             PatientDTO patient = model.orig;
-            ConfirmRegisterForPracticeStage confirm = new ConfirmRegisterForPracticeStage(patient);
+            RegisterForPracticeDialog confirm = new RegisterForPracticeDialog(patient);
             confirm.showAndWait();
             if( confirm.isOk() ){
                 Service.api.startVisit(patient.patientId)

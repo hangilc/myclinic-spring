@@ -362,7 +362,7 @@ public class PatientWithHokenStage extends Stage {
         if( patient == null ){
             return;
         }
-        ConfirmRegisterForPracticeStage confirmStage = new ConfirmRegisterForPracticeStage(patient);
+        RegisterForPracticeDialog confirmStage = new RegisterForPracticeDialog(patient);
         confirmStage.showAndWait();
         if( confirmStage.isOk() ){
             Service.api.startVisit(thePatient.getValue().patientId)

@@ -9,11 +9,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
 
-public class ConfirmRegisterForPracticeStage extends Stage {
+public class RegisterForPracticeDialog extends Stage {
 
     private boolean ok;
 
-    public ConfirmRegisterForPracticeStage(PatientDTO patient){
+    public RegisterForPracticeDialog(PatientDTO patient){
         setTitle("診療受付の確認");
         VBox root = new VBox(4);
         {
