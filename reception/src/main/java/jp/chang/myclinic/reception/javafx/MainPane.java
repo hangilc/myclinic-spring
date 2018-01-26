@@ -224,18 +224,19 @@ public class MainPane extends VBox {
     }
 
     private void doRefresh(){
-        Service.api.listWqueue()
-                .thenAccept(wqueueList -> {
-                    Platform.runLater(() -> {
-                        ReceptionEnv.INSTANCE.setWqueueList(wqueueList);
-                        //wqueueTable.printColumnWidths();
-                    });
-                })
-                .exceptionally(ex -> {
-                    logger.error("Failed list wqueue.", ex);
-                    Platform.runLater(() -> GuiUtil.alertException(ex));
-                    return null;
-                });
+        ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
+//        Service.api.listWqueue()
+//                .thenAccept(wqueueList -> {
+//                    Platform.runLater(() -> {
+//                        ReceptionEnv.INSTANCE.setWqueueList(wqueueList);
+//                        //wqueueTable.printColumnWidths();
+//                    });
+//                })
+//                .exceptionally(ex -> {
+//                    logger.error("Failed list wqueue.", ex);
+//                    Platform.runLater(() -> GuiUtil.alertException(ex));
+//                    return null;
+//                });
     }
 
 }

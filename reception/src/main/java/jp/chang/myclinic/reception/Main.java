@@ -1,9 +1,11 @@
 package jp.chang.myclinic.reception;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.reception.javafx.MainPane;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -11,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 public class Main extends Application {
 
@@ -39,6 +42,24 @@ public class Main extends Application {
         Scene scene = new Scene(mainPane, 600, 400);
         scene.getStylesheets().add("css/WqueueTable.css");
         primaryStage.setScene(scene);
+        WqueueReloader reloader = new WqueueReloader(5000);
+        reloader.setCallback(new WqueueReloader.Callback() {
+            @Override
+            public void onLoad(List<WqueueFullDTO> list) {
+                Platform.runLater(() -> {
+                    ReceptionEnv.INSTANCE.setWqueueList(list);
+                });
+            }
+
+            @Override
+            public void onError(Throwable ex) {
+
+            }
+        });
+        Thread reloaderThread = new Thread(reloader);
+        reloaderThread.setDaemon(true);
+        reloaderThread.start();
+        ReceptionEnv.INSTANCE.setWqueueReloader(reloader);
         primaryStage.show();
     }
 
