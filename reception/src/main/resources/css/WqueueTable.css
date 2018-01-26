@@ -1,9 +1,9 @@
 .wait-cashier {
-    -fx-text-fill: ladder(-fx-background, #F99 49%, red 50%);
+    -fx-text-fill: ladder(-fx-background, white 49%, red 50%);
 }
 
 .wait-drug {
-    -fx-text-fill: ladder(-fx-background, #9F9 49%, green 50%);
+    -fx-text-fill: ladder(-fx-background, white 49%, green 50%);
 }
 
 .state-column {
