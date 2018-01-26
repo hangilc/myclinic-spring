@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.Service;
+import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.KouhiUtil;
 import jp.chang.myclinic.util.KoukikoureiUtil;
 import jp.chang.myclinic.util.RoujinUtil;
@@ -365,15 +366,16 @@ public class PatientWithHokenStage extends Stage {
         RegisterForPracticeDialog confirmStage = new RegisterForPracticeDialog(patient);
         confirmStage.showAndWait();
         if( confirmStage.isOk() ){
-            Service.api.startVisit(thePatient.getValue().patientId)
-                    .thenAccept(visitId -> {
-                        logger.info("Started visit: {}.", visitId);
-                    })
-                    .exceptionally(ex -> {
-                        logger.error("Failed to start visit.", ex);
-                        Platform.runLater(() -> GuiUtil.alertException(ex));
-                        return null;
-                    });
+            ReceptionService.startVisit(thePatient.getValue().patientId);
+//            Service.api.startVisit(thePatient.getValue().patientId)
+//                    .thenAccept(visitId -> {
+//                        logger.info("Started visit: {}.", visitId);
+//                    })
+//                    .exceptionally(ex -> {
+//                        logger.error("Failed to start visit.", ex);
+//                        Platform.runLater(() -> GuiUtil.alertException(ex));
+//                        return null;
+//                    });
         }
     }
 

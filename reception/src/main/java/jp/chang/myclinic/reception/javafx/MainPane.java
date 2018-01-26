@@ -13,6 +13,7 @@ import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.Service;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
+import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;
@@ -226,15 +227,16 @@ public class MainPane extends VBox {
         RegisterForPracticeDialog dialog = new RegisterForPracticeDialog(patient);
         dialog.showAndWait();
         if( dialog.isOk() ){
-            Service.api.startVisit(patient.patientId)
-                    .thenAccept(visitId -> {
-                        // TODO: update wqueue table
-                    })
-                    .exceptionally(ex -> {
-                        logger.error("Failed start visit.", ex);
-                        Platform.runLater(() -> GuiUtil.alertException(ex));
-                        return null;
-                    });
+            ReceptionService.startVisit(patient.patientId);
+//            Service.api.startVisit(patient.patientId)
+//                    .thenAccept(visitId -> {
+//                        // TODO: update wqueue table
+//                    })
+//                    .exceptionally(ex -> {
+//                        logger.error("Failed start visit.", ex);
+//                        Platform.runLater(() -> GuiUtil.alertException(ex));
+//                        return null;
+//                    });
         }
     }
 
