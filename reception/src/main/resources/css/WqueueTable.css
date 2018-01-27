@@ -1,8 +1,8 @@
-.table-view.wqueue-table .wait-cashier {
+.table-view.wqueue-table .table-row-cell.wait-cashier .table-cell {
     -fx-text-fill: ladder(-fx-background, white 49%, red 50%);
 }
 
-.table-view.wqueue-table .wait-drug {
+.table-view.wqueue-table .table-row-cell.wait-drug .table-cell {
     -fx-text-fill: ladder(-fx-background, white 49%, green 50%);
 }
 

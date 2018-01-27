@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.consts.WqueueWaitState;
@@ -35,12 +36,13 @@ public class WqueueTable extends TableView<WqueueFullDTO> {
                     if( wqueue != null ) {
                         WqueueWaitState state = WqueueWaitState.fromCode(wqueue.wqueue.waitState);
                         if (state != null) {
+                            TableRow tableRow = getTableRow();
                             switch (state) {
                                 case WaitCashier:
-                                    getStyleClass().add("wait-cashier");
+                                    tableRow.getStyleClass().add("wait-cashier");
                                     break;
                                 case WaitDrug:
-                                    getStyleClass().add("wait-drug");
+                                    tableRow.getStyleClass().add("wait-drug");
                                     break;
                             }
                         }
