@@ -1,13 +1,20 @@
-.wait-cashier {
+.table-view.wqueue-table .wait-cashier {
     -fx-text-fill: ladder(-fx-background, white 49%, red 50%);
 }
 
-.wait-drug {
+.table-view.wqueue-table .wait-drug {
     -fx-text-fill: ladder(-fx-background, white 49%, green 50%);
 }
 
-.state-column {
+.table-view.wqueue-table .state-column {
     -fx-pref-width: 38;
     -fx-alignment: center;
 }
+
+.table-view.wqueue-table:focused > .virtual-flow > .clipped-container > .sheet > .table-row-cell:selected
+{
+    -fx-background: -fx-selection-bar-non-focused;
+    -fx-table-cell-border-color: derive(-fx-selection-bar-non-focused, 20%);
+}
+
 
