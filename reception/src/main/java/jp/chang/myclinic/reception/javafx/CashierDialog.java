@@ -32,8 +32,9 @@ public class CashierDialog extends Stage {
         this.visit = visit;
         setTitle(String.format("会計（%s）", patient.lastName + patient.firstName));
         VBox root = new VBox(4);
-        root.getStyleClass().add("CashierDialog");
+        root.getStyleClass().add("cashier-dialog");
         root.setStyle("-fx-padding: 10");
+        root.getStylesheets().add("css/CashierDialog.css");
         root.getChildren().addAll(
                 makePatientPart(patient),
                 new MeisaiDetailPane(meisai),
@@ -46,6 +47,7 @@ public class CashierDialog extends Stage {
     private Node makePatientPart(PatientDTO patient){
         VBox vbox = new VBox(4);
         Label nameLabel = new Label(patient.lastName + " " + patient.firstName);
+        nameLabel.getStyleClass().add("patient-name");
         Label patientIdLabel = new Label("患者番号：" + patient.patientId);
         vbox.getChildren().addAll(nameLabel, patientIdLabel);
         return vbox;
@@ -67,6 +69,7 @@ public class CashierDialog extends Stage {
             vbox.getChildren().add(new Label(String.format("以前の支払い：%,d円", lastPayment.amount)));
         }
         Label chargeLabel = new Label(String.format("請求額：%,d円", chargeValue));
+        chargeLabel.getStyleClass().add("charge-amount");
         vbox.getChildren().add(chargeLabel);
         return vbox;
     }

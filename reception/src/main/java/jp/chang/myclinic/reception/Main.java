@@ -41,7 +41,9 @@ public class Main extends Application {
         MainPane mainPane = new MainPane();
         mainPane.setPadding(new Insets(10, 10, 10, 10));
         Scene scene = new Scene(mainPane, 600, 400);
-        scene.getStylesheets().add("css/WqueueTable.css");
+        scene.getStylesheets().addAll(
+                "css/WqueueTable.css"
+        );
         primaryStage.setScene(scene);
         WqueueReloader reloader = new WqueueReloader(5000);
         reloader.setCallback(new WqueueReloader.Callback() {
