@@ -69,4 +69,17 @@ public class ReceptionService {
                 });
     }
 
+    public static void finishCashier(PaymentDTO payment, Runnable cb){
+        Service.api.finishCashier(payment)
+                .thenAccept(result -> {
+                    ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
+                    Platform.runLater(() -> cb.run());
+                })
+                .exceptionally(ex -> {
+                    logger.error("Failed finish cashier.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("会計を完了できませんでした。", ex));
+                    return null;
+                });
+    }
+
 }

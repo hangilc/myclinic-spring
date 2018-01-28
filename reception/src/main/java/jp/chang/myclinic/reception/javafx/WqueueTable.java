@@ -30,13 +30,13 @@ public class WqueueTable extends TableView<WqueueFullDTO> {
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 setText(empty ? "" : item);
-                getStyleClass().removeAll("wait-cashier", "wait-drug");
                 if( !empty ){
                     WqueueFullDTO wqueue = (WqueueFullDTO)getTableRow().getItem();
                     if( wqueue != null ) {
                         WqueueWaitState state = WqueueWaitState.fromCode(wqueue.wqueue.waitState);
                         if (state != null) {
                             TableRow tableRow = getTableRow();
+                            tableRow.getStyleClass().removeAll("wait-cashier", "wait-drug");
                             switch (state) {
                                 case WaitCashier:
                                     tableRow.getStyleClass().add("wait-cashier");

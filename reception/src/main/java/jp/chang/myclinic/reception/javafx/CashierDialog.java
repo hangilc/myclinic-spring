@@ -14,7 +14,10 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PaymentDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.reception.lib.ReceptionLib;
+import jp.chang.myclinic.reception.lib.ReceptionService;
+import jp.chang.myclinic.util.DateTimeUtil;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class CashierDialog extends Stage {
@@ -77,8 +80,17 @@ public class CashierDialog extends Stage {
         Button finishButton = new Button("終了");
         printReceiptButton.setOnAction(event -> ReceptionLib.previewReceipt(meisai, patient, visit));
         printManualReceiptButton.setOnAction(event -> ReceptionLib.previewReceipt(patient, visit));
+        finishButton.setOnAction(event -> doFinish());
         hbox.getChildren().addAll(printReceiptButton, printManualReceiptButton, spacer, finishButton);
         return hbox;
+    }
+
+    private void doFinish() {
+        PaymentDTO payment = new PaymentDTO();
+        payment.visitId = visit.visitId;
+        payment.amount = meisai.charge;
+        payment.paytime = DateTimeUtil.toSqlDateTime(LocalDateTime.now());
+        ReceptionService.finishCashier(payment, this::close);
     }
 
 }
