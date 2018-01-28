@@ -2,7 +2,11 @@ package jp.chang.myclinic.reception.javafx;
 
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.MeisaiDTO;
@@ -21,7 +25,8 @@ public class CashierDialog extends Stage {
         root.getChildren().addAll(
                 makePatientPart(patient),
                 new MeisaiDetailPane(meisai),
-                makeSummary(meisai, payments)
+                makeSummary(meisai, payments),
+                makeButtons()
         );
         setScene(new Scene(root));
     }
@@ -54,6 +59,15 @@ public class CashierDialog extends Stage {
         return vbox;
     }
 
-
+    private Node makeButtons(){
+        HBox hbox = new HBox(4);
+        Pane spacer = new Pane();
+        Button printReceiptButton = new Button("領収書印刷");
+        Button printManualReceiptButton = new Button("手書き領収書印刷");
+        HBox.setHgrow(spacer, Priority.SOMETIMES);
+        Button finishButton = new Button("終了");
+        hbox.getChildren().addAll(printReceiptButton, printManualReceiptButton, spacer, finishButton);
+        return hbox;
+    }
 
 }
