@@ -14,7 +14,7 @@ public class DrawerCompiler {
     }
 
     public static class TextAtOpt {
-        double extraSpace;
+        public double extraSpace;
     }
 
     public enum TextInEvenColumnsJustification {
@@ -80,7 +80,7 @@ public class DrawerCompiler {
         }
         double extraSpace = opt == null ? 0 : opt.extraSpace;
         List<Double> mes = measureChars(text, currentFontSize);
-        double totalWidth = mes.stream().reduce((a,b) -> a + b).orElse(0.0);
+        double totalWidth = mes.stream().reduce((a,b) -> a + b).orElse(0.0) + extraSpace * (text.length() - 1);
         double left, top;
         switch(halign){
             case Left: left = x; break;
@@ -360,6 +360,18 @@ public class DrawerCompiler {
         } else {
             return nLines * fontSize + leading * (nLines - 1);
         }
+    }
+
+    public static class Measure {
+        public double cx;
+        public double cy;
+    }
+
+    public Measure measureText(String text){
+        Measure mes = new Measure();
+        mes.cx = measureChars(text, currentFontSize).stream().reduce((a, b) -> a + b).orElse(0.0);
+        mes.cy = currentFontSize;
+        return mes;
     }
 
     private static List<Double> measureChars(String str, double fontSize){

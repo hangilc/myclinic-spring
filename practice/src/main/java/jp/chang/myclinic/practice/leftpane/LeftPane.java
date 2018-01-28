@@ -1,13 +1,22 @@
 package jp.chang.myclinic.practice.leftpane;
 
+import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.drawer.preview.PreviewDialog;
+import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.MainContext;
+import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.cashierdialog.CashierDialog;
+import jp.chang.myclinic.practice.leftpane.text.PrescData;
+import jp.chang.myclinic.practice.refer.ReferDrawer;
+import jp.chang.myclinic.practice.refer.ReferPreviewDialog;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.List;
 
 public class LeftPane extends JPanel implements LeftPaneContext {
@@ -77,6 +86,11 @@ public class LeftPane extends JPanel implements LeftPaneContext {
                     mainContext.suspendExam(() -> {});
                 }
             }
+
+            @Override
+            public void onRefer(){
+                doRefer();
+            }
         });
     }
 
@@ -123,6 +137,35 @@ public class LeftPane extends JPanel implements LeftPaneContext {
                     });
                     return null;
                 });
+    }
+
+    private void doRefer(){
+        ReferDrawer drawer = new ReferDrawer();
+        MainContext mainContext = MainContext.get(this);
+        PatientDTO patient = mainContext.getCurrentPatient();
+        drawer.setPatient(patient);
+        drawer.setTitle("紹介状");
+        drawer.setReferHospital("〇〇病院");
+        drawer.setReferDoctor("〇〇 先生");
+        drawer.setPatientName("〇〇 〇〇 様");
+        drawer.setPatientInfo("昭和〇〇年〇月〇日生 〇〇才 女性");
+        drawer.setDiagnosis("診断");
+        drawer.setIssueDate("平成29年12月6日");
+        drawer.setAddress("addr1", "addr2", "addr3", "addr4", "Clinic Name", "Doctor Name");
+        drawer.setContent("いつもお世話になっております。\n高血圧症にて当院に通院されている方です。高血圧症にて当院に通院されている方です。高血圧症にて当院に通院されている方です。高血圧症にて当院に通院されている方です。");
+        List<Op> ops = drawer.getOps();
+        PrintManager printManager = new PrintManager(PracticeEnv.INSTANCE.getPrinterSettingsDir());
+        ReferPreviewDialog dialog = new ReferPreviewDialog(printManager, null);
+        dialog.render(ops);
+        dialog.setLocationByPlatform(true);
+        dialog.setVisible(true);
+//        PreviewDialog previewDialog = new PreviewDialog(SwingUtilities.getWindowAncestor(this), "紹介状", pringManager, null);
+//        previewDialog.setPageSize(PaperSize.A4);
+//        previewDialog.setScale(0.5);
+//        previewDialog.setPage(ops);
+//        previewDialog.pack();
+//        previewDialog.setLocationByPlatform(true);
+//        previewDialog.setVisible(true);
     }
 
     public void reset(){
