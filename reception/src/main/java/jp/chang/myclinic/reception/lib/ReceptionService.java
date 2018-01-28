@@ -1,12 +1,17 @@
 package jp.chang.myclinic.reception.lib;
 
 import javafx.application.Platform;
+import jp.chang.myclinic.dto.MeisaiDTO;
+import jp.chang.myclinic.dto.PaymentDTO;
 import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.Service;
 import jp.chang.myclinic.reception.javafx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class ReceptionService {
@@ -29,6 +34,38 @@ public class ReceptionService {
                     logger.error("Failed start visit.", ex);
                     Platform.runLater(() -> GuiUtil.alertException("診察の受付に失敗しました。", ex));
                     return null;
+                });
+    }
+    
+    public static void getMeisaiAndPayments(int visitId, BiConsumer<MeisaiDTO, List<PaymentDTO>> cb){
+        CompletableFuture<MeisaiDTO> meisaiFuture = apiGetMeisai(visitId);
+        CompletableFuture<List<PaymentDTO>> paymentsFuture = apiListPayment(visitId);
+        try {
+            MeisaiDTO meisai = meisaiFuture.get();
+            List<PaymentDTO> payments = paymentsFuture.get();
+            cb.accept(meisai, payments);
+        } catch(Exception ex){
+            logger.error("Failed to get meisai and payments");
+        }
+    }
+
+    public static CompletableFuture<MeisaiDTO> apiGetMeisai(int visitId){
+        return Service.api.getVisitMeisai(visitId)
+                .whenComplete((meisai, ex) -> {
+                    if( ex != null ) {
+                        logger.error("Failed to get meisai.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException("診療明細の取得に失敗しました。", ex));
+                    }
+                });
+    }
+
+    public static CompletableFuture<List<PaymentDTO>> apiListPayment(int visitId){
+        return Service.api.listPayment(visitId)
+                .whenComplete((payments, ex) -> {
+                    if( ex != null ){
+                        logger.error("Failed to list payments.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException("支払い履歴の取得に失敗しました。", ex));
+                    }
                 });
     }
 

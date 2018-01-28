@@ -1,0 +1,59 @@
+package jp.chang.myclinic.reception.javafx;
+
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import jp.chang.myclinic.dto.MeisaiDTO;
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.PaymentDTO;
+
+import java.util.List;
+
+public class CashierDialog extends Stage {
+
+    public CashierDialog(MeisaiDTO meisai, PatientDTO patient, List<PaymentDTO> payments){
+        setTitle(String.format("会計（%s）", patient.lastName + patient.firstName));
+        VBox root = new VBox(4);
+        root.getStyleClass().add("CashierDialog");
+        root.setStyle("-fx-padding: 10");
+        root.getChildren().addAll(
+                makePatientPart(patient),
+                new MeisaiDetailPane(meisai),
+                makeSummary(meisai, payments)
+        );
+        setScene(new Scene(root));
+    }
+
+    private Node makePatientPart(PatientDTO patient){
+        VBox vbox = new VBox(4);
+        Label nameLabel = new Label(patient.lastName + " " + patient.firstName);
+        Label patientIdLabel = new Label("患者番号：" + patient.patientId);
+        vbox.getChildren().addAll(nameLabel, patientIdLabel);
+        return vbox;
+    }
+
+    private Node makeSummary(MeisaiDTO meisai, List<PaymentDTO> payments){
+        VBox vbox = new VBox(4);
+        Label totalTenLabel = new Label(String.format("総点：%,d", meisai.totalTen));
+        Label futanWariLabel = new Label("負担割：" + meisai.futanWari);
+        Label futanLabel = new Label(String.format("自己負担金額：%,d円", meisai.charge));
+        vbox.getChildren().addAll(totalTenLabel, futanWariLabel, futanLabel);
+        PaymentDTO lastPayment = null;
+        if( payments.size() > 0 ){
+            lastPayment = payments.get(0);
+        }
+        int chargeValue = meisai.charge;
+        if( lastPayment != null ){
+            chargeValue -= payments.get(0).amount;
+            vbox.getChildren().add(new Label(String.format("以前の支払い：%,d円", lastPayment.amount)));
+        }
+        Label chargeLabel = new Label(String.format("請求額：%,d円", chargeValue));
+        vbox.getChildren().add(chargeLabel);
+        return vbox;
+    }
+
+
+
+}

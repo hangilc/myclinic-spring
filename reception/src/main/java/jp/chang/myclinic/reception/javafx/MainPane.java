@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.PatientDTO;
@@ -33,7 +34,6 @@ public class MainPane extends VBox {
 
     private WqueueTable wqueueTable = new WqueueTable();
 
-    private Button cashierButton = new Button("会計");
     private Button deselectButton = new Button("選択解除");
     private Button deleteButton = new Button("削除");
 
@@ -71,7 +71,9 @@ public class MainPane extends VBox {
         {
             HBox hbox = new HBox(4);
             Button refreshButton = new Button("更新");
+            Button cashierButton = new Button("会計");
             refreshButton.setOnAction(event -> doRefresh());
+            cashierButton.setOnAction(event -> doCashier());
             hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton);
             getChildren().add(hbox);
         }
@@ -92,6 +94,19 @@ public class MainPane extends VBox {
                 wqueueTable.getSelectionModel().select(newSelection);
             }
         });
+    }
+
+    private void doCashier(){
+        WqueueFullDTO wq = wqueueTable.getSelectionModel().getSelectedItem();
+        if( wq != null ){
+            WqueueWaitState state = WqueueWaitState.fromCode(wq.wqueue.waitState);
+            if( state == WqueueWaitState.WaitCashier ) {
+                ReceptionService.getMeisaiAndPayments(wq.visit.visitId, (meisai, payments) -> {
+                    CashierDialog cashierDialog = new CashierDialog(meisai, wq.patient, payments);
+                    cashierDialog.show();
+                });
+            }
+        }
     }
 
     private void doNewPatient(){
