@@ -79,6 +79,9 @@ public class Service {
         @GET("list-wqueue-full-for-exam")
         CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam();
 
+        @GET("list-visit-with-patient")
+        CompletableFuture<List<VisitPatientDTO>> listRecentVisits();
+
         @GET("list-todays-visits")
         CompletableFuture<List<VisitPatientDTO>> listTodaysVisits();
 
@@ -257,6 +260,7 @@ public class Service {
     }
 
     public static ServerAPI api;
+    public static OkHttpClient client;
 
     static void setServerUrl(String serverUrl){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -264,6 +268,7 @@ public class Service {
         //logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
+        client = httpClient.build();
 
         ObjectMapper mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
@@ -273,7 +278,7 @@ public class Service {
                 .baseUrl(serverUrl)
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
                 .addCallAdapterFactory(Java8CallAdapterFactory.create())
-                .client(httpClient.build())
+                .client(client)
                 .build();
         api = server.create(ServerAPI.class);
     }
