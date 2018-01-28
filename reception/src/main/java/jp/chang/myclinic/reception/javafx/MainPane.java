@@ -34,7 +34,6 @@ public class MainPane extends VBox {
 
     private WqueueTable wqueueTable = new WqueueTable();
 
-    private Button deselectButton = new Button("選択解除");
     private Button deleteButton = new Button("削除");
 
     public MainPane(){
@@ -72,8 +71,10 @@ public class MainPane extends VBox {
             HBox hbox = new HBox(4);
             Button refreshButton = new Button("更新");
             Button cashierButton = new Button("会計");
+            Button deselectButton = new Button("選択解除");
             refreshButton.setOnAction(event -> doRefresh());
             cashierButton.setOnAction(event -> doCashier());
+            deselectButton.setOnAction(event -> doDeselect());
             hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton);
             getChildren().add(hbox);
         }
@@ -107,6 +108,10 @@ public class MainPane extends VBox {
                 });
             }
         }
+    }
+
+    private void doDeselect(){
+        wqueueTable.getSelectionModel().select(null);
     }
 
     private void doNewPatient(){
