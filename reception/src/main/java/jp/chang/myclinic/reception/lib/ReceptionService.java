@@ -82,4 +82,16 @@ public class ReceptionService {
                 });
     }
 
+    public static void deleteFromWqueue(int visitId){
+        Service.api.deleteVisitFromReception(visitId)
+                .thenAccept(result -> {
+                    ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
+                })
+                .exceptionally(ex -> {
+                    logger.error("Failed to delete visit from wqueue.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("診察受付の削除に失敗しました。", ex));
+                    return null;
+                });
+    }
+
 }

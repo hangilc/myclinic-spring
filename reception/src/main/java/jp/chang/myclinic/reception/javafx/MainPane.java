@@ -34,8 +34,6 @@ public class MainPane extends VBox {
 
     private WqueueTable wqueueTable = new WqueueTable();
 
-    private Button deleteButton = new Button("削除");
-
     public MainPane(){
         setSpacing(4);
         {
@@ -72,9 +70,11 @@ public class MainPane extends VBox {
             Button refreshButton = new Button("更新");
             Button cashierButton = new Button("会計");
             Button deselectButton = new Button("選択解除");
+            Button deleteButton = new Button("削除");
             refreshButton.setOnAction(event -> doRefresh());
             cashierButton.setOnAction(event -> doCashier());
             deselectButton.setOnAction(event -> doDeselect());
+            deleteButton.setOnAction(event -> doDelete());
             hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton);
             getChildren().add(hbox);
         }
@@ -112,6 +112,16 @@ public class MainPane extends VBox {
 
     private void doDeselect(){
         wqueueTable.getSelectionModel().select(null);
+    }
+
+    private void doDelete(){
+        WqueueFullDTO wq = wqueueTable.getSelectionModel().getSelectedItem();
+        if( wq != null ){
+            String message = String.format("この診察受付（%s%s）を削除していいですか？", wq.patient.lastName, wq.patient.firstName);
+            if( GuiUtil.confirm(message) ) {
+                ReceptionService.deleteFromWqueue(wq.visit.visitId);
+            }
+        }
     }
 
     private void doNewPatient(){
