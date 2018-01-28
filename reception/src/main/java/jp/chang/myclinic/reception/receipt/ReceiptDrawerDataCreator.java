@@ -13,16 +13,26 @@ public class ReceiptDrawerDataCreator {
     private NumberFormat numberFormat = NumberFormat.getNumberInstance();
     private ReceiptDrawerData data;
 
-    public static ReceiptDrawerData create(int charge, PatientDTO patient, VisitDTO visit, MeisaiDTO meisai,
+    public static ReceiptDrawerData create(MeisaiDTO meisai, PatientDTO patient, VisitDTO visit,
         ClinicInfoDTO clinicInfo){
         ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
         ReceiptDrawerData data =creator.data;
-        creator.setPatient(patient);
-        creator.setCharge(charge);
-        creator.setVisitDate(visit);
+        if( patient != null ) {
+            creator.setPatient(patient);
+        }
+        if( meisai != null ) {
+            creator.setCharge(meisai.charge);
+        }
+        if( visit != null ) {
+            creator.setVisitDate(visit);
+        }
         creator.setIssueDate();
-        creator.setMeisai(meisai);
-        creator.setClinicInfo(clinicInfo);
+        if( meisai != null ) {
+            creator.setMeisai(meisai);
+        }
+        if( clinicInfo != null ) {
+            creator.setClinicInfo(clinicInfo);
+        }
         return data;
     }
 

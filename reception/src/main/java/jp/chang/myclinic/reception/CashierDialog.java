@@ -120,8 +120,8 @@ class CashierDialog extends JDialog {
 						return Service.api.getVisit(visitId);
 					})
 					.thenAccept(visit -> {
-						ReceiptDrawerData data = ReceiptDrawerDataCreator.create(charge.charge, patient,
-								visit, meisai, dataStore.clinicInfo);
+						ReceiptDrawerData data = ReceiptDrawerDataCreator.create(meisai, patient,
+								visit, dataStore.clinicInfo);
 						ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
 						List<Op> ops = receiptDrawer.getOps();
 						EventQueue.invokeLater(() -> {

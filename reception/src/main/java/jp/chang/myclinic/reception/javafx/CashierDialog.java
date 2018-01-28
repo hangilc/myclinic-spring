@@ -12,12 +12,21 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PaymentDTO;
+import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.reception.lib.ReceptionLib;
 
 import java.util.List;
 
 public class CashierDialog extends Stage {
 
-    public CashierDialog(MeisaiDTO meisai, PatientDTO patient, List<PaymentDTO> payments){
+    private MeisaiDTO meisai;
+    private PatientDTO patient;
+    private VisitDTO visit;
+
+    public CashierDialog(MeisaiDTO meisai, PatientDTO patient, List<PaymentDTO> payments, VisitDTO visit){
+        this.meisai = meisai;
+        this.patient = patient;
+        this.visit = visit;
         setTitle(String.format("会計（%s）", patient.lastName + patient.firstName));
         VBox root = new VBox(4);
         root.getStyleClass().add("CashierDialog");
@@ -66,6 +75,8 @@ public class CashierDialog extends Stage {
         Button printManualReceiptButton = new Button("手書き領収書印刷");
         HBox.setHgrow(spacer, Priority.SOMETIMES);
         Button finishButton = new Button("終了");
+        printReceiptButton.setOnAction(event -> ReceptionLib.previewReceipt(meisai, patient, visit));
+        printManualReceiptButton.setOnAction(event -> ReceptionLib.previewReceipt(patient, visit));
         hbox.getChildren().addAll(printReceiptButton, printManualReceiptButton, spacer, finishButton);
         return hbox;
     }

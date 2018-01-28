@@ -3,9 +3,9 @@ package jp.chang.myclinic.reception;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.preview.PreviewDialog;
 import jp.chang.myclinic.drawer.printer.manager.PrintManager;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
-import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;
 import net.miginfocom.swing.MigLayout;
 
@@ -89,8 +89,8 @@ class SearchPaymentDialog extends JDialog {
 						return Service.api.getVisitMeisai(visitId);
 					})
 					.thenAccept((MeisaiDTO meisai) -> {
-						ReceiptDrawerData data = ReceiptDrawerDataCreator.create(dataStore.getChargeValue(),
-								selection.patient, selection.visit, meisai, dataStore.clinicInfo);
+						ReceiptDrawerData data = ReceiptDrawerDataCreator.create(meisai,
+								selection.patient, selection.visit, dataStore.clinicInfo);
 						ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
 						final List<Op> ops = receiptDrawer.getOps();
 						EventQueue.invokeLater(() -> {

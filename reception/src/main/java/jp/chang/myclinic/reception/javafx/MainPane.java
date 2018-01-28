@@ -102,7 +102,7 @@ public class MainPane extends VBox {
             WqueueWaitState state = WqueueWaitState.fromCode(wq.wqueue.waitState);
             if( state == WqueueWaitState.WaitCashier ) {
                 ReceptionService.getMeisaiAndPayments(wq.visit.visitId, (meisai, payments) -> {
-                    CashierDialog cashierDialog = new CashierDialog(meisai, wq.patient, payments);
+                    CashierDialog cashierDialog = new CashierDialog(meisai, wq.patient, payments, wq.visit);
                     cashierDialog.show();
                 });
             }
