@@ -44,6 +44,9 @@ public class MainPane extends BorderPane {
     private void doRecentVisits(){
         PracticeService.listRecentVisits(list -> {
             RecentVisitsDialog dialog = new RecentVisitsDialog(list);
+            dialog.setCallback(patient -> {
+                System.out.println("open: "+patient);
+            });
             dialog.show();
         });
     }
