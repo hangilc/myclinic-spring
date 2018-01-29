@@ -1,0 +1,7 @@
+.hyperlink.detail {
+    -fx-border-color: transparent;
+}
+
+.hyperlink.detail:visited {
+    -fx-text-fill: -fx-accent;
+}

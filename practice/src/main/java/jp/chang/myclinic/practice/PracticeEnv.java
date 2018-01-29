@@ -1,6 +1,9 @@
 package jp.chang.myclinic.practice;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
+import jp.chang.myclinic.dto.PatientDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +19,7 @@ public class PracticeEnv {
 
     private Path printerSettingsDir;
     private ClinicInfoDTO clinicInfo;
+    private ObjectProperty<PatientDTO> currentPatient = new SimpleObjectProperty<>();
 
     public PracticeEnv(CommandArgs commandArgs){
         printerSettingsDir = commandArgs.getWorkingDirectory();
@@ -42,6 +46,18 @@ public class PracticeEnv {
 
     public void setClinicInfo(ClinicInfoDTO clinicInfo) {
         this.clinicInfo = clinicInfo;
+    }
+
+    public PatientDTO getCurrentPatient() {
+        return currentPatient.get();
+    }
+
+    public ObjectProperty<PatientDTO> currentPatientProperty() {
+        return currentPatient;
+    }
+
+    public void setCurrentPatient(PatientDTO currentPatient) {
+        this.currentPatient.set(currentPatient);
     }
 
     @Override

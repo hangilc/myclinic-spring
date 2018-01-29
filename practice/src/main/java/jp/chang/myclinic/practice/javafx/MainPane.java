@@ -7,6 +7,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.lib.PracticeService;
 
 public class MainPane extends BorderPane {
@@ -38,6 +39,9 @@ public class MainPane extends BorderPane {
     private Node createCenter(){
         VBox root = new VBox(4);
         root.setStyle("-fx-padding: 10");
+        CurrentPatientInfo currentPatientInfo = new CurrentPatientInfo();
+        currentPatientInfo.patientProperty().bind(PracticeEnv.INSTANCE.currentPatientProperty());
+        root.getChildren().addAll(currentPatientInfo);
         return root;
     }
 
@@ -45,7 +49,7 @@ public class MainPane extends BorderPane {
         PracticeService.listRecentVisits(list -> {
             RecentVisitsDialog dialog = new RecentVisitsDialog(list);
             dialog.setCallback(patient -> {
-                System.out.println("open: "+patient);
+                PracticeEnv.INSTANCE.setCurrentPatient(patient);
             });
             dialog.show();
         });
