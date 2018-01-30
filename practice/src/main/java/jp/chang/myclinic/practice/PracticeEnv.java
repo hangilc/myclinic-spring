@@ -1,15 +1,19 @@
 package jp.chang.myclinic.practice;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.VisitFull2DTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class PracticeEnv {
 
@@ -20,6 +24,10 @@ public class PracticeEnv {
     private Path printerSettingsDir;
     private ClinicInfoDTO clinicInfo;
     private ObjectProperty<PatientDTO> currentPatient = new SimpleObjectProperty<>();
+    private int recordsPerPage = 10;
+    private IntegerProperty totalRecordPages = new SimpleIntegerProperty(0);
+    private IntegerProperty currentRecordPage = new SimpleIntegerProperty(0);
+    private ObjectProperty<List<VisitFull2DTO>> pageVisits = new SimpleObjectProperty<>();
 
     public PracticeEnv(CommandArgs commandArgs){
         printerSettingsDir = commandArgs.getWorkingDirectory();
@@ -58,6 +66,46 @@ public class PracticeEnv {
 
     public void setCurrentPatient(PatientDTO currentPatient) {
         this.currentPatient.set(currentPatient);
+    }
+
+    public int getRecordsPerPage(){
+        return recordsPerPage;
+    }
+
+    public int getTotalRecordPages() {
+        return totalRecordPages.get();
+    }
+
+    public IntegerProperty totalRecordPagesProperty() {
+        return totalRecordPages;
+    }
+
+    public void setTotalRecordPages(int totalRecordPages) {
+        this.totalRecordPages.set(totalRecordPages);
+    }
+
+    public int getCurrentRecordPage() {
+        return currentRecordPage.get();
+    }
+
+    public IntegerProperty currentRecordPageProperty() {
+        return currentRecordPage;
+    }
+
+    public void setCurrentRecordPage(int currentRecordPage) {
+        this.currentRecordPage.set(currentRecordPage);
+    }
+
+    public List<VisitFull2DTO> getPageVisits() {
+        return pageVisits.get();
+    }
+
+    public ObjectProperty<List<VisitFull2DTO>> pageVisitsProperty() {
+        return pageVisits;
+    }
+
+    public void setPageVisits(List<VisitFull2DTO> pageVisits) {
+        this.pageVisits.set(pageVisits);
     }
 
     @Override
