@@ -11,6 +11,20 @@
     -fx-pref-width: 260;
 }
 
+.record-title-text {
+    -fx-font-weight: bold;
+    -fx-background-color: #ccc;
+    -fx-padding: 2;
+}
+
+.record-title-text.current-visit {
+    -fx-background-color: #ff9;
+}
+
+.record-title-text.temp-visit {
+    -fx-background-color: #9ff;
+}
+
 .record-text-form .text-area {
     -fx-pref-height: 160;
 }
