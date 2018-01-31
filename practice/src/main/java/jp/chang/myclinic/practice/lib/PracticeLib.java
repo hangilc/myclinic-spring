@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.lib;
 import javafx.application.Platform;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitFull2PageDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class PracticeLib {
 
@@ -116,6 +118,29 @@ public class PracticeLib {
                 }
             }
         }
+    }
+
+    public static void enterText(int visitId, String content, Consumer<TextDTO> cb){
+        TextDTO text = new TextDTO();
+        text.visitId = visitId;
+        text.content = content;
+        Service.api.enterText(text)
+                .thenAccept(textId -> getText(textId, cb))
+                .exceptionally(ex -> {
+                    logger.error("Failed enter text.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("文章の入力に失敗しました。", ex));
+                    return null;
+                });
+    }
+
+    public static void getText(int textId, Consumer<TextDTO> cb){
+        Service.api.getText(textId)
+                .thenAccept(text -> Platform.runLater(() -> cb.accept(text)))
+                .exceptionally(ex -> {
+                    logger.error("Failed get text.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("文章の取得に失敗しました。", ex));
+                    return null;
+                });
     }
 
 }

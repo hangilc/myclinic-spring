@@ -7,6 +7,10 @@ import jp.chang.myclinic.dto.TextDTO;
 public class RecordText extends TextFlow {
 
     public RecordText(TextDTO text){
-        getChildren().add(new Text(text.content));
+        String content = text.content;
+        if( content.isEmpty() ){
+            content = "(空白)";
+        }
+        getChildren().add(new Text(content));
     }
 }

@@ -6,9 +6,6 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class Record extends VBox {
 
     public Record(VisitFull2DTO visit){
@@ -26,12 +23,11 @@ public class Record extends VBox {
         VBox left = new VBox();
         VBox right = new VBox();
         left.prefWidthProperty().bind(widthProperty().divide(2));
-        left.setStyle("-fx-padding: 0 5 0 0");
+        left.setStyle("-fx-padding: 5");
         right.prefWidthProperty().bind(widthProperty().divide(2));
-        right.setStyle("=fx-padding: 0 0 0 5");
+        right.setStyle("-fx-padding: 5");
         hbox.getChildren().addAll(left, right);
-        List<RecordText> texts = visit.texts.stream().map(RecordText::new).collect(Collectors.toList());
-        left.getChildren().addAll(texts.toArray(new RecordText[]{}));
+        left.getChildren().add(new RecordTextsPane(visit.texts, visit.visit.visitId));
         right.getChildren().addAll(
                 new RecordHoken(visit.hoken),
                 new RecordDrugsPane(visit.drugs),
@@ -41,4 +37,5 @@ public class Record extends VBox {
         );
         return hbox;
     }
+
 }
