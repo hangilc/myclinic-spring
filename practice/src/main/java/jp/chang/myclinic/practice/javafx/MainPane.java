@@ -12,7 +12,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.lib.PracticeService;
-import jp.chang.myclinic.practice.lib.dateinput.PracticeLib;
+import jp.chang.myclinic.practice.lib.PracticeLib;
 
 public class MainPane extends BorderPane {
 
@@ -48,9 +48,18 @@ public class MainPane extends BorderPane {
         root.getChildren().addAll(
                 currentPatientInfo,
                 createPatientManip(),
-                createRecords()
+                createRecordNav(),
+                createRecords(),
+                createRecordNav()
         );
         return root;
+    }
+
+    private Node createRecordNav(){
+        RecordNav nav = new RecordNav();
+        nav.totalPagesProperty().bind(PracticeEnv.INSTANCE.totalRecordPagesProperty());
+        nav.currentPageProperty().bind(PracticeEnv.INSTANCE.currentRecordPageProperty());
+        return nav;
     }
 
     private Node createPatientManip(){
