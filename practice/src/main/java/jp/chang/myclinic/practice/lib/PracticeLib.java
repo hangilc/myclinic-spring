@@ -1,10 +1,7 @@
 package jp.chang.myclinic.practice.lib;
 
 import javafx.application.Platform;
-import jp.chang.myclinic.dto.DiseaseFullDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.dto.VisitFull2PageDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import org.slf4j.Logger;
@@ -18,18 +15,7 @@ public class PracticeLib {
 
     private static Logger logger = LoggerFactory.getLogger(PracticeLib.class);
 
-    public static void startPatient(int patientId, Runnable cb){
-        CompletableFuture<PatientDTO> patientFuture = Service.api.getPatient(patientId);
-        try {
-            PatientDTO patient = patientFuture.join();
-            startPatient(patient, cb);
-        } catch(Exception ex){
-            logger.error("Failed start patient.", ex);
-            Platform.runLater(() -> GuiUtil.alertException("患者を開始できませんでした。", ex));
-        }
-    }
-
-    public static void startPatient(PatientDTO patient, Runnable cb){
+    public static void startPatient(int visitId, PatientDTO patient, Runnable cb){
         CompletableFuture<VisitFull2PageDTO> visitsFuture = Service.api.listVisitFull2(patient.patientId, 0);
         CompletableFuture<List<DiseaseFullDTO>> diseasesFuture = Service.api.listCurrentDiseaseFull(patient.patientId);
         try {
@@ -38,6 +24,8 @@ public class PracticeLib {
             PracticeEnv env = PracticeEnv.INSTANCE;
             Platform.runLater(() -> {
                 env.setCurrentPatient(patient);
+                env.setCurrentVisitId(visitId);
+                env.setTempVisitId(0);
                 env.setTotalRecordPages(visits.totalPages);
                 env.setCurrentRecordPage(visits.page);
                 env.setPageVisits(visits.visits);
@@ -48,6 +36,10 @@ public class PracticeLib {
             logger.error("Failed start patient.", ex);
             Platform.runLater(() -> GuiUtil.alertException("患者を開始できませんでした。", ex));
         }
+    }
+
+    public static void startPatient(PatientDTO patient, Runnable cb){
+        startPatient(0, patient, cb);
     }
 
     public static void gotoFirstRecordPage(){
@@ -159,6 +151,16 @@ public class PracticeLib {
                 .exceptionally(ex -> {
                     logger.error("Failed delete text.", ex);
                     Platform.runLater(() -> GuiUtil.alertException("文章の削除に失敗しました。", ex));
+                    return null;
+                });
+    }
+
+    public static void listWqueue(Consumer<List<WqueueFullDTO>> cb){
+        Service.api.listWqueueFullForExam()
+                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
+                .exceptionally(ex -> {
+                    logger.error("Failed list wqueue for exam.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("受付患者リストの取得に失敗しました。", ex));
                     return null;
                 });
     }

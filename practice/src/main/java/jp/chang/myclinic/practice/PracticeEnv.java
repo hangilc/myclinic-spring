@@ -26,6 +26,8 @@ public class PracticeEnv {
     private Path printerSettingsDir;
     private ClinicInfoDTO clinicInfo;
     private ObjectProperty<PatientDTO> currentPatient = new SimpleObjectProperty<>();
+    private IntegerProperty currentVisitId = new SimpleIntegerProperty(0);
+    private IntegerProperty tempVisitId = new SimpleIntegerProperty(0);
     private int recordsPerPage = 10;
     private IntegerProperty totalRecordPages = new SimpleIntegerProperty(0);
     private IntegerProperty currentRecordPage = new SimpleIntegerProperty(0);
@@ -121,6 +123,30 @@ public class PracticeEnv {
 
     public void setCurrentDiseases(List<DiseaseFullDTO> currentDiseases) {
         this.currentDiseases.set(currentDiseases);
+    }
+
+    public int getCurrentVisitId() {
+        return currentVisitId.get();
+    }
+
+    public IntegerProperty currentVisitIdProperty() {
+        return currentVisitId;
+    }
+
+    public void setCurrentVisitId(int currentVisitId) {
+        this.currentVisitId.set(currentVisitId);
+    }
+
+    public int getTempVisitId() {
+        return tempVisitId.get();
+    }
+
+    public IntegerProperty tempVisitIdProperty() {
+        return tempVisitId;
+    }
+
+    public void setTempVisitId(int tempVisitId) {
+        this.tempVisitId.set(tempVisitId);
     }
 
     @Override
