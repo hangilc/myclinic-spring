@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.javafx;
 
 import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.HokenDTO;
@@ -22,8 +23,13 @@ public class HokenSelectForm extends VBox {
 
     public HokenSelectForm(HokenDTO available, HokenDTO current){
         super(4);
+        getStyleClass().add("form");
+        Label title = new Label("保険選択");
+        title.getStyleClass().add("title");
+        title.setMaxWidth(Double.MAX_VALUE);
         selectPane = new HokenSelectPane(available, current);
         getChildren().addAll(
+                title,
                 selectPane,
                 createButtons()
         );

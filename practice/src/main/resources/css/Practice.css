@@ -44,3 +44,15 @@
 .current-disease-start-at {
     -fx-fill: #666;
 }
+
+.form {
+    -fx-border-color: #ccc;
+    -fx-border-width: 2;
+    -fx-padding: 4;
+}
+
+.form .title {
+    -fx-font-weight: bold;
+    -fx-background-color: #ccc;
+    -fx-padding: 2;
+}
