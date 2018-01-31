@@ -149,6 +149,10 @@ public class PracticeEnv {
         this.tempVisitId.set(tempVisitId);
     }
 
+    public boolean isCurrentOrTempVisitId(int visitId){
+        return getCurrentVisitId() == visitId || getTempVisitId() == visitId;
+    }
+
     @Override
     public String toString() {
         return "PracticeEnv{" +

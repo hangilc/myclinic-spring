@@ -165,4 +165,14 @@ public class PracticeLib {
                 });
     }
 
+    public static void listAvailableHoken(VisitDTO visit, Consumer<HokenDTO> cb){
+        Service.api.listAvailableHoken(visit.patientId, visit.visitedAt)
+                .thenAccept(hoken -> Platform.runLater(() -> cb.accept(hoken)))
+                .exceptionally(ex -> {
+                    logger.error("Failed list available hoken.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("有効な保険の取得に失敗しました。", ex));
+                    return null;
+                });
+    }
+
 }
