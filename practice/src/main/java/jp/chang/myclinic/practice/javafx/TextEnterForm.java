@@ -31,6 +31,10 @@ public class TextEnterForm extends VBox {
         this.callback = callback;
     }
 
+    public void acquireFocus(){
+        textArea.requestFocus();
+    }
+
     private Node createButtons(){
         HBox hbox = new HBox(4);
         Hyperlink enterLink = new Hyperlink("入力");

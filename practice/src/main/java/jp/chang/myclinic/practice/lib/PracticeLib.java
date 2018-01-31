@@ -143,4 +143,24 @@ public class PracticeLib {
                 });
     }
 
+    public static void updateText(TextDTO newText, Runnable cb){
+        Service.api.updateText(newText)
+                .thenAccept(result -> Platform.runLater(cb))
+                .exceptionally(ex -> {
+                    logger.error("Failed update text.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("文章の変更に失敗しました。", ex));
+                    return null;
+                });
+    }
+
+    public static void deleteText(TextDTO text, Runnable cb){
+        Service.api.deleteText(text.textId)
+                .thenAccept(result -> Platform.runLater(cb))
+                .exceptionally(ex -> {
+                    logger.error("Failed delete text.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("文章の削除に失敗しました。", ex));
+                    return null;
+                });
+    }
+
 }

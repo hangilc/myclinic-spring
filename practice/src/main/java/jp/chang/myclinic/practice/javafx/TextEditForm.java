@@ -6,6 +6,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.TextDTO;
+import jp.chang.myclinic.practice.lib.GuiUtil;
 
 public class TextEditForm extends VBox {
 
@@ -36,6 +37,10 @@ public class TextEditForm extends VBox {
         this.callback = callback;
     }
 
+    public void acquireFocus(){
+        textArea.requestFocus();
+    }
+
     private Node createButtons(){
         FlowPane wrapper = new FlowPane();
         Hyperlink enterLink = new Hyperlink("入力");
@@ -52,6 +57,13 @@ public class TextEditForm extends VBox {
         cancelLink.setOnAction(event -> {
             if( callback != null ){
                 callback.onCancel();
+            }
+        });
+        deleteLink.setOnAction(event -> {
+            if( GuiUtil.confirm("この文章を削除しますか？") ){
+                if( callback != null ){
+                    callback.onDelete();
+                }
             }
         });
         wrapper.getChildren().addAll(enterLink, cancelLink, deleteLink, shohousenLink, copyLink);

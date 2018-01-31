@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.VBox;
@@ -19,7 +20,14 @@ public class RecordTextsPane extends VBox {
     }
 
     private void addText(TextDTO text){
-        getChildren().add(new RecordText(text));
+        RecordText recordText = new RecordText(text);
+        recordText.setCallback(new RecordText.Callback() {
+            @Override
+            public void onDelete() {
+                getChildren().remove(recordText);
+            }
+        });
+        getChildren().add(recordText);
     }
 
     private Node createNewTextLink(){
@@ -44,6 +52,7 @@ public class RecordTextsPane extends VBox {
             });
             getChildren().remove(link);
             getChildren().add(textEnterForm);
+            Platform.runLater(textEnterForm::acquireFocus);
         });
         return link;
     }
