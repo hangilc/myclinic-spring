@@ -5,6 +5,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
+import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 
 public class PracticeEnv {
@@ -27,7 +29,8 @@ public class PracticeEnv {
     private int recordsPerPage = 10;
     private IntegerProperty totalRecordPages = new SimpleIntegerProperty(0);
     private IntegerProperty currentRecordPage = new SimpleIntegerProperty(0);
-    private ObjectProperty<List<VisitFull2DTO>> pageVisits = new SimpleObjectProperty<>();
+    private ObjectProperty<List<VisitFull2DTO>> pageVisits = new SimpleObjectProperty<>(Collections.emptyList());
+    private ObjectProperty<List<DiseaseFullDTO>> currentDiseases = new SimpleObjectProperty<>(Collections.emptyList());
 
     public PracticeEnv(CommandArgs commandArgs){
         printerSettingsDir = commandArgs.getWorkingDirectory();
@@ -106,6 +109,18 @@ public class PracticeEnv {
 
     public void setPageVisits(List<VisitFull2DTO> pageVisits) {
         this.pageVisits.set(pageVisits);
+    }
+
+    public List<DiseaseFullDTO> getCurrentDiseases() {
+        return currentDiseases.get();
+    }
+
+    public ObjectProperty<List<DiseaseFullDTO>> currentDiseasesProperty() {
+        return currentDiseases;
+    }
+
+    public void setCurrentDiseases(List<DiseaseFullDTO> currentDiseases) {
+        this.currentDiseases.set(currentDiseases);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.lib;
 
 import javafx.application.Platform;
+import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2PageDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
@@ -8,6 +9,7 @@ import jp.chang.myclinic.practice.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class PracticeLib {
@@ -27,14 +29,17 @@ public class PracticeLib {
 
     public static void startPatient(PatientDTO patient, Runnable cb){
         CompletableFuture<VisitFull2PageDTO> visitsFuture = Service.api.listVisitFull2(patient.patientId, 0);
+        CompletableFuture<List<DiseaseFullDTO>> diseasesFuture = Service.api.listCurrentDiseaseFull(patient.patientId);
         try {
             VisitFull2PageDTO visits = visitsFuture.join();
+            List<DiseaseFullDTO> diseases = diseasesFuture.join();
             PracticeEnv env = PracticeEnv.INSTANCE;
             Platform.runLater(() -> {
                 env.setCurrentPatient(patient);
                 env.setTotalRecordPages(visits.totalPages);
                 env.setCurrentRecordPage(visits.page);
                 env.setPageVisits(visits.visits);
+                env.setCurrentDiseases(diseases);
                 cb.run();
             });
         } catch(Exception ex){

@@ -6,13 +6,10 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.PracticeLib;
+import jp.chang.myclinic.practice.lib.PracticeService;
 
 public class MainPane extends BorderPane {
 
@@ -41,16 +38,36 @@ public class MainPane extends BorderPane {
     }
 
     private Node createCenter(){
-        VBox root = new VBox(4);
+        HBox root = new HBox(4);
         root.setStyle("-fx-padding: 10");
+        root.getChildren().addAll(
+                createMainColumn(),
+                createSideColumn()
+        );
+        return root;
+    }
+
+    private Node createMainColumn(){
+        VBox root = new VBox(4);
+        root.getStyleClass().add("main-column");
         CurrentPatientInfo currentPatientInfo = new CurrentPatientInfo();
         currentPatientInfo.patientProperty().bind(PracticeEnv.INSTANCE.currentPatientProperty());
+        HBox.setHgrow(root, Priority.ALWAYS);
         root.getChildren().addAll(
                 currentPatientInfo,
                 createPatientManip(),
                 createRecordNav(),
                 createRecords(),
                 createRecordNav()
+        );
+        return root;
+    }
+
+    private Node createSideColumn(){
+        VBox root = new VBox(4);
+        root.getStyleClass().add("side-column");
+        root.getChildren().addAll(
+            new DiseasesPane()
         );
         return root;
     }

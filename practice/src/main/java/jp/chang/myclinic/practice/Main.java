@@ -24,7 +24,9 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         stage.setTitle("診療");
         MainPane root = new MainPane();
-
+        root.getStylesheets().addAll(
+                "css/Practice.css"
+        );
         stage.setScene(new Scene(root));
         stage.show();
     }

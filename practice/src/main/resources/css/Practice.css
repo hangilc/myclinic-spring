@@ -1,0 +1,28 @@
+.hyperlink:visited {
+    -fx-text-fill: -fx-accent;
+}
+
+.main-column {
+    -fx-pref-width: 360;
+    -fx-pref-height: 400;
+}
+
+.side-column {
+    -fx-pref-width: 260;
+}
+
+.diseases-pane {
+    -fx-border-color: #ccc;
+    -fx-border-width: 2;
+    -fx-padding: 4;
+}
+
+.diseases-pane-title {
+    -fx-font-weight: bold;
+    -fx-background-color: #ccc;
+    -fx-padding: 2;
+}
+
+.current-disease-start-at {
+    -fx-fill: #666;
+}
