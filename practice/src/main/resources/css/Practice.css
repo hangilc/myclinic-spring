@@ -11,6 +11,10 @@
     -fx-pref-width: 260;
 }
 
+.record-text-form .text-area {
+    -fx-pref-height: 160;
+}
+
 .diseases-pane {
     -fx-border-color: #ccc;
     -fx-border-width: 2;

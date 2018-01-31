@@ -25,12 +25,12 @@ public class RecordTextsPane extends VBox {
     private Node createNewTextLink(){
         Hyperlink link = new Hyperlink("[文章追加]");
         link.setOnAction(event -> {
-            TextForm textForm = new TextForm();
-            textForm.setCallback(new TextForm.Callback() {
+            TextEnterForm textEnterForm = new TextEnterForm();
+            textEnterForm.setCallback(new TextEnterForm.Callback() {
                 @Override
                 public void onEnter(String content) {
                     PracticeLib.enterText(visitId, content, newText ->{
-                        getChildren().remove(textForm);
+                        getChildren().remove(textEnterForm);
                         addText(newText);
                         getChildren().add(link);
                     });
@@ -38,12 +38,12 @@ public class RecordTextsPane extends VBox {
 
                 @Override
                 public void onCancel() {
-                    getChildren().remove(textForm);
+                    getChildren().remove(textEnterForm);
                     getChildren().add(link);
                 }
             });
             getChildren().remove(link);
-            getChildren().add(textForm);
+            getChildren().add(textEnterForm);
         });
         return link;
     }

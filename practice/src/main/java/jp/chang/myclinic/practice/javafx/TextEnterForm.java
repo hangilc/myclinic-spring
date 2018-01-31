@@ -6,7 +6,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-public class TextForm extends VBox {
+public class TextEnterForm extends VBox {
 
     public interface Callback {
         void onEnter(String content);
@@ -16,10 +16,11 @@ public class TextForm extends VBox {
     private TextArea textArea = new TextArea();
     private Callback callback;
 
-    public TextForm(){
+    public TextEnterForm(){
         super(4);
+        getStyleClass().addAll("record-text-form", "enter");
         setFillWidth(true);
-        textArea.setPrefHeight(160);
+        textArea.setWrapText(true);
         getChildren().addAll(
                 textArea,
                 createButtons()
