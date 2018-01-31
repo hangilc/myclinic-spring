@@ -30,4 +30,13 @@ public enum ConductKind {
         }
         return null;
     }
+
+    public static String codeToKanjiRep(int code){
+        ConductKind kind = fromCode(code);
+        if( kind == null ){
+            return "??";
+        } else {
+            return kind.getKanjiRep();
+        }
+    }
 }

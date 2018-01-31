@@ -33,7 +33,11 @@ public class Record extends VBox {
         List<RecordText> texts = visit.texts.stream().map(RecordText::new).collect(Collectors.toList());
         left.getChildren().addAll(texts.toArray(new RecordText[]{}));
         right.getChildren().addAll(
-                new RecordHoken(visit.hoken)
+                new RecordHoken(visit.hoken),
+                new RecordDrugsPane(visit.drugs),
+                new RecordShinryouPane(visit.shinryouList),
+                new RecordConductsPane(visit.conducts),
+                new RecordCharge(visit.charge)
         );
         return hbox;
     }
