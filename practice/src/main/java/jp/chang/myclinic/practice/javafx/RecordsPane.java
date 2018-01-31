@@ -7,6 +7,7 @@ public class RecordsPane extends VBox {
 
     public RecordsPane(){
         setFillWidth(true);
+        getStylesheets().add("css/Record.css");
     }
 
     public void addRecord(VisitFull2DTO visit){

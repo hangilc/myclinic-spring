@@ -5,10 +5,11 @@ import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.dateinput.PracticeLib;
@@ -57,7 +58,7 @@ public class MainPane extends BorderPane {
         PatientManip patientManip = new PatientManip();
         PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) -> {
             if( newValue != null ){
-                wrapper.getChildren().add(patientManip);
+                wrapper.getChildren().setAll(patientManip);
             } else {
                 wrapper.getChildren().clear();
             }
@@ -66,17 +67,18 @@ public class MainPane extends BorderPane {
     }
 
     private Node createRecords(){
+        ScrollPane sp = new ScrollPane();
+        sp.setFitToWidth(true);
+        VBox.setVgrow(sp, Priority.ALWAYS);
         RecordsPane recordsPane = new RecordsPane();
         PracticeEnv.INSTANCE.pageVisitsProperty().addListener((obs, oldValue, newValue) -> {
             recordsPane.getChildren().clear();
             if( newValue != null ){
-                if( newValue.size() > 0 ){
-                    VisitFull2DTO visit = newValue.get(0);
-                    recordsPane.addRecord(visit);
-                }
+                newValue.forEach(recordsPane::addRecord);
             }
         });
-        return recordsPane;
+        sp.setContent(recordsPane);
+        return sp;
     }
 
     private void doRecentVisits(){

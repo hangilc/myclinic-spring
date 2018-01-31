@@ -19,6 +19,7 @@ public class RecordTitle extends VBox {
                 DateTimeUtil.kanjiFormatter3, DateTimeUtil.kanjiFormatter4);
         Text title = new Text(text);
         textFlow.getChildren().add(title);
+        textFlow.getStyleClass().add("title-text");
         return textFlow;
     }
 }

@@ -1,7 +1,6 @@
 package jp.chang.myclinic.practice.javafx;
 
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.VisitDTO;
@@ -33,7 +32,9 @@ public class Record extends VBox {
         hbox.getChildren().addAll(left, right);
         List<RecordText> texts = visit.texts.stream().map(RecordText::new).collect(Collectors.toList());
         left.getChildren().addAll(texts.toArray(new RecordText[]{}));
-        right.getChildren().add(new Label("RIGHT"));
+        right.getChildren().addAll(
+                new RecordHoken(visit.hoken)
+        );
         return hbox;
     }
 }
