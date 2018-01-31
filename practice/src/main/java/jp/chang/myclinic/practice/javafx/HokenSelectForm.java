@@ -18,10 +18,13 @@ public class HokenSelectForm extends VBox {
     }
 
     private Callback callback;
+    private HokenSelectPane selectPane;
 
-    public HokenSelectForm(HokenDTO current, HokenDTO available){
+    public HokenSelectForm(HokenDTO available, HokenDTO current){
         super(4);
+        selectPane = new HokenSelectPane(available, current);
         getChildren().addAll(
+                selectPane,
                 createButtons()
         );
     }
