@@ -25,8 +25,11 @@ public class RecordHoken extends StackPane {
                 HokenSelectForm form = new HokenSelectForm(hoken, available);
                 form.setCallback(new HokenSelectForm.Callback() {
                     @Override
-                    public void onEnter(VisitDTO visit) {
+                    public void onEnter(VisitDTO newVisit) {
+                        newVisit.visitId = visit.visitId;
+                        PracticeLib.updateHoken(newVisit, () -> {
 
+                        });
                     }
 
                     @Override

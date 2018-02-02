@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.javafx;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.util.KouhiUtil;
 import jp.chang.myclinic.util.KoukikoureiUtil;
 import jp.chang.myclinic.util.RoujinUtil;
@@ -18,33 +19,35 @@ public class HokenSelectPane extends VBox {
 
     private interface Hoken<T> {
         T getDTO();
+
         String rep();
+
         int getIndex();
     }
 
     private static abstract class HokenBase<T> {
         private T dto;
 
-        HokenBase(T dto){
+        HokenBase(T dto) {
             this.dto = dto;
         }
 
-        public T getDTO(){
+        public T getDTO() {
             return dto;
         }
     }
 
     private static class Shahokokuho extends HokenBase<ShahokokuhoDTO> implements Hoken<ShahokokuhoDTO> {
 
-        Shahokokuho(ShahokokuhoDTO dto){
+        Shahokokuho(ShahokokuhoDTO dto) {
             super(dto);
         }
 
-        public String rep(){
+        public String rep() {
             return ShahokokuhoUtil.rep(getDTO());
         }
 
-        public int getIndex(){
+        public int getIndex() {
             return getDTO().shahokokuhoId;
         }
 
@@ -52,15 +55,15 @@ public class HokenSelectPane extends VBox {
 
     private static class Koukikourei extends HokenBase<KoukikoureiDTO> implements Hoken<KoukikoureiDTO> {
 
-        Koukikourei(KoukikoureiDTO dto){
+        Koukikourei(KoukikoureiDTO dto) {
             super(dto);
         }
 
-        public String rep(){
+        public String rep() {
             return KoukikoureiUtil.rep(getDTO());
         }
 
-        public int getIndex(){
+        public int getIndex() {
             return getDTO().koukikoureiId;
         }
 
@@ -68,15 +71,15 @@ public class HokenSelectPane extends VBox {
 
     private static class Roujin extends HokenBase<RoujinDTO> implements Hoken<RoujinDTO> {
 
-        Roujin(RoujinDTO dto){
+        Roujin(RoujinDTO dto) {
             super(dto);
         }
 
-        public String rep(){
+        public String rep() {
             return RoujinUtil.rep(getDTO());
         }
 
-        public int getIndex(){
+        public int getIndex() {
             return getDTO().roujinId;
         }
 
@@ -84,15 +87,15 @@ public class HokenSelectPane extends VBox {
 
     private static class Kouhi extends HokenBase<KouhiDTO> implements Hoken<KouhiDTO> {
 
-        Kouhi(KouhiDTO dto){
+        Kouhi(KouhiDTO dto) {
             super(dto);
         }
 
-        public String rep(){
+        public String rep() {
             return KouhiUtil.rep(getDTO());
         }
 
-        public int getIndex(){
+        public int getIndex() {
             return getDTO().kouhiId;
         }
 
@@ -102,17 +105,17 @@ public class HokenSelectPane extends VBox {
 
         private Hoken<T> hoken;
 
-        HokenCheckBox(Hoken<T> hoken){
+        HokenCheckBox(Hoken<T> hoken) {
             this.hoken = hoken;
             setText(hoken.rep());
         }
 
-        Hoken<T> getHoken(){
+        Hoken<T> getHoken() {
             return hoken;
         }
 
-        int getSelectedIndex(){
-            if( isSelected() ){
+        int getSelectedIndex() {
+            if (isSelected()) {
                 return hoken.getIndex();
             } else {
                 return 0;
@@ -128,14 +131,14 @@ public class HokenSelectPane extends VBox {
     private HokenCheckBox<RoujinDTO> roujinCheck;
     private List<HokenCheckBox<KouhiDTO>> kouhiChecks = new ArrayList<>();
 
-    public HokenSelectPane(HokenDTO available, HokenDTO current){
+    public HokenSelectPane(HokenDTO available, HokenDTO current) {
         super(2);
         this.current = current;
         currentKouhiList = Stream.of(current.kouhi1, current.kouhi2, current.kouhi3)
                 .filter(Objects::nonNull).collect(Collectors.toList());
         {
             ShahokokuhoDTO dto = available.shahokokuho;
-            if( dto != null ){
+            if (dto != null) {
                 shahokokuhoCheck = new HokenCheckBox<>(new Shahokokuho(dto));
                 shahokokuhoCheck.setSelected(isCurrentShahokokuho(dto));
                 getChildren().add(shahokokuhoCheck);
@@ -143,7 +146,7 @@ public class HokenSelectPane extends VBox {
         }
         {
             KoukikoureiDTO dto = available.koukikourei;
-            if( dto != null ){
+            if (dto != null) {
                 koukikoureiCheck = new HokenCheckBox<>(new Koukikourei(dto));
                 koukikoureiCheck.setSelected(isCurrentKoukikourei(dto));
                 getChildren().add(koukikoureiCheck);
@@ -151,50 +154,53 @@ public class HokenSelectPane extends VBox {
         }
         {
             RoujinDTO dto = available.roujin;
-            if( dto != null ){
+            if (dto != null) {
                 roujinCheck = new HokenCheckBox<>(new Roujin(dto));
                 roujinCheck.setSelected(isCurrentRoujin(dto));
                 getChildren().add(roujinCheck);
             }
         }
-        Stream.of(available.kouhi1, available.kouhi2, available.kouhi3).forEach(dto -> {
-            HokenCheckBox<KouhiDTO> check = new HokenCheckBox<>(new Kouhi(dto));
-            check.setSelected((isCurrentKouhi(dto)));
-            kouhiChecks.add(check);
-            getChildren().add(check);
-        });
+        Stream.of(available.kouhi1, available.kouhi2, available.kouhi3)
+                .filter(Objects::nonNull)
+                .forEach(dto -> {
+                    HokenCheckBox<KouhiDTO> check = new HokenCheckBox<>(new Kouhi(dto));
+                    check.setSelected((isCurrentKouhi(dto)));
+                    kouhiChecks.add(check);
+                    getChildren().add(check);
+                });
 
     }
 
-    public void storeTo(VisitDTO visit){
-        visit.shahokokuhoId = shahokokuhoCheck.getSelectedIndex();
-        visit.koukikoureiId = koukikoureiCheck.getSelectedIndex();
-        visit.roujinId = roujinCheck.getSelectedIndex();
+    public void storeTo(VisitDTO visit) {
+        visit.shahokokuhoId = shahokokuhoCheck == null ? 0 : shahokokuhoCheck.getSelectedIndex();
+        visit.koukikoureiId = koukikoureiCheck == null ? 0 : koukikoureiCheck.getSelectedIndex();
+        visit.roujinId = roujinCheck == null ? 0 : roujinCheck.getSelectedIndex();
         List<KouhiDTO> selectedKouhi = kouhiChecks.stream()
                 .filter(ch -> ch.getSelectedIndex() > 0)
                 .map(ch -> ch.getHoken().getDTO())
                 .collect(Collectors.toList());
+        PracticeUtil.storeKouhiList(visit, selectedKouhi);
     }
 
-    private boolean isCurrentShahokokuho(ShahokokuhoDTO shahokokuho){
+    private boolean isCurrentShahokokuho(ShahokokuhoDTO shahokokuho) {
         return current.shahokokuho != null && shahokokuho != null &&
                 current.shahokokuho.shahokokuhoId == shahokokuho.shahokokuhoId;
     }
 
-    private boolean isCurrentKoukikourei(KoukikoureiDTO koukikourei){
+    private boolean isCurrentKoukikourei(KoukikoureiDTO koukikourei) {
         return current.koukikourei != null && koukikourei != null &&
                 current.koukikourei.koukikoureiId == koukikourei.koukikoureiId;
     }
 
-    private boolean isCurrentRoujin(RoujinDTO roujin){
+    private boolean isCurrentRoujin(RoujinDTO roujin) {
         return current.roujin != null && roujin != null &&
                 current.roujin.roujinId == roujin.roujinId;
     }
 
-    private boolean isCurrentKouhi(KouhiDTO kouhi){
+    private boolean isCurrentKouhi(KouhiDTO kouhi) {
         int kouhiId = kouhi.kouhiId;
-        for(KouhiDTO curr: currentKouhiList){
-            if( curr.kouhiId == kouhiId ){
+        for (KouhiDTO curr : currentKouhiList) {
+            if (curr.kouhiId == kouhiId) {
                 return true;
             }
         }

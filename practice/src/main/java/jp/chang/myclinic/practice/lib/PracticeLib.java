@@ -175,4 +175,14 @@ public class PracticeLib {
                 });
     }
 
+    public static void updateHoken(VisitDTO visit, Runnable cb){
+        Service.api.updateHoken(visit)
+                .thenAccept(result -> Platform.runLater(cb))
+                .exceptionally(ex -> {
+                    logger.error("Failed to update hoken.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("保険情報の更新に失敗しました。", ex));
+                    return null;
+                });
+    }
+
 }
