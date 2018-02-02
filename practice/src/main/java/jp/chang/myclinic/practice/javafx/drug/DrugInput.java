@@ -1,14 +1,21 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.practice.lib.RadioButtonGroup;
 
 public class DrugInput extends GridPane {
 
-    private TextFlow drugName;
+    private Text drugNameLabel;
     private Label amountLabel;
     private TextField amountInput;
     private Label amountUnit;
@@ -16,6 +23,9 @@ public class DrugInput extends GridPane {
     private Label daysLabel;
     private TextField daysInput;
     private Label daysUnit;
+    private RadioButtonGroup<DrugCategory> categoryButtons;
+    private StringProperty drugName;
+    private ObjectProperty<DrugCategory> category;
 
     public DrugInput(){
         getStyleClass().add("drug-input");
@@ -24,12 +34,41 @@ public class DrugInput extends GridPane {
         setupUsage();
         setupDays();
         setupCategory();
+        drugName.setValue("アムロジピン");
+        category.setValue(DrugCategory.Naifuku);
+    }
+
+    public String getDrugName() {
+        return drugName.get();
+    }
+
+    public StringProperty drugNameProperty() {
+        return drugName;
+    }
+
+    public void setDrugName(String drugName) {
+        this.drugName.set(drugName);
+    }
+
+    public DrugCategory getCategory() {
+        return category.get();
+    }
+
+    public ObjectProperty<DrugCategory> categoryProperty() {
+        return category;
+    }
+
+    public void setCategory(DrugCategory category) {
+        this.category.set(category);
     }
 
     private void setupName(){
         add(new Label("名称"), 0, 0);
-        drugName = new TextFlow();
-        add(drugName, 1, 0);
+        drugNameLabel = new Text("");
+        TextFlow wrapper = new TextFlow();
+        wrapper.getChildren().add(drugNameLabel);
+        add(wrapper, 1, 0);
+        drugName = drugNameLabel.textProperty();
     }
 
     private void setupAmount(){
@@ -66,13 +105,12 @@ public class DrugInput extends GridPane {
 
     private void setupCategory(){
         HBox hbox = new HBox(4);
-        RadioButton naifukuRadio = new RadioButton("内服");
-        RadioButton tonpukuButton = new RadioButton("屯服");
-        RadioButton gaiyouButton = new RadioButton("外用");
-        ToggleGroup group = new ToggleGroup();
-        RadioButton[] buttons = new RadioButton[]{ naifukuRadio, tonpukuButton, gaiyouButton };
-        group.getToggles().addAll(buttons);
-        hbox.getChildren().addAll(buttons);
+        categoryButtons = new RadioButtonGroup<>();
+        categoryButtons.createRadioButton("内服", DrugCategory.Naifuku);
+        categoryButtons.createRadioButton("屯服", DrugCategory.Tonpuku);
+        categoryButtons.createRadioButton("外用", DrugCategory.Gaiyou);
+        hbox.getChildren().addAll(categoryButtons.getButtons());
+        category = categoryButtons.valueProperty();
         add(hbox, 0, 4, 2, 1);
     }
 
