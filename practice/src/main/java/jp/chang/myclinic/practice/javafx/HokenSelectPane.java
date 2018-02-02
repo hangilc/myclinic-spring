@@ -8,6 +8,7 @@ import jp.chang.myclinic.util.KoukikoureiUtil;
 import jp.chang.myclinic.util.RoujinUtil;
 import jp.chang.myclinic.util.ShahokokuhoUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -15,62 +16,164 @@ import java.util.stream.Stream;
 
 public class HokenSelectPane extends VBox {
 
+    private interface Hoken<T> {
+        T getDTO();
+        String rep();
+        int getIndex();
+    }
+
+    private static abstract class HokenBase<T> {
+        private T dto;
+
+        HokenBase(T dto){
+            this.dto = dto;
+        }
+
+        public T getDTO(){
+            return dto;
+        }
+    }
+
+    private static class Shahokokuho extends HokenBase<ShahokokuhoDTO> implements Hoken<ShahokokuhoDTO> {
+
+        Shahokokuho(ShahokokuhoDTO dto){
+            super(dto);
+        }
+
+        public String rep(){
+            return ShahokokuhoUtil.rep(getDTO());
+        }
+
+        public int getIndex(){
+            return getDTO().shahokokuhoId;
+        }
+
+    }
+
+    private static class Koukikourei extends HokenBase<KoukikoureiDTO> implements Hoken<KoukikoureiDTO> {
+
+        Koukikourei(KoukikoureiDTO dto){
+            super(dto);
+        }
+
+        public String rep(){
+            return KoukikoureiUtil.rep(getDTO());
+        }
+
+        public int getIndex(){
+            return getDTO().koukikoureiId;
+        }
+
+    }
+
+    private static class Roujin extends HokenBase<RoujinDTO> implements Hoken<RoujinDTO> {
+
+        Roujin(RoujinDTO dto){
+            super(dto);
+        }
+
+        public String rep(){
+            return RoujinUtil.rep(getDTO());
+        }
+
+        public int getIndex(){
+            return getDTO().roujinId;
+        }
+
+    }
+
+    private static class Kouhi extends HokenBase<KouhiDTO> implements Hoken<KouhiDTO> {
+
+        Kouhi(KouhiDTO dto){
+            super(dto);
+        }
+
+        public String rep(){
+            return KouhiUtil.rep(getDTO());
+        }
+
+        public int getIndex(){
+            return getDTO().kouhiId;
+        }
+
+    }
+
+    private static class HokenCheckBox<T> extends CheckBox {
+
+        private Hoken<T> hoken;
+
+        HokenCheckBox(Hoken<T> hoken){
+            this.hoken = hoken;
+            setText(hoken.rep());
+        }
+
+        Hoken<T> getHoken(){
+            return hoken;
+        }
+
+        int getSelectedIndex(){
+            if( isSelected() ){
+                return hoken.getIndex();
+            } else {
+                return 0;
+            }
+        }
+
+    }
+
     private HokenDTO current;
     private List<KouhiDTO> currentKouhiList;
-    private CheckBox shahokokuhoCheck;
-    private CheckBox koukikoureiCheck;
-    private CheckBox roujinCheck;
-    private CheckBox kouhi1Check;
-    private CheckBox kouhi2Check;
-    private CheckBox kouhi3Check;
+    private HokenCheckBox<ShahokokuhoDTO> shahokokuhoCheck;
+    private HokenCheckBox<KoukikoureiDTO> koukikoureiCheck;
+    private HokenCheckBox<RoujinDTO> roujinCheck;
+    private List<HokenCheckBox<KouhiDTO>> kouhiChecks = new ArrayList<>();
 
     public HokenSelectPane(HokenDTO available, HokenDTO current){
         super(2);
         this.current = current;
         currentKouhiList = Stream.of(current.kouhi1, current.kouhi2, current.kouhi3)
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        if( available.shahokokuho != null ){
-            String text = ShahokokuhoUtil.rep(available.shahokokuho);
-            CheckBox check = new CheckBox(text);
-            check.setSelected(isCurrentShahokokuho(available.shahokokuho));
-            getChildren().add(check);
-            shahokokuhoCheck = check;
+        {
+            ShahokokuhoDTO dto = available.shahokokuho;
+            if( dto != null ){
+                shahokokuhoCheck = new HokenCheckBox<>(new Shahokokuho(dto));
+                shahokokuhoCheck.setSelected(isCurrentShahokokuho(dto));
+                getChildren().add(shahokokuhoCheck);
+            }
         }
-        if( available.koukikourei != null ){
-            String text = KoukikoureiUtil.rep(available.koukikourei);
-            CheckBox check = new CheckBox(text);
-            check.setSelected((isCurrentKoukikourei(available.koukikourei)));
-            getChildren().add(check);
-            koukikoureiCheck = check;
+        {
+            KoukikoureiDTO dto = available.koukikourei;
+            if( dto != null ){
+                koukikoureiCheck = new HokenCheckBox<>(new Koukikourei(dto));
+                koukikoureiCheck.setSelected(isCurrentKoukikourei(dto));
+                getChildren().add(koukikoureiCheck);
+            }
         }
-        if( available.roujin != null ){
-            String text = RoujinUtil.rep(available.roujin);
-            CheckBox check = new CheckBox(text);
-            check.setSelected((isCurrentRoujin(available.roujin)));
-            getChildren().add(check);
-            roujinCheck = check;
+        {
+            RoujinDTO dto = available.roujin;
+            if( dto != null ){
+                roujinCheck = new HokenCheckBox<>(new Roujin(dto));
+                roujinCheck.setSelected(isCurrentRoujin(dto));
+                getChildren().add(roujinCheck);
+            }
         }
-        if( available.kouhi1 != null ){
-            String text = KouhiUtil.rep(available.kouhi1);
-            CheckBox check = new CheckBox(text);
-            check.setSelected((isCurrentKouhi(available.kouhi1)));
+        Stream.of(available.kouhi1, available.kouhi2, available.kouhi3).forEach(dto -> {
+            HokenCheckBox<KouhiDTO> check = new HokenCheckBox<>(new Kouhi(dto));
+            check.setSelected((isCurrentKouhi(dto)));
+            kouhiChecks.add(check);
             getChildren().add(check);
-            kouhi1Check = check;
-        }
-        if( available.kouhi2 != null ){
-            String text = KouhiUtil.rep(available.kouhi2);
-            CheckBox check = new CheckBox(text);
-            check.setSelected((isCurrentKouhi(available.kouhi2)));
-            getChildren().add(check);
-            kouhi2Check = check;
-        }
-        if( available.kouhi3 != null ){
-            String text = KouhiUtil.rep(available.kouhi3);
-            CheckBox check = new CheckBox(text);
-            check.setSelected((isCurrentKouhi(available.kouhi3)));
-            getChildren().add(check);
-            kouhi3Check = check;
-        }
+        });
+
+    }
+
+    public void storeTo(VisitDTO visit){
+        visit.shahokokuhoId = shahokokuhoCheck.getSelectedIndex();
+        visit.koukikoureiId = koukikoureiCheck.getSelectedIndex();
+        visit.roujinId = roujinCheck.getSelectedIndex();
+        List<KouhiDTO> selectedKouhi = kouhiChecks.stream()
+                .filter(ch -> ch.getSelectedIndex() > 0)
+                .map(ch -> ch.getHoken().getDTO())
+                .collect(Collectors.toList());
     }
 
     private boolean isCurrentShahokokuho(ShahokokuhoDTO shahokokuho){
