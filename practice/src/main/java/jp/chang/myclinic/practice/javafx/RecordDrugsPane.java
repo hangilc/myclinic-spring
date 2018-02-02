@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.javafx;
 import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.practice.javafx.drug.DrugMenu;
 
 import java.util.List;
 

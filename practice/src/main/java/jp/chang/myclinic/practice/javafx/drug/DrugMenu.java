@@ -1,8 +1,7 @@
-package jp.chang.myclinic.practice.javafx;
+package jp.chang.myclinic.practice.javafx.drug;
 
 import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -26,7 +25,8 @@ public class DrugMenu extends VBox {
         Hyperlink mainMenu = new Hyperlink("[処方]");
         Hyperlink auxMenu = new Hyperlink("[+]");
         mainMenu.setOnAction(event -> {
-            showWorkarea(new Label("workarea"));
+            EnterDrugForm form = new EnterDrugForm();
+            showWorkarea(form);
         });
         hbox.getChildren().addAll(mainMenu, auxMenu);
         return hbox;

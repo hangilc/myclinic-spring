@@ -3,7 +3,7 @@
 }
 
 .main-column {
-    -fx-pref-width: 360;
+    -fx-pref-width: 680;
     -fx-pref-height: 400;
 }
 
@@ -55,4 +55,17 @@
     -fx-font-weight: bold;
     -fx-background-color: #ccc;
     -fx-padding: 2;
+}
+
+.drug-input {
+    -fx-hgap: 4;
+    -fx-vgap: 2;
+}
+
+.drug-input .amount-input {
+    -fx-pref-width: 4em;
+}
+
+.drug-input .days-input {
+    -fx-pref-width: 4em;
 }
