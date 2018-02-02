@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.javafx.drug;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -12,6 +13,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DrugInput extends GridPane {
 
@@ -23,6 +27,7 @@ public class DrugInput extends GridPane {
     private Label daysLabel;
     private TextField daysInput;
     private Label daysUnit;
+    private List<? extends Node> daysList = new ArrayList<>();
     private RadioButtonGroup<DrugCategory> categoryButtons;
     private StringProperty drugName;
     private ObjectProperty<DrugCategory> category;
@@ -101,6 +106,7 @@ public class DrugInput extends GridPane {
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getChildren().addAll(daysInput, daysUnit);
         add(hbox, 1, 3);
+        daysList.addAll(daysLabel, hbox);
     }
 
     private void setupCategory(){
@@ -111,7 +117,39 @@ public class DrugInput extends GridPane {
         categoryButtons.createRadioButton("外用", DrugCategory.Gaiyou);
         hbox.getChildren().addAll(categoryButtons.getButtons());
         category = categoryButtons.valueProperty();
+        category.addListener((obs, oldValue, newValue) -> adaptToCategory());
         add(hbox, 0, 4, 2, 1);
+    }
+
+    private void adaptToCategory(){
+        DrugCategory cat = category.getValue();
+        if( cat != null ){
+            switch(cat){
+                case Naifuku: {
+                    amountLabel.setText("用量");
+                    daysLabel.setText("日数");
+                    daysUnit.setText("日分");
+                    setDaysVisible(true);
+                    break;
+                }
+                case Tonpuku: {
+                    amountLabel.setText("一回");
+                    daysLabel.setText("回数");
+                    daysUnit.setText("回分");
+                    setDaysVisible(true);
+                    break;
+                }
+                case Gaiyou: {
+                    amountLabel.setText("用量");
+                    setDaysVisible(false);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void setDaysVisible(boolean visible){
+
     }
 
 }
