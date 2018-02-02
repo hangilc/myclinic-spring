@@ -175,13 +175,27 @@ public class PracticeLib {
                 });
     }
 
-    public static void updateHoken(VisitDTO visit, Runnable cb){
-        Service.api.updateHoken(visit)
-                .thenAccept(result -> Platform.runLater(cb))
+    public static void updateHoken(VisitDTO visit, Consumer<HokenDTO> cb){
+        apiUpdateHoken(visit)
+                .thenCompose(result -> apiGetHoken(visit.visitId))
+                .thenAccept(hoken -> Platform.runLater(() -> cb.accept(hoken)));
+    }
+
+    public static CompletableFuture<Boolean> apiUpdateHoken(VisitDTO visit){
+        return Service.api.updateHoken(visit)
                 .exceptionally(ex -> {
                     logger.error("Failed to update hoken.", ex);
                     Platform.runLater(() -> GuiUtil.alertException("保険情報の更新に失敗しました。", ex));
-                    return null;
+                    return ex;
+                });
+    }
+
+    public static CompletableFuture<HokenDTO> apiGetHoken(int visitId){
+        return Service.api.getHoken(visitId)
+                .exceptionally(ex -> {
+                    logger.error("Failed to get hoken.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("保険情報の取得に失敗しました。", ex));
+                    return ex;
                 });
     }
 

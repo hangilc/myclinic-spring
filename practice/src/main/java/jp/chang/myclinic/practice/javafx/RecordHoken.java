@@ -27,7 +27,7 @@ public class RecordHoken extends StackPane {
                     @Override
                     public void onEnter(VisitDTO newVisit) {
                         newVisit.visitId = visit.visitId;
-                        PracticeLib.updateHoken(newVisit, () -> {
+                        PracticeLib.updateHoken(newVisit, newHoken -> {
 
                         });
                     }
