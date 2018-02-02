@@ -165,8 +165,8 @@ public class PracticeLib {
                 });
     }
 
-    public static void listAvailableHoken(VisitDTO visit, Consumer<HokenDTO> cb){
-        Service.api.listAvailableHoken(visit.patientId, visit.visitedAt)
+    public static void listAvailableHoken(int patientId, String visitedAt, Consumer<HokenDTO> cb){
+        Service.api.listAvailableHoken(patientId, visitedAt)
                 .thenAccept(hoken -> Platform.runLater(() -> cb.accept(hoken)))
                 .exceptionally(ex -> {
                     logger.error("Failed list available hoken.", ex);
@@ -183,19 +183,21 @@ public class PracticeLib {
 
     public static CompletableFuture<Boolean> apiUpdateHoken(VisitDTO visit){
         return Service.api.updateHoken(visit)
-                .exceptionally(ex -> {
-                    logger.error("Failed to update hoken.", ex);
-                    Platform.runLater(() -> GuiUtil.alertException("保険情報の更新に失敗しました。", ex));
-                    return ex;
+                .whenComplete((v, ex) -> {
+                    if( ex != null ) {
+                        logger.error("Failed to update hoken.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException("保険情報の更新に失敗しました。", ex));
+                    }
                 });
     }
 
     public static CompletableFuture<HokenDTO> apiGetHoken(int visitId){
         return Service.api.getHoken(visitId)
-                .exceptionally(ex -> {
-                    logger.error("Failed to get hoken.", ex);
-                    Platform.runLater(() -> GuiUtil.alertException("保険情報の取得に失敗しました。", ex));
-                    return ex;
+                .whenComplete((v, ex) -> {
+                    if( ex != null ){
+                        logger.error("Failed to get hoken.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException("保険情報の取得に失敗しました。", ex));
+                    }
                 });
     }
 

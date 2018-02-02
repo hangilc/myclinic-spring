@@ -11,25 +11,32 @@ import jp.chang.myclinic.util.HokenUtil;
 
 public class RecordHoken extends StackPane {
 
-    private VisitDTO visit;
+    private int visitId;
+    private int patientId;
+    private String visitedAt;
 
     public RecordHoken(HokenDTO hoken, VisitDTO visit){
-        this.visit = visit;
+        this.visitId = visit.visitId;
+        this.patientId = visit.patientId;
+        this.visitedAt = visit.visitedAt;
+        showDisp(hoken);
+    }
+
+    private void showDisp(HokenDTO hoken){
+        getChildren().clear();
         getChildren().add(createDisp(hoken));
     }
 
     private Node createDisp(HokenDTO hoken){
         TextFlow disp = new TextFlow();
         disp.setOnMouseClicked(event -> {
-            PracticeLib.listAvailableHoken(visit, available -> {
-                HokenSelectForm form = new HokenSelectForm(hoken, available);
+            PracticeLib.listAvailableHoken(patientId, visitedAt, (HokenDTO available) -> {
+                HokenSelectForm form = new HokenSelectForm(available, hoken);
                 form.setCallback(new HokenSelectForm.Callback() {
                     @Override
                     public void onEnter(VisitDTO newVisit) {
-                        newVisit.visitId = visit.visitId;
-                        PracticeLib.updateHoken(newVisit, newHoken -> {
-
-                        });
+                        newVisit.visitId = visitId;
+                        PracticeLib.updateHoken(newVisit, newHoken -> showDisp(newHoken));
                     }
 
                     @Override
