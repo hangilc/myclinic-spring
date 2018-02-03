@@ -7,10 +7,12 @@ import javafx.scene.layout.VBox;
 public class EnterDrugForm extends VBox {
 
     public EnterDrugForm(){
+        super(4);
         getStyleClass().add("form");
         getChildren().addAll(
                 createTitle(),
-                createDisp()
+                createDisp(),
+                createSearch()
         );
     }
 
@@ -23,6 +25,10 @@ public class EnterDrugForm extends VBox {
 
     private Node createDisp(){
         return new DrugInput();
+    }
+
+    private Node createSearch(){
+        return new DrugSearch();
     }
 
 }

@@ -19,17 +19,15 @@ import java.util.List;
 
 public class DrugInput extends GridPane {
 
-    private Text drugNameLabel;
     private Label amountLabel;
-    private TextField amountInput;
-    private Label amountUnit;
-    private TextField usageInput;
     private Label daysLabel;
-    private TextField daysInput;
     private Label daysUnit;
     private List<Node> daysList = new ArrayList<>();
-    private RadioButtonGroup<DrugCategory> categoryButtons;
     private StringProperty drugName;
+    private StringProperty amount;
+    private StringProperty amountUnit;
+    private StringProperty usage;
+    private StringProperty days;
     private ObjectProperty<DrugCategory> category;
 
     public DrugInput(){
@@ -39,8 +37,6 @@ public class DrugInput extends GridPane {
         setupUsage();
         setupDays();
         setupCategory();
-        drugName.setValue("アムロジピン");
-        category.setValue(DrugCategory.Naifuku);
     }
 
     public String getDrugName() {
@@ -67,9 +63,57 @@ public class DrugInput extends GridPane {
         this.category.set(category);
     }
 
+    public String getAmount() {
+        return amount.get();
+    }
+
+    public StringProperty amountProperty() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount.set(amount);
+    }
+
+    public String getAmountUnit() {
+        return amountUnit.get();
+    }
+
+    public StringProperty amountUnitProperty() {
+        return amountUnit;
+    }
+
+    public void setAmountUnit(String amountUnit) {
+        this.amountUnit.set(amountUnit);
+    }
+
+    public String getUsage() {
+        return usage.get();
+    }
+
+    public StringProperty usageProperty() {
+        return usage;
+    }
+
+    public void setUsage(String usage) {
+        this.usage.set(usage);
+    }
+
+    public String getDays() {
+        return days.get();
+    }
+
+    public StringProperty daysProperty() {
+        return days;
+    }
+
+    public void setDays(String days) {
+        this.days.set(days);
+    }
+
     private void setupName(){
         add(new Label("名称"), 0, 0);
-        drugNameLabel = new Text("");
+        Text drugNameLabel = new Text("");
         TextFlow wrapper = new TextFlow();
         wrapper.getChildren().add(drugNameLabel);
         add(wrapper, 1, 0);
@@ -78,28 +122,31 @@ public class DrugInput extends GridPane {
 
     private void setupAmount(){
         amountLabel = new Label("容量");
-        amountInput = new TextField();
+        TextField amountInput = new TextField();
         amountInput.getStyleClass().add("amount-input");
-        amountUnit = new Label("");
+        Label amountUnitInput = new Label("");
         add(amountLabel, 0, 1);
         HBox hbox = new HBox(4);
-        hbox.getChildren().addAll(amountInput, amountUnit);
+        hbox.getChildren().addAll(amountInput, amountUnitInput);
         add(hbox, 1, 1);
+        amount = amountInput.textProperty();
+        amountUnit = amountUnitInput.textProperty();
     }
 
     private void setupUsage(){
         add(new Label("用法"), 0, 2);
-        usageInput = new TextField();
+        TextField usageInput = new TextField();
         Hyperlink exampleLink = new Hyperlink("例");
         HBox hbox = new HBox(4);
         hbox.getChildren().addAll(usageInput, exampleLink);
         add(hbox, 1, 2);
+        usage = usageInput.textProperty();
     }
 
     private void setupDays(){
         daysLabel = new Label("日数");
         add(daysLabel, 0, 3);
-        daysInput = new TextField();
+        TextField daysInput = new TextField();
         daysInput.getStyleClass().add("days-input");
         daysUnit = new Label("日分");
         HBox hbox = new HBox(4);
@@ -108,11 +155,12 @@ public class DrugInput extends GridPane {
         add(hbox, 1, 3);
         daysList.add(daysLabel);
         daysList.add(hbox);
+        days = daysInput.textProperty();
     }
 
     private void setupCategory(){
         HBox hbox = new HBox(4);
-        categoryButtons = new RadioButtonGroup<>();
+        RadioButtonGroup<DrugCategory> categoryButtons = new RadioButtonGroup<>();
         categoryButtons.createRadioButton("内服", DrugCategory.Naifuku);
         categoryButtons.createRadioButton("屯服", DrugCategory.Tonpuku);
         categoryButtons.createRadioButton("外用", DrugCategory.Gaiyou);
