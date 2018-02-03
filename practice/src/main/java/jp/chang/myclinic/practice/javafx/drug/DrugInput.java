@@ -27,7 +27,7 @@ public class DrugInput extends GridPane {
     private Label daysLabel;
     private TextField daysInput;
     private Label daysUnit;
-    private List<? extends Node> daysList = new ArrayList<>();
+    private List<Node> daysList = new ArrayList<>();
     private RadioButtonGroup<DrugCategory> categoryButtons;
     private StringProperty drugName;
     private ObjectProperty<DrugCategory> category;
@@ -106,7 +106,8 @@ public class DrugInput extends GridPane {
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getChildren().addAll(daysInput, daysUnit);
         add(hbox, 1, 3);
-        daysList.addAll(daysLabel, hbox);
+        daysList.add(daysLabel);
+        daysList.add(hbox);
     }
 
     private void setupCategory(){
@@ -149,7 +150,7 @@ public class DrugInput extends GridPane {
     }
 
     private void setDaysVisible(boolean visible){
-
+        daysList.forEach(n -> n.setVisible(visible));
     }
 
 }
