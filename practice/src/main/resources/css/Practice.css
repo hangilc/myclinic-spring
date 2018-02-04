@@ -73,5 +73,5 @@
 .drug-enter-form .commands {
     -fx-border-color: #ccc;
     -fx-border-width: 1;
-    -fx-border-padding: 4;
+    -fx-padding: 4;
 }

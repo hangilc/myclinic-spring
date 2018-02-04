@@ -4,9 +4,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
@@ -15,6 +14,7 @@ import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DrugInput extends GridPane {
@@ -153,8 +153,25 @@ public class DrugInput extends GridPane {
         Hyperlink exampleLink = new Hyperlink("例");
         HBox hbox = new HBox(4);
         hbox.getChildren().addAll(usageInput, exampleLink);
+        exampleLink.setOnMousePressed(event -> doExample(event, exampleLink));
         add(hbox, 1, 2);
         usage = usageInput.textProperty();
+    }
+
+    private void doExample(MouseEvent event, Node anchor){
+        ContextMenu contextMenu = new ContextMenu();
+        List<String> examples = Arrays.asList(
+                "分１　朝食後",
+                "分２　朝夕食後",
+                "分３　毎食後",
+                "分１　寝る前"
+        );
+        examples.forEach(ex -> {
+            MenuItem item = new MenuItem(ex);
+            item.setOnAction(ev -> setUsage(item.getText()));
+            contextMenu.getItems().add(item);
+        });
+        contextMenu.show(anchor, event.getScreenX(), event.getScreenY());
     }
 
     private void setupDays(){
