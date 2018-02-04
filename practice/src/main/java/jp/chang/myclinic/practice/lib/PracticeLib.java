@@ -7,6 +7,7 @@ import jp.chang.myclinic.practice.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -198,6 +199,26 @@ public class PracticeLib {
                         logger.error("Failed to get hoken.", ex);
                         Platform.runLater(() -> GuiUtil.alertException("保険情報の取得に失敗しました。", ex));
                     }
+                });
+    }
+
+    public static void searchIyakuhinMaster(String text, Consumer<List<IyakuhinMasterDTO>> cb){
+        Service.api.searchIyakuhinMaster(text, LocalDate.now().toString())
+                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
+                .exceptionally(ex -> {
+                    logger.error("Failed search iyakuhin master.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("医薬品マスターの検索に失敗しました。", ex));
+                    return null;
+                });
+    }
+
+    public static void searchPrescExample(String text, Consumer<List<PrescExampleFullDTO>> cb){
+        Service.api.searchPrescExample(text)
+                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
+                .exceptionally(ex -> {
+                    logger.error("Failed search presc example.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("約束処方の検索に失敗しました。", ex));
+                    return null;
                 });
     }
 
