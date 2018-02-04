@@ -232,4 +232,27 @@ public class PracticeLib {
                 });
     }
 
+    public static void enterDrug(DrugDTO drug, Consumer<DrugFullDTO> cb) {
+        apiEnterDrug(drug)
+                .thenCompose(PracticeLib::apiGetDrugFull)
+                .thenAccept(drugFull -> Platform.runLater(() -> cb.accept(drugFull)));
+    }
+
+    public static CompletableFuture<Integer> apiEnterDrug(DrugDTO drug){
+        return Service.api.enterDrug(drug)
+                .whenComplete((drugId, ex) -> {
+                    if( ex != null ){
+                        logger.error("Failed to enter drug.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException("新規処方の入力に失敗しました。", ex));
+                    }
+                });
+    }
+
+    public static CompletableFuture<DrugFullDTO> apiGetDrugFull(int drugId){
+        return Service.api.getDrugFull(drugId)
+                .whenComplete((drug, ex) -> {
+                    logger.error("Failed to get drug full.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("薬剤情報の取得に失敗しました。", ex));
+                });
+    }
 }

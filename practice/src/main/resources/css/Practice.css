@@ -69,3 +69,9 @@
 .drug-input .days-input {
     -fx-pref-width: 4em;
 }
+
+.drug-enter-form .commands {
+    -fx-border-color: #ccc;
+    -fx-border-width: 1;
+    -fx-border-padding: 4;
+}

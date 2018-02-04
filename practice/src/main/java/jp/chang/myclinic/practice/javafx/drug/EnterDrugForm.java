@@ -1,23 +1,43 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.practice.lib.GuiUtil;
+import jp.chang.myclinic.practice.lib.PracticeLib;
 
 public class EnterDrugForm extends VBox {
 
-    private int patientId;
-    private DrugInputModel inputModel = new DrugInputModel();
+    public interface Callback {
+        void onEnter(DrugFullDTO drug);
+        void onClose();
+    }
 
-    public EnterDrugForm(int patientId){
+    private int patientId;
+    private int visitId;
+    private DrugInputModel inputModel = new DrugInputModel();
+    private Callback callback;
+
+    public EnterDrugForm(int patientId, int visitId){
         super(4);
         this.patientId = patientId;
+        this.visitId = visitId;
+        getStyleClass().add("drug-enter-form");
         getStyleClass().add("form");
         getChildren().addAll(
                 createTitle(),
                 createDisp(),
+                createButtons(),
                 createSearch()
         );
+    }
+
+    public void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     private Node createTitle(){
@@ -31,6 +51,39 @@ public class EnterDrugForm extends VBox {
         DrugInput drugInput = new DrugInput();
         DrugCommon.bindDrugInputAndModel(drugInput, inputModel);
         return drugInput;
+    }
+
+    private Node createButtons(){
+        VBox vbox = new VBox(4);
+        vbox.getStyleClass().add("commands");
+        {
+            HBox hbox = new HBox(4);
+            Button enterButton = new Button("入力");
+            Button closeButton = new Button("閉じる");
+            Hyperlink clearLink = new Hyperlink("クリア");
+            enterButton.setOnAction(event -> {
+                inputModel.convertToDrug(visitId, (drug, err) -> {
+                    if( err != null ){
+                        GuiUtil.alertError(String.join("\n", err));
+                    } else {
+                        PracticeLib.enterDrug(drug, newDrug -> {
+                            if( callback != null ){
+                                callback.onEnter(newDrug);
+                            }
+                        });
+                    }
+                });
+            });
+            closeButton.setOnAction(event -> {
+                if( callback != null ){
+                    callback.onClose();
+                }
+            });
+            clearLink.setOnAction(event -> inputModel.clear());
+            hbox.getChildren().addAll(enterButton, closeButton, clearLink);
+            vbox.getChildren().add(hbox);
+        }
+        return vbox;
     }
 
     private Node createSearch(){

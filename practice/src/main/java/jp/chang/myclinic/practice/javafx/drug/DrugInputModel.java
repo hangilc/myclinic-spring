@@ -5,6 +5,11 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.dto.DrugDTO;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
 
 public class DrugInputModel {
     private int iyakuhincode;
@@ -106,5 +111,58 @@ public class DrugInputModel {
 
     public void setComment(String comment) {
         this.comment.set(comment);
+    }
+
+    public void clear(){
+        setIyakuhincode(0);
+        setAmount("");
+        setAmountUnit("");
+        setUsage("");
+        setDays("");
+        setComment("");
+    }
+
+    public void convertToDrug(int visitId, BiConsumer<DrugDTO, List<String>> cb){
+        List<String> err = new ArrayList<>();
+        DrugDTO drug = new DrugDTO();
+        if( getIyakuhincode() > 0 ){
+            drug.iyakuhincode = getIyakuhincode();
+        } else {
+            err.add("医薬品が指定されていません。");
+        }
+        try {
+            drug.amount = Double.parseDouble(getAmount());
+        } catch(NumberFormatException ex){
+            err.add("用量の入力が適切でありません。");
+        }
+        if( !getUsage().isEmpty() ){
+            drug.usage = getUsage();
+        } else {
+            err.add("用法が入力されていません。");
+        }
+        if( getCategory() != null ){
+            drug.category = getCategory().getCode();
+        } else {
+            err.add("Drug category is not specified.");
+        }
+        try {
+            if( getCategory() == DrugCategory.Gaiyou ){
+                drug.days = 1;
+            } else {
+                drug.days = Integer.parseInt(getDays());
+            }
+        } catch(NumberFormatException ex){
+            err.add("日数・回数の入力が不適切です。");
+        }
+        if( visitId > 0 ){
+            drug.visitId = visitId;
+        } else {
+            err.add("Invalid visitId.");
+        }
+        if( err.size() > 0 ){
+            cb.accept(null, err);
+        } else {
+            cb.accept(drug, null);
+        }
     }
 }
