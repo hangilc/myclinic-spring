@@ -15,13 +15,19 @@ public class DrugCommon {
         drugInput.commentProperty().bindBidirectional(model.commentProperty());
     }
 
-    public static void stuffMasterInto(IyakuhinMasterDTO master, DrugInputModel model){
+    public static void stuffMasterInto(IyakuhinMasterDTO master, DrugInputModel model, InputConstraints constraints){
         model.setIyakuhincode(master.iyakuhincode);
         model.setDrugName(master.name);
-        model.setAmount("");
+        if( !constraints.isAmountFixed() ) {
+            model.setAmount("");
+        }
         model.setAmountUnit(master.unit);
-        model.setUsage("");
-        model.setDays("");
+        if( !constraints.isUsageFixed() ) {
+            model.setUsage("");
+        }
+        if( !constraints.isDaysFixed() ) {
+            model.setDays("");
+        }
         model.setCategory(PracticeUtil.zaikeiToCategory(master.zaikei));
         model.setComment("");
    }

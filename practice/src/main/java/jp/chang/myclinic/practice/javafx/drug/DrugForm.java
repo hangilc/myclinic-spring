@@ -6,24 +6,18 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.practice.lib.GuiUtil;
-import jp.chang.myclinic.practice.lib.PracticeLib;
 
-public class EnterDrugForm extends VBox {
-
-    public interface Callback {
-        void onEnter(DrugFullDTO drug);
-        void onClose();
-    }
+public class DrugForm extends VBox {
 
     private int patientId;
     private int visitId;
     private String at;
     private DrugInputModel inputModel = new DrugInputModel();
-    private Callback callback;
+    private InputConstraints inputConstraints = new InputConstraints();
 
-    public EnterDrugForm(int patientId, int visitId, String at){
+    public DrugForm(int patientId, int visitId, String at){
         super(4);
         this.patientId = patientId;
         this.visitId = visitId;
@@ -38,10 +32,6 @@ public class EnterDrugForm extends VBox {
         );
     }
 
-    public void setCallback(Callback callback){
-        this.callback = callback;
-    }
-
     private Node createTitle(){
         Label title = new Label("新規処方の入力");
         title.setMaxWidth(Double.MAX_VALUE);
@@ -49,10 +39,26 @@ public class EnterDrugForm extends VBox {
         return title;
     }
 
+    protected InputConstraints getInputConstraints() {
+        return inputConstraints;
+    }
+
+    protected DrugInput createDrugInput(){
+        return new DrugInput();
+    }
+
     private Node createDisp(){
-        DrugInput drugInput = new DrugInput();
+        DrugInput drugInput = createDrugInput();
         DrugCommon.bindDrugInputAndModel(drugInput, inputModel);
         return drugInput;
+    }
+
+    protected void onEnter(DrugDTO drug){
+
+    }
+
+    protected void onClose(){
+
     }
 
     private Node createButtons(){
@@ -68,19 +74,11 @@ public class EnterDrugForm extends VBox {
                     if( err != null ){
                         GuiUtil.alertError(String.join("\n", err));
                     } else {
-                        PracticeLib.enterDrug(drug, newDrug -> {
-                            if( callback != null ){
-                                callback.onEnter(newDrug);
-                            }
-                        });
+                        onEnter(drug);
                     }
                 });
             });
-            closeButton.setOnAction(event -> {
-                if( callback != null ){
-                    callback.onClose();
-                }
-            });
+            closeButton.setOnAction(event -> onClose());
             clearLink.setOnAction(event -> inputModel.clear());
             hbox.getChildren().addAll(enterButton, closeButton, clearLink);
             vbox.getChildren().add(hbox);
@@ -93,7 +91,7 @@ public class EnterDrugForm extends VBox {
         drugSearch.setCallback(new DrugSearch.Callback() {
             @Override
             public void onSelect(SearchResultModel searchResultModel) {
-                searchResultModel.stuffInto(inputModel);
+                searchResultModel.stuffInto(inputModel, inputConstraints);
             }
         });
         return drugSearch;

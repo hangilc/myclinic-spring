@@ -16,8 +16,8 @@ class MasterSearchResult implements SearchResultModel {
     }
 
     @Override
-    public void stuffInto(DrugInputModel model) {
-        DrugCommon.stuffMasterInto(master, model);
+    public void stuffInto(DrugInputModel model, InputConstraints constraints) {
+        DrugCommon.stuffMasterInto(master, model, constraints);
     }
 
 }

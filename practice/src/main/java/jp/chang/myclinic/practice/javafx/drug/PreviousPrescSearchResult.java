@@ -22,18 +22,24 @@ class PreviousPrescSearchResult implements SearchResultModel {
     }
 
     @Override
-    public void stuffInto(DrugInputModel model) {
+    public void stuffInto(DrugInputModel model, InputConstraints constraints) {
         int origIyakuhincode = drugFull.master.iyakuhincode;
         PracticeLib.resolveIyakuhinMaster(origIyakuhincode, at, master -> {
-            DrugCommon.stuffMasterInto(master, model);
+            DrugCommon.stuffMasterInto(master, model, constraints);
             DrugDTO drug = drugFull.drug;
-            model.setAmount("" + drug.amount);
-            model.setUsage(drug.usage);
+            if( !constraints.isAmountFixed() ) {
+                model.setAmount("" + drug.amount);
+            }
+            if( !constraints.isUsageFixed() ) {
+                model.setUsage(drug.usage);
+            }
             DrugCategory category = DrugCategory.fromCode(drug.category);
             if( category != null ) {
                 model.setCategory(category);
                 if( category != DrugCategory.Gaiyou ) {
-                    model.setDays("" + drug.days);
+                    if( !constraints.isDaysFixed() ) {
+                        model.setDays("" + drug.days);
+                    }
                 }
             }
             model.setComment("");

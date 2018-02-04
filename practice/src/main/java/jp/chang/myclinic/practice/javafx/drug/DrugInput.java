@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.javafx.drug;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -177,15 +178,19 @@ public class DrugInput extends GridPane {
     private void setupDays(){
         daysLabel = new Label("日数：");
         add(daysLabel, 0, 3);
+        HBox hbox = new HBox(4);
+        hbox.setAlignment(Pos.CENTER_LEFT);
+        setupDaysInputArea(hbox.getChildren());
+        daysList.add(daysLabel);
+        daysList.add(hbox);
+        add(hbox, 1, 3);
+    }
+
+    protected void setupDaysInputArea(ObservableList<Node> children){
         TextField daysInput = new TextField();
         daysInput.getStyleClass().add("days-input");
         daysUnit = new Label("日分");
-        HBox hbox = new HBox(4);
-        hbox.setAlignment(Pos.CENTER_LEFT);
-        hbox.getChildren().addAll(daysInput, daysUnit);
-        add(hbox, 1, 3);
-        daysList.add(daysLabel);
-        daysList.add(hbox);
+        children.addAll(daysInput, daysUnit);
         days = daysInput.textProperty();
     }
 
