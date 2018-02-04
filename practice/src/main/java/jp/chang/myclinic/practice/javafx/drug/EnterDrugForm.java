@@ -19,13 +19,15 @@ public class EnterDrugForm extends VBox {
 
     private int patientId;
     private int visitId;
+    private String at;
     private DrugInputModel inputModel = new DrugInputModel();
     private Callback callback;
 
-    public EnterDrugForm(int patientId, int visitId){
+    public EnterDrugForm(int patientId, int visitId, String at){
         super(4);
         this.patientId = patientId;
         this.visitId = visitId;
+        this.at = at;
         getStyleClass().add("drug-enter-form");
         getStyleClass().add("form");
         getChildren().addAll(
@@ -87,7 +89,7 @@ public class EnterDrugForm extends VBox {
     }
 
     private Node createSearch(){
-        DrugSearch drugSearch = new DrugSearch(patientId);
+        DrugSearch drugSearch = new DrugSearch(patientId, at);
         drugSearch.setCallback(new DrugSearch.Callback() {
             @Override
             public void onSelect(SearchResultModel searchResultModel) {

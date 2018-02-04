@@ -3,14 +3,17 @@ package jp.chang.myclinic.practice.javafx.drug;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.util.DrugUtil;
 
 class PreviousPrescSearchResult implements SearchResultModel {
 
     private DrugFullDTO drugFull;
+    private String at;
 
-    PreviousPrescSearchResult(DrugFullDTO drug){
+    PreviousPrescSearchResult(DrugFullDTO drug, String at){
         this.drugFull = drug;
+        this.at = at;
     }
 
     @Override
@@ -20,18 +23,20 @@ class PreviousPrescSearchResult implements SearchResultModel {
 
     @Override
     public void stuffInto(DrugInputModel model) {
-        DrugCommon.stuffMasterInto(drugFull.master, model);
-        DrugDTO drug = drugFull.drug;
-        model.setAmount("" + drug.amount);
-        model.setUsage(drug.usage);
-        DrugCategory category = DrugCategory.fromCode(drug.category);
-        if( category != null ) {
-            model.setCategory(category);
-            if( category != DrugCategory.Gaiyou ) {
-                model.setDays("" + drug.days);
+        int origIyakuhincode = drugFull.master.iyakuhincode;
+        PracticeLib.resolveIyakuhinMaster(origIyakuhincode, at, master -> {
+            DrugCommon.stuffMasterInto(master, model);
+            DrugDTO drug = drugFull.drug;
+            model.setAmount("" + drug.amount);
+            model.setUsage(drug.usage);
+            DrugCategory category = DrugCategory.fromCode(drug.category);
+            if( category != null ) {
+                model.setCategory(category);
+                if( category != DrugCategory.Gaiyou ) {
+                    model.setDays("" + drug.days);
+                }
             }
-        }
-        model.setComment("");
-
+            model.setComment("");
+        });
     }
 }

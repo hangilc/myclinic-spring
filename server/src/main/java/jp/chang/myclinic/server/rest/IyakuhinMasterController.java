@@ -30,6 +30,9 @@ public class IyakuhinMasterController {
         if( atString.equals("") ){
             at = LocalDate.now();
         } else {
+            if( atString.length() > 10 ){
+                atString = atString.substring(0, 10);
+            }
             at = LocalDate.parse(atString);
         }
         return dbGateway.searchIyakuhinByName(text, at);

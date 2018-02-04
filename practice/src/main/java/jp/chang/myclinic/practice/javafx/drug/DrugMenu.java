@@ -10,12 +10,14 @@ public class DrugMenu extends VBox {
 
     private int patientId;
     private int visitId;
+    private String at;
     private StackPane workarea = new StackPane();
 
-    public DrugMenu(int patientId, int visitId){
+    public DrugMenu(int patientId, int visitId, String at){
         super(4);
         this.patientId = patientId;
         this.visitId = visitId;
+        this.at = at;
         workarea.setVisible(false);
         workarea.setManaged(false);
         getChildren().addAll(
@@ -29,7 +31,7 @@ public class DrugMenu extends VBox {
         Hyperlink mainMenu = new Hyperlink("[処方]");
         Hyperlink auxMenu = new Hyperlink("[+]");
         mainMenu.setOnAction(event -> {
-            EnterDrugForm form = new EnterDrugForm(patientId, visitId);
+            EnterDrugForm form = new EnterDrugForm(patientId, visitId, at);
             showWorkarea(form);
         });
         hbox.getChildren().addAll(mainMenu, auxMenu);

@@ -11,9 +11,9 @@ public class RecordDrugsPane extends VBox {
 
     private int index = 1;
 
-    public RecordDrugsPane(List<DrugFullDTO> drugs, int patientId, int visitId){
+    public RecordDrugsPane(List<DrugFullDTO> drugs, int patientId, int visitId, String at){
         setAlignment(Pos.TOP_LEFT);
-        DrugMenu menu = new DrugMenu(patientId, visitId);
+        DrugMenu menu = new DrugMenu(patientId, visitId, at);
         getChildren().add(menu);
         drugs.forEach(this::addDrug);
     }

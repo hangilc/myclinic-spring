@@ -18,14 +18,16 @@ public class DrugSearch extends VBox {
     }
 
     private int patientId;
+    private String at;
     private TextField searchTextInput;
     private RadioButtonGroup<DrugSearchMode> modeGroup;
     private DrugSearchResult searchResult;
     private Callback callback;
 
-    public DrugSearch(int patientId){
+    public DrugSearch(int patientId, String at){
         super(4);
         this.patientId = patientId;
+        this.at = at;
         getChildren().addAll(
                 createSearchInput(),
                 createMode(),
@@ -67,7 +69,7 @@ public class DrugSearch extends VBox {
     private void doSearch(){
         String text = searchTextInput.getText();
         DrugSearchMode mode = modeGroup.getValue();
-        if( mode != null && !text.isEmpty() ){
+        if( mode != null ){
             switch(mode){
                 case Master: doMasterSearch(text); break;
                 case Example: doExampleSearch(text); break;
@@ -77,21 +79,34 @@ public class DrugSearch extends VBox {
     }
 
     private void doMasterSearch(String text){
-        PracticeLib.searchIyakuhinMaster(text, result -> {
+        if( text == null || text.isEmpty() ){
+            return;
+        }
+        PracticeLib.searchIyakuhinMaster(text, at, result -> {
             List<SearchResultModel> models = result.stream().map(MasterSearchResult::new).collect(Collectors.toList());
             searchResult.itemsProperty().getValue().setAll(models);
         });
     }
 
     private void doExampleSearch(String text){
-        PracticeLib.searchPrescExample(text, result -> {
-            List<SearchResultModel> models = result.stream().map(ExampleSearchResult::new).collect(Collectors.toList());
+        if( text == null || text.isEmpty() ){
+            return;
+        }
+       PracticeLib.searchPrescExample(text, result -> {
+            List<SearchResultModel> models = result.stream()
+                    .map(example -> new ExampleSearchResult(example, at))
+                    .collect(Collectors.toList());
             searchResult.itemsProperty().getValue().setAll(models);
         });
     }
 
     private void doPreviousSearch(String text, int patientId){
         PracticeLib.searchPreviousPresc(text, patientId, result -> {
+            System.out.println("previous drugs:" + result);
+            List<SearchResultModel> models = result.stream()
+                    .map(d -> new PreviousPrescSearchResult(d, at))
+                    .collect(Collectors.toList());
+            searchResult.itemsProperty().getValue().setAll(models);
         });
     }
 

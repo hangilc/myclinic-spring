@@ -539,6 +539,15 @@ public class DbGateway {
         return resultToDrugFullDTO(result);
     }
 
+    public DrugFullDTO findDrugFull(int drugId){
+        List<Object []> list = drugRepository.findOneWithMaster(drugId);
+        if( list.size() == 0 ){
+            return null;
+        } else {
+            return resultToDrugFullDTO(list.get(0));
+        }
+    }
+
     public List<DrugFullDTO> listDrugFull(int visitId){
         Sort sort = new Sort(Sort.Direction.ASC, "drugId");
         return drugRepository.findByVisitIdWithMaster(visitId, sort).stream()
@@ -570,14 +579,14 @@ public class DbGateway {
         List<Integer> drugIds = drugRepository.findNaifukuAndTonpukuPatternByPatient(patientId);
         drugIds.addAll(drugRepository.findGaiyouPatternByPatient(patientId));
         drugIds.sort(Comparator.<Integer>naturalOrder().reversed());
-        return drugIds.stream().map(this::getDrugFull).collect(Collectors.toList());
+        return drugIds.stream().map(this::findDrugFull).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public List<DrugFullDTO> searchPrevDrug(int patientId, String text){
         List<Integer> drugIds = drugRepository.findNaifukuAndTonpukuPatternByPatient(patientId, text);
         drugIds.addAll(drugRepository.findGaiyouPatternByPatient(patientId, text));
         drugIds.sort(Comparator.<Integer>naturalOrder().reversed());
-        return drugIds.stream().map(this::getDrugFull).collect(Collectors.toList());
+        return drugIds.stream().map(this::findDrugFull).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     public void batchUpdateDrugDays(List<Integer> drugIds, int days){
