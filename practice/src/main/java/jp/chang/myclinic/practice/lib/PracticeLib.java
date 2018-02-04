@@ -222,4 +222,14 @@ public class PracticeLib {
                 });
     }
 
+    public static void searchPreviousPresc(String text, int patientId, Consumer<List<DrugFullDTO>> cb){
+        Service.api.searchPrevDrug(text, patientId)
+                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
+                .exceptionally(ex -> {
+                    logger.error("Failed search previous prescription.", ex);
+                    Platform.runLater(() -> GuiUtil.alertException("過去の処方の検索に失敗しました。", ex));
+                    return null;
+                });
+    }
+
 }

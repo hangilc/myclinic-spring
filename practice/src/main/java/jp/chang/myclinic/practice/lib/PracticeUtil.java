@@ -1,5 +1,7 @@
 package jp.chang.myclinic.practice.lib;
 
+import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.dto.KouhiDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 
@@ -21,4 +23,13 @@ public class PracticeUtil {
             }
         }
     }
+
+    public static DrugCategory zaikeiToCategory(char zaikei){
+        if( zaikei == MyclinicConsts.ZaikeiGaiyou ){
+            return DrugCategory.Gaiyou;
+        } else {
+            return DrugCategory.Naifuku;
+        }
+    }
+
 }

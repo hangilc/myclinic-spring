@@ -5,22 +5,48 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DrugSearch extends VBox {
 
-    private RadioButtonGroup<DrugSearchMode> modeGroup;
+    public interface Callback {
+        void onSelect(SearchResultModel searchResultModel);
+    }
 
-    public DrugSearch(){
+    private int patientId;
+    private TextField searchTextInput;
+    private RadioButtonGroup<DrugSearchMode> modeGroup;
+    private DrugSearchResult searchResult;
+    private Callback callback;
+
+    public DrugSearch(int patientId){
+        super(4);
+        this.patientId = patientId;
         getChildren().addAll(
                 createSearchInput(),
-                createMode()
+                createMode(),
+                createResult()
         );
+        searchResult.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if( newValue != null ){
+                if( callback != null ){
+                    callback.onSelect(newValue);
+                }
+            }
+        });
+    }
+
+    public void setCallback(Callback callback){
+        this.callback = callback;
     }
 
     private Node createSearchInput(){
         HBox hbox = new HBox(4);
-        TextField searchTextInput = new TextField();
+        searchTextInput = new TextField();
         Button searchButton = new Button("検索");
         searchButton.setOnAction(event -> doSearch());
         hbox.getChildren().addAll(searchTextInput, searchButton);
@@ -39,26 +65,39 @@ public class DrugSearch extends VBox {
     }
 
     private void doSearch(){
+        String text = searchTextInput.getText();
         DrugSearchMode mode = modeGroup.getValue();
-        if( mode != null ){
+        if( mode != null && !text.isEmpty() ){
             switch(mode){
-                case Master: doMasterSearch(); break;
-                case Example: doExampleSearch(); break;
-                case Previous: doPreviousSearch(); break;
+                case Master: doMasterSearch(text); break;
+                case Example: doExampleSearch(text); break;
+                case Previous: doPreviousSearch(text, patientId); break;
             }
         }
     }
 
-    private void doMasterSearch(){
-
+    private void doMasterSearch(String text){
+        PracticeLib.searchIyakuhinMaster(text, result -> {
+            List<SearchResultModel> models = result.stream().map(MasterSearchResult::new).collect(Collectors.toList());
+            searchResult.itemsProperty().getValue().setAll(models);
+        });
     }
 
-    private void doExampleSearch(){
-
+    private void doExampleSearch(String text){
+        PracticeLib.searchPrescExample(text, result -> {
+            List<SearchResultModel> models = result.stream().map(ExampleSearchResult::new).collect(Collectors.toList());
+            searchResult.itemsProperty().getValue().setAll(models);
+        });
     }
 
-    private void doPreviousSearch(){
+    private void doPreviousSearch(String text, int patientId){
+        PracticeLib.searchPreviousPresc(text, patientId, result -> {
+        });
+    }
 
+    private Node createResult(){
+        searchResult = new DrugSearchResult();
+        return searchResult;
     }
 
 }

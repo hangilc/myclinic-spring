@@ -30,7 +30,7 @@ public class Record extends VBox {
         left.getChildren().add(new RecordTextsPane(visit.texts, visit.visit.visitId));
         right.getChildren().addAll(
                 new RecordHoken(visit.hoken, visit.visit),
-                new RecordDrugsPane(visit.drugs),
+                new RecordDrugsPane(visit.drugs, visit.visit.patientId),
                 new RecordShinryouPane(visit.shinryouList),
                 new RecordConductsPane(visit.conducts),
                 new RecordCharge(visit.charge)

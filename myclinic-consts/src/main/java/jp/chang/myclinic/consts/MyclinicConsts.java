@@ -28,12 +28,12 @@ public class MyclinicConsts {
 	public static final int ConductKindOtherChuusha = 2;
 	public static final int ConductKindGazou = 3;
 
-	public static final int ZaikeiNaifuku = 1;
-	public static final int ZaikeiOther = 3;
-	public static final int ZaikeiChuusha = 4;
-	public static final int ZaikeiGaiyou = 6;
-	public static final int ZaikeiShikaYakuzai = 8;
-	public static final int ZaikeiShikaTokutei = 9;
+	public static final char ZaikeiNaifuku = '1';
+	public static final char ZaikeiOther = '3';
+	public static final char ZaikeiChuusha = '4';
+	public static final char ZaikeiGaiyou = '6';
+	public static final char ZaikeiShikaYakuzai = '8';
+	public static final char ZaikeiShikaTokutei = '9';
 
 	public static final int SmallestPostfixShuushokugoCode = 8000;
 	public static final int LargestPostfixShuushookugoCode = 8999;

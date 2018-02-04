@@ -6,8 +6,12 @@ import javafx.scene.layout.VBox;
 
 public class EnterDrugForm extends VBox {
 
-    public EnterDrugForm(){
+    private int patientId;
+    private DrugInputModel inputModel = new DrugInputModel();
+
+    public EnterDrugForm(int patientId){
         super(4);
+        this.patientId = patientId;
         getStyleClass().add("form");
         getChildren().addAll(
                 createTitle(),
@@ -24,11 +28,20 @@ public class EnterDrugForm extends VBox {
     }
 
     private Node createDisp(){
-        return new DrugInput();
+        DrugInput drugInput = new DrugInput();
+        DrugCommon.bindDrugInputAndModel(drugInput, inputModel);
+        return drugInput;
     }
 
     private Node createSearch(){
-        return new DrugSearch();
+        DrugSearch drugSearch = new DrugSearch(patientId);
+        drugSearch.setCallback(new DrugSearch.Callback() {
+            @Override
+            public void onSelect(SearchResultModel searchResultModel) {
+                searchResultModel.stuffInto(inputModel);
+            }
+        });
+        return drugSearch;
     }
 
 }

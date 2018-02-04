@@ -29,6 +29,7 @@ public class DrugInput extends GridPane {
     private StringProperty usage;
     private StringProperty days;
     private ObjectProperty<DrugCategory> category;
+    private StringProperty comment;
 
     public DrugInput(){
         getStyleClass().add("drug-input");
@@ -36,6 +37,7 @@ public class DrugInput extends GridPane {
         setupAmount();
         setupUsage();
         setupDays();
+        setupComment();
         setupCategory();
     }
 
@@ -111,8 +113,20 @@ public class DrugInput extends GridPane {
         this.days.set(days);
     }
 
+    public String getComment() {
+        return comment.get();
+    }
+
+    public StringProperty commentProperty() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment.set(comment);
+    }
+
     private void setupName(){
-        add(new Label("名称"), 0, 0);
+        add(new Label("名称："), 0, 0);
         Text drugNameLabel = new Text("");
         TextFlow wrapper = new TextFlow();
         wrapper.getChildren().add(drugNameLabel);
@@ -121,7 +135,7 @@ public class DrugInput extends GridPane {
     }
 
     private void setupAmount(){
-        amountLabel = new Label("容量");
+        amountLabel = new Label("用量：");
         TextField amountInput = new TextField();
         amountInput.getStyleClass().add("amount-input");
         Label amountUnitInput = new Label("");
@@ -134,7 +148,7 @@ public class DrugInput extends GridPane {
     }
 
     private void setupUsage(){
-        add(new Label("用法"), 0, 2);
+        add(new Label("用法："), 0, 2);
         TextField usageInput = new TextField();
         Hyperlink exampleLink = new Hyperlink("例");
         HBox hbox = new HBox(4);
@@ -144,7 +158,7 @@ public class DrugInput extends GridPane {
     }
 
     private void setupDays(){
-        daysLabel = new Label("日数");
+        daysLabel = new Label("日数：");
         add(daysLabel, 0, 3);
         TextField daysInput = new TextField();
         daysInput.getStyleClass().add("days-input");
@@ -158,6 +172,15 @@ public class DrugInput extends GridPane {
         days = daysInput.textProperty();
     }
 
+    private void setupComment(){
+        Text commentText = new Text("");
+        TextFlow wrapper = new TextFlow();
+        wrapper.getChildren().add(commentText);
+        comment = commentText.textProperty();
+        add(new Label("注釈："), 0, 4);
+        add(wrapper, 1, 4);
+    }
+
     private void setupCategory(){
         HBox hbox = new HBox(4);
         RadioButtonGroup<DrugCategory> categoryButtons = new RadioButtonGroup<>();
@@ -167,7 +190,7 @@ public class DrugInput extends GridPane {
         hbox.getChildren().addAll(categoryButtons.getButtons());
         category = categoryButtons.valueProperty();
         category.addListener((obs, oldValue, newValue) -> adaptToCategory());
-        add(hbox, 0, 4, 2, 1);
+        add(hbox, 0, 5, 2, 1);
     }
 
     private void adaptToCategory(){
@@ -175,21 +198,21 @@ public class DrugInput extends GridPane {
         if( cat != null ){
             switch(cat){
                 case Naifuku: {
-                    amountLabel.setText("用量");
-                    daysLabel.setText("日数");
+                    amountLabel.setText("用量：");
+                    daysLabel.setText("日数：");
                     daysUnit.setText("日分");
                     setDaysVisible(true);
                     break;
                 }
                 case Tonpuku: {
-                    amountLabel.setText("一回");
-                    daysLabel.setText("回数");
+                    amountLabel.setText("一回：");
+                    daysLabel.setText("回数：");
                     daysUnit.setText("回分");
                     setDaysVisible(true);
                     break;
                 }
                 case Gaiyou: {
-                    amountLabel.setText("用量");
+                    amountLabel.setText("用量：");
                     setDaysVisible(false);
                     break;
                 }
