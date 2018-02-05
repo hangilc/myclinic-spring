@@ -22,7 +22,7 @@ public class DrugForm extends VBox {
         this.patientId = patientId;
         this.visitId = visitId;
         this.at = at;
-        getStyleClass().add("drug-enter-form");
+        getStyleClass().add("drug-form");
         getStyleClass().add("form");
         getChildren().addAll(
                 createTitle(),

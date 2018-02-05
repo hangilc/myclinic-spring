@@ -8,6 +8,7 @@ public class DrugSearchResult extends ListView<SearchResultModel> {
 
     public DrugSearchResult(){
         super(FXCollections.observableArrayList());
+        getStyleClass().add("search-result");
         setCellFactory(listView -> new ListCell<SearchResultModel>(){
             @Override
             protected void updateItem(SearchResultModel item, boolean empty) {
