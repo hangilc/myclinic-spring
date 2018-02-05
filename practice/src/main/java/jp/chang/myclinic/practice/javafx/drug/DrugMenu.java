@@ -5,6 +5,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.practice.javafx.events.EventTypes;
 
 public class DrugMenu extends VBox {
 

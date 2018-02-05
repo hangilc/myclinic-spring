@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 
 public class DrugEnterForm extends DrugForm {
@@ -28,7 +29,7 @@ public class DrugEnterForm extends DrugForm {
     }
 
     protected void onEntered(DrugFullDTO newDrug){
-
+        fireEvent(new DrugEnteredEvent(newDrug));
     }
 
     @Override

@@ -50,6 +50,7 @@ public class DrugSearch extends VBox {
         HBox hbox = new HBox(4);
         searchTextInput = new TextField();
         Button searchButton = new Button("検索");
+        searchTextInput.setOnAction(event -> doSearch());
         searchButton.setOnAction(event -> doSearch());
         hbox.getChildren().addAll(searchTextInput, searchButton);
         return hbox;
@@ -102,7 +103,6 @@ public class DrugSearch extends VBox {
 
     private void doPreviousSearch(String text, int patientId){
         PracticeLib.searchPreviousPresc(text, patientId, result -> {
-            System.out.println("previous drugs:" + result);
             List<SearchResultModel> models = result.stream()
                     .map(d -> new PreviousPrescSearchResult(d, at))
                     .collect(Collectors.toList());
