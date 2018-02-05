@@ -31,7 +31,12 @@ public class DrugMenu extends VBox {
         Hyperlink mainMenu = new Hyperlink("[処方]");
         Hyperlink auxMenu = new Hyperlink("[+]");
         mainMenu.setOnAction(event -> {
-            DrugForm form = new DrugEnterForm(patientId, visitId, at);
+            DrugForm form = new DrugEnterForm(patientId, visitId, at){
+                @Override
+                protected void onClose(DrugForm form) {
+                    hideWorkarea();
+                }
+            };
             showWorkarea(form);
         });
         hbox.getChildren().addAll(mainMenu, auxMenu);

@@ -9,24 +9,8 @@ import jp.chang.myclinic.practice.lib.PracticeLib;
 
 public class DrugEnterForm extends DrugForm {
 
-    public interface Callback {
-        void onEntered(DrugFullDTO enteredDrug);
-        void onClose();
-    }
-
-    private Callback callback = new Callback() {
-        @Override
-        public void onEntered(DrugFullDTO enteredDrug) { }
-        @Override
-        public void onClose() { }
-    };
-
     public DrugEnterForm(int patientId, int visitId, String at) {
         super(patientId, visitId, at);
-    }
-
-    public void setCallback(Callback callback){
-        this.callback = callback;
     }
 
     @Override
@@ -43,13 +27,17 @@ public class DrugEnterForm extends DrugForm {
         };
     }
 
-    @Override
-    protected void onEnter(DrugDTO drug){
-        PracticeLib.enterDrug(drug, callback::onEntered);
+    protected void onEntered(DrugFullDTO newDrug){
+
     }
 
     @Override
-    protected void onClose(){
-        callback.onClose();
+    protected void onEnter(DrugDTO drug){
+        PracticeLib.enterDrug(drug, this::onEntered);
+    }
+
+    @Override
+    protected void onClose(DrugForm self){
+
     }
 }

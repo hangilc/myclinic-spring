@@ -57,7 +57,7 @@ public class DrugForm extends VBox {
 
     }
 
-    protected void onClose(){
+    protected void onClose(DrugForm self){
 
     }
 
@@ -78,7 +78,7 @@ public class DrugForm extends VBox {
                     }
                 });
             });
-            closeButton.setOnAction(event -> onClose());
+            closeButton.setOnAction(event -> onClose(this));
             clearLink.setOnAction(event -> inputModel.clear());
             hbox.getChildren().addAll(enterButton, closeButton, clearLink);
             vbox.getChildren().add(hbox);
