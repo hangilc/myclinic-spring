@@ -113,15 +113,6 @@ public class DrugInputModel {
         this.comment.set(comment);
     }
 
-    public void clear(){
-        setIyakuhincode(0);
-        setAmount("");
-        setAmountUnit("");
-        setUsage("");
-        setDays("");
-        setComment("");
-    }
-
     public void convertToDrug(int visitId, BiConsumer<DrugDTO, List<String>> cb){
         List<String> err = new ArrayList<>();
         DrugDTO drug = new DrugDTO();

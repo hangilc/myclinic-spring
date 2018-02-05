@@ -79,7 +79,7 @@ public class DrugForm extends VBox {
                 });
             });
             closeButton.setOnAction(event -> onClose(this));
-            clearLink.setOnAction(event -> inputModel.clear());
+            clearLink.setOnAction(event -> DrugCommon.clearInputModel(inputModel, inputConstraints));
             hbox.getChildren().addAll(enterButton, closeButton, clearLink);
             vbox.getChildren().add(hbox);
         }

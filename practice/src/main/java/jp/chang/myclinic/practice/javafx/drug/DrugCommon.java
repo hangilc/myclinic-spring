@@ -32,4 +32,20 @@ public class DrugCommon {
         model.setComment("");
    }
 
+   public static void clearInputModel(DrugInputModel model, InputConstraints constraints){
+        model.setIyakuhincode(0);
+        model.setDrugName("");
+       if( !constraints.isAmountFixed() ) {
+           model.setAmount("");
+       }
+       model.setAmountUnit("");
+       if( !constraints.isUsageFixed() ) {
+           model.setUsage("");
+       }
+       if( !constraints.isDaysFixed() ) {
+           model.setDays("");
+       }
+       model.setComment("");
+   }
+
 }
