@@ -59,4 +59,10 @@ public class PracticeUtil {
         return title;
     }
 
+    public static boolean confirmCurrentVisitAction(int visitId, String message) {
+        PracticeEnv env = PracticeEnv.INSTANCE;
+        return visitId == env.getCurrentVisitId() || visitId == env.getTempVisitId() ||
+                GuiUtil.confirm("現在診察中あるいは暫定診察でありませんが、" + message);
+    }
+
 }

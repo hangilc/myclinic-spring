@@ -44,11 +44,8 @@ public class DrugMenu extends VBox {
         Hyperlink auxMenuLink = new Hyperlink("[+]");
         mainMenu.setOnAction(event -> {
             if( isWorkareaEmpty() ) {
-                PracticeEnv env = PracticeEnv.INSTANCE;
-                if( visitId != env.getCurrentVisitId() && visitId != env.getTempVisitId() ){
-                    if( !GuiUtil.confirm("現在診察中あるいは暫定診察でありませんが、処方を追加しますか？") ){
-                        return;
-                    }
+                if( !PracticeUtil.confirmCurrentVisitAction(visitId, "処方を追加しますか？") ){
+                    return;
                 }
                 DrugForm form = new DrugEnterForm(patientId, visitId, at) {
                     @Override
