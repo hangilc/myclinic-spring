@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.javafx;
 
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.practice.javafx.events.EventTypes;
 
@@ -12,6 +13,9 @@ public class RecordsPane extends VBox {
         addEventHandler(EventTypes.visitDeletedEventType, event -> {
             deleteRecord(event.getVisitId());
         });
+        addEventHandler(EventTypes.drugEnteredEventType, event -> {
+            addDrug(event.getEnteredDrug());
+        });
     }
 
     public void addRecord(VisitFull2DTO visit){
@@ -20,18 +24,28 @@ public class RecordsPane extends VBox {
     }
 
     private void deleteRecord(int visitId){
-        Record record = null;
+        Record record = findRecord(visitId);
+        if( record != null ){
+            getChildren().remove(record);
+        }
+    }
+
+    private Record findRecord(int visitId){
         for(Node node :getChildren()){
             if( node instanceof Record ){
                 Record r = (Record)node;
                 if( r.getVisitId() == visitId ){
-                    record = r;
-                    break;
+                    return r;
                 }
             }
         }
+        return null;
+    }
+
+    private void addDrug(DrugFullDTO drug){
+        Record record = findRecord(drug.drug.visitId);
         if( record != null ){
-            getChildren().remove(record);
+            record.addDrug(drug);
         }
     }
 }

@@ -269,4 +269,17 @@ public class PracticeLib {
                     }
                 });
     }
+
+    public static CompletableFuture<DrugFullDTO> copyDrug(int targetVisitId, String at, DrugDTO srcDrug){
+        return PracticeService.resolveIyakuhinMaster(srcDrug.iyakuhincode, at)
+                .thenCompose(master -> {
+                    DrugDTO newDrug = DrugDTO.copy(srcDrug);
+                    newDrug.drugId = 0;
+                    newDrug.visitId = targetVisitId;
+                    newDrug.iyakuhincode = master.iyakuhincode;
+                    newDrug.prescribed = 0;
+                    return PracticeService.enterDrug(newDrug);
+                })
+                .thenCompose(PracticeService::getDrugFull);
+    }
 }

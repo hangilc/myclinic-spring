@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Hyperlink;
@@ -7,6 +8,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
+import jp.chang.myclinic.practice.lib.DrugsCopier;
+import jp.chang.myclinic.practice.lib.GuiUtil;
+import jp.chang.myclinic.practice.lib.PracticeService;
+import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 public class DrugMenu extends VBox {
 
@@ -66,6 +72,20 @@ public class DrugMenu extends VBox {
 
     private MenuItem createCopyAllMenuItem(){
         MenuItem item = new MenuItem("全部コピー");
+        item.setOnAction(event -> {
+            int targetVisitId = PracticeUtil.findCopyTarget();
+            if( targetVisitId == 0 || targetVisitId == visitId ){
+                GuiUtil.alertError("コピー先を見つけられませんでした。");
+                return;
+            }
+            PracticeService.listDrugFull(visitId)
+                    .thenAccept(drugs -> {
+                        new DrugsCopier(targetVisitId, drugs,
+                                enteredDrug -> Platform.runLater(() -> fireEvent(new DrugEnteredEvent(enteredDrug))),
+                                () -> { }
+                                );
+                    });
+        });
         return item;
     }
 
