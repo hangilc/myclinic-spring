@@ -12,7 +12,6 @@ import java.util.List;
 public class RecordDrugsPane extends VBox {
 
     private int index = 1;
-    private List<RecordDrug> recordDrugs = new ArrayList<>();
 
     public RecordDrugsPane(List<DrugFullDTO> drugs, int patientId, int visitId, String at){
         setAlignment(Pos.TOP_LEFT);
@@ -23,7 +22,6 @@ public class RecordDrugsPane extends VBox {
 
     public void addDrug(DrugFullDTO drug){
         RecordDrug recordDrug = new RecordDrug(drug, index++);
-        recordDrugs.add(recordDrug);
         getChildren().add(recordDrug);
     }
 

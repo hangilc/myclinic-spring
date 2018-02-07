@@ -1,25 +1,41 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.util.DrugUtil;
 
-class RecordDrug extends TextFlow {
+class RecordDrug extends StackPane {
 
-    private int drugId;
+    private DrugFullDTO drug;
+    private int index;
+    private TextFlow disp = new TextFlow();
 
     RecordDrug(DrugFullDTO drug, int index){
-        this.drugId = drug.drug.drugId;
+        this.drug = drug;
+        this.index = index;
+        updateDisp();
+        getChildren().add(disp);
+    }
+
+    private void updateDisp(){
         String text = String.format("%d)%s", index, DrugUtil.drugRep(drug));
-        getChildren().add(new Text(text));
+        disp.getChildren().clear();
+        disp.getChildren().add(new TextFlow(new Text(text)));
     }
 
     public int getDrugId() {
-        return drugId;
+        return drug.drug.drugId;
     }
 
     public void modifyDays(int days){
-        
+        DrugFullDTO newDrugFull = DrugFullDTO.copy(drug);
+        DrugDTO newDrug = DrugDTO.copy(drug.drug);
+        newDrug.days = days;
+        newDrugFull.drug = newDrug;
+        this.drug = newDrugFull;
+        updateDisp();
     }
 }

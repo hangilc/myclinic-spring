@@ -142,9 +142,9 @@ public class DrugMenu extends VBox {
                                     PracticeService.modifyDrugDays(drugs, days)
                                             .thenAccept(result -> Platform.runLater(() -> {
                                                 drugs.forEach(drug -> {
-                                                    int drugId = drug.drugId;
-                                                    fireEvent(new DrugDaysModifiedEvent(drugId, days));
+                                                    fireEvent(new DrugDaysModifiedEvent(drug, days));
                                                 });
+                                                hideWorkarea();
                                             }));
                                 }
 
