@@ -1,10 +1,13 @@
 package jp.chang.myclinic.practice.javafx;
 
-import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
+import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 public class RecordTitle extends TextFlow {
@@ -14,7 +17,8 @@ public class RecordTitle extends TextFlow {
     public RecordTitle(VisitDTO visit) {
         this.visitId = visit.visitId;
         getStyleClass().add("record-title-text");
-        getChildren().addAll(new Text(createText(visit.visitedAt));
+        getChildren().addAll(new Text(createText(visit.visitedAt)));
+        addContextMenu();
         adaptToEnv();
         PracticeEnv.INSTANCE.currentVisitIdProperty().addListener((obs, oldValue, newValue) -> adaptToEnv());
         PracticeEnv.INSTANCE.tempVisitIdProperty().addListener((obs, oldValue, newValue) -> adaptToEnv());
@@ -32,5 +36,33 @@ public class RecordTitle extends TextFlow {
     private String createText(String at) {
         return DateTimeUtil.sqlDateTimeToKanji(at,
                 DateTimeUtil.kanjiFormatter3, DateTimeUtil.kanjiFormatter4);
+    }
+
+    private void addContextMenu(){
+        ContextMenu contextMenu = new ContextMenu();
+        {
+            MenuItem item = new MenuItem("この診察を削除");
+            item.setOnAction(event -> {
+                PracticeService.doDeleteVisit(visitId, result -> {
+                    this.fireEvent(new VisitDeletedEvent(visitId));
+                });
+            });
+            contextMenu.getItems().add(item);
+        }
+        {
+            MenuItem item = new MenuItem("暫定診察設定");
+            contextMenu.getItems().add(item);
+        }
+        {
+            MenuItem item = new MenuItem("暫定診察解除");
+            contextMenu.getItems().add(item);
+        }
+        {
+            MenuItem item = new MenuItem("診療明細");
+            contextMenu.getItems().add(item);
+        }
+        setOnContextMenuRequested(event -> {
+            contextMenu.show(this, event.getScreenX(), event.getScreenY());
+        });
     }
 }

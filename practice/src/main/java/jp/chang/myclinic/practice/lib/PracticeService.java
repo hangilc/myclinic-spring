@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class PracticeService {
@@ -35,4 +36,30 @@ public class PracticeService {
                     return null;
                 });
     }
+
+    private static <T> CompletableFuture<T> addExceptionHandler(CompletableFuture<T> cf, String message1, String message2){
+        return cf.whenComplete((result, ex) -> {
+            if( ex != null ){
+                logger.error(message1, ex);
+                Platform.runLater(() -> GuiUtil.alertException(message2, ex));
+            }
+        });
+    }
+
+    private static <T> void withCallback(CompletableFuture<T> cf, Consumer<T> cb){
+        cf.thenAccept(result -> Platform.runLater(() -> cb.accept(result)));
+    }
+
+    public static CompletableFuture<Boolean> deleteVisit(int visitId){
+        return addExceptionHandler(
+                Service.api.deleteVisit(visitId),
+                "Failed to delete visit.",
+                "診察の削除に失敗しました。"
+        );
+    }
+
+    public static void doDeleteVisit(int visitId, Consumer<Boolean> cb){
+        withCallback(deleteVisit(visitId), cb);
+    }
+
 }

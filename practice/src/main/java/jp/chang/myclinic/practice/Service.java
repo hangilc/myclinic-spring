@@ -73,6 +73,9 @@ public class Service {
         @POST("start-visit")
         CompletableFuture<Integer> startVisit(@Query("patient-id") int patientId);
 
+        @POST("delete-visit")
+        CompletableFuture<Boolean> deleteVisit(@Query("visit-id") int visitId);
+
         @GET("list-wqueue-full")
         CompletableFuture<List<WqueueFullDTO>> listWqueueFull();
 

@@ -178,6 +178,12 @@ public class VisitController {
 		return true;
 	}
 
+	@RequestMapping(value="/delete-visit", method=RequestMethod.POST)
+	public boolean deleteVisit(@RequestParam("visit-id") int visitId){
+		dbGateway.deleteVisitSafely(visitId);
+		return true;
+	}
+
 	@RequestMapping(value="/list-visit-text-drug", method=RequestMethod.GET)
 	public List<VisitTextDrugDTO> listVisitTextDrug(@RequestParam("visit-id[]") List<Integer> visitIds){
 		return dbGateway.listVisitTextDrug(visitIds);

@@ -8,9 +8,16 @@ import jp.chang.myclinic.dto.VisitFull2DTO;
 
 public class Record extends VBox {
 
+    private int visitId;
+
     public Record(VisitFull2DTO visit){
+        this.visitId = visit.visit.visitId;
         getChildren().addAll(createTitle(visit.visit), createBody(visit));
         setPrefWidth(400);
+    }
+
+    public int getVisitId() {
+        return visitId;
     }
 
     private Node createTitle(VisitDTO visit){
