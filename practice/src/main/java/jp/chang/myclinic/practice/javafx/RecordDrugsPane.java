@@ -35,6 +35,7 @@ public class RecordDrugsPane extends VBox {
         RecordDrug recordDrug = findRecordDrug(drugId);
         if( recordDrug != null ){
             getChildren().remove(recordDrug);
+            reIndex();
         }
     }
 
@@ -48,5 +49,15 @@ public class RecordDrugsPane extends VBox {
             }
         }
         return null;
+    }
+
+    private void reIndex(){
+        this.index = 1;
+        for(Node node: getChildren()){
+            if( node instanceof RecordDrug ){
+                RecordDrug recordDrug = (RecordDrug)node;
+                recordDrug.setIndex(this.index++);
+            }
+        }
     }
 }

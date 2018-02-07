@@ -38,4 +38,9 @@ class RecordDrug extends StackPane {
         this.drug = newDrugFull;
         updateDisp();
     }
+
+    public void setIndex(int index){
+        this.index = index;
+        updateDisp();
+    }
 }
