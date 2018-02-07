@@ -6,7 +6,6 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.practice.javafx.drug.DrugMenu;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecordDrugsPane extends VBox {
@@ -26,14 +25,28 @@ public class RecordDrugsPane extends VBox {
     }
 
     public void modifyDrugDays(int drugId, int days) {
+        RecordDrug recordDrug = findRecordDrug(drugId);
+        if( recordDrug != null ){
+            recordDrug.modifyDays(days);
+        }
+    }
+
+    public void deleteDrug(int drugId) {
+        RecordDrug recordDrug = findRecordDrug(drugId);
+        if( recordDrug != null ){
+            getChildren().remove(recordDrug);
+        }
+    }
+
+    private RecordDrug findRecordDrug(int drugId){
         for(Node node: getChildren()){
             if( node instanceof RecordDrug ){
                 RecordDrug recordDrug = (RecordDrug)node;
                 if( recordDrug.getDrugId() == drugId ){
-                    recordDrug.modifyDays(days);
-                    return;
+                    return recordDrug;
                 }
             }
         }
+        return null;
     }
 }

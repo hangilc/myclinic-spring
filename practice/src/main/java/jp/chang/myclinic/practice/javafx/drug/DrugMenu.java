@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
+import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.DrugsCopier;
 import jp.chang.myclinic.practice.lib.GuiUtil;
@@ -133,6 +134,9 @@ public class DrugMenu extends VBox {
     private MenuItem createModifyDaysMenuItem(){
         MenuItem item = new MenuItem("日数変更");
         item.setOnAction(evt -> {
+            if( !isWorkareaEmpty() ){
+                return;
+            }
             if( PracticeUtil.confirmCurrentVisitAction(visitId, "処方に日数を変更しますか？") ){
                 PracticeService.listDrugFull(visitId)
                         .thenAccept(drugs -> {
@@ -162,6 +166,35 @@ public class DrugMenu extends VBox {
 
     private MenuItem createDeleteSelectedMenuItem(){
         MenuItem item = new MenuItem("複数削除");
+        item.setOnAction(evt -> {
+            if( !isWorkareaEmpty() ){
+                return;
+            }
+            if( PracticeUtil.confirmCurrentVisitAction(visitId, "複数の処方を削除しますか？") ) {
+                PracticeService.listDrugFull(visitId)
+                        .thenAccept(drugs -> {
+                            DeleteSelectedForm form = new DeleteSelectedForm(drugs){
+                                @Override
+                                protected void onDelete(List<DrugDTO> drugs) {
+                                    PracticeService.batchDeleteDrugs(drugs)
+                                            .thenAccept(result -> Platform.runLater(() ->{
+                                                drugs.forEach(drug -> {
+                                                    DrugDeletedEvent e = new DrugDeletedEvent(drug);
+                                                    DrugMenu.this.fireEvent(e);
+                                                });
+                                                hideWorkarea();
+                                            }));
+                                }
+
+                                @Override
+                                protected void onClose() {
+                                    hideWorkarea();
+                                }
+                            };
+                            Platform.runLater(() -> showWorkarea(form));
+                        });
+            }
+        });
         return item;
     }
 

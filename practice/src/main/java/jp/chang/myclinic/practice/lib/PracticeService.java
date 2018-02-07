@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -129,5 +130,14 @@ public class PracticeService {
         );
     }
 
+
+    public static CompletionStage<Boolean> batchDeleteDrugs(List<DrugDTO> drugs) {
+        List<Integer> drugIds = drugs.stream().map(drug -> drug.drugId).collect(Collectors.toList());
+        return addExceptionHandler(
+                Service.api.batchDeleteDrugs(drugIds),
+                "Failed to delete drugs.",
+                "薬剤の複数削除に失敗しました。"
+        );
+    }
 
 }

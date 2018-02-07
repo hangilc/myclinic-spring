@@ -55,4 +55,8 @@ public class Record extends VBox {
     public void modifyDrugDays(int drugId, int days) {
         drugsPane.modifyDrugDays(drugId, days);
     }
+
+    public void deleteDrug(int drugId) {
+        drugsPane.deleteDrug(drugId);
+    }
 }
