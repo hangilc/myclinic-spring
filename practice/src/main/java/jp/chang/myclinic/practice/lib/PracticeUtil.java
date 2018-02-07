@@ -1,5 +1,7 @@
 package jp.chang.myclinic.practice.lib;
 
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.dto.KouhiDTO;
@@ -44,6 +46,17 @@ public class PracticeUtil {
             return tempVisitId;
         }
         return 0;
+    }
+
+    public static void addFormClass(Node node){
+        node.getStyleClass().add("form");
+    }
+
+    public static Node createFormTitle(String label){
+        Label title = new Label(label);
+        title.getStyleClass().add("title");
+        title.setMaxWidth(Double.MAX_VALUE);
+        return title;
     }
 
 }

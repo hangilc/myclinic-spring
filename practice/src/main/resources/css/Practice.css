@@ -57,6 +57,10 @@
     -fx-padding: 2;
 }
 
+.days-field {
+    -fx-pref-width: 4em;
+}
+
 .drug-input {
     -fx-hgap: 4;
     -fx-vgap: 2;

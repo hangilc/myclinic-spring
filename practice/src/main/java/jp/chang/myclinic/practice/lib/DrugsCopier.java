@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.lib;
 
+import javafx.application.Platform;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 
@@ -26,7 +27,7 @@ public class DrugsCopier {
 
     private void doCopy(List<DrugFullDTO> drugs){
         if( drugs.size() == 0 ){
-            cb.run();
+            Platform.runLater(cb);
         } else {
             DrugFullDTO srcDrug = drugs.get(0);
             PracticeService.resolveIyakuhinMaster(srcDrug, targetVisitedAt)
@@ -40,7 +41,7 @@ public class DrugsCopier {
                     })
                     .thenCompose(PracticeService::getDrugFull)
                     .thenAccept(newDrugFull -> {
-                        drugEnteredCallback.accept(newDrugFull);
+                        Platform.runLater(() -> drugEnteredCallback.accept(newDrugFull));
                         doCopy(drugs.subList(1, drugs.size()));
                     });
         }
