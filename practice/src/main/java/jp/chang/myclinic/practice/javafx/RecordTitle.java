@@ -7,6 +7,7 @@ import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
+import jp.chang.myclinic.practice.lib.GuiUtil;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.util.DateTimeUtil;
 
@@ -51,10 +52,14 @@ public class RecordTitle extends TextFlow {
         }
         {
             MenuItem item = new MenuItem("暫定診察設定");
+            item.setOnAction(event -> {
+                doSetTempVisit();
+            });
             contextMenu.getItems().add(item);
         }
         {
             MenuItem item = new MenuItem("暫定診察解除");
+            item.setOnAction(event -> doUnsetTempVisit());
             contextMenu.getItems().add(item);
         }
         {
@@ -64,5 +69,21 @@ public class RecordTitle extends TextFlow {
         setOnContextMenuRequested(event -> {
             contextMenu.show(this, event.getScreenX(), event.getScreenY());
         });
+    }
+
+    private void doSetTempVisit(){
+        PracticeEnv env = PracticeEnv.INSTANCE;
+        if( env.getCurrentVisitId() > 0 ){
+            GuiUtil.alertError("現在診察中なので、暫定診察を設定できません。");
+        } else {
+            env.setTempVisitId(visitId);
+        }
+    }
+
+    private void doUnsetTempVisit(){
+        PracticeEnv env = PracticeEnv.INSTANCE;
+        if( env.getTempVisitId() == visitId ){
+            env.setTempVisitId(0);
+        }
     }
 }
