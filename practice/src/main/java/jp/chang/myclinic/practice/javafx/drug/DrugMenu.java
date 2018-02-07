@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.DrugsCopier;
 import jp.chang.myclinic.practice.lib.GuiUtil;
@@ -43,6 +44,12 @@ public class DrugMenu extends VBox {
         Hyperlink auxMenuLink = new Hyperlink("[+]");
         mainMenu.setOnAction(event -> {
             if( isWorkareaEmpty() ) {
+                PracticeEnv env = PracticeEnv.INSTANCE;
+                if( visitId != env.getCurrentVisitId() && visitId != env.getTempVisitId() ){
+                    if( !GuiUtil.confirm("現在診察中あるいは暫定診察でありませんが、処方を追加しますか？") ){
+                        return;
+                    }
+                }
                 DrugForm form = new DrugEnterForm(patientId, visitId, at) {
                     @Override
                     protected void onClose(DrugForm form) {
