@@ -8,8 +8,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.DrugsCopier;
 import jp.chang.myclinic.practice.lib.GuiUtil;
@@ -99,6 +100,9 @@ public class DrugMenu extends VBox {
     private MenuItem createCopySelectedMenuItem(){
         MenuItem item = new MenuItem("部分コピー");
         item.setOnAction(evt -> {
+            if( !isWorkareaEmpty() ){
+                return;
+            }
             int targetVisitId = PracticeUtil.findCopyTarget();
             if( targetVisitId == 0 || targetVisitId == visitId ){
                 GuiUtil.alertError("コピー先を見つけられませんでした。");
@@ -128,6 +132,31 @@ public class DrugMenu extends VBox {
 
     private MenuItem createModifyDaysMenuItem(){
         MenuItem item = new MenuItem("日数変更");
+        item.setOnAction(evt -> {
+            if( PracticeUtil.confirmCurrentVisitAction(visitId, "処方に日数を変更しますか？") ){
+                PracticeService.listDrugFull(visitId)
+                        .thenAccept(drugs -> {
+                            ModifyDaysForm form = new ModifyDaysForm(drugs){
+                                @Override
+                                protected void onEnter(List<DrugDTO> drugs, int days) {
+                                    PracticeService.modifyDrugDays(drugs, days)
+                                            .thenAccept(result -> Platform.runLater(() -> {
+                                                drugs.forEach(drug -> {
+                                                    int drugId = drug.drugId;
+                                                    fireEvent(new DrugDaysModifiedEvent(drugId, days));
+                                                });
+                                            }));
+                                }
+
+                                @Override
+                                protected void onClose() {
+                                    hideWorkarea();
+                                }
+                            };
+                            Platform.runLater(() -> showWorkarea(form));
+                        });
+            }
+        });
         return item;
     }
 

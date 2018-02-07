@@ -4,6 +4,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
 import jp.chang.myclinic.practice.javafx.events.EventTypes;
 
 public class RecordsPane extends VBox {
@@ -16,6 +17,7 @@ public class RecordsPane extends VBox {
         addEventHandler(EventTypes.drugEnteredEventType, event -> {
             addDrug(event.getEnteredDrug());
         });
+        addEventHandler(EventTypes.drugDaysModifiedEventType, this::drugDaysModified);
     }
 
     public void addRecord(VisitFull2DTO visit){
@@ -46,6 +48,13 @@ public class RecordsPane extends VBox {
         Record record = findRecord(drug.drug.visitId);
         if( record != null ){
             record.addDrug(drug);
+        }
+    }
+
+    private void drugDaysModified(DrugDaysModifiedEvent event){
+        Record record = findRecord(event.getVisitId());
+        if( record != null ){
+            record.modifyDrugDays(event.getDrugId(), event.getDays());
         }
     }
 }

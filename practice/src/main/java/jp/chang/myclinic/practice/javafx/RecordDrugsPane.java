@@ -1,15 +1,18 @@
 package jp.chang.myclinic.practice.javafx;
 
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.practice.javafx.drug.DrugMenu;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecordDrugsPane extends VBox {
 
     private int index = 1;
+    private List<RecordDrug> recordDrugs = new ArrayList<>();
 
     public RecordDrugsPane(List<DrugFullDTO> drugs, int patientId, int visitId, String at){
         setAlignment(Pos.TOP_LEFT);
@@ -19,6 +22,20 @@ public class RecordDrugsPane extends VBox {
     }
 
     public void addDrug(DrugFullDTO drug){
-        getChildren().add(new RecordDrug(drug, index++));
+        RecordDrug recordDrug = new RecordDrug(drug, index++);
+        recordDrugs.add(recordDrug);
+        getChildren().add(recordDrug);
+    }
+
+    public void modifyDrugDays(int drugId, int days) {
+        for(Node node: getChildren()){
+            if( node instanceof RecordDrug ){
+                RecordDrug recordDrug = (RecordDrug)node;
+                if( recordDrug.getDrugId() == drugId ){
+                    recordDrug.modifyDays(days);
+                    return;
+                }
+            }
+        }
     }
 }

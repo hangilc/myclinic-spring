@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class PracticeService {
 
@@ -116,6 +117,15 @@ public class PracticeService {
                 Service.api.getVisit(visitId),
                 "Failed to get visit.",
                 "診察情報の取得に失敗しました。"
+        );
+    }
+
+    public static CompletableFuture<Boolean> modifyDrugDays(List<DrugDTO> drugs, int days){
+        List<Integer> drugIds = drugs.stream().map(drug -> drug.drugId).collect(Collectors.toList());
+        return addExceptionHandler(
+                Service.api.batchUpdateDrugDays(drugIds, days),
+                "Failed to modify drug days.",
+                "処方日数の変更に失敗しました。"
         );
     }
 
