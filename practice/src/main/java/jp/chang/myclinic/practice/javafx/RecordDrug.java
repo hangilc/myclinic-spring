@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -17,6 +18,7 @@ class RecordDrug extends StackPane {
         this.drug = drug;
         this.index = index;
         updateDisp();
+        disp.setOnMouseClicked(this::onDispClick);
         getChildren().add(disp);
     }
 
@@ -42,5 +44,9 @@ class RecordDrug extends StackPane {
     public void setIndex(int index){
         this.index = index;
         updateDisp();
+    }
+
+    private void onDispClick(MouseEvent event){
+
     }
 }
