@@ -5,13 +5,14 @@ import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 
 public class DrugEnterForm extends DrugForm {
 
-    public DrugEnterForm(int patientId, int visitId, String at) {
-        super(patientId, visitId, at);
+    public DrugEnterForm(VisitDTO visit) {
+        super(visit);
     }
 
     @Override

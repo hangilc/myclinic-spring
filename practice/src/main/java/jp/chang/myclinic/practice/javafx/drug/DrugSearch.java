@@ -7,6 +7,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
+import jp.chang.myclinic.practice.lib.DrugSearchResultModel;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 public class DrugSearch extends VBox {
 
     public interface Callback {
-        void onSelect(SearchResultModel searchResultModel);
+        void onSelect(DrugSearchResultModel searchResultModel);
     }
 
     private int patientId;
@@ -84,7 +85,7 @@ public class DrugSearch extends VBox {
             return;
         }
         PracticeLib.searchIyakuhinMaster(text, at, result -> {
-            List<SearchResultModel> models = result.stream().map(MasterSearchResult::new).collect(Collectors.toList());
+            List<DrugSearchResultModel> models = result.stream().map(MasterSearchResult::new).collect(Collectors.toList());
             searchResult.itemsProperty().getValue().setAll(models);
         });
     }
@@ -94,7 +95,7 @@ public class DrugSearch extends VBox {
             return;
         }
        PracticeLib.searchPrescExample(text, result -> {
-            List<SearchResultModel> models = result.stream()
+            List<DrugSearchResultModel> models = result.stream()
                     .map(example -> new ExampleSearchResult(example, at))
                     .collect(Collectors.toList());
             searchResult.itemsProperty().getValue().setAll(models);
@@ -103,7 +104,7 @@ public class DrugSearch extends VBox {
 
     private void doPreviousSearch(String text, int patientId){
         PracticeLib.searchPreviousPresc(text, patientId, result -> {
-            List<SearchResultModel> models = result.stream()
+            List<DrugSearchResultModel> models = result.stream()
                     .map(d -> new PreviousPrescSearchResult(d, at))
                     .collect(Collectors.toList());
             searchResult.itemsProperty().getValue().setAll(models);

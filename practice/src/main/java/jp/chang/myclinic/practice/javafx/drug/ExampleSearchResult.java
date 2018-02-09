@@ -3,10 +3,12 @@ package jp.chang.myclinic.practice.javafx.drug;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.PrescExampleDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
+import jp.chang.myclinic.practice.lib.DrugInputConstraints;
 import jp.chang.myclinic.practice.lib.PracticeLib;
+import jp.chang.myclinic.practice.lib.DrugSearchResultModel;
 import jp.chang.myclinic.util.PrescExampleUtil;
 
-class ExampleSearchResult implements SearchResultModel {
+class ExampleSearchResult implements DrugSearchResultModel {
 
     private PrescExampleFullDTO example;
     private String at;
@@ -22,7 +24,7 @@ class ExampleSearchResult implements SearchResultModel {
     }
 
     @Override
-    public void stuffInto(DrugInputModel model, InputConstraints constraints) {
+    public void stuffInto(DrugInputModel model, DrugInputConstraints constraints) {
         int origIyakuhincode = example.master.iyakuhincode;
         PracticeLib.resolveIyakuhinMaster(origIyakuhincode, at, master -> {
             DrugCommon.stuffMasterInto(master, model, constraints);

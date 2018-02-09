@@ -1,9 +1,12 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
+import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.VisitDTO;
+
 public class DrugEditForm extends DrugForm {
 
-    public DrugEditForm(int patientId, int visitId, String at) {
-        super(patientId, visitId, at);
+    public DrugEditForm(VisitDTO visit, DrugFullDTO drugFull) {
+        super(visit);
     }
 
 }

@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.practice.lib.DrugInputConstraints;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 public class DrugCommon {
@@ -15,7 +16,7 @@ public class DrugCommon {
         drugInput.commentProperty().bindBidirectional(model.commentProperty());
     }
 
-    public static void stuffMasterInto(IyakuhinMasterDTO master, DrugInputModel model, InputConstraints constraints){
+    public static void stuffMasterInto(IyakuhinMasterDTO master, DrugInputModel model, DrugInputConstraints constraints){
         model.setIyakuhincode(master.iyakuhincode);
         model.setDrugName(master.name);
         if( !constraints.isAmountFixed() ) {
@@ -32,7 +33,7 @@ public class DrugCommon {
         model.setComment("");
    }
 
-   public static void clearInputModel(DrugInputModel model, InputConstraints constraints){
+   public static void clearInputModel(DrugInputModel model, DrugInputConstraints constraints){
         model.setIyakuhincode(0);
         model.setDrugName("");
        if( !constraints.isAmountFixed() ) {

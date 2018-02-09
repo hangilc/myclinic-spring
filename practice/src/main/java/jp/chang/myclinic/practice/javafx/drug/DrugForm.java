@@ -7,25 +7,28 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.dto.DrugDTO;
+import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.lib.DrugFormGetter;
-import jp.chang.myclinic.practice.lib.GuiUtil;
+import jp.chang.myclinic.practice.lib.DrugFormSetter;
+import jp.chang.myclinic.practice.lib.DrugInputConstraints;
+import jp.chang.myclinic.practice.lib.DrugSearchResultModel;
 
-public class DrugForm extends VBox {
+public class DrugForm extends VBox implements DrugFormGetter, DrugFormSetter {
 
-    private int drugId;
     private int patientId;
+    private int drugId;
     private int visitId;
+    private int iyakuhincode;
     private String at;
     private DrugInput drugInput;
-    private DrugInputModel inputModel = new DrugInputModel();
-    private InputConstraints inputConstraints = new InputConstraints();
+    private DrugInputConstraints inputConstraints = new DrugInputConstraints();
 
-    public DrugForm(int patientId, int visitId, String at){
+    public DrugForm(VisitDTO visit){
         super(4);
-        this.patientId = patientId;
-        this.visitId = visitId;
-        this.at = at;
+        this.patientId = visit.patientId;
+        this.drugId = 0;
+        this.visitId = visit.visitId;
+        this.at = visit.visitedAt;
         getStyleClass().add("drug-form");
         getStyleClass().add("form");
         getChildren().addAll(
@@ -43,7 +46,7 @@ public class DrugForm extends VBox {
         return title;
     }
 
-    protected InputConstraints getInputConstraints() {
+    DrugInputConstraints getInputConstraints() {
         return inputConstraints;
     }
 
@@ -53,11 +56,10 @@ public class DrugForm extends VBox {
 
     private Node createDisp(){
         this.drugInput = createDrugInput();
-        DrugCommon.bindDrugInputAndModel(drugInput, inputModel);
         return drugInput;
     }
 
-    protected void onEnter(DrugDTO drug){
+    protected void onEnter(DrugForm self){
 
     }
 
@@ -73,17 +75,9 @@ public class DrugForm extends VBox {
             Button enterButton = new Button("入力");
             Button closeButton = new Button("閉じる");
             Hyperlink clearLink = new Hyperlink("クリア");
-            enterButton.setOnAction(event -> {
-                inputModel.convertToDrug(visitId, (drug, err) -> {
-                    if( err != null ){
-                        GuiUtil.alertError(String.join("\n", err));
-                    } else {
-                        onEnter(drug);
-                    }
-                });
-            });
+            enterButton.setOnAction(event -> onEnter(this));
             closeButton.setOnAction(event -> onClose(this));
-            clearLink.setOnAction(event -> DrugCommon.clearInputModel(inputModel, inputConstraints));
+            clearLink.setOnAction(event -> clearForm(inputConstraints));
             hbox.getChildren().addAll(enterButton, closeButton, clearLink);
             vbox.getChildren().add(hbox);
         }
@@ -94,50 +88,95 @@ public class DrugForm extends VBox {
         DrugSearch drugSearch = new DrugSearch(patientId, at);
         drugSearch.setCallback(new DrugSearch.Callback() {
             @Override
-            public void onSelect(SearchResultModel searchResultModel) {
-                searchResultModel.stuffInto(inputModel, inputConstraints);
+            public void onSelect(DrugSearchResultModel searchResultModel) {
+                searchResultModel.stuffInto(DrugForm.this, inputConstraints);
             }
         });
         return drugSearch;
     }
 
-    protected DrugFormGetter createDrugFormGetter(){
-        return new DrugFormGetter() {
-            @Override
-            public int getDrugId() {
-                return drugId;
-            }
-
-            @Override
-            public int getVisitId() {
-                return visitId;
-            }
-
-            @Override
-            public int getIyakuhincode() {
-                return drugInput.();
-            }
-
-            @Override
-            public String getAmount() {
-                return null;
-            }
-
-            @Override
-            public String getUsage() {
-                return null;
-            }
-
-            @Override
-            public String getDays() {
-                return null;
-            }
-
-            @Override
-            public DrugCategory getCategory() {
-                return null;
-            }
-        }
+    @Override
+    public int getDrugId() {
+        return drugId;
     }
 
+    @Override
+    public int getVisitId() {
+        return visitId;
+    }
+
+    @Override
+    public int getIyakuhincode() {
+        return iyakuhincode;
+    }
+
+    @Override
+    public String getAmount() {
+        return drugInput.getAmount();
+    }
+
+    @Override
+    public String getUsage() {
+        return drugInput.getUsage();
+    }
+
+    @Override
+    public String getDays() {
+        return drugInput.getDays();
+    }
+
+    @Override
+    public DrugCategory getCategory() {
+        return drugInput.getCategory();
+    }
+
+    @Override
+    public void setDrugId(int drugId) {
+        this.drugId = drugId;
+    }
+
+    @Override
+    public void setVisitId(int visitId) {
+        this.visitId = visitId;
+    }
+
+    @Override
+    public void setIyakuhincode(int iyakuhincode) {
+        this.iyakuhincode = iyakuhincode;
+    }
+
+    @Override
+    public void setDrugName(String name) {
+        drugInput.setDrugName(name);
+    }
+
+    @Override
+    public void setAmount(String value) {
+        drugInput.setAmount(value);
+    }
+
+    @Override
+    public void setAmountUnit(String value) {
+        drugInput.setAmountUnit(value);
+    }
+
+    @Override
+    public void setUsage(String value) {
+        drugInput.setUsage(value);
+    }
+
+    @Override
+    public void setDays(String value) {
+        drugInput.setDays(value);
+    }
+
+    @Override
+    public void setCategory(DrugCategory category) {
+        drugInput.setCategory(category);
+    }
+
+    @Override
+    public void setComment(String comment) {
+        drugInput.setComment(comment);
+    }
 }
