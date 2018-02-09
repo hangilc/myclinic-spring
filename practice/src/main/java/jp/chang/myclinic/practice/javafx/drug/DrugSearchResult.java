@@ -3,7 +3,7 @@ package jp.chang.myclinic.practice.javafx.drug;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import jp.chang.myclinic.practice.lib.DrugSearchResultModel;
+import jp.chang.myclinic.practice.lib.drug.DrugSearchResultModel;
 
 public class DrugSearchResult extends ListView<DrugSearchResultModel> {
 

@@ -7,7 +7,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
-import jp.chang.myclinic.practice.lib.DrugSearchResultModel;
+import jp.chang.myclinic.practice.lib.drug.DrugSearchResultModel;
+import jp.chang.myclinic.practice.lib.drug.ExampleSearchResult;
+import jp.chang.myclinic.practice.lib.drug.MasterSearchResult;
 
 import java.util.List;
 import java.util.stream.Collectors;

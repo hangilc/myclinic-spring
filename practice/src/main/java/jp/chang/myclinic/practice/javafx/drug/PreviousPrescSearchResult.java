@@ -3,9 +3,9 @@ package jp.chang.myclinic.practice.javafx.drug;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.practice.lib.DrugInputConstraints;
+import jp.chang.myclinic.practice.lib.drug.DrugInputConstraints;
 import jp.chang.myclinic.practice.lib.PracticeLib;
-import jp.chang.myclinic.practice.lib.DrugSearchResultModel;
+import jp.chang.myclinic.practice.lib.drug.DrugSearchResultModel;
 import jp.chang.myclinic.util.DrugUtil;
 
 import java.text.DecimalFormat;

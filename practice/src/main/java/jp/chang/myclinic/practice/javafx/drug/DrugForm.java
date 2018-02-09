@@ -8,10 +8,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.practice.lib.DrugFormGetter;
-import jp.chang.myclinic.practice.lib.DrugFormSetter;
-import jp.chang.myclinic.practice.lib.DrugInputConstraints;
-import jp.chang.myclinic.practice.lib.DrugSearchResultModel;
+import jp.chang.myclinic.practice.lib.drug.DrugFormGetter;
+import jp.chang.myclinic.practice.lib.drug.DrugFormSetter;
+import jp.chang.myclinic.practice.lib.drug.DrugInputConstraints;
+import jp.chang.myclinic.practice.lib.drug.DrugSearchResultModel;
 
 public class DrugForm extends VBox implements DrugFormGetter, DrugFormSetter {
 
@@ -21,7 +21,6 @@ public class DrugForm extends VBox implements DrugFormGetter, DrugFormSetter {
     private int iyakuhincode;
     private String at;
     private DrugInput drugInput;
-    private DrugInputConstraints inputConstraints = new DrugInputConstraints();
 
     public DrugForm(VisitDTO visit){
         super(4);
@@ -46,8 +45,8 @@ public class DrugForm extends VBox implements DrugFormGetter, DrugFormSetter {
         return title;
     }
 
-    DrugInputConstraints getInputConstraints() {
-        return inputConstraints;
+    protected DrugInputConstraints getInputConstraints() {
+        return DrugInputConstraints.defaultDrugInputConstraints();
     }
 
     protected DrugInput createDrugInput(){
@@ -77,7 +76,7 @@ public class DrugForm extends VBox implements DrugFormGetter, DrugFormSetter {
             Hyperlink clearLink = new Hyperlink("クリア");
             enterButton.setOnAction(event -> onEnter(this));
             closeButton.setOnAction(event -> onClose(this));
-            clearLink.setOnAction(event -> clearForm(inputConstraints));
+            clearLink.setOnAction(event -> clearForm(getInputConstraints()));
             hbox.getChildren().addAll(enterButton, closeButton, clearLink);
             vbox.getChildren().add(hbox);
         }
@@ -89,7 +88,7 @@ public class DrugForm extends VBox implements DrugFormGetter, DrugFormSetter {
         drugSearch.setCallback(new DrugSearch.Callback() {
             @Override
             public void onSelect(DrugSearchResultModel searchResultModel) {
-                searchResultModel.stuffInto(DrugForm.this, inputConstraints);
+                searchResultModel.stuffInto(DrugForm.this, getInputConstraints());
             }
         });
         return drugSearch;

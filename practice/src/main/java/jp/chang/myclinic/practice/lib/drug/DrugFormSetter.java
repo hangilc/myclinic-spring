@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.lib;
+package jp.chang.myclinic.practice.lib.drug;
 
 import jp.chang.myclinic.consts.DrugCategory;
 

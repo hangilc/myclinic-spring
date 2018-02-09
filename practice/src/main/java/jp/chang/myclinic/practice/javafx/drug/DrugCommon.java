@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.practice.lib.DrugInputConstraints;
+import jp.chang.myclinic.practice.lib.drug.DrugInputConstraints;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 public class DrugCommon {

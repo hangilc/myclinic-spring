@@ -1,8 +1,9 @@
-package jp.chang.myclinic.practice.lib;
+package jp.chang.myclinic.practice.lib.drug;
 
 import javafx.application.Platform;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.practice.lib.PracticeService;
 
 import java.util.List;
 import java.util.function.Consumer;
