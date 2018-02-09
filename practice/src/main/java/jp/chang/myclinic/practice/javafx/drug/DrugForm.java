@@ -6,14 +6,18 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.DrugDTO;
+import jp.chang.myclinic.practice.lib.DrugFormGetter;
 import jp.chang.myclinic.practice.lib.GuiUtil;
 
 public class DrugForm extends VBox {
 
+    private int drugId;
     private int patientId;
     private int visitId;
     private String at;
+    private DrugInput drugInput;
     private DrugInputModel inputModel = new DrugInputModel();
     private InputConstraints inputConstraints = new InputConstraints();
 
@@ -48,7 +52,7 @@ public class DrugForm extends VBox {
     }
 
     private Node createDisp(){
-        DrugInput drugInput = createDrugInput();
+        this.drugInput = createDrugInput();
         DrugCommon.bindDrugInputAndModel(drugInput, inputModel);
         return drugInput;
     }
@@ -95,6 +99,45 @@ public class DrugForm extends VBox {
             }
         });
         return drugSearch;
+    }
+
+    protected DrugFormGetter createDrugFormGetter(){
+        return new DrugFormGetter() {
+            @Override
+            public int getDrugId() {
+                return drugId;
+            }
+
+            @Override
+            public int getVisitId() {
+                return visitId;
+            }
+
+            @Override
+            public int getIyakuhincode() {
+                return drugInput.();
+            }
+
+            @Override
+            public String getAmount() {
+                return null;
+            }
+
+            @Override
+            public String getUsage() {
+                return null;
+            }
+
+            @Override
+            public String getDays() {
+                return null;
+            }
+
+            @Override
+            public DrugCategory getCategory() {
+                return null;
+            }
+        }
     }
 
 }
