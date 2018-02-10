@@ -37,7 +37,7 @@ public class Record extends VBox {
         right.setStyle("-fx-padding: 5");
         hbox.getChildren().addAll(left, right);
         left.getChildren().add(new RecordTextsPane(visit.texts, visit.visit.visitId));
-        drugsPane = new RecordDrugsPane(visit.drugs, visit.visit.patientId, visit.visit.visitId, visit.visit.visitedAt);
+        drugsPane = new RecordDrugsPane(visit.drugs, visit.visit);
         right.getChildren().addAll(
                 new RecordHoken(visit.hoken, visit.visit),
                 drugsPane,

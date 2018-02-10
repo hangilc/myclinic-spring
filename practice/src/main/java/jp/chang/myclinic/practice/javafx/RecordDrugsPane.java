@@ -4,6 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.drug.DrugMenu;
 
 import java.util.List;
@@ -12,9 +13,9 @@ public class RecordDrugsPane extends VBox {
 
     private int index = 1;
 
-    public RecordDrugsPane(List<DrugFullDTO> drugs, int patientId, int visitId, String at){
+    public RecordDrugsPane(List<DrugFullDTO> drugs, VisitDTO visit){
         setAlignment(Pos.TOP_LEFT);
-        DrugMenu menu = new DrugMenu(patientId, visitId, at);
+        DrugMenu menu = new DrugMenu(visit);
         getChildren().add(menu);
         drugs.forEach(this::addDrug);
     }

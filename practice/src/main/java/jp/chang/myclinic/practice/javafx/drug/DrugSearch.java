@@ -10,6 +10,7 @@ import jp.chang.myclinic.practice.lib.RadioButtonGroup;
 import jp.chang.myclinic.practice.lib.drug.DrugSearchResultModel;
 import jp.chang.myclinic.practice.lib.drug.ExampleSearchResult;
 import jp.chang.myclinic.practice.lib.drug.MasterSearchResult;
+import jp.chang.myclinic.practice.lib.drug.PreviousPrescSearchResult;
 
 import java.util.List;
 import java.util.stream.Collectors;

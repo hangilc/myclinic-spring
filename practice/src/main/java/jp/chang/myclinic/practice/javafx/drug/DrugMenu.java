@@ -10,46 +10,41 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
-import jp.chang.myclinic.practice.lib.drug.DrugsCopier;
 import jp.chang.myclinic.practice.lib.GuiUtil;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
+import jp.chang.myclinic.practice.lib.drug.DrugsCopier;
 
 import java.util.List;
 
 public class DrugMenu extends VBox {
 
-    private int patientId;
-    private int visitId;
-    private String at;
     private StackPane workarea = new StackPane();
 
-    public DrugMenu(int patientId, int visitId, String at){
+    public DrugMenu(VisitDTO visit) {
         super(4);
-        this.patientId = patientId;
-        this.visitId = visitId;
-        this.at = at;
         workarea.setVisible(false);
         workarea.setManaged(false);
         getChildren().addAll(
-                createMenu(),
+                createMenu(visit),
                 workarea
         );
     }
 
-    private Node createMenu(){
+    private Node createMenu(VisitDTO visit) {
         HBox hbox = new HBox(4);
         Hyperlink mainMenu = new Hyperlink("[処方]");
         Hyperlink auxMenuLink = new Hyperlink("[+]");
         mainMenu.setOnAction(event -> {
-            if( isWorkareaEmpty() ) {
-                if( !PracticeUtil.confirmCurrentVisitAction(visitId, "処方を追加しますか？") ){
+            if (isWorkareaEmpty()) {
+                if (!PracticeUtil.confirmCurrentVisitAction(visit.visitId, "処方を追加しますか？")) {
                     return;
                 }
-                DrugForm form = new DrugEnterForm(patientId, visitId, at) {
+                DrugForm form = new DrugEnterForm(visit) {
                     @Override
                     protected void onClose(DrugForm form) {
                         hideWorkarea();
@@ -59,8 +54,8 @@ public class DrugMenu extends VBox {
             }
         });
         auxMenuLink.setOnMouseClicked(event -> {
-            if( isWorkareaEmpty() ) {
-                ContextMenu contextMenu = createAuxMenu();
+            if (isWorkareaEmpty()) {
+                ContextMenu contextMenu = createAuxMenu(visit.visitId);
                 contextMenu.show(auxMenuLink, event.getScreenX(), event.getScreenY());
             }
         });
@@ -68,22 +63,22 @@ public class DrugMenu extends VBox {
         return hbox;
     }
 
-    private ContextMenu createAuxMenu(){
+    private ContextMenu createAuxMenu(int visitId) {
         ContextMenu menu = new ContextMenu();
         menu.getItems().addAll(
-            createCopyAllMenuItem(),
-                createCopySelectedMenuItem(),
-                createModifyDaysMenuItem(),
-                createDeleteSelectedMenuItem()
+                createCopyAllMenuItem(visitId),
+                createCopySelectedMenuItem(visitId),
+                createModifyDaysMenuItem(visitId),
+                createDeleteSelectedMenuItem(visitId)
         );
         return menu;
     }
 
-    private MenuItem createCopyAllMenuItem(){
+    private MenuItem createCopyAllMenuItem(int visitId) {
         MenuItem item = new MenuItem("全部コピー");
         item.setOnAction(event -> {
             int targetVisitId = PracticeUtil.findCopyTarget();
-            if( targetVisitId == 0 || targetVisitId == visitId ){
+            if (targetVisitId == 0 || targetVisitId == visitId) {
                 GuiUtil.alertError("コピー先を見つけられませんでした。");
                 return;
             }
@@ -91,27 +86,28 @@ public class DrugMenu extends VBox {
                     .thenAccept(drugs -> {
                         new DrugsCopier(targetVisitId, drugs,
                                 enteredDrug -> fireEvent(new DrugEnteredEvent(enteredDrug)),
-                                () -> { }
-                                );
+                                () -> {
+                                }
+                        );
                     });
         });
         return item;
     }
 
-    private MenuItem createCopySelectedMenuItem(){
+    private MenuItem createCopySelectedMenuItem(int visitId) {
         MenuItem item = new MenuItem("部分コピー");
         item.setOnAction(evt -> {
-            if( !isWorkareaEmpty() ){
+            if (!isWorkareaEmpty()) {
                 return;
             }
             int targetVisitId = PracticeUtil.findCopyTarget();
-            if( targetVisitId == 0 || targetVisitId == visitId ){
+            if (targetVisitId == 0 || targetVisitId == visitId) {
                 GuiUtil.alertError("コピー先を見つけられませんでした。");
                 return;
             }
             PracticeService.listDrugFull(visitId)
                     .thenAccept(drugs -> {
-                        CopySelectedForm form = new CopySelectedForm(drugs){
+                        CopySelectedForm form = new CopySelectedForm(drugs) {
                             @Override
                             protected void onEnter(List<DrugFullDTO> selected) {
                                 new DrugsCopier(targetVisitId, selected,
@@ -131,16 +127,16 @@ public class DrugMenu extends VBox {
         return item;
     }
 
-    private MenuItem createModifyDaysMenuItem(){
+    private MenuItem createModifyDaysMenuItem(int visitId) {
         MenuItem item = new MenuItem("日数変更");
         item.setOnAction(evt -> {
-            if( !isWorkareaEmpty() ){
+            if (!isWorkareaEmpty()) {
                 return;
             }
-            if( PracticeUtil.confirmCurrentVisitAction(visitId, "処方に日数を変更しますか？") ){
+            if (PracticeUtil.confirmCurrentVisitAction(visitId, "処方に日数を変更しますか？")) {
                 PracticeService.listDrugFull(visitId)
                         .thenAccept(drugs -> {
-                            ModifyDaysForm form = new ModifyDaysForm(drugs){
+                            ModifyDaysForm form = new ModifyDaysForm(drugs) {
                                 @Override
                                 protected void onEnter(List<DrugDTO> drugs, int days) {
                                     PracticeService.modifyDrugDays(drugs, days)
@@ -164,20 +160,20 @@ public class DrugMenu extends VBox {
         return item;
     }
 
-    private MenuItem createDeleteSelectedMenuItem(){
+    private MenuItem createDeleteSelectedMenuItem(int visitId) {
         MenuItem item = new MenuItem("複数削除");
         item.setOnAction(evt -> {
-            if( !isWorkareaEmpty() ){
+            if (!isWorkareaEmpty()) {
                 return;
             }
-            if( PracticeUtil.confirmCurrentVisitAction(visitId, "複数の処方を削除しますか？") ) {
+            if (PracticeUtil.confirmCurrentVisitAction(visitId, "複数の処方を削除しますか？")) {
                 PracticeService.listDrugFull(visitId)
                         .thenAccept(drugs -> {
-                            DeleteSelectedForm form = new DeleteSelectedForm(drugs){
+                            DeleteSelectedForm form = new DeleteSelectedForm(drugs) {
                                 @Override
                                 protected void onDelete(List<DrugDTO> drugs) {
                                     PracticeService.batchDeleteDrugs(drugs)
-                                            .thenAccept(result -> Platform.runLater(() ->{
+                                            .thenAccept(result -> Platform.runLater(() -> {
                                                 drugs.forEach(drug -> {
                                                     DrugDeletedEvent e = new DrugDeletedEvent(drug);
                                                     DrugMenu.this.fireEvent(e);
@@ -198,17 +194,17 @@ public class DrugMenu extends VBox {
         return item;
     }
 
-    private boolean isWorkareaEmpty(){
+    private boolean isWorkareaEmpty() {
         return workarea.getChildren().size() == 0;
     }
 
-    private void showWorkarea(Node content){
+    private void showWorkarea(Node content) {
         workarea.getChildren().add(content);
         workarea.setManaged(true);
         workarea.setVisible(true);
     }
 
-    private void hideWorkarea(){
+    private void hideWorkarea() {
         workarea.getChildren().clear();
         workarea.setVisible(false);
         workarea.setManaged(false);

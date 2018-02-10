@@ -88,7 +88,7 @@ public class DrugForm extends VBox implements DrugFormGetter, DrugFormSetter {
         drugSearch.setCallback(new DrugSearch.Callback() {
             @Override
             public void onSelect(DrugSearchResultModel searchResultModel) {
-                searchResultModel.stuffInto(DrugForm.this, getInputConstraints());
+                searchResultModel.stuffInto(DrugForm.this, DrugForm.this, getInputConstraints());
             }
         });
         return drugSearch;
