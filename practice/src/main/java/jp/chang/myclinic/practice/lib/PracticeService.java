@@ -113,6 +113,14 @@ public class PracticeService {
         );
     }
 
+    public static CompletableFuture<Boolean> deleteDrug(DrugDTO drug){
+        return addExceptionHandler(
+                Service.api.deleteDrug(drug.drugId),
+                "Failed to delete drug.",
+                "処方の削除に失敗しました。"
+        );
+    }
+
     public static CompletableFuture<DrugFullDTO> getDrugFull(int drugId){
         return addExceptionHandler(
                 Service.api.getDrugFull(drugId),

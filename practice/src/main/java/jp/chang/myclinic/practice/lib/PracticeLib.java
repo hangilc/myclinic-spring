@@ -243,6 +243,11 @@ public class PracticeLib {
                 .thenAccept(updatedDrug -> Platform.runLater(() -> cb.accept(updatedDrug)));
     }
 
+    public static void deleteDrug(DrugDTO drug, Runnable cb){
+        PracticeService.deleteDrug(drug)
+                .thenAccept(result -> Platform.runLater(cb));
+    }
+
     public static void resolveIyakuhinMaster(int iyakuhincode, String at, Consumer<IyakuhinMasterDTO> cb) {
         if (at.length() > 10) {
             at = at.substring(0, 10);

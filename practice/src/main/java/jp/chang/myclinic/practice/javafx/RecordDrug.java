@@ -9,6 +9,7 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.drug.DrugEditForm;
 import jp.chang.myclinic.practice.javafx.drug.DrugForm;
+import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.practice.lib.GuiUtil;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.drug.DrugFormHelper;
@@ -75,6 +76,11 @@ class RecordDrug extends StackPane {
             @Override
             protected void onClose(DrugForm self) {
                 showDisp();
+            }
+
+            @Override
+            protected void onDeleted() {
+                RecordDrug.this.fireEvent(new DrugDeletedEvent(drug.drug));
             }
         };
         getChildren().remove(disp);
