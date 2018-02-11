@@ -263,14 +263,14 @@ public class PracticeLib {
     public static CompletableFuture<DrugFullDTO> apiGetDrugFull(int drugId) {
         return Service.api.getDrugFull(drugId)
                 .whenComplete((drug, ex) -> {
-                    if( ex != null ) {
+                    if (ex != null) {
                         logger.error("Failed to get drug full.", ex);
                         Platform.runLater(() -> GuiUtil.alertException("薬剤情報の取得に失敗しました。", ex));
                     }
                 });
     }
 
-    public static CompletableFuture<DrugFullDTO> copyDrug(int targetVisitId, String at, DrugDTO srcDrug){
+    public static CompletableFuture<DrugFullDTO> copyDrug(int targetVisitId, String at, DrugDTO srcDrug) {
         return PracticeService.resolveIyakuhinMaster(srcDrug.iyakuhincode, at)
                 .thenCompose(master -> {
                     DrugDTO newDrug = DrugDTO.copy(srcDrug);

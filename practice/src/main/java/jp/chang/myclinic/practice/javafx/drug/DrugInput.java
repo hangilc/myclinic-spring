@@ -1,7 +1,6 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -13,26 +12,30 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
+import jp.chang.myclinic.practice.lib.drug.DrugFormGetter;
+import jp.chang.myclinic.practice.lib.drug.DrugFormSetter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DrugInput extends GridPane {
+class DrugInput extends GridPane implements DrugFormGetter, DrugFormSetter {
 
+    private int iyakuhincode = 0;
+    private Text drugNameLabel = new Text("");
     private Label amountLabel;
+    private TextField amountInput = new TextField();
+    private Label amountUnitLabel = new Label("");
+    private TextField usageInput = new TextField();
+    private HBox daysRow;
     private Label daysLabel;
+    private TextField daysInput = new TextField();
     private Label daysUnit;
     private List<Node> daysList = new ArrayList<>();
-    private StringProperty drugName;
-    private StringProperty amount;
-    private StringProperty amountUnit;
-    private StringProperty usage;
-    private StringProperty days;
     private ObjectProperty<DrugCategory> category;
-    private StringProperty comment;
+    private Text commentText = new Text("");
 
-    public DrugInput(){
+    DrugInput() {
         getStyleClass().add("drug-input");
         setupName();
         setupAmount();
@@ -42,124 +45,101 @@ public class DrugInput extends GridPane {
         setupCategory();
     }
 
-    public String getDrugName() {
-        return drugName.get();
+    void addToDaysRow(Node ...nodes){
+        daysRow.getChildren().addAll(nodes);
     }
 
-    public StringProperty drugNameProperty() {
-        return drugName;
+    @Override
+    public int getIyakuhincode() {
+        return iyakuhincode;
     }
 
-    public void setDrugName(String drugName) {
-        this.drugName.set(drugName);
+    @Override
+    public void setIyakuhincode(int iyakuhincode) {
+        this.iyakuhincode = iyakuhincode;
     }
 
-    public DrugCategory getCategory() {
-        return category.get();
-    }
-
-    public ObjectProperty<DrugCategory> categoryProperty() {
-        return category;
-    }
-
-    public void setCategory(DrugCategory category) {
-        this.category.set(category);
-    }
-
+    @Override
     public String getAmount() {
-        return amount.get();
+        return amountInput.getText();
     }
 
-    public StringProperty amountProperty() {
-        return amount;
-    }
-
-    public void setAmount(String amount) {
-        this.amount.set(amount);
-    }
-
-    public String getAmountUnit() {
-        return amountUnit.get();
-    }
-
-    public StringProperty amountUnitProperty() {
-        return amountUnit;
-    }
-
-    public void setAmountUnit(String amountUnit) {
-        this.amountUnit.set(amountUnit);
-    }
-
+    @Override
     public String getUsage() {
-        return usage.get();
+        return usageInput.getText();
     }
 
-    public StringProperty usageProperty() {
-        return usage;
-    }
-
-    public void setUsage(String usage) {
-        this.usage.set(usage);
-    }
-
+    @Override
     public String getDays() {
-        return days.get();
+        return daysInput.getText();
     }
 
-    public StringProperty daysProperty() {
-        return days;
+    @Override
+    public DrugCategory getCategory() {
+        return category.getValue();
     }
 
-    public void setDays(String days) {
-        this.days.set(days);
+    @Override
+    public void setDrugName(String name) {
+        drugNameLabel.setText(name);
     }
 
-    public String getComment() {
-        return comment.get();
+    @Override
+    public void setAmount(String value) {
+        amountInput.setText(value);
     }
 
-    public StringProperty commentProperty() {
-        return comment;
+    @Override
+    public void setAmountUnit(String value) {
+        amountUnitLabel.setText(value);
     }
 
+    @Override
+    public void setUsage(String value) {
+        usageInput.setText(value);
+    }
+
+    @Override
+    public void setDays(String value) {
+        daysInput.setText(value);
+    }
+
+    @Override
+    public void setCategory(DrugCategory category) {
+        this.category.setValue(category);
+    }
+
+    @Override
     public void setComment(String comment) {
-        this.comment.set(comment);
+        commentText.setText(comment);
     }
 
-    private void setupName(){
+    private void setupName() {
         add(new Label("名称："), 0, 0);
-        Text drugNameLabel = new Text("");
         TextFlow wrapper = new TextFlow();
         wrapper.getChildren().add(drugNameLabel);
         add(wrapper, 1, 0);
-        drugName = drugNameLabel.textProperty();
     }
 
-    private void setupAmount(){
+    private void setupAmount() {
         amountLabel = new Label("用量：");
-        TextField amountInput = new TextField();
         amountInput.getStyleClass().add("amount-input");
-        Label amountUnitInput = new Label("");
         add(amountLabel, 0, 1);
         HBox hbox = new HBox(4);
-        hbox.getChildren().addAll(amountInput, amountUnitInput);
+        hbox.getChildren().addAll(amountInput, amountUnitLabel);
         add(hbox, 1, 1);
-        amount = amountInput.textProperty();
-        amountUnit = amountUnitInput.textProperty();
     }
 
-    private void setupUsage(){
+    private void setupUsage() {
         add(new Label("用法："), 0, 2);
-        TextField usageInput = new TextField();
         Hyperlink exampleLink = new Hyperlink("例");
         HBox hbox = new HBox(4);
         hbox.getChildren().addAll(usageInput, exampleLink);
         exampleLink.setOnMousePressed(event -> doExample(event, exampleLink));
         add(hbox, 1, 2);
-        usage = usageInput.textProperty();
     }
 
-    private void doExample(MouseEvent event, Node anchor){
+    private void doExample(MouseEvent event, Node anchor) {
         ContextMenu contextMenu = new ContextMenu();
         List<String> examples = Arrays.asList(
                 "分１　朝食後",
@@ -175,7 +155,7 @@ public class DrugInput extends GridPane {
         contextMenu.show(anchor, event.getScreenX(), event.getScreenY());
     }
 
-    private void setupDays(){
+    private void setupDays() {
         daysLabel = new Label("日数：");
         add(daysLabel, 0, 3);
         HBox hbox = new HBox(4);
@@ -184,26 +164,23 @@ public class DrugInput extends GridPane {
         daysList.add(daysLabel);
         daysList.add(hbox);
         add(hbox, 1, 3);
+        daysRow = hbox;
     }
 
-    protected void setupDaysInputArea(ObservableList<Node> children){
-        TextField daysInput = new TextField();
+    protected void setupDaysInputArea(ObservableList<Node> children) {
         daysInput.getStyleClass().add("days-input");
         daysUnit = new Label("日分");
         children.addAll(daysInput, daysUnit);
-        days = daysInput.textProperty();
     }
 
-    private void setupComment(){
-        Text commentText = new Text("");
+    private void setupComment() {
         TextFlow wrapper = new TextFlow();
         wrapper.getChildren().add(commentText);
-        comment = commentText.textProperty();
         add(new Label("注釈："), 0, 4);
         add(wrapper, 1, 4);
     }
 
-    private void setupCategory(){
+    private void setupCategory() {
         HBox hbox = new HBox(4);
         RadioButtonGroup<DrugCategory> categoryButtons = new RadioButtonGroup<>();
         categoryButtons.createRadioButton("内服", DrugCategory.Naifuku);
@@ -215,10 +192,10 @@ public class DrugInput extends GridPane {
         add(hbox, 0, 5, 2, 1);
     }
 
-    private void adaptToCategory(){
+    private void adaptToCategory() {
         DrugCategory cat = category.getValue();
-        if( cat != null ){
-            switch(cat){
+        if (cat != null) {
+            switch (cat) {
                 case Naifuku: {
                     amountLabel.setText("用量：");
                     daysLabel.setText("日数：");
@@ -242,7 +219,7 @@ public class DrugInput extends GridPane {
         }
     }
 
-    private void setDaysVisible(boolean visible){
+    private void setDaysVisible(boolean visible) {
         daysList.forEach(n -> n.setVisible(visible));
     }
 

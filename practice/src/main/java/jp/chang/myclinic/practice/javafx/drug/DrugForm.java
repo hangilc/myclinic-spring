@@ -6,36 +6,39 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.lib.drug.DrugFormGetter;
-import jp.chang.myclinic.practice.lib.drug.DrugFormSetter;
+import jp.chang.myclinic.practice.lib.drug.DrugFormHelper;
 import jp.chang.myclinic.practice.lib.drug.DrugInputConstraints;
 import jp.chang.myclinic.practice.lib.drug.DrugSearchResultModel;
 
-public class DrugForm extends VBox implements DrugFormGetter, DrugFormSetter {
+class DrugForm extends VBox {
 
-    private int patientId;
-    private int drugId;
-    private int visitId;
-    private int iyakuhincode;
-    private String at;
-    private DrugInput drugInput;
+    private DrugInput drugInput = new DrugInput();
+    private DrugInputConstraints constraints = DrugInputConstraints.defaultDrugInputConstraints();
 
-    public DrugForm(VisitDTO visit){
+    DrugForm(VisitDTO visit){
         super(4);
-        this.patientId = visit.patientId;
-        this.drugId = 0;
-        this.visitId = visit.visitId;
-        this.at = visit.visitedAt;
         getStyleClass().add("drug-form");
         getStyleClass().add("form");
         getChildren().addAll(
                 createTitle(),
-                createDisp(),
+                drugInput,
                 createButtons(),
-                createSearch()
+                createSearch(visit.patientId, visit.visitedAt)
         );
+    }
+
+    void setConstraints(DrugInputConstraints constraints) {
+        this.constraints = constraints;
+    }
+
+    void addToDaysRow(Node ...nodes){
+        drugInput.addToDaysRow(nodes);
+    }
+
+    DrugFormGetter getDrugFormGetter(){
+        return drugInput;
     }
 
     private Node createTitle(){
@@ -43,19 +46,6 @@ public class DrugForm extends VBox implements DrugFormGetter, DrugFormSetter {
         title.setMaxWidth(Double.MAX_VALUE);
         title.getStyleClass().add("title");
         return title;
-    }
-
-    protected DrugInputConstraints getInputConstraints() {
-        return DrugInputConstraints.defaultDrugInputConstraints();
-    }
-
-    protected DrugInput createDrugInput(){
-        return new DrugInput();
-    }
-
-    private Node createDisp(){
-        this.drugInput = createDrugInput();
-        return drugInput;
     }
 
     protected void onEnter(DrugForm self){
@@ -76,106 +66,22 @@ public class DrugForm extends VBox implements DrugFormGetter, DrugFormSetter {
             Hyperlink clearLink = new Hyperlink("クリア");
             enterButton.setOnAction(event -> onEnter(this));
             closeButton.setOnAction(event -> onClose(this));
-            clearLink.setOnAction(event -> clearForm(getInputConstraints()));
+            clearLink.setOnAction(event -> DrugFormHelper.clear(drugInput, constraints));
             hbox.getChildren().addAll(enterButton, closeButton, clearLink);
             vbox.getChildren().add(hbox);
         }
         return vbox;
     }
 
-    private Node createSearch(){
+    private Node createSearch(int patientId, String at){
         DrugSearch drugSearch = new DrugSearch(patientId, at);
         drugSearch.setCallback(new DrugSearch.Callback() {
             @Override
             public void onSelect(DrugSearchResultModel searchResultModel) {
-                searchResultModel.stuffInto(DrugForm.this, DrugForm.this, getInputConstraints());
+                searchResultModel.stuffInto(drugInput, drugInput, constraints);
             }
         });
         return drugSearch;
     }
 
-    @Override
-    public int getDrugId() {
-        return drugId;
-    }
-
-    @Override
-    public int getVisitId() {
-        return visitId;
-    }
-
-    @Override
-    public int getIyakuhincode() {
-        return iyakuhincode;
-    }
-
-    @Override
-    public String getAmount() {
-        return drugInput.getAmount();
-    }
-
-    @Override
-    public String getUsage() {
-        return drugInput.getUsage();
-    }
-
-    @Override
-    public String getDays() {
-        return drugInput.getDays();
-    }
-
-    @Override
-    public DrugCategory getCategory() {
-        return drugInput.getCategory();
-    }
-
-    @Override
-    public void setDrugId(int drugId) {
-        this.drugId = drugId;
-    }
-
-    @Override
-    public void setVisitId(int visitId) {
-        this.visitId = visitId;
-    }
-
-    @Override
-    public void setIyakuhincode(int iyakuhincode) {
-        this.iyakuhincode = iyakuhincode;
-    }
-
-    @Override
-    public void setDrugName(String name) {
-        drugInput.setDrugName(name);
-    }
-
-    @Override
-    public void setAmount(String value) {
-        drugInput.setAmount(value);
-    }
-
-    @Override
-    public void setAmountUnit(String value) {
-        drugInput.setAmountUnit(value);
-    }
-
-    @Override
-    public void setUsage(String value) {
-        drugInput.setUsage(value);
-    }
-
-    @Override
-    public void setDays(String value) {
-        drugInput.setDays(value);
-    }
-
-    @Override
-    public void setCategory(DrugCategory category) {
-        drugInput.setCategory(category);
-    }
-
-    @Override
-    public void setComment(String comment) {
-        drugInput.setComment(comment);
-    }
 }

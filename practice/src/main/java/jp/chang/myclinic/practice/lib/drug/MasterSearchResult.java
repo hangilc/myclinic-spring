@@ -18,20 +18,7 @@ public class MasterSearchResult implements DrugSearchResultModel {
 
     @Override
     public void stuffInto(DrugFormSetter setter, DrugFormGetter getter, DrugInputConstraints constraints) {
-        setter.setIyakuhincode(master.iyakuhincode);
-        setter.setDrugName(master.name);
-        if( !constraints.isAmountFixed() ) {
-            setter.setAmount("");
-        }
-        setter.setAmountUnit(master.unit);
-        if( !constraints.isUsageFixed() ) {
-            setter.setUsage("");
-        }
-        if( !constraints.isDaysFixed() ) {
-            setter.setDays("");
-        }
-        setter.setCategory(PracticeUtil.zaikeiToCategory(master.zaikei));
-        setter.setComment("");
+        DrugFormHelper.setMaster(setter, master, getter, constraints);
     }
 
 }
