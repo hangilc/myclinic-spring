@@ -11,7 +11,7 @@ class RecordConductsPane extends VBox {
         conducts.forEach(this::addConduct);
     }
 
-    private void addConduct(ConductFullDTO conduct){
+    public void addConduct(ConductFullDTO conduct){
         getChildren().add(new RecordConduct(conduct));
     }
 }

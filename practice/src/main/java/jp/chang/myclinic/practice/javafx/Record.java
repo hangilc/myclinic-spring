@@ -3,14 +3,14 @@ package jp.chang.myclinic.practice.javafx;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.dto.*;
 
 public class Record extends VBox {
 
     private int visitId;
     private RecordDrugsPane drugsPane;
+    private RecordShinryouPane shinryouPane;
+    private RecordConductsPane conductsPane;
 
     public Record(VisitFull2DTO visit){
         this.visitId = visit.visit.visitId;
@@ -38,11 +38,13 @@ public class Record extends VBox {
         hbox.getChildren().addAll(left, right);
         left.getChildren().add(new RecordTextsPane(visit.texts, visit.visit.visitId));
         drugsPane = new RecordDrugsPane(visit.drugs, visit.visit);
+        shinryouPane = new RecordShinryouPane(visit.shinryouList, visit.visit);
+        conductsPane = new RecordConductsPane(visit.conducts);
         right.getChildren().addAll(
                 new RecordHoken(visit.hoken, visit.visit),
                 drugsPane,
-                new RecordShinryouPane(visit.shinryouList, visit.visit),
-                new RecordConductsPane(visit.conducts),
+                shinryouPane,
+                conductsPane,
                 new RecordCharge(visit.charge)
         );
         return hbox;
@@ -59,4 +61,13 @@ public class Record extends VBox {
     public void deleteDrug(int drugId) {
         drugsPane.deleteDrug(drugId);
     }
+
+    public void insertShinryou(ShinryouFullDTO shinryou){
+        shinryouPane.insertShinryou(shinryou);
+    }
+
+    public void addConduct(ConductFullDTO conduct){
+        conductsPane.addConduct(conduct);
+    }
+
 }

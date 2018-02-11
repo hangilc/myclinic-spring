@@ -6,6 +6,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 public class ShinryouMenu extends VBox {
 
@@ -29,10 +30,6 @@ public class ShinryouMenu extends VBox {
         return hbox;
     }
 
-    private Node createWorkarea(){
-        return workarea;
-    }
-
     private Node createMainMenu(){
         Hyperlink mainLink = new Hyperlink("[診療行為]");
         mainLink.setOnAction(event -> doMainMenu());
@@ -47,13 +44,20 @@ public class ShinryouMenu extends VBox {
 
     private void doMainMenu(){
         if( isWorkareaEmpty() ) {
-            AddRegularForm form = new AddRegularForm(visitId){
-                @Override
-                void onCancel() {
-                    hideWorkarea();
-                }
-            };
-            showWorkarea(form);
+            if( PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？") ) {
+                AddRegularForm form = new AddRegularForm(visitId) {
+                    @Override
+                    void onEntered(AddRegularForm form) {
+                        hideWorkarea();
+                    }
+
+                    @Override
+                    void onCancel() {
+                        hideWorkarea();
+                    }
+                };
+                showWorkarea(form);
+            }
         }
     }
 

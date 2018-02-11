@@ -19,14 +19,13 @@ class RecordShinryouPane extends VBox {
                 createShinryouList()
         );
         shinryouList.forEach(this::addShinryou);
-        addEventHandler(ShinryouEnteredEvent.eventType, this::onShinryouEntered);
     }
 
     private void addShinryou(ShinryouFullDTO shinryou){
         shinryouList.getChildren().add(new RecordShinryou(shinryou));
     }
 
-    private void insertShinryou(ShinryouFullDTO shinryou){
+    public void insertShinryou(ShinryouFullDTO shinryou){
         int i = 0;
         int shinryoucode = shinryou.shinryou.shinryoucode;
         RecordShinryou newRecordShinryou = new RecordShinryou(shinryou);

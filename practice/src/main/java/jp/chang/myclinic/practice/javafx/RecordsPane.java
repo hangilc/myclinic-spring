@@ -2,11 +2,11 @@ package jp.chang.myclinic.practice.javafx;
 
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
-import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
-import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
-import jp.chang.myclinic.practice.javafx.events.EventTypes;
+import jp.chang.myclinic.practice.javafx.events.*;
 
 public class RecordsPane extends VBox {
 
@@ -20,6 +20,8 @@ public class RecordsPane extends VBox {
         });
         addEventHandler(EventTypes.drugDaysModifiedEventType, this::drugDaysModified);
         addEventHandler(EventTypes.drugDeletedEventType, this::drugDeleted);
+        addEventHandler(ShinryouEnteredEvent.eventType, this::onShinryouEntered);
+        addEventHandler(ConductEnteredEvent.eventType, this::onConductEntered);
     }
 
     public void addRecord(VisitFull2DTO visit){
@@ -64,6 +66,22 @@ public class RecordsPane extends VBox {
         Record record = findRecord(event.getVisitId());
         if( record != null ){
             record.deleteDrug(event.getDrugId());
+        }
+    }
+
+    private void onShinryouEntered(ShinryouEnteredEvent event){
+        ShinryouFullDTO shinryou = event.getShinryou();
+        Record record = findRecord(shinryou.shinryou.visitId);
+        if( record != null ){
+            record.insertShinryou(shinryou);
+        }
+    }
+
+    private void onConductEntered(ConductEnteredEvent event){
+        ConductFullDTO conduct = event.getConduct();
+        Record record = findRecord(conduct.conduct.visitId);
+        if( record != null ){
+            record.addConduct(conduct);
         }
     }
 
