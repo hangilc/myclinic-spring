@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.lib.shinryou;
 public class RegularShinryou {
 
     private static String[] leftItems = new String[]{
+            "初診",
             "再診",
             "外来管理加算",
             "特定疾患管理",

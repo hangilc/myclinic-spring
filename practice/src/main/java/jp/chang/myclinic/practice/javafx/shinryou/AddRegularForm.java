@@ -9,7 +9,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.practice.lib.PracticeLib;
+import jp.chang.myclinic.dto.ConductFullDTO;
+import jp.chang.myclinic.dto.ShinryouFullDTO;
+import jp.chang.myclinic.practice.javafx.FunJavaFX;
+import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
+import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.practice.lib.shinryou.RegularShinryou;
 
@@ -95,13 +99,26 @@ class AddRegularForm extends VBox {
         return hbox;
     }
 
+    void onEntered(AddRegularForm form){
+
+    }
+
     private void doEnter(){
         List<String> selected = checks.stream().filter(CheckBox::isSelected).map(CheckBox::getText)
                 .collect(Collectors.toList());
-        PracticeLib.batchEnterShinryouByNames(selected, visitId, (shinryouList, conductList) -> {
-            System.out.println("entered shinryou: " + shinryouList);
-            System.out.println("entered conduct: " + conductList);
+        FunJavaFX.INSTANCE.batchEnterShinryouByNames(selected, visitId, (shinryouList, conductList) -> {
+            shinryouList.forEach(this::fireShinryouEnteredEvent);
+            conductList.forEach(this::fireConductEnteredEvent);
+            onEntered(AddRegularForm.this);
         });
+    }
+
+    private void fireShinryouEnteredEvent(ShinryouFullDTO shinryou){
+        fireEvent(new ShinryouEnteredEvent(shinryou));
+    }
+
+    private void fireConductEnteredEvent(ConductFullDTO conduct){
+        fireEvent(new ConductEnteredEvent(conduct));
     }
 
     void onCancel(){

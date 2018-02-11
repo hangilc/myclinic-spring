@@ -7,10 +7,8 @@ import jp.chang.myclinic.practice.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class PracticeLib {
@@ -283,28 +281,5 @@ public class PracticeLib {
                 });
     }
 
-    private static class BatchEnterShinryouByNamesStore {
-        BatchEnterResultDTO result;
-        List<ShinryouFullDTO> shinryouList;
-    }
-
-    public static void batchEnterShinryouByNames(List<String> names, int visitId,
-                                                 BiConsumer<List<ShinryouFullDTO>, List<ConductFullDTO>> cb){
-        BatchEnterShinryouByNamesStore store = new BatchEnterShinryouByNamesStore();
-        PracticeService.batchEnterShinryouByName(names, visitId)
-                .thenCompose(result -> {
-                    store.result = result;
-                    return PracticeService.listShinryouFullByIds(result.shinryouIds);
-                })
-                .thenCompose(shinryouList -> {
-                    store.shinryouList = shinryouList;
-                    if( store.result.conductIds.size() == 0 ){
-                        return CompletableFuture.completedFuture(Collections.emptyList());
-                    } else {
-                        return PracticeService.listConductFullByIds(store.result.conductIds);
-                    }
-                })
-                .thenAccept(conductList -> Platform.runLater(() -> cb.accept(store.shinryouList, conductList)));
-    }
 
 }
