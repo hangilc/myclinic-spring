@@ -105,6 +105,14 @@ public class PracticeService {
         );
     }
 
+    public static CompletableFuture<Boolean> updateDrug(DrugDTO drug){
+        return addExceptionHandler(
+                Service.api.updateDrug(drug),
+                "Failed to update drug.",
+                "処方内容の変更に失敗しました。"
+        );
+    }
+
     public static CompletableFuture<DrugFullDTO> getDrugFull(int drugId){
         return addExceptionHandler(
                 Service.api.getDrugFull(drugId),

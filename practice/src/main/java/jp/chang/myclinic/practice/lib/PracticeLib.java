@@ -237,6 +237,12 @@ public class PracticeLib {
                 .thenAccept(drugFull -> Platform.runLater(() -> cb.accept(drugFull)));
     }
 
+    public static void updateDrug(DrugDTO drug, Consumer<DrugFullDTO> cb){
+        PracticeService.updateDrug(drug)
+                .thenCompose(result -> PracticeService.getDrugFull(drug.drugId))
+                .thenAccept(updatedDrug -> Platform.runLater(() -> cb.accept(updatedDrug)));
+    }
+
     public static void resolveIyakuhinMaster(int iyakuhincode, String at, Consumer<IyakuhinMasterDTO> cb) {
         if (at.length() > 10) {
             at = at.substring(0, 10);
@@ -270,16 +276,4 @@ public class PracticeLib {
                 });
     }
 
-    public static CompletableFuture<DrugFullDTO> copyDrug(int targetVisitId, String at, DrugDTO srcDrug) {
-        return PracticeService.resolveIyakuhinMaster(srcDrug.iyakuhincode, at)
-                .thenCompose(master -> {
-                    DrugDTO newDrug = DrugDTO.copy(srcDrug);
-                    newDrug.drugId = 0;
-                    newDrug.visitId = targetVisitId;
-                    newDrug.iyakuhincode = master.iyakuhincode;
-                    newDrug.prescribed = 0;
-                    return PracticeService.enterDrug(newDrug);
-                })
-                .thenCompose(PracticeService::getDrugFull);
-    }
 }

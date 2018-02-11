@@ -7,12 +7,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.practice.lib.drug.DrugFormGetter;
-import jp.chang.myclinic.practice.lib.drug.DrugFormHelper;
-import jp.chang.myclinic.practice.lib.drug.DrugInputConstraints;
-import jp.chang.myclinic.practice.lib.drug.DrugSearchResultModel;
+import jp.chang.myclinic.practice.lib.drug.*;
 
-class DrugForm extends VBox {
+public class DrugForm extends VBox {
 
     private DrugInput drugInput = new DrugInput();
     private DrugInputConstraints constraints = DrugInputConstraints.defaultDrugInputConstraints();
@@ -29,6 +26,10 @@ class DrugForm extends VBox {
         );
     }
 
+    public DrugInputConstraints getConstraints() {
+        return constraints;
+    }
+
     void setConstraints(DrugInputConstraints constraints) {
         this.constraints = constraints;
     }
@@ -37,7 +38,15 @@ class DrugForm extends VBox {
         drugInput.addToDaysRow(nodes);
     }
 
-    DrugFormGetter getDrugFormGetter(){
+    void addDrugInputRow(Node node){
+        drugInput.addRow(node);
+    }
+
+    public DrugFormGetter getDrugFormGetter(){
+        return drugInput;
+    }
+
+    public DrugFormSetter getDrugFormSetter(){
         return drugInput;
     }
 

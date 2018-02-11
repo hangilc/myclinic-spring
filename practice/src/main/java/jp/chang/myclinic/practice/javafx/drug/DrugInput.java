@@ -34,6 +34,7 @@ class DrugInput extends GridPane implements DrugFormGetter, DrugFormSetter {
     private List<Node> daysList = new ArrayList<>();
     private ObjectProperty<DrugCategory> category;
     private Text commentText = new Text("");
+    private int row = 0;
 
     DrugInput() {
         getStyleClass().add("drug-input");
@@ -114,29 +115,36 @@ class DrugInput extends GridPane implements DrugFormGetter, DrugFormSetter {
         commentText.setText(comment);
     }
 
+    public void addRow(Node node){
+        add(node, 0, row, 2, 1);
+    }
+
     private void setupName() {
-        add(new Label("名称："), 0, 0);
+        add(new Label("名称："), 0, row);
         TextFlow wrapper = new TextFlow();
         wrapper.getChildren().add(drugNameLabel);
-        add(wrapper, 1, 0);
+        add(wrapper, 1, row);
+        row += 1;
     }
 
     private void setupAmount() {
         amountLabel = new Label("用量：");
         amountInput.getStyleClass().add("amount-input");
-        add(amountLabel, 0, 1);
+        add(amountLabel, 0, row);
         HBox hbox = new HBox(4);
         hbox.getChildren().addAll(amountInput, amountUnitLabel);
-        add(hbox, 1, 1);
+        add(hbox, 1, row);
+        row += 1;
     }
 
     private void setupUsage() {
-        add(new Label("用法："), 0, 2);
+        add(new Label("用法："), 0, row);
         Hyperlink exampleLink = new Hyperlink("例");
         HBox hbox = new HBox(4);
         hbox.getChildren().addAll(usageInput, exampleLink);
         exampleLink.setOnMousePressed(event -> doExample(event, exampleLink));
-        add(hbox, 1, 2);
+        add(hbox, 1, row);
+        row += 1;
     }
 
     private void doExample(MouseEvent event, Node anchor) {
@@ -157,17 +165,18 @@ class DrugInput extends GridPane implements DrugFormGetter, DrugFormSetter {
 
     private void setupDays() {
         daysLabel = new Label("日数：");
-        add(daysLabel, 0, 3);
+        add(daysLabel, 0, row);
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         setupDaysInputArea(hbox.getChildren());
         daysList.add(daysLabel);
         daysList.add(hbox);
-        add(hbox, 1, 3);
+        add(hbox, 1, row);
         daysRow = hbox;
+        row += 1;
     }
 
-    protected void setupDaysInputArea(ObservableList<Node> children) {
+    private void setupDaysInputArea(ObservableList<Node> children) {
         daysInput.getStyleClass().add("days-input");
         daysUnit = new Label("日分");
         children.addAll(daysInput, daysUnit);
@@ -176,8 +185,9 @@ class DrugInput extends GridPane implements DrugFormGetter, DrugFormSetter {
     private void setupComment() {
         TextFlow wrapper = new TextFlow();
         wrapper.getChildren().add(commentText);
-        add(new Label("注釈："), 0, 4);
-        add(wrapper, 1, 4);
+        add(new Label("注釈："), 0, row);
+        add(wrapper, 1, row);
+        row += 1;
     }
 
     private void setupCategory() {
@@ -189,7 +199,8 @@ class DrugInput extends GridPane implements DrugFormGetter, DrugFormSetter {
         hbox.getChildren().addAll(categoryButtons.getButtons());
         category = categoryButtons.valueProperty();
         category.addListener((obs, oldValue, newValue) -> adaptToCategory());
-        add(hbox, 0, 5, 2, 1);
+        add(hbox, 0, row, 2, 1);
+        row += 1;
     }
 
     private void adaptToCategory() {

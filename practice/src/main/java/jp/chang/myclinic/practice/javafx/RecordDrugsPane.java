@@ -12,8 +12,10 @@ import java.util.List;
 public class RecordDrugsPane extends VBox {
 
     private int index = 1;
+    private VisitDTO visit;
 
     public RecordDrugsPane(List<DrugFullDTO> drugs, VisitDTO visit){
+        this.visit = visit;
         setAlignment(Pos.TOP_LEFT);
         DrugMenu menu = new DrugMenu(visit);
         getChildren().add(menu);
@@ -21,7 +23,10 @@ public class RecordDrugsPane extends VBox {
     }
 
     public void addDrug(DrugFullDTO drug){
-        RecordDrug recordDrug = new RecordDrug(drug, index++);
+        if( drug.drug.visitId != visit.visitId ){
+            throw new RuntimeException("Inconsisitent visitId in drug.");
+        }
+        RecordDrug recordDrug = new RecordDrug(drug, visit, index++);
         getChildren().add(recordDrug);
     }
 
