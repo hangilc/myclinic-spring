@@ -16,7 +16,7 @@ public class PracticeService {
 
     private static Logger logger = LoggerFactory.getLogger(PracticeService.class);
 
-    public static void listRecentVisits(Consumer<List<VisitPatientDTO>> cb){
+    public static void listRecentVisits(Consumer<List<VisitPatientDTO>> cb) {
         Service.api.listRecentVisits()
                 .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
                 .exceptionally(ex -> {
@@ -26,7 +26,7 @@ public class PracticeService {
                 });
     }
 
-    public static void listVisits(int patientId, int page, Consumer<List<VisitFull2DTO>> cb){
+    public static void listVisits(int patientId, int page, Consumer<List<VisitFull2DTO>> cb) {
         Service.api.listVisitFull2(patientId, page)
                 .thenAccept(result -> {
                     Platform.runLater(() -> cb.accept(result.visits));
@@ -38,20 +38,20 @@ public class PracticeService {
                 });
     }
 
-    private static <T> CompletableFuture<T> addExceptionHandler(CompletableFuture<T> cf, String message1, String message2){
+    private static <T> CompletableFuture<T> addExceptionHandler(CompletableFuture<T> cf, String message1, String message2) {
         return cf.whenComplete((result, ex) -> {
-            if( ex != null ){
+            if (ex != null) {
                 logger.error(message1, ex);
                 Platform.runLater(() -> GuiUtil.alertException(message2, ex));
             }
         });
     }
 
-    private static <T> void withCallback(CompletableFuture<T> cf, Consumer<T> cb){
+    private static <T> void withCallback(CompletableFuture<T> cf, Consumer<T> cb) {
         cf.thenAccept(result -> Platform.runLater(() -> cb.accept(result)));
     }
 
-    public static CompletableFuture<Boolean> deleteVisit(int visitId){
+    public static CompletableFuture<Boolean> deleteVisit(int visitId) {
         return addExceptionHandler(
                 Service.api.deleteVisit(visitId),
                 "Failed to delete visit.",
@@ -59,7 +59,7 @@ public class PracticeService {
         );
     }
 
-    public static void doDeleteVisit(int visitId, Consumer<Boolean> cb){
+    public static void doDeleteVisit(int visitId, Consumer<Boolean> cb) {
         withCallback(deleteVisit(visitId), cb);
     }
 
@@ -85,11 +85,11 @@ public class PracticeService {
         );
     }
 
-    public static void doResolveIyakuhinMaster(int iyakuhincode, String at, Consumer<IyakuhinMasterDTO> cb){
+    public static void doResolveIyakuhinMaster(int iyakuhincode, String at, Consumer<IyakuhinMasterDTO> cb) {
         withCallback(resolveIyakuhinMaster(iyakuhincode, at), cb);
     }
 
-    public static CompletableFuture<List<DrugFullDTO>> listDrugFull(int visitId){
+    public static CompletableFuture<List<DrugFullDTO>> listDrugFull(int visitId) {
         return addExceptionHandler(
                 Service.api.listDrugFull(visitId),
                 "Failed to list drugs.",
@@ -97,7 +97,7 @@ public class PracticeService {
         );
     }
 
-    public static CompletableFuture<Integer> enterDrug(DrugDTO drug){
+    public static CompletableFuture<Integer> enterDrug(DrugDTO drug) {
         return addExceptionHandler(
                 Service.api.enterDrug(drug),
                 "Failed to enter drug.",
@@ -105,7 +105,7 @@ public class PracticeService {
         );
     }
 
-    public static CompletableFuture<Boolean> updateDrug(DrugDTO drug){
+    public static CompletableFuture<Boolean> updateDrug(DrugDTO drug) {
         return addExceptionHandler(
                 Service.api.updateDrug(drug),
                 "Failed to update drug.",
@@ -113,7 +113,7 @@ public class PracticeService {
         );
     }
 
-    public static CompletableFuture<Boolean> deleteDrug(DrugDTO drug){
+    public static CompletableFuture<Boolean> deleteDrug(DrugDTO drug) {
         return addExceptionHandler(
                 Service.api.deleteDrug(drug.drugId),
                 "Failed to delete drug.",
@@ -121,7 +121,7 @@ public class PracticeService {
         );
     }
 
-    public static CompletableFuture<DrugFullDTO> getDrugFull(int drugId){
+    public static CompletableFuture<DrugFullDTO> getDrugFull(int drugId) {
         return addExceptionHandler(
                 Service.api.getDrugFull(drugId),
                 "Failed to get drug full.",
@@ -129,7 +129,7 @@ public class PracticeService {
         );
     }
 
-    public static CompletableFuture<VisitDTO> getVisit(int visitId){
+    public static CompletableFuture<VisitDTO> getVisit(int visitId) {
         return addExceptionHandler(
                 Service.api.getVisit(visitId),
                 "Failed to get visit.",
@@ -137,7 +137,7 @@ public class PracticeService {
         );
     }
 
-    public static CompletableFuture<Boolean> modifyDrugDays(List<DrugDTO> drugs, int days){
+    public static CompletableFuture<Boolean> modifyDrugDays(List<DrugDTO> drugs, int days) {
         List<Integer> drugIds = drugs.stream().map(drug -> drug.drugId).collect(Collectors.toList());
         return addExceptionHandler(
                 Service.api.batchUpdateDrugDays(drugIds, days),
@@ -153,6 +153,30 @@ public class PracticeService {
                 Service.api.batchDeleteDrugs(drugIds),
                 "Failed to delete drugs.",
                 "薬剤の複数削除に失敗しました。"
+        );
+    }
+
+    public static CompletableFuture<BatchEnterResultDTO> batchEnterShinryouByName(List<String> names, int visitId) {
+        return addExceptionHandler(
+                Service.api.batchEnterShinryouByName(names, visitId),
+                "Failed to batch enter shinryou",
+                "診療行為の入力に失敗しました。"
+        );
+    }
+
+    public static CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(List<Integer> shinryouIds){
+        return addExceptionHandler(
+                Service.api.listShinryouFullByIds(shinryouIds),
+                "Failed to list shinryou",
+                "診療行為情報の取得に失敗しました。"
+        );
+    }
+
+    public static CompletableFuture<List<ConductFullDTO>> listConductFullByIds(List<Integer> conductIds){
+        return addExceptionHandler(
+                Service.api.listConductFullByIds(conductIds),
+                "Failed to list conducts.",
+                "処置情報の取得に失敗しました。"
         );
     }
 

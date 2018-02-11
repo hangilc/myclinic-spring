@@ -41,7 +41,7 @@ public class Record extends VBox {
         right.getChildren().addAll(
                 new RecordHoken(visit.hoken, visit.visit),
                 drugsPane,
-                new RecordShinryouPane(visit.shinryouList),
+                new RecordShinryouPane(visit.shinryouList, visit.visit),
                 new RecordConductsPane(visit.conducts),
                 new RecordCharge(visit.charge)
         );
