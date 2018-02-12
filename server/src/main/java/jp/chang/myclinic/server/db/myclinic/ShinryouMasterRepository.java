@@ -16,8 +16,8 @@ public interface ShinryouMasterRepository extends CrudRepository<ShinryouMaster,
 	Optional<ShinryouMaster> findByShinryoucodeAndDate(@Param("shinryoucode") int shinryoucode, @Param("at") Date at);
 
 	@Query("select m from ShinryouMaster m where m.shinryoucode = :shinryoucode and m.validFrom <= DATE(:at) " +
-			"and (m.validUpto = '0000-00-00' or m.validUpto >= DATE(:at))")
-	ShinryouMaster findOneByShinryoucodeAndDate(@Param("shinryoucode") int shinryoucode, @Param("at") String at);
+			"and (m.validUpto = '0000-00-00' or m.validUpto >= FUNCTION('date', :at))")
+	ShinryouMaster findOneByShinryoucodeAndDate(@Param("shinryoucode") int shinryoucode, @Param("at") Date at);
 
 	@Query("select m from ShinryouMaster m where m.name = :name and m.validFrom <= FUNCTION('date', :at) " +
 			"and (m.validUpto = '0000-00-00' or m.validUpto >= FUNCTION('date', :at))")

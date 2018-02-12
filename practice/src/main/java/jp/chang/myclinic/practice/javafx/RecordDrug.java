@@ -10,7 +10,6 @@ import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.drug.DrugEditForm;
 import jp.chang.myclinic.practice.javafx.drug.DrugForm;
 import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
-import jp.chang.myclinic.practice.lib.GuiUtil;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.drug.DrugFormHelper;
 import jp.chang.myclinic.util.DrugUtil;

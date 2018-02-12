@@ -147,6 +147,12 @@ public class Service {
         @GET("search-shinryou-master")
         CompletableFuture<List<ShinryouMasterDTO>> searchShinryouMaster(@Query("text") String text, @Query("at") String at);
 
+        @GET("resolve-shinryoucode")
+        CompletableFuture<Integer> resolveShinryoucode(@Query("shinryoucode") int shinryoucode, @Query("at") String at);
+
+        @GET("get-shinryou-master")
+        CompletableFuture<ShinryouMasterDTO> getShinryouMaster(@Query("shinryoucode") int shinryoucode, @Query("at") String at);
+
         @GET("get-shinryou-full")
         CompletableFuture<ShinryouFullDTO> getShinryouFull(@Query("shinryou-id") int shinryouId);
 

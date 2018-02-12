@@ -6,7 +6,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.practice.lib.GuiUtil;
 
 public class TextEditForm extends VBox {
 

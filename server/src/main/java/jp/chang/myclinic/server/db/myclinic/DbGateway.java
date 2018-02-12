@@ -168,6 +168,9 @@ public class DbGateway {
 
     public PatientDTO getPatient(int patientId){
         Patient patient = patientRepository.findOne(patientId);
+        if( patient == null ){
+            throw new RuntimeException("患者情報の取得に失敗しました。");
+        }
         return mapper.toPatientDTO(patient);
     }
 
@@ -625,8 +628,13 @@ public class DbGateway {
     }
 
     public ShinryouMasterDTO getShinryouMaster(int shinryoucode, LocalDate at){
-        String atString = at.toString();
-        return mapper.toShinryouMasterDTO(shinryouMasterRepository.findOneByShinryoucodeAndDate(shinryoucode, atString));
+        Date atDate = Date.valueOf(at);
+        return mapper.toShinryouMasterDTO(shinryouMasterRepository.findOneByShinryoucodeAndDate(shinryoucode, atDate));
+    }
+
+    public Optional<ShinryouMasterDTO> findShinryouMaster(int shinryoucode, LocalDate at){
+        Date date = Date.valueOf(at);
+        return shinryouMasterRepository.findByShinryoucodeAndDate(shinryoucode, date).map(mapper::toShinryouMasterDTO);
     }
 
     public VisitFullDTO getVisitFull(int visitId){

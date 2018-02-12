@@ -5,7 +5,7 @@ import javafx.scene.control.CheckBox;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
-import jp.chang.myclinic.practice.lib.GuiUtil;
+import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.drug.DrugFormHelper;
 import jp.chang.myclinic.practice.lib.drug.DrugInputConstraints;

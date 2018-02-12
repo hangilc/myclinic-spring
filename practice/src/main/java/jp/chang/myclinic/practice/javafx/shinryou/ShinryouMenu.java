@@ -11,10 +11,12 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.javafx.parts.ShinryouForm;
+import jp.chang.myclinic.practice.lib.HttpExceptionHandler;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 import java.util.List;
@@ -154,7 +156,15 @@ public class ShinryouMenu extends VBox {
     }
 
     private void doCopyAll(){
-
+        int targetVisitId = PracticeUtil.findCopyTarget(visitId);
+        if( targetVisitId != 0 ){
+            HttpExceptionHandler errorHandler = new HttpExceptionHandler(System.out::println);
+            Service.api.getPatient(0)
+                    .exceptionally(ex -> {
+                        errorHandler.handle(ex);
+                        return null;
+                    });
+        }
     }
 
     private void doCopySelected(){

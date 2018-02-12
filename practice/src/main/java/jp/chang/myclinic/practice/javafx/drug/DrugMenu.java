@@ -14,7 +14,6 @@ import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
-import jp.chang.myclinic.practice.lib.GuiUtil;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.practice.lib.drug.DrugsCopier;
@@ -77,9 +76,8 @@ public class DrugMenu extends VBox {
     private MenuItem createCopyAllMenuItem(int visitId) {
         MenuItem item = new MenuItem("全部コピー");
         item.setOnAction(event -> {
-            int targetVisitId = PracticeUtil.findCopyTarget();
-            if (targetVisitId == 0 || targetVisitId == visitId) {
-                GuiUtil.alertError("コピー先を見つけられませんでした。");
+            int targetVisitId = PracticeUtil.findCopyTarget(visitId);
+            if( targetVisitId == 0 ){
                 return;
             }
             PracticeService.listDrugFull(visitId)
@@ -100,9 +98,8 @@ public class DrugMenu extends VBox {
             if (!isWorkareaEmpty()) {
                 return;
             }
-            int targetVisitId = PracticeUtil.findCopyTarget();
-            if (targetVisitId == 0 || targetVisitId == visitId) {
-                GuiUtil.alertError("コピー先を見つけられませんでした。");
+            int targetVisitId = PracticeUtil.findCopyTarget(visitId);
+            if( targetVisitId == 0 ){
                 return;
             }
             PracticeService.listDrugFull(visitId)

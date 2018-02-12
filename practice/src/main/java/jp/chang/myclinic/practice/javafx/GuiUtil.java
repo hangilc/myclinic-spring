@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.lib;
+package jp.chang.myclinic.practice.javafx;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;

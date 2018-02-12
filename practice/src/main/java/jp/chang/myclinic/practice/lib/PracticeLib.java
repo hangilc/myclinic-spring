@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.javafx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

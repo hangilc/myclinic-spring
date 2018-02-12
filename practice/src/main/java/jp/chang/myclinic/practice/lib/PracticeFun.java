@@ -59,5 +59,8 @@ public class PracticeFun {
                 .thenAccept(entered -> invoke(() -> cb.accept(entered)));
     }
 
+    private static class BatchCopyShinryouStore {
+        String at;
+    }
 
 }
