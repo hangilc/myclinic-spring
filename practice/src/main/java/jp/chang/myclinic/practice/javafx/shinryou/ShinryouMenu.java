@@ -1,12 +1,21 @@
 package jp.chang.myclinic.practice.javafx.shinryou;
 
 import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.dto.ConductFullDTO;
+import jp.chang.myclinic.dto.ShinryouFullDTO;
+import jp.chang.myclinic.practice.javafx.FunJavaFX;
+import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
+import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
+
+import java.util.List;
 
 public class ShinryouMenu extends VBox {
 
@@ -38,7 +47,7 @@ public class ShinryouMenu extends VBox {
 
     private Node createAuxMenu(){
         Hyperlink auxLink = new Hyperlink("[+]");
-        auxLink.setOnMouseClicked(this::onAuxMenu);
+        auxLink.setOnMouseClicked(event -> onAuxMenu(auxLink, event));
         return auxLink;
     }
 
@@ -61,10 +70,95 @@ public class ShinryouMenu extends VBox {
         }
     }
 
-    private void onAuxMenu(MouseEvent event){
+    private void onAuxMenu(Node link, MouseEvent event){
         if( isWorkareaEmpty() ){
+            ContextMenu contextMenu = new ContextMenu();
+            {
+                MenuItem item = new MenuItem("検査");
+                item.setOnAction(evt -> doKensa());
+                contextMenu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("診療行為検索");
+                item.setOnAction(evt -> doSearch());
+                contextMenu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("全部コピー");
+                item.setOnAction(evt -> doCopyAll());
+                contextMenu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("選択コピー");
+                item.setOnAction(evt -> doCopySelected());
+                contextMenu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("複数削除");
+                item.setOnAction(evt -> doDeleteSelected());
+                contextMenu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("重複削除");
+                item.setOnAction(evt -> doDeleteDuplicate());
+                contextMenu.getItems().add(item);
+            }
+            contextMenu.show(link, event.getScreenX(), event.getScreenY());
+        }
+    }
+
+    private void fireShinryouEnteredEvent(ShinryouFullDTO shinryou){
+        fireEvent(new ShinryouEnteredEvent(shinryou));
+    }
+
+    private void fireConductEnteredEvent(ConductFullDTO conduct){
+        fireEvent(new ConductEnteredEvent(conduct));
+    }
+
+    private void doKensa(){
+        if( PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？") ) {
+            AddKensaForm form = new AddKensaForm(){
+                @Override
+                protected void onEnter(List<String> selected) {
+                    FunJavaFX.INSTANCE.batchEnterShinryouByNames(selected, visitId, (shinryouList, conductList) -> {
+                        shinryouList.forEach(shinryou -> fireShinryouEnteredEvent(shinryou));
+                        conductList.forEach(conduct -> fireConductEnteredEvent(conduct));
+                        hideWorkarea();
+                    });
+                }
+
+                @Override
+                protected void onCancel(AddKensaForm form) {
+                    hideWorkarea();
+                }
+            };
+            showWorkarea(form);
+        }
+    }
+
+    private void doSearch(){
+        if( PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？") ) {
 
         }
+    }
+
+    private void doCopyAll(){
+
+    }
+
+    private void doCopySelected(){
+
+    }
+
+    private void doDeleteSelected(){
+        if( PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を削除しますか？") ) {
+
+        }
+
+    }
+
+    private void doDeleteDuplicate(){
+
     }
 
     private boolean isWorkareaEmpty(){
