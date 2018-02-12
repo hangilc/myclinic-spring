@@ -10,9 +10,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
+import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
+import jp.chang.myclinic.practice.javafx.parts.ShinryouForm;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 import java.util.List;
@@ -20,11 +22,13 @@ import java.util.List;
 public class ShinryouMenu extends VBox {
 
     private int visitId;
+    private String visitedAt;
     private StackPane workarea = new StackPane();
 
-    public ShinryouMenu(int visitId){
+    public ShinryouMenu(VisitDTO visit){
         super(4);
-        this.visitId = visitId;
+        this.visitId = visit.visitId;
+        this.visitedAt = visit.visitedAt;
         getChildren().addAll(
                 createMenu()
         );
@@ -138,7 +142,14 @@ public class ShinryouMenu extends VBox {
 
     private void doSearch(){
         if( PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？") ) {
+            ShinryouEnterForm form = new ShinryouEnterForm(visitedAt, visitId){
 
+                @Override
+                protected void onClose(ShinryouForm form) {
+                    hideWorkarea();
+                }
+            };
+            showWorkarea(form);
         }
     }
 

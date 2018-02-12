@@ -1,13 +1,12 @@
 package jp.chang.myclinic.practice.lib;
 
-import jp.chang.myclinic.dto.BatchEnterResultDTO;
-import jp.chang.myclinic.dto.ConductFullDTO;
-import jp.chang.myclinic.dto.ShinryouFullDTO;
+import jp.chang.myclinic.dto.*;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class PracticeFun {
 
@@ -48,5 +47,17 @@ public class PracticeFun {
                 })
                 .thenAccept(conductList -> invoke(() -> cb.accept(store.shinryouList, conductList)));
     }
+
+    public void searchShinryouMaster(String text, String at, Consumer<List<ShinryouMasterDTO>> cb){
+        PracticeService.searchShinryouMaster(text, at)
+                .thenAccept(result -> invoke(() -> cb.accept(result)));
+    }
+
+    public void enterShinryou(ShinryouDTO shinryou, Consumer<ShinryouFullDTO> cb){
+        PracticeService.enterShinryou(shinryou)
+                .thenCompose(PracticeService::getShinryouFull)
+                .thenAccept(entered -> invoke(() -> cb.accept(entered)));
+    }
+
 
 }

@@ -15,7 +15,7 @@ class RecordShinryouPane extends VBox {
 
     RecordShinryouPane(List<ShinryouFullDTO> shinryouList, VisitDTO visit){
         getChildren().addAll(
-                createMenu(visit.visitId),
+                createMenu(visit),
                 createShinryouList()
         );
         shinryouList.forEach(this::addShinryou);
@@ -42,8 +42,8 @@ class RecordShinryouPane extends VBox {
         shinryouList.getChildren().add(newRecordShinryou);
     }
 
-    private Node createMenu(int visitId){
-        return new ShinryouMenu(visitId);
+    private Node createMenu(VisitDTO visit){
+        return new ShinryouMenu(visit);
     }
 
     private Node createShinryouList(){

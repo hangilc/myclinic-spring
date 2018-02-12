@@ -180,4 +180,28 @@ public class PracticeService {
         );
     }
 
+    public static CompletableFuture<List<ShinryouMasterDTO>> searchShinryouMaster(String text, String at){
+        return addExceptionHandler(
+                Service.api.searchShinryouMaster(text, at),
+                "Failed to search shinryou master.",
+                "診療行為マスターの検索に失敗しました。"
+        );
+    }
+
+    public static CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou){
+        return addExceptionHandler(
+                Service.api.enterShinryou(shinryou),
+                "Failed to enter shinryou.",
+                "診療行為の入力に失敗しました。"
+        );
+    }
+
+    public static CompletableFuture<ShinryouFullDTO> getShinryouFull(int shinryouId){
+        return addExceptionHandler(
+                Service.api.getShinryouFull(shinryouId),
+                "Failed to get shinryou.",
+                "診療行為の取得に失敗しました。"
+        );
+    }
+
 }
