@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.shinryou;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -106,10 +107,12 @@ class AddRegularForm extends VBox {
     private void doEnter(){
         List<String> selected = checks.stream().filter(CheckBox::isSelected).map(CheckBox::getText)
                 .collect(Collectors.toList());
-        FunJavaFX.INSTANCE.batchEnterShinryouByNames(selected, visitId, (shinryouList, conductList) -> {
-            shinryouList.forEach(this::fireShinryouEnteredEvent);
-            conductList.forEach(this::fireConductEnteredEvent);
-            onEntered(AddRegularForm.this);
+        FunJavaFX.batchEnterShinryouByNames(visitId, selected, (shinryouList, conductList) -> {
+            Platform.runLater(() -> {
+                shinryouList.forEach(this::fireShinryouEnteredEvent);
+                conductList.forEach(this::fireConductEnteredEvent);
+                onEntered(AddRegularForm.this);
+            });
         });
     }
 

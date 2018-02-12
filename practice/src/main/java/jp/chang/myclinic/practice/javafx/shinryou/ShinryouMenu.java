@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.shinryou;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Hyperlink;
@@ -16,7 +17,6 @@ import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.javafx.parts.ShinryouForm;
-import jp.chang.myclinic.practice.lib.HttpExceptionHandler;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 import java.util.List;
@@ -126,10 +126,12 @@ public class ShinryouMenu extends VBox {
             AddKensaForm form = new AddKensaForm(){
                 @Override
                 protected void onEnter(List<String> selected) {
-                    FunJavaFX.INSTANCE.batchEnterShinryouByNames(selected, visitId, (shinryouList, conductList) -> {
-                        shinryouList.forEach(shinryou -> fireShinryouEnteredEvent(shinryou));
-                        conductList.forEach(conduct -> fireConductEnteredEvent(conduct));
-                        hideWorkarea();
+                    FunJavaFX.batchEnterShinryouByNames(visitId, selected, (shinryouList, conductList) -> {
+                        Platform.runLater(() -> {
+                            shinryouList.forEach(shinryou -> fireShinryouEnteredEvent(shinryou));
+                            conductList.forEach(conduct -> fireConductEnteredEvent(conduct));
+                            hideWorkarea();
+                        });
                     });
                 }
 
@@ -158,11 +160,13 @@ public class ShinryouMenu extends VBox {
     private void doCopyAll(){
         int targetVisitId = PracticeUtil.findCopyTarget(visitId);
         if( targetVisitId != 0 ){
-            HttpExceptionHandler errorHandler = new HttpExceptionHandler(System.out::println);
-            Service.api.getPatient(0)
-                    .exceptionally(ex -> {
-                        errorHandler.handle(ex);
-                        return null;
+            Service.api.listShinryouFull(visitId)
+                    .thenAccept(srcList -> {
+                        FunJavaFX.batchCopyShinryou(targetVisitId, srcList,
+                                entered -> {
+                                    Platform.runLater(() -> fireShinryouEnteredEvent(entered));
+                                },
+                                () -> {});
                     });
         }
     }

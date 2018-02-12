@@ -1,6 +1,8 @@
 package jp.chang.myclinic.practice.javafx.shinryou;
 
+import javafx.application.Platform;
 import jp.chang.myclinic.dto.ShinryouDTO;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.javafx.parts.ShinryouForm;
@@ -19,10 +21,18 @@ class ShinryouEnterForm extends ShinryouForm {
         ShinryouDTO shinryou = new ShinryouDTO();
         shinryou.visitId = visitId;
         shinryou.shinryoucode = shinryoucode;
-        FunJavaFX.INSTANCE.enterShinryou(shinryou, entered -> {
-            ShinryouEnterForm.this.fireEvent(new ShinryouEnteredEvent(entered));
-            onEntered(this);
-        });
+        Service.api.enterShinryou(shinryou)
+                .thenCompose(Service.api::getShinryouFull)
+                .thenAccept(entered -> {
+                    Platform.runLater(() -> {
+                        ShinryouEnterForm.this.fireEvent(new ShinryouEnteredEvent(entered));
+                        onEntered(this);
+                    });
+               })
+                .exceptionally(ex -> {
+                    FunJavaFX.createErrorHandler().accept(ex);
+                    return null;
+                });
     }
 
     protected void onEntered(ShinryouEnterForm form){

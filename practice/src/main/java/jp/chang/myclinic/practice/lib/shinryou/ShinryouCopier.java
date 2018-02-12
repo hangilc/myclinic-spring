@@ -17,12 +17,12 @@ public class ShinryouCopier {
     private int targetVisitId;
     private List<ShinryouFullDTO> srcList;
     private Consumer<ShinryouFullDTO> onEnterCallback;
-    private Consumer<String> errorCallback;
+    private Consumer<Throwable> errorCallback;
     private Runnable finishedCallback;
     private VisitDTO targetVisit;
 
     public ShinryouCopier(int targetVisitId, List<ShinryouFullDTO> srcList, Consumer<ShinryouFullDTO> cb,
-                          Consumer<String> errorHandler, Runnable finishedCallback){
+                          Consumer<Throwable> errorHandler, Runnable finishedCallback){
         this.targetVisitId = targetVisitId;
         this.srcList = srcList;
         this.onEnterCallback = cb;
@@ -37,8 +37,7 @@ public class ShinryouCopier {
                     iterate();
                 })
                 .exceptionally(ex -> {
-                    logger.error("Failed get visit.", ex);
-                    errorCallback.accept("コピー先診療行為の情報の取得に失敗しました。");
+                    errorCallback.accept(ex);
                     return null;
                 });
     }
@@ -59,19 +58,19 @@ public class ShinryouCopier {
                         } else {
                             ShinryouDTO dst = composeShinryou(src.shinryou, shinryoucode);
                             Service.api.enterShinryou(dst)
-                                    .thenAccept(shinryouId -> {
-
+                                    .thenCompose(Service.api::getShinryouFull)
+                                    .thenAccept(entered -> {
+                                        onEnterCallback.accept(entered);
+                                        iterate();
                                     })
                                     .exceptionally(ex -> {
-                                        logger.error("Failed to enter shinryou.", ex);
-                                        errorCallback.accept("診療行為の入力に失敗しました。");
+                                        errorCallback.accept(ex);
                                         return null;
                                     });
                         }
                     })
                     .exceptionally(ex -> {
-                        logger.error("Failed to resolve shinryoucode.", ex);
-                        errorCallback.accept("診療行為が有効でありません。");
+                        errorCallback.accept(ex);
                         return null;
                     });
         }

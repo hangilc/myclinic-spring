@@ -141,6 +141,9 @@ public class Service {
         @GET("list-shinryou-full-by-ids")
         CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(@Query("shinryou-id") List<Integer> shinryouIds);
 
+        @GET("list-shinryou-full")
+        CompletableFuture<List<ShinryouFullDTO>> listShinryouFull(@Query("visit-id") int visitId);
+
         @GET("list-conduct-full-by-ids")
         CompletableFuture<List<ConductFullDTO>> listConductFullByIds(@Query("conduct-id") List<Integer> conductIds);
 

@@ -33,6 +33,11 @@ public class ShinryouController {
 		return dbGateway.listShinryouFullByIds(shinryouIds);
 	}
 
+	@RequestMapping(value="/list-shinryou-full", method=RequestMethod.GET)
+	public List<ShinryouFullDTO> listShinryouFull(@RequestParam("visit-id") int visitId){
+		return dbGateway.listShinryouFull(visitId);
+	}
+
 	@RequestMapping(value="/batch-enter-shinryou-by-name", method=RequestMethod.POST)
 	public BatchEnterResultDTO batchEnterShinryou(@RequestParam("visit-id") int visitId,
 											@RequestParam("name") List<String> names){

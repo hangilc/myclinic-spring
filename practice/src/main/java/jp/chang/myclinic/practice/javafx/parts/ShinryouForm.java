@@ -4,6 +4,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 
 public class ShinryouForm extends WorkForm {
@@ -44,9 +45,12 @@ public class ShinryouForm extends WorkForm {
             @Override
             protected void onSearch(String text) {
                 if( !text.isEmpty() ) {
-                    FunJavaFX.INSTANCE.searchShinryouMaster(text, at, list -> {
-                        searchResult.setList(list);
-                    });
+                    Service.api.searchShinryouMaster(text, at)
+                            .thenAccept(result -> searchResult.setList(result))
+                            .exceptionally(ex -> {
+                                FunJavaFX.createErrorHandler().accept(ex);
+                                return null;
+                            });
                 }
             }
         };
