@@ -23,6 +23,11 @@ public class CheckBoxList<T> extends VBox {
         this.labelMaker = labelMaker;
     }
 
+    public CheckBoxList(List<T> list, Function<T,String> labelMaker){
+        this(labelMaker);
+        addAll(list);
+    }
+
     public void addAll(List<T> dataList){
         List<CheckBoxWithData<T>> checks = dataList.stream()
                 .map(data -> {

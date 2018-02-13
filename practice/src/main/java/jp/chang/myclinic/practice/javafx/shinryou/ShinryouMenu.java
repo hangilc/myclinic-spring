@@ -173,13 +173,26 @@ public class ShinryouMenu extends VBox {
     }
 
     private void doCopySelected(){
-        int targetVisitId = PracticeUtil.findCopyTarget(visitId);
-        if( targetVisitId != 0 ){
-            Service.api.listShinryouFull(visitId)
-                    .thenAccept(shinryouList -> {
+        if( isWorkareaEmpty() ) {
+            int targetVisitId = PracticeUtil.findCopyTarget(visitId);
+            if (targetVisitId != 0) {
+                Service.api.listShinryouFull(visitId)
+                        .thenAccept(shinryouList -> {
+                            CopySelectedForm form = new CopySelectedForm(shinryouList){
+                                @Override
+                                protected void onEnter(CopySelectedForm form, List<ShinryouFullDTO> selection) {
+                                    super.onEnter(form, selection);
+                                }
 
-                    })
-                    .exceptionally(HandlerFX<>::exceptionally);
+                                @Override
+                                protected void onCancel(CopySelectedForm form) {
+                                    hideWorkarea();
+                                }
+                            };
+                            showWorkarea(form);
+                        })
+                        .exceptionally(HandlerFX<Void>::exceptionally);
+            }
         }
     }
 
