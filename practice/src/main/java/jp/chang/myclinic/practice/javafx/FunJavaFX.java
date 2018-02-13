@@ -5,7 +5,7 @@ import jp.chang.myclinic.dto.BatchEnterResultDTO;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.practice.Service;
-import jp.chang.myclinic.practice.lib.HttpExceptionHandler;
+import jp.chang.myclinic.practice.lib.ErrorMessageExtractor;
 import jp.chang.myclinic.practice.lib.shinryou.ShinryouCopier;
 
 import java.util.ArrayList;
@@ -17,10 +17,8 @@ public class FunJavaFX {
 
     public static Consumer<Throwable> createErrorHandler(){
         return (Throwable th) -> {
-            HttpExceptionHandler handler = new HttpExceptionHandler(message -> {
-                Platform.runLater(() -> GuiUtil.alertError(message));
-            });
-            handler.handle(th);
+            String message = ErrorMessageExtractor.extract(th);
+            Platform.runLater(() -> GuiUtil.alertError(message));
         };
     }
 

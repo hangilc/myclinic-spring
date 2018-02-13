@@ -6,7 +6,7 @@ import retrofit2.HttpException;
 
 import java.io.IOException;
 
-public class HttpErrorHandler {
+public class ErrorMessageExtractor {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -15,7 +15,7 @@ public class HttpErrorHandler {
         public String message;
     }
 
-    public String getMessage(Throwable throwable){
+    public static String extract(Throwable throwable){
         if( throwable instanceof HttpException){
             HttpException httpException = (HttpException)throwable;
             try {

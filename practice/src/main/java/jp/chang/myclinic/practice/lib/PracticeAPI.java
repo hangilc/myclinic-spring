@@ -10,17 +10,22 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 public class PracticeAPI {
 
     private static Logger logger = LoggerFactory.getLogger(PracticeAPI.class);
 
+    private static class IgnoreException extends RuntimeException {
+
+    }
+
     public static CompletableFuture<ShinryouFullDTO> copyShinryou(VisitDTO target, ShinryouFullDTO src){
         return Service.api.resolveShinryoucode(src.shinryou.shinryoucode, target.visitedAt)
                 .thenCompose(shinryoucode -> {
                     if( shinryoucode == 0 ){
-                        return CompletableFuture.completedFuture(0);
+                        throw new IgnoreException();
                     } else {
                         ShinryouDTO shinryou = ShinryouDTO.copy(src.shinryou);
                         shinryou.shinryouId = 0;
@@ -29,11 +34,17 @@ public class PracticeAPI {
                         return Service.api.enterShinryou(shinryou);
                     }
                 })
-                .thenCompose(shinryouId -> {
-                    if (shinryouId == 0) {
-                        return CompletableFuture.completedFuture(null);
+                .thenCompose(Service.api::getShinryouFull)
+                .exceptionally(ex -> {
+                    if( ex instanceof CompletionException ){
+                        CompletionException ce = (CompletionException)ex;
+                        if( ce.getCause() instanceof IgnoreException ){
+                            return null;
+                        } else {
+                            throw ce;
+                        }
                     } else {
-                        return Service.api.getShinryouFull(shinryouId);
+                        throw new CompletionException(ex);
                     }
                 });
     }
