@@ -12,6 +12,7 @@ public class CheckBoxWithData<T> extends CheckBox {
 
     public CheckBoxWithData(String label, T data) {
         this.data = data;
+        setText(label);
         setWrapText(true);
     }
 

@@ -18,6 +18,7 @@ import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.javafx.parts.ShinryouForm;
+import jp.chang.myclinic.practice.lib.PracticeAPI;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 import java.util.List;
@@ -181,7 +182,12 @@ public class ShinryouMenu extends VBox {
                             CopySelectedForm form = new CopySelectedForm(shinryouList){
                                 @Override
                                 protected void onEnter(CopySelectedForm form, List<ShinryouFullDTO> selection) {
-                                    super.onEnter(form, selection);
+                                    PracticeAPI.batchCopyShinryou(targetVisitId, selection)
+                                            .thenAccept(entered -> Platform.runLater(() ->{
+                                                entered.forEach(e -> fireShinryouEnteredEvent(e));
+                                                hideWorkarea();
+                                            }))
+                                            .exceptionally(HandlerFX::exceptionally);
                                 }
 
                                 @Override
@@ -189,9 +195,9 @@ public class ShinryouMenu extends VBox {
                                     hideWorkarea();
                                 }
                             };
-                            showWorkarea(form);
+                            Platform.runLater(() -> showWorkarea(form));
                         })
-                        .exceptionally(HandlerFX<Void>::exceptionally);
+                        .exceptionally(HandlerFX::exceptionally);
             }
         }
     }
