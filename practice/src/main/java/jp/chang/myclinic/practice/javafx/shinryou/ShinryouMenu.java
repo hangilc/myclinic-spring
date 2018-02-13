@@ -14,6 +14,7 @@ import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.javafx.parts.ShinryouForm;
@@ -172,7 +173,14 @@ public class ShinryouMenu extends VBox {
     }
 
     private void doCopySelected(){
+        int targetVisitId = PracticeUtil.findCopyTarget(visitId);
+        if( targetVisitId != 0 ){
+            Service.api.listShinryouFull(visitId)
+                    .thenAccept(shinryouList -> {
 
+                    })
+                    .exceptionally(HandlerFX<>::exceptionally);
+        }
     }
 
     private void doDeleteSelected(){
