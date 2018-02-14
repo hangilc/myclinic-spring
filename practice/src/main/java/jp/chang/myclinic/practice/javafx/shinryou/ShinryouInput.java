@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.parts;
+package jp.chang.myclinic.practice.javafx.shinryou;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;

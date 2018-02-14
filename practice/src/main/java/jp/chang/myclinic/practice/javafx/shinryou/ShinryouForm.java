@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.parts;
+package jp.chang.myclinic.practice.javafx.shinryou;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -6,6 +6,9 @@ import javafx.scene.layout.HBox;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
+import jp.chang.myclinic.practice.javafx.parts.SearchInputBox;
+import jp.chang.myclinic.practice.javafx.parts.SearchResult;
+import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 
 public class ShinryouForm extends WorkForm {
 

@@ -57,7 +57,7 @@
     -fx-padding: 2;
 }
 
-.drug-disp {
+.drug-disp, .shinryou-disp {
     -fx-cursor: hand;
 }
 

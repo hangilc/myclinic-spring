@@ -5,7 +5,6 @@ import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
-import jp.chang.myclinic.practice.javafx.parts.ShinryouForm;
 
 class ShinryouEnterForm extends ShinryouForm {
 
