@@ -7,11 +7,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.practice.lib.conduct.ConductDrugForm;
+import jp.chang.myclinic.practice.lib.conduct.ConductDrugInputInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DrugInput extends GridPane implements ConductDrugForm {
+public class DrugInput extends GridPane implements ConductDrugInputInterface {
 
     private static Logger logger = LoggerFactory.getLogger(DrugInput.class);
 

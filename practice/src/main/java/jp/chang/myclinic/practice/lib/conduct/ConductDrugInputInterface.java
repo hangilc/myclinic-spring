@@ -7,7 +7,7 @@ import jp.chang.myclinic.practice.lib.ValueFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface ConductDrugForm {
+public interface ConductDrugInputInterface {
 
     void setIyakuhincode(int iyakuhincode);
     void setName(String name);
