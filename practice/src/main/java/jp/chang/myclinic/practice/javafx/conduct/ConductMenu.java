@@ -57,6 +57,7 @@ public class ConductMenu extends VBox {
             }
             {
                 MenuItem item = new MenuItem("全部コピー");
+                item.setOnAction(evt -> doCopyAll());
                 contextMenu.getItems().add(item);
             }
             contextMenu.show(this, event.getScreenX(), event.getScreenY());
@@ -109,6 +110,18 @@ public class ConductMenu extends VBox {
                 }
             };
             showWorkarea(form);
+        }
+    }
+
+    private void doCopyAll(){
+        int targetVisitId = PracticeUtil.findCopyTarget(visitId);
+        if( targetVisitId > 0 ){
+            Service.api.copyAllConducts(targetVisitId, visitId)
+                    .thenCompose(Service.api::listConductFullByIds)
+                    .thenAccept(entered -> Platform.runLater(() -> {
+                        entered.forEach(this::fireConductEntered);
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
         }
     }
 
