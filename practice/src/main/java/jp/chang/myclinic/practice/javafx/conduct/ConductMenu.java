@@ -10,6 +10,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.ConductDrugDTO;
+import jp.chang.myclinic.dto.ConductEnterRequestDTO;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
@@ -25,11 +26,13 @@ public class ConductMenu extends VBox {
     private static Logger logger = LoggerFactory.getLogger(ConductMenu.class);
 
     private int visitId;
+    private String at;
     private StackPane workarea = new StackPane();
 
-    public ConductMenu(int visitId) {
+    public ConductMenu(int visitId, String at) {
         super(4);
         this.visitId = visitId;
+        this.at = at;
         getChildren().addAll(
             createLink()
         );
@@ -91,14 +94,18 @@ public class ConductMenu extends VBox {
 
     private void doEnterInjection(){
         if( PracticeUtil.confirmCurrentVisitAction(visitId, "処置注射を入力しますか？") ){
-            EnterInjectionForm form = new EnterInjectionForm(){
+            EnterInjectionForm form = new EnterInjectionForm(at){
                 @Override
                 protected void onEnter(EnterInjectionForm form, ConductKind kind, ConductDrugDTO drug) {
-                    Service.api.enterConductFull(visitId, kind.getCode(), null, null, Collections.singletonList(drug), null)
-                            .thenAccept(entered -> {
+                    ConductEnterRequestDTO req = new ConductEnterRequestDTO();
+                    req.visitId = visitId;
+                    req.kind = kind.getCode();
+                    req.drugs = Collections.singletonList(drug);
+                    Service.api.enterConductFull(req)
+                            .thenAccept(entered -> Platform.runLater(() -> {
                                 fireConductEntered(entered);
                                 hideWorkarea();
-                            })
+                            }))
                             .exceptionally(HandlerFX::exceptionally);
                 }
 

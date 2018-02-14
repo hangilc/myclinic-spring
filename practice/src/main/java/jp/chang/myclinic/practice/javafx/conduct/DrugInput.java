@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.conduct;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -30,7 +31,8 @@ public class DrugInput extends GridPane implements ConductDrugForm {
         }
         {
             HBox hbox = new HBox(4);
-            amountField = new TextField();
+            hbox.setAlignment(Pos.CENTER_LEFT);
+            amountField = new TextField("1");
             amountField.getStyleClass().add("drug-amount-input");
             amountUnitText = new Text("");
             hbox.getChildren().addAll(amountField, amountUnitText);

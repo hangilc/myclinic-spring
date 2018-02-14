@@ -18,7 +18,7 @@ public class ErrorMessageExtractor {
     }
 
     public static String extract(Throwable throwable){
-        while( throwable.getCause() != null ){
+        while( isWrapper(throwable) ){
             throwable = throwable.getCause();
         }
         if( throwable instanceof HttpException){
@@ -32,11 +32,15 @@ public class ErrorMessageExtractor {
                     return body;
                 }
             } catch(IOException ioException){
-                return throwable.getMessage();
+                return throwable.toString();
             }
         } else {
-            return throwable.getMessage();
+            return throwable.toString();
         }
+    }
+
+    private static boolean isWrapper(Throwable th){
+        return (th instanceof CompletionException) || (th instanceof ExecutionException);
     }
 
 }

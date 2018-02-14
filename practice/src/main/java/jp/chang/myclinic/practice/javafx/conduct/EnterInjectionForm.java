@@ -1,11 +1,17 @@
 package jp.chang.myclinic.practice.javafx.conduct;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.ConductDrugDTO;
+import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.practice.javafx.parts.SearchResult;
+import jp.chang.myclinic.practice.javafx.parts.SearchTextBox;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
 import org.slf4j.Logger;
@@ -17,17 +23,23 @@ public class EnterInjectionForm extends WorkForm {
 
     private static Logger logger = LoggerFactory.getLogger(EnterInjectionForm.class);
 
+    private String at;
     private int conductDrugId = 0;
     private int conductId = 0;
     private DrugInput drugInput = new DrugInput();
     private RadioButtonGroup<ConductKind> kindGroup;
+    private SearchResult<IyakuhinMasterDTO> searchResult;
 
-    public EnterInjectionForm() {
+    public EnterInjectionForm(String at) {
         super("処置注射入力");
+        this.at = at;
+        getStyleClass().add("enter-injection-form");
         getChildren().addAll(
                 drugInput,
                 createKindInput(),
-                createCommands()
+                createCommands(),
+                createSearchTextInput(),
+                createSearchResult()
         );
     }
 
@@ -37,6 +49,7 @@ public class EnterInjectionForm extends WorkForm {
         kindGroup.createRadioButton("皮下・筋肉", ConductKind.HikaChuusha);
         kindGroup.createRadioButton("静脈 ", ConductKind.JoumyakuChuusha);
         kindGroup.createRadioButton("その他", ConductKind.OtherChuusha);
+        kindGroup.setValue(ConductKind.HikaChuusha);
         hbox.getChildren().addAll(kindGroup.getButtons());
         return hbox;
     }
@@ -45,10 +58,33 @@ public class EnterInjectionForm extends WorkForm {
         HBox hbox = new HBox(4);
         Button enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
-        enterButton.setOnDragEntered(evt -> doEnter());
+        enterButton.setOnAction(evt -> doEnter());
         cancelButton.setOnAction(evt -> onCancel(this));
         hbox.getChildren().addAll(enterButton, cancelButton);
         return hbox;
+    }
+
+    private Node createSearchTextInput(){
+        return new SearchTextBox(){
+            @Override
+            protected void onEnter(String text) {
+                Service.api.searchIyakuhinMaster(text, at)
+                        .thenAccept(result -> Platform.runLater(() -> {
+                            searchResult.setList(result);
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
+            }
+        };
+    }
+
+    private Node createSearchResult(){
+        searchResult = new SearchResult<IyakuhinMasterDTO>(m -> m.name){
+            @Override
+            protected void onSelect(IyakuhinMasterDTO selected) {
+                drugInput.setMaster(selected);
+            }
+        };
+        return searchResult;
     }
 
     private void doEnter(){

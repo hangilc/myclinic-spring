@@ -10,10 +10,10 @@ class RecordConductsPane extends VBox {
 
     private VBox conductList = new VBox(4);
 
-    RecordConductsPane(List<ConductFullDTO> conducts, int visitId){
+    RecordConductsPane(List<ConductFullDTO> conducts, int visitId, String at){
         super(4);
         getChildren().addAll(
-                new ConductMenu(visitId),
+                new ConductMenu(visitId, at),
                 conductList
         );
         conducts.forEach(this::addConduct);
