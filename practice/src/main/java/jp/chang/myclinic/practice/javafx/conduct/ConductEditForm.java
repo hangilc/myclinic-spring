@@ -13,6 +13,7 @@ import javafx.scene.text.TextFlow;
 import javafx.util.StringConverter;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.javafx.parts.OptionalWrapper;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.KizaiUtil;
@@ -25,10 +26,13 @@ public class ConductEditForm extends WorkForm {
 
     private static Logger logger = LoggerFactory.getLogger(ConductEditForm.class);
 
+    private OptionalWrapper workarea = new OptionalWrapper();
+
     public ConductEditForm(ConductFullDTO conduct) {
         super("処置の編集");
         getChildren().addAll(
                 createTopMenu(),
+                workarea,
                 createKindInput(conduct.conduct.kind),
                 createLabelInput(conduct.gazouLabel),
                 createShinryouList(conduct.conductShinryouList),
@@ -43,6 +47,7 @@ public class ConductEditForm extends WorkForm {
         Hyperlink enterShinryouLink = new Hyperlink("診療行為追加");
         Hyperlink enterDrugLink = new Hyperlink("薬剤追加");
         Hyperlink enterKizaiLink = new Hyperlink("器材追加");
+        enterShinryouLink.setOnAction(evt -> doEnterShinryou());
         hbox.getChildren().addAll(enterShinryouLink, enterDrugLink, enterKizaiLink);
         return hbox;
     }
@@ -113,6 +118,11 @@ public class ConductEditForm extends WorkForm {
         closeButton.setOnAction(evt -> onClose(conduct));
         hbox.getChildren().addAll(closeButton, deleteLink);
         return hbox;
+    }
+
+    private void doEnterShinryou(){
+        ConductShinryouForm form = new ConductShinryouForm();
+        workarea.show(form);
     }
 
     protected void onClose(ConductFullDTO conduct){
