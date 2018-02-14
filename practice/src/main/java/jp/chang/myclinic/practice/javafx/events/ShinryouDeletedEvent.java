@@ -8,13 +8,17 @@ public class ShinryouDeletedEvent extends Event {
 
     public static EventType<ShinryouDeletedEvent> eventType = new EventType<>("SHINRYOU_DELETED");
 
-    private int shinryouId;
     private int visitId;
+    private int shinryouId;
+
+    public ShinryouDeletedEvent(int visitId, int shinryouId){
+        super(eventType);
+        this.visitId = visitId;
+        this.shinryouId = shinryouId;
+    }
 
     public ShinryouDeletedEvent(ShinryouDTO shinryou) {
-        super(eventType);
-        this.shinryouId = shinryou.shinryouId;
-        this.visitId = shinryou.visitId;
+        this(shinryou.visitId, shinryou.shinryouId);
     }
 
     public int getShinryouId() {

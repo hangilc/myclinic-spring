@@ -243,7 +243,14 @@ public class ShinryouMenu extends VBox {
     }
 
     private void doDeleteDuplicate() {
-
+        Service.api.deleteDuplicateShinryou(visitId)
+                .thenAccept(shinryouIds -> Platform.runLater(() ->{
+                    shinryouIds.forEach(shinryouId -> {
+                        ShinryouDeletedEvent e = new ShinryouDeletedEvent(visitId, shinryouId);
+                        ShinryouMenu.this.fireEvent(e);
+                    });
+                }))
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private boolean isWorkareaEmpty() {
