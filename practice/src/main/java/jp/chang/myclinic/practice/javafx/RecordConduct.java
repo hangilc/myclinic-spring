@@ -5,7 +5,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.ConductKind;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.dto.ConductFullDTO;
+import jp.chang.myclinic.dto.GazouLabelDTO;
+import jp.chang.myclinic.practice.javafx.conduct.ConductEditForm;
+import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 class RecordConduct extends StackPane {
 
@@ -36,7 +39,25 @@ class RecordConduct extends StackPane {
                 disp.getChildren().add(new RecordConductKizai(kizai));
             });
         }
+        disp.setOnMouseClicked(evt -> onClick(conduct));
         return disp;
+    }
+
+    private void onClick(ConductFullDTO conduct){
+        if( PracticeUtil.confirmCurrentVisitAction(conduct.conduct.visitId, "処置を編集しますか？") ){
+            ConductEditForm form = new ConductEditForm(conduct){
+                @Override
+                protected void onClose(ConductFullDTO conduct) {
+                    setContent(createDisp(conduct));
+                }
+            };
+            setContent(form);
+        }
+    }
+
+    private void setContent(Node content){
+        getChildren().clear();
+        getChildren().add(content);
     }
 
 }
