@@ -172,6 +172,14 @@ public class Service {
         @GET("get-conduct-full")
         CompletableFuture<ConductFullDTO> getConductFull(@Query("conduct-id") int conductId);
 
+        @GET("enter-conduct-full")
+        CompletableFuture<ConductFullDTO> enterConductFull(@Query("visit-id") int visitId,
+                                                             @Query("kind") int kind,
+                                                             @Query("gazou-label") String gazouLabel,
+                                                             @Query("shinryou-list") List<ConductShinryouDTO> shinryouList,
+                                                             @Query("drugs") List<ConductDrugDTO> drugs,
+                                                             @Query("kizai-list") List<ConductKizaiDTO> kizaiList);
+
         @POST("enter-xp")
         CompletableFuture<Integer> enterXp(@Query("visit-id") int visitId, @Query("label") String label, @Query("film") String film);
 

@@ -62,6 +62,38 @@ public class ConductController {
 		);
 	}
 
+	@RequestMapping(value="/enter-conduct-full", method=RequestMethod.POST)
+	public ConductFullDTO enterConductFull(@RequestParam("visit-id") int visitId,
+										   @RequestParam("kind") int conductKind,
+										   @RequestParam(value="gazou-label", required=false) String gazouLabel,
+										   @RequestParam(value="shinryou-list", required=false) List<ConductShinryouDTO> shinryouList,
+										   @RequestParam(value="drugs", required=false) List<ConductDrugDTO> drugs,
+										   @RequestParam(value="kizai-list", required=false) List<ConductKizaiDTO> kizaiList){
+		ConductDTO conduct = new ConductDTO();
+		conduct.visitId = visitId;
+		conduct.kind = conductKind;
+		int conductId = dbGateway.enterConduct(conduct);
+		if( gazouLabel != null ) {
+			GazouLabelDTO gazouLabelDTO = new GazouLabelDTO();
+			gazouLabelDTO.conductId = conductId;
+			gazouLabelDTO.label = gazouLabel;
+			dbGateway.enterGazouLabel(gazouLabelDTO);
+		}
+		for(ConductShinryouDTO shinryou: shinryouList){
+			shinryou.conductId = conductId;
+			dbGateway.enterConductShinryou(shinryou);
+		}
+		for(ConductDrugDTO drug: drugs){
+			drug.conductId = conductId;
+			dbGateway.enterConductDrug(drug);
+		}
+		for(ConductKizaiDTO kizai: kizaiList){
+			kizai.conductId = conductId;
+			dbGateway.enterConductKizai(kizai);
+		}
+		return dbGateway.getConductFull(conductId);
+	}
+
 	@RequestMapping(value="/enter-inject", method=RequestMethod.POST)
 	public Integer enterInject(@RequestParam("visit-id") int visitId,
 							   @RequestParam("kind") int conductKindCode,

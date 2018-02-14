@@ -18,7 +18,7 @@ public class EnterXpForm extends WorkForm {
     private Supplier<String> gazouLabelSupplier;
     private Supplier<String> filmSupplier;
 
-    public EnterXpForm(int visitId) {
+    public EnterXpForm() {
         super("X線入力");
         getChildren().addAll(
                 createLabelInput(),

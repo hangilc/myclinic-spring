@@ -8,6 +8,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.consts.ConductKind;
+import jp.chang.myclinic.dto.ConductDrugDTO;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
@@ -15,6 +17,8 @@ import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
 
 public class ConductMenu extends VBox {
 
@@ -46,7 +50,8 @@ public class ConductMenu extends VBox {
                 contextMenu.getItems().add(item);
             }
             {
-                MenuItem item = new MenuItem("Ｘ線検査追加");
+                MenuItem item = new MenuItem("注射追加");
+                item.setOnAction(evt -> doEnterInjection());
                 contextMenu.getItems().add(item);
             }
             {
@@ -63,7 +68,7 @@ public class ConductMenu extends VBox {
 
     private void doEnterXp(){
         if( PracticeUtil.confirmCurrentVisitAction(visitId, "Ｘ線検査を入力しますか？") ) {
-            EnterXpForm form = new EnterXpForm(visitId) {
+            EnterXpForm form = new EnterXpForm() {
                 @Override
                 protected void onEnter(EnterXpForm form, String label, String film) {
                     Service.api.enterXp(visitId, label, film)
@@ -77,6 +82,28 @@ public class ConductMenu extends VBox {
 
                 @Override
                 protected void onCancel(EnterXpForm form) {
+                    hideWorkarea();
+                }
+            };
+            showWorkarea(form);
+        }
+    }
+
+    private void doEnterInjection(){
+        if( PracticeUtil.confirmCurrentVisitAction(visitId, "処置注射を入力しますか？") ){
+            EnterInjectionForm form = new EnterInjectionForm(){
+                @Override
+                protected void onEnter(EnterInjectionForm form, ConductKind kind, ConductDrugDTO drug) {
+                    Service.api.enterConductFull(visitId, kind.getCode(), null, null, Collections.singletonList(drug), null)
+                            .thenAccept(entered -> {
+                                fireConductEntered(entered);
+                                hideWorkarea();
+                            })
+                            .exceptionally(HandlerFX::exceptionally);
+                }
+
+                @Override
+                protected void onCancel(EnterInjectionForm form) {
                     hideWorkarea();
                 }
             };
