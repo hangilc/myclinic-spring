@@ -10,16 +10,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.ConductDrugDTO;
-import jp.chang.myclinic.dto.ConductEnterRequestDTO;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
+import jp.chang.myclinic.practice.lib.PracticeAPI;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
 
 public class ConductMenu extends VBox {
 
@@ -97,11 +95,7 @@ public class ConductMenu extends VBox {
             EnterInjectionForm form = new EnterInjectionForm(at){
                 @Override
                 protected void onEnter(EnterInjectionForm form, ConductKind kind, ConductDrugDTO drug) {
-                    ConductEnterRequestDTO req = new ConductEnterRequestDTO();
-                    req.visitId = visitId;
-                    req.kind = kind.getCode();
-                    req.drugs = Collections.singletonList(drug);
-                    Service.api.enterConductFull(req)
+                    PracticeAPI.enterInjection(visitId, kind, drug)
                             .thenAccept(entered -> Platform.runLater(() -> {
                                 fireConductEntered(entered);
                                 hideWorkarea();

@@ -1,12 +1,13 @@
 package jp.chang.myclinic.practice.lib;
 
-import jp.chang.myclinic.dto.ShinryouDTO;
-import jp.chang.myclinic.dto.ShinryouFullDTO;
-import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.consts.ConductKind;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -53,6 +54,34 @@ public class PracticeAPI {
         return Service.api.getVisit(visitId)
                 .thenCompose(visit -> CFUtil.map(srcList, s -> copyShinryou(visit, s)))
                 .thenApply(entered -> entered.stream().filter(Objects::nonNull).collect(Collectors.toList()));
+    }
+
+    public static CompletableFuture<ConductFullDTO> enterInjection(int visitId, ConductKind kind, ConductDrugDTO drug){
+        List<ConductShinryouDTO> shinryouList = new ArrayList<>();
+        return Service.api.getVisit(visitId)
+                .thenCompose(result -> {
+                    String at = result.visitedAt;
+                    if( kind == ConductKind.HikaChuusha ){
+                        return Service.api.resolveShinryouMasterByName("皮下筋注", at);
+                    } else if( kind == ConductKind.JoumyakuChuusha ){
+                        return Service.api.resolveShinryouMasterByName("静注", at);
+                    } else {
+                        return CompletableFuture.completedFuture(null);
+                    }
+                })
+                .thenCompose(master -> {
+                    if( master != null ){
+                        ConductShinryouDTO shinryou = new ConductShinryouDTO();
+                        shinryou.shinryoucode = master.shinryoucode;
+                        shinryouList.add(shinryou);
+                    }
+                    ConductEnterRequestDTO req = new ConductEnterRequestDTO();
+                    req.visitId = visitId;
+                    req.kind = kind.getCode();
+                    req.shinryouList = shinryouList;
+                    req.drugs = Collections.singletonList(drug);
+                    return Service.api.enterConductFull(req);
+                });
     }
 
 }

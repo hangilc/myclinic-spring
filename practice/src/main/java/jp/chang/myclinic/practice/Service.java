@@ -153,6 +153,12 @@ public class Service {
         @GET("resolve-shinryoucode")
         CompletableFuture<Integer> resolveShinryoucode(@Query("shinryoucode") int shinryoucode, @Query("at") String at);
 
+        @GET("resolve-shinryou-master-by-name")
+        CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByName(@Query("name") String name, @Query("at") String at);
+
+        @GET("resolve-kizai-master-by-name")
+        CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByName(@Query("name") String name, @Query("at") String at);
+
         @GET("get-shinryou-master")
         CompletableFuture<ShinryouMasterDTO> getShinryouMaster(@Query("shinryoucode") int shinryoucode, @Query("at") String at);
 

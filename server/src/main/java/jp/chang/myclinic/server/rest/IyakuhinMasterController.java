@@ -1,8 +1,10 @@
 package jp.chang.myclinic.server.rest;
 
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.mastermap.MasterMap;
+import jp.chang.myclinic.server.db.myclinic.DbGateway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,8 @@ import java.util.*;
 @RequestMapping("/json")
 @Transactional
 public class IyakuhinMasterController {
+
+    private static Logger logger = LoggerFactory.getLogger(IyakuhinMasterController.class);
 
     @Autowired
     private DbGateway dbGateway;
@@ -41,10 +45,7 @@ public class IyakuhinMasterController {
     @RequestMapping(value="/resolve-iyakuhin-master", method=RequestMethod.GET)
     public Optional<IyakuhinMasterDTO> resolveIyakuhinMaster(@RequestParam("iyakuhincode") int iyakuhincode,
                                                              @RequestParam("at") String at){
-        if( at.length() > 10 ){
-            at = at.substring(0, 10);
-        }
-        LocalDate atDate = LocalDate.parse(at);
+        LocalDate atDate = convertToDate(at);
         iyakuhincode = masterMap.resolveIyakuhinCode(iyakuhincode, atDate);
         return dbGateway.findIyakuhinMaster(iyakuhincode, at);
     }
@@ -63,6 +64,13 @@ public class IyakuhinMasterController {
             map.put(iyakuhincode, optMaster.orElse(null));
         });
         return map;
+    }
+
+    private LocalDate convertToDate(String at){
+        if( at.length() > 10 ){
+            at = at.substring(0, 10);
+        }
+        return LocalDate.parse(at);
     }
 
 }
