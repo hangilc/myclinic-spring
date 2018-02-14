@@ -2,16 +2,24 @@ package jp.chang.myclinic.practice.javafx;
 
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.ConductFullDTO;
+import jp.chang.myclinic.practice.javafx.conduct.ConductMenu;
 
 import java.util.List;
 
 class RecordConductsPane extends VBox {
 
-    RecordConductsPane(List<ConductFullDTO> conducts){
+    private VBox conductList = new VBox(4);
+
+    RecordConductsPane(List<ConductFullDTO> conducts, int visitId){
+        super(4);
+        getChildren().addAll(
+                new ConductMenu(visitId),
+                conductList
+        );
         conducts.forEach(this::addConduct);
     }
 
     public void addConduct(ConductFullDTO conduct){
-        getChildren().add(new RecordConduct(conduct));
+        conductList.getChildren().add(new RecordConduct(conduct));
     }
 }
