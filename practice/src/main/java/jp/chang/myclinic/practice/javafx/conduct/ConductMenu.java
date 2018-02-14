@@ -12,6 +12,7 @@ import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
+import jp.chang.myclinic.practice.lib.PracticeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,24 +62,26 @@ public class ConductMenu extends VBox {
     }
 
     private void doEnterXp(){
-        EnterXpForm form = new EnterXpForm(visitId){
-            @Override
-            protected void onEnter(EnterXpForm form, String label, String film) {
-                Service.api.enterXp(visitId, label, film)
-                        .thenCompose(Service.api::getConductFull)
-                        .thenAccept(entered -> Platform.runLater(() -> {
-                            fireConductEntered(entered);
-                            hideWorkarea();
-                        }))
-                        .exceptionally(HandlerFX::exceptionally);
-            }
+        if( PracticeUtil.confirmCurrentVisitAction(visitId, "Ｘ線検査を入力しますか？") ) {
+            EnterXpForm form = new EnterXpForm(visitId) {
+                @Override
+                protected void onEnter(EnterXpForm form, String label, String film) {
+                    Service.api.enterXp(visitId, label, film)
+                            .thenCompose(Service.api::getConductFull)
+                            .thenAccept(entered -> Platform.runLater(() -> {
+                                fireConductEntered(entered);
+                                hideWorkarea();
+                            }))
+                            .exceptionally(HandlerFX::exceptionally);
+                }
 
-            @Override
-            protected void onCancel(EnterXpForm form) {
-                hideWorkarea();
-            }
-        };
-        showWorkarea(form);
+                @Override
+                protected void onCancel(EnterXpForm form) {
+                    hideWorkarea();
+                }
+            };
+            showWorkarea(form);
+        }
     }
 
     private void showWorkarea(Node content){
