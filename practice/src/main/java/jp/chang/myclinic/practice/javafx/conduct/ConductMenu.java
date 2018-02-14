@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.conduct;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Hyperlink;
@@ -7,6 +8,10 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.dto.ConductFullDTO;
+import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +56,23 @@ public class ConductMenu extends VBox {
         }
     }
 
+    private void fireConductEntered(ConductFullDTO entered){
+        fireEvent(new ConductEnteredEvent(entered));
+    }
+
     private void doEnterXp(){
         EnterXpForm form = new EnterXpForm(visitId){
+            @Override
+            protected void onEnter(EnterXpForm form, String label, String film) {
+                Service.api.enterXp(visitId, label, film)
+                        .thenCompose(Service.api::getConductFull)
+                        .thenAccept(entered -> Platform.runLater(() -> {
+                            fireConductEntered(entered);
+                            hideWorkarea();
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
+            }
+
             @Override
             protected void onCancel(EnterXpForm form) {
                 hideWorkarea();
