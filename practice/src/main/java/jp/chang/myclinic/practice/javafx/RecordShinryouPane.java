@@ -4,7 +4,6 @@ import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.javafx.shinryou.ShinryouMenu;
 
 import java.util.List;
@@ -51,11 +50,11 @@ class RecordShinryouPane extends VBox {
         return shinryouList;
     }
 
-    private RecordShinryou findRecordShinryou(int visitId){
+    private RecordShinryou findRecordShinryou(int shinryouId){
         for(Node node: shinryouList.getChildren()){
             if( node instanceof RecordShinryou){
                 RecordShinryou r = (RecordShinryou)node;
-                if( r.getVisitId() == visitId ){
+                if( r.getShinryouId() == shinryouId ){
                     return r;
                 }
             }
@@ -63,8 +62,10 @@ class RecordShinryouPane extends VBox {
         return null;
     }
 
-    private void onShinryouEntered(ShinryouEnteredEvent event){
-        ShinryouFullDTO enteredShinryou = event.getShinryou();
-        insertShinryou(enteredShinryou);
+    public void deleteShinryou(int shinryouId) {
+        RecordShinryou recordShinryou = findRecordShinryou(shinryouId);
+        if( recordShinryou != null ){
+            shinryouList.getChildren().remove(recordShinryou);
+        }
     }
 }

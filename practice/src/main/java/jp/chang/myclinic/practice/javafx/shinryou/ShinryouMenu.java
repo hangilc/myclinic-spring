@@ -10,18 +10,22 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.ConductFullDTO;
+import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
+import jp.chang.myclinic.practice.javafx.events.ShinryouDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.javafx.parts.ShinryouForm;
+import jp.chang.myclinic.practice.lib.CFUtil;
 import jp.chang.myclinic.practice.lib.PracticeAPI;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class ShinryouMenu extends VBox {
 
@@ -29,7 +33,7 @@ public class ShinryouMenu extends VBox {
     private String visitedAt;
     private StackPane workarea = new StackPane();
 
-    public ShinryouMenu(VisitDTO visit){
+    public ShinryouMenu(VisitDTO visit) {
         super(4);
         this.visitId = visit.visitId;
         this.visitedAt = visit.visitedAt;
@@ -38,7 +42,7 @@ public class ShinryouMenu extends VBox {
         );
     }
 
-    private Node createMenu(){
+    private Node createMenu() {
         HBox hbox = new HBox(4);
         hbox.getChildren().addAll(
                 createMainMenu(),
@@ -47,21 +51,21 @@ public class ShinryouMenu extends VBox {
         return hbox;
     }
 
-    private Node createMainMenu(){
+    private Node createMainMenu() {
         Hyperlink mainLink = new Hyperlink("[診療行為]");
         mainLink.setOnAction(event -> doMainMenu());
         return mainLink;
     }
 
-    private Node createAuxMenu(){
+    private Node createAuxMenu() {
         Hyperlink auxLink = new Hyperlink("[+]");
         auxLink.setOnMouseClicked(event -> onAuxMenu(auxLink, event));
         return auxLink;
     }
 
-    private void doMainMenu(){
-        if( isWorkareaEmpty() ) {
-            if( PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？") ) {
+    private void doMainMenu() {
+        if (isWorkareaEmpty()) {
+            if (PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？")) {
                 AddRegularForm form = new AddRegularForm(visitId) {
                     @Override
                     void onEntered(AddRegularForm form) {
@@ -78,8 +82,8 @@ public class ShinryouMenu extends VBox {
         }
     }
 
-    private void onAuxMenu(Node link, MouseEvent event){
-        if( isWorkareaEmpty() ){
+    private void onAuxMenu(Node link, MouseEvent event) {
+        if (isWorkareaEmpty()) {
             ContextMenu contextMenu = new ContextMenu();
             {
                 MenuItem item = new MenuItem("検査");
@@ -115,17 +119,21 @@ public class ShinryouMenu extends VBox {
         }
     }
 
-    private void fireShinryouEnteredEvent(ShinryouFullDTO shinryou){
+    private void fireShinryouEnteredEvent(ShinryouFullDTO shinryou) {
         fireEvent(new ShinryouEnteredEvent(shinryou));
     }
 
-    private void fireConductEnteredEvent(ConductFullDTO conduct){
+    private void fireShinryouDeletedEvent(ShinryouDTO shinryou){
+        fireEvent(new ShinryouDeletedEvent(shinryou));
+    }
+
+    private void fireConductEnteredEvent(ConductFullDTO conduct) {
         fireEvent(new ConductEnteredEvent(conduct));
     }
 
-    private void doKensa(){
-        if( PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？") ) {
-            AddKensaForm form = new AddKensaForm(){
+    private void doKensa() {
+        if (PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？")) {
+            AddKensaForm form = new AddKensaForm() {
                 @Override
                 protected void onEnter(List<String> selected) {
                     FunJavaFX.batchEnterShinryouByNames(visitId, selected, (shinryouList, conductList) -> {
@@ -146,9 +154,9 @@ public class ShinryouMenu extends VBox {
         }
     }
 
-    private void doSearch(){
-        if( PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？") ) {
-            ShinryouEnterForm form = new ShinryouEnterForm(visitedAt, visitId){
+    private void doSearch() {
+        if (PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？")) {
+            ShinryouEnterForm form = new ShinryouEnterForm(visitedAt, visitId) {
 
                 @Override
                 protected void onClose(ShinryouForm form) {
@@ -159,31 +167,32 @@ public class ShinryouMenu extends VBox {
         }
     }
 
-    private void doCopyAll(){
+    private void doCopyAll() {
         int targetVisitId = PracticeUtil.findCopyTarget(visitId);
-        if( targetVisitId != 0 ){
+        if (targetVisitId != 0) {
             Service.api.listShinryouFull(visitId)
                     .thenAccept(srcList -> {
                         FunJavaFX.batchCopyShinryou(targetVisitId, srcList,
                                 entered -> {
                                     Platform.runLater(() -> fireShinryouEnteredEvent(entered));
                                 },
-                                () -> {});
+                                () -> {
+                                });
                     });
         }
     }
 
-    private void doCopySelected(){
-        if( isWorkareaEmpty() ) {
+    private void doCopySelected() {
+        if (isWorkareaEmpty()) {
             int targetVisitId = PracticeUtil.findCopyTarget(visitId);
             if (targetVisitId != 0) {
                 Service.api.listShinryouFull(visitId)
                         .thenAccept(shinryouList -> {
-                            CopySelectedForm form = new CopySelectedForm(shinryouList){
+                            CopySelectedForm form = new CopySelectedForm(shinryouList) {
                                 @Override
-                                protected void onEnter(CopySelectedForm form, List<ShinryouFullDTO> selection) {
+                                protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection) {
                                     PracticeAPI.batchCopyShinryou(targetVisitId, selection)
-                                            .thenAccept(entered -> Platform.runLater(() ->{
+                                            .thenAccept(entered -> Platform.runLater(() -> {
                                                 entered.forEach(e -> fireShinryouEnteredEvent(e));
                                                 hideWorkarea();
                                             }))
@@ -191,7 +200,7 @@ public class ShinryouMenu extends VBox {
                                 }
 
                                 @Override
-                                protected void onCancel(CopySelectedForm form) {
+                                protected void onCancel(HandleSelectedForm form) {
                                     hideWorkarea();
                                 }
                             };
@@ -202,28 +211,52 @@ public class ShinryouMenu extends VBox {
         }
     }
 
-    private void doDeleteSelected(){
-        if( PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を削除しますか？") ) {
+    private void doDeleteSelected() {
+        if (isWorkareaEmpty()) {
+            if (PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を削除しますか？")) {
+                Service.api.listShinryouFull(visitId)
+                        .thenAccept(shinryouList -> {
+                            DeleteSelectedForm form = new DeleteSelectedForm(shinryouList) {
+                                private CompletableFuture<Void> deleteShinryou(ShinryouFullDTO shinryou){
+                                    return Service.api.deleteShinryou(shinryou.shinryou.shinryouId)
+                                            .thenAccept(result -> Platform.runLater(() ->
+                                                    fireShinryouDeletedEvent(shinryou.shinryou)));
+                                }
 
+                                @Override
+                                protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection) {
+                                    CFUtil.forEach(selection, this::deleteShinryou)
+                                            .thenAccept(result -> Platform.runLater(() -> hideWorkarea()))
+                                            .exceptionally(HandlerFX::exceptionally);
+                                }
+
+                                @Override
+                                protected void onCancel(HandleSelectedForm form) {
+                                    hideWorkarea();
+                                }
+                            };
+                            Platform.runLater(() -> showWorkarea(form));
+                        })
+                        .exceptionally(HandlerFX::exceptionally);
+            }
         }
+    }
+
+    private void doDeleteDuplicate() {
 
     }
 
-    private void doDeleteDuplicate(){
-
-    }
-
-    private boolean isWorkareaEmpty(){
+    private boolean isWorkareaEmpty() {
         return workarea.getChildren().size() == 0;
     }
 
-    private void showWorkarea(Node content){
+    private void showWorkarea(Node content) {
         workarea.getChildren().clear();
         workarea.getChildren().add(content);
         getChildren().add(workarea);
     }
 
-    private void hideWorkarea(){
+    private void hideWorkarea() {
         workarea.getChildren().clear();
         getChildren().remove(workarea);
     }

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import retrofit2.HttpException;
 
 import java.io.IOException;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 
 public class ErrorMessageExtractor {
 
@@ -16,6 +18,9 @@ public class ErrorMessageExtractor {
     }
 
     public static String extract(Throwable throwable){
+        while( throwable.getCause() != null ){
+            throwable = throwable.getCause();
+        }
         if( throwable instanceof HttpException){
             HttpException httpException = (HttpException)throwable;
             try {

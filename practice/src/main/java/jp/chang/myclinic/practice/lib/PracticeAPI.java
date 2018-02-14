@@ -54,4 +54,5 @@ public class PracticeAPI {
                 .thenCompose(visit -> CFUtil.map(srcList, s -> copyShinryou(visit, s)))
                 .thenApply(entered -> entered.stream().filter(Objects::nonNull).collect(Collectors.toList()));
     }
+
 }

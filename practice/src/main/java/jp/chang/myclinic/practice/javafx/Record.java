@@ -66,6 +66,10 @@ public class Record extends VBox {
         shinryouPane.insertShinryou(shinryou);
     }
 
+    public void deleteShinryou(int shinryouId) {
+        shinryouPane.deleteShinryou(shinryouId);
+    }
+
     public void addConduct(ConductFullDTO conduct){
         conductsPane.addConduct(conduct);
     }

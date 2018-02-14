@@ -21,6 +21,7 @@ public class RecordsPane extends VBox {
         addEventHandler(EventTypes.drugDaysModifiedEventType, this::drugDaysModified);
         addEventHandler(EventTypes.drugDeletedEventType, this::drugDeleted);
         addEventHandler(ShinryouEnteredEvent.eventType, this::onShinryouEntered);
+        addEventHandler(ShinryouDeletedEvent.eventType, this::onShinryouDeleted);
         addEventHandler(ConductEnteredEvent.eventType, this::onConductEntered);
     }
 
@@ -74,6 +75,14 @@ public class RecordsPane extends VBox {
         Record record = findRecord(shinryou.shinryou.visitId);
         if( record != null ){
             record.insertShinryou(shinryou);
+        }
+    }
+
+    private void onShinryouDeleted(ShinryouDeletedEvent event) {
+        int visitId = event.getVisitId();
+        Record record = findRecord(visitId);
+        if( record != null ){
+            record.deleteShinryou(event.getShinryouId());
         }
     }
 
