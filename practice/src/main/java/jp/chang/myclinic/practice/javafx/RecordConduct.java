@@ -12,7 +12,10 @@ import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 class RecordConduct extends StackPane {
 
-    RecordConduct(ConductFullDTO conduct){
+    private String at;
+
+    RecordConduct(ConductFullDTO conduct, String at){
+        this.at = at;
         getChildren().add(createDisp(conduct));
     }
 
@@ -45,7 +48,7 @@ class RecordConduct extends StackPane {
 
     private void onClick(ConductFullDTO conduct){
         if( PracticeUtil.confirmCurrentVisitAction(conduct.conduct.visitId, "処置を編集しますか？") ){
-            ConductEditForm form = new ConductEditForm(conduct){
+            ConductEditForm form = new ConductEditForm(conduct, at){
                 @Override
                 protected void onClose(ConductFullDTO conduct) {
                     setContent(createDisp(conduct));

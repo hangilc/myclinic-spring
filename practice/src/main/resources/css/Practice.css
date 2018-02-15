@@ -92,10 +92,6 @@
     -fx-pref-height: 120;
 }
 
-.shinryou-form .search-result {
-    -fx-pref-height: 120;
-}
-
-.enter-injection-form .search-result {
+.search-result {
     -fx-pref-height: 120;
 }

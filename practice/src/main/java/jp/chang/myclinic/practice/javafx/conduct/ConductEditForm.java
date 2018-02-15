@@ -26,10 +26,12 @@ public class ConductEditForm extends WorkForm {
 
     private static Logger logger = LoggerFactory.getLogger(ConductEditForm.class);
 
+    private String at;
     private OptionalWrapper workarea = new OptionalWrapper();
 
-    public ConductEditForm(ConductFullDTO conduct) {
+    public ConductEditForm(ConductFullDTO conduct, String at) {
         super("処置の編集");
+        this.at = at;
         getChildren().addAll(
                 createTopMenu(),
                 workarea,
@@ -121,7 +123,7 @@ public class ConductEditForm extends WorkForm {
     }
 
     private void doEnterShinryou(){
-        ConductShinryouForm form = new ConductShinryouForm();
+        ConductShinryouForm form = new ConductShinryouForm(at);
         workarea.show(form);
     }
 

@@ -8,10 +8,12 @@ import java.util.List;
 
 class RecordConductsPane extends VBox {
 
+    private String at;
     private VBox conductList = new VBox(4);
 
     RecordConductsPane(List<ConductFullDTO> conducts, int visitId, String at){
         super(4);
+        this.at = at;
         getChildren().addAll(
                 new ConductMenu(visitId, at),
                 conductList
@@ -20,6 +22,6 @@ class RecordConductsPane extends VBox {
     }
 
     public void addConduct(ConductFullDTO conduct){
-        conductList.getChildren().add(new RecordConduct(conduct));
+        conductList.getChildren().add(new RecordConduct(conduct, at));
     }
 }
