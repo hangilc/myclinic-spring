@@ -1,46 +1,41 @@
 package jp.chang.myclinic.practice.javafx.parts;
 
+import javafx.application.Platform;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class SearchBox<T> extends VBox {
 
-    private SearchInputBox inputBox;
-    private SearchResult<T> resultBox;
+    private SearchInputBox inputBox = new SearchInputBox();
+    private SearchResult<T> resultBox = new SearchResult<>();
+    private Function<String,CompletableFuture<List<T>>> searcher =
+            t -> CompletableFuture.completedFuture(Collections.emptyList());
 
     public SearchBox(){
-        SearchInputBox inputBox = new SearchInputBox(){
-            @Override
-            protected void onSearch(String text) {
-                if( text.isEmpty() ){
-                    return;
-                }
-                search(text, result -> {
-                    resultBox.setList(result);
-                });
-            }
-        };
-        resultBox = new SearchResult<T>(this::convert){
-            @Override
-            protected void onSelect(T selected) {
-                SearchBox.this.onSelect(selected);
-            }
-        };
+        inputBox.setOnTextCallback(t -> {
+            searcher.apply(t)
+                    .thenAccept(list -> Platform.runLater(() -> resultBox.setList(list)))
+                    .exceptionally(HandlerFX::exceptionally);
+        });
         getChildren().addAll(inputBox, resultBox);
     }
 
-    protected String convert(T result){
-        return result.toString();
+    public void setConverter(Function<T,String> converter) {
+        resultBox.setConverter(converter);
     }
 
-    protected void search(String text, Consumer<List<T>> cb){
-
+    public void setSearcher(Function<String,CompletableFuture<List<T>>> searcher) {
+        this.searcher = searcher;
     }
 
-    protected void onSelect(T selection){
-
+    public void setOnSelectCallback(Consumer<T> cb){
+        resultBox.setOnSelectCallback(cb);
     }
 
 }

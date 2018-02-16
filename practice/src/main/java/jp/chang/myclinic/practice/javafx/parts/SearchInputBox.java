@@ -4,10 +4,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
+import java.util.function.Consumer;
+
 public class SearchInputBox extends HBox {
 
     private TextField inputField = new TextField();
-
+    private Consumer<String> onTextCallback = s -> {};
 
     public SearchInputBox(){
         super(4);
@@ -20,11 +22,12 @@ public class SearchInputBox extends HBox {
         );
     }
 
+    public void setOnTextCallback(Consumer<String> cb){
+        this.onTextCallback = cb;
+    }
+
     private void doSearch(){
-        onSearch(inputField.getText());
+        this.onTextCallback.accept(inputField.getText());
     }
 
-    protected void onSearch(String text){
-
-    }
 }

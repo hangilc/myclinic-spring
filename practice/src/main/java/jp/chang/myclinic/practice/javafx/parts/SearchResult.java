@@ -6,18 +6,21 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class SearchResult<M> extends ListView<M> {
 
+    private Function<M,String> converter = m::toString;
+    private Consumer<M> onSelectCallback = m -> {};
 
-    public SearchResult(Function<M, String> repMaker){
+    public SearchResult(){
         getStyleClass().add("search-result");
         setCellFactory(listView -> new ListCell<M>(){
             @Override
             protected void updateItem(M item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty ? "" : repMaker.apply(item));
+                setText(empty ? "" : converter.apply(item));
             }
         });
         setOnMouseClicked(this::onMouseClick);
@@ -27,14 +30,18 @@ public class SearchResult<M> extends ListView<M> {
         itemsProperty().setValue(FXCollections.observableArrayList(list));
     }
 
-    protected void onSelect(M selected){
+    public void setOnSelectCallback(Consumer<M> cb){
+        this.onSelectCallback = cb;
+    }
 
+    public void setConverter(Function<M,String> converter){
+        this.converter = converter;
     }
 
     private void onMouseClick(MouseEvent event){
         M selected = getSelectionModel().getSelectedItem();
         if( selected != null ){
-            onSelect(selected);
+            onSelectCallback.accept(selected);
         }
     }
 
