@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.conduct;
 
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -13,6 +14,8 @@ import javafx.scene.text.TextFlow;
 import javafx.util.StringConverter;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.OptionalWrapper;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import jp.chang.myclinic.util.DrugUtil;
@@ -27,11 +30,16 @@ public class ConductEditForm extends WorkForm {
     private static Logger logger = LoggerFactory.getLogger(ConductEditForm.class);
 
     private String at;
+    private ConductFullDTO conduct;
     private OptionalWrapper workarea = new OptionalWrapper();
+    private VBox shinryouBox = new VBox(4);
+    private VBox drugBox = new VBox(4);
+    private VBox kizaiBox = new VBox(4);
 
     public ConductEditForm(ConductFullDTO conduct, String at) {
         super("処置の編集");
         this.at = at;
+        this.conduct = conduct;
         getChildren().addAll(
                 createTopMenu(),
                 workarea,
@@ -84,13 +92,14 @@ public class ConductEditForm extends WorkForm {
     }
 
     private Node createShinryouList(List<ConductShinryouFullDTO> shinryouList){
-        VBox vbox = new VBox(4);
-        shinryouList.forEach(shinryou -> {
-            Text label = new Text(shinryou.master.name);
-            Hyperlink editLink = new Hyperlink("編集");
-            vbox.getChildren().add(new TextFlow(label, editLink));
-        });
-        return vbox;
+        shinryouList.forEach(this::addShinryou);
+        return shinryouBox;
+    }
+
+    private void addShinryou(ConductShinryouFullDTO shinryou){
+        Text label = new Text(shinryou.master.name);
+        Hyperlink editLink = new Hyperlink("編集");
+        shinryouBox.getChildren().add(new TextFlow(label, editLink));
     }
 
     private Node createDrugs(List<ConductDrugFullDTO> drugs){
@@ -123,7 +132,24 @@ public class ConductEditForm extends WorkForm {
     }
 
     private void doEnterShinryou(){
-        ConductShinryouForm form = new ConductShinryouForm(at);
+        ConductShinryouForm form = new ConductShinryouForm(at, conduct.conduct.conductId){
+            @Override
+            protected void onEnter(ConductShinryouDTO shinryou) {
+                Service.api.enterConductShinryou(shinryou)
+                        .thenCompose(Service.api::getConductShinryouFull)
+                        .thenAccept(entered -> Platform.runLater(() -> {
+                            workarea.hide();
+                            conduct.conductShinryouList.add(entered);
+                            addShinryou(entered);
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
+            }
+
+            @Override
+            protected void onCancel() {
+                workarea.hide();
+            }
+        };
         workarea.show(form);
     }
 
