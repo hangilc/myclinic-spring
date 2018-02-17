@@ -5,6 +5,7 @@ import jp.chang.myclinic.dto.ShinryouMasterDTO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface ConductShinryouInputInterface {
 
@@ -18,7 +19,7 @@ public interface ConductShinryouInputInterface {
         setName(master.name);
     }
 
-    default List<String> stuffInto(ConductShinryouDTO shinryou){
+    default void stuffInto(ConductShinryouDTO shinryou, Runnable okHandler, Consumer<List<String>> errorHandler){
         List<String> err = new ArrayList<>();
         int shinryoucode = getShinryoucode();
         if( shinryoucode != 0 ){
@@ -26,6 +27,10 @@ public interface ConductShinryouInputInterface {
         } else {
             err.add("診療行為が設定されていません。");
         }
-        return err;
+        if( err.size() > 0 ){
+            errorHandler.accept(err);
+        } else {
+            okHandler.run();
+        }
     }
 }

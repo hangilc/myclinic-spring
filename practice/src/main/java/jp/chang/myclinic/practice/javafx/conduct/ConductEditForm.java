@@ -58,6 +58,7 @@ public class ConductEditForm extends WorkForm {
         Hyperlink enterDrugLink = new Hyperlink("薬剤追加");
         Hyperlink enterKizaiLink = new Hyperlink("器材追加");
         enterShinryouLink.setOnAction(evt -> doEnterShinryou());
+        enterDrugLink.setOnAction(evt -> doEnterDrug());
         hbox.getChildren().addAll(enterShinryouLink, enterDrugLink, enterKizaiLink);
         return hbox;
     }
@@ -131,8 +132,15 @@ public class ConductEditForm extends WorkForm {
         return hbox;
     }
 
+    private int getConductId(){
+        return conduct.conduct.conductId;
+    }
+
     private void doEnterShinryou(){
-        ConductShinryouForm form = new ConductShinryouForm(at, conduct.conduct.conductId){
+        if( workarea.isVisible() ){
+            return;
+        }
+        ConductShinryouForm form = new ConductShinryouForm(at, getConductId()){
             @Override
             protected void onEnter(ConductShinryouDTO shinryou) {
                 Service.api.enterConductShinryou(shinryou)
@@ -149,6 +157,16 @@ public class ConductEditForm extends WorkForm {
             protected void onCancel() {
                 workarea.hide();
             }
+        };
+        workarea.show(form);
+    }
+
+    private void doEnterDrug(){
+        if( workarea.isVisible() ){
+            return;
+        }
+        ConductDrugForm form = new ConductDrugForm(at, getConductId()){
+
         };
         workarea.show(form);
     }
