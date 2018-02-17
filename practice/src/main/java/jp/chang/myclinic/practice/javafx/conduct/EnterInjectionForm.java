@@ -78,12 +78,9 @@ public class EnterInjectionForm extends WorkForm {
     }
 
     private Node createSearchResult(){
-        searchResult = new SearchResult<IyakuhinMasterDTO>(m -> m.name){
-            @Override
-            protected void onSelect(IyakuhinMasterDTO selected) {
-                drugInput.setMaster(selected);
-            }
-        };
+        searchResult = new SearchResult<>();
+        searchResult.setConverter(m -> m.name);
+        searchResult.setOnSelectCallback(drugInput::setMaster);
         return searchResult;
     }
 

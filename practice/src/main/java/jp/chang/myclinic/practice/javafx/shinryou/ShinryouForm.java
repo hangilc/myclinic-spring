@@ -44,29 +44,24 @@ public class ShinryouForm extends WorkForm {
     }
 
     private Node createSearchInput(){
-        SearchInputBox box = new SearchInputBox(){
-            @Override
-            protected void onSearch(String text) {
-                if( !text.isEmpty() ) {
-                    Service.api.searchShinryouMaster(text, at)
-                            .thenAccept(result -> searchResult.setList(result))
-                            .exceptionally(ex -> {
-                                FunJavaFX.createErrorHandler().accept(ex);
-                                return null;
-                            });
-                }
+        SearchInputBox box = new SearchInputBox();
+        box.setOnTextCallback(text -> {
+            if( !text.isEmpty() ) {
+                Service.api.searchShinryouMaster(text, at)
+                        .thenAccept(result -> searchResult.setList(result))
+                        .exceptionally(ex -> {
+                            FunJavaFX.createErrorHandler().accept(ex);
+                            return null;
+                        });
             }
-        };
+        });
         return box;
     }
 
     private Node createSearchResult(){
-        searchResult = new SearchResult<ShinryouMasterDTO>(m -> m.name){
-            @Override
-            protected void onSelect(ShinryouMasterDTO selected) {
-                shinryouInput.setMaster(selected);
-            }
-        };
+        searchResult = new SearchResult<>();
+        searchResult.setConverter(m -> m.name);
+        searchResult.setOnSelectCallback(shinryouInput::setMaster);
         return searchResult;
     }
 

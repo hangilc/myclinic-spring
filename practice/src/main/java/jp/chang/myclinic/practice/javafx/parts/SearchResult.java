@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 public class SearchResult<M> extends ListView<M> {
 
-    private Function<M,String> converter = m::toString;
+    private Function<M,String> converter = Object::toString;
     private Consumer<M> onSelectCallback = m -> {};
 
     public SearchResult(){

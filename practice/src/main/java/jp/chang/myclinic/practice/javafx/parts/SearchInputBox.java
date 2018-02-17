@@ -27,7 +27,10 @@ public class SearchInputBox extends HBox {
     }
 
     private void doSearch(){
-        this.onTextCallback.accept(inputField.getText());
+        String text = inputField.getText();
+        if( !text.isEmpty() ){
+            this.onTextCallback.accept(inputField.getText());
+        }
     }
 
 }
