@@ -142,8 +142,21 @@ public class ConductEditForm extends WorkForm {
 
     private void addDrug(ConductDrugFullDTO drug) {
         Text label = new Text(DrugUtil.conductDrugRep(drug));
-        Hyperlink editLink = new Hyperlink("編集");
-        drugBox.getChildren().add(new TextFlow(label, editLink));
+        Hyperlink deleteLink = new Hyperlink("削除");
+        TextFlow textFlow = new TextFlow(label, deleteLink);
+        deleteLink.setOnAction(evt -> doDeleteDrug(drug, textFlow));
+        drugBox.getChildren().add(textFlow);
+    }
+
+    private void doDeleteDrug(ConductDrugFullDTO drug, TextFlow disp) {
+        if( GuiUtil.confirm("この薬剤を削除しますか？") ){
+            Service.api.deleteConductDrug(drug.conductDrug.conductDrugId)
+                    .thenAccept(result -> Platform.runLater(() -> {
+                        drugBox.getChildren().remove(disp);
+                        conduct.conductDrugs.remove(drug);
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
 
     private Node createKizaiList(List<ConductKizaiFullDTO> kizaiList) {
@@ -153,8 +166,21 @@ public class ConductEditForm extends WorkForm {
 
     private void addKizai(ConductKizaiFullDTO kizai) {
         Text label = new Text(KizaiUtil.kizaiRep(kizai));
-        Hyperlink editLink = new Hyperlink("編集");
-        kizaiBox.getChildren().add(new TextFlow(label, editLink));
+        Hyperlink deleteLink = new Hyperlink("削除");
+        TextFlow textFlow = new TextFlow(label, deleteLink);
+        deleteLink.setOnAction(evt -> doDeleteKizai(kizai, textFlow));
+        kizaiBox.getChildren().add(textFlow);
+    }
+
+    private void doDeleteKizai(ConductKizaiFullDTO kizai, TextFlow disp) {
+        if( GuiUtil.confirm("この薬剤を削除しますか？") ){
+            Service.api.deleteConductKizai(kizai.conductKizai.conductKizaiId)
+                    .thenAccept(result -> Platform.runLater(() -> {
+                        kizaiBox.getChildren().remove(disp);
+                        conduct.conductKizaiList.remove(kizai);
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
 
     private Node createCommands(ConductFullDTO conduct) {
