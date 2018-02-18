@@ -1,13 +1,48 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.dto.ChargeDTO;
+import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.javafx.charge.ChargeForm;
 
-class RecordCharge extends TextFlow {
+class RecordCharge extends StackPane {
 
-    RecordCharge(ChargeDTO charge) {
-        getChildren().add(new Text(getChargeText(charge)));
+    private ChargeDTO chargeDTO;
+
+    RecordCharge(ChargeDTO chargeDTO) {
+        this.chargeDTO = chargeDTO;
+        getChildren().add(createDisp());
+    }
+
+    private Node createDisp(){
+        TextFlow textFlow = new TextFlow(new Text(getChargeText(chargeDTO)));
+        textFlow.setOnMouseClicked(evt -> onMouseClick(textFlow));
+        return textFlow;
+    }
+
+    private void onMouseClick(Node disp){
+        if( chargeDTO != null ){
+            Service.api.getMeisai(chargeDTO.visitId)
+                    .thenAccept(meisai -> Platform.runLater(() -> {
+                        ChargeForm form = new ChargeForm(meisai, chargeDTO) {
+                            @Override
+                            protected void onEnter(double chargeValue) {
+                                Service.api.
+                            }
+
+                            @Override
+                            protected void onCancel() {
+                                RecordCharge.this.getChildren().setAll(disp);
+                            }
+                        };
+                        getChildren().setAll(form);
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
 
     private String getChargeText(ChargeDTO charge){

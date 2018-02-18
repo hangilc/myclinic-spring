@@ -38,4 +38,9 @@ public class ChargeController {
 		return chargeOptionalDTO;
 	}
 
+	@RequestMapping(value="/modify-charge", method=RequestMethod.POST)
+	public boolean modifyCharge(@RequestParam("vsiit-id") int visitId, @RequestParam("charge") int chargeValue){
+		
+	}
+
 }

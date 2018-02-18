@@ -95,3 +95,7 @@
 .search-result {
     -fx-pref-height: 120;
 }
+
+.charge-input-field {
+    -fx-pref-width: 6em;
+}
