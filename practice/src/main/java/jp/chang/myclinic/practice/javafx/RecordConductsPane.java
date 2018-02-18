@@ -24,4 +24,14 @@ class RecordConductsPane extends VBox {
     public void addConduct(ConductFullDTO conduct){
         conductList.getChildren().add(new RecordConduct(conduct, at));
     }
+
+    public void deleteConduct(int conductId) {
+        conductList.getChildren().removeIf(node -> {
+            if( node instanceof RecordConduct ){
+                RecordConduct recordConduct = (RecordConduct)node;
+                return recordConduct.getConductId() == conductId;
+            }
+            return false;
+        });
+    }
 }

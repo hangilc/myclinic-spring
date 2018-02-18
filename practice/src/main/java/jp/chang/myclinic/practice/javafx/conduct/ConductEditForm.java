@@ -16,6 +16,7 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.practice.javafx.events.ConductDeletedEvent;
 import jp.chang.myclinic.practice.javafx.parts.OptionalWrapper;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import jp.chang.myclinic.util.DrugUtil;
@@ -188,8 +189,19 @@ public class ConductEditForm extends WorkForm {
         Button closeButton = new Button("閉じる");
         Hyperlink deleteLink = new Hyperlink("削除");
         closeButton.setOnAction(evt -> onClose(conduct));
+        deleteLink.setOnAction(evt -> doDelete());
         hbox.getChildren().addAll(closeButton, deleteLink);
         return hbox;
+    }
+
+    private void doDelete() {
+        if( GuiUtil.confirm("この処置を削除しますか？") ) {
+            Service.api.deleteConduct(getConductId())
+                    .thenAccept(result -> Platform.runLater(() -> {
+                        ConductEditForm.this.fireEvent(new ConductDeletedEvent(conduct.conduct));
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
 
     private int getConductId() {

@@ -23,6 +23,7 @@ public class RecordsPane extends VBox {
         addEventHandler(ShinryouEnteredEvent.eventType, this::onShinryouEntered);
         addEventHandler(ShinryouDeletedEvent.eventType, this::onShinryouDeleted);
         addEventHandler(ConductEnteredEvent.eventType, this::onConductEntered);
+        addEventHandler(ConductDeletedEvent.eventType, this::onConductDeleted);
     }
 
     public void addRecord(VisitFull2DTO visit){
@@ -91,6 +92,13 @@ public class RecordsPane extends VBox {
         Record record = findRecord(conduct.conduct.visitId);
         if( record != null ){
             record.addConduct(conduct);
+        }
+    }
+
+    private void onConductDeleted(ConductDeletedEvent event){
+        Record record = findRecord(event.getVisitId());
+        if( record != null ){
+            record.deleteConduct(event.getConductId());
         }
     }
 

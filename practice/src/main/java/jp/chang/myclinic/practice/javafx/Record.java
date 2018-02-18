@@ -74,4 +74,7 @@ public class Record extends VBox {
         conductsPane.addConduct(conduct);
     }
 
+    public void deleteConduct(int conductId) {
+        conductsPane.deleteConduct(conductId);
+    }
 }

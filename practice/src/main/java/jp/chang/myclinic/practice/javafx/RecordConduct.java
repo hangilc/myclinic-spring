@@ -13,10 +13,16 @@ import jp.chang.myclinic.practice.lib.PracticeUtil;
 class RecordConduct extends StackPane {
 
     private String at;
+    private int conductId;
 
     RecordConduct(ConductFullDTO conduct, String at){
         this.at = at;
+        this.conductId = conduct.conduct.conductId;
         getChildren().add(createDisp(conduct));
+    }
+
+    public int getConductId() {
+        return conductId;
     }
 
     private Node createDisp(ConductFullDTO conduct){
