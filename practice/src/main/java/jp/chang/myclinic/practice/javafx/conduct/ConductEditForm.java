@@ -80,8 +80,19 @@ public class ConductEditForm extends WorkForm {
         });
         choiceBox.getItems().addAll(ConductKind.values());
         choiceBox.getSelectionModel().select(ConductKind.fromCode(kind));
+        choiceBox.valueProperty().addListener((obs, oldValue, newValue) ->
+                onKindChange(choiceBox.getValue())
+        );
         hbox.getChildren().addAll(new Label("種類："), choiceBox);
         return hbox;
+    }
+
+    private void onKindChange(ConductKind value) {
+        Service.api.modifyConductKind(getConductId(), value.getCode())
+                .thenAccept(result -> {
+                    conduct.conduct.kind = value.getCode();
+                })
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private Node createLabelInput(GazouLabelDTO gazouLabel) {
