@@ -1,7 +1,6 @@
 package jp.chang.myclinic.practice.javafx.conduct;
 
 import javafx.application.Platform;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -95,13 +94,20 @@ public class ConductEditForm extends WorkForm {
                 .exceptionally(HandlerFX::exceptionally);
     }
 
-    private Node createLabelInput(GazouLabelDTO gazouLabel) {
-        HBox hbox = new HBox(4);
-        hbox.setAlignment(Pos.CENTER_LEFT);
-        String label = gazouLabel == null ? "" : gazouLabel.label;
-        Hyperlink editLink = new Hyperlink("編集");
-        hbox.getChildren().addAll(new Label("画像ラベル："), new Label(label), editLink);
-        return hbox;
+    private Node createLabelInput(GazouLabelDTO gazouLabelDTO) {
+        return new GazouLabel(gazouLabelDTO, getConductId()){
+            @Override
+            protected void onModified(String value) {
+                if( conduct.gazouLabel != null ){
+                    conduct.gazouLabel.label = value;
+                } else {
+                    GazouLabelDTO dto = new GazouLabelDTO();
+                    dto.label = value;
+                    dto.conductId = getConductId();
+                    conduct.gazouLabel = dto;
+                }
+            }
+        };
     }
 
     private Node createShinryouList(List<ConductShinryouFullDTO> shinryouList) {

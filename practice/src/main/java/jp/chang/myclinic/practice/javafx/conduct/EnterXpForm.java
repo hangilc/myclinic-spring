@@ -6,6 +6,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
+import jp.chang.myclinic.practice.lib.PracticeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class EnterXpForm extends WorkForm {
 
     private Node createLabelInput(){
         ComboBox<String> combo = new ComboBox<>();
-        combo.getItems().addAll("胸部単純Ｘ線", "腹部単純Ｘ線");
+        combo.getItems().addAll(PracticeUtil.gazouLabelExamples);
         combo.getSelectionModel().select(0);
         combo.setEditable(true);
         gazouLabelSupplier = () -> combo.getSelectionModel().getSelectedItem();

@@ -74,4 +74,6 @@ public class PracticeUtil {
                 GuiUtil.confirm("現在診察中あるいは暫定診察でありませんが、" + message);
     }
 
+    public static String[] gazouLabelExamples = new String[]{ "胸部単純Ｘ線", "腹部単純Ｘ線" };
+
 }
