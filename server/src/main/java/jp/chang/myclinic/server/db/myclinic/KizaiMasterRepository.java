@@ -20,7 +20,8 @@ public interface KizaiMasterRepository extends CrudRepository<KizaiMaster, Kizai
 	Optional<KizaiMaster> findByNameAndDate(@Param("name") String name, @Param("at") Date at);
 
 	@Query("select m from KizaiMaster m where m.name like CONCAT('%', :text, '%') and " +
-			" m.validFrom <= :at and (m.validUpto = '0000-00-00' or m.validUpto >= :at)")
+			" m.validFrom <= FUNCTION('date', :at) " +
+			" and (m.validUpto = '0000-00-00' or m.validUpto >= FUNCTION('date', :at))")
 	List<KizaiMaster> searchByName(@Param("text") String text, @Param("at") Date at, Sort sort);
 
 

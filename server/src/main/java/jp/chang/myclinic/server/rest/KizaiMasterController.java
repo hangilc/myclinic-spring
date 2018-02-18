@@ -29,6 +29,9 @@ class KizaiMasterController {
 
     @RequestMapping(value="/search-kizai-master-by-name", method= RequestMethod.GET)
     List<KizaiMasterDTO> searchByName(@RequestParam("text") String text, @RequestParam("at") String at){
+        if( at.length() > 10 ){
+            at = at.substring(0, 10);
+        }
         LocalDate date = LocalDate.parse(at);
         return dbGateway.searchKizaiMasterByName(text, date);
     }

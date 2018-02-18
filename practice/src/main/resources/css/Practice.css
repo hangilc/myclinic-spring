@@ -70,7 +70,7 @@
     -fx-vgap: 2;
 }
 
-.drug-amount-input {
+.drug-amount-input, .kizai-amount-input {
     -fx-pref-width: 4em;
 }
 

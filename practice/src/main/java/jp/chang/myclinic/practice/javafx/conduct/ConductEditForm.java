@@ -59,6 +59,7 @@ public class ConductEditForm extends WorkForm {
         Hyperlink enterKizaiLink = new Hyperlink("器材追加");
         enterShinryouLink.setOnAction(evt -> doEnterShinryou());
         enterDrugLink.setOnAction(evt -> doEnterDrug());
+        enterKizaiLink.setOnAction(evt -> doEnterKizai());
         hbox.getChildren().addAll(enterShinryouLink, enterDrugLink, enterKizaiLink);
         return hbox;
     }
@@ -176,6 +177,31 @@ public class ConductEditForm extends WorkForm {
                             workarea.hide();
                             conduct.conductDrugs.add(entered);
                             addDrug(entered);
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
+            }
+
+            @Override
+            protected void onCancel() {
+                workarea.hide();
+            }
+        };
+        workarea.show(form);
+    }
+
+    private void doEnterKizai(){
+        if( workarea.isVisible() ){
+            return;
+        }
+        ConductKizaiForm form = new ConductKizaiForm(at, getConductId()){
+            @Override
+            protected void onEnter(ConductKizaiDTO kizai) {
+                Service.api.enterConductKizai(kizai)
+                        .thenCompose(Service.api::getConductKizaiFull)
+                        .thenAccept(entered -> Platform.runLater(() -> {
+                            workarea.hide();
+                            conduct.conductKizaiList.add(entered);
+                            addKizai(entered);
                         }))
                         .exceptionally(HandlerFX::exceptionally);
             }
