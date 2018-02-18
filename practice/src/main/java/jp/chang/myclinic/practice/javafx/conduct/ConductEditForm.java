@@ -14,6 +14,7 @@ import javafx.util.StringConverter;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.OptionalWrapper;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
@@ -117,8 +118,21 @@ public class ConductEditForm extends WorkForm {
 
     private void addShinryou(ConductShinryouFullDTO shinryou) {
         Text label = new Text(shinryou.master.name);
-        Hyperlink editLink = new Hyperlink("編集");
-        shinryouBox.getChildren().add(new TextFlow(label, editLink));
+        Hyperlink deleteLink = new Hyperlink("削除");
+        TextFlow textFlow = new TextFlow(label, deleteLink);
+        deleteLink.setOnAction(evt -> doDeleteShinryou(shinryou, textFlow));
+        shinryouBox.getChildren().add(textFlow);
+    }
+
+    private void doDeleteShinryou(ConductShinryouFullDTO shinryou, Node disp){
+        if( GuiUtil.confirm("この診療行為を削除しますか？") ){
+            Service.api.deleteConductShinryou(shinryou.conductShinryou.conductShinryouId)
+                    .thenAccept(result -> Platform.runLater(() -> {
+                        shinryouBox.getChildren().remove(disp);
+                        conduct.conductShinryouList.remove(shinryou);
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
 
     private Node createDrugs(List<ConductDrugFullDTO> drugs) {
