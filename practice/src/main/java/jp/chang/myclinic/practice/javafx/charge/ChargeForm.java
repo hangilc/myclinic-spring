@@ -32,7 +32,7 @@ public class ChargeForm extends WorkForm {
 
     private void doEnter(){
         try {
-            double chargeValue = Double.parseDouble(chargeInputField.getText());
+            int chargeValue = Integer.parseInt(chargeInputField.getText());
             onEnter(chargeValue);
         } catch(NumberFormatException ex){
             GuiUtil.alertError("請求額の入力が不適切です。");
@@ -44,16 +44,16 @@ public class ChargeForm extends WorkForm {
         vbox.getChildren().addAll(
                 new Label(String.format("診療報酬総点：%,d 点", meisai.totalTen)),
                 new Label(String.format("負担割：%d 割", meisai.futanWari)),
-                new Label(String.format("現在の請求額：%,d 円", meisai.futanWari)),
-                createInputField()
+                new Label(String.format("現在の請求額：%,d 円", chargeDTO.charge)),
+                createInputField(meisai.charge)
         );
         return vbox;
     }
 
-    private Node createInputField() {
+    private Node createInputField(int chargeValue) {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
-        TextField textField = new TextField();
+        TextField textField = new TextField("" + chargeValue);
         textField.getStyleClass().add("charge-input-field");
         hbox.getChildren().addAll(
                 new Label("変更後の請求額："),
@@ -64,7 +64,7 @@ public class ChargeForm extends WorkForm {
         return hbox;
     }
 
-    protected void onEnter(double chargeValue){
+    protected void onEnter(int chargeValue){
 
     }
 

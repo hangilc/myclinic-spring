@@ -398,12 +398,12 @@ public class DbGateway {
     }
 
     public Optional<ChargeDTO> findCharge(int visitId){
-        return chargeRepository.tryFindByVisitId(visitId)
+        return chargeRepository.findByVisitId(visitId)
             .map(mapper::toChargeDTO);
     }
 
     public void setChargeOfVisit(int visitId, int charge){
-        Optional<Charge> optCharge = chargeRepository.tryFindByVisitId(visitId);
+        Optional<Charge> optCharge = chargeRepository.findByVisitId(visitId);
         if( optCharge.isPresent() ){
             Charge currentCharge = optCharge.get();
             currentCharge.setCharge(charge);
@@ -740,7 +740,7 @@ public class DbGateway {
         if( visit.conducts.size() > 0 ){
             throw new RuntimeException("処置があるので、診察を削除できません。");
         }
-        Optional<Charge> optCharge = chargeRepository.tryFindByVisitId(visitId);
+        Optional<Charge> optCharge = chargeRepository.findByVisitId(visitId);
         if( optCharge.isPresent() ){
             throw new RuntimeException("請求があるので、診察を削除できません。");
         }

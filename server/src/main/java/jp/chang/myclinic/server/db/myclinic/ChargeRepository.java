@@ -9,8 +9,6 @@ import java.util.Optional;
 public interface ChargeRepository extends CrudRepository<Charge, Integer> {
 
 	@Query("select c from Charge c where c.visitId = :visitId")
-	Optional<Charge> tryFindByVisitId(@Param("visitId") int visitId);
-
-	Charge findByVisitId(int visitId);
+	Optional<Charge> findByVisitId(@Param("visitId") int visitId);
 
 }

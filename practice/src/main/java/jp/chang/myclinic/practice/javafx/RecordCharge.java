@@ -30,8 +30,14 @@ class RecordCharge extends StackPane {
                     .thenAccept(meisai -> Platform.runLater(() -> {
                         ChargeForm form = new ChargeForm(meisai, chargeDTO) {
                             @Override
-                            protected void onEnter(double chargeValue) {
-                                Service.api.
+                            protected void onEnter(int chargeValue) {
+                                Service.api.modifyCharge(chargeDTO.visitId, chargeValue)
+                                        .thenAccept(result -> Platform.runLater(() -> {
+                                            chargeDTO = ChargeDTO.copy(chargeDTO);
+                                            chargeDTO.charge = chargeValue;
+                                            RecordCharge.this.getChildren().setAll(createDisp());
+                                        }))
+                                        .exceptionally(HandlerFX::exceptionally);
                             }
 
                             @Override

@@ -39,8 +39,9 @@ public class ChargeController {
 	}
 
 	@RequestMapping(value="/modify-charge", method=RequestMethod.POST)
-	public boolean modifyCharge(@RequestParam("vsiit-id") int visitId, @RequestParam("charge") int chargeValue){
-		
+	public boolean modifyCharge(@RequestParam("visit-id") int visitId, @RequestParam("charge") int chargeValue){
+		dbGateway.setChargeOfVisit(visitId, chargeValue);
+		return true;
 	}
 
 }

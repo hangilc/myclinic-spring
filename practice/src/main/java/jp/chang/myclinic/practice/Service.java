@@ -235,6 +235,9 @@ public class Service {
         @POST("delete-conduct-kizai")
         CompletableFuture<Boolean> deleteConductKizai(@Query("conduct-kizai-id") int conductKizaiId);
 
+        @POST("modify-charge")
+        CompletableFuture<Boolean> modifyCharge(@Query("visit-id") int visitId, @Query("charge") int charge);
+
         @GET("get-visit-meisai")
         CompletableFuture<MeisaiDTO> getMeisai(@Query("visit-id") int visitId);
 
