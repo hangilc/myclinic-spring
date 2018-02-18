@@ -52,7 +52,7 @@ public class ConductEditForm extends WorkForm {
         );
     }
 
-    private Node createTopMenu(){
+    private Node createTopMenu() {
         HBox hbox = new HBox(4);
         Hyperlink enterShinryouLink = new Hyperlink("診療行為追加");
         Hyperlink enterDrugLink = new Hyperlink("薬剤追加");
@@ -63,10 +63,10 @@ public class ConductEditForm extends WorkForm {
         return hbox;
     }
 
-    private Node createKindInput(int kind){
+    private Node createKindInput(int kind) {
         HBox hbox = new HBox(4);
         ChoiceBox<ConductKind> choiceBox = new ChoiceBox<>();
-        choiceBox.setConverter(new StringConverter<ConductKind>(){
+        choiceBox.setConverter(new StringConverter<ConductKind>() {
             @Override
             public String toString(ConductKind kind) {
                 return kind.getKanjiRep();
@@ -83,7 +83,7 @@ public class ConductEditForm extends WorkForm {
         return hbox;
     }
 
-    private Node createLabelInput(GazouLabelDTO gazouLabel){
+    private Node createLabelInput(GazouLabelDTO gazouLabel) {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         String label = gazouLabel == null ? "" : gazouLabel.label;
@@ -92,38 +92,40 @@ public class ConductEditForm extends WorkForm {
         return hbox;
     }
 
-    private Node createShinryouList(List<ConductShinryouFullDTO> shinryouList){
+    private Node createShinryouList(List<ConductShinryouFullDTO> shinryouList) {
         shinryouList.forEach(this::addShinryou);
         return shinryouBox;
     }
 
-    private void addShinryou(ConductShinryouFullDTO shinryou){
+    private void addShinryou(ConductShinryouFullDTO shinryou) {
         Text label = new Text(shinryou.master.name);
         Hyperlink editLink = new Hyperlink("編集");
         shinryouBox.getChildren().add(new TextFlow(label, editLink));
     }
 
-    private Node createDrugs(List<ConductDrugFullDTO> drugs){
-        VBox vbox = new VBox(4);
-        drugs.forEach(drug -> {
-            Text label = new Text(DrugUtil.conductDrugRep(drug));
-            Hyperlink editLink = new Hyperlink("編集");
-            vbox.getChildren().add(new TextFlow(label, editLink));
-        });
-        return vbox;
+    private Node createDrugs(List<ConductDrugFullDTO> drugs) {
+        drugs.forEach(this::addDrug);
+        return drugBox;
     }
 
-    private Node createKizaiList(List<ConductKizaiFullDTO> kizaiList){
-        VBox vbox = new VBox(4);
-        kizaiList.forEach(kizai -> {
-            Text label = new Text(KizaiUtil.kizaiRep(kizai));
-            Hyperlink editLink = new Hyperlink("編集");
-            vbox.getChildren().add(new TextFlow(label, editLink));
-        });
-        return vbox;
+    private void addDrug(ConductDrugFullDTO drug) {
+        Text label = new Text(DrugUtil.conductDrugRep(drug));
+        Hyperlink editLink = new Hyperlink("編集");
+        drugBox.getChildren().add(new TextFlow(label, editLink));
     }
 
-    private Node createCommands(ConductFullDTO conduct){
+    private Node createKizaiList(List<ConductKizaiFullDTO> kizaiList) {
+        kizaiList.forEach(this::addKizai);
+        return kizaiBox;
+    }
+
+    private void addKizai(ConductKizaiFullDTO kizai) {
+        Text label = new Text(KizaiUtil.kizaiRep(kizai));
+        Hyperlink editLink = new Hyperlink("編集");
+        kizaiBox.getChildren().add(new TextFlow(label, editLink));
+    }
+
+    private Node createCommands(ConductFullDTO conduct) {
         HBox hbox = new HBox();
         Button closeButton = new Button("閉じる");
         Hyperlink deleteLink = new Hyperlink("削除");
@@ -132,15 +134,15 @@ public class ConductEditForm extends WorkForm {
         return hbox;
     }
 
-    private int getConductId(){
+    private int getConductId() {
         return conduct.conduct.conductId;
     }
 
-    private void doEnterShinryou(){
-        if( workarea.isVisible() ){
+    private void doEnterShinryou() {
+        if (workarea.isVisible()) {
             return;
         }
-        ConductShinryouForm form = new ConductShinryouForm(at, getConductId()){
+        ConductShinryouForm form = new ConductShinryouForm(at, getConductId()) {
             @Override
             protected void onEnter(ConductShinryouDTO shinryou) {
                 Service.api.enterConductShinryou(shinryou)
@@ -161,17 +163,32 @@ public class ConductEditForm extends WorkForm {
         workarea.show(form);
     }
 
-    private void doEnterDrug(){
-        if( workarea.isVisible() ){
+    private void doEnterDrug() {
+        if (workarea.isVisible()) {
             return;
         }
-        ConductDrugForm form = new ConductDrugForm(at, getConductId()){
+        ConductDrugForm form = new ConductDrugForm(at, getConductId()) {
+            @Override
+            protected void onEnter(ConductDrugDTO drug) {
+                Service.api.enterConductDrug(drug)
+                        .thenCompose(Service.api::getConductDrugFull)
+                        .thenAccept(entered -> Platform.runLater(() -> {
+                            workarea.hide();
+                            conduct.conductDrugs.add(entered);
+                            addDrug(entered);
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
+            }
 
+            @Override
+            protected void onCancel() {
+                workarea.hide();
+            }
         };
         workarea.show(form);
     }
 
-    protected void onClose(ConductFullDTO conduct){
+    protected void onClose(ConductFullDTO conduct) {
 
     }
 

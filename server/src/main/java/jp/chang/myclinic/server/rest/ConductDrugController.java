@@ -1,7 +1,8 @@
 package jp.chang.myclinic.server.rest;
 
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.ConductDrugDTO;
+import jp.chang.myclinic.dto.ConductDrugFullDTO;
+import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,11 @@ class ConductDrugController {
     public boolean deleteConductDrug(@RequestParam("conduct-drug-id") int conductDrugId){
         dbGateway.deleteConductDrug(conductDrugId);
         return true;
+    }
+
+    @RequestMapping(value="/get-conduct-drug-full", method=RequestMethod.GET)
+    public ConductDrugFullDTO getConductDrugFull(@RequestParam("conduct-drug-id") int conductDrugId){
+        return dbGateway.getConductDrugFull(conductDrugId);
     }
 
 }

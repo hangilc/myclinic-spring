@@ -206,8 +206,14 @@ public class Service {
         @POST("enter-conduct-drug")
         CompletableFuture<Integer> enterConductDrug(@Body ConductDrugDTO conductDrug);
 
+        @GET("get-conduct-drug-full")
+        CompletableFuture<ConductDrugFullDTO> getConductDrugFull(@Query("conduct-drug-id") int conductDrugId);
+
         @POST("enter-conduct-kizai")
         CompletableFuture<Integer> enterConductKizai(@Body ConductKizaiDTO conductKizai);
+
+        @GET("get-conduct-kizai-full")
+        CompletableFuture<ConductKizaiFullDTO> getConductKizaiFull(@Query("conduct-kizai-id") int conductKizaiId);
 
         @GET("search-kizai-master-by-name")
         CompletableFuture<List<KizaiMasterDTO>> searchKizaiMaster(@Query("text") String text, @Query("at") String at);

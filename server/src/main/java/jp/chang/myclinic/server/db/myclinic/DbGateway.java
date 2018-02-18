@@ -851,6 +851,26 @@ public class DbGateway {
         return resultToConductShinryouFullDTO(results.get(0));
     }
 
+    public ConductDrugFullDTO getConductDrugFull(int conductDrugId){
+        List<Object[]> results = conductDrugRepository.findFull(conductDrugId);
+        if( results.size() == 0 ){
+            throw new RuntimeException("canoot find conduct drug: " + conductDrugId);
+        } else if( results.size() != 1 ){
+            throw new RuntimeException("cannot happen in getConductDrugFull");
+        }
+        return resultToConductDrugFullDTO(results.get(0));
+    }
+
+    public ConductKizaiFullDTO getConductKizaiFull(int conductKizaiId){
+        List<Object[]> results = conductKizaiRepository.findFull(conductKizaiId);
+        if( results.size() == 0 ){
+            throw new RuntimeException("canoot find conduct kizai: " + conductKizaiId);
+        } else if( results.size() != 1 ){
+            throw new RuntimeException("cannot happen in getConductKizaiFull");
+        }
+        return resultToConductKizaiFullDTO(results.get(0));
+    }
+
     public int enterConductShinryou(ConductShinryouDTO conductShinryouDTO){
         ConductShinryou conductShinryou = mapper.fromConductShinryouDTO(conductShinryouDTO);
         conductShinryou = conductShinryouRepository.save(conductShinryou);
@@ -868,7 +888,7 @@ public class DbGateway {
 
     public List<ConductDrugFullDTO> listConductDrugFull(int conductId){
         return conductDrugRepository.findByConductIdWithMaster(conductId).stream()
-        .map(this::resulToConductDrugFullDTO)
+        .map(this::resultToConductDrugFullDTO)
         .collect(Collectors.toList());
     }
 
@@ -889,7 +909,7 @@ public class DbGateway {
 
     public List<ConductKizaiFullDTO> listConductKizaiFull(int conductId){
         return conductKizaiRepository.findByConductIdWithMaster(conductId).stream()
-        .map(this::resulToConductKizaiFullDTO)
+        .map(this::resultToConductKizaiFullDTO)
         .collect(Collectors.toList());
     }
 
@@ -1343,7 +1363,7 @@ public class DbGateway {
         return conductShinryouFull;
     }
 
-    private ConductDrugFullDTO resulToConductDrugFullDTO(Object[] result){
+    private ConductDrugFullDTO resultToConductDrugFullDTO(Object[] result){
         ConductDrug conductDrug = (ConductDrug)result[0];
         IyakuhinMaster master = (IyakuhinMaster)result[1];
         ConductDrugFullDTO conductDrugFull = new ConductDrugFullDTO();
@@ -1352,7 +1372,7 @@ public class DbGateway {
         return conductDrugFull;
     }
 
-    private ConductKizaiFullDTO resulToConductKizaiFullDTO(Object[] result){
+    private ConductKizaiFullDTO resultToConductKizaiFullDTO(Object[] result){
         ConductKizai conductKizai = (ConductKizai)result[0];
         KizaiMaster master = (KizaiMaster)result[1];
         ConductKizaiFullDTO conductKizaiFull = new ConductKizaiFullDTO();

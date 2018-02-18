@@ -3,14 +3,12 @@ package jp.chang.myclinic.practice.javafx.conduct;
 import jp.chang.myclinic.dto.ConductDrugDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.practice.Service;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.EnterCancelBox;
 import jp.chang.myclinic.practice.javafx.parts.SearchBox;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class ConductDrugForm extends WorkForm {
 
@@ -41,12 +39,7 @@ public class ConductDrugForm extends WorkForm {
     private void doEnter(DrugInput input){
         ConductDrugDTO drug = new ConductDrugDTO();
         drug.conductId = conductId;
-        List<String> errs = input.stuffInto(drug);
-        if( errs.size() > 0 ){
-            GuiUtil.alertError(String.join("\n", errs));
-        } else {
-            onEnter(drug);
-        }
+        input.stuffInto(drug, this::onEnter, HandlerFX::alert);
     }
 
     protected void onEnter(ConductDrugDTO drug){

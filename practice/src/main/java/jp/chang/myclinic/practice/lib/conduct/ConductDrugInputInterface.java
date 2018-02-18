@@ -2,12 +2,14 @@ package jp.chang.myclinic.practice.lib.conduct;
 
 import jp.chang.myclinic.dto.ConductDrugDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.practice.lib.Stuffer;
 import jp.chang.myclinic.practice.lib.ValueFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
-public interface ConductDrugInputInterface {
+public interface ConductDrugInputInterface extends Stuffer<ConductDrugDTO> {
 
     void setIyakuhincode(int iyakuhincode);
     void setName(String name);
@@ -26,7 +28,9 @@ public interface ConductDrugInputInterface {
         setAmountUnit(master.unit);
     }
 
-    default List<String> stuffInto(ConductDrugDTO drug){
+    @Override
+    default void stuffInto(ConductDrugDTO drug, Consumer<ConductDrugDTO> okHandler,
+                           Consumer<List<String>> errorHandler){
         List<String> errors = new ArrayList<>();
         {
             int iyakuhincode = getIyakuhincode();
@@ -41,7 +45,11 @@ public interface ConductDrugInputInterface {
         } catch(NumberFormatException ex){
             errors.add("用量の入力が不適切です。");
         }
-        return errors;
+        if( errors.size() > 0 ){
+            errorHandler.accept(errors);
+        } else {
+            okHandler.accept(drug);
+        }
     }
 
 }

@@ -22,4 +22,11 @@ public interface ConductKizaiRepository extends CrudRepository<ConductKizai, Int
 
 	List<ConductKizai> findByConductId(int conductId, Sort sort);
 	List<ConductKizai> findByConductId(int conductId);
+
+	@Query("select k, m from ConductKizai k, KizaiMaster m, Conduct c, Visit v " +
+			" where k.conductKizaiId = :conductKizaiId and c.conductId = k.conductId " +
+			" and v.visitId = c.visitId and m.kizaicode = k.kizaicode " +
+			" and m.validFrom <= DATE(v.visitedAt) " +
+			" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto)")
+	List<Object[]> findFull(@Param("conductKizaiId") int conductKizaiId);
 }

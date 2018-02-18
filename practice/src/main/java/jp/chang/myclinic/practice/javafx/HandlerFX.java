@@ -5,6 +5,8 @@ import jp.chang.myclinic.practice.lib.ErrorMessageExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class HandlerFX {
 
     private static Logger logger = LoggerFactory.getLogger(HandlerFX.class);
@@ -16,4 +18,7 @@ public class HandlerFX {
         return null;
     }
 
+    public static void alert(List<String> errors){
+        GuiUtil.alertError(String.join("\n", errors));
+    }
 }

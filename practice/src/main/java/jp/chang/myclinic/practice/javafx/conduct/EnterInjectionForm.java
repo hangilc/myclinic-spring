@@ -88,12 +88,7 @@ public class EnterInjectionForm extends WorkForm {
         ConductDrugDTO drug = new ConductDrugDTO();
         drug.conductDrugId = conductDrugId;
         drug.conductId = conductId;
-        List<String> errors = drugInput.stuffInto(drug);
-        if( errors.size() > 0 ){
-            GuiUtil.alertError(String.join("\n", errors));
-        } else {
-            onEnter(this, kindGroup.getValue(), drug);
-        }
+        drugInput.stuffInto(drug, d -> onEnter(this, kindGroup.getValue(), d), HandlerFX::alert);
     }
 
     protected void onEnter(EnterInjectionForm form, ConductKind kind, ConductDrugDTO drug){

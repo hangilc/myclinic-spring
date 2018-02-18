@@ -2,12 +2,13 @@ package jp.chang.myclinic.practice.lib.conduct;
 
 import jp.chang.myclinic.dto.ConductShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
+import jp.chang.myclinic.practice.lib.Stuffer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public interface ConductShinryouInputInterface {
+public interface ConductShinryouInputInterface extends Stuffer<ConductShinryouDTO> {
 
     int getShinryoucode();
 
@@ -19,7 +20,8 @@ public interface ConductShinryouInputInterface {
         setName(master.name);
     }
 
-    default void stuffInto(ConductShinryouDTO shinryou, Runnable okHandler, Consumer<List<String>> errorHandler){
+    @Override
+    default void stuffInto(ConductShinryouDTO shinryou, Consumer<ConductShinryouDTO> okHandler, Consumer<List<String>> errorHandler){
         List<String> err = new ArrayList<>();
         int shinryoucode = getShinryoucode();
         if( shinryoucode != 0 ){
@@ -30,7 +32,8 @@ public interface ConductShinryouInputInterface {
         if( err.size() > 0 ){
             errorHandler.accept(err);
         } else {
-            okHandler.run();
+            okHandler.accept(shinryou);
         }
     }
+
 }

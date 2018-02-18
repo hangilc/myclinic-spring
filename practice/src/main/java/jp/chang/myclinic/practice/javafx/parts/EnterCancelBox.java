@@ -18,10 +18,12 @@ public class EnterCancelBox extends HBox {
 
     public EnterCancelBox(Runnable enterCallback, Runnable cancelCallback){
         super(4);
+        this.enterCallback = enterCallback;
+        this.cancelCallback = cancelCallback;
         Button enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
-        enterButton.setOnAction(evt -> enterCallback.run());
-        cancelButton.setOnAction(evt -> cancelCallback.run());
+        enterButton.setOnAction(evt ->doEnter());
+        cancelButton.setOnAction(evt -> doCancel());
         getChildren().addAll(enterButton, cancelButton);
     }
 
@@ -33,4 +35,11 @@ public class EnterCancelBox extends HBox {
         this.cancelCallback = cancelCallback;
     }
 
+    private void doEnter(){
+        enterCallback.run();
+    }
+
+    private void doCancel(){
+        cancelCallback.run();
+    }
 }
