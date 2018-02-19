@@ -5,16 +5,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.practice.lib.DateInputInterface;
 
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.chrono.JapaneseDate;
-import java.time.temporal.ChronoField;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiConsumer;
-
-public class DateInput extends HBox {
+public class DateInput extends HBox implements DateInputInterface {
 
     private GengouInput gengouInput;
     private TextField nenField = new TextField();
@@ -43,8 +36,43 @@ public class DateInput extends HBox {
         );
     }
 
+    @Override
+    public Gengou getGengou() {
+        return gengouInput.getValue();
+    }
+
+    @Override
+    public String getNen() {
+        return nenField.getText();
+    }
+
+    @Override
+    public String getMonth() {
+        return monthField.getText();
+    }
+
+    @Override
+    public String getDay() {
+        return dayField.getText();
+    }
+
     public void setGengou(Gengou gengou) {
-        gengouInput.getSelectionModel().select(gengou);
+        gengouInput.setValue(gengou);
+    }
+
+    @Override
+    public void setNen(String nen) {
+        nenField.setText(nen);
+    }
+
+    @Override
+    public void setMonth(String month) {
+        monthField.setText(month);
+    }
+
+    @Override
+    public void setDay(String day) {
+        dayField.setText(day);
     }
 
     public void clear(){
@@ -53,62 +81,4 @@ public class DateInput extends HBox {
         dayField.clear();
     }
 
-    public boolean isEmpty(){
-        return nenField.getText().isEmpty() && monthField.getText().isEmpty() &&
-                dayField.getText().isEmpty();
-    }
-
-    public void setValue(LocalDate value){
-        if( value == null ){
-            nenInput.setText("");
-            monthInput.setText("");
-            dayInput.setText("");
-        } else {
-            JapaneseDate jd = JapaneseDate.from(value);
-            gengouInput.setEra(jd.getEra());
-            int nen = jd.get(ChronoField.YEAR_OF_ERA);
-            int month = value.getMonthValue();
-            int day = value.getDayOfMonth();
-            nenInput.setText("" + nen);
-            monthInput.setText("" + month);
-            dayInput.setText("" + day);
-        }
-
-    }
-
-    public void getValue(BiConsumer<LocalDate,List<String>> cb){
-        List<String> err = new ArrayList<>();
-        LocalDate value = null;
-        if( !isEmpty() ){
-            int nen = 0, month = 0, day = 0;
-            try {
-                nen = Integer.parseInt(nenField.getText());
-            } catch(NumberFormatException ex){
-                err.add("年の入力が不適切です。");
-            }
-            try {
-                month = Integer.parseInt(monthField.getText());
-            } catch(NumberFormatException ex){
-                err.add("月の入力が不適切です。");
-            }
-            try {
-                day = Integer.parseInt(dayField.getText());
-            } catch(NumberFormatException ex){
-                err.add("日の入力が不適切です。");
-            }
-            try {
-                Gengou gengou = gengouInput.getGengou();
-                if( gengou == null ){
-                    err.add("元号が設定されていません。");
-                } else {
-                    try {
-                        value = LocalDate.ofEpochDay(JapaneseDate.of(gengou.getEra(), nen, month, day).toEpochDay());
-                    } catch(DateTimeException ex){
-                        err.add("日付の入力が不適切です。");
-                    }
-                }
-            }
-        }
-        cb.accept(value, err);
-    }
 }

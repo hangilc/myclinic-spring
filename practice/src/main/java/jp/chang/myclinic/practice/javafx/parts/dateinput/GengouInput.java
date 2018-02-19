@@ -15,10 +15,6 @@ public class GengouInput extends ChoiceBox<Gengou> {
         this(Gengou.values());
     }
 
-    public Gengou getGengou(){
-        return getSelectionModel().getSelectedItem();
-    }
-
     private StringConverter<Gengou> makeConverter(){
         return new StringConverter<Gengou>() {
             @Override
