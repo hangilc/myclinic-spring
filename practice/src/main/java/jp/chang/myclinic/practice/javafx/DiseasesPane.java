@@ -1,11 +1,23 @@
 package jp.chang.myclinic.practice.javafx;
 
 import javafx.scene.Node;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.javafx.disease.Add;
+import jp.chang.myclinic.practice.javafx.disease.Current;
+
+import java.util.Collections;
+import java.util.List;
 
 public class DiseasesPane extends VBox {
+
+    private StackPane workarea = new StackPane();
+    private List<DiseaseFullDTO> currentDiseases = Collections.emptyList();
 
     DiseasesPane() {
         super(4);
@@ -14,8 +26,17 @@ public class DiseasesPane extends VBox {
         getStyleClass().add("diseases-pane");
         getChildren().addAll(
                 createTitle(),
-                createDiseases()
+                workarea,
+                createControls()
         );
+        setVisible(false);
+        PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) -> {
+            DiseasesPane.this.setVisible(newValue != null);
+        });
+        PracticeEnv.INSTANCE.currentDiseasesProperty().addListener((obs, oldValue, newValue) -> {
+            currentDiseases = newValue;
+            showCurrent();
+        });
     }
 
     private Node createTitle() {
@@ -25,17 +46,28 @@ public class DiseasesPane extends VBox {
         return label;
     }
 
-    private Node createDiseases() {
-        VBox box = new VBox(2);
-        PracticeEnv.INSTANCE.currentDiseasesProperty().addListener((obs, oldValue, newValue) -> {
-            box.getChildren().clear();
-            if( newValue != null ){
-                newValue.forEach(d -> {
-                    box.getChildren().add(new Disease(d));
-                });
-            }
-        });
-        return box;
+    private void showCurrent(){
+        setWorkarea(new Current(currentDiseases));
+    }
+
+    private void showAdd(){
+        setWorkarea(new Add());
+    }
+
+    private Node createControls(){
+        HBox hbox = new HBox(4);
+        Hyperlink listLink = new Hyperlink("現行");
+        Hyperlink addLink = new Hyperlink("追加");
+        Hyperlink endLink = new Hyperlink("転機");
+        Hyperlink editLink = new Hyperlink("編集");
+        listLink.setOnAction(evt -> showCurrent());
+        addLink.setOnAction(evt -> showAdd());
+        hbox.getChildren().addAll(listLink, addLink, endLink, editLink);
+        return hbox;
+    }
+
+    private void setWorkarea(Node content){
+        workarea.getChildren().setAll(content);
     }
 
 }

@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx;
+package jp.chang.myclinic.practice.javafx.disease;
 
 import javafx.scene.Node;
 import javafx.scene.text.Text;
@@ -7,9 +7,9 @@ import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DiseaseUtil;
 
-public class Disease extends TextFlow {
+class Disp extends TextFlow {
 
-    public Disease(DiseaseFullDTO disease){
+    Disp(DiseaseFullDTO disease){
         getChildren().addAll(
                 makeNameLabel(disease),
                 new Text(" "),
