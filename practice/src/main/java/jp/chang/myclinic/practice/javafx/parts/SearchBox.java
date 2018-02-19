@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -17,19 +18,38 @@ public class SearchBox<T> extends VBox {
         Node asNode();
     }
 
+    private Function<String, CompletableFuture<List<T>>> searcher;
     private SearchResult<T> resultBox = new SearchResult<>();
+
+    public SearchBox(){
+        this(s -> CompletableFuture.completedFuture(Collections.emptyList()),
+                Object::toString);
+    }
 
     public SearchBox(Function<String, CompletableFuture<List<T>>> searcher,
                      Function<T, String> converter) {
         super(4);
+        this.searcher = searcher;
         InputBox inputBox = createInputBox();
         inputBox.setOnTextCallback(t -> {
-            searcher.apply(t)
+            getSearcher().apply(t)
                     .thenAccept(list -> Platform.runLater(() -> resultBox.setList(list)))
                     .exceptionally(HandlerFX::exceptionally);
         });
         resultBox.setConverter(converter);
         getChildren().addAll(inputBox.asNode(), resultBox);
+    }
+
+    private Function<String, CompletableFuture<List<T>>> getSearcher(){
+        return searcher;
+    }
+
+    public void setSearcher(Function<String, CompletableFuture<List<T>>> searcher){
+        this.searcher = searcher;
+    }
+
+    public void setConverter(Function<T, String> converter){
+        resultBox.setConverter(converter);
     }
 
     public void setOnSelectCallback(Consumer<T> cb) {
