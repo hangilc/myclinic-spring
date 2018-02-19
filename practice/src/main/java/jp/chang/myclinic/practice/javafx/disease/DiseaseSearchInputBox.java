@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.practice.javafx.parts.SearchBox;
+import jp.chang.myclinic.practice.lib.RadioButtonGroup;
 
 import java.util.function.Consumer;
 
@@ -17,7 +18,8 @@ public class DiseaseSearchInputBox extends VBox implements SearchBox.InputBox {
     public DiseaseSearchInputBox(){
         super(4);
         getChildren().addAll(
-                createInput()
+                createInput(),
+                createSwitch()
         );
     }
 
@@ -31,6 +33,16 @@ public class DiseaseSearchInputBox extends VBox implements SearchBox.InputBox {
                 searchButton,
                 exampleLink
         );
+        return hbox;
+    }
+
+    private Node createSwitch(){
+        HBox hbox = new HBox(4);
+        RadioButtonGroup<DiseaseSearchMode> modeGroup = new RadioButtonGroup<>();
+        modeGroup.createRadioButton("傷病名", DiseaseSearchMode.Disease);
+        modeGroup.createRadioButton("修飾語", DiseaseSearchMode.Adj);
+        modeGroup.setValue(DiseaseSearchMode.Disease);
+        hbox.getChildren().addAll(modeGroup.getButtons());
         return hbox;
     }
 

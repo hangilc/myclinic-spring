@@ -10,7 +10,7 @@ public class Add extends VBox {
 
     public Add(){
         super(4);
-        diseaseInput.setGengou(Gengou.Shouwa);
+        diseaseInput.setGengou(Gengou.Current);
         getChildren().addAll(
                 diseaseInput,
                 searchBox
