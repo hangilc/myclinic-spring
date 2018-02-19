@@ -1,12 +1,13 @@
 package jp.chang.myclinic.practice.javafx.parts;
 
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
 import java.util.function.Consumer;
 
-public class SearchInputBox extends HBox {
+public class SearchInputBox extends HBox implements SearchBox.InputBox {
 
     private TextField inputField = new TextField();
     private Consumer<String> onTextCallback = s -> {};
@@ -22,8 +23,14 @@ public class SearchInputBox extends HBox {
         );
     }
 
+    @Override
     public void setOnTextCallback(Consumer<String> cb){
         this.onTextCallback = cb;
+    }
+
+    @Override
+    public Node asNode(){
+        return this;
     }
 
     private void doSearch(){

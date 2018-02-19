@@ -15,9 +15,10 @@ public class DiseaseInput extends VBox {
 
     public DiseaseInput() {
         super(4);
+        dateInput.setGengou(Gengou.Current);
         getChildren().addAll(
-                dateInput,
-                createName()
+                createName(),
+                dateInput
         );
     }
 

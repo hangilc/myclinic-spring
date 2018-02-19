@@ -70,7 +70,7 @@ public interface DateInputInterface {
             } catch (NumberFormatException ex) {
                 err.add("日の入力が不適切です。");
             }
-            try {
+            {
                 Gengou gengou = getGengou();
                 if (gengou == null) {
                     err.add("元号が設定されていません。");
