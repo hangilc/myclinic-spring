@@ -99,3 +99,7 @@
 .charge-input-field {
     -fx-pref-width: 6em;
 }
+
+.date-input .nen, .date-input .month, .date-input .day {
+    -fx-pref-width: 2em;
+}

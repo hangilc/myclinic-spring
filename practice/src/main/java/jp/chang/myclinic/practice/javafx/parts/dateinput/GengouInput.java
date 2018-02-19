@@ -1,41 +1,36 @@
 package jp.chang.myclinic.practice.javafx.parts.dateinput;
 
+import javafx.scene.control.ChoiceBox;
+import javafx.util.StringConverter;
 import jp.chang.myclinic.consts.Gengou;
 
-import javax.swing.*;
-import java.awt.*;
-import java.time.chrono.JapaneseEra;
-import java.util.List;
+public class GengouInput extends ChoiceBox<Gengou> {
 
-public class GengouInput extends JComboBox<Gengou> {
+    public GengouInput(Gengou... gengouList){
+        setConverter(makeConverter());
+        getItems().addAll(gengouList);
+    }
 
-    public GengouInput(List<Gengou> gengouList){
-        setEditable(false);
-        setRenderer(new ListCellRenderer<Gengou>(){
+    public GengouInput(){
+        this(Gengou.values());
+    }
+
+    public Gengou getGengou(){
+        return getSelectionModel().getSelectedItem();
+    }
+
+    private StringConverter<Gengou> makeConverter(){
+        return new StringConverter<Gengou>() {
             @Override
-            public Component getListCellRendererComponent(JList<? extends Gengou> list, Gengou value, int index, boolean isSelected, boolean cellHasFocus) {
-                JLabel label = new JLabel(value.getKanji());
-                if( isSelected ){
-                    label.setBackground(list.getSelectionBackground());
-                    label.setForeground(list.getSelectionForeground());
-                } else {
-                    label.setBackground(list.getBackground());
-                    label.setForeground(list.getForeground());
-                }
-                label.setOpaque(true);
-                return label;
+            public String toString(Gengou gengou) {
+                return gengou.getKanji();
             }
-        });
-        gengouList.forEach(this::addItem);
-    }
 
-    public JapaneseEra getEra(){
-        return ((Gengou)getSelectedItem()).getEra();
-    }
-
-    public void setEra(JapaneseEra era){
-        Gengou g = Gengou.fromEra(era);
-        setSelectedItem(g);
+            @Override
+            public Gengou fromString(String string) {
+                return Gengou.fromKanji(string);
+            }
+        };
     }
 
 }
