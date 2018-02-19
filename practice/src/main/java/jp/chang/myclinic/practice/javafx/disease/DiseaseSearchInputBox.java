@@ -14,6 +14,8 @@ import java.util.function.Consumer;
 public class DiseaseSearchInputBox extends VBox implements SearchBox.InputBox {
 
     private Consumer<String> onTextCallback = s -> {};
+    private TextField textField = new TextField();
+    private RadioButtonGroup<IDiseaseSearcher> modeGroup = new RadioButtonGroup<>();
 
     public DiseaseSearchInputBox(){
         super(4);
@@ -23,11 +25,16 @@ public class DiseaseSearchInputBox extends VBox implements SearchBox.InputBox {
         );
     }
 
+    public IDiseaseSearcher getSearcher(){
+        return modeGroup.getValue();
+    }
+
     private Node createInput(){
         HBox hbox = new HBox(4);
-        TextField textField = new TextField();
         Button searchButton = new Button("検索");
         Hyperlink exampleLink = new Hyperlink("例");
+        textField.setOnAction(evt -> doSearch());
+        searchButton.setOnAction(evt -> doSearch());
         hbox.getChildren().addAll(
                 textField,
                 searchButton,
@@ -38,12 +45,18 @@ public class DiseaseSearchInputBox extends VBox implements SearchBox.InputBox {
 
     private Node createSwitch(){
         HBox hbox = new HBox(4);
-        RadioButtonGroup<DiseaseSearchMode> modeGroup = new RadioButtonGroup<>();
-        modeGroup.createRadioButton("傷病名", DiseaseSearchMode.Disease);
-        modeGroup.createRadioButton("修飾語", DiseaseSearchMode.Adj);
-        modeGroup.setValue(DiseaseSearchMode.Disease);
+        modeGroup.createRadioButton("傷病名", DiseaseSearchers.byoumeiSearcher);
+        modeGroup.createRadioButton("修飾語", DiseaseSearchers.shuushokugoSearcher);
+        modeGroup.setValue(DiseaseSearchers.byoumeiSearcher);
         hbox.getChildren().addAll(modeGroup.getButtons());
         return hbox;
+    }
+
+    private void doSearch(){
+        String text = textField.getText();
+        if( !text.isEmpty() ){
+            onTextCallback.accept(text);
+        }
     }
 
     @Override
@@ -55,4 +68,5 @@ public class DiseaseSearchInputBox extends VBox implements SearchBox.InputBox {
     public Node asNode() {
         return this;
     }
+
 }

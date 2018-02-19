@@ -6,11 +6,12 @@ import jp.chang.myclinic.consts.Gengou;
 public class Add extends VBox {
 
     private DiseaseInput diseaseInput = new DiseaseInput();
-    private DiseaseSearchBox searchBox = new DiseaseSearchBox();
+    private DiseaseSearchBox searchBox;
 
     public Add(){
         super(4);
         diseaseInput.setGengou(Gengou.Current);
+        searchBox = new DiseaseSearchBox();
         getChildren().addAll(
                 diseaseInput,
                 searchBox
