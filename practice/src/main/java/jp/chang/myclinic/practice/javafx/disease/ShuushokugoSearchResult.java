@@ -19,4 +19,9 @@ public class ShuushokugoSearchResult implements DiseaseSearchResultModel {
     public String rep() {
         return master.name;
     }
+
+    @Override
+    public void applyTo(DiseaseInput diseaseInput) {
+        diseaseInput.addShuushokugo(master);
+    }
 }

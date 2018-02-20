@@ -19,4 +19,9 @@ public class ByoumeiSearchResult implements DiseaseSearchResultModel {
         return master.name;
     }
 
+    @Override
+    public void applyTo(DiseaseInput diseaseInput) {
+        diseaseInput.setByoumei(master);
+    }
+
 }
