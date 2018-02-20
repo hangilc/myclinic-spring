@@ -5,7 +5,7 @@ import jp.chang.myclinic.dto.KizaiMasterDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.EnterCancelBox;
-import jp.chang.myclinic.practice.javafx.parts.SearchBox;
+import jp.chang.myclinic.practice.javafx.parts.SearchBoxOld;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class ConductKizaiForm extends WorkForm {
         this.at = at;
         this.conductId = conductId;
         KizaiInput kizaiInput = new KizaiInput();
-        SearchBox<KizaiMasterDTO> searchBox = new SearchBox<>(
+        SearchBoxOld<KizaiMasterDTO> searchBox = new SearchBoxOld<>(
                 t -> Service.api.searchKizaiMaster(t, at),
                 m -> m.name
         );

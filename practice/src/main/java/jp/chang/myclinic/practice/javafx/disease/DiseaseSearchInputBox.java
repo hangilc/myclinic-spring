@@ -6,12 +6,12 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.practice.javafx.parts.SearchBox;
+import jp.chang.myclinic.practice.javafx.parts.SearchBoxOld;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
 
 import java.util.function.Consumer;
 
-public class DiseaseSearchInputBox extends VBox implements SearchBox.InputBox {
+public class DiseaseSearchInputBox extends VBox implements SearchBoxOld.InputBox {
 
     private Consumer<String> onTextCallback = s -> {};
     private TextField textField = new TextField();

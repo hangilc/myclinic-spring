@@ -5,7 +5,7 @@ import jp.chang.myclinic.practice.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ShinryouSearchBox extends SearchBox<ShinryouMasterDTO> {
+public class ShinryouSearchBox extends SearchBoxOld<ShinryouMasterDTO> {
 
     private static Logger logger = LoggerFactory.getLogger(ShinryouSearchBox.class);
 

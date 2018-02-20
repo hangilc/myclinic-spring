@@ -39,6 +39,7 @@ public class MenuExecEnv {
 
 	@PostConstruct
 	public void postConstruct(){
+		System.out.println("PostConstruct:" + masterFilesConfig);
 		masterFilesDirectory = Paths.get(masterFilesConfig);
 	}
 

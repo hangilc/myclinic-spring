@@ -5,7 +5,7 @@ import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.EnterCancelBox;
-import jp.chang.myclinic.practice.javafx.parts.SearchBox;
+import jp.chang.myclinic.practice.javafx.parts.SearchBoxOld;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class ConductDrugForm extends WorkForm {
         EnterCancelBox commands = new EnterCancelBox();
         commands.setEnterCallback(() -> doEnter(drugInput));
         commands.setCancelCallback(this::onCancel);
-        SearchBox<IyakuhinMasterDTO> searchBox = new SearchBox<>(
+        SearchBoxOld<IyakuhinMasterDTO> searchBox = new SearchBoxOld<>(
                 t -> Service.api.searchIyakuhinMaster(t, at),
                 m -> m.name
         );

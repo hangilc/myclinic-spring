@@ -2,17 +2,16 @@ package jp.chang.myclinic.practice.javafx.disease;
 
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
-import jp.chang.myclinic.practice.javafx.parts.SearchBox;
+import jp.chang.myclinic.practice.javafx.parts.SearchBoxOld;
 import jp.chang.myclinic.practice.lib.Result;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class DiseaseSearchBox extends SearchBox<DiseaseSearchResult> {
+public class DiseaseSearchBox extends SearchBoxOld<DiseaseSearchResult> {
 
     private DiseaseSearchInputBox inputBox;
 
