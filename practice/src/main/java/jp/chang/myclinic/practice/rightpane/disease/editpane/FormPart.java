@@ -111,12 +111,12 @@ class FormPart extends JPanel {
         );
         disease.endReason = reasonSelector.getReason().getCode();
         if( errs.size() > 0 ){
-            return new Result<>(null, errs);
+            return Result.createError(errs);
         } else {
             DiseaseModifyDTO modifyDTO = new DiseaseModifyDTO();
             modifyDTO.disease = disease;
             modifyDTO.shuushokugocodes = shuushokugoMasters.stream().map(m -> m.shuushokugocode).collect(Collectors.toList());
-            return new Result<>(modifyDTO, null);
+            return Result.createValue(modifyDTO);
         }
     }
 

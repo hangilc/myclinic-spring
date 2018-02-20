@@ -7,11 +7,15 @@ public class Result<T,E> {
     private T value;
     private E error;
 
-    public Result(T value){
-        this(value, null);
+    public static <T,E> Result<T,E>  createError(E err){
+        return new Result<>(null, err);
     }
 
-    public Result(T value, E error){
+    public static <T,E> Result<T,E> createValue(T value){
+        return new Result<>(value, null);
+    }
+
+    private Result(T value, E error){
         this.value = value;
         this.error = error;
     }

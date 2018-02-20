@@ -11,7 +11,7 @@ public class Add extends VBox {
     public Add(){
         super(4);
         diseaseInput.setGengou(Gengou.Current);
-        searchBox = new DiseaseSearchBox();
+        searchBox = DiseaseSearchBox.create(() -> diseaseInput.getStartDate());
         getChildren().addAll(
                 diseaseInput,
                 searchBox

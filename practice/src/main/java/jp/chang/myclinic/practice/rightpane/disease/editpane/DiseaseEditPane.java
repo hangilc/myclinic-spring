@@ -73,7 +73,7 @@ public class DiseaseEditPane extends JPanel {
         SearchArea searchArea = new SearchArea(width, new DateInput(){
             @Override
             public Result<LocalDate, List<String>> getValue(){
-                return new Result<>(startDate, null);
+                return Result.createValue(startDate);
             }
 
             @Override

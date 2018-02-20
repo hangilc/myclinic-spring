@@ -34,7 +34,7 @@ public abstract class SearchResultBase<M> extends ListView<M> implements SearchR
     }
 
     @Override
-    public void setOnSelectCallback(Consumer cb) {
+    public void setOnSelectCallback(Consumer<M> cb) {
         this.onSelectCallback = cb;
     }
 

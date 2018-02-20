@@ -50,7 +50,7 @@ public interface DateInputInterface {
         }
     }
 
-    default void getValue(BiConsumer<LocalDate, List<String>> cb) {
+    default Result<LocalDate, List<String>> getValue() {
         List<String> err = new ArrayList<>();
         LocalDate value = null;
         if (!isEmpty()) {
@@ -83,7 +83,11 @@ public interface DateInputInterface {
                 }
             }
         }
-        cb.accept(value, err);
+        if( err.size() > 0 ){
+            return Result.createError(err);
+        } else {
+            return Result.createValue(value);
+        }
     }
 
 }

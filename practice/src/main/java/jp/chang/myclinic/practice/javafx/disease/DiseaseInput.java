@@ -7,6 +7,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.practice.javafx.parts.dateinput.DateInput;
+import jp.chang.myclinic.practice.lib.Result;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,8 +30,8 @@ public class DiseaseInput extends VBox {
         dateInput.setGengou(gengou);
     }
 
-    public void getStartDate(BiConsumer<LocalDate,List<String>> cb){
-        dateInput.getValue(cb);
+    public Result<LocalDate, List<String>> getStartDate(){
+        return dateInput.getValue();
     }
 
     private Node createName() {

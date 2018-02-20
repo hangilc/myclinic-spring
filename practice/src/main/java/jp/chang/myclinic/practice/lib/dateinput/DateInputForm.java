@@ -72,7 +72,7 @@ public class DateInputForm extends JPanel implements DateInput {
 
     public Result<LocalDate, List<String>> getValue(){
         if( allowEmpty && isEmpty() ){
-            return new Result<>(null, null);
+            return Result.createValue(null);
         }
         List<String> err = new ArrayList<>();
         JapaneseEra era = gengouInput.getEra();
@@ -96,12 +96,12 @@ public class DateInputForm extends JPanel implements DateInput {
         }
         if( nen != null && month != null && day != null ){
             try {
-                return new Result<>(LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay()));
+                return Result.createValue(LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay()));
             } catch(DateTimeException ex){
                 err.add("不適切な月日です。");
             }
         }
-        return new Result<>(null, err);
+        return Result.createError(err);
     }
 
     public boolean isEmpty(){
