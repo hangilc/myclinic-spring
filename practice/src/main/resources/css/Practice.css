@@ -101,5 +101,5 @@
 }
 
 .date-input .nen, .date-input .month, .date-input .day {
-    -fx-pref-width: 2em;
+    -fx-pref-width: 3em;
 }

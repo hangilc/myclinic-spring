@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.parts.searchbox;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -29,7 +30,7 @@ public abstract class SearchResultBase<M> extends ListView<M> implements SearchR
     @Override
     public void search(String text) {
         doSearch(text)
-                .thenAccept(this::setList)
+                .thenAccept(result -> Platform.runLater(() -> setList(result)))
                 .exceptionally(HandlerFX::exceptionally);
     }
 

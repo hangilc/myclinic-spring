@@ -16,6 +16,7 @@ public class DateInput extends HBox implements DateInputInterface {
     private Label monthLabel = new Label("月");
     private TextField dayField = new TextField();
     private Label dayLabel = new Label("日");
+    private boolean allowNull = false;
 
     public DateInput() {
         super(4);
@@ -73,6 +74,11 @@ public class DateInput extends HBox implements DateInputInterface {
     @Override
     public void setDay(String day) {
         dayField.setText(day);
+    }
+
+    @Override
+    public boolean getAllowNull(){
+        return allowNull;
     }
 
     public void clear(){

@@ -8,7 +8,6 @@ import java.time.chrono.JapaneseDate;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 public interface DateInputInterface {
 
@@ -27,6 +26,10 @@ public interface DateInputInterface {
     void setMonth(String month);
 
     void setDay(String day);
+
+    default boolean getAllowNull(){
+        return false;
+    }
 
     default boolean isEmpty() {
         return getNen().isEmpty() && getMonth().isEmpty() && getDay().isEmpty();
@@ -81,6 +84,12 @@ public interface DateInputInterface {
                         err.add("日付の入力が不適切です。");
                     }
                 }
+            }
+        } else {
+            if( getAllowNull() ){
+                value = null;
+            } else {
+                err.add("日付が入力されていません。");
             }
         }
         if( err.size() > 0 ){

@@ -11,7 +11,6 @@ import jp.chang.myclinic.practice.lib.Result;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 public class DiseaseInput extends VBox {
 
@@ -20,6 +19,7 @@ public class DiseaseInput extends VBox {
 
     public DiseaseInput() {
         super(4);
+        dateInput.setValue(LocalDate.now());
         getChildren().addAll(
                 createName(),
                 dateInput
