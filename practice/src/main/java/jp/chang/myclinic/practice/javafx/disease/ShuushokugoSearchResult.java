@@ -4,7 +4,7 @@ import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ShuushokugoSearchResult implements DiseaseSearchResult {
+public class ShuushokugoSearchResult implements DiseaseSearchResultModel {
 
     private static Logger logger = LoggerFactory.getLogger(ShuushokugoSearchResult.class);
 

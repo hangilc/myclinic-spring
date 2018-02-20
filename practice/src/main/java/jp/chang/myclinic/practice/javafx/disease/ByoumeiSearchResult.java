@@ -4,7 +4,7 @@ import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ByoumeiSearchResult implements DiseaseSearchResult {
+public class ByoumeiSearchResult implements DiseaseSearchResultModel {
 
     private static Logger logger = LoggerFactory.getLogger(ByoumeiSearchResult.class);
 

@@ -14,14 +14,14 @@ public class DiseaseSearchers {
 
     }
 
-    public static IDiseaseSearcher byoumeiSearcher = (t, at) ->
+    public static DiseaseSearcher byoumeiSearcher = (t, at) ->
             Service.api.searchByoumei(t, at)
-                    .thenApply(result -> result.stream().map(m -> (DiseaseSearchResult) new ByoumeiSearchResult(m))
+                    .thenApply(result -> result.stream().map(m -> (DiseaseSearchResultModel) new ByoumeiSearchResult(m))
                             .collect(Collectors.toList()));
 
-    public static IDiseaseSearcher shuushokugoSearcher = (t, at) ->
+    public static DiseaseSearcher shuushokugoSearcher = (t, at) ->
             Service.api.searchShuushokugo(t)
-                    .thenApply(result -> result.stream().map(m -> (DiseaseSearchResult) new ShuushokugoSearchResult(m))
+                    .thenApply(result -> result.stream().map(m -> (DiseaseSearchResultModel) new ShuushokugoSearchResult(m))
                             .collect(Collectors.toList()));
 
 }

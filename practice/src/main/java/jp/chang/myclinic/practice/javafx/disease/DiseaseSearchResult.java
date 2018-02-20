@@ -1,5 +1,12 @@
 package jp.chang.myclinic.practice.javafx.disease;
 
-public interface DiseaseSearchResult {
-    String rep();
+import jp.chang.myclinic.practice.javafx.parts.searchbox.SearchResultBase;
+
+public abstract class DiseaseSearchResult extends SearchResultBase<DiseaseSearchResultModel>  {
+
+    @Override
+    protected String convert(DiseaseSearchResultModel model) {
+        return model.rep();
+    }
+
 }

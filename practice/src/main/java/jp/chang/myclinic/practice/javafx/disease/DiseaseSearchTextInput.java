@@ -6,18 +6,18 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.practice.javafx.parts.SearchBoxOld;
+import jp.chang.myclinic.practice.javafx.parts.searchbox.SearchTextInput;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
 
 import java.util.function.Consumer;
 
-public class DiseaseSearchInputBox extends VBox implements SearchBoxOld.InputBox {
+public class DiseaseSearchTextInput extends VBox implements SearchTextInput {
 
-    private Consumer<String> onTextCallback = s -> {};
+    private Consumer<String> onSearchCallback = s -> {};
     private TextField textField = new TextField();
-    private RadioButtonGroup<IDiseaseSearcher> modeGroup = new RadioButtonGroup<>();
+    private RadioButtonGroup<DiseaseSearcher> modeGroup = new RadioButtonGroup<>();
 
-    public DiseaseSearchInputBox(){
+    public DiseaseSearchTextInput(){
         super(4);
         getChildren().addAll(
                 createInput(),
@@ -25,7 +25,7 @@ public class DiseaseSearchInputBox extends VBox implements SearchBoxOld.InputBox
         );
     }
 
-    public IDiseaseSearcher getSearcher(){
+    public DiseaseSearcher getSearcher(){
         return modeGroup.getValue();
     }
 
@@ -55,18 +55,12 @@ public class DiseaseSearchInputBox extends VBox implements SearchBoxOld.InputBox
     private void doSearch(){
         String text = textField.getText();
         if( !text.isEmpty() ){
-            onTextCallback.accept(text);
+            onSearchCallback.accept(text);
         }
     }
 
     @Override
-    public void setOnTextCallback(Consumer<String> cb) {
-        this.onTextCallback = cb;
+    public void setOnSearchCallback(Consumer<String> cb) {
+        this.onSearchCallback = cb;
     }
-
-    @Override
-    public Node asNode() {
-        return this;
-    }
-
 }
