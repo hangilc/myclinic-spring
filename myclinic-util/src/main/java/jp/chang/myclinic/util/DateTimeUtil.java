@@ -92,6 +92,10 @@ public class DateTimeUtil {
 		return jd.get(YEAR_OF_ERA);
 	}
 
+	public static LocalDate warekiToLocalDate(JapaneseEra era, int nen, int month, int day){
+		return LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay());
+	}
+
 	public static int calcAge(LocalDate birthday, LocalDate at){
 		return (int)birthday.until(at, ChronoUnit.YEARS);
 	}

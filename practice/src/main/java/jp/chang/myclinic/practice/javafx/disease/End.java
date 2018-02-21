@@ -51,16 +51,36 @@ public class End extends VBox {
         };
         dateInput = new DateInput();
         dateInput.setGengou(Gengou.Current);
-        DateControl dateControl = new DateControl();
         Button enterButton = new Button("入力");
         enterButton.setOnAction(evt -> doEnter());
         getChildren().addAll(
                 diseaseList,
                 dateInput,
-                dateControl,
+                createDateControl(),
                 createReasonGroup(),
                 enterButton
         );
+    }
+
+    private Node createDateControl(){
+        DateControl dateControl = new DateControl();
+        dateControl.setOnWeekCallback(event -> {
+            int n = 1;
+            if( event.isShiftDown() ){
+                n = -n;
+            }
+            dateInput.advanceWeek(n);
+        });
+        dateControl.setOnTodayCallback(event -> {
+            dateInput.setValue(LocalDate.now());
+        });
+        dateControl.setOnMonthEndCallback(event -> {
+            dateInput.moveToEndOfMonth();
+        });
+        dateControl.setOnLastMonthEndCallback(event -> {
+            dateInput.moveToEndOfLastMonth();
+        });
+        return dateControl;
     }
 
     private Node createReasonGroup(){
