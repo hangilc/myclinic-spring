@@ -7,11 +7,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
-import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.disease.Add;
 import jp.chang.myclinic.practice.javafx.disease.Current;
 import jp.chang.myclinic.practice.javafx.disease.End;
+import jp.chang.myclinic.practice.javafx.events.CurrentDiseasesChangedEvent;
 import jp.chang.myclinic.practice.javafx.events.DiseaseEnteredEvent;
 
 import java.util.Collections;
@@ -21,6 +21,7 @@ public class DiseasesPane extends VBox {
 
     private StackPane workarea = new StackPane();
     private List<DiseaseFullDTO> currentDiseases = Collections.emptyList();
+    private int patientId;
 
     DiseasesPane() {
         super(4);
@@ -34,6 +35,8 @@ public class DiseasesPane extends VBox {
         );
         setVisible(false);
         PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) -> {
+            clearWorkarea();
+            this.patientId = (newValue == null) ? 0 : newValue.patientId;
             DiseasesPane.this.setVisible(newValue != null);
         });
         PracticeEnv.INSTANCE.currentDiseasesProperty().addListener((obs, oldValue, newValue) -> {
@@ -41,6 +44,9 @@ public class DiseasesPane extends VBox {
             showCurrent();
         });
         addEventHandler(DiseaseEnteredEvent.eventType, this::onDiseaseEntered);
+        addEventHandler(CurrentDiseasesChangedEvent.eventType, event -> {
+            this.currentDiseases = event.getDiseases();
+        });
     }
 
     private Node createTitle() {
@@ -55,14 +61,13 @@ public class DiseasesPane extends VBox {
     }
 
     private void showAdd(){
-        PatientDTO currentPatient = PracticeEnv.INSTANCE.getCurrentPatient();
-        if( currentPatient != null ) {
-            setWorkarea(new Add(currentPatient.patientId));
-        }
+        assert patientId != 0;
+        setWorkarea(new Add(patientId));
     }
 
     private void showEnd(){
-        setWorkarea(new End(currentDiseases));
+        assert patientId != 0;
+        setWorkarea(new End(currentDiseases, patientId));
     }
 
     private Node createControls(){
@@ -80,6 +85,10 @@ public class DiseasesPane extends VBox {
 
     private void setWorkarea(Node content){
         workarea.getChildren().setAll(content);
+    }
+
+    private void clearWorkarea(){
+        workarea.getChildren().clear();
     }
 
     private void onDiseaseEntered(DiseaseEnteredEvent event){

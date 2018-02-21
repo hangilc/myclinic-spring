@@ -15,7 +15,6 @@ public class DiseaseList extends CheckBoxList<DiseaseFullDTO> {
 
     public DiseaseList(List<DiseaseFullDTO> diseases) {
         super(diseases, DiseaseList::getFullName);
-        this.addAll(diseases);
     }
 
     private static String getFullName(DiseaseFullDTO disease){

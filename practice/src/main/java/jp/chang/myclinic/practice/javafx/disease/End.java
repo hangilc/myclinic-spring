@@ -14,8 +14,10 @@ import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.disease.end.DateControl;
 import jp.chang.myclinic.practice.javafx.disease.end.DiseaseList;
+import jp.chang.myclinic.practice.javafx.events.CurrentDiseasesChangedEvent;
 import jp.chang.myclinic.practice.javafx.parts.CheckBoxWithData;
 import jp.chang.myclinic.practice.javafx.parts.dateinput.DateInput;
+import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
 import jp.chang.myclinic.practice.lib.Result;
 import org.slf4j.Logger;
@@ -31,10 +33,16 @@ public class End extends VBox {
     private static Logger logger = LoggerFactory.getLogger(End.class);
     private DiseaseList diseaseList;
     private DateInput dateInput;
-    private RadioButtonGroup<DiseaseEndReason> reasonGroup = new RadioButtonGroup<>();
+    private RadioButtonGroup<DiseaseEndReason> reasonGroup;
+    private int patientId;
 
-    public End(List<DiseaseFullDTO> diseases) {
+    public End(List<DiseaseFullDTO> diseases, int patientId) {
         super(4);
+        this.patientId = patientId;
+        setup(diseases);
+    }
+
+    private void setup(List<DiseaseFullDTO> diseases){
         diseaseList = new DiseaseList(diseases){
             @Override
             protected void onChange(CheckBoxWithData<DiseaseFullDTO> check) {
@@ -57,6 +65,7 @@ public class End extends VBox {
 
     private Node createReasonGroup(){
         HBox hbox = new HBox(4);
+        this.reasonGroup = new RadioButtonGroup<>();
         reasonGroup.createRadioButton("治癒", DiseaseEndReason.Cured);
         reasonGroup.createRadioButton("中止", DiseaseEndReason.Stopped);
         reasonGroup.createRadioButton("死亡", DiseaseEndReason.Dead);
@@ -101,23 +110,22 @@ public class End extends VBox {
     private void doEnter(LocalDate endDate){
         DiseaseEndReason endReason = reasonGroup.getValue();
         List<DiseaseModifyEndReasonDTO> modifies = diseaseList.getSelected().stream()
-                .map(d -> createModify(d, endDate, endReason))
+                .map(d -> PracticeUtil.createDiseaseModifyEndReason(d, endReason, endDate))
                 .collect(Collectors.toList());
         if( modifies.size() > 0 ){
             Service.api.batchUpdateDiseaseEndReason(modifies)
-                    .thenAccept(result -> Platform.runLater(() -> {
-
+                    .thenCompose(result -> Service.api.listCurrentDiseaseFull(patientId))
+                    .thenAccept(newDiseases -> Platform.runLater(() -> {
+                        resetDiseases(newDiseases);
+                        End.this.fireEvent(new CurrentDiseasesChangedEvent(newDiseases));
                     }))
                     .exceptionally(HandlerFX::exceptionally);
         }
     }
 
-    private DiseaseModifyEndReasonDTO createModify(DiseaseFullDTO disease, LocalDate endDate, DiseaseEndReason reason){
-        DiseaseModifyEndReasonDTO modify = new DiseaseModifyEndReasonDTO();
-        modify.diseaseId = disease.disease.diseaseId;
-        modify.endReason = reason.getCode();
-        modify.endDate = endDate.toString();
-        return modify;
+    private void resetDiseases(List<DiseaseFullDTO> diseases){
+        getChildren().clear();
+        setup(diseases);
     }
 
 }

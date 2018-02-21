@@ -6,7 +6,7 @@ import jp.chang.myclinic.dto.DiseaseFullDTO;
 
 public class DiseaseEnteredEvent extends Event {
 
-    public static EventType<DiseaseEnteredEvent> eventType = new EventType<>("");
+    public static EventType<DiseaseEnteredEvent> eventType = new EventType<>("DISEASE_ENTERED_EVENT");
 
     private DiseaseFullDTO disease;
 

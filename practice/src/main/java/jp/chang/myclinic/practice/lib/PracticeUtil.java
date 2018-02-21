@@ -2,13 +2,14 @@ package jp.chang.myclinic.practice.lib;
 
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.MyclinicConsts;
-import jp.chang.myclinic.dto.KouhiDTO;
-import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class PracticeUtil {
@@ -76,4 +77,23 @@ public class PracticeUtil {
 
     public static String[] gazouLabelExamples = new String[]{ "胸部単純Ｘ線", "腹部単純Ｘ線" };
 
+    public static DiseaseModifyEndReasonDTO createDiseaseModifyEndReason(DiseaseFullDTO disease, DiseaseEndReason reason, LocalDate endDate){
+        DiseaseModifyEndReasonDTO modify = new DiseaseModifyEndReasonDTO();
+        modify.diseaseId = disease.disease.diseaseId;
+        if( diseaseHasSusp(disease.adjList) && reason == DiseaseEndReason.Cured ){
+            reason = DiseaseEndReason.Stopped;
+        }
+        modify.endReason = reason.getCode();
+        modify.endDate = endDate.toString();
+        return modify;
+    }
+
+    public static boolean diseaseHasSusp(List<DiseaseAdjFullDTO> adjList){
+        for(DiseaseAdjFullDTO adj: adjList){
+            if( "の疑い".equals(adj.master.name) ){
+                return true;
+            }
+        }
+        return false;
+    }
 }

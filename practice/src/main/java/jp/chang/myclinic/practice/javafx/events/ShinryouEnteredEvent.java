@@ -5,7 +5,7 @@ import javafx.event.EventType;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 
 public class ShinryouEnteredEvent extends Event {
-    public static EventType<ShinryouEnteredEvent> eventType = new EventType<ShinryouEnteredEvent>("SHINRYOU_ENTERED");
+    public static EventType<ShinryouEnteredEvent> eventType = new EventType<ShinryouEnteredEvent>("SHINRYOU_ENTERED_EVVENT");
 
     private ShinryouFullDTO shinryou;
 
