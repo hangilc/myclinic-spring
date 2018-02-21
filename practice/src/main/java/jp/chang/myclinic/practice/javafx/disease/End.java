@@ -3,6 +3,8 @@ package jp.chang.myclinic.practice.javafx.disease;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.DiseaseEndReason;
@@ -42,31 +44,65 @@ public class End extends VBox {
         setup(diseases);
     }
 
-    private void setup(List<DiseaseFullDTO> diseases){
-        diseaseList = new DiseaseList(diseases){
+    private void setup(List<DiseaseFullDTO> diseases) {
+        diseaseList = new DiseaseList(diseases) {
             @Override
             protected void onChange(CheckBoxWithData<DiseaseFullDTO> check) {
                 doSelectionChange(check);
             }
         };
-        dateInput = new DateInput();
-        dateInput.setGengou(Gengou.Current);
         Button enterButton = new Button("入力");
         enterButton.setOnAction(evt -> doEnter());
         getChildren().addAll(
                 diseaseList,
-                dateInput,
+                createDateInput(),
                 createDateControl(),
                 createReasonGroup(),
                 enterButton
         );
     }
 
-    private Node createDateControl(){
+    private Node createDateInput() {
+        this.dateInput = new DateInput();
+        dateInput.setGengou(Gengou.Current);
+        dateInput.setDayLabelClickHandler(this::handleDayLabelClick);
+        dateInput.setMonthLabelClickHandler(this::handleMonthLabelClick);
+        dateInput.setNenLabelClickHandler(this::handleNenLabelClick);
+        return dateInput;
+    }
+
+    private void handleDayLabelClick(MouseEvent event) {
+        int n = 1;
+        if (event.isAltDown()) {
+            n = 5;
+        }
+        if (event.isShiftDown()) {
+            n = -n;
+        }
+        dateInput.advanceDay(n);
+    }
+
+    private void handleMonthLabelClick(MouseEvent event) {
+        int n = 1;
+        if (event.isShiftDown()) {
+            n = -n;
+        }
+        dateInput.advanceMonth(n);
+    }
+
+    private void handleNenLabelClick(MouseEvent event) {
+        int n = 1;
+        if (event.isShiftDown()) {
+            n = -n;
+        }
+        dateInput.advanceYear(n);
+    }
+
+    private Node createDateControl() {
         DateControl dateControl = new DateControl();
         dateControl.setOnWeekCallback(event -> {
             int n = 1;
-            if( event.isShiftDown() ){
+            if (event.isShiftDown()) {
                 n = -n;
             }
             dateInput.advanceWeek(n);
@@ -83,26 +119,27 @@ public class End extends VBox {
         return dateControl;
     }
 
-    private Node createReasonGroup(){
+    private Node createReasonGroup() {
         HBox hbox = new HBox(4);
         this.reasonGroup = new RadioButtonGroup<>();
         reasonGroup.createRadioButton("治癒", DiseaseEndReason.Cured);
         reasonGroup.createRadioButton("中止", DiseaseEndReason.Stopped);
         reasonGroup.createRadioButton("死亡", DiseaseEndReason.Dead);
         reasonGroup.setValue(DiseaseEndReason.Cured);
+        hbox.getChildren().add(new Label("転機："));
         hbox.getChildren().addAll(reasonGroup.getButtons());
         return hbox;
     }
 
-    private void doSelectionChange(CheckBoxWithData<DiseaseFullDTO> check){
-        if( check.isSelected() ){
+    private void doSelectionChange(CheckBoxWithData<DiseaseFullDTO> check) {
+        if (check.isSelected()) {
             LocalDate startDate = LocalDate.parse(check.getData().disease.startDate);
-            if( dateInput.isEmpty() ){
+            if (dateInput.isEmpty()) {
                 dateInput.setValue(startDate);
             } else {
                 Result<LocalDate, List<String>> currentResult = dateInput.getValue();
-                if( currentResult.hasValue() ){
-                    if( currentResult.getValue().compareTo(startDate) < 0 ){
+                if (currentResult.hasValue()) {
+                    if (currentResult.getValue().compareTo(startDate) < 0) {
                         dateInput.setValue(startDate);
                     }
                 } else {
@@ -112,7 +149,7 @@ public class End extends VBox {
         } else {
             Optional<String> lastDate = diseaseList.getSelected().stream()
                     .map(d -> d.disease.startDate).max(String::compareTo);
-            if( lastDate.isPresent() ){
+            if (lastDate.isPresent()) {
                 LocalDate endDate = LocalDate.parse(lastDate.get());
                 dateInput.setValue(endDate);
             } else {
@@ -121,18 +158,18 @@ public class End extends VBox {
         }
     }
 
-    private void doEnter(){
+    private void doEnter() {
         dateInput.getValue()
                 .ifError(e -> GuiUtil.alertError("終了日の設定が不適切です。"))
                 .ifPresent(this::doEnter);
     }
 
-    private void doEnter(LocalDate endDate){
+    private void doEnter(LocalDate endDate) {
         DiseaseEndReason endReason = reasonGroup.getValue();
         List<DiseaseModifyEndReasonDTO> modifies = diseaseList.getSelected().stream()
                 .map(d -> PracticeUtil.createDiseaseModifyEndReason(d, endReason, endDate))
                 .collect(Collectors.toList());
-        if( modifies.size() > 0 ){
+        if (modifies.size() > 0) {
             Service.api.batchUpdateDiseaseEndReason(modifies)
                     .thenCompose(result -> Service.api.listCurrentDiseaseFull(patientId))
                     .thenAccept(newDiseases -> Platform.runLater(() -> {
@@ -143,7 +180,7 @@ public class End extends VBox {
         }
     }
 
-    private void resetDiseases(List<DiseaseFullDTO> diseases){
+    private void resetDiseases(List<DiseaseFullDTO> diseases) {
         getChildren().clear();
         setup(diseases);
     }

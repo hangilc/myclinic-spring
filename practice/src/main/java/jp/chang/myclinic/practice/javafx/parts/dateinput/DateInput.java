@@ -3,9 +3,12 @@ package jp.chang.myclinic.practice.javafx.parts.dateinput;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.practice.lib.DateInputInterface;
+
+import java.util.function.Consumer;
 
 public class DateInput extends HBox implements DateInputInterface {
 
@@ -85,6 +88,18 @@ public class DateInput extends HBox implements DateInputInterface {
         nenField.clear();
         monthField.clear();
         dayField.clear();
+    }
+
+    public void setNenLabelClickHandler(Consumer<MouseEvent> handler){
+        nenLabel.setOnMouseClicked(handler::accept);
+    }
+
+    public void setMonthLabelClickHandler(Consumer<MouseEvent> handler){
+        monthLabel.setOnMouseClicked(handler::accept);
+    }
+
+    public void setDayLabelClickHandler(Consumer<MouseEvent> handler){
+        dayLabel.setOnMouseClicked(handler::accept);
     }
 
 }

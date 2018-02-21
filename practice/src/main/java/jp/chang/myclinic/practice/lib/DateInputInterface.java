@@ -151,6 +151,18 @@ public interface DateInputInterface {
         advance(n, ChronoUnit.WEEKS);
     }
 
+    default void advanceDay(int n){
+        advance(n, ChronoUnit.DAYS);
+    }
+
+    default void advanceMonth(int n){
+        advance(n, ChronoUnit.MONTHS);
+    }
+
+    default void advanceYear(int n){
+        advance(n, ChronoUnit.YEARS);
+    }
+
     default void moveToEndOfMonth(){
         adjust();
         getValue()
