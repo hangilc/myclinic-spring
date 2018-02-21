@@ -5,6 +5,7 @@ import jp.chang.myclinic.dto.DiseaseExampleDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.practice.javafx.disease.search.DiseaseSearchResultModel;
 import jp.chang.myclinic.practice.lib.CFUtil;
 import jp.chang.myclinic.practice.lib.Result;
 import org.slf4j.Logger;

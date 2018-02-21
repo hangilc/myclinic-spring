@@ -10,10 +10,7 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
-import jp.chang.myclinic.practice.javafx.disease.Add;
-import jp.chang.myclinic.practice.javafx.disease.Current;
-import jp.chang.myclinic.practice.javafx.disease.End;
-import jp.chang.myclinic.practice.javafx.disease.Select;
+import jp.chang.myclinic.practice.javafx.disease.*;
 import jp.chang.myclinic.practice.javafx.events.CurrentDiseasesChangedEvent;
 import jp.chang.myclinic.practice.javafx.events.DiseaseEnteredEvent;
 
@@ -85,7 +82,8 @@ public class DiseasesPane extends VBox {
     }
 
     private void showEdit(DiseaseFullDTO disease){
-        System.out.println("showEdit is not implemented");
+        Edit edit = new Edit(disease);
+        setWorkarea(edit);
     }
 
     private Node createControls(){

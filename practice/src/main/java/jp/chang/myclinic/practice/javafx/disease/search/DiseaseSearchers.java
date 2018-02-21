@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.disease.add;
+package jp.chang.myclinic.practice.javafx.disease.search;
 
 import jp.chang.myclinic.practice.Service;
 import org.slf4j.Logger;

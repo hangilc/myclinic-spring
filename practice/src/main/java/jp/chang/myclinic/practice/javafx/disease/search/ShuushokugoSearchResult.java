@@ -1,6 +1,7 @@
-package jp.chang.myclinic.practice.javafx.disease.add;
+package jp.chang.myclinic.practice.javafx.disease.search;
 
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
+import jp.chang.myclinic.practice.javafx.disease.add.DiseaseInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

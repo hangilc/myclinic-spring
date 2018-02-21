@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.disease.add;
+package jp.chang.myclinic.practice.javafx.disease.search;
 
 import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
