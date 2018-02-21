@@ -11,6 +11,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.disease.Add;
 import jp.chang.myclinic.practice.javafx.disease.Current;
+import jp.chang.myclinic.practice.javafx.disease.End;
 import jp.chang.myclinic.practice.javafx.events.DiseaseEnteredEvent;
 
 import java.util.Collections;
@@ -60,6 +61,10 @@ public class DiseasesPane extends VBox {
         }
     }
 
+    private void showEnd(){
+        setWorkarea(new End(currentDiseases));
+    }
+
     private Node createControls(){
         HBox hbox = new HBox(4);
         Hyperlink listLink = new Hyperlink("現行");
@@ -68,6 +73,7 @@ public class DiseasesPane extends VBox {
         Hyperlink editLink = new Hyperlink("編集");
         listLink.setOnAction(evt -> showCurrent());
         addLink.setOnAction(evt -> showAdd());
+        endLink.setOnAction(evt -> showEnd());
         hbox.getChildren().addAll(listLink, addLink, endLink, editLink);
         return hbox;
     }

@@ -16,16 +16,16 @@ public class CheckBoxList<T> extends VBox {
     private static Logger logger = LoggerFactory.getLogger(CheckBoxList.class);
 
     private List<CheckBoxWithData<T>> checkBoxes = new ArrayList<>();
-    private Function<T, String> labelMaker;
+    private Function<T, String> labelMaker = Object::toString;
 
-    public CheckBoxList(Function<T, String> labelMaker) {
-        super(4);
+    public CheckBoxList(List<T> list, Function<T, String> labelMaker) {
+        this();
         this.labelMaker = labelMaker;
+        addAll(list);
     }
 
-    public CheckBoxList(List<T> list, Function<T,String> labelMaker){
-        this(labelMaker);
-        addAll(list);
+    public CheckBoxList(){
+        super(4);
     }
 
     public void addAll(List<T> dataList){
