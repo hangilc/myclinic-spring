@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.parts.searchbox;
+package jp.chang.myclinic.practice.javafx.parts.searchboxold;
 
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;

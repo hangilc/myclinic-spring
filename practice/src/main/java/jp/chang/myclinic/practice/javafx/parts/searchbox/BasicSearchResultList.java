@@ -1,37 +1,34 @@
 package jp.chang.myclinic.practice.javafx.parts.searchbox;
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
-public abstract class SearchResultBase<M> extends ListView<M> implements SearchResult<M>{
+public class BasicSearchResultList<M> extends ListView<M> implements SearchResultList<M>{
 
     private Consumer<M> onSelectCallback = m -> {};
+    private Function<M, String> converter = Object::toString;
 
-    public SearchResultBase(){
+    public BasicSearchResultList(){
         getStyleClass().add("search-result");
         setCellFactory(listView -> new ListCell<M>(){
             @Override
             protected void updateItem(M item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty ? "" : convert(item));
+                setText(empty ? "" : converter.apply(item));
             }
         });
         setOnMouseClicked(this::onMouseClick);
     }
 
     @Override
-    public void search(String text) {
-        doSearch(text)
-                .thenAccept(result -> Platform.runLater(() -> setList(result)))
-                .exceptionally(HandlerFX::exceptionally);
+    public void setResult(List<M> result) {
+        itemsProperty().setValue(FXCollections.observableArrayList(result));
     }
 
     @Override
@@ -39,12 +36,8 @@ public abstract class SearchResultBase<M> extends ListView<M> implements SearchR
         this.onSelectCallback = cb;
     }
 
-    protected abstract CompletableFuture<List<M>> doSearch(String text);
-
-    protected abstract String convert(M model);
-
-    private void setList(List<M> list){
-        itemsProperty().setValue(FXCollections.observableArrayList(list));
+    public void setConverter(Function<M, String> converter){
+        this.converter = converter;
     }
 
     private void onMouseClick(MouseEvent event){

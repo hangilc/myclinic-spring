@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.disease;
+package jp.chang.myclinic.practice.javafx.disease.add;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

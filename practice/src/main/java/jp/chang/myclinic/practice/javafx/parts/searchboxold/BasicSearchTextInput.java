@@ -1,6 +1,5 @@
-package jp.chang.myclinic.practice.javafx.parts.searchbox;
+package jp.chang.myclinic.practice.javafx.parts.searchboxold;
 
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -24,10 +23,6 @@ public class BasicSearchTextInput extends HBox implements SearchTextInput {
         );
     }
 
-    public void extend(Node... nodes){
-        getChildren().addAll(nodes);
-    }
-
     private void doSearch(){
         String text = textField.getText();
         if( !text.isEmpty() ){
@@ -37,7 +32,6 @@ public class BasicSearchTextInput extends HBox implements SearchTextInput {
 
     @Override
     public void setOnSearchCallback(Consumer<String> cb) {
-        this.onSearchCallback = cb;
-    }
 
+    }
 }

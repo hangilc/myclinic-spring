@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.disease;
+package jp.chang.myclinic.practice.javafx.disease.add;
 
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import org.slf4j.Logger;

@@ -7,6 +7,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.disease.Add;
 import jp.chang.myclinic.practice.javafx.disease.Current;
@@ -51,7 +52,10 @@ public class DiseasesPane extends VBox {
     }
 
     private void showAdd(){
-        setWorkarea(new Add());
+        PatientDTO currentPatient = PracticeEnv.INSTANCE.getCurrentPatient();
+        if( currentPatient != null ) {
+            setWorkarea(new Add(currentPatient.patientId));
+        }
     }
 
     private Node createControls(){

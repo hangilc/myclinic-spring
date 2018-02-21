@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.disease;
+package jp.chang.myclinic.practice.javafx.disease.add;
 
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -41,8 +41,21 @@ public class DiseaseInput extends VBox {
         updateName();
     }
 
+    public ByoumeiMasterDTO getByoumei(){
+        return byoumeiMaster;
+    }
+
+    public List<ShuushokugoMasterDTO> getShuushokugoList(){
+        return adjList;
+    }
+
     public void addShuushokugo(ShuushokugoMasterDTO shuushokugoMaster){
         this.adjList.add(shuushokugoMaster);
+        updateName();
+    }
+
+    public void clearShuushokugo() {
+        adjList.clear();
         updateName();
     }
 
@@ -58,5 +71,4 @@ public class DiseaseInput extends VBox {
         String name = DiseaseUtil.getFullName(byoumeiMaster, adjList);
         nameText.setText(name);
     }
-
 }

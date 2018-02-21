@@ -1,10 +1,9 @@
 package jp.chang.myclinic.practice.javafx.parts.searchbox;
 
+import java.util.List;
 import java.util.function.Consumer;
 
-public interface SearchResult<M> {
-
-    void search(String text);
+public interface SearchResultList<M> {
+    void setResult(List<M> result);
     void setOnSelectCallback(Consumer<M> cb);
-
 }

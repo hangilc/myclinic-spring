@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.disease;
+package jp.chang.myclinic.practice.javafx.disease.add;
 
 public interface DiseaseSearchResultModel {
     String rep();

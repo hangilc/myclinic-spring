@@ -84,4 +84,9 @@ public class PracticeAPI {
                 });
     }
 
+    public static CompletableFuture<ShuushokugoMasterDTO> findDiseaseSusp(){
+        return Service.api.findShuushokugoMasterByName("の疑い");
+
+    }
+
 }
