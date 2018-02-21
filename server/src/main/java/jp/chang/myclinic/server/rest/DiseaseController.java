@@ -27,6 +27,11 @@ class DiseaseController {
         return dbGateway.listCurrentDiseaseFull(patientId);
     }
 
+    @RequestMapping(value="/list-disease-full", method=RequestMethod.GET)
+    public List<DiseaseFullDTO> listDiseaseFull(@RequestParam("patient-id") int patientId){
+        return dbGateway.listDiseaseFull(patientId);
+    }
+
     @RequestMapping(value="/count-page-of-disease-by-patient", method=RequestMethod.GET)
     public int countPageOfDiseaseByPatient(@RequestParam("patient-id") int patientId,
                                            @RequestParam("items-per-page") int itemsPerPage){

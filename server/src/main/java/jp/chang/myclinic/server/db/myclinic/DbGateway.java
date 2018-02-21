@@ -1239,6 +1239,17 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
+    public List<DiseaseFullDTO> listDiseaseFull(int patientId){
+        return diseaseRepository.findAllWithMaster(patientId, new Sort("diseaseId")).stream()
+                .map(this::resultToDiseaseFullDTO)
+                .peek(diseaseFullDTO -> diseaseFullDTO.adjList =
+                        diseaseAdjRepository.findByDiseaseIdWithMaster(diseaseFullDTO.disease.diseaseId, new Sort("diseaseAdjId"))
+                                .stream()
+                                .map(this::resultToDiseaseAdjFullDTO)
+                                .collect(Collectors.toList()))
+                .collect(Collectors.toList());
+    }
+
     public long countDiseaseByPatient(int patientId){
         return diseaseRepository.countByPatientId(patientId);
     }

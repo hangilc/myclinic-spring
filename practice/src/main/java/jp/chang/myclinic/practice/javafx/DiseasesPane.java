@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -8,9 +9,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.disease.Add;
 import jp.chang.myclinic.practice.javafx.disease.Current;
 import jp.chang.myclinic.practice.javafx.disease.End;
+import jp.chang.myclinic.practice.javafx.disease.Select;
 import jp.chang.myclinic.practice.javafx.events.CurrentDiseasesChangedEvent;
 import jp.chang.myclinic.practice.javafx.events.DiseaseEnteredEvent;
 
@@ -70,6 +73,15 @@ public class DiseasesPane extends VBox {
         setWorkarea(new End(currentDiseases, patientId));
     }
 
+    private void showEdit(){
+        assert patientId != 0;
+        Service.api.listDiseaseFull(patientId)
+                .thenAccept(list -> Platform.runLater(() ->{
+                    setWorkarea(new Select(list));
+                }))
+                .exceptionally(HandlerFX::exceptionally);
+    }
+
     private Node createControls(){
         HBox hbox = new HBox(4);
         Hyperlink listLink = new Hyperlink("現行");
@@ -79,6 +91,7 @@ public class DiseasesPane extends VBox {
         listLink.setOnAction(evt -> showCurrent());
         addLink.setOnAction(evt -> showAdd());
         endLink.setOnAction(evt -> showEnd());
+        editLink.setOnAction(evt -> showEdit());
         hbox.getChildren().addAll(listLink, addLink, endLink, editLink);
         return hbox;
     }
