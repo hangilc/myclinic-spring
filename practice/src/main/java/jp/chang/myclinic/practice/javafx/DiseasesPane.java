@@ -73,13 +73,19 @@ public class DiseasesPane extends VBox {
         setWorkarea(new End(currentDiseases, patientId));
     }
 
-    private void showEdit(){
+    private void showSelect(){
         assert patientId != 0;
         Service.api.listDiseaseFull(patientId)
                 .thenAccept(list -> Platform.runLater(() ->{
-                    setWorkarea(new Select(list));
+                    Select selector = new Select(list);
+                    selector.setOnSelectCallback(this::showEdit);
+                    setWorkarea(selector);
                 }))
                 .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private void showEdit(DiseaseFullDTO disease){
+        System.out.println("showEdit is not implemented");
     }
 
     private Node createControls(){
@@ -91,7 +97,7 @@ public class DiseasesPane extends VBox {
         listLink.setOnAction(evt -> showCurrent());
         addLink.setOnAction(evt -> showAdd());
         endLink.setOnAction(evt -> showEnd());
-        editLink.setOnAction(evt -> showEdit());
+        editLink.setOnAction(evt -> showSelect());
         hbox.getChildren().addAll(listLink, addLink, endLink, editLink);
         return hbox;
     }

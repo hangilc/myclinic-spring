@@ -96,6 +96,10 @@ public class DateTimeUtil {
 		return LocalDate.ofEpochDay(JapaneseDate.of(era, nen, month, day).toEpochDay());
 	}
 
+	public static boolean isSqlDateUnspecified(String sqldate){
+		return sqldate == null || "0000-00-00".equals(sqldate);
+	}
+
 	public static int calcAge(LocalDate birthday, LocalDate at){
 		return (int)birthday.until(at, ChronoUnit.YEARS);
 	}
