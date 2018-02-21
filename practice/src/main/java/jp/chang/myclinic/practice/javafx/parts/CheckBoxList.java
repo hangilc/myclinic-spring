@@ -32,6 +32,7 @@ public class CheckBoxList<T> extends VBox {
         List<CheckBoxWithData<T>> checks = dataList.stream()
                 .map(data -> {
                     CheckBoxWithData<T> c = new CheckBoxWithData<T>(labelMaker.apply(data), data);
+                    c.selectedProperty().addListener((obs, oldValue, newValue) -> onChange(c));
                     checkBoxes.add(c);
                     return c;
                 })
@@ -46,6 +47,10 @@ public class CheckBoxList<T> extends VBox {
     public List<T> getSelected(){
         return checkBoxes.stream().filter(CheckBox::isSelected).map(CheckBoxWithData::getData)
                 .collect(Collectors.toList());
+    }
+
+    protected void onChange(CheckBoxWithData<T> check){
+
     }
 
 }

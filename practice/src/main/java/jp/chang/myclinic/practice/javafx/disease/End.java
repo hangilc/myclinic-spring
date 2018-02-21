@@ -9,12 +9,16 @@ import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.practice.javafx.disease.end.DateControl;
 import jp.chang.myclinic.practice.javafx.disease.end.DiseaseList;
+import jp.chang.myclinic.practice.javafx.parts.CheckBoxWithData;
 import jp.chang.myclinic.practice.javafx.parts.dateinput.DateInput;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
+import jp.chang.myclinic.practice.lib.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public class End extends VBox {
 
@@ -25,7 +29,12 @@ public class End extends VBox {
 
     public End(List<DiseaseFullDTO> diseases) {
         super(4);
-        diseaseList = new DiseaseList(diseases);
+        diseaseList = new DiseaseList(diseases){
+            @Override
+            protected void onChange(CheckBoxWithData<DiseaseFullDTO> check) {
+                doSelectionChange(check);
+            }
+        };
         dateInput = new DateInput();
         dateInput.setGengou(Gengou.Current);
         DateControl dateControl = new DateControl();
@@ -47,6 +56,33 @@ public class End extends VBox {
         reasonGroup.setValue(DiseaseEndReason.Cured);
         hbox.getChildren().addAll(reasonGroup.getButtons());
         return hbox;
+    }
+
+    private void doSelectionChange(CheckBoxWithData<DiseaseFullDTO> check){
+        if( check.isSelected() ){
+            LocalDate startDate = LocalDate.parse(check.getData().disease.startDate);
+            if( dateInput.isEmpty() ){
+                dateInput.setValue(startDate);
+            } else {
+                Result<LocalDate, List<String>> currentResult = dateInput.getValue();
+                if( currentResult.hasValue() ){
+                    if( currentResult.getValue().compareTo(startDate) < 0 ){
+                        dateInput.setValue(startDate);
+                    }
+                } else {
+                    dateInput.setValue(startDate);
+                }
+            }
+        } else {
+            Optional<String> lastDate = diseaseList.getSelected().stream()
+                    .map(d -> d.disease.startDate).max(String::compareTo);
+            if( lastDate.isPresent() ){
+                LocalDate endDate = LocalDate.parse(lastDate.get());
+                dateInput.setValue(endDate);
+            } else {
+                dateInput.clear();
+            }
+        }
     }
 
 }
