@@ -16,15 +16,21 @@ public class DiseaseSearchTextInput extends ExtendedSearchTextInput {
     private static Logger logger = LoggerFactory.getLogger(DiseaseSearchTextInput.class);
 
     private RadioButtonGroup<DiseaseSearcher> modeGroup = new RadioButtonGroup<>();
+    private Runnable onExampleCallback = () -> {};
 
     public DiseaseSearchTextInput() {
         Hyperlink exampleLink = new Hyperlink("例");
+        exampleLink.setOnAction(evt -> onExampleCallback.run());
         extendBasic(exampleLink);
         addRow(createSwitch());
     }
 
     public CompletableFuture<List<DiseaseSearchResultModel>> search(String text, String at){
         return modeGroup.getValue().search(text, at);
+    }
+
+    public void setOnExampleCallback(Runnable onExampleCallback) {
+        this.onExampleCallback = onExampleCallback;
     }
 
     private Node createSwitch(){

@@ -10,10 +10,7 @@ import jp.chang.myclinic.dto.DiseaseNewDTO;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
-import jp.chang.myclinic.practice.javafx.disease.add.CommandBox;
-import jp.chang.myclinic.practice.javafx.disease.add.DiseaseInput;
-import jp.chang.myclinic.practice.javafx.disease.add.DiseaseSearchResultModel;
-import jp.chang.myclinic.practice.javafx.disease.add.DiseaseSearchTextInput;
+import jp.chang.myclinic.practice.javafx.disease.add.*;
 import jp.chang.myclinic.practice.javafx.events.DiseaseEnteredEvent;
 import jp.chang.myclinic.practice.javafx.parts.searchbox.BasicSearchResultList;
 import jp.chang.myclinic.practice.lib.PracticeAPI;
@@ -21,6 +18,7 @@ import jp.chang.myclinic.practice.lib.Result;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Add extends VBox {
@@ -29,6 +27,7 @@ public class Add extends VBox {
     private DiseaseSearchTextInput searchTextInput;
     private BasicSearchResultList<DiseaseSearchResultModel> resultList;
     private int patientId;
+    private List<DiseaseSearchResultModel> examples;
 
     public Add(int patientId){
         super(4);
@@ -47,6 +46,7 @@ public class Add extends VBox {
                 GuiUtil.alertError("開始日の設定が不適切です。");
             }
         });
+        searchTextInput.setOnExampleCallback(this::doExample);
         resultList.setOnSelectCallback(model -> model.applyTo(diseaseInput));
         CommandBox commandBox = new CommandBox();
         commandBox.setOnEnterCallback(this::doEnter);
@@ -58,6 +58,7 @@ public class Add extends VBox {
                 searchTextInput,
                 resultList
         );
+        doExample();
     }
 
     private void doEnter(){
@@ -104,6 +105,23 @@ public class Add extends VBox {
 
     private void doDeleteAdj(){
         diseaseInput.clearShuushokugo();
+    }
+
+    private void doExample(){
+        if( examples != null ){
+            resultList.setResult(examples);
+        } else {
+            Supplier<Result<LocalDate, List<String>>> dateSupplier = () -> diseaseInput.getStartDate();
+            Service.api.listDiseaseExample()
+                    .thenAccept(examples -> {
+                        List<DiseaseSearchResultModel> models = examples.stream()
+                                .map(ex -> new ExampleSearchResult(ex, dateSupplier))
+                                .collect(Collectors.toList());
+                        Add.this.examples = models;
+                        resultList.setResult(models);
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
 
 }
