@@ -11,6 +11,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.disease.Add;
 import jp.chang.myclinic.practice.javafx.disease.Current;
+import jp.chang.myclinic.practice.javafx.events.DiseaseEnteredEvent;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +39,7 @@ public class DiseasesPane extends VBox {
             currentDiseases = newValue;
             showCurrent();
         });
+        addEventHandler(DiseaseEnteredEvent.eventType, this::onDiseaseEntered);
     }
 
     private Node createTitle() {
@@ -72,6 +74,11 @@ public class DiseasesPane extends VBox {
 
     private void setWorkarea(Node content){
         workarea.getChildren().setAll(content);
+    }
+
+    private void onDiseaseEntered(DiseaseEnteredEvent event){
+        DiseaseFullDTO entered = event.getDisease();
+        currentDiseases.add(entered);
     }
 
 }

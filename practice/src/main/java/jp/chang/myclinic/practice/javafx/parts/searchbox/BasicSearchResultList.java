@@ -5,6 +5,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -34,6 +35,10 @@ public class BasicSearchResultList<M> extends ListView<M> implements SearchResul
     @Override
     public void setOnSelectCallback(Consumer<M> cb) {
         this.onSelectCallback = cb;
+    }
+
+    public void clear(){
+        setResult(Collections.emptyList());
     }
 
     public void setConverter(Function<M, String> converter){

@@ -26,6 +26,10 @@ public class ExtendedSearchTextInput extends VBox implements SearchTextInput {
         getChildren().add(node);
     }
 
+    public void clear(){
+        basicInput.clear();
+    }
+
     @Override
     public void setOnSearchCallback(Consumer<String> cb) {
         basicInput.setOnSearchCallback(cb);

@@ -28,6 +28,10 @@ public class BasicSearchTextInput extends HBox implements SearchTextInput {
         getChildren().addAll(nodes);
     }
 
+    public void clear(){
+        textField.clear();
+    }
+
     private void doSearch(){
         String text = textField.getText();
         if( !text.isEmpty() ){
