@@ -15,6 +15,7 @@ import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
 import jp.chang.myclinic.practice.javafx.parts.dateinput.DateInput;
 import jp.chang.myclinic.practice.lib.Result;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.DiseaseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,7 @@ public class Form extends VBox {
         nameText = new Text("");
         startDateInput = new DateInput();
         endDateInput = new DateInput();
+        endDateInput.setAllowNull(true);
         getChildren().addAll(
                 new TextFlow(new Label("名称："), nameText),
                 startDateInput,
@@ -65,8 +67,24 @@ public class Form extends VBox {
         return reasonChoice;
     }
 
+    public int getShoubyoumeicode(){
+        return byoumeiMaster.shoubyoumeicode;
+    }
+
+    public List<ShuushokugoMasterDTO> getShuushokugoMasters(){
+        return adjList;
+    }
+
     public Result<LocalDate, List<String>> getStartDate(){
         return startDateInput.getValue();
+    }
+
+    public Result<LocalDate, List<String>> getEndDate(){
+        return endDateInput.getValue();
+    }
+
+    public DiseaseEndReason getEndReason(){
+        return reasonChoice.getValue();
     }
 
     private void setDisease(DiseaseFullDTO disease){
@@ -81,6 +99,26 @@ public class Form extends VBox {
             endDateInput.setValue(DateTimeUtil.parseSqlDate(disease.disease.endDate));
         }
         reasonChoice.setValue(DiseaseEndReason.fromCode(disease.disease.endReason));
+        updateName();
+    }
+
+    private void updateName(){
+        nameText.setText(DiseaseUtil.getFullName(byoumeiMaster, adjList));
+    }
+
+    public void setByoumeiMaster(ByoumeiMasterDTO master){
+        this.byoumeiMaster = master;
+        updateName();
+    }
+
+    public void addShuushokugoMaster(ShuushokugoMasterDTO master){
+        adjList.add(master);
+        updateName();
+    }
+
+    public void deleteShuushokugoMaster(){
+        adjList.clear();
+        updateName();
     }
 
 }

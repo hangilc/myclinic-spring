@@ -84,6 +84,10 @@ public class DateInput extends HBox implements DateInputInterface {
         return allowNull;
     }
 
+    public void setAllowNull(boolean value){
+        allowNull = value;
+    }
+
     public void clear(){
         nenField.clear();
         monthField.clear();
