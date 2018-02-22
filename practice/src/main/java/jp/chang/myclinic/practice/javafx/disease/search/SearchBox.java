@@ -31,6 +31,7 @@ public class SearchBox extends VBox {
         this.dateSupplier = dateSupplier;
         this.textInput = new DiseaseSearchTextInput();
         resultList = new SelectableList<>(DiseaseSearchResultModel::rep);
+        resultList.getStyleClass().add("search-result");
         resultList.setOnSelectCallback(m -> m.onSelect(this));
         textInput.setOnSearchCallback(text -> {
             Result<LocalDate, List<String>> resultDate = dateSupplier.get();
