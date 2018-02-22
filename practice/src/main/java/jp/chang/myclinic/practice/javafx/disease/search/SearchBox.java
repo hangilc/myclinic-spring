@@ -31,6 +31,7 @@ public class SearchBox extends VBox {
         this.dateSupplier = dateSupplier;
         this.textInput = new DiseaseSearchTextInput();
         resultList = new SelectableList<>(DiseaseSearchResultModel::rep);
+        resultList.setOnSelectCallback(m -> m.onSelect(this));
         textInput.setOnSearchCallback(text -> {
             Result<LocalDate, List<String>> resultDate = dateSupplier.get();
             if( resultDate.hasValue() ){
@@ -45,6 +46,15 @@ public class SearchBox extends VBox {
                 textInput,
                 resultList
         );
+    }
+
+    public void clear(){
+        textInput.clear();
+        resultList.clear();
+    }
+
+    public void setList(List<DiseaseSearchResultModel> list){
+        resultList.setList(list);
     }
 
     void triggerByoumeiSelect(ByoumeiMasterDTO master){
