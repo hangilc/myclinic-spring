@@ -8,9 +8,6 @@ import jp.chang.myclinic.practice.lib.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 public class DiseaseSearchTextInput extends ExtendedSearchTextInput {
 
     private static Logger logger = LoggerFactory.getLogger(DiseaseSearchTextInput.class);
@@ -25,8 +22,8 @@ public class DiseaseSearchTextInput extends ExtendedSearchTextInput {
         addRow(createSwitch());
     }
 
-    public CompletableFuture<List<DiseaseSearchResultModel>> search(String text, String at){
-        return modeGroup.getValue().search(text, at);
+    public DiseaseSearcher getSearcher(){
+        return modeGroup.getValue();
     }
 
     public void setOnExampleCallback(Runnable onExampleCallback) {
@@ -41,5 +38,6 @@ public class DiseaseSearchTextInput extends ExtendedSearchTextInput {
         hbox.getChildren().addAll(modeGroup.getButtons());
         return hbox;
     }
+
 
 }

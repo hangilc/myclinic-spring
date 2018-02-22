@@ -1,7 +1,6 @@
 package jp.chang.myclinic.practice.javafx.disease.search;
 
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
-import jp.chang.myclinic.practice.javafx.disease.add.DiseaseInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +21,7 @@ public class ShuushokugoSearchResult implements DiseaseSearchResultModel {
     }
 
     @Override
-    public void applyTo(DiseaseInput diseaseInput) {
-        diseaseInput.addShuushokugo(master);
+    public void onSelect(SearchBox searchBox) {
+        searchBox.triggerShuushokugoSelect(master);
     }
 }

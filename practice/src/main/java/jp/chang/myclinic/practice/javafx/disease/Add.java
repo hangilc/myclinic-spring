@@ -13,6 +13,7 @@ import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.disease.add.*;
 import jp.chang.myclinic.practice.javafx.disease.search.DiseaseSearchResultModel;
 import jp.chang.myclinic.practice.javafx.disease.search.DiseaseSearchTextInput;
+import jp.chang.myclinic.practice.javafx.disease.search.ExampleSearchResult;
 import jp.chang.myclinic.practice.javafx.events.DiseaseEnteredEvent;
 import jp.chang.myclinic.practice.javafx.parts.searchbox.BasicSearchResultList;
 import jp.chang.myclinic.practice.lib.PracticeAPI;
