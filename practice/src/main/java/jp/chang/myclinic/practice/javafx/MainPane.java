@@ -30,10 +30,12 @@ public class MainPane extends BorderPane {
         {
             Menu selectMenu = new Menu("患者選択");
             MenuItem selectVisitMenu = new MenuItem("受付患者選択");
+            MenuItem searchMenuItem = new MenuItem("患者検索");
             MenuItem recentVisitsItem = new MenuItem("最近の診察");
             selectVisitMenu.setOnAction(event -> doSelectVisit());
+            searchMenuItem.setOnAction(event -> doSearchPatient());
             recentVisitsItem.setOnAction(event -> doRecentVisits());
-            selectMenu.getItems().addAll(selectVisitMenu, recentVisitsItem);
+            selectMenu.getItems().addAll(selectVisitMenu, searchMenuItem, recentVisitsItem);
             menuBar.getMenus().add(selectMenu);
         }
         return menuBar;
@@ -114,6 +116,10 @@ public class MainPane extends BorderPane {
             SelectFromWqueueDialog dialog = new SelectFromWqueueDialog(list);
             dialog.show();
         });
+    }
+
+    private void doSearchPatient(){
+
     }
 
     private void doRecentVisits(){
