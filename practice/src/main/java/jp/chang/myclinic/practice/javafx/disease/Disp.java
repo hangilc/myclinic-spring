@@ -15,6 +15,7 @@ class Disp extends TextFlow {
                 new Text(" "),
                 makeStartAtLabel(disease)
         );
+        setOnMouseClicked(evt -> onMouseClick(disease));
     }
 
     private Node makeNameLabel(DiseaseFullDTO disease){
@@ -36,4 +37,7 @@ class Disp extends TextFlow {
         return DateTimeUtil.sqlDateToKanji(diseaseFull.disease.startDate, DateTimeUtil.kanjiFormatter5);
     }
 
+    protected void onMouseClick(DiseaseFullDTO disease){
+
+    }
 }

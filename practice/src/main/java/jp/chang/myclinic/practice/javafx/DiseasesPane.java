@@ -57,7 +57,13 @@ public class DiseasesPane extends VBox {
     }
 
     private void showCurrent(){
-        setWorkarea(new Current(currentDiseases));
+        Current current = new Current(currentDiseases){
+            @Override
+            protected void onMouseClick(DiseaseFullDTO disease) {
+                showEdit(disease);
+            }
+        };
+        setWorkarea(current);
     }
 
     private void showAdd(){
