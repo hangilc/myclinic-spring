@@ -11,6 +11,7 @@ import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.disease.edit.Form;
 import jp.chang.myclinic.practice.javafx.disease.search.SearchBox;
+import jp.chang.myclinic.practice.javafx.events.DiseaseUpdatedEvent;
 import jp.chang.myclinic.practice.lib.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,8 +92,12 @@ public class Edit extends VBox {
         modify.shuushokugocodes = form.getShuushokugoMasters().stream()
                 .map(m -> m.shuushokugocode).collect(Collectors.toList());
         Service.api.modifyDisease(modify)
-                .thenAccept(entered -> {})
+                .thenAccept(result -> onComplete())
                 .exceptionally(HandlerFX::exceptionally);
+    }
+
+    protected void onComplete(){
+
     }
 
 }

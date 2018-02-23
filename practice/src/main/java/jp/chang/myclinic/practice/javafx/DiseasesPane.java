@@ -82,7 +82,18 @@ public class DiseasesPane extends VBox {
     }
 
     private void showEdit(DiseaseFullDTO disease){
-        Edit edit = new Edit(disease);
+        Edit edit = new Edit(disease){
+            @Override
+            protected void onComplete() {
+                Service.api.listDiseaseFull(patientId)
+                        .thenAccept(list -> Platform.runLater(() ->{
+                            DiseasesPane.this.currentDiseases = list;
+                            showCurrent();
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
+
+            }
+        };
         setWorkarea(edit);
     }
 
