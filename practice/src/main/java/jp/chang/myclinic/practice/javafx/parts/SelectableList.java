@@ -52,18 +52,4 @@ public class SelectableList<T> extends ListView<T> {
         }
     }
 
-    public void updateItem(Function<T,Boolean> pred, T newValue){
-        int n = getItems().size();
-        int index = -1;
-        for(int i=0;i<n;i++){
-            T item = getItems().get(i);
-            if( pred.apply(item) ){
-                index = i;
-                break;
-            }
-        }
-        if( index >= 0 ){
-            getItems().set(index, newValue);
-        }
-    }
 }

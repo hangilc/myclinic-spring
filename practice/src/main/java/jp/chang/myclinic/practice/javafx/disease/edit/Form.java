@@ -33,6 +33,7 @@ public class Form extends VBox {
     private ChoiceBox<DiseaseEndReason> reasonChoice;
     private ByoumeiMasterDTO byoumeiMaster;
     private List<ShuushokugoMasterDTO> adjList;
+    private LocalDate endDateSave;
 
     public Form(DiseaseFullDTO disease) {
         super(4);
@@ -48,6 +49,7 @@ public class Form extends VBox {
                 createReasonChoice()
         );
         setDisease(disease);
+        reasonChoice.valueProperty().addListener((obs, oldValue, newValue) -> onReasonChange(newValue));
     }
 
     private Node createReasonChoice(){
@@ -119,6 +121,20 @@ public class Form extends VBox {
     public void deleteShuushokugoMaster(){
         adjList.clear();
         updateName();
+    }
+
+    private void onReasonChange(DiseaseEndReason newReason){
+        if( newReason == DiseaseEndReason.NotEnded ){
+            endDateInput.getValue()
+                    .ifPresent(currentDate -> {
+                        endDateSave = currentDate;
+                        endDateInput.clear();
+                    });
+        } else {
+            if( endDateInput.isEmpty() && endDateSave != null ){
+                endDateInput.setValue(endDateSave);
+            }
+        }
     }
 
 }

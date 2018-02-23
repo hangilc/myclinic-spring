@@ -11,7 +11,6 @@ import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.disease.edit.Form;
 import jp.chang.myclinic.practice.javafx.disease.search.SearchBox;
-import jp.chang.myclinic.practice.javafx.events.DiseaseUpdatedEvent;
 import jp.chang.myclinic.practice.lib.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
