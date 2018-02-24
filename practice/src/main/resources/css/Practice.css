@@ -103,3 +103,7 @@
 .date-input .nen, .date-input .month, .date-input .day {
     -fx-pref-width: 3em;
 }
+
+.search-patient-dialog {
+    -fx-pref-height: 20em;
+}

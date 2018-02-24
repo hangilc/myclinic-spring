@@ -3,7 +3,7 @@ package jp.chang.myclinic.practice.javafx.parts;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.MouseButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +15,6 @@ import java.util.function.Function;
 public class SelectableList<T> extends ListView<T> {
 
     private static Logger logger = LoggerFactory.getLogger(SelectableList.class);
-    private Consumer<T> onSelectCallback = m -> {};
 
     public SelectableList(Function<T, String> converter) {
         setCellFactory(listView -> new ListCell<T>() {
@@ -25,7 +24,6 @@ public class SelectableList<T> extends ListView<T> {
                 setText(empty ? "" : converter.apply(item));
             }
         });
-        setOnMouseClicked(this::onMouseClick);
     }
 
     public SelectableList(Function<T, String> converter, List<T> dataList) {
@@ -37,19 +35,34 @@ public class SelectableList<T> extends ListView<T> {
         itemsProperty().setValue(FXCollections.observableArrayList(result));
     }
 
-    public void setOnSelectCallback(Consumer<T> cb) {
-        this.onSelectCallback = cb;
-    }
-
     public void clear() {
         setList(Collections.emptyList());
     }
 
-    private void onMouseClick(MouseEvent event) {
+    public void setOnSelectCallback(Consumer<T> cb) {
+        setupClickEvent(cb, 1);
+    }
+
+    public void setOnDoubleClickSelectCallback(Consumer<T> cb){
+        setupClickEvent(cb, 2);
+    }
+
+    private void setupClickEvent(Consumer<T> cb, int clickCount){
+        setOnMouseClicked(event -> {
+            if( event.getButton().equals(MouseButton.PRIMARY) ){
+                if( event.getClickCount() == clickCount ){
+                    doSelect(cb);
+                }
+            }
+        });
+    }
+
+    private void doSelect(Consumer<T> cb){
         T selected = getSelectionModel().getSelectedItem();
         if (selected != null) {
-            onSelectCallback.accept(selected);
+            cb.accept(selected);
         }
     }
+
 
 }

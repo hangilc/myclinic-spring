@@ -43,6 +43,10 @@ public class PracticeLib {
         startPatient(0, patient, cb);
     }
 
+    public static void startPatient(PatientDTO patient){
+        startPatient(patient, () -> {});
+    }
+
     public static void gotoFirstRecordPage() {
         PracticeEnv env = PracticeEnv.INSTANCE;
         PatientDTO patient = env.getCurrentPatient();

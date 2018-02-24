@@ -119,7 +119,8 @@ public class MainPane extends BorderPane {
     }
 
     private void doSearchPatient(){
-
+        SearchPatientDialog dialog = new SearchPatientDialog();
+        dialog.show();
     }
 
     private void doRecentVisits(){
