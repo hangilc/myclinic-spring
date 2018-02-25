@@ -28,7 +28,7 @@ public class PracticeEnv {
     private ObjectProperty<PatientDTO> currentPatient = new SimpleObjectProperty<>();
     private IntegerProperty currentVisitId = new SimpleIntegerProperty(0);
     private IntegerProperty tempVisitId = new SimpleIntegerProperty(0);
-    private int recordsPerPage = 10;
+    private static final int recordsPerPage = 10;
     private IntegerProperty totalRecordPages = new SimpleIntegerProperty(0);
     private IntegerProperty currentRecordPage = new SimpleIntegerProperty(0);
     private ObjectProperty<List<VisitFull2DTO>> pageVisits = new SimpleObjectProperty<>(Collections.emptyList());

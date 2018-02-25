@@ -107,7 +107,7 @@ public class MainPane extends BorderPane {
         if( visitId > 0 ) {
             Service.api.getMeisai(visitId)
                     .thenAccept(meisai -> Platform.runLater(() ->{
-                        CashierDialog dialog = new CashierDialog(meisai);
+                        CashierDialog dialog = new CashierDialog(meisai, visitId);
                         dialog.showAndWait();
                     }))
                     .exceptionally(HandlerFX::exceptionally);

@@ -8,37 +8,39 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.MeisaiDTO;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.parts.MeisaiDisp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.practice.javafx.parts.inplaceediting.InPlaceEditable;
+import jp.chang.myclinic.practice.lib.PracticeLib;
 
-public class CashierDialog extends Stage {
+import java.util.function.Consumer;
 
-    private static Logger logger = LoggerFactory.getLogger(CashierDialog.class);
+class CashierDialog extends Stage {
 
-    public CashierDialog(MeisaiDTO meisai) {
+    //private static Logger logger = LoggerFactory.getLogger(CashierDialog.class);
+    private int visitId;
+    private int chargeValue;
+    private MeisaiDTO meisai;
+
+    CashierDialog(MeisaiDTO meisai, int visitId) {
+        this.meisai = meisai;
+        this.visitId = visitId;
+        this.chargeValue = meisai.charge;
         VBox root = new VBox(4);
         root.getStylesheets().addAll(
                 "css/Practice.css"
         );
         root.getStyleClass().add("cashier-dialog");
         root.getChildren().addAll(
-                createDisp(meisai),
+                new MeisaiDisp(meisai),
                 createTotalTen(meisai.totalTen),
-                createCharge(meisai),
+                createCharge(),
                 createCommands()
         );
         setScene(new Scene(root));
-    }
-
-    private Node createDisp(MeisaiDTO meisai) {
-        MeisaiDisp disp = new MeisaiDisp(meisai);
-        return disp;
     }
 
     private Node createTotalTen(int totalTen) {
@@ -50,58 +52,95 @@ public class CashierDialog extends Stage {
         return hbox;
     }
 
-    private Node createCharge(MeisaiDTO meisai) {
-        StackPane wrapper = new StackPane();
-        wrapper.getChildren().add(createChargeDisp(wrapper, meisai.charge, meisai));
-        return wrapper;
+    private Node createCharge() {
+        ChargeDisp disp = new ChargeDisp();
+        return new InPlaceEditable<>(disp);
     }
 
-    private Node createChargeDisp(Pane wrapper, int currentCharge, MeisaiDTO meisai) {
-        HBox hbox = new HBox(4);
-        hbox.setAlignment(Pos.CENTER_LEFT);
-        Label label = new Label(String.format("請求額 %,d 円 (負担割 %d 割)", currentCharge, meisai.futanWari));
-        Hyperlink modifyLink = new Hyperlink("変更");
-        hbox.getChildren().addAll(
-                label,
-                modifyLink
-        );
-        modifyLink.setOnAction(evt -> {
-            Node form = createEditForm(
-                    () -> {
-                    },
-                    () -> {
-                        wrapper.getChildren().setAll(hbox);
-                    }
+    private class ChargeDisp extends HBox implements InPlaceEditable.Editable<Integer> {
+        private Consumer<InPlaceEditable.Editor<Integer>> onEditCallback;
+
+        ChargeDisp(){
+            setAlignment(Pos.CENTER_LEFT);
+            Label label = new Label(String.format("請求額 %,d 円 (負担割 %d 割)", chargeValue, meisai.futanWari));
+            Hyperlink modifyLink = new Hyperlink("変更");
+            modifyLink.setOnAction(evt -> {
+                ChargeEditor editor = new ChargeEditor();
+                onEditCallback.accept(editor);
+            });
+            getChildren().addAll(
+                    label,
+                    modifyLink
             );
-            wrapper.getChildren().setAll(form);
-        });
-        return hbox;
+        }
+
+        @Override
+        public void setOnEditCallback(Consumer<InPlaceEditable.Editor<Integer>> onEditCallback) {
+            this.onEditCallback = onEditCallback;
+        }
+
+        @Override
+        public Node asNode() {
+            return this;
+        }
     }
 
-    private Node createEditForm(Runnable applyCallback, Runnable cancelCallback) {
-        HBox hbox = new HBox(4);
-        hbox.setAlignment(Pos.CENTER_LEFT);
-        TextField textField = new TextField("");
-        textField.getStyleClass().add("charge-input-field");
-        Hyperlink enterLink = new Hyperlink("適用");
-        Hyperlink cancelLink = new Hyperlink("キャンセル");
-        cancelLink.setOnAction(evt -> cancelCallback.run());
-        hbox.getChildren().addAll(
-                new Label("変更額 "),
-                textField,
-                new Label("円"),
-                enterLink,
-                cancelLink
-        );
-        return hbox;
+    private class ChargeEditor extends HBox implements InPlaceEditable.Editor<Integer> {
+        private Consumer<InPlaceEditable.Editable<Integer>> onEnterCallback;
+        private Runnable cancelCallback;
+
+        ChargeEditor(){
+            setAlignment(Pos.CENTER_LEFT);
+            TextField textField = new TextField("");
+            textField.getStyleClass().add("charge-input-field");
+            Hyperlink enterLink = new Hyperlink("適用");
+            Hyperlink cancelLink = new Hyperlink("キャンセル");
+            enterLink.setOnAction(evt -> {
+                try {
+                    chargeValue = Integer.parseInt(textField.getText());
+                    onEnterCallback.accept(new ChargeDisp());
+                } catch(NumberFormatException ex){
+                    GuiUtil.alertError("請求額の入慮億が不適切です。");
+                }
+            });
+            cancelLink.setOnAction(evt -> cancelCallback.run());
+            getChildren().addAll(
+                    new Label("変更額 "),
+                    textField,
+                    new Label("円"),
+                    enterLink,
+                    cancelLink
+            );
+        }
+
+        @Override
+        public void setOnEnterCallback(Consumer<InPlaceEditable.Editable<Integer>> cb) {
+            this.onEnterCallback = cb;
+        }
+
+        @Override
+        public void setOnCancelCallback(Runnable cb) {
+            this.cancelCallback = cb;
+        }
+
+        @Override
+        public Node asNode() {
+            return this;
+        }
     }
 
     private Node createCommands(){
         HBox hbox = new HBox(4);
         Button enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
+        enterButton.setOnAction(evt -> doEnter());
+        cancelButton.setOnAction(evt -> CashierDialog.this.close());
         hbox.getChildren().addAll(enterButton, cancelButton);
         return hbox;
+    }
+
+    private void doEnter(){
+        PracticeLib.endExam(visitId, chargeValue, () -> close());
     }
 
 }

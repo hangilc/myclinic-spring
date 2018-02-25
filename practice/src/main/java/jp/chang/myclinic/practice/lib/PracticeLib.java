@@ -5,9 +5,11 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -45,6 +47,26 @@ public class PracticeLib {
 
     public static void startPatient(PatientDTO patient){
         startPatient(patient, () -> {});
+    }
+
+    private static void clearCurrentPatient(){
+        PracticeEnv env = PracticeEnv.INSTANCE;
+        env.setCurrentVisitId(0);
+        env.setTempVisitId(0);
+        env.setCurrentPatient(null);
+        env.setCurrentRecordPage(0);
+        env.setTotalRecordPages(0);
+        env.setPageVisits(Collections.emptyList());
+        env.setCurrentDiseases(Collections.emptyList());
+    }
+
+    public static void endExam(int visitId, int charge, Runnable cb){
+        Service.api.endExam(visitId, charge)
+                .thenAccept(result -> Platform.runLater(() -> {
+                    clearCurrentPatient();
+                    cb.run();
+                }))
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     public static void gotoFirstRecordPage() {
@@ -186,7 +208,7 @@ public class PracticeLib {
                 .thenAccept(hoken -> Platform.runLater(() -> cb.accept(hoken)));
     }
 
-    public static CompletableFuture<Boolean> apiUpdateHoken(VisitDTO visit) {
+    private static CompletableFuture<Boolean> apiUpdateHoken(VisitDTO visit) {
         return Service.api.updateHoken(visit)
                 .whenComplete((v, ex) -> {
                     if (ex != null) {
@@ -196,7 +218,7 @@ public class PracticeLib {
                 });
     }
 
-    public static CompletableFuture<HokenDTO> apiGetHoken(int visitId) {
+    private static CompletableFuture<HokenDTO> apiGetHoken(int visitId) {
         return Service.api.getHoken(visitId)
                 .whenComplete((v, ex) -> {
                     if (ex != null) {
@@ -236,12 +258,6 @@ public class PracticeLib {
                 });
     }
 
-    public static void enterDrug(DrugDTO drug, Consumer<DrugFullDTO> cb) {
-        apiEnterDrug(drug)
-                .thenCompose(PracticeLib::apiGetDrugFull)
-                .thenAccept(drugFull -> Platform.runLater(() -> cb.accept(drugFull)));
-    }
-
     public static void updateDrug(DrugDTO drug, Consumer<DrugFullDTO> cb){
         PracticeService.updateDrug(drug)
                 .thenCompose(result -> PracticeService.getDrugFull(drug.drugId))
@@ -265,26 +281,5 @@ public class PracticeLib {
                     return null;
                 });
     }
-
-    public static CompletableFuture<Integer> apiEnterDrug(DrugDTO drug) {
-        return Service.api.enterDrug(drug)
-                .whenComplete((drugId, ex) -> {
-                    if (ex != null) {
-                        logger.error("Failed to enter drug.", ex);
-                        Platform.runLater(() -> GuiUtil.alertException("新規処方の入力に失敗しました。", ex));
-                    }
-                });
-    }
-
-    public static CompletableFuture<DrugFullDTO> apiGetDrugFull(int drugId) {
-        return Service.api.getDrugFull(drugId)
-                .whenComplete((drug, ex) -> {
-                    if (ex != null) {
-                        logger.error("Failed to get drug full.", ex);
-                        Platform.runLater(() -> GuiUtil.alertException("薬剤情報の取得に失敗しました。", ex));
-                    }
-                });
-    }
-
 
 }
