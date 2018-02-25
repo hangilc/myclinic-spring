@@ -1,6 +1,7 @@
 package jp.chang.myclinic.server.db.myclinic;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -17,5 +18,5 @@ public interface TextRepository extends CrudRepository<Text, Integer> {
     @Query("select text, visit from Text text, Visit visit " +
             " where visit.patientId = :patientId and text.visitId = visit.visitId " + "" +
             " and text.content like CONCAT('%', :text, '%') ")
-    List<Object[]> searchText(@Param("patientId") int patientId, @Param("text") String text, Sort sort);
+    Page<Object[]> searchText(@Param("patientId") int patientId, @Param("text") String text, Pageable pageable);
 }

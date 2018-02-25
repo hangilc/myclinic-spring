@@ -10,8 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -622,10 +622,16 @@ public class DbGateway {
         textRepository.delete(textId);
     }
 
-    public List<TextVisitDTO> searchText(int patientId, String text) {
+    public TextVisitPageDTO searchText(int patientId, String text, int page) {
+        PageRequest pageRequest = new PageRequest(page, 20, Sort.Direction.ASC, "textId");
         Sort sort = new Sort("textId");
-        return textRepository.searchText(patientId, text, sort).stream()
+        Page<Object[]> pageResult = textRepository.searchText(patientId, text, pageRequest);
+        TextVisitPageDTO result = new TextVisitPageDTO();
+        result.totalPages = pageResult.getTotalPages();
+        result.page = page;
+        result.textVisits = pageResult.getContent().stream()
                 .map(this::resultToTextVisitDTO).collect(Collectors.toList());
+        return result;
     }
 
     public List<ShinryouMasterDTO> searchShinryouMaster(String text, String at){
