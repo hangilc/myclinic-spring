@@ -20,6 +20,7 @@ public class MeisaiDisp extends GridPane {
     private int row = 0;
 
     public MeisaiDisp(MeisaiDTO meisai) {
+        getStyleClass().add("meisai-disp");
         ColumnConstraints headerColumn = new ColumnConstraints(12);
         ColumnConstraints labelColumn = new ColumnConstraints();
         labelColumn.setHgrow(Priority.ALWAYS);

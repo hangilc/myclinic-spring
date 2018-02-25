@@ -3,15 +3,12 @@ package jp.chang.myclinic.practice.javafx;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.MeisaiDTO;
-import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.parts.MeisaiDisp;
 import jp.chang.myclinic.practice.javafx.parts.inplaceediting.InPlaceEditable;
 import jp.chang.myclinic.practice.lib.PracticeLib;
@@ -35,12 +32,22 @@ class CashierDialog extends Stage {
         );
         root.getStyleClass().add("cashier-dialog");
         root.getChildren().addAll(
-                new MeisaiDisp(meisai),
+                createDisp(),
                 createTotalTen(meisai.totalTen),
                 createCharge(),
                 createCommands()
         );
         setScene(new Scene(root));
+    }
+
+    private Node createDisp(){
+        MeisaiDisp meisaiDisp = new MeisaiDisp(meisai);
+        ScrollPane sp = new ScrollPane();
+        sp.getStyleClass().add("meisai-scroll");
+        sp.setFitToWidth(true);
+        sp.setContent(meisaiDisp);
+        VBox.setVgrow(sp, Priority.ALWAYS);
+        return sp;
     }
 
     private Node createTotalTen(int totalTen) {

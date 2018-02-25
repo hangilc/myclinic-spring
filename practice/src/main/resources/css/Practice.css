@@ -121,3 +121,12 @@
 .cashier-dialog .charge-input-field {
     -fx-pref-width: 5em;
 }
+
+.cashier-dialog .meisai-disp {
+    -fx-padding: 0 4px 0 0;
+}
+
+.cashier-dialog .meisai-scroll {
+    -fx-background-color: transparent;
+    -fx-max-height: 400px;
+}

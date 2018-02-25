@@ -10,7 +10,7 @@ import jp.chang.myclinic.practice.javafx.events.*;
 
 public class RecordsPane extends VBox {
 
-    public RecordsPane(){
+    RecordsPane(){
         setFillWidth(true);
         addEventHandler(EventTypes.visitDeletedEventType, event -> {
             deleteRecord(event.getVisitId());
