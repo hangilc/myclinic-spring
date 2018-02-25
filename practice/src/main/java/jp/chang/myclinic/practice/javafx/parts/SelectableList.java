@@ -16,6 +16,8 @@ public class SelectableList<T> extends ListView<T> {
 
     private static Logger logger = LoggerFactory.getLogger(SelectableList.class);
 
+    private Consumer<T> onSingleResultCallback = t -> {};
+
     public SelectableList(Function<T, String> converter) {
         setCellFactory(listView -> new ListCell<T>() {
             @Override
@@ -32,6 +34,9 @@ public class SelectableList<T> extends ListView<T> {
     }
 
     public void setList(List<T> result) {
+        if( result.size() == 1 ){
+            onSingleResultCallback.accept(result.get(0));
+        }
         itemsProperty().setValue(FXCollections.observableArrayList(result));
     }
 
@@ -45,6 +50,10 @@ public class SelectableList<T> extends ListView<T> {
 
     public void setOnDoubleClickSelectCallback(Consumer<T> cb){
         setupClickEvent(cb, 2);
+    }
+
+    public void setOnSingleResultCallback(Consumer<T> cb){
+        this.onSingleResultCallback = cb;
     }
 
     private void setupClickEvent(Consumer<T> cb, int clickCount){

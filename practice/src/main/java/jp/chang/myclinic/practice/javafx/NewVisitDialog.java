@@ -59,9 +59,7 @@ class NewVisitDialog extends Stage {
             GuiUtil.alertError("患者が選択されていません。");
         } else {
             Service.api.startVisit(patientId)
-                    .thenAccept(visitId -> Platform.runLater(() -> {
-                        close();
-                    }))
+                    .thenAccept(visitId -> Platform.runLater(this::close))
                     .exceptionally(HandlerFX::exceptionally);
         }
     }
