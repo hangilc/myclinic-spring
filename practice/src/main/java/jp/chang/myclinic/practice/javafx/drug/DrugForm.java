@@ -14,6 +14,7 @@ public class DrugForm extends VBox {
     private DrugInput drugInput = new DrugInput();
     private HBox commandBox;
     private DrugInputConstraints constraints = DrugInputConstraints.defaultDrugInputConstraints();
+    private DrugSearch drugSearch;
 
     DrugForm(VisitDTO visit) {
         super(4);
@@ -51,8 +52,13 @@ public class DrugForm extends VBox {
         return drugInput;
     }
 
-    public void addCommand(Node node){
+    void addCommand(Node node){
         commandBox.getChildren().add(node);
+    }
+
+    public void clear(){
+        DrugFormHelper.clear(drugInput,getConstraints());
+        drugSearch.clear();
     }
 
     private Node createTitle() {
@@ -85,7 +91,7 @@ public class DrugForm extends VBox {
     }
 
     private Node createSearch(int patientId, String at) {
-        DrugSearch drugSearch = new DrugSearch(patientId, at);
+        drugSearch = new DrugSearch(patientId, at);
         drugSearch.setCallback(new DrugSearch.Callback() {
             @Override
             public void onSelect(DrugSearchResultModel searchResultModel) {

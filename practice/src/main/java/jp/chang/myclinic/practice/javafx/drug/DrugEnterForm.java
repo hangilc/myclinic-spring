@@ -50,7 +50,10 @@ class DrugEnterForm extends DrugForm {
             } else {
                 PracticeService.enterDrug(drug)
                         .thenCompose(PracticeService::getDrugFull)
-                        .thenAccept(drugFull -> Platform.runLater(() -> onEntered(drugFull)));
+                        .thenAccept(drugFull -> Platform.runLater(() -> {
+                            onEntered(drugFull);
+                            DrugEnterForm.this.clear();
+                        }));
             }
         });
     }

@@ -50,6 +50,11 @@ public class DrugSearch extends VBox {
         this.callback = callback;
     }
 
+    public void clear() {
+        searchTextInput.clear();
+        searchResult.clear();
+    }
+
     private Node createSearchInput(){
         HBox hbox = new HBox(4);
         searchTextInput = new TextField();

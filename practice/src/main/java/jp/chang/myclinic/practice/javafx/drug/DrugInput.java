@@ -197,6 +197,7 @@ class DrugInput extends GridPane implements DrugFormGetter, DrugFormSetter {
         categoryButtons.createRadioButton("屯服", DrugCategory.Tonpuku);
         categoryButtons.createRadioButton("外用", DrugCategory.Gaiyou);
         hbox.getChildren().addAll(categoryButtons.getButtons());
+        categoryButtons.setValue(DrugCategory.Naifuku);
         category = categoryButtons.valueProperty();
         category.addListener((obs, oldValue, newValue) -> adaptToCategory());
         add(hbox, 0, row, 2, 1);

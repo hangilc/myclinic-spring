@@ -19,4 +19,8 @@ public class DrugSearchResult extends ListView<DrugSearchResultModel> {
         });
     }
 
+    public void clear(){
+        getItems().clear();
+    }
+
 }
