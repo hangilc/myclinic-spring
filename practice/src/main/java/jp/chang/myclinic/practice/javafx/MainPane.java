@@ -8,6 +8,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeService;
 
@@ -85,7 +86,12 @@ public class MainPane extends BorderPane {
 
     private Node createPatientManip(){
         StackPane wrapper = new StackPane();
-        PatientManip patientManip = new PatientManip();
+        PatientManip patientManip = new PatientManip(){
+            @Override
+            protected void onCashier() {
+                doCashier();
+            }
+        };
         PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) -> {
             if( newValue != null ){
                 wrapper.getChildren().setAll(patientManip);
@@ -94,6 +100,18 @@ public class MainPane extends BorderPane {
             }
         });
         return wrapper;
+    }
+
+    private void doCashier(){
+        int visitId = PracticeEnv.INSTANCE.getCurrentVisitId();
+        if( visitId > 0 ) {
+            Service.api.getMeisai(visitId)
+                    .thenAccept(meisai -> Platform.runLater(() ->{
+                        CashierDialog dialog = new CashierDialog(meisai);
+                        dialog.showAndWait();
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
 
     private Node createRecords(){

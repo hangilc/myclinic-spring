@@ -107,3 +107,13 @@
 .search-patient-dialog {
     -fx-pref-height: 20em;
 }
+
+.cashier-dialog {
+    -fx-pref-width: 340px;
+    -fx-padding: 10px;
+}
+
+.cashier-dialog .total-ten {
+    -fx-border-color: black;
+    -fx-border-width: 1px 0px  0px  0px;
+}

@@ -12,6 +12,17 @@ public class PatientManip extends HBox {
         Button endButton = new Button("患者終了");
         Hyperlink searchTextLink = new Hyperlink("文章検索");
         Hyperlink referLink = new Hyperlink("紹介状作成");
+        cashierButton.setOnAction(evt -> onCashier());
+        endButton.setOnAction(evt -> onEndPatient());
         getChildren().addAll(cashierButton, endButton, searchTextLink, referLink);
     }
+
+    protected void onCashier(){
+
+    }
+
+    protected void onEndPatient(){
+
+    }
+
 }
