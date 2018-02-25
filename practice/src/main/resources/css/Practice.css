@@ -130,3 +130,7 @@
     -fx-background-color: transparent;
     -fx-max-height: 400px;
 }
+
+.new-visit-dialog {
+    -fx-padding: 10px;
+}

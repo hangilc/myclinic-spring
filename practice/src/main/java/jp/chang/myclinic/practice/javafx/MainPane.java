@@ -39,7 +39,19 @@ public class MainPane extends BorderPane {
             selectMenu.getItems().addAll(selectVisitMenu, searchMenuItem, recentVisitsItem);
             menuBar.getMenus().add(selectMenu);
         }
+        {
+            Menu menu = new Menu("その他");
+            MenuItem newVisitItem = new MenuItem("受付");
+            newVisitItem.setOnAction(evt -> doNewVisit());
+            menu.getItems().addAll(newVisitItem);
+            menuBar.getMenus().add(menu);
+        }
         return menuBar;
+    }
+
+    private void doNewVisit(){
+        NewVisitDialog dialog = new NewVisitDialog();
+        dialog.showAndWait();
     }
 
     private Node createCenter(){
