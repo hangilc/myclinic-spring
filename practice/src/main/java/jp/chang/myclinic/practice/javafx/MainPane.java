@@ -91,6 +91,11 @@ public class MainPane extends BorderPane {
             protected void onCashier() {
                 doCashier();
             }
+
+            @Override
+            protected void onEndPatient() {
+                doEndPatient();
+            }
         };
         PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) -> {
             if( newValue != null ){
@@ -112,6 +117,10 @@ public class MainPane extends BorderPane {
                     }))
                     .exceptionally(HandlerFX::exceptionally);
         }
+    }
+
+    private void doEndPatient(){
+        PracticeLib.endPatient();
     }
 
     private Node createRecords(){

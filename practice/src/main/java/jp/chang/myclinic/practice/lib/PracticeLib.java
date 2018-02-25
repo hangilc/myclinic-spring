@@ -18,27 +18,42 @@ public class PracticeLib {
 
     private static Logger logger = LoggerFactory.getLogger(PracticeLib.class);
 
+    private PracticeLib(){
+        throw new AssertionError();
+    }
+
     public static void startPatient(int visitId, PatientDTO patient, Runnable cb) {
-        CompletableFuture<VisitFull2PageDTO> visitsFuture = Service.api.listVisitFull2(patient.patientId, 0);
-        CompletableFuture<List<DiseaseFullDTO>> diseasesFuture = Service.api.listCurrentDiseaseFull(patient.patientId);
-        try {
-            VisitFull2PageDTO visits = visitsFuture.join();
-            List<DiseaseFullDTO> diseases = diseasesFuture.join();
-            PracticeEnv env = PracticeEnv.INSTANCE;
-            Platform.runLater(() -> {
-                env.setCurrentPatient(patient);
-                env.setCurrentVisitId(visitId);
-                env.setTempVisitId(0);
-                env.setTotalRecordPages(visits.totalPages);
-                env.setCurrentRecordPage(visits.page);
-                env.setPageVisits(visits.visits);
-                env.setCurrentDiseases(diseases);
-                cb.run();
-            });
-        } catch (Exception ex) {
-            logger.error("Failed start patient.", ex);
-            Platform.runLater(() -> GuiUtil.alertException("患者を開始できませんでした。", ex));
-        }
+        endPatient()
+                .thenCompose(result -> {
+                    if( visitId == 0 ){
+                        return CompletableFuture.completedFuture(null);
+                    } else {
+                        return Service.api.startExam(visitId);
+                    }
+                })
+                .thenAccept(result -> {
+                    CompletableFuture<VisitFull2PageDTO> visitsFuture = Service.api.listVisitFull2(patient.patientId, 0);
+                    CompletableFuture<List<DiseaseFullDTO>> diseasesFuture = Service.api.listCurrentDiseaseFull(patient.patientId);
+                    try {
+                        VisitFull2PageDTO visits = visitsFuture.join();
+                        List<DiseaseFullDTO> diseases = diseasesFuture.join();
+                        PracticeEnv env = PracticeEnv.INSTANCE;
+                        Platform.runLater(() -> {
+                            env.setCurrentPatient(patient);
+                            env.setCurrentVisitId(visitId);
+                            env.setTempVisitId(0);
+                            env.setTotalRecordPages(visits.totalPages);
+                            env.setCurrentRecordPage(visits.page);
+                            env.setPageVisits(visits.visits);
+                            env.setCurrentDiseases(diseases);
+                            cb.run();
+                        });
+                    } catch (Exception ex) {
+                        logger.error("Failed start patient.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException("患者を開始できませんでした。", ex));
+                    }
+                })
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     public static void startPatient(PatientDTO patient, Runnable cb) {
@@ -47,6 +62,22 @@ public class PracticeLib {
 
     public static void startPatient(PatientDTO patient){
         startPatient(patient, () -> {});
+    }
+
+    public static CompletableFuture<Void> endPatient(){
+        PracticeEnv env = PracticeEnv.INSTANCE;
+        if( env.getCurrentPatient() != null ){
+            int visitId = env.getCurrentVisitId();
+            if( visitId > 0 ){
+                return Service.api.suspendExam(visitId)
+                        .thenAccept(result -> Platform.runLater(PracticeLib::clearCurrentPatient));
+            } else {
+                clearCurrentPatient();
+                return CompletableFuture.completedFuture(null);
+            }
+        } else {
+            return CompletableFuture.completedFuture(null);
+        }
     }
 
     private static void clearCurrentPatient(){
