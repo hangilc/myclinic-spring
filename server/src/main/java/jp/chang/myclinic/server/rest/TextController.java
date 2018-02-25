@@ -1,10 +1,13 @@
 package jp.chang.myclinic.server.rest;
 
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.TextDTO;
+import jp.chang.myclinic.dto.TextVisitDTO;
+import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/json")
@@ -35,4 +38,9 @@ class TextController {
         return dbGateway.getText(textId);
     }
 
+
+    @RequestMapping(value="/search-text", method=RequestMethod.GET)
+    public List<TextVisitDTO> searchText(@RequestParam("patient-id") int patientId, @RequestParam("text") String text){
+        return dbGateway.searchText(patientId, text);
+    }
 }

@@ -12,7 +12,7 @@ public class BasicSearchTextInput extends HBox implements SearchTextInput {
     private Consumer<String> onSearchCallback = t -> {};
     private TextField textField = new TextField();
 
-    BasicSearchTextInput(){
+    public BasicSearchTextInput(){
         super(4);
         textField.getStyleClass().add("search-text-input");
         Button searchButton = new Button("検索");

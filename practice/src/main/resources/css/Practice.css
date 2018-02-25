@@ -134,3 +134,7 @@
 .new-visit-dialog {
     -fx-padding: 10px;
 }
+
+.search-text-dialog {
+    -fx-padding: 10px;
+}

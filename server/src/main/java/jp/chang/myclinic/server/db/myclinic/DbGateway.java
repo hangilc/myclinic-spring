@@ -622,6 +622,12 @@ public class DbGateway {
         textRepository.delete(textId);
     }
 
+    public List<TextVisitDTO> searchText(int patientId, String text) {
+        Sort sort = new Sort("textId");
+        return textRepository.searchText(patientId, text, sort).stream()
+                .map(this::resultToTextVisitDTO).collect(Collectors.toList());
+    }
+
     public List<ShinryouMasterDTO> searchShinryouMaster(String text, String at){
         return shinryouMasterRepository.search(text, at, new Sort("shinryoucode")).stream()
                 .map(mapper::toShinryouMasterDTO).collect(Collectors.toList());
@@ -1442,6 +1448,13 @@ public class DbGateway {
         DiseaseAdjFullDTO dto = new DiseaseAdjFullDTO();
         dto.diseaseAdj = mapper.toDiseaseAdjDTO((DiseaseAdj)result[0]);
         dto.master = mapper.toShuushokugoMasterDTO((ShuushokugoMaster)result[1]);
+        return dto;
+    }
+
+    private TextVisitDTO resultToTextVisitDTO(Object[] result){
+        TextVisitDTO dto = new TextVisitDTO();
+        dto.text = mapper.toTextDTO((Text)result[0]);
+        dto.visit = mapper.toVisitDTO((Visit)result[1]);
         return dto;
     }
 

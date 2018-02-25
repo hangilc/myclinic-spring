@@ -7,6 +7,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.lib.PracticeLib;
@@ -108,6 +109,11 @@ public class MainPane extends BorderPane {
             protected void onEndPatient() {
                 doEndPatient();
             }
+
+            @Override
+            protected void onSearchText() {
+                doSearchText();
+            }
         };
         PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) -> {
             if( newValue != null ){
@@ -133,6 +139,14 @@ public class MainPane extends BorderPane {
 
     private void doEndPatient(){
         PracticeLib.endPatient();
+    }
+
+    private void doSearchText(){
+        PatientDTO patient = PracticeEnv.INSTANCE.getCurrentPatient();
+        if( patient != null ){
+            SearchTextDialog dialog = new SearchTextDialog(patient.patientId);
+            dialog.showAndWait();
+        }
     }
 
     private Node createRecords(){

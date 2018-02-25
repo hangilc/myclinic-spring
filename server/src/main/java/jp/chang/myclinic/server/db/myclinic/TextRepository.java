@@ -1,6 +1,9 @@
 package jp.chang.myclinic.server.db.myclinic;
 
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -10,4 +13,9 @@ import java.util.List;
 public interface TextRepository extends CrudRepository<Text, Integer> {
 
     List<Text> findByVisitId(int visitId);
+
+    @Query("select text, visit from Text text, Visit visit " +
+            " where visit.patientId = :patientId and text.visitId = visit.visitId " + "" +
+            " and text.content like CONCAT('%', :text, '%') ")
+    List<Object[]> searchText(@Param("patientId") int patientId, @Param("text") String text, Sort sort);
 }
