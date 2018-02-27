@@ -1,56 +1,30 @@
 package jp.chang.myclinic.practice.javafx.parts;
 
-import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+public class PageNav {
 
-public class PageNav<T> {
-
-    public interface Searcher<T> {
-        CompletableFuture<List<T>> search(int page);
+    public interface RequestHandler {
+        void handle(int page, Runnable cb);
     }
 
-    public static final int PAGE_RESET = -1;
-    private IntegerProperty page = new SimpleIntegerProperty(PAGE_RESET);
+    public static final int NO_PAGE = -1;
+    private IntegerProperty page = new SimpleIntegerProperty(NO_PAGE);
     private IntegerProperty totalPage = new SimpleIntegerProperty(0);
-    private Searcher<T> searcher = n ->
-            CompletableFuture.completedFuture(Collections.emptyList());
-    private ObjectProperty<List<T>> items = new SimpleObjectProperty<>(Collections.emptyList());
+    private RequestHandler requestHandler = (page, cb) -> cb.run();
 
-    public PageNav(Searcher searcher){
-        this.searcher = searcher;
+    public void setRequestHandler(RequestHandler requestHandler){
+        this.requestHandler = requestHandler;
     }
 
-    private void reset(){
-        setPage(PAGE_RESET);
-        setTotalPage(0);
+    public void reset(int totalPage){
+        start(NO_PAGE, totalPage);
     }
 
-    public void setSearcher(Searcher<T> searcher){
-        this.searcher = searcher;
-        reset();
-    }
-
-    public void start(){
-        setPage(0);
-    }
-
-    private void triggerLoad(){
-        int page = getPage();
-        if( page != PAGE_RESET ){
-            searcher.search(page)
-                    .thenAccept(result -> Platform.runLater(() -> {
-                        items.setValue(result);
-                    }))
-                    .exceptionally(HandlerFX::exceptionally);
-        }
+    public void start(int page, int totalPage){
+        setPage(page);
+        setTotalPage(totalPage);
     }
 
     public int getPage() {
@@ -79,7 +53,7 @@ public class PageNav<T> {
 
     public void gotoPage(int page){
         if( page >= 0 && page < getTotalPage() && page != getPage() ){
-            setPage(page);
+            requestHandler.handle(page, () -> setPage(page));
         }
     }
 

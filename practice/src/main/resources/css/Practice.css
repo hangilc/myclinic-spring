@@ -137,4 +137,15 @@
 
 .search-text-dialog {
     -fx-padding: 10px;
+    -fx-pref-width: 300px;
+}
+
+.search-text-dialog .result-scroll {
+    -fx-pref-height: 400px;
+}
+
+.search-text-dialog .result-scroll .title {
+    -fx-font-weight: bold;
+    -fx-background-color: #ddd;
+    -fx-padding: 3px;
 }
