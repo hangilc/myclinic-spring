@@ -39,6 +39,10 @@ public class Service {
         @POST("delete-text")
         CompletableFuture<Boolean> deleteText(@Query("text-id") int textId);
 
+        @GET("search-text-by-page")
+        CompletableFuture<TextVisitPageDTO> searchTextByPage(@Query("patient-id") int patientId,
+                                                             @Query("text") String text, @Query("page") int page);
+
         @GET("list-available-hoken")
         CompletableFuture<HokenDTO> listAvailableHoken(@Query("patient-id") int patientId, @Query("at") String at);
 

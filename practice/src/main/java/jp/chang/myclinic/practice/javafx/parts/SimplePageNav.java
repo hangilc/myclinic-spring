@@ -7,18 +7,13 @@ import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.Consumer;
-
 public class SimplePageNav extends HBox {
 
     private static Logger logger = LoggerFactory.getLogger(SimplePageNav.class);
-    private PageNav pageNav;
     private Text currentPageText = new Text("");
     private Text totalPageText = new Text("");
-    private Consumer<Integer> onPageChangeCallback = p -> {};
 
-    public SimplePageNav(int currentPage, int totalPage) {
-        this.pageNav = new PageNav(currentPage, totalPage);
+    public SimplePageNav(PageNav pageNav) {
         Hyperlink gotoFirstLink = new Hyperlink("≪");
         Hyperlink gotoPrevLink = new Hyperlink("<");
         Hyperlink gotoNextLink = new Hyperlink(">");
@@ -27,13 +22,15 @@ public class SimplePageNav extends HBox {
         gotoPrevLink.setOnAction(evt -> pageNav.advance(-1));
         gotoNextLink.setOnAction(evt -> pageNav.advance(1));
         gotoLastLink.setOnAction(evt -> pageNav.gotoLast());
-        pageNav.setOnResetCallback(() -> {
-            currentPageText.setText("");
-            totalPageText.setText("");
+        pageNav.pageProperty().addListener((obs, oldValue, newValue) -> {
+            int pageValue = newValue.intValue();
+            String text = pageValue == PageNav.PAGE_RESET ? "" : "" + (pageValue + 1);
+            currentPageText.setText(text);
         });
-        pageNav.setOnPageChangeCallback(onPageChangeCallback);
-        currentPageText.setText("" + currentPage);
-        totalPageText.setText("" + totalPage);
+        pageNav.totalPageProperty().addListener((obs, oldValue, newValue) -> {
+            int totalValue = newValue.intValue();
+            totalPageText.setText("" + totalValue);
+        });
         getChildren().addAll(
                 gotoFirstLink,
                 gotoPrevLink,
@@ -45,8 +42,4 @@ public class SimplePageNav extends HBox {
         );
     }
 
-    public void setOnPageChangeCallback(Consumer<Integer> onPageChangeCallback) {
-        this.onPageChangeCallback = onPageChangeCallback;
-    }
-    
 }

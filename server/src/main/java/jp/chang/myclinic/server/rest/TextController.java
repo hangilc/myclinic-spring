@@ -37,8 +37,8 @@ class TextController {
     }
 
 
-    @RequestMapping(value="/search-text", method=RequestMethod.GET)
-    public TextVisitPageDTO searchText(@RequestParam("patient-id") int patientId, @RequestParam("text") String text,
+    @RequestMapping(value="/search-text-by-page", method=RequestMethod.GET)
+    public TextVisitPageDTO searchTextByPage(@RequestParam("patient-id") int patientId, @RequestParam("text") String text,
                                        @RequestParam("page") int page){
         return dbGateway.searchText(patientId, text, page);
     }

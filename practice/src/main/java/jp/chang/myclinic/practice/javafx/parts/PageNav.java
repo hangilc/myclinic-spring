@@ -3,14 +3,11 @@ package jp.chang.myclinic.practice.javafx.parts;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
-import java.util.function.Consumer;
-
 public class PageNav {
 
     private IntegerProperty page = new SimpleIntegerProperty(0);
     private IntegerProperty totalPage = new SimpleIntegerProperty(0);
-    private Consumer<Integer> onPageChangeCallback = p -> {};
-    private Runnable onResetCallback = () -> {};
+    public static final int PAGE_RESET = -1;
 
     public PageNav(int currentPage, int totalPage){
         setPage(currentPage);
@@ -41,31 +38,18 @@ public class PageNav {
         this.totalPage.set(totalPage);
     }
 
-    public void setOnPageChangeCallback(Consumer<Integer> onPageChangeCallback) {
-        this.onPageChangeCallback = onPageChangeCallback;
-    }
-
-    public void setOnResetCallback(Runnable onResetCallback) {
-        this.onResetCallback = onResetCallback;
-    }
-
     public void reset(){
-        setPage(0);
+        setPage(PAGE_RESET);
         setTotalPage(0);
-        onResetCallback.run();
-    }
-
-    private void invokeOnPageChangeCallback(){
     }
 
     public void gotoPage(int page){
         if( page >= 0 && page < getTotalPage() && page != getPage() ){
             setPage(page);
-            onPageChangeCallback.accept(getPage());
         }
     }
 
-    public void gotoFirst(int page){
+    public void gotoFirst(){
         gotoPage(0);
     }
 
