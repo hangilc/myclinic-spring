@@ -4,7 +4,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.parts.searchbox.BasicSearchTextInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ public class SearchTextDialog extends Stage {
                 createTextInput()
         );
         setScene(new Scene(root));
-        Service.api.search
+
     }
 
     private Node createTextInput(){
