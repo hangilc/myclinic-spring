@@ -1,17 +1,56 @@
 package jp.chang.myclinic.practice.javafx.parts;
 
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
 
-public class PageNav {
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-    private IntegerProperty page = new SimpleIntegerProperty(0);
-    private IntegerProperty totalPage = new SimpleIntegerProperty(0);
+public class PageNav<T> {
+
+    public interface Searcher<T> {
+        CompletableFuture<List<T>> search(int page);
+    }
+
     public static final int PAGE_RESET = -1;
+    private IntegerProperty page = new SimpleIntegerProperty(PAGE_RESET);
+    private IntegerProperty totalPage = new SimpleIntegerProperty(0);
+    private Searcher<T> searcher = n ->
+            CompletableFuture.completedFuture(Collections.emptyList());
+    private ObjectProperty<List<T>> items = new SimpleObjectProperty<>(Collections.emptyList());
 
-    public PageNav(int currentPage, int totalPage){
-        setPage(currentPage);
-        setTotalPage(totalPage);
+    public PageNav(Searcher searcher){
+        this.searcher = searcher;
+    }
+
+    private void reset(){
+        setPage(PAGE_RESET);
+        setTotalPage(0);
+    }
+
+    public void setSearcher(Searcher<T> searcher){
+        this.searcher = searcher;
+        reset();
+    }
+
+    public void start(){
+        setPage(0);
+    }
+
+    private void triggerLoad(){
+        int page = getPage();
+        if( page != PAGE_RESET ){
+            searcher.search(page)
+                    .thenAccept(result -> Platform.runLater(() -> {
+                        items.setValue(result);
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
 
     public int getPage() {
@@ -36,11 +75,6 @@ public class PageNav {
 
     public void setTotalPage(int totalPage) {
         this.totalPage.set(totalPage);
-    }
-
-    public void reset(){
-        setPage(PAGE_RESET);
-        setTotalPage(0);
     }
 
     public void gotoPage(int page){
