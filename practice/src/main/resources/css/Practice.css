@@ -165,3 +165,7 @@
 .drawer-preview-dialog {
     -fx-padding: 10px;
 }
+
+.drawer-preview-dialog .printer-setting-choice {
+    -fx-max-width: 160px;
+}
