@@ -15,6 +15,7 @@ public class PatientManip extends HBox {
         cashierButton.setOnAction(evt -> onCashier());
         endButton.setOnAction(evt -> onEndPatient());
         searchTextLink.setOnAction(evt -> onSearchText());
+        referLink.setOnAction(evt -> onRefer());
         getChildren().addAll(cashierButton, endButton, searchTextLink, referLink);
     }
 
@@ -27,6 +28,10 @@ public class PatientManip extends HBox {
     }
 
     protected void onSearchText(){
+
+    }
+
+    protected void onRefer(){
 
     }
 

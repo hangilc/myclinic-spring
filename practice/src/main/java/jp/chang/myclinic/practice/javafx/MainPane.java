@@ -10,6 +10,7 @@ import javafx.scene.layout.*;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeService;
 
@@ -43,8 +44,10 @@ public class MainPane extends BorderPane {
         {
             Menu menu = new Menu("その他");
             MenuItem newVisitItem = new MenuItem("受付");
+            MenuItem referItem = new MenuItem("紹介状作成");
             newVisitItem.setOnAction(evt -> doNewVisit());
-            menu.getItems().addAll(newVisitItem);
+            referItem.setOnAction(evt -> doRefer());
+            menu.getItems().addAll(newVisitItem, referItem);
             menuBar.getMenus().add(menu);
         }
         return menuBar;
@@ -114,6 +117,11 @@ public class MainPane extends BorderPane {
             protected void onSearchText() {
                 doSearchText();
             }
+
+            @Override
+            protected void onRefer() {
+                doRefer();
+            }
         };
         PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) -> {
             if( newValue != null ){
@@ -146,6 +154,19 @@ public class MainPane extends BorderPane {
         if( patient != null ){
             SearchTextDialog dialog = new SearchTextDialog(patient.patientId);
             dialog.showAndWait();
+        }
+    }
+
+    private void doRefer(){
+        ReferDialog dialog = new ReferDialog();
+        dialog.show();
+    }
+
+    private void doRefer(PatientDTO patient){
+        if( patient == null ){
+            doRefer();
+        } else {
+            doRefer();
         }
     }
 

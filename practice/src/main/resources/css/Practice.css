@@ -149,3 +149,15 @@
     -fx-background-color: #ddd;
     -fx-padding: 3px;
 }
+
+.refer-dialog {
+    -fx-padding: 10px;
+}
+
+.refer-dialog .title-input {
+    -fx-pref-width: 200px;
+}
+
+.refer-dialog .age-input {
+    -fx-pref-width: 5em;
+}

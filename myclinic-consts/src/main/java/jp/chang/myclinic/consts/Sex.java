@@ -21,12 +21,18 @@ public enum Sex {
 	}
 
 	public static Sex fromCode(String code){
-		if( code != null ){
-			if( code.equals("M") ){
-				return Male;
+		for(Sex sex: values()){
+			if( sex.getCode().equals(code) ){
+				return sex;
 			}
-			if( code.equals("F") ){
-				return Female;
+		}
+		return null;
+	}
+
+	public static Sex fromKanji(String kanji){
+		for(Sex sex: values()){
+			if( sex.getKanji().equals(kanji) ){
+				return sex;
 			}
 		}
 		return null;
