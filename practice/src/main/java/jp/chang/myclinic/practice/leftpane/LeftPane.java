@@ -1,22 +1,18 @@
 package jp.chang.myclinic.practice.leftpane;
 
 import jp.chang.myclinic.drawer.Op;
-import jp.chang.myclinic.drawer.PaperSize;
-import jp.chang.myclinic.drawer.preview.PreviewDialog;
 import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.MainContext;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.cashierdialog.CashierDialog;
-import jp.chang.myclinic.practice.leftpane.text.PrescData;
 import jp.chang.myclinic.practice.refer.ReferDrawer;
 import jp.chang.myclinic.practice.refer.ReferPreviewDialog;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
 import java.util.List;
 
 public class LeftPane extends JPanel implements LeftPaneContext {
@@ -143,7 +139,7 @@ public class LeftPane extends JPanel implements LeftPaneContext {
         ReferDrawer drawer = new ReferDrawer();
         MainContext mainContext = MainContext.get(this);
         PatientDTO patient = mainContext.getCurrentPatient();
-        drawer.setPatient(patient);
+        //drawer.setPatient(patient);
         drawer.setTitle("紹介状");
         drawer.setReferHospital("〇〇病院");
         drawer.setReferDoctor("〇〇 先生");

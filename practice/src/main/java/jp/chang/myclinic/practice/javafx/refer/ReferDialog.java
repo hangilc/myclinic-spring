@@ -3,17 +3,20 @@ package jp.chang.myclinic.practice.javafx.refer;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.consts.Sex;
+import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import jp.chang.myclinic.practice.javafx.parts.SexInput;
+import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReferDialog extends Stage {
 
@@ -38,10 +41,19 @@ public class ReferDialog extends Stage {
         );
         root.getStyleClass().add("refer-dialog");
         root.getChildren().addAll(
+                createCommands(),
                 createPropertiesInput(),
                 createMainContent()
         );
         setScene(new Scene(root));
+    }
+
+    private Node createCommands(){
+        HBox hbox = new HBox(4);
+        Button previewButton = new Button("プレビュー");
+        previewButton.setOnAction(evt -> doPreview());
+        hbox.getChildren().addAll(previewButton);
+        return hbox;
     }
 
     private Node createPropertiesInput(){
@@ -79,6 +91,58 @@ public class ReferDialog extends Stage {
 
     private Node createMainContent(){
         return mainContentInput;
+    }
+
+    private String composeReferDoctor(){
+        List<String> items = new ArrayList<>();
+        String section = sectionInput.getText();
+        if( section.isEmpty() ){
+            section = "　　　　　　";
+        }
+        String doctorName = doctorInput.getText();
+        if( doctorName.isEmpty() ){
+            doctorName = "　　　 　　　";
+        }
+        return String.format("%s　%s 先生 御机下", section, doctorName);
+    }
+
+    private String composePatientName(){
+        String name = patientNameInput.getText();
+        if( name.isEmpty() ){
+            name = "　　　 　　　";
+        }
+        return String.format("%s 様", name);
+    }
+
+    private String composePatientInfo(){
+        String birthday = birthdayInput.getText();
+        if( birthday.isEmpty() ){
+            birthday = "　　   年   月   日";
+        }
+        String age = ageInput.getText();
+        if( age.isEmpty() ){
+            age = "    ";
+        }
+        Sex sex = sexInput.getSelectionModel().getSelectedItem();
+        String sexText = sex == null ? "　 " : sex.getKanji();
+        return String.format("%s生 %s才 %s性", birthday, age, sexText);
+    }
+
+    private void doPreview(){
+        ReferDrawer drawer = new ReferDrawer();
+        drawer.setTitle(getReferTitle());
+        drawer.setReferHospital(hospitalInput.getText());
+        drawer.setReferDoctor(composeReferDoctor());
+        drawer.setPatientName(composePatientName());
+        drawer.setPatientInfo(composePatientInfo());
+        drawer.setDiagnosis(diagnosisInput.getText());
+        drawer.setIssueDate(issueDateInput.getText());
+        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog();
+        previewDialog.setTitle("紹介状のプレビュー");
+        previewDialog.setScaleFactor(0.7);
+        previewDialog.setContentSize(PaperSize.A4.getWidth(), PaperSize.A4.getHeight());
+        previewDialog.setOps(drawer.getOps());
+        previewDialog.show();
     }
 
     private String getReferTitle(){
