@@ -1,8 +1,9 @@
 package jp.chang.myclinic.myclinicenv.printer;
 
 
+import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
-import jp.chang.myclinic.drawer.printer.manager.PrintManager;
+import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,12 +22,33 @@ public class PrinterEnv {
     private static Logger logger = LoggerFactory.getLogger(PrinterEnv.class);
     private Path baseDir;
 
-    public PrinterEnv(Path baseDir){
+    public PrinterEnv(Path baseDir) {
         this.baseDir = baseDir;
     }
 
+    public void print(List<List<Op>> pages, String settingName) throws IOException {
+        DrawerPrinter drawerPrinter = new DrawerPrinter();
+        byte[] devmode = null, devnames = null;
+        AuxSetting auxSetting = null;
+        if (settingName == null || settingName.isEmpty()) {
+            DrawerPrinter.DialogResult result = drawerPrinter.printDialog(null, null);
+            if (result.ok) {
+                devmode = result.devmodeData;
+                devnames = result.devnamesData;
+                auxSetting = null;
+            } else {
+                return;
+            }
+        } else {
+            devmode = getDevmode(settingName);
+            devnames = getDevnames(settingName);
+            auxSetting = getAuxSetting(settingName);
+        }
+        drawerPrinter.printPages(pages, devmode, devnames, auxSetting);
+    }
+
     public List<String> listSettingNames() throws IOException {
-        if( baseDir == null ){
+        if (baseDir == null) {
             return Collections.emptyList();
         }
         List<String> names = new ArrayList<>();
@@ -39,8 +61,8 @@ public class PrinterEnv {
         return names;
     }
 
-    private Path getSettingMapPath(){
-        if( baseDir == null ){
+    private Path getSettingMapPath() {
+        if (baseDir == null) {
             return null;
         } else {
             return baseDir.resolve("setting-map.properties");
@@ -49,8 +71,8 @@ public class PrinterEnv {
 
     private void ensureSettingMap() throws IOException {
         Path path = getSettingMapPath();
-        if( path != null ){
-            if( !Files.exists(path) ){
+        if (path != null) {
+            if (!Files.exists(path)) {
                 Files.createFile(path);
             }
         }
@@ -59,7 +81,7 @@ public class PrinterEnv {
     private Properties readSettingMap() throws IOException {
         ensureSettingMap();
         Path path = getSettingMapPath();
-        if( path == null ){
+        if (path == null) {
             return null;
         } else {
             try (InputStream inputStream = Files.newInputStream(path)) {
@@ -74,7 +96,7 @@ public class PrinterEnv {
     private void saveSettingMap(Properties props) throws IOException {
         ensureSettingMap();
         Path path = getSettingMapPath();
-        if( path == null ){
+        if (path == null) {
             logger.info("Setting has not been saved becasue baseDir is null.");
         } else {
             try (OutputStream outputStream = Files.newOutputStream(path,
@@ -86,35 +108,37 @@ public class PrinterEnv {
     }
 
     public void savePrintSetting(String name, byte[] devnames, byte[] devmode, AuxSetting auxSetting)
-            throws IOException, PrintManager.SettingDirNotSuppliedException {
-        PrintManager manager = new PrintManager(baseDir);
+            throws IOException, jp.chang.myclinic.drawer.printer.manager.PrinterEnv.SettingDirNotSuppliedException {
+        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
         try {
             manager.saveSetting(name, devnames, devmode);
-        } catch(Exception ex){
+        } catch (Exception ex) {
             logger.error("Failed to carete printer setting.", ex);
             throw ex;
         }
         try {
             manager.saveSetting(name, auxSetting);
-        } catch(Exception ex){
+        } catch (Exception ex) {
             logger.error("Failed to printersetting auxSetting.", ex);
             manager.deleteSetting(name);
             throw ex;
         }
     }
 
+    @Deprecated
     public void deletePrintSetting(String name) throws IOException {
-        PrintManager manager = new PrintManager(baseDir);
+        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
         manager.deleteSetting(name);
     }
 
+    @Deprecated
     public void saveDefaultSettingName(String settingKey, String settingName) throws IOException {
-        if( settingKey == null || settingKey.isEmpty() ){
+        if (settingKey == null || settingKey.isEmpty()) {
             logger.info("saveSettingName did nothing because settingKey is empty");
             return;
         }
         Properties props = readSettingMap();
-        if( props != null ){
+        if (props != null) {
             props.put(settingKey, settingName);
             saveSettingMap(props);
         } else {
@@ -122,12 +146,13 @@ public class PrinterEnv {
         }
     }
 
+    @Deprecated
     public String getDefaultSettingName(String settingKey) throws IOException {
-        if( settingKey == null || settingKey.isEmpty()  ){
+        if (settingKey == null || settingKey.isEmpty()) {
             return null;
         } else {
             Properties props = readSettingMap();
-            if( props != null ) {
+            if (props != null) {
                 return props.getProperty(settingKey);
             } else {
                 return null;
@@ -136,17 +161,17 @@ public class PrinterEnv {
     }
 
     public byte[] getDevnames(String settingName) throws IOException {
-        PrintManager manager = new PrintManager(baseDir);
+        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
         return manager.readDevnames(settingName);
     }
 
     public byte[] getDevmode(String settingName) throws IOException {
-        PrintManager manager = new PrintManager(baseDir);
+        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
         return manager.readDevmode(settingName);
     }
 
     public AuxSetting getAuxSetting(String settingName) throws IOException {
-        PrintManager manager = new PrintManager(baseDir);
+        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
         return manager.readAuxSetting(settingName);
     }
 

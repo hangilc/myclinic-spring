@@ -3,7 +3,7 @@ package jp.chang.myclinic.drawer.preview.manage;
 import jp.chang.myclinic.drawer.lib.Link;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
-import jp.chang.myclinic.drawer.printer.manager.PrintManager;
+import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,12 +18,12 @@ public class ManageDialog extends JDialog {
 
     private static final Logger logger = LoggerFactory.getLogger(ManageDialog.class);
 
-    private PrintManager printManager;
+    private PrinterEnv printManager;
     private JComboBox<String> namesCombo;
     private DevPart devPart = new DevPart();
     private AuxPart auxPart = new AuxPart();
 
-    public ManageDialog(PrintManager printManager, List<String> names){
+    public ManageDialog(PrinterEnv printManager, List<String> names){
         this.printManager = printManager;
         setLayout(new MigLayout("", "", ""));
         setTitle("印刷設定の管理");
@@ -51,7 +51,7 @@ public class ManageDialog extends JDialog {
                     printManager.saveSetting(name, devnames, devmode);
                     devPart.setData(devnames, devmode);
                     pack();
-                } catch (PrintManager.SettingDirNotSuppliedException e) {
+                } catch (PrinterEnv.SettingDirNotSuppliedException e) {
                     logger.error("printer setting dir not specified", e);
                     alert("印刷設定の保存場所が設定されていません。");
                 } catch (IOException e) {
@@ -72,7 +72,7 @@ public class ManageDialog extends JDialog {
                     auxPart.clear();
                     auxPart.setData(newSetting);
                     pack();
-                } catch (PrintManager.SettingDirNotSuppliedException e) {
+                } catch (PrinterEnv.SettingDirNotSuppliedException e) {
                     logger.error("printer setting dir not specified", e);
                     alert("印刷設定の保存場所が設定されていません。");
                 } catch (IOException e) {
@@ -145,7 +145,7 @@ public class ManageDialog extends JDialog {
             printManager.createNewSetting(name);
             updateSettingNames();
             alert(name + "が追加されました。");
-        } catch(PrintManager.SettingDirNotSuppliedException ex){
+        } catch(PrinterEnv.SettingDirNotSuppliedException ex){
             logger.error("Setting dir not specified", ex);
             alert("Setting dir is not specified.");
         } catch(IOException ex){

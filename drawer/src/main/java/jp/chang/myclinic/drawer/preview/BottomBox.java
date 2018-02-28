@@ -2,11 +2,10 @@ package jp.chang.myclinic.drawer.preview;
 
 import jp.chang.myclinic.drawer.lib.Link;
 import jp.chang.myclinic.drawer.preview.manage.ManageDialog;
-import jp.chang.myclinic.drawer.printer.manager.PrintManager;
+import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -23,11 +22,11 @@ class BottomBox extends JPanel {
     private static final Logger logger = LoggerFactory.getLogger(BottomBox.class);
 
     private String settingName;
-    private PrintManager printManager;
+    private PrinterEnv printManager;
     private JLabel nameLabel;
     private Callback callback = new Callback(){};
 
-    BottomBox(String settingName, PrintManager printManager){
+    BottomBox(String settingName, PrinterEnv printManager){
         this.settingName = settingName;
         this.printManager = printManager;
         setLayout(new MigLayout("insets 0", "", ""));

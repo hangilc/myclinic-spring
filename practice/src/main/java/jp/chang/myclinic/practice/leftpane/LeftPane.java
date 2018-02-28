@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice.leftpane;
 
 import jp.chang.myclinic.drawer.Op;
-import jp.chang.myclinic.drawer.printer.manager.PrintManager;
+import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.MainContext;
 import jp.chang.myclinic.practice.PracticeEnv;
@@ -150,7 +150,7 @@ public class LeftPane extends JPanel implements LeftPaneContext {
         drawer.setAddress("addr1", "addr2", "addr3", "addr4", "Clinic Name", "Doctor Name");
         drawer.setContent("いつもお世話になっております。\n高血圧症にて当院に通院されている方です。高血圧症にて当院に通院されている方です。高血圧症にて当院に通院されている方です。高血圧症にて当院に通院されている方です。");
         List<Op> ops = drawer.getOps();
-        PrintManager printManager = new PrintManager(PracticeEnv.INSTANCE.getPrinterSettingsDir());
+        PrinterEnv printManager = new PrinterEnv(PracticeEnv.INSTANCE.getPrinterSettingsDir());
         ReferPreviewDialog dialog = new ReferPreviewDialog(printManager, null);
         dialog.render(ops);
         dialog.setLocationByPlatform(true);

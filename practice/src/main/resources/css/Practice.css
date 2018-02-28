@@ -161,3 +161,7 @@
 .refer-dialog .age-input {
     -fx-pref-width: 5em;
 }
+
+.drawer-preview-dialog {
+    -fx-padding: 10px;
+}

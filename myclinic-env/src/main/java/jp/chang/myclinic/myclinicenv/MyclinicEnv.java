@@ -4,10 +4,14 @@ import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 public class MyclinicEnv {
 
@@ -34,6 +38,42 @@ public class MyclinicEnv {
         Path printerSettingDir = getPrinterSettingDir();
         ensureDirectory(printerSettingDir);
         return new PrinterEnv(printerSettingDir);
+    }
+
+    public Properties getAppProperties(String app) throws IOException {
+        Path path = getAppPropertiesPath(app);
+        ensureFile(path);
+        return readProperties(path);
+    }
+
+    public void saveAppProperties(String app, Properties props) throws IOException {
+        Path path = getAppPropertiesPath(app);
+        saveProperties(path, props);
+    }
+
+    private Properties readProperties(Path path) throws IOException {
+        Properties props = new Properties();
+        try(BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)){
+            props.load(reader);
+        }
+        return props;
+    }
+
+    private void saveProperties(Path path, Properties props) throws IOException {
+        try(BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)){
+            props.store(writer, "");
+        }
+    }
+
+    private Path getAppPropertiesPath(String app) throws IOException {
+        ensureDirectory(baseDir);
+        return baseDir.resolve(String.format("%s.properties", app));
+    }
+
+    private void ensureFile(Path path) throws IOException {
+        if( !Files.exists(path) ){
+            Files.createFile(path);
+        }
     }
 
     private void ensureDirectory(Path dir) throws IOException {

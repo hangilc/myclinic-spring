@@ -9,11 +9,13 @@ import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         CommandArgs commandArgs = new CommandArgs(args);
         Service.setServerUrl(commandArgs.getServerUrl());
         PracticeEnv.INSTANCE = new PracticeEnv(commandArgs);

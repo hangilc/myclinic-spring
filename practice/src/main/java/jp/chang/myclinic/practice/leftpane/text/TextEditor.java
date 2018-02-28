@@ -3,7 +3,7 @@ package jp.chang.myclinic.practice.leftpane.text;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.drawer.preview.PreviewDialog;
-import jp.chang.myclinic.drawer.printer.manager.PrintManager;
+import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.Link;
 import jp.chang.myclinic.practice.PracticeEnv;
@@ -70,7 +70,7 @@ public class TextEditor extends JPanel {
     }
 
     private void doPresc(){
-        PrintManager pringManager = new PrintManager(PracticeEnv.INSTANCE.getPrinterSettingsDir());
+        PrinterEnv pringManager = new PrinterEnv(PracticeEnv.INSTANCE.getPrinterSettingsDir());
         PreviewDialog previewDialog = new PreviewDialog(SwingUtilities.getWindowAncestor(this), "処方箋印刷", pringManager, null);
         ShohousenData shohousenData = new ShohousenData();
         shohousenData.setClinicInfo(PracticeEnv.INSTANCE.getClinicInfo());

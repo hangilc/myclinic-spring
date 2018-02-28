@@ -8,19 +8,26 @@ import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.myclinicenv.MyclinicEnv;
+import jp.chang.myclinic.practice.javafx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
+import java.util.function.Consumer;
 
 public class PracticeEnv {
 
     private static final Logger logger = LoggerFactory.getLogger(PracticeEnv.class);
 
+    public static final String APP_NAME = "practice";
+    public static final String PRINTER_SETTING_KEY = "default-printer-setting";
     public static PracticeEnv INSTANCE;
 
     private Path printerSettingsDir;
@@ -33,16 +40,18 @@ public class PracticeEnv {
     private IntegerProperty currentRecordPage = new SimpleIntegerProperty(0);
     private ObjectProperty<List<VisitFull2DTO>> pageVisits = new SimpleObjectProperty<>(Collections.emptyList());
     private ObjectProperty<List<DiseaseFullDTO>> currentDiseases = new SimpleObjectProperty<>(Collections.emptyList());
+    private MyclinicEnv myclinicEnv;
 
-    public PracticeEnv(CommandArgs commandArgs){
+    public PracticeEnv(CommandArgs commandArgs) throws IOException {
         printerSettingsDir = commandArgs.getWorkingDirectory();
-        if( printerSettingsDir == null ){
+        if (printerSettingsDir == null) {
             printerSettingsDir = Paths.get(System.getProperty("user.home"), "practice-home");
         }
-        if( !(Files.exists(printerSettingsDir) && Files.isDirectory(printerSettingsDir)) ){
+        if (!(Files.exists(printerSettingsDir) && Files.isDirectory(printerSettingsDir))) {
             logger.error("Invalid printer settings directory: " + printerSettingsDir);
             System.exit(1);
         }
+        myclinicEnv = new MyclinicEnv();
     }
 
     public Path getPrinterSettingsDir() {
@@ -73,7 +82,7 @@ public class PracticeEnv {
         this.currentPatient.set(currentPatient);
     }
 
-    public int getRecordsPerPage(){
+    public int getRecordsPerPage() {
         return recordsPerPage;
     }
 
@@ -149,8 +158,16 @@ public class PracticeEnv {
         this.tempVisitId.set(tempVisitId);
     }
 
-    public boolean isCurrentOrTempVisitId(int visitId){
+    public boolean isCurrentOrTempVisitId(int visitId) {
         return getCurrentVisitId() == visitId || getTempVisitId() == visitId;
+    }
+
+    public MyclinicEnv getMyclinicEnv() {
+        return myclinicEnv;
+    }
+
+    public Properties getAppProperties() throws IOException {
+        return getMyclinicEnv().getAppProperties(APP_NAME);
     }
 
     @Override

@@ -15,14 +15,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PrintManager {
+public class PrinterEnv {
 
     public static class SettingDirNotSuppliedException extends Exception {}
 
-    private static Logger logger = LoggerFactory.getLogger(PrintManager.class);
+    private static Logger logger = LoggerFactory.getLogger(PrinterEnv.class);
     private Path settingDir;
 
-    public PrintManager(Path settingDir){
+    public PrinterEnv(Path settingDir){
         this.settingDir = settingDir;
     }
 

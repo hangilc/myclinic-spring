@@ -9,14 +9,16 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import jp.chang.myclinic.practice.javafx.parts.SexInput;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.Properties;
 
 public class ReferDialog extends Stage {
 
@@ -94,7 +96,6 @@ public class ReferDialog extends Stage {
     }
 
     private String composeReferDoctor(){
-        List<String> items = new ArrayList<>();
         String section = sectionInput.getText();
         if( section.isEmpty() ){
             section = "　　　　　　";
@@ -142,6 +143,15 @@ public class ReferDialog extends Stage {
         previewDialog.setScaleFactor(0.7);
         previewDialog.setContentSize(PaperSize.A4.getWidth(), PaperSize.A4.getHeight());
         previewDialog.setOps(drawer.getOps());
+        try {
+            previewDialog.setPrinterEnv(PracticeEnv.INSTANCE.getMyclinicEnv().getPrinterEnv());
+            Properties properties = PracticeEnv.INSTANCE.getAppProperties();
+            String settingName = properties.getProperty(PracticeEnv.PRINTER_SETTING_KEY);
+            previewDialog.setPrintSettingName(settingName);
+        } catch (IOException e) {
+            logger.error("Failed to get printer env", e);
+            GuiUtil.alertException("入出力エラーが発生しました。", e);
+        }
         previewDialog.show();
     }
 

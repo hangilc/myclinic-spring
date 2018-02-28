@@ -1,21 +1,10 @@
 package jp.chang.myclinic.practice.leftpane;
 
-import jp.chang.myclinic.drawer.Op;
-import jp.chang.myclinic.drawer.PaperSize;
-import jp.chang.myclinic.drawer.preview.PreviewDialog;
-import jp.chang.myclinic.drawer.printer.manager.PrintManager;
 import jp.chang.myclinic.practice.Link;
-import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.leftpane.text.PrescData;
-import jp.chang.myclinic.practice.refer.ReferDrawer;
-import jp.chang.myclinic.practice.shohousen.ShohousenData;
-import jp.chang.myclinic.practice.shohousen.ShohousenDrawer;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDate;
-import java.util.List;
 
 class PatientManip extends JPanel {
 

@@ -2,15 +2,13 @@ package jp.chang.myclinic.drawer.preview;
 
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
-import jp.chang.myclinic.drawer.lib.Link;
-import jp.chang.myclinic.drawer.printer.manager.PrintManager;
+import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,21 +22,21 @@ public class PreviewDialog extends JDialog {
 
     private PreviewPane previewPane = new PreviewPane(14.8, 21.0);
     private List<List<Op>> pages = new ArrayList<>();
-    private PrintManager printManager;
+    private PrinterEnv printManager;
     private String settingName;
     private Callback callback = new Callback(){};
 
-    public PreviewDialog(JDialog owner, String title, PrintManager printManager, String settingName){
+    public PreviewDialog(JDialog owner, String title, PrinterEnv printManager, String settingName){
         super(owner, title, ModalityType.DOCUMENT_MODAL);
         setupDialog(title, printManager, settingName);
     }
 
-    public PreviewDialog(Window owner, String title, PrintManager printManager, String settingName){
+    public PreviewDialog(Window owner, String title, PrinterEnv printManager, String settingName){
         super(owner, title, ModalityType.DOCUMENT_MODAL);
         setupDialog(title, printManager, settingName);
     }
 
-    private void setupDialog(String title, PrintManager printManager, String settingName){
+    private void setupDialog(String title, PrinterEnv printManager, String settingName){
         this.printManager = printManager;
         this.settingName = settingName;
         setLayout(new MigLayout("insets 4", "[grow]", "[] [grow] []"));

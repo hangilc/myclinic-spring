@@ -2,7 +2,7 @@ package jp.chang.myclinic.reception;
 
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.preview.PreviewDialog;
-import jp.chang.myclinic.drawer.printer.manager.PrintManager;
+import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
@@ -126,7 +126,7 @@ class CashierDialog extends JDialog {
 						List<Op> ops = receiptDrawer.getOps();
 						EventQueue.invokeLater(() -> {
 //							ReceiptPreviewDialog dialog = new ReceiptPreviewDialog(this, ops);
-							PrintManager printManager = new PrintManager(ReceptionEnv.INSTANCE.getPrinterSettingsDir());
+							PrinterEnv printManager = new PrinterEnv(ReceptionEnv.INSTANCE.getPrinterSettingsDir());
 							PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー", printManager, ReceptionEnv.INSTANCE.getPrinterSettingName())
 									.setPageSize(148, 105);
 							dialog.setPage(ops);

@@ -3,7 +3,7 @@ package jp.chang.myclinic.reception;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.preview.PreviewDialog;
-import jp.chang.myclinic.drawer.printer.manager.PrintManager;
+import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.dto.*;
@@ -231,7 +231,7 @@ class MainFrame extends JFrame {
 		ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
 		final List<Op> ops = receiptDrawer.getOps();
 		EventQueue.invokeLater(() -> {
-			PrintManager printManager = new PrintManager(ReceptionEnv.INSTANCE.getPrinterSettingsDir());
+			PrinterEnv printManager = new PrinterEnv(ReceptionEnv.INSTANCE.getPrinterSettingsDir());
 			String settingName = ReceptionEnv.INSTANCE.getPrinterSettingName();
 			PreviewDialog dialog = new PreviewDialog(this, "領収書プレビュー", printManager, settingName)
 					.setPageSize(148, 105);

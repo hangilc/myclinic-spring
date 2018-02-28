@@ -2,10 +2,11 @@ package jp.chang.myclinic.practice;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class AppPractice
 {
-    public static void main( String[] args )
+    public static void main( String[] args ) throws IOException
     {
         CommandArgs commandArgs = new CommandArgs(args);
         Service.setServerUrl(commandArgs.getServerUrl());
