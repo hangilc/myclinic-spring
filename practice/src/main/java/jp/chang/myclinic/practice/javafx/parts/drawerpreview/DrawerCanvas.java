@@ -72,8 +72,6 @@ public class DrawerCanvas extends Canvas {
     public void setContentSize(double mmWidth, double mmHeight){
         setWidth(scale(mmWidth));
         setHeight(scale(mmHeight));
-        System.out.println("width: " + scale(mmWidth));
-        System.out.println("height: " + scale(mmHeight));
     }
 
     public void setOps(List<Op> ops){

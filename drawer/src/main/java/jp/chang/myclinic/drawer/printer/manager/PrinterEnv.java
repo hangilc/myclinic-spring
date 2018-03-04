@@ -127,6 +127,10 @@ public class PrinterEnv {
         return names;
     }
 
+    public boolean settingExists(String name){
+        return nameExists(name);
+    }
+
     private boolean nameExists(String name){
         return Files.exists(devnamesSettingPath(name)) &&
                 Files.exists(devmodeSettingPath(name));

@@ -61,6 +61,11 @@ public class PrinterEnv {
         return names;
     }
 
+    public boolean settingExists(String name){
+        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
+        return manager.settingExists(name);
+    }
+
     private Path getSettingMapPath() {
         if (baseDir == null) {
             return null;
