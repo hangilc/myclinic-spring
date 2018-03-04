@@ -1,0 +1,63 @@
+package jp.chang.myclinic.practice.javafx.parts.drawerpreview;
+
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.practice.javafx.parts.DispGrid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
+
+public class ListSettingDialog extends Stage {
+
+    private static Logger logger = LoggerFactory.getLogger(ListSettingDialog.class);
+    private List<String> names;
+    private PrinterEnv printerEnv;
+    private DispGrid dispGrid;
+
+    public ListSettingDialog(List<String> names, PrinterEnv printerEnv) {
+        this.names = names;
+        this.printerEnv = printerEnv;
+        setTitle("印刷設定名の一覧");
+        DispGrid root = new DispGrid();
+        root.setStyle("-fx-padding:10");
+        names.forEach(name -> root.addRow(name + ":", createCommands(name)));
+        this.dispGrid = root;
+        setScene(new Scene(root));
+    }
+
+    private Node createCommands(String name){
+        HBox hbox = new HBox(4);
+        hbox.setAlignment(Pos.CENTER_LEFT);
+        Button editButton = new Button("編集");
+        Button deleteButton = new Button("削除");
+        deleteButton.setOnAction(evt -> doDelete(name));
+        hbox.getChildren().addAll(editButton, deleteButton);
+        return hbox;
+    }
+
+    private void doDelete(String name){
+        if( !GuiUtil.confirm(name + ": この印刷設定を削除していいですか？") ){
+            return;
+        }
+        try {
+            printerEnv.deletePrintSetting(name);
+            int index = names.indexOf(name);
+            assert index >= 0;
+            names.remove(index);
+            dispGrid.removeRow(index);
+            sizeToScene();
+        } catch (IOException e) {
+            logger.error("Failed to delete printer setting.", e);
+            GuiUtil.alertException("印刷設定の削除に失敗しました。", e);
+        }
+    }
+
+}

@@ -93,6 +93,11 @@ public class DrawerPreviewDialog extends Stage {
                     item.setOnAction(evt -> doNewSetting());
                     menu.getItems().add(item);
                 }
+                 {
+                    MenuItem item = new MenuItem("印刷設定一覧");
+                    item.setOnAction(evt -> doListSetting());
+                    menu.getItems().add(item);
+                }
                 mbar.getMenus().add(menu);
             }
         }
@@ -111,14 +116,16 @@ public class DrawerPreviewDialog extends Stage {
                 GuiUtil.alertError(name + " という設定名は既に存在します。");
                 return;
             }
-            System.out.println("NAME: " + name);
             DrawerPrinter drawerPrinter = new DrawerPrinter();
             DrawerPrinter.DialogResult dialogResult = drawerPrinter.printDialog(null, null);
             if( dialogResult.ok ){
                 byte[] devmode = dialogResult.devmodeData;
                 byte[] devnames = dialogResult.devnamesData;
+                AuxSetting auxSetting = new AuxSetting();
                 try {
-                    printerEnv.savePrintSetting(name, devnames, devmode, new AuxSetting());
+                    printerEnv.savePrintSetting(name, devnames, devmode, auxSetting);
+                    EditSettingDialog editSettingDialog = new EditSettingDialog(name, devmode, devnames, auxSetting);
+                    editSettingDialog.showAndWait();
                 } catch (IOException e) {
                     logger.error("Failed to save printer settng.", e);
                     GuiUtil.alertException("印刷設定の保存に失敗しました。", e);
@@ -126,6 +133,17 @@ public class DrawerPreviewDialog extends Stage {
                     GuiUtil.alertError("Printer setting directory is not specified.");
                 }
             }
+        }
+    }
+
+    private void doListSetting(){
+        try {
+            List<String> names = printerEnv.listSettingNames();
+            ListSettingDialog listSettingDialog = new ListSettingDialog(names, printerEnv);
+            listSettingDialog.show();
+        } catch (IOException e) {
+            logger.error("Failed to list printer setting names.", e);
+            GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", e);
         }
     }
 

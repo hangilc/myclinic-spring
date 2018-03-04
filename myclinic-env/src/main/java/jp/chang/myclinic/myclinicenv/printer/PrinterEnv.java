@@ -130,13 +130,11 @@ public class PrinterEnv {
         }
     }
 
-    @Deprecated
     public void deletePrintSetting(String name) throws IOException {
         jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
         manager.deleteSetting(name);
     }
 
-    @Deprecated
     public void saveDefaultSettingName(String settingKey, String settingName) throws IOException {
         if (settingKey == null || settingKey.isEmpty()) {
             logger.info("saveSettingName did nothing because settingKey is empty");
@@ -151,7 +149,6 @@ public class PrinterEnv {
         }
     }
 
-    @Deprecated
     public String getDefaultSettingName(String settingKey) throws IOException {
         if (settingKey == null || settingKey.isEmpty()) {
             return null;

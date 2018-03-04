@@ -25,9 +25,26 @@ public class DispGrid extends GridPane {
     }
 
     public void rightAlignFirstColumn(){
-        ColumnConstraints cc = new ColumnConstraints();
-        cc.setHalignment(HPos.RIGHT);
-        getColumnConstraints().add(cc);
+        {
+            ColumnConstraints cc = new ColumnConstraints();
+            cc.setHalignment(HPos.RIGHT);
+            getColumnConstraints().add(cc);
+        }
+        {
+            ColumnConstraints cc = new ColumnConstraints();
+            cc.setHalignment(HPos.LEFT);
+            getColumnConstraints().add(cc);
+        }
+    }
+
+    public void removeRow(int row){
+        getChildren().removeIf(node -> {
+            if( row == 0 ){
+                return GridPane.getRowIndex(node) == null || GridPane.getRowIndex(node) == 0;
+            } else {
+                return GridPane.getRowIndex(node) == row;
+            }
+        });
     }
 
 }
