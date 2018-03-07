@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -191,7 +190,7 @@ public class DrawerPreviewDialog extends Stage {
     private void doPrint(){
         if( printerEnv != null ){
             try {
-                printerEnv.print(Collections.singletonList(ops), getSettingName());
+                printerEnv.print(ops, getSettingName());
                 close();
             } catch (IOException e) {
                 logger.error("Printing error.", e);
@@ -216,6 +215,7 @@ public class DrawerPreviewDialog extends Stage {
                         }
                     }
                 };
+                dialog.setTestPrintOps(ops);
                 dialog.showAndWait();
             } catch(IOException e){
                 HandlerFX.exception("印刷設定のリストの取得に失敗しました。", e);

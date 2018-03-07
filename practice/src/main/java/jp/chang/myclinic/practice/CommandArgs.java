@@ -17,7 +17,7 @@ class CommandArgs {
     CommandArgs(String[] args){
         Options options = new Options();
         options.addOption("d", "workdir", true, "Working directory");
-        options.addOption("h", "help", false, "print this help");
+        options.addOption("h", "help", false, "printPages this help");
         CommandLineParser commandParser = new DefaultParser();
         try {
             CommandLine commandLine = commandParser.parse(options, args);

@@ -26,7 +26,7 @@ public class ReceptionArgs {
         options.addOption("c", "config", true, "configuration file (default: " + defaultConfigFileName + " in working directory)");
         options.addOption("p", "printer-settings-dir", true, "directory containing printer settings " +
                 "(default: " + defaultPrinterSettingsDirName + " in working directory)");
-        options.addOption("h", "help", false, "print this help");
+        options.addOption("h", "help", false, "printPages this help");
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = null;
         try {

@@ -26,7 +26,11 @@ public class PrinterEnv {
         this.baseDir = baseDir;
     }
 
-    public void print(List<List<Op>> pages, String settingName) throws IOException {
+    public void print(List<Op> ops, String settingName) throws IOException {
+        printPages(Collections.singletonList(ops), settingName);
+    }
+
+    public void printPages(List<List<Op>> pages, String settingName) throws IOException {
         DrawerPrinter drawerPrinter = new DrawerPrinter();
         byte[] devmode = null, devnames = null;
         AuxSetting auxSetting = null;
