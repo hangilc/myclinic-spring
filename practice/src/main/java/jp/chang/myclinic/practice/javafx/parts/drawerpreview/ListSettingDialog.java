@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 public class ListSettingDialog extends Stage {
@@ -22,6 +24,7 @@ public class ListSettingDialog extends Stage {
     private List<String> names;
     private PrinterEnv printerEnv;
     private DispGrid dispGrid;
+    private List<Op> testPrintOps = Collections.emptyList();
 
     public ListSettingDialog(List<String> names, PrinterEnv printerEnv) {
         this.names = names;
@@ -32,6 +35,10 @@ public class ListSettingDialog extends Stage {
         names.forEach(name -> root.addRow(name + ":", createCommands(name)));
         this.dispGrid = root;
         setScene(new Scene(root));
+    }
+
+    public void setTestPrintOps(List<Op> testPrintOps) {
+        this.testPrintOps = testPrintOps;
     }
 
     private Node createCommands(String name){
@@ -51,6 +58,7 @@ public class ListSettingDialog extends Stage {
             byte[] devnames = printerEnv.getDevnames(name);
             AuxSetting auxSetting = printerEnv.getAuxSetting(name);
             EditSettingDialog editSettingDialog = new EditSettingDialog(printerEnv, name, devmode, devnames, auxSetting);
+            editSettingDialog.setTestPrintOps(testPrintOps);
             editSettingDialog.show();
         } catch (IOException e) {
             logger.error("Failed to get printer setting info.", e);

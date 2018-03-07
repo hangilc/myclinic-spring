@@ -64,6 +64,10 @@ public class DrawerPreviewDialog extends Stage {
         drawerCanvas.setOps(ops);
     }
 
+    private List<Op> getOps(){
+        return ops;
+    }
+
     public void setPrinterEnv(PrinterEnv printerEnv) {
         this.printerEnv = printerEnv;
         updateSettingChoice();
@@ -132,6 +136,7 @@ public class DrawerPreviewDialog extends Stage {
                 try {
                     printerEnv.savePrintSetting(name, devnames, devmode, auxSetting);
                     EditSettingDialog editSettingDialog = new EditSettingDialog(printerEnv, name, devmode, devnames, auxSetting);
+                    editSettingDialog.setTestPrintOps(getOps());
                     editSettingDialog.showAndWait();
                 } catch (IOException e) {
                     logger.error("Failed to save printer settng.", e);
@@ -144,7 +149,10 @@ public class DrawerPreviewDialog extends Stage {
     }
 
     private void doListSetting(){
-        PracticeLib.openPrinterSettingList().ifPresent(ListSettingDialog::show);
+        PracticeLib.openPrinterSettingList().ifPresent(dialog -> {
+            dialog.setTestPrintOps(getOps());
+            dialog.show();
+        });
     }
 
     private Node createCommands(){
