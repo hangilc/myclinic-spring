@@ -112,6 +112,11 @@ public class PrinterEnv {
         }
     }
 
+    public void savePrinterAuxSetting(String name, AuxSetting auxSetting) throws IOException, jp.chang.myclinic.drawer.printer.manager.PrinterEnv.SettingDirNotSuppliedException {
+        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
+        manager.saveSetting(name, auxSetting);
+    }
+
     public void savePrintSetting(String name, byte[] devnames, byte[] devmode, AuxSetting auxSetting)
             throws IOException, jp.chang.myclinic.drawer.printer.manager.PrinterEnv.SettingDirNotSuppliedException {
         jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
