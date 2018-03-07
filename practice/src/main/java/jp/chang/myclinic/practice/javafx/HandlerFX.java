@@ -21,4 +21,9 @@ public class HandlerFX {
     public static void alert(List<String> errors){
         GuiUtil.alertError(String.join("\n", errors));
     }
+
+    public static void exception(String message, Throwable t){
+        logger.error(message, t);
+        GuiUtil.alertException(message, t);
+    }
 }

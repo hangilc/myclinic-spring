@@ -9,7 +9,6 @@ import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.myclinicenv.MyclinicEnv;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.function.Consumer;
 
 public class PracticeEnv {
 
@@ -168,6 +166,24 @@ public class PracticeEnv {
 
     public Properties getAppProperties() throws IOException {
         return getMyclinicEnv().getAppProperties(APP_NAME);
+    }
+
+    public void setAppProperties(Properties properties) throws IOException {
+        getMyclinicEnv().saveAppProperties(APP_NAME, properties);
+    }
+
+    public String getDefaultPrinterSetting() throws IOException {
+        return getAppProperties().getProperty(PRINTER_SETTING_KEY);
+    }
+
+    public void setDefaultPrinterSetting(String settingName) throws IOException {
+        Properties properties = getAppProperties();
+        if( settingName == null ){
+            properties.remove(PRINTER_SETTING_KEY);
+        } else {
+            properties.setProperty(PRINTER_SETTING_KEY, settingName);
+        }
+        setAppProperties(properties);
     }
 
     @Override

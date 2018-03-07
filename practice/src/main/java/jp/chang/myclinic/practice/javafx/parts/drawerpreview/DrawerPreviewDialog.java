@@ -11,7 +11,9 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,9 +96,14 @@ public class DrawerPreviewDialog extends Stage {
                     item.setOnAction(evt -> doNewSetting());
                     menu.getItems().add(item);
                 }
-                 {
+                {
                     MenuItem item = new MenuItem("印刷設定一覧");
                     item.setOnAction(evt -> doListSetting());
+                    menu.getItems().add(item);
+                }
+                {
+                    MenuItem item = new MenuItem("既定の印刷設定");
+                    item.setOnAction(evt -> doDefaultSetting());
                     menu.getItems().add(item);
                 }
                 mbar.getMenus().add(menu);
@@ -190,6 +197,31 @@ public class DrawerPreviewDialog extends Stage {
                 logger.error("Printing error.", e);
                 GuiUtil.alertException("印刷に失敗しました。", e);
             }
+        }
+    }
+
+    private void doDefaultSetting(){
+        try {
+            String defaultSetting = PracticeEnv.INSTANCE.getDefaultPrinterSetting();
+            try {
+                List<String> names = printerEnv.listSettingNames();
+                SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(defaultSetting, names, printerEnv){
+                    @Override
+                    protected void onChange(String newDefaultSetting) {
+                        try {
+                            PracticeEnv.INSTANCE.setDefaultPrinterSetting(newDefaultSetting);
+                            settingChoice.setValue(newDefaultSetting == null ? NO_PRINTER_SETTING : newDefaultSetting);
+                        } catch (IOException e) {
+                            HandlerFX.exception("既定印刷設定名の保存に失敗しました。", e);
+                        }
+                    }
+                };
+                dialog.showAndWait();
+            } catch(IOException e){
+                HandlerFX.exception("印刷設定のリストの取得に失敗しました。", e);
+            }
+        } catch (IOException e) {
+            HandlerFX.exception("既定の印刷設定を取得できませんでした。", e);
         }
     }
 }

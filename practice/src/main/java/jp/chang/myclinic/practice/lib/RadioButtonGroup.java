@@ -6,10 +6,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RadioButtonGroup<T>  {
 
@@ -21,7 +18,7 @@ public class RadioButtonGroup<T>  {
     public RadioButtonGroup(){
         value.addListener((observable, oldValue, newValue) -> {
             for(Map.Entry<Toggle, T> entry : valueMap.entrySet()){
-                if( entry.getValue() == newValue ){
+                if( Objects.equals(entry.getValue(), newValue) ){
                     entry.getKey().setSelected(true);
                 }
             }
