@@ -11,6 +11,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import jp.chang.myclinic.drawer.DrawerCompiler;
+import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DevnamesInfo;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
@@ -21,17 +23,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class EditSettingDialog extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(EditSettingDialog.class);
+    private static List<Op> defaultTestPrintOps = new ArrayList<>();
+    {
+        DrawerCompiler comp = new DrawerCompiler();
+        comp.createFont("default-font", "sans-serif", 10);
+        comp.setFont("default-font");
+        comp.textAt("こんにちは、世界", 0, 0, DrawerCompiler.HAlign.Left, DrawerCompiler.VAlign.Top);
+        defaultTestPrintOps = comp.getOps();
+    }
     private PrinterEnv printerEnv;
     private String name;
     private byte[] devmode;
     private byte[] devnames;
     private AuxSetting auxSetting;
+    private List<Op> testPrintOps = defaultTestPrintOps;
 
     private class PrinterPart extends VBox {
         private Text text;
@@ -48,7 +61,7 @@ public class EditSettingDialog extends Stage {
             update();
         }
 
-        final void update(){
+        private void update(){
             text.setText(createLabel());
         }
 
@@ -136,10 +149,15 @@ public class EditSettingDialog extends Stage {
         setScene(new Scene(root));
     }
 
+    public void setTestPrintOps(List<Op> testPrintOps) {
+        this.testPrintOps = testPrintOps;
+    }
+
     private Node createCenter(){
         VBox vbox = new VBox(4);
         vbox.getChildren().addAll(
-                createMain()
+                createMain(),
+                createCommands()
         );
         return vbox;
     }
@@ -152,6 +170,24 @@ public class EditSettingDialog extends Stage {
         root.addRow("dy：", new AuxPart("dy", () -> auxSetting.getDy(), auxSetting::setDy, "下方向への変位"));
         root.addRow("scale：", new AuxPart("scale", () -> auxSetting.getScale(), auxSetting::setScale, "拡大倍数"));
         return root;
+    }
+
+    private Node createCommands(){
+        HBox hbox = new HBox(4);
+        Button doneButton = new Button("終了");
+        Button testPrintButton = new Button("テスト印刷");
+        doneButton.setOnAction(evt -> close());
+        testPrintButton.setOnAction(evt -> doTestPrint());
+        hbox.getChildren().addAll(
+                doneButton,
+                testPrintButton
+        );
+        return hbox;
+    }
+
+    private void doTestPrint(){
+        DrawerPrinter drawerPrinter = new DrawerPrinter();
+        drawerPrinter.print(testPrintOps, devmode, devnames, auxSetting);
     }
 
 }
