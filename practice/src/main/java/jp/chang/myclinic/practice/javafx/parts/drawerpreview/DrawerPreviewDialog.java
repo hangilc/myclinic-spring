@@ -12,6 +12,7 @@ import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.practice.lib.PracticeLib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,7 +125,7 @@ public class DrawerPreviewDialog extends Stage {
                 AuxSetting auxSetting = new AuxSetting();
                 try {
                     printerEnv.savePrintSetting(name, devnames, devmode, auxSetting);
-                    EditSettingDialog editSettingDialog = new EditSettingDialog(name, devmode, devnames, auxSetting);
+                    EditSettingDialog editSettingDialog = new EditSettingDialog(printerEnv, name, devmode, devnames, auxSetting);
                     editSettingDialog.showAndWait();
                 } catch (IOException e) {
                     logger.error("Failed to save printer settng.", e);
@@ -137,14 +138,7 @@ public class DrawerPreviewDialog extends Stage {
     }
 
     private void doListSetting(){
-        try {
-            List<String> names = printerEnv.listSettingNames();
-            ListSettingDialog listSettingDialog = new ListSettingDialog(names, printerEnv);
-            listSettingDialog.show();
-        } catch (IOException e) {
-            logger.error("Failed to list printer setting names.", e);
-            GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", e);
-        }
+        PracticeLib.openPrinterSettingList().ifPresent(ListSettingDialog::show);
     }
 
     private Node createCommands(){

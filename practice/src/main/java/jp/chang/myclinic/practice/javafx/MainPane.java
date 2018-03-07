@@ -7,6 +7,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
@@ -45,9 +46,11 @@ public class MainPane extends BorderPane {
             Menu menu = new Menu("その他");
             MenuItem newVisitItem = new MenuItem("受付");
             MenuItem referItem = new MenuItem("紹介状作成");
+            MenuItem listPrinterSettingItem = new MenuItem("印刷設定の一覧");
             newVisitItem.setOnAction(evt -> doNewVisit());
             referItem.setOnAction(evt -> doRefer());
-            menu.getItems().addAll(newVisitItem, referItem);
+            listPrinterSettingItem.setOnAction(evt -> doListPrinterSetting());
+            menu.getItems().addAll(newVisitItem, referItem, listPrinterSettingItem);
             menuBar.getMenus().add(menu);
         }
         return menuBar;
@@ -56,6 +59,10 @@ public class MainPane extends BorderPane {
     private void doNewVisit(){
         NewVisitDialog dialog = new NewVisitDialog();
         dialog.showAndWait();
+    }
+
+    private void doListPrinterSetting(){
+        PracticeLib.openPrinterSettingList().ifPresent(Stage::show);
     }
 
     private Node createCenter(){

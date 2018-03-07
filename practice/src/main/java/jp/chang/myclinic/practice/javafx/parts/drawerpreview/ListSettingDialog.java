@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
@@ -38,9 +39,23 @@ public class ListSettingDialog extends Stage {
         hbox.setAlignment(Pos.CENTER_LEFT);
         Button editButton = new Button("編集");
         Button deleteButton = new Button("削除");
+        editButton.setOnAction(evt -> doEdit(name));
         deleteButton.setOnAction(evt -> doDelete(name));
         hbox.getChildren().addAll(editButton, deleteButton);
         return hbox;
+    }
+
+    private void doEdit(String name){
+        try {
+            byte[] devmode = printerEnv.getDevmode(name);
+            byte[] devnames = printerEnv.getDevnames(name);
+            AuxSetting auxSetting = printerEnv.getAuxSetting(name);
+            EditSettingDialog editSettingDialog = new EditSettingDialog(printerEnv, name, devmode, devnames, auxSetting);
+            editSettingDialog.show();
+        } catch (IOException e) {
+            logger.error("Failed to get printer setting info.", e);
+            GuiUtil.alertException("印刷設定情報の取得に失敗しました。", e);
+        }
     }
 
     private void doDelete(String name){

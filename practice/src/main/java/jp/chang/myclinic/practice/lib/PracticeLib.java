@@ -2,15 +2,19 @@ package jp.chang.myclinic.practice.lib;
 
 import javafx.application.Platform;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.practice.javafx.parts.drawerpreview.ListSettingDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -311,6 +315,18 @@ public class PracticeLib {
                     Platform.runLater(() -> GuiUtil.alertException("医薬品マスターの特定に失敗しました。", ex));
                     return null;
                 });
+    }
+
+    public static Optional<ListSettingDialog> openPrinterSettingList(){
+        try {
+            PrinterEnv printerEnv = PracticeEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
+            List<String> names = printerEnv.listSettingNames();
+            return Optional.of(new ListSettingDialog(names, printerEnv));
+        } catch (IOException e) {
+            logger.error("Failed to list printer setting names.", e);
+            GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", e);
+            return Optional.empty();
+        }
     }
 
 }
