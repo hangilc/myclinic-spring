@@ -138,9 +138,10 @@ public class ReferDialog extends Stage {
         drawer.setPatientInfo(composePatientInfo());
         drawer.setDiagnosis(diagnosisInput.getText());
         drawer.setIssueDate(issueDateInput.getText());
+        drawer.setContent(mainContentInput.getText());
         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog();
         previewDialog.setTitle("紹介状のプレビュー");
-        previewDialog.setScaleFactor(0.7);
+        previewDialog.setScaleFactor(0.5);
         previewDialog.setContentSize(PaperSize.A4.getWidth(), PaperSize.A4.getHeight());
         previewDialog.setOps(drawer.getOps());
         try {
