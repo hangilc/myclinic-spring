@@ -9,19 +9,27 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.drawer.printer.AuxSetting;
+import jp.chang.myclinic.drawer.printer.DevmodeInfo;
+import jp.chang.myclinic.drawer.printer.DevnamesInfo;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
 
 public abstract class SelectDefaultSettingDialog extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(SelectDefaultSettingDialog.class);
     private static final String NO_SELECTION_TOKEN = "";
+    private PrinterEnv printerEnv;
 
     public SelectDefaultSettingDialog(String current, List<String> names,  PrinterEnv printerEnv) {
+        this.printerEnv = printerEnv;
         Parent root = createRoot(current, names, printerEnv);
         root.setStyle("-fx-padding:10px");
         setScene(new Scene(root));
@@ -51,13 +59,32 @@ public abstract class SelectDefaultSettingDialog extends Stage {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         RadioButton radio = group.createRadioButton(label, nameValue);
-        Hyperlink detailLink = new Hyperlink("詳細");
-
-        hbox.getChildren().addAll(
-                radio,
-                detailLink
-        );
+        hbox.getChildren().add(radio);
+        if (!NO_SELECTION_TOKEN.equals(nameValue) && nameValue != null) {
+            Hyperlink detailLink = new Hyperlink("詳細");
+            Hyperlink testPrintLink = new Hyperlink("テスト印刷");
+            detailLink.setOnAction(evt -> doDetail(label, nameValue));
+            hbox.getChildren().addAll(
+                    detailLink,
+                    testPrintLink
+            );
+        }
         return hbox;
+    }
+
+    private void doDetail(String label, String nameValue){
+        try {
+            DevmodeInfo devmodeInfo = new DevmodeInfo(printerEnv.getDevmode(nameValue));
+            DevnamesInfo devnamesInfo = new DevnamesInfo(printerEnv.getDevnames(nameValue));
+            AuxSetting auxSetting = printerEnv.getAuxSetting(nameValue);
+            String text = String.format("%s\n%s; %s; dx=%g; dy=%g; scale=%g",
+                    devnamesInfo.getDevice(), devmodeInfo.getDefaultSourceLabel(),
+                    devmodeInfo.getOrientationLabel(),
+                    auxSetting.getDx(), auxSetting.getDy(), auxSetting.getScale());
+            GuiUtil.alertInfo(text);
+        } catch (IOException e) {
+            HandlerFX.exception("印刷設定情報の取得に失敗しました。", e);
+        }
     }
 
 }

@@ -27,6 +27,12 @@ public class GuiUtil {
         alert.showAndWait();
     }
 
+    public static void alertInfo(String message){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
+        alert.setHeaderText(null);
+        alert.showAndWait();
+    }
+
     public static void alertException(String prefix, Throwable ex){
         if( prefix == null ){
             prefix = "";
