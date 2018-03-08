@@ -296,10 +296,10 @@ public class DrawerPrinter {
 
     private HFONT createFont(String fontName, int size, int weight, boolean italic){
         LOGFONT logfont = new LOGFONT();
-        logfont.lfHeight = size;
-        logfont.lfWeight = weight;
-        logfont.lfItalic = italic ? 1 : 0;
-        logfont.lfCharSet = PrinterConsts.DEFAULT_CHARSET;
+        logfont.lfHeight = new LONG(size);
+        logfont.lfWeight = new LONG(weight);
+        logfont.lfItalic = new WinDef.BYTE(italic ? 1 : 0);
+        logfont.lfCharSet = new WinDef.BYTE(PrinterConsts.DEFAULT_CHARSET);
         if( fontName.length() >= PrinterConsts.LF_FACESIZE ){
             throw new RuntimeException("Too long font name");
         }
