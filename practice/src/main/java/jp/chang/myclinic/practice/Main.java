@@ -47,8 +47,12 @@ public class Main extends Application {
     private static void setupPracticeEnv(CommandArgs commandArgs, Runnable cb) throws IOException {
         PracticeEnv.INSTANCE = new PracticeEnv(commandArgs);
         Service.api.getClinicInfo()
-                .thenAccept(clinicInfo -> {
+                .thenCompose(clinicInfo -> {
                     PracticeEnv.INSTANCE.setClinicInfo(clinicInfo);
+                    return Service.api.getReferList();
+                })
+                .thenAccept(referItems -> {
+                    PracticeEnv.INSTANCE.setReferList(referItems);
                     cb.run();
                 })
                 .exceptionally(t -> {

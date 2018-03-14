@@ -169,3 +169,8 @@
 .drawer-preview-dialog .printer-setting-choice {
     -fx-max-width: 160px;
 }
+
+.registered-refer-dialog {
+    -fx-padding: 10px;
+    -fx-pref-width: 420px;
+}

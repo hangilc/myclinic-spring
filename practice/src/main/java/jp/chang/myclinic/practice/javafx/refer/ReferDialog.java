@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
+import jp.chang.myclinic.dto.ReferItemDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 public class ReferDialog extends Stage {
@@ -54,8 +56,10 @@ public class ReferDialog extends Stage {
     private Node createCommands(){
         HBox hbox = new HBox(4);
         Button previewButton = new Button("プレビュー");
+        Button registeredButton = new Button("登録先");
         previewButton.setOnAction(evt -> doPreview());
-        hbox.getChildren().addAll(previewButton);
+        registeredButton.setOnAction(evt-> doRegistered());
+        hbox.getChildren().addAll(previewButton, registeredButton);
         return hbox;
     }
 
@@ -158,6 +162,14 @@ public class ReferDialog extends Stage {
             GuiUtil.alertException("入出力エラーが発生しました。", e);
         }
         previewDialog.show();
+    }
+
+    private void doRegistered(){
+        List<ReferItemDTO> referList = PracticeEnv.INSTANCE.getReferList();
+        if( referList != null ){
+            RegisteredDialog dialog = new RegisteredDialog(referList);
+            dialog.showAndWait();
+        }
     }
 
     private String getReferTitle(){

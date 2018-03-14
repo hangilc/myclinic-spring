@@ -4,10 +4,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import jp.chang.myclinic.dto.ClinicInfoDTO;
-import jp.chang.myclinic.dto.DiseaseFullDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.myclinicenv.MyclinicEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +36,7 @@ public class PracticeEnv {
     private ObjectProperty<List<VisitFull2DTO>> pageVisits = new SimpleObjectProperty<>(Collections.emptyList());
     private ObjectProperty<List<DiseaseFullDTO>> currentDiseases = new SimpleObjectProperty<>(Collections.emptyList());
     private MyclinicEnv myclinicEnv;
+    private List<ReferItemDTO> referList;
 
     public PracticeEnv(CommandArgs commandArgs) throws IOException {
         printerSettingsDir = commandArgs.getWorkingDirectory();
@@ -184,6 +182,14 @@ public class PracticeEnv {
             properties.setProperty(PRINTER_SETTING_KEY, settingName);
         }
         setAppProperties(properties);
+    }
+
+    public List<ReferItemDTO> getReferList() {
+        return referList;
+    }
+
+    public void setReferList(List<ReferItemDTO> referList) {
+        this.referList = referList;
     }
 
     @Override

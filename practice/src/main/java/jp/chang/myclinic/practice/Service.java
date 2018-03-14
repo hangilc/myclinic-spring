@@ -294,6 +294,9 @@ public class Service {
 
         @GET("get-clinic-info")
         CompletableFuture<ClinicInfoDTO> getClinicInfo();
+
+        @GET("get-refer-list")
+        CompletableFuture<List<ReferItemDTO>> getReferList();
     }
 
     public static ServerAPI api;
