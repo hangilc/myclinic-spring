@@ -18,8 +18,7 @@ public class Main extends Application {
     public static void main(String[] args) throws IOException {
         CommandArgs commandArgs = new CommandArgs(args);
         Service.setServerUrl(commandArgs.getServerUrl());
-        PracticeEnv.INSTANCE = new PracticeEnv(commandArgs);
-        Application.launch(Main.class, args);
+        setupPracticeEnv(commandArgs, () -> Application.launch(Main.class, args));
     }
 
     @Override
@@ -43,6 +42,20 @@ public class Main extends Application {
         if( cache != null ){
             cache.close();
         }
+    }
+
+    private static void setupPracticeEnv(CommandArgs commandArgs, Runnable cb) throws IOException {
+        PracticeEnv.INSTANCE = new PracticeEnv(commandArgs);
+        Service.api.getClinicInfo()
+                .thenAccept(clinicInfo -> {
+                    PracticeEnv.INSTANCE.setClinicInfo(clinicInfo);
+                    cb.run();
+                })
+                .exceptionally(t -> {
+                    t.printStackTrace();
+                    return null;
+                    });
+
     }
 
 }

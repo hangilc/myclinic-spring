@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
@@ -139,6 +140,9 @@ public class ReferDialog extends Stage {
         drawer.setDiagnosis(diagnosisInput.getText());
         drawer.setIssueDate(issueDateInput.getText());
         drawer.setContent(mainContentInput.getText());
+        ClinicInfoDTO clinicInfo = PracticeEnv.INSTANCE.getClinicInfo();
+        drawer.setAddress(clinicInfo.postalCode, clinicInfo.address, clinicInfo.tel, clinicInfo.fax,
+                clinicInfo.name, clinicInfo.doctorName);
         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog();
         previewDialog.setTitle("紹介状のプレビュー");
         previewDialog.setScaleFactor(0.5);

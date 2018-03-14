@@ -195,11 +195,12 @@ public class DrawerCanvas extends Canvas {
         double size = op.getSize();
         int weight = op.getWeight();
         boolean isItalic = op.isItalic();
+        double fontSize = Units.mmToPoint(size) * scaleFactor;
         Font font = Font.font(
                 fontName,
                 FontWeight.findByWeight(weight),
                 isItalic ? FontPosture.ITALIC : FontPosture.REGULAR,
-                Units.mmToPoint(size));
+                fontSize);
         fontMap.put(name, font);
     }
 
