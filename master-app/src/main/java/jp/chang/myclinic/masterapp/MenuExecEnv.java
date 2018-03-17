@@ -37,12 +37,6 @@ public class MenuExecEnv {
 		reader = new BufferedReader(r);
 	}
 
-//	@PostConstruct
-//	public void postConstruct(){
-//		System.out.println("PostConstruct:" + masterFilesConfig);
-//		masterFilesDirectory = Paths.get(masterFilesConfig);
-//	}
-//
 	public String readLine(String prompt){
 		out.print(prompt);
 		return readLine();

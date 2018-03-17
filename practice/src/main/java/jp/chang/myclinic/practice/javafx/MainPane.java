@@ -166,6 +166,10 @@ public class MainPane extends BorderPane {
 
     private void doRefer(){
         ReferDialog dialog = new ReferDialog();
+        PatientDTO patient = PracticeEnv.INSTANCE.getCurrentPatient();
+        if( patient != null ){
+            dialog.setPatient(patient);
+        }
         dialog.show();
     }
 

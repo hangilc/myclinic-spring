@@ -10,16 +10,19 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ReferItemDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import jp.chang.myclinic.practice.javafx.parts.SexInput;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
+import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Properties;
 
@@ -51,6 +54,30 @@ public class ReferDialog extends Stage {
                 createMainContent()
         );
         setScene(new Scene(root));
+    }
+
+    public void setPatient(PatientDTO patient){
+        patientNameInput.setText(patient.lastName + " " + patient.firstName);
+        birthdayInput.setText(composeBirthdayRep(patient.birthday));
+        ageInput.setText(composeAgeRep(patient.birthday));
+        sexInput.getSelectionModel().select(Sex.fromCode(patient.sex));
+    }
+
+    private String composeBirthdayRep(String sqldate){
+        if( sqldate == null || sqldate.isEmpty() ){
+            return "";
+        } else {
+            return DateTimeUtil.sqlDateToKanji(sqldate, DateTimeUtil.kanjiFormatter1);
+        }
+    }
+
+    private String composeAgeRep(String sqldate){
+        try {
+            LocalDate bd = LocalDate.parse(sqldate);
+            return "" + DateTimeUtil.calcAge(bd);
+        } catch(Exception ex){
+            return "";
+        }
     }
 
     private Node createCommands(){
@@ -91,12 +118,14 @@ public class ReferDialog extends Stage {
 
     private HBox createHBox(Node... children){
         HBox hbox = new HBox(4);
-        hbox.setAlignment(Pos.CENTER_RIGHT);
+        hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getChildren().addAll(children);
         return hbox;
     }
 
     private Node createMainContent(){
+        mainContentInput.setWrapText(true);
+        mainContentInput.setText("いつも大変お世話になっております。");
         return mainContentInput;
     }
 
@@ -141,7 +170,7 @@ public class ReferDialog extends Stage {
         drawer.setReferDoctor(composeReferDoctor());
         drawer.setPatientName(composePatientName());
         drawer.setPatientInfo(composePatientInfo());
-        drawer.setDiagnosis(diagnosisInput.getText());
+        drawer.setDiagnosis("診断 " + diagnosisInput.getText());
         drawer.setIssueDate(issueDateInput.getText());
         drawer.setContent(mainContentInput.getText());
         ClinicInfoDTO clinicInfo = PracticeEnv.INSTANCE.getClinicInfo();
@@ -167,7 +196,21 @@ public class ReferDialog extends Stage {
     private void doRegistered(){
         List<ReferItemDTO> referList = PracticeEnv.INSTANCE.getReferList();
         if( referList != null ){
-            RegisteredDialog dialog = new RegisteredDialog(referList);
+            RegisteredDialog dialog = new RegisteredDialog(referList){
+                @Override
+                void onEnter(RegisteredDialog self, ReferItemDTO item) {
+                    if( item.hospital != null ){
+                        hospitalInput.setText(item.hospital);
+                    }
+                    if( item.section != null ){
+                        sectionInput.setText(item.section);
+                    }
+                    if( item.doctor != null ){
+                        doctorInput.setText(item.doctor);
+                    }
+                    self.close();
+                }
+            };
             dialog.showAndWait();
         }
     }
