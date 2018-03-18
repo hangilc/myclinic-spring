@@ -124,6 +124,7 @@ public class ShohousenDialog extends Stage {
     private void addContentInput(DispGrid grid){
         contentInput.setWrapText(true);
         contentInput.getStyleClass().add("drugs-input");
+        //contentInput.setFont(new Font("MS Gothic", 13));
         grid.addRow("薬剤", contentInput);
     }
 

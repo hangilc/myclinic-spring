@@ -46,8 +46,10 @@
     -fx-max-width: 9em;
 }
 
-.shohousen-dialog .drugs-input {
+.shohousen-dialog .drugs-input{
     -fx-pref-width: 300px;
+    -fx-font-family: "MS Gothic";
+    -fx-font-size: 12;
 }
 
 
