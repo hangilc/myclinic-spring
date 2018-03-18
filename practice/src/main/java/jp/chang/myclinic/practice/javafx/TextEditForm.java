@@ -33,12 +33,14 @@ public class TextEditForm extends VBox {
     }
 
     private int visitId;
+    private String content;
     private TextArea textArea = new TextArea();
     private Callback callback;
 
     public TextEditForm(TextDTO text){
         super(4);
         this.visitId = text.visitId;
+        this.content = text.content;
         getStyleClass().addAll("record-text-form", "edit");
         setFillWidth(true);
         textArea.setWrapText(true);
@@ -104,6 +106,7 @@ public class TextEditForm extends VBox {
                         LocalDate visitedAt = LocalDate.parse(info.getVisit().visitedAt.substring(0, 10));
                         data.setFutanWari(info.getHoken(), patient, visitedAt);
                         data.setKoufuDate(visitedAt);
+                        data.setDrugs(content);
                         data.applyTo(drawer);
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog();
                         previewDialog.setPrinterEnv(printerEnv);
