@@ -12,6 +12,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeService;
 
@@ -46,11 +47,17 @@ public class MainPane extends BorderPane {
             Menu menu = new Menu("その他");
             MenuItem newVisitItem = new MenuItem("受付");
             MenuItem referItem = new MenuItem("紹介状作成");
+            MenuItem shohousenItem = new MenuItem("処方箋作成");
             MenuItem listPrinterSettingItem = new MenuItem("印刷設定の一覧");
             newVisitItem.setOnAction(evt -> doNewVisit());
             referItem.setOnAction(evt -> doRefer());
+            shohousenItem.setOnAction(evt -> doShohousen());
             listPrinterSettingItem.setOnAction(evt -> doListPrinterSetting());
-            menu.getItems().addAll(newVisitItem, referItem, listPrinterSettingItem);
+            menu.getItems().addAll(
+                    newVisitItem,
+                    referItem,
+                    shohousenItem,
+                    listPrinterSettingItem);
             menuBar.getMenus().add(menu);
         }
         return menuBar;
@@ -170,6 +177,11 @@ public class MainPane extends BorderPane {
         if( patient != null ){
             dialog.setPatient(patient);
         }
+        dialog.show();
+    }
+
+    private void doShohousen(){
+        ShohousenDialog dialog = new ShohousenDialog();
         dialog.show();
     }
 

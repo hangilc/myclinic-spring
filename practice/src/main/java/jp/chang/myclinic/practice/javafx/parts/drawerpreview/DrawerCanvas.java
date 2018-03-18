@@ -138,7 +138,7 @@ public class DrawerCanvas extends Canvas {
         int b = op.getB();
         double width = scale(op.getWidth());
         StrokeEnv env = new StrokeEnv();
-        env.paint = Color.color(r, g, b);
+        env.paint = Color.color(r/255.0, g/255.0, b/255.0);
         env.width = width;
         penMap.put(name, env);
     }
@@ -147,7 +147,7 @@ public class DrawerCanvas extends Canvas {
         int r = op.getR();
         int g = op.getG();
         int b = op.getB();
-        Color color = Color.color(r, g, b);
+        Color color = Color.color(r/255.0, g/255.0, b/255.0);
         enterStrokeMode(StrokeMode.TEXT);
         gc.setStroke(color);
     }

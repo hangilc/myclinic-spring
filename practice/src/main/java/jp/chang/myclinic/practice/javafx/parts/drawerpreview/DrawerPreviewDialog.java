@@ -8,6 +8,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
@@ -53,6 +54,10 @@ public class DrawerPreviewDialog extends Stage {
 
     public void setContentSize(double mmWidth, double mmHeight) {
         drawerCanvas.setContentSize(mmWidth, mmHeight);
+    }
+
+    public void setContentSize(PaperSize paperSize){
+        setContentSize(paperSize.getWidth(), paperSize.getHeight());
     }
 
     public void setScaleFactor(double scaleFactor) {
