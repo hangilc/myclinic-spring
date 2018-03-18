@@ -1,6 +1,5 @@
 .shohousen-dialog {
     -fx-padding: 10px;
-    -fx-pref-width: 360px;
 }
 
 .shohousen-dialog .input-scroll {
@@ -39,5 +38,16 @@
     -fx-max-width: 9em;
 }
 
+.shohousen-dialog .kouhi-futansha-input {
+    -fx-max-width: 9em;
+}
+
+.shohousen-dialog .kouhi-jukyuusha-input {
+    -fx-max-width: 9em;
+}
+
+.shohousen-dialog .drugs-input {
+    -fx-pref-width: 300px;
+}
 
 

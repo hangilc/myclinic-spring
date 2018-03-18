@@ -1,14 +1,16 @@
 package jp.chang.myclinic.practice.shohousen;
 
 import jp.chang.myclinic.drawer.Box;
+import jp.chang.myclinic.drawer.Box.HorizAnchor;
+import jp.chang.myclinic.drawer.Box.VertAnchor;
 import jp.chang.myclinic.drawer.DrawerCompiler;
+import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
+import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
-import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
-import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
-import jp.chang.myclinic.drawer.Box.VertAnchor;
-import jp.chang.myclinic.drawer.Box.HorizAnchor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ShohousenDrawer {

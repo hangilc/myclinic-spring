@@ -2,10 +2,7 @@ package jp.chang.myclinic.practice.javafx.shohousen;
 
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -45,12 +42,17 @@ public class ShohousenDialog extends Stage {
     private DateInput issueDateInput = new DateInput();
     private TextField hokenshaInput = new TextField();
     private TextField kigouBangouInput = new TextField();
+    private TextField kouhiFutansha1 = new TextField();
+    private TextField kouhiJukyuusha1 = new TextField();
+    private TextField kouhiFutansha2 = new TextField();
+    private TextField kouhiJukyuusha2 = new TextField();
     private TextField doctorNameInput = new TextField("");
     private TextField postalCodeInput = new TextField("〒");
     private TextField addressInput = new TextField();
     private TextField clinicNameInput = new TextField();
     private TextField phoneInput = new TextField();
     private TextField kikancodeInput = new TextField();
+    private TextArea contentInput = new TextArea();
 
     public ShohousenDialog() {
         VBox root = new VBox(4);
@@ -102,12 +104,27 @@ public class ShohousenDialog extends Stage {
         kigouBangouInput.getStyleClass().add("kigou-bangou-input");
         grid.addRow("記号・番号", kigouBangouInput);
         doctorNameInput.getStyleClass().add("doctor-name-input");
+        kouhiFutansha1.getStyleClass().add("kouhi-futansha-input");
+        grid.addRow("公費負担者１", kouhiFutansha1);
+        kouhiJukyuusha1.getStyleClass().add("kouhi-jukyuusha-input");
+        grid.addRow("公費受給者１", kouhiJukyuusha1);
+        kouhiFutansha2.getStyleClass().add("kouhi-futansha-input");
+        grid.addRow("公費負担者２", kouhiFutansha2);
+        kouhiJukyuusha2.getStyleClass().add("kouhi-jukyuusha-input");
+        grid.addRow("公費受給者２", kouhiJukyuusha2);
+        addContentInput(grid);
         grid.addRow("医師名", doctorNameInput);
         addHakkouKikan(grid);
         ScrollPane scrollPane = new ScrollPane(grid);
         scrollPane.getStyleClass().add("input-scroll");
         scrollPane.setFitToWidth(true);
         return scrollPane;
+    }
+
+    private void addContentInput(DispGrid grid){
+        contentInput.setWrapText(true);
+        contentInput.getStyleClass().add("drugs-input");
+        grid.addRow("薬剤", contentInput);
     }
 
     private void addIssueDateInput(DispGrid grid){
@@ -172,6 +189,13 @@ public class ShohousenDialog extends Stage {
                 return;
             }
             drawer.setHihokensha(kigouBangouInput.getText());
+            if( !(setKouhiFutansha1(drawer) && setKouhiJukyuusha1(drawer)) ){
+                return;
+            }
+            if( !(setKouhiFutansha2(drawer) && setKouhiJukyuusha2(drawer)) ){
+                return;
+            }
+            setDrugs(drawer);
             previewDialog.setContentSize(PaperSize.A5);
             previewDialog.setOps(drawer.getOps());
             previewDialog.showAndWait();
@@ -179,6 +203,94 @@ public class ShohousenDialog extends Stage {
             logger.error("Failed to preview shohousen.", ex);
             GuiUtil.alertException("処方箋のプレビューに失敗しました。", ex);
         }
+    }
+
+    private void setDrugs(ShohousenDrawer drawer){
+        drawer.setDrugLines(contentInput.getText().trim());
+    }
+
+    private boolean setKouhiFutansha1(ShohousenDrawer drawer){
+        String input = kouhiFutansha1.getText();
+        if( input.isEmpty() ){
+            return true;
+        }
+        try {
+            int num = Integer.parseInt(input);
+            String rep = "" + num;
+            if( rep.length() > 8 ){
+                GuiUtil.alertError("公費負担者番号の大きさは８桁までです。");
+                return false;
+            }
+            drawer.setKouhi1Futansha(rep);
+            return true;
+        } catch(Exception ex){
+            GuiUtil.alertError("公費負担者番号の入力が不適切です。");
+            return false;
+        }
+
+    }
+
+    private boolean setKouhiFutansha2(ShohousenDrawer drawer){
+        String input = kouhiFutansha2.getText();
+        if( input.isEmpty() ){
+            return true;
+        }
+        try {
+            int num = Integer.parseInt(input);
+            String rep = "" + num;
+            if( rep.length() > 8 ){
+                GuiUtil.alertError("公費負担者番号の大きさは８桁までです。");
+                return false;
+            }
+            drawer.setKouhi2Futansha(rep);
+            return true;
+        } catch(Exception ex){
+            GuiUtil.alertError("公費負担者番号の入力が不適切です。");
+            return false;
+        }
+
+    }
+
+    private boolean setKouhiJukyuusha1(ShohousenDrawer drawer){
+        String input = kouhiJukyuusha1.getText();
+        if( input.isEmpty() ){
+            return true;
+        }
+        try {
+            int num = Integer.parseInt(input);
+            String rep = "" + num;
+            if( rep.length() > 7 ){
+                GuiUtil.alertError("公費受給者番号の大きさは７桁までです。");
+                return false;
+            }
+            drawer.setKouhi1Jukyuusha(rep);
+            return true;
+        } catch(Exception ex){
+            GuiUtil.alertError("公費受給者番号の入力が不適切です。");
+            return false;
+        }
+
+    }
+
+    private boolean setKouhiJukyuusha2(ShohousenDrawer drawer){
+        String input = kouhiJukyuusha2.getText();
+        if( input.isEmpty() ){
+            return true;
+        }
+        try {
+            int num = Integer.parseInt(input);
+            String rep = "" + num;
+            if( rep.length() > 7 ){
+                GuiUtil.alertError("公費受給者番号の大きさは７桁までです。");
+                return false;
+            }
+            drawer.setKouhi2Jukyuusha(rep);
+            return true;
+        } catch(Exception ex){
+            GuiUtil.alertError("公費受給者番号の入力が不適切です。");
+            return false;
+        }
+
     }
 
     private boolean setDrawerHokensha(ShohousenDrawer drawer){

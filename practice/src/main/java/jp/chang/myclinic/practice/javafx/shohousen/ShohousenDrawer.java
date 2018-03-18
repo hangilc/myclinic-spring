@@ -9,6 +9,8 @@ import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ShohousenDrawer {
@@ -243,6 +245,15 @@ public class ShohousenDrawer {
         c.setTextColor(0, 0, 0);
         c.setFont("gothic-4.5");
         c.multilineText(drugLines, drugsPaneBox, HAlign.Left, VAlign.Top, 0);
+    }
+
+    public void setDrugLines(String concatenatedLines){
+        if( concatenatedLines == null || concatenatedLines.isEmpty() ){
+            return;
+        }
+        List<String> lines = new ArrayList<>(Arrays.asList(concatenatedLines.split("\\r?\\n")));
+        lines.add("------以下余白------");
+        setDrugLines(lines);
     }
 
     private void frameDate(Box[] cols){
