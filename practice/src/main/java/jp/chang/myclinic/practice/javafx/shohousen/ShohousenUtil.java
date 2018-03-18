@@ -14,11 +14,15 @@ public class ShohousenUtil {
 
     }
 
+    public static String composeFullKikanCode(ClinicInfoDTO clinicInfo){
+        return clinicInfo.todoufukencode + clinicInfo.tensuuhyoucode + clinicInfo.kikancode;
+    }
+
     public static void setClinicInfo(ShohousenDrawer drawer, ClinicInfoDTO clinicInfo){
         String addr = clinicInfo.postalCode + " " + clinicInfo.address;
         String name = clinicInfo.name;
         String phone = "電話 " + clinicInfo.tel;
-        String kikancode = clinicInfo.todoufukencode + clinicInfo.tensuuhyoucode + clinicInfo.kikancode;
+        String kikancode = composeFullKikanCode(clinicInfo);
         drawer.setHakkouKikan(addr, name, phone, kikancode);
         drawer.setDoctorName(clinicInfo.doctorName);
         LocalDate today = LocalDate.now();

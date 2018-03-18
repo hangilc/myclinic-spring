@@ -8,21 +8,23 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeService;
 
 public class MainPane extends BorderPane {
 
-    public MainPane(){
+    public MainPane() {
         setTop(createMenu());
         setCenter(createCenter());
     }
 
-    private Node createMenu(){
+    private Node createMenu() {
         MenuBar menuBar = new MenuBar();
         {
             Menu fileMenu = new Menu("ファイル");
@@ -62,16 +64,16 @@ public class MainPane extends BorderPane {
         return menuBar;
     }
 
-    private void doNewVisit(){
+    private void doNewVisit() {
         NewVisitDialog dialog = new NewVisitDialog();
         dialog.showAndWait();
     }
 
-    private void doListPrinterSetting(){
+    private void doListPrinterSetting() {
         PracticeLib.openPrinterSettingList().ifPresent(Stage::show);
     }
 
-    private Node createCenter(){
+    private Node createCenter() {
         HBox root = new HBox(4);
         root.setStyle("-fx-padding: 10");
         root.getChildren().addAll(
@@ -81,7 +83,7 @@ public class MainPane extends BorderPane {
         return root;
     }
 
-    private Node createMainColumn(){
+    private Node createMainColumn() {
         VBox root = new VBox(4);
         root.getStyleClass().add("main-column");
         CurrentPatientInfo currentPatientInfo = new CurrentPatientInfo();
@@ -97,25 +99,25 @@ public class MainPane extends BorderPane {
         return root;
     }
 
-    private Node createSideColumn(){
+    private Node createSideColumn() {
         VBox root = new VBox(4);
         root.getStyleClass().add("side-column");
         root.getChildren().addAll(
-            new DiseasesPane()
+                new DiseasesPane()
         );
         return root;
     }
 
-    private Node createRecordNav(){
+    private Node createRecordNav() {
         RecordNav nav = new RecordNav();
         nav.totalPagesProperty().bind(PracticeEnv.INSTANCE.totalRecordPagesProperty());
         nav.currentPageProperty().bind(PracticeEnv.INSTANCE.currentRecordPageProperty());
         return nav;
     }
 
-    private Node createPatientManip(){
+    private Node createPatientManip() {
         StackPane wrapper = new StackPane();
-        PatientManip patientManip = new PatientManip(){
+        PatientManip patientManip = new PatientManip() {
             @Override
             protected void onCashier() {
                 doCashier();
@@ -137,7 +139,7 @@ public class MainPane extends BorderPane {
             }
         };
         PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) -> {
-            if( newValue != null ){
+            if (newValue != null) {
                 wrapper.getChildren().setAll(patientManip);
             } else {
                 wrapper.getChildren().clear();
@@ -146,11 +148,11 @@ public class MainPane extends BorderPane {
         return wrapper;
     }
 
-    private void doCashier(){
+    private void doCashier() {
         int visitId = PracticeEnv.INSTANCE.getCurrentVisitId();
-        if( visitId > 0 ) {
+        if (visitId > 0) {
             Service.api.getMeisai(visitId)
-                    .thenAccept(meisai -> Platform.runLater(() ->{
+                    .thenAccept(meisai -> Platform.runLater(() -> {
                         CashierDialog dialog = new CashierDialog(meisai, visitId);
                         dialog.showAndWait();
                     }))
@@ -158,43 +160,43 @@ public class MainPane extends BorderPane {
         }
     }
 
-    private void doEndPatient(){
+    private void doEndPatient() {
         PracticeLib.endPatient();
     }
 
-    private void doSearchText(){
+    private void doSearchText() {
         PatientDTO patient = PracticeEnv.INSTANCE.getCurrentPatient();
-        if( patient != null ){
+        if (patient != null) {
             SearchTextDialog dialog = new SearchTextDialog(patient.patientId);
             dialog.showAndWait();
         }
     }
 
-    private void doRefer(){
+    private void doRefer() {
         ReferDialog dialog = new ReferDialog();
         PatientDTO patient = PracticeEnv.INSTANCE.getCurrentPatient();
-        if( patient != null ){
+        if (patient != null) {
             dialog.setPatient(patient);
         }
         dialog.show();
     }
 
-    private void doShohousen(){
-//        ShohousenDialog dialog = new ShohousenDialog();
-//        ShohousenDrawer drawer = dialog.getDrawer();
-//        ClinicInfoDTO clinicInfo = PracticeEnv.INSTANCE.getClinicInfo();
-//        ShohousenUtil.setClinicInfo(drawer, clinicInfo);
-//        dialog.show();
+    private void doShohousen() {
+        ShohousenDialog dialog = new ShohousenDialog();
+        ClinicInfoDTO clinicInfo = PracticeEnv.INSTANCE.getClinicInfo();
+        dialog.setClinicInfo(clinicInfo);
+        dialog.setDoctorName(clinicInfo.doctorName);
+        dialog.show();
     }
 
-    private Node createRecords(){
+    private Node createRecords() {
         ScrollPane sp = new ScrollPane();
         sp.setFitToWidth(true);
         VBox.setVgrow(sp, Priority.ALWAYS);
         RecordsPane recordsPane = new RecordsPane();
         PracticeEnv.INSTANCE.pageVisitsProperty().addListener((obs, oldValue, newValue) -> {
             recordsPane.getChildren().clear();
-            if( newValue != null ){
+            if (newValue != null) {
                 newValue.forEach(recordsPane::addRecord);
             }
         });
@@ -202,23 +204,24 @@ public class MainPane extends BorderPane {
         return sp;
     }
 
-    private void doSelectVisit(){
+    private void doSelectVisit() {
         PracticeLib.listWqueue(list -> {
             SelectFromWqueueDialog dialog = new SelectFromWqueueDialog(list);
             dialog.show();
         });
     }
 
-    private void doSearchPatient(){
+    private void doSearchPatient() {
         SearchPatientDialog dialog = new SearchPatientDialog();
         dialog.show();
     }
 
-    private void doRecentVisits(){
+    private void doRecentVisits() {
         PracticeService.listRecentVisits(list -> {
             RecentVisitsDialog dialog = new RecentVisitsDialog(list);
             dialog.setCallback(patient -> {
-                PracticeLib.startPatient(patient, () -> {});
+                PracticeLib.startPatient(patient, () -> {
+                });
             });
             dialog.show();
         });

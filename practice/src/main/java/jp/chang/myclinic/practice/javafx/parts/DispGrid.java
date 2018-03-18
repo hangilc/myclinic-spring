@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,7 @@ public class DispGrid extends GridPane {
         {
             ColumnConstraints cc = new ColumnConstraints();
             cc.setHalignment(HPos.LEFT);
+            cc.setHgrow(Priority.ALWAYS);
             getColumnConstraints().add(cc);
         }
     }

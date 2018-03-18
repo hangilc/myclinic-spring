@@ -1,0 +1,29 @@
+.shohousen-dialog {
+    -fx-padding: 10px;
+    -fx-pref-width: 360px;
+}
+
+.shohousen-dialog .input-scroll {
+    -fx-background-color: transparent;
+}
+
+.shohousen-dialog .postalcode-input {
+    -fx-max-width: 9em;
+}
+
+.shohousen-dialog .phone-input {
+    -fx-max-width: 9em;
+}
+
+.shohousen-dialog .kikancode-input {
+    -fx-max-width: 9em;
+}
+
+.shohousen-dialog .doctor-name-input {
+    -fx-max-width: 9em;
+}
+
+.date-input .nen, .date-input .month, .date-input .day {
+    -fx-pref-width: 3em;
+}
+
