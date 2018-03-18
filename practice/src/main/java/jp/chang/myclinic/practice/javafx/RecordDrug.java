@@ -34,7 +34,7 @@ class RecordDrug extends StackPane {
     private void updateDisp(){
         String text = String.format("%d)%s", index, DrugUtil.drugRep(drug));
         disp.getChildren().clear();
-        disp.getChildren().add(new TextFlow(new Text(text)));
+        disp.getChildren().add(new Text(text));
     }
 
     public int getDrugId() {
