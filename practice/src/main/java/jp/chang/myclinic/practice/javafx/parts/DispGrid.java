@@ -1,10 +1,12 @@
 package jp.chang.myclinic.practice.javafx.parts;
 
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,14 @@ public class DispGrid extends GridPane {
     public int addRow(String label, Node content){
         addRow(row, new Label(label), content);
         return row++;
+    }
+
+    public int addRow(String label, Node content1, Node content2, Node... others){
+        HBox hbox = new HBox(4);
+        hbox.setAlignment(Pos.CENTER_LEFT);
+        hbox.getChildren().addAll(content1, content2);
+        hbox.getChildren().addAll(others);
+        return addRow(label, hbox);
     }
 
     public void rightAlignFirstColumn(){

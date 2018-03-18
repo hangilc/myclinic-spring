@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.javafx.shohousen;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -40,6 +41,10 @@ public class ShohousenDialog extends Stage {
     private DateInput birthdayInput = new DateInput();
     private SexInput sexInput = new SexInput(Sex.Female);
     private RadioButtonGroup<HokenKubun> hokenKubunInput = new RadioButtonGroup<>();
+    private TextField futanWariInput = new TextField();
+    private DateInput issueDateInput = new DateInput();
+    private TextField hokenshaInput = new TextField();
+    private TextField kigouBangouInput = new TextField();
     private TextField doctorNameInput = new TextField("");
     private TextField postalCodeInput = new TextField("〒");
     private TextField addressInput = new TextField();
@@ -89,6 +94,13 @@ public class ShohousenDialog extends Stage {
         addBirthdayInput(grid);
         grid.addRow("性別", sexInput);
         addHokenKubunInput(grid);
+        futanWariInput.getStyleClass().add("futan-wari-input");
+        grid.addRow("負担割", futanWariInput, new Label("割"));
+        addIssueDateInput(grid);
+        hokenshaInput.getStyleClass().add("hokensha-input");
+        grid.addRow("保険者番号", hokenshaInput);
+        kigouBangouInput.getStyleClass().add("kigou-bangou-input");
+        grid.addRow("記号・番号", kigouBangouInput);
         doctorNameInput.getStyleClass().add("doctor-name-input");
         grid.addRow("医師名", doctorNameInput);
         addHakkouKikan(grid);
@@ -96,6 +108,11 @@ public class ShohousenDialog extends Stage {
         scrollPane.getStyleClass().add("input-scroll");
         scrollPane.setFitToWidth(true);
         return scrollPane;
+    }
+
+    private void addIssueDateInput(DispGrid grid){
+        issueDateInput.setValue(LocalDate.now());
+        grid.addRow("発行日",issueDateInput);
     }
 
     private void addHokenKubunInput(DispGrid grid){
@@ -145,12 +162,56 @@ public class ShohousenDialog extends Stage {
             }
             setDrawerSex(drawer);
             setDrawerHokenKubun(drawer);
+            if( !setDrawerFutanWari(drawer) ){
+                return;
+            }
+            if( !setDrawerIssueDate(drawer) ){
+                return;
+            }
+            if( !setDrawerHokensha(drawer) ){
+                return;
+            }
+            drawer.setHihokensha(kigouBangouInput.getText());
             previewDialog.setContentSize(PaperSize.A5);
             previewDialog.setOps(drawer.getOps());
             previewDialog.showAndWait();
         } catch(Exception ex){
             logger.error("Failed to preview shohousen.", ex);
             GuiUtil.alertException("処方箋のプレビューに失敗しました。", ex);
+        }
+    }
+
+    private boolean setDrawerHokensha(ShohousenDrawer drawer){
+        String input = hokenshaInput.getText();
+        if( input.isEmpty() ){
+            return true;
+        }
+        try {
+            int num = Integer.parseInt(input);
+            String rep = "" + num;
+            if( rep.length() > 8 ){
+                GuiUtil.alertError("保険者番号の大きさは８桁までです。");
+                return false;
+            }
+            drawer.setHokenshaBangou(rep);
+            return true;
+        } catch(Exception ex){
+            GuiUtil.alertError("保険者番号の入力が不適切です。");
+            return false;
+        }
+    }
+
+    private boolean setDrawerFutanWari(ShohousenDrawer drawer){
+        if( futanWariInput.getText().isEmpty() ){
+            return true;
+        }
+        try {
+            int futanWari = Integer.parseInt(futanWariInput.getText());
+            drawer.setFutanWari(futanWari);
+            return true;
+        } catch(Exception ex){
+            GuiUtil.alertError("負担割の入力が不適切です。");
+            return false;
         }
     }
 
@@ -181,6 +242,22 @@ public class ShohousenDialog extends Stage {
             return true;
         } else {
             GuiUtil.alertError("生年月日の入力が不適切です。");
+            return false;
+        }
+    }
+
+    private boolean setDrawerIssueDate(ShohousenDrawer drawer){
+        DateInput dateInput = issueDateInput;
+        if( dateInput.isEmpty() ){
+            return true;
+        }
+        Result<LocalDate, List<String>> result = dateInput.getValue();
+        if( result.hasValue() ){
+            LocalDate date = result.getValue();
+            drawer.setKoufuDate(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+            return true;
+        } else {
+            GuiUtil.alertError("発行日の入力が不適切です。");
             return false;
         }
     }

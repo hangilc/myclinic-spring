@@ -27,3 +27,17 @@
     -fx-pref-width: 3em;
 }
 
+.shohousen-dialog .futan-wari-input {
+    -fx-max-width: 2em;
+}
+
+.shohousen-dialog .hokensha-input {
+    -fx-max-width: 9em;
+}
+
+.shohousen-dialog .kigou-bangou-input {
+    -fx-max-width: 9em;
+}
+
+
+
