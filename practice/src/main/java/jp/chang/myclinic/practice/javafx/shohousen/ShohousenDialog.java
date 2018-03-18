@@ -7,9 +7,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.PaperSize;
-import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
-import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
 import org.slf4j.Logger;
@@ -18,6 +16,8 @@ import org.slf4j.LoggerFactory;
 public class ShohousenDialog extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(ShohousenDialog.class);
+    private ShohousenDrawer drawer = new ShohousenDrawer();
+    private PrinterEnv printerEnv;
 
     public ShohousenDialog() {
         VBox root = new VBox(4);
@@ -26,6 +26,14 @@ public class ShohousenDialog extends Stage {
                 createCommands()
         );
         setScene(new Scene(root));
+    }
+
+    public ShohousenDrawer getDrawer() {
+        return drawer;
+    }
+
+    public void setPrinterEnv(PrinterEnv printerEnv) {
+        this.printerEnv = printerEnv;
     }
 
     private Node createCommands(){
@@ -40,12 +48,8 @@ public class ShohousenDialog extends Stage {
 
     private void doPreview(){
         try {
-            PrinterEnv printerEnv = PracticeEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
             DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(printerEnv);
             previewDialog.setContentSize(PaperSize.A5);
-            ShohousenDrawer drawer = new ShohousenDrawer();
-            ClinicInfoDTO clinicInfo = PracticeEnv.INSTANCE.getClinicInfo();
-            ShohousenUtil.setClinicInfo(drawer, clinicInfo);
             previewDialog.setOps(drawer.getOps());
             previewDialog.showAndWait();
         } catch(Exception ex){

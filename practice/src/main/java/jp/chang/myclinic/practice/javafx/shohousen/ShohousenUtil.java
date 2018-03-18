@@ -17,8 +17,8 @@ public class ShohousenUtil {
     public static void setClinicInfo(ShohousenDrawer drawer, ClinicInfoDTO clinicInfo){
         String addr = clinicInfo.postalCode + " " + clinicInfo.address;
         String name = clinicInfo.name;
-        String phone = clinicInfo.tel;
-        String kikancode = clinicInfo.kikancode;
+        String phone = "電話 " + clinicInfo.tel;
+        String kikancode = clinicInfo.todoufukencode + clinicInfo.tensuuhyoucode + clinicInfo.kikancode;
         drawer.setHakkouKikan(addr, name, phone, kikancode);
         drawer.setDoctorName(clinicInfo.doctorName);
         LocalDate today = LocalDate.now();

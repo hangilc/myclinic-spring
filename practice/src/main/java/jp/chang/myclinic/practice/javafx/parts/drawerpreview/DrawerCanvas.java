@@ -21,11 +21,11 @@ public class DrawerCanvas extends Canvas {
 
     private static Logger logger = LoggerFactory.getLogger(DrawerCanvas.class);
 
-    private enum StrokeMode {
-        NONE, TEXT, LINE
+    private enum RenderMode {
+        NONE, TEXT, PEN
     }
 
-    private static class StrokeEnv {
+    private static class PenEnv {
         Paint paint;
         double width;
     }
@@ -54,10 +54,10 @@ public class DrawerCanvas extends Canvas {
     private double scaleFactor = 1.0;
     private GraphicsContext gc;
     private Map<String, Font> fontMap = new HashMap<>();
-    private Map<String, StrokeEnv> penMap = new HashMap<>();
-    private StrokeMode strokeMode = StrokeMode.NONE;
-    private StrokeEnv savedTextStrokeEnv;
-    private StrokeEnv savedLineStrokeEnv;
+    private Map<String, PenEnv> penMap = new HashMap<>();
+    private RenderMode renderMode = RenderMode.NONE;
+    private Color textColor;
+    private PenEnv penEnv;
 
     public DrawerCanvas() {
         gc = getGraphicsContext2D();
@@ -96,38 +96,31 @@ public class DrawerCanvas extends Canvas {
 
     private void doSetPen(OpSetPen op) {
         String name = op.getName();
-        StrokeEnv env = penMap.get(name);
+        PenEnv env = penMap.get(name);
         if( env == null ){
             logger.error("Cannot find pen ({}).", name);
         } else {
-            enterStrokeMode(StrokeMode.LINE);
-            restoreStrokeEnv(env);
-        }
-    }
-
-    private StrokeEnv getCurrentStrokeEnv(){
-        StrokeEnv currentEnv = new StrokeEnv();
-        currentEnv.paint = gc.getStroke();
-        currentEnv.width = gc.getLineWidth();
-        return currentEnv;
-    }
-
-    private void restoreStrokeEnv(StrokeEnv env){
-        if( env != null ) {
-            gc.setStroke(env.paint);
-            gc.setLineWidth(env.width);
-        }
-    }
-
-    private void enterStrokeMode(StrokeMode mode){
-        if( strokeMode != mode ){
-            if( mode == StrokeMode.TEXT ){
-                savedLineStrokeEnv = getCurrentStrokeEnv();
-                restoreStrokeEnv(savedTextStrokeEnv);
-            } else {
-                savedTextStrokeEnv = getCurrentStrokeEnv();
-                restoreStrokeEnv(savedLineStrokeEnv);
+            penEnv = env;
+            if( renderMode == RenderMode.PEN ){
+                gc.setStroke(env.paint);
+                gc.setLineWidth(env.width);
             }
+        }
+    }
+
+    private void enterRenderMode(RenderMode mode){
+        if( renderMode != mode ){
+            if( mode == RenderMode.TEXT ){
+                if( textColor != null ) {
+                    gc.setFill(textColor);
+                }
+            } else {
+                if( penEnv != null ){
+                    gc.setStroke(penEnv.paint);
+                    gc.setLineWidth(penEnv.width);
+                }
+            }
+            renderMode = mode;
         }
     }
 
@@ -137,7 +130,7 @@ public class DrawerCanvas extends Canvas {
         int g = op.getG();
         int b = op.getB();
         double width = scale(op.getWidth());
-        StrokeEnv env = new StrokeEnv();
+        PenEnv env = new PenEnv();
         env.paint = Color.color(r/255.0, g/255.0, b/255.0);
         env.width = width;
         penMap.put(name, env);
@@ -147,9 +140,10 @@ public class DrawerCanvas extends Canvas {
         int r = op.getR();
         int g = op.getG();
         int b = op.getB();
-        Color color = Color.color(r/255.0, g/255.0, b/255.0);
-        enterStrokeMode(StrokeMode.TEXT);
-        gc.setStroke(color);
+        textColor = Color.color(r/255.0, g/255.0, b/255.0);
+        if( renderMode == RenderMode.TEXT ){
+            gc.setFill(textColor);
+        }
     }
 
     private void doDrawChars(OpDrawChars op) {
@@ -167,12 +161,12 @@ public class DrawerCanvas extends Canvas {
         int n = chars.length();
         PosList xPosList = new PosList(xs);
         PosList yPosList = new PosList(ys);
-        enterStrokeMode(StrokeMode.TEXT);
+        enterRenderMode(RenderMode.TEXT);
         for(int i=0;i<n;i++){
             String s = chars.substring(i, i+1);
             double x = scale(xPosList.get(i));
             double y = scale(yPosList.get(i));
-            gc.strokeText(s, x, y);
+            gc.fillText(s, x, y);
         }
     }
 
@@ -185,7 +179,7 @@ public class DrawerCanvas extends Canvas {
     private void doLineTo(OpLineTo op){
         double x = scale(op.getX());
         double y = scale(op.getY());
-        enterStrokeMode(StrokeMode.LINE);
+        enterRenderMode(RenderMode.PEN);
         gc.lineTo(x, y);
     }
 

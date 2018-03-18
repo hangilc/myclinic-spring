@@ -1,13 +1,28 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.TextDTO;
+import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenData;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDrawer;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.LocalDate;
 
 public class TextEditForm extends VBox {
+
+    private static Logger logger = LoggerFactory.getLogger(TextEditForm.class);
 
     public interface Callback {
         void onEnter(String content);
@@ -17,11 +32,13 @@ public class TextEditForm extends VBox {
         void onCopy();
     }
 
+    private int visitId;
     private TextArea textArea = new TextArea();
     private Callback callback;
 
     public TextEditForm(TextDTO text){
         super(4);
+        this.visitId = text.visitId;
         getStyleClass().addAll("record-text-form", "edit");
         setFillWidth(true);
         textArea.setWrapText(true);
@@ -65,8 +82,40 @@ public class TextEditForm extends VBox {
                 }
             }
         });
+        shohousenLink.setOnAction(evt -> doShohousen());
         wrapper.getChildren().addAll(enterLink, cancelLink, deleteLink, shohousenLink, copyLink);
         return wrapper;
+    }
+
+    private void doShohousen(){
+        try {
+            ShohousenDrawer drawer = new ShohousenDrawer();
+            ShohousenData data = new ShohousenData();
+            PracticeEnv practiceEnv = PracticeEnv.INSTANCE;
+            PrinterEnv printerEnv = practiceEnv.getMyclinicEnv().getPrinterEnv();
+            data.setClinicInfo(practiceEnv.getClinicInfo());
+            PatientDTO patient = practiceEnv.getCurrentPatient();
+            if( patient!= null ){
+                data.setPatient(patient);
+            }
+            ShohousenInfo.load(visitId)
+                    .thenAccept(info -> Platform.runLater(() -> {
+                        data.setHoken(info.getHoken());
+                        LocalDate visitedAt = LocalDate.parse(info.getVisit().visitedAt.substring(0, 10));
+                        data.setFutanWari(info.getHoken(), patient, visitedAt);
+                        data.setKoufuDate(visitedAt);
+                        data.applyTo(drawer);
+                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog();
+                        previewDialog.setPrinterEnv(printerEnv);
+                        previewDialog.setContentSize(PaperSize.A5);
+                        previewDialog.setOps(drawer.getOps());
+                        previewDialog.showAndWait();
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        } catch(Exception ex){
+            logger.error("Failed to print shohousen.", ex);
+            GuiUtil.alertException("処方箋の印刷に失敗しました。", ex);
+        }
     }
 
 }

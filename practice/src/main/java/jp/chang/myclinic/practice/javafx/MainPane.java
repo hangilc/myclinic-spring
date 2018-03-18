@@ -12,7 +12,6 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
-import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeService;
 
@@ -181,16 +180,11 @@ public class MainPane extends BorderPane {
     }
 
     private void doShohousen(){
-        ShohousenDialog dialog = new ShohousenDialog();
-        dialog.show();
-    }
-
-    private void doRefer(PatientDTO patient){
-        if( patient == null ){
-            doRefer();
-        } else {
-            doRefer();
-        }
+//        ShohousenDialog dialog = new ShohousenDialog();
+//        ShohousenDrawer drawer = dialog.getDrawer();
+//        ClinicInfoDTO clinicInfo = PracticeEnv.INSTANCE.getClinicInfo();
+//        ShohousenUtil.setClinicInfo(drawer, clinicInfo);
+//        dialog.show();
     }
 
     private Node createRecords(){
