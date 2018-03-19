@@ -17,7 +17,12 @@ public class RecordText extends StackPane {
         void onDelete();
     }
 
-    private Callback callback;
+    private Callback callback = new Callback(){
+        @Override
+        public void onDelete() {
+            // nop
+        }
+    };
 
     public RecordText(TextDTO text) {
         getChildren().add(createDisp(text));
@@ -57,7 +62,7 @@ public class RecordText extends StackPane {
                 public void onDelete() {
                     PracticeLib.deleteText(text, () -> {
                         if (callback != null) {
-                            callback.onDelete();
+                            Platform.runLater(callback::onDelete);
                         }
                     });
                 }

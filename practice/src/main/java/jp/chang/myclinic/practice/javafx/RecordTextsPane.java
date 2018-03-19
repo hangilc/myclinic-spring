@@ -25,7 +25,7 @@ public class RecordTextsPane extends VBox {
         recordText.setCallback(new RecordText.Callback() {
             @Override
             public void onDelete() {
-                getChildren().remove(recordText);
+                textsArea.getChildren().remove(recordText);
             }
         });
         textsArea.getChildren().add(recordText);
