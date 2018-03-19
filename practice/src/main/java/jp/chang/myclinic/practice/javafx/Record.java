@@ -8,6 +8,7 @@ import jp.chang.myclinic.dto.*;
 public class Record extends VBox {
 
     private int visitId;
+    private RecordTextsPane textPane;
     private RecordDrugsPane drugsPane;
     private RecordShinryouPane shinryouPane;
     private RecordConductsPane conductsPane;
@@ -36,7 +37,8 @@ public class Record extends VBox {
         right.prefWidthProperty().bind(widthProperty().divide(2));
         right.setStyle("-fx-padding: 5");
         hbox.getChildren().addAll(left, right);
-        left.getChildren().add(new RecordTextsPane(visit.texts, visit.visit.visitId));
+        textPane = new RecordTextsPane(visit.texts, visit.visit.visitId);
+        left.getChildren().add(textPane);
         drugsPane = new RecordDrugsPane(visit.drugs, visit.visit);
         shinryouPane = new RecordShinryouPane(visit.shinryouList, visit.visit);
         conductsPane = new RecordConductsPane(visit.conducts, visit.visit.visitId, visit.visit.visitedAt);
@@ -76,5 +78,9 @@ public class Record extends VBox {
 
     public void deleteConduct(int conductId) {
         conductsPane.deleteConduct(conductId);
+    }
+
+    public void appendText(TextDTO enteredText) {
+        textPane.appendText(enteredText);
     }
 }

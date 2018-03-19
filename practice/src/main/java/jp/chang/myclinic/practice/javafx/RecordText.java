@@ -6,7 +6,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.dto.TextDTO;
+import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.javafx.events.TextEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeLib;
+import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 public class RecordText extends StackPane {
 
@@ -60,13 +63,28 @@ public class RecordText extends StackPane {
                 }
 
                 @Override
-                public void onShohousen() {
-
+                public void onDone() {
+                    getChildren().remove(form);
+                    getChildren().add(disp);
                 }
 
                 @Override
                 public void onCopy() {
-
+                    int targetVisitId = PracticeUtil.findCopyTarget(text.visitId);
+                    if( targetVisitId != 0 ){
+                        TextDTO newText = new TextDTO();
+                        newText.visitId = targetVisitId;
+                        newText.content = text.content;
+                        Service.api.enterText(newText)
+                                .thenCompose(Service.api::getText)
+                                .thenAccept(enteredText -> Platform.runLater(() -> {
+                                    TextEnteredEvent textEnteredEvent = new TextEnteredEvent(enteredText);
+                                    RecordText.this.fireEvent(textEnteredEvent);
+                                    getChildren().remove(form);
+                                    getChildren().add(disp);
+                                }))
+                                .exceptionally(HandlerFX::exceptionally);
+                    }
                 }
             });
             getChildren().clear();

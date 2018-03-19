@@ -11,11 +11,13 @@ import java.util.List;
 public class RecordTextsPane extends VBox {
 
     private int visitId;
+    private VBox textsArea = new VBox(4);
 
     public RecordTextsPane(List<TextDTO> texts, int visitId){
+        super(4);
         this.visitId = visitId;
         texts.forEach(this::addText);
-        getChildren().add(createNewTextLink());
+        getChildren().addAll(textsArea, createNewTextLink());
     }
 
     private void addText(TextDTO text){
@@ -26,7 +28,7 @@ public class RecordTextsPane extends VBox {
                 getChildren().remove(recordText);
             }
         });
-        getChildren().add(recordText);
+        textsArea.getChildren().add(recordText);
     }
 
     private Node createNewTextLink(){
@@ -56,4 +58,7 @@ public class RecordTextsPane extends VBox {
         return link;
     }
 
+    public void appendText(TextDTO enteredText) {
+        addText(enteredText);
+    }
 }

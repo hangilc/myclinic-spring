@@ -24,6 +24,7 @@ public class RecordsPane extends VBox {
         addEventHandler(ShinryouDeletedEvent.eventType, this::onShinryouDeleted);
         addEventHandler(ConductEnteredEvent.eventType, this::onConductEntered);
         addEventHandler(ConductDeletedEvent.eventType, this::onConductDeleted);
+        addEventHandler(TextEnteredEvent.eventType, this::onTextEntered);
     }
 
     public void addRecord(VisitFull2DTO visit){
@@ -99,6 +100,13 @@ public class RecordsPane extends VBox {
         Record record = findRecord(event.getVisitId());
         if( record != null ){
             record.deleteConduct(event.getConductId());
+        }
+    }
+
+    private void onTextEntered(TextEnteredEvent event){
+        Record record = findRecord(event.getEnteredText().visitId);
+        if( record != null ){
+            record.appendText(event.getEnteredText());
         }
     }
 

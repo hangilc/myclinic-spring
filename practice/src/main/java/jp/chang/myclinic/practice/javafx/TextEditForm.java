@@ -28,7 +28,7 @@ public class TextEditForm extends VBox {
         void onEnter(String content);
         void onCancel();
         void onDelete();
-        void onShohousen();
+        void onDone();
         void onCopy();
     }
 
@@ -85,6 +85,9 @@ public class TextEditForm extends VBox {
             }
         });
         shohousenLink.setOnAction(evt -> doShohousen());
+        copyLink.setOnAction(evt -> {
+            callback.onCopy();
+        });
         wrapper.getChildren().addAll(enterLink, cancelLink, deleteLink, shohousenLink, copyLink);
         return wrapper;
     }
@@ -113,6 +116,7 @@ public class TextEditForm extends VBox {
                         previewDialog.setContentSize(PaperSize.A5);
                         previewDialog.setOps(drawer.getOps());
                         previewDialog.showAndWait();
+                        callback.onDone();
                     }))
                     .exceptionally(HandlerFX::exceptionally);
         } catch(Exception ex){
