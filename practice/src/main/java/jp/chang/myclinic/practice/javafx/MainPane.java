@@ -38,10 +38,16 @@ public class MainPane extends BorderPane {
             MenuItem selectVisitMenu = new MenuItem("受付患者選択");
             MenuItem searchMenuItem = new MenuItem("患者検索");
             MenuItem recentVisitsItem = new MenuItem("最近の診察");
+            MenuItem todaysVisitsItem = new MenuItem("本日の診察");
             selectVisitMenu.setOnAction(event -> doSelectVisit());
             searchMenuItem.setOnAction(event -> doSearchPatient());
             recentVisitsItem.setOnAction(event -> doRecentVisits());
-            selectMenu.getItems().addAll(selectVisitMenu, searchMenuItem, recentVisitsItem);
+            todaysVisitsItem.setOnAction(event -> doTodaysVisits());
+            selectMenu.getItems().addAll(
+                    selectVisitMenu,
+                    searchMenuItem,
+                    recentVisitsItem,
+                    todaysVisitsItem);
             menuBar.getMenus().add(selectMenu);
         }
         {
@@ -62,6 +68,15 @@ public class MainPane extends BorderPane {
             menuBar.getMenus().add(menu);
         }
         return menuBar;
+    }
+
+    private void doTodaysVisits(){
+        Service.api.listTodaysVisits()
+                .thenAccept(list -> Platform.runLater(() -> {
+                    TodaysVisitsDialog dialog = new TodaysVisitsDialog(list);
+                    dialog.show();
+                }))
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private void doNewVisit() {
