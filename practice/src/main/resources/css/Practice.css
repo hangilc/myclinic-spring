@@ -174,3 +174,7 @@
     -fx-padding: 10px;
     -fx-pref-width: 420px;
 }
+
+.todays-visits-dialog {
+    -fx-padding: 10px;
+}

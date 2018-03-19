@@ -6,6 +6,9 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
@@ -40,7 +43,9 @@ public class MainPane extends BorderPane {
             MenuItem recentVisitsItem = new MenuItem("最近の診察");
             MenuItem todaysVisitsItem = new MenuItem("本日の診察");
             selectVisitMenu.setOnAction(event -> doSelectVisit());
+            selectVisitMenu.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
             searchMenuItem.setOnAction(event -> doSearchPatient());
+            searchMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
             recentVisitsItem.setOnAction(event -> doRecentVisits());
             todaysVisitsItem.setOnAction(event -> doTodaysVisits());
             selectMenu.getItems().addAll(
