@@ -1,6 +1,5 @@
 package jp.chang.myclinic.practice.javafx;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.VBox;
@@ -52,7 +51,7 @@ public class RecordTextsPane extends VBox {
             });
             getChildren().remove(link);
             getChildren().add(textEnterForm);
-            Platform.runLater(textEnterForm::acquireFocus);
+            //Platform.runLater(textEnterForm::acquireFocus);
         });
         return link;
     }
