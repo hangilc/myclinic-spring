@@ -1,7 +1,6 @@
 package jp.chang.myclinic.server.db.myclinic;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 // import javax.persistence.NamedEntityGraphs;
 // import javax.persistence.NamedEntityGraph;
@@ -59,13 +58,13 @@ public class Drug {
 	}
 
 	@Column(name="d_amount")
-	private BigDecimal amount;
+	private String amount;
 
-	public BigDecimal getAmount(){
+	public String getAmount(){
 		return amount;
 	}
 
-	public void setAmount(BigDecimal amount){
+	public void setAmount(String amount){
 		this.amount = amount;
 	}
 

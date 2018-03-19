@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,6 +16,7 @@ public class DTOMapper {
 
 	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 	private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");
+	private NumberFormat simpleNumberFormatter = NumberFormat.getNumberInstance();
 
 	public PatientDTO toPatientDTO(Patient patient){
 		PatientDTO patientDTO = new PatientDTO();
@@ -275,7 +277,7 @@ public class DTOMapper {
 		drugDTO.drugId = drug.getDrugId();
 		drugDTO.visitId = drug.getVisitId();
 		drugDTO.iyakuhincode = drug.getIyakuhincode();
-		drugDTO.amount = drug.getAmount().doubleValue();
+		drugDTO.amount = Double.parseDouble(drug.getAmount());
 		drugDTO.usage = drug.getUsage();
 		drugDTO.days = drug.getDays();
 		drugDTO.category = drug.getCategory();
@@ -289,7 +291,8 @@ public class DTOMapper {
 		drug.setDrugId(drugDTO.drugId);
 		drug.setVisitId(drugDTO.visitId);
 		drug.setIyakuhincode(drugDTO.iyakuhincode);
-		drug.setAmount(BigDecimal.valueOf(drugDTO.amount));
+		//drug.setAmount(BigDecimal.valueOf(drugDTO.amount));
+		drug.setAmount(simpleNumberFormatter.format(drugDTO.amount));
 		drug.setUsage(drugDTO.usage);
 		drug.setDays(drugDTO.days);
 		drug.setCategory(drugDTO.category);
