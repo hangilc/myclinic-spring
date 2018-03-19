@@ -71,7 +71,6 @@ public class RecordText extends StackPane {
             });
             getChildren().clear();
             getChildren().add(form);
-            Platform.runLater(form::acquireFocus);
         });
         return disp;
     }
