@@ -31,7 +31,7 @@ class RecordCharge extends StackPane {
                         ChargeForm form = new ChargeForm(meisai, chargeDTO) {
                             @Override
                             protected void onEnter(int chargeValue) {
-                                Service.api.modifyCharge(chargeDTO.visitId, chargeValue)
+                                Service.api.endExam(chargeDTO.visitId, chargeValue)
                                         .thenAccept(result -> Platform.runLater(() -> {
                                             chargeDTO = ChargeDTO.copy(chargeDTO);
                                             chargeDTO.charge = chargeValue;

@@ -14,13 +14,13 @@ import jp.chang.myclinic.practice.javafx.disease.*;
 import jp.chang.myclinic.practice.javafx.events.CurrentDiseasesChangedEvent;
 import jp.chang.myclinic.practice.javafx.events.DiseaseEnteredEvent;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DiseasesPane extends VBox {
 
     private StackPane workarea = new StackPane();
-    private List<DiseaseFullDTO> currentDiseases = Collections.emptyList();
+    private List<DiseaseFullDTO> currentDiseases = new ArrayList<>();
     private int patientId;
 
     DiseasesPane() {

@@ -82,7 +82,8 @@ public class Add extends VBox {
                     .thenCompose(Service.api::getDiseaseFull)
                     .thenAccept(entered -> Platform.runLater(() -> {
                         Add.this.fireEvent(new DiseaseEnteredEvent(entered));
-                        searchBox.clear();
+                        diseaseInput.clear();
+                        doExample();
                     }))
                     .exceptionally(HandlerFX::exceptionally);
         }
@@ -106,13 +107,13 @@ public class Add extends VBox {
         } else {
             Supplier<Result<LocalDate, List<String>>> dateSupplier = () -> diseaseInput.getStartDate();
             Service.api.listDiseaseExample()
-                    .thenAccept(examples -> {
+                    .thenAccept(examples -> Platform.runLater(() -> {
                         List<DiseaseSearchResultModel> models = examples.stream()
                                 .map(ex -> new ExampleSearchResult(ex, dateSupplier))
                                 .collect(Collectors.toList());
                         Add.this.examples = models;
                         searchBox.setList(models);
-                    })
+                    }))
                     .exceptionally(HandlerFX::exceptionally);
         }
     }

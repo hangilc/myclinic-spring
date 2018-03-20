@@ -59,6 +59,12 @@ public class DiseaseInput extends VBox {
         updateName();
     }
 
+    public void clear(){
+        this.byoumeiMaster = null;
+        adjList.clear();
+        updateName();
+    }
+
     public Result<LocalDate, List<String>> getStartDate(){
         return dateInput.getValue();
     }
