@@ -1,11 +1,13 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.application.Platform;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.util.DateTimeUtil;
@@ -63,6 +65,7 @@ public class RecordTitle extends TextFlow {
         }
         {
             MenuItem item = new MenuItem("診療明細");
+            item.setOnAction(event -> doRcptDetail());
             contextMenu.getItems().add(item);
         }
         setOnContextMenuRequested(event -> {
@@ -84,5 +87,14 @@ public class RecordTitle extends TextFlow {
         if( env.getTempVisitId() == visitId ){
             env.setTempVisitId(0);
         }
+    }
+
+    private void doRcptDetail(){
+        Service.api.getMeisai(visitId)
+                .thenAccept(meisai -> Platform.runLater(() -> {
+                    RcptDetailDialog dialog = new RcptDetailDialog(meisai);
+                    dialog.showAndWait();
+                }))
+                .exceptionally(HandlerFX::exceptionally);
     }
 }
