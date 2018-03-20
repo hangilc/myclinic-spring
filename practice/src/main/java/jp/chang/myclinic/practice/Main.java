@@ -54,9 +54,12 @@ public class Main extends Application {
                     PracticeEnv.INSTANCE.setClinicInfo(clinicInfo);
                     return Service.api.getReferList();
                 })
-                .thenAccept(referItems -> {
+                .thenCompose(referItems -> {
                     PracticeEnv.INSTANCE.setReferList(referItems);
-                    PracticeEnv.INSTANCE.setKouhatsuKasanEnabled(true);
+                    return Service.api.getPracticeConfig();
+                })
+                .thenAccept(config -> {
+                    PracticeEnv.INSTANCE.setKouhatsuKasanEnabled(config.kouhatsuKasan);
                     cb.run();
                 })
                 .exceptionally(t -> {

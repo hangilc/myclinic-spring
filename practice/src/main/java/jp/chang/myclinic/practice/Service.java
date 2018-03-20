@@ -297,6 +297,9 @@ public class Service {
 
         @GET("get-refer-list")
         CompletableFuture<List<ReferItemDTO>> getReferList();
+
+        @GET("get-practice-config")
+        CompletableFuture<PracticeConfigDTO> getPracticeConfig();
     }
 
     public static ServerAPI api;
