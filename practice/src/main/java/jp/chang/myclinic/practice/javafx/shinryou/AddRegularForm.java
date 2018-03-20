@@ -9,9 +9,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
+import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
@@ -26,6 +28,8 @@ class AddRegularForm extends VBox {
 
     private int visitId;
     private List<CheckBox> checks = new ArrayList<>();
+    private CheckBox shohouryouCheckBox;
+    private CheckBox kouhatsuKasanCheckBox;
 
     AddRegularForm(int visitId){
         super(4);
@@ -36,6 +40,15 @@ class AddRegularForm extends VBox {
                 createInputs(),
                 createCommands()
         );
+        if( PracticeEnv.INSTANCE.isKouhatsuKasanEnabled() ) {
+            if (shohouryouCheckBox != null && kouhatsuKasanCheckBox != null) {
+                shohouryouCheckBox.selectedProperty().addListener((obs, oldValue, newValue) -> {
+                    if (newValue) {
+                        kouhatsuKasanCheckBox.setSelected(true);
+                    }
+                });
+            }
+        }
     }
 
     private Node createInputs(){
@@ -55,29 +68,48 @@ class AddRegularForm extends VBox {
         right.prefWidthProperty().bind(hbox.widthProperty().divide(2));
         left.setOpaqueInsets(new Insets(0, 2, 0, 0));
         right.setOpaqueInsets(new Insets(0, 0, 0, 2));
-        for(String item: RegularShinryou.getLeftItems()){
-            if( item.equals("-") ){
-                left.getChildren().add(new Label(" "));
-            } else {
-                CheckBox check = new CheckBox(item);
-                check.setWrapText(true);
-                checks.add(check);
-                left.getChildren().add(check);
-            }
-        }
-        for(String item: RegularShinryou.getRightItems()){
-            if( item.equals("-") ){
-                right.getChildren().add(new Label(" "));
-            } else {
-                CheckBox check = new CheckBox(item);
-                check.setWrapText(true);
-                checks.add(check);
-                right.getChildren().add(check);
-            }
-        }
+        setupItems(left, RegularShinryou.getLeftItems());
+        setupItems(right, RegularShinryou.getRightItems());
+//        for(String item: RegularShinryou.getLeftItems()){
+//            if( item.equals("-") ){
+//                left.getChildren().add(new Label(" "));
+//            } else {
+//                CheckBox check = new CheckBox(item);
+//                check.setWrapText(true);
+//                checks.add(check);
+//                left.getChildren().add(check);
+//            }
+//        }
+//        for(String item: RegularShinryou.getRightItems()){
+//            if( item.equals("-") ){
+//                right.getChildren().add(new Label(" "));
+//            } else {
+//                CheckBox check = new CheckBox(item);
+//                check.setWrapText(true);
+//                checks.add(check);
+//                right.getChildren().add(check);
+//            }
+//        }
         hbox.setAlignment(Pos.TOP_LEFT);
         hbox.getChildren().addAll(left, right);
         return hbox;
+    }
+
+    private void setupItems(Pane pane, String[] items){
+        for(String item: items) {
+            if (item.equals("-")) {
+                pane.getChildren().add(new Label(" "));
+            } else {
+                CheckBox check = new CheckBox(item);
+                check.setWrapText(true);
+                checks.add(check);
+                pane.getChildren().add(check);
+                switch(item){
+                    case "処方料": shohouryouCheckBox = check; break;
+                    case "外来後発加算１": kouhatsuKasanCheckBox = check; break;
+                }
+            }
+        }
     }
 
     private Node createBottom(){

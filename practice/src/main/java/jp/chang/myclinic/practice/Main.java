@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -24,6 +25,8 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("診療");
+        PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
+                updateTitle(stage, newValue));
         MainPane root = new MainPane();
         root.getStylesheets().addAll(
                 "css/Practice.css"
@@ -39,7 +42,7 @@ public class Main extends Application {
         client.dispatcher().executorService().shutdown();
         client.connectionPool().evictAll();
         Cache cache = client.cache();
-        if( cache != null ){
+        if (cache != null) {
             cache.close();
         }
     }
@@ -53,13 +56,25 @@ public class Main extends Application {
                 })
                 .thenAccept(referItems -> {
                     PracticeEnv.INSTANCE.setReferList(referItems);
+                    PracticeEnv.INSTANCE.setKouhatsuKasanEnabled(true);
                     cb.run();
                 })
                 .exceptionally(t -> {
                     t.printStackTrace();
                     return null;
-                    });
+                });
+    }
 
+    private void updateTitle(Stage stage, PatientDTO patient) {
+        if (patient == null) {
+            stage.setTitle("診察");
+        } else {
+            String title = String.format("診察 (%d) %s%s",
+                    patient.patientId,
+                    patient.lastName,
+                    patient.firstName);
+            stage.setTitle(title);
+        }
     }
 
 }

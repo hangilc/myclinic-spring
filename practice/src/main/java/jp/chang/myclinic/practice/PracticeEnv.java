@@ -37,6 +37,7 @@ public class PracticeEnv {
     private ObjectProperty<List<DiseaseFullDTO>> currentDiseases = new SimpleObjectProperty<>(Collections.emptyList());
     private MyclinicEnv myclinicEnv;
     private List<ReferItemDTO> referList;
+    private boolean kouhatsuKasanEnabled;
 
     public PracticeEnv(CommandArgs commandArgs) throws IOException {
         printerSettingsDir = commandArgs.getWorkingDirectory();
@@ -190,6 +191,14 @@ public class PracticeEnv {
 
     public void setReferList(List<ReferItemDTO> referList) {
         this.referList = referList;
+    }
+
+    public boolean isKouhatsuKasanEnabled() {
+        return kouhatsuKasanEnabled;
+    }
+
+    public void setKouhatsuKasanEnabled(boolean kouhatsuKasanEnabled) {
+        this.kouhatsuKasanEnabled = kouhatsuKasanEnabled;
     }
 
     @Override

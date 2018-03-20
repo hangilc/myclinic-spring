@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.shinryou;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
@@ -48,7 +49,7 @@ public class ShinryouForm extends WorkForm {
         box.setOnTextCallback(text -> {
             if( !text.isEmpty() ) {
                 Service.api.searchShinryouMaster(text, at)
-                        .thenAccept(result -> searchResult.setList(result))
+                        .thenAccept(result -> Platform.runLater(() -> searchResult.setList(result)))
                         .exceptionally(ex -> {
                             FunJavaFX.createErrorHandler().accept(ex);
                             return null;
