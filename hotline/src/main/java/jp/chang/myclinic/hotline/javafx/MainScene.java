@@ -32,6 +32,7 @@ class MainScene extends VBox {
     private TextArea inputText = new TextArea();
     private Label errorMessage;
     private ContextMenu freqContextMenu;
+    private static final String templateMarker = "{}";
 
     MainScene() {
         super(4);
@@ -111,7 +112,7 @@ class MainScene extends VBox {
         List<MenuItem> items = Freqs.INSTANCE.listFor(sender).stream().map(text -> {
             MenuItem item = new MenuItem(text);
             item.setOnAction(evt -> {
-                insertToInput(text);
+                insertFreqToInput(text);
             });
             return item;
         }).collect(Collectors.toList());
@@ -221,6 +222,19 @@ class MainScene extends VBox {
     private void insertToInput(String text){
         int caretPos = inputText.getCaretPosition();
         inputText.insertText(caretPos, text);
+    }
+
+    private void insertFreqToInput(String text){
+        if( text.contains(templateMarker) ){
+            int caretPos = inputText.getCaretPosition();
+            int offset = text.indexOf(templateMarker);
+            text = text.replace(templateMarker, "");
+            inputText.requestFocus();
+            inputText.insertText(caretPos, text);
+            inputText.positionCaret(caretPos + offset);
+        } else {
+            insertToInput(text);
+        }
     }
 
     private void postMessage(String message){
