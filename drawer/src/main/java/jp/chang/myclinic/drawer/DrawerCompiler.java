@@ -103,6 +103,10 @@ public class DrawerCompiler {
         textAt(text, x, y, halign, valign, null);
     }
 
+    public void textAt(String text, Point p, HAlign halign, VAlign valign){
+        textAt(text, p.getX(), p.getY(), halign, valign);
+    }
+
     public void textAtJustified(String text, double left, double right, double y, VAlign valign){
         if( text == null || text.isEmpty() ){
             return;
@@ -352,6 +356,17 @@ public class DrawerCompiler {
 
     public double multilineText(String[] lines, Box box, HAlign halign, VAlign valign, double leading){
         return multilineText(Arrays.asList(lines), box, halign, valign, leading);
+    }
+
+    public double paragraph(String src, Box box, HAlign halign, VAlign valign, double leading){
+        String[] para = src.split("\\r?\n");
+        List<String> lines = new ArrayList<>();
+        double width = box.getWidth();
+        for(String p: para){
+            List<String> bl = breakLine(p, width);
+            lines.addAll(bl);
+        }
+        return multilineText(lines, box, halign, valign, leading);
     }
 
     public double calcTotalHeight(int nLines, double fontSize, double leading){

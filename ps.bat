@@ -1,2 +1,2 @@
-set PROJECT_GROUP_ID=jp.chang.myclinic
+call ./config/cmd-env-vars.bat
 start powershell
