@@ -37,18 +37,17 @@ public class PeriodicFetcher implements Runnable {
                 Response<List<HotlineDTO>> response = reload();
                 if (response.isSuccessful()) {
                     List<HotlineDTO> hotlines = response.body();
+                    consumer.onPosts(hotlines, lastHotlineId == 0);
                     if (hotlines.size() > 0) {
-                        consumer.onPosts(hotlines, lastHotlineId == 0);
                         lastHotlineId = hotlines.get(hotlines.size() - 1).hotlineId;
+                    }
+                } else {
+                    if( lastHotlineId == 0 ){
+                        Thread.sleep(2000);
                     }
                 }
             } catch (Exception e) {
                 String message = "サーバーからの読み込みに失敗しました。";
-                try {
-                    Thread.sleep(2000);
-                } catch(InterruptedException ex){
-                    logger.error("Interrupted", ex);
-                }
                 logger.error(message, e);
                 errorConsumer.accept(message);
             }

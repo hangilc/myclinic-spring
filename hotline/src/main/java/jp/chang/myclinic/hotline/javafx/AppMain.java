@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import jp.chang.myclinic.hotline.Context;
+import jp.chang.myclinic.hotline.ResizeRequiredEvent;
 import jp.chang.myclinic.hotline.Service;
 import jp.chang.myclinic.hotline.User;
 import jp.chang.myclinic.hotline.lib.PeriodicFetcher;
@@ -53,6 +54,9 @@ public class AppMain extends Application {
     @Override
     public void start(Stage stage) {
         stage.setTitle("Hotline to " + Context.INSTANCE.getRecipient().getDispName());
+        stage.addEventHandler(ResizeRequiredEvent.eventType, evt -> {
+            stage.sizeToScene();
+        });
         MainScene root = new MainScene();
         root.getStylesheets().add("Hotline.css");
         PeriodicFetcher fetcher = new PeriodicFetcher((hotlines, initialSetup) -> {
@@ -61,6 +65,7 @@ public class AppMain extends Application {
             });
         }, error -> {
             logger.error(error);
+            root.showErrorMessage(error);
         });
         Context.INSTANCE.setPeriodicFetcher(fetcher);
         fetcherThread = new Thread(fetcher);

@@ -12,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.hotline.Context;
+import jp.chang.myclinic.hotline.ResizeRequiredEvent;
 import jp.chang.myclinic.hotline.User;
 import jp.chang.myclinic.hotline.lib.HotlineUtil;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ class MainScene extends VBox {
     private VBox messageBox = new VBox(2);
     private ScrollPane messageScroll;
     private TextArea inputText = new TextArea();
+    private Label errorMessage;
 
     MainScene() {
         super(4);
@@ -33,7 +35,8 @@ class MainScene extends VBox {
         getChildren().addAll(
                 createDisp(),
                 createTextArea(),
-                createCommands()
+                createCommands(),
+                createErrorMessage()
         );
         messageBox.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -72,6 +75,16 @@ class MainScene extends VBox {
         return hbox;
     }
 
+    private Node createErrorMessage(){
+        Label label = new Label();
+        label.setVisible(false);
+        label.setManaged(false);
+        label.getStyleClass().add("error");
+        label.setWrapText(true);
+        errorMessage = label;
+        return label;
+    }
+
     public void addHotlinePosts(List<HotlineDTO> posts, boolean initialSetup) {
         posts.forEach(post -> {
             User postSender = User.fromName(post.sender);
@@ -92,6 +105,24 @@ class MainScene extends VBox {
                 messageBox.getChildren().add(label);
             }
         });
+        hideErrorMessage();
+    }
+
+    public void showErrorMessage(String message){
+        errorMessage.setText(message);
+        if( !errorMessage.isVisible() ){
+            errorMessage.setManaged(true);
+            errorMessage.setVisible(true);
+        }
+        fireEvent(new ResizeRequiredEvent());
+    }
+
+    private void hideErrorMessage(){
+        if( errorMessage.isVisible() ){
+            errorMessage.setManaged(false);
+            errorMessage.setVisible(false);
+            fireEvent(new ResizeRequiredEvent());
+        }
     }
 
     private void doSend(){
