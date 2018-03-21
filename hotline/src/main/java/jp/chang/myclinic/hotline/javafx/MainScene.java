@@ -2,7 +2,6 @@ package jp.chang.myclinic.hotline.javafx;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,6 +9,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.hotline.Context;
 import jp.chang.myclinic.hotline.ResizeRequiredEvent;
@@ -100,8 +101,8 @@ class MainScene extends VBox {
                     }
                     return;
                 }
-                String text = HotlineUtil.makeHotlineText(postSender.getDispName(), post.hotlineId, post.message);
-                Node label = createLabel(text);
+                String prefix = HotlineUtil.makeHotlinePrefix(postSender.getDispName(), post.hotlineId);
+                Node label = createLabel(prefix, post.message);
                 messageBox.getChildren().add(label);
             }
         });
@@ -157,14 +158,18 @@ class MainScene extends VBox {
         java.awt.Toolkit.getDefaultToolkit().beep();
     }
 
-    private Node createLabel(String text){
-        Label label = new Label(text);
-        label.setAlignment(Pos.TOP_LEFT);
-        label.setWrapText(true);
-        label.setMinHeight(USE_PREF_SIZE);
+    private Node createLabel(String prefix, String message){
+        TextFlow label = new TextFlow(new Text(prefix), new Text(message));
         label.setOnMouseClicked(event -> {
             if( event.getClickCount() == 2 ){
-                EditDialog editDialog = new EditDialog(text);
+                EditDialog editDialog = new EditDialog(message){
+                    @Override
+                    protected void onEnter(EditDialog self, String text) {
+                        int caretPos = inputText.getCaretPosition();
+                        inputText.insertText(caretPos, text);
+                        self.close();
+                    }
+                };
                 editDialog.showAndWait();
             }
         });

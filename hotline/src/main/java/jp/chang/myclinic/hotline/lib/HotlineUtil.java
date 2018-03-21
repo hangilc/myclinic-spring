@@ -8,8 +8,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class HotlineUtil {
 
-    public static String makeHotlineText(String sender, int hotlineId, String message){
-        return String.format("%s(%03d)> %s", sender, hotlineId % 1000, message);
+    public static String makeHotlinePrefix(String sender, int hotlineId){
+        return String.format("%s(%03d)> ", sender, hotlineId % 1000);
     }
 
     public static CompletableFuture<Integer>  postMessge(String sender, String recipient, String message){
