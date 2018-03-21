@@ -2,17 +2,17 @@ package jp.chang.myclinic.hotline.javafx;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.hotline.Context;
+import jp.chang.myclinic.hotline.Freqs;
 import jp.chang.myclinic.hotline.ResizeRequiredEvent;
 import jp.chang.myclinic.hotline.User;
 import jp.chang.myclinic.hotline.lib.HotlineUtil;
@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 class MainScene extends VBox {
 
@@ -29,6 +30,7 @@ class MainScene extends VBox {
     private ScrollPane messageScroll;
     private TextArea inputText = new TextArea();
     private Label errorMessage;
+    private ContextMenu freqContextMenu;
 
     MainScene() {
         super(4);
@@ -62,18 +64,37 @@ class MainScene extends VBox {
 
     private Node createCommands(){
         HBox hbox = new HBox(4);
+        messageBox.setAlignment(Pos.CENTER_LEFT);
         Button sendButton = new Button("送信");
         Button rajaButton = new Button("了解");
         Button beepButton = new Button("ビープ");
+        Hyperlink freqLink = new Hyperlink("常用");
         sendButton.setOnAction(evt -> doSend());
         rajaButton.setOnAction(evt -> doRaja());
         beepButton.setOnAction(evt -> doSendBeep());
+        freqContextMenu = createFreqContextMenu();
+        freqLink.setOnMouseClicked(event -> doFreq(freqLink, event));
         hbox.getChildren().addAll(
                 sendButton,
                 rajaButton,
-                beepButton
+                beepButton,
+                freqLink
         );
         return hbox;
+    }
+
+    private ContextMenu createFreqContextMenu(){
+        ContextMenu menu = new ContextMenu();
+        String sender = Context.INSTANCE.getSender().getName();
+        List<MenuItem> items = Freqs.INSTANCE.listFor(sender).stream().map(text -> {
+            MenuItem item = new MenuItem(text);
+            item.setOnAction(evt -> {
+                insertToInput(text);
+            });
+            return item;
+        }).collect(Collectors.toList());
+        menu.getItems().addAll(items);
+        return menu;
     }
 
     private Node createErrorMessage(){
@@ -165,8 +186,7 @@ class MainScene extends VBox {
                 EditDialog editDialog = new EditDialog(message){
                     @Override
                     protected void onEnter(EditDialog self, String text) {
-                        int caretPos = inputText.getCaretPosition();
-                        inputText.insertText(caretPos, text);
+                        insertToInput(text);
                         self.close();
                     }
                 };
@@ -174,6 +194,11 @@ class MainScene extends VBox {
             }
         });
         return label;
+    }
+
+    private void insertToInput(String text){
+        int caretPos = inputText.getCaretPosition();
+        inputText.insertText(caretPos, text);
     }
 
     private void postMessage(String message){
@@ -185,6 +210,10 @@ class MainScene extends VBox {
                     logger.error("failed to post message", t);
                     return null;
                 });
+    }
+
+    private void doFreq(Node link, MouseEvent event){
+        freqContextMenu.show(link, event.getScreenX(), event.getScreenY());
     }
 
 }

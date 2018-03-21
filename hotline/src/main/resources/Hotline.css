@@ -1,3 +1,13 @@
+.hyperlink {
+    -fx-padding: 2 0 2 0;
+    -fx-border-color: transparent;
+}
+
+.hyperlink {
+    -fx-underline: false;
+    -fx-text-fill: -fx-accent;
+}
+
 .main-scene {
     -fx-padding: 10px;
     -fx-pref-width: 246px;
