@@ -2,6 +2,7 @@ package jp.chang.myclinic.hotline;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.dto.HotlineDTO;
+import jp.chang.myclinic.dto.WqueueFullDTO;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -32,6 +33,9 @@ public class Service {
 
         @POST("enter-hotline")
         CompletableFuture<Integer> enterHotline(@Body HotlineDTO hotline);
+
+        @GET("list-wqueue-full")
+        CompletableFuture<List<WqueueFullDTO>> listWqueue();
     }
 
     public static ServerAPI api;

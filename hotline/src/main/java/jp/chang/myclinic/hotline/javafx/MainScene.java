@@ -1,5 +1,6 @@
 package jp.chang.myclinic.hotline.javafx;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
@@ -11,15 +12,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.dto.HotlineDTO;
-import jp.chang.myclinic.hotline.Context;
-import jp.chang.myclinic.hotline.Freqs;
-import jp.chang.myclinic.hotline.ResizeRequiredEvent;
-import jp.chang.myclinic.hotline.User;
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.hotline.*;
 import jp.chang.myclinic.hotline.lib.HotlineUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 class MainScene extends VBox {
@@ -69,18 +70,39 @@ class MainScene extends VBox {
         Button rajaButton = new Button("了解");
         Button beepButton = new Button("ビープ");
         Hyperlink freqLink = new Hyperlink("常用");
+        Hyperlink patientLink = new Hyperlink("患者");
         sendButton.setOnAction(evt -> doSend());
         rajaButton.setOnAction(evt -> doRaja());
         beepButton.setOnAction(evt -> doSendBeep());
         freqContextMenu = createFreqContextMenu();
         freqLink.setOnMouseClicked(event -> doFreq(freqLink, event));
+        patientLink.setOnMouseClicked(event -> doPatient(patientLink, event));
         hbox.getChildren().addAll(
                 sendButton,
                 rajaButton,
                 beepButton,
-                freqLink
+                freqLink,
+                patientLink
         );
         return hbox;
+    }
+
+    private void doPatient(Node anchor, MouseEvent event){
+        Service.api.listWqueue()
+                .thenAccept(qlist -> Platform.runLater(() -> {
+                    Map<Integer, PatientDTO> patientMap = new LinkedHashMap<>();
+                    qlist.forEach(q -> patientMap.put(q.patient.patientId, q.patient));
+                    ContextMenu menu = new ContextMenu();
+                    List<MenuItem> items = patientMap.values().stream().map(p -> {
+                        String text = String.format("%s%s (%d) 様 ", p.lastName, p.firstName, p.patientId);
+                        MenuItem item = new MenuItem(text);
+                        item.setOnAction(evt -> insertToInput(text));
+                        return item;
+                    }).collect(Collectors.toList());
+                    menu.getItems().addAll(items);
+                    menu.show(anchor, event.getScreenX(), event.getScreenY());
+                }))
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private ContextMenu createFreqContextMenu(){
