@@ -32,6 +32,7 @@
     <module>myclinic-lib</module>
     <module>reportwaiting</module>
     <module>myclinic-env</module>
+    <module>shujii</module>
   </modules>
 
 </project>
