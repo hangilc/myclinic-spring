@@ -2,8 +2,6 @@ package jp.chang.myclinic.hotline.javafx;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import jp.chang.myclinic.hotline.Context;
@@ -20,7 +18,8 @@ import java.util.List;
 public class AppMain extends Application {
     private static Logger logger = LoggerFactory.getLogger(AppMain.class);
     private Thread fetcherThread;
-    public static void main(String[] args){
+
+    public static void main(String[] args) {
         launch(args);
     }
 
@@ -28,7 +27,7 @@ public class AppMain extends Application {
     public void init() throws Exception {
         super.init();
         List<String> args = getParameters().getUnnamed();
-        if( args.size() != 3 ){
+        if (args.size() != 3) {
             System.out.println("Usage: server-url sender recipient");
             System.out.println("ssender/receipient should be one of practice, pharmacy, or reception");
             System.exit(1);
@@ -40,11 +39,11 @@ public class AppMain extends Application {
         Service.setServerUrl(serverUrl);
         User sender = User.fromNameIgnoreCase(args.get(1));
         User recipient = User.fromNameIgnoreCase(args.get(2));
-        if( sender == null ){
+        if (sender == null) {
             logger.error("invalid sender name");
             System.exit(1);
         }
-        if( recipient == null ){
+        if (recipient == null) {
             logger.error("invalid recipient name");
             System.exit(1);
         }
@@ -52,30 +51,46 @@ public class AppMain extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage)  {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainScene.fxml"));
-            Parent root = loader.load();
-            MainSceneController controller = loader.getController();
-            PeriodicFetcher fetcher = new PeriodicFetcher((hotlines, initialSetup) -> {
-                Platform.runLater(() -> {
-                    controller.addHotlinePosts(hotlines, initialSetup);
-                });
-            }, error -> {
-                logger.error(error);
+    public void start(Stage stage) {
+        stage.setTitle("Hotline to " + Context.INSTANCE.getRecipient().getDispName());
+        MainScene root = new MainScene();
+        root.getStylesheets().add("Hotline.css");
+        PeriodicFetcher fetcher = new PeriodicFetcher((hotlines, initialSetup) -> {
+            Platform.runLater(() -> {
+                root.addHotlinePosts(hotlines, initialSetup);
             });
-            Context.INSTANCE.setPeriodicFetcher(fetcher);
-            Scene scene = new Scene(root);
-            primaryStage.setTitle("Hotline to " + Context.INSTANCE.getRecipient().getDispName());
-            primaryStage.setScene(scene);
-            primaryStage.show();
-            fetcherThread = new Thread(fetcher);
-            fetcherThread.setDaemon(true);
-            fetcherThread.start();
-        } catch(Exception ex){
-            logger.error("failed to start hotline", ex);
-            System.exit(1);
-        }
+        }, error -> {
+            logger.error(error);
+        });
+        Context.INSTANCE.setPeriodicFetcher(fetcher);
+        fetcherThread = new Thread(fetcher);
+        fetcherThread.setDaemon(true);
+        fetcherThread.start();
+        stage.setScene(new Scene(root));
+        stage.show();
+//        try {
+//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainScene.fxml"));
+//            Parent root = loader.load();
+//            MainSceneController controller = loader.getController();
+//            PeriodicFetcher fetcher = new PeriodicFetcher((hotlines, initialSetup) -> {
+//                Platform.runLater(() -> {
+//                    controller.addHotlinePosts(hotlines, initialSetup);
+//                });
+//            }, error -> {
+//                logger.error(error);
+//            });
+//            Context.INSTANCE.setPeriodicFetcher(fetcher);
+//            Scene scene = new Scene(root);
+//            primaryStage.setTitle("Hotline to " + Context.INSTANCE.getRecipient().getDispName());
+//            primaryStage.setScene(scene);
+//            primaryStage.show();
+//            fetcherThread = new Thread(fetcher);
+//            fetcherThread.setDaemon(true);
+//            fetcherThread.start();
+//        } catch(Exception ex){
+//            logger.error("failed to start hotline", ex);
+//            System.exit(1);
+//        }
     }
 
     @Override
@@ -87,7 +102,7 @@ public class AppMain extends Application {
         client.dispatcher().executorService().shutdown();
         client.connectionPool().evictAll();
         Cache cache = client.cache();
-        if( cache != null ){
+        if (cache != null) {
             cache.close();
         }
     }

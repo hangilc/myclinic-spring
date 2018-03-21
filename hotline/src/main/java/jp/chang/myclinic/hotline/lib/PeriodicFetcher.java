@@ -44,6 +44,11 @@ public class PeriodicFetcher implements Runnable {
                 }
             } catch (Exception e) {
                 String message = "サーバーからの読み込みに失敗しました。";
+                try {
+                    Thread.sleep(2000);
+                } catch(InterruptedException ex){
+                    logger.error("Interrupted", ex);
+                }
                 logger.error(message, e);
                 errorConsumer.accept(message);
             }

@@ -17,7 +17,6 @@ class EditDialog extends Stage {
         VBox root = new VBox(4);
         root.getStyleClass().add("edit-dialog");
         root.getStylesheets().add("Hotline.css");
-        root.setStyle("-fx-padding:10px");
         root.getChildren().addAll(
                 createTextArea(text)
         );

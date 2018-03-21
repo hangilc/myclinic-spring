@@ -1,4 +1,18 @@
+.main-scene {
+    -fx-padding: 10px;
+    -fx-pref-width: 246px;
+}
+
+.main-scene .disp {
+    -fx-pref-height: 400px;
+}
+
+.main-scene .input-text {
+    -fx-pref-height: 6em;
+}
+
 .edit-dialog {
+    -fx-padding: 10px;
     -fx-pref-width: 260px;
     -fx-pref-height: 6em;
 }

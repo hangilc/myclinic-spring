@@ -2,13 +2,13 @@ package jp.chang.myclinic.hotline.javafx;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.hotline.Context;
@@ -19,16 +19,22 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static javafx.scene.layout.Region.USE_PREF_SIZE;
+class MainScene extends VBox {
 
-public class MainSceneController {
-    private static Logger logger = LoggerFactory.getLogger(MainSceneController.class);
-    public VBox messageBox;
-    public ScrollPane messageScroll;
-    public TextArea inputText;
-    private static String beepMessage = "[BEEP]";
+    private static Logger logger = LoggerFactory.getLogger(MainScene.class);
+    private static final String beepMessage = "[BEEP]";
+    private VBox messageBox = new VBox(2);
+    private ScrollPane messageScroll;
+    private TextArea inputText = new TextArea();
 
-    public void initialize(){
+    MainScene() {
+        super(4);
+        getStyleClass().add("main-scene");
+        getChildren().addAll(
+                createDisp(),
+                createTextArea(),
+                createCommands()
+        );
         messageBox.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -37,41 +43,36 @@ public class MainSceneController {
         });
     }
 
-    public void onSubmit(Event event){
-        String message = inputText.getText();
-        if( message.isEmpty() ){
-            return;
-        }
-        postMessage(message);
-        inputText.setText("");
+    private Node createDisp(){
+        messageScroll = new ScrollPane(messageBox);
+        messageScroll.getStyleClass().add("disp");
+        messageScroll.setFitToWidth(true);
+        return messageScroll;
     }
 
-    public void onRaja(ActionEvent actionEvent) {
-        postMessage("了解");
+    private Node createTextArea(){
+        inputText.setWrapText(true);
+        inputText.getStyleClass().add("input-text");
+        return inputText;
     }
 
-    public void onBeep(ActionEvent actionEvent) {
-        postMessage(beepMessage);
+    private Node createCommands(){
+        HBox hbox = new HBox(4);
+        Button sendButton = new Button("送信");
+        Button rajaButton = new Button("了解");
+        Button beepButton = new Button("ビープ");
+        sendButton.setOnAction(evt -> doSend());
+        rajaButton.setOnAction(evt -> doRaja());
+        beepButton.setOnAction(evt -> doSendBeep());
+        hbox.getChildren().addAll(
+                sendButton,
+                rajaButton,
+                beepButton
+        );
+        return hbox;
     }
 
-    private void playBeep(){
-        java.awt.Toolkit.getDefaultToolkit().beep();
-//        File wavFile = new File("C:\\Windows\\Media\\notify.wav");
-//        try {
-//            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(wavFile);
-//            AudioFormat audioFormat = audioInputStream.getFormat();
-//            DataLine.Info info = new DataLine.Info(Clip.class, audioFormat);
-//            Clip clip = (Clip)AudioSystem.getLine(info);
-//            clip.open(audioInputStream);
-//            clip.setFramePosition(0);
-//            clip.start();
-//            //clip.stop();
-//        } catch(Exception ex){
-//            logger.error("cannot play sound", ex);
-//        }
-    }
-
-    public void addHotlinePosts(List<HotlineDTO> posts, boolean initialSetup){
+    public void addHotlinePosts(List<HotlineDTO> posts, boolean initialSetup) {
         posts.forEach(post -> {
             User postSender = User.fromName(post.sender);
             User postRecipient = User.fromName(post.recipient);
@@ -93,6 +94,38 @@ public class MainSceneController {
         });
     }
 
+    private void doSend(){
+        String message = inputText.getText();
+        if( message.isEmpty() ){
+            return;
+        }
+        postMessage(message);
+        inputText.setText("");
+    }
+
+    private void doRaja(){
+        postMessage("了解");
+    }
+
+    private void doSendBeep(){
+        postMessage(beepMessage);
+    }
+
+    private boolean isMyPost(User postSender, User postRecipient){
+        User sender = Context.INSTANCE.getSender();
+        User recipient = Context.INSTANCE.getRecipient();
+        return (postSender == sender && postRecipient == recipient) ||
+                (postSender == recipient && postRecipient == sender);
+    }
+
+    private boolean isBeepPost(String message){
+        return beepMessage.equals(message);
+    }
+
+    private void playBeep() {
+        java.awt.Toolkit.getDefaultToolkit().beep();
+    }
+
     private Node createLabel(String text){
         Label label = new Label(text);
         label.setAlignment(Pos.TOP_LEFT);
@@ -107,17 +140,6 @@ public class MainSceneController {
         return label;
     }
 
-    private boolean isMyPost(User postSender, User postRecipient){
-        User sender = Context.INSTANCE.getSender();
-        User recipient = Context.INSTANCE.getRecipient();
-        return (postSender == sender && postRecipient == recipient) ||
-                (postSender == recipient && postRecipient == sender);
-    }
-
-    private boolean isBeepPost(String message){
-        return beepMessage.equals(message);
-    }
-
     private void postMessage(String message){
         HotlineUtil.postMessge(Context.INSTANCE.getSender().getName(), Context.INSTANCE.getRecipient().getName(), message)
                 .thenAccept(result -> {
@@ -128,4 +150,5 @@ public class MainSceneController {
                     return null;
                 });
     }
+
 }
