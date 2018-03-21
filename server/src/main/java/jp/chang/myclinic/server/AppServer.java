@@ -55,12 +55,14 @@ public class AppServer implements CommandLineRunner{
                                   @Value("${myclinic.name-map-file}") String nameMapLocation) throws IOException {
         MasterMap masterMap = new MasterMap();
         {
-            Stream<String> lines = Files.lines(Paths.get(masterMapLocation));
-            masterMap.loadCodeMap(lines);
+            try(Stream<String> lines = Files.lines(Paths.get(masterMapLocation))){
+                masterMap.loadCodeMap(lines);
+            }
         }
         {
-            Stream<String> lines = Files.lines(Paths.get(nameMapLocation));
-            masterMap.loadNameMap(lines);
+            try(Stream<String> lines = Files.lines(Paths.get(nameMapLocation))){
+                masterMap.loadNameMap(lines);
+            }
         }
         return masterMap;
     }

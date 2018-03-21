@@ -62,18 +62,23 @@ public class Main extends Application {
     }
 
     private void doPreview() {
-        ShujiiDrawer drawer = new ShujiiDrawer();
-        drawer.setDoctorName(shujiiForm.getDoctorName());
-        drawer.setClinicName(shujiiForm.getClinicName());
-        drawer.setClinicAddr(shujiiForm.getClinicAddr());
-        drawer.setClinicPhone(shujiiForm.getClinicPhone());
-        drawer.setClinicFax(shujiiForm.getClinicFax());
-        drawer.setDetail(shujiiForm.getDetail());
-        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null);
-        previewDialog.setContentSize(PaperSize.A4);
-        previewDialog.setScaleFactor(0.6);
-        previewDialog.setOps(drawer.getOps());
-        previewDialog.showAndWait();
+        try {
+            ShujiiDrawer drawer = new ShujiiDrawer();
+            drawer.setDoctorName(shujiiForm.getDoctorName());
+            drawer.setClinicName(shujiiForm.getClinicName());
+            drawer.setClinicAddr(shujiiForm.getClinicAddr());
+            drawer.setClinicPhone(shujiiForm.getClinicPhone());
+            drawer.setClinicFax(shujiiForm.getClinicFax());
+            drawer.setDetail(shujiiForm.getDetail());
+            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null);
+            previewDialog.setContentSize(PaperSize.A4);
+            previewDialog.setScaleFactor(0.6);
+            previewDialog.setOps(drawer.getOps());
+            previewDialog.showAndWait();
+        } catch(Exception ex){
+            logger.error("Failed to do preview.", ex);
+            System.exit(1);
+        }
     }
 
     private void applyConfig(Config config){
