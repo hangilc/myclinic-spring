@@ -38,6 +38,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        primaryStage.setTitle("受付");
         MainPane mainPane = new MainPane();
         mainPane.setPadding(new Insets(10, 10, 10, 10));
         Scene scene = new Scene(mainPane, 600, 400);

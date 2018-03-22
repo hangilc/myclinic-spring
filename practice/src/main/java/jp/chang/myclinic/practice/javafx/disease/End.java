@@ -73,7 +73,7 @@ public class End extends VBox {
 
     private void handleDayLabelClick(MouseEvent event) {
         int n = 1;
-        if (event.isAltDown()) {
+        if (event.isControlDown()) {
             n = 5;
         }
         if (event.isShiftDown()) {
