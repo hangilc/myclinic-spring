@@ -73,7 +73,7 @@ public class MainPane extends BorderPane {
             MenuItem shohousenItem = new MenuItem("処方箋作成");
             MenuItem listPrinterSettingItem = new MenuItem("印刷設定の一覧");
             newVisitItem.setOnAction(evt -> doNewVisit());
-            referItem.setOnAction(evt -> doRefer());
+            referItem.setOnAction(evt -> doRefer(false));
             shohousenItem.setOnAction(evt -> doShohousen());
             listPrinterSettingItem.setOnAction(evt -> doListPrinterSetting());
             menu.getItems().addAll(
@@ -177,7 +177,7 @@ public class MainPane extends BorderPane {
 
             @Override
             protected void onRefer() {
-                doRefer();
+                doRefer(true);
             }
         };
         PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) -> {
@@ -214,14 +214,23 @@ public class MainPane extends BorderPane {
         }
     }
 
-    private void doRefer() {
-        ReferDialog dialog = new ReferDialog();
-        PatientDTO patient = PracticeEnv.INSTANCE.getCurrentPatient();
-        if (patient != null) {
-            dialog.setPatient(patient);
+    private void doRefer(boolean includePatientInfo) {
+        try {
+            PrinterEnv printerEnv = PracticeEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
+            String printerSetting = PracticeEnv.INSTANCE.getAppProperty(PracticeEnv.REFER_PRINTER_SETTING_KEY);
+            ReferDialog dialog = new ReferDialog();
+            dialog.setPrinterEnv(printerEnv);
+            dialog.setDefaultPrinterSetting(printerSetting);
+            PatientDTO patient = PracticeEnv.INSTANCE.getCurrentPatient();
+            if (includePatientInfo && patient != null) {
+                dialog.setPatient(patient);
+            }
+            dialog.setIssueDate(LocalDate.now());
+            dialog.show();
+        } catch(IOException ex){
+            logger.error("Failed to open refer dialog.", ex);
+            GuiUtil.alertException("紹介状ダイアログの表示に失敗しました。", ex);
         }
-        dialog.setIssueDate(LocalDate.now());
-        dialog.show();
     }
 
     private void doShohousen() {

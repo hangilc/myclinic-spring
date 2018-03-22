@@ -12,8 +12,8 @@ import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ReferItemDTO;
+import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import jp.chang.myclinic.practice.javafx.parts.SexInput;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
@@ -21,10 +21,8 @@ import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Properties;
 
 public class ReferDialog extends Stage {
 
@@ -40,6 +38,8 @@ public class ReferDialog extends Stage {
     private TextField diagnosisInput = new TextField("");
     private TextField issueDateInput = new TextField("");
     private TextArea mainContentInput = new TextArea("");
+    private PrinterEnv printerEnv;
+    private String defaultPrinterSetting;
 
     public ReferDialog() {
         setTitle("紹介状作成");
@@ -66,6 +66,14 @@ public class ReferDialog extends Stage {
     public void setIssueDate(LocalDate date){
         String s = DateTimeUtil.toKanji(date);
         issueDateInput.setText(s);
+    }
+
+    public void setPrinterEnv(PrinterEnv printerEnv){
+        this.printerEnv = printerEnv;
+    }
+
+    public void setDefaultPrinterSetting(String setting){
+        this.defaultPrinterSetting = setting;
     }
 
     private String composeBirthdayRep(String sqldate){
@@ -181,20 +189,19 @@ public class ReferDialog extends Stage {
         ClinicInfoDTO clinicInfo = PracticeEnv.INSTANCE.getClinicInfo();
         drawer.setAddress(clinicInfo.postalCode, clinicInfo.address, clinicInfo.tel, clinicInfo.fax,
                 clinicInfo.name, clinicInfo.doctorName);
-        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog();
+        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(){
+            @Override
+            protected void onDefaultSettingChange(String newSettingName) {
+                ReferDialog.this.defaultPrinterSetting = newSettingName;
+                ReferUtil.changeDefaultPrinterSetting(newSettingName);
+            }
+        };
+        previewDialog.setPrinterEnv(printerEnv);
+        previewDialog.setPrintSettingName(defaultPrinterSetting);
         previewDialog.setTitle("紹介状のプレビュー");
         previewDialog.setScaleFactor(0.5);
         previewDialog.setContentSize(PaperSize.A4.getWidth(), PaperSize.A4.getHeight());
         previewDialog.setOps(drawer.getOps());
-        try {
-            previewDialog.setPrinterEnv(PracticeEnv.INSTANCE.getMyclinicEnv().getPrinterEnv());
-            Properties properties = PracticeEnv.INSTANCE.getAppProperties();
-            String settingName = properties.getProperty(PracticeEnv.PRINTER_SETTING_KEY);
-            previewDialog.setPrintSettingName(settingName);
-        } catch (IOException e) {
-            logger.error("Failed to get printer env", e);
-            GuiUtil.alertException("入出力エラーが発生しました。", e);
-        }
         previewDialog.show();
     }
 
