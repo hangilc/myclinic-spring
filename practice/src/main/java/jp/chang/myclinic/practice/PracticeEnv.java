@@ -24,6 +24,8 @@ public class PracticeEnv {
 
     public static final String APP_NAME = "practice";
     public static final String PRINTER_SETTING_KEY = "default-printer-setting";
+    public static final String SHOHOUSEN_PRINTER_SETTING_KEY = "shohousen-printer-setting";
+    public static final String REFER_PRINTER_SETTING_KEY = "refer-printer-setting";
     public static PracticeEnv INSTANCE;
 
     private Path printerSettingsDir;
@@ -168,7 +170,17 @@ public class PracticeEnv {
         return getMyclinicEnv().getAppProperties(APP_NAME);
     }
 
-    public void setAppProperties(Properties properties) throws IOException {
+    public String getAppProperty(String key) throws IOException {
+        return getAppProperties().getProperty(key);
+    }
+
+    public void setAppProperty(String key, String value) throws IOException {
+        Properties props = getAppProperties();
+        props.setProperty(key, value);
+        saveAppProperties(props);
+    }
+
+    public void saveAppProperties(Properties properties) throws IOException {
         getMyclinicEnv().saveAppProperties(APP_NAME, properties);
     }
 
@@ -183,7 +195,7 @@ public class PracticeEnv {
         } else {
             properties.setProperty(PRINTER_SETTING_KEY, settingName);
         }
-        setAppProperties(properties);
+        saveAppProperties(properties);
     }
 
     public List<ReferItemDTO> getReferList() {

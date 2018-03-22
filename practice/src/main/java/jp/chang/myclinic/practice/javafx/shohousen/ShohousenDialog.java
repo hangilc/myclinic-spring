@@ -11,6 +11,7 @@ import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import jp.chang.myclinic.practice.javafx.parts.SexInput;
@@ -79,7 +80,7 @@ public class ShohousenDialog extends Stage {
             if( postalCode != null && postalCode.startsWith("〒") ){
                 postalCode = postalCode.substring(1);
             }
-            postalCodeInput.setText(clinicInfo.postalCode);
+            postalCodeInput.setText(postalCode);
         }
         addressInput.setText(clinicInfo.address);
         phoneInput.setText(clinicInfo.tel);
@@ -170,7 +171,6 @@ public class ShohousenDialog extends Stage {
 
     private void doPreview(){
         try {
-            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(printerEnv);
             ShohousenDrawer drawer = new ShohousenDrawer();
             setDrawerHakkouKikan(drawer);
             drawer.setDoctorName(doctorNameInput.getText());
@@ -197,6 +197,14 @@ public class ShohousenDialog extends Stage {
                 return;
             }
             setDrugs(drawer);
+            String settingName = PracticeEnv.INSTANCE.getAppProperty(PracticeEnv.SHOHOUSEN_PRINTER_SETTING_KEY);
+            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(printerEnv){
+                @Override
+                protected void onDefaultSettingChange(String newSettingName) {
+                    ShohousenUtil.changeDefaultPrinterSetting(newSettingName);
+                }
+            };
+            previewDialog.setPrintSettingName(settingName);
             previewDialog.setScaleFactor(0.8);
             previewDialog.setContentSize(PaperSize.A5);
             previewDialog.setOps(drawer.getOps());

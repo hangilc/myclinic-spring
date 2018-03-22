@@ -13,6 +13,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.events.EventTypes;
@@ -21,10 +22,15 @@ import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 public class MainPane extends BorderPane {
+
+    private static Logger logger = LoggerFactory.getLogger(MainPane.class);
 
     public MainPane() {
         setTop(createMenu());
@@ -219,11 +225,18 @@ public class MainPane extends BorderPane {
     }
 
     private void doShohousen() {
-        ShohousenDialog dialog = new ShohousenDialog();
-        ClinicInfoDTO clinicInfo = PracticeEnv.INSTANCE.getClinicInfo();
-        dialog.setClinicInfo(clinicInfo);
-        dialog.setDoctorName(clinicInfo.doctorName);
-        dialog.show();
+        try {
+            PrinterEnv printerEnv = PracticeEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
+            ShohousenDialog dialog = new ShohousenDialog();
+            dialog.setPrinterEnv(printerEnv);
+            ClinicInfoDTO clinicInfo = PracticeEnv.INSTANCE.getClinicInfo();
+            dialog.setClinicInfo(clinicInfo);
+            dialog.setDoctorName(clinicInfo.doctorName);
+            dialog.show();
+        } catch(IOException ex){
+            logger.error("Failed to do shohousen.", ex);
+            GuiUtil.alertException("処方箋ダイアログの表示に失敗しました。", ex);
+        }
     }
 
     private Node createRecords() {

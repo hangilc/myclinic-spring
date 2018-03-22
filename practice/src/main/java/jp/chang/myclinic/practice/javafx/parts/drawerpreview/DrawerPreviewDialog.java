@@ -69,6 +69,10 @@ public class DrawerPreviewDialog extends Stage {
         drawerCanvas.setOps(ops);
     }
 
+    protected void onDefaultSettingChange(String newSettingName){
+
+    }
+
     private List<Op> getOps(){
         return ops;
     }
@@ -220,12 +224,7 @@ public class DrawerPreviewDialog extends Stage {
                 SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(defaultSetting, names, printerEnv){
                     @Override
                     protected void onChange(String newDefaultSetting) {
-                        try {
-                            PracticeEnv.INSTANCE.setDefaultPrinterSetting(newDefaultSetting);
-                            settingChoice.setValue(newDefaultSetting == null ? NO_PRINTER_SETTING : newDefaultSetting);
-                        } catch (IOException e) {
-                            HandlerFX.exception("既定印刷設定名の保存に失敗しました。", e);
-                        }
+                        onDefaultSettingChange(newDefaultSetting);
                     }
                 };
                 dialog.setTestPrintOps(ops);

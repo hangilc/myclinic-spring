@@ -15,6 +15,7 @@ import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenData;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDrawer;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenInfo;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,6 +104,7 @@ public class TextEditForm extends VBox {
             if( patient!= null ){
                 data.setPatient(patient);
             }
+            String settingName = PracticeEnv.INSTANCE.getAppProperty(PracticeEnv.SHOHOUSEN_PRINTER_SETTING_KEY);
             ShohousenInfo.load(visitId)
                     .thenAccept(info -> Platform.runLater(() -> {
                         data.setHoken(info.getHoken());
@@ -111,8 +113,14 @@ public class TextEditForm extends VBox {
                         data.setKoufuDate(visitedAt);
                         data.setDrugs(content);
                         data.applyTo(drawer);
-                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog();
+                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(){
+                            @Override
+                            protected void onDefaultSettingChange(String newSettingName) {
+                                ShohousenUtil.changeDefaultPrinterSetting(newSettingName);
+                            }
+                        };
                         previewDialog.setPrinterEnv(printerEnv);
+                        previewDialog.setPrintSettingName(settingName);
                         previewDialog.setScaleFactor(0.8);
                         previewDialog.setContentSize(PaperSize.A5);
                         previewDialog.setOps(drawer.getOps());
