@@ -19,7 +19,9 @@ public class Freqs {
 
     private List<String> practice = Arrays.asList(
             "おはようございます。",
-            "診察室におねがいします。"
+            "診察室におねがいします。",
+            "処方箋おねがいします。",
+            " 様、伝。"
     );
 
     private List<String> reception = Arrays.asList(
