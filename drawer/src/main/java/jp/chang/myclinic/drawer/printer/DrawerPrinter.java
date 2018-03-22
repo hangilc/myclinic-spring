@@ -187,6 +187,7 @@ public class DrawerPrinter {
         }
         DialogResult result = printDialog(hwnd, devmodeBase, devnamesBase);
         User32.INSTANCE.CloseWindow(hwnd);
+        User32.INSTANCE.DestroyWindow(hwnd);
         return result;
     }
 

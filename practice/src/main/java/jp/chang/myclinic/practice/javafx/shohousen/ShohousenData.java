@@ -98,6 +98,9 @@ public class ShohousenData {
                 hokenshaBangou = hoken.shahokokuho.hokenshaBangou + "";
                 hihokensha = composeHihokensha(hoken.shahokokuho);
                 this.honnin = hoken.shahokokuho.honnin != 0;
+            } else if( hoken.koukikourei != null ){
+                hokenshaBangou = hoken.koukikourei.hokenshaBangou;
+                hihokensha = hoken.koukikourei.hihokenshaBangou;
             }
             List<KouhiDTO> kouhiList = new ArrayList<>();
             if( hoken.kouhi1 != null ){

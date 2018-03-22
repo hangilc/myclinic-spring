@@ -131,26 +131,32 @@ class MainScene extends VBox {
     }
 
     public void addHotlinePosts(List<HotlineDTO> posts, boolean initialSetup) {
-        posts.forEach(post -> {
+        int count = 0;
+        User myself = Context.INSTANCE.getSender();
+        for(HotlineDTO post: posts){
             User postSender = User.fromName(post.sender);
             User postRecipient = User.fromName(post.recipient);
-            if( postSender == null || postRecipient == null ){
-                return;
-            }
-            if( isMyPost(postSender, postRecipient) ){
-                if( isBeepPost(post.message) ){
-                    if( !initialSetup && postRecipient == Context.INSTANCE.getSender() ){
-                        System.out.println("beep");
-                        playBeep();
+            if( postSender != null && postRecipient != null ){
+                if( isMyPost(postSender, postRecipient) ){
+                    if( isBeepPost(post.message) ){
+                        if( !initialSetup && postRecipient == Context.INSTANCE.getSender() ){
+                            playBeep();
+                        }
+                    } else {
+                        String prefix = HotlineUtil.makeHotlinePrefix(postSender.getDispName(), post.hotlineId);
+                        Node label = createLabel(prefix, post.message);
+                        messageBox.getChildren().add(label);
+                        if( postRecipient == myself ) {
+                            count += 1;
+                        }
                     }
-                    return;
                 }
-                String prefix = HotlineUtil.makeHotlinePrefix(postSender.getDispName(), post.hotlineId);
-                Node label = createLabel(prefix, post.message);
-                messageBox.getChildren().add(label);
-            }
-        });
+           }
+        }
         hideErrorMessage();
+        if( !initialSetup && count > 0 ){
+            playBeep();
+        }
     }
 
     public void showErrorMessage(String message){

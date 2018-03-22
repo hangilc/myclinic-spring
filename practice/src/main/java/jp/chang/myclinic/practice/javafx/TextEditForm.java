@@ -113,6 +113,7 @@ public class TextEditForm extends VBox {
                         data.applyTo(drawer);
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog();
                         previewDialog.setPrinterEnv(printerEnv);
+                        previewDialog.setScaleFactor(0.8);
                         previewDialog.setContentSize(PaperSize.A5);
                         previewDialog.setOps(drawer.getOps());
                         previewDialog.showAndWait();

@@ -15,6 +15,8 @@ import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.javafx.events.EventTypes;
+import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
@@ -25,6 +27,7 @@ public class MainPane extends BorderPane {
     public MainPane() {
         setTop(createMenu());
         setCenter(createCenter());
+        addEventHandler(EventTypes.visitDeletedEventType, this::onVisitDeleted);
     }
 
     private Node createMenu() {
@@ -73,6 +76,17 @@ public class MainPane extends BorderPane {
             menuBar.getMenus().add(menu);
         }
         return menuBar;
+    }
+
+    private void onVisitDeleted(VisitDeletedEvent event){
+        int visitId = event.getVisitId();
+        PracticeEnv env = PracticeEnv.INSTANCE;
+        if( env.getCurrentVisitId() == visitId ){
+            env.setCurrentVisitId(0);
+        }
+        if( env.getTempVisitId() == visitId ){
+            env.setTempVisitId(0);
+        }
     }
 
     private void doTodaysVisits(){
