@@ -22,6 +22,8 @@ import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeService;
 
+import java.time.LocalDate;
+
 public class MainPane extends BorderPane {
 
     public MainPane() {
@@ -212,6 +214,7 @@ public class MainPane extends BorderPane {
         if (patient != null) {
             dialog.setPatient(patient);
         }
+        dialog.setIssueDate(LocalDate.now());
         dialog.show();
     }
 

@@ -63,6 +63,11 @@ public class ReferDialog extends Stage {
         sexInput.getSelectionModel().select(Sex.fromCode(patient.sex));
     }
 
+    public void setIssueDate(LocalDate date){
+        String s = DateTimeUtil.toKanji(date);
+        issueDateInput.setText(s);
+    }
+
     private String composeBirthdayRep(String sqldate){
         if( sqldate == null || sqldate.isEmpty() ){
             return "";
