@@ -197,7 +197,7 @@ public class ReferDialog extends Stage {
             }
         };
         previewDialog.setPrinterEnv(printerEnv);
-        previewDialog.setPrintSettingName(defaultPrinterSetting);
+        previewDialog.setDefaultPrinterSetting(defaultPrinterSetting);
         previewDialog.setTitle("紹介状のプレビュー");
         previewDialog.setScaleFactor(0.5);
         previewDialog.setContentSize(PaperSize.A4.getWidth(), PaperSize.A4.getHeight());

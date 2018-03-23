@@ -82,13 +82,6 @@ public class DrawerPreviewDialog extends Stage {
         updateSettingChoice();
     }
 
-    public void setPrintSettingName(String printSettingName) {
-        settingChoice.getSelectionModel().select(printSettingName);
-        if (settingChoice.getSelectionModel().getSelectedItem() == null) {
-            settingChoice.getSelectionModel().select(NO_PRINTER_SETTING);
-        }
-    }
-
     private void setSettingChoice(String printerSetting) {
         settingChoice.getSelectionModel().select(printerSetting);
         if (settingChoice.getSelectionModel().getSelectedItem() == null) {
@@ -200,7 +193,7 @@ public class DrawerPreviewDialog extends Stage {
                 GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", e);
             }
         }
-        setPrintSettingName(current);
+        setSettingChoice(current);
     }
 
     private String getSettingName() {
@@ -235,6 +228,7 @@ public class DrawerPreviewDialog extends Stage {
             SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(defaultSetting, names, printerEnv) {
                 @Override
                 protected void onChange(String newDefaultSetting) {
+                    setSettingChoice(newDefaultSetting);
                     onDefaultSettingChange(newDefaultSetting);
                 }
             };

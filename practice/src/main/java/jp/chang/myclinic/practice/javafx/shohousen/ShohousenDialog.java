@@ -204,7 +204,7 @@ public class ShohousenDialog extends Stage {
                     ShohousenUtil.changeDefaultPrinterSetting(newSettingName);
                 }
             };
-            previewDialog.setPrintSettingName(settingName);
+            previewDialog.setDefaultPrinterSetting(settingName);
             previewDialog.setScaleFactor(0.8);
             previewDialog.setContentSize(PaperSize.A5);
             previewDialog.setOps(drawer.getOps());
