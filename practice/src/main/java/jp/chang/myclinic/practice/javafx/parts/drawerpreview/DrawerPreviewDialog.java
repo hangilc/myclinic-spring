@@ -12,7 +12,6 @@ import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
-import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.lib.PracticeLib;
@@ -32,12 +31,13 @@ public class DrawerPreviewDialog extends Stage {
     private DrawerCanvas drawerCanvas;
     private List<Op> ops;
     private PrinterEnv printerEnv;
+    private String defaultPrinterSetting;
 
     public DrawerPreviewDialog() {
         this(null);
     }
 
-    public DrawerPreviewDialog(PrinterEnv printerEnv){
+    public DrawerPreviewDialog(PrinterEnv printerEnv) {
         this.printerEnv = printerEnv;
         BorderPane main = new BorderPane();
         VBox root = new VBox(4);
@@ -56,7 +56,7 @@ public class DrawerPreviewDialog extends Stage {
         drawerCanvas.setContentSize(mmWidth, mmHeight);
     }
 
-    public void setContentSize(PaperSize paperSize){
+    public void setContentSize(PaperSize paperSize) {
         setContentSize(paperSize.getWidth(), paperSize.getHeight());
     }
 
@@ -69,11 +69,11 @@ public class DrawerPreviewDialog extends Stage {
         drawerCanvas.setOps(ops);
     }
 
-    protected void onDefaultSettingChange(String newSettingName){
+    protected void onDefaultSettingChange(String newSettingName) {
 
     }
 
-    private List<Op> getOps(){
+    private List<Op> getOps() {
         return ops;
     }
 
@@ -84,12 +84,24 @@ public class DrawerPreviewDialog extends Stage {
 
     public void setPrintSettingName(String printSettingName) {
         settingChoice.getSelectionModel().select(printSettingName);
-        if( settingChoice.getSelectionModel().getSelectedItem() == null ){
+        if (settingChoice.getSelectionModel().getSelectedItem() == null) {
             settingChoice.getSelectionModel().select(NO_PRINTER_SETTING);
         }
     }
 
-    private Node createMenu(){
+    private void setSettingChoice(String printerSetting) {
+        settingChoice.getSelectionModel().select(printerSetting);
+        if (settingChoice.getSelectionModel().getSelectedItem() == null) {
+            settingChoice.getSelectionModel().select(NO_PRINTER_SETTING);
+        }
+    }
+
+    public void setDefaultPrinterSetting(String defaultSetting) {
+        this.defaultPrinterSetting = defaultSetting;
+        setSettingChoice(defaultSetting);
+    }
+
+    private Node createMenu() {
         MenuBar mbar = new MenuBar();
         {
             {
@@ -124,21 +136,21 @@ public class DrawerPreviewDialog extends Stage {
         return mbar;
     }
 
-    private void doNewSetting(){
+    private void doNewSetting() {
         TextInputDialog textInputDialog = new TextInputDialog();
         textInputDialog.setTitle("新規印刷設定の名前");
         textInputDialog.setHeaderText(null);
         textInputDialog.setContentText("新規印刷設定の名前：");
         Optional<String> result = textInputDialog.showAndWait();
-        if( result.isPresent() ){
+        if (result.isPresent()) {
             String name = result.get();
-            if( printerEnv.settingExists(name) ){
+            if (printerEnv.settingExists(name)) {
                 GuiUtil.alertError(name + " という設定名は既に存在します。");
                 return;
             }
             DrawerPrinter drawerPrinter = new DrawerPrinter();
             DrawerPrinter.DialogResult dialogResult = drawerPrinter.printDialog(null, null);
-            if( dialogResult.ok ){
+            if (dialogResult.ok) {
                 byte[] devmode = dialogResult.devmodeData;
                 byte[] devnames = dialogResult.devnamesData;
                 AuxSetting auxSetting = new AuxSetting();
@@ -157,14 +169,14 @@ public class DrawerPreviewDialog extends Stage {
         }
     }
 
-    private void doListSetting(){
+    private void doListSetting() {
         PracticeLib.openPrinterSettingList().ifPresent(dialog -> {
             dialog.setTestPrintOps(getOps());
             dialog.show();
         });
     }
 
-    private Node createCommands(){
+    private Node createCommands() {
         HBox hbox = new HBox(4);
         Button printButton = new Button("印刷");
         printButton.setOnAction(evt -> doPrint());
@@ -175,12 +187,12 @@ public class DrawerPreviewDialog extends Stage {
         return hbox;
     }
 
-    private void updateSettingChoice(){
+    private void updateSettingChoice() {
         String current = settingChoice.getSelectionModel().getSelectedItem();
         settingChoice.getItems().setAll(NO_PRINTER_SETTING);
-        if( printerEnv != null ){
+        if (printerEnv != null) {
             try {
-                for(String name: printerEnv.listSettingNames()){
+                for (String name : printerEnv.listSettingNames()) {
                     settingChoice.getItems().add(name);
                 }
             } catch (IOException e) {
@@ -191,9 +203,9 @@ public class DrawerPreviewDialog extends Stage {
         setPrintSettingName(current);
     }
 
-    private String getSettingName(){
+    private String getSettingName() {
         String setting = settingChoice.getSelectionModel().getSelectedItem();
-        if( NO_PRINTER_SETTING.equals(setting) ){
+        if (NO_PRINTER_SETTING.equals(setting)) {
             setting = null;
         }
         return setting;
@@ -204,8 +216,8 @@ public class DrawerPreviewDialog extends Stage {
         return new ScrollPane(drawerCanvas);
     }
 
-    private void doPrint(){
-        if( printerEnv != null ){
+    private void doPrint() {
+        if (printerEnv != null) {
             try {
                 printerEnv.print(ops, getSettingName());
                 close();
@@ -216,24 +228,20 @@ public class DrawerPreviewDialog extends Stage {
         }
     }
 
-    private void doDefaultSetting(){
+    private void doDefaultSetting() {
+        String defaultSetting = this.defaultPrinterSetting;
         try {
-            String defaultSetting = PracticeEnv.INSTANCE.getDefaultPrinterSetting();
-            try {
-                List<String> names = printerEnv.listSettingNames();
-                SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(defaultSetting, names, printerEnv){
-                    @Override
-                    protected void onChange(String newDefaultSetting) {
-                        onDefaultSettingChange(newDefaultSetting);
-                    }
-                };
-                dialog.setTestPrintOps(ops);
-                dialog.showAndWait();
-            } catch(IOException e){
-                HandlerFX.exception("印刷設定のリストの取得に失敗しました。", e);
-            }
+            List<String> names = printerEnv.listSettingNames();
+            SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(defaultSetting, names, printerEnv) {
+                @Override
+                protected void onChange(String newDefaultSetting) {
+                    onDefaultSettingChange(newDefaultSetting);
+                }
+            };
+            dialog.setTestPrintOps(ops);
+            dialog.showAndWait();
         } catch (IOException e) {
-            HandlerFX.exception("既定の印刷設定を取得できませんでした。", e);
+            HandlerFX.exception("印刷設定のリストの取得に失敗しました。", e);
         }
     }
 }

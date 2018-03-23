@@ -120,7 +120,7 @@ public class TextEditForm extends VBox {
                             }
                         };
                         previewDialog.setPrinterEnv(printerEnv);
-                        previewDialog.setPrintSettingName(settingName);
+                        previewDialog.setDefaultPrinterSetting(settingName);
                         previewDialog.setScaleFactor(0.8);
                         previewDialog.setContentSize(PaperSize.A5);
                         previewDialog.setOps(drawer.getOps());

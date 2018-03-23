@@ -176,7 +176,11 @@ public class PracticeEnv {
 
     public void setAppProperty(String key, String value) throws IOException {
         Properties props = getAppProperties();
-        props.setProperty(key, value);
+        if( value == null ){
+            props.remove(key);
+        } else {
+            props.setProperty(key, value);
+        }
         saveAppProperties(props);
     }
 

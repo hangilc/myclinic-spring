@@ -24,7 +24,7 @@ public class HandleSelectedForm extends WorkForm {
     }
 
     private Node createChecks(List<ShinryouFullDTO> shinryouList){
-        checkInputs = new CheckBoxList<ShinryouFullDTO>(shinryouList, s -> s.master.name);
+        checkInputs = new CheckBoxList<>(shinryouList, s -> s.master.name);
         return checkInputs;
     }
 
@@ -32,6 +32,12 @@ public class HandleSelectedForm extends WorkForm {
         HBox hbox = new HBox(4);
         Hyperlink selectAllLink = new Hyperlink("全部選択");
         Hyperlink unselectAllLink = new Hyperlink("全部解除");
+        selectAllLink.setOnAction(evt -> {
+            checkInputs.forEachCheckBox(chk -> chk.setSelected(true));
+        });
+        unselectAllLink.setOnAction(evt -> {
+            checkInputs.forEachCheckBox(chk -> chk.setSelected(false));
+        });
         hbox.getChildren().addAll(selectAllLink, unselectAllLink);
         return hbox;
     }
