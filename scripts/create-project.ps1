@@ -9,6 +9,6 @@ if (!$groupId) {
     exit 1
 }
 
-mvn archetype:generate -DarchetypeArtifactId=maven-archetype-quickstart -DgroupId="$groupId" -DartifactId="$name" -DinteractiveMode=false
+mvn archetype:generate -DarchetypeArtifactId=maven-archetype-quickstart -DgroupId="$groupId" -DartifactId="$name" -Dversion="$version" -DinteractiveMode=false
 
 
