@@ -17,8 +17,6 @@ public class Cat {
         if( args.length == 2 ){
             String type = args[0];
             String zipFile = args[1];
-            System.out.println("type: " + type);
-            System.out.println("zipFile: " + zipFile);
             String file = resolveFile(type);
             cat(zipFile, file);
         } else {
