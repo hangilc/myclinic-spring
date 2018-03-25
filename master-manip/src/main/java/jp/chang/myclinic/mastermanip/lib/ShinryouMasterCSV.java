@@ -19,6 +19,10 @@ public class ShinryouMasterCSV {
     public String codeAlpha;
     public String codeKubun;
 
+    public ShinryouMasterCSV(){
+
+    }
+
     public ShinryouMasterCSV(CSVRow row) {
         kubun = row.getInt(1);
         masterShubetsu = row.getString(2);

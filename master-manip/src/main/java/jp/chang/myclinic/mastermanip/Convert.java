@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.mastermanip.lib.CSVRow;
 import jp.chang.myclinic.mastermanip.lib.CommonsCSVRow;
 import jp.chang.myclinic.mastermanip.lib.IyakuhinMasterCSV;
+import jp.chang.myclinic.mastermanip.lib.ShinryouMasterCSV;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
@@ -18,10 +19,6 @@ public class Convert {
 
     private static Logger logger = LoggerFactory.getLogger(Convert.class);
 
-    Convert() {
-
-    }
-
     public static void main(String[] args) throws IOException {
         if (args.length == 1) {
             String kind = args[0];
@@ -29,6 +26,10 @@ public class Convert {
             switch(kind){
                 case "iyakuhin": {
                     forEachEntry(record -> convertIyakuhin(record, mapper));
+                    break;
+                }
+                case "shinryou": {
+                    forEachEntry(record -> convertShinryou(record, mapper));
                     break;
                 }
                 default: {
@@ -46,6 +47,18 @@ public class Convert {
     private static void convertIyakuhin(CSVRecord record, ObjectMapper mapper) {
         CSVRow row = new CommonsCSVRow(record);
         IyakuhinMasterCSV master = new IyakuhinMasterCSV(row);
+        try {
+            String json = mapper.writeValueAsString(master);
+            System.out.println(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to write as JSON");
+        }
+    }
+
+    private static void convertShinryou(CSVRecord record, ObjectMapper mapper) {
+        CSVRow row = new CommonsCSVRow(record);
+        ShinryouMasterCSV master = new ShinryouMasterCSV(row);
         try {
             String json = mapper.writeValueAsString(master);
             System.out.println(json);

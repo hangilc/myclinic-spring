@@ -11,6 +11,10 @@ public class KizaiMasterCSV {
     public String kingakuShubetsu;
     public String kingaku;
 
+    public KizaiMasterCSV(){
+
+    }
+
     public KizaiMasterCSV(CSVRow row) {
         kubun = row.getInt(1);
         masterShubetsu = row.getString(2);
