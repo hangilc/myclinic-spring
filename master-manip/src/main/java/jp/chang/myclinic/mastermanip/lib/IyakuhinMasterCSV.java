@@ -14,6 +14,10 @@ public class IyakuhinMasterCSV {
     public int zaikei;
     public String yakkacode;
 
+    public IyakuhinMasterCSV(){
+
+    }
+
     public IyakuhinMasterCSV(CSVRow row){
         kubun = row.getInt(1);
         masterShubetsu = row.getString(2);
@@ -29,5 +33,22 @@ public class IyakuhinMasterCSV {
         yakkacode = row.getString(32);
     }
 
+    @Override
+    public String toString() {
+        return "IyakuhinMasterCSV{" +
+                "kubun=" + kubun +
+                ", masterShubetsu='" + masterShubetsu + '\'' +
+                ", iyakuhincode=" + iyakuhincode +
+                ", name='" + name + '\'' +
+                ", yomi='" + yomi + '\'' +
+                ", unit='" + unit + '\'' +
+                ", kingakuShubetsu=" + kingakuShubetsu +
+                ", yakka='" + yakka + '\'' +
+                ", madoku=" + madoku +
+                ", kouhatsu=" + kouhatsu +
+                ", zaikei=" + zaikei +
+                ", yakkacode='" + yakkacode + '\'' +
+                '}';
+    }
 }
 

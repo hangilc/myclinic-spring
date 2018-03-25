@@ -56,7 +56,7 @@ public class Convert {
     }
 
     private static void forEachEntry(Consumer<CSVRecord> consumer) throws IOException {
-        try (InputStreamReader inputStreamReader = new InputStreamReader(System.in, "MS932")) {
+        try (InputStreamReader inputStreamReader = new InputStreamReader(System.in)) {
             try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
                 Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(reader);
                 for(CSVRecord record: records){
