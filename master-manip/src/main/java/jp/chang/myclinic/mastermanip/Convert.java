@@ -1,10 +1,7 @@
 package jp.chang.myclinic.mastermanip;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.mastermanip.lib.CSVRow;
-import jp.chang.myclinic.mastermanip.lib.CommonsCSVRow;
-import jp.chang.myclinic.mastermanip.lib.IyakuhinMasterCSV;
-import jp.chang.myclinic.mastermanip.lib.ShinryouMasterCSV;
+import jp.chang.myclinic.mastermanip.lib.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
@@ -30,6 +27,10 @@ public class Convert {
                 }
                 case "shinryou": {
                     forEachEntry(record -> convertShinryou(record, mapper));
+                    break;
+                }
+                case "kizai": {
+                    forEachEntry(record -> convertKizai(record, mapper));
                     break;
                 }
                 default: {
@@ -59,6 +60,18 @@ public class Convert {
     private static void convertShinryou(CSVRecord record, ObjectMapper mapper) {
         CSVRow row = new CommonsCSVRow(record);
         ShinryouMasterCSV master = new ShinryouMasterCSV(row);
+        try {
+            String json = mapper.writeValueAsString(master);
+            System.out.println(json);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to write as JSON");
+        }
+    }
+
+    private static void convertKizai(CSVRecord record, ObjectMapper mapper) {
+        CSVRow row = new CommonsCSVRow(record);
+        KizaiMasterCSV master = new KizaiMasterCSV(row);
         try {
             String json = mapper.writeValueAsString(master);
             System.out.println(json);

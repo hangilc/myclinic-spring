@@ -3,6 +3,7 @@ package jp.chang.myclinic.mastermanip;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.mastermanip.lib.IyakuhinMasterCSV;
+import jp.chang.myclinic.mastermanip.lib.KizaiMasterCSV;
 import jp.chang.myclinic.mastermanip.lib.ShinryouMasterCSV;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +31,12 @@ public class Updater {
                     forEachLine(line -> updateShinryou(line, mapper, validFrom));
                     break;
                 }
+                case "kizai": {
+                    forEachLine(line -> updateKizai(line, mapper, validFrom));
+                    break;
+                }
                 default: {
-                    System.err.println("Unknown kinda: " + kind);
+                    System.err.println("Unknown kind (updater): " + kind);
                     System.err.println("Valid kind is one of iyakuhin, shinryou, and kizai");
                     System.exit(1);
                 }
@@ -64,6 +69,21 @@ public class Updater {
             int kubun = master.kubun;
             if (kubun == 0 || kubun == 3 || kubun == 5) {
                 System.out.println(shinryouSql(master, validFrom));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to parse iyakuhin.");
+            System.exit(1);
+        }
+    }
+
+    private static void updateKizai(String line, ObjectMapper mapper, String validFrom) {
+        try {
+            KizaiMasterCSV master = mapper.readValue(line, new TypeReference<KizaiMasterCSV>() {
+            });
+            int kubun = master.kubun;
+            if (kubun == 0 || kubun == 3 || kubun == 5) {
+                System.out.println(kizaiSql(master, validFrom));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -144,6 +164,33 @@ public class Updater {
                 master.codeBu,
                 master.codeAlpha,
                 master.codeKubun,
+                validFrom,
+                "0000-00-00"
+        );
+    }
+
+    private static String kizaiTemplate;
+
+    static {
+        kizaiTemplate = String.join(" ",
+                "insert into tokuteikizai_master_arch set",
+                "kizaicode=%d,",
+                "name='%s',",
+                "yomi='%s',",
+                "unit='%s',",
+                "kingaku='%s',",
+                "valid_from='%s',",
+                "valid_upto='%s';"
+        );
+    }
+
+    private static String kizaiSql(KizaiMasterCSV master, String validFrom) {
+        return String.format(kizaiTemplate,
+                master.kizaicode,
+                master.name,
+                master.yomi,
+                master.unit,
+                master.kingaku,
                 validFrom,
                 "0000-00-00"
         );
