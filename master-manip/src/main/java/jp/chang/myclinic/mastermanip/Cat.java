@@ -9,22 +9,26 @@ import java.nio.charset.Charset;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-class Cat {
+public class Cat {
 
     private static Logger logger = LoggerFactory.getLogger(Cat.class);
 
-    void run(String[] args){
+    public static void main(String[] args) throws IOException {
         if( args.length == 2 ){
             String type = args[0];
             String zipFile = args[1];
             System.out.println("type: " + type);
             System.out.println("zipFile: " + zipFile);
             String file = resolveFile(type);
-            doCat(zipFile, file);
+            cat(zipFile, file);
+        } else {
+            System.err.println("Usage: master-cat kind zipfile");
+            System.exit(1);
         }
+
     }
 
-    private void doCat(String zipFile, String file){
+    private static void cat(String zipFile, String file) throws IOException {
         try(ZipFile zip = new ZipFile(zipFile, Charset.forName("MS932"))){
             ZipEntry entry = zip.getEntry(file);
             if( entry == null ){
@@ -35,22 +39,16 @@ class Cat {
                     is.transferTo(System.out);
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Failed to open zipfile: " + zipFile);
-            System.exit(1);
         }
     }
 
-    private String resolveFile(String type){
+    private static String resolveFile(String type){
         switch(type){
             case "iyakuhin": return "y.csv";
             case "shinryou": return "s.csv";
             case "kizai": return "t.csv";
             default: {
-                System.err.println("Unknown type. Types are: iyakuhin, shinryou, or kizai.");
-                System.exit(1);
-                return null;
+                throw new RuntimeException("Unknown type. Types are: iyakuhin, shinryou, or kizai.");
             }
         }
     }
