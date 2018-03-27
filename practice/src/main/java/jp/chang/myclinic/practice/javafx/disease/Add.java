@@ -12,7 +12,6 @@ import jp.chang.myclinic.practice.javafx.disease.add.DiseaseInput;
 import jp.chang.myclinic.practice.javafx.disease.search.DiseaseSearchResultModel;
 import jp.chang.myclinic.practice.javafx.disease.search.ExampleSearchResult;
 import jp.chang.myclinic.practice.javafx.disease.search.SearchBox;
-import jp.chang.myclinic.practice.javafx.events.DiseaseEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeAPI;
 import jp.chang.myclinic.practice.lib.Result;
 
@@ -81,12 +80,17 @@ public class Add extends VBox {
             Service.api.enterDisease(newDisease)
                     .thenCompose(Service.api::getDiseaseFull)
                     .thenAccept(entered -> Platform.runLater(() -> {
-                        Add.this.fireEvent(new DiseaseEnteredEvent(entered));
+                        onEntered(entered);
+                        //Add.this.fireEvent(new DiseaseEnteredEvent(entered));
                         diseaseInput.clear();
                         doExample();
                     }))
                     .exceptionally(HandlerFX::exceptionally);
         }
+    }
+
+    protected void onEntered(DiseaseFullDTO entered){
+
     }
 
     private void doSusp(){

@@ -12,7 +12,6 @@ import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.disease.*;
-import jp.chang.myclinic.practice.javafx.events.CurrentDiseasesChangedEvent;
 import jp.chang.myclinic.practice.javafx.events.DiseaseEnteredEvent;
 
 import java.util.ArrayList;
@@ -53,10 +52,10 @@ public class DiseasesPane extends VBox {
                         .exceptionally(HandlerFX::exceptionally);
             }
         });
-        addEventHandler(DiseaseEnteredEvent.eventType, this::onDiseaseEntered);
-        addEventHandler(CurrentDiseasesChangedEvent.eventType, event -> {
-            this.currentDiseases = event.getDiseases();
-        });
+//        addEventHandler(DiseaseEnteredEvent.eventType, this::onDiseaseEntered);
+//        addEventHandler(CurrentDiseasesChangedEvent.eventType, event -> {
+//            this.currentDiseases = event.getDiseases();
+//        });
     }
 
     private Node createTitle() {
@@ -81,7 +80,17 @@ public class DiseasesPane extends VBox {
 
     private void showAdd(){
         assert patientId != 0;
-        setWorkarea(new Add(patientId));
+        Add add = new Add(patientId){
+            @Override
+            protected void onEntered(DiseaseFullDTO entered) {
+               appendDisease(entered);
+            }
+        };
+        setWorkarea(add);
+    }
+
+    private void appendDisease(DiseaseFullDTO disease){
+        currentDiseases.add(disease);
     }
 
     private void showEnd(){
