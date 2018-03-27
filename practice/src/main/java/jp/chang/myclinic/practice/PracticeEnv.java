@@ -4,7 +4,10 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.ReferItemDTO;
+import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.myclinicenv.MyclinicEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +16,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -37,7 +39,7 @@ public class PracticeEnv {
     private IntegerProperty totalRecordPages = new SimpleIntegerProperty(0);
     private IntegerProperty currentRecordPage = new SimpleIntegerProperty(0);
     private ObjectProperty<List<VisitFull2DTO>> pageVisits = new SimpleObjectProperty<>(Collections.emptyList());
-    private ObjectProperty<List<DiseaseFullDTO>> currentDiseases = new SimpleObjectProperty<>(Collections.emptyList());
+    //private ObjectProperty<List<DiseaseFullDTO>> currentDiseases = new SimpleObjectProperty<>(Collections.emptyList());
     private MyclinicEnv myclinicEnv;
     private List<ReferItemDTO> referList;
     private boolean kouhatsuKasanEnabled;
@@ -122,18 +124,18 @@ public class PracticeEnv {
         this.pageVisits.set(pageVisits);
     }
 
-    public List<DiseaseFullDTO> getCurrentDiseases() {
-        return currentDiseases.get();
-    }
-
-    public ObjectProperty<List<DiseaseFullDTO>> currentDiseasesProperty() {
-        return currentDiseases;
-    }
-
-    public void setCurrentDiseases(List<DiseaseFullDTO> currentDiseases) {
-        this.currentDiseases.set(new ArrayList<>(currentDiseases));
-    }
-
+//    public List<DiseaseFullDTO> getCurrentDiseases() {
+//        return currentDiseases.get();
+//    }
+//
+//    public ObjectProperty<List<DiseaseFullDTO>> currentDiseasesProperty() {
+//        return currentDiseases;
+//    }
+//
+//    public void setCurrentDiseases(List<DiseaseFullDTO> currentDiseases) {
+//        this.currentDiseases.set(new ArrayList<>(currentDiseases));
+//    }
+//
     public int getCurrentVisitId() {
         return currentVisitId.get();
     }

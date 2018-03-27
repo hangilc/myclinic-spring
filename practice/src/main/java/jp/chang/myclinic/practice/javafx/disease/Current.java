@@ -16,13 +16,13 @@ public class Current extends VBox {
         Disp disp = new Disp(diseaseFull){
             @Override
             protected void onMouseClick(DiseaseFullDTO disease) {
-                Current.this.onMouseClick(disease);
+                Current.this.onSelect(disease);
             }
         };
         getChildren().add(disp);
     }
 
-    protected void onMouseClick(DiseaseFullDTO disease){
+    protected void onSelect(DiseaseFullDTO disease){
 
     }
 }

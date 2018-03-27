@@ -37,10 +37,10 @@ public class PracticeLib {
                 })
                 .thenAccept(result -> {
                     CompletableFuture<VisitFull2PageDTO> visitsFuture = Service.api.listVisitFull2(patient.patientId, 0);
-                    CompletableFuture<List<DiseaseFullDTO>> diseasesFuture = Service.api.listCurrentDiseaseFull(patient.patientId);
+//                    CompletableFuture<List<DiseaseFullDTO>> diseasesFuture = Service.api.listCurrentDiseaseFull(patient.patientId);
                     try {
                         VisitFull2PageDTO visits = visitsFuture.join();
-                        List<DiseaseFullDTO> diseases = diseasesFuture.join();
+//                        List<DiseaseFullDTO> diseases = diseasesFuture.join();
                         PracticeEnv env = PracticeEnv.INSTANCE;
                         Platform.runLater(() -> {
                             env.setCurrentPatient(patient);
@@ -49,7 +49,7 @@ public class PracticeLib {
                             env.setTotalRecordPages(visits.totalPages);
                             env.setCurrentRecordPage(visits.page);
                             env.setPageVisits(visits.visits);
-                            env.setCurrentDiseases(diseases);
+//                            env.setCurrentDiseases(diseases);
                             cb.run();
                         });
                     } catch (Exception ex) {
@@ -92,7 +92,7 @@ public class PracticeLib {
         env.setCurrentRecordPage(0);
         env.setTotalRecordPages(0);
         env.setPageVisits(Collections.emptyList());
-        env.setCurrentDiseases(Collections.emptyList());
+//        env.setCurrentDiseases(Collections.emptyList());
     }
 
     public static void endExam(int visitId, int charge, Runnable cb){

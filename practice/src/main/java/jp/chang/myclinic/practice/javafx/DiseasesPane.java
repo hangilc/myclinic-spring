@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -15,6 +16,7 @@ import jp.chang.myclinic.practice.javafx.events.CurrentDiseasesChangedEvent;
 import jp.chang.myclinic.practice.javafx.events.DiseaseEnteredEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DiseasesPane extends VBox {
@@ -36,12 +38,20 @@ public class DiseasesPane extends VBox {
         setVisible(false);
         PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) -> {
             clearWorkarea();
-            this.patientId = (newValue == null) ? 0 : newValue.patientId;
-            DiseasesPane.this.setVisible(newValue != null);
-        });
-        PracticeEnv.INSTANCE.currentDiseasesProperty().addListener((obs, oldValue, newValue) -> {
-            currentDiseases = newValue;
-            showCurrent();
+            currentDiseases = Collections.emptyList();
+            if( newValue == null ){
+                setVisible(false);
+                this.patientId = 0;
+            } else {
+                this.patientId = newValue.patientId;
+                Service.api.listCurrentDiseaseFull(patientId)
+                        .thenAccept(result -> Platform.runLater(() -> {
+                            this.currentDiseases = result;
+                            showCurrent();
+                            setVisible(true);
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
+            }
         });
         addEventHandler(DiseaseEnteredEvent.eventType, this::onDiseaseEntered);
         addEventHandler(CurrentDiseasesChangedEvent.eventType, event -> {
@@ -59,11 +69,14 @@ public class DiseasesPane extends VBox {
     private void showCurrent(){
         Current current = new Current(currentDiseases){
             @Override
-            protected void onMouseClick(DiseaseFullDTO disease) {
+            protected void onSelect(DiseaseFullDTO disease) {
                 showEdit(disease);
             }
         };
-        setWorkarea(current);
+        ScrollPane scroll = new ScrollPane(current);
+        scroll.setStyle("-fx-padding: 10px");
+        scroll.setFitToWidth(true);
+        setWorkarea(scroll);
     }
 
     private void showAdd(){
