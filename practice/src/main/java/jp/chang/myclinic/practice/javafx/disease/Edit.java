@@ -12,7 +12,6 @@ import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.disease.edit.Form;
 import jp.chang.myclinic.practice.javafx.disease.search.SearchBox;
-import jp.chang.myclinic.practice.javafx.events.DiseaseDeletedEvent;
 import jp.chang.myclinic.practice.lib.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,11 +98,12 @@ public class Edit extends VBox {
     }
 
     private void doDelete(){
+        if( !GuiUtil.confirm("この病名を削除していいですか？") ){
+            return;
+        }
         int diseaseId = origDisease.diseaseId;
         Service.api.deleteDisease(diseaseId)
-                .thenAccept(result -> Platform.runLater(() -> {
-                    Edit.this.fireEvent(new DiseaseDeletedEvent(diseaseId))
-                }))
+                .thenAccept(result -> Platform.runLater(this::onComplete))
                 .exceptionally(HandlerFX::exceptionally);
     }
 
