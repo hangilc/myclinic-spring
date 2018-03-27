@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.disease;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -11,6 +12,7 @@ import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.disease.edit.Form;
 import jp.chang.myclinic.practice.javafx.disease.search.SearchBox;
+import jp.chang.myclinic.practice.javafx.events.DiseaseDeletedEvent;
 import jp.chang.myclinic.practice.lib.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,7 @@ public class Edit extends VBox {
         Hyperlink deleteLink = new Hyperlink("削除");
         enterButton.setOnAction(evt -> doEnter());
         deleteAdjLink.setOnAction(evt -> form.deleteShuushokugoMaster());
+        deleteLink.setOnAction(evt -> doDelete());
         hbox.getChildren().addAll(
                 enterButton,
                 deleteAdjLink,
@@ -92,6 +95,15 @@ public class Edit extends VBox {
                 .map(m -> m.shuushokugocode).collect(Collectors.toList());
         Service.api.modifyDisease(modify)
                 .thenAccept(result -> onComplete())
+                .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private void doDelete(){
+        int diseaseId = origDisease.diseaseId;
+        Service.api.deleteDisease(diseaseId)
+                .thenAccept(result -> Platform.runLater(() -> {
+                    Edit.this.fireEvent(new DiseaseDeletedEvent(diseaseId))
+                }))
                 .exceptionally(HandlerFX::exceptionally);
     }
 
