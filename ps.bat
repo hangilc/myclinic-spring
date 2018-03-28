@@ -1,2 +1,2 @@
 call ./config/cmd-env-vars.bat
-start pwsh
+start pwsh -NoExit -Command "cd $MyclinicSpringDir"
