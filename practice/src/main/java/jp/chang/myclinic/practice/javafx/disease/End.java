@@ -16,7 +16,6 @@ import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.disease.end.DateControl;
 import jp.chang.myclinic.practice.javafx.disease.end.DiseaseList;
-import jp.chang.myclinic.practice.javafx.events.CurrentDiseasesChangedEvent;
 import jp.chang.myclinic.practice.javafx.parts.CheckBoxWithData;
 import jp.chang.myclinic.practice.javafx.parts.dateinput.DateInput;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
@@ -174,7 +173,7 @@ public class End extends VBox {
                     .thenCompose(result -> Service.api.listCurrentDiseaseFull(patientId))
                     .thenAccept(newDiseases -> Platform.runLater(() -> {
                         resetDiseases(newDiseases);
-                        End.this.fireEvent(new CurrentDiseasesChangedEvent(newDiseases));
+                        onModified(newDiseases);
                     }))
                     .exceptionally(HandlerFX::exceptionally);
         }
@@ -183,6 +182,10 @@ public class End extends VBox {
     private void resetDiseases(List<DiseaseFullDTO> diseases) {
         getChildren().clear();
         setup(diseases);
+    }
+
+    protected void onModified(List<DiseaseFullDTO> newCurrentDiseases){
+
     }
 
 }

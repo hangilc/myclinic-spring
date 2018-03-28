@@ -178,3 +178,12 @@
 .todays-visits-dialog {
     -fx-padding: 10px;
 }
+
+.current-diseases-scroll {
+    -fx-padding: 10px;
+    -fx-max-height: 400px;
+}
+
+.add-disease-pane .search-result {
+    -fx-pref-height: 260px;
+}

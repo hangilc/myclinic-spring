@@ -29,6 +29,7 @@ public class Add extends VBox {
 
     public Add(int patientId){
         super(4);
+        getStyleClass().add("add-disease-pane");
         this.patientId = patientId;
         this.diseaseInput = new DiseaseInput();
         this.searchBox = new SearchBox(() -> diseaseInput.getStartDate()){

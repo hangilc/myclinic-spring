@@ -12,7 +12,6 @@ import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.disease.*;
-import jp.chang.myclinic.practice.javafx.events.DiseaseEnteredEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +27,6 @@ public class DiseasesPane extends VBox {
         super(4);
         getStyleClass().add("diseases-pane");
         setFillWidth(true);
-        getStyleClass().add("diseases-pane");
         getChildren().addAll(
                 createTitle(),
                 workarea,
@@ -52,10 +50,10 @@ public class DiseasesPane extends VBox {
                         .exceptionally(HandlerFX::exceptionally);
             }
         });
-//        addEventHandler(DiseaseEnteredEvent.eventType, this::onDiseaseEntered);
-//        addEventHandler(CurrentDiseasesChangedEvent.eventType, event -> {
-//            this.currentDiseases = event.getDiseases();
-//        });
+    }
+
+    private void setCurrentDiseases(List<DiseaseFullDTO> diseases){
+        this.currentDiseases = diseases;
     }
 
     private Node createTitle() {
@@ -73,7 +71,8 @@ public class DiseasesPane extends VBox {
             }
         };
         ScrollPane scroll = new ScrollPane(current);
-        scroll.setStyle("-fx-padding: 10px");
+        scroll.getStyleClass().add("current-diseases-scroll");
+        scroll.prefViewportHeightProperty().bind(current.heightProperty());
         scroll.setFitToWidth(true);
         setWorkarea(scroll);
     }
@@ -95,7 +94,13 @@ public class DiseasesPane extends VBox {
 
     private void showEnd(){
         assert patientId != 0;
-        setWorkarea(new End(currentDiseases, patientId));
+        End endPane = new End(currentDiseases, patientId){
+            @Override
+            protected void onModified(List<DiseaseFullDTO> newCurrentDiseases) {
+                setCurrentDiseases(newCurrentDiseases);
+            }
+        };
+        setWorkarea(endPane);
     }
 
     private void showSelect(){
@@ -113,7 +118,7 @@ public class DiseasesPane extends VBox {
         Edit edit = new Edit(disease){
             @Override
             protected void onComplete() {
-                Service.api.listDiseaseFull(patientId)
+                Service.api.listCurrentDiseaseFull(patientId)
                         .thenAccept(list -> Platform.runLater(() ->{
                             DiseasesPane.this.currentDiseases = list;
                             showCurrent();
@@ -145,11 +150,6 @@ public class DiseasesPane extends VBox {
 
     private void clearWorkarea(){
         workarea.getChildren().clear();
-    }
-
-    private void onDiseaseEntered(DiseaseEnteredEvent event){
-        DiseaseFullDTO entered = event.getDisease();
-        currentDiseases.add(entered);
     }
 
 }
