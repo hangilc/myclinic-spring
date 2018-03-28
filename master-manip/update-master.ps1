@@ -29,11 +29,12 @@ if( -Not $SkipDump ){
 # set valid_upto of current masters
 restrictCurrentMaster($prevDate)
 
-#echo "update iyakuhin_master_arch set valid_upto = '$prevDate' where valid_upto = '0000-00-00';" |
-#        mysql -u "$dbUser" -p"$dbPass" myclinic
-#echo "update shinryoukoui_master_arch set valid_upto = '$prevDate' where valid_upto = '0000-00-00';" |
-#        mysql -u "$dbUser" -p"$dbPass" myclinic
-#echo "update tokuteikizai_master_arch set valid_upto = '$prevDate' where valid_upto = '0000-00-00';" |
-#        mysql -u "$dbUser" -p"$dbPass" myclinic
+# prepare updater sql
+prepIyakuhinMaster $IyakuhinZipfile $ValidFrom $iyakuhinUpdaterFile
+prepShinryouMaster $ShinryouZipfile $ValidFrom $shinryouUpdaterFile
+prepKizaiMaster $KizaiZipfile $ValidFrom $kizaiUpdaterFile
 
+execMysqlQuery($iyakuhinUpdaterFile)
+execMysqlQuery($shinryouUpdaterFile)
+execMysqlQuery($kizaiUpdaterFile)
 
