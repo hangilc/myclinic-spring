@@ -18,6 +18,7 @@ import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.events.EventTypes;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
+import jp.chang.myclinic.practice.javafx.globalsearch.GlobalSearchDialog;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
@@ -72,15 +73,19 @@ public class MainPane extends BorderPane {
             MenuItem referItem = new MenuItem("紹介状作成");
             MenuItem shohousenItem = new MenuItem("処方箋作成");
             MenuItem listPrinterSettingItem = new MenuItem("印刷設定の一覧");
+            MenuItem searchTextMenuItem = new MenuItem("全文検索");
             newVisitItem.setOnAction(evt -> doNewVisit());
             referItem.setOnAction(evt -> doRefer(false));
             shohousenItem.setOnAction(evt -> doShohousen());
             listPrinterSettingItem.setOnAction(evt -> doListPrinterSetting());
+            searchTextMenuItem.setOnAction(evt -> doGlobalSearchText());
             menu.getItems().addAll(
                     newVisitItem,
                     referItem,
                     shohousenItem,
-                    listPrinterSettingItem);
+                    listPrinterSettingItem,
+                    searchTextMenuItem
+            );
             menuBar.getMenus().add(menu);
         }
         return menuBar;
@@ -113,6 +118,11 @@ public class MainPane extends BorderPane {
 
     private void doListPrinterSetting() {
         PracticeLib.openPrinterSettingList().ifPresent(Stage::show);
+    }
+
+    private void doGlobalSearchText(){
+        GlobalSearchDialog dialog = new GlobalSearchDialog();
+        dialog.show();
     }
 
     private Node createCenter() {
