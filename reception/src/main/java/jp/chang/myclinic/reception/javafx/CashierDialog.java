@@ -9,10 +9,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jp.chang.myclinic.dto.MeisaiDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.PaymentDTO;
-import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.reception.lib.ReceptionLib;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.DateTimeUtil;
@@ -25,11 +22,14 @@ public class CashierDialog extends Stage {
     private MeisaiDTO meisai;
     private PatientDTO patient;
     private VisitDTO visit;
+    private ChargeDTO charge;
 
-    public CashierDialog(MeisaiDTO meisai, PatientDTO patient, List<PaymentDTO> payments, VisitDTO visit){
+    public CashierDialog(MeisaiDTO meisai, PatientDTO patient, List<PaymentDTO> payments, VisitDTO visit,
+                         ChargeDTO charge){
         this.meisai = meisai;
         this.patient = patient;
         this.visit = visit;
+        this.charge = charge;
         setTitle(String.format("会計（%s）", patient.lastName + patient.firstName));
         VBox root = new VBox(4);
         root.getStyleClass().add("cashier-dialog");
@@ -63,7 +63,7 @@ public class CashierDialog extends Stage {
         if( payments.size() > 0 ){
             lastPayment = payments.get(0);
         }
-        int chargeValue = meisai.charge;
+        int chargeValue = charge.charge;
         if( lastPayment != null ){
             chargeValue -= payments.get(0).amount;
             vbox.getChildren().add(new Label(String.format("以前の支払い：%,d円", lastPayment.amount)));
@@ -91,7 +91,7 @@ public class CashierDialog extends Stage {
     private void doFinish() {
         PaymentDTO payment = new PaymentDTO();
         payment.visitId = visit.visitId;
-        payment.amount = meisai.charge;
+        payment.amount = charge.charge;
         payment.paytime = DateTimeUtil.toSqlDateTime(LocalDateTime.now());
         ReceptionService.finishCashier(payment, this::close);
     }

@@ -8,8 +8,7 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.WqueueFullDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.Service;
@@ -98,14 +97,31 @@ public class MainPane extends VBox {
     }
 
     private void doCashier(){
+        class Store {
+            MeisaiDTO meisai;
+            List<PaymentDTO> payments;
+        }
         WqueueFullDTO wq = wqueueTable.getSelectionModel().getSelectedItem();
         if( wq != null ){
             WqueueWaitState state = WqueueWaitState.fromCode(wq.wqueue.waitState);
             if( state == WqueueWaitState.WaitCashier ) {
-                ReceptionService.getMeisaiAndPayments(wq.visit.visitId, (meisai, payments) -> {
-                    CashierDialog cashierDialog = new CashierDialog(meisai, wq.patient, payments, wq.visit);
-                    cashierDialog.show();
-                });
+                int visitId = wq.visit.visitId;
+                Store store = new Store();
+                Service.api.getVisitMeisai(visitId)
+                        .thenCompose(meisai -> {
+                            store.meisai = meisai;
+                            return Service.api.listPayment(visitId);
+                        })
+                        .thenCompose(payments -> {
+                            store.payments = payments;
+                            return Service.api.getCharge(visitId);
+                        })
+                        .thenAccept(charge -> Platform.runLater(() -> {
+                            CashierDialog cashierDialog = new CashierDialog(store.meisai, wq.patient,
+                                    store.payments, wq.visit, charge);
+                            cashierDialog.show();
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
             }
         }
     }
