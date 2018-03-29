@@ -300,6 +300,9 @@ public class Service {
 
         @GET("get-practice-config")
         CompletableFuture<PracticeConfigDTO> getPracticeConfig();
+
+        @GET("search-text-globally")
+        CompletableFuture<TextVisitPatientDTO> searchTextGlobally(String text, int page);
     }
 
     public static ServerAPI api;

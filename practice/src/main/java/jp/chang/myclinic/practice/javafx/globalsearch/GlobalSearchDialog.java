@@ -20,12 +20,13 @@ public class GlobalSearchDialog extends Stage {
         vbox.getStyleClass().add("global-text-search-dialog");
         vbox.getStylesheets().add("css/Practice.css");
         vbox.getChildren().addAll(
-            createInputs()
+                createInputs(),
+                createResult()
         );
         setScene(new Scene(vbox));
     }
 
-    private Node createInputs(){
+    private Node createInputs() {
         HBox hbox = new HBox(4);
         searchTextInput = new TextField();
         searchTextInput.setOnAction(evt -> doSearch());
@@ -38,9 +39,13 @@ public class GlobalSearchDialog extends Stage {
         return hbox;
     }
 
-    private void doSearch(){
+    private Node createResult(){
+
+    }
+
+    private void doSearch() {
         String text = searchTextInput.getText();
-        if( !text.isEmpty() ){
+        if (!text.isEmpty()) {
 
         }
     }
