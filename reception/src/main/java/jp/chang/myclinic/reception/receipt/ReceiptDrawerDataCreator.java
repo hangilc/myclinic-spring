@@ -87,7 +87,11 @@ public class ReceiptDrawerDataCreator {
     }
 
     public void setFutanWari(int futanWari){
-        data.setFutanWari("" + futanWari);
+        if( futanWari == 10 ){
+            data.setFutanWari("");
+        } else {
+            data.setFutanWari("" + futanWari);
+        }
     }
 
     public void setSouten(int souten){
@@ -112,7 +116,7 @@ public class ReceiptDrawerDataCreator {
                 return rep;
             }
         }
-        return "";
+        return "自費";
     }
 
     private String format(int number){
