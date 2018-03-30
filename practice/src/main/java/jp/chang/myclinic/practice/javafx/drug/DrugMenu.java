@@ -11,14 +11,20 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.practice.lib.drug.DrugsCopier;
+import jp.chang.myclinic.util.DrugUtil;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DrugMenu extends VBox {
 
@@ -68,7 +74,8 @@ public class DrugMenu extends VBox {
                 createCopyAllMenuItem(visitId),
                 createCopySelectedMenuItem(visitId),
                 createModifyDaysMenuItem(visitId),
-                createDeleteSelectedMenuItem(visitId)
+                createDeleteSelectedMenuItem(visitId),
+                createDrugTextMenuItem(visitId)
         );
         return menu;
     }
@@ -189,6 +196,26 @@ public class DrugMenu extends VBox {
             }
         });
         return item;
+    }
+
+    private MenuItem createDrugTextMenuItem(int visitId){
+        MenuItem menuItem = new MenuItem("処方内容を文章コピー");
+        menuItem.setOnAction(evt -> {
+            Service.api.listDrugFull(visitId)
+                    .thenAccept(drugs -> {
+                        List<String> reps = drugs.stream().map(DrugUtil::drugRep).collect(Collectors.toList());
+                        List<String> lines = new ArrayList<>();
+                        int i = 1;
+                        for(String rep: reps){
+                            lines.add(String.format("%d) %s\n", i, rep));
+                            i += 1;
+                        }
+                        String text = String.join("", lines);
+                        Platform.runLater(() -> GuiUtil.copyToClipboard(text));
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        });
+        return menuItem;
     }
 
     private boolean isWorkareaEmpty() {

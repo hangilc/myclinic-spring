@@ -5,10 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.HttpException;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionException;
 
@@ -21,6 +25,8 @@ public class GuiUtil {
 
     private static Logger logger = LoggerFactory.getLogger(GuiUtil.class);
     private static ObjectMapper objectMapper = new ObjectMapper();
+
+    private GuiUtil(){}
 
     public static void alertError(String message){
         Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
@@ -69,4 +75,12 @@ public class GuiUtil {
         textInputDialog.setHeaderText(prompt);
         return textInputDialog.showAndWait();
     }
+
+    public static  boolean copyToClipboard(String text){
+        Map<DataFormat,Object> content = new HashMap<>();
+        content.put(DataFormat.PLAIN_TEXT, text);
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        return clipboard.setContent(content);
+    }
+
 }
