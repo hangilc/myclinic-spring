@@ -51,6 +51,7 @@ public class Main extends Application {
 
     private void doPreview(){
         try {
+            Data data = new Data();
             Drawer drawer = new Drawer();
 //            drawer.setDoctorName(shujiiForm.getDoctorName());
 //            drawer.setClinicName(shujiiForm.getClinicName());
@@ -61,7 +62,7 @@ public class Main extends Application {
             DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null);
             previewDialog.setContentSize(PaperSize.A4);
             previewDialog.setScaleFactor(0.6);
-            previewDialog.setOps(drawer.getOps());
+            previewDialog.setOps(drawer.render(data));
             previewDialog.showAndWait();
         } catch(Exception ex){
             logger.error("Failed to do preview.", ex);
