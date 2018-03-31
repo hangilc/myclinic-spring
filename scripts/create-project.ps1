@@ -1,7 +1,7 @@
 Param(
     [parameter(mandatory)]$name,
-    $version="1.0.0-SNAPSHOT",
-    $groupId=$env:PROJECT_GROUP_ID
+    $groupId=$env:PROJECT_GROUP_ID,
+    $version="1.0.0-SNAPSHOT"
 )
 
 if (!$groupId) {

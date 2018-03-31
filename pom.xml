@@ -33,6 +33,7 @@
     <module>myclinic-env</module>
     <module>shujii</module>
     <module>master-manip</module>
+    <module>medicalcheck</module>
   </modules>
 
 </project>
