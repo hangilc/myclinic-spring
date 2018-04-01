@@ -1,0 +1,15 @@
+* Download 「薬価基準収載品目リスト及び後発医薬品に関する情報]
+  http://www.mhlw.go.jp/topics/2018/04/tp20180401-01.html
+
+  tp..._1.xls, tp..._2.xls, tp..._3.xls
+
+  copy these files to work/
+
+* convert .xls files to .csv (SJIS encoded) files.
+
+* compile if necessary
+  > mvn -pl kouhatsukasan package
+
+* invoke program
+  > java -jar kouhatsu\target\kouhatsu-1.0.0-SNAPSHOT.jar tp..._1.xls tp..._2.xls tp..._3.xls 2018
+

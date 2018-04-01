@@ -17,10 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SpringBootApplication
 public class Main implements CommandLineRunner {
@@ -38,7 +35,7 @@ public class Main implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (args.length == 3) {
+        if (args.length == 4) {
             for (int i = 0; i < 3; i++) {
                 Path path = Paths.get(args[i]);
                 try (BufferedReader reader = Files.newBufferedReader(path, Charset.forName("MS932"))) {
@@ -67,27 +64,55 @@ public class Main implements CommandLineRunner {
                     }
                 }
             }
-            Map<String, Drug> drugMap1 = new HashMap<>();
-            List<Drug> drugs1 = collectDrugs(2018, 1);
-            drugs1.forEach(drug -> extendDrugMap(drugMap1, drug));
+            int year = Integer.parseInt(args[3]);
+            List<Drug> drugs1 = collectDrugs(year, 1);
             Map<Kubun, Double> summary1 = new HashMap<>();
-            extendSummary(summary1, drugMap1.values());
-            Map<String, Drug> drugMap2 = new HashMap<>();
-            List<Drug> drugs2 = collectDrugs(2018, 2);
-            drugs2.forEach(drug -> extendDrugMap(drugMap2, drug));
+            extendSummary(summary1, drugs1);
+            List<Drug> drugs2 = collectDrugs(year, 2);
             Map<Kubun, Double> summary2 = new HashMap<>();
-            extendSummary(summary2, drugMap2.values());
-            Map<String, Drug> drugMap3 = new HashMap<>();
-            List<Drug> drugs3 = collectDrugs(2018, 3);
-            drugs3.forEach(drug -> extendDrugMap(drugMap3, drug));
+            extendSummary(summary2, drugs2);
+            List<Drug> drugs3 = collectDrugs(year, 3);
             Map<Kubun, Double> summary3 = new HashMap<>();
-            extendSummary(summary3, drugMap3.values());
+            extendSummary(summary3, drugs3);
             Map<Kubun, Double> grandSum = grandSum(List.of(summary1, summary2, summary3));
             report(summary1, summary2, summary3, grandSum);
+            reportPossibleKouhatsu(List.of(drugs1, drugs2, drugs3));
         } else {
-            System.err.println("Usage: kouhatsu TP-1.csv TP-2.csv TP-3.csv");
+            System.err.println("Usage: kouhatsu TP-1.csv TP-2.csv TP-3.csv year");
             System.exit(1);
         }
+    }
+
+    private void reportPossibleKouhatsu(List<List<Drug>> drugsList){
+        Map<String, Drug> map = new HashMap<>();
+        drugsList.forEach(drugs -> {
+            drugs.forEach(drug -> {
+                if( drug.kubun == Kubun.SenpatsuWithKouhatsu ){
+                    Drug bind = map.get(drug.yakkacode);
+                    if( bind == null ){
+                        bind = drug;
+                    } else {
+                        bind = Drug.copy(bind);
+                        bind.amount += drug.amount;
+                    }
+                    map.put(drug.yakkacode, bind);
+                }
+            });
+        });
+        List<Drug> pks = new ArrayList<>(map.values());
+        pks.sort((a, b) -> Double.compare(b.amount, a.amount));
+        System.out.println("== Possible Kouhatsu ==");
+        for(Drug d: pks.subList(0, 20)){
+            String name = d.name;
+            int slen = 12;
+            if( name.length() > slen ){
+                name = name.substring(0, slen);
+            } else {
+                name = name + String.join("", Collections.nCopies(slen - name.length(), "　"));
+            }
+            System.out.printf("  %s: %,10.0f\n", name, d.amount);
+        }
+        System.out.println();
     }
 
     private void report(Map<Kubun, Double> sum1, Map<Kubun, Double> sum2, Map<Kubun, Double> sum3,
@@ -160,29 +185,21 @@ public class Main implements CommandLineRunner {
 
     private void extendSummary(Map<Kubun, Double> summary, Collection<Drug> drugs){
         for(Drug drug: drugs){
-            String yakkacode = drug.yakkacode;
-            YakuzaiEntry yakuzai = yakuzaiMap.get(yakkacode);
-            if( yakuzai != null ){
-                Kubun kubun = yakuzai.kubun;
-                Double value = summary.get(kubun);
-                if( value == null ){
-                    value = 0.0;
-                }
-                value += drug.amount;
-                summary.put(kubun, value);
+            Kubun kubun = drug.kubun;
+            if( kubun != Kubun.Other ){
+                summary.compute(kubun, (k, v) -> {
+                    if( v == null ){
+                        v = 0.0;
+                    }
+                    return v + drug.amount;
+                });
             }
         }
     }
 
-    private void extendDrugMap(Map<String, Drug> map, Drug drug){
-        Drug entry = map.get(drug.yakkacode);
-        if( entry == null ){
-            entry = drug;
-        } else {
-            entry = Drug.copy(entry);
-            entry.amount += drug.amount;
-        }
-        map.put(drug.yakkacode, entry);
+    private Kubun resolveKubun(String yakkacode){
+        YakuzaiEntry entry = yakuzaiMap.get(yakkacode);
+        return entry == null ? Kubun.Other : entry.kubun;
     }
 
     private List<Drug> collectDrugs(String dateFrom, String dateUpto){
@@ -205,6 +222,7 @@ public class Main implements CommandLineRunner {
                         days = 1;
                     }
                     drug.amount = amount * days;
+                    drug.kubun = resolveKubun(drug.yakkacode);
                     return drug;
                 },
                 dateFrom, dateUpto);
