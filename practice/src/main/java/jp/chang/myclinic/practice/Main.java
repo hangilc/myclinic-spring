@@ -59,7 +59,7 @@ public class Main extends Application {
                     return Service.api.getPracticeConfig();
                 })
                 .thenAccept(config -> {
-                    PracticeEnv.INSTANCE.setKouhatsuKasanEnabled(config.kouhatsuKasan);
+                    PracticeEnv.INSTANCE.setKouhatsuKasan(config.kouhatsuKasan);
                     cb.run();
                 })
                 .exceptionally(t -> {

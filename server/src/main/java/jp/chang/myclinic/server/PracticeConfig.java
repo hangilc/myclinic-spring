@@ -8,19 +8,19 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix="myclinic.practice")
 public class PracticeConfig {
 
-    private boolean kouhatsuKasan;
+    private String kouhatsuKasan;
 
-    public boolean isKouhatsuKasan() {
+    public String getKouhatsuKasan() {
         return kouhatsuKasan;
     }
 
-    public void setKouhatsuKasan(boolean kouhatsuKasan) {
+    public void setKouhatsuKasan(String kouhatsuKasan) {
         this.kouhatsuKasan = kouhatsuKasan;
     }
 
     public PracticeConfigDTO toDTO(){
         PracticeConfigDTO dto = new PracticeConfigDTO();
-        dto.kouhatsuKasan = isKouhatsuKasan();
+        dto.kouhatsuKasan = getKouhatsuKasan();
         return dto;
     }
 }

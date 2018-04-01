@@ -39,10 +39,9 @@ public class PracticeEnv {
     private IntegerProperty totalRecordPages = new SimpleIntegerProperty(0);
     private IntegerProperty currentRecordPage = new SimpleIntegerProperty(0);
     private ObjectProperty<List<VisitFull2DTO>> pageVisits = new SimpleObjectProperty<>(Collections.emptyList());
-    //private ObjectProperty<List<DiseaseFullDTO>> currentDiseases = new SimpleObjectProperty<>(Collections.emptyList());
     private MyclinicEnv myclinicEnv;
     private List<ReferItemDTO> referList;
-    private boolean kouhatsuKasanEnabled;
+    private String kouhatsuKasan;
 
     public PracticeEnv(CommandArgs commandArgs) throws IOException {
         printerSettingsDir = commandArgs.getWorkingDirectory();
@@ -124,18 +123,6 @@ public class PracticeEnv {
         this.pageVisits.set(pageVisits);
     }
 
-//    public List<DiseaseFullDTO> getCurrentDiseases() {
-//        return currentDiseases.get();
-//    }
-//
-//    public ObjectProperty<List<DiseaseFullDTO>> currentDiseasesProperty() {
-//        return currentDiseases;
-//    }
-//
-//    public void setCurrentDiseases(List<DiseaseFullDTO> currentDiseases) {
-//        this.currentDiseases.set(new ArrayList<>(currentDiseases));
-//    }
-//
     public int getCurrentVisitId() {
         return currentVisitId.get();
     }
@@ -212,12 +199,12 @@ public class PracticeEnv {
         this.referList = referList;
     }
 
-    public boolean isKouhatsuKasanEnabled() {
-        return kouhatsuKasanEnabled;
+    public String getKouhatsuKasan() {
+        return kouhatsuKasan;
     }
 
-    public void setKouhatsuKasanEnabled(boolean kouhatsuKasanEnabled) {
-        this.kouhatsuKasanEnabled = kouhatsuKasanEnabled;
+    public void setKouhatsuKasan(String kouhatsuKasan) {
+        this.kouhatsuKasan = kouhatsuKasan;
     }
 
     @Override

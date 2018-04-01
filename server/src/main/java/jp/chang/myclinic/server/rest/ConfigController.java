@@ -21,4 +21,5 @@ public class ConfigController {
     public PracticeConfigDTO getPracticeConfig(){
         return practiceConfig.toDTO();
     }
+
 }
