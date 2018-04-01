@@ -192,6 +192,23 @@ public class DrawerCompiler {
         textAt(text, x, y, halign, valign);
     }
 
+    public void textInVert(String text, Box box, HAlign halign, VAlign valign){
+        double x, y;
+        switch(halign){
+            case Left: x = box.getLeft(); break;
+            case Center: x = box.getCx(); break;
+            case Right: x = box.getRight(); break;
+            default: throw new RuntimeException("invalid halign:" + halign);
+        }
+        switch(valign){
+            case Top: y = box.getTop(); break;
+            case Center: y = box.getCy(); break;
+            case Bottom: y = box.getBottom(); break;
+            default: throw new Error("invalid valign: " + valign);
+        }
+        textAtVert(text, x, y, halign, valign);
+    }
+
     public void textInJustified(String text, Box box, VAlign valign){
         double y;
         switch(valign){
@@ -321,6 +338,12 @@ public class DrawerCompiler {
             Box cell = firstRow[i];
             double x = cell.getLeft();
             line(x, top, x, bottom);
+        }
+    }
+
+    public void frameInnerRowBorders(Box[] rows){
+        for(int i=1;i<rows.length;i++){
+            frameTop(rows[i]);
         }
     }
 

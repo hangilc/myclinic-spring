@@ -17,7 +17,9 @@ class Drawer {
     private Box outerBox = new Box(19, 41, 190, 260);
     private double cy = outerBox.getTop();
     private double w1 = 22;
-    private double w2 = 77;
+    private double w2 = 59;
+    private double w3 = 77;
+    private double w4 = 113;
     private double h1 = 9;
 
     List<Op> render(Data data){
@@ -32,7 +34,7 @@ class Drawer {
         drawAddress(allocRow(h1));
         {
             Box row = allocRow(h1*2);
-            Box[] cols = row.splitToColumns(w2);
+            Box[] cols = row.splitToColumns(w3);
             Box[] leftRows = cols[0].splitToRows(h1);
             drawShinchou(leftRows[0]);
             drawTaijuu(leftRows[1]);
@@ -40,14 +42,32 @@ class Drawer {
         }
         {
             Box row = allocRow(h1*5);
-            Box[] cols = row.splitToColumns(w2);
+            Box[] cols = row.splitToColumns(w3);
             Box[] leftRows = cols[0].splitToEvenRows(5);
             drawShinsatsu(leftRows[0]);
             drawShiryoku(leftRows[1]);
-            drawChouryoku(leftRows[3]);
-            drawKetsuatsu(leftRows[4]);
-            drawEKG(leftRows[2]);
+            drawChouryoku(leftRows[2]);
+            drawKetsuatsu(leftRows[3]);
+            drawEKG(leftRows[4]);
             drawXp(cols[1]);
+        }
+        {
+            Box row = allocRow(h1*9);
+            Box[] cols = row.splitToColumns(w1, w4);
+            compiler.box(row);
+            compiler.frameInnerColumnBorders(cols);
+            compiler.textIn("血液検査", cols[0], HAlign.Center, VAlign.Center);
+            drawBloodExams(cols[1]);
+            {
+                Box[] rightRows = cols[2].splitToRows(h1*3);
+                compiler.frameInnerRowBorders(rightRows);
+                drawUrinalysis(rightRows[0]);
+                compiler.textIn("その他特記事項", rightRows[1].inset(1, 1), HAlign.Left, VAlign.Top);
+            }
+        }
+        {
+            Box bottom = outerBox.setTop(cy);
+            drawBottom(bottom);
         }
         return compiler.getOps();
     }
@@ -80,7 +100,7 @@ class Drawer {
         String name = "";
         String birthday = "";
         String sex = "";
-        Box[] cols = box.splitToColumns(w1, w2, 94, 143.5);
+        Box[] cols = box.splitToColumns(w1, w3, 94, 143.5);
         compiler.frameBottom(box);
         compiler.frameInnerColumnBorders(cols);
         compiler.textIn("氏　名", cols[0], HAlign.Center, VAlign.Center);
@@ -100,45 +120,85 @@ class Drawer {
     }
 
     private void drawShinchou(Box box){
+        Box[] cols = box.splitToColumns(w1);
         compiler.box(box);
+        compiler.frameInnerColumnBorders(cols);
+        compiler.textIn("身　長", cols[0], HAlign.Center, VAlign.Center);
     }
 
     private void drawTaijuu(Box box){
+        Box[] cols = box.splitToColumns(w1);
         compiler.box(box);
+        compiler.frameInnerColumnBorders(cols);
+        compiler.textIn("体　重", cols[0], HAlign.Center, VAlign.Center);
+    }
+
+    private void drawShinsatsu(Box box) {
+        Box[] cols = box.splitToColumns(w1);
+        compiler.box(box);
+        compiler.frameInnerColumnBorders(cols);
+        compiler.textIn("診　察", cols[0], HAlign.Center, VAlign.Center);
+    }
+
+    private void drawShiryoku(Box box) {
+        Box[] cols = box.splitToColumns(w1);
+        compiler.box(box);
+        compiler.frameInnerColumnBorders(cols);
+        compiler.textIn("視　力", cols[0], HAlign.Center, VAlign.Center);
+    }
+
+    private void drawChouryoku(Box box) {
+        Box[] cols = box.splitToColumns(w1);
+        compiler.box(box);
+        compiler.frameInnerColumnBorders(cols);
+        compiler.textIn("聴　力", cols[0], HAlign.Center, VAlign.Center);
+    }
+
+    private void drawKetsuatsu(Box box) {
+        Box[] cols = box.splitToColumns(w1);
+        compiler.box(box);
+        compiler.frameInnerColumnBorders(cols);
+        compiler.textIn("血　圧", cols[0], HAlign.Center, VAlign.Center);
+    }
+
+    private void drawEKG(Box box) {
+        Box[] cols = box.splitToColumns(w1);
+        compiler.box(box);
+        compiler.frameInnerColumnBorders(cols);
+        compiler.textIn("心電図", cols[0], HAlign.Center, VAlign.Center);
     }
 
     private void drawHistory(Box box){
         compiler.box(box);
+        compiler.textIn("既往歴", box.inset(1, 1), HAlign.Left, VAlign.Top);
     }
 
     private void drawXp(Box box) {
         compiler.box(box);
-
+        compiler.textIn("胸部Ｘ線（大角）", box.inset(1, 1), HAlign.Left, VAlign.Top);
     }
 
-    private void drawKetsuatsu(Box box) {
-        compiler.box(box);
-
+    private void drawBloodExams(Box box){
+        Box[] rows = box.splitToEvenRows(9);
+        compiler.frameInnerRowBorders(rows);
+        for(int i=0;i<9;i++){
+            Box row = rows[i];
+            Box[] cols = row.splitToColumns(w2 - w1);
+            Box key = cols[0];
+            Box value = cols[1];
+            compiler.frameInnerColumnBorders(cols);
+        }
     }
 
-    private void drawChouryoku(Box box) {
-        compiler.box(box);
-
+    private void drawUrinalysis(Box box){
+        Box[] cols = box.splitToColumns(7);
+        compiler.frameInnerColumnBorders(cols);
+        compiler.textInVert("検　尿", cols[0], HAlign.Center, VAlign.Center);
+        Box[] dataRows = cols[1].splitToEvenRows(3);
     }
 
-    private void drawShiryoku(Box box) {
-        compiler.box(box);
-
-    }
-
-    private void drawShinsatsu(Box box) {
-        compiler.box(box);
-
-    }
-
-    private void drawEKG(Box box) {
-        compiler.box(box);
-
+    private void drawBottom(Box box){
+        compiler.textIn("診断の結果上記の通り相違ないことを証明する。", box.inset(3), HAlign.Left, VAlign.Top);
     }
 
 }
