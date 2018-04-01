@@ -10,7 +10,7 @@
   </parent>
   <groupId>jp.chang.myclinic</groupId>
   <artifactId>kouhatsukasan</artifactId>
-  <version>jp.chang.myclinic</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>kouhatsukasan</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
