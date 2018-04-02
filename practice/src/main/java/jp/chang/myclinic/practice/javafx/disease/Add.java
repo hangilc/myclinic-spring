@@ -27,7 +27,7 @@ public class Add extends VBox {
     private int patientId;
     private List<DiseaseSearchResultModel> examples;
 
-    public Add(int patientId){
+    protected Add(int patientId){
         super(4);
         getStyleClass().add("add-disease-pane");
         this.patientId = patientId;
@@ -82,8 +82,8 @@ public class Add extends VBox {
                     .thenCompose(Service.api::getDiseaseFull)
                     .thenAccept(entered -> Platform.runLater(() -> {
                         onEntered(entered);
-                        //Add.this.fireEvent(new DiseaseEnteredEvent(entered));
                         diseaseInput.clear();
+                        searchBox.clearTextInput();
                         doExample();
                     }))
                     .exceptionally(HandlerFX::exceptionally);

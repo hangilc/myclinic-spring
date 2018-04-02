@@ -26,7 +26,7 @@ public class SearchBox extends VBox {
     private DiseaseSearchTextInput textInput;
     private SelectableList<DiseaseSearchResultModel> resultList;
 
-    public SearchBox(Supplier<Result<LocalDate, List<String>>> dateSupplier) {
+    protected SearchBox(Supplier<Result<LocalDate, List<String>>> dateSupplier) {
         super(4);
         this.dateSupplier = dateSupplier;
         this.textInput = new DiseaseSearchTextInput();
@@ -52,6 +52,10 @@ public class SearchBox extends VBox {
     public void clear(){
         textInput.clear();
         resultList.clear();
+    }
+
+    public void clearTextInput(){
+        textInput.clear();
     }
 
     public void setList(List<DiseaseSearchResultModel> list){
