@@ -21,8 +21,10 @@ class Drawer {
     private double w3 = 77;
     private double w4 = 113;
     private double h1 = 9;
+    private Data data;
 
     List<Op> render(Data data){
+        this.data = data;
         setupFonts();
         setupPens();
         drawTitle();
@@ -198,7 +200,16 @@ class Drawer {
     }
 
     private void drawBottom(Box box){
-        compiler.textIn("診断の結果上記の通り相違ないことを証明する。", box.inset(3), HAlign.Left, VAlign.Top);
+        compiler.textIn("診断の結果上記の通り相違ないことを証明する。",
+                box.inset(3), HAlign.Left, VAlign.Top);
+        double h1 = 75;
+        double v1 = 17;
+        Box sub = box.inset(h1, v1, 0, 0);
+        compiler.textIn(data.address1, sub, HAlign.Left, VAlign.Top);
+        sub = sub.shiftDown(6);
+        compiler.textIn(data.address2, sub, HAlign.Left, VAlign.Top);
+        sub = sub.shiftDown(6);
+        compiler.textIn(data.clinicName, sub, HAlign.Left, VAlign.Top);
     }
 
 }

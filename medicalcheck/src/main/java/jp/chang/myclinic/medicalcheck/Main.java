@@ -53,12 +53,7 @@ public class Main extends Application {
         try {
             Data data = new Data();
             Drawer drawer = new Drawer();
-//            drawer.setDoctorName(shujiiForm.getDoctorName());
-//            drawer.setClinicName(shujiiForm.getClinicName());
-//            drawer.setClinicAddr(shujiiForm.getClinicAddr());
-//            drawer.setClinicPhone(shujiiForm.getClinicPhone());
-//            drawer.setClinicFax(shujiiForm.getClinicFax());
-//            drawer.setDetail(shujiiForm.getDetail());
+            setupClinicInfo(data);
             DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null);
             previewDialog.setContentSize(PaperSize.A4);
             previewDialog.setScaleFactor(0.6);
@@ -68,7 +63,13 @@ public class Main extends Application {
             logger.error("Failed to do preview.", ex);
             System.exit(1);
         }
+    }
 
+    private void setupClinicInfo(Data data){
+        data.address1 = config.clinicAddr;
+        data.address2 = config.clinicPhone + " " + config.clinicFax;
+        data.clinicName = config.clinicName;
+        data.doctorName = config.doctorName;
     }
 
 }
