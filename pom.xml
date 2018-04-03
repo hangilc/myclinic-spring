@@ -34,6 +34,7 @@
     <module>shujii</module>
     <module>master-manip</module>
     <module>medicalcheck</module>
+    <module>client</module>
   </modules>
 
 </project>
