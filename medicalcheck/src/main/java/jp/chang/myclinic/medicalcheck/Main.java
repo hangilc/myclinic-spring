@@ -55,6 +55,7 @@ public class Main extends Application {
             Data data = new Data();
             Drawer drawer = new Drawer();
             setupClinicInfo(data);
+            form.applyTo(data);
             DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null);
             previewDialog.setContentSize(PaperSize.A4);
             previewDialog.setScaleFactor(0.6);
@@ -67,8 +68,8 @@ public class Main extends Application {
     }
 
     private void setupClinicInfo(Data data){
-        data.address1 = config.clinicAddr;
-        data.address2 = config.clinicPhone + " " + config.clinicFax;
+        data.clinicAddress1 = config.clinicAddr;
+        data.clinicAddress2 = config.clinicPhone + " " + config.clinicFax;
         data.clinicName = config.clinicName;
         data.doctorName = config.doctorName;
     }

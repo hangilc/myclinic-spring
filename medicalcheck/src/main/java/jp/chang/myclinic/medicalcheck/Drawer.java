@@ -22,6 +22,7 @@ class Drawer {
     private double w4 = 113;
     private double h1 = 9;
     private int nExams = 10;
+    private double valueInset = 4;
     private Data data;
 
     List<Op> render(Data data){
@@ -103,15 +104,23 @@ class Drawer {
     private void drawShimei(Box box){
         String name = data.name;
         String birthday = data.birthday;
-        String sex = data.sex;
-        Box[] cols = box.splitToColumns(w1, w3, 94, 143.5);
+        Box[] cols = box.splitToColumns(w1, w3, 94, 143.5-w1*0.5);
         compiler.frameBottom(box);
         compiler.frameInnerColumnBorders(cols);
         compiler.textIn("氏　名", cols[0], HAlign.Center, VAlign.Center);
-        compiler.textIn(name, cols[1].inset(2, 0), HAlign.Left, VAlign.Center);
+        compiler.textIn(name, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
         compiler.textIn("生年月日", cols[2], HAlign.Center, VAlign.Center);
-        compiler.textIn(birthday, cols[3].inset(2, 0), HAlign.Left, VAlign.Center);
-        compiler.textIn(sex, cols[4], HAlign.Center, VAlign.Center);
+        compiler.textIn(birthday, cols[3].inset(valueInset, 0), HAlign.Left, VAlign.Center);
+        drawSex(cols[4]);
+    }
+
+    private void drawSex(Box box){
+        String sex = data.sex;
+        System.out.println(sex);
+        Box[] cols = box.splitToColumns(w1);
+        compiler.frameInnerColumnBorders(cols);
+        compiler.textIn("性別", cols[0], HAlign.Center, VAlign.Center);
+        compiler.textIn(sex, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
     }
 
     private void drawAddress(Box box){
@@ -120,7 +129,7 @@ class Drawer {
         compiler.frameBottom(box);
         compiler.frameInnerColumnBorders(cols);
         compiler.textIn("住　所", cols[0], HAlign.Center, VAlign.Center);
-        compiler.textIn(address, cols[1].inset(2, 0), HAlign.Left, VAlign.Center);
+        compiler.textIn(address, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
     }
 
     private void drawShinchou(Box box){
@@ -129,13 +138,16 @@ class Drawer {
         compiler.box(box);
         compiler.frameInnerColumnBorders(cols);
         compiler.textIn("身　長", cols[0], HAlign.Center, VAlign.Center);
+        compiler.textIn(height, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
     }
 
     private void drawTaijuu(Box box){
+        String weight = data.weight;
         Box[] cols = box.splitToColumns(w1);
         compiler.box(box);
         compiler.frameInnerColumnBorders(cols);
         compiler.textIn("体　重", cols[0], HAlign.Center, VAlign.Center);
+        compiler.textIn(weight, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
     }
 
     private void drawShinsatsu(Box box) {
@@ -209,9 +221,9 @@ class Drawer {
         double h1 = 75;
         double v1 = 17;
         Box sub = box.inset(h1, v1, 0, 0);
-        compiler.textIn(data.address1, sub, HAlign.Left, VAlign.Top);
+        compiler.textIn(data.clinicAddress1, sub, HAlign.Left, VAlign.Top);
         sub = sub.shiftDown(6);
-        compiler.textIn(data.address2, sub, HAlign.Left, VAlign.Top);
+        compiler.textIn(data.clinicAddress2, sub, HAlign.Left, VAlign.Top);
         sub = sub.shiftDown(6);
         compiler.textIn(data.clinicName, sub, HAlign.Left, VAlign.Top);
         sub = sub.shiftDown(8);

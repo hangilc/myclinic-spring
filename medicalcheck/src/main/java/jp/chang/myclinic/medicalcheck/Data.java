@@ -28,8 +28,8 @@ class Data {
     String urinarySugar = "";
     List<String> others = new ArrayList<>();
     List<ExamEntry> examEntries = new ArrayList<>();
-    String address1 = "";
-    String address2 = "";
+    String clinicAddress1 = "";
+    String clinicAddress2 = "";
     String clinicName = "";
     String doctorName = "";
 
