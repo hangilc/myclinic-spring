@@ -29,7 +29,8 @@ public class Main extends Application {
         config = new Config();
         config.load();
         Pane root = createRoot();
-        root.setStyle("-fx-padding:10px");
+        root.getStylesheets().add("MedicalCheck.css");
+        root.getStyleClass().add("root-pane");
         stage.setScene(new Scene(root));
         stage.show();
     }

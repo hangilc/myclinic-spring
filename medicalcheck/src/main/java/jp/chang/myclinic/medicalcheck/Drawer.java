@@ -101,9 +101,9 @@ class Drawer {
     }
 
     private void drawShimei(Box box){
-        String name = "";
-        String birthday = "";
-        String sex = "";
+        String name = data.name;
+        String birthday = data.birthday;
+        String sex = data.sex;
         Box[] cols = box.splitToColumns(w1, w3, 94, 143.5);
         compiler.frameBottom(box);
         compiler.frameInnerColumnBorders(cols);
@@ -115,7 +115,7 @@ class Drawer {
     }
 
     private void drawAddress(Box box){
-        String address = "";
+        String address = data.address;
         Box[] cols = box.splitToColumns(w1);
         compiler.frameBottom(box);
         compiler.frameInnerColumnBorders(cols);
@@ -124,6 +124,7 @@ class Drawer {
     }
 
     private void drawShinchou(Box box){
+        String height = data.height;
         Box[] cols = box.splitToColumns(w1);
         compiler.box(box);
         compiler.frameInnerColumnBorders(cols);
@@ -196,9 +197,10 @@ class Drawer {
 
     private void drawUrinalysis(Box box){
         Box[] cols = box.splitToColumns(7);
+        Box[] dataRows = cols[1].splitToEvenRows(3);
         compiler.frameInnerColumnBorders(cols);
         compiler.textInVert("検　尿", cols[0], HAlign.Center, VAlign.Center);
-        Box[] dataRows = cols[1].splitToEvenRows(3);
+        compiler.frameInnerRowBorders(dataRows);
     }
 
     private void drawBottom(Box box){
@@ -212,11 +214,12 @@ class Drawer {
         compiler.textIn(data.address2, sub, HAlign.Left, VAlign.Top);
         sub = sub.shiftDown(6);
         compiler.textIn(data.clinicName, sub, HAlign.Left, VAlign.Top);
-        sub = sub.shiftDown(9);
-        Point p = new Point(sub.getLeft(), sub.getTop() + compiler.getCurrentFontSize()/2.0);
-        compiler.textIn("診断医師氏名", sub.flipLeft().shiftToLeft(6), HAlign.Right, VAlign.Top);
+        sub = sub.shiftDown(8);
         compiler.setFont("doctor-name");
-        compiler.textIn(data.doctorName, sub, HAlign.Left, VAlign.Top);
+        Point p = new Point(sub.getLeft(), sub.getTop() + compiler.getCurrentFontSize()/2.0);
+        compiler.textAt(data.doctorName, p, HAlign.Left, VAlign.Center);
+        compiler.setFont("regular");
+        compiler.textAt("診断医師氏名", p.shiftToLeft(3), HAlign.Right, VAlign.Center);
     }
 
 }

@@ -1,0 +1,7 @@
+.root-pane {
+    -fx-padding: 10px;
+}
+
+.date-input .nen, .date-input .month, .date-input .day {
+    -fx-pref-width: 3em;
+}

@@ -28,6 +28,22 @@ public class Point {
         return new Point(x, y + dy);
     }
 
+    public Point shiftToRight(double amount){
+        return shiftX(amount);
+    }
+
+    public Point shiftToLeft(double amount){
+        return shiftX(-amount);
+    }
+
+    public Point shiftToUpward(double amount){
+        return shiftY(-amount);
+    }
+
+    public Point shiftToDownward(double amount){
+        return shiftY(amount);
+    }
+
     @Override
     public String toString() {
         return "Point{" +
