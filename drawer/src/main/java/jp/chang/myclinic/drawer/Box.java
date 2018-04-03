@@ -188,6 +188,10 @@ public class Box {
         return shiftToRight(getWidth());
     }
 
+    public Box flipLeft(){
+        return shiftToLeft(getWidth());
+    }
+
     public Box[] splitToColumns(double... borders){
         Box[] cols = new Box[borders.length + 1];
         double colLeft = left;

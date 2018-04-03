@@ -74,6 +74,10 @@ public class DrawerCompiler {
         currentFontSize = fontMap.get(name);
     }
 
+    public double getCurrentFontSize(){
+        return currentFontSize;
+    }
+
     public void textAt(String text, double x, double y, HAlign halign, VAlign valign, TextAtOpt opt){
         if( text == null || text.isEmpty() ){
             return;

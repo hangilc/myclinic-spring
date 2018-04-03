@@ -20,6 +20,14 @@ public class Point {
         return y;
     }
 
+    public Point shiftX(double dx){
+        return new Point(x + dx, y);
+    }
+
+    public Point shiftY(double dy){
+        return new Point(x, y + dy);
+    }
+
     @Override
     public String toString() {
         return "Point{" +

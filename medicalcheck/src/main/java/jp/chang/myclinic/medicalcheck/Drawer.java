@@ -21,6 +21,7 @@ class Drawer {
     private double w3 = 77;
     private double w4 = 113;
     private double h1 = 9;
+    private int nExams = 10;
     private Data data;
 
     List<Op> render(Data data){
@@ -54,7 +55,7 @@ class Drawer {
             drawXp(cols[1]);
         }
         {
-            Box row = allocRow(h1*9);
+            Box row = allocRow(h1*nExams);
             Box[] cols = row.splitToColumns(w1, w4);
             compiler.box(row);
             compiler.frameInnerColumnBorders(cols);
@@ -77,6 +78,7 @@ class Drawer {
     private void setupFonts(){
         compiler.createFont("title", "MS Gothic", 6.4, DrawerConsts.FontWeightBold, false);
         compiler.createFont("regular", "MS Gothic", 3.5);
+        compiler.createFont("doctor-name", "MS Gothic", 4.5);
     }
 
     private void setupPens(){
@@ -181,9 +183,9 @@ class Drawer {
     }
 
     private void drawBloodExams(Box box){
-        Box[] rows = box.splitToEvenRows(9);
+        Box[] rows = box.splitToEvenRows(nExams);
         compiler.frameInnerRowBorders(rows);
-        for(int i=0;i<9;i++){
+        for(int i=0;i<nExams;i++){
             Box row = rows[i];
             Box[] cols = row.splitToColumns(w2 - w1);
             Box key = cols[0];
@@ -210,6 +212,11 @@ class Drawer {
         compiler.textIn(data.address2, sub, HAlign.Left, VAlign.Top);
         sub = sub.shiftDown(6);
         compiler.textIn(data.clinicName, sub, HAlign.Left, VAlign.Top);
+        sub = sub.shiftDown(9);
+        Point p = new Point(sub.getLeft(), sub.getTop() + compiler.getCurrentFontSize()/2.0);
+        compiler.textIn("診断医師氏名", sub.flipLeft().shiftToLeft(6), HAlign.Right, VAlign.Top);
+        compiler.setFont("doctor-name");
+        compiler.textIn(data.doctorName, sub, HAlign.Left, VAlign.Top);
     }
 
 }
