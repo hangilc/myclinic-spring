@@ -3,6 +3,9 @@ package jp.chang.myclinic.medicalcheck;
 import jp.chang.myclinic.drawer.*;
 import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
 import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
+import jp.chang.myclinic.drawer.render.PlusMinusRenderer;
+import jp.chang.myclinic.drawer.render.Renderable;
+import jp.chang.myclinic.drawer.render.StringRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -239,8 +242,6 @@ class Drawer {
     }
 
     private void drawBloodExams(Box box) {
-        compiler.textIn("＋", box, HAlign.Left, VAlign.Top);
-        compiler.textIn("－", box.shiftDown(compiler.getCurrentFontSize()/2), HAlign.Left, VAlign.Top);
         Box[] rows = box.splitToEvenRows(nExams);
         compiler.frameInnerRowBorders(rows);
         for (int i = 0; i < nExams; i++) {
@@ -258,52 +259,35 @@ class Drawer {
         compiler.frameInnerColumnBorders(cols);
         compiler.textInVert("検　尿", cols[0], HAlign.Center, VAlign.Center);
         compiler.frameInnerRowBorders(dataRows);
-        {
-            String value = data.urinaryProtein;
-            if (value.isEmpty()) {
-                value = "   ";
-            } else {
-                value = formatUrineResult(value);
-            }
-            String text = String.format("蛋白（%s）", value);
-            compiler.textIn(text, dataRows[0], HAlign.Center, VAlign.Center);
-        }
-        {
-            String value = data.urinaryBlood;
-            if (value.isEmpty()) {
-                value = "   ";
-            } else {
-                value = formatUrineResult(value);
-            }
-            String text = String.format("潜血（%s）", value);
-            compiler.textIn(text, dataRows[1], HAlign.Center, VAlign.Center);
-        }
-        {
-            String value = data.urinarySugar;
-            if (value.isEmpty()) {
-                value = "   ";
-            } else {
-                value = formatUrineResult(value);
-            }
-            String text = String.format("糖　（%s）", value);
-            compiler.textIn(text, dataRows[2], HAlign.Center, VAlign.Center);
-        }
+        drawUrinalysisResult("蛋白", data.urinaryProtein, dataRows[0]);
+        drawUrinalysisResult("潜血", data.urinaryBlood, dataRows[1]);
+        drawUrinalysisResult("糖　", data.urinarySugar, dataRows[2]);
     }
 
-    private String formatUrineResult(String result) {
+    private void drawUrinalysisResult(String label, String value, Box box){
+        Renderable valueRenderer;
+        if (value.isEmpty()) {
+            valueRenderer = new StringRenderer("　");
+        } else {
+            valueRenderer = formatUrineResult(value);
+        }
+        List<Renderable> items = List.of(
+                new StringRenderer(label + "（"),
+                valueRenderer,
+                new StringRenderer("）")
+        );
+        compiler.render(items, box, HAlign.Center, VAlign.Center);
+    }
+
+    private Renderable formatUrineResult(String result) {
         String value = result;
         switch (value) {
-            case "+":
-                value = "＋";
-                break;
-            case "-":
-                value = "－";
-                break;
-            case "+/-":
-                value = "±";
-                break;
+            case "+": return new StringRenderer("＋");
+            case "-": return new StringRenderer("－");
+            case "+/-": return new PlusMinusRenderer();
+            case "": return new StringRenderer("　");
+            default: return new StringRenderer(value);
         }
-        return value;
     }
 
     private void drawBottom(Box box) {
