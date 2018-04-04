@@ -94,6 +94,11 @@ public class TextEditForm extends VBox {
     }
 
     private void doShohousen(){
+        if( PracticeEnv.INSTANCE.getCurrentVisitId() != visitId ){
+            if( !GuiUtil.confirm("現在診察中ではないですか、この処方箋を発行しますか？") ){
+                return;
+            }
+        }
         try {
             ShohousenDrawer drawer = new ShohousenDrawer();
             ShohousenData data = new ShohousenData();
