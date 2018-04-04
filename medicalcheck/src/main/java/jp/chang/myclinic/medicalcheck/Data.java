@@ -25,7 +25,8 @@ class Data {
     String bloodPressure = "";
     String ekg = "";
     String history = "";
-    String chestXp = "";
+    String chestXpResult = "";
+    String chestXpDate = "";
     String urinaryProtein = "";
     String urinaryBlood = "";
     String urinarySugar = "";

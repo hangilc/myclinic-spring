@@ -17,3 +17,7 @@
 .hearing-ability-input {
     -fx-pref-width: 6em;
 }
+
+.blood-pressure-input {
+    -fx-pref-width: 10em;
+}

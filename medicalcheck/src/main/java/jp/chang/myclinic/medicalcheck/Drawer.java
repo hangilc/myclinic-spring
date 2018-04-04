@@ -191,32 +191,51 @@ class Drawer {
         Box[] cols = box.splitToColumns(6);
         Box[] rows = cols[1].splitToEvenRows(2);
         compiler.textIn(label, cols[0], HAlign.Center, VAlign.Center);
-        compiler.textIn("1000Hz " + value1000, rows[0], HAlign.Center, VAlign.Center);
-        compiler.textIn("4000Hz " + value4000, rows[1], HAlign.Center, VAlign.Center);
+        compiler.textIn("1000Hz " + value1000, rows[0], HAlign.Left, VAlign.Center);
+        compiler.textIn("4000Hz " + value4000, rows[1], HAlign.Left, VAlign.Center);
     }
 
     private void drawKetsuatsu(Box box) {
+        String value = data.bloodPressure;
         Box[] cols = box.splitToColumns(w1);
         compiler.box(box);
         compiler.frameInnerColumnBorders(cols);
         compiler.textIn("血　圧", cols[0], HAlign.Center, VAlign.Center);
+        compiler.textIn(value, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
     }
 
     private void drawEKG(Box box) {
+        String value = data.ekg;
         Box[] cols = box.splitToColumns(w1);
         compiler.box(box);
         compiler.frameInnerColumnBorders(cols);
         compiler.textIn("心電図", cols[0], HAlign.Center, VAlign.Center);
+        compiler.textIn(value, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
     }
 
     private void drawHistory(Box box){
+        String value = data.history;
+        Box innerBox = box.inset(1, 1);
         compiler.box(box);
-        compiler.textIn("既往歴", box.inset(1, 1), HAlign.Left, VAlign.Top);
+        compiler.textIn("既往歴", innerBox, HAlign.Left, VAlign.Top);
+        double fontSize = compiler.getCurrentFontSize();
+        Box valueBox = innerBox.inset(fontSize, compiler.getCurrentFontSize() + 1, 0, 0);
+        compiler.paragraph(value, valueBox, HAlign.Left, VAlign.Top, 0);
     }
 
     private void drawXp(Box box) {
+        Box innerBox = box.inset(1, 1);
         compiler.box(box);
-        compiler.textIn("胸部Ｘ線（大角）", box.inset(1, 1), HAlign.Left, VAlign.Top);
+        compiler.textIn("胸部Ｘ線（大角）", innerBox, HAlign.Left, VAlign.Top);
+        double fontSize = compiler.getCurrentFontSize();
+        Box resultBox = innerBox.inset(
+                fontSize,
+                fontSize + 1,
+                0,
+                fontSize + 1
+        );
+        compiler.paragraph(data.chestXpResult, resultBox, HAlign.Left, VAlign.Top, 0);
+        compiler.textIn(data.chestXpDate, innerBox, HAlign.Left, VAlign.Bottom);
     }
 
     private void drawBloodExams(Box box){

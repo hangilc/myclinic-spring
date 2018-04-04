@@ -1,8 +1,13 @@
 package jp.chang.myclinic.medicalcheck;
 
 import javafx.application.Application;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -28,11 +33,28 @@ public class Main extends Application {
         stage.setTitle("健康診断証明書");
         config = new Config();
         config.load();
+        BorderPane borderPane = new BorderPane();
+        borderPane.setTop(createMenu());
         Pane root = createRoot();
         root.getStylesheets().add("MedicalCheck.css");
         root.getStyleClass().add("root-pane");
-        stage.setScene(new Scene(root));
+        borderPane.setCenter(root);
+        stage.setScene(new Scene(borderPane));
         stage.show();
+    }
+
+    private Node createMenu(){
+        MenuBar mbar = new MenuBar();
+        {
+            Menu menu = new Menu("入力");
+            {
+                MenuItem item = new MenuItem("聴力所見なし");
+                item.setOnAction(evt -> form.setHearingAbilityNormal());
+                menu.getItems().add(item);
+            }
+            mbar.getMenus().add(menu);
+        }
+        return mbar;
     }
 
     private Pane createRoot(){
