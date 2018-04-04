@@ -51,4 +51,6 @@ public enum Gengou {
 		Recent.add(Heisei);
 	}
 
+	public static Gengou MostRecent = Heisei;
+
 }

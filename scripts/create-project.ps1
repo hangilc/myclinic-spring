@@ -1,7 +1,12 @@
 Param (
     [parameter(mandatory)]$name,
+<<<<<<< HEAD
     $groupId = $env:PROJECT_GROUP_ID,
     $version = "1.0.0-SNAPSHOT"
+=======
+    $groupId=$env:PROJECT_GROUP_ID,
+    $version="1.0.0-SNAPSHOT"
+>>>>>>> medicalcheck
 )
 
 if (!$groupId) {

@@ -1,6 +1,9 @@
 package jp.chang.myclinic.drawer;
 
+import jp.chang.myclinic.drawer.render.Renderable;
+
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class DrawerCompiler {
@@ -23,7 +26,8 @@ public class DrawerCompiler {
 
     private List<Op> ops = new ArrayList<>();
     private Map<String, Double> fontMap = new HashMap<>();
-    private Double currentFontSize;
+    private String currentFont;
+    private Stack<String> fontStack = new Stack<>();
     private Map<String, Point> pointDict = new HashMap<>();
     private Map<String, Box> boxDict = new HashMap<>();
 
@@ -69,9 +73,34 @@ public class DrawerCompiler {
         createFont(name, fontName, size, 0, false);
     }
 
+    public void pushFont(){
+        fontStack.push(currentFont);
+    }
+
+    public void popFont(){
+        setFont(fontStack.pop());
+    }
+
     public void setFont(String name){
         ops.add(new OpSetFont(name));
-        currentFontSize = fontMap.get(name);
+        currentFont = name;
+    }
+
+    public void setFontPushing(String name){
+        pushFont();
+        setFont(name);
+    }
+
+    public String getCurrentFont(){
+        return currentFont;
+    }
+
+    public double getCurrentFontSize(){
+        return fontMap.get(currentFont);
+    }
+
+    public double getFontSizeFor(String fontName){
+        return fontMap.get(fontName);
     }
 
     public void textAt(String text, double x, double y, HAlign halign, VAlign valign, TextAtOpt opt){
@@ -79,7 +108,7 @@ public class DrawerCompiler {
             return;
         }
         double extraSpace = opt == null ? 0 : opt.extraSpace;
-        List<Double> mes = measureChars(text, currentFontSize);
+        List<Double> mes = doMeasureChars(text, getCurrentFontSize());
         double totalWidth = mes.stream().reduce((a,b) -> a + b).orElse(0.0) + extraSpace * (text.length() - 1);
         double left, top;
         switch(halign){
@@ -90,8 +119,8 @@ public class DrawerCompiler {
         }
         switch(valign){
             case Top: top = y; break;
-            case Center: top = y - currentFontSize/2; break;
-            case Bottom: top = y - currentFontSize; break;
+            case Center: top = y - getCurrentFontSize()/2; break;
+            case Bottom: top = y - getCurrentFontSize(); break;
             default: throw new RuntimeException("invalid valign: " + valign);
         }
         List<Double> xs = composeXs(mes, left, extraSpace);
@@ -111,7 +140,7 @@ public class DrawerCompiler {
         if( text == null || text.isEmpty() ){
             return;
         }
-        List<Double> mes = measureChars(text, currentFontSize);
+        List<Double> mes = doMeasureChars(text, getCurrentFontSize());
         double totalWidth = mes.stream().reduce((a,b) -> a + b).orElse(0.0);
         if( text.length() < 2 ){
             textAt(text, left, y, HAlign.Left, valign);
@@ -119,8 +148,8 @@ public class DrawerCompiler {
             double top;
             switch(valign){
                 case Top: top = y; break;
-                case Center: top = y - currentFontSize/2; break;
-                case Bottom: top = y - currentFontSize; break;
+                case Center: top = y - getCurrentFontSize()/2; break;
+                case Bottom: top = y - getCurrentFontSize(); break;
                 default: throw new RuntimeException("invalid valign: " + valign);
             }
             double extra = ((right - left) - totalWidth) / (text.length() - 1);
@@ -131,8 +160,8 @@ public class DrawerCompiler {
     }
 
     public void textAtVert(String text, double x, double y, HAlign halign, VAlign valign){
-        List<Double> mes = measureChars(text, currentFontSize);
-        double totalHeight = currentFontSize * text.length();
+        List<Double> mes = doMeasureChars(text, getCurrentFontSize());
+        double totalHeight = getCurrentFontSize() * text.length();
         List<Double> xs = mes.stream().map(cw -> {
             switch(halign){
                 case Left: return x;
@@ -148,7 +177,7 @@ public class DrawerCompiler {
             case Bottom: top = y - totalHeight; break;
             default: throw new RuntimeException("invalid valign: " + valign);
         }
-        List<Double> ys = composeYs(text.length(), top, currentFontSize, 0);
+        List<Double> ys = composeYs(text.length(), top, getCurrentFontSize(), 0);
         ops.add(new OpDrawChars(text, xs, ys));
     }
 
@@ -156,7 +185,7 @@ public class DrawerCompiler {
         if( text == null || text.isEmpty() ){
             return;
         }
-        List<Double> mes = measureChars(text, currentFontSize);
+        List<Double> mes = doMeasureChars(text, getCurrentFontSize());
         if( text.length() < 2 ){
             textAt(text, x, top, halign, VAlign.Top);
             return;
@@ -169,9 +198,9 @@ public class DrawerCompiler {
                 default: throw new RuntimeException("unknown halign: " + halign);
             }
         }).collect(Collectors.toList());
-        double totalHeight = currentFontSize * text.length();
+        double totalHeight = getCurrentFontSize() * text.length();
         double extra = ((bottom - top) - totalHeight) / (text.length() - 1);
-        List<Double> ys = composeYs(text.length(), top, currentFontSize, extra);
+        List<Double> ys = composeYs(text.length(), top, getCurrentFontSize(), extra);
         ops.add(new OpDrawChars(text, xs, ys));
     }
 
@@ -190,6 +219,23 @@ public class DrawerCompiler {
             default: throw new Error("invalid valign: " + valign);
         }
         textAt(text, x, y, halign, valign);
+    }
+
+    public void textInVert(String text, Box box, HAlign halign, VAlign valign){
+        double x, y;
+        switch(halign){
+            case Left: x = box.getLeft(); break;
+            case Center: x = box.getCx(); break;
+            case Right: x = box.getRight(); break;
+            default: throw new RuntimeException("invalid halign:" + halign);
+        }
+        switch(valign){
+            case Top: y = box.getTop(); break;
+            case Center: y = box.getCy(); break;
+            case Bottom: y = box.getBottom(); break;
+            default: throw new Error("invalid valign: " + valign);
+        }
+        textAtVert(text, x, y, halign, valign);
     }
 
     public void textInJustified(String text, Box box, VAlign valign){
@@ -230,6 +276,45 @@ public class DrawerCompiler {
                 textIn(text.substring(i, i+1), cols[i+nPad], HAlign.Center, VAlign.Center);
             }
         }
+    }
+
+    private double getStartX(Box box, HAlign halign, Supplier<Double> widthSupplier){
+        switch(halign){
+            case Left: return box.getLeft();
+            case Center: return box.getCx() - widthSupplier.get()/2.0;
+            case Right: return box.getRight() - widthSupplier.get();
+            default: throw new RuntimeException("Invalid halign value.");
+        }
+    }
+
+    private double getAnchorX(Box box, HAlign halign){
+        switch(halign){
+            case Left: return box.getLeft();
+            case Center: return box.getCy();
+            case Right: return box.getRight();
+            default: throw new RuntimeException("Invalid halign value.");
+        }
+    }
+
+    private double getAnchorY(Box box, VAlign valign){
+        switch(valign){
+            case Top: return box.getTop();
+            case Center: return box.getCy();
+            case Bottom: return box.getBottom();
+            default: throw new RuntimeException("Invalid valign value.");
+        }
+    }
+
+    // returns last x
+    public double render(List<Renderable> items, Box box, HAlign halign, VAlign valign){
+        double y = getAnchorY(box, valign);
+        double x = getStartX(box, halign, () ->
+                items.stream().mapToDouble(r -> r.calcWidth(this)).sum());
+        for(Renderable r: items){
+            r.render(this, x, y, valign);
+            x += r.calcWidth(this);
+        }
+        return x;
     }
 
     public void setTextColor(int red, int green, int blue){
@@ -324,8 +409,14 @@ public class DrawerCompiler {
         }
     }
 
+    public void frameInnerRowBorders(Box[] rows){
+        for(int i=1;i<rows.length;i++){
+            frameTop(rows[i]);
+        }
+    }
+
     public List<String> breakLine(String line, double lineWidth){
-        return LineBreaker.breakLine(line, currentFontSize, lineWidth);
+        return LineBreaker.breakLine(line, getCurrentFontSize(), lineWidth);
     }
 
     public double multilineText(Collection<String> lines, Box box, HAlign halign, VAlign valign, double leading){
@@ -336,8 +427,8 @@ public class DrawerCompiler {
         double y;
         switch(valign){
             case Top: y = box.getTop(); break;
-            case Center: y = box.getTop() + (box.getHeight() - calcTotalHeight(nLines, currentFontSize, leading))/ 2; break;
-            case Bottom: y = box.getTop() + box.getHeight() - calcTotalHeight(nLines, currentFontSize, leading); break;
+            case Center: y = box.getTop() + (box.getHeight() - calcTotalHeight(nLines, getCurrentFontSize(), leading))/ 2; break;
+            case Bottom: y = box.getTop() + box.getHeight() - calcTotalHeight(nLines, getCurrentFontSize(), leading); break;
             default: throw new RuntimeException("invalid valign: " + valign);
         }
         double x;
@@ -349,7 +440,7 @@ public class DrawerCompiler {
         }
         for(String line: lines){
             textAt(line, x, y, halign, VAlign.Top);
-            y += currentFontSize + leading;
+            y += getCurrentFontSize() + leading;
         }
         return y - leading;
     }
@@ -384,16 +475,24 @@ public class DrawerCompiler {
 
     public Measure measureText(String text){
         Measure mes = new Measure();
-        mes.cx = measureChars(text, currentFontSize).stream().reduce((a, b) -> a + b).orElse(0.0);
-        mes.cy = currentFontSize;
+        mes.cx = doMeasureChars(text, getCurrentFontSize()).stream().reduce((a, b) -> a + b).orElse(0.0);
+        mes.cy = getCurrentFontSize();
         return mes;
     }
 
-    private static List<Double> measureChars(String str, double fontSize){
-        return str.codePoints().mapToDouble(code -> charWidth(code, fontSize)).boxed().collect(Collectors.toList());
+    public double calcTextWidth(String text){
+        return calcTextWidth(text, getCurrentFontSize());
     }
 
-    private static double charWidth(int code, double fontSize){
+    public double calcTextWidth(String text, double fontSize){
+        return text.codePoints().mapToDouble(code -> doCalcCharWidth(code, fontSize)).sum();
+    }
+
+    private static List<Double> doMeasureChars(String str, double fontSize){
+        return str.codePoints().mapToDouble(code -> doCalcCharWidth(code, fontSize)).boxed().collect(Collectors.toList());
+    }
+
+    private static double doCalcCharWidth(int code, double fontSize){
         return ( code < 256 || isHankaku(code) ) ? fontSize/2 : fontSize;
     }
 

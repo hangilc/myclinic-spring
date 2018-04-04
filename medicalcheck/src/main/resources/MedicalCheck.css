@@ -1,0 +1,40 @@
+.root-pane {
+    -fx-padding: 10px;
+}
+
+.date-input .nen, .date-input .month, .date-input .day {
+    -fx-pref-width: 3em;
+}
+
+.height-input, .weight-input {
+    -fx-pref-width: 6em;
+}
+
+.visual-acuity-input {
+    -fx-pref-width: 4em;
+}
+
+.hearing-ability-input {
+    -fx-pref-width: 6em;
+}
+
+.blood-pressure-input {
+    -fx-pref-width: 10em;
+}
+
+.urinary-input {
+    -fx-pref-width: 3em;
+}
+
+.exam-result-area {
+    -fx-pref-width: 200px;
+}
+
+.import-exam-dialog {
+    -fx-padding: 10px;
+}
+
+.import-exam-dialog .text-area {
+    -fx-pref-width: 200px;
+    -fx-pref-height: 400px;
+}
