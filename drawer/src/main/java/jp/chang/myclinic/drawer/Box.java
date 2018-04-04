@@ -62,6 +62,10 @@ public class Box {
         return new Box(this.left + left, this.top + top, this.left + right, this.top + bottom);
     }
 
+    public Point innerPoint(double left, double top){
+        return new Point(this.left + left, this.top + top);
+    }
+
     public double getWidth(){
         return right - left;
     }

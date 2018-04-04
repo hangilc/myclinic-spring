@@ -48,6 +48,7 @@ class Form extends HBox {
     private TextField urinaryProteinField = new TextField("");
     private TextField urinaryBloodField = new TextField("");
     private TextField urinarySugarField = new TextField("");
+    private DateInput issueDateInput = new DateInput();
     private TextArea examResultArea = new TextArea();
 
     Form(){
@@ -82,6 +83,7 @@ class Form extends HBox {
         chestXpDateInput.setGengou(Gengou.MostRecent);
         List.of(urinaryProteinField, urinaryBloodField, urinarySugarField)
                 .forEach(f -> f.getStyleClass().add("urinary-input"));
+        issueDateInput.setValue(LocalDate.now());
         DispGrid column = new DispGrid();
         column.addRow("氏名", nameField);
         column.addRow("生年月日", birthdayInput);
@@ -103,6 +105,7 @@ class Form extends HBox {
         column.addRow("Ｘ線撮影日", chestXpDateInput);
         column.addRow("尿検", new Label("蛋白"), urinaryProteinField, new Label("潜血"), urinaryBloodField,
                 new Label("糖"), urinarySugarField);
+        column.addRow("発行日", issueDateInput);
         return column;
     }
 
@@ -127,6 +130,7 @@ class Form extends HBox {
         data.urinaryProtein = urinaryProteinField.getText();
         data.urinaryBlood = urinaryBloodField.getText();
         data.urinarySugar = urinarySugarField.getText();
+        data.issueDate = getIssueDate();
         data.examResults = getExamResults();
     }
 
@@ -234,6 +238,11 @@ class Form extends HBox {
             String dateRep = DateTimeUtil.toKanji(date, DateTimeUtil.kanjiFormatter1);
             return String.format("撮影日 %s （直接）", dateRep);
         }, "Ｘ線撮影日の入力が不適切です。");
+    }
+
+    private String getIssueDate(){
+        return getDate(issueDateInput, date -> DateTimeUtil.toKanji(date, DateTimeUtil.kanjiFormatter1),
+                "発行日の入力が不適切です。");
     }
 
     private String getDate(DateInput input, Function<LocalDate, String> formatter, String errorMessage){

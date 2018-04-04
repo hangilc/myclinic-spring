@@ -325,6 +325,8 @@ class Drawer {
                 box.inset(3), HAlign.Left, VAlign.Top);
         double h1 = 75;
         double v1 = 17;
+        Point issuePoint = box.innerPoint(h1, v1).shiftToLeft(6);
+        compiler.textAt(data.issueDate, issuePoint, HAlign.Right, VAlign.Top);
         Box sub = box.inset(h1, v1, 0, 0);
         compiler.textIn(data.clinicAddress1, sub, HAlign.Left, VAlign.Top);
         sub = sub.shiftDown(6);
