@@ -5,11 +5,6 @@ import java.util.List;
 
 class Data {
 
-    class ExamEntry {
-        String key;
-        String value;
-    }
-
     String name = "";
     String birthday = "";
     String sex = "";
@@ -31,7 +26,7 @@ class Data {
     String urinaryBlood = "";
     String urinarySugar = "";
     List<String> others = new ArrayList<>();
-    List<ExamEntry> examEntries = new ArrayList<>();
+    List<String> examResults = new ArrayList<>();
     String clinicAddress1 = "";
     String clinicAddress2 = "";
     String clinicName = "";
