@@ -29,6 +29,7 @@ class Drawer {
     private int nExams = 10;
     private double valueInset = 4;
     private Data data;
+    private Box auxBox;
 
     List<Op> render(Data data) {
         this.data = data;
@@ -66,13 +67,14 @@ class Drawer {
             compiler.box(row);
             compiler.frameInnerColumnBorders(cols);
             compiler.textIn("血液検査", cols[0], HAlign.Center, VAlign.Center);
-            drawBloodExams(cols[1]);
             {
                 Box[] rightRows = cols[2].splitToRows(h1 * 3);
                 compiler.frameInnerRowBorders(rightRows);
                 drawUrinalysis(rightRows[0]);
                 compiler.textIn("その他特記事項", rightRows[1].inset(1, 1), HAlign.Left, VAlign.Top);
+                auxBox = rightRows[1].inset(1,1).inset(0, compiler.getCurrentFontSize()+1, 0, 0);
             }
+            drawBloodExams(cols[1]); // should be after auxBox has been specified
         }
         {
             Box bottom = outerBox.setTop(cy);
@@ -267,6 +269,19 @@ class Drawer {
             compiler.frameInnerColumnBorders(cols);
             drawExamResult(key, value, mainPart.get(i));
         }
+        drawAux(sidePart);
+    }
+
+    private void drawAux(List<String> results){
+        Box box = auxBox;
+        RichText richText = new RichText("superscript");
+        for(String result: results){
+            Box[] rows = box.splitToRows(compiler.getCurrentFontSize() + 2.0);
+            Box row = rows[0];
+            box = rows[1];
+            result = result.replaceAll("\\s*\\|\\s*", " ");
+            compiler.render(richText.parse(result), row, HAlign.Left, VAlign.Center);
+        }
     }
 
     private void drawExamResult(Box keyBox, Box valueBox, String result){
@@ -280,6 +295,13 @@ class Drawer {
             compiler.textIn(value, cols[0], HAlign.Center, VAlign.Center);
             RichText richText = new RichText("superscript");
             compiler.render(richText.parse(unit), cols[1], HAlign.Left, VAlign.Center);
+        } else if( items.length == 2 ){
+            String key = items[0];
+            String value = items[1];
+            compiler.textIn(key, keyBox, HAlign.Center, VAlign.Center);
+            compiler.textIn(value, valueBox, HAlign.Center, VAlign.Center);
+        } else {
+            compiler.textIn(result, valueBox, HAlign.Center, VAlign.Center);
         }
     }
 
