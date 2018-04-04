@@ -1,41 +1,77 @@
 package jp.chang.myclinic.medicalcheck;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Map;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 class Config {
 
-    private static Logger logger = LoggerFactory.getLogger(Config.class);
+    private String name = "";
+    private String postalCode = "";
+    private String address = "";
+    private String tel = "";
+    private String fax = "";
+    private String doctorName = "";
 
-    String doctorName = "";
-    String clinicName = "";
-    String clinicAddr = "";
-    String clinicPhone = "";
-    String clinicFax = "";
+    public String getName() {
+        return name;
+    }
 
-    void load() throws Exception {
-        Path path = Paths.get("config", "application.yml");
-        Yaml yaml = new Yaml();
-        try (InputStream ins = new FileInputStream(path.toFile())) {
-            Map map = yaml.load(ins);
-            Map myclinicMap = (Map) map.get("myclinic");
-            Map clinicMap = (Map) myclinicMap.get("clinic");
-            this.doctorName = (String) clinicMap.get("doctor-name");
-            this.clinicName = (String) clinicMap.get("name");
-            String postalCode = (String) clinicMap.get("postal-code");
-            String address = (String) clinicMap.get("address");
-            this.clinicAddr = String.join(" ", postalCode, address);
-            this.clinicPhone = (String) clinicMap.get("tel");
-            this.clinicFax = (String) clinicMap.get("fax");
-        }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @JsonProperty("postal-code")
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
+
+    public String getFax() {
+        return fax;
+    }
+
+    public void setFax(String fax) {
+        this.fax = fax;
+    }
+
+    @JsonProperty("doctor-name")
+    public String getDoctorName() {
+        return doctorName;
+    }
+
+    public void setDoctorName(String doctorName) {
+        this.doctorName = doctorName;
+    }
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "name='" + name + '\'' +
+                ", postalCode='" + postalCode + '\'' +
+                ", address='" + address + '\'' +
+                ", tel='" + tel + '\'' +
+                ", fax='" + fax + '\'' +
+                ", doctorName='" + doctorName + '\'' +
+                '}';
     }
 }

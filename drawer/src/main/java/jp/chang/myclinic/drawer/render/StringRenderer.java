@@ -17,9 +17,8 @@ public class StringRenderer implements Renderable {
     }
 
     @Override
-    public double render(DrawerCompiler compiler, double x, double y, VAlign valign) {
+    public void render(DrawerCompiler compiler, double x, double y, VAlign valign) {
         compiler.textAt(string, x, y, HAlign.Left, valign);
-        return x + calcWidth(compiler);
     }
 
     @Override

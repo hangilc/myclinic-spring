@@ -99,6 +99,10 @@ public class DrawerCompiler {
         return fontMap.get(currentFont);
     }
 
+    public double getFontSizeFor(String fontName){
+        return fontMap.get(fontName);
+    }
+
     public void textAt(String text, double x, double y, HAlign halign, VAlign valign, TextAtOpt opt){
         if( text == null || text.isEmpty() ){
             return;
@@ -307,7 +311,8 @@ public class DrawerCompiler {
         double x = getStartX(box, halign, () ->
                 items.stream().mapToDouble(r -> r.calcWidth(this)).sum());
         for(Renderable r: items){
-            x = r.render(this, x, y, valign);
+            r.render(this, x, y, valign);
+            x += r.calcWidth(this);
         }
         return x;
     }

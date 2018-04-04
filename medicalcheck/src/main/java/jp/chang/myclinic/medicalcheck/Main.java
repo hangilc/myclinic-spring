@@ -1,5 +1,9 @@
 package jp.chang.myclinic.medicalcheck;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -14,8 +18,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.medicalcheck.drawerpreview.DrawerPreviewDialog;
+import jp.chang.myclinic.medicalcheck.importexam.BloodExamSpec;
+import jp.chang.myclinic.medicalcheck.importexam.ImportExamDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.List;
 
 public class Main extends Application {
 
@@ -23,6 +33,7 @@ public class Main extends Application {
 
     private Form form = new Form();
     private Config config;
+    private List<BloodExamSpec> bloodExamSpecs;
 
     public static void main(String[] args){
         Application.launch(Main.class, args);
@@ -31,8 +42,8 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("健康診断証明書");
-        config = new Config();
-        config.load();
+        loadConfig();
+        loadBloodExamSpecs();
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(createMenu());
         Pane root = createRoot();
@@ -52,9 +63,25 @@ public class Main extends Application {
                 item.setOnAction(evt -> form.setHearingAbilityNormal());
                 menu.getItems().add(item);
             }
+            {
+                MenuItem item = new MenuItem("血液検査読み込み");
+                item.setOnAction(evt -> doImportBloodExam());
+                menu.getItems().add(item);
+            }
             mbar.getMenus().add(menu);
         }
         return mbar;
+    }
+
+    private void doImportBloodExam(){
+        ImportExamDialog dialog = new ImportExamDialog(bloodExamSpecs){
+            @Override
+            public void onEnter(List<String> input) {
+                form.importExam(input);
+                this.close();
+            }
+        };
+        dialog.showAndWait();
     }
 
     private Pane createRoot(){
@@ -90,10 +117,31 @@ public class Main extends Application {
     }
 
     private void setupClinicInfo(Data data){
-        data.clinicAddress1 = config.clinicAddr;
-        data.clinicAddress2 = config.clinicPhone + " " + config.clinicFax;
-        data.clinicName = config.clinicName;
-        data.doctorName = config.doctorName;
+        data.clinicAddress1 = config.getPostalCode() + " " + config.getAddress();
+        data.clinicAddress2 = "tel: " + config.getTel() + " fax: " + config.getFax();
+        data.clinicName = config.getName();
+        data.doctorName = config.getDoctorName();
+    }
+
+    private void loadConfig(){
+        try(InputStream ins = new FileInputStream("config/application.yml")){
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            JsonNode node = mapper.readTree(ins).get("myclinic").get("clinic");
+            config = mapper.convertValue(node, Config.class);
+        } catch(Exception ex){
+            logger.error("Failed to load application.yml", ex);
+            System.exit(1);
+        }
+    }
+
+    private void loadBloodExamSpecs(){
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        try(InputStream ins = Main.class.getResourceAsStream("/blood-exams.yml")) {
+            bloodExamSpecs = mapper.readValue(ins, new TypeReference<List<BloodExamSpec>>(){});
+        } catch(Exception ex){
+            logger.error("Failed to load blood exam sepcs.", ex);
+            System.exit(1);
+        }
     }
 
 }

@@ -25,3 +25,16 @@
 .urinary-input {
     -fx-pref-width: 3em;
 }
+
+.exam-result-area {
+    -fx-pref-width: 200px;
+}
+
+.import-exam-dialog {
+    -fx-padding: 10px;
+}
+
+.import-exam-dialog .text-area {
+    -fx-pref-width: 200px;
+    -fx-pref-height: 400px;
+}

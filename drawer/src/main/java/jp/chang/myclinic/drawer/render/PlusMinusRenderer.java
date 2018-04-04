@@ -16,10 +16,9 @@ public class PlusMinusRenderer implements Renderable {
     private String minus = "－";
 
     @Override
-    public double render(DrawerCompiler compiler, double x, double y, VAlign valign) {
+    public void render(DrawerCompiler compiler, double x, double y, VAlign valign) {
         compiler.textAt(plus, x, y, HAlign.Left, valign);
         compiler.textAt(minus, x, y + compiler.getCurrentFontSize()* 0.46, HAlign.Left, valign);
-        return x + calcWidth(compiler);
     }
 
     @Override

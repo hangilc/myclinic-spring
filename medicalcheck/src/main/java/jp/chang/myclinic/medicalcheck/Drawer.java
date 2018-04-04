@@ -6,9 +6,11 @@ import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
 import jp.chang.myclinic.drawer.render.PlusMinusRenderer;
 import jp.chang.myclinic.drawer.render.Renderable;
 import jp.chang.myclinic.drawer.render.StringRenderer;
+import jp.chang.myclinic.medicalcheck.richtext.RichText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class Drawer {
@@ -84,6 +86,7 @@ class Drawer {
         compiler.createFont("regular", "MS Gothic", 3.5);
         compiler.createFont("small-1", "MS Gothic", 3.0);
         compiler.createFont("small-2", "MS Gothic", 2.5);
+        compiler.createFont("superscript", "MS Gothic", 2.5);
         compiler.createFont("doctor-name", "MS Gothic", 4.5);
     }
 
@@ -242,14 +245,41 @@ class Drawer {
     }
 
     private void drawBloodExams(Box box) {
+        List<String> allResults = data.examResults;
+        List<String> mainPart = new ArrayList<>();
+        List<String> sidePart = new ArrayList<>();
+        if( allResults.size() <= nExams ){
+            mainPart.addAll(allResults);
+        } else {
+            mainPart.addAll(allResults.subList(0, nExams));
+            sidePart.addAll(allResults.subList(nExams, allResults.size()));
+        }
         Box[] rows = box.splitToEvenRows(nExams);
         compiler.frameInnerRowBorders(rows);
         for (int i = 0; i < nExams; i++) {
+            if( i >= mainPart.size() ){
+                break;
+            }
             Box row = rows[i];
             Box[] cols = row.splitToColumns(w2 - w1);
             Box key = cols[0];
             Box value = cols[1];
             compiler.frameInnerColumnBorders(cols);
+            drawExamResult(key, value, mainPart.get(i));
+        }
+    }
+
+    private void drawExamResult(Box keyBox, Box valueBox, String result){
+        String[] items = result.split("\\s*\\|\\s*", 3);
+        if( items.length == 3 ){
+            String key = items[0];
+            String value = items[1];
+            String unit = items[2];
+            Box[] cols = valueBox.splitToColumns(valueBox.getWidth() - 24);
+            compiler.textIn(key, keyBox, HAlign.Center, VAlign.Center);
+            compiler.textIn(value, cols[0], HAlign.Center, VAlign.Center);
+            RichText richText = new RichText("superscript");
+            compiler.render(richText.parse(unit), cols[1], HAlign.Left, VAlign.Center);
         }
     }
 

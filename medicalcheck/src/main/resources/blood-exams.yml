@@ -1,0 +1,26 @@
+- name: 赤血球数
+  unit: "× 10^{4}/μL"
+- name: ﾍﾓｸﾞﾛﾋﾞﾝ
+  unit: "g/dL"
+- name: ﾍﾏﾄｸﾘｯﾄ
+  unit: "%"
+- name: AST(GOT)
+  unit: "U/L"
+- name: ALT(GPT)
+  unit: "U/L"
+- name: γ-GT
+  unit: "U/L"
+- name: ｸﾚｱﾁﾆﾝ
+  unit: "mg/dL"
+- name: 尿酸
+  unit: "mg/dL"
+- name: ｸﾞﾙｺｰｽ
+  unit: "mg/dL"
+- name: HbA1c/NGSP
+  unit: "%"
+- name: LDLｺﾚｽﾃﾛｰﾙ
+  unit: "mg/dL"
+- name: HDLｺﾚｽﾃﾛｰﾙ
+  unit: "mg/dL"
+- name: TG(中性脂肪)
+  unit: "mg/dL"

@@ -27,6 +27,7 @@ class Data {
     String urinarySugar = "";
     List<String> others = new ArrayList<>();
     List<String> examResults = new ArrayList<>();
+    String issueDate = "";
     String clinicAddress1 = "";
     String clinicAddress2 = "";
     String clinicName = "";

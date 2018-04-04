@@ -3,6 +3,7 @@ package jp.chang.myclinic.medicalcheck;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -17,10 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-class Form extends DispGrid {
+class Form extends HBox {
 
     private static Logger logger = LoggerFactory.getLogger(Form.class);
     private TextField nameField = new TextField();
@@ -46,8 +48,27 @@ class Form extends DispGrid {
     private TextField urinaryProteinField = new TextField("");
     private TextField urinaryBloodField = new TextField("");
     private TextField urinarySugarField = new TextField("");
+    private TextArea examResultArea = new TextArea();
 
-    Form() {
+    Form(){
+        super(4);
+        getChildren().addAll(
+                leftColumn(),
+                rightColumn()
+        );
+    }
+
+    private Node rightColumn(){
+        examResultArea.getStyleClass().add("exam-result-area");
+        VBox root = new VBox(4);
+        root.getChildren().addAll(
+                new Label("検査結果"),
+                examResultArea
+        );
+        return root;
+    }
+
+    private Node leftColumn() {
         birthdayInput.setGengou(Gengou.Heisei);
         heightField.getStyleClass().add("height-input");
         weightField.getStyleClass().add("weight-input");
@@ -61,26 +82,28 @@ class Form extends DispGrid {
         chestXpDateInput.setGengou(Gengou.MostRecent);
         List.of(urinaryProteinField, urinaryBloodField, urinarySugarField)
                 .forEach(f -> f.getStyleClass().add("urinary-input"));
-        addRow("氏名", nameField);
-        addRow("生年月日", birthdayInput);
-        addRow("性別", sexInput);
-        addRow("住所", addressField);
-        addRow("身長", heightField, new Label("cm"));
-        addRow("体重", weightField, new Label("kg"));
-        addRow("診察", physicalExamField);
-        addRow("視力",
+        DispGrid column = new DispGrid();
+        column.addRow("氏名", nameField);
+        column.addRow("生年月日", birthdayInput);
+        column.addRow("性別", sexInput);
+        column.addRow("住所", addressField);
+        column.addRow("身長", heightField, new Label("cm"));
+        column.addRow("体重", weightField, new Label("kg"));
+        column.addRow("診察", physicalExamField);
+        column.addRow("視力",
                 new Label("右"), visualAcuityBareRightField,
                 new Label("("), visualAcuityGlassRightField, new Label(")"),
                 new Label("左"), visualAcuityBareLeftField,
                 new Label("("), visualAcuityGlassLeftField, new Label(")"));
-        addRow("聴力", hearingInput());
-        addRow("血圧", bloodPressureField, new Label("mm/Hg"));
-        addRow("心電図", ekgField);
-        addRow("既往歴", historyField);
-        addRow("Ｘ線結果", chestXpResultField);
-        addRow("Ｘ線撮影日", chestXpDateInput);
-        addRow("尿検", new Label("蛋白"), urinaryProteinField, new Label("潜血"), urinaryBloodField,
+        column.addRow("聴力", hearingInput());
+        column.addRow("血圧", bloodPressureField, new Label("mm/Hg"));
+        column.addRow("心電図", ekgField);
+        column.addRow("既往歴", historyField);
+        column.addRow("Ｘ線結果", chestXpResultField);
+        column.addRow("Ｘ線撮影日", chestXpDateInput);
+        column.addRow("尿検", new Label("蛋白"), urinaryProteinField, new Label("潜血"), urinaryBloodField,
                 new Label("糖"), urinarySugarField);
+        return column;
     }
 
     void applyTo(Data data) {
@@ -104,6 +127,15 @@ class Form extends DispGrid {
         data.urinaryProtein = urinaryProteinField.getText();
         data.urinaryBlood = urinaryBloodField.getText();
         data.urinarySugar = urinarySugarField.getText();
+        data.examResults = getExamResults();
+    }
+
+    void importExam(List<String> results){
+        String text = String.join("\n", results);
+        if( !text.isEmpty() ){
+            text = text + "\n";
+        }
+        examResultArea.appendText(text);
     }
 
     private Node hearingInput(){
@@ -216,6 +248,11 @@ class Form extends DispGrid {
             GuiUtil.alertError(errorMessage + "\n" + String.join("\n", result.getError()));
             return "";
         }
+    }
+
+    private List<String> getExamResults(){
+        String text = examResultArea.getText().trim();
+        return Arrays.asList(text.split("\\r?\\n"));
     }
 
 }
