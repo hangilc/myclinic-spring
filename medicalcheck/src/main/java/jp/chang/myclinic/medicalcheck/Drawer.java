@@ -25,7 +25,7 @@ class Drawer {
     private double valueInset = 4;
     private Data data;
 
-    List<Op> render(Data data){
+    List<Op> render(Data data) {
         this.data = data;
         setupFonts();
         setupPens();
@@ -37,7 +37,7 @@ class Drawer {
         drawShimei(allocRow(h1));
         drawAddress(allocRow(h1));
         {
-            Box row = allocRow(h1*2);
+            Box row = allocRow(h1 * 2);
             Box[] cols = row.splitToColumns(w3);
             Box[] leftRows = cols[0].splitToRows(h1);
             drawShinchou(leftRows[0]);
@@ -45,7 +45,7 @@ class Drawer {
             drawHistory(cols[1]);
         }
         {
-            Box row = allocRow(h1*5);
+            Box row = allocRow(h1 * 5);
             Box[] cols = row.splitToColumns(w3);
             Box[] leftRows = cols[0].splitToEvenRows(5);
             drawShinsatsu(leftRows[0]);
@@ -56,14 +56,14 @@ class Drawer {
             drawXp(cols[1]);
         }
         {
-            Box row = allocRow(h1*nExams);
+            Box row = allocRow(h1 * nExams);
             Box[] cols = row.splitToColumns(w1, w4);
             compiler.box(row);
             compiler.frameInnerColumnBorders(cols);
             compiler.textIn("血液検査", cols[0], HAlign.Center, VAlign.Center);
             drawBloodExams(cols[1]);
             {
-                Box[] rightRows = cols[2].splitToRows(h1*3);
+                Box[] rightRows = cols[2].splitToRows(h1 * 3);
                 compiler.frameInnerRowBorders(rightRows);
                 drawUrinalysis(rightRows[0]);
                 compiler.textIn("その他特記事項", rightRows[1].inset(1, 1), HAlign.Left, VAlign.Top);
@@ -76,7 +76,7 @@ class Drawer {
         return compiler.getOps();
     }
 
-    private void setupFonts(){
+    private void setupFonts() {
         compiler.createFont("title", "MS Gothic", 6.4, DrawerConsts.FontWeightBold, false);
         compiler.createFont("regular", "MS Gothic", 3.5);
         compiler.createFont("small-1", "MS Gothic", 3.0);
@@ -84,12 +84,12 @@ class Drawer {
         compiler.createFont("doctor-name", "MS Gothic", 4.5);
     }
 
-    private void setupPens(){
+    private void setupPens() {
         compiler.createPen("bold", 0, 0, 0, 0.5);
         compiler.createPen("regular", 0, 0, 0);
     }
 
-    private Box allocRow(double height){
+    private Box allocRow(double height) {
         double left = outerBox.getLeft();
         double top = cy;
         double right = outerBox.getRight();
@@ -98,15 +98,15 @@ class Drawer {
         return new Box(left, top, right, bottom);
     }
 
-    private void drawTitle(){
+    private void drawTitle() {
         compiler.setFont("title");
         compiler.textAt("健康診断書", titlePoint, HAlign.Center, VAlign.Center);
     }
 
-    private void drawShimei(Box box){
+    private void drawShimei(Box box) {
         String name = data.name;
         String birthday = data.birthday;
-        Box[] cols = box.splitToColumns(w1, w3, 94, 143.5-w1*0.5);
+        Box[] cols = box.splitToColumns(w1, w3, 94, 143.5 - w1 * 0.5);
         compiler.frameBottom(box);
         compiler.frameInnerColumnBorders(cols);
         compiler.textIn("氏　名", cols[0], HAlign.Center, VAlign.Center);
@@ -116,7 +116,7 @@ class Drawer {
         drawSex(cols[4]);
     }
 
-    private void drawSex(Box box){
+    private void drawSex(Box box) {
         String sex = data.sex;
         Box[] cols = box.splitToColumns(w1);
         compiler.frameInnerColumnBorders(cols);
@@ -124,7 +124,7 @@ class Drawer {
         compiler.textIn(sex, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
     }
 
-    private void drawAddress(Box box){
+    private void drawAddress(Box box) {
         String address = data.address;
         Box[] cols = box.splitToColumns(w1);
         compiler.frameBottom(box);
@@ -133,7 +133,7 @@ class Drawer {
         compiler.textIn(address, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
     }
 
-    private void drawShinchou(Box box){
+    private void drawShinchou(Box box) {
         String height = data.height;
         Box[] cols = box.splitToColumns(w1);
         compiler.box(box);
@@ -142,7 +142,7 @@ class Drawer {
         compiler.textIn(height, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
     }
 
-    private void drawTaijuu(Box box){
+    private void drawTaijuu(Box box) {
         String weight = data.weight;
         Box[] cols = box.splitToColumns(w1);
         compiler.box(box);
@@ -187,7 +187,7 @@ class Drawer {
         compiler.popFont();
     }
 
-    private void drawChouryokuSub(Box box, String label, String value1000, String value4000){
+    private void drawChouryokuSub(Box box, String label, String value1000, String value4000) {
         Box[] cols = box.splitToColumns(6);
         Box[] rows = cols[1].splitToEvenRows(2);
         compiler.textIn(label, cols[0], HAlign.Center, VAlign.Center);
@@ -213,7 +213,7 @@ class Drawer {
         compiler.textIn(value, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
     }
 
-    private void drawHistory(Box box){
+    private void drawHistory(Box box) {
         String value = data.history;
         Box innerBox = box.inset(1, 1);
         compiler.box(box);
@@ -238,10 +238,12 @@ class Drawer {
         compiler.textIn(data.chestXpDate, innerBox, HAlign.Left, VAlign.Bottom);
     }
 
-    private void drawBloodExams(Box box){
+    private void drawBloodExams(Box box) {
+        compiler.textIn("＋", box, HAlign.Left, VAlign.Top);
+        compiler.textIn("－", box.shiftDown(compiler.getCurrentFontSize()/2), HAlign.Left, VAlign.Top);
         Box[] rows = box.splitToEvenRows(nExams);
         compiler.frameInnerRowBorders(rows);
-        for(int i=0;i<nExams;i++){
+        for (int i = 0; i < nExams; i++) {
             Box row = rows[i];
             Box[] cols = row.splitToColumns(w2 - w1);
             Box key = cols[0];
@@ -250,15 +252,61 @@ class Drawer {
         }
     }
 
-    private void drawUrinalysis(Box box){
+    private void drawUrinalysis(Box box) {
         Box[] cols = box.splitToColumns(7);
         Box[] dataRows = cols[1].splitToEvenRows(3);
         compiler.frameInnerColumnBorders(cols);
         compiler.textInVert("検　尿", cols[0], HAlign.Center, VAlign.Center);
         compiler.frameInnerRowBorders(dataRows);
+        {
+            String value = data.urinaryProtein;
+            if (value.isEmpty()) {
+                value = "   ";
+            } else {
+                value = formatUrineResult(value);
+            }
+            String text = String.format("蛋白（%s）", value);
+            compiler.textIn(text, dataRows[0], HAlign.Center, VAlign.Center);
+        }
+        {
+            String value = data.urinaryBlood;
+            if (value.isEmpty()) {
+                value = "   ";
+            } else {
+                value = formatUrineResult(value);
+            }
+            String text = String.format("潜血（%s）", value);
+            compiler.textIn(text, dataRows[1], HAlign.Center, VAlign.Center);
+        }
+        {
+            String value = data.urinarySugar;
+            if (value.isEmpty()) {
+                value = "   ";
+            } else {
+                value = formatUrineResult(value);
+            }
+            String text = String.format("糖　（%s）", value);
+            compiler.textIn(text, dataRows[2], HAlign.Center, VAlign.Center);
+        }
     }
 
-    private void drawBottom(Box box){
+    private String formatUrineResult(String result) {
+        String value = result;
+        switch (value) {
+            case "+":
+                value = "＋";
+                break;
+            case "-":
+                value = "－";
+                break;
+            case "+/-":
+                value = "±";
+                break;
+        }
+        return value;
+    }
+
+    private void drawBottom(Box box) {
         compiler.textIn("診断の結果上記の通り相違ないことを証明する。",
                 box.inset(3), HAlign.Left, VAlign.Top);
         double h1 = 75;
@@ -271,7 +319,7 @@ class Drawer {
         compiler.textIn(data.clinicName, sub, HAlign.Left, VAlign.Top);
         sub = sub.shiftDown(8);
         compiler.setFont("doctor-name");
-        Point p = new Point(sub.getLeft(), sub.getTop() + compiler.getCurrentFontSize()/2.0);
+        Point p = new Point(sub.getLeft(), sub.getTop() + compiler.getCurrentFontSize() / 2.0);
         compiler.textAt(data.doctorName, p, HAlign.Left, VAlign.Center);
         compiler.setFont("regular");
         compiler.textAt("診断医師氏名", p.shiftToLeft(3), HAlign.Right, VAlign.Center);

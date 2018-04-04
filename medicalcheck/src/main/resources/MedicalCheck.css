@@ -21,3 +21,7 @@
 .blood-pressure-input {
     -fx-pref-width: 10em;
 }
+
+.urinary-input {
+    -fx-pref-width: 3em;
+}

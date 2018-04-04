@@ -43,6 +43,9 @@ class Form extends DispGrid {
     private TextField historyField = new TextField("特記事項なし");
     private TextField chestXpResultField = new TextField("");
     private DateInput chestXpDateInput = new DateInput();
+    private TextField urinaryProteinField = new TextField("");
+    private TextField urinaryBloodField = new TextField("");
+    private TextField urinarySugarField = new TextField("");
 
     Form() {
         birthdayInput.setGengou(Gengou.Heisei);
@@ -56,6 +59,8 @@ class Form extends DispGrid {
                 .forEach(f -> f.getStyleClass().add("hearing-ability-input"));
         bloodPressureField.getStyleClass().add("blood-pressure-input");
         chestXpDateInput.setGengou(Gengou.MostRecent);
+        List.of(urinaryProteinField, urinaryBloodField, urinarySugarField)
+                .forEach(f -> f.getStyleClass().add("urinary-input"));
         addRow("氏名", nameField);
         addRow("生年月日", birthdayInput);
         addRow("性別", sexInput);
@@ -74,6 +79,8 @@ class Form extends DispGrid {
         addRow("既往歴", historyField);
         addRow("Ｘ線結果", chestXpResultField);
         addRow("Ｘ線撮影日", chestXpDateInput);
+        addRow("尿検", new Label("蛋白"), urinaryProteinField, new Label("潜血"), urinaryBloodField,
+                new Label("糖"), urinarySugarField);
     }
 
     void applyTo(Data data) {
@@ -94,6 +101,9 @@ class Form extends DispGrid {
         data.history = historyField.getText();
         data.chestXpResult = chestXpResultField.getText();
         data.chestXpDate = getChestXpDate();
+        data.urinaryProtein = urinaryProteinField.getText();
+        data.urinaryBlood = urinaryBloodField.getText();
+        data.urinarySugar = urinarySugarField.getText();
     }
 
     private Node hearingInput(){
