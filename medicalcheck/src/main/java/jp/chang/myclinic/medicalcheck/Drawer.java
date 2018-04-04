@@ -79,6 +79,8 @@ class Drawer {
     private void setupFonts(){
         compiler.createFont("title", "MS Gothic", 6.4, DrawerConsts.FontWeightBold, false);
         compiler.createFont("regular", "MS Gothic", 3.5);
+        compiler.createFont("small-1", "MS Gothic", 3.0);
+        compiler.createFont("small-2", "MS Gothic", 2.5);
         compiler.createFont("doctor-name", "MS Gothic", 4.5);
     }
 
@@ -116,7 +118,6 @@ class Drawer {
 
     private void drawSex(Box box){
         String sex = data.sex;
-        System.out.println(sex);
         Box[] cols = box.splitToColumns(w1);
         compiler.frameInnerColumnBorders(cols);
         compiler.textIn("性別", cols[0], HAlign.Center, VAlign.Center);
@@ -151,17 +152,23 @@ class Drawer {
     }
 
     private void drawShinsatsu(Box box) {
+        String value = data.physicalExam;
         Box[] cols = box.splitToColumns(w1);
         compiler.box(box);
         compiler.frameInnerColumnBorders(cols);
         compiler.textIn("診　察", cols[0], HAlign.Center, VAlign.Center);
+        compiler.textIn(value, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
     }
 
     private void drawShiryoku(Box box) {
+        String value = data.visualAcuity;
         Box[] cols = box.splitToColumns(w1);
         compiler.box(box);
         compiler.frameInnerColumnBorders(cols);
         compiler.textIn("視　力", cols[0], HAlign.Center, VAlign.Center);
+        compiler.setFontPushing("small-1");
+        compiler.textIn(value, cols[1].inset(valueInset, 0), HAlign.Left, VAlign.Center);
+        compiler.popFont();
     }
 
     private void drawChouryoku(Box box) {
@@ -169,6 +176,23 @@ class Drawer {
         compiler.box(box);
         compiler.frameInnerColumnBorders(cols);
         compiler.textIn("聴　力", cols[0], HAlign.Center, VAlign.Center);
+        compiler.setFontPushing("small-2");
+        {
+            Box[] valueCols = cols[1].splitToEvenColumns(2);
+            Box rightCol = valueCols[0];
+            Box leftCol = valueCols[1];
+            drawChouryokuSub(rightCol, "右", data.hearingAbility1000Right, data.hearingAbility4000Right);
+            drawChouryokuSub(leftCol, "左", data.hearingAbility1000Left, data.hearingAbility4000Left);
+        }
+        compiler.popFont();
+    }
+
+    private void drawChouryokuSub(Box box, String label, String value1000, String value4000){
+        Box[] cols = box.splitToColumns(6);
+        Box[] rows = cols[1].splitToEvenRows(2);
+        compiler.textIn(label, cols[0], HAlign.Center, VAlign.Center);
+        compiler.textIn("1000Hz " + value1000, rows[0], HAlign.Center, VAlign.Center);
+        compiler.textIn("4000Hz " + value4000, rows[1], HAlign.Center, VAlign.Center);
     }
 
     private void drawKetsuatsu(Box box) {

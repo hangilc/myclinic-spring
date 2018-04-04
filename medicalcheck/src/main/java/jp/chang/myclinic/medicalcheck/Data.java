@@ -18,7 +18,10 @@ class Data {
     String weight = "";
     String physicalExam = "";
     String visualAcuity = "";
-    String hearingAbility = "";
+    String hearingAbility1000Right = "";
+    String hearingAbility4000Right = "";
+    String hearingAbility1000Left = "";
+    String hearingAbility4000Left = "";
     String bloodPressure = "";
     String ekg = "";
     String history = "";

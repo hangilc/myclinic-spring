@@ -9,3 +9,11 @@
 .height-input, .weight-input {
     -fx-pref-width: 6em;
 }
+
+.visual-acuity-input {
+    -fx-pref-width: 4em;
+}
+
+.hearing-ability-input {
+    -fx-pref-width: 6em;
+}
