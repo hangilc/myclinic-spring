@@ -7,6 +7,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.practice.javafx.parts.PageNav;
+import jp.chang.myclinic.practice.javafx.parts.SimplePageNav;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +23,7 @@ public class GlobalSearchDialog extends Stage {
         vbox.getStylesheets().add("css/Practice.css");
         vbox.getChildren().addAll(
                 createInputs(),
+                createNav(),
                 createResult()
         );
         setScene(new Scene(vbox));
@@ -39,8 +42,15 @@ public class GlobalSearchDialog extends Stage {
         return hbox;
     }
 
-    private Node createResult(){
+    private Node createNav(){
+        PageNav pageNav = new PageNav();
+        SimplePageNav simpleNav = new SimplePageNav(pageNav);
+        return simpleNav;
+    }
 
+    private Node createResult(){
+        VBox vbox = new VBox(4);
+        return vbox;
     }
 
     private void doSearch() {
