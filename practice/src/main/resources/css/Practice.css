@@ -193,5 +193,17 @@
 }
 
 .global-text-search-dialog .search-result-scroll {
-    -fx-pref-height: 300px;
+    -fx-pref-width: 260px;
+    -fx-pref-height: 360px;
+}
+
+.global-text-search-dialog .result-item-patient {
+    -fx-font-weight: bold;
+    -fx-background-color: #fdd;
+    -fx-padding: 3px;
+}
+.global-text-search-dialog .result-item-visited-at {
+    -fx-font-weight: bold;
+    -fx-background-color: #ddd;
+    -fx-padding: 3px;
 }
