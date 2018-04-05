@@ -18,7 +18,7 @@ public class GlobalSearchDialog extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(GlobalSearchDialog.class);
     private TextField searchTextInput = new TextField();
-    private Nav nav = new Nav();
+    private Nav nav;
     private Result resultBox = new Result();
 
     public GlobalSearchDialog() {
@@ -27,7 +27,7 @@ public class GlobalSearchDialog extends Stage {
         vbox.getStylesheets().add("css/Practice.css");
         vbox.getChildren().addAll(
                 createInputs(),
-                nav,
+                createNav(),
                 createResult()
         );
         setScene(new Scene(vbox));
@@ -44,6 +44,16 @@ public class GlobalSearchDialog extends Stage {
                 searchButton
         );
         return hbox;
+    }
+
+    private Node createNav(){
+        nav = new Nav(){
+            @Override
+            protected void onPage(int page) {
+                doSearch(page);
+            }
+        };
+        return nav;
     }
 
     private Node createResult(){

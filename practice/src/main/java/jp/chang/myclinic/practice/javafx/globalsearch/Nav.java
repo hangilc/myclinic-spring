@@ -23,6 +23,10 @@ class Nav extends HBox {
         Hyperlink gotoPrevLink = new Hyperlink("前へ");
         Hyperlink gotoNextLink = new Hyperlink("次へ");
         Hyperlink gotoLastLink = new Hyperlink("最後");
+        gotoFirstLink.setOnAction(evt -> gotoFirst());
+        gotoPrevLink.setOnAction(evt -> gotoPrev());
+        gotoNextLink.setOnAction(evt -> gotoNext());
+        gotoLastLink.setOnAction(evt -> gotoLast());
         getChildren().addAll(
                 gotoFirstLink,
                 gotoPrevLink,
@@ -45,7 +49,7 @@ class Nav extends HBox {
     }
 
     private void updateDisp(){
-        currentPageText.setText("" + currentPage);
+        currentPageText.setText("" + (currentPage + 1));
         totalPageText.setText("" + totalPage);
         setActive(totalPage > 1);
     }
@@ -53,6 +57,32 @@ class Nav extends HBox {
     private void setActive(boolean active){
         setVisible(active);
         setManaged(active);
+    }
+
+    private void gotoFirst(){
+        gotoPage(0);
+    }
+
+    private void gotoPrev(){
+        gotoPage(currentPage - 1);
+    }
+
+    private void gotoNext(){
+        gotoPage(currentPage + 1);
+    }
+
+    private void gotoLast(){
+        gotoPage(totalPage - 1);
+    }
+
+    private void gotoPage(int page){
+        if( page != currentPage && page >= 0 && page < totalPage ){
+            onPage(page);
+        }
+    }
+
+    protected void onPage(int page){
+
     }
 
 }

@@ -207,3 +207,7 @@
     -fx-background-color: #ddd;
     -fx-padding: 3px;
 }
+
+.global-text-search-dialog .result-item-content .hilited {
+    -fx-text-fill: red;
+}
