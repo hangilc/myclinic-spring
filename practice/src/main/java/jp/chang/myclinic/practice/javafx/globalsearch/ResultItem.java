@@ -29,7 +29,7 @@ class ResultItem extends VBox {
     }
 
     private Node createVisitedAtRow(VisitDTO visit){
-        String text = DateTimeUtil.sqlDateTimeToKanji(data.visit.visitedAt,
+        String text = DateTimeUtil.sqlDateTimeToKanji(visit.visitedAt,
                 DateTimeUtil.kanjiFormatter3, DateTimeUtil.kanjiFormatter4);
         return new Label(text);
 
