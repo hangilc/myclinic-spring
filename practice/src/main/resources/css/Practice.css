@@ -187,3 +187,7 @@
 .add-disease-pane .search-result {
     -fx-pref-height: 260px;
 }
+
+.global-text-search-dialog {
+    -fx-padding: 10px;
+}

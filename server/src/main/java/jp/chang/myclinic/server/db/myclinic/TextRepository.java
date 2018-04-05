@@ -19,4 +19,9 @@ public interface TextRepository extends CrudRepository<Text, Integer> {
             " where visit.patientId = :patientId and text.visitId = visit.visitId " + "" +
             " and text.content like CONCAT('%', :text, '%') ")
     Page<Object[]> searchText(@Param("patientId") int patientId, @Param("text") String text, Pageable pageable);
+
+    @Query("select text, visit, patient from Text text, Visit visit, Patient patient " +
+            " where text.content like CONCAT('%', :text, '%') " +
+            " and visit.visitId = text.visitId and patient.patientId = visit.patientId ")
+    Page<Object[]> searchTextGlobally(@Param("text") String text, Pageable pageable);
 }

@@ -11,7 +11,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.sql.Date;
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1358,6 +1357,24 @@ public class DbGateway {
 
     public Optional<ShuushokugoMasterDTO> findShuushokugoMasterByName(String name){
         return shuushokugoMasterRepository.findByName(name).map(mapper::toShuushokugoMasterDTO);
+    }
+
+    public TextVisitPatientPageDTO searchTextGlobally(String text, int page, int itemsPerPage){
+        Pageable pageable = new PageRequest(page, itemsPerPage, Sort.Direction.DESC, "textId");
+        Page<Object[]> result = textRepository.searchTextGlobally(text, pageable);
+        TextVisitPatientPageDTO retval = new TextVisitPatientPageDTO();
+        retval.page = page;
+        retval.totalPages = result.getTotalPages();
+        retval.textVisitPatients = result.getContent().stream()
+                .map(cols -> {
+                    TextVisitPatientDTO value = new TextVisitPatientDTO();
+                    value.text = mapper.toTextDTO((Text)cols[0]);
+                    value.visit = mapper.toVisitDTO((Visit)cols[1]);
+                    value.patient = mapper.toPatientDTO((Patient)cols[2]);
+                    return value;
+                })
+                .collect(Collectors.toList());
+        return retval;
     }
 
     private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){
