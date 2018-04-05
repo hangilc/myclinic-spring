@@ -302,7 +302,8 @@ public class Service {
         CompletableFuture<PracticeConfigDTO> getPracticeConfig();
 
         @GET("search-text-globally")
-        CompletableFuture<TextVisitPatientDTO> searchTextGlobally(String text, int page);
+        CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(@Query("text") String text,
+                @Query("page") int page);
     }
 
     public static ServerAPI api;

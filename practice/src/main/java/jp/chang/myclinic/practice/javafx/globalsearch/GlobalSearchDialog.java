@@ -1,14 +1,16 @@
 package jp.chang.myclinic.practice.javafx.globalsearch;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jp.chang.myclinic.practice.javafx.parts.PageNav;
-import jp.chang.myclinic.practice.javafx.parts.SimplePageNav;
+import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +18,8 @@ public class GlobalSearchDialog extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(GlobalSearchDialog.class);
     private TextField searchTextInput = new TextField();
+    private Nav nav = new Nav();
+    private Result resultBox = new Result();
 
     public GlobalSearchDialog() {
         VBox vbox = new VBox(4);
@@ -23,7 +27,7 @@ public class GlobalSearchDialog extends Stage {
         vbox.getStylesheets().add("css/Practice.css");
         vbox.getChildren().addAll(
                 createInputs(),
-                createNav(),
+                nav,
                 createResult()
         );
         setScene(new Scene(vbox));
@@ -32,9 +36,9 @@ public class GlobalSearchDialog extends Stage {
     private Node createInputs() {
         HBox hbox = new HBox(4);
         searchTextInput = new TextField();
-        searchTextInput.setOnAction(evt -> doSearch());
+        searchTextInput.setOnAction(evt -> doSearch(0));
         Button searchButton = new Button("検索");
-        searchButton.setOnAction(evt -> doSearch());
+        searchButton.setOnAction(evt -> doSearch(0));
         hbox.getChildren().addAll(
                 searchTextInput,
                 searchButton
@@ -42,21 +46,22 @@ public class GlobalSearchDialog extends Stage {
         return hbox;
     }
 
-    private Node createNav(){
-        PageNav pageNav = new PageNav();
-        SimplePageNav simpleNav = new SimplePageNav(pageNav);
-        return simpleNav;
-    }
-
     private Node createResult(){
-        VBox vbox = new VBox(4);
-        return vbox;
+        ScrollPane sc = new ScrollPane(resultBox);
+        sc.getStyleClass().add("search-result-scroll");
+        sc.setFitToWidth(true);
+        return sc;
     }
 
-    private void doSearch() {
+    private void doSearch(int page) {
         String text = searchTextInput.getText();
         if (!text.isEmpty()) {
-
+            Service.api.searchTextGlobally(text, page)
+                    .thenAccept(result -> Platform.runLater(() ->{
+                        resultBox.set(result.textVisitPatients);
+                        nav.set(result.page, result.totalPages);
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
         }
     }
 

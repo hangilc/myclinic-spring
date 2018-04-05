@@ -191,3 +191,7 @@
 .global-text-search-dialog {
     -fx-padding: 10px;
 }
+
+.global-text-search-dialog .search-result-scroll {
+    -fx-pref-height: 300px;
+}
