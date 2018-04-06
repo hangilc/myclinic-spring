@@ -17,13 +17,13 @@ class ResultItem extends VBox {
 
     private static Logger logger = LoggerFactory.getLogger(ResultItem.class);
 
-    ResultItem(TextVisitPatientDTO data) {
+    ResultItem(TextVisitPatientDTO data, String searchText) {
         super(4);
         setFillWidth(true);
         getChildren().addAll(
                 createPatientRow(data.patient),
                 createVisitedAtRow(data.visit),
-                createContent(data.text)
+                createContent(data.text, searchText)
         );
     }
 
@@ -45,9 +45,31 @@ class ResultItem extends VBox {
         return label;
     }
 
-    private Node createContent(TextDTO text){
-        TextFlow textFlow = new TextFlow(new Text(text.content));
+    private Node createContent(TextDTO text, String searchText){
+        TextFlow textFlow = parseContent(text.content, searchText);
         textFlow.getStyleClass().add("result-item-content");
+        return textFlow;
+    }
+
+    private TextFlow parseContent(String text, String hilight){
+        TextFlow textFlow = new TextFlow();
+        int lastEnd = 0;
+        while(true){
+            int start = text.indexOf(hilight, lastEnd);
+            if( start < 0 ){
+                break;
+            }
+            if( start > lastEnd ){
+                textFlow.getChildren().add(new Text(text.substring(lastEnd, start)));
+            }
+            Text hilightText = new Text(text.substring(start, start + hilight.length()));
+            hilightText.getStyleClass().add("hilight");
+            textFlow.getChildren().add(hilightText);
+            lastEnd = start + hilight.length();
+        }
+        if( lastEnd <text.length() ){
+            textFlow.getChildren().add(new Text(text.substring(lastEnd, text.length())));
+        }
         return textFlow;
     }
 

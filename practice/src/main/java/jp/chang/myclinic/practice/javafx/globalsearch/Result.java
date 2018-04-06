@@ -16,8 +16,9 @@ class Result extends VBox {
         super(4);
     }
 
-    void set(List<TextVisitPatientDTO> list){
-        List<ResultItem> items = list.stream().map(ResultItem::new).collect(Collectors.toList());
+    void set(List<TextVisitPatientDTO> list, String searchText){
+        List<ResultItem> items = list.stream()
+                .map(item -> new ResultItem(item, searchText)).collect(Collectors.toList());
         getChildren().setAll(items);
     }
 

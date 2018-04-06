@@ -68,7 +68,7 @@ public class GlobalSearchDialog extends Stage {
         if (!text.isEmpty()) {
             Service.api.searchTextGlobally(text, page)
                     .thenAccept(result -> Platform.runLater(() ->{
-                        resultBox.set(result.textVisitPatients);
+                        resultBox.set(result.textVisitPatients, text);
                         nav.set(result.page, result.totalPages);
                     }))
                     .exceptionally(HandlerFX::exceptionally);

@@ -199,7 +199,7 @@
 
 .global-text-search-dialog .result-item-patient {
     -fx-font-weight: bold;
-    -fx-background-color: #fdd;
+    -fx-background-color: #dfd;
     -fx-padding: 3px;
 }
 .global-text-search-dialog .result-item-visited-at {
@@ -208,6 +208,7 @@
     -fx-padding: 3px;
 }
 
-.global-text-search-dialog .result-item-content .hilited {
-    -fx-text-fill: red;
+.global-text-search-dialog .result-item-content .hilight {
+    -fx-fill: red;
+    -fx-font-weight: bold;
 }
