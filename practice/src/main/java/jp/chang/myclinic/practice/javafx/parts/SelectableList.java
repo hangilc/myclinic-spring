@@ -17,6 +17,7 @@ public class SelectableList<T> extends ListView<T> {
     private static Logger logger = LoggerFactory.getLogger(SelectableList.class);
 
     private Consumer<T> onSelectCallback = t -> {};
+    private boolean singleResultAutoSelect = true;
 
     public SelectableList(Function<T, String> converter) {
         setCellFactory(listView -> new ListCell<T>() {
@@ -34,10 +35,14 @@ public class SelectableList<T> extends ListView<T> {
     }
 
     public void setList(List<T> result) {
-        if( result.size() == 1 ){
+        if( result.size() == 1 && singleResultAutoSelect ){
             onSelectCallback.accept(result.get(0));
         }
         itemsProperty().setValue(FXCollections.observableArrayList(result));
+    }
+
+    public void setSingleResultAutoSelect(boolean value){
+        this.singleResultAutoSelect = value;
     }
 
     public void clear() {

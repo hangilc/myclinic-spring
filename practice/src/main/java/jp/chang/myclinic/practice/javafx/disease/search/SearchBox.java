@@ -37,7 +37,17 @@ public class SearchBox extends VBox {
             Result<LocalDate, List<String>> resultDate = dateSupplier.get();
             if( resultDate.hasValue() ){
                 textInput.getSearcher().search(text, resultDate.getValue().toString())
-                        .thenAccept(result -> Platform.runLater(() -> resultList.setList(result)))
+                        .thenAccept(result -> Platform.runLater(() -> {
+                            if( result.size() > 0 ){
+                                DiseaseSearchResultModel model = result.get(0);
+                                if( model instanceof ShuushokugoSearchResult ){
+                                    resultList.setSingleResultAutoSelect(false);
+                                } else {
+                                    resultList.setSingleResultAutoSelect(true);
+                                }
+                            }
+                            resultList.setList(result);
+                        }))
                         .exceptionally(HandlerFX::exceptionally);
             } else {
                 GuiUtil.alertError("開始日の設定が不適切です。");
