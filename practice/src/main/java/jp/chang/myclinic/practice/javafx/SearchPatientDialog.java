@@ -21,6 +21,7 @@ public class SearchPatientDialog extends Stage {
     }
 
     public SearchPatientDialog() {
+        setTitle("患者検索");
         VBox root = new VBox(4);
         root.setStyle("-fx-padding: 10");
         root.getStyleClass().add("search-patient-dialog");
