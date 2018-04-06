@@ -84,15 +84,14 @@ public class DrugMenu extends VBox {
         MenuItem item = new MenuItem("全部コピー");
         item.setOnAction(event -> {
             int targetVisitId = PracticeUtil.findCopyTarget(visitId);
-            if( targetVisitId == 0 ){
+            if (targetVisitId == 0) {
                 return;
             }
             PracticeService.listDrugFull(visitId)
                     .thenAccept(drugs -> {
                         new DrugsCopier(targetVisitId, drugs,
                                 enteredDrug -> fireEvent(new DrugEnteredEvent(enteredDrug)),
-                                () -> {
-                                }
+                                () -> { }
                         );
                     });
         });
@@ -106,17 +105,26 @@ public class DrugMenu extends VBox {
                 return;
             }
             int targetVisitId = PracticeUtil.findCopyTarget(visitId);
-            if( targetVisitId == 0 ){
+            if (targetVisitId == 0) {
                 return;
             }
             PracticeService.listDrugFull(visitId)
                     .thenAccept(drugs -> {
                         CopySelectedForm form = new CopySelectedForm(drugs) {
                             @Override
-                            protected void onEnter(List<DrugFullDTO> selected) {
+                            protected void onEnter(List<DrugFullDTO> selected, boolean keepOpen) {
                                 new DrugsCopier(targetVisitId, selected,
                                         enteredDrug -> fireEvent(new DrugEnteredEvent(enteredDrug)),
-                                        () -> hideWorkarea()
+                                        () -> {
+                                            if (keepOpen) {
+                                                int remain = cleanUpForKeepOpen();
+                                                if( remain == 0 ){
+                                                    hideWorkarea();
+                                                }
+                                            } else {
+                                                hideWorkarea();
+                                            }
+                                        }
                                 );
                             }
 
@@ -198,7 +206,7 @@ public class DrugMenu extends VBox {
         return item;
     }
 
-    private MenuItem createDrugTextMenuItem(int visitId){
+    private MenuItem createDrugTextMenuItem(int visitId) {
         MenuItem menuItem = new MenuItem("処方内容を文章コピー");
         menuItem.setOnAction(evt -> {
             Service.api.listDrugFull(visitId)
@@ -206,7 +214,7 @@ public class DrugMenu extends VBox {
                         List<String> reps = drugs.stream().map(DrugUtil::drugRep).collect(Collectors.toList());
                         List<String> lines = new ArrayList<>();
                         int i = 1;
-                        for(String rep: reps){
+                        for (String rep : reps) {
                             lines.add(String.format("%d) %s\n", i, rep));
                             i += 1;
                         }

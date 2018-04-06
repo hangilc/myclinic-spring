@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.javafx.drug;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.DrugDTO;
@@ -19,9 +20,11 @@ import java.util.stream.Collectors;
 public class CopySelectedForm extends VBox {
 
     private List<CheckBox> drugChecks = new ArrayList<>();
+    private Pane drugChecksWrapper;
     private TextField daysField = new TextField();
+    private CheckBox keepOpenCheck;
 
-    public CopySelectedForm(List<DrugFullDTO> drugs) {
+    CopySelectedForm(List<DrugFullDTO> drugs) {
         super(4);
         PracticeUtil.addFormClass(this);
         getChildren().addAll(
@@ -42,6 +45,7 @@ public class CopySelectedForm extends VBox {
             drugChecks.add(check);
             list.getChildren().add(check);
         });
+        drugChecksWrapper = list;
         return list;
     }
 
@@ -66,10 +70,15 @@ public class CopySelectedForm extends VBox {
         HBox hbox = new HBox(4);
         Button enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
+        keepOpenCheck = new CheckBox("閉じない");
         enterButton.setOnAction(event -> doEnter());
         cancelButton.setOnAction(event -> onClose());
-        hbox.getChildren().addAll(enterButton, cancelButton);
+        hbox.getChildren().addAll(enterButton, cancelButton, keepOpenCheck);
         return hbox;
+    }
+
+    private boolean isKeepOpen(){
+        return keepOpenCheck.isSelected();
     }
 
     private void doEnter(){
@@ -78,7 +87,7 @@ public class CopySelectedForm extends VBox {
                     .filter(CheckBox::isSelected)
                     .map(chk -> modifyDrug((DrugFullDTO)chk.getUserData(), days))
                     .collect(Collectors.toList());
-            onEnter(selectedSrcDrugs);
+            onEnter(selectedSrcDrugs, isKeepOpen());
         });
     }
 
@@ -117,7 +126,17 @@ public class CopySelectedForm extends VBox {
         }
     }
 
-    protected void onEnter(List<DrugFullDTO> selected) {
+    int cleanUpForKeepOpen(){
+        List<CheckBox> checked = drugChecks.stream()
+                .filter(CheckBox::isSelected).collect(Collectors.toList());
+        checked.forEach(chk -> {
+            drugChecksWrapper.getChildren().remove(chk);
+            drugChecks.remove(chk);
+        });
+        return drugChecks.size();
+    }
+
+    protected void onEnter(List<DrugFullDTO> selected, boolean keepOpen) {
 
     }
 

@@ -45,6 +45,9 @@ public class RecordTitle extends TextFlow {
         {
             MenuItem item = new MenuItem("この診察を削除");
             item.setOnAction(event -> {
+                if( !GuiUtil.confirm("この診察を削除しますか？") ){
+                    return;
+                }
                 PracticeService.doDeleteVisit(visitId, result -> {
                     this.fireEvent(new VisitDeletedEvent(visitId));
                 });
