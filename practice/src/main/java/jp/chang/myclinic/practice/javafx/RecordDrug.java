@@ -1,5 +1,9 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
@@ -28,6 +32,7 @@ class RecordDrug extends StackPane {
         disp.getStyleClass().add("drug-disp");
         updateDisp();
         disp.setOnMouseClicked(this::onDispClick);
+        disp.setOnContextMenuRequested(event -> onDispContextMenu(event, disp));
         getChildren().add(disp);
     }
 
@@ -56,34 +61,49 @@ class RecordDrug extends StackPane {
     }
 
     private void onDispClick(MouseEvent event){
-        DrugEditForm form = new DrugEditForm(visit, drug){
-            @Override
-            protected void onEnter(DrugForm self) {
-                DrugFormHelper.convertToDrug(self.getDrugFormGetter(), drug.drug.drugId, visit.visitId, 0, (drug, errors) -> {
-                    if( errors.size() > 0 ){
-                        GuiUtil.alertError(String.join("\n", errors));
-                    } else {
-                        PracticeLib.updateDrug(drug, newDrugFull -> {
-                            RecordDrug.this.drug = newDrugFull;
-                            updateDisp();
-                            showDisp();
-                        });
-                    }
-                });
-            }
+        if( event.isPrimaryButtonDown() ) {
+            DrugEditForm form = new DrugEditForm(visit, drug) {
+                @Override
+                protected void onEnter(DrugForm self) {
+                    DrugFormHelper.convertToDrug(self.getDrugFormGetter(), drug.drug.drugId, visit.visitId, 0, (drug, errors) -> {
+                        if (errors.size() > 0) {
+                            GuiUtil.alertError(String.join("\n", errors));
+                        } else {
+                            PracticeLib.updateDrug(drug, newDrugFull -> {
+                                RecordDrug.this.drug = newDrugFull;
+                                updateDisp();
+                                showDisp();
+                            });
+                        }
+                    });
+                }
 
-            @Override
-            protected void onClose(DrugForm self) {
-                showDisp();
-            }
+                @Override
+                protected void onClose(DrugForm self) {
+                    showDisp();
+                }
 
-            @Override
-            protected void onDeleted() {
-                RecordDrug.this.fireEvent(new DrugDeletedEvent(drug.drug));
-            }
-        };
-        getChildren().remove(disp);
-        getChildren().add(form);
+                @Override
+                protected void onDeleted() {
+                    RecordDrug.this.fireEvent(new DrugDeletedEvent(drug.drug));
+                }
+            };
+            getChildren().remove(disp);
+            getChildren().add(form);
+        }
+    }
+
+    private void onDispContextMenu(ContextMenuEvent event, Node target) {
+        ContextMenu contextMenu = new ContextMenu();
+        {
+            MenuItem item = new MenuItem("文字列コピー");
+            item.setOnAction(evt -> {
+                String text = DrugUtil.drugRep(drug);
+                GuiUtil.copyToClipboard(text);
+            });
+            contextMenu.getItems().add(item);
+        }
+        contextMenu.show(target, event.getScreenX(), event.getScreenY());
     }
 
     private void showDisp(){
