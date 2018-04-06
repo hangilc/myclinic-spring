@@ -14,6 +14,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class PeriodicFetcher implements Runnable {
+    public final static Integer CMD_FETCH = 0;
+    public final static Integer CMD_RESET = 1;
+
     private static Logger logger = LoggerFactory.getLogger(PeriodicFetcher.class);
     private PeriodicFetcherCallback consumer;
     private Consumer<String> errorConsumer;
@@ -25,41 +28,54 @@ public class PeriodicFetcher implements Runnable {
         this.errorConsumer = errorConsumer;
     }
 
-    public void trigger(){
-        triggerQueue.offer(0);
+    public void trigger(Integer cmd){
+        triggerQueue.offer(cmd);
     }
 
     @Override
     public void run() {
         logger.info("PeriodicFetcher started.");
+        //noinspection InfiniteLoopStatement
         while(true){
             try {
                 logger.info("Start polling.");
-                Integer q = triggerQueue.poll(lastHotlineId <= 0 ? 0 : 2000, TimeUnit.MILLISECONDS);
-                logger.info("Returned from polling. {}", q);
-                Response<List<HotlineDTO>> response = reload();
-                if (response.isSuccessful()) {
-                    List<HotlineDTO> hotlines = response.body();
-                    consumer.onPosts(hotlines, lastHotlineId == 0);
-                    if (hotlines.size() > 0) {
-                        lastHotlineId = hotlines.get(hotlines.size() - 1).hotlineId;
-                    }
-                } else {
-                    logger.info("Server response was unsuccessful.");
-                    if( lastHotlineId == 0 ){
-                        Thread.sleep(2000);
-                    }
+                Integer cmd = triggerQueue.poll(lastHotlineId <= 0 ? 0 : 2000, TimeUnit.MILLISECONDS);
+                logger.info("Returned from polling. {}", cmd);
+                if( cmd == null || CMD_FETCH.equals(cmd) ){
+                    doFetch();
+                } else if( CMD_RESET.equals(cmd) ){
+                    lastHotlineId = 0;
+                    doFetch();
                 }
             } catch (Exception e) {
-                String message = "サーバーからの読み込みに失敗しました。";
-                logger.error(message, e);
-                errorConsumer.accept(message);
+                logger.error("Error occured in periodic fetcher loop.", e);
+                errorConsumer.accept("エラーが発生しました。");
+            }
+        }
+    }
+
+    private void doFetch() throws IOException, InterruptedException {
+        Response<List<HotlineDTO>> response = reload();
+        if (response.isSuccessful()) {
+            List<HotlineDTO> hotlines = response.body();
+            consumer.onPosts(hotlines, lastHotlineId == 0);
+            if (hotlines.size() > 0) {
+                lastHotlineId = hotlines.get(hotlines.size() - 1).hotlineId;
+            }
+        } else {
+            logger.info("Server response was unsuccessful.");
+            if( lastHotlineId == 0 ){
+                Thread.sleep(2000);
             }
         }
     }
 
     private Response<List<HotlineDTO>> reload() throws IOException {
-        return (lastHotlineId <= 0 ? Service.api.listTodaysHotlineSync() : Service.api.listRecentHotlineSync(lastHotlineId)).execute();
+        if( lastHotlineId <= 0 ){
+            return Service.api.listTodaysHotlineSync().execute();
+        } else {
+            return Service.api.listRecentHotlineSync(lastHotlineId).execute();
+        }
     }
 
 }

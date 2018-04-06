@@ -15,6 +15,7 @@ import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.hotline.*;
 import jp.chang.myclinic.hotline.lib.HotlineUtil;
+import jp.chang.myclinic.hotline.lib.PeriodicFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,6 +134,9 @@ class MainScene extends VBox {
     public void addHotlinePosts(List<HotlineDTO> posts, boolean initialSetup) {
         int count = 0;
         User myself = Context.INSTANCE.getSender();
+        if( initialSetup ){
+            messageBox.getChildren().clear();
+        }
         for(HotlineDTO post: posts){
             User postSender = User.fromName(post.sender);
             User postRecipient = User.fromName(post.recipient);
@@ -246,7 +250,7 @@ class MainScene extends VBox {
     private void postMessage(String message){
         HotlineUtil.postMessge(Context.INSTANCE.getSender().getName(), Context.INSTANCE.getRecipient().getName(), message)
                 .thenAccept(result -> {
-                    Context.INSTANCE.getPeriodicFetcher().trigger();
+                    Context.INSTANCE.getPeriodicFetcher().trigger(PeriodicFetcher.CMD_FETCH);
                 })
                 .exceptionally(t -> {
                     logger.error("failed to post message", t);

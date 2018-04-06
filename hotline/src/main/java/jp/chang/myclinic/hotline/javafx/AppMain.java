@@ -2,7 +2,12 @@ package jp.chang.myclinic.hotline.javafx;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.hotline.Context;
 import jp.chang.myclinic.hotline.ResizeRequiredEvent;
@@ -18,7 +23,6 @@ import java.util.List;
 
 public class AppMain extends Application {
     private static Logger logger = LoggerFactory.getLogger(AppMain.class);
-    private Thread fetcherThread;
 
     public static void main(String[] args) {
         launch(args);
@@ -71,10 +75,13 @@ public class AppMain extends Application {
             });
         });
         Context.INSTANCE.setPeriodicFetcher(fetcher);
-        fetcherThread = new Thread(fetcher);
+        Thread fetcherThread = new Thread(fetcher);
         fetcherThread.setDaemon(true);
         fetcherThread.start();
-        stage.setScene(new Scene(root));
+        BorderPane borderPane = new BorderPane();
+        borderPane.setTop(createMenu());
+        borderPane.setCenter(root);
+        stage.setScene(new Scene(borderPane));
         stage.show();
     }
 
@@ -91,5 +98,23 @@ public class AppMain extends Application {
             cache.close();
         }
         logger.info("Hotline stopped.");
+    }
+
+    private Node createMenu(){
+        MenuBar mbar = new MenuBar();
+        {
+            Menu menu = new Menu("メニュー");
+            {
+                MenuItem item = new MenuItem("再読み込み");
+                item.setOnAction(evt -> doReload());
+                menu.getItems().add(item);
+            }
+            mbar.getMenus().add(menu);
+        }
+        return mbar;
+    }
+
+    private void doReload(){
+        Context.INSTANCE.getPeriodicFetcher().trigger(PeriodicFetcher.CMD_RESET);
     }
 }
