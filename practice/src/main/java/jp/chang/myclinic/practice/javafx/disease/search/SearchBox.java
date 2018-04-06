@@ -43,6 +43,7 @@ public class SearchBox extends VBox {
                 GuiUtil.alertError("開始日の設定が不適切です。");
             }
         });
+        textInput.setOnExampleCallback(this::onExample);
         getChildren().addAll(
                 textInput,
                 resultList
@@ -66,7 +67,11 @@ public class SearchBox extends VBox {
         onByoumeiSelect(master);
     }
 
-    public void onByoumeiSelect(ByoumeiMasterDTO master) {
+    protected void onExample(){
+
+    }
+
+    protected void onByoumeiSelect(ByoumeiMasterDTO master) {
 
     }
 
@@ -74,7 +79,7 @@ public class SearchBox extends VBox {
         onShuushokugoSelect(master);
     }
 
-    public void onShuushokugoSelect(ShuushokugoMasterDTO master) {
+    protected void onShuushokugoSelect(ShuushokugoMasterDTO master) {
 
     }
 

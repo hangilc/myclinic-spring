@@ -34,13 +34,19 @@ public class Add extends VBox {
         this.diseaseInput = new DiseaseInput();
         this.searchBox = new SearchBox(() -> diseaseInput.getStartDate()){
             @Override
-            public void onByoumeiSelect(ByoumeiMasterDTO master) {
+            protected void onByoumeiSelect(ByoumeiMasterDTO master) {
                 diseaseInput.setByoumei(master);
             }
 
             @Override
-            public void onShuushokugoSelect(ShuushokugoMasterDTO master) {
+            protected void onShuushokugoSelect(ShuushokugoMasterDTO master) {
                 diseaseInput.addShuushokugo(master);
+            }
+
+            @Override
+            protected void onExample() {
+                doExample();
+                clearTextInput();
             }
         };
         CommandBox commandBox = new CommandBox();
