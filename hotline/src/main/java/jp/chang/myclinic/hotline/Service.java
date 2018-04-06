@@ -5,6 +5,8 @@ import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class Service {
+    private static Logger logger = LoggerFactory.getLogger(Service.class);
     public interface ServerAPI {
         @GET("list-todays-hotline")
         CompletableFuture<List<HotlineDTO>> listTodaysHotline();
@@ -42,9 +45,9 @@ public class Service {
     public static OkHttpClient client;
 
     public static void setServerUrl(String serverUrl){
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        //logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        logging.setLevel(HttpLoggingInterceptor.Level.NONE);
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(logger::debug);
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        //logging.setLevel(HttpLoggingInterceptor.Level.NONE);
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
         client = httpClient.build();

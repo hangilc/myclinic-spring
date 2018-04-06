@@ -31,9 +31,12 @@ public class PeriodicFetcher implements Runnable {
 
     @Override
     public void run() {
+        logger.info("PeriodicFetcher started.");
         while(true){
             try {
-                triggerQueue.poll(lastHotlineId <= 0 ? 0 : 2000, TimeUnit.MILLISECONDS);
+                logger.info("Start polling.");
+                Integer q = triggerQueue.poll(lastHotlineId <= 0 ? 0 : 2000, TimeUnit.MILLISECONDS);
+                logger.info("Returned from polling. {}", q);
                 Response<List<HotlineDTO>> response = reload();
                 if (response.isSuccessful()) {
                     List<HotlineDTO> hotlines = response.body();
@@ -42,6 +45,7 @@ public class PeriodicFetcher implements Runnable {
                         lastHotlineId = hotlines.get(hotlines.size() - 1).hotlineId;
                     }
                 } else {
+                    logger.info("Server response was unsuccessful.");
                     if( lastHotlineId == 0 ){
                         Thread.sleep(2000);
                     }

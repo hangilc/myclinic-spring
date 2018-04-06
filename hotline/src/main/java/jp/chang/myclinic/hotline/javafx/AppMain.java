@@ -27,10 +27,12 @@ public class AppMain extends Application {
     @Override
     public void init() throws Exception {
         super.init();
+        logger.info("Hotline invoked.");
         List<String> args = getParameters().getUnnamed();
         if (args.size() != 3) {
-            System.out.println("Usage: server-url sender recipient");
-            System.out.println("ssender/receipient should be one of practice, pharmacy, or reception");
+            logger.error("Hotline aborting.");
+            logger.error("Usage: server-url sender recipient");
+            logger.error("ssender/receipient should be one of practice, pharmacy, or reception");
             System.exit(1);
         }
         String serverUrl = args.get(0);
@@ -64,8 +66,9 @@ public class AppMain extends Application {
                 root.addHotlinePosts(hotlines, initialSetup);
             });
         }, error -> {
-            logger.error(error);
-            root.showErrorMessage(error);
+            Platform.runLater(() -> {
+                root.showErrorMessage(error);
+            });
         });
         Context.INSTANCE.setPeriodicFetcher(fetcher);
         fetcherThread = new Thread(fetcher);
@@ -73,29 +76,6 @@ public class AppMain extends Application {
         fetcherThread.start();
         stage.setScene(new Scene(root));
         stage.show();
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainScene.fxml"));
-//            Parent root = loader.load();
-//            MainSceneController controller = loader.getController();
-//            PeriodicFetcher fetcher = new PeriodicFetcher((hotlines, initialSetup) -> {
-//                Platform.runLater(() -> {
-//                    controller.addHotlinePosts(hotlines, initialSetup);
-//                });
-//            }, error -> {
-//                logger.error(error);
-//            });
-//            Context.INSTANCE.setPeriodicFetcher(fetcher);
-//            Scene scene = new Scene(root);
-//            primaryStage.setTitle("Hotline to " + Context.INSTANCE.getRecipient().getDispName());
-//            primaryStage.setScene(scene);
-//            primaryStage.show();
-//            fetcherThread = new Thread(fetcher);
-//            fetcherThread.setDaemon(true);
-//            fetcherThread.start();
-//        } catch(Exception ex){
-//            logger.error("failed to start hotline", ex);
-//            System.exit(1);
-//        }
     }
 
     @Override
@@ -110,5 +90,6 @@ public class AppMain extends Application {
         if (cache != null) {
             cache.close();
         }
+        logger.info("Hotline stopped.");
     }
 }
