@@ -1,9 +1,7 @@
 package jp.chang.myclinic.practice.javafx;
 
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
@@ -32,7 +30,7 @@ class RecordDrug extends StackPane {
         disp.getStyleClass().add("drug-disp");
         updateDisp();
         disp.setOnMouseClicked(this::onDispClick);
-        disp.setOnContextMenuRequested(event -> onDispContextMenu(event, disp));
+        //disp.setOnContextMenuRequested(event -> onDispContextMenu(event, disp));
         getChildren().add(disp);
     }
 
@@ -61,7 +59,9 @@ class RecordDrug extends StackPane {
     }
 
     private void onDispClick(MouseEvent event){
-        if( event.isPrimaryButtonDown() ) {
+        if( event.isPopupTrigger() ){
+            doContextMenu(event);
+        } else  {
             DrugEditForm form = new DrugEditForm(visit, drug) {
                 @Override
                 protected void onEnter(DrugForm self) {
@@ -93,7 +93,7 @@ class RecordDrug extends StackPane {
         }
     }
 
-    private void onDispContextMenu(ContextMenuEvent event, Node target) {
+    private void doContextMenu(MouseEvent event) {
         ContextMenu contextMenu = new ContextMenu();
         {
             MenuItem item = new MenuItem("文字列コピー");
@@ -103,7 +103,7 @@ class RecordDrug extends StackPane {
             });
             contextMenu.getItems().add(item);
         }
-        contextMenu.show(target, event.getScreenX(), event.getScreenY());
+        contextMenu.show(disp, event.getScreenX(), event.getScreenY());
     }
 
     private void showDisp(){
