@@ -32,3 +32,9 @@
 .presc-pane .prescribed {
     -fx-font-weight: bold;
 }
+
+.aux-switch, .aux-nav {
+    -fx-border-style: solid;
+    -fx-border-color: #ddd;
+    -fx-padding: 10px;
+}
