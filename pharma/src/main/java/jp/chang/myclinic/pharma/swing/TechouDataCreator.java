@@ -1,4 +1,4 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.swing;
 
 import jp.chang.myclinic.drawer.techou.TechouDrawerData;
 import jp.chang.myclinic.dto.ClinicInfoDTO;

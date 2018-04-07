@@ -4,7 +4,7 @@ import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
-import jp.chang.myclinic.pharma.BlankIcon;
+import jp.chang.myclinic.pharma.swing.BlankIcon;
 
 import javax.swing.*;
 import java.awt.*;

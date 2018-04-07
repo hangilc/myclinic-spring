@@ -1,4 +1,4 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.swing;
 
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.drawer.DrawerColor;

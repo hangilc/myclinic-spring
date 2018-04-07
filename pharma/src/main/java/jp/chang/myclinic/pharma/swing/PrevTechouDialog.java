@@ -1,4 +1,4 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.swing;
 
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
@@ -7,6 +7,7 @@ import jp.chang.myclinic.drawer.techou.TechouDrawerData;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitIdVisitedAtDTO;
+import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.wrappedtext.WrappedText;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DrugUtil;

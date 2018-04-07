@@ -1,4 +1,4 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.swing;
 
 import jp.chang.myclinic.dto.PharmaDrugDTO;
 import net.miginfocom.swing.MigLayout;

@@ -1,6 +1,6 @@
 package jp.chang.myclinic.pharma.rightpane;
 
-import jp.chang.myclinic.pharma.PharmaUtil;
+import jp.chang.myclinic.pharma.swing.PharmaUtil;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;

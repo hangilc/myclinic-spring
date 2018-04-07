@@ -1,4 +1,4 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.swing;
 
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.drawer.Op;
@@ -10,6 +10,7 @@ import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.leftpane.LeftPane;
 import jp.chang.myclinic.pharma.rightpane.RightPane;
 import net.miginfocom.swing.MigLayout;
@@ -21,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletionException;
 
-class MainFrame extends JFrame {
+public class MainFrame extends JFrame {
 
     private JTextField prevTechouSearchField = new JTextField(6);
     private JButton searchPrevTechouButton = new JButton("検索");
@@ -34,7 +35,7 @@ class MainFrame extends JFrame {
 
     private LeftPane leftPane;
 
-    MainFrame(){
+    public MainFrame(){
         super("薬局");
         try {
             setupIcons();

@@ -1,4 +1,4 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.swing;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

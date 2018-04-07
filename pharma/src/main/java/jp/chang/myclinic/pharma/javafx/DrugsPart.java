@@ -1,0 +1,53 @@
+package jp.chang.myclinic.pharma.javafx;
+
+import javafx.scene.Node;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.util.DrugUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+class DrugsPart extends VBox {
+
+    private static Logger logger = LoggerFactory.getLogger(DrugsPart.class);
+
+    DrugsPart() {
+        super(4);
+
+    }
+
+    void setDrugs(List<DrugFullDTO> drugs) {
+        getChildren().clear();
+        int index = 1;
+        for (DrugFullDTO drug : drugs) {
+            getChildren().add(drugRep(index++, drug));
+        }
+    }
+
+    private Node drugRep(int index, DrugFullDTO drug) {
+        TextFlow textFlow = new TextFlow();
+        textFlow.getChildren().addAll(
+                new Text(index + ")"),
+                new Text(DrugUtil.drugRep(drug)),
+                drugBagLink(drug)
+        );
+        if( drug.drug.prescribed != 0 ){
+            Text prescribed = new Text("処方済");
+            prescribed.getStyleClass().add("prescribed");
+            textFlow.getChildren().add(prescribed);
+        }
+        return textFlow;
+    }
+
+    private Node drugBagLink(DrugFullDTO drug){
+        Hyperlink link = new Hyperlink("薬袋");
+        link.getStyleClass().add("drugbag-link");
+        return link;
+    }
+
+}

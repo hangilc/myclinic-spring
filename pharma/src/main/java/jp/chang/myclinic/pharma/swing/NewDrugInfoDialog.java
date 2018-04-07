@@ -1,7 +1,8 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.swing;
 
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
+import jp.chang.myclinic.pharma.Service;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;

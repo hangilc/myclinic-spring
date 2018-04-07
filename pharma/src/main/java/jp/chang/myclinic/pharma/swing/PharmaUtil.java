@@ -1,8 +1,7 @@
-package jp.chang.myclinic.pharma;
+package jp.chang.myclinic.pharma.swing;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 
 public class PharmaUtil {
 
