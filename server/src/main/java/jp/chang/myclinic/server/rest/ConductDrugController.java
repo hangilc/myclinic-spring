@@ -20,7 +20,7 @@ class ConductDrugController {
         return dbGateway.enterConductDrug(drug);
     }
 
-    @RequestMapping(value="/delete-conduct-drug", method=RequestMethod.POST)
+    @RequestMapping(value="/deleteById-conduct-drug", method=RequestMethod.POST)
     public boolean deleteConductDrug(@RequestParam("conduct-drug-id") int conductDrugId){
         dbGateway.deleteConductDrug(conductDrugId);
         return true;

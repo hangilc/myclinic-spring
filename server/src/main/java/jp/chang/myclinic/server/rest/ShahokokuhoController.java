@@ -35,7 +35,7 @@ public class ShahokokuhoController {
 		return dbGateway.findAvailableShahokokuho(patientId, at);
 	}
 
-	@RequestMapping(value="/delete-shahokokuho", method=RequestMethod.POST)
+	@RequestMapping(value="/deleteById-shahokokuho", method=RequestMethod.POST)
 	public boolean deleteShahokokuho(@RequestBody ShahokokuhoDTO shahokokuhoDTO){
 		dbGateway.deleteShahokokuho(shahokokuhoDTO.shahokokuhoId);
 		return true;

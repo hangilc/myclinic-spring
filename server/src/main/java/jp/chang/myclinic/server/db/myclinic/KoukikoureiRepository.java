@@ -17,4 +17,7 @@ public interface KoukikoureiRepository extends CrudRepository<Koukikourei, Integ
 
     List<Koukikourei> findByPatientId(int patientId, Sort sort);
 
+    void deleteById(int koukikoureiId);
+
+    Koukikourei findById(int koukikoureiId);
 }

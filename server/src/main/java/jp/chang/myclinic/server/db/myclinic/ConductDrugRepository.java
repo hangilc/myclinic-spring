@@ -26,4 +26,7 @@ public interface ConductDrugRepository extends CrudRepository<ConductDrug, Integ
 			" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto)")
 	List<Object[]> findFull(@Param("conductDrugId") int conductDrugId);
 
+	ConductDrug findById(int conductDrugId);
+
+	void deleteById(int conductDrugId);
 }

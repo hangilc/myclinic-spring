@@ -17,4 +17,7 @@ public interface ShahokokuhoRepository extends CrudRepository<Shahokokuho, Integ
 
     List<Shahokokuho> findByPatientId(int patientId, Sort sort);
 
+    void deleteById(int shahokokuhoId);
+
+    Shahokokuho findById(int shahokokuhoId);
 }

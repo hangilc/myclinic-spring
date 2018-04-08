@@ -30,7 +30,7 @@ class IntraclinicController {
 
     @RequestMapping(value="/get-post-full", method= RequestMethod.GET)
     public IntraclinicPostFullDTO getPostFull(@RequestParam("post-id") int id){
-        return toPostFullDTO(postRepository.findOne(id));
+        return toPostFullDTO(postRepository.findById(id));
     }
 
     @RequestMapping(value="/list-recent-full", method=RequestMethod.GET)
@@ -62,9 +62,9 @@ class IntraclinicController {
         return true;
     }
 
-    @RequestMapping(value="/delete-post", method=RequestMethod.POST)
+    @RequestMapping(value="/deleteById-post", method=RequestMethod.POST)
     public boolean deletePost(@RequestParam("post-id") int postId){
-        postRepository.delete(postId);
+        postRepository.deleteById(postId);
         return true;
     }
 

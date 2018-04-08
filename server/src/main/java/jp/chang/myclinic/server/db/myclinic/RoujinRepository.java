@@ -16,4 +16,8 @@ public interface RoujinRepository extends CrudRepository<Roujin, Integer> {
     Stream<Roujin> findAvailable(int patientId, String at, Sort sort);
 
     List<Roujin> findByPatientId(int patientId, Sort sort);
+
+    void deleteById(int roujinId);
+
+    Roujin findById(int roujinId);
 }

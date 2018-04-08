@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 
 interface PatientRepository extends CrudRepository<Patient, Integer> {
 
+    Patient findById(int patientId);
+
     Stream<Patient> findByLastNameContaining(String text, Sort sort);
     Stream<Patient> findByFirstNameContaining(String text, Sort sort);
     Stream<Patient> findByLastNameYomiContaining(String text, Sort sort);

@@ -154,7 +154,7 @@ public class DbGateway {
             wqueueRepository.save(wqueue);
         }
         pharmaQueueRepository.deleteByVisitId(visitId);
-        Visit visit = visitRepository.findOne(visitId);
+        Visit visit = visitRepository.findById(visitId);
         if( visit.getVisitedAt().substring(0, 10).equals(LocalDate.now().toString()) ){
             int unprescribed = drugRepository.countByVisitIdAndPrescribed(visitId, 0);
             if( unprescribed > 0 ){
@@ -167,7 +167,7 @@ public class DbGateway {
     }
 
     public PatientDTO getPatient(int patientId){
-        Patient patient = patientRepository.findOne(patientId);
+        Patient patient = patientRepository.findById(patientId);
         if( patient == null ){
             throw new RuntimeException("患者情報の取得に失敗しました。");
         }
@@ -259,7 +259,7 @@ public class DbGateway {
         if( usage != 0 ){
             throw new RuntimeException("この社保・国保はすでに使用されているので、削除できません。");
         }
-        shahokokuhoRepository.delete(shahokokuhoId);
+        shahokokuhoRepository.deleteById(shahokokuhoId);
     }
 
     public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at){
@@ -285,7 +285,7 @@ public class DbGateway {
         if( visitRepository.countByKoukikoureiId(koukikoureiId) > 0 ){
             throw new RuntimeException("この後期高齢保険はすでに使用されているので、削除できません。");
         }
-        koukikoureiRepository.delete(koukikoureiId);
+        koukikoureiRepository.deleteById(koukikoureiId);
     }
 
     public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at){
@@ -312,7 +312,7 @@ public class DbGateway {
         if( visitRepository.countByRoujinId(roujinId) > 0 ){
             throw new RuntimeException("この老人保険はすでに使用されているので、削除できません。");
         }
-        roujinRepository.delete(roujinId);
+        roujinRepository.deleteById(roujinId);
     }
 
     public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at){
@@ -339,7 +339,7 @@ public class DbGateway {
         if( visitRepository.countByKouhi1IdOrKouhi2IdOrKouhi3Id(kouhiId, kouhiId, kouhiId) > 0 ){
             throw new RuntimeException("この公費負担はすでに使われているので、削除できません。");
         }
-        kouhiRepository.delete(kouhiId);
+        kouhiRepository.deleteById(kouhiId);
     }
 
     public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at){
@@ -393,7 +393,7 @@ public class DbGateway {
     }
 
     public ChargeDTO getCharge(int visitId){
-        Charge charge = chargeRepository.findOne(visitId);
+        Charge charge = chargeRepository.findById(visitId);
         return mapper.toChargeDTO(charge);
     }
 
@@ -428,7 +428,7 @@ public class DbGateway {
     }
 
     public VisitDTO getVisit(int visitId){
-        Visit visit = visitRepository.findOne(visitId);
+        Visit visit = visitRepository.findById(visitId);
         return mapper.toVisitDTO(visit);
     }
 
@@ -509,11 +509,11 @@ public class DbGateway {
     }
 
     public void deleteShinryou(int shinryouId){
-        shinryouRepository.delete(shinryouId);
+        shinryouRepository.deleteById(shinryouId);
     }
 
     public List<Integer> deleteDuplicateShinryou(int visitId){
-        Visit visit = visitRepository.findOne(visitId);
+        Visit visit = visitRepository.findById(visitId);
         List<Integer> shinryouIds = new ArrayList<>();
         Set<Integer> shinryoucodes = new HashSet<>();
         shinryouRepository.findByVisitId(visitId).forEach(shinryou -> {
@@ -523,7 +523,7 @@ public class DbGateway {
                 shinryoucodes.add(shinryou.getShinryoucode());
             }
         });
-        shinryouIds.forEach(shinryouId -> shinryouRepository.delete(shinryouId));
+        shinryouIds.forEach(shinryouId -> shinryouRepository.deleteById(shinryouId));
         return shinryouIds;
     }
 
@@ -566,7 +566,7 @@ public class DbGateway {
     }
 
     public void deleteDrug(int drugId) {
-        drugRepository.delete(drugId);
+        drugRepository.deleteById(drugId);
     }
 
     public void updateDrug(DrugDTO drugDTO){
@@ -602,7 +602,7 @@ public class DbGateway {
     }
 
     public TextDTO getText(int textId){
-        Text text = textRepository.findOne(textId);
+        Text text = textRepository.findById(textId);
         return mapper.toTextDTO(text);
     }
 
@@ -619,7 +619,7 @@ public class DbGateway {
     }
 
     public void deleteText(int textId){
-        textRepository.delete(textId);
+        textRepository.deleteById(textId);
     }
 
     public TextVisitPageDTO searchText(int patientId, String text, int page) {
@@ -708,7 +708,7 @@ public class DbGateway {
     }
 
     public ConductDTO getConduct(int conductId){
-        Conduct conduct = conductRepository.findOne(conductId);
+        Conduct conduct = conductRepository.findById(conductId);
         return mapper.toConductDTO(conduct);
     }
 
@@ -768,7 +768,7 @@ public class DbGateway {
         if( optPharmaQueue.isPresent() ){
             pharmaQueueRepository.delete(optPharmaQueue.get());
         }
-        visitRepository.delete(visitId);
+        visitRepository.deleteById(visitId);
     }
 
     private ConductFullDTO extendConduct(ConductDTO conductDTO){
@@ -807,7 +807,7 @@ public class DbGateway {
         conductShinryouRepository.findByConductId(conductId).forEach(conductShinryouRepository::delete);
         conductDrugRepository.findByConductId(conductId).forEach(conductDrugRepository::delete);
         conductKizaiRepository.findByConductId(conductId).forEach(conductKizaiRepository::delete);
-        conductRepository.delete(conductId);
+        conductRepository.deleteById(conductId);
     }
 
     public void modifyGazouLabel(int conductId, String label){
@@ -890,7 +890,7 @@ public class DbGateway {
     }
 
     public void deleteConductShinryou(int conductShinryouId){
-        conductShinryouRepository.delete(conductShinryouId);
+        conductShinryouRepository.deleteById(conductShinryouId);
     }
 
     public List<ConductDrugDTO> listConductDrug(int conductId){
@@ -911,7 +911,7 @@ public class DbGateway {
     }
 
     public void deleteConductDrug(int conductDrugId){
-        conductDrugRepository.delete(conductDrugId);
+        conductDrugRepository.deleteById(conductDrugId);
     }
 
     public List<ConductKizaiDTO> listConductKizai(int conductId){
@@ -932,7 +932,7 @@ public class DbGateway {
     }
 
     public void deleteConductKizai(int conductKizaiId){
-        conductKizaiRepository.delete(conductKizaiId);
+        conductKizaiRepository.deleteById(conductKizaiId);
     }
 
     public Optional<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at){
@@ -952,7 +952,7 @@ public class DbGateway {
     }
 
     public void modifyConductKind(int conductId, int kind){
-        Conduct c = conductRepository.findOne(conductId);
+        Conduct c = conductRepository.findById(conductId);
         c.setKind(kind);
         conductRepository.save(c);
     }
@@ -960,22 +960,22 @@ public class DbGateway {
     public HokenDTO getHokenForVisit(VisitDTO visitDTO){
         HokenDTO hokenDTO = new HokenDTO();
         if( visitDTO.shahokokuhoId > 0 ){
-            hokenDTO.shahokokuho = mapper.toShahokokuhoDTO(shahokokuhoRepository.findOne(visitDTO.shahokokuhoId));
+            hokenDTO.shahokokuho = mapper.toShahokokuhoDTO(shahokokuhoRepository.findById(visitDTO.shahokokuhoId));
         }
         if( visitDTO.koukikoureiId > 0 ){
-            hokenDTO.koukikourei = mapper.toKoukikoureiDTO(koukikoureiRepository.findOne(visitDTO.koukikoureiId));
+            hokenDTO.koukikourei = mapper.toKoukikoureiDTO(koukikoureiRepository.findById(visitDTO.koukikoureiId));
         }
         if( visitDTO.roujinId > 0 ){
-            hokenDTO.roujin = mapper.toRoujinDTO(roujinRepository.findOne(visitDTO.roujinId));
+            hokenDTO.roujin = mapper.toRoujinDTO(roujinRepository.findById(visitDTO.roujinId));
         }
         if( visitDTO.kouhi1Id > 0 ){
-            hokenDTO.kouhi1 = mapper.toKouhiDTO(kouhiRepository.findOne(visitDTO.kouhi1Id));
+            hokenDTO.kouhi1 = mapper.toKouhiDTO(kouhiRepository.findById(visitDTO.kouhi1Id));
         }
         if( visitDTO.kouhi2Id > 0 ){
-            hokenDTO.kouhi2 = mapper.toKouhiDTO(kouhiRepository.findOne(visitDTO.kouhi2Id));
+            hokenDTO.kouhi2 = mapper.toKouhiDTO(kouhiRepository.findById(visitDTO.kouhi2Id));
         }
         if( visitDTO.kouhi3Id > 0 ){
-            hokenDTO.kouhi3 = mapper.toKouhiDTO(kouhiRepository.findOne(visitDTO.kouhi3Id));
+            hokenDTO.kouhi3 = mapper.toKouhiDTO(kouhiRepository.findById(visitDTO.kouhi3Id));
         }
         return hokenDTO;
     }
@@ -1102,7 +1102,7 @@ public class DbGateway {
     }
 
     public void deletePharmaDrug(int iyakuhincode){
-        pharmaDrugRepository.delete(iyakuhincode);
+        pharmaDrugRepository.deleteById(iyakuhincode);
     }
 
     public List<PharmaDrugNameDTO> searchPharmaDrugNames(String text){
@@ -1145,6 +1145,28 @@ public class DbGateway {
                 })
                 .collect(Collectors.toList());
     }
+
+    public VisitTextDrugPageDTO listVisitTextDrugForPatient(int patientId, int page){
+        Sort sort = new Sort(Sort.Direction.DESC, "visitId");
+        PageRequest pageRequest = new PageRequest(page, 10, sort);
+        Page<Integer> visitIdPage = visitRepository.pageVisitIdsByPatient(patientId, pageRequest);
+        List<Integer> visitIds = visitIdPage.getContent();
+        List<VisitTextDrugDTO> visits = visitRepository.findByVisitIds(visitIds, sort)
+                .stream()
+                .map(visit -> {
+                    VisitTextDrugDTO visitTextDrugDTO = new VisitTextDrugDTO();
+                    visitTextDrugDTO.visit = mapper.toVisitDTO(visit);
+                    visitTextDrugDTO.texts = listText(visit.getVisitId());
+                    visitTextDrugDTO.drugs = listDrugFull(visit.getVisitId());
+                    return visitTextDrugDTO;
+                })
+                .collect(Collectors.toList());
+        VisitTextDrugPageDTO result = new VisitTextDrugPageDTO();
+        result.totalPages = visitIdPage.getTotalPages();
+        result.page = page;
+        result.visitTextDrugs = visits;
+        return result;
+   }
 
     public List<Integer> listIyakuhincodeForPatient(int patientId){
         return drugRepository.findIyakuhincodeByPatient(patientId);
@@ -1309,7 +1331,7 @@ public class DbGateway {
     }
 
     public void modifyDiseaseEndReason(int diseaseId, LocalDate endDate, char reason){
-        Disease d = diseaseRepository.findOne(diseaseId);
+        Disease d = diseaseRepository.findById(diseaseId);
         d.setEndReason(reason);
         d.setEndDate(endDate.toString());
         diseaseRepository.save(d);
@@ -1317,7 +1339,7 @@ public class DbGateway {
 
     public void modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
         DiseaseDTO diseaseDTO = diseaseModifyDTO.disease;
-        Disease d = diseaseRepository.findOne(diseaseDTO.diseaseId);
+        Disease d = diseaseRepository.findById(diseaseDTO.diseaseId);
         d.setShoubyoumeicode(diseaseDTO.shoubyoumeicode);
         d.setStartDate(diseaseDTO.startDate);
         d.setEndDate(diseaseDTO.endDate);
@@ -1335,7 +1357,7 @@ public class DbGateway {
     }
 
     public void deleteDisease(int diseaseId) {
-        diseaseRepository.delete(diseaseId);
+        diseaseRepository.deleteById(diseaseId);
         diseaseAdjRepository.deleteByDiseaseId(diseaseId);
     }
 

@@ -10,4 +10,8 @@ public interface PostRepository extends CrudRepository<Post, Integer> {
 
     List<Post> findTop7ByOrderByIdDesc();
     Page<Post> findAll(Pageable pageable);
+
+    Post findById(int id);
+
+    void deleteById(int id);
 }

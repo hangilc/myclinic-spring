@@ -16,4 +16,8 @@ public interface KouhiRepository extends CrudRepository<Kouhi, Integer> {
     Stream<Kouhi> findAvailable(int patientId, String at, Sort sort);
 
     List<Kouhi> findByPatientId(int patientId, Sort sort);
+
+    void deleteById(int kouhiId);
+
+    Kouhi findById(int kouhiId);
 }

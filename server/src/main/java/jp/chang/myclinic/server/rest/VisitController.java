@@ -172,21 +172,28 @@ public class VisitController {
 		return dbGateway.getVisit(visitId);
 	}
 
-	@RequestMapping(value="/delete-visit-from-reception", method=RequestMethod.POST)
+	@RequestMapping(value="/deleteById-visit-from-reception", method=RequestMethod.POST)
 	public boolean deleteVisitFromReception(@RequestParam("visit-id") int visitId){
 		dbGateway.deleteVisitFromReception(visitId);
 		return true;
 	}
 
-	@RequestMapping(value="/delete-visit", method=RequestMethod.POST)
+	@RequestMapping(value="/deleteById-visit", method=RequestMethod.POST)
 	public boolean deleteVisit(@RequestParam("visit-id") int visitId){
 		dbGateway.deleteVisitSafely(visitId);
 		return true;
 	}
 
+	@Deprecated
 	@RequestMapping(value="/list-visit-text-drug", method=RequestMethod.GET)
 	public List<VisitTextDrugDTO> listVisitTextDrug(@RequestParam("visit-id[]") List<Integer> visitIds){
 		return dbGateway.listVisitTextDrug(visitIds);
+	}
+
+	@RequestMapping(value="/list-visit-text-drug-for-patient", method=RequestMethod.GET)
+	public VisitTextDrugPageDTO listVisitTextDrugForPatient(@RequestParam("patient-id") int patientId,
+															@RequestParam("page") int page){
+		return dbGateway.listVisitTextDrugForPatient(patientId, page);
 	}
 
 	@RequestMapping(value="/update-hoken", method=RequestMethod.POST)

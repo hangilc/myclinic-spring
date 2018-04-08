@@ -149,13 +149,13 @@ public class ShinryouController {
 		return true;
 	}
 
-	@RequestMapping(value="/delete-shinryou", method=RequestMethod.POST)
+	@RequestMapping(value="/deleteById-shinryou", method=RequestMethod.POST)
 	public boolean deleteShinryou(@RequestParam("shinryou-id") int shinryouId){
 		dbGateway.deleteShinryou(shinryouId);
 		return true;
 	}
 
-	@RequestMapping(value="/batch-delete-shinryou", method=RequestMethod.POST)
+	@RequestMapping(value="/batch-deleteById-shinryou", method=RequestMethod.POST)
 	public boolean batchDeleteShinryou(@RequestParam(value="shinryou-id", defaultValue="") List<Integer> shinryouIds){
 		dbGateway.batchDeleteShinryou(shinryouIds);
 		return true;
@@ -179,7 +179,7 @@ public class ShinryouController {
 		return shinryouIds;
 	}
 
-	@RequestMapping(value="/delete-duplicate-shinryou", method=RequestMethod.POST)
+	@RequestMapping(value="/deleteById-duplicate-shinryou", method=RequestMethod.POST)
 	public List<Integer> deleteDuplicate(@RequestParam("visit-id") int visitId){
 		return dbGateway.deleteDuplicateShinryou(visitId);
 	}

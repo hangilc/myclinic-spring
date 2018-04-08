@@ -12,10 +12,6 @@ public class Post {
     private String content;
     @Column(name="created_at")
     private String createdAt;
-    //@OneToMany(mappedBy="post", fetch=FetchType.EAGER)
-//    @OneToMany
-//    @JoinColumn(name="post_id")
-//    private List<Comment> comments;
 
     public Integer getId() {
         return id;
@@ -40,14 +36,6 @@ public class Post {
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
-
-//    public List<Comment> getComments() {
-//        return comments;
-//    }
-//
-//    public void setComments(List<Comment> comments) {
-//        this.comments = comments;
-//    }
 
     @Override
     public String toString() {

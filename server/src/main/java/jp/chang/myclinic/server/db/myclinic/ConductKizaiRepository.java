@@ -29,4 +29,8 @@ public interface ConductKizaiRepository extends CrudRepository<ConductKizai, Int
 			" and m.validFrom <= DATE(v.visitedAt) " +
 			" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto)")
 	List<Object[]> findFull(@Param("conductKizaiId") int conductKizaiId);
+
+	ConductKizai findById(int conductKizaiId);
+
+	void deleteById(int conductKizaiId);
 }
