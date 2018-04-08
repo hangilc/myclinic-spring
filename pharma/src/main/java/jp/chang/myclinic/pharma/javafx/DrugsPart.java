@@ -50,4 +50,7 @@ class DrugsPart extends VBox {
         return link;
     }
 
+    void reset() {
+        getChildren().clear();
+    }
 }

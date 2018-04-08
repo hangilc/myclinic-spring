@@ -24,16 +24,15 @@ class RightColumn extends VBox {
 
     RightColumn() {
         super(4);
-        setVisible(false);
         getStyleClass().add("right-column");
-        byDateNav = new ByDateNav(){
+        setVisible(false);
+        byDateNav = new ByDateNav() {
             @Override
             public void onPage(List<VisitTextDrugDTO> visits, String hilight) {
                 records.setItems(visits, hilight);
             }
         };
-        byDrugNav = new ByDrugNav(){
-
+        byDrugNav = new ByDrugNav() {
             @Override
             public void onPage(List<VisitTextDrugDTO> visits, String hilight) {
                 records.setItems(visits, hilight);
@@ -47,37 +46,51 @@ class RightColumn extends VBox {
         );
     }
 
-    void startPresc(PharmaQueueFullDTO item, List<DrugFullDTO> drugs){
-        if( item != null ){
-            PatientDTO patient = item.patient;
-            String patientName = patientName(item.patient);
-            prescPane.setItem(item, drugs);
-            byDateNav.setPatient(patient.patientId, patientName);
-            byDrugNav.setPatient(patient.patientId, patientName);
-            auxNav.setContent(byDateNav);
-            byDateNav.trigger();
-            setVisible(true);
-        } else {
-            setVisible(false);
-        }
+    void startPresc(PharmaQueueFullDTO item, List<DrugFullDTO> drugs) {
+        PatientDTO patient = item.patient;
+        String patientName = patientName(item.patient);
+        prescPane.setItem(item, drugs);
+        byDateNav.setPatient(patient.patientId, patientName);
+        byDrugNav.setPatient(patient.patientId, patientName);
+        auxSwitch.reset();
+        auxSwitch.trigger();
+        setVisible(true);
     }
 
-    private Node createAuxSwitch(){
-        auxSwitch = new AuxSwitch();
+    void endPresc(){
+        prescPane.reset();
+        byDateNav.reset();
+        byDrugNav.reset();
+        setVisible(false);
+    }
+
+    private Node createAuxSwitch() {
+        auxSwitch = new AuxSwitch(){
+            @Override
+            void onChange(AuxMode mode) {
+                if( mode == AuxMode.ByDate ){
+                    auxNav.setContent(byDateNav);
+                    byDateNav.trigger();
+                } else if( mode == AuxMode.ByDrug ){
+                    auxNav.setContent(byDrugNav);
+                    byDrugNav.trigger();
+                }
+            }
+        };
         return auxSwitch;
     }
 
-    private Node createAuxNav(){
+    private Node createAuxNav() {
         auxNav = new AuxNav();
         return auxNav;
     }
 
-    private Node createRecords(){
+    private Node createRecords() {
         records = new Records();
         return records;
     }
 
-    private String patientName(PatientDTO patient){
+    private String patientName(PatientDTO patient) {
         return patient.lastName + patient.firstName;
     }
 

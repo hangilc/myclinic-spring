@@ -1,10 +1,14 @@
 .hyperlink {
     -fx-border-color: transparent;
-    -fx-padding: 2 0 0 0;
+    -fx-padding: 0 0 0 0;
 }
 
 .hyperlink:visited {
     -fx-text-fill: -fx-accent;
+    -fx-underline: false;
+}
+
+.hyperlink:hover {
     -fx-underline: false;
 }
 
@@ -54,3 +58,8 @@
     -fx-font-weight: bold;
     -fx-padding: 2px;
 }
+
+.drug-list-for-patient {
+    -fx-padding: 0 0 0 10px;
+}
+

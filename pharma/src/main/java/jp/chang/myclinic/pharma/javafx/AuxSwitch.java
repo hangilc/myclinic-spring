@@ -6,10 +6,11 @@ import jp.chang.myclinic.pharma.javafx.lib.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class AuxSwitch extends HBox {
+abstract class AuxSwitch extends HBox {
 
     private static Logger logger = LoggerFactory.getLogger(AuxSwitch.class);
     private RadioButtonGroup<AuxMode> group = new RadioButtonGroup<>();
+    private boolean reportChange = false;
 
     AuxSwitch() {
         super(4);
@@ -17,18 +18,27 @@ class AuxSwitch extends HBox {
         RadioButton byDateButton = group.createRadioButton("日にち順", AuxMode.ByDate);
         RadioButton byDrugButton = group.createRadioButton("薬剤別", AuxMode.ByDrug);
         group.setValue(AuxMode.ByDate);
+        group.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if( reportChange ){
+                onChange(newValue);
+            }
+        });
         getChildren().addAll(
                 byDateButton,
                 byDrugButton
         );
     }
 
-    AuxMode getValue(){
-        return group.getValue();
+    void reset(){
+        reportChange = false;
+        group.setValue(AuxMode.ByDate);
+        reportChange = true;
     }
 
-    void setValue(AuxMode mode){
-        group.setValue(mode);
+    void trigger(){
+        onChange(group.getValue());
     }
+
+    abstract void onChange(AuxMode mode);
 
 }

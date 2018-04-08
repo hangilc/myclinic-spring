@@ -48,6 +48,13 @@ class PrescPane extends VBox {
         drugsPart.setDrugs(drugs);
     }
 
+    void reset(){
+        nameText.setText("");
+        yomiText.setText("");
+        infoText.setText("");
+        drugsPart.reset();
+    }
+
     private String infoText(PatientDTO patient){
         String birthdayPart = "";
         try {

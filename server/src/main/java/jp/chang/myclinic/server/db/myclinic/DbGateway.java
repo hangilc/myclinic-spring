@@ -1168,6 +1168,28 @@ public class DbGateway {
         return result;
    }
 
+   public VisitTextDrugPageDTO listVisitTextDrugByPatientAndIyakuhincode(int patientId, int iyakuhincode, int page){
+       Sort sort = new Sort(Sort.Direction.DESC, "visitId");
+       PageRequest pageRequest = new PageRequest(page, 10, sort);
+       Page<Integer> visitIdPage = drugRepository.pageVisitIdsByPatientAndIyakuhincode(patientId, iyakuhincode, pageRequest);
+       List<Integer> visitIds = visitIdPage.getContent();
+       List<VisitTextDrugDTO> visits = visitRepository.findByVisitIds(visitIds, sort)
+               .stream()
+               .map(visit -> {
+                   VisitTextDrugDTO visitTextDrugDTO = new VisitTextDrugDTO();
+                   visitTextDrugDTO.visit = mapper.toVisitDTO(visit);
+                   visitTextDrugDTO.texts = listText(visit.getVisitId());
+                   visitTextDrugDTO.drugs = listDrugFull(visit.getVisitId());
+                   return visitTextDrugDTO;
+               })
+               .collect(Collectors.toList());
+       VisitTextDrugPageDTO result = new VisitTextDrugPageDTO();
+       result.totalPages = visitIdPage.getTotalPages();
+       result.page = page;
+       result.visitTextDrugs = visits;
+       return result;
+   }
+
     public List<Integer> listIyakuhincodeForPatient(int patientId){
         return drugRepository.findIyakuhincodeByPatient(patientId);
     }

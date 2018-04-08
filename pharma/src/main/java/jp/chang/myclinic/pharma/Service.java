@@ -61,6 +61,12 @@ public class Service {
         CompletableFuture<VisitTextDrugPageDTO> listVisitTextDrugForPatient(@Query("patient-id") int patientId,
                                                                             @Query("page") int page);
 
+        @GET("list-visit-text-drug-by-patient-and-iyakuhincode")
+        CompletableFuture<VisitTextDrugPageDTO> listVisitTextDrugByPatientAndIyakuhincode(
+                @Query("patient-id") int patientId, @Query("iyakuhincode") int iyakuhincode,
+                @Query("page") int page
+        );
+
         @GET("list-iyakuhin-for-patient")
         CompletableFuture<List<IyakuhincodeNameDTO>> listIyakuhinForPatient(@Query("patient-id") int patientId);
 
