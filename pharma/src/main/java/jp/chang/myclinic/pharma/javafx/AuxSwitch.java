@@ -30,4 +30,5 @@ class AuxSwitch extends HBox {
     void setValue(AuxMode mode){
         group.setValue(mode);
     }
+
 }

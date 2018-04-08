@@ -1,3 +1,13 @@
+.hyperlink {
+    -fx-border-color: transparent;
+    -fx-padding: 2 0 0 0;
+}
+
+.hyperlink:visited {
+    -fx-text-fill: -fx-accent;
+    -fx-underline: false;
+}
+
 .main-scene {
     -fx-padding: 10px;
 }
@@ -12,7 +22,7 @@
 }
 
 .right-column {
-    -fx-pref-width: 300px;
+    -fx-pref-width: 450px;
 }
 
 .patient-list {
@@ -37,4 +47,10 @@
     -fx-border-style: solid;
     -fx-border-color: #ddd;
     -fx-padding: 10px;
+}
+
+.record-title {
+    -fx-background-color: #ddd;
+    -fx-font-weight: bold;
+    -fx-padding: 2px;
 }
