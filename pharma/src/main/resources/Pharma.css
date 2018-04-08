@@ -63,3 +63,7 @@
     -fx-padding: 0 0 0 10px;
 }
 
+.record-right .highlight {
+    -fx-fill: red;
+}
+

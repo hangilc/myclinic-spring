@@ -150,7 +150,7 @@ abstract class ByDrugNav extends VBox implements Nav {
         } else {
             Service.api.listVisitTextDrugByPatientAndIyakuhincode(patientId, iyakuhincode, currentPage)
                     .thenAccept(result -> Platform.runLater(() -> {
-                        onPage(result.visitTextDrugs, null);
+                        onPage(result.visitTextDrugs, drugName);
                         renderPageNav(result.page, result.totalPages);
                     }))
                     .exceptionally(HandlerFX::exceptionally);

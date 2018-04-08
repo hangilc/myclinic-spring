@@ -15,11 +15,11 @@ public class Records extends VBox {
         super(4);
     }
 
-    public void setItems(List<VisitTextDrugDTO> items, String hilight){
+    public void setItems(List<VisitTextDrugDTO> items, String highlight){
         getChildren().clear();
         items.forEach(item -> {
             Title title = new Title(item.visit.visitedAt);
-            Body body = new Body(item);
+            Body body = new Body(item, highlight);
             getChildren().addAll(
                     title,
                     body

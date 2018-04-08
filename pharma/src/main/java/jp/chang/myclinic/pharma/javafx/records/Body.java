@@ -11,8 +11,9 @@ class Body extends TwoColumn {
 
     private static Logger logger = LoggerFactory.getLogger(Body.class);
 
-    Body(VisitTextDrugDTO item) {
+    Body(VisitTextDrugDTO item, String highlight) {
         super(8);
+        getRightBox().getStyleClass().add("record-right");
         item.texts.forEach(text -> {
             getLeftBox().getChildren().add(new RecordText(text.content));
         });
@@ -20,7 +21,7 @@ class Body extends TwoColumn {
             getRightBox().getChildren().add(new Label("Rp)"));
             int index = 1;
             for(DrugFullDTO drug: item.drugs){
-                getRightBox().getChildren().add(new RecordDrug(index++, drug));
+                getRightBox().getChildren().add(new RecordDrug(index++, drug, highlight));
             }
         }
     }
