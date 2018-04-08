@@ -55,6 +55,7 @@
 
 .record-title {
     -fx-background-color: #ddd;
+
     -fx-font-weight: bold;
     -fx-padding: 2px;
 }
