@@ -28,6 +28,10 @@ public class Main extends Application {
     @Override
     public void init() throws Exception {
         super.init();
+        {
+            Config config = Config.load();
+            System.out.println("Config: " + config);
+        }
         List<String> args = getParameters().getUnnamed();
         if( args.size() == 1 ){
             String serverUrl = args.get(0);
