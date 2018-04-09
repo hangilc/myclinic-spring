@@ -2,6 +2,10 @@
     -fx-text-fill: -fx-accent;
 }
 
+.hyperlink:hover {
+    -fx-underline: false;
+}
+
 .main-column {
     -fx-pref-width: 680;
     -fx-pref-height: 600;
