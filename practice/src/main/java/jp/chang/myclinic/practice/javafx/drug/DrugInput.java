@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
 import jp.chang.myclinic.practice.lib.drug.DrugFormGetter;
 import jp.chang.myclinic.practice.lib.drug.DrugFormSetter;
@@ -125,6 +126,19 @@ class DrugInput extends GridPane implements DrugFormGetter, DrugFormSetter {
         wrapper.getChildren().add(drugNameLabel);
         add(wrapper, 1, row);
         row += 1;
+        drugNameLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if( event.isPopupTrigger() ){
+                ContextMenu contextMenu = new ContextMenu();
+                {
+                    MenuItem item = new MenuItem("コピー");
+                    item.setOnAction(evt -> {
+                        GuiUtil.copyToClipboard(drugNameLabel.getText());
+                    });
+                    contextMenu.getItems().add(item);
+                }
+                contextMenu.show(drugNameLabel, event.getScreenX(), event.getScreenY());
+            }
+        });
     }
 
     private void setupAmount() {
