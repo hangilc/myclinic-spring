@@ -34,6 +34,9 @@ abstract class ByDateNav extends HBox implements Nav {
     }
 
     void setPatient(int patientId, String name) {
+        if( this.patientId > 0 ){
+            reset();
+        }
         this.patientId = patientId;
         nameText.setText("(" + name + ")");
         getChildren().setAll(

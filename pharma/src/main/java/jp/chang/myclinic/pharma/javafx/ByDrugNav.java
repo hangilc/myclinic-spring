@@ -45,6 +45,9 @@ abstract class ByDrugNav extends VBox implements Nav {
     }
 
     void setPatient(int patientId, String patientName) {
+        if( this.patientId > 0 ){
+            reset();
+        }
         this.patientId = patientId;
         patientNameLabel.setText("(" + patientName + ")");
     }
