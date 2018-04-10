@@ -29,8 +29,11 @@ public class Main extends Application {
     public void init() throws Exception {
         super.init();
         {
-            Config config = Config.load();
-            System.out.println("Config: " + config);
+            Config.load()
+                    .ifPresent(config -> {
+                        config.setDrugBagPrinterSetting("drug-bag2");
+                        config.save();
+                    });
         }
         List<String> args = getParameters().getUnnamed();
         if( args.size() == 1 ){
