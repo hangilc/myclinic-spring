@@ -1,5 +1,6 @@
 package jp.chang.myclinic.pharma.javafx.drawerpreview;
 
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,6 +30,7 @@ public class DrawerPreviewDialogEx<Tag> extends Stage {
     private List<TaggedPage<Tag>> pages = Collections.emptyList();
     private PageNav pageNav;
     private Parent root;
+    private HBox commandsBox;
 
     public DrawerPreviewDialogEx(double width, double height, double scaleFactor) {
         BorderPane main = new BorderPane();
@@ -58,6 +60,10 @@ public class DrawerPreviewDialogEx<Tag> extends Stage {
         pageNav.trigger();
     }
 
+    public void addToCommands(Node node){
+        commandsBox.getChildren().add(node);
+    }
+
     private void showPage(int page){
         if( page >= 0 && page < pages.size() ){
             List<Op> ops = pages.get(page).getOps();
@@ -67,6 +73,7 @@ public class DrawerPreviewDialogEx<Tag> extends Stage {
 
     private Node createCommands() {
         HBox hbox = new HBox(4);
+        hbox.setAlignment(Pos.CENTER_LEFT);
         Button printButton = new Button("印刷");
         printButton.setOnAction(evt -> doPrint());
         settingChoice = new ChoiceBox<>();
@@ -84,6 +91,7 @@ public class DrawerPreviewDialogEx<Tag> extends Stage {
             }
         };
         hbox.getChildren().addAll(printButton, settingChoice, pageNav);
+        this.commandsBox = hbox;
         return hbox;
     }
 

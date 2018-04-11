@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -183,6 +184,14 @@ class PrescPane extends VBox {
                                 }).collect(Collectors.toList());
                         DrawerPreviewDialogEx<Boolean> previewDialog = new DrawerPreviewDialogEx<>(128, 182, 1.0);
                         previewDialog.addStylesheet("Pharma.css");
+                        CheckBox unprescribedOnlyCheck = new CheckBox("未処方のみ");
+                        unprescribedOnlyCheck.setSelected(true);
+                        unprescribedOnlyCheck.selectedProperty().addListener((obs, oldValue, newValue) -> {
+                            if( newValue ){
+
+                            }
+                        });
+                        previewDialog.addToCommands(unprescribedOnlyCheck);
                         previewDialog.setPages(pages);
                         previewDialog.show();
                     }))
