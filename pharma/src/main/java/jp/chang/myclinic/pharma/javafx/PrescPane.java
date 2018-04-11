@@ -192,7 +192,22 @@ class PrescPane extends VBox {
                         List<List<Op>> allPages = pages.stream().map(p -> p.ops).collect(Collectors.toList());
                         List<List<Op>> unprescribedPages = pages.stream()
                                 .filter(p -> !p.prescribed).map(p -> p.ops).collect(Collectors.toList());
-                        DrawerPreviewDialogEx<Boolean> previewDialog = new DrawerPreviewDialogEx<>(128, 182, 1.0);
+                        DrawerPreviewDialogEx previewDialog = new DrawerPreviewDialogEx(
+                                Globals.printerEnv, 128, 182, 1.0){
+                            @Override
+                            protected String getDefaultPrinterSettingName() {
+                                return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
+                            }
+
+                            @Override
+                            protected void setDefaultPrinterSettingName(String newName) {
+                                Config.load()
+                                        .ifPresent(config -> {
+                                            config.setDrugBagPrinterSetting(newName);
+                                            config.save();
+                                        });
+                            }
+                        };
                         previewDialog.addStylesheet("Pharma.css");
                         CheckBox unprescribedOnlyCheck = new CheckBox("処方済も含める");
                         unprescribedOnlyCheck.setSelected(true);

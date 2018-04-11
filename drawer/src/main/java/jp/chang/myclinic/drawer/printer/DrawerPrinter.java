@@ -42,6 +42,10 @@ public class DrawerPrinter {
         printPages(pages, devmode, devnames, auxSetting);
     }
 
+    public void printPages(List<List<Op>> pages){
+        printPages(pages, null, null, null);
+    }
+
     public void printPages(List<List<Op>> pages, byte[] devmode, byte[] devnames, AuxSetting auxSetting){
         if( devmode == null &&  devnames == null ){
             DialogResult dialogResult = printDialog(null, null);
