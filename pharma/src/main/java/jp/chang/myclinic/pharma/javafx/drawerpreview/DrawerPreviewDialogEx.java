@@ -27,7 +27,7 @@ public class DrawerPreviewDialogEx<Tag> extends Stage {
     private ChoiceBox<String> settingChoice;
     private DrawerCanvas drawerCanvas;
     private PrinterEnv printerEnv;
-    private List<TaggedPage<Tag>> pages = Collections.emptyList();
+    private List<List<Op>> pages = Collections.emptyList();
     private PageNav pageNav;
     private Parent root;
     private HBox commandsBox;
@@ -46,15 +46,11 @@ public class DrawerPreviewDialogEx<Tag> extends Stage {
         this.root = root;
     }
 
-    private void addStyleClass(String name){
-        root.getStyleClass().add(name);
-    }
-
     public void addStylesheet(String path){
         root.getStylesheets().add(path);
     }
 
-    public void setPages(List<TaggedPage<Tag>> pages){
+    public void setPages(List<List<Op>> pages){
         this.pages = pages;
         pageNav.set(pages.size());
         pageNav.trigger();
@@ -66,7 +62,7 @@ public class DrawerPreviewDialogEx<Tag> extends Stage {
 
     private void showPage(int page){
         if( page >= 0 && page < pages.size() ){
-            List<Op> ops = pages.get(page).getOps();
+            List<Op> ops = pages.get(page);
             drawerCanvas.setOps(ops);
         }
     }

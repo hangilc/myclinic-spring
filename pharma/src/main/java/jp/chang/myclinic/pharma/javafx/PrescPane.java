@@ -17,7 +17,6 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.pharma.*;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialogEx;
-import jp.chang.myclinic.pharma.javafx.drawerpreview.TaggedPage;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
@@ -169,30 +168,43 @@ class PrescPane extends VBox {
     }
 
     private void doPrintDrugBag(){
+        class TaggedPage {
+            private boolean prescribed;
+            private List<Op> ops;
+            private TaggedPage(boolean prescribed, List<Op> ops){
+                this.prescribed = prescribed;
+                this.ops = ops;
+            }
+        }
         if( drugs.size() > 0 ){
             ClinicInfoDTO clinicInfo = Globals.clinicInfo;
             collectPharmaDrugs(drugs)
                     .thenAccept(dps -> Platform.runLater(() -> {
-                        List<TaggedPage<Boolean>> pages = dps.stream()
+                        List<TaggedPage> pages = dps.stream()
                                 .map(dp -> {
                                     DrugBagDataCreator creator = new DrugBagDataCreator(dp.drug, patient,
                                             dp.pharmaDrug, clinicInfo);
                                     DrugBagDrawer drawer = new DrugBagDrawer(creator.createData());
                                     List<Op> ops = drawer.getOps();
                                     Boolean prescribed = dp.drug.drug.prescribed != 0;
-                                    return new TaggedPage<>(prescribed, ops);
+                                    return new TaggedPage(prescribed, ops);
                                 }).collect(Collectors.toList());
+                        List<List<Op>> allPages = pages.stream().map(p -> p.ops).collect(Collectors.toList());
+                        List<List<Op>> unprescribedPages = pages.stream()
+                                .filter(p -> !p.prescribed).map(p -> p.ops).collect(Collectors.toList());
                         DrawerPreviewDialogEx<Boolean> previewDialog = new DrawerPreviewDialogEx<>(128, 182, 1.0);
                         previewDialog.addStylesheet("Pharma.css");
-                        CheckBox unprescribedOnlyCheck = new CheckBox("未処方のみ");
+                        CheckBox unprescribedOnlyCheck = new CheckBox("処方済も含める");
                         unprescribedOnlyCheck.setSelected(true);
                         unprescribedOnlyCheck.selectedProperty().addListener((obs, oldValue, newValue) -> {
                             if( newValue ){
-
+                                previewDialog.setPages(allPages);
+                            } else {
+                                previewDialog.setPages(unprescribedPages);
                             }
                         });
                         previewDialog.addToCommands(unprescribedOnlyCheck);
-                        previewDialog.setPages(pages);
+                        previewDialog.setPages(unprescribedPages);
                         previewDialog.show();
                     }))
                     .exceptionally(HandlerFX::exceptionally);
