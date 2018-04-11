@@ -169,6 +169,7 @@ public class DrawerPreviewDialog extends Stage {
         settingChoice = new ChoiceBox<>();
         settingChoice.getStyleClass().add("printer-setting-choice");
         updateSettingChoice();
+        setPrintSettingName(getDefaultPrinterSettingName());
         hbox.getChildren().addAll(printButton, settingChoice);
         return hbox;
     }
@@ -214,12 +215,10 @@ public class DrawerPreviewDialog extends Stage {
     }
 
     protected String getDefaultPrinterSettingName() {
-        GuiUtil.alertError("既定の印刷設定はサポートされていません。");
         return null;
     }
 
-    protected void setDefaultPrinterSettingName(String newName) throws Exception {
-        GuiUtil.alertError("既定の印刷設定はサポートされていません。");
+    protected void setDefaultPrinterSettingName(String newName){
     }
 
     private void doDefaultSetting() {
@@ -231,6 +230,7 @@ public class DrawerPreviewDialog extends Stage {
                 protected void onChange(String newDefaultSetting) {
                     try {
                         setDefaultPrinterSettingName(newDefaultSetting);
+                        setPrintSettingName(newDefaultSetting);
                     } catch (Exception e) {
                         GuiUtil.alertException("既定印刷設定名の保存に失敗しました。", e);
                     }

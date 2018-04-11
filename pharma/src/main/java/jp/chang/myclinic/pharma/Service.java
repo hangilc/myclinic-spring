@@ -11,6 +11,7 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.dto.*;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -47,6 +48,9 @@ public class Service {
 
         @GET("get-clinic-info")
         CompletableFuture<ClinicInfoDTO> getClinicInfo();
+
+        @GET("get-clinic-info")
+        Call<ClinicInfoDTO> getClinicInfoCall();
 
         @GET("collect-pharma-drug-by-iyakuhincodes")
         CompletableFuture<List<PharmaDrugDTO>> collectPharmaDrugByIyakuhincodes(@Query("iyakuhincode[]") List<Integer> iyakuhincodes);
@@ -100,9 +104,9 @@ public class Service {
     }
 
     public static ServerAPI api;
-    public static OkHttpClient client;
+    static OkHttpClient client;
 
-    public static void setServerUrl(String serverUrl){
+    static void setServerUrl(String serverUrl){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.NONE);
         //logging.setLevel(HttpLoggingInterceptor.Level.BODY);

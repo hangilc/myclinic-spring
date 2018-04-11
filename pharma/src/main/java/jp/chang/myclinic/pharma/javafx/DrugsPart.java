@@ -9,10 +9,12 @@ import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.PharmaDrugDTO;
+import jp.chang.myclinic.pharma.Config;
 import jp.chang.myclinic.pharma.DrugBagDataCreator;
+import jp.chang.myclinic.pharma.Globals;
 import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
@@ -67,7 +69,6 @@ class DrugsPart extends VBox {
     private void doDrugBag(DrugFullDTO drug){
         class Data {
             private PatientDTO patient;
-            private PharmaDrugDTO pharmaDrug;
         }
         Data data = new Data();
         Service.api.getVisit(drug.drug.visitId)
@@ -76,17 +77,28 @@ class DrugsPart extends VBox {
                     data.patient = patient;
                     return Service.api.findPharmaDrug(drug.drug.iyakuhincode);
                 })
-                .thenCompose(pharmaDrug -> {
-                    data.pharmaDrug = pharmaDrug;
-                    return Service.api.getClinicInfo();
-                })
-                .thenAccept(clinicInfo -> {
+                .thenAccept(pharmaDrug -> {
+                    ClinicInfoDTO clinicInfo = Globals.clinicInfo;
                     DrugBagDataCreator creator = new DrugBagDataCreator(drug, data.patient,
-                            data.pharmaDrug, clinicInfo);
+                            pharmaDrug, clinicInfo);
                     DrugBagDrawerData drawerData = creator.createData();
                     List<Op> ops = new DrugBagDrawer(drawerData).getOps();
                     Platform.runLater(() -> {
-                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog();
+                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv){
+                            @Override
+                            protected String getDefaultPrinterSettingName() {
+                                return Config.load().map(Config::getDrugBagPrinterSetting).orElse("");
+                            }
+
+                            @Override
+                            protected void setDefaultPrinterSettingName(String newName) {
+                                Config.load()
+                                        .ifPresent(config -> {
+                                            config.setDrugBagPrinterSetting(newName);
+                                            config.save();
+                                        });
+                            }
+                        };
                         previewDialog.setContentSize(128, 182);
                         previewDialog.setScaleFactor(1.0);
                         previewDialog.setOps(ops);

@@ -8,12 +8,14 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.pharma.javafx.MainScene;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Paths;
 import java.util.List;
 
 public class Main extends Application {
@@ -28,13 +30,6 @@ public class Main extends Application {
     @Override
     public void init() throws Exception {
         super.init();
-        {
-            Config.load()
-                    .ifPresent(config -> {
-                        config.setDrugBagPrinterSetting("drug-bag2");
-                        config.save();
-                    });
-        }
         List<String> args = getParameters().getUnnamed();
         if( args.size() == 1 ){
             String serverUrl = args.get(0);
@@ -42,6 +37,8 @@ public class Main extends Application {
                 serverUrl = serverUrl + "/";
             }
             Service.setServerUrl(serverUrl);
+            Globals.clinicInfo = Service.api.getClinicInfoCall().execute().body();
+            Globals.printerEnv = new PrinterEnv(Paths.get(System.getProperty("user.home"), "myclinic-env", "printer-settings"));
         } else {
             logger.error("Usage: pharma service-url");
             System.exit(1);
