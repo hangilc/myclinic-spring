@@ -12,7 +12,6 @@ import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
-import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.pharma.DrugBagDataCreator;
 import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
@@ -67,16 +66,12 @@ class DrugsPart extends VBox {
 
     private void doDrugBag(DrugFullDTO drug){
         class Data {
-            VisitDTO visit;
-            PatientDTO patient;
-            PharmaDrugDTO pharmaDrug;
+            private PatientDTO patient;
+            private PharmaDrugDTO pharmaDrug;
         }
         Data data = new Data();
         Service.api.getVisit(drug.drug.visitId)
-                .thenCompose(visit -> {
-                    data.visit = visit;
-                    return Service.api.getPatient(visit.patientId);
-                })
+                .thenCompose(visit -> Service.api.getPatient(visit.patientId))
                 .thenCompose(patient -> {
                     data.patient = patient;
                     return Service.api.findPharmaDrug(drug.drug.iyakuhincode);
