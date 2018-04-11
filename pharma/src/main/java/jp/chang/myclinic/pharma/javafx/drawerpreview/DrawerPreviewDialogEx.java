@@ -62,6 +62,10 @@ public class DrawerPreviewDialogEx extends Stage {
         pageNav.trigger();
     }
 
+    public void setSinglePage(List<Op> page){
+        setPages(Collections.singletonList(page));
+    }
+
     public void addToCommands(Node node){
         commandsBox.getChildren().add(node);
     }

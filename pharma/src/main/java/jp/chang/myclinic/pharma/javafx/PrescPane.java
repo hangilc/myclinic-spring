@@ -13,11 +13,14 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawer;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawerData;
+import jp.chang.myclinic.drawer.techou.TechouDrawer;
+import jp.chang.myclinic.drawer.techou.TechouDrawerData;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.pharma.*;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialogEx;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
+import jp.chang.myclinic.pharma.swing.TechouDataCreator;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,6 +98,7 @@ class PrescPane extends VBox {
         Button printTechouButton = new Button("薬手帳印刷");
         printPrescButton.setOnAction(evt -> doPrintPresc());
         printDrugBagButton.setOnAction(evt -> doPrintDrugBag());
+        printTechouButton.setOnAction(evt -> doPrintTechou());
         hbox.getChildren().addAll(
                 printPrescButton,
                 printDrugBagButton,
@@ -145,6 +149,7 @@ class PrescPane extends VBox {
                     });
                 }
             };
+            previewDialog.setTitle("処方内容印刷");
             previewDialog.setContentSize(148, 210);
             previewDialog.setScaleFactor(0.8);
             previewDialog.setOps(ops);
@@ -208,6 +213,7 @@ class PrescPane extends VBox {
                                         });
                             }
                         };
+                        previewDialog.setTitle("薬袋印刷");
                         previewDialog.addStylesheet("Pharma.css");
                         CheckBox unprescribedOnlyCheck = new CheckBox("処方済も含める");
                         unprescribedOnlyCheck.setSelected(true);
@@ -226,7 +232,30 @@ class PrescPane extends VBox {
         }
     }
 
+    private void doPrintTechou(){
+        if( patient != null ){
+            TechouDataCreator creator = new TechouDataCreator(patient, LocalDate.now(), drugs, Globals.clinicInfo);
+            TechouDrawerData drawerData = creator.createData();
+            List<Op> ops = new TechouDrawer(drawerData).getOps();
+            DrawerPreviewDialogEx previewDialog = new DrawerPreviewDialogEx(Globals.printerEnv, 99, 120, 1.0){
+                @Override
+                protected String getDefaultPrinterSettingName() {
+                    return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
+                }
 
-
+                @Override
+                protected void setDefaultPrinterSettingName(String newName) {
+                    Config.load().ifPresent(config -> {
+                        config.setTechouPrinterSetting(newName);
+                        config.save();
+                    });
+                }
+            };
+            previewDialog.setTitle("薬手帳印刷");
+            previewDialog.addStylesheet("Pharma.css");
+            previewDialog.setSinglePage(ops);
+            previewDialog.show();
+        }
+    }
 
 }
