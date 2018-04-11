@@ -57,7 +57,8 @@ class ListSettingDialog extends Stage {
             AuxSetting auxSetting = printerEnv.readAuxSetting(name);
             EditSettingDialog editSettingDialog = new EditSettingDialog(printerEnv, name, devmode, devnames, auxSetting);
             editSettingDialog.setTestPrintOps(testPrintOps);
-            editSettingDialog.show();
+            editSettingDialog.showAndWait();
+            sizeToScene();
         } catch (IOException e) {
             logger.error("Failed to get printer setting info.", e);
             GuiUtil.alertException("印刷設定情報の取得に失敗しました。", e);
@@ -75,10 +76,15 @@ class ListSettingDialog extends Stage {
             names.remove(index);
             dispGrid.removeRow(index);
             sizeToScene();
+            onDelete(name);
         } catch (IOException e) {
             logger.error("Failed to delete printer setting.", e);
             GuiUtil.alertException("印刷設定の削除に失敗しました。", e);
         }
+    }
+
+    protected void onDelete(String name){
+
     }
 
 }

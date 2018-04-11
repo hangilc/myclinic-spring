@@ -16,7 +16,7 @@ import jp.chang.myclinic.dto.PharmaDrugDTO;
 import jp.chang.myclinic.pharma.*;
 import jp.chang.myclinic.pharma.DrugBagDataCreator;
 import jp.chang.myclinic.pharma.swing.PharmaConfig;
-import jp.chang.myclinic.pharma.swing.PrescContentDataCreator;
+import jp.chang.myclinic.pharma.PrescContentDataCreator;
 import jp.chang.myclinic.pharma.swing.TechouDataCreator;
 import jp.chang.myclinic.pharma.wrappedtext.Strut;
 import jp.chang.myclinic.pharma.wrappedtext.WrappedText;

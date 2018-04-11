@@ -87,7 +87,7 @@ class DrugsPart extends VBox {
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv){
                             @Override
                             protected String getDefaultPrinterSettingName() {
-                                return Config.load().map(Config::getDrugBagPrinterSetting).orElse("");
+                                return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
                             }
 
                             @Override

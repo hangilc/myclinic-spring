@@ -7,14 +7,22 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.presccontent.PrescContentDrawer;
+import jp.chang.myclinic.drawer.presccontent.PrescContentDrawerData;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.pharma.Config;
+import jp.chang.myclinic.pharma.Globals;
+import jp.chang.myclinic.pharma.PrescContentDataCreator;
+import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 class PrescPane extends VBox {
@@ -24,6 +32,8 @@ class PrescPane extends VBox {
     private Text yomiText = new Text("");
     private Text infoText = new Text("");
     private DrugsPart drugsPart = new DrugsPart();
+    private List<DrugFullDTO> drugs = Collections.emptyList();
+    private PatientDTO patient;
 
     PrescPane() {
         super(4);
@@ -46,6 +56,8 @@ class PrescPane extends VBox {
         yomiText.setText(String.format("%s %s", patient.lastNameYomi, patient.firstNameYomi));
         infoText.setText(infoText(patient));
         drugsPart.setDrugs(drugs);
+        this.drugs = drugs;
+        this.patient = item.patient;
     }
 
     void reset(){
@@ -53,6 +65,8 @@ class PrescPane extends VBox {
         yomiText.setText("");
         infoText.setText("");
         drugsPart.reset();
+        this.drugs = Collections.emptyList();
+        this.patient = null;
     }
 
     private String infoText(PatientDTO patient){
@@ -76,6 +90,7 @@ class PrescPane extends VBox {
         Button printPrescButton = new Button("処方内容印刷");
         Button printDrugBagButton = new Button("薬袋印刷");
         Button printTechouButton = new Button("薬手帳印刷");
+        printPrescButton.setOnAction(evt -> doPrintPresc());
         hbox.getChildren().addAll(
                 printPrescButton,
                 printDrugBagButton,
@@ -105,6 +120,32 @@ class PrescPane extends VBox {
                 doneButton
         );
         return hbox;
+    }
+
+    private void doPrintPresc(){
+        if( patient != null ){
+            PrescContentDataCreator creator = new PrescContentDataCreator(patient, LocalDate.now(), drugs);
+            PrescContentDrawerData drawerData = creator.createData();
+            List<Op> ops = new PrescContentDrawer(drawerData).getOps();
+            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv){
+                @Override
+                protected String getDefaultPrinterSettingName() {
+                    return Config.load().map(Config::getPrescContentPrinterSetting).orElse(null);
+                }
+
+                @Override
+                protected void setDefaultPrinterSettingName(String newName) {
+                    Config.load().ifPresent(config -> {
+                        config.setPrescContentPrinterSetting(newName);
+                        config.save();
+                    });
+                }
+            };
+            previewDialog.setContentSize(148, 210);
+            previewDialog.setScaleFactor(0.8);
+            previewDialog.setOps(ops);
+            previewDialog.show();
+        }
     }
 
 }

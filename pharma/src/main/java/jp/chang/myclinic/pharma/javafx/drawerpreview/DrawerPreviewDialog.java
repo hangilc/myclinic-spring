@@ -137,6 +137,7 @@ public class DrawerPreviewDialog extends Stage {
                 AuxSetting auxSetting = new AuxSetting();
                 try {
                     printerEnv.saveSetting(name, devnames, devmode, auxSetting);
+                    updateSettingChoice();
                     EditSettingDialog editSettingDialog = new EditSettingDialog(printerEnv, name, devmode, devnames, auxSetting);
                     editSettingDialog.setTestPrintOps(getOps());
                     editSettingDialog.showAndWait();
@@ -153,7 +154,12 @@ public class DrawerPreviewDialog extends Stage {
     private void doListSetting() {
         try {
             List<String> names = printerEnv.listNames();
-            ListSettingDialog dialog = new ListSettingDialog(names, printerEnv);
+            ListSettingDialog dialog = new ListSettingDialog(names, printerEnv){
+                @Override
+                protected void onDelete(String name) {
+                    updateSettingChoice();
+                }
+            };
             dialog.setTestPrintOps(getOps());
             dialog.show();
         } catch (Exception ex) {

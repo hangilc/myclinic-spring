@@ -1,4 +1,4 @@
-package jp.chang.myclinic.pharma.swing;
+package jp.chang.myclinic.pharma;
 
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawerData;
 import jp.chang.myclinic.dto.DrugFullDTO;
