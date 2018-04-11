@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.lib;
+package jp.chang.myclinic.pharma;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public class CFUtil {
-
-    private CFUtil(){}
 
     public static <D> CompletableFuture<Void> forEach(List<D> dataList, Function<D, CompletableFuture<Void>> cvt){
         CompletableFuture<Void> cfMain = new CompletableFuture<>();

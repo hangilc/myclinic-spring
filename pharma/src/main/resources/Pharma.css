@@ -68,3 +68,7 @@
     -fx-fill: red;
 }
 
+.drawer-preview-dialog {
+    -fx-padding: 10px;
+}
+

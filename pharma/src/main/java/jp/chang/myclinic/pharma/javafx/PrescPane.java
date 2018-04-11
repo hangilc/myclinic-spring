@@ -1,5 +1,6 @@
 package jp.chang.myclinic.pharma.javafx;
 
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -8,15 +9,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawer;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawerData;
-import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.PharmaQueueFullDTO;
-import jp.chang.myclinic.pharma.Config;
-import jp.chang.myclinic.pharma.Globals;
-import jp.chang.myclinic.pharma.PrescContentDataCreator;
+import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.pharma.*;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
+import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialogEx;
+import jp.chang.myclinic.pharma.javafx.drawerpreview.TaggedPage;
+import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 class PrescPane extends VBox {
 
@@ -91,6 +94,7 @@ class PrescPane extends VBox {
         Button printDrugBagButton = new Button("薬袋印刷");
         Button printTechouButton = new Button("薬手帳印刷");
         printPrescButton.setOnAction(evt -> doPrintPresc());
+        printDrugBagButton.setOnAction(evt -> doPrintDrugBag());
         hbox.getChildren().addAll(
                 printPrescButton,
                 printDrugBagButton,
@@ -147,5 +151,46 @@ class PrescPane extends VBox {
             previewDialog.show();
         }
     }
+
+    private class DrugWithPharmaDrug {
+        private DrugFullDTO drug;
+        private PharmaDrugDTO pharmaDrug;
+    }
+
+    private CompletableFuture<List<DrugWithPharmaDrug>> collectPharmaDrugs(List<DrugFullDTO> drugs){
+        return CFUtil.map(drugs, drug -> Service.api.getPharmaDrug(drug.drug.iyakuhincode)
+                .thenApply(pharmaDrug -> {
+                    DrugWithPharmaDrug result = new DrugWithPharmaDrug();
+                    result.pharmaDrug = pharmaDrug;
+                    result.drug = drug;
+                    return result;
+                }));
+    }
+
+    private void doPrintDrugBag(){
+        if( drugs.size() > 0 ){
+            ClinicInfoDTO clinicInfo = Globals.clinicInfo;
+            collectPharmaDrugs(drugs)
+                    .thenAccept(dps -> Platform.runLater(() -> {
+                        List<TaggedPage<Boolean>> pages = dps.stream()
+                                .map(dp -> {
+                                    DrugBagDataCreator creator = new DrugBagDataCreator(dp.drug, patient,
+                                            dp.pharmaDrug, clinicInfo);
+                                    DrugBagDrawer drawer = new DrugBagDrawer(creator.createData());
+                                    List<Op> ops = drawer.getOps();
+                                    Boolean prescribed = dp.drug.drug.prescribed != 0;
+                                    return new TaggedPage<>(prescribed, ops);
+                                }).collect(Collectors.toList());
+                        DrawerPreviewDialogEx<Boolean> previewDialog = new DrawerPreviewDialogEx<>(128, 182, 1.0);
+                        previewDialog.addStylesheet("Pharma.css");
+                        previewDialog.setPages(pages);
+                        previewDialog.show();
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        }
+    }
+
+
+
 
 }
