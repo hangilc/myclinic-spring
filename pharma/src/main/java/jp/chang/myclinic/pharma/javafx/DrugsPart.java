@@ -1,11 +1,22 @@
 package jp.chang.myclinic.pharma.javafx;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
+import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.PharmaDrugDTO;
+import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.pharma.DrugBagDataCreator;
+import jp.chang.myclinic.pharma.Service;
+import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
+import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import jp.chang.myclinic.util.DrugUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +29,6 @@ class DrugsPart extends VBox {
 
     DrugsPart() {
         super(4);
-
     }
 
     void setDrugs(List<DrugFullDTO> drugs) {
@@ -27,6 +37,10 @@ class DrugsPart extends VBox {
         for (DrugFullDTO drug : drugs) {
             getChildren().add(drugRep(index++, drug));
         }
+    }
+
+    void reset() {
+        getChildren().clear();
     }
 
     private Node drugRep(int index, DrugFullDTO drug) {
@@ -47,10 +61,43 @@ class DrugsPart extends VBox {
     private Node drugBagLink(DrugFullDTO drug){
         Hyperlink link = new Hyperlink("薬袋");
         link.getStyleClass().add("drugbag-link");
+        link.setOnAction(evt -> doDrugBag(drug));
         return link;
     }
 
-    void reset() {
-        getChildren().clear();
+    private void doDrugBag(DrugFullDTO drug){
+        class Data {
+            VisitDTO visit;
+            PatientDTO patient;
+            PharmaDrugDTO pharmaDrug;
+        }
+        Data data = new Data();
+        Service.api.getVisit(drug.drug.visitId)
+                .thenCompose(visit -> {
+                    data.visit = visit;
+                    return Service.api.getPatient(visit.patientId);
+                })
+                .thenCompose(patient -> {
+                    data.patient = patient;
+                    return Service.api.findPharmaDrug(drug.drug.iyakuhincode);
+                })
+                .thenCompose(pharmaDrug -> {
+                    data.pharmaDrug = pharmaDrug;
+                    return Service.api.getClinicInfo();
+                })
+                .thenAccept(clinicInfo -> {
+                    DrugBagDataCreator creator = new DrugBagDataCreator(drug, data.patient,
+                            data.pharmaDrug, clinicInfo);
+                    DrugBagDrawerData drawerData = creator.createData();
+                    List<Op> ops = new DrugBagDrawer(drawerData).getOps();
+                    Platform.runLater(() -> {
+                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog();
+                        previewDialog.setContentSize(128, 182);
+                        previewDialog.setScaleFactor(1.0);
+                        previewDialog.setOps(ops);
+                        previewDialog.show();
+                    });
+                })
+                .exceptionally(HandlerFX::exceptionally);
     }
 }

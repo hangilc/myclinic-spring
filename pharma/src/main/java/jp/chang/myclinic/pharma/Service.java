@@ -94,6 +94,9 @@ public class Service {
 
         @POST("presc-done")
         CompletableFuture<Boolean> prescDone(@Query("visit-id") int visitId);
+
+        @GET("get-visit")
+        CompletableFuture<VisitDTO> getVisit(@Query("visit-id") int visitId);
     }
 
     public static ServerAPI api;

@@ -10,6 +10,7 @@ import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.pharma.DrugBagDataCreator;
 import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.leftpane.LeftPane;
 import jp.chang.myclinic.pharma.rightpane.RightPane;
