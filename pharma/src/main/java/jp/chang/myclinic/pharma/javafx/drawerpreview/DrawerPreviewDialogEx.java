@@ -143,16 +143,8 @@ public class DrawerPreviewDialogEx extends Stage {
         return mbar;
     }
 
-    private void setPrinterSettingName(String printSettingName) {
-        settingChoice.getSelectionModel().select(printSettingName);
-        int index = settingChoice.getSelectionModel().getSelectedIndex();
-        if (index < 0) {
-            settingChoice.getSelectionModel().select(NO_PRINTER_SETTING);
-        }
-    }
-
     private void updateSettingChoice() {
-        String current = settingChoice.getSelectionModel().getSelectedItem();
+        String current = getPrinterSettingName();
         settingChoice.getItems().setAll(NO_PRINTER_SETTING);
         if (printerEnv != null) {
             try {
@@ -167,6 +159,27 @@ public class DrawerPreviewDialogEx extends Stage {
         setPrinterSettingName(current);
     }
 
+    private void setPrinterSettingName(String printSettingName) {
+        settingChoice.getSelectionModel().select(printSettingName);
+        int index = settingChoice.getSelectionModel().getSelectedIndex();
+        if (index < 0) {
+            settingChoice.getSelectionModel().select(NO_PRINTER_SETTING);
+        }
+    }
+
+    private String getPrinterSettingName() {
+        int index = settingChoice.getSelectionModel().getSelectedIndex();
+        if( index < 0 ){
+            return null;
+        } else {
+            String setting = settingChoice.getItems().get(index);
+            if (NO_PRINTER_SETTING.equals(setting)) {
+                setting = null;
+            }
+            return setting;
+        }
+    }
+
     protected String getDefaultPrinterSettingName() {
         return null;
     }
@@ -174,18 +187,10 @@ public class DrawerPreviewDialogEx extends Stage {
     protected void setDefaultPrinterSettingName(String newName){
     }
 
-    private String getSettingName() {
-        String setting = settingChoice.getSelectionModel().getSelectedItem();
-        if (NO_PRINTER_SETTING.equals(setting)) {
-            setting = null;
-        }
-        return setting;
-    }
-
     private void doPrint(){
-        String settingName = getSettingName();
+        String settingName = getPrinterSettingName();
         if (printerEnv != null && settingName != null) {
-            printerEnv.print(pages, getSettingName());
+            printerEnv.print(pages, getPrinterSettingName());
             close();
         } else {
             DrawerPrinter printer = new DrawerPrinter();

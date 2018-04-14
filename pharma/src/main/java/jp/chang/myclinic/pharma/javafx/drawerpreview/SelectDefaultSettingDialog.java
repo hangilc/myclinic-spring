@@ -36,7 +36,7 @@ abstract class SelectDefaultSettingDialog extends Stage {
         setScene(new Scene(root));
     }
 
-    public void setTestPrintOps(List<Op> testPrintOps) {
+    void setTestPrintOps(List<Op> testPrintOps) {
         this.testPrintOps = testPrintOps;
     }
 
@@ -49,7 +49,15 @@ abstract class SelectDefaultSettingDialog extends Stage {
         names.forEach(name -> {
             root.getChildren().add(createRow(group, name, name));
         });
-        group.setValue(current == null ? NO_SELECTION_TOKEN : current);
+        {
+            String currentValue = current == null ? NO_SELECTION_TOKEN : current;
+            group.setValue(currentValue);
+//            if( group.hasValue(currentValue) ){
+//                group.setValue(currentValue);
+//            } else {
+//                group.setValue(NO_SELECTION_TOKEN);
+//            }
+        }
         group.valueProperty().addListener((obs, oldValue, newValue) -> {
             if( NO_SELECTION_TOKEN.equals(newValue) ){
                 newValue = null;

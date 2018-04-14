@@ -56,4 +56,8 @@ class RadioButtonGroup<T>  {
     public RadioButton[] getButtons(){
         return buttons.toArray(new RadioButton[]{});
     }
+
+    public boolean hasValue(String value){
+        return valueMap.containsValue(value);
+    }
 }

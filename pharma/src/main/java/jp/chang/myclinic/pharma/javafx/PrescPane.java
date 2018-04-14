@@ -17,9 +17,9 @@ import jp.chang.myclinic.drawer.techou.TechouDrawer;
 import jp.chang.myclinic.drawer.techou.TechouDrawerData;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.pharma.*;
-import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialogEx;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
+import jp.chang.myclinic.pharma.javafx.printing.Printing;
 import jp.chang.myclinic.pharma.swing.TechouDataCreator;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
@@ -111,6 +111,8 @@ class PrescPane extends VBox {
         HBox hbox = new HBox(4);
         Button printAllButton = new Button("*全部印刷*");
         Button printAllExceptTechouButton = new Button("*全部印刷(薬手帳なし)*");
+        printAllButton.setOnAction(evt -> doPrintAll());
+        printAllExceptTechouButton.setOnAction(evt -> doPrintAllExcepTechou());
         hbox.getChildren().addAll(
                 printAllButton,
                 printAllExceptTechouButton
@@ -135,7 +137,8 @@ class PrescPane extends VBox {
             PrescContentDataCreator creator = new PrescContentDataCreator(patient, LocalDate.now(), drugs);
             PrescContentDrawerData drawerData = creator.createData();
             List<Op> ops = new PrescContentDrawer(drawerData).getOps();
-            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv){
+            DrawerPreviewDialogEx previewDialog = new DrawerPreviewDialogEx(Globals.printerEnv,
+                    148, 210, 0.8){
                 @Override
                 protected String getDefaultPrinterSettingName() {
                     return Config.load().map(Config::getPrescContentPrinterSetting).orElse(null);
@@ -150,9 +153,8 @@ class PrescPane extends VBox {
                 }
             };
             previewDialog.setTitle("処方内容印刷");
-            previewDialog.setContentSize(148, 210);
-            previewDialog.setScaleFactor(0.8);
-            previewDialog.setOps(ops);
+            previewDialog.addStylesheet("Pharma.css");
+            previewDialog.setSinglePage(ops);
             previewDialog.show();
         }
     }
@@ -256,6 +258,14 @@ class PrescPane extends VBox {
             previewDialog.setSinglePage(ops);
             previewDialog.show();
         }
+    }
+
+    private void doPrintAll(){
+        Printing.printAll(drugs, patient);
+    }
+
+    private void doPrintAllExcepTechou(){
+        Printing.printAllExceptTechou(drugs, patient);
     }
 
 }

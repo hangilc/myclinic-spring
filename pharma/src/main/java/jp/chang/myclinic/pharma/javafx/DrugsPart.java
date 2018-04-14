@@ -16,7 +16,7 @@ import jp.chang.myclinic.pharma.Config;
 import jp.chang.myclinic.pharma.DrugBagDataCreator;
 import jp.chang.myclinic.pharma.Globals;
 import jp.chang.myclinic.pharma.Service;
-import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
+import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialogEx;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import jp.chang.myclinic.util.DrugUtil;
 import org.slf4j.Logger;
@@ -84,7 +84,8 @@ class DrugsPart extends VBox {
                     DrugBagDrawerData drawerData = creator.createData();
                     List<Op> ops = new DrugBagDrawer(drawerData).getOps();
                     Platform.runLater(() -> {
-                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv){
+                        DrawerPreviewDialogEx previewDialog = new DrawerPreviewDialogEx(Globals.printerEnv,
+                                128, 182, 0.8){
                             @Override
                             protected String getDefaultPrinterSettingName() {
                                 return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
@@ -99,9 +100,9 @@ class DrugsPart extends VBox {
                                         });
                             }
                         };
-                        previewDialog.setContentSize(128, 182);
-                        previewDialog.setScaleFactor(1.0);
-                        previewDialog.setOps(ops);
+                        previewDialog.setTitle("薬袋印刷");
+                        previewDialog.addStylesheet("Pharma.css");
+                        previewDialog.setSinglePage(ops);
                         previewDialog.show();
                     });
                 })
