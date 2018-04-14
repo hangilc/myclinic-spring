@@ -69,14 +69,54 @@ public class Main extends Application {
         }
         {
             Menu menu = new Menu("薬剤情報");
+            {
+                MenuItem item = new MenuItem("新規作成");
+                menu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("表示・編集");
+                menu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("一覧");
+                menu.getItems().add(item);
+            }
             mbar.getMenus().add(menu);
         }
         {
             Menu menu = new Menu("設定");
+            {
+                MenuItem item = new MenuItem("処方内容印刷設定");
+                menu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("薬袋印刷設定");
+                menu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("薬手帳印刷設定");
+                menu.getItems().add(item);
+            }
             mbar.getMenus().add(menu);
         }
         {
             Menu menu = new Menu("印刷");
+            {
+                MenuItem item = new MenuItem("内服薬袋印刷");
+                menu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("頓服薬袋印刷");
+                menu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("外用薬袋印刷");
+                menu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("おくすり薬袋印刷");
+                menu.getItems().add(item);
+            }
             mbar.getMenus().add(menu);
         }
         return mbar;
