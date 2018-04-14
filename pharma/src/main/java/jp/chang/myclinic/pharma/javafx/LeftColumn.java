@@ -33,6 +33,10 @@ class LeftColumn extends VBox {
         );
     }
 
+    void clearSelection(){
+        patientList.getSelectionModel().clearSelection();
+    }
+
     private Node createPatientList(){
         patientList = new PatientList();
         return patientList;

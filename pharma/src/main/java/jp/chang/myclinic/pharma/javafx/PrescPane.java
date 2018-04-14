@@ -125,11 +125,20 @@ class PrescPane extends VBox {
         hbox.setAlignment(Pos.CENTER_RIGHT);
         Button cancelButton = new Button("キャンセル");
         Button doneButton = new Button("薬渡し終了");
+        cancelButton.setOnAction(evt -> doCancel());
         hbox.getChildren().addAll(
                 cancelButton,
                 doneButton
         );
         return hbox;
+    }
+
+    private void doCancel(){
+        onCancel();
+    }
+
+    protected void onCancel(){
+
     }
 
     private void doPrintPresc(){

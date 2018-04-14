@@ -15,7 +15,7 @@ import java.util.List;
 class RightColumn extends VBox {
 
     private static Logger logger = LoggerFactory.getLogger(RightColumn.class);
-    private PrescPane prescPane = new PrescPane();
+    private PrescPane prescPane;
     private AuxSwitch auxSwitch;
     private AuxNav auxNav;
     private Records records;
@@ -39,7 +39,7 @@ class RightColumn extends VBox {
             }
         };
         getChildren().addAll(
-                prescPane,
+                createPrescPane(),
                 createAuxSwitch(),
                 createAuxNav(),
                 createRecords()
@@ -57,11 +57,26 @@ class RightColumn extends VBox {
         setVisible(true);
     }
 
-    void endPresc(){
+    private void endPresc(){
         prescPane.reset();
         byDateNav.reset();
         byDrugNav.reset();
         setVisible(false);
+    }
+
+    private Node createPrescPane(){
+        prescPane = new PrescPane(){
+            @Override
+            protected void onCancel() {
+                endPresc();
+                RightColumn.this.onCancel();
+            }
+        };
+        return prescPane;
+    }
+
+    void onCancel(){
+
     }
 
     private Node createAuxSwitch() {

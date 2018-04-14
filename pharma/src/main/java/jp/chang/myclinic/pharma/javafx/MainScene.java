@@ -28,7 +28,12 @@ public class MainScene extends HBox {
                         .exceptionally(HandlerFX::exceptionally);
             }
         };
-        rightColumn = new RightColumn();
+        rightColumn = new RightColumn(){
+            @Override
+            void onCancel() {
+                leftColumn.clearSelection();
+            }
+        };
         ScrollPane rightScroll = new ScrollPane(rightColumn);
         rightScroll.getStyleClass().add("right-column-scroll");
         rightScroll.setFitToWidth(true);
