@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.pharma.javafx.MainScene;
+import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -63,6 +64,9 @@ public class Main extends Application {
             Menu menu = new Menu("アクション");
             {
                 MenuItem item = new MenuItem("過去のお薬手帳");
+                item.setOnAction(evt -> {
+                    new PrevTechouDialog().show();
+                });
                 menu.getItems().add(item);
             }
             mbar.getMenus().add(menu);
