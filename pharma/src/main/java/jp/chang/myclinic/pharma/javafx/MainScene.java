@@ -33,6 +33,11 @@ public class MainScene extends HBox {
             void onCancel() {
                 leftColumn.clearSelection();
             }
+
+            @Override
+            void onPrescDone() {
+                leftColumn.reloadPatientList();
+            }
         };
         ScrollPane rightScroll = new ScrollPane(rightColumn);
         rightScroll.getStyleClass().add("right-column-scroll");

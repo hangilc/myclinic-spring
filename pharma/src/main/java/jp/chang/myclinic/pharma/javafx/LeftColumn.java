@@ -37,6 +37,10 @@ class LeftColumn extends VBox {
         patientList.getSelectionModel().clearSelection();
     }
 
+    void reloadPatientList(){
+        doReload();
+    }
+
     private Node createPatientList(){
         patientList = new PatientList();
         return patientList;

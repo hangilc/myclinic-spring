@@ -40,6 +40,7 @@ class PrescPane extends VBox {
     private DrugsPart drugsPart = new DrugsPart();
     private List<DrugFullDTO> drugs = Collections.emptyList();
     private PatientDTO patient;
+    private int visitId;
 
     PrescPane() {
         super(4);
@@ -64,6 +65,7 @@ class PrescPane extends VBox {
         drugsPart.setDrugs(drugs);
         this.drugs = drugs;
         this.patient = item.patient;
+        this.visitId = item.visitId;
     }
 
     void reset(){
@@ -73,6 +75,7 @@ class PrescPane extends VBox {
         drugsPart.reset();
         this.drugs = Collections.emptyList();
         this.patient = null;
+        this.visitId = 0;
     }
 
     private String infoText(PatientDTO patient){
@@ -126,6 +129,7 @@ class PrescPane extends VBox {
         Button cancelButton = new Button("キャンセル");
         Button doneButton = new Button("薬渡し終了");
         cancelButton.setOnAction(evt -> doCancel());
+        doneButton.setOnAction(evt -> doPrescDone());
         hbox.getChildren().addAll(
                 cancelButton,
                 doneButton
@@ -137,7 +141,17 @@ class PrescPane extends VBox {
         onCancel();
     }
 
+    private void doPrescDone(){
+        Service.api.prescDone(visitId)
+                .thenAccept(result -> Platform.runLater(this::onPrescDone))
+                .exceptionally(HandlerFX::exceptionally);
+    }
+
     protected void onCancel(){
+
+    }
+
+    protected void onPrescDone(){
 
     }
 

@@ -71,11 +71,21 @@ class RightColumn extends VBox {
                 endPresc();
                 RightColumn.this.onCancel();
             }
+
+            @Override
+            protected void onPrescDone() {
+                endPresc();
+                RightColumn.this.onPrescDone();
+            }
         };
         return prescPane;
     }
 
     void onCancel(){
+
+    }
+
+    void onPrescDone(){
 
     }
 
