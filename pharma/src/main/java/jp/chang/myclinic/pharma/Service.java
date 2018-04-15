@@ -101,6 +101,10 @@ public class Service {
 
         @GET("get-visit")
         CompletableFuture<VisitDTO> getVisit(@Query("visit-id") int visitId);
+
+        @GET("page-visit-drug")
+        CompletableFuture<VisitDrugPageDTO> pageVisitDrug(@Query("patient-id") int patientId,
+                                                          @Query("page") int page);
     }
 
     public static ServerAPI api;

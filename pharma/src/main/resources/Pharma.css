@@ -73,6 +73,11 @@
 }
 
 .prev-techou-dialog {
+    -fx-pref-width: 300px;
     -fx-padding: 10px;
+}
+
+.prev-techou-dialog .result-list-scroll {
+    -fx-pref-height: 360px;
 }
 
