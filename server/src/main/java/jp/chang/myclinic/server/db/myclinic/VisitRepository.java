@@ -54,4 +54,8 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 	Integer countByKouhi1IdOrKouhi2IdOrKouhi3Id(int kouhi1Id, int kouhi2Id, int kouhi3Id);
 
 	void deleteById(int visitId);
+
+	@Query("select visit.visitId from Visit visit, Drug drug where visit.visitId = drug.visitId " +
+			" and visit.patientId = :patientId group by visit.visitId having count(drug.drugId) > 0 ")
+	Page<Integer> pageVisitIdHavingDrug(@Param("patientId") int patientId, Pageable pageable);
 }

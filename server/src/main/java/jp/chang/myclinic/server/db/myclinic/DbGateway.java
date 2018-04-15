@@ -1404,7 +1404,7 @@ public class DbGateway {
     }
 
     public TextVisitPatientPageDTO searchTextGlobally(String text, int page, int itemsPerPage){
-        Pageable pageable = new PageRequest(page, itemsPerPage, Sort.Direction.DESC, "textId");
+        Pageable pageable = PageRequest.of(page, itemsPerPage, Sort.Direction.DESC, "textId");
         Page<Object[]> result = textRepository.searchTextGlobally(text, pageable);
         TextVisitPatientPageDTO retval = new TextVisitPatientPageDTO();
         retval.page = page;
@@ -1419,6 +1419,23 @@ public class DbGateway {
                 })
                 .collect(Collectors.toList());
         return retval;
+    }
+
+    public VisitDrugPageDTO pageVisitIdHavingDrug(int patientId, int page){
+        Pageable pageable = PageRequest.of(page, 10, new Sort(Sort.Direction.DESC, "visitId"));
+        Page<Integer> visitIdPage =  visitRepository.pageVisitIdHavingDrug(patientId, pageable);
+        VisitDrugPageDTO resultPage = new VisitDrugPageDTO();
+        resultPage.page = page;
+        resultPage.totalPages = visitIdPage.getTotalPages();
+        resultPage.visitDrugs = visitIdPage.getContent().stream()
+                .map(visitId -> {
+                    VisitDrugDTO visitDrug = new VisitDrugDTO();
+                    visitDrug.visit = getVisit(visitId);
+                    visitDrug.drugs = listDrugFull(visitId);
+                    return visitDrug;
+                })
+                .collect(Collectors.toList());
+        return resultPage;
     }
 
     private ShinryouFullDTO resultToShinryouFullDTO(Object[] result){

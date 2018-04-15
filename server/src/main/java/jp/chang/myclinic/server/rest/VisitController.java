@@ -222,4 +222,10 @@ public class VisitController {
 		return sectionItemDTO;
 	}
 
+	@RequestMapping(value="/page-visit-id-having-drug", method=RequestMethod.GET)
+	public VisitDrugPageDTO pageVisitIdHavingDrug(@RequestParam("patient-id") int patientId,
+											   @RequestParam("page") int page){
+		return dbGateway.pageVisitIdHavingDrug(patientId, page);
+	}
+
 }
