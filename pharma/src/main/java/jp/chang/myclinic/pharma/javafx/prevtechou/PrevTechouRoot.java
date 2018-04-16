@@ -7,6 +7,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDrugDTO;
 import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.javafx.lib.GuiUtil;
@@ -26,6 +27,7 @@ class PrevTechouRoot extends VBox {
     private Nav nav;
     private VBox disp = new VBox(4);
     private int patientId = 0;
+    private PatientDTO currentPatient;
 
     PrevTechouRoot() {
         super(4);
@@ -64,12 +66,14 @@ class PrevTechouRoot extends VBox {
     }
 
     private void setResultList(List<VisitDrugDTO> visitDrugs) {
-        List<Item> items = visitDrugs.stream().map(Item::new).collect(Collectors.toList());
+        List<Item> items = visitDrugs.stream()
+                .map(visitDrug -> new Item(visitDrug, currentPatient))
+                .collect(Collectors.toList());
         disp.getChildren().setAll(items);
     }
 
     private void loadPage(int page) {
-        if (patientId > 0) {
+        if (patientId > 0 && currentPatient != null) {
             Service.api.pageVisitDrug(patientId, page)
                     .thenAccept(result -> Platform.runLater(() -> {
                         nav.set(page, result.totalPages);
@@ -86,6 +90,7 @@ class PrevTechouRoot extends VBox {
             Service.api.getPatient(patientId)
                     .thenAccept(patient -> Platform.runLater(() -> {
                         patientInfo.setPatient(patient);
+                        currentPatient = patient;
                         loadPage(0);
                     }))
                     .exceptionally(HandlerFX::exceptionally);

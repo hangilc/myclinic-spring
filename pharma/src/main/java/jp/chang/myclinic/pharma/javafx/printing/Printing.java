@@ -11,6 +11,7 @@ import jp.chang.myclinic.drawer.techou.TechouDrawerData;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.pharma.*;
+import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import jp.chang.myclinic.pharma.swing.TechouDataCreator;
 import org.slf4j.Logger;
@@ -31,16 +32,40 @@ public class Printing {
         printTechou(drugs, patient);
     }
 
-    public static void printAllExceptTechou(List<DrugFullDTO> drugs, PatientDTO patient){
+    public static void printAllExceptTechou(List<DrugFullDTO> drugs, PatientDTO patient) {
         printPrescContent(drugs, patient);
         printDrugBagSet(drugs, patient);
+    }
+
+    public static void previewTechou(List<DrugFullDTO> drugs, PatientDTO patient) {
+        TechouDataCreator creator = new TechouDataCreator(patient, LocalDate.now(), drugs, Globals.clinicInfo);
+        TechouDrawerData drawerData = creator.createData();
+        List<Op> ops = new TechouDrawer(drawerData).getOps();
+        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv, 99, 120, 1.0) {
+            @Override
+            protected String getDefaultPrinterSettingName() {
+                return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
+            }
+
+            @Override
+            protected void setDefaultPrinterSettingName(String newName) {
+                Config.load().ifPresent(config -> {
+                    config.setTechouPrinterSetting(newName);
+                    config.save();
+                });
+            }
+        };
+        previewDialog.setTitle("薬手帳印刷");
+        previewDialog.addStylesheet("Pharma.css");
+        previewDialog.setSinglePage(ops);
+        previewDialog.show();
     }
 
     private static void print(List<Op> page, String setting) {
         printPages(Collections.singletonList(page), setting);
     }
 
-    private static void printPages(List<List<Op>> pages, String setting){
+    private static void printPages(List<List<Op>> pages, String setting) {
         PrinterEnv printerEnv = Globals.printerEnv;
         if (printerEnv != null) {
             printerEnv.print(pages, setting);

@@ -21,9 +21,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class DrawerPreviewDialogEx extends Stage {
+public class DrawerPreviewDialog extends Stage {
 
-    private static Logger logger = LoggerFactory.getLogger(DrawerPreviewDialogEx.class);
+    private static Logger logger = LoggerFactory.getLogger(DrawerPreviewDialog.class);
     private static final String NO_PRINTER_SETTING = "(手動選択)";
     private ChoiceBox<String> settingChoice;
     private DrawerCanvas drawerCanvas;
@@ -33,11 +33,11 @@ public class DrawerPreviewDialogEx extends Stage {
     private Parent root;
     private HBox commandsBox;
 
-    public DrawerPreviewDialogEx(double width, double height, double scaleFactor) {
+    public DrawerPreviewDialog(double width, double height, double scaleFactor) {
         this(null, width, height, scaleFactor);
     }
 
-    public DrawerPreviewDialogEx(PrinterEnv printerEnv, double width, double height, double scaleFactor) {
+    public DrawerPreviewDialog(PrinterEnv printerEnv, double width, double height, double scaleFactor) {
         this.printerEnv = printerEnv;
         BorderPane main = new BorderPane();
         VBox root = new VBox(4);
