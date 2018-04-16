@@ -81,3 +81,17 @@
     -fx-pref-height: 360px;
 }
 
+.new-pharma-drug-dialog {
+    -fx-padding: 10px;
+}
+
+.drug-description-text-area, .side-effect-text-area {
+    -fx-pref-width: 260px;
+    -fx-pref-height: 120px;
+}
+
+.iyakuhin-list-dialog {
+    -fx-padding: 10px;
+    -fx-pref-height: 360px;
+}
+
