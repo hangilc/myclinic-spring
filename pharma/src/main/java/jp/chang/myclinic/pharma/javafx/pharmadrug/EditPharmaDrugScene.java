@@ -10,28 +10,26 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
+import jp.chang.myclinic.dto.PharmaDrugNameDTO;
 import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
+class EditPharmaDrugScene extends VBox {
 
-class NewPharmaDrugScene extends VBox {
-
-    private static Logger logger = LoggerFactory.getLogger(NewPharmaDrugScene.class);
+    private static Logger logger = LoggerFactory.getLogger(EditPharmaDrugScene.class);
     private TextField inputField = new TextField();
     private Text drugInfoText = new Text("");
     private TextArea descriptionTextArea = new TextArea();
     private TextArea sideEffectTextArea = new TextArea();
     private int iyakuhincode;
 
-    NewPharmaDrugScene() {
+    EditPharmaDrugScene() {
         super(4);
         getStylesheets().add("Pharma.css");
-        getStyleClass().add("new-pharma-drug-dialog");
+        getStyleClass().add("edit-pharma-drug-dialog");
         descriptionTextArea.getStyleClass().add("drug-description-text-area");
         descriptionTextArea.setWrapText(true);
         sideEffectTextArea.getStyleClass().add("side-effect-text-area");
@@ -46,7 +44,6 @@ class NewPharmaDrugScene extends VBox {
                 new Label("副作用"),
                 sideEffectTextArea,
                 new HBox(4, enterButton)
-
         );
     }
 
@@ -65,16 +62,15 @@ class NewPharmaDrugScene extends VBox {
     }
 
     private void doSearch(String text){
-        if( text.isEmpty() ){
-            return;
-        }
-        Service.api.searchIyakuhinMasterByName(text, LocalDate.now().toString())
+        Service.api.searchPharmaDrugNames(text)
                 .thenAccept(result -> Platform.runLater(() -> {
-                    IyakuhinListDialog listDialog = new IyakuhinListDialog(result){
+                    PharmaDrugListDialog listDialog = new PharmaDrugListDialog(result){
                         @Override
-                        protected void onSelect(IyakuhinMasterDTO master) {
-                            drugInfoText.setText(master.name);
-                            iyakuhincode = master.iyakuhincode;
+                        protected void onSelect(PharmaDrugNameDTO item, PharmaDrugDTO pharmaDrug) {
+                            drugInfoText.setText(item.name);
+                            iyakuhincode = item.iyakuhincode;
+                            descriptionTextArea.setText(pharmaDrug.description);
+                            sideEffectTextArea.setText(pharmaDrug.sideeffect);
                             close();
                         }
 
@@ -90,21 +86,19 @@ class NewPharmaDrugScene extends VBox {
 
     private void doEnter(){
         if( iyakuhincode > 0 ){
-            PharmaDrugDTO pd = new PharmaDrugDTO();
-            pd.iyakuhincode = iyakuhincode;
-            pd.description = descriptionTextArea.getText();
-            pd.sideeffect = sideEffectTextArea.getText();
-            Service.api.enterPharmaDrug(pd)
-                    .thenAccept(result -> {
-                        clear();
-                    })
+            PharmaDrugDTO data = new PharmaDrugDTO();
+            data.iyakuhincode = iyakuhincode;
+            data.description = descriptionTextArea.getText();
+            data.sideeffect = sideEffectTextArea.getText();
+            Service.api.updatePharmaDrug(data)
+                    .thenAccept(result -> Platform.runLater(() -> {
+                        onEnter();
+                    }))
                     .exceptionally(HandlerFX::exceptionally);
         }
     }
 
-    private void clear(){
-        drugInfoText.setText("");
-        descriptionTextArea.setText("");
-        sideEffectTextArea.setText("");
+    protected void onEnter(){
+
     }
 }

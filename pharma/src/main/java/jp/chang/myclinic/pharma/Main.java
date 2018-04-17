@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.pharma.javafx.MainScene;
+import jp.chang.myclinic.pharma.javafx.pharmadrug.EditPharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.pharmadrug.NewPharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
 import okhttp3.Cache;
@@ -80,7 +81,8 @@ public class Main extends Application {
                 menu.getItems().add(item);
             }
             {
-                MenuItem item = new MenuItem("表示・編集");
+                MenuItem item = new MenuItem("編集");
+                item.setOnAction(evt -> new EditPharmaDrugDialog().show());
                 menu.getItems().add(item);
             }
             {
