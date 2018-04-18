@@ -5,13 +5,27 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NewPharmaDrugDialog extends Stage {
+class NewPharmaDrugDialog extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(NewPharmaDrugDialog.class);
 
-    public NewPharmaDrugDialog() {
+    NewPharmaDrugDialog() {
         setTitle("新規薬剤情報入力");
-        setScene(new Scene(new NewPharmaDrugScene()));
+        setScene(new Scene(new NewPharmaDrugScene(){
+            @Override
+            protected void onEnter(int iyakuhincode) {
+
+            }
+
+            @Override
+            protected void onClose() {
+                close();
+            }
+        }));
+    }
+
+    protected void onEnter(int iyakuhincode){
+
     }
 
 }

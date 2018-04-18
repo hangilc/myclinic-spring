@@ -37,7 +37,9 @@ class NewPharmaDrugScene extends VBox {
         sideEffectTextArea.getStyleClass().add("side-effect-text-area");
         sideEffectTextArea.setWrapText(true);
         Button enterButton = new Button("入力");
+        Button closeButton = new Button("閉じる");
         enterButton.setOnAction(evt -> doEnter());
+        closeButton.setOnAction(evt -> onClose());
         getChildren().addAll(
                 createSearchTextInput(),
                 createDrugInfoPane(),
@@ -45,8 +47,7 @@ class NewPharmaDrugScene extends VBox {
                 descriptionTextArea,
                 new Label("副作用"),
                 sideEffectTextArea,
-                new HBox(4, enterButton)
-
+                new HBox(4, enterButton, closeButton)
         );
     }
 
@@ -97,6 +98,7 @@ class NewPharmaDrugScene extends VBox {
             Service.api.enterPharmaDrug(pd)
                     .thenAccept(result -> {
                         clear();
+                        onEnter(pd.iyakuhincode);
                     })
                     .exceptionally(HandlerFX::exceptionally);
         }
@@ -106,5 +108,13 @@ class NewPharmaDrugScene extends VBox {
         drugInfoText.setText("");
         descriptionTextArea.setText("");
         sideEffectTextArea.setText("");
+    }
+
+    protected void onEnter(int iyakuhincode){
+
+    }
+
+    protected void onClose(){
+
     }
 }

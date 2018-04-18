@@ -81,6 +81,10 @@
     -fx-pref-height: 360px;
 }
 
+.pharma-drug-dialog {
+    -fx-padding: 10px;
+}
+
 .new-pharma-drug-dialog {
     -fx-padding: 10px;
 }
@@ -90,6 +94,8 @@
     -fx-pref-height: 120px;
 }
 
+
+/*
 .iyakuhin-list-dialog {
     -fx-padding: 10px;
     -fx-pref-height: 360px;
@@ -103,6 +109,7 @@
     -fx-padding: 10px;
     -fx-pref-height: 260px;
 }
+*/
 
 
 

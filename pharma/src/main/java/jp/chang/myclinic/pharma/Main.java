@@ -1,6 +1,7 @@
 package jp.chang.myclinic.pharma;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -10,8 +11,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.pharma.javafx.MainScene;
-import jp.chang.myclinic.pharma.javafx.pharmadrug.EditPharmaDrugDialog;
-import jp.chang.myclinic.pharma.javafx.pharmadrug.NewPharmaDrugDialog;
+import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
+import jp.chang.myclinic.pharma.javafx.pharmadrug.PharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -71,26 +72,35 @@ public class Main extends Application {
                 });
                 menu.getItems().add(item);
             }
-            mbar.getMenus().add(menu);
-        }
-        {
-            Menu menu = new Menu("薬剤情報");
             {
-                MenuItem item = new MenuItem("新規作成");
-                item.setOnAction(evt -> new NewPharmaDrugDialog().show());
-                menu.getItems().add(item);
-            }
-            {
-                MenuItem item = new MenuItem("編集");
-                item.setOnAction(evt -> new EditPharmaDrugDialog().show());
-                menu.getItems().add(item);
-            }
-            {
-                MenuItem item = new MenuItem("一覧");
+                MenuItem item = new MenuItem("薬剤情報管理");
+                item.setOnAction(evt -> {
+                    Service.api.listAllPharmaDrugNames()
+                            .thenAccept(result -> Platform.runLater(() -> new PharmaDrugDialog(result).show()))
+                            .exceptionally(HandlerFX::exceptionally);
+                });
                 menu.getItems().add(item);
             }
             mbar.getMenus().add(menu);
         }
+//        {
+//            Menu menu = new Menu("薬剤情報");
+//            {
+//                MenuItem item = new MenuItem("新規作成");
+//                item.setOnAction(evt -> new NewPharmaDrugDialog().show());
+//                menu.getItems().add(item);
+//            }
+//            {
+//                MenuItem item = new MenuItem("編集");
+//                item.setOnAction(evt -> new EditPharmaDrugDialog().show());
+//                menu.getItems().add(item);
+//            }
+//            {
+//                MenuItem item = new MenuItem("一覧");
+//                menu.getItems().add(item);
+//            }
+//            mbar.getMenus().add(menu);
+//        }
         {
             Menu menu = new Menu("設定");
             {
