@@ -117,4 +117,12 @@ class NewPharmaDrugRoot extends VBox {
     protected void onClose(){
 
     }
+
+    void setDescription(String description) {
+        descriptionTextArea.setText(description);
+    }
+
+    void setSideEffect(String sideEffect){
+        sideEffectTextArea.setText(sideEffect);
+    }
 }

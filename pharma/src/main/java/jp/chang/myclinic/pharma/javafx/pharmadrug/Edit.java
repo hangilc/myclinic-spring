@@ -15,19 +15,19 @@ import jp.chang.myclinic.dto.PharmaDrugNameDTO;
 import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.javafx.lib.GuiUtil;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 
 class Edit extends VBox {
 
-    private static Logger logger = LoggerFactory.getLogger(Edit.class);
+    //private static Logger logger = LoggerFactory.getLogger(Edit.class);
     private int iyakuhincode;
     private Text infoText = new Text("");
     private TextArea descTextArea = new TextArea("");
     private TextArea sideTextArea = new TextArea("");
+    private Button newButton = new Button("新規作成");
     private Button editButton = new Button("編集");
+    private Button clearButton = new Button("クリア");
     private Button enterButton = new Button("入力");
     private Button cancelEditButton = new Button("キャンセル");
     private Button deleteButton = new Button("削除");
@@ -47,7 +47,9 @@ class Edit extends VBox {
         editCommands = createEditCommands();
         commandPane.getChildren().setAll(viewCommands);
         editButton.setDisable(true);
+        newButton.setOnAction(evt -> doNew());
         editButton.setOnAction(evt -> editMode());
+        clearButton.setOnAction(evt-> clear());
         enterButton.setOnAction(evt -> doEnter(this::viewMode));
         cancelEditButton.setOnAction(evt -> viewMode());
         deleteButton.setOnAction(evt -> doDelete(iyakuhincode -> {
@@ -77,8 +79,32 @@ class Edit extends VBox {
                 .exceptionally(HandlerFX::exceptionally);
     }
 
+    void onEnter(int iyakuhincode){
+
+    }
+
     void onDelete(int iyakuhincode){
 
+    }
+
+    private Node createViewCommands(){
+        HBox hbox = new HBox(4);
+        hbox.getChildren().addAll(
+                newButton,
+                editButton,
+                clearButton
+        );
+        return hbox;
+    }
+
+    private Node createEditCommands(){
+        HBox hbox = new HBox(4);
+        hbox.getChildren().addAll(
+                enterButton,
+                cancelEditButton,
+                deleteButton
+        );
+        return hbox;
     }
 
     private void viewMode(){
@@ -94,6 +120,7 @@ class Edit extends VBox {
     }
 
     private void clear(){
+        iyakuhincode = 0;
         infoText.setText("");
         descTextArea.setText("");
         sideTextArea.setText("");
@@ -101,22 +128,18 @@ class Edit extends VBox {
         viewMode();
     }
 
-    private Node createViewCommands(){
-        HBox hbox = new HBox(4);
-        hbox.getChildren().addAll(
-                editButton
-        );
-        return hbox;
-    }
-
-    private Node createEditCommands(){
-        HBox hbox = new HBox(4);
-        hbox.getChildren().addAll(
-                enterButton,
-                cancelEditButton,
-                deleteButton
-        );
-        return hbox;
+    private void doNew(){
+        NewPharmaDrugDialog dialog = new NewPharmaDrugDialog(){
+            @Override
+            protected void onEnter(int iyakuhincode) {
+                Edit.this.onEnter(iyakuhincode);
+            }
+        };
+        if( iyakuhincode > 0 ){
+            dialog.setDescription(descTextArea.getText());
+            dialog.setSideEffect(sideTextArea.getText());
+        }
+        dialog.show();
     }
 
     private void doEnter(Runnable cb){
@@ -126,9 +149,7 @@ class Edit extends VBox {
             data.description = descTextArea.getText();
             data.sideeffect = sideTextArea.getText();
             Service.api.updatePharmaDrug(data)
-                    .thenAccept(result -> {
-                        Platform.runLater(cb);
-                    })
+                    .thenAccept(result -> Platform.runLater(cb))
                     .exceptionally(HandlerFX::exceptionally);
         }
     }
