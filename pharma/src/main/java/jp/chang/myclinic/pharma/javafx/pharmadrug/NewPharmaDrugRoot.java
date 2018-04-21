@@ -13,11 +13,13 @@ import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
 import jp.chang.myclinic.pharma.Service;
+import jp.chang.myclinic.pharma.javafx.lib.GuiUtil;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.List;
 
 class NewPharmaDrugRoot extends VBox {
 
@@ -27,6 +29,7 @@ class NewPharmaDrugRoot extends VBox {
     private TextArea descriptionTextArea = new TextArea();
     private TextArea sideEffectTextArea = new TextArea();
     private int iyakuhincode;
+    private Button enterButton = new Button("入力");
 
     NewPharmaDrugRoot() {
         super(4);
@@ -36,8 +39,8 @@ class NewPharmaDrugRoot extends VBox {
         descriptionTextArea.setWrapText(true);
         sideEffectTextArea.getStyleClass().add("side-effect-text-area");
         sideEffectTextArea.setWrapText(true);
-        Button enterButton = new Button("入力");
         Button closeButton = new Button("閉じる");
+        enterButton.setDisable(true);
         enterButton.setOnAction(evt -> doEnter());
         closeButton.setOnAction(evt -> onClose());
         getChildren().addAll(
@@ -70,23 +73,34 @@ class NewPharmaDrugRoot extends VBox {
             return;
         }
         Service.api.searchIyakuhinMasterByName(text, LocalDate.now().toString())
-                .thenAccept(result -> Platform.runLater(() -> {
-                    IyakuhinListDialog listDialog = new IyakuhinListDialog(result){
-                        @Override
-                        protected void onSelect(IyakuhinMasterDTO master) {
-                            drugInfoText.setText(master.name);
-                            iyakuhincode = master.iyakuhincode;
-                            close();
-                        }
-
-                        @Override
-                        protected void onCancel() {
-                            close();
-                        }
-                    };
-                    listDialog.show();
-                }))
+                .thenAccept(result -> Platform.runLater(() -> openIyakuhinListDialog(result)))
                 .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private void openIyakuhinListDialog(List<IyakuhinMasterDTO> masters){
+        IyakuhinListDialog listDialog = new IyakuhinListDialog(masters){
+            @Override
+            protected void onSelect(IyakuhinMasterDTO master) {
+                Service.api.findPharmaDrug(master.iyakuhincode)
+                        .thenAccept(result -> Platform.runLater(() ->{
+                            if( result != null ){
+                                GuiUtil.alertError(master.name + "は既に登録されています。");
+                            } else {
+                                drugInfoText.setText(master.name);
+                                iyakuhincode = master.iyakuhincode;
+                                enterButton.setDisable(false);
+                                close();
+                            }
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
+            }
+
+            @Override
+            protected void onCancel() {
+                close();
+            }
+        };
+        listDialog.show();
     }
 
     private void doEnter(){
@@ -105,9 +119,11 @@ class NewPharmaDrugRoot extends VBox {
     }
 
     void clear(){
+        iyakuhincode = 0;
         drugInfoText.setText("");
         descriptionTextArea.setText("");
         sideEffectTextArea.setText("");
+        enterButton.setDisable(true);
     }
 
     protected void onEnter(int iyakuhincode){
