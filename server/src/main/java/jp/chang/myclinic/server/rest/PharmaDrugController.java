@@ -49,7 +49,7 @@ public class PharmaDrugController {
         return true;
     }
 
-    @RequestMapping(value="/deleteById-pharma-drug", method=RequestMethod.POST)
+    @RequestMapping(value="/delete-pharma-drug", method=RequestMethod.POST)
     public boolean deletePharmaDrug(@RequestParam("iyakuhincode") int iyakuhincode){
         dbGateway.deletePharmaDrug(iyakuhincode);
         return true;

@@ -19,16 +19,16 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 
-class NewPharmaDrugScene extends VBox {
+class NewPharmaDrugRoot extends VBox {
 
-    private static Logger logger = LoggerFactory.getLogger(NewPharmaDrugScene.class);
+    private static Logger logger = LoggerFactory.getLogger(NewPharmaDrugRoot.class);
     private TextField inputField = new TextField();
     private Text drugInfoText = new Text("");
     private TextArea descriptionTextArea = new TextArea();
     private TextArea sideEffectTextArea = new TextArea();
     private int iyakuhincode;
 
-    NewPharmaDrugScene() {
+    NewPharmaDrugRoot() {
         super(4);
         getStylesheets().add("Pharma.css");
         getStyleClass().add("new-pharma-drug-dialog");
@@ -104,7 +104,7 @@ class NewPharmaDrugScene extends VBox {
         }
     }
 
-    private void clear(){
+    void clear(){
         drugInfoText.setText("");
         descriptionTextArea.setText("");
         sideEffectTextArea.setText("");

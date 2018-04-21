@@ -11,10 +11,11 @@ class NewPharmaDrugDialog extends Stage {
 
     NewPharmaDrugDialog() {
         setTitle("新規薬剤情報入力");
-        setScene(new Scene(new NewPharmaDrugScene(){
+        setScene(new Scene(new NewPharmaDrugRoot(){
             @Override
             protected void onEnter(int iyakuhincode) {
-
+                NewPharmaDrugDialog.this.onEnter(iyakuhincode);
+                clear();
             }
 
             @Override

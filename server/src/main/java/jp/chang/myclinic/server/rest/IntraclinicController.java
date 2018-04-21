@@ -40,7 +40,7 @@ class IntraclinicController {
 
     @RequestMapping(value="/list-post-full", method=RequestMethod.GET)
     public IntraclinicPostFullPageDTO listPostFull(@RequestParam("page") int page){
-        Page<Post> postPage = postRepository.findAll(new PageRequest(page, 7, Sort.Direction.DESC, "id"));
+        Page<Post> postPage = postRepository.findAll(PageRequest.of(page, 7, Sort.Direction.DESC, "id"));
         IntraclinicPostFullPageDTO pageDTO = new IntraclinicPostFullPageDTO();
         pageDTO.totalPages = postPage.getTotalPages();
         pageDTO.posts = postPage.map(this::toPostFullDTO).getContent();
@@ -109,7 +109,7 @@ class IntraclinicController {
     private IntraclinicPostFullDTO toPostFullDTO(Post post){
         IntraclinicPostFullDTO postFullDTO = new IntraclinicPostFullDTO();
         postFullDTO.post = toPostDTO(post);
-        postFullDTO.comments = commentRepository.findByPostId(post.getId(), new Sort("id")).stream()
+        postFullDTO.comments = commentRepository.findByPostId(post.getId(), Sort.by("id")).stream()
                 .map(this::toCommentDTO).collect(Collectors.toList());
         return postFullDTO;
     }

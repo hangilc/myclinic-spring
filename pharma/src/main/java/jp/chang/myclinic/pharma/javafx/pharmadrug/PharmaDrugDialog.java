@@ -7,19 +7,17 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import jp.chang.myclinic.dto.PharmaDrugNameDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class PharmaDrugDialog extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(PharmaDrugDialog.class);
+    private PharmaDrugRoot root;
 
-    public PharmaDrugDialog(List<PharmaDrugNameDTO> pharmaDrugNames) {
+    public PharmaDrugDialog() {
         setTitle("薬剤情報管理");
-        PharmaDrugRoot root = new PharmaDrugRoot(pharmaDrugNames);
+        root = new PharmaDrugRoot();
         root.getStylesheets().add("Pharma.css");
         root.getStyleClass().add("pharma-drug-dialog");
         BorderPane borderPane = new BorderPane();
@@ -43,7 +41,12 @@ public class PharmaDrugDialog extends Stage {
     }
 
     private void doNew(){
-        NewPharmaDrugDialog newPharmaDrugDialog = new NewPharmaDrugDialog();
+        NewPharmaDrugDialog newPharmaDrugDialog = new NewPharmaDrugDialog(){
+            @Override
+            protected void onEnter(int iyakuhincode) {
+                root.reloadList();
+            }
+        };
         newPharmaDrugDialog.show();
     }
 
