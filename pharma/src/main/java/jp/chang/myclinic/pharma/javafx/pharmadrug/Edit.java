@@ -21,8 +21,9 @@ import java.util.function.Consumer;
 class Edit extends VBox {
 
     //private static Logger logger = LoggerFactory.getLogger(Edit.class);
+    private static String noSelectText = "（薬剤選択なし）";
     private int iyakuhincode;
-    private Text infoText = new Text("");
+    private Text infoText = new Text(noSelectText);
     private TextArea descTextArea = new TextArea("");
     private TextArea sideTextArea = new TextArea("");
     private Button newButton = new Button("新規作成");
@@ -121,7 +122,7 @@ class Edit extends VBox {
 
     private void clear(){
         iyakuhincode = 0;
-        infoText.setText("");
+        infoText.setText(noSelectText);
         descTextArea.setText("");
         sideTextArea.setText("");
         editButton.setDisable(true);
@@ -133,6 +134,7 @@ class Edit extends VBox {
             @Override
             protected void onEnter(int iyakuhincode) {
                 Edit.this.onEnter(iyakuhincode);
+                close();
             }
         };
         if( iyakuhincode > 0 ){

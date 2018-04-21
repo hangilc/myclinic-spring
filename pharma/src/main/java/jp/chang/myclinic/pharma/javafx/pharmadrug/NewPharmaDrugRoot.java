@@ -110,10 +110,10 @@ class NewPharmaDrugRoot extends VBox {
             pd.description = descriptionTextArea.getText();
             pd.sideeffect = sideEffectTextArea.getText();
             Service.api.enterPharmaDrug(pd)
-                    .thenAccept(result -> {
+                    .thenAccept(result -> Platform.runLater(() ->{
                         clear();
                         onEnter(pd.iyakuhincode);
-                    })
+                    }))
                     .exceptionally(HandlerFX::exceptionally);
         }
     }
