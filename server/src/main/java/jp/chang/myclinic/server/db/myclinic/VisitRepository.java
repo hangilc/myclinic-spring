@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
+	Visit findById(int visitId);
+
 	@Query("select visit.visitId from Visit visit where date(visit.visitedAt) = date(now()) ")
 	List<Integer> findVisitIdForToday(Sort sort);
 
@@ -29,7 +31,10 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
     @Query("select visit.visitId from Visit visit where visit.patientId = :patientId")
 	List<Integer> findVisitIdsByPatient(@Param("patientId") int patientId, Sort sort);
 
-    @Query("select visit.visitId, visit.visitedAt from Visit visit where visit.patientId = :patientId")
+	@Query("select visit.visitId from Visit visit where visit.patientId = :patientId")
+	Page<Integer> pageVisitIdsByPatient(@Param("patientId") int patientId, Pageable pageable);
+
+	@Query("select visit.visitId, visit.visitedAt from Visit visit where visit.patientId = :patientId")
 	List<Object[]> findVisitIdVisitedAtByPatient(@Param("patientId") int patientId, Sort sort);
 
 	@Query("select visit from Visit visit where visit.visitId in :visitIds")
@@ -47,4 +52,10 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 	Integer countByRoujinId(int roujinId);
 
 	Integer countByKouhi1IdOrKouhi2IdOrKouhi3Id(int kouhi1Id, int kouhi2Id, int kouhi3Id);
+
+	void deleteById(int visitId);
+
+	@Query("select visit.visitId from Visit visit, Drug drug where visit.visitId = drug.visitId " +
+			" and visit.patientId = :patientId group by visit.visitId having count(drug.drugId) > 0 ")
+	Page<Integer> pageVisitIdHavingDrug(@Param("patientId") int patientId, Pageable pageable);
 }

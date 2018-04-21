@@ -1,5 +1,7 @@
 package jp.chang.myclinic.server.db.myclinic;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -74,4 +76,14 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 	@Query("update Drug d set d.days = :days where d.drugId in :drugIds")
 	void batchUpdateDays(@Param("drugIds") List<Integer> drugIds, @Param("days") int days);
 
+	@Query("select drug.visitId from Drug drug, Visit visit where drug.iyakuhincode = :iyakuhincode " +
+			" and visit.patientId = :patientId and visit.visitId = drug.visitId ")
+	Page<Integer> pageVisitIdsByPatientAndIyakuhincode(@Param("patientId") int patientId,
+													   @Param("iyakuhincode") int iyakuhincode,
+													   Pageable pageable);
+
+
+	Drug findById(int drugId);
+
+	void deleteById(int drugId);
 }

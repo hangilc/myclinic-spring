@@ -1,5 +1,7 @@
 package jp.chang.myclinic.pharma;
 
+import jp.chang.myclinic.pharma.swing.MainFrame;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;

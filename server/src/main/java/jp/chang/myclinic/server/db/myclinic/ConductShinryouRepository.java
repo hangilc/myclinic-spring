@@ -26,4 +26,8 @@ public interface ConductShinryouRepository extends CrudRepository<ConductShinryo
 			" and m.validFrom <= DATE(v.visitedAt) " +
 			" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto)")
 	List<Object[]> findFull(@Param("conductShinryouId") int conductShinryouId);
+
+	ConductShinryou findById(int conductShinryouId);
+
+	void deleteById(int conductShinryouId);
 }

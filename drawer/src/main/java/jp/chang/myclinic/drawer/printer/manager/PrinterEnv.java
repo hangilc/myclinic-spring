@@ -58,6 +58,10 @@ public class PrinterEnv {
         }
     }
 
+    public void printSinglePage(List<Op> page, String setting){
+        print(Collections.singletonList(page), setting);
+    }
+
     public boolean createNewSetting(String name) throws IOException, SettingDirNotSuppliedException {
         if (settingDir == null) {
             throw new SettingDirNotSuppliedException();

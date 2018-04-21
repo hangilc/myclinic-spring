@@ -25,4 +25,8 @@ public interface PharmaDrugRepository extends CrudRepository<PharmaDrug, Integer
     @Query("select m.iyakuhincode, m.name, m.yomi from PharmaDrug p, IyakuhinMaster m where " +
             " p.iyakuhincode = m.iyakuhincode group by m.iyakuhincode, m.name ")
     List<Object[]> findAllPharmaDrugNames();
+
+    PharmaDrug findById(int iyakuhincode);
+
+    void deleteById(int iyakuhincode);
 }

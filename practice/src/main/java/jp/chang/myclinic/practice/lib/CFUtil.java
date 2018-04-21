@@ -7,6 +7,8 @@ import java.util.function.Function;
 
 public class CFUtil {
 
+    private CFUtil(){}
+
     public static <D> CompletableFuture<Void> forEach(List<D> dataList, Function<D, CompletableFuture<Void>> cvt){
         CompletableFuture<Void> cfMain = new CompletableFuture<>();
         forEachIter(cfMain, dataList, cvt);

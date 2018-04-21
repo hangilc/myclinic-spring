@@ -44,7 +44,7 @@ public class WqueueController {
 		return dbGateway.listWqueueFull();
 	}
 
-	@RequestMapping(value="/try-delete-wqueue", method=RequestMethod.POST)
+	@RequestMapping(value="/try-deleteById-wqueue", method=RequestMethod.POST)
 	public boolean tryDeleteWqueue(@RequestParam("visit-id") int visitId){
 		Optional<WqueueDTO> optWqueueDTO = dbGateway.findWqueue(visitId);
 		optWqueueDTO.ifPresent(wqueue -> dbGateway.deleteWqueue(wqueue));

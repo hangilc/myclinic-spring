@@ -1,0 +1,105 @@
+.hyperlink {
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 0 0;
+}
+
+.hyperlink:visited {
+    -fx-text-fill: -fx-accent;
+    -fx-underline: false;
+}
+
+.hyperlink:hover {
+    -fx-underline: false;
+}
+
+.main-scene {
+    -fx-padding: 10px;
+}
+
+.left-column {
+    -fx-pref-width: 260px;
+}
+
+.right-column-scroll {
+    -fx-pref-height: 500px;
+    -fx-background-color: transparent;
+}
+
+.right-column {
+    -fx-pref-width: 450px;
+}
+
+.patient-list {
+    -fx-pref-height: 200px;
+}
+
+.presc-pane {
+    -fx-padding: 10px;
+    -fx-border-style: solid;
+    -fx-border-color: black;
+}
+
+.presc-pane .patient-name {
+    -fx-font-size: 16pt;
+}
+
+.presc-pane .prescribed {
+    -fx-font-weight: bold;
+}
+
+.aux-switch, .aux-nav {
+    -fx-border-style: solid;
+    -fx-border-color: #ddd;
+    -fx-padding: 10px;
+}
+
+.record-title {
+    -fx-background-color: #ddd;
+
+    -fx-font-weight: bold;
+    -fx-padding: 2px;
+}
+
+.drug-list-for-patient {
+    -fx-padding: 0 0 0 10px;
+}
+
+.record-right .highlight {
+    -fx-fill: red;
+}
+
+.drawer-preview-dialog {
+    -fx-padding: 10px;
+}
+
+.prev-techou-dialog {
+    -fx-pref-width: 300px;
+    -fx-padding: 10px;
+}
+
+.prev-techou-dialog .result-list-scroll {
+    -fx-pref-height: 360px;
+}
+
+.pharma-drug-dialog {
+    -fx-padding: 10px;
+}
+
+.new-pharma-drug-dialog {
+    -fx-padding: 10px;
+}
+
+.drug-description-text-area, .side-effect-text-area {
+    -fx-pref-width: 260px;
+    -fx-pref-height: 120px;
+}
+
+.iyakuhin-list-dialog {
+    -fx-padding: 10px;
+    -fx-pref-height: 260px;
+}
+
+
+
+
+

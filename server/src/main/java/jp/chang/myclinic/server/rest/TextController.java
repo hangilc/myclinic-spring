@@ -26,7 +26,7 @@ class TextController {
         return dbGateway.enterText(textDTO);
     }
 
-    @RequestMapping(value="/delete-text", method= RequestMethod.POST)
+    @RequestMapping(value="/deleteById-text", method= RequestMethod.POST)
     public boolean enterText(@RequestParam("text-id") int textId){
         dbGateway.deleteText(textId);
         return true;

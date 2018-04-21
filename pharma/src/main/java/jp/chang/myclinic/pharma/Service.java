@@ -9,6 +9,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.drawer.JacksonOpDeserializer;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.dto.*;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -46,6 +49,9 @@ public class Service {
         @GET("get-clinic-info")
         CompletableFuture<ClinicInfoDTO> getClinicInfo();
 
+        @GET("get-clinic-info")
+        Call<ClinicInfoDTO> getClinicInfoCall();
+
         @GET("collect-pharma-drug-by-iyakuhincodes")
         CompletableFuture<List<PharmaDrugDTO>> collectPharmaDrugByIyakuhincodes(@Query("iyakuhincode[]") List<Integer> iyakuhincodes);
 
@@ -54,6 +60,16 @@ public class Service {
 
         @GET("list-visit-text-drug")
         CompletableFuture<List<VisitTextDrugDTO>> listVisitTextDrug(@Query("visit-id[]") List<Integer> visitIds);
+
+        @GET("list-visit-text-drug-for-patient")
+        CompletableFuture<VisitTextDrugPageDTO> listVisitTextDrugForPatient(@Query("patient-id") int patientId,
+                                                                            @Query("page") int page);
+
+        @GET("list-visit-text-drug-by-patient-and-iyakuhincode")
+        CompletableFuture<VisitTextDrugPageDTO> listVisitTextDrugByPatientAndIyakuhincode(
+                @Query("patient-id") int patientId, @Query("iyakuhincode") int iyakuhincode,
+                @Query("page") int page
+        );
 
         @GET("list-iyakuhin-for-patient")
         CompletableFuture<List<IyakuhincodeNameDTO>> listIyakuhinForPatient(@Query("patient-id") int patientId);
@@ -82,11 +98,26 @@ public class Service {
 
         @POST("presc-done")
         CompletableFuture<Boolean> prescDone(@Query("visit-id") int visitId);
+
+        @GET("get-visit")
+        CompletableFuture<VisitDTO> getVisit(@Query("visit-id") int visitId);
+
+        @GET("page-visit-drug")
+        CompletableFuture<VisitDrugPageDTO> pageVisitDrug(@Query("patient-id") int patientId,
+                                                          @Query("page") int page);
     }
 
     public static ServerAPI api;
+    static OkHttpClient client;
 
-    public static void setServerUrl(String serverUrl){
+    static void setServerUrl(String serverUrl){
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.NONE);
+        //logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(logging);
+        client = httpClient.build();
+
         ObjectMapper mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Op.class, new JacksonOpDeserializer());
@@ -95,6 +126,7 @@ public class Service {
                 .baseUrl(serverUrl)
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
                 .addCallAdapterFactory(Java8CallAdapterFactory.create())
+                .client(client)
                 .build();
         api = server.create(ServerAPI.class);
     }

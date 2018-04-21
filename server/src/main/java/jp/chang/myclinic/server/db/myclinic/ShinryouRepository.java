@@ -36,4 +36,6 @@ public interface ShinryouRepository extends CrudRepository<Shinryou, Integer> {
     void batchDelete(@Param("shinryouIds") List<Integer> shinryouIds);
 
 	List<Shinryou> findByVisitId(int visitId);
+
+	void deleteById(int shinryouId);
 }

@@ -31,7 +31,7 @@ public class PharmaQueueController {
         return dbGateway.listPharmaQueueFullForToday();
     }
 
-    @RequestMapping(value="/try-delete-pharma-queue", method=RequestMethod.POST)
+    @RequestMapping(value="/try-deleteById-pharma-queue", method=RequestMethod.POST)
     public boolean tryDeletePharmaQueue(@RequestParam("visit-id") int visitId){
         Optional<PharmaQueueDTO> pharmaQueueDTO = dbGateway.findPharmaQueue(visitId);
         if( pharmaQueueDTO.isPresent() ){

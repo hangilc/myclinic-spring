@@ -29,7 +29,7 @@ public class RoujinController {
 		return dbGateway.enterRoujin(roujinDTO);
 	}
 
-	@RequestMapping(value="/delete-roujin", method=RequestMethod.POST)
+	@RequestMapping(value="/deleteById-roujin", method=RequestMethod.POST)
 	public boolean deleteRoujin(@RequestBody RoujinDTO roujinDTO){
 		dbGateway.deleteRoujin(roujinDTO.roujinId);
 		return true;

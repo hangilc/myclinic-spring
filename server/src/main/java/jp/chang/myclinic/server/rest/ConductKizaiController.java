@@ -20,7 +20,7 @@ class ConductKizaiController {
         return dbGateway.enterConductKizai(kizai);
     }
 
-    @RequestMapping(value="/delete-conduct-kizai", method=RequestMethod.POST)
+    @RequestMapping(value="/deleteById-conduct-kizai", method=RequestMethod.POST)
     public boolean deleteConductKizai(@RequestParam("conduct-kizai-id") int conductKizaiId){
         dbGateway.deleteConductKizai(conductKizaiId);
         return true;

@@ -13,4 +13,8 @@ public interface ConductRepository extends CrudRepository<Conduct, Integer> {
     List<Conduct> listConductByIds(@Param("conductIds") List<Integer> conductIds, Sort sort);
 
 	List<Conduct> findByVisitId(int visitId, Sort sort);
+
+	Conduct findById(int conductId);
+
+	void deleteById(int conductId);
 }
