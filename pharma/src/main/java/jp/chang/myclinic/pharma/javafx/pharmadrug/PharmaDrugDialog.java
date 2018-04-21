@@ -1,7 +1,6 @@
 package jp.chang.myclinic.pharma.javafx.pharmadrug;
 
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -20,7 +19,7 @@ public class PharmaDrugDialog extends Stage {
 
     public PharmaDrugDialog(List<PharmaDrugNameDTO> pharmaDrugNames) {
         setTitle("薬剤情報管理");
-        Parent root = new PharmaDrugRoot(pharmaDrugNames);
+        PharmaDrugRoot root = new PharmaDrugRoot(pharmaDrugNames);
         root.getStylesheets().add("Pharma.css");
         root.getStyleClass().add("pharma-drug-dialog");
         BorderPane borderPane = new BorderPane();
