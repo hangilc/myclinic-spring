@@ -1,4 +1,4 @@
-package ${package};
+package jp.chang.myclinic.mockclient;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -46,4 +46,3 @@ public class Main extends Application {
     }
 
 }
-

@@ -305,7 +305,7 @@ public class Service {
     public static ServerAPI api;
     public static OkHttpClient client;
 
-    static void setServerUrl(String serverUrl){
+    static public void setServerUrl(String serverUrl){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.NONE);
         //logging.setLevel(HttpLoggingInterceptor.Level.BODY);

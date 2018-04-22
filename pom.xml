@@ -37,6 +37,7 @@
         <module>medicalcheck</module>
         <module>client</module>
         <module>archetype-client-javafx</module>
+    <module>mock-client</module>
   </modules>
 
 </project>
