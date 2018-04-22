@@ -13,7 +13,7 @@ import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.pharma.Config;
-import jp.chang.myclinic.pharma.DrugBagDataCreator;
+import jp.chang.myclinic.pharma.drawercreator.DrugBagDataCreator;
 import jp.chang.myclinic.pharma.Globals;
 import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
