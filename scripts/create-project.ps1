@@ -2,7 +2,6 @@ Param (
     [parameter(mandatory)]$name,
     $groupId=$env:PROJECT_GROUP_ID,
     $version="1.0.0-SNAPSHOT"
->>>>>>> medicalcheck
 )
 
 if (!$groupId) {
