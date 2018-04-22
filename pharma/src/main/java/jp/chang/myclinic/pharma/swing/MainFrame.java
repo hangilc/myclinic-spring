@@ -1,16 +1,11 @@
 package jp.chang.myclinic.pharma.swing;
 
 import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.drawer.Op;
-import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
-import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.drawer.printer.manage.PrinterManageDialog;
 import jp.chang.myclinic.drawer.printer.manage.SettingChooserDialog;
-import jp.chang.myclinic.drawer.swing.DrawerPreviewDialog;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
-import jp.chang.myclinic.pharma.DrugBagDataCreator;
 import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.leftpane.LeftPane;
 import jp.chang.myclinic.pharma.rightpane.RightPane;
@@ -140,16 +135,16 @@ public class MainFrame extends JFrame {
     private void printBlankDrugBag(DrugCategory category){
         Service.api.getClinicInfo()
                 .thenAccept(clinicInfo -> EventQueue.invokeLater(() -> {
-                    DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
-                    previewDialog.setImageSize(128, 182);
-                    previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getDrugbagPrinterSetting());
-                    previewDialog.setLocationByPlatform(true);
-                    DrugBagDataCreator dataCreator = new DrugBagDataCreator(category);
-                    dataCreator.setClinicInfo(clinicInfo);
-                    DrugBagDrawerData data = dataCreator.createData();
-                    List<Op> ops = new DrugBagDrawer(data).getOps();
-                    previewDialog.render(ops);
-                    previewDialog.setVisible(true);
+//                    DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null, "薬袋印刷プレビュー", false);
+//                    previewDialog.setImageSize(128, 182);
+//                    previewDialog.setPrinterSetting(PharmaConfig.INSTANCE.getDrugbagPrinterSetting());
+//                    previewDialog.setLocationByPlatform(true);
+//                    DrugBagDataCreator dataCreator = new DrugBagDataCreator(category);
+//                    dataCreator.setClinicInfo(clinicInfo);
+//                    DrugBagDrawerData data = dataCreator.createData();
+//                    List<Op> ops = new DrugBagDrawer(data).getOps();
+//                    previewDialog.render(ops);
+//                    previewDialog.setVisible(true);
                 }))
                 .exceptionally(t -> {
                     t.printStackTrace();

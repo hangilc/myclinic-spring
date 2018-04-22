@@ -1,7 +1,9 @@
 package jp.chang.myclinic.pharma.javafx.printing;
 
+import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
+import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawer;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawerData;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
@@ -35,6 +37,33 @@ public class Printing {
     public static void printAllExceptTechou(List<DrugFullDTO> drugs, PatientDTO patient) {
         printPrescContent(drugs, patient);
         printDrugBagSet(drugs, patient);
+    }
+
+    public static void previewDrugBag(DrugCategory category){
+        DrugBagDataCreator creator = new DrugBagDataCreator(category, null, null, Globals.clinicInfo);
+        DrugBagDrawerData data = creator.createData();
+        DrugBagDrawer drawer = new DrugBagDrawer(data);
+        List<Op> ops = drawer.getOps();
+        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv,
+                128, 182, 0.8){
+            @Override
+            protected String getDefaultPrinterSettingName() {
+                return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
+            }
+
+            @Override
+            protected void setDefaultPrinterSettingName(String newName) {
+                Config.load()
+                        .ifPresent(config -> {
+                            config.setDrugBagPrinterSetting(newName);
+                            config.save();
+                        });
+            }
+        };
+        previewDialog.setTitle("薬袋印刷");
+        previewDialog.addStylesheet("Pharma.css");
+        previewDialog.setSinglePage(ops);
+        previewDialog.show();
     }
 
     public static void previewTechou(List<DrugFullDTO> drugs, PatientDTO patient) {

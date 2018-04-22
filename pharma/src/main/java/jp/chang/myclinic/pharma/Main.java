@@ -8,6 +8,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.pharma.javafx.MainScene;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.ListSettingDialog;
@@ -15,6 +16,7 @@ import jp.chang.myclinic.pharma.javafx.drawerpreview.NewSetting;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.SelectDefaultSettingDialog;
 import jp.chang.myclinic.pharma.javafx.pharmadrug.PharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
+import jp.chang.myclinic.pharma.javafx.printing.Printing;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -62,6 +64,19 @@ public class Main extends Application {
         borderPane.setCenter(root);
         stage.setScene(new Scene(borderPane));
         stage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        OkHttpClient client = Service.client;
+        client.dispatcher().executorService().shutdown();
+        client.connectionPool().evictAll();
+        Cache cache = client.cache();
+        if (cache != null) {
+            cache.close();
+        }
+        logger.info("pharma stopped.");
     }
 
     private Node createMenu(){
@@ -117,18 +132,22 @@ public class Main extends Application {
             Menu menu = new Menu("印刷");
             {
                 MenuItem item = new MenuItem("内服薬袋印刷");
+                item.setOnAction(evt -> Printing.previewDrugBag(DrugCategory.Naifuku));
                 menu.getItems().add(item);
             }
             {
                 MenuItem item = new MenuItem("頓服薬袋印刷");
+                item.setOnAction(evt -> Printing.previewDrugBag(DrugCategory.Tonpuku));
                 menu.getItems().add(item);
             }
             {
                 MenuItem item = new MenuItem("外用薬袋印刷");
+                item.setOnAction(evt -> Printing.previewDrugBag(DrugCategory.Gaiyou));
                 menu.getItems().add(item);
             }
             {
                 MenuItem item = new MenuItem("おくすり薬袋印刷");
+                item.setOnAction(evt -> Printing.previewDrugBag(null));
                 menu.getItems().add(item);
             }
             mbar.getMenus().add(menu);
@@ -168,19 +187,6 @@ public class Main extends Application {
     private void openTechouPrinterSettingDialog(){
         openDefaultPrinterSettingDialog("薬手帳", Config::getTechouPrinterSetting,
                 Config::setTechouPrinterSetting);
-    }
-
-    @Override
-    public void stop() throws Exception {
-        super.stop();
-        OkHttpClient client = Service.client;
-        client.dispatcher().executorService().shutdown();
-        client.connectionPool().evictAll();
-        Cache cache = client.cache();
-        if (cache != null) {
-            cache.close();
-        }
-        logger.info("pharma stopped.");
     }
 
 }

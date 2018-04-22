@@ -45,17 +45,18 @@ public class DrugBagDataCreator {
         powderDrugMap.put(620392528, 1.0);  // コデイン散
     }
 
-    public DrugBagDataCreator(DrugCategory category){
+    public DrugBagDataCreator(DrugCategory category, PatientDTO patient, PharmaDrugDTO pharmaDrug,
+                              ClinicInfoDTO clinicInfo){
         this.category = category;
-    }
-
-    public DrugBagDataCreator(DrugFullDTO drugFull, PatientDTO patient, PharmaDrugDTO pharmaDrug, ClinicInfoDTO clinicInfo){
-        this(DrugCategory.fromCode(drugFull.drug.category));
-        this.drug = drugFull.drug;
-        this.master = drugFull.master;
         this.patient = patient;
         this.pharmaDrug = pharmaDrug;
         this.clinicInfo = clinicInfo;
+    }
+
+    public DrugBagDataCreator(DrugFullDTO drugFull, PatientDTO patient, PharmaDrugDTO pharmaDrug, ClinicInfoDTO clinicInfo){
+        this(DrugCategory.fromCode(drugFull.drug.category), patient, pharmaDrug, clinicInfo);
+        this.drug = drugFull.drug;
+        this.master = drugFull.master;
     }
 
     public void setClinicInfo(ClinicInfoDTO clinicInfo){
