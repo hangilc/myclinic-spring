@@ -10,7 +10,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.Op;
-import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import org.slf4j.Logger;
@@ -19,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class DrawerPreviewDialog extends Stage {
 
@@ -33,9 +31,9 @@ public class DrawerPreviewDialog extends Stage {
     private Parent root;
     private HBox commandsBox;
 
-    public DrawerPreviewDialog(double width, double height, double scaleFactor) {
-        this(null, width, height, scaleFactor);
-    }
+//    public DrawerPreviewDialog(double width, double height, double scaleFactor) {
+//        this(null, width, height, scaleFactor);
+//    }
 
     public DrawerPreviewDialog(PrinterEnv printerEnv, double width, double height, double scaleFactor) {
         this.printerEnv = printerEnv;
@@ -52,26 +50,26 @@ public class DrawerPreviewDialog extends Stage {
         this.root = root;
     }
 
-    public void addStylesheet(String path){
+    public void addStylesheet(String path) {
         root.getStylesheets().add(path);
     }
 
-    public void setPages(List<List<Op>> pages){
+    public void setPages(List<List<Op>> pages) {
         this.pages = pages;
         pageNav.set(pages.size());
         pageNav.trigger();
     }
 
-    public void setSinglePage(List<Op> page){
+    public void setSinglePage(List<Op> page) {
         setPages(Collections.singletonList(page));
     }
 
-    public void addToCommands(Node node){
+    public void addToCommands(Node node) {
         commandsBox.getChildren().add(node);
     }
 
-    private void showPage(int page){
-        if( page >= 0 && page < pages.size() ){
+    private void showPage(int page) {
+        if (page >= 0 && page < pages.size()) {
             List<Op> ops = pages.get(page);
             drawerCanvas.setOps(ops);
         }
@@ -86,11 +84,11 @@ public class DrawerPreviewDialog extends Stage {
         settingChoice.getStyleClass().add("printer-setting-choice");
         updateSettingChoice();
         setPrinterSettingName(getDefaultPrinterSettingName());
-        if( printerEnv == null ){
+        if (printerEnv == null) {
             settingChoice.setManaged(false);
             settingChoice.setVisible(false);
         }
-        this.pageNav = new PageNav(){
+        this.pageNav = new PageNav() {
             @Override
             protected void onPage(int page) {
                 showPage(page);
@@ -108,9 +106,9 @@ public class DrawerPreviewDialog extends Stage {
         return new ScrollPane(drawerCanvas);
     }
 
-    private Node createMenu(){
+    private Node createMenu() {
         MenuBar mbar = new MenuBar();
-        if( printerEnv != null ){
+        if (printerEnv != null) {
             {
                 Menu menu = new Menu("ファイル");
                 {
@@ -169,7 +167,7 @@ public class DrawerPreviewDialog extends Stage {
 
     private String getPrinterSettingName() {
         int index = settingChoice.getSelectionModel().getSelectedIndex();
-        if( index < 0 ){
+        if (index < 0) {
             return null;
         } else {
             String setting = settingChoice.getItems().get(index);
@@ -184,10 +182,10 @@ public class DrawerPreviewDialog extends Stage {
         return null;
     }
 
-    protected void setDefaultPrinterSettingName(String newName){
+    protected void setDefaultPrinterSettingName(String newName) {
     }
 
-    private void doPrint(){
+    private void doPrint() {
         String settingName = getPrinterSettingName();
         if (printerEnv != null && settingName != null) {
             printerEnv.print(pages, getPrinterSettingName());
@@ -200,8 +198,8 @@ public class DrawerPreviewDialog extends Stage {
 
     }
 
-    private List<Op> getOpsForTesting(){
-        if( pages.size() > 0 ){
+    private List<Op> getOpsForTesting() {
+        if (pages.size() > 0) {
             return pages.get(0);
         } else {
             return Collections.emptyList();
@@ -209,87 +207,77 @@ public class DrawerPreviewDialog extends Stage {
     }
 
     private void doNewSetting() {
-        TextInputDialog textInputDialog = new TextInputDialog();
-        textInputDialog.setTitle("新規印刷設定の名前");
-        textInputDialog.setHeaderText(null);
-        textInputDialog.setContentText("新規印刷設定の名前：");
-        Optional<String> result = textInputDialog.showAndWait();
-        if (result.isPresent()) {
-            String name = result.get();
-            if (printerEnv.settingExists(name)) {
-                GuiUtil.alertError(name + " という設定名は既に存在します。");
-                return;
-            }
-            DrawerPrinter drawerPrinter = new DrawerPrinter();
-            DrawerPrinter.DialogResult dialogResult = drawerPrinter.printDialog(null, null);
-            if (dialogResult.ok) {
-                byte[] devmode = dialogResult.devmodeData;
-                byte[] devnames = dialogResult.devnamesData;
-                AuxSetting auxSetting = new AuxSetting();
-                try {
-                    printerEnv.saveSetting(name, devnames, devmode, auxSetting);
-                    updateSettingChoice();
-                    EditSettingDialog editSettingDialog = new EditSettingDialog(
-                            printerEnv, name, devmode, devnames, auxSetting);
-                    editSettingDialog.setTestPrintOps(getOpsForTesting());
-                    editSettingDialog.showAndWait();
-                } catch (IOException e) {
-                    logger.error("Failed to save printer settng.", e);
-                    GuiUtil.alertException("印刷設定の保存に失敗しました。", e);
-                } catch (PrinterEnv.SettingDirNotSuppliedException e) {
-                    GuiUtil.alertError("Printer setting directory is not specified.");
-                }
-            }
-        }
+        NewSetting.createNewPrinterSetting(printerEnv, name -> updateSettingChoice());
+//        TextInputDialog textInputDialog = new TextInputDialog();
+//        textInputDialog.setTitle("新規印刷設定の名前");
+//        textInputDialog.setHeaderText(null);
+//        textInputDialog.setContentText("新規印刷設定の名前：");
+//        Optional<String> result = textInputDialog.showAndWait();
+//        if (result.isPresent()) {
+//            String name = result.get();
+//            if (printerEnv.settingExists(name)) {
+//                GuiUtil.alertError(name + " という設定名は既に存在します。");
+//                return;
+//            }
+//            DrawerPrinter drawerPrinter = new DrawerPrinter();
+//            DrawerPrinter.DialogResult dialogResult = drawerPrinter.printDialog(null, null);
+//            if (dialogResult.ok) {
+//                byte[] devmode = dialogResult.devmodeData;
+//                byte[] devnames = dialogResult.devnamesData;
+//                AuxSetting auxSetting = new AuxSetting();
+//                try {
+//                    printerEnv.saveSetting(name, devnames, devmode, auxSetting);
+//                    updateSettingChoice();
+//                    EditSettingDialog editSettingDialog = new EditSettingDialog(
+//                            printerEnv, name, devmode, devnames, auxSetting);
+//                    editSettingDialog.setTestPrintOps(getOpsForTesting());
+//                    editSettingDialog.showAndWait();
+//                } catch (IOException e) {
+//                    logger.error("Failed to save printer settng.", e);
+//                    GuiUtil.alertException("印刷設定の保存に失敗しました。", e);
+//                } catch (PrinterEnv.SettingDirNotSuppliedException e) {
+//                    GuiUtil.alertError("Printer setting directory is not specified.");
+//                }
+//            }
+//        }
     }
 
-    private void deleteOrphanDefault(String settingName){
-        if( settingName != null && !settingName.isEmpty() && printerEnv != null ){
+    private void deleteOrphanDefault(String settingName) {
+        if (settingName != null && !settingName.isEmpty() && printerEnv != null) {
             String currentDefault = getDefaultPrinterSettingName();
-            if( settingName.equals(currentDefault) ){
+            if (settingName.equals(currentDefault)) {
                 setDefaultPrinterSettingName(null);
             }
         }
     }
 
     private void doListSetting() {
-        try {
-            List<String> names = printerEnv.listNames();
-            ListSettingDialog dialog = new ListSettingDialog(names, printerEnv){
-                @Override
-                protected void onDelete(String name) {
-                    updateSettingChoice();
-                    deleteOrphanDefault(name);
-                }
-            };
-            dialog.setTestPrintOps(getOpsForTesting());
-            dialog.show();
-        } catch (Exception ex) {
-            logger.error("Failed to list settings.", ex);
-            GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", ex);
-        }
+        ListSettingDialog dialog = new ListSettingDialog(printerEnv) {
+            @Override
+            protected void onDelete(String name) {
+                updateSettingChoice();
+                deleteOrphanDefault(name);
+            }
+        };
+        dialog.setTestPrintOps(getOpsForTesting());
+        dialog.show();
     }
 
     private void doDefaultSetting() {
         String defaultSetting = getDefaultPrinterSettingName();
-        try {
-            List<String> names = printerEnv.listNames();
-            SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(defaultSetting, names, printerEnv) {
-                @Override
-                protected void onChange(String newDefaultSetting) {
-                    try {
-                        setDefaultPrinterSettingName(newDefaultSetting);
-                        setPrinterSettingName(newDefaultSetting);
-                    } catch (Exception e) {
-                        GuiUtil.alertException("既定印刷設定名の保存に失敗しました。", e);
-                    }
+        SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(defaultSetting, printerEnv) {
+            @Override
+            protected void onChange(String newDefaultSetting) {
+                try {
+                    setDefaultPrinterSettingName(newDefaultSetting);
+                    setPrinterSettingName(newDefaultSetting);
+                } catch (Exception e) {
+                    GuiUtil.alertException("既定印刷設定名の保存に失敗しました。", e);
                 }
-            };
-            dialog.setTestPrintOps(getOpsForTesting());
-            dialog.showAndWait();
-        } catch (IOException e) {
-            GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", e);
-        }
+            }
+        };
+        dialog.setTestPrintOps(getOpsForTesting());
+        dialog.showAndWait();
     }
 
 }

@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -29,8 +28,8 @@ import java.util.function.Supplier;
 class EditSettingDialog extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(EditSettingDialog.class);
-    private static List<Op> defaultTestPrintOps = new ArrayList<>();
-    {
+    private static List<Op> defaultTestPrintOps;
+    static {
         DrawerCompiler comp = new DrawerCompiler();
         comp.createFont("default-font", "sans-serif", 10);
         comp.setFont("default-font");
@@ -147,7 +146,7 @@ class EditSettingDialog extends Stage {
         setScene(new Scene(root));
     }
 
-    public void setTestPrintOps(List<Op> testPrintOps) {
+    void setTestPrintOps(List<Op> testPrintOps) {
         this.testPrintOps = testPrintOps;
     }
 

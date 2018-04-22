@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-class ListSettingDialog extends Stage {
+public class ListSettingDialog extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(ListSettingDialog.class);
     private List<String> names;
@@ -24,9 +24,15 @@ class ListSettingDialog extends Stage {
     private DispGrid dispGrid;
     private List<Op> testPrintOps = Collections.emptyList();
 
-    ListSettingDialog(List<String> names, PrinterEnv printerEnv) {
-        this.names = names;
+    public ListSettingDialog(PrinterEnv printerEnv) {
+        this.names = Collections.emptyList();
         this.printerEnv = printerEnv;
+        try {
+            this.names = printerEnv.listNames();
+        } catch (IOException e) {
+            logger.error("Failed to list printer settings.", e);
+            GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", e);
+        }
         setTitle("印刷設定名の一覧");
         DispGrid root = new DispGrid();
         root.setStyle("-fx-padding:10");
