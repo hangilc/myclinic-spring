@@ -10,6 +10,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.pharma.javafx.MainScene;
+import jp.chang.myclinic.pharma.javafx.drawerpreview.ListSettingDialog;
+import jp.chang.myclinic.pharma.javafx.drawerpreview.NewSetting;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.SelectDefaultSettingDialog;
 import jp.chang.myclinic.pharma.javafx.pharmadrug.PharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
@@ -97,6 +99,16 @@ public class Main extends Application {
             {
                 MenuItem item = new MenuItem("薬手帳印刷設定");
                 item.setOnAction(evt -> openTechouPrinterSettingDialog());
+                menu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("新規印刷設定");
+                item.setOnAction(evt -> NewSetting.createNewPrinterSetting(Globals.printerEnv, name -> {}));
+                menu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("印刷設定の一覧");
+                item.setOnAction(evt -> new ListSettingDialog(Globals.printerEnv).show());
                 menu.getItems().add(item);
             }
             mbar.getMenus().add(menu);
