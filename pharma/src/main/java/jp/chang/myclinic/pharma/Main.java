@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.pharma.javafx.MainScene;
+import jp.chang.myclinic.pharma.javafx.drawerpreview.SelectDefaultSettingDialog;
 import jp.chang.myclinic.pharma.javafx.pharmadrug.PharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
 import okhttp3.Cache;
@@ -19,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class Main extends Application {
 
@@ -83,14 +86,17 @@ public class Main extends Application {
             Menu menu = new Menu("設定");
             {
                 MenuItem item = new MenuItem("処方内容印刷設定");
+                item.setOnAction(evt -> openPrescContentPrinterSettingDialog());
                 menu.getItems().add(item);
             }
             {
                 MenuItem item = new MenuItem("薬袋印刷設定");
+                item.setOnAction(evt -> openDrugBagPrinterSettingDialog());
                 menu.getItems().add(item);
             }
             {
                 MenuItem item = new MenuItem("薬手帳印刷設定");
+                item.setOnAction(evt -> openTechouPrinterSettingDialog());
                 menu.getItems().add(item);
             }
             mbar.getMenus().add(menu);
@@ -116,6 +122,40 @@ public class Main extends Application {
             mbar.getMenus().add(menu);
         }
         return mbar;
+    }
+
+    private void openDefaultPrinterSettingDialog(String titleName, Function<Config, String> currentGetter,
+                                                 BiConsumer<Config, String> currentSetter){
+        Config.load().ifPresent(config -> {
+            String current = currentGetter.apply(config);
+            PrinterEnv printerEnv = Globals.printerEnv;
+            SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(current, printerEnv) {
+                @Override
+                protected void onChange(String newDefaultSetting) {
+                    Config.load().ifPresent(config -> {
+                        currentSetter.accept(config, newDefaultSetting);
+                        config.save();
+                    });
+                }
+            };
+            dialog.setTitle(titleName + "の既定印刷設定の選択");
+            dialog.show();
+        });
+    }
+
+    private void openPrescContentPrinterSettingDialog() {
+        openDefaultPrinterSettingDialog("印刷内容", Config::getPrescContentPrinterSetting,
+                Config::setPrescContentPrinterSetting);
+    }
+
+    private void openDrugBagPrinterSettingDialog(){
+        openDefaultPrinterSettingDialog("薬袋", Config::getDrugBagPrinterSetting,
+                Config::setDrugBagPrinterSetting);
+    }
+
+    private void openTechouPrinterSettingDialog(){
+        openDefaultPrinterSettingDialog("薬手帳", Config::getTechouPrinterSetting,
+                Config::setTechouPrinterSetting);
     }
 
     @Override

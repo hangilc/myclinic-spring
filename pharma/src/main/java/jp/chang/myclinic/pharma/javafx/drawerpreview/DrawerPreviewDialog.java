@@ -272,24 +272,19 @@ public class DrawerPreviewDialog extends Stage {
 
     private void doDefaultSetting() {
         String defaultSetting = getDefaultPrinterSettingName();
-        try {
-            List<String> names = printerEnv.listNames();
-            SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(defaultSetting, names, printerEnv) {
-                @Override
-                protected void onChange(String newDefaultSetting) {
-                    try {
-                        setDefaultPrinterSettingName(newDefaultSetting);
-                        setPrinterSettingName(newDefaultSetting);
-                    } catch (Exception e) {
-                        GuiUtil.alertException("既定印刷設定名の保存に失敗しました。", e);
-                    }
+        SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(defaultSetting, printerEnv) {
+            @Override
+            protected void onChange(String newDefaultSetting) {
+                try {
+                    setDefaultPrinterSettingName(newDefaultSetting);
+                    setPrinterSettingName(newDefaultSetting);
+                } catch (Exception e) {
+                    GuiUtil.alertException("既定印刷設定名の保存に失敗しました。", e);
                 }
-            };
-            dialog.setTestPrintOps(getOpsForTesting());
-            dialog.showAndWait();
-        } catch (IOException e) {
-            GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", e);
-        }
+            }
+        };
+        dialog.setTestPrintOps(getOpsForTesting());
+        dialog.showAndWait();
     }
 
 }

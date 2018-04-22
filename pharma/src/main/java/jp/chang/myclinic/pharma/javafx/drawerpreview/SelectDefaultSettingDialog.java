@@ -22,16 +22,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-abstract class SelectDefaultSettingDialog extends Stage {
+public abstract class SelectDefaultSettingDialog extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(SelectDefaultSettingDialog.class);
     private static final String NO_SELECTION_TOKEN = "";
     private PrinterEnv printerEnv;
     private List<Op> testPrintOps = new ArrayList<>();
 
-    SelectDefaultSettingDialog(String current, List<String> names,  PrinterEnv printerEnv) {
+    public SelectDefaultSettingDialog(String current, PrinterEnv printerEnv) {
         this.printerEnv = printerEnv;
-        Parent root = createRoot(current, names, printerEnv);
+        List<String> names = Collections.emptyList();
+        try {
+            names = printerEnv.listNames();
+        } catch (IOException e) {
+            logger.error("Failed to list printer setting names.", e);
+            GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", e);
+        }
+        Parent root = createRoot(current, names);
         root.setStyle("-fx-padding:10px");
         setScene(new Scene(root));
     }
@@ -42,21 +49,14 @@ abstract class SelectDefaultSettingDialog extends Stage {
 
     protected abstract void onChange(String newDefaultSetting);
 
-    private Parent createRoot(String current, List<String> names,  PrinterEnv printerEnv) {
+    private Parent createRoot(String current, List<String> names) {
         VBox root = new VBox(4);
         RadioButtonGroup<String> group = new RadioButtonGroup<>();
         root.getChildren().add(createRow(group, "（手動選択）", NO_SELECTION_TOKEN));
-        names.forEach(name -> {
-            root.getChildren().add(createRow(group, name, name));
-        });
+        names.forEach(name -> root.getChildren().add(createRow(group, name, name)));
         {
             String currentValue = current == null ? NO_SELECTION_TOKEN : current;
             group.setValue(currentValue);
-//            if( group.hasValue(currentValue) ){
-//                group.setValue(currentValue);
-//            } else {
-//                group.setValue(NO_SELECTION_TOKEN);
-//            }
         }
         group.valueProperty().addListener((obs, oldValue, newValue) -> {
             if( NO_SELECTION_TOKEN.equals(newValue) ){
@@ -76,7 +76,7 @@ abstract class SelectDefaultSettingDialog extends Stage {
         if (!NO_SELECTION_TOKEN.equals(nameValue) && nameValue != null) {
             Hyperlink detailLink = new Hyperlink("詳細");
             Hyperlink testPrintLink = new Hyperlink("テスト印刷");
-            detailLink.setOnAction(evt -> doDetail(label, nameValue));
+            detailLink.setOnAction(evt -> doDetail(nameValue));
             testPrintLink.setOnAction(evt -> doTestPrint(nameValue));
             hbox.getChildren().addAll(
                     detailLink,
@@ -86,7 +86,7 @@ abstract class SelectDefaultSettingDialog extends Stage {
         return hbox;
     }
 
-    private void doDetail(String label, String nameValue){
+    private void doDetail(String nameValue){
         try {
             DevmodeInfo devmodeInfo = new DevmodeInfo(printerEnv.readDevmode(nameValue));
             DevnamesInfo devnamesInfo = new DevnamesInfo(printerEnv.readDevnames(nameValue));
