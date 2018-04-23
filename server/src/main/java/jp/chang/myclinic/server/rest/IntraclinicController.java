@@ -62,7 +62,7 @@ class IntraclinicController {
         return true;
     }
 
-    @RequestMapping(value="/deleteById-post", method=RequestMethod.POST)
+    @RequestMapping(value="/delete-post", method=RequestMethod.POST)
     public boolean deletePost(@RequestParam("post-id") int postId){
         postRepository.deleteById(postId);
         return true;

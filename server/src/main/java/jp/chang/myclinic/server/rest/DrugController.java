@@ -125,7 +125,7 @@ public class DrugController {
         return true;
     }
 
-    @RequestMapping(value = "/batch-deleteById-drugs", method = RequestMethod.POST)
+    @RequestMapping(value = "/batch-delete-drugs", method = RequestMethod.POST)
     public boolean batchDeleteDrugs(@RequestParam(value = "drug-id", required = false) List<Integer> drugIds) {
         if (drugIds != null) {
             drugIds.forEach(dbGateway::deleteDrug);
@@ -133,7 +133,7 @@ public class DrugController {
         return true;
     }
 
-    @RequestMapping(value = "/deleteById-drug", method = RequestMethod.POST)
+    @RequestMapping(value = "/delete-drug", method = RequestMethod.POST)
     public boolean deleteDrug(@RequestParam("drug-id") int drugId) {
         dbGateway.deleteDrug(drugId);
         return true;

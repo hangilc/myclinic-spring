@@ -1,10 +1,9 @@
 package jp.chang.myclinic.server.rest;
 
 import jp.chang.myclinic.consts.WqueueWaitState;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
-import jp.chang.myclinic.server.db.myclinic.Wqueue;
+import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +43,7 @@ public class WqueueController {
 		return dbGateway.listWqueueFull();
 	}
 
-	@RequestMapping(value="/try-deleteById-wqueue", method=RequestMethod.POST)
+	@RequestMapping(value="/try-delete-wqueue", method=RequestMethod.POST)
 	public boolean tryDeleteWqueue(@RequestParam("visit-id") int visitId){
 		Optional<WqueueDTO> optWqueueDTO = dbGateway.findWqueue(visitId);
 		optWqueueDTO.ifPresent(wqueue -> dbGateway.deleteWqueue(wqueue));
