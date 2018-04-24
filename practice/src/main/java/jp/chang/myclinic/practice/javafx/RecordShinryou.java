@@ -37,7 +37,7 @@ class RecordShinryou extends StackPane {
         return textFlow;
     }
 
-    public int getShinryouId() {
+    int getShinryouId() {
         return shinryouId;
     }
 
