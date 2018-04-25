@@ -29,7 +29,7 @@ public class KoukikoureiController {
 		return dbGateway.enterKoukikourei(koukikoureiDTO);
 	}
 
-	@RequestMapping(value="/deleteById-koukikourei", method=RequestMethod.POST)
+	@RequestMapping(value="/delete-koukikourei", method=RequestMethod.POST)
 	public boolean deleteKoukikourei(@RequestBody KoukikoureiDTO koukikoureiDTO){
 		dbGateway.deleteKoukikourei(koukikoureiDTO.koukikoureiId);
 		return true;

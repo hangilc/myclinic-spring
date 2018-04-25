@@ -172,13 +172,13 @@ public class VisitController {
 		return dbGateway.getVisit(visitId);
 	}
 
-	@RequestMapping(value="/deleteById-visit-from-reception", method=RequestMethod.POST)
+	@RequestMapping(value="/delete-visit-from-reception", method=RequestMethod.POST)
 	public boolean deleteVisitFromReception(@RequestParam("visit-id") int visitId){
 		dbGateway.deleteVisitFromReception(visitId);
 		return true;
 	}
 
-	@RequestMapping(value="/deleteById-visit", method=RequestMethod.POST)
+	@RequestMapping(value="/delete-visit", method=RequestMethod.POST)
 	public boolean deleteVisit(@RequestParam("visit-id") int visitId){
 		dbGateway.deleteVisitSafely(visitId);
 		return true;
