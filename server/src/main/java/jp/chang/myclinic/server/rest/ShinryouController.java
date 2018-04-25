@@ -1,15 +1,16 @@
 package jp.chang.myclinic.server.rest;
 
 import jp.chang.myclinic.consts.ConductKind;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.mastermap.MasterMap;
+import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,29 +41,34 @@ public class ShinryouController {
 
 	@RequestMapping(value="/batch-enter-shinryou-by-name", method=RequestMethod.POST)
 	public BatchEnterResultDTO batchEnterShinryou(@RequestParam("visit-id") int visitId,
-											@RequestParam("name") List<String> names){
+											@RequestParam(value="name", required=false) List<String> names){
 		VisitDTO visit = dbGateway.getVisit(visitId);
+		if( names == null ){
+			names = Collections.emptyList();
+		}
 		LocalDate at = LocalDate.parse(visit.visitedAt.substring(0, 10));
 		BatchEnterAccum accum = new BatchEnterAccum();
-		for (String name : names) {
-			if (name.equals("骨塩定量")) {
-				addKotsuenTeiryou(accum, visitId, at);
-			} else {
-				Optional<ShinryouMasterDTO> optMaster = resolveShinryouMaster(name, at);
-				if (optMaster.isPresent()) {
-					ShinryouDTO shinryouDTO = new ShinryouDTO();
-					shinryouDTO.visitId = visitId;
-					shinryouDTO.shinryoucode = optMaster.get().shinryoucode;
-					shinryouDTO = dbGateway.enterShinryou(shinryouDTO);
-					accum.shinryouIds.add(shinryouDTO.shinryouId);
+		if( names.size() > 0 ) {
+			for (String name : names) {
+				if (name.equals("骨塩定量")) {
+					addKotsuenTeiryou(accum, visitId, at);
 				} else {
-					accum.errorMessages.add(String.format("%sはその期日に使用できません。", name));
+					Optional<ShinryouMasterDTO> optMaster = resolveShinryouMaster(name, at);
+					if (optMaster.isPresent()) {
+						ShinryouDTO shinryouDTO = new ShinryouDTO();
+						shinryouDTO.visitId = visitId;
+						shinryouDTO.shinryoucode = optMaster.get().shinryoucode;
+						shinryouDTO = dbGateway.enterShinryou(shinryouDTO);
+						accum.shinryouIds.add(shinryouDTO.shinryouId);
+					} else {
+						accum.errorMessages.add(String.format("%sはその期日に使用できません。", name));
+					}
 				}
 			}
-		}
-		if( accum.errorMessages.size() > 0 ){
-			accum.errorMessages.forEach(System.out::println);
-			throw new RuntimeException(String.join("", accum.errorMessages));
+			if (accum.errorMessages.size() > 0) {
+				accum.errorMessages.forEach(System.out::println);
+				throw new RuntimeException(String.join("", accum.errorMessages));
+			}
 		}
 		return accum.toBatchEnterResult();
 	}
