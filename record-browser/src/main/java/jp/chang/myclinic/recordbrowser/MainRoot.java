@@ -63,6 +63,7 @@ class MainRoot extends VBox {
         visit.texts.forEach(textDTO -> addText(twoColumn.getLeftBox(), textDTO));
         VBox right = twoColumn.getRightBox();
         addHoken(right, visit.hoken);
+        addCharge(right, visit.charge);
         right.getChildren().add(new Label("[処方]"));
         if( visit.drugs.size() > 0 ){
             int index = 1;
@@ -86,6 +87,10 @@ class MainRoot extends VBox {
 
     private void addHoken(Pane pane, HokenDTO hoken){
         pane.getChildren().add(new RecordHoken(hoken));
+    }
+
+    private void addCharge(Pane pane, ChargeDTO charge){
+        pane.getChildren().add(new RecordCharge(charge));
     }
 
     private void addShinryou(Pane pane, ShinryouFullDTO shinryou){
