@@ -16,11 +16,16 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 	@Query("select visit.visitId from Visit visit where date(visit.visitedAt) = date(now()) ")
 	List<Integer> findVisitIdForToday(Sort sort);
 
+	@Query("select visit.visitId from Visit visit where date(visit.visitedAt) = date(:date) ")
+	Page<Integer> pageVisitIdAt(@Param("date") String date, Pageable pageable);
+
 	@Query("select visit, patient from Visit visit, Patient patient " +
 			" where visit.patientId = patient.patientId and visit.visitId in :visitIds ")
 	List<Object[]> findByVisitIdsWithPatient(@Param("visitIds") List<Integer> visitIds);
 
-	int countByPatientId(int patientId);
+	@Query("select visit, patient from Visit visit, Patient patient " +
+			" where visit.patientId = patient.patientId and visit.visitId in :visitIds ")
+	List<Object[]> findByVisitIdsWithPatient(@Param("visitIds") List<Integer> visitIds, Sort sort);
 
 	@Query("select v.visitId from Visit v")
     List<Integer> findAllVisitIds(Sort sort);

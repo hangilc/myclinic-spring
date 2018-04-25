@@ -37,6 +37,9 @@
         <module>medicalcheck</module>
         <module>client</module>
         <module>archetype-client-javafx</module>
+        <module>archetype-lib</module>
+        <module>record-browser</module>
+    <module>utilfx</module>
   </modules>
 
 </project>
