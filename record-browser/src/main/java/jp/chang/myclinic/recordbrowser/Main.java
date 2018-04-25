@@ -9,6 +9,8 @@ import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+
 public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
@@ -31,7 +33,8 @@ public class Main extends Application {
         MainRoot root = new MainRoot();
         stage.setScene(new Scene(root));
         stage.show();
-        root.loadTodaysVisits();
+        //root.loadTodaysVisits();
+        root.loadVisitsAt(LocalDate.of(2018, 3, 23));
     }
 
     @Override
