@@ -72,6 +72,8 @@ class MainRoot extends VBox {
         }
         right.getChildren().add(new Label("[診療行為]"));
         visit.shinryouList.forEach(shinryou -> addShinryou(right, shinryou));
+        right.getChildren().add(new Label("[処置]"));
+        visit.conducts.forEach(conduct -> addConduct(right, conduct));
         recordPane.getChildren().addAll(
                 new RecordTitle(patient, visit.visit),
                 twoColumn
@@ -88,6 +90,10 @@ class MainRoot extends VBox {
 
     private void addShinryou(Pane pane, ShinryouFullDTO shinryou){
         pane.getChildren().add(new RecordShinryou(shinryou));
+    }
+
+    private void addConduct(Pane pane, ConductFullDTO conduct){
+        pane.getChildren().add(new RecordConduct(conduct));
     }
 
 }
