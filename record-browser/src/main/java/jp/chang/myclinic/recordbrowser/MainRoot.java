@@ -10,14 +10,12 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.utilfx.TwoColumn;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 
 class MainRoot extends VBox {
 
-    private static Logger logger = LoggerFactory.getLogger(MainRoot.class);
+    //private static Logger logger = LoggerFactory.getLogger(MainRoot.class);
     private Label titleText = new Label("");
     private VBox recordPane = new VBox(4);
 
@@ -39,18 +37,16 @@ class MainRoot extends VBox {
 
     void loadVisitsAt(LocalDate at){
         Service.api.pageVisitFullWithPatientAt(at.toString(), 0)
-                .thenAccept(result -> Platform.runLater(() ->{
-                    dispRecordsByDate(result, at);
-                }))
+                .thenAccept(result -> Platform.runLater(() -> dispRecordsByDate(result, at)))
                 .exceptionally(HandlerFX::exceptionally);
     }
 
     private void dispRecordsByDate(VisitFull2PatientPageDTO pageContent, LocalDate at){
-        String titleString = "";
+        String titleString;
         if( LocalDate.now().equals(at) ){
             titleString = "本日の診察";
         } else {
-            titleString = DateTimeUtil.toKanji(at, DateTimeUtil.kanjiFormatter1) + "の診察";
+            titleString = DateTimeUtil.toKanji(at, DateTimeUtil.kanjiFormatter7) + "の診察";
         }
         titleText.setText(titleString);
         recordPane.getChildren().clear();

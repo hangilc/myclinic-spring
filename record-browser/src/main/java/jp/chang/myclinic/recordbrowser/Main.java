@@ -2,14 +2,16 @@ package jp.chang.myclinic.recordbrowser;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.LocalDate;
 
 public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -31,10 +33,12 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         MainRoot root = new MainRoot();
-        stage.setScene(new Scene(root));
+        BorderPane pane = new BorderPane();
+        pane.setCenter(root);
+        pane.setTop(createMenu(root));
+        stage.setScene(new Scene(pane));
         stage.show();
-        //root.loadTodaysVisits();
-        root.loadVisitsAt(LocalDate.of(2018, 3, 23));
+        root.loadTodaysVisits();
     }
 
     @Override
@@ -47,6 +51,31 @@ public class Main extends Application {
         if (cache != null) {
             cache.close();
         }
+    }
+
+    private MenuBar createMenu(MainRoot root){
+        MenuBar mBar = new MenuBar();
+        {
+            Menu menu = new Menu("選択");
+            {
+                MenuItem item = new MenuItem("本日の診察");
+                item.setOnAction(evt -> root.loadTodaysVisits());
+                menu.getItems().add(item);
+            }
+            {
+                MenuItem item = new MenuItem("日付を選択");
+                item.setOnAction(evt -> selectByDate(root));
+                menu.getItems().add(item);
+            }
+            mBar.getMenus().add(menu);
+        }
+        return mBar;
+    }
+
+    private void selectByDate(MainRoot root){
+        SelectDateDialog dialog = new SelectDateDialog();
+        dialog.showAndWait();
+        dialog.getValue().ifPresent(root::loadVisitsAt);
     }
 
 }
