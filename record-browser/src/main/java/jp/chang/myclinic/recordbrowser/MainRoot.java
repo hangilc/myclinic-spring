@@ -41,6 +41,12 @@ class MainRoot extends VBox {
                 .exceptionally(HandlerFX::exceptionally);
     }
 
+    void loadVisitsOfPatient(PatientDTO patient){
+        Service.api.listVisitFull2(patient.patientId, 0)
+                .thenAccept(result -> Platform.runLater(() -> dispRecordsByPatient(patient, result)))
+                .exceptionally(HandlerFX::exceptionally);
+    }
+
     private void dispRecordsByDate(VisitFull2PatientPageDTO pageContent, LocalDate at){
         String titleString;
         if( LocalDate.now().equals(at) ){
@@ -54,7 +60,25 @@ class MainRoot extends VBox {
                 addRecordByDate(visitPatient.patient, visitPatient.visitFull));
     }
 
+    private void dispRecordsByPatient(PatientDTO patient, VisitFull2PageDTO pageContent){
+        String titleString = String.format("(%d) %s %s (%s %s)", patient.patientId,
+                patient.lastName, patient.firstName, patient.lastNameYomi, patient.firstNameYomi);
+        titleText.setText(titleString);
+        recordPane.getChildren().clear();
+        pageContent.visits.forEach(this::addRecordByPatient);
+    }
+
     private void addRecordByDate(PatientDTO patient, VisitFull2DTO visit){
+        recordPane.getChildren().add(new RecordTitle(patient, visit.visit));
+        addRecordBody(visit);
+    }
+
+    private void addRecordByPatient(VisitFull2DTO visit){
+        recordPane.getChildren().add(new RecordTitle(visit.visit));
+        addRecordBody(visit);
+    }
+
+    private void addRecordBody(VisitFull2DTO visit){
         TwoColumn twoColumn = new TwoColumn(4);
         visit.texts.forEach(textDTO -> addText(twoColumn.getLeftBox(), textDTO));
         VBox right = twoColumn.getRightBox();
@@ -71,10 +95,7 @@ class MainRoot extends VBox {
         visit.shinryouList.forEach(shinryou -> addShinryou(right, shinryou));
         right.getChildren().add(new Label("[処置]"));
         visit.conducts.forEach(conduct -> addConduct(right, conduct));
-        recordPane.getChildren().addAll(
-                new RecordTitle(patient, visit.visit),
-                twoColumn
-        );
+        recordPane.getChildren().add(twoColumn);
     }
 
     private void addText(Pane pane, TextDTO textDTO){

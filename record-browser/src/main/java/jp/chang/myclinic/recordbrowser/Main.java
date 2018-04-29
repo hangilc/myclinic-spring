@@ -67,6 +67,11 @@ public class Main extends Application {
                 item.setOnAction(evt -> selectByDate(root));
                 menu.getItems().add(item);
             }
+            {
+                MenuItem item = new MenuItem("患者を選択");
+                item.setOnAction(evt -> selectPatient(root));
+                menu.getItems().add(item);
+            }
             mBar.getMenus().add(menu);
         }
         return mBar;
@@ -76,6 +81,12 @@ public class Main extends Application {
         SelectDateDialog dialog = new SelectDateDialog();
         dialog.showAndWait();
         dialog.getValue().ifPresent(root::loadVisitsAt);
+    }
+
+    private void selectPatient(MainRoot root){
+        SelectPatientDialog dialog = new SelectPatientDialog();
+        dialog.showAndWait();
+        dialog.getSelectedPatient().ifPresent(root::loadVisitsOfPatient);
     }
 
 }

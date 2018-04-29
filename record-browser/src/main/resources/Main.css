@@ -26,3 +26,7 @@
 .select-date-dialog {
     -fx-padding: 10px;
 }
+
+.select-patient-dialog {
+    -fx-padding: 10px;
+}
