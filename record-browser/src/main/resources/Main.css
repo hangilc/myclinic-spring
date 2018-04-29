@@ -36,3 +36,11 @@
 .select-patient-dialog {
     -fx-padding: 10px;
 }
+
+.patient-id-column {
+    -fx-alignment: center;
+}
+
+.charge-column {
+    -fx-alignment: center-right;
+}
