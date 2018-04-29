@@ -19,6 +19,7 @@ public class DateTimeUtil {
 	public static DateTimeFormatter kanjiFormatter4 = DateTimeFormatter.ofPattern("HH時mm分");
 	public static DateTimeFormatter kanjiFormatter5 = DateTimeFormatter.ofPattern("GGGGGy.M.d");
 	public static DateTimeFormatter kanjiFormatter6 = DateTimeFormatter.ofPattern("H時m分");
+	public static DateTimeFormatter kanjiFormatter7 = DateTimeFormatter.ofPattern("Gy年M月d日（E）");
 
 	public static String toKanji(LocalDate date, DateTimeFormatter formatter){
 			JapaneseDate jd = JapaneseDate.from(date);

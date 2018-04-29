@@ -30,6 +30,10 @@ public class Service {
         @GET("list-visit-full2")
         CompletableFuture<VisitFull2PageDTO> listVisitFull2(@Query("patient-id") int patientId, @Query("page") int page);
 
+        @GET("page-visit-full2-with-patient-at")
+        CompletableFuture<VisitFull2PatientPageDTO> pageVisitFullWithPatientAt(@Query("at") String at,
+                                                                               @Query("page") int page);
+
         @POST("update-text")
         CompletableFuture<Boolean> updateText(@Body TextDTO textDTO);
 
@@ -300,6 +304,9 @@ public class Service {
 
         @GET("get-practice-config")
         CompletableFuture<PracticeConfigDTO> getPracticeConfig();
+
+        @GET("list-visit-charge-patient-at")
+        CompletableFuture<List<VisitChargePatientDTO>> listVisitChargePatientAt(@Query("at") String at);
     }
 
     public static ServerAPI api;

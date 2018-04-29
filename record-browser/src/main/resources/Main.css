@@ -1,0 +1,46 @@
+.hyperlink {
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 0 0;
+}
+
+.hyperlink:visited {
+    -fx-text-fill: -fx-accent;
+    -fx-underline: false;
+}
+
+.hyperlink:hover {
+    -fx-underline: false;
+}
+
+.record-title {
+    -fx-font-weight: bold;
+    -fx-background-color: #ccc;
+    -fx-padding: 2;
+}
+
+.record-scroll {
+    -fx-background-color: transparent;
+    -fx-padding: 0 4px 0 0;
+}
+
+.app-root {
+    -fx-padding: 10px;
+    -fx-pref-width: 500px;
+    -fx-pref-height: 400px;
+}
+
+.select-date-dialog {
+    -fx-padding: 10px;
+}
+
+.select-patient-dialog {
+    -fx-padding: 10px;
+}
+
+.patient-id-column {
+    -fx-alignment: center;
+}
+
+.charge-column {
+    -fx-alignment: center-right;
+}

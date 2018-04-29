@@ -7,7 +7,7 @@
     <artifactId>project</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>archetype-client-javafx</artifactId>
+  <artifactId>archetype-lib</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>archetype-client-javafx</name>
+  <name>archetype-lib</name>
 </project>

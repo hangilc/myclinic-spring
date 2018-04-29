@@ -114,6 +114,31 @@ public class DbGateway {
                 .map(this::resultToVisitPatientDTO).collect(Collectors.toList());
     }
 
+    public VisitFull2PatientPageDTO pageVisitsWithPatientAt(LocalDate date, int page) {
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.Direction.ASC, "visitId");
+        Page<Integer> pageVisitIds = visitRepository.pageVisitIdAt(date.toString(), pageRequest);
+        List<VisitFull2PatientDTO> visitFullPatients = Collections.emptyList();
+        if (pageVisitIds.getContent().size() > 0) {
+            List<VisitPatientDTO> visitPatients = visitRepository
+                    .findByVisitIdsWithPatient(pageVisitIds.getContent(), Sort.by("visitId"))
+                    .stream()
+                    .map(this::resultToVisitPatientDTO).collect(Collectors.toList());
+            visitFullPatients = visitPatients.stream()
+                    .map(visitPatient -> {
+                        VisitFull2DTO visitFull = getVisitFull2(mapper.fromVisitDTO(visitPatient.visit));
+                        VisitFull2PatientDTO result = new VisitFull2PatientDTO();
+                        result.patient = visitPatient.patient;
+                        result.visitFull = visitFull;
+                        return result;
+                    }).collect(Collectors.toList());
+        }
+        VisitFull2PatientPageDTO resultPage = new VisitFull2PatientPageDTO();
+        resultPage.page = page;
+        resultPage.totalPages = pageVisitIds.getTotalPages();
+        resultPage.visitPatients = visitFullPatients;
+        return resultPage;
+    }
+
     public void enterWqueue(WqueueDTO wqueueDTO) {
         Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
         wqueueRepository.save(wqueue);
@@ -1416,6 +1441,22 @@ public class DbGateway {
                 })
                 .collect(Collectors.toList());
         return resultPage;
+    }
+
+    public List<VisitChargePatientDTO> listVisitChargePatientAt(LocalDate at){
+        return visitRepository.listVisitChargePatientAt(at.toString(), Sort.by("visitId"))
+                .stream()
+                .map(obs -> {
+                    VisitDTO visit = mapper.toVisitDTO((Visit)obs[0]);
+                    ChargeDTO charge = mapper.toChargeDTO((Charge)obs[1]);
+                    PatientDTO patient = mapper.toPatientDTO((Patient)obs[2]);
+                    VisitChargePatientDTO dto = new VisitChargePatientDTO();
+                    dto.visit = visit;
+                    dto.charge = charge;
+                    dto.patient = patient;
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     private ShinryouFullDTO resultToShinryouFullDTO(Object[] result) {

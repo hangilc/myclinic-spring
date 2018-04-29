@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,7 +27,7 @@ public class VisitController {
 	@Autowired
 	private HoukatsuKensa houkatsuKensa;
 
-	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
+	//private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 
 	@RequestMapping(value="/start-visit", method=RequestMethod.POST)
 	public int startVisit(@RequestParam("patient-id") int patientId){
@@ -100,6 +99,13 @@ public class VisitController {
 		return dbGateway.listVisitFull2(patientId, page);
 	}
 
+	@RequestMapping(value="/page-visit-full2-with-patient-at", method=RequestMethod.GET)
+	public VisitFull2PatientPageDTO pageVisitFull2PatientAt(@RequestParam("at") String at,
+															@RequestParam("page") int page){
+		LocalDate date = LocalDate.parse(at);
+		return dbGateway.pageVisitsWithPatientAt(date, page);
+	}
+
 	@RequestMapping(value="/get-visit-meisai", method=RequestMethod.GET)
 	public MeisaiDTO getVisitMeisai(@RequestParam("visit-id") int visitId){
 		RcptVisit rcptVisit = new RcptVisit();
@@ -133,7 +139,7 @@ public class VisitController {
 		if( patientDTO.birthday != null ){
 			HokenDTO hokenDTO = dbGateway.getHokenForVisit(visit);
 			meisaiDTO.hoken = hokenDTO;
-			LocalDateTime atDateTime = DateTimeUtil.parseSqlDateTime(visit.visitedAt);
+			//LocalDateTime atDateTime = DateTimeUtil.parseSqlDateTime(visit.visitedAt);
 			LocalDate birthdayDate = DateTimeUtil.parseSqlDate(patientDTO.birthday);
 			int rcptAge = HokenUtil.calcRcptAge(birthdayDate.getYear(), birthdayDate.getMonth().getValue(),
 					birthdayDate.getDayOfMonth(), at.getYear(), at.getMonth().getValue());
@@ -212,6 +218,13 @@ public class VisitController {
 	@RequestMapping(value="/list-todays-visits", method=RequestMethod.GET)
 	public List<VisitPatientDTO> listTodaysVisits(){
 		return dbGateway.listTodaysVisits();
+	}
+
+	@RequestMapping(value="/list-visit-charge-patient-at", method=RequestMethod.GET)
+	public List<VisitChargePatientDTO> listVisitChargePatientAt(
+			@RequestParam("at") String at){
+		LocalDate date = LocalDate.parse(at);
+		return dbGateway.listVisitChargePatientAt(date);
 	}
 
 	private SectionItemDTO toSectionItemDTO(SectionItem sectionItem) {
