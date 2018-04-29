@@ -31,7 +31,8 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        stage.setTitle("診療録閲覧");
         MainRoot root = new MainRoot();
         BorderPane pane = new BorderPane();
         pane.setCenter(root);
