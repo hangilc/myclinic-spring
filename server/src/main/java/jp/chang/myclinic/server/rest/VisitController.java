@@ -220,6 +220,13 @@ public class VisitController {
 		return dbGateway.listTodaysVisits();
 	}
 
+	@RequestMapping(value="/list-visit-charge-patient-at", method=RequestMethod.GET)
+	public List<VisitChargePatientDTO> listVisitChargePatientAt(
+			@RequestParam("at") String at){
+		LocalDate date = LocalDate.parse(at);
+		return dbGateway.listVisitChargePatientAt(date);
+	}
+
 	private SectionItemDTO toSectionItemDTO(SectionItem sectionItem) {
 		SectionItemDTO sectionItemDTO = new SectionItemDTO();
 		sectionItemDTO.label = sectionItem.getLabel();

@@ -1,6 +1,7 @@
 package jp.chang.myclinic.recordbrowser;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -8,10 +9,13 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.LocalDate;
 
 public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -75,6 +79,15 @@ public class Main extends Application {
             }
             mBar.getMenus().add(menu);
         }
+        {
+            Menu menu = new Menu("その他");
+            {
+                MenuItem item = new MenuItem("会計一覧");
+                item.setOnAction(evt -> doListCharge());
+                menu.getItems().add(item);
+            }
+            mBar.getMenus().add(menu);
+        }
         return mBar;
     }
 
@@ -88,6 +101,15 @@ public class Main extends Application {
         SelectPatientDialog dialog = new SelectPatientDialog();
         dialog.showAndWait();
         dialog.getSelectedPatient().ifPresent(root::loadVisitsOfPatient);
+    }
+
+    private void doListCharge(){
+        Service.api.listVisitChargePatientAt(LocalDate.now().toString())
+                .thenAccept(result -> Platform.runLater(() -> {
+                    ListChargeDialog dialog = new ListChargeDialog(result);
+                    dialog.show();
+                }))
+                .exceptionally(HandlerFX::exceptionally);
     }
 
 }

@@ -304,6 +304,9 @@ public class Service {
 
         @GET("get-practice-config")
         CompletableFuture<PracticeConfigDTO> getPracticeConfig();
+
+        @GET("list-visit-charge-patient-at")
+        CompletableFuture<List<VisitChargePatientDTO>> listVisitChargePatientAt(@Query("at") String at);
     }
 
     public static ServerAPI api;

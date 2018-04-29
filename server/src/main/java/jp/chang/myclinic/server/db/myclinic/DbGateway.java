@@ -1443,6 +1443,22 @@ public class DbGateway {
         return resultPage;
     }
 
+    public List<VisitChargePatientDTO> listVisitChargePatientAt(LocalDate at){
+        return visitRepository.listVisitChargePatientAt(at.toString(), Sort.by("visitId"))
+                .stream()
+                .map(obs -> {
+                    VisitDTO visit = mapper.toVisitDTO((Visit)obs[0]);
+                    ChargeDTO charge = mapper.toChargeDTO((Charge)obs[1]);
+                    PatientDTO patient = mapper.toPatientDTO((Patient)obs[2]);
+                    VisitChargePatientDTO dto = new VisitChargePatientDTO();
+                    dto.visit = visit;
+                    dto.charge = charge;
+                    dto.patient = patient;
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
     private ShinryouFullDTO resultToShinryouFullDTO(Object[] result) {
         Shinryou shinryou = (Shinryou) result[0];
         ShinryouMaster master = (ShinryouMaster) result[1];

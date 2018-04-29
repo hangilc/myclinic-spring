@@ -63,4 +63,9 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 	@Query("select visit.visitId from Visit visit, Drug drug where visit.visitId = drug.visitId " +
 			" and visit.patientId = :patientId group by visit.visitId having count(drug.drugId) > 0 ")
 	Page<Integer> pageVisitIdHavingDrug(@Param("patientId") int patientId, Pageable pageable);
+
+	@Query("select v, c, p from Visit v, Charge c, Patient p where " +
+			" date(v.visitedAt) = date(:at) and c.visitId = v.visitId and " +
+			" p.patientId = v.patientId")
+	List<Object[]> listVisitChargePatientAt(@Param("at") String at, Sort sort);
 }
