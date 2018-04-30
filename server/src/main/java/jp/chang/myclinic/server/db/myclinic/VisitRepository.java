@@ -69,7 +69,7 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 			" p.patientId = v.patientId")
 	List<Object[]> listVisitChargePatientAt(@Param("at") String at, Sort sort);
 
-	@Query("select v.patientId from Visit v where year(v.visitedAt) = :year " +
+	@Query("select distinct v.patientId from Visit v where year(v.visitedAt) = :year " +
 			" and month(v.visitedAt) = :month " +
 			" and not (v.shahokokuhoId = 0 and v.koukikoureiId = 0 and v.roujinId = 0 " +
 			"   and v.kouhi1Id = 0 and v.kouhi2Id = 0 and v.kouhi3Id = 0) ")

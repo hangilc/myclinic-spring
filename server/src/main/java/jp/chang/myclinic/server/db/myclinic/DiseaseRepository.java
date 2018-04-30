@@ -31,7 +31,7 @@ public interface DiseaseRepository extends CrudRepository<Disease, Integer> {
 
     long countByPatientId(int patientId);
 
-    @Query("select d, m from Disease d, ByoumeiMaster m, Visit v " +
+    @Query("select d, m from Disease d, ByoumeiMaster m " +
             " where d.diseaseId = :diseaseId and m.shoubyoumeicode = d.shoubyoumeicode " +
             " and m.validFrom <= d.startDate " +
             " and (m.validUpto = '0000-00-00' or m.validUpto >= d.startDate) ")

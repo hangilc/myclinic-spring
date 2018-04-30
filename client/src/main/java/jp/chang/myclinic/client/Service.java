@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.drawer.JacksonOpDeserializer;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.dto.*;
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -15,6 +17,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -26,6 +29,9 @@ public class Service {
 
         @GET("get-patient")
         CompletableFuture<PatientDTO> getPatient(@Query("patient-id") int patientId);
+
+        @GET("get-patient")
+        Call<PatientDTO> getPatientCall(@Query("patient-id") int patientId);
 
         @GET("list-visit-full2")
         CompletableFuture<VisitFull2PageDTO> listVisitFull2(@Query("patient-id") int patientId, @Query("page") int page);
@@ -140,11 +146,17 @@ public class Service {
         @POST("enter-shinryou")
         CompletableFuture<Integer> enterShinryou(@Body ShinryouDTO shinryou);
 
+        @POST("enter-shinryou")
+        Call<Integer> enterShinryouCall(@Body ShinryouDTO shinryou);
+
         @POST("update-shinryou")
         CompletableFuture<Boolean> updateShinryou(@Body ShinryouDTO shinryou);
 
         @POST("delete-shinryou")
         CompletableFuture<Boolean> deleteShinryou(@Query("shinryou-id") int shinryouId);
+
+        @POST("delete-shinryou")
+        Call<Boolean> deleteShinryouCall(@Query("shinryou-id") int shinryouId);
 
         @GET("list-shinryou-full-by-ids")
         CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(@Query("shinryou-id") List<Integer> shinryouIds);
@@ -307,15 +319,52 @@ public class Service {
 
         @GET("list-visit-charge-patient-at")
         CompletableFuture<List<VisitChargePatientDTO>> listVisitChargePatientAt(@Query("at") String at);
+
+        @GET("list-visiting-patient-id-having-hoken")
+        CompletableFuture<List<Integer>> listVisitingPatientIdHavingHoken(@Query("year") int year,
+                                                                          @Query("month") int month);
+
+        @GET("list-visiting-patient-id-having-hoken")
+        Call<List<Integer>> listVisitingPatientIdHavingHokenCall(@Query("year") int year,
+                                                             @Query("month") int month);
+
+        @GET("list-visit-by-patient-having-hoken")
+        CompletableFuture<List<VisitFull2DTO>> listVisitByPatientHavingHoken(
+                @Query("patient-id") int patientId, @Query("year") int year, @Query("month") int month);
+
+        @GET("list-visit-by-patient-having-hoken")
+        Call<List<VisitFull2DTO>> listVisitByPatientHavingHokenCall(
+                @Query("patient-id") int patientId, @Query("year") int year, @Query("month") int month);
+
+        @GET("list-disease-by-patient-at")
+        CompletableFuture<List<DiseaseFullDTO>> listDiseaseByPatientAt(
+                @Query("patient-id") int patientId, @Query("year") int year, @Query("month") int month);
+
+        @GET("list-disease-by-patient-at")
+        Call<List<DiseaseFullDTO>> listDiseaseByPatientAtCall(
+                @Query("patient-id") int patientId, @Query("year") int year, @Query("month") int month);
+
+        @GET("find-shinryou-master-by-name")
+        CompletableFuture<ShinryouMasterDTO> findShinryouMasterByName(@Query("name") String name,
+                                                                      @Query("at") String at);
+
+        @GET("find-shinryou-master-by-name")
+        Call<ShinryouMasterDTO> findShinryouMasterByNameCall(@Query("name") String name,
+                                                                      @Query("at") String at);
+
     }
 
     public static ServerAPI api;
     public static OkHttpClient client;
+    private static HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+    static {
+        logging.setLevel(HttpLoggingInterceptor.Level.NONE);
+    }
 
     static public void setServerUrl(String serverUrl){
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.NONE);
-        //logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        if( !serverUrl.endsWith("/") ){
+            serverUrl += "/";
+        }
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
         client = httpClient.build();
@@ -331,6 +380,24 @@ public class Service {
                 .client(client)
                 .build();
         api = server.create(ServerAPI.class);
+    }
+
+    public static void setLogBody(){
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+    }
+
+    public static void stop() {
+        OkHttpClient client = Service.client;
+        client.dispatcher().executorService().shutdown();
+        client.connectionPool().evictAll();
+        Cache cache = client.cache();
+        if (cache != null) {
+            try {
+                cache.close();
+            } catch (IOException e) {
+                e.printStackTrace(System.err);
+            }
+        }
     }
 
 }
