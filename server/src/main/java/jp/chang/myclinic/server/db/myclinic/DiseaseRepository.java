@@ -40,4 +40,11 @@ public interface DiseaseRepository extends CrudRepository<Disease, Integer> {
     Disease findById(int diseaseId);
 
     void deleteById(int diseaseId);
+
+    @Query("select d.diseaseId from Disease d where d.patientId = :patientId and " +
+            " d.startDate <= :validUpto and " +
+            " ( d.endDate = '0000-00-00' or d.endDate >= :validFrom ) ")
+    List<Integer> listDiseaseIdByPatientAt(@Param("patientId") int patientId,
+                                         @Param("validFrom") String validFrom,
+                                         @Param("validUpto") String validupto);
 }

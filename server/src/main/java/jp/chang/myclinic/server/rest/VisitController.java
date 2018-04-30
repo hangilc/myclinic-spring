@@ -241,4 +241,18 @@ public class VisitController {
 		return dbGateway.pageVisitIdHavingDrug(patientId, page);
 	}
 
+	@RequestMapping(value="list-visiting-patient-id-having-hoken", method=RequestMethod.GET)
+	public List<Integer> listVisitingPatientId(@RequestParam("year") int year,
+											   @RequestParam("month") int month){
+		return dbGateway.listVisitingPatientIdHavingHoken(year, month);
+	}
+
+	@RequestMapping(value="list-visit-by-patient-having-hoken", method=RequestMethod.GET)
+	public List<VisitFull2DTO> listVisitByPatientHavingHoken(
+			@RequestParam("patient-id") int patientId,
+			@RequestParam("year") int year,
+			@RequestParam("month") int month){
+		return dbGateway.listVisitByPatientHavingHoken(patientId, year, month);
+	}
+
 }

@@ -68,4 +68,18 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 			" date(v.visitedAt) = date(:at) and c.visitId = v.visitId and " +
 			" p.patientId = v.patientId")
 	List<Object[]> listVisitChargePatientAt(@Param("at") String at, Sort sort);
+
+	@Query("select v.patientId from Visit v where year(v.visitedAt) = :year " +
+			" and month(v.visitedAt) = :month " +
+			" and not (v.shahokokuhoId = 0 and v.koukikoureiId = 0 and v.roujinId = 0 " +
+			"   and v.kouhi1Id = 0 and v.kouhi2Id = 0 and v.kouhi3Id = 0) ")
+	List<Integer> listVisitingPatientIdHavingHoken(@Param("year") int year, @Param("month") int month);
+
+	@Query("select v.visitId from Visit v where year(v.visitedAt) = :year and month(v.visitedAt) = :month " +
+			" and v.patientId = :patientId " +
+			" and not (v.shahokokuhoId = 0 and v.koukikoureiId = 0 and v.roujinId = 0 " +
+			"   and v.kouhi1Id = 0 and v.kouhi2Id = 0 and v.kouhi3Id = 0) ")
+	List<Integer> listVisitIdByPatientHavingHoken(@Param("patientId") int patientId,
+												  @Param("year") int year, @Param("month") int month);
+
 }

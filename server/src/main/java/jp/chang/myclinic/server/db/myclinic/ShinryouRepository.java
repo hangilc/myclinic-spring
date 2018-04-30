@@ -38,4 +38,5 @@ public interface ShinryouRepository extends CrudRepository<Shinryou, Integer> {
 	List<Shinryou> findByVisitId(int visitId);
 
 	void deleteById(int shinryouId);
+
 }

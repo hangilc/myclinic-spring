@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -1563,4 +1564,26 @@ public class DbGateway {
         return dto;
     }
 
+    public List<Integer> listVisitingPatientIdHavingHoken(int year, int month) {
+        return visitRepository.listVisitingPatientIdHavingHoken(year, month);
+    }
+
+    public List<VisitFull2DTO> listVisitByPatientHavingHoken(int patientId, int year, int month){
+        return visitRepository.listVisitIdByPatientHavingHoken(patientId, year, month)
+                .stream()
+                .map(visitId -> {
+                    Visit visit = visitRepository.getOne(visitId);
+                    return getVisitFull2(visit);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<DiseaseFullDTO> listDiseaseByPatientAt(int patientId, int year, int month) {
+        LocalDate validFrom = LocalDate.of(year, month, 1);
+        LocalDate validUpto = validFrom.plus(1, ChronoUnit.MONTHS).minus(1, ChronoUnit.DAYS);
+        return diseaseRepository.listDiseaseIdByPatientAt(patientId, validFrom.toString(), validUpto.toString())
+                .stream()
+                .map(this::getDiseaseFull)
+                .collect(Collectors.toList());
+    }
 }

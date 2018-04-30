@@ -189,4 +189,5 @@ public class ShinryouController {
 	public List<Integer> deleteDuplicate(@RequestParam("visit-id") int visitId){
 		return dbGateway.deleteDuplicateShinryou(visitId);
 	}
+
 }

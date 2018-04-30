@@ -114,4 +114,11 @@ class DiseaseController {
         return dto;
     }
 
+    @RequestMapping(value="list-disease-by-patient-at", method=RequestMethod.GET)
+    List<DiseaseFullDTO> listDiseaseByPatientAt(@RequestParam("patient-id") int patientId,
+                                                @RequestParam("year") int year,
+                                                @RequestParam("month") int month){
+        return dbGateway.listDiseaseByPatientAt(patientId, year, month);
+    }
+
 }
