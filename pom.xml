@@ -38,8 +38,10 @@
         <module>client</module>
         <module>archetype-client-javafx</module>
         <module>archetype-lib</module>
+        <module>archetype-cli</module>
         <module>record-browser</module>
-    <module>utilfx</module>
+        <module>utilfx</module>
+    <module>rcpt</module>
   </modules>
 
 </project>
