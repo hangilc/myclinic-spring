@@ -47,7 +47,7 @@ public class Check {
         Masters masters = new Masters(year, month);
         List<Integer> patientIds = Service.api.listVisitingPatientIdHavingHokenCall(year, month).execute().body();
         //patientIds = patientIds.subList(0, 3); // for development
-        patientIds = List.of(75);
+        //patientIds = List.of(75);
         for(int patientId: patientIds){
             PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
             System.out.printf("%04d %s%s%n", patient.patientId, patient.lastName, patient.firstName);
@@ -57,6 +57,7 @@ public class Check {
                     .execute().body();
             new CheckChouki(visits, masters).check(fixit);
             new CheckTokuteiShikkanKanri(visits, masters).check(fixit);
+            new CheckChoukiTouyakuKasan(visits, masters).check(fixit);
         }
         Service.stop();
     }

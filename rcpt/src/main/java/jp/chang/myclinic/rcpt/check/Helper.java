@@ -1,6 +1,8 @@
 package jp.chang.myclinic.rcpt.check;
 
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
+import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 class Helper {
 
@@ -58,6 +61,16 @@ class Helper {
             }
         }
         return result;
+    }
+
+    static void removeExtraShinryouFromVisits(List<VisitFull2DTO> visits, ShinryouMasterDTO master, int toBeRemained)
+            throws Exception {
+        List<ShinryouFullDTO> targets = filterShinryouInVisits(visits,
+                s -> s.master.shinryoucode == master.shinryoucode);
+        List<Integer> shinryouIds = targets.subList(toBeRemained, targets.size())
+                .stream().map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
+        boolean success = Service.api.batchDeleteShinryouCall(shinryouIds).execute().body();
+        assert success;
     }
 
     static boolean drugExistsInVisits(List<VisitFull2DTO> visits){
