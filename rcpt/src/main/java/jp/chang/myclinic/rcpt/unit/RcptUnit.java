@@ -1,18 +1,26 @@
 package jp.chang.myclinic.rcpt.unit;
 
+import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.HoukatsuKensaKind;
+import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RcptUnit {
 
     private static Logger logger = LoggerFactory.getLogger(RcptUnit.class);
     private Map<Integer, SimpleShinryouItem> simpleShinryouMap = new HashMap<>();
     private List<HoukatsuKensaItem> houkatsuKensaItems = new ArrayList<>();
+    private List<NaifukuItem> naifukuItems = new ArrayList<>();
+    private List<TonpukuItem> tonpukuItems = new ArrayList<>();
+    private List<GaiyouItem> gaiyouItems = new ArrayList<>();
 
     private static <T extends Extendable<T>> void extendList(List<T> list, T item){
         for(T curr: list){
@@ -57,11 +65,15 @@ public class RcptUnit {
 
     RcptUnit(VisitFull2DTO visit){
         visit.shinryouList.forEach(this::addShinryou);
+        visit.drugs.forEach(this::addDrug);
     }
 
     void merge(RcptUnit arg){
         mergeMap(simpleShinryouMap, arg.simpleShinryouMap);
         mergeList(houkatsuKensaItems, arg.houkatsuKensaItems);
+        mergeList(naifukuItems, arg.naifukuItems);
+        mergeList(tonpukuItems, arg.tonpukuItems);
+        mergeList(gaiyouItems, arg.gaiyouItems);
     }
 
     private void addShinryou(ShinryouFullDTO shinryou){
@@ -73,11 +85,34 @@ public class RcptUnit {
         }
     }
 
+    private void addDrug(DrugFullDTO drug){
+        DrugCategory category = DrugCategory.fromCode(drug.drug.category);
+        if( category != null ){
+            switch(category){
+                case Naifuku: {
+                    extendList(naifukuItems, new NaifukuItem(drug));
+                    break;
+                }
+                case Tonpuku: {
+                    tonpukuItems.add(new TonpukuItem(drug));
+                    break;
+                }
+                case Gaiyou: {
+                    gaiyouItems.add(new GaiyouItem(drug));
+                    break;
+                }
+            }
+        }
+    }
+
     @Override
     public String toString() {
         return "RcptUnit{" +
                 "simpleShinryouMap=" + simpleShinryouMap +
                 ", houkatsuKensaItems=" + houkatsuKensaItems +
+                ", naifukuItems=" + naifukuItems +
+                ", tonpukuItems=" + tonpukuItems +
+                ", gaiyouItems=" + gaiyouItems +
                 '}';
     }
 

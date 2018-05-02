@@ -47,7 +47,7 @@ public class Check {
     public void run() throws Exception {
         Masters masters = new Masters(year, month);
         List<Integer> patientIds = Service.api.listVisitingPatientIdHavingHokenCall(year, month).execute().body();
-        patientIds = patientIds.subList(0, 1); // for development
+        //patientIds = patientIds.subList(0, 3); // for development
         for(int patientId: patientIds){
             PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
             System.out.printf("%04d %s%s%n", patient.patientId, patient.lastName, patient.firstName);
@@ -55,8 +55,7 @@ public class Check {
                     .execute().body();
             List<DiseaseFullDTO> diseases = Service.api.listDiseaseByPatientAtCall(patientId, year, month)
                     .execute().body();
-            RcptBundle bundle = new RcptBundle(visits);
-            System.out.println(bundle);
+            new CheckChouki(visits, masters).check(fixit);
         }
     }
 

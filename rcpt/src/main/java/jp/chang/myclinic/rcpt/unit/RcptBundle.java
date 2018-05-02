@@ -1,9 +1,11 @@
 package jp.chang.myclinic.rcpt.unit;
 
+import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RcptBundle {
@@ -17,6 +19,10 @@ public class RcptBundle {
             RcptUnit unit = new RcptUnit(visit);
             bundledUnit.merge(unit);
         });
+    }
+
+    public RcptUnit getBundledUnit() {
+        return bundledUnit;
     }
 
     @Override

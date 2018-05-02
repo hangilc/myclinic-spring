@@ -10,19 +10,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-class HoukatsuKensaItem implements Countable, Extendable<HoukatsuKensaItem>, Mergeable<HoukatsuKensaItem> {
+class HoukatsuKensaItem extends CountableBase implements Extendable<HoukatsuKensaItem>, Mergeable<HoukatsuKensaItem> {
 
     private static Logger logger = LoggerFactory.getLogger(HoukatsuKensaItem.class);
     private HoukatsuKensaKind kind;
     private Set<Integer> shinryoucodes = new HashSet<>();
     private Map<Integer, ShinryouMasterDTO> masterMap = new HashMap<>();
-    private int count;
 
     HoukatsuKensaItem(ShinryouMasterDTO master) {
         assert HoukatsuKensaKind.fromCode(master.houkatsukensa) != HoukatsuKensaKind.NONE;
         this.kind = HoukatsuKensaKind.fromCode(master.houkatsukensa);
         addMaster(master);
-        this.count = 1;
     }
 
     HoukatsuKensaKind getKind(){
@@ -51,22 +49,11 @@ class HoukatsuKensaItem implements Countable, Extendable<HoukatsuKensaItem>, Mer
     }
 
     @Override
-    public void incCount(int n){
-        count += n;
-    }
-
-    @Override
-    public int getCount(){
-        return count;
-    }
-
-    @Override
     public String toString() {
         return "HoukatsuKensaItem{" +
                 "kind=" + kind +
                 ", shinryoucodes=" + shinryoucodes +
                 ", masterMap=" + masterMap +
-                ", count=" + count +
                 '}';
     }
 }
