@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -43,13 +44,11 @@ class Helper {
 
     static List<ShinryouFullDTO> filterShinryouInVisits(List<VisitFull2DTO> visits, Predicate<ShinryouFullDTO> pred){
         List<ShinryouFullDTO> result = new ArrayList<>();
-        for(VisitFull2DTO visit: visits){
-            for(ShinryouFullDTO shinryou: visit.shinryouList){
-                if( pred.test(shinryou) ){
-                    result.add(shinryou);
-                }
+        forEachShinryouInVisits(visits, shinryou -> {
+            if( pred.test(shinryou) ){
+                result.add(shinryou);
             }
-        }
+        });
         return result;
     }
 
@@ -61,6 +60,14 @@ class Helper {
             }
         }
         return result;
+    }
+
+    static void forEachShinryouInVisits(List<VisitFull2DTO> visits, Consumer<ShinryouFullDTO> cb){
+        for(VisitFull2DTO visit: visits){
+            for(ShinryouFullDTO shinryou: visit.shinryouList){
+                cb.accept(shinryou);
+            }
+        }
     }
 
     static void removeExtraShinryouFromVisits(List<VisitFull2DTO> visits, ShinryouMasterDTO master, int toBeRemained)

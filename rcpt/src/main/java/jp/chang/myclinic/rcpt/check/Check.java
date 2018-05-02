@@ -99,11 +99,13 @@ public class Check {
             System.out.printf("%04d %s%s%n", patient.patientId, patient.lastName, patient.firstName);
             List<VisitFull2DTO> visits = Service.api.listVisitByPatientHavingHokenCall(patientId, year, month)
                     .execute().body();
+            assert visits.size() > 0;
             List<DiseaseFullDTO> diseases = Service.api.listDiseaseByPatientAtCall(patientId, year, month)
                     .execute().body();
             new CheckChouki(visits, masters).check(fixit);
             new CheckTokuteiShikkanKanri(visits, masters).check(fixit);
             new CheckChoukiTouyakuKasan(visits, masters).check(fixit);
+            new CheckHandanryou(visits, masters).check(fixit);
         }
         Service.stop();
     }

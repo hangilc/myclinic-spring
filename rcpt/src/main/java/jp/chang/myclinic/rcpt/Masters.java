@@ -17,6 +17,12 @@ public class Masters {
     public ShinryouMasterDTO 特定疾患管理料;
     public ShinryouMasterDTO 長期投薬加算;
     public ShinryouMasterDTO 特定疾患処方管理加算;
+    public ShinryouMasterDTO 尿便検査判断料;
+    public ShinryouMasterDTO 血液検査判断料;
+    public ShinryouMasterDTO 生化Ⅰ判断料;
+    public ShinryouMasterDTO 生化Ⅱ判断料;
+    public ShinryouMasterDTO 免疫検査判断料;
+    public ShinryouMasterDTO 微生物検査判断料;
 
     public Masters(int year, int month) throws Exception {
         at = LocalDate.of(year, month, 1).toString();
@@ -30,6 +36,12 @@ public class Masters {
         特定疾患管理料 = resolveShinryouMaster("特定疾患管理");
         長期投薬加算 = resolveShinryouMaster("長期処方");
         特定疾患処方管理加算 = resolveShinryouMaster("特定疾患処方");
+        尿便検査判断料 = resolveShinryouMaster("尿便検査判断料");
+        血液検査判断料 = resolveShinryouMaster("血液検査判断料");
+        生化Ⅰ判断料 = resolveShinryouMaster("生化Ⅰ判断料");
+        生化Ⅱ判断料 = resolveShinryouMaster("生化Ⅱ判断料");
+        免疫検査判断料 = resolveShinryouMaster("免疫検査判断料");
+        微生物検査判断料 = resolveShinryouMaster("微生物検査判断料");
     }
 
     private ShinryouMasterDTO resolveShinryouMaster(String name) throws Exception {
