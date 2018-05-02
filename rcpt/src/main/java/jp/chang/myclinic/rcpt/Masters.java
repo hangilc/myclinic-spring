@@ -14,6 +14,7 @@ public class Masters {
     public ShinryouMasterDTO 処方せん料;
     public ShinryouMasterDTO 処方せん料７;
     public ShinryouMasterDTO 調基;
+    public ShinryouMasterDTO 特定疾患管理料;
 
     public Masters(int year, int month) throws Exception {
         at = LocalDate.of(year, month, 1).toString();
@@ -24,6 +25,7 @@ public class Masters {
         処方せん料 = resolveShinryouMaster("処方せん料");
         処方せん料７ = resolveShinryouMaster("処方せん料７");
         調基 = resolveShinryouMaster("調基");
+        特定疾患管理料 = resolveShinryouMaster("特定疾患管理");
     }
 
     private ShinryouMasterDTO resolveShinryouMaster(String name) throws Exception {
