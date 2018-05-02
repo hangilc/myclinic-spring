@@ -4,6 +4,8 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.rcpt.Masters;
+import jp.chang.myclinic.rcpt.unit.RcptBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +45,9 @@ public class Check {
     }
 
     public void run() throws Exception {
+        Masters masters = new Masters(year, month);
         List<Integer> patientIds = Service.api.listVisitingPatientIdHavingHokenCall(year, month).execute().body();
+        patientIds = patientIds.subList(0, 1); // for development
         for(int patientId: patientIds){
             PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
             System.out.printf("%04d %s%s%n", patient.patientId, patient.lastName, patient.firstName);
@@ -51,9 +55,8 @@ public class Check {
                     .execute().body();
             List<DiseaseFullDTO> diseases = Service.api.listDiseaseByPatientAtCall(patientId, year, month)
                     .execute().body();
-            for(VisitFull2DTO visit: visits){
-                new CheckChouki(visit, diseases, fixit).check();
-            }
+            RcptBundle bundle = new RcptBundle(visits);
+            System.out.println(bundle);
         }
     }
 
