@@ -1,0 +1,17 @@
+package jp.chang.myclinic.mastermap.generated;
+
+import jp.chang.myclinic.mastermap.Resolver;
+
+public class {{ class_name }} {
+	
+	{% for name in names %}
+	public static int {{ name }};
+	{% endfor %}
+
+	public void init(Resolver resolver){
+		{% for name in names %}
+		this.{{ name }} = resolver.resolve("{{ name }}");
+		{% endfor %}
+	}
+}
+
