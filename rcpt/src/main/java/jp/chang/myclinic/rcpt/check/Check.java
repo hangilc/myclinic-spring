@@ -109,6 +109,7 @@ public class Check {
             new CheckShoshinSaisin(visits, masters).check(fixit);
             new CheckKouseishinyaku(visits, masters).check(fixit);
             new CheckGaiyou(visits, masters).check(fixit);
+            new CheckShohouryou(visits, masters).check(fixit);
             if( diseases == null ){
                 System.err.println("Failed to get disease list (some checks skipped). PatientID " + patientId);
             } else {

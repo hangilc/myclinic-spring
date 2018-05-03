@@ -23,18 +23,24 @@ class CheckGaiyou extends CheckBase {
             if( ds.size() > 0 ){
                 if( nGaiyouChouzai == 0 ){
                     error("調剤料（外用薬）抜け");
-                    enterShinryou(visit, getMasters().外用調剤);
-                    info("FIXED");
+                    if( fixit ) {
+                        enterShinryou(visit, getMasters().外用調剤);
+                        info("FIXED");
+                    }
                 } else if( nGaiyouChouzai > 1 ){
                     error("調剤料（外用薬）重複");
-                    removeExtraShinryou(visit, getMasters().外用調剤, 1);
-                    info("FIXED");
+                    if( fixit ) {
+                        removeExtraShinryou(visit, getMasters().外用調剤, 1);
+                        info("FIXED");
+                    }
                 }
             } else {
                 if( nGaiyouChouzai > 0 ){
                     error("調剤料（外用薬）不可");
-                    removeExtraShinryou(visit, getMasters().外用調剤, 0);
-                    info("FIXED");
+                    if( fixit ) {
+                        removeExtraShinryou(visit, getMasters().外用調剤, 0);
+                        info("FIXED");
+                    }
                 }
             }
         });

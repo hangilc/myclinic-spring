@@ -44,6 +44,14 @@ class CheckBase {
         System.out.println(msg);
     }
 
+    void error(String msg, boolean fixit, Runnable fixer){
+        System.out.println(msg);
+        if( fixit ){
+            fixer.run();
+            System.out.println("FIXED");
+        }
+    }
+
     void info(String msg){
         System.out.println(msg);
     }
@@ -134,8 +142,48 @@ class CheckBase {
         return DrugCategory.fromCode(drug.drug.category);
     }
 
+    boolean isNaifuku(DrugFullDTO drug){
+        return drugCategoryOf(drug) == DrugCategory.Naifuku;
+    }
+
     boolean isGaiyou(DrugFullDTO drug){
         return drugCategoryOf(drug) == DrugCategory.Gaiyou;
+    }
+
+    int countDrug(VisitFull2DTO visit, Predicate<DrugFullDTO> pred){
+        return (int)visit.drugs.stream().filter(pred).count();
+    }
+
+    int countShohouryou(VisitFull2DTO visit){
+        return countShinryouMaster(visit, getMasters().処方料);
+    }
+
+    int countShohouryou7(VisitFull2DTO visit){
+        return countShinryouMaster(visit, getMasters().処方料７);
+    }
+
+    boolean isChoukiNaifukuDrug(DrugFullDTO drug){
+        return isNaifuku(drug) && drug.drug.days > 14;
+    }
+
+    int countChoukiNaifukuDrug(VisitFull2DTO visit){
+        return countDrug(visit, this::isChoukiNaifukuDrug);
+    }
+
+    void enterShohouryou(VisitFull2DTO visit){
+        enterShinryou(visit, getMasters().処方料);
+    }
+
+    void enterShohouryou7(VisitFull2DTO visit){
+        enterShinryou(visit, getMasters().処方料７);
+    }
+
+    void removeExtraShohouryou(VisitFull2DTO visit, int remain){
+        removeExtraShinryou(visit, getMasters().処方料, remain);
+    }
+
+    void removeExtraShohouryou7(VisitFull2DTO visit, int remain){
+        removeExtraShinryou(visit, getMasters().処方料７, remain);
     }
 
 }
