@@ -15,9 +15,8 @@ class CheckShoshinSaisin extends CheckBase {
 
     void check(boolean fixit){
         forEachVisit(visit -> {
-            int nShoshin = countShinryouMaster(visit, getMasters().初診);
-            int nSaishin = countShinryouMaster(visit, getMasters().再診) +
-                    countShinryouMaster(visit, getMasters().同日再診);
+            int nShoshin = countShoshinGroup(visit);
+            int nSaishin = countSaishinGroup(visit);
             int n = nShoshin + nSaishin;
             if( n == 0 ){
                 error("初診再診もれ");
