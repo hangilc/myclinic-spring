@@ -64,7 +64,7 @@ class CheckBase {
                 countShinryouMaster(visit, getMasters().同日再診);
     }
 
-    List<DiseaseFullDTO> listDiseases(VisitFull2DTO visit){
+    List<DiseaseFullDTO> listDisease(VisitFull2DTO visit){
         String at = visit.visit.visitedAt.substring(0, 10);
         return diseases.stream().filter(d -> isValidAt(d, at)).collect(Collectors.toList());
     }

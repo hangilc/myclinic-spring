@@ -112,6 +112,7 @@ public class Check {
             } else {
                 new CheckDiseaseExists(visits, masters, diseases).check(fixit);
                 new CheckShoshinByoumei(visits, masters, diseases).check(fixit);
+                new CheckSaishinByoumei(visits, masters, diseases).check(fixit);
             }
         }
         Service.stop();

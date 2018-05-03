@@ -22,7 +22,7 @@ class CheckShoshinByoumei extends CheckBase {
             int nShoshin = countShoshinGroup(visit);
             int nSaishin = countSaishinGroup(visit);
             if( nShoshin > 0 && nSaishin == 0 ){
-                List<DiseaseFullDTO> ds = listDiseases(visit);
+                List<DiseaseFullDTO> ds = listDisease(visit);
                 List<DiseaseFullDTO> starters = ds.stream()
                         .filter(d -> diseaseStartsAt(d, visit)).collect(Collectors.toList());
                 if( starters.size() == 0 ){
