@@ -1332,7 +1332,11 @@ public class DbGateway {
     }
 
     public DiseaseFullDTO getDiseaseFull(int diseaseId) {
-        Object[] result = diseaseRepository.findFull(diseaseId).get(0);
+        List<Object[]> resultList = diseaseRepository.findFull(diseaseId);
+        if( resultList.size() == 0 ){
+            throw new RuntimeException("Cannot find full disease. " + diseaseId);
+        }
+        Object[] result = resultList.get(0);
         DiseaseFullDTO diseaseFullDTO = new DiseaseFullDTO();
         diseaseFullDTO.disease = mapper.toDiseaseDTO((Disease) result[0]);
         diseaseFullDTO.master = mapper.toByoumeiMasterDTO(((ByoumeiMaster) result[1]));
