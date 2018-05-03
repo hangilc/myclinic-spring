@@ -1,6 +1,5 @@
 package jp.chang.myclinic.rcpt.check;
 
-import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.rcpt.Masters;
@@ -13,8 +12,8 @@ class CheckKouseishinyaku extends CheckBase {
 
     private static Logger logger = LoggerFactory.getLogger(CheckKouseishinyaku.class);
 
-    CheckKouseishinyaku(List<VisitFull2DTO> visits, Masters masters, List<DiseaseFullDTO> diseases) {
-        super(visits, masters, diseases);
+    CheckKouseishinyaku(List<VisitFull2DTO> visits, Masters masters) {
+        super(visits, masters);
     }
 
     void check(boolean fixit){

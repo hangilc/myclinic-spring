@@ -1,6 +1,7 @@
 package jp.chang.myclinic.rcpt.check;
 
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Madoku;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.rcpt.Masters;
@@ -127,6 +128,14 @@ class CheckBase {
             ex.printStackTrace();
             System.exit(1);
         }
+    }
+
+    DrugCategory drugCategoryOf(DrugFullDTO drug){
+        return DrugCategory.fromCode(drug.drug.category);
+    }
+
+    boolean isGaiyou(DrugFullDTO drug){
+        return drugCategoryOf(drug) == DrugCategory.Gaiyou;
     }
 
 }
