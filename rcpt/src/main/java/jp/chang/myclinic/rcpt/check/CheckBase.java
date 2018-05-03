@@ -1,12 +1,13 @@
 package jp.chang.myclinic.rcpt.check;
 
-import jp.chang.myclinic.dto.DiseaseFullDTO;
-import jp.chang.myclinic.dto.ShinryouMasterDTO;
-import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.consts.Madoku;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.rcpt.Masters;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class CheckBase {
@@ -83,6 +84,49 @@ class CheckBase {
     boolean diseaseStartsAt(DiseaseFullDTO disease, VisitFull2DTO visit){
         String at = visit.visit.visitedAt.substring(0, 10);
         return disease.disease.startDate.equals(at);
+    }
+
+    void forEachDrug(VisitFull2DTO visit, Consumer<DrugFullDTO> cb){
+        visit.drugs.forEach(cb);
+    }
+
+    List<DrugFullDTO> filterDrug(VisitFull2DTO visit, Predicate<DrugFullDTO> pred){
+        return visit.drugs.stream().filter(pred).collect(Collectors.toList());
+    }
+
+    boolean isMadoku(DrugFullDTO drug){
+        return Madoku.fromCode(drug.master.madoku) != Madoku.NoMadoku;
+    }
+
+    List<ShinryouFullDTO> filterShinryou(VisitFull2DTO visit, Predicate<ShinryouFullDTO> pred){
+        return visit.shinryouList.stream().filter(pred).collect(Collectors.toList());
+    }
+
+    void removeExtraShinryou(VisitFull2DTO visit, ShinryouMasterDTO master, int toBeRemained){
+        List<ShinryouFullDTO> targets = filterShinryou(visit,
+                s -> s.master.shinryoucode == master.shinryoucode);
+        List<Integer> shinryouIds = targets.subList(toBeRemained, targets.size())
+                .stream().map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
+        try {
+            boolean success = Service.api.batchDeleteShinryouCall(shinryouIds).execute().body();
+            assert success;
+        } catch(Exception ex){
+            ex.printStackTrace();
+            System.exit(1);
+        }
+    }
+
+    void enterShinryou(VisitFull2DTO visit, ShinryouMasterDTO master){
+        ShinryouDTO shinryou = new ShinryouDTO();
+        shinryou.visitId = visit.visit.visitId;
+        shinryou.shinryoucode = master.shinryoucode;
+        try {
+            int shinryouId = Service.api.enterShinryouCall(shinryou).execute().body();
+            assert shinryouId > 0;
+        } catch(Exception ex){
+            ex.printStackTrace();
+            System.exit(1);
+        }
     }
 
 }
