@@ -23,6 +23,9 @@ public class Masters {
     public ShinryouMasterDTO 生化Ⅱ判断料;
     public ShinryouMasterDTO 免疫検査判断料;
     public ShinryouMasterDTO 微生物検査判断料;
+    public ShinryouMasterDTO 初診;
+    public ShinryouMasterDTO 再診;
+    public ShinryouMasterDTO 同日再診;
 
     public Masters(int year, int month) throws Exception {
         at = LocalDate.of(year, month, 1).toString();
@@ -42,6 +45,9 @@ public class Masters {
         生化Ⅱ判断料 = resolveShinryouMaster("生化Ⅱ判断料");
         免疫検査判断料 = resolveShinryouMaster("免疫検査判断料");
         微生物検査判断料 = resolveShinryouMaster("微生物検査判断料");
+        初診 = resolveShinryouMaster("初診");
+        再診 = resolveShinryouMaster("再診");
+        同日再診 = resolveShinryouMaster("同日再診");
     }
 
     private ShinryouMasterDTO resolveShinryouMaster(String name) throws Exception {

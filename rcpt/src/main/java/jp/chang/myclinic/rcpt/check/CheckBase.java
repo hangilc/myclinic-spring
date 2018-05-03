@@ -1,10 +1,12 @@
 package jp.chang.myclinic.rcpt.check;
 
 import jp.chang.myclinic.dto.DiseaseFullDTO;
+import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.rcpt.Masters;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 class CheckBase {
 
@@ -14,7 +16,11 @@ class CheckBase {
     private  List<DiseaseFullDTO> diseases;
 
     CheckBase(){
+        this(null, null, null);
+    }
 
+    CheckBase(List<VisitFull2DTO> visits, Masters masters){
+        this(visits, masters, null);
     }
 
     CheckBase(List<VisitFull2DTO> visits, Masters masters, List<DiseaseFullDTO> diseases){
@@ -39,4 +45,12 @@ class CheckBase {
         System.err.println(msg);
     }
 
+    void forEachVisit(Consumer<VisitFull2DTO> cb){
+        visits.forEach(cb);
+    }
+
+    int countShinryouMaster(VisitFull2DTO visit, ShinryouMasterDTO master){
+        int shinryoucode = master.shinryoucode;
+        return (int)visit.shinryouList.stream().filter(s -> s.master.shinryoucode == shinryoucode).count();
+    }
 }

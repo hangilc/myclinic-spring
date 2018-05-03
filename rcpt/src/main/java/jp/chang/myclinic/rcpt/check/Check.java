@@ -106,6 +106,7 @@ public class Check {
             new CheckTokuteiShikkanKanri(visits, masters).check(fixit);
             new CheckChoukiTouyakuKasan(visits, masters).check(fixit);
             new CheckHandanryou(visits, masters).check(fixit);
+            new CheckShoshinSaisin(visits, masters).check(fixit);
             if( diseases == null ){
                 System.err.println("Failed to get disease list (some checks skipped).");
             } else {
