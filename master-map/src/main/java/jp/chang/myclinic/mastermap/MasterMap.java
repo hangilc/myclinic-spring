@@ -4,14 +4,15 @@ import jp.chang.myclinic.mastermap.generated.ResolvedDiseaseAdjMap;
 import jp.chang.myclinic.mastermap.generated.ResolvedDiseaseMap;
 import jp.chang.myclinic.mastermap.generated.ResolvedKizaiMap;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class MasterMap {
@@ -123,6 +124,41 @@ public class MasterMap {
         m.shinryouMap = new ResolvedShinryouMap(createResolver(MapKind.Shinryou), at);
         m.kizaiMap = new ResolvedKizaiMap(createResolver(MapKind.Kizai), at);
         return m;
+    }
+
+    public static Map<String, List<ShinryouByoumei>> createShinryouByoumeiMap(String srcLocation) throws Exception {
+        try(InputStream ins = new FileInputStream(srcLocation)){
+            Map<String, List<ShinryouByoumei>> map = new HashMap<>();
+            Yaml yaml = new Yaml();
+            Map<String, Object> top = yaml.load(ins);
+            for(Map.Entry<String, Object> entry: top.entrySet()){
+                String byoumei = entry.getKey();
+                List<ShinryouByoumei> sb = new ArrayList<>();
+                @SuppressWarnings("unchecked")
+                List<Object> values = (List<Object>)entry.getValue();
+                for(Object value: values){
+                    if( value instanceof String ){
+                        sb.add(new ShinryouByoumei((String)value));
+                    } else if( value instanceof List ){
+                        List<String> elements = new ArrayList<>();
+                        @SuppressWarnings("unchecked")
+                        List<Object> valueList = (List<Object>)value;
+                        for(Object valueElem: valueList){
+                            elements.add((String)valueElem);
+                        }
+                        if( elements.size() > 0 ){
+                            sb.add(new ShinryouByoumei(elements.get(0), elements.subList(1, elements.size())));
+                        } else {
+                            throw new RuntimeException("Failed to read shinryou byoumei: " + byoumei);
+                        }
+                    } else {
+                        throw new RuntimeException("Failed to read shinryou byoumei: " + byoumei);
+                    }
+                    map.put(byoumei, sb);
+                }
+            }
+            return map;
+        }
     }
 
 }

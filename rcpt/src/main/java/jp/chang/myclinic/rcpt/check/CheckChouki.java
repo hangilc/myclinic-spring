@@ -16,7 +16,7 @@ class CheckChouki extends CheckBase {
                 error("処方せん料、調基の同時算定");
             }
         } else {
-            if (countDrugInVisits(d -> true) > 0) {
+            if (countDrugInVisits(d -> true) == 0) {
                 if (choukiCount > 0) {
                     error("調基請求不可", fixit, () -> {
                         removeExtraShinryouMasterInVisits(getShinryouMaster().調基, 0);

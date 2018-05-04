@@ -1,9 +1,11 @@
 package jp.chang.myclinic.rcpt;
 
-import jp.chang.myclinic.mastermap.ResolvedMap;
+import jp.chang.myclinic.mastermap.MasterMap;
+import jp.chang.myclinic.mastermap.ShinryouByoumei;
 import jp.chang.myclinic.rcpt.check.Check;
 
-import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -11,9 +13,9 @@ public class Main {
 
     public static void main( String[] args ) throws Exception {
         {
-            ResolvedMap m = Common.getResolvedMap(LocalDate.now());
-            System.out.println(m.shinryouMap.免疫検査判断料);
-            System.exit(0);
+            Map<String, List<ShinryouByoumei>> shinryouByoumeiMap = MasterMap.createShinryouByoumeiMap("./config/shinryou-byoumei.yml");
+            System.out.println(shinryouByoumeiMap);
+            System.exit(1);
         }
 
 

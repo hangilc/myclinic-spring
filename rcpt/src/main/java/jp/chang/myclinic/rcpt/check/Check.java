@@ -113,6 +113,7 @@ public class Check {
                     .execute().body();
             if (diseases == null) {
                 System.err.println("Failed to get disease list (some checks skipped). PatientID " + patientId);
+                continue;
             }
             Scope scope = new Scope(visits, resolvedMap, diseases);
             new CheckChouki(scope).check(fixit);
