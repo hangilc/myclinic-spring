@@ -4,7 +4,6 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
-import jp.chang.myclinic.mastermap.ResolvedMap;
 import jp.chang.myclinic.rcpt.Common;
 
 import java.time.LocalDate;
@@ -96,7 +95,7 @@ public class Check {
 
     public void run() throws Exception {
         Service.setServerUrl(serverUrl);
-        ResolvedMap resolvedMap = Common.getResolvedMap(LocalDate.of(year, month, 1));
+        Common.MasterMaps masterMaps = Common.getMasterMaps(LocalDate.of(year, month, 1));
         List<Integer> patientIds;
         if (optPatientIds != null) {
             patientIds = optPatientIds;
@@ -115,7 +114,7 @@ public class Check {
                 System.err.println("Failed to get disease list (some checks skipped). PatientID " + patientId);
                 continue;
             }
-            Scope scope = new Scope(visits, resolvedMap, diseases);
+            Scope scope = new Scope(visits, masterMaps.resolvedMap, masterMaps.shinryouByoumeiMap, diseases);
             new CheckChouki(scope).check(fixit);
             new CheckTokuteiShikkanKanri(scope).check(fixit);
             new CheckChoukiTouyakuKasan(scope).check(fixit);
@@ -127,6 +126,7 @@ public class Check {
             new CheckDiseaseExists(scope).check(fixit);
             new CheckShoshinByoumei(scope).check(fixit);
             new CheckSaishinByoumei(scope).check(fixit);
+            new CheckByoumei(scope).check(fixit);
         }
         Service.stop();
     }
