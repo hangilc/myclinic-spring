@@ -1,19 +1,15 @@
 package jp.chang.myclinic.rcpt.check;
 
-import jp.chang.myclinic.dto.VisitFull2DTO;
-import jp.chang.myclinic.rcpt.Masters;
-
-import java.util.List;
+import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 
 class CheckChoukiTouyakuKasan extends CheckBase {
 
     //private static Logger logger = LoggerFactory.getLogger(CheckChoukiTouyakuKasan.class);
-    private List<VisitFull2DTO> visits;
-    private Masters masters;
+    private ResolvedShinryouMap sm;
 
-    CheckChoukiTouyakuKasan(List<VisitFull2DTO> visits, Masters masters) {
-        this.visits = visits;
-        this.masters = masters;
+    CheckChoukiTouyakuKasan(Scope scope) {
+        super(scope);
+        sm = getShinryouMaster();
     }
 
     void check(boolean fixit) throws Exception {
@@ -21,44 +17,32 @@ class CheckChoukiTouyakuKasan extends CheckBase {
         int nTokuteiKasan = countTokuteiShohouKasan();
         if( nChoukiTouyaku > 0 ){
             if( nTokuteiKasan != 0 ){
-                error("特定疾患処方管理加算請求不可");
-                if( fixit ){
-                    removeExtraTokuteiKasan(0);
-                    info("FIXED");
-                }
+                error("特定疾患処方管理加算請求不可", fixit, () -> removeExtraTokuteiKasan(0));
             }
             if( nChoukiTouyaku > 1 ){
-                error("長期投薬加算重複");
-                if( fixit ){
-                    removeExtraChoukiTouyakuKasan();
-                    info("FIXED");
-                }
+                error("長期投薬加算重複", fixit, this::removeExtraChoukiTouyakuKasan);
             }
         } else {
             if( nTokuteiKasan > 2 ){
-                error("特定疾患処方管理加算３回以上");
-                if( fixit ){
-                    removeExtraTokuteiKasan(2);
-                    info("FIXED");
-                }
+                error("特定疾患処方管理加算３回以上", fixit, () -> removeExtraTokuteiKasan(2));
             }
         }
     }
 
     private int countChoukiTouyakuKasan(){
-        return Helper.countShinryoucodeInVisits(visits, masters.長期投薬加算.shinryoucode);
+        return countShinryouMasterInVisits(sm.長期処方);
     }
 
     private int countTokuteiShohouKasan(){
-        return Helper.countShinryoucodeInVisits(visits, masters.特定疾患処方管理加算.shinryoucode);
+        return countShinryouMasterInVisits(sm.特定疾患処方);
     }
 
-    private void removeExtraTokuteiKasan(int nRemain) throws Exception {
-        Helper.removeExtraShinryouFromVisits(visits, masters.特定疾患処方管理加算, nRemain);
+    private void removeExtraTokuteiKasan(int nRemain) {
+        removeExtraShinryouMasterInVisits(sm.特定疾患処方, nRemain);
     }
 
-    private void removeExtraChoukiTouyakuKasan() throws Exception {
-        Helper.removeExtraShinryouFromVisits(visits, masters.長期投薬加算, 1);
+    private void removeExtraChoukiTouyakuKasan() {
+        removeExtraShinryouMasterInVisits(sm.長期処方, 1);
     }
 
 }

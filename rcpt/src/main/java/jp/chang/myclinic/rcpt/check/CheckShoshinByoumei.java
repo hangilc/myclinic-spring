@@ -1,20 +1,16 @@
 package jp.chang.myclinic.rcpt.check;
 
 import jp.chang.myclinic.dto.DiseaseFullDTO;
-import jp.chang.myclinic.dto.VisitFull2DTO;
-import jp.chang.myclinic.rcpt.Masters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 class CheckShoshinByoumei extends CheckBase {
 
-    private static Logger logger = LoggerFactory.getLogger(CheckShoshinByoumei.class);
+    //private static Logger logger = LoggerFactory.getLogger(CheckShoshinByoumei.class);
 
-    CheckShoshinByoumei(List<VisitFull2DTO> visits, Masters masters, List<DiseaseFullDTO> diseases) {
-        super(visits, masters, diseases);
+    CheckShoshinByoumei(Scope scope) {
+        super(scope);
     }
 
     void check(boolean fixit){

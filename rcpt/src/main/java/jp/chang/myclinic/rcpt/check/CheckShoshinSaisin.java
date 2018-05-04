@@ -1,16 +1,11 @@
 package jp.chang.myclinic.rcpt.check;
 
-import jp.chang.myclinic.dto.VisitFull2DTO;
-import jp.chang.myclinic.rcpt.Masters;
-
-import java.util.List;
-
 class CheckShoshinSaisin extends CheckBase {
 
     //private static Logger logger = LoggerFactory.getLogger(CheckShoshinSaisin.class);
 
-    CheckShoshinSaisin(List<VisitFull2DTO> visits, Masters masters) {
-        super(visits, masters);
+    CheckShoshinSaisin(Scope scope) {
+        super(scope);
     }
 
     void check(boolean fixit){

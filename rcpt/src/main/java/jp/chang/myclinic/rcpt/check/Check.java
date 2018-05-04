@@ -4,8 +4,10 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
-import jp.chang.myclinic.rcpt.Masters;
+import jp.chang.myclinic.mastermap.ResolvedMap;
+import jp.chang.myclinic.rcpt.Common;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class Check {
         parseArgs(args);
     }
 
-    private void usage(){
+    private void usage() {
         System.err.println("usage: rcpt check [options] serverUrl year month");
         System.err.println("  options:");
         System.err.println("    -f                 : fix problems");
@@ -30,47 +32,54 @@ public class Check {
     }
 
     private void parseArgs(String[] args) {
-        if( args.length < 4 ){
+        if (args.length < 4) {
             usage();
             System.exit(1);
         }
         int i = 1;
-        while( i < args.length ){
+        while (i < args.length) {
             String s = args[i];
-            if( s.startsWith("-") ){
-                if( s.length() < 2 ){
+            if (s.startsWith("-")) {
+                if (s.length() < 2) {
                     usage();
                     System.exit(1);
                 }
                 char opt = s.charAt(1);
-                switch(opt){
-                    case 'f': fixit = true; break;
-                    case 'p': optPatientIds(s.substring(2)); break;
-                    default: usage(); System.exit(1); break;
+                switch (opt) {
+                    case 'f':
+                        fixit = true;
+                        break;
+                    case 'p':
+                        optPatientIds(s.substring(2));
+                        break;
+                    default:
+                        usage();
+                        System.exit(1);
+                        break;
                 }
                 i += 1;
             } else {
                 break;
             }
         }
-        if( args.length - i != 3 ){
+        if (args.length - i != 3) {
             usage();
             System.exit(1);
         }
         serverUrl = args[i];
         try {
-            year = Integer.parseInt(args[i+1]);
-            month = Integer.parseInt(args[i+2]);
-        } catch(NumberFormatException ex){
+            year = Integer.parseInt(args[i + 1]);
+            month = Integer.parseInt(args[i + 2]);
+        } catch (NumberFormatException ex) {
             System.err.println("Invalid year or month.");
             usage();
             System.exit(1);
         }
     }
 
-    private void optPatientIds(String arg){
+    private void optPatientIds(String arg) {
         this.optPatientIds = new ArrayList<>();
-        if( arg.startsWith("=") ){
+        if (arg.startsWith("=")) {
             arg = arg.substring(1);
         }
         String[] toks = arg.split(",");
@@ -87,14 +96,14 @@ public class Check {
 
     public void run() throws Exception {
         Service.setServerUrl(serverUrl);
-        Masters masters = new Masters(year, month);
+        ResolvedMap resolvedMap = Common.getResolvedMap(LocalDate.of(year, month, 1));
         List<Integer> patientIds;
-        if( optPatientIds != null ){
+        if (optPatientIds != null) {
             patientIds = optPatientIds;
         } else {
             patientIds = Service.api.listVisitingPatientIdHavingHokenCall(year, month).execute().body();
         }
-        for(int patientId: patientIds){
+        for (int patientId : patientIds) {
             PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
             System.out.printf("%04d %s%s%n", patient.patientId, patient.lastName, patient.firstName);
             List<VisitFull2DTO> visits = Service.api.listVisitByPatientHavingHokenCall(patientId, year, month)
@@ -102,21 +111,21 @@ public class Check {
             assert visits.size() > 0;
             List<DiseaseFullDTO> diseases = Service.api.listDiseaseByPatientAtCall(patientId, year, month)
                     .execute().body();
-            new CheckChouki(visits, masters).check(fixit);
-            new CheckTokuteiShikkanKanri(visits, masters).check(fixit);
-            new CheckChoukiTouyakuKasan(visits, masters).check(fixit);
-            new CheckHandanryou(visits, masters).check(fixit);
-            new CheckShoshinSaisin(visits, masters).check(fixit);
-            new CheckKouseishinyaku(visits, masters).check(fixit);
-            new CheckGaiyou(visits, masters).check(fixit);
-            new CheckShohouryou(visits, masters).check(fixit);
-            if( diseases == null ){
+            if (diseases == null) {
                 System.err.println("Failed to get disease list (some checks skipped). PatientID " + patientId);
-            } else {
-                new CheckDiseaseExists(visits, masters, diseases).check(fixit);
-                new CheckShoshinByoumei(visits, masters, diseases).check(fixit);
-                new CheckSaishinByoumei(visits, masters, diseases).check(fixit);
             }
+            Scope scope = new Scope(visits, resolvedMap, diseases);
+            new CheckChouki(scope).check(fixit);
+            new CheckTokuteiShikkanKanri(scope).check(fixit);
+            new CheckChoukiTouyakuKasan(scope).check(fixit);
+            new CheckHandanryou(scope).check(fixit);
+            new CheckShoshinSaisin(scope).check(fixit);
+            new CheckKouseishinyaku(scope).check(fixit);
+            new CheckGaiyou(scope).check(fixit);
+            new CheckShohouryou(scope).check(fixit);
+            new CheckDiseaseExists(scope).check(fixit);
+            new CheckShoshinByoumei(scope).check(fixit);
+            new CheckSaishinByoumei(scope).check(fixit);
         }
         Service.stop();
     }
