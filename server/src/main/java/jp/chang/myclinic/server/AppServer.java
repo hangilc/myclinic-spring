@@ -20,10 +20,7 @@ import org.springframework.context.annotation.Bean;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Stream;
 
 @SpringBootApplication
 public class AppServer implements CommandLineRunner{
@@ -53,18 +50,19 @@ public class AppServer implements CommandLineRunner{
     @Bean
     public MasterMap getMasterMap(@Value("${myclinic.master-map-file}") String masterMapLocation,
                                   @Value("${myclinic.name-map-file}") String nameMapLocation) throws IOException {
-        MasterMap masterMap = new MasterMap();
-        {
-            try(Stream<String> lines = Files.lines(Paths.get(masterMapLocation))){
-                masterMap.loadCodeMap(lines);
-            }
-        }
-        {
-            try(Stream<String> lines = Files.lines(Paths.get(nameMapLocation))){
-                masterMap.loadNameMap(lines);
-            }
-        }
-        return masterMap;
+        return MasterMap.loadMap(nameMapLocation, masterMapLocation);
+//        MasterMap masterMap = new MasterMap();
+//        {
+//            try(Stream<String> lines = Files.lines(Paths.get(masterMapLocation))){
+//                masterMap.loadCodeMap(lines);
+//            }
+//        }
+//        {
+//            try(Stream<String> lines = Files.lines(Paths.get(nameMapLocation))){
+//                masterMap.loadNameMap(lines);
+//            }
+//        }
+//        return masterMap;
     }
 
     @Bean

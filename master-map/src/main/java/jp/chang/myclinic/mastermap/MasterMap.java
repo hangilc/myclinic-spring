@@ -1,149 +1,128 @@
 package jp.chang.myclinic.mastermap;
 
+import jp.chang.myclinic.mastermap.generated.ResolvedDiseaseAdjMap;
+import jp.chang.myclinic.mastermap.generated.ResolvedDiseaseMap;
+import jp.chang.myclinic.mastermap.generated.ResolvedKizaiMap;
+import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-/**
- * Created by hangil on 2017/03/04.
- */
 public class MasterMap {
 
-    private CodeMap iyakuhinCodeMap;
-    private CodeMap shinryouCodeMap;
-    private CodeMap kizaiCodeMap;
-    private NameMap shinryouNameMap;
-    private NameMap kizaiNameMap;
-    private NameMap diseaseNameMap;
-    private NameMap diseaseAdjNameMap;
+    private Map<MapKind, CodeMap> codeMapRegistry = new EnumMap<>(MapKind.class);
+    private Map<MapKind, NameMap> nameMapRegistry = new EnumMap<>(MapKind.class);
 
     public MasterMap() {
-        this.iyakuhinCodeMap = new CodeMap();
-        this.shinryouCodeMap = new CodeMap();
-        this.kizaiCodeMap = new CodeMap();
-        shinryouNameMap = new NameMap();
-        kizaiNameMap = new NameMap();
-        diseaseNameMap = new NameMap();
-        diseaseAdjNameMap = new NameMap();
+        for (MapKind kind : MapKind.values()) {
+            codeMapRegistry.put(kind, new CodeMap());
+            nameMapRegistry.put(kind, new NameMap());
+        }
     }
 
-    public int resolveIyakuhinCode(int code, LocalDate at){
-        return iyakuhinCodeMap.resolve(code, at);
+    public int resolveIyakuhinCode(int code, LocalDate at) {
+        return codeMapRegistry.get(MapKind.Iyakuhin).resolve(code, at);
     }
 
-    public int resolveShinryouCode(int code, LocalDate at){
-        return shinryouCodeMap.resolve(code,at);
+    public int resolveShinryouCode(int code, LocalDate at) {
+        return codeMapRegistry.get(MapKind.Shinryou).resolve(code, at);
     }
 
-    public int resolveKizaiCode(int code, LocalDate at){
-        return kizaiCodeMap.resolve(code, at);
+    public int resolveKizaiCode(int code, LocalDate at) {
+        return codeMapRegistry.get(MapKind.Kizai).resolve(code, at);
     }
 
-    public Optional<Integer> getShinryoucodeByName(String name){
-        return shinryouNameMap.get(name);
+    public Optional<Integer> getShinryoucodeByName(String name) {
+        return nameMapRegistry.get(MapKind.Shinryou).get(name);
     }
 
-    public Optional<Integer> getKizaicodeByName(String name){
-        return kizaiNameMap.get(name);
+    public Optional<Integer> getKizaicodeByName(String name) {
+        return nameMapRegistry.get(MapKind.Kizai).get(name);
     }
 
-    public Optional<Integer> getShoubyoumeicodeByName(String name){
-        return diseaseNameMap.get(name);
+    public Optional<Integer> getShoubyoumeicodeByName(String name) {
+        return nameMapRegistry.get(MapKind.Disease).get(name);
     }
 
-    public Optional<Integer> getShuushokugocodeByName(String name){
-        return diseaseAdjNameMap.get(name);
+    public Optional<Integer> getShuushokugocodeByName(String name) {
+        return nameMapRegistry.get(MapKind.DiseaseAdj).get(name);
     }
 
-    public void loadCodeMap(Stream<String> lines) {
+    void loadCodeMap(Stream<String> lines) {
         lines.forEach(line -> {
             if (line.isEmpty()) return;
-            char kind = line.charAt(0);
-            CodeMap codeMap = null;
-            if (kind == 'Y') {
-                codeMap = iyakuhinCodeMap;
-            } else if (kind == 'S') {
-                codeMap = shinryouCodeMap;
-            } else if (kind == 'K') {
-                codeMap = kizaiCodeMap;
-            }
-            if (codeMap == null) {
+            char leadChar = line.charAt(0);
+            MapKind kind = MapKind.fromCodeKey(leadChar);
+            if (kind == null) {
                 line = line.trim();
-                if( line.isEmpty() ) return;
+                if (line.isEmpty()) return;
                 if (line.charAt(0) == ';') {
                     return;
                 }
                 throw new RuntimeException("invalid code map entry: " + line);
-            } else {
-                CodeMapEntry entry = CodeMapEntry.parse(line);
-                codeMap.addEntry(entry);
             }
+            CodeMap codeMap = codeMapRegistry.get(kind);
+            CodeMapEntry entry = CodeMapEntry.parse(line);
+            codeMap.addEntry(entry);
         });
-        iyakuhinCodeMap.sortByDate();
-        shinryouCodeMap.sortByDate();
-        kizaiCodeMap.sortByDate();
+        for (CodeMap codeMap : codeMapRegistry.values()) {
+            codeMap.sortByDate();
+        }
     }
 
-    public void loadNameMap(Stream<String> lines) {
+    void loadNameMap(Stream<String> lines) {
         lines.forEach(line -> {
             if (line.isEmpty()) return;
-            char kind = line.charAt(0);
-            NameMap nameMap = null;
-            if (kind == 's') {
-                nameMap = shinryouNameMap;
-            } else if (kind == 'k') {
-                nameMap = kizaiNameMap;
-            } else if (kind == 'd') {
-                nameMap = diseaseNameMap;
-            } else if( kind == 'a' ){
-                nameMap = diseaseAdjNameMap;
-            }
-            if (nameMap == null) {
+            char leadChar = line.charAt(0);
+            MapKind kind = MapKind.fromNameKey(leadChar);
+            if (kind == null) {
                 line = line.trim();
-                if( line.isEmpty() ) return;
+                if (line.isEmpty()) return;
                 if (line.charAt(0) == ';') {
                     return;
                 }
-                throw new RuntimeException("invalid name map entry: " + line);
-            } else {
-                nameMap.parseAndEnter(line);
+                throw new RuntimeException("invalid code map entry: " + line);
             }
+            NameMap nameMap = nameMapRegistry.get(kind);
+            nameMap.parseAndEnter(line);
         });
     }
 
-    // void loadNameMapResource(Resource resource) throws IOException {
-    //     try (InputStream in = resource.getInputStream()) {
-    //         Scanner scanner = new Scanner(in, "UTF-8");
-    //         while (scanner.hasNextLine()) {
-    //             String line = scanner.nextLine();
-    //             if (line.isEmpty()) continue;
-    //             char kind = line.charAt(0);
-    //             NameMap nameMap = null;
-    //             if (kind == 's') {
-    //                 nameMap = shinryouNameMap;
-    //             } else if (kind == 'k') {
-    //                 nameMap = kizaiNameMap;
-    //             } else if (kind == 'd') {
-    //                 nameMap = diseaseNameMap;
-    //             } else if( kind == 'a' ){
-    //                 nameMap = diseaseAdjNameMap;
-    //             }
-    //             if (nameMap == null) {
-    //                 line = line.trim();
-    //                 if( line.isEmpty() ) continue;
-    //                 if (line.charAt(0) == ';') {
-    //                     continue;
-    //                 }
-    //                 throw new RuntimeException("invalid name map entry: " + line);
-    //             } else {
-    //                 nameMap.parseAndEnter(line);
-    //             }
-    //         }
-    //         scanner.close();
-    //         iyakuhinCodeMap.sortByDate();
-    //         shinryouCodeMap.sortByDate();
-    //         kizaiCodeMap.sortByDate();
-    //     }
-    // }
+    public static MasterMap loadMap(String nameMapLocation, String codeMapLocation) throws IOException {
+        MasterMap masterMap = new MasterMap();
+        {
+            try (Stream<String> lines = Files.lines(Paths.get(nameMapLocation))) {
+                masterMap.loadNameMap(lines);
+            }
+        }
+        {
+            try (Stream<String> lines = Files.lines(Paths.get(codeMapLocation))) {
+                masterMap.loadCodeMap(lines);
+            }
+        }
+        return masterMap;
+    }
+
+    private Resolver createResolver(MapKind kind) {
+        return new ResolverImpl(
+                nameMapRegistry.get(kind),
+                codeMapRegistry.get(kind));
+    }
+
+
+    public ResolvedMap getResolvedMap(LocalDate at) {
+        ResolvedMap m = new ResolvedMap();
+        m.diseaseAdjMap = new ResolvedDiseaseAdjMap(createResolver(MapKind.DiseaseAdj), at);
+        m.diseaseMap = new ResolvedDiseaseMap(createResolver(MapKind.Disease), at);
+        m.shinryouMap = new ResolvedShinryouMap(createResolver(MapKind.Shinryou), at);
+        m.kizaiMap = new ResolvedKizaiMap(createResolver(MapKind.Kizai), at);
+        return m;
+    }
 
 }

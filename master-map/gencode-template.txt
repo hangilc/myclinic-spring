@@ -1,16 +1,17 @@
 package jp.chang.myclinic.mastermap.generated;
 
+import java.time.LocalDate;
 import jp.chang.myclinic.mastermap.Resolver;
 
 public class {{ class_name }} {
 	
-	{% for name in names %}
-	public static int {{ name }};
+	{% for (k,_) in entries %}
+	public int {{ k }};
 	{% endfor %}
 
-	public void init(Resolver resolver){
-		{% for name in names %}
-		this.{{ name }} = resolver.resolve("{{ name }}");
+	public {{ class_name }}(Resolver resolver, LocalDate at){
+		{% for (k,v) in entries %}
+		this.{{ k }} = resolver.resolve("{{ v }}", at);
 		{% endfor %}
 	}
 }
