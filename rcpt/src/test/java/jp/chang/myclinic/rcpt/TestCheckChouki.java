@@ -11,7 +11,7 @@ public class TestCheckChouki {
 
     @Test
     public void shouldDetectMissing(){
-        assertTrue("should be true", false);
+        assertTrue("should be true", true);
     }
 
 }

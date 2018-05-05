@@ -13,7 +13,7 @@ class CheckShoshinByoumei extends CheckBase {
         super(scope);
     }
 
-    void check(boolean fixit){
+    void check(){
         forEachVisit(visit -> {
             int nShoshin = countShoshinGroup(visit);
             int nSaishin = countSaishinGroup(visit);

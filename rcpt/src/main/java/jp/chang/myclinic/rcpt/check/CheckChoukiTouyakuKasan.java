@@ -12,19 +12,30 @@ class CheckChoukiTouyakuKasan extends CheckBase {
         sm = getShinryouMaster();
     }
 
-    void check(boolean fixit) throws Exception {
+    void check() {
         int nChoukiTouyaku = countChoukiTouyakuKasan();
         int nTokuteiKasan = countTokuteiShohouKasan();
         if( nChoukiTouyaku > 0 ){
-            if( nTokuteiKasan != 0 ){
-                error("特定疾患処方管理加算請求不可", fixit, () -> removeExtraTokuteiKasan(0));
+            if( nTokuteiKasan > 0 ){
+                String em = String.format("特定疾患処方管理加算(%d件)を削除します。", nTokuteiKasan);
+                error("特定疾患処方管理加算請求不可", em, () ->
+                        removeExtraShinryouMasterInVisits(sm.特定疾患処方, 0)
+                );
             }
             if( nChoukiTouyaku > 1 ){
-                error("長期投薬加算重複", fixit, this::removeExtraChoukiTouyakuKasan);
+                String em = String.format("長期投薬加算(%d件中%d件)を削除します。",
+                        nChoukiTouyaku, nChoukiTouyaku - 1);
+                error("長期投薬加算重複", em, () ->
+                    removeExtraShinryouMasterInVisits(sm.長期処方, 1)
+                );
             }
         } else {
             if( nTokuteiKasan > 2 ){
-                error("特定疾患処方管理加算３回以上", fixit, () -> removeExtraTokuteiKasan(2));
+                String em = String.format("特定疾患処方管理加算(%d件中%d件)を削除します。",
+                        nTokuteiKasan, nTokuteiKasan - 2);
+                error("特定疾患処方管理加算３回以上", em, () ->
+                        removeExtraShinryouMasterInVisits(sm.特定疾患処方, 2)
+                );
             }
         }
     }
@@ -35,14 +46,6 @@ class CheckChoukiTouyakuKasan extends CheckBase {
 
     private int countTokuteiShohouKasan(){
         return countShinryouMasterInVisits(sm.特定疾患処方);
-    }
-
-    private void removeExtraTokuteiKasan(int nRemain) {
-        removeExtraShinryouMasterInVisits(sm.特定疾患処方, nRemain);
-    }
-
-    private void removeExtraChoukiTouyakuKasan() {
-        removeExtraShinryouMasterInVisits(sm.長期処方, 1);
     }
 
 }

@@ -25,13 +25,15 @@ class CheckBase {
     private List<VisitFull2DTO> visits;
     private ResolvedMap resolvedMasterMap;
     private Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumeiMap;
-    private  List<DiseaseFullDTO> diseases;
+    private List<DiseaseFullDTO> diseases;
+    private Scope scope;
 
     CheckBase(Scope scope){
         this.visits = scope.visits;
         this.resolvedMasterMap = scope.resolvedMasterMap;
         this.shinryouByoumeiMap = scope.shinryouByoumeiMap;
         this.diseases =scope. diseases;
+        this.scope = scope;
     }
 
     List<DiseaseFullDTO> getDiseases(){
@@ -39,15 +41,12 @@ class CheckBase {
     }
 
     void error(String msg){
-        System.out.println(msg);
+        error(msg, null, null);
     }
 
-    void error(String msg, boolean fixit, Runnable fixer){
-        System.out.println(msg);
-        if( fixit ){
-            fixer.run();
-            System.out.println("FIXED");
-        }
+    void error(String msg, String fixMessage, Runnable fixer){
+        Error error = new Error(scope.patient, msg, fixMessage, fixer);
+        scope.errorHandler.accept(error);
     }
 
     void info(String msg){
@@ -288,6 +287,14 @@ class CheckBase {
 
     List<ResolvedShinryouByoumei> getShinryouByoumeiList(int shinryoucode){
         return shinryouByoumeiMap.get(shinryoucode);
+    }
+
+    String messageForRemoveExtra(String name, int total, int remain){
+        if( remain > 0 ) {
+            return String.format("%s(%d件中%d件)を削除します。", name, total, total - remain);
+        } else {
+            return String.format("%s(%d件)を削除します。", name, total);
+        }
     }
 
 }

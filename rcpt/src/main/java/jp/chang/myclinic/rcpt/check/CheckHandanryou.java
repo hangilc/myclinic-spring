@@ -25,7 +25,7 @@ class CheckHandanryou extends CheckBase {
         return result;
     }
 
-    void check(boolean fixit) {
+    void check() {
         Map<Integer, Integer> map = new HashMap<>(); // shinryoucode -> count
         Set<Integer> handanryouShinryoucodes = handanryouMap.keySet();
         forEachShinryouInVisits(s -> {
@@ -42,7 +42,9 @@ class CheckHandanryou extends CheckBase {
         });
         for (int problemShinryoucode : problemShinryoucodes) {
             String name = handanryouMap.get(problemShinryoucode);
-            error(name + "重複", fixit, () ->
+            int count = map.get(problemShinryoucode);
+            String em = String.format("%s(%d件中%d件)を削除します。", name, count, count - 1);
+            error(name + "重複", em, () ->
                 removeExtraShinryouMasterInVisits(problemShinryoucode, 1)
             );
         }

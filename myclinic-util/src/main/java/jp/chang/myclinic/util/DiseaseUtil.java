@@ -1,5 +1,6 @@
 package jp.chang.myclinic.util;
 
+import jp.chang.myclinic.consts.Shuushokugo;
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 public class DiseaseUtil {
 
     public static boolean isPrefix(int shuushokugocode){
-        return shuushokugocode < 8000;
+        return shuushokugocode < Shuushokugo.PostFixStart;
     }
 
     public static String getFullName(ByoumeiMasterDTO byoumeiMaster, List<ShuushokugoMasterDTO> adjList){

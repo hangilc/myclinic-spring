@@ -8,10 +8,11 @@ class CheckTokuteiShikkanKanri extends CheckBase {
         super(scope);
     }
 
-    void check(boolean fixit){
+    void check(){
         int n = countKanri();
         if( n > 2 ){
-            error("特定疾患療養管理料が３回以上", fixit, () ->
+            String em = messageForRemoveExtra("特定疾患療養管理料", n, 2);
+            error("特定疾患療養管理料が３回以上", em, () ->
                 removeExtraShinryouMasterInVisits(getShinryouMaster().特定疾患管理, 2)
             );
         }

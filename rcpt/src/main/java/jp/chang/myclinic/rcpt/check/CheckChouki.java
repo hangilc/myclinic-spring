@@ -8,7 +8,7 @@ class CheckChouki extends CheckBase {
         super(scope);
     }
 
-    void check(boolean fixit){
+    void check(){
         int choukiCount = countShinryouMasterInVisits(getShinryouMaster().調基);
         int shohousenCount = countShohousenGroupInVisits();
         if( shohousenCount > 0 ){
@@ -18,17 +18,20 @@ class CheckChouki extends CheckBase {
         } else {
             if (countDrugInVisits(d -> true) == 0) {
                 if (choukiCount > 0) {
-                    error("調基請求不可", fixit, () -> {
+                    String fixMessage = String.format("調基(%d件)を削除します。", choukiCount);
+                    error("調基請求不可", fixMessage, () -> {
                         removeExtraShinryouMasterInVisits(getShinryouMaster().調基, 0);
                     });
                 }
             } else {
                 if (choukiCount > 1) {
-                    error("調基重複", fixit, () -> {
+                    String fixMessage = String.format("調基(%d件中%d件)を削除します。",
+                            choukiCount, choukiCount - 1);
+                    error("調基重複", fixMessage, () -> {
                         removeExtraShinryouMasterInVisits(getShinryouMaster().調基, 1);
                     });
                 } else if (choukiCount == 0) {
-                    error("調基抜け", fixit, () -> {
+                    error("調基抜け", "調基を追加します。", () -> {
                         VisitFull2DTO visit = findVisit(v -> v.drugs.size() > 0);
                         enterShinryou(visit, getShinryouMaster().調基);
                     });
