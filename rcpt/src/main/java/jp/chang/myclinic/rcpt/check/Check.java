@@ -39,7 +39,7 @@ public class Check {
                     continue;
                 }
                 Scope scope = new Scope(patient, visits, masterMaps.resolvedMap, masterMaps.shinryouByoumeiMap,
-                        diseases, runEnv.fixit, runEnv.errorHandler);
+                        diseases, runEnv.fixit, runEnv.errorHandler, runEnv.api);
                 new CheckChouki(scope).check();
                 new CheckTokuteiShikkanKanri(scope).check();
                 new CheckChoukiTouyakuKasan(scope).check();

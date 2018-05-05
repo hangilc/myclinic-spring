@@ -24,7 +24,6 @@ public class ResolvedShinryouMap {
 	public int 静脈採血;
 	public int 内服調剤;
 	public int 外用調剤;
-	public int 調剤基本;
 	public int 心電図;
 	public int 処方料;
 	public int 処方料７;
@@ -62,6 +61,8 @@ public class ResolvedShinryouMap {
 	public int ＣＲＰ;
 	public int 外来後発加算１;
 
+	public ResolvedShinryouMap(){}
+
 	public ResolvedShinryouMap(Resolver resolver, LocalDate at){
 		this.単純撮影 = resolver.resolve("単純撮影", at);
 		this.単純撮影診断 = resolver.resolve("単純撮影診断", at);
@@ -82,7 +83,6 @@ public class ResolvedShinryouMap {
 		this.静脈採血 = resolver.resolve("静脈採血", at);
 		this.内服調剤 = resolver.resolve("内服調剤", at);
 		this.外用調剤 = resolver.resolve("外用調剤", at);
-		this.調剤基本 = resolver.resolve("調剤基本", at);
 		this.心電図 = resolver.resolve("心電図", at);
 		this.処方料 = resolver.resolve("処方料", at);
 		this.処方料７ = resolver.resolve("処方料７", at);

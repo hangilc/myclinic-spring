@@ -26,6 +26,7 @@ class CheckBase {
     private ResolvedMap resolvedMasterMap;
     private Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumeiMap;
     private List<DiseaseFullDTO> diseases;
+    private Service.ServerAPI api;
     private Scope scope;
 
     CheckBase(Scope scope){
@@ -33,6 +34,7 @@ class CheckBase {
         this.resolvedMasterMap = scope.resolvedMasterMap;
         this.shinryouByoumeiMap = scope.shinryouByoumeiMap;
         this.diseases =scope. diseases;
+        this.api = scope.api;
         this.scope = scope;
     }
 
@@ -105,7 +107,7 @@ class CheckBase {
         shinryou.visitId = visit.visit.visitId;
         shinryou.shinryoucode = shinryoucode;
         try {
-            int shinryouId = Service.api.enterShinryouCall(shinryou).execute().body();
+            int shinryouId = api.enterShinryouCall(shinryou).execute().body();
             assert shinryouId > 0;
         } catch(Exception ex){
             ex.printStackTrace();
@@ -137,7 +139,7 @@ class CheckBase {
                 .map(s -> s.shinryou.shinryouId)
                 .collect(Collectors.toList());
         try {
-            boolean success = Service.api.batchDeleteShinryouCall(shinryouIds).execute().body();
+            boolean success = api.batchDeleteShinryouCall(shinryouIds).execute().body();
             assert success;
         } catch(Exception ex){
             ex.printStackTrace();
@@ -151,7 +153,7 @@ class CheckBase {
                 .skip(toBeRemained)
                 .collect(Collectors.toList());
         try {
-            boolean success = Service.api.batchDeleteShinryouCall(shinryouIds).execute().body();
+            boolean success = api.batchDeleteShinryouCall(shinryouIds).execute().body();
             assert success;
         } catch(Exception ex){
             ex.printStackTrace();
@@ -237,7 +239,7 @@ class CheckBase {
 
     void enterDisease(DiseaseNewDTO disease){
         try {
-            int diseaseId = Service.api.enterDiseaseCall(disease).execute().body();
+            int diseaseId = api.enterDiseaseCall(disease).execute().body();
             assert diseaseId > 0;
         } catch(Exception ex){
             logger.error("Failed to enter disease", ex);

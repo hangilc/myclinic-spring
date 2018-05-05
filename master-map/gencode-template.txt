@@ -9,6 +9,8 @@ public class {{ class_name }} {
 	public int {{ k }};
 	{% endfor %}
 
+	public {{ class_name }}(){}
+
 	public {{ class_name }}(Resolver resolver, LocalDate at){
 		{% for (k,v) in entries %}
 		this.{{ k }} = resolver.resolve("{{ v }}", at);
