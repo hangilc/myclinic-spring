@@ -1,9 +1,11 @@
 package jp.chang.myclinic.rcpt.check;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.Common;
+import jp.chang.myclinic.rcpt.builder.B;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -82,12 +84,14 @@ public class TestCheckChouki {
     @Test
     public void choukiWithNoDrug() throws Exception {
         MockWebServer server = TestListener.server;
-        server.enqueue(new MockResponse().setBody("1"));
+        server.enqueue(new MockResponse().setBody("true"));
         Scope scope = createScope();
-        scope.fixit = true;
         scope.visits.add(createVisit(visit -> {
             visit.shinryouList.add(createShinryou(shinryouMap.調基, s -> {
                 s.shinryou.shinryouId = 1234;
+            }));
+            visit.shinryouList.add(createShinryou(shinryouMap.再診, s -> {
+                s.shinryou.shinryouId = 1235;
             }));
         }));
         class State {
@@ -105,6 +109,76 @@ public class TestCheckChouki {
         assertEquals("POST", req.getMethod());
         assertEquals("/json/batch-delete-shinryou", httpUrl.encodedPath());
         assertEquals("shinryou-id=1234", httpUrl.url().getQuery());
+    }
+
+    @Test
+    public void tooManyChouki() throws Exception {
+        MockWebServer server = TestListener.server;
+        server.enqueue(new MockResponse().setBody("true"));
+        Scope scope = createScope();
+        scope.visits.add(createVisit(visit -> {
+            visit.drugs.add(createDrug());
+            visit.shinryouList.add(createShinryou(shinryouMap.再診, s -> {
+                s.shinryou.shinryouId = 1235;
+            }));
+            visit.shinryouList.add(createShinryou(shinryouMap.調基, s -> {
+                s.shinryou.shinryouId = 1236;
+            }));
+            visit.shinryouList.add(createShinryou(shinryouMap.調基, s -> {
+                s.shinryou.shinryouId = 1237;
+            }));
+        }));
+        class State {
+            private int nerror = 0;
+        }
+        State state = new State();
+        scope.errorHandler = err -> {
+            state.nerror += 1;
+            err.getFixFun().run();
+        };
+        new CheckChouki(scope).check();
+        RecordedRequest req = server.takeRequest();
+        HttpUrl httpUrl = req.getRequestUrl();
+        assertEquals(1, state.nerror);
+        assertEquals("POST", req.getMethod());
+        assertEquals("/json/batch-delete-shinryou", httpUrl.encodedPath());
+        assertEquals("shinryou-id=1237", httpUrl.url().getQuery());
+    }
+
+    @Test
+    public void choukiMissing() throws Exception {
+        MockWebServer server = TestListener.server;
+        server.enqueue(new MockResponse().setBody("1"));
+        Scope scope = createScope();
+        scope.visits.add(createVisit(visit -> {
+            visit.visit.visitId = 1000;
+            visit.drugs.add(createDrug());
+            visit.shinryouList.add(createShinryou(shinryouMap.再診, s -> {
+                s.shinryou.shinryouId = 1235;
+            }));
+        }));
+        class State {
+            private int nerror = 0;
+        }
+        State state = new State();
+        scope.errorHandler = err -> {
+            state.nerror += 1;
+            err.getFixFun().run();
+        };
+        new CheckChouki(scope).check();
+        RecordedRequest req = server.takeRequest();
+        HttpUrl httpUrl = req.getRequestUrl();
+        assertEquals(1, state.nerror);
+        assertEquals("POST", req.getMethod());
+        ObjectMapper mapper = new ObjectMapper();
+        ShinryouDTO shinryou = mapper.readValue(req.getBody().readUtf8(), ShinryouDTO.class);
+        ShinryouDTO expected = B.shinryouBuilder()
+                .setVisitId(1000)
+                .setShinryoucode(shinryouMap.調基)
+                .build();
+        System.out.println(shinryou);
+        assertEquals("/json/enter-shinryou", httpUrl.encodedPath());
+        assertEquals(expected, shinryou);
     }
 
     private Scope createScope() {
@@ -127,6 +201,7 @@ public class TestCheckChouki {
 
     private VisitFull2DTO createVisit(Consumer<VisitFull2DTO> cb) {
         VisitFull2DTO visit = new VisitFull2DTO();
+        visit.visit = new VisitDTO();
         visit.shinryouList = new ArrayList<>();
         visit.drugs = new ArrayList<>();
         cb.accept(visit);

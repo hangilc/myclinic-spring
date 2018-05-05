@@ -1,5 +1,7 @@
 package jp.chang.myclinic.dto;
 
+import java.util.Objects;
+
 public class ShinryouDTO {
 	public int shinryouId;
 	public int visitId;
@@ -11,6 +13,22 @@ public class ShinryouDTO {
 		dst.visitId = src.visitId;
 		dst.shinryoucode = src.shinryoucode;
 		return dst;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ShinryouDTO that = (ShinryouDTO) o;
+		return shinryouId == that.shinryouId &&
+				visitId == that.visitId &&
+				shinryoucode == that.shinryoucode;
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(shinryouId, visitId, shinryoucode);
 	}
 
 	@Override
