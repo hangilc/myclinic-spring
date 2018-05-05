@@ -1,6 +1,7 @@
 package jp.chang.myclinic.rcpt.check;
 
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Madoku;
 import jp.chang.myclinic.dto.*;
@@ -67,6 +68,10 @@ class CheckBase {
 
     ResolvedDiseaseAdjMap getDiseaseAdjMap(){
         return resolvedMasterMap.diseaseAdjMap;
+    }
+
+    Map<Integer, List<ResolvedShinryouByoumei>> getShinryouByoumeiMap(){
+        return shinryouByoumeiMap;
     }
 
     VisitFull2DTO findVisit(Predicate<VisitFull2DTO> pred){
@@ -179,6 +184,10 @@ class CheckBase {
         visits.stream().flatMap(visit -> visit.shinryouList.stream()).forEach(cb);
     }
 
+    void forEachShinryou(VisitFull2DTO visit, Consumer<ShinryouFullDTO> cb){
+        visit.shinryouList.forEach(cb);
+    }
+
     int countDrugInVisits(Predicate<DrugFullDTO> pred){
         return visits.stream().mapToInt(visit -> countDrug(visit, pred)).sum();
     }
@@ -186,6 +195,10 @@ class CheckBase {
     List<DiseaseFullDTO> listDisease(VisitFull2DTO visit){
         String at = visit.visit.visitedAt.substring(0, 10);
         return diseases.stream().filter(d -> isValidAt(d, at)).collect(Collectors.toList());
+    }
+
+    int countDisease(Predicate<DiseaseFullDTO> pred){
+        return (int)diseases.stream().filter(pred).count();
     }
 
     private boolean isValidAt(DiseaseFullDTO disease, String at){
@@ -202,6 +215,35 @@ class CheckBase {
     boolean diseaseStartsAt(DiseaseFullDTO disease, VisitFull2DTO visit){
         String at = visit.visit.visitedAt.substring(0, 10);
         return disease.disease.startDate.equals(at);
+    }
+
+    DiseaseNewDTO createNewDisease(VisitFull2DTO visit, ResolvedShinryouByoumei rsb){
+        DiseaseNewDTO result = new DiseaseNewDTO();
+        DiseaseDTO disease = new DiseaseDTO();
+        disease.endDate = "0000-00-00";
+        disease.endReason = DiseaseEndReason.NotEnded.getCode();
+        disease.patientId = visit.visit.patientId;
+        disease.shoubyoumeicode = rsb.byoumei.code;
+        disease.startDate = visit.visit.visitedAt.substring(0, 10);
+        result.disease = disease;
+        result.adjList = rsb.shuushokugoList.stream()
+                .map(adj -> {
+                    DiseaseAdjDTO adjDTO = new DiseaseAdjDTO();
+                    adjDTO.shuushokugocode = adj.code;
+                    return adjDTO;
+                })
+                .collect(Collectors.toList());
+        return result;
+    }
+
+    void enterDisease(DiseaseNewDTO disease){
+        try {
+            int diseaseId = Service.api.enterDiseaseCall(disease).execute().body();
+            assert diseaseId > 0;
+        } catch(Exception ex){
+            logger.error("Failed to enter disease", ex);
+            throw new RuntimeException("Failed to enter disease.");
+        }
     }
 
     List<DrugFullDTO> filterDrug(VisitFull2DTO visit, Predicate<DrugFullDTO> pred){
