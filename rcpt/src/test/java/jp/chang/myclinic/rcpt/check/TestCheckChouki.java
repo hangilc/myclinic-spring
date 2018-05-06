@@ -91,7 +91,7 @@ public class TestCheckChouki extends Base {
         HttpUrl httpUrl = req.getRequestUrl();
         assertEquals(1, nerror);
         assertEquals("POST", req.getMethod());
-        assertEquals("/json/batch-delete-shinryou", httpUrl.encodedPath());
+        assertEquals("/batch-delete-shinryou", httpUrl.encodedPath());
         assertEquals(Set.of("shinryou-id"), httpUrl.queryParameterNames());
         assertEquals("1235", httpUrl.queryParameter("shinryou-id"));
     }
@@ -129,7 +129,7 @@ public class TestCheckChouki extends Base {
         HttpUrl httpUrl = req.getRequestUrl();
         assertEquals(1, nerror);
         assertEquals("POST", req.getMethod());
-        assertEquals("/json/batch-delete-shinryou", httpUrl.encodedPath());
+        assertEquals("/batch-delete-shinryou", httpUrl.encodedPath());
         assertEquals(Set.of("shinryou-id"), httpUrl.queryParameterNames());
         assertEquals("1237", httpUrl.queryParameter("shinryou-id"));
     }
@@ -163,7 +163,7 @@ public class TestCheckChouki extends Base {
         }).build();
         assertEquals(1, nerror);
         assertEquals("POST", req.getMethod());
-        assertEquals("/json/enter-shinryou", httpUrl.encodedPath());
+        assertEquals("/enter-shinryou", httpUrl.encodedPath());
         assertEquals(expected, shinryou);
     }
 

@@ -23,7 +23,7 @@ public class TestListener extends RunListener {
         System.out.println("Test Started...");
         server = new MockWebServer();
         server.start();
-        Service.setServerUrl(server.url("/json").toString());
+        Service.setServerUrl(server.url("/").toString());
     }
 
     @Override
