@@ -36,4 +36,17 @@ class Scope {
         this.api = api;
     }
 
+    @Override
+    public String toString() {
+        return "Scope{" +
+                "patient=" + patient +
+                ", visits=" + visits +
+                ", resolvedMasterMap=" + resolvedMasterMap +
+                ", shinryouByoumeiMap=" + shinryouByoumeiMap +
+                ", diseases=" + diseases +
+                ", fixit=" + fixit +
+                ", errorHandler=" + errorHandler +
+                ", api=" + api +
+                '}';
+    }
 }

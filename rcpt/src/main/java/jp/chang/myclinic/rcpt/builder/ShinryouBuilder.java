@@ -2,30 +2,30 @@ package jp.chang.myclinic.rcpt.builder;
 
 import jp.chang.myclinic.dto.ShinryouDTO;
 
+import java.util.function.Consumer;
+
 public class ShinryouBuilder {
 
-    private ShinryouDTO shinryou = new ShinryouDTO();
+    private ShinryouDTO result;
 
-    ShinryouBuilder() {
+    public ShinryouBuilder() {
+        result = new ShinryouDTO();
+        result.shinryouId = G.genid();
+        result.shinryoucode = G.genid();
+        result.visitId = G.genid();
+    }
 
+    public ShinryouBuilder(Consumer<ShinryouDTO> modifier){
+        this();
+        modifier.accept(result);
     }
 
     public ShinryouDTO build(){
-        return shinryou;
+        return result;
     }
 
-    public ShinryouBuilder setShinryouId(int shinryouId){
-        shinryou.shinryouId = shinryouId;
-        return this;
-    }
-
-    public ShinryouBuilder setShinryoucode(int shinryoucode){
-        shinryou.shinryoucode = shinryoucode;
-        return this;
-    }
-
-    public ShinryouBuilder setVisitId(int visitId){
-        shinryou.visitId = visitId;
+    public ShinryouBuilder modify(Consumer<ShinryouDTO> cb){
+        cb.accept(result);
         return this;
     }
 
