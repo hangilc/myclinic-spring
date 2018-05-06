@@ -13,10 +13,17 @@ public class BatchCheck {
 
     public static void run(String[] args){
         RunEnv runEnv = CmdArgParser.parse(args);
+        class State {
+            private int prevPatientId = 0;
+        }
+        State state = new State();
         runEnv.errorHandler = error -> {
             if( !runEnv.verbose ){
                 PatientDTO patient = error.getPatient();
-                System.out.printf("%04d %s%s%n", patient.patientId, patient.lastName, patient.firstName);
+                if( state.prevPatientId != patient.patientId ) {
+                    System.out.printf("%04d %s%s%n", patient.patientId, patient.lastName, patient.firstName);
+                    state.prevPatientId = patient.patientId;
+                }
             }
             System.out.println(error.getMessage());
             if( runEnv.fixit ){
