@@ -25,7 +25,6 @@ class Base {
     ResolvedDiseaseMap byoumeiMap;
     Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumei;
     Common.MasterMaps masterMaps;
-    int nerror;
 
     Base() {
         masterMaps = TestListener.masterMaps;

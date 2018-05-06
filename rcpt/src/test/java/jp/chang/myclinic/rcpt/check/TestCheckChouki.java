@@ -19,8 +19,10 @@ import static org.junit.Assert.assertEquals;
 
 public class TestCheckChouki extends Base {
 
+    private int nerror;
+
     @After
-    public void doAfter() {
+    public void doAfter(){
         nerror = 0;
     }
 
