@@ -11,7 +11,7 @@ public class DiseaseBuilder {
     //private static Logger logger = LoggerFactory.getLogger(DiseaseBuilder.class);
     private DiseaseDTO result;
 
-    DiseaseBuilder() {
+    public DiseaseBuilder() {
         result = new DiseaseDTO();
         result.diseaseId = G.genid();
         result.patientId = G.genid();
@@ -19,6 +19,11 @@ public class DiseaseBuilder {
         result.startDate = LocalDate.now().toString();
         result.endDate = "0000-00-00";
         result.endReason = DiseaseEndReason.NotEnded.getCode();
+    }
+
+    public DiseaseBuilder(Consumer<DiseaseDTO> cb){
+        this();
+        cb.accept(result);
     }
 
     public DiseaseDTO build(){

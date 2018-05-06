@@ -1,5 +1,6 @@
 package jp.chang.myclinic.rcpt.check;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.Common;
@@ -16,7 +17,7 @@ public class TestListener extends RunListener {
     public static LocalDate at = LocalDate.of(2018, 3, 1);
     public static Common.MasterMaps masterMaps = Common.getMasterMaps(at);
     public static ResolvedShinryouMap shinryouMap = masterMaps.resolvedMap.shinryouMap;
-
+    public static ObjectMapper objectMapper;
 
     @Override
     public void testRunStarted(Description description) throws Exception {
@@ -24,6 +25,7 @@ public class TestListener extends RunListener {
         server = new MockWebServer();
         server.start();
         Service.setServerUrl(server.url("/").toString());
+        objectMapper = new ObjectMapper();
     }
 
     @Override

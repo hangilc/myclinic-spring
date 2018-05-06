@@ -56,4 +56,15 @@ public class VisitFull2Builder {
         return this;
     }
 
+    public VisitFull2Builder setVisitedAt(String at){
+        result.visit.visitedAt = at;
+        return this;
+    }
+
+    public VisitFull2Builder setPatientId(int patientId){
+        result.visit.patientId = patientId;
+        result.hoken = new HokenBuilder(result.hoken).setPatientId(patientId).build();
+        return this;
+    }
+
 }

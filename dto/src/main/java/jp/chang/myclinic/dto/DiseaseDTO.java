@@ -1,5 +1,7 @@
 package jp.chang.myclinic.dto;
 
+import java.util.Objects;
+
 public class DiseaseDTO {
 
     public int diseaseId;
@@ -18,6 +20,25 @@ public class DiseaseDTO {
         dst.endDate = src.endDate;
         dst.endReason = src.endReason;
         return dst;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DiseaseDTO that = (DiseaseDTO) o;
+        return diseaseId == that.diseaseId &&
+                patientId == that.patientId &&
+                shoubyoumeicode == that.shoubyoumeicode &&
+                endReason == that.endReason &&
+                Objects.equals(startDate, that.startDate) &&
+                Objects.equals(endDate, that.endDate);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(diseaseId, patientId, shoubyoumeicode, startDate, endDate, endReason);
     }
 
     @Override
