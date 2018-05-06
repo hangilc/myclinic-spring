@@ -17,7 +17,7 @@ class Scope {
     ResolvedMap resolvedMasterMap;
     Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumeiMap;
     List<DiseaseFullDTO> diseases;
-    boolean fixit;
+    boolean fixit;  // TODO: check whether necessary
     Consumer<Error> errorHandler;
     Service.ServerAPI api;
 
