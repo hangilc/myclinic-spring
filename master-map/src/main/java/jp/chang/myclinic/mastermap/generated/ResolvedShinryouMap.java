@@ -1,7 +1,8 @@
 package jp.chang.myclinic.mastermap.generated;
 
-import java.time.LocalDate;
 import jp.chang.myclinic.mastermap.Resolver;
+
+import java.time.LocalDate;
 
 public class ResolvedShinryouMap {
 	
