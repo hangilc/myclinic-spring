@@ -7,7 +7,9 @@ import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
 import jp.chang.myclinic.mastermap.generated.ResolvedDiseaseMap;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.Common;
+import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
 
 class Base {
 
@@ -44,15 +50,15 @@ class Base {
         return scope;
     }
 
-    MockWebServer getServer(){
+    MockWebServer getServer() {
         return TestListener.server;
     }
 
-    ObjectMapper getObjectMapper(){
+    ObjectMapper getObjectMapper() {
         return TestListener.objectMapper;
     }
 
-    <T> T fromJson(String s, Class<T> cls){
+    <T> T fromJson(String s, Class<T> cls) {
         try {
             return getObjectMapper().readValue(s, cls);
         } catch (IOException e) {
@@ -60,7 +66,25 @@ class Base {
         }
     }
 
-    LocalDate getAt(){
+    LocalDate getAt() {
         return TestListener.at;
+    }
+
+    void assertBatchDeleteShinryou(int shinryouId, RecordedRequest req) {
+        HttpUrl httpUrl = req.getRequestUrl();
+        assertEquals("POST", req.getMethod());
+        assertEquals("/batch-delete-shinryou", httpUrl.encodedPath());
+        assertEquals(Set.of("shinryou-id"), httpUrl.queryParameterNames());
+        assertEquals("" + shinryouId, httpUrl.queryParameter("shinryou-id"));
+    }
+
+    void assertBatchDeleteShinryou(Set<Integer> shinryouIds, RecordedRequest req) throws Exception {
+        assertEquals("POST", req.getMethod());
+        HttpUrl httpUrl = req.getRequestUrl();
+        assertEquals("/batch-delete-shinryou", httpUrl.encodedPath());
+        assertEquals(Set.of("shinryou-id"), httpUrl.queryParameterNames());
+        Set<Integer> sentIds = httpUrl.queryParameterValues("shinryou-id").stream()
+                .map(Integer::parseInt).collect(Collectors.toSet());
+        assertEquals(shinryouIds, sentIds);
     }
 }
