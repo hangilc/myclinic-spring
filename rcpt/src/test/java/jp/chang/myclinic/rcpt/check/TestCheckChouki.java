@@ -1,9 +1,6 @@
 package jp.chang.myclinic.rcpt.check;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.rcpt.builder.Clinic;
-import jp.chang.myclinic.rcpt.builder.ShinryouBuilder;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -89,7 +86,6 @@ public class TestCheckChouki extends Base {
         HttpUrl httpUrl = req.getRequestUrl();
         assertEquals(1, nerror);
         assertBatchDeleteShinryou(shinryouId, req);
-        assertEquals("POST", req.getMethod());
     }
 
     @Test
@@ -108,18 +104,8 @@ public class TestCheckChouki extends Base {
         };
         new CheckChouki(scope).check();
         RecordedRequest req = server.takeRequest();
-        HttpUrl httpUrl = req.getRequestUrl();
-        ObjectMapper mapper = new ObjectMapper();
-        ShinryouDTO shinryou = mapper.readValue(req.getBody().readUtf8(), ShinryouDTO.class);
-        ShinryouDTO expected = new ShinryouBuilder(s -> {
-            s.shinryouId = 0;
-            s.visitId = visitId;
-            s.shinryoucode = shinryouMap.調基;
-        }).build();
         assertEquals(1, nerror);
-        assertEquals("POST", req.getMethod());
-        assertEquals("/enter-shinryou", httpUrl.encodedPath());
-        assertEquals(expected, shinryou);
+        assertEnterShinryou(visitId, shinryouMap.調基, req);
     }
 
 }

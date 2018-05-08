@@ -17,6 +17,8 @@ public class Clinic {
     private LocalDate defaultMasterValidFromDate = LocalDate.of(2018, 4, 1);
     private LocalDate defaultVisitedAtDate = defaultMasterValidFromDate;
     private int nextPatientId = 1;
+    private int nextShinryouId = 1;
+    private int nextDrugId = 1;
     private Map<Integer, PatientDTO> patientMap = new HashMap<>();
     private Map<Integer, ShinryouMasterDTO> shinryouMasterMap = new HashMap<>();
     private Map<Integer, IyakuhinMasterDTO> iyakuhinMasterMap = new HashMap<>();
@@ -35,7 +37,11 @@ public class Clinic {
         return patientMap.get(patientId);
     }
 
-    public PatientDTO createPatient(Consumer<PatientModifier> cb){
+    public int createPatient(){
+        return createPatient(null);
+    }
+
+    public int createPatient(Consumer<PatientModifier> cb){
         PatientDTO result = new PatientDTO();
         result.patientId = nextPatientId++;
         result.lastName = G.gensym();
@@ -50,7 +56,7 @@ public class Clinic {
             cb.accept(new PatientModifier(result));
         }
         patientMap.put(result.patientId, result);
-        return result;
+        return result.patientId;
     }
 
     private VisitDTO createVisit(int patientId, LocalDate at){
@@ -72,10 +78,18 @@ public class Clinic {
     }
 
     public int startVisit(){
-        PatientDTO patient = createPatient(null);
-        VisitFull2DTO visitFull = createVisitFull2DTO(patient.patientId, defaultVisitedAtDate);
+        int patientId = createPatient(null);
+        return startVisit(patientId);
+    }
+
+    public int startVisit(int patientId){
+        VisitFull2DTO visitFull = createVisitFull2DTO(patientId, defaultVisitedAtDate);
         currentVisit = visitFull;
         return visitFull.visit.visitId;
+    }
+
+    public String getVisitedAt(){
+        return currentVisit.visit.visitedAt;
     }
 
     private ShinryouMasterDTO createShinryouMaster(int shinryoucode,
@@ -125,7 +139,7 @@ public class Clinic {
 
     private ShinryouDTO createShinryou(int shinryoucode){
         ShinryouDTO result = new ShinryouDTO();
-        result.shinryouId = 0;
+        result.shinryouId = nextShinryouId++;
         result.shinryoucode = shinryoucode;
         result.visitId = currentVisit.visit.visitId;
         return result;
@@ -175,7 +189,7 @@ public class Clinic {
 
     private DrugDTO createDrug(IyakuhinMasterDTO master){
         DrugDTO result = new DrugDTO();
-        result.drugId = 0;
+        result.drugId = nextDrugId++;
         result.visitId = G.genid();
         result.iyakuhincode = master.iyakuhincode;
         result.amount = 3.0;

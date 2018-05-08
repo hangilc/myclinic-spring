@@ -1,7 +1,23 @@
 package jp.chang.myclinic.rcpt.check;
 
+import jp.chang.myclinic.consts.DiseaseEndReason;
+import jp.chang.myclinic.dto.DiseaseAdjDTO;
+import jp.chang.myclinic.dto.DiseaseNewDTO;
+import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
+import jp.chang.myclinic.rcpt.builder.Clinic;
+import jp.chang.myclinic.rcpt.builder.DiseaseBuilder;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
+import org.junit.Test;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+
 public class TestCheckByoumei extends Base {
-/*
+
     @Test
     public void checkByoumei() throws Exception {
         Set<Integer> shinryoucodes = shinryouByoumei.keySet();
@@ -11,18 +27,13 @@ public class TestCheckByoumei extends Base {
     }
 
     private void testOne(int shinryoucode) throws Exception {
-        String at = getAt().toString();
         Scope scope = createScope();
-        scope.visits.add(new VisitFull2Builder()
-                .setVisitId(1000)
-                .setPatientId(1234)
-                .setVisitedAt(at)
-                .addShinryou(new ShinryouFullBuilder()
-                        .setShinryoucode(shinryoucode)
-                        .build()
-                )
-                .build()
-        );
+        Clinic clinic = new Clinic();
+        int patientId = clinic.createPatient();
+        clinic.startVisit(patientId);
+        String at = clinic.getVisitedAt();
+        clinic.addShinryou(shinryoucode);
+        scope.visits = clinic.getVisits();
         class State {
             private int nerror;
         }
@@ -41,7 +52,7 @@ public class TestCheckByoumei extends Base {
         expected.disease = new DiseaseBuilder(d -> {
             d.diseaseId = 0;
             d.shoubyoumeicode = rsb.byoumei.code;
-            d.patientId = 1234;
+            d.patientId = patientId;
             d.endReason = DiseaseEndReason.NotEnded.getCode();
             d.startDate = at;
             d.endDate = "0000-00-00";
@@ -58,5 +69,5 @@ public class TestCheckByoumei extends Base {
         assertEquals("/enter-disease", req.getPath());
         assertEquals(expected, sent);
     }
-*/
+
 }

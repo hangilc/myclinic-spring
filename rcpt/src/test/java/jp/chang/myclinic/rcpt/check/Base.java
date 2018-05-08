@@ -3,6 +3,7 @@ package jp.chang.myclinic.rcpt.check;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
 import jp.chang.myclinic.mastermap.generated.ResolvedDiseaseMap;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
@@ -78,7 +79,7 @@ class Base {
         assertEquals("" + shinryouId, httpUrl.queryParameter("shinryou-id"));
     }
 
-    void assertBatchDeleteShinryou(Set<Integer> shinryouIds, RecordedRequest req) throws Exception {
+    void assertBatchDeleteShinryou(Set<Integer> shinryouIds, RecordedRequest req) {
         assertEquals("POST", req.getMethod());
         HttpUrl httpUrl = req.getRequestUrl();
         assertEquals("/batch-delete-shinryou", httpUrl.encodedPath());
@@ -86,5 +87,22 @@ class Base {
         Set<Integer> sentIds = httpUrl.queryParameterValues("shinryou-id").stream()
                 .map(Integer::parseInt).collect(Collectors.toSet());
         assertEquals(shinryouIds, sentIds);
+    }
+
+    void assertEnterShinryou(int visitId, int shinryoucode, RecordedRequest req) {
+        ShinryouDTO expected = new ShinryouDTO();
+        expected.shinryouId = 0;
+        expected.visitId = visitId;
+        expected.shinryoucode = shinryoucode;
+        HttpUrl httpUrl = req.getRequestUrl();
+        ObjectMapper mapper = getObjectMapper();
+        try {
+            ShinryouDTO shinryou = mapper.readValue(req.getBody().readUtf8(), ShinryouDTO.class);
+            assertEquals("POST", req.getMethod());
+            assertEquals("/enter-shinryou", httpUrl.encodedPath());
+            assertEquals(expected, shinryou);
+        } catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
     }
 }
