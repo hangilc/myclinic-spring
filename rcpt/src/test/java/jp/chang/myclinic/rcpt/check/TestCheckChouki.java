@@ -1,7 +1,6 @@
 package jp.chang.myclinic.rcpt.check;
 
 import jp.chang.myclinic.rcpt.builder.Clinic;
-import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -73,6 +72,7 @@ public class TestCheckChouki extends Base {
         server.enqueue(new MockResponse().setBody("true"));
         Scope scope = createScope();
         Clinic clinic = new Clinic();
+        clinic.addDrug();
         clinic.addShinryou(shinryouMap.再診);
         clinic.addShinryou(shinryouMap.調基);
         int shinryouId = clinic.addShinryou(shinryouMap.調基);
@@ -83,7 +83,6 @@ public class TestCheckChouki extends Base {
         };
         new CheckChouki(scope).check();
         RecordedRequest req = server.takeRequest();
-        HttpUrl httpUrl = req.getRequestUrl();
         assertEquals(1, nerror);
         assertBatchDeleteShinryou(shinryouId, req);
     }
