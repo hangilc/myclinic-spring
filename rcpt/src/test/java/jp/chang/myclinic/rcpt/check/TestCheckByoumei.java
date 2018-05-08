@@ -5,7 +5,6 @@ import jp.chang.myclinic.dto.DiseaseAdjDTO;
 import jp.chang.myclinic.dto.DiseaseNewDTO;
 import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
 import jp.chang.myclinic.rcpt.builder.DiseaseBuilder;
-import jp.chang.myclinic.rcpt.builder.ShinryouFullBuilder;
 import jp.chang.myclinic.rcpt.builder.VisitFull2Builder;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;

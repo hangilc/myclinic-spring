@@ -1,5 +1,6 @@
 package jp.chang.myclinic.rcpt.builder;
 
+import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.*;
 
 import java.time.LocalDate;
@@ -7,19 +8,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 public class Clinic {
 
-    //private static Logger logger = LoggerFactory.getLogger(Clinic.class);
     private LocalDate defaultMasterValidFromDate = LocalDate.of(2018, 4, 1);
-    private String defaultMasterValidFrom = defaultMasterValidFromDate.toString();
-    private List<PatientDTO> patients = new ArrayList<>();
-    private List<VisitFull2DTO> visits = new ArrayList<>();
+    private LocalDate defaultVisitedAtDate = defaultMasterValidFromDate;
+    private int nextPatientId = 1;
+    private Map<Integer, PatientDTO> patientMap = new HashMap<>();
     private Map<Integer, ShinryouMasterDTO> shinryouMasterMap = new HashMap<>();
-    private VisitDTO currentVisit;
-    private List<ShinryouDTO> currentShinryouList = new ArrayList<>();
-    private List<DrugDTO> currentDrugs = new ArrayList<>();
+    private Map<Integer, IyakuhinMasterDTO> iyakuhinMasterMap = new HashMap<>();
+    private List<VisitFull2DTO> visits = new ArrayList<>();
+    private VisitFull2DTO currentVisit;
 
     public Clinic() {
 
@@ -29,90 +29,100 @@ public class Clinic {
         return new PatientBuilder().build();
     }
 
-    public PatientDTO findPatient(int patientId){
-        return patients.stream().filter(p -> p.patientId == patientId).findFirst().orElse(null);
+    private PatientDTO findPatient(int patientId){
+        return patientMap.get(patientId);
     }
 
-    public PatientDTO ensurePatient(int patientId){
-        PatientDTO patient = findPatient(patientId);
-        if( patient != null ){
-            patient = new PatientBuilder()
-                    .modify(p -> p.patientId = patientId)
-                    .build();
-            patients.add(patient);
+    public PatientDTO createPatient(Consumer<PatientModifier> cb){
+        PatientDTO result = new PatientDTO();
+        result.patientId = nextPatientId++;
+        result.lastName = G.gensym();
+        result.firstName = G.gensym();
+        result.lastNameYomi = G.gensym();
+        result.firstNameYomi = G.gensym();
+        result.birthday = LocalDate.of(1970, 2, 12).toString();
+        result.sex = Sex.Female.getCode();
+        result.address = G.gensym();
+        result.phone = G.gensym();
+        if( cb != null ){
+            cb.accept(new PatientModifier(result));
         }
-        return patient;
+        patientMap.put(result.patientId, result);
+        return result;
     }
 
-    public VisitDTO startVisit(int patientId){
-        ensurePatient(patientId);
-        VisitDTO visit = new VisitBuilder()
-                .modify(v -> {
-                    v.patientId = patientId;
-                    v.visitedAt = defaultMasterValidFrom;
-                })
-                .build();
-        this.currentVisit = visit;
-        this.currentShinryouList = new ArrayList<>();
-        this.currentDrugs = new ArrayList<>();
+    private VisitDTO createVisit(int patientId, LocalDate at){
+        VisitDTO visit = new VisitDTO();
+        visit.patientId = patientId;
+        visit.visitedAt = at.toString();
         return visit;
     }
 
-    public ShinryouMasterDTO ensureShinryouMaster(int shinryoucode){
-        ShinryouMasterDTO m = shinryouMasterMap.get(shinryoucode);
-        if( m == null ){
-            m = new ShinryouMasterBuilder()
-                    .modify(sm -> {
-                        sm.shinryoucode = shinryoucode;
-                        sm.validFrom = defaultMasterValidFrom;
-                    })
-                    .build();
-            shinryouMasterMap.put(shinryoucode, m);
+    private VisitFull2DTO createVisitFull2DTO(int patientId, LocalDate at){
+        VisitFull2DTO result = new VisitFull2DTO();
+        result.visit = createVisit(patientId, at);
+        result.texts = new ArrayList<>();
+        result.shinryouList = new ArrayList<>();
+        result.drugs = new ArrayList<>();
+        result.conducts = new ArrayList<>();
+        result.hoken = new HokenDTO();
+        return result;
+    }
+
+    public int startVisit(){
+        PatientDTO patient = createPatient(null);
+        VisitFull2DTO visitFull = createVisitFull2DTO(patient.patientId, defaultVisitedAtDate);
+        return visitFull.visit.visitId;
+    }
+
+    private ShinryouMasterDTO createShinryouMaster(int shinryoucode,
+                                                   Consumer<ShinryouMasterModifier> cb){
+        ShinryouMasterDTO result = new ShinryouMasterDTO();
+        result.shinryoucode = shinryoucode;
+        result.validFrom = defaultMasterValidFromDate.toString();
+        result.validUpto = "0000-00-00";
+        result.name = G.gensym();
+        result.codeAlpha = 'D';
+        result.codeKubun = "007";
+        result.codeBu = "03";
+        result.codeShou = '2';
+        result.roujinTekiyou = '0';
+        result.oushinkubun = '0';
+        result.houkatsukensa = "00";
+        result.kensaGroup = "03";
+        result.tensuu = 144;
+        result.tensuuShikibetsu = '3';
+        result.shuukeisaki = "600";
+        if( cb != null ){
+            cb.accept(new ShinryouMasterModifier(result));
         }
-        return m;
+        shinryouMasterMap.put(shinryoucode, result);
+        return result;
     }
 
-    public ShinryouMasterDTO findShinryouMaster(int shinryoucode){
-        return shinryouMasterMap.get(shinryoucode);
+    public int addShinry(int shinryoucode, Consumer<ShinryouMasterModifier> cb){
+        ShinryouMasterDTO master = shinryouMasterMap.get(shinryoucode);
+        if( master == null ){
+            master = createShinryouMaster(shinryoucode, cb);
+        }
+        ShinryouDTO shinryou = createShinryou(shinryoucode);
+        ShinryouFullDTO shinryouFull = new ShinryouFullDTO();
+        shinryouFull.shinryou = shinryou;
+        shinryouFull.master = master;
+        currentVisit.shinryouList.add(shinryouFull);
+        return shinryou.shinryoucode;
     }
 
-    public ShinryouDTO addShinryou(int shinryoucode){
-        ensureShinryouMaster(shinryoucode);
-        ShinryouDTO shinryou = new ShinryouBuilder()
-                .modify(s -> {
-                    s.shinryoucode = shinryoucode;
-                    s.visitId = currentVisit.visitId;
-                })
-                .build();
-        currentShinryouList.add(shinryou);
-        return shinryou;
+    private ShinryouDTO createShinryou(int shinryoucode){
+        ShinryouDTO result = new ShinryouDTO();
+        result.shinryoucode = shinryoucode;
+        result.visitId = currentVisit.visit.visitId;
+        return result;
     }
 
     public void endVisit(){
-        VisitFull2DTO visit = new VisitFull2DTO();
-        visit.visit = currentVisit;
-        visit.shinryouList = currentShinryouList.stream()
-                .map(s -> {
-                    ShinryouFullDTO result = new ShinryouFullDTO();
-                    result.shinryou = s;
-                    result.master = ensureShinryouMaster(s.shinryoucode);
-                    return result;
-                })
-                .collect(Collectors.toList());
-        visit.drugs = currentDrugs.stream()
-                .map(d -> {
-                    DrugFullDTO result = new DrugFullDTO();
-                    return result;
-                })
-                .collect(Collectors.toList());
-        visit.conducts = new ArrayList<>();
-        visit.texts = new ArrayList<>();
-        visit.charge = new ChargeDTO();
-        visit.hoken = new HokenDTO();
-        visits.add(visit);
+        visits.add(currentVisit);
         currentVisit = null;
-        currentShinryouList = new ArrayList<>();
-        currentDrugs = new ArrayList<>();
     }
 
     public List<VisitFull2DTO> getVisits(){

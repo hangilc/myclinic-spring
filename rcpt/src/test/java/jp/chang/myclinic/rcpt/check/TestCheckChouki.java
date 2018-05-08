@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.rcpt.builder.DrugFullBuilder;
 import jp.chang.myclinic.rcpt.builder.ShinryouBuilder;
-import jp.chang.myclinic.rcpt.builder.ShinryouFullBuilder;
 import jp.chang.myclinic.rcpt.builder.VisitFull2Builder;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
