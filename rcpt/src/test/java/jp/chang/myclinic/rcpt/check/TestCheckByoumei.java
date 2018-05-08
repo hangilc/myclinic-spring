@@ -17,34 +17,25 @@ import static org.junit.Assert.assertEquals;
 public class TestCheckByoumei extends Base {
 
     @Test
-    public void checkByoumei() throws Exception {
+    public void checkByoumei() {
         Set<Integer> shinryoucodes = shinryouByoumei.keySet();
         for(int shinryoucode: shinryoucodes){
+            doBaseBefore();
             testOne(shinryoucode);
         }
     }
 
-    private void testOne(int shinryoucode) throws Exception {
-        FixerLog log = new FixerLog();
-        Scope scope = createScope(log);
+    private void testOne(int shinryoucode) {
         Clinic clinic = new Clinic();
         int patientId = clinic.createPatient();
         clinic.startVisit(patientId);
         String at = clinic.getVisitedAt();
         clinic.addShinryou(shinryoucode);
         scope.visits = clinic.getVisits();
-        class State {
-            private int nerror;
-        }
-        State state = new State();
-        scope.errorHandler = err -> {
-            state.nerror += 1;
-            err.getFixFun().run();
-        };
         new CheckByoumei(scope).check();
         ResolvedShinryouByoumei rsb = shinryouByoumei.get(shinryoucode).get(0);
         DiseaseNewDTO expected = RsbToDisease(rsb, patientId, at);
-        assertEquals(1, state.nerror);
+        assertEquals(1, nerror);
         assertEquals(List.of(expected), log.getEnteredDisseases());
     }
 

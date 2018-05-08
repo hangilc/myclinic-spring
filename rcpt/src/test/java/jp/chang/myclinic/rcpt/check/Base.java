@@ -3,9 +3,9 @@ package jp.chang.myclinic.rcpt.check;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
-import jp.chang.myclinic.mastermap.generated.ResolvedDiseaseMap;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.Common;
+import org.junit.Before;
 
 import java.util.*;
 
@@ -15,14 +15,22 @@ class Base {
 
     //private static Logger logger = LoggerFactory.getLogger(Base.class);
     ResolvedShinryouMap shinryouMap;
-    ResolvedDiseaseMap byoumeiMap;
     Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumei;
-    Common.MasterMaps masterMaps;
+    private Common.MasterMaps masterMaps;
+    int nerror;
+    FixerLog log;
+    Scope scope;
+
+    @Before
+    public void doBaseBefore(){
+        nerror = 0;
+        log = new FixerLog();
+        scope = createScope(log);
+    }
 
     Base() {
         masterMaps = TestListener.masterMaps;
         shinryouMap = TestListener.shinryouMap;
-        byoumeiMap = TestListener.masterMaps.resolvedMap.diseaseMap;
         shinryouByoumei = TestListener.masterMaps.shinryouByoumeiMap;
     }
 
@@ -34,21 +42,27 @@ class Base {
         scope.shinryouByoumeiMap = masterMaps.shinryouByoumeiMap;
         scope.diseases = new ArrayList<>();
         scope.api = new FixerMock(log);
+        scope.errorHandler = err -> {
+            nerror += 1;
+            if( err.getFixFun() != null ){
+                err.getFixFun().run();
+            }
+        };
         return scope;
     }
 
-    void assertBatchDeleteShinryou(int shinryouId, FixerLog log){
+    void assertBatchDeleteShinryou(int shinryouId) {
         assertEquals(1, log.getBatchDeletedShinryouList().size());
         assertEquals(Integer.valueOf(shinryouId), log.getBatchDeletedShinryouList().get(0).get(0));
     }
 
-    void assertBatchDeleteShinryou(Set<Integer> shinryouIds, FixerLog log){
+    void assertBatchDeleteShinryou(Set<Integer> shinryouIds) {
         assertEquals(1, log.getBatchDeletedShinryouList().size());
         assertEquals(shinryouIds,
                 new HashSet<>(log.getBatchDeletedShinryouList().get(0)));
     }
 
-    void assertEnterShinryou(int visitId, int shinryoucode, FixerLog log){
+    void assertEnterShinryou(int visitId, int shinryoucode) {
         List<ShinryouDTO> enteredList = log.getEnteredShinryouList();
         assertEquals(1, enteredList.size());
         ShinryouDTO entered = enteredList.get(0);

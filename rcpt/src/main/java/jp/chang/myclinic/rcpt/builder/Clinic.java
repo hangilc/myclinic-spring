@@ -217,15 +217,28 @@ public class Clinic {
     }
 
     public int addDrug(Consumer<IyakuhinMasterModifier> masterModifier){
+        return addDrug(masterModifier, null);
+    }
+
+    public int addDrug(Consumer<IyakuhinMasterModifier> masterModifier,
+                       Consumer<DrugModifier> drugModifier){
         if( currentVisit == null ){
             startVisit();
         }
         int iyakuhincode = createIyakuhinMaster(masterModifier);
         IyakuhinMasterDTO master = iyakuhinMasterMap.get(iyakuhincode);
         DrugDTO drug = createDrug(master);
+        if( drugModifier != null ){
+            drugModifier.accept(new DrugModifier(drug));
+        }
         DrugFullDTO drugFull = createDrugFull(drug);
         currentVisit.drugs.add(drugFull);
         return drug.drugId;
+    }
+
+    public int addGaiyouDrug(){
+        return addDrug(modifier -> modifier.setZaikei(Zaikei.Gaiyou),
+                modifier -> modifier.setCategory(DrugCategory.Gaiyou));
     }
 
 }
