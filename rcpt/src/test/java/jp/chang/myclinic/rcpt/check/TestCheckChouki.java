@@ -1,6 +1,13 @@
 package jp.chang.myclinic.rcpt.check;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.rcpt.builder.Clinic;
+import jp.chang.myclinic.rcpt.builder.ShinryouBuilder;
+import okhttp3.HttpUrl;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.After;
 import org.junit.Test;
 
@@ -22,36 +29,21 @@ public class TestCheckChouki extends Base {
         clinic.addDrug();
         clinic.addShinryou(shinryouMap.調基);
         scope.visits = clinic.getVisits();
-//        scope.visits.add(new VisitFull2Builder()
-//                .addDrug(new DrugFullBuilder().build())
-//                .addShinryou(
-//                        new ShinryouFullBuilder()
-//                                .setShinryoucode(shinryouMap.調基)
-//                                .build())
-//                .build()
-//        );
         scope.errorHandler = err -> {
             nerror += 1;
         };
         new CheckChouki(scope).check();
         assertEquals("1 chouki", 0, nerror);
     }
-/*
+
     @Test
     public void shohouryouChoukiDuplicate() {
         Scope scope = createScope();
-        scope.visits.add(new VisitFull2Builder()
-                .addDrug(new DrugFullBuilder().build())
-                .addShinryou(new ShinryouFullBuilder()
-                        .setShinryoucode(shinryouMap.調基)
-                        .build()
-                )
-                .addShinryou(new ShinryouFullBuilder()
-                        .setShinryoucode(shinryouMap.処方せん料)
-                        .build()
-                )
-                .build()
-        );
+        Clinic clinic = new Clinic();
+        clinic.addDrug();
+        clinic.addShinryou(shinryouMap.調基);
+        clinic.addShinryou(shinryouMap.処方せん料);
+        scope.visits = clinic.getVisits();
         scope.errorHandler = err -> {
             nerror += 1;
         };
@@ -61,34 +53,21 @@ public class TestCheckChouki extends Base {
 
     @Test
     public void choukiWithNoDrug() throws Exception {
-        MockWebServer server = TestListener.server;
+        MockWebServer server = getServer();
         server.enqueue(new MockResponse().setBody("true"));
         Scope scope = createScope();
-        scope.visits.add(new VisitFull2Builder()
-                .addShinryou(new ShinryouFullBuilder()
-                        .setShinryoucode(shinryouMap.再診)
-                        .setShinryouId(1234)
-                        .build()
-                )
-                .addShinryou(new ShinryouFullBuilder()
-                        .setShinryoucode(shinryouMap.調基)
-                        .setShinryouId(1235)
-                        .build()
-                )
-                .build()
-        );
+        Clinic clinic = new Clinic();
+        clinic.addShinryou(shinryouMap.再診);
+        int shinryouId = clinic.addShinryou(shinryouMap.調基);
+        scope.visits = clinic.getVisits();
         scope.errorHandler = err -> {
             nerror += 1;
             err.getFixFun().run();
         };
         new CheckChouki(scope).check();
         RecordedRequest req = server.takeRequest();
-        HttpUrl httpUrl = req.getRequestUrl();
         assertEquals(1, nerror);
-        assertEquals("POST", req.getMethod());
-        assertEquals("/batch-delete-shinryou", httpUrl.encodedPath());
-        assertEquals(Set.of("shinryou-id"), httpUrl.queryParameterNames());
-        assertEquals("1235", httpUrl.queryParameter("shinryou-id"));
+        assertBatchDeleteShinryou(shinryouId, req);
     }
 
     @Test
@@ -96,25 +75,11 @@ public class TestCheckChouki extends Base {
         MockWebServer server = TestListener.server;
         server.enqueue(new MockResponse().setBody("true"));
         Scope scope = createScope();
-        scope.visits.add(new VisitFull2Builder()
-                .addDrug(new DrugFullBuilder().build())
-                .addShinryou(new ShinryouFullBuilder()
-                        .setShinryoucode(shinryouMap.再診)
-                        .setShinryouId(1235)
-                        .build()
-                )
-                .addShinryou(new ShinryouFullBuilder()
-                        .setShinryoucode(shinryouMap.調基)
-                        .setShinryouId(1236)
-                        .build()
-                )
-                .addShinryou(new ShinryouFullBuilder()
-                        .setShinryoucode(shinryouMap.調基)
-                        .setShinryouId(1237)
-                        .build()
-                )
-                .build()
-        );
+        Clinic clinic = new Clinic();
+        clinic.addShinryou(shinryouMap.再診);
+        clinic.addShinryou(shinryouMap.調基);
+        int shinryouId = clinic.addShinryou(shinryouMap.調基);
+        scope.visits = clinic.getVisits();
         scope.errorHandler = err -> {
             nerror += 1;
             err.getFixFun().run();
@@ -123,10 +88,8 @@ public class TestCheckChouki extends Base {
         RecordedRequest req = server.takeRequest();
         HttpUrl httpUrl = req.getRequestUrl();
         assertEquals(1, nerror);
+        assertBatchDeleteShinryou(shinryouId, req);
         assertEquals("POST", req.getMethod());
-        assertEquals("/batch-delete-shinryou", httpUrl.encodedPath());
-        assertEquals(Set.of("shinryou-id"), httpUrl.queryParameterNames());
-        assertEquals("1237", httpUrl.queryParameter("shinryou-id"));
     }
 
     @Test
@@ -134,14 +97,11 @@ public class TestCheckChouki extends Base {
         MockWebServer server = TestListener.server;
         server.enqueue(new MockResponse().setBody("1"));
         Scope scope = createScope();
-        scope.visits.add(new VisitFull2Builder()
-                .setVisitId(1000)
-                .addDrug(new DrugFullBuilder().build())
-                .addShinryou(new ShinryouFullBuilder()
-                        .setShinryoucode(shinryouMap.再診)
-                        .build())
-                .build()
-        );
+        Clinic clinic = new Clinic();
+        int visitId = clinic.startVisit();
+        clinic.addDrug();
+        clinic.addShinryou(shinryouMap.再診);
+        scope.visits = clinic.getVisits();
         scope.errorHandler = err -> {
             nerror += 1;
             err.getFixFun().run();
@@ -153,7 +113,7 @@ public class TestCheckChouki extends Base {
         ShinryouDTO shinryou = mapper.readValue(req.getBody().readUtf8(), ShinryouDTO.class);
         ShinryouDTO expected = new ShinryouBuilder(s -> {
             s.shinryouId = 0;
-            s.visitId = 1000;
+            s.visitId = visitId;
             s.shinryoucode = shinryouMap.調基;
         }).build();
         assertEquals(1, nerror);
@@ -161,5 +121,5 @@ public class TestCheckChouki extends Base {
         assertEquals("/enter-shinryou", httpUrl.encodedPath());
         assertEquals(expected, shinryou);
     }
-*/
+
 }

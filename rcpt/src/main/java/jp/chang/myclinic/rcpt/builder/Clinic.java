@@ -74,6 +74,7 @@ public class Clinic {
     public int startVisit(){
         PatientDTO patient = createPatient(null);
         VisitFull2DTO visitFull = createVisitFull2DTO(patient.patientId, defaultVisitedAtDate);
+        currentVisit = visitFull;
         return visitFull.visit.visitId;
     }
 
@@ -165,7 +166,9 @@ public class Clinic {
         result.zaikei = 1;
         result.validFrom = defaultMasterValidFromDate.toString();
         result.validUpto = "0000-00-00";
-        cb.accept(new IyakuhinMasterModifier(result));
+        if( cb != null ) {
+            cb.accept(new IyakuhinMasterModifier(result));
+        }
         iyakuhinMasterMap.put(iyakuhincode, result);
         return result.iyakuhincode;
     }

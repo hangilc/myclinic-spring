@@ -1,23 +1,7 @@
 package jp.chang.myclinic.rcpt.check;
 
-import jp.chang.myclinic.consts.DiseaseEndReason;
-import jp.chang.myclinic.dto.DiseaseAdjDTO;
-import jp.chang.myclinic.dto.DiseaseNewDTO;
-import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
-import jp.chang.myclinic.rcpt.builder.DiseaseBuilder;
-import jp.chang.myclinic.rcpt.builder.VisitFull2Builder;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.Test;
-
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-
 public class TestCheckByoumei extends Base {
-
+/*
     @Test
     public void checkByoumei() throws Exception {
         Set<Integer> shinryoucodes = shinryouByoumei.keySet();
@@ -74,5 +58,5 @@ public class TestCheckByoumei extends Base {
         assertEquals("/enter-disease", req.getPath());
         assertEquals(expected, sent);
     }
-
+*/
 }
