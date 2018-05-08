@@ -17,7 +17,6 @@ class Scope {
     ResolvedMap resolvedMasterMap;
     Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumeiMap;
     List<DiseaseFullDTO> diseases;
-    boolean fixit;  // TODO: check whether necessary
     Consumer<Error> errorHandler;
     Service.ServerAPI api;
 
@@ -25,13 +24,12 @@ class Scope {
 
     Scope(PatientDTO patient, List<VisitFull2DTO> visits, ResolvedMap resolvedMasterMap,
           Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumeiMap, List<DiseaseFullDTO> diseases,
-          boolean fixit, Consumer<Error> errorHandler, Service.ServerAPI api) {
+          Consumer<Error> errorHandler, Service.ServerAPI api) {
         this.patient = patient;
         this.visits = visits;
         this.resolvedMasterMap = resolvedMasterMap;
         this.shinryouByoumeiMap = shinryouByoumeiMap;
         this.diseases = diseases;
-        this.fixit = fixit;
         this.errorHandler = errorHandler;
         this.api = api;
     }
@@ -44,7 +42,6 @@ class Scope {
                 ", resolvedMasterMap=" + resolvedMasterMap +
                 ", shinryouByoumeiMap=" + shinryouByoumeiMap +
                 ", diseases=" + diseases +
-                ", fixit=" + fixit +
                 ", errorHandler=" + errorHandler +
                 ", api=" + api +
                 '}';

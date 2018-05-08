@@ -39,7 +39,7 @@ public class Check {
                     continue;
                 }
                 Scope scope = new Scope(patient, visits, masterMaps.resolvedMap, masterMaps.shinryouByoumeiMap,
-                        diseases, runEnv.fixit, runEnv.errorHandler, runEnv.api);
+                        diseases, runEnv.errorHandler, runEnv.api);
                 new CheckChouki(scope).check();
                 // TODO: check duplicate shinryou in a visit
                 new CheckTokuteiShikkanKanri(scope).check();
