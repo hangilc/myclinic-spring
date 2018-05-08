@@ -1,21 +1,10 @@
 package jp.chang.myclinic.rcpt.check;
 
-import jp.chang.myclinic.rcpt.builder.Clinic;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.After;
-import org.junit.Test;
-
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-
 public class TestCheckChoukiTouyakuKasan extends Base {
 
     //private static Logger logger = LoggerFactory.getLogger(TestCheckChoukiTouyakuKasan.class);
     private int nerror;
-
+/*
     @After
     public void doAfter(){
         nerror = 0;
@@ -82,5 +71,5 @@ public class TestCheckChoukiTouyakuKasan extends Base {
         RecordedRequest req = server.takeRequest();
         assertBatchDeleteShinryou(Set.of(shinryouId1, shinryouId2), req);
     }
-
+*/
 }

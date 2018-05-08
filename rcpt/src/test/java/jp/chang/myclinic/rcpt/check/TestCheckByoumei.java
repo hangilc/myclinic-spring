@@ -6,11 +6,9 @@ import jp.chang.myclinic.dto.DiseaseNewDTO;
 import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
 import jp.chang.myclinic.rcpt.builder.Clinic;
 import jp.chang.myclinic.rcpt.builder.DiseaseBuilder;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,7 +25,8 @@ public class TestCheckByoumei extends Base {
     }
 
     private void testOne(int shinryoucode) throws Exception {
-        Scope scope = createScope();
+        FixerLog log = new FixerLog();
+        Scope scope = createScope(log);
         Clinic clinic = new Clinic();
         int patientId = clinic.createPatient();
         clinic.startVisit(patientId);
@@ -42,13 +41,15 @@ public class TestCheckByoumei extends Base {
             state.nerror += 1;
             err.getFixFun().run();
         };
-        MockWebServer server = getServer();
-        server.enqueue(new MockResponse().setBody("1"));
         new CheckByoumei(scope).check();
-        RecordedRequest req = server.takeRequest();
-        DiseaseNewDTO sent = fromJson(req.getBody().readUtf8(), DiseaseNewDTO.class);
-        DiseaseNewDTO expected = new DiseaseNewDTO();
         ResolvedShinryouByoumei rsb = shinryouByoumei.get(shinryoucode).get(0);
+        DiseaseNewDTO expected = RsbToDisease(rsb, patientId, at);
+        assertEquals(1, state.nerror);
+        assertEquals(List.of(expected), log.getEnteredDisseases());
+    }
+
+    private DiseaseNewDTO RsbToDisease(ResolvedShinryouByoumei rsb, int patientId, String at){
+        DiseaseNewDTO expected = new DiseaseNewDTO();
         expected.disease = new DiseaseBuilder(d -> {
             d.diseaseId = 0;
             d.shoubyoumeicode = rsb.byoumei.code;
@@ -64,10 +65,7 @@ public class TestCheckByoumei extends Base {
                     return adj;
                 })
                 .collect(Collectors.toList());
-        assertEquals(1, state.nerror);
-        assertEquals("POST", req.getMethod());
-        assertEquals("/enter-disease", req.getPath());
-        assertEquals(expected, sent);
+        return expected;
     }
 
 }
