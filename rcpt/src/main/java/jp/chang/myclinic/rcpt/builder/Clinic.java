@@ -1,6 +1,8 @@
 package jp.chang.myclinic.rcpt.builder;
 
+import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Sex;
+import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.*;
 
 import java.time.LocalDate;
@@ -100,7 +102,14 @@ public class Clinic {
         return result;
     }
 
-    public int addShinry(int shinryoucode, Consumer<ShinryouMasterModifier> cb){
+    public int addShinryou(int shinryoucode){
+        return addShinryou(shinryoucode, null);
+    }
+
+    public int addShinryou(int shinryoucode, Consumer<ShinryouMasterModifier> cb){
+        if( currentVisit == null ){
+            startVisit();
+        }
         ShinryouMasterDTO master = shinryouMasterMap.get(shinryoucode);
         if( master == null ){
             master = createShinryouMaster(shinryoucode, cb);
@@ -110,11 +119,12 @@ public class Clinic {
         shinryouFull.shinryou = shinryou;
         shinryouFull.master = master;
         currentVisit.shinryouList.add(shinryouFull);
-        return shinryou.shinryoucode;
+        return shinryou.shinryouId;
     }
 
     private ShinryouDTO createShinryou(int shinryoucode){
         ShinryouDTO result = new ShinryouDTO();
+        result.shinryouId = 0;
         result.shinryoucode = shinryoucode;
         result.visitId = currentVisit.visit.visitId;
         return result;
@@ -130,6 +140,75 @@ public class Clinic {
             endVisit();
         }
         return visits;
+    }
+
+    public int createIyakuhinMaster(Consumer<IyakuhinMasterModifier> cb){
+        int iyakuhincode = 0;
+        for(int i=0;i<100;i++){
+            iyakuhincode = G.genid();
+            if( iyakuhinMasterMap.get(iyakuhincode) == null ){
+                break;
+            }
+            iyakuhincode = 0;
+        }
+        if( iyakuhincode == 0 ){
+            throw new RuntimeException("Cannot find iyakuhincode for new master.");
+        }
+        IyakuhinMasterDTO result = new IyakuhinMasterDTO();
+        result.iyakuhincode = iyakuhincode;
+        result.name = G.gensym();
+        result.yomi = G.gensym();
+        result.unit = G.gensym();
+        result.yakka = 39.1;
+        result.madoku = '0';
+        result.kouhatsu = 1;
+        result.zaikei = 1;
+        result.validFrom = defaultMasterValidFromDate.toString();
+        result.validUpto = "0000-00-00";
+        cb.accept(new IyakuhinMasterModifier(result));
+        iyakuhinMasterMap.put(iyakuhincode, result);
+        return result.iyakuhincode;
+    }
+
+    private DrugDTO createDrug(IyakuhinMasterDTO master){
+        DrugDTO result = new DrugDTO();
+        result.drugId = 0;
+        result.visitId = G.genid();
+        result.iyakuhincode = master.iyakuhincode;
+        result.amount = 3.0;
+        if( Zaikei.fromCode(master.zaikei) == Zaikei.Gaiyou ){
+            result.category = DrugCategory.Gaiyou.getCode();
+            result.days = 1;
+        } else {
+            result.category = DrugCategory.Naifuku.getCode();
+            result.days = 7;
+        }
+        result.prescribed = 0;
+        result.shuukeisaki = 0; // not used
+        return result;
+    }
+
+    private DrugFullDTO createDrugFull(DrugDTO drug){
+        DrugFullDTO result = new DrugFullDTO();
+        result.drug = drug;
+        result.master = iyakuhinMasterMap.get(drug.iyakuhincode);
+        return result;
+    }
+
+    public int addDrug(){
+        return addDrug(null);
+    }
+
+    public int addDrug(Consumer<IyakuhinMasterModifier> masterModifier){
+        if( currentVisit == null ){
+            startVisit();
+        }
+        int iyakuhincode = createIyakuhinMaster(masterModifier);
+        IyakuhinMasterDTO master = iyakuhinMasterMap.get(iyakuhincode);
+        DrugDTO drug = createDrug(master);
+        DrugFullDTO drugFull = createDrugFull(drug);
+        currentVisit.drugs.add(drugFull);
+        return drug.drugId;
     }
 
 }
