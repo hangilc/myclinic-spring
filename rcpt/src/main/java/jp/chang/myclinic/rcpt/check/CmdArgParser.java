@@ -70,7 +70,7 @@ class CmdArgParser {
         }
         String serverUrl = args[i];
         Service.setServerUrl(serverUrl);
-        env.api = Service.api;
+        env.api = new FixerService(Service.api);
         return env;
     }
 

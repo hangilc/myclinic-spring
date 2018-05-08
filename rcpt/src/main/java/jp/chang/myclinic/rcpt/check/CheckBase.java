@@ -1,14 +1,11 @@
 package jp.chang.myclinic.rcpt.check;
 
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Madoku;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.mastermap.ResolvedMap;
 import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
-import jp.chang.myclinic.mastermap.generated.ResolvedDiseaseAdjMap;
-import jp.chang.myclinic.mastermap.generated.ResolvedDiseaseMap;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,75 +23,59 @@ class CheckBase {
     private ResolvedMap resolvedMasterMap;
     private Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumeiMap;
     private List<DiseaseFullDTO> diseases;
-    private Service.ServerAPI api;
+    private Fixer api;
     private Scope scope;
 
-    CheckBase(Scope scope){
+    CheckBase(Scope scope) {
         this.visits = scope.visits;
         this.resolvedMasterMap = scope.resolvedMasterMap;
         this.shinryouByoumeiMap = scope.shinryouByoumeiMap;
-        this.diseases =scope. diseases;
+        this.diseases = scope.diseases;
         this.api = scope.api;
         this.scope = scope;
     }
 
-    List<DiseaseFullDTO> getDiseases(){
-        return diseases;
-    }
-
-    void error(String msg){
+    void error(String msg) {
         error(msg, null, null);
     }
 
-    void error(String msg, String fixMessage, Runnable fixer){
+    void error(String msg, String fixMessage, Runnable fixer) {
         Error error = new Error(scope.patient, msg, fixMessage, fixer);
         scope.errorHandler.accept(error);
     }
 
-    void info(String msg){
-        System.out.println(msg);
-    }
-
-    void forEachVisit(Consumer<VisitFull2DTO> cb){
+    void forEachVisit(Consumer<VisitFull2DTO> cb) {
         visits.forEach(cb);
     }
 
-    ResolvedShinryouMap getShinryouMaster(){
+    ResolvedShinryouMap getShinryouMaster() {
         return resolvedMasterMap.shinryouMap;
     }
 
-    ResolvedDiseaseMap getDiseaseMaster(){
-        return resolvedMasterMap.diseaseMap;
-    }
-
-    ResolvedDiseaseAdjMap getDiseaseAdjMap(){
-        return resolvedMasterMap.diseaseAdjMap;
-    }
-
-    Map<Integer, List<ResolvedShinryouByoumei>> getShinryouByoumeiMap(){
+    Map<Integer, List<ResolvedShinryouByoumei>> getShinryouByoumeiMap() {
         return shinryouByoumeiMap;
     }
 
-    VisitFull2DTO findVisit(Predicate<VisitFull2DTO> pred){
+    VisitFull2DTO findVisit(Predicate<VisitFull2DTO> pred) {
         return visits.stream().filter(pred).findFirst().orElseThrow(() -> {
             throw new RuntimeException("Cannot find visit");
         });
     }
 
-    int countShinryou(VisitFull2DTO visit, Predicate<ShinryouFullDTO> pred){
-        return (int)visit.shinryouList.stream().filter(pred).count();
+    int countShinryou(VisitFull2DTO visit, Predicate<ShinryouFullDTO> pred) {
+        return (int) visit.shinryouList.stream().filter(pred).count();
     }
 
-    int countShinryouInVisits(Predicate<ShinryouFullDTO> pred){
+    int countShinryouInVisits(Predicate<ShinryouFullDTO> pred) {
         return visits.stream().mapToInt(visit -> countShinryou(visit, pred)).sum();
     }
 
-    int countShinryouMasterInVisits(int shinryoucode){
+    int countShinryouMasterInVisits(int shinryoucode) {
         Predicate<ShinryouFullDTO> pred = s -> s.master.shinryoucode == shinryoucode;
         return countShinryouInVisits(pred);
     }
 
-    int countShohousenGroupInVisits(){
+    int countShohousenGroupInVisits() {
         return countShinryouInVisits(s -> {
             int shinryoucode = s.master.shinryoucode;
             return shinryoucode == getShinryouMaster().処方せん料 ||
@@ -102,123 +83,105 @@ class CheckBase {
         });
     }
 
-    void enterShinryou(VisitFull2DTO visit, int shinryoucode){
+    void enterShinryou(VisitFull2DTO visit, int shinryoucode) {
         ShinryouDTO shinryou = new ShinryouDTO();
         shinryou.visitId = visit.visit.visitId;
         shinryou.shinryoucode = shinryoucode;
-        try {
-            int shinryouId = api.enterShinryouCall(shinryou).execute().body();
-            assert shinryouId > 0;
-        } catch(Exception ex){
-            ex.printStackTrace();
-            System.exit(1);
-        }
+        api.enterShinryou(shinryou);
     }
 
-    int countShinryouMaster(VisitFull2DTO visit, int shinryoucode){
-        return (int)visit.shinryouList.stream().filter(s -> s.master.shinryoucode == shinryoucode).count();
+    int countShinryouMaster(VisitFull2DTO visit, int shinryoucode) {
+        return (int) visit.shinryouList.stream().filter(s -> s.master.shinryoucode == shinryoucode).count();
     }
 
-    int countShoshinGroup(VisitFull2DTO visit){
+    int countShoshinGroup(VisitFull2DTO visit) {
         return countShinryouMaster(visit, getShinryouMaster().初診);
     }
 
-    int countSaishinGroup(VisitFull2DTO visit){
+    int countSaishinGroup(VisitFull2DTO visit) {
         return countShinryouMaster(visit, getShinryouMaster().再診) +
                 countShinryouMaster(visit, getShinryouMaster().同日再診);
     }
 
-    List<ShinryouFullDTO> filterShinryou(VisitFull2DTO visit, Predicate<ShinryouFullDTO> pred){
+    List<ShinryouFullDTO> filterShinryou(VisitFull2DTO visit, Predicate<ShinryouFullDTO> pred) {
         return visit.shinryouList.stream().filter(pred).collect(Collectors.toList());
     }
 
-    void removeExtraShinryouMasterInVisits(int shinryoucode, int toBeRemained){
+    void removeExtraShinryouMasterInVisits(int shinryoucode, int toBeRemained) {
         List<Integer> shinryouIds = visits.stream().flatMap(visit -> visit.shinryouList.stream())
                 .filter(s -> s.master.shinryoucode == shinryoucode)
                 .skip(toBeRemained)
                 .map(s -> s.shinryou.shinryouId)
                 .collect(Collectors.toList());
-        try {
-            boolean success = api.batchDeleteShinryouCall(shinryouIds).execute().body();
-            assert success;
-        } catch(Exception ex){
-            ex.printStackTrace();
-            System.exit(1);
-        }
+        api.batchDeleteShinryou(shinryouIds);
     }
 
-    void removeExtraShinryou(VisitFull2DTO visit, Predicate<ShinryouFullDTO> pred, int toBeRemained){
+    void removeExtraShinryou(VisitFull2DTO visit, Predicate<ShinryouFullDTO> pred, int toBeRemained) {
         List<Integer> shinryouIds = visit.shinryouList.stream().filter(pred)
                 .map(s -> s.shinryou.shinryouId)
                 .skip(toBeRemained)
                 .collect(Collectors.toList());
-        try {
-            boolean success = api.batchDeleteShinryouCall(shinryouIds).execute().body();
-            assert success;
-        } catch(Exception ex){
-            ex.printStackTrace();
-            System.exit(1);
-        }
+        api.batchDeleteShinryou(shinryouIds);
     }
 
-    void removeExtraShinryouMaster(VisitFull2DTO visit, int shinryoucode, int toBeRemained){
+    void removeExtraShinryouMaster(VisitFull2DTO visit, int shinryoucode, int toBeRemained) {
         removeExtraShinryou(visit, s -> s.master.shinryoucode == shinryoucode, toBeRemained);
     }
 
-    void enterShohouryou(VisitFull2DTO visit){
+    void enterShohouryou(VisitFull2DTO visit) {
         enterShinryou(visit, getShinryouMaster().処方料);
     }
 
-    void enterShohouryou7(VisitFull2DTO visit){
+    void enterShohouryou7(VisitFull2DTO visit) {
         enterShinryou(visit, getShinryouMaster().処方料７);
     }
 
-    void removeExtraShohouryou(VisitFull2DTO visit, int remain){
+    void removeExtraShohouryou(VisitFull2DTO visit, int remain) {
         removeExtraShinryouMaster(visit, getShinryouMaster().処方料, remain);
     }
 
-    void removeExtraShohouryou7(VisitFull2DTO visit, int remain){
+    void removeExtraShohouryou7(VisitFull2DTO visit, int remain) {
         removeExtraShinryouMaster(visit, getShinryouMaster().処方料７, remain);
     }
 
-    void forEachShinryouInVisits(Consumer<ShinryouFullDTO> cb){
+    void forEachShinryouInVisits(Consumer<ShinryouFullDTO> cb) {
         visits.stream().flatMap(visit -> visit.shinryouList.stream()).forEach(cb);
     }
 
-    void forEachShinryou(VisitFull2DTO visit, Consumer<ShinryouFullDTO> cb){
+    void forEachShinryou(VisitFull2DTO visit, Consumer<ShinryouFullDTO> cb) {
         visit.shinryouList.forEach(cb);
     }
 
-    int countDrugInVisits(Predicate<DrugFullDTO> pred){
+    int countDrugInVisits(Predicate<DrugFullDTO> pred) {
         return visits.stream().mapToInt(visit -> countDrug(visit, pred)).sum();
     }
 
-    List<DiseaseFullDTO> listDisease(VisitFull2DTO visit){
+    List<DiseaseFullDTO> listDisease(VisitFull2DTO visit) {
         String at = visit.visit.visitedAt.substring(0, 10);
         return diseases.stream().filter(d -> isValidAt(d, at)).collect(Collectors.toList());
     }
 
-    int countDisease(Predicate<DiseaseFullDTO> pred){
-        return (int)diseases.stream().filter(pred).count();
+    int countDisease(Predicate<DiseaseFullDTO> pred) {
+        return (int) diseases.stream().filter(pred).count();
     }
 
-    private boolean isValidAt(DiseaseFullDTO disease, String at){
+    private boolean isValidAt(DiseaseFullDTO disease, String at) {
         String startDate = disease.disease.startDate;
         String endDate = disease.disease.endDate;
         return inTheInterval(startDate, endDate, at);
     }
 
-    private boolean inTheInterval(String startDate, String endDate, String at){
+    private boolean inTheInterval(String startDate, String endDate, String at) {
         return startDate.compareTo(at) <= 0 &&
                 ("0000-00-00".equals(endDate) || at.compareTo(endDate) <= 0);
     }
 
-    boolean diseaseStartsAt(DiseaseFullDTO disease, VisitFull2DTO visit){
+    boolean diseaseStartsAt(DiseaseFullDTO disease, VisitFull2DTO visit) {
         String at = visit.visit.visitedAt.substring(0, 10);
         return disease.disease.startDate.equals(at);
     }
 
-    DiseaseNewDTO createNewDisease(VisitFull2DTO visit, ResolvedShinryouByoumei rsb){
+    DiseaseNewDTO createNewDisease(VisitFull2DTO visit, ResolvedShinryouByoumei rsb) {
         DiseaseNewDTO result = new DiseaseNewDTO();
         DiseaseDTO disease = new DiseaseDTO();
         disease.endDate = "0000-00-00";
@@ -237,62 +200,56 @@ class CheckBase {
         return result;
     }
 
-    void enterDisease(DiseaseNewDTO disease){
-        try {
-            int diseaseId = api.enterDiseaseCall(disease).execute().body();
-            assert diseaseId > 0;
-        } catch(Exception ex){
-            logger.error("Failed to enter disease", ex);
-            throw new RuntimeException("Failed to enter disease.");
-        }
+    void enterDisease(DiseaseNewDTO disease) {
+        api.enterDisease(disease);
     }
 
-    List<DrugFullDTO> filterDrug(VisitFull2DTO visit, Predicate<DrugFullDTO> pred){
+    List<DrugFullDTO> filterDrug(VisitFull2DTO visit, Predicate<DrugFullDTO> pred) {
         return visit.drugs.stream().filter(pred).collect(Collectors.toList());
     }
 
-    boolean isMadoku(DrugFullDTO drug){
+    boolean isMadoku(DrugFullDTO drug) {
         return Madoku.fromCode(drug.master.madoku) != Madoku.NoMadoku;
     }
 
-    DrugCategory drugCategoryOf(DrugFullDTO drug){
+    DrugCategory drugCategoryOf(DrugFullDTO drug) {
         return DrugCategory.fromCode(drug.drug.category);
     }
 
-    boolean isNaifuku(DrugFullDTO drug){
+    boolean isNaifuku(DrugFullDTO drug) {
         return drugCategoryOf(drug) == DrugCategory.Naifuku;
     }
 
-    boolean isGaiyou(DrugFullDTO drug){
+    boolean isGaiyou(DrugFullDTO drug) {
         return drugCategoryOf(drug) == DrugCategory.Gaiyou;
     }
 
-    int countDrug(VisitFull2DTO visit, Predicate<DrugFullDTO> pred){
-        return (int)visit.drugs.stream().filter(pred).count();
+    int countDrug(VisitFull2DTO visit, Predicate<DrugFullDTO> pred) {
+        return (int) visit.drugs.stream().filter(pred).count();
     }
 
-    int countShohouryou(VisitFull2DTO visit){
+    int countShohouryou(VisitFull2DTO visit) {
         return countShinryouMaster(visit, getShinryouMaster().処方料);
     }
 
-    int countShohouryou7(VisitFull2DTO visit){
+    int countShohouryou7(VisitFull2DTO visit) {
         return countShinryouMaster(visit, getShinryouMaster().処方料７);
     }
 
-    boolean isChoukiNaifukuDrug(DrugFullDTO drug){
+    boolean isChoukiNaifukuDrug(DrugFullDTO drug) {
         return isNaifuku(drug) && drug.drug.days > 14;
     }
 
-    int countChoukiNaifukuDrug(VisitFull2DTO visit){
+    int countChoukiNaifukuDrug(VisitFull2DTO visit) {
         return countDrug(visit, this::isChoukiNaifukuDrug);
     }
 
-    List<ResolvedShinryouByoumei> getShinryouByoumeiList(int shinryoucode){
+    List<ResolvedShinryouByoumei> getShinryouByoumeiList(int shinryoucode) {
         return shinryouByoumeiMap.get(shinryoucode);
     }
 
-    String messageForRemoveExtra(String name, int total, int remain){
-        if( remain > 0 ) {
+    String messageForRemoveExtra(String name, int total, int remain) {
+        if (remain > 0) {
             return String.format("%s(%d件中%d件)を削除します。", name, total, total - remain);
         } else {
             return String.format("%s(%d件)を削除します。", name, total);

@@ -1,6 +1,5 @@
 package jp.chang.myclinic.rcpt.check;
 
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
@@ -18,13 +17,13 @@ class Scope {
     Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumeiMap;
     List<DiseaseFullDTO> diseases;
     Consumer<Error> errorHandler;
-    Service.ServerAPI api;
+    Fixer api;
 
     Scope(){}
 
     Scope(PatientDTO patient, List<VisitFull2DTO> visits, ResolvedMap resolvedMasterMap,
           Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumeiMap, List<DiseaseFullDTO> diseases,
-          Consumer<Error> errorHandler, Service.ServerAPI api) {
+          Consumer<Error> errorHandler, Fixer api) {
         this.patient = patient;
         this.visits = visits;
         this.resolvedMasterMap = resolvedMasterMap;

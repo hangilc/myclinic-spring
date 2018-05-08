@@ -1,7 +1,6 @@
 package jp.chang.myclinic.rcpt.check;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
@@ -47,7 +46,7 @@ class Base {
         scope.resolvedMasterMap = masterMaps.resolvedMap;
         scope.shinryouByoumeiMap = masterMaps.shinryouByoumeiMap;
         scope.diseases = new ArrayList<>();
-        scope.api = Service.api;
+        scope.api = new FixerMock();
         return scope;
     }
 

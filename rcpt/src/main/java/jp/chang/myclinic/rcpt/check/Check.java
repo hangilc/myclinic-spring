@@ -22,7 +22,7 @@ public class Check {
         List<Integer> patientIds = runEnv.patientIds;
         try {
             if (patientIds == null) {
-                patientIds = runEnv.api.listVisitingPatientIdHavingHokenCall(year, month).execute().body();
+                patientIds = Service.api.listVisitingPatientIdHavingHokenCall(year, month).execute().body();
             }
             for (int patientId : patientIds) {
                 PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
