@@ -22,6 +22,7 @@ public class Clinic {
     private int nextShinryouId = 1;
     private int nextDrugId = 1;
     private int nextDiseaseId = 1;
+    private int nextVisitId = 1;
     private Map<Integer, PatientDTO> patientMap = new HashMap<>();
     private Map<Integer, ShinryouMasterDTO> shinryouMasterMap = new HashMap<>();
     private Map<Integer, IyakuhinMasterDTO> iyakuhinMasterMap = new HashMap<>();
@@ -73,6 +74,7 @@ public class Clinic {
 
     private VisitDTO createVisit(int patientId,Consumer<VisitModifier> cb){
         VisitDTO visit = new VisitDTO();
+        visit.visitId = nextVisitId++;
         visit.patientId = patientId;
         visit.visitedAt = defaultVisitedAtDateTime.format(sqlDateTimeFormatter);
         if( cb != null ){

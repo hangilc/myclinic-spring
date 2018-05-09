@@ -35,7 +35,7 @@ class Base {
         shinryouByoumei = TestListener.masterMaps.shinryouByoumeiMap;
     }
 
-    Scope createScope(FixerLog log) {
+    private Scope createScope(FixerLog log) {
         Scope scope = new Scope();
         scope.visits = new ArrayList<>();
         scope.patient = new PatientDTO();
@@ -45,6 +45,10 @@ class Base {
         scope.api = new FixerMock(log);
         scope.errorHandler = err -> {
             nerror += 1;
+            log.getErrorMessages().add(err.getMessage());
+            if( err.getFixMessage() != null ){
+                log.getFixMessages().add(err.getFixMessage());
+            }
             if( err.getFixFun() != null ){
                 err.getFixFun().run();
             }
@@ -75,7 +79,7 @@ class Base {
         ShinryouDTO expected = new ShinryouDTO();
         expected.shinryouId = 0;
         expected.shinryoucode = shinryoucode;
-        entered.visitId = visitId;
+        expected.visitId = visitId;
         assertEquals(expected, entered);
     }
 

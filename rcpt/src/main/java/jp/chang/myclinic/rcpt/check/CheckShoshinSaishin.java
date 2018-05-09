@@ -1,10 +1,10 @@
 package jp.chang.myclinic.rcpt.check;
 
-class CheckShoshinSaisin extends CheckBase {
+class CheckShoshinSaishin extends CheckBase {
 
-    //private static Logger logger = LoggerFactory.getLogger(CheckShoshinSaisin.class);
+    //private static Logger logger = LoggerFactory.getLogger(CheckShoshinSaishin.class);
 
-    CheckShoshinSaisin(Scope scope) {
+    CheckShoshinSaishin(Scope scope) {
         super(scope);
     }
 

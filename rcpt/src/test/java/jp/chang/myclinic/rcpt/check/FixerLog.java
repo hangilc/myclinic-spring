@@ -12,16 +12,26 @@ class FixerLog {
     private List<ShinryouDTO> enteredShinryouList = new ArrayList<>();
     private List<List<Integer>> batchDeletedShinryouList = new ArrayList<>();
     private List<DiseaseNewDTO> enteredDisseases = new ArrayList<>();
+    private List<String> errorMessages = new ArrayList<>();
+    private List<String> fixMessages = new ArrayList<>();
 
-    public List<ShinryouDTO> getEnteredShinryouList() {
+    List<ShinryouDTO> getEnteredShinryouList() {
         return enteredShinryouList;
     }
 
-    public List<List<Integer>> getBatchDeletedShinryouList() {
+    List<List<Integer>> getBatchDeletedShinryouList() {
         return batchDeletedShinryouList;
     }
 
-    public List<DiseaseNewDTO> getEnteredDisseases() {
+    List<DiseaseNewDTO> getEnteredDisseases() {
         return enteredDisseases;
+    }
+
+    List<String> getErrorMessages() {
+        return errorMessages;
+    }
+
+    List<String> getFixMessages() {
+        return fixMessages;
     }
 }
