@@ -29,24 +29,24 @@ public class TestCheckByoumei extends Base {
         Clinic clinic = new Clinic();
         int patientId = clinic.createPatient();
         clinic.startVisit(patientId);
-        String at = clinic.getVisitedAt();
+        String startDate = clinic.getVisitedAt().substring(0, 10);
         clinic.addShinryou(shinryoucode);
         scope.visits = clinic.getVisits();
         new CheckByoumei(scope).check();
         ResolvedShinryouByoumei rsb = shinryouByoumei.get(shinryoucode).get(0);
-        DiseaseNewDTO expected = RsbToDisease(rsb, patientId, at);
+        DiseaseNewDTO expected = RsbToDisease(rsb, patientId, startDate);
         assertEquals(1, nerror);
         assertEquals(List.of(expected), log.getEnteredDisseases());
     }
 
-    private DiseaseNewDTO RsbToDisease(ResolvedShinryouByoumei rsb, int patientId, String at){
+    private DiseaseNewDTO RsbToDisease(ResolvedShinryouByoumei rsb, int patientId, String startDate){
         DiseaseNewDTO expected = new DiseaseNewDTO();
         expected.disease = new DiseaseBuilder(d -> {
             d.diseaseId = 0;
             d.shoubyoumeicode = rsb.byoumei.code;
             d.patientId = patientId;
             d.endReason = DiseaseEndReason.NotEnded.getCode();
-            d.startDate = at;
+            d.startDate = startDate;
             d.endDate = "0000-00-00";
         }).build();
         expected.adjList = rsb.shuushokugoList.stream()

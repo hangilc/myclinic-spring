@@ -4,6 +4,9 @@ import jp.chang.myclinic.consts.*;
 import jp.chang.myclinic.dto.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +16,8 @@ import java.util.function.Consumer;
 public class Clinic {
 
     private LocalDate defaultMasterValidFromDate = LocalDate.of(2018, 4, 1);
-    private LocalDate defaultVisitedAtDate = defaultMasterValidFromDate;
+    private LocalDateTime defaultVisitedAtDateTime =
+            LocalDateTime.of(defaultMasterValidFromDate, LocalTime.of(10, 20));
     private int nextPatientId = 1;
     private int nextShinryouId = 1;
     private int nextDrugId = 1;
@@ -26,9 +30,15 @@ public class Clinic {
     private List<DiseaseFullDTO> diseases = new ArrayList<>();
     private List<VisitFull2DTO> visits = new ArrayList<>();
     private VisitFull2DTO currentVisit;
+    private static DateTimeFormatter sqlDateTimeFormatter =
+            DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 
     public Clinic() {
 
+    }
+
+    public LocalDate getBaseDate(){
+        return defaultMasterValidFromDate;
     }
 
     public PatientDTO newPatient(){
@@ -61,16 +71,19 @@ public class Clinic {
         return result.patientId;
     }
 
-    private VisitDTO createVisit(int patientId, LocalDate at){
+    private VisitDTO createVisit(int patientId,Consumer<VisitModifier> cb){
         VisitDTO visit = new VisitDTO();
         visit.patientId = patientId;
-        visit.visitedAt = at.toString();
+        visit.visitedAt = defaultVisitedAtDateTime.format(sqlDateTimeFormatter);
+        if( cb != null ){
+            cb.accept(new VisitModifier(visit));
+        }
         return visit;
     }
 
-    private VisitFull2DTO createVisitFull2DTO(int patientId, LocalDate at){
+    private VisitFull2DTO createVisitFull2DTO(int patientId, Consumer<VisitModifier> cb){
         VisitFull2DTO result = new VisitFull2DTO();
-        result.visit = createVisit(patientId, at);
+        result.visit = createVisit(patientId, cb);
         result.texts = new ArrayList<>();
         result.shinryouList = new ArrayList<>();
         result.drugs = new ArrayList<>();
@@ -79,13 +92,21 @@ public class Clinic {
         return result;
     }
 
-    public int startVisit(){
+    public int startVisit() {
+        return startVisit(null);
+    }
+
+    public int startVisit(Consumer<VisitModifier> cb){
         int patientId = createPatient(null);
-        return startVisit(patientId);
+        return startVisit(patientId, cb);
     }
 
     public int startVisit(int patientId){
-        VisitFull2DTO visitFull = createVisitFull2DTO(patientId, defaultVisitedAtDate);
+        return startVisit(patientId, null);
+    }
+
+    public int startVisit(int patientId, Consumer<VisitModifier> cb){
+        VisitFull2DTO visitFull = createVisitFull2DTO(patientId, cb);
         currentVisit = visitFull;
         return visitFull.visit.visitId;
     }
@@ -316,6 +337,10 @@ public class Clinic {
     }
 
     public int addDisease(){
+        return addDisease(null);
+    }
+
+    public int addDisease(Consumer<DiseaseModifier> cb){
         if( currentVisit == null ){
             startVisit();
         }
@@ -323,10 +348,13 @@ public class Clinic {
         DiseaseDTO disease = new DiseaseDTO();
         disease.shoubyoumeicode = byoumeiMaster.shoubyoumeicode;
         disease.diseaseId = nextDiseaseId++;
-        disease.startDate = currentVisit.visit.visitedAt;
+        disease.startDate = currentVisit.visit.visitedAt.substring(0, 10);
         disease.endDate = "0000-00-00";
         disease.endReason = DiseaseEndReason.NotEnded.getCode();
         disease.patientId = currentVisit.visit.patientId;
+        if( cb != null ){
+            cb.accept(new DiseaseModifier(disease));
+        }
         DiseaseFullDTO diseaseFull = new DiseaseFullDTO();
         diseaseFull.disease = disease;
         diseaseFull.master = byoumeiMaster;

@@ -5,6 +5,7 @@ import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.Common;
+import jp.chang.myclinic.rcpt.builder.Clinic;
 import org.junit.Before;
 
 import java.util.*;
@@ -49,6 +50,11 @@ class Base {
             }
         };
         return scope;
+    }
+
+    void syncScope(Clinic clinic){
+        scope.visits = clinic.getVisits();
+        scope.diseases = clinic.getDiseases();
     }
 
     void assertBatchDeleteShinryou(int shinryouId) {

@@ -5,15 +5,15 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class TestSaishinByoumei extends Base {
+public class TestCheckSaishinByoumei extends Base {
 
-    //private static Logger logger = LoggerFactory.getLogger(TestSaishinByoumei.class);
+    //private static Logger logger = LoggerFactory.getLogger(TestCheckSaishinByoumei.class);
 
     @Test
     public void missingDiseases(){
         Clinic clinic = new Clinic();
         clinic.addShinryou(shinryouMap.再診);
-        scope.visits = clinic.getVisits();
+        syncScope(clinic);
         new CheckSaishinByoumei(scope).check();
         assertEquals(1, nerror);
     }
