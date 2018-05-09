@@ -90,6 +90,10 @@ public class Clinic {
         return visitFull.visit.visitId;
     }
 
+    public int getVisitId(){
+        return currentVisit.visit.visitId;
+    }
+
     public String getVisitedAt(){
         return currentVisit.visit.visitedAt;
     }

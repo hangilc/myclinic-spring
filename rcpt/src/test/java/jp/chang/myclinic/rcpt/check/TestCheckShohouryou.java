@@ -33,7 +33,26 @@ public class TestCheckShohouryou extends Base {
 
     @Test
     public void missing7(){
-        //notyet
+        Clinic clinic = new Clinic();
+        int visitId = clinic.startVisit();
+        clinic.addChoukiNaifukuDrug(7);
+        scope.visits = clinic.getVisits();
+        new CheckShohouryou(scope).check();
+        assertEquals(1, nerror);
+        assertEnterShinryou(visitId, shinryouMap.処方料７);
+    }
+
+    @Test
+    public void inappropriate(){
+        Clinic clinic = new Clinic();
+        int visitId = clinic.startVisit();
+        clinic.addChoukiNaifukuDrug(7);
+        int shinryouId = clinic.addShinryou(shinryouMap.処方料);
+        clinic.addShinryou(shinryouMap.処方料７);
+        scope.visits = clinic.getVisits();
+        new CheckShohouryou(scope).check();
+        assertEquals(1, nerror);
+        assertBatchDeleteShinryou(shinryouId);
     }
 
 }
