@@ -1,6 +1,7 @@
 package jp.chang.myclinic.rcpt.builder;
 
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.consts.Madoku;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.*;
@@ -239,6 +240,11 @@ public class Clinic {
     public int addGaiyouDrug(){
         return addDrug(modifier -> modifier.setZaikei(Zaikei.Gaiyou),
                 modifier -> modifier.setCategory(DrugCategory.Gaiyou));
+    }
+
+    public int addMadokuDrug(){
+        return addDrug(modifier -> modifier.setMadoku(Madoku.Kouseishinyaku),
+                modifier -> modifier.setCategory(DrugCategory.Naifuku));
     }
 
 }
