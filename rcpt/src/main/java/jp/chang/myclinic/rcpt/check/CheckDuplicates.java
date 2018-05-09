@@ -1,24 +1,26 @@
 package jp.chang.myclinic.rcpt.check;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 class CheckDuplicates extends CheckBase {
 
-    private static Logger logger = LoggerFactory.getLogger(CheckDuplicates.class);
-
+    //private static Logger logger = LoggerFactory.getLogger(CheckDuplicates.class);
     CheckDuplicates(Scope scope) {
         super(scope);
     }
 
     void check(){
+        Set<Integer> excludes = Set.of(getShinryouMaster().非特異的ＩｇＥ);
         forEachVisit(visit -> {
             Map<Integer, Integer> counts = new HashMap<>(); // shinryoucode -> count
             Map<Integer, String> nameMap = new HashMap<>(); // shinryoucode -> name
             forEachShinryou(visit, shinryou -> {
+                int shinryoucode = shinryou.master.shinryoucode;
+                if( excludes.contains(shinryoucode) ){
+                    return;
+                }
                 counts.merge(shinryou.master.shinryoucode, 1, (a, b) -> a + b);
                 nameMap.put(shinryou.master.shinryoucode, shinryou.master.name);
             });

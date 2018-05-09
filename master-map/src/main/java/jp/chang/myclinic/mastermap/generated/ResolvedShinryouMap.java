@@ -1,8 +1,7 @@
 package jp.chang.myclinic.mastermap.generated;
 
-import jp.chang.myclinic.mastermap.Resolver;
-
 import java.time.LocalDate;
+import jp.chang.myclinic.mastermap.Resolver;
 
 public class ResolvedShinryouMap {
 	
@@ -37,6 +36,7 @@ public class ResolvedShinryouMap {
 	public int 薬剤情報提供;
 	public int 手帳記載加算;
 	public int 向精神薬;
+	public int 外来後発加算１;
 	public int 骨塩定量ＭＤ法;
 	public int 血算;
 	public int 末梢血液像;
@@ -60,7 +60,7 @@ public class ResolvedShinryouMap {
 	public int 蛋白定量尿;
 	public int クレアチニン尿;
 	public int ＣＲＰ;
-	public int 外来後発加算１;
+	public int 非特異的ＩｇＥ;
 
 	public ResolvedShinryouMap(){}
 
@@ -96,6 +96,7 @@ public class ResolvedShinryouMap {
 		this.薬剤情報提供 = resolver.resolve("薬剤情報提供", at);
 		this.手帳記載加算 = resolver.resolve("手帳記載加算", at);
 		this.向精神薬 = resolver.resolve("向精神薬", at);
+		this.外来後発加算１ = resolver.resolve("外来後発加算１", at);
 		this.骨塩定量ＭＤ法 = resolver.resolve("骨塩定量ＭＤ法", at);
 		this.血算 = resolver.resolve("血算", at);
 		this.末梢血液像 = resolver.resolve("末梢血液像", at);
@@ -119,6 +120,6 @@ public class ResolvedShinryouMap {
 		this.蛋白定量尿 = resolver.resolve("蛋白定量（尿）", at);
 		this.クレアチニン尿 = resolver.resolve("クレアチニン（尿）", at);
 		this.ＣＲＰ = resolver.resolve("ＣＲＰ", at);
-		this.外来後発加算１ = resolver.resolve("外来後発加算１", at);
+		this.非特異的ＩｇＥ = resolver.resolve("非特異的ＩｇＥ", at);
 	}
 }

@@ -109,6 +109,10 @@ public class Clinic {
         return createShinryouMaster(shinryoucode, null);
     }
 
+    public int createShinryouMaster(int shinryoucode){
+        return createShinryouMaster(shinryoucode, null);
+    }
+
     public int createShinryouMaster(int shinryoucode,
                                                    Consumer<ShinryouMasterModifier> cb){
         ShinryouMasterDTO result = new ShinryouMasterDTO();

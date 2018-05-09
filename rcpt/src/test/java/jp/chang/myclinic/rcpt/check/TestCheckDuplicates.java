@@ -18,4 +18,15 @@ public class TestCheckDuplicates extends Base {
         assertEquals(1, nerror);
     }
 
+    @Test
+    public void allowIgE(){
+        Clinic clinic = new Clinic();
+        clinic.createShinryouMaster(shinryouMap.非特異的ＩｇＥ);
+        clinic.createShinryouMaster(shinryouMap.非特異的ＩｇＥ);
+        clinic.createShinryouMaster(shinryouMap.非特異的ＩｇＥ);
+        scope.visits = clinic.getVisits();
+        new CheckDuplicates(scope).check();
+        assertEquals(0, nerror);
+    }
+
 }

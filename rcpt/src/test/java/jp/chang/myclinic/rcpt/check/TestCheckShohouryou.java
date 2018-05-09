@@ -33,7 +33,7 @@ public class TestCheckShohouryou extends Base {
 
     @Test
     public void missing7(){
-        notyet
+        //notyet
     }
 
 }
