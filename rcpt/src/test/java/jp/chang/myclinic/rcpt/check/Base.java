@@ -30,9 +30,9 @@ class Base {
     }
 
     Base() {
-        masterMaps = TestListener.masterMaps;
-        shinryouMap = TestListener.shinryouMap;
-        shinryouByoumei = TestListener.masterMaps.shinryouByoumeiMap;
+        masterMaps = Listener.masterMaps;
+        shinryouMap = Listener.shinryouMap;
+        shinryouByoumei = Listener.masterMaps.shinryouByoumeiMap;
     }
 
     private Scope createScope(FixerLog log) {

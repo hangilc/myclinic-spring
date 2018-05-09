@@ -85,7 +85,7 @@
                     <properties>
                         <property>
                             <name>listener</name>
-                            <value>jp.chang.myclinic.rcpt.check.TestListener</value>
+                            <value>jp.chang.myclinic.rcpt.check.Listener</value>
                         </property>
                     </properties>
                 </configuration>

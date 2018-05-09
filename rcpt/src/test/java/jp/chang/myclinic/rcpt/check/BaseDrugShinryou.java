@@ -5,9 +5,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-class TestBaseDrugShinryou extends Base {
+class BaseDrugShinryou extends Base {
 
-    //private static Logger logger = LoggerFactory.getLogger(TestBaseDrugShinryou.class);
+    //private static Logger logger = LoggerFactory.getLogger(BaseDrugShinryou.class);
     private int shinryoucode;
 
     void setShinryoucode(int shinryoucode){

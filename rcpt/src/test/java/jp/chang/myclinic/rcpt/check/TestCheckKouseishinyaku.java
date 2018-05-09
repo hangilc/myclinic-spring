@@ -2,7 +2,7 @@ package jp.chang.myclinic.rcpt.check;
 
 import jp.chang.myclinic.rcpt.builder.Clinic;
 
-public class TestCheckKouseishinyaku extends TestBaseDrugShinryou {
+public class TestCheckKouseishinyaku extends BaseDrugShinryou {
 
     //private static Logger logger = LoggerFactory.getLogger(TestCheckKouseishinyaku.class);
 

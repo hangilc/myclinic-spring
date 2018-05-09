@@ -9,7 +9,7 @@ import org.junit.runner.notification.RunListener;
 
 import java.time.LocalDate;
 
-public class TestListener extends RunListener {
+public class Listener extends RunListener {
 
     public static LocalDate at = LocalDate.of(2018, 3, 1);
     public static Common.MasterMaps masterMaps = Common.getMasterMaps(at);
