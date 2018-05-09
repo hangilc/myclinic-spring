@@ -1,9 +1,6 @@
 package jp.chang.myclinic.rcpt.builder;
 
-import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.consts.Madoku;
-import jp.chang.myclinic.consts.Sex;
-import jp.chang.myclinic.consts.Zaikei;
+import jp.chang.myclinic.consts.*;
 import jp.chang.myclinic.dto.*;
 
 import java.time.LocalDate;
@@ -20,9 +17,13 @@ public class Clinic {
     private int nextPatientId = 1;
     private int nextShinryouId = 1;
     private int nextDrugId = 1;
+    private int nextDiseaseId = 1;
     private Map<Integer, PatientDTO> patientMap = new HashMap<>();
     private Map<Integer, ShinryouMasterDTO> shinryouMasterMap = new HashMap<>();
     private Map<Integer, IyakuhinMasterDTO> iyakuhinMasterMap = new HashMap<>();
+    private Map<Integer, ByoumeiMasterDTO> byoumeiMasterMap = new HashMap<>();
+    private Map<Integer, ShuushokugoMasterDTO> shuushokugoMasterMap = new HashMap<>();
+    private List<DiseaseFullDTO> diseases = new ArrayList<>();
     private List<VisitFull2DTO> visits = new ArrayList<>();
     private VisitFull2DTO currentVisit;
 
@@ -93,7 +94,22 @@ public class Clinic {
         return currentVisit.visit.visitedAt;
     }
 
-    private ShinryouMasterDTO createShinryouMaster(int shinryoucode,
+    public int createShinryouMaster(){
+        int shinryoucode = 0;
+        for(int i=1;i<100;i++){
+            ShinryouMasterDTO m = shinryouMasterMap.get(i);
+            if( m == null ){
+                shinryoucode = i;
+                break;
+            }
+        }
+        if( shinryoucode == 0 ){
+            throw new RuntimeException("Cannot allocate new shinryoucode.");
+        }
+        return createShinryouMaster(shinryoucode, null);
+    }
+
+    public int createShinryouMaster(int shinryoucode,
                                                    Consumer<ShinryouMasterModifier> cb){
         ShinryouMasterDTO result = new ShinryouMasterDTO();
         result.shinryoucode = shinryoucode;
@@ -115,7 +131,7 @@ public class Clinic {
             cb.accept(new ShinryouMasterModifier(result));
         }
         shinryouMasterMap.put(shinryoucode, result);
-        return result;
+        return result.shinryoucode;
     }
 
     public int addShinryou(int shinryoucode){
@@ -128,7 +144,8 @@ public class Clinic {
         }
         ShinryouMasterDTO master = shinryouMasterMap.get(shinryoucode);
         if( master == null ){
-            master = createShinryouMaster(shinryoucode, cb);
+            createShinryouMaster(shinryoucode, cb);
+            master = shinryouMasterMap.get(shinryoucode);
         }
         ShinryouDTO shinryou = createShinryou(shinryoucode);
         ShinryouFullDTO shinryouFull = new ShinryouFullDTO();
@@ -245,6 +262,73 @@ public class Clinic {
     public int addMadokuDrug(){
         return addDrug(modifier -> modifier.setMadoku(Madoku.Kouseishinyaku),
                 modifier -> modifier.setCategory(DrugCategory.Naifuku));
+    }
+
+    public int addNaifukuDrug(){
+        return addNaifukuDrug(null);
+    }
+
+    public int addNaifukuDrug(Consumer<DrugModifier> cb){
+        return addDrug(m -> m.setZaikei(Zaikei.Naifuku),
+                m -> {
+                    m.setCategory(DrugCategory.Naifuku);
+                    if( cb != null ) {
+                        cb.accept(m);
+                    }
+                });
+    }
+
+    public List<Integer> addChoukiNaifukuDrug(int count){
+        List<Integer> drugIds = new ArrayList<>();
+        for(int i=0;i<count;i++){
+            int drugId = addNaifukuDrug(m -> m.setDays(28));
+            drugIds.add(drugId);
+        }
+        return drugIds;
+    }
+
+    private ByoumeiMasterDTO createByoumeiMaster(){
+        int byoumeicode = 0;
+        for(int i=1;i<100;i++){
+            ByoumeiMasterDTO m = byoumeiMasterMap.get(i);
+            if( m == null ){
+                byoumeicode = i;
+                break;
+            }
+        }
+        if( byoumeicode == 0 ){
+            throw new RuntimeException("Cannot allocate new byoumeicode.");
+        }
+        ByoumeiMasterDTO master = new ByoumeiMasterDTO();
+        master.shoubyoumeicode = byoumeicode;
+        master.name = G.gensym();
+        master.validFrom = defaultMasterValidFromDate.toString();
+        master.validUpto = "0000-00-00";
+        return master;
+    }
+
+    public int addDisease(){
+        if( currentVisit == null ){
+            startVisit();
+        }
+        ByoumeiMasterDTO byoumeiMaster = createByoumeiMaster();
+        DiseaseDTO disease = new DiseaseDTO();
+        disease.shoubyoumeicode = byoumeiMaster.shoubyoumeicode;
+        disease.diseaseId = nextDiseaseId++;
+        disease.startDate = currentVisit.visit.visitedAt;
+        disease.endDate = "0000-00-00";
+        disease.endReason = DiseaseEndReason.NotEnded.getCode();
+        disease.patientId = currentVisit.visit.patientId;
+        DiseaseFullDTO diseaseFull = new DiseaseFullDTO();
+        diseaseFull.disease = disease;
+        diseaseFull.master = byoumeiMaster;
+        diseaseFull.adjList = new ArrayList<>();
+        diseases.add(diseaseFull);
+        return disease.diseaseId;
+    }
+
+    public List<DiseaseFullDTO> getDiseases(){
+        return diseases;
     }
 
 }

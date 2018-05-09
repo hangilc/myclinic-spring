@@ -17,4 +17,9 @@ class DrugModifier {
         return this;
     }
 
+    DrugModifier setDays(int days){
+        drug.days = days;
+        return this;
+    }
+
 }
