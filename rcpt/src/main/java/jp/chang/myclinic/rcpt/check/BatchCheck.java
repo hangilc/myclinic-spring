@@ -5,13 +5,15 @@ import jp.chang.myclinic.dto.PatientDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public class BatchCheck {
 
     private static Logger logger = LoggerFactory.getLogger(BatchCheck.class);
 
     private BatchCheck() { }
 
-    public static void run(String[] args){
+    public static void run(String[] args) throws IOException {
         RunEnv runEnv = CmdArgParser.parse(args);
         class State {
             private int prevPatientId = 0;

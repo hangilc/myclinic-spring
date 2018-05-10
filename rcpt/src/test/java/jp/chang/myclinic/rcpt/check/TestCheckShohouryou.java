@@ -54,4 +54,14 @@ public class TestCheckShohouryou extends Base {
         assertBatchDeleteShinryou(shinryouId);
     }
 
+    @Test
+    public void inappropriateWithoutDrugs(){
+        Clinic clinic = new Clinic();
+        int shinryouId = clinic.addShinryou(shinryouMap.処方料);
+        syncScope(clinic);
+        new CheckShohouryou(scope).check();
+        assertEquals(1, nerror);
+        assertBatchDeleteShinryou(shinryouId);
+    }
+
 }

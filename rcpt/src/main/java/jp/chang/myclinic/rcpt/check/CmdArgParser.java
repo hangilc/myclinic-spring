@@ -2,6 +2,7 @@ package jp.chang.myclinic.rcpt.check;
 
 import jp.chang.myclinic.client.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ class CmdArgParser {
         System.err.println("    -h                 : help");
     }
 
-    static RunEnv parse(String[] args){
+    static RunEnv parse(String[] args) throws IOException {
         RunEnv env = new RunEnv();
         if (args.length < 4) {
             usage();
@@ -71,6 +72,9 @@ class CmdArgParser {
         String serverUrl = args[i];
         Service.setServerUrl(serverUrl);
         env.api = new FixerService(Service.api);
+        if( env.patientIds == null ){
+            env.patientIds = Service.api.listVisitingPatientIdHavingHokenCall(env.year, env.month).execute().body();
+        }
         return env;
     }
 
