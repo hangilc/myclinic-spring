@@ -42,10 +42,6 @@ public class Clinic {
         return defaultMasterValidFromDate;
     }
 
-    public PatientDTO newPatient(){
-        return new PatientBuilder().build();
-    }
-
     private PatientDTO findPatient(int patientId){
         return patientMap.get(patientId);
     }

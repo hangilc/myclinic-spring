@@ -2,10 +2,10 @@ package jp.chang.myclinic.rcpt.check;
 
 import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.dto.DiseaseAdjDTO;
+import jp.chang.myclinic.dto.DiseaseDTO;
 import jp.chang.myclinic.dto.DiseaseNewDTO;
 import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
 import jp.chang.myclinic.rcpt.builder.Clinic;
-import jp.chang.myclinic.rcpt.builder.DiseaseBuilder;
 import org.junit.Test;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class TestCheckByoumei extends Base {
     @Test
     public void checkByoumei() {
         Set<Integer> shinryoucodes = shinryouByoumei.keySet();
-        for(int shinryoucode: shinryoucodes){
+        for (int shinryoucode : shinryoucodes) {
             doBaseBefore();
             testOne(shinryoucode);
         }
@@ -39,16 +39,16 @@ public class TestCheckByoumei extends Base {
         assertEquals(List.of(expected), log.getEnteredDisseases());
     }
 
-    private DiseaseNewDTO RsbToDisease(ResolvedShinryouByoumei rsb, int patientId, String startDate){
+    private DiseaseNewDTO RsbToDisease(ResolvedShinryouByoumei rsb, int patientId, String startDate) {
         DiseaseNewDTO expected = new DiseaseNewDTO();
-        expected.disease = new DiseaseBuilder(d -> {
-            d.diseaseId = 0;
-            d.shoubyoumeicode = rsb.byoumei.code;
-            d.patientId = patientId;
-            d.endReason = DiseaseEndReason.NotEnded.getCode();
-            d.startDate = startDate;
-            d.endDate = "0000-00-00";
-        }).build();
+        DiseaseDTO disease = new DiseaseDTO();
+        disease.diseaseId = 0;
+        disease.shoubyoumeicode = rsb.byoumei.code;
+        disease.patientId = patientId;
+        disease.endReason = DiseaseEndReason.NotEnded.getCode();
+        disease.startDate = startDate;
+        disease.endDate = "0000-00-00";
+        expected.disease = disease;
         expected.adjList = rsb.shuushokugoList.stream()
                 .map(s -> {
                     DiseaseAdjDTO adj = new DiseaseAdjDTO();
