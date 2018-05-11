@@ -4,7 +4,7 @@ import jp.chang.myclinic.client.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import java.io.PrintStream;
 
 public class BatchData {
 
@@ -22,9 +22,9 @@ public class BatchData {
         int year = Integer.parseInt(args[2]);
         int month = Integer.parseInt(args[3]);
         Service.setServerUrl(serverUrl);
-        List<Integer> patientIds =
-                Service.api.listVisitingPatientIdHavingHokenCall(year, month).execute().body();
-        System.out.println(patientIds);
+        Data data = new Data(year, month);
+        data.run();
+        PrintStream out = new PrintStream(System.out, false, "UTF-8");
         Service.stop();
     }
 
