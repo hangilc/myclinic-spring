@@ -1,6 +1,7 @@
 package jp.chang.myclinic.rcpt;
 
 import jp.chang.myclinic.rcpt.check.BatchCheck;
+import jp.chang.myclinic.rcpt.data.BatchData;
 
 public class Main {
 
@@ -15,6 +16,10 @@ public class Main {
         switch(command){
             case "check": {
                 BatchCheck.run(args);
+                break;
+            }
+            case "data": {
+                BatchData.run(args);
                 break;
             }
             default: {
