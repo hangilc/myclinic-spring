@@ -16,14 +16,13 @@ class Data {
     private List<VisitFull2DTO> visits;
     private PrintStream out;
 
-    Data(int year, int month) {
+    Data(PrintStream out, int year, int month) {
+        this.out = out;
         this.year = year;
         this.month = month;
     }
 
     void run() throws Exception {
-        //this.out = new PrintStream(System.out, false, "UTF-8");
-        this.out = new PrintStream(System.out, false);
         List<Integer> patientIds =
                 Service.api.listVisitingPatientIdHavingHokenCall(year, month).execute().body();
         out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");

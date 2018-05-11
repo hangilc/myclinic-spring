@@ -12,19 +12,20 @@ public class BatchData {
 
     private BatchData() { }
 
-    // Usage: java -jar rcpt.jar data SERVER-URL YEAR MONTH
     public static void run(String[] args) throws Exception {
-        if( args.length != 4 ){
-            System.err.println("Usage: java -jar rcpt.jar server-url year month");
-            System.exit(1);
-        }
-        String serverUrl = args[1];
-        int year = Integer.parseInt(args[2]);
-        int month = Integer.parseInt(args[3]);
+        CmdArgs cmdArgs = CmdArgs.parse(args);
+        String serverUrl = cmdArgs.serverUrl;
+        int year = cmdArgs.year;
+        int month = cmdArgs.month;
         Service.setServerUrl(serverUrl);
-        Data data = new Data(year, month);
+        PrintStream out;
+        if( cmdArgs.sjis ){
+            this.out = new PrintStream(System.out, false);
+        } else {
+            this.out = new PrintStream(System.out, false, "UTF-8");
+        }
+        Data data = new Data(out, year, month);
         data.run();
-        PrintStream out = new PrintStream(System.out, false, "UTF-8");
         Service.stop();
     }
 
