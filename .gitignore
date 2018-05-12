@@ -1,7 +1,7 @@
 target/
 *.zip
-master-files/
-programs/
+/master-files
+/programs
 *.sublime-workspace
 *.sublime-project
 .idea
@@ -10,11 +10,13 @@ programs/
 application.properties
 application-save.properties
 application.yml
-printer-settings/
-config/
-master-manip/work/
-kouhatsukasan/work/
-my-pyenv/
+/printer-settings
+/config
+/master-manip/work
+/kouhatsukasan/work
+/my-pyenv
+/work
+
 
 
 
