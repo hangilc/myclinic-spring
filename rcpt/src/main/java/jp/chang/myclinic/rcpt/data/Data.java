@@ -1,14 +1,15 @@
 package jp.chang.myclinic.rcpt.data;
 
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.rcpt.RcptUtil;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.DiseaseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.chrono.JapaneseEra;
 import java.util.List;
@@ -20,11 +21,8 @@ class Data {
     private static Logger logger = LoggerFactory.getLogger(Data.class);
     private int year;
     private int month;
-    private List<VisitFull2DTO> visits;
-    private PrintWriter out;
 
-    Data(PrintWriter out, int year, int month) {
-        this.out = out;
+    Data(int year, int month) {
         this.year = year;
         this.month = month;
     }
@@ -32,11 +30,14 @@ class Data {
     void run() throws Exception {
         List<Integer> patientIds =
                 Service.api.listVisitingPatientIdHavingHokenCall(year, month).execute().body();
+        System.err.printf("Patients %d\n", patientIds.size());
         System.out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         System.out.println("<レセプト>");
         outProlog();
         for (int patientId : patientIds) {
             PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
+            List<DiseaseFullDTO> diseases = Service.api.listDiseaseByPatientAtCall(patientId,
+                    year, month).execute().body();
             List<VisitFull2DTO> visits = Service.api.listVisitByPatientHavingHokenCall(patientId,
                     year, month).execute().body();
             Map<HokenIds, List<VisitFull2DTO>> bundles = visits.stream()
@@ -46,7 +47,7 @@ class Data {
                         patient.lastName, patient.firstName);
             }
             // TODO: handle bundles seprately
-            outPatient(patient, visits);
+            outPatient(patient, visits, diseases);
         }
         System.out.println("</レセプト>");
     }
@@ -73,7 +74,8 @@ class Data {
         System.out.printf("  <医療機関名称>%s</医療機関名称>\n", info.name);
     }
 
-    private void outPatient(PatientDTO patient, List<VisitFull2DTO> visits) {
+    private void outPatient(PatientDTO patient, List<VisitFull2DTO> visits,
+                            List<DiseaseFullDTO> diseases) {
         HokenDTO hoken = visits.get(0).hoken;
         String futan = getFutan(patient, hoken);
         System.out.println("<請求>");
@@ -83,6 +85,12 @@ class Data {
         System.out.printf("  <保険負担>%s</保険負担>\n", futan);
         System.out.printf("  <給付割合>%d</給付割合>\n", getKyuufuWari(futan));
         outHokenDetail(hoken);
+        System.out.printf("  <氏名>%s%s</氏名>\n", patient.lastName, patient.firstName);
+        System.out.printf("  <性別>%s</性別>\n",
+                patient.sex.equals("F") ? "女" : "男");
+        System.out.printf("  <生年月日>%s</生年月日>\n", patient.birthday);
+        diseases.forEach(this::outDisease);
+        visits.forEach(this::outVisit);
         System.out.println("</請求>");
     }
 
@@ -205,5 +213,48 @@ class Data {
         }
     }
 
+    private void outDisease(DiseaseFullDTO disease){
+        System.out.println("  <傷病名>");
+        System.out.printf("    <名称>%s</名称>\n", DiseaseUtil.getFullName(disease));
+        System.out.printf("    <診療開始日>%s</診療開始日>\n", disease.disease.startDate);
+        if( disease.disease.endReason != DiseaseEndReason.NotEnded.getCode() ){
+            System.out.printf("    <転帰>%s</転帰>\n", getTenki(disease.disease.endReason));
+            System.out.printf("    <診療終了日>%s</診療終了日>\n", disease.disease.endDate);
+        }
+        System.out.println("  </傷病名>");
+    }
+
+    private String getTenki(char endReason){
+        switch(endReason){
+            case 'S': return "中止";
+            case 'C': return "治ゆ";
+            case 'N': return "継続";
+            case 'D': return "死亡";
+            default: return "????";
+        }
+    }
+
+    private void outVisit(VisitFull2DTO visit){
+        System.out.println("  <受診>");
+        System.out.printf("    <受診日>%s</受診日>\n", visit.visit.visitedAt);
+        visit.shinryouList.forEach(this::outShinryou);
+
+        System.out.println("  </受診>");
+    }
+
+    private void outShinryou(ShinryouFullDTO shinryou){
+        System.out.println("    <診療>");
+        System.out.printf("      <診療コード>%d</診療コード>\n", shinryou.master.shinryoucode);
+        System.out.printf("      <名称>%s</名称>\n", shinryou.master.name);
+        System.out.printf("      <点数>%d</点数>\n", shinryou.master.tensuu);
+        System.out.printf("      <集計先>%s</集計先>\n", shinryou.master.shuukeisaki);
+        if( !shinryou.master.houkatsukensa.equals("00") ){
+            System.out.printf("      <包括検査>%s</包括検査>\n", shinryou.master.houkatsukensa);
+        }
+        if( !shinryou.master.kensaGroup.equals("00") ){
+            System.out.printf("      <検査グループ>%s</検査グループ>\n", shinryou.master.kensaGroup);
+        }
+        System.out.println("    </診療>");
+    }
 
 }

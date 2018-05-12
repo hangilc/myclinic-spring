@@ -10,12 +10,10 @@ class CmdArgs {
     String serverUrl;
     int year;
     int month;
-    boolean sjis;
 
     private static void usage(){
         System.err.println("Usage: java -jar rcpt.jar data [options] server-url year month");
         System.err.println("options:");
-        System.err.println("  -s                output with SJIS encoding");
         System.err.println("  -h                output help");
     }
 
@@ -37,10 +35,6 @@ class CmdArgs {
             }
             char c = arg.charAt(1);
             switch(c){
-                case 's': {
-                    cmdArgs.sjis = true;
-                    break;
-                }
                 case 'h': {
                     usage();
                     System.exit(0);
