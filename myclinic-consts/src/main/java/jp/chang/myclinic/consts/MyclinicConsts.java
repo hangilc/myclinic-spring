@@ -22,6 +22,7 @@ public class MyclinicConsts {
 	public static final int DrugCategoryNaifuku = 0;
 	public static final int DrugCategoryTonpuku = 1;
 	public static final int DrugCategoryGaiyou  = 2;
+	public static final int DrugCategoryInjection  = 3;
 
 	public static final int ConductKindHikaChuusha = 0;
 	public static final int ConductKindJoumyakuChuusha = 1;
