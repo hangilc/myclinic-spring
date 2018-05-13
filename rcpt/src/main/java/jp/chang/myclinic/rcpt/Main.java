@@ -1,6 +1,7 @@
 package jp.chang.myclinic.rcpt;
 
 import jp.chang.myclinic.rcpt.check.BatchCheck;
+import jp.chang.myclinic.rcpt.create.BatchCreate;
 import jp.chang.myclinic.rcpt.data.BatchData;
 
 public class Main {
@@ -20,6 +21,10 @@ public class Main {
             }
             case "data": {
                 BatchData.run(args);
+                break;
+            }
+            case "create": {
+                BatchCreate.run(args);
                 break;
             }
             default: {
