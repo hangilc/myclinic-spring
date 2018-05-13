@@ -20,14 +20,17 @@ class Create {
         try(FileInputStream ins = new FileInputStream(xmlSrcFile)){
             XmlMapper mapper = new XmlMapper();
             Rcpt rcpt = mapper.readValue(ins, Rcpt.class);
-            rcpt.seikyuuList.sort(Comparator.comparing(Seikyuu::getRankTag));
-            //rcpt.seikyuuList.forEach(s -> System.out.println("patient_id " + s.patientId));
-            rcpt.seikyuuList.stream().filter(s -> s.patientId == 2213 || s.patientId == 430 )
-                    .forEach(s -> System.out.println(s.patientId + " " + s.getRankTag()));
+            rcpt.seikyuuList.sort(seikyuuComparator());
+            rcpt.seikyuuList.forEach(s -> System.out.println("patient_id " + s.patientId));
         } catch(Exception ex){
             logger.error("Failed to run carete.", ex);
             System.exit(1);
         }
+    }
+
+    private Comparator<Seikyuu> seikyuuComparator(){
+        Comparator<Seikyuu> comp = Comparator.comparing(Seikyuu::getRankTag);
+        return comp.thenComparing(Comparator.comparing(s -> s.patientId));
     }
 
 }
