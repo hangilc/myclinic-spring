@@ -278,8 +278,10 @@ class Data {
             xml.element("名称", DiseaseUtil.getFullName(disease));
             xml.element("診療開始日", disease.disease.startDate);
             if (disease.disease.endReason != DiseaseEndReason.NotEnded.getCode()) {
-                xml.element("転帰", getTenki(disease.disease.endReason));
-                xml.element("診療終了日", disease.disease.endDate);
+                if( !disease.disease.endDate.equals("0000-00-00") ) { // for backward compatibility
+                    xml.element("転帰", getTenki(disease.disease.endReason));
+                    xml.element("診療終了日", disease.disease.endDate);
+                }
             }
         });
     }
@@ -380,15 +382,31 @@ class Data {
     }
 
     private void outConductShinryou(ConductShinryouFullDTO shinryou){
-
+        xml.element("診療", () -> {
+            xml.element("診療コード", shinryou.master.shinryoucode);
+            xml.element("名称", shinryou.master.name);
+            xml.element("点数", shinryou.master.tensuu);
+        });
     }
 
     private void outConductDrug(ConductDrugFullDTO drug){
-
+        xml.element("薬剤", () -> {
+            xml.element("医薬品コード", drug.master.iyakuhincode);
+            xml.element("名称", drug.master.name);
+            xml.element("用量", drug.conductDrug.amount);
+            xml.element("単位", drug.master.unit);
+            xml.element("薬価", "%.2f", drug.master.yakka);
+        });
     }
 
     private void outConductKizai(ConductKizaiFullDTO kizai){
-
-    }
+        xml.element("器材", () -> {
+            xml.element("器材コード", kizai.master.kizaicode);
+            xml.element("名称", kizai.master.name);
+            xml.element("量", kizai.conductKizai.amount);
+            xml.element("単位", kizai.master.unit);
+            xml.element("金額", "%.2f", kizai.master.kingaku);
+        });
+   }
 
 }

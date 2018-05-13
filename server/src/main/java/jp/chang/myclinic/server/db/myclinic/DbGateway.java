@@ -1579,6 +1579,8 @@ public class DbGateway {
                     Visit visit = visitRepository.getOne(visitId);
                     return getVisitFull2(visit);
                 })
+                .filter(v -> v.shinryouList.size() > 0 || v.drugs.size() > 0 ||
+                        v.conducts.size() > 0)
                 .collect(Collectors.toList());
     }
 

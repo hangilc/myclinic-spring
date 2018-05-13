@@ -7,7 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface DiseaseRepository extends CrudRepository<Disease, Integer> {
 
@@ -43,8 +42,9 @@ public interface DiseaseRepository extends CrudRepository<Disease, Integer> {
     void deleteById(int diseaseId);
 
     @Query("select d.diseaseId from Disease d where d.patientId = :patientId and " +
-            " d.startDate <= :validUpto and " +
-            " ( d.endDate = '0000-00-00' or d.endDate >= :validFrom ) ")
+            " ( ( d.endReason = 'N' ) or " +
+            "   ( d.startDate <= :validUpto and " +
+            "     ( d.endDate = '0000-00-00' or d.endDate >= :validFrom ) ) ) ")
     List<Integer> listDiseaseIdByPatientAt(@Param("patientId") int patientId,
                                          @Param("validFrom") String validFrom,
                                          @Param("validUpto") String validupto);

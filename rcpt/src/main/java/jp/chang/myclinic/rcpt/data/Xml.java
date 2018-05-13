@@ -1,5 +1,7 @@
 package jp.chang.myclinic.rcpt.data;
 
+import jp.chang.myclinic.util.NumberUtil;
+
 class Xml {
 
     //private static Logger logger = LoggerFactory.getLogger(Xml.class);
@@ -32,6 +34,11 @@ class Xml {
 
     void element(String tag, char value){
         System.out.printf("%s<%s>%c</%s>\n", indentStr, tag, value, tag);
+    }
+
+    void element(String tag, double value){
+        String rep = NumberUtil.formatNumber(value);
+        System.out.printf("%s<%s>%s</%s>\n", indentStr, tag, rep, tag);
     }
 
     void element(String tag, String fmt, double value){
