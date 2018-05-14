@@ -21,7 +21,18 @@ class Create {
             XmlMapper mapper = new XmlMapper();
             Rcpt rcpt = mapper.readValue(ins, Rcpt.class);
             rcpt.seikyuuList.sort(seikyuuComparator());
-            rcpt.seikyuuList.forEach(s -> System.out.println("patient_id " + s.patientId));
+            rcpt.seikyuuList.forEach(s -> {
+                System.out.println("patient_id " + s.patientId);
+                s.byoumeiList.forEach(b -> {
+                    System.out.println(b.name);
+                });
+                s.visits.forEach(v -> {
+                    System.out.println(v.visitedAt);
+                    v.shinryouList.forEach(shinryou -> {
+                        System.out.println(shinryou.shinryoucode);
+                    });
+                });
+            });
         } catch(Exception ex){
             logger.error("Failed to run carete.", ex);
             System.exit(1);

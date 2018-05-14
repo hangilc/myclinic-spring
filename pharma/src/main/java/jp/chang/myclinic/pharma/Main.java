@@ -31,6 +31,7 @@ public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
+    // TODO: update wqueue list automatically
     public static void main(String[] args) {
         logger.info("pharma invoked");
         Application.launch(Main.class, args);

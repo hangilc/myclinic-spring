@@ -2,6 +2,9 @@ package jp.chang.myclinic.rcpt.create;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 class Seikyuu {
@@ -38,6 +41,12 @@ class Seikyuu {
     int kouhiFutanshaBangou2;
     @JsonProperty("公費2受給者番号")
     int kouhiJukyuushaBangou2;
+    @JacksonXmlElementWrapper(localName="傷病名", useWrapping=false)
+    @JsonProperty("傷病名")
+    List<Byoumei> byoumeiList;
+    @JacksonXmlElementWrapper(localName="受診", useWrapping=false)
+    @JsonProperty("受診")
+    List<Visit> visits;
 
     Seikyuu() {
 

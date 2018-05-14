@@ -7,7 +7,6 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @JacksonXmlRootElement(localName="レセプト")
@@ -20,7 +19,7 @@ class Rcpt {
     String gengou;
     @JacksonXmlElementWrapper(localName="請求", useWrapping=false)
     @JsonProperty("請求")
-    List<Seikyuu> seikyuuList = new ArrayList<>();
+    List<Seikyuu> seikyuuList;
 
     Rcpt() {
 
