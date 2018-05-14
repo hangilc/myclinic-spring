@@ -16,9 +16,19 @@ class Visit {
     @JacksonXmlElementWrapper(localName="診療", useWrapping=false)
     @JsonProperty("診療")
     List<Shinryou> shinryouList;
+    @JsonProperty("投薬")
+    Drug drug;
 
     Visit() {
 
     }
 
+    @Override
+    public String toString() {
+        return "Visit{" +
+                "visitedAt='" + visitedAt + '\'' +
+                ", shinryouList=" + shinryouList +
+                ", drug=" + drug +
+                '}';
+    }
 }

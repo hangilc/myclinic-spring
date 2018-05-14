@@ -26,12 +26,7 @@ class Create {
                 s.byoumeiList.forEach(b -> {
                     System.out.println(b.name);
                 });
-                s.visits.forEach(v -> {
-                    System.out.println(v.visitedAt);
-                    v.shinryouList.forEach(shinryou -> {
-                        System.out.println(shinryou.shinryoucode);
-                    });
-                });
+                s.visits.forEach(System.out::println);
             });
         } catch(Exception ex){
             logger.error("Failed to run carete.", ex);
