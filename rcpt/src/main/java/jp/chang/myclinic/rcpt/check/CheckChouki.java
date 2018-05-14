@@ -8,12 +8,15 @@ class CheckChouki extends CheckBase {
         super(scope);
     }
 
-    void check(){
+    void check() {
         int choukiCount = countShinryouMasterInVisits(getShinryouMaster().調基);
         int shohousenCount = countShohousenGroupInVisits();
-        if( shohousenCount > 0 ){
-            if( choukiCount > 0 ) {
-                error("処方せん料、調基の同時算定");
+        if (shohousenCount > 0) {
+            if (choukiCount > 0) {
+                String fixMessage = messageForRemoveExtra("調基", choukiCount, 0);
+                error("処方せん料、調基の同時算定", fixMessage, () ->
+                        removeExtraShinryouMasterInVisits(getShinryouMaster().調基, 0)
+                );
             }
         } else {
             if (countDrugInVisits(d -> true) == 0) {

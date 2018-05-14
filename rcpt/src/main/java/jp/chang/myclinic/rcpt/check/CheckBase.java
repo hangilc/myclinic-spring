@@ -3,6 +3,7 @@ package jp.chang.myclinic.rcpt.check;
 import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Madoku;
+import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.mastermap.ResolvedMap;
 import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
@@ -221,7 +222,8 @@ class CheckBase {
     }
 
     boolean isGaiyou(DrugFullDTO drug) {
-        return drugCategoryOf(drug) == DrugCategory.Gaiyou;
+        return drug.master.zaikei == Zaikei.Gaiyou.getCode();
+        //return drugCategoryOf(drug) == DrugCategory.Gaiyou;
     }
 
     int countDrug(VisitFull2DTO visit, Predicate<DrugFullDTO> pred) {

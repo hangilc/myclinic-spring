@@ -1,5 +1,9 @@
 package jp.chang.myclinic.rcpt.check;
 
+import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.consts.Zaikei;
+import jp.chang.myclinic.dto.DrugFullDTO;
+
 class CheckShohouryou extends CheckBase {
 
     //private static Logger logger = LoggerFactory.getLogger(CheckShohouryou.class);
@@ -10,7 +14,7 @@ class CheckShohouryou extends CheckBase {
 
     void check() {
         forEachVisit(visit -> {
-            int ndrug = countDrug(visit, d -> true);
+            int ndrug = countDrug(visit, this::isShohouDrug);
             int n = countShohouryou(visit);
             int n7 = countShohouryou7(visit);
             if (ndrug == 0) {
@@ -51,6 +55,14 @@ class CheckShohouryou extends CheckBase {
                 }
             }
         });
+    }
+
+    private boolean isShohouDrug(DrugFullDTO drug){
+        if( drug.drug.category == DrugCategory.Gaiyou.getCode() ){
+            return drug.master.zaikei == Zaikei.Gaiyou.getCode();
+        } else {
+            return true;
+        }
     }
 
 }

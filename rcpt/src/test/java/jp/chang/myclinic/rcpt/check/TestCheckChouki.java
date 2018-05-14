@@ -21,11 +21,12 @@ public class TestCheckChouki extends Base {
     public void shohouryouChoukiDuplicate() {
         Clinic clinic = new Clinic();
         clinic.addDrug();
-        clinic.addShinryou(shinryouMap.調基);
+        int shinryouId = clinic.addShinryou(shinryouMap.調基);
         clinic.addShinryou(shinryouMap.処方せん料);
         scope.visits = clinic.getVisits();
         new CheckChouki(scope).check();
         assertEquals("shohouryu chouki dupliate", 1, nerror);
+        assertBatchDeleteShinryou(shinryouId);
     }
 
     @Test
