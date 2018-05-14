@@ -18,6 +18,9 @@ class Visit {
     List<Shinryou> shinryouList;
     @JsonProperty("投薬")
     Drug drug;
+    @JacksonXmlElementWrapper(localName="行為", useWrapping=false)
+    @JsonProperty("行為")
+    List<Conduct> conducts;
 
     Visit() {
 
