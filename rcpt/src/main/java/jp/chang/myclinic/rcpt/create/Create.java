@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.time.LocalDate;
-import java.util.Comparator;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -81,12 +81,16 @@ class Create {
             System.out.printf("seinengappi.nen %d\n", birthday.getMonthValue());
             System.out.printf("seinengappi.nen %d\n", birthday.getDayOfMonth());
             outputByoumei(seikyuu);
+            System.out.printf("shinryounissuu.hoken %d\n", calcShinryouNissuu(seikyuu.visits));
             System.out.print("rcpt_end\n");
         });
     }
 
     private void outputByoumei(Seikyuu seikyuu) {
         int index = 1;
+        List<String> chiyu = new ArrayList<>();
+        List<String> shibou = new ArrayList<>();
+        List<String> chuushi = new ArrayList<>();
         for (Byoumei byoumei : seikyuu.byoumeiList) {
             LocalDate startDate = LocalDate.parse(byoumei.startDate);
             if (index <= 4) {
@@ -98,7 +102,28 @@ class Create {
                 System.out.printf("shoubyoumei_extra %d:%s:%d:%d:%d\n", index, byoumei.name,
                         DateTimeUtil.getNen(startDate), startDate.getMonthValue(), startDate.getDayOfMonth());
             }
+            final int currentIndex = index;
+            ifNotNull(byoumei.endDate, s -> {
+                LocalDate d = LocalDate.parse(s);
+                String tenkiDate = String.format("%c%d.%d.%d", getGengou(d).charAt(0), DateTimeUtil.getNen(d),
+                        d.getMonthValue(), d.getDayOfMonth());
+                String tenkiStr = String.format("%d(%s)", currentIndex, tenkiDate);
+                switch(byoumei.tenki){
+                    case "治ゆ": chiyu.add(tenkiStr); break;
+                    case "死亡": shibou.add(tenkiStr); break;
+                    case "中止": chuushi.add(tenkiStr); break;
+                }
+            });
             index += 1;
+        }
+        if( chiyu.size() > 0 ){
+            System.out.printf("tenki.chiyu %s", String.join(",", chiyu));
+        }
+        if( shibou.size() > 0 ){
+            System.out.printf("tenki.shibou %s", String.join(",", shibou));
+        }
+        if( chuushi.size() > 0 ){
+            System.out.printf("tenki.chuushi %s", String.join(",", chuushi));
         }
     }
 
@@ -127,6 +152,12 @@ class Create {
             errorCb.run();
         } else {
             cb.accept(a, b);
+        }
+    }
+
+    private void ifNotNull(String s, Consumer<String> cb){
+        if( s != null ){
+            cb.accept(s);
         }
     }
 
@@ -205,6 +236,14 @@ class Create {
 
     private String getGengouSlug(LocalDate date) {
         return Gengou.fromEra(DateTimeUtil.getEra(date)).getRomaji();
+    }
+
+    private String getGengou(LocalDate date){
+        return Gengou.fromEra(DateTimeUtil.getEra(date)).getKanji();
+    }
+
+    private int calcShinryouNissuu(List<Visit> visits){
+        return (int)visits.stream().map(v -> v.visitedAt).distinct().count();
     }
 
 }
