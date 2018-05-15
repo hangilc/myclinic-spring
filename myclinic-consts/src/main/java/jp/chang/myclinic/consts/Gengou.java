@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public enum Gengou {
-	Meiji(JapaneseEra.MEIJI, "明治"),
-	Taishou(JapaneseEra.TAISHO, "大正"),
-	Shouwa(JapaneseEra.SHOWA, "昭和"),
-	Heisei(JapaneseEra.HEISEI, "平成");
+	Meiji(JapaneseEra.MEIJI, "明治", "meiji"),
+	Taishou(JapaneseEra.TAISHO, "大正", "taishou"),
+	Shouwa(JapaneseEra.SHOWA, "昭和", "shouwa"),
+	Heisei(JapaneseEra.HEISEI, "平成", "heisei");
 
 	private JapaneseEra era;
 	private String kanji;
+	private String romaji;
 
-	Gengou(JapaneseEra era, String kanji){
+	Gengou(JapaneseEra era, String kanji, String romaji){
 		this.era = era;
 		this.kanji = kanji;
 	}
@@ -24,6 +25,10 @@ public enum Gengou {
 
 	public String getKanji(){
 		return kanji;
+	}
+
+	public String getRomaji(){
+		return romaji;
 	}
 
 	public static Gengou fromKanji(String kanji){

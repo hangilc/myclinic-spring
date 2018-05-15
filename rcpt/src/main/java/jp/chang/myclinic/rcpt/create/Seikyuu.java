@@ -20,7 +20,7 @@ class Seikyuu {
     @JsonProperty("保険負担")
     String hokenFutan;
     @JsonProperty("給付割合")
-    int futanWari;
+    int kyuufuWariai;
     @JsonProperty("保険者番号")
     int hokenshaBangou;
     @JsonProperty("被保険者記号")

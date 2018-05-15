@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-@JacksonXmlRootElement(localName="レセプト")
+@JacksonXmlRootElement(localName = "レセプト")
 @JsonIgnoreProperties(ignoreUnknown = true)
 class Rcpt {
 
@@ -17,7 +17,21 @@ class Rcpt {
 
     @JsonProperty("元号")
     String gengou;
-    @JacksonXmlElementWrapper(localName="請求", useWrapping=false)
+    @JsonProperty("年")
+    int nen;
+    @JsonProperty("月")
+    int month;
+    @JsonProperty("都道府県番号")
+    int todoufukenBangou;
+    @JsonProperty("医療機関コード")
+    String kikancode;
+    @JsonProperty("医療機関住所")
+    String clinicAddress;
+    @JsonProperty("医療機関電話")
+    String clinicPhone;
+    @JsonProperty("医療機関名称")
+    String clinicName;
+    @JacksonXmlElementWrapper(localName = "請求", useWrapping = false)
     @JsonProperty("請求")
     List<Seikyuu> seikyuuList;
 
