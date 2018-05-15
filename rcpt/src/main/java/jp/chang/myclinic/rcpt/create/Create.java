@@ -80,8 +80,26 @@ class Create {
             System.out.printf("seinengappi.nen %d\n", DateTimeUtil.getNen(birthday));
             System.out.printf("seinengappi.nen %d\n", birthday.getMonthValue());
             System.out.printf("seinengappi.nen %d\n", birthday.getDayOfMonth());
+            outputByoumei(seikyuu);
             System.out.print("rcpt_end\n");
         });
+    }
+
+    private void outputByoumei(Seikyuu seikyuu) {
+        int index = 1;
+        for (Byoumei byoumei : seikyuu.byoumeiList) {
+            LocalDate startDate = LocalDate.parse(byoumei.startDate);
+            if (index <= 4) {
+                System.out.printf("shoubyoumei.%d %s\n", index, byoumei.name);
+                System.out.printf("shinryoukaishi.nen.%d %d\n", index, DateTimeUtil.getNen(startDate));
+                System.out.printf("shinryoukaishi.tsuki.%d %d\n", index, startDate.getMonthValue());
+                System.out.printf("shinryoukaishi.hi.%d %d\n", index, startDate.getDayOfMonth());
+            } else {
+                System.out.printf("shoubyoumei_extra %d:%s:%d:%d:%d\n", index, byoumei.name,
+                        DateTimeUtil.getNen(startDate), startDate.getMonthValue(), startDate.getDayOfMonth());
+            }
+            index += 1;
+        }
     }
 
     private void ifPositive(int n, Consumer<Integer> cb) {
@@ -163,26 +181,29 @@ class Create {
         }
     }
 
-    private String formatHokenshaBangou(int hokenshaBangou){
+    private String formatHokenshaBangou(int hokenshaBangou) {
         int n = hokenshaBangou;
-        if( n < 10000 )
+        if (n < 10000)
             return String.format("%04d", n);
-        if( n >= 10000 && n <= 99999 )
+        if (n >= 10000 && n <= 99999)
             return String.format("%06d", n);
-        if( n >= 1000000 && n <= 9999999 )
+        if (n >= 1000000 && n <= 9999999)
             return String.format("%08d", n);
         return "" + n;
     }
 
-    private String seibetsuSlug(String seibetsu){
-        switch(seibetsu){
-            case "男": return "otoko";
-            case "女": return "onna";
-            default: throw new RuntimeException("Unknown seibtsu: " + seibetsu);
+    private String seibetsuSlug(String seibetsu) {
+        switch (seibetsu) {
+            case "男":
+                return "otoko";
+            case "女":
+                return "onna";
+            default:
+                throw new RuntimeException("Unknown seibtsu: " + seibetsu);
         }
     }
 
-    private String getGengouSlug(LocalDate date){
+    private String getGengouSlug(LocalDate date) {
         return Gengou.fromEra(DateTimeUtil.getEra(date)).getRomaji();
     }
 
