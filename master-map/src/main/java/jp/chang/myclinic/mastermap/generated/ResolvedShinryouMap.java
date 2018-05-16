@@ -10,6 +10,12 @@ public class ResolvedShinryouMap {
 	public int 皮下筋注;
 	public int 静注;
 	public int 初診;
+	public int 初診時間外加算;
+	public int 初診休日加算;
+	public int 初診深夜加算;
+	public int 初診乳幼児時間外加算;
+	public int 初診乳幼児休日加算;
+	public int 初診乳幼児深夜加算;
 	public int 再診;
 	public int 同日再診;
 	public int 外来管理加算;
@@ -70,6 +76,12 @@ public class ResolvedShinryouMap {
 		this.皮下筋注 = resolver.resolve("皮下筋注", at);
 		this.静注 = resolver.resolve("静注", at);
 		this.初診 = resolver.resolve("初診", at);
+		this.初診時間外加算 = resolver.resolve("初診（時間外）加算", at);
+		this.初診休日加算 = resolver.resolve("初診（休日）加算", at);
+		this.初診深夜加算 = resolver.resolve("初診（深夜）加算", at);
+		this.初診乳幼児時間外加算 = resolver.resolve("初診（乳幼児時間外）加算", at);
+		this.初診乳幼児休日加算 = resolver.resolve("初診（乳幼児休日）加算", at);
+		this.初診乳幼児深夜加算 = resolver.resolve("初診（乳幼児深夜）加算", at);
 		this.再診 = resolver.resolve("再診", at);
 		this.同日再診 = resolver.resolve("同日再診", at);
 		this.外来管理加算 = resolver.resolve("外来管理加算", at);

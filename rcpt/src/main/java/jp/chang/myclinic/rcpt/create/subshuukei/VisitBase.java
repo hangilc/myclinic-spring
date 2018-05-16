@@ -5,14 +5,19 @@ import java.util.List;
 
 class VisitBase {
 
-    List<Tekiyou> tekiyouList = new ArrayList<>();
+    private SubShuukei subShuukei;
+    private List<Tekiyou> tekiyouList = new ArrayList<>();
 
-    VisitBase() {
-
+    VisitBase(SubShuukei subShuukei) {
+        this.subShuukei = subShuukei;
     }
 
     void addTekiyou(String label, int tanka, int count){
         tekiyouList.add(new Tekiyou(label, tanka, count));
+    }
+
+    void outputTekiyou(){
+        Tekiyou.output("" + subShuukei.getCode(), tekiyouList);
     }
 
 }
