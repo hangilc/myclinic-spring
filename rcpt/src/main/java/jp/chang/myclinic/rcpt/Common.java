@@ -20,7 +20,6 @@ public class Common {
     private Common() { }
 
     public static class MasterMaps {
-        public MasterMap masterMap;
         public ResolvedMap resolvedMap;
         public Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumeiMap;
     }
@@ -36,7 +35,6 @@ public class Common {
             String nameMapFile = myclinic.get("name-map-file");
             String shinryouByoumeiFile = myclinic.get("shinryou-byoumei-file");
             MasterMap masterMap = MasterMap.loadMap(nameMapFile,masterMapFile);
-            maps.masterMap = masterMap;
             maps.resolvedMap = masterMap.getResolvedMap(at);
             maps.shinryouByoumeiMap = masterMap.getResolvedShinryouByoumeiMap(shinryouByoumeiFile, at);
             return maps;

@@ -50,23 +50,23 @@ public class MyclinicConsts {
 	public static final String SHUUKEI_SAISHIN_JIKANGAI = "123";
 	public static final String SHUUKEI_SAISHIN_KYUUJITSU = "124";
 	public static final String SHUUKEI_SAISHIN_SHINYA = "125";
-	public static final String SHUUKEI_SHIDO = "130";
+	public static final String SHUUKEI_SHIDOU = "130";
 	public static final String SHUUKEI_ZAITAKU = "140";
-	public static final String SHUUKEI_TOYAKU_NAIFUKUTONPUKUCHOZAI = "210";
-	public static final String SHUUKEI_TOYAKU_GAIYOCHOZAI = "230";
-	public static final String SHUUKEI_TOYAKU_SHOHO = "250";
-	public static final String SHUUKEI_TOYAKU_MADOKU = "260";
-	public static final String SHUUKEI_TOYAKU_CHOKI = "270";
-	public static final String SHUUKEI_CHUSHA_SEIBUTSUETC = "300";
-	public static final String SHUUKEI_CHUSHA_HIKA = "311";
-	public static final String SHUUKEI_CHUSHA_JOMYAKU = "321";
-	public static final String SHUUKEI_CHUSHA_OTHERS = "331";
+	public static final String SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI = "210";
+	public static final String SHUUKEI_TOUYAKU_GAIYOUCHOUZAI = "230";
+	public static final String SHUUKEI_TOUYAKU_SHOHOU = "250";
+	public static final String SHUUKEI_TOUYAKU_MADOKU = "260";
+	public static final String SHUUKEI_TOUYAKU_CHOUKI = "270";
+	public static final String SHUUKEI_CHUUSHA_SEIBUTSUETC = "300";
+	public static final String SHUUKEI_CHUUSHA_HIKA = "311";
+	public static final String SHUUKEI_CHUUSHA_JOUMYAKU = "321";
+	public static final String SHUUKEI_CHUUSHA_OTHERS = "331";
 	public static final String SHUUKEI_SHOCHI = "400";
 	public static final String SHUUKEI_SHUJUTSU_SHUJUTSU = "500";
 	public static final String SHUUKEI_SHUJUTSU_YUKETSU = "502";
 	public static final String SHUUKEI_MASUI = "540";
 	public static final String SHUUKEI_KENSA = "600";
-	public static final String SHUUKEI_GAZOSHINDAN = "700";
+	public static final String SHUUKEI_GAZOUSHINDAN = "700";
 	public static final String SHUUKEI_OTHERS = "800";
 
 	public static final String HOUKATSU_NONE = "00";
@@ -78,84 +78,8 @@ public class MyclinicConsts {
 	public static final String HOUKATSU_COAGULO = "06";
 	public static final String HOUKATSU_AUTOANTIBODY = "07";
 	public static final String HOUKATSU_TOLERANCE = "08";
+	public static final String HOUKATSU_VIRUSTITER = "09";
+	public static final String HOUKATSU_VIRUSGLOBULIN = "10";
+	public static final String HOUKATSU_SPECIFICIGE = "11";
 
 }
-
-/*
-"use strict";
-
-exports.WqueueStateWaitExam = 0;
-exports.WqueueStateInExam = 1;
-exports.WqueueStateWaitCashier = 2;
-exports.WqueueStateWaitDrug = 3;
-exports.WqueueStateWaitReExam = 4;
-exports.WqueueStateWaitAppoint = 5;
-
-exports.PharmaQueueStateWaitPack = 0;
-exports.PharmaQueueStateInPack   = 1;
-exports.PharmaQueueStatePackDone = 2;
-
-exports.DiseaseEndReasonNotEnded = "N";
-exports.DiseaseEndReasonCured = "C";
-exports.DiseaseEndReasonStopped = "S";
-exports.DiseaseEndReasonDead = "D";
-
-exports.DrugCategoryNaifuku = 0;
-exports.DrugCategoryTonpuku = 1;
-exports.DrugCategoryGaiyou  = 2;
-
-exports.ConductKindHikaChuusha = 0;
-exports.ConductKindJoumyakuChuusha = 1;
-exports.ConductKindOtherChuusha = 2;
-exports.ConductKindGazou = 3;
-
-exports.ZaikeiNaifuku = 1;
-exports.ZaikeiOther = 3;
-exports.ZaikeiChuusha = 4;
-exports.ZaikeiGaiyou = 6;
-exports.ZaikeiShikaYakuzai = 8;
-exports.ZaikeiShikaTokutei = 9;
-
-exports.SmallestPostfixShuushokugoCode = 8000;
-exports.LargestPostfixShuushookugoCode = 8999;
-
-exports.MeisaiSections = [
-        "初・再診料", "医学管理等", "在宅医療", "検査", "画像診断",
-        "投薬", "注射", "処置", "その他"       
-    ];
-
-exports.SHUUKEI_SHOSHIN = "110";
-exports.SHUUKEI_SAISHIN_SAISHIN = "120";
-exports.SHUUKEI_SAISHIN_GAIRAIKANRI = "122";
-exports.SHUUKEI_SAISHIN_JIKANGAI = "123";
-exports.SHUUKEI_SAISHIN_KYUUJITSU = "124";
-exports.SHUUKEI_SAISHIN_SHINYA = "125";
-exports.SHUUKEI_SHIDO = "130";
-exports.SHUUKEI_ZAITAKU = "140";
-exports.SHUUKEI_TOYAKU_NAIFUKUTONPUKUCHOZAI = "210";
-exports.SHUUKEI_TOYAKU_GAIYOCHOZAI = "230";
-exports.SHUUKEI_TOYAKU_SHOHO = "250";
-exports.SHUUKEI_TOYAKU_MADOKU = "260";
-exports.SHUUKEI_TOYAKU_CHOKI = "270";
-exports.SHUUKEI_CHUSHA_SEIBUTSUETC = "300";
-exports.SHUUKEI_CHUSHA_HIKA = "311";
-exports.SHUUKEI_CHUSHA_JOMYAKU = "321";
-exports.SHUUKEI_CHUSHA_OTHERS = "331";
-exports.SHUUKEI_SHOCHI = "400";
-exports.SHUUKEI_SHUJUTSU_SHUJUTSU = "500";
-exports.SHUUKEI_SHUJUTSU_YUKETSU = "502";
-exports.SHUUKEI_MASUI = "540";
-exports.SHUUKEI_KENSA = "600";
-exports.SHUUKEI_GAZOSHINDAN = "700";
-exports.SHUUKEI_OTHERS = "800";
-
-exports.HOUKATSU_NONE = '00';
-exports.HOUKATSU_KETSUEKIKageKU = "01";
-exports.HOUKATSU_ENDOCRINE = "02";
-exports.HOUKATSU_HEPATITIS = "03";
-exports.HOUKATSU_TUMOR = "04";
-exports.HOUKATSU_TUMORMISC = "05";
-exports.HOUKATSU_COAGULO = "06";
-exports.HOUKATSU_AUTOANTIBODY = "07";
-exports.HOUKATSU_TOLERANCE = "08";
-*/

@@ -2,7 +2,7 @@ package jp.chang.myclinic.rcpt.create;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-class Tonpuku {
+public class Tonpuku {
 
     @JsonProperty("医薬品コード")
     int iyakuhincode;

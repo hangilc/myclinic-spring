@@ -30,24 +30,24 @@ public enum MeisaiSection {
 			case MyclinicConsts.SHUUKEI_SAISHIN_KYUUJITSU:
 			case MyclinicConsts.SHUUKEI_SAISHIN_SHINYA:
 				return ShoshinSaisin;
-			case MyclinicConsts.SHUUKEI_SHIDO:
+			case MyclinicConsts.SHUUKEI_SHIDOU:
 				return IgakuKanri;
 			case MyclinicConsts.SHUUKEI_ZAITAKU:
 				return Zaitaku;
 			case MyclinicConsts.SHUUKEI_KENSA:
 				return Kensa;
-			case MyclinicConsts.SHUUKEI_GAZOSHINDAN:
+			case MyclinicConsts.SHUUKEI_GAZOUSHINDAN:
 				return Gazou;
-			case MyclinicConsts.SHUUKEI_TOYAKU_NAIFUKUTONPUKUCHOZAI:
-			case MyclinicConsts.SHUUKEI_TOYAKU_GAIYOCHOZAI:
-			case MyclinicConsts.SHUUKEI_TOYAKU_SHOHO:
-			case MyclinicConsts.SHUUKEI_TOYAKU_MADOKU:
-			case MyclinicConsts.SHUUKEI_TOYAKU_CHOKI:
+			case MyclinicConsts.SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI:
+			case MyclinicConsts.SHUUKEI_TOUYAKU_GAIYOUCHOUZAI:
+			case MyclinicConsts.SHUUKEI_TOUYAKU_SHOHOU:
+			case MyclinicConsts.SHUUKEI_TOUYAKU_MADOKU:
+			case MyclinicConsts.SHUUKEI_TOUYAKU_CHOUKI:
 				return Touyaku;
-			case MyclinicConsts.SHUUKEI_CHUSHA_SEIBUTSUETC:
-			case MyclinicConsts.SHUUKEI_CHUSHA_HIKA:
-			case MyclinicConsts.SHUUKEI_CHUSHA_JOMYAKU:
-			case MyclinicConsts.SHUUKEI_CHUSHA_OTHERS:
+			case MyclinicConsts.SHUUKEI_CHUUSHA_SEIBUTSUETC:
+			case MyclinicConsts.SHUUKEI_CHUUSHA_HIKA:
+			case MyclinicConsts.SHUUKEI_CHUUSHA_JOUMYAKU:
+			case MyclinicConsts.SHUUKEI_CHUUSHA_OTHERS:
 				return Chuusha;
 			case MyclinicConsts.SHUUKEI_SHOCHI:
 				return Shochi;

@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-class Shinryou {
+public class Shinryou {
 
     private static Logger logger = LoggerFactory.getLogger(Shinryou.class);
 
@@ -23,6 +23,26 @@ class Shinryou {
 
     Shinryou() {
 
+    }
+
+    public int getShinryoucode() {
+        return shinryoucode;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getTensuu() {
+        return tensuu;
+    }
+
+    public String getShuukeisaki() {
+        return shuukeisaki;
+    }
+
+    public String getKensaGroup() {
+        return kensaGroup;
     }
 
     @Override

@@ -4,9 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @JacksonXmlRootElement(localName = "レセプト")
@@ -37,6 +40,14 @@ class Rcpt {
 
     Rcpt() {
 
+    }
+
+    LocalDate getDate(int day){
+        Gengou geng = Gengou.fromKanji(gengou);
+        if( geng == null ){
+            throw new RuntimeException("Unknown gengou: " + gengou);
+        }
+        return DateTimeUtil.warekiToLocalDate(geng.getEra(), nen, month, day);
     }
 
 }

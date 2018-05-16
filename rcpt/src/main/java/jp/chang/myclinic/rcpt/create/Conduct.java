@@ -7,7 +7,7 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-class Conduct {
+public class Conduct {
 
     @JsonProperty("ラベル")
     String label;

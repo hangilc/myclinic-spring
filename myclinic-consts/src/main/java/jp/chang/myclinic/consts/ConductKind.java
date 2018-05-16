@@ -31,6 +31,15 @@ public enum ConductKind {
         return null;
     }
 
+    public static ConductKind fromKanjiRep(String kanjiRep){
+        for(ConductKind conductKind: values()){
+            if( conductKind.kanjiRep.equals(kanjiRep) ){
+                return conductKind;
+            }
+        }
+        return null;
+    }
+
     public static String codeToKanjiRep(int code){
         ConductKind kind = fromCode(code);
         if( kind == null ){
