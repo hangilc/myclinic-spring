@@ -127,7 +127,7 @@ public class PrinterEnv {
         try {
             manager.saveSetting(name, devnames, devmode);
         } catch (Exception ex) {
-            logger.error("Failed to carete printer setting.", ex);
+            logger.error("Failed to create printer setting.", ex);
             throw ex;
         }
         try {

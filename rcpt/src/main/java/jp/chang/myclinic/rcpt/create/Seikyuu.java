@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -43,10 +44,10 @@ class Seikyuu {
     int kouhiJukyuushaBangou2;
     @JacksonXmlElementWrapper(localName="傷病名", useWrapping=false)
     @JsonProperty("傷病名")
-    List<Byoumei> byoumeiList;
+    List<Byoumei> byoumeiList = new ArrayList<>();
     @JacksonXmlElementWrapper(localName="受診", useWrapping=false)
     @JsonProperty("受診")
-    List<Visit> visits;
+    List<Visit> visits = new ArrayList<>();
 
     Seikyuu() {
 

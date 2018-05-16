@@ -19,6 +19,7 @@ public class ResolvedShinryouMap {
 	public int 再診;
 	public int 同日再診;
 	public int 外来管理加算;
+	public int 往診;
 	public int 尿一般;
 	public int 便潜血;
 	public int 尿便検査判断料;
@@ -85,6 +86,7 @@ public class ResolvedShinryouMap {
 		this.再診 = resolver.resolve("再診", at);
 		this.同日再診 = resolver.resolve("同日再診", at);
 		this.外来管理加算 = resolver.resolve("外来管理加算", at);
+		this.往診 = resolver.resolve("往診", at);
 		this.尿一般 = resolver.resolve("尿一般", at);
 		this.便潜血 = resolver.resolve("便潜血", at);
 		this.尿便検査判断料 = resolver.resolve("尿便検査判断料", at);

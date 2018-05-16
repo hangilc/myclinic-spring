@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -15,12 +16,12 @@ class Visit {
     String visitedAt;
     @JacksonXmlElementWrapper(localName="診療", useWrapping=false)
     @JsonProperty("診療")
-    List<Shinryou> shinryouList;
+    List<Shinryou> shinryouList = new ArrayList<>();
     @JsonProperty("投薬")
-    Drug drug;
+    Drug drug = new Drug();
     @JacksonXmlElementWrapper(localName="行為", useWrapping=false)
     @JsonProperty("行為")
-    List<Conduct> conducts;
+    List<Conduct> conducts = new ArrayList<>();
 
     Visit() {
 

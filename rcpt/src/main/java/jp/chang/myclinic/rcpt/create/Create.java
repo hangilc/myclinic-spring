@@ -35,7 +35,7 @@ class Create {
             rcpt.seikyuuList.sort(seikyuuComparator());
             outputRcpt(rcpt);
         } catch (Exception ex) {
-            logger.error("Failed to run carete.", ex);
+            logger.error("Failed to run create.", ex);
             System.exit(1);
         }
     }
@@ -101,6 +101,7 @@ class Create {
                 visit.conducts.forEach(conduct -> dispatchConduct(shuukei, conduct));
                 grandShuukei.merge(shuukei);
             });
+            grandShuukei.output();
             System.out.print("rcpt_end\n");
         });
     }

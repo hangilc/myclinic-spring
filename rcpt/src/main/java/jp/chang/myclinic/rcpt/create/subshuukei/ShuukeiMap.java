@@ -8,9 +8,9 @@ public class ShuukeiMap {
     private static ResolvedShinryouMap shinryouMasterMap;
 
     private ShoshinVisit shoshinVisit = new ShoshinVisit(shinryouMasterMap);
-    private SaishinVisit saishinVisit = new SaishinVisit();
+    private SaishinVisit saishinVisit = new SaishinVisit(shinryouMasterMap);
     private ShidouVisit shidouVisit = new ShidouVisit();
-    private ZaitakuVisit zaitakuVisit = new ZaitakuVisit();
+    private ZaitakuVisit zaitakuVisit = new ZaitakuVisit(shinryouMasterMap);
     private TouyakuVisit touyakuVisit = new TouyakuVisit();
     private ChuushaVisit chuushaVisit = new ChuushaVisit();
     private ShochiVisit shochiVisit = new ShochiVisit();
@@ -73,10 +73,16 @@ public class ShuukeiMap {
 
     public void merge(ShuukeiMap src){
         shoshinVisit.merge(src.shoshinVisit);
+        saishinVisit.merge(src.saishinVisit);
+        shidouVisit.merge(src.shidouVisit);
+        zaitakuVisit.merge(src.zaitakuVisit);
     }
 
     public void output(){
         shoshinVisit.output();
+        saishinVisit.output();
+        shidouVisit.output();
+        zaitakuVisit.output();
     }
 
 }

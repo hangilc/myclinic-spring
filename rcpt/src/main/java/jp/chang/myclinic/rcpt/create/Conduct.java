@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -15,13 +16,13 @@ public class Conduct {
     String kind;
     @JacksonXmlElementWrapper(localName="診療", useWrapping=false)
     @JsonProperty("診療")
-    List<ConductShinryou> shinryouList;
+    List<ConductShinryou> shinryouList = new ArrayList<>();
     @JacksonXmlElementWrapper(localName="薬剤", useWrapping=false)
     @JsonProperty("薬剤")
-    List<ConductDrug> drugs;
+    List<ConductDrug> drugs = new ArrayList<>();
     @JacksonXmlElementWrapper(localName="器材", useWrapping=false)
     @JsonProperty("器材")
-    List<ConductKizai> kizaiList;
+    List<ConductKizai> kizaiList = new ArrayList<>();
 
     Conduct() {
 

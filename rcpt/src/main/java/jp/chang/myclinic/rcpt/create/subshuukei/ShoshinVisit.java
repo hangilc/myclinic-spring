@@ -4,25 +4,11 @@ import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.create.Shinryou;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ShoshinVisit extends VisitBase {
 
-    private static class ShoshinItem {
-        String name;
-        int tanka;
-        int count;
-
-        ShoshinItem(String name, int tanka, int count) {
-            this.name = name;
-            this.tanka = tanka;
-            this.count = count;
-        }
-    }
-
-    private Map<Integer, ShoshinItem> items = new LinkedHashMap<>();
+    private RcptItemMap items = new RcptItemMap();
     private ResolvedShinryouMap shinryouMasterMap;
 
     ShoshinVisit(ResolvedShinryouMap shinryouMasterMap) {
@@ -31,21 +17,11 @@ public class ShoshinVisit extends VisitBase {
     }
 
     public void add(Shinryou shinryou) {
-        items.merge(shinryou.getShinryoucode(),
-                new ShoshinItem(shinryou.getName(), shinryou.getTensuu(), 1),
-                (prev, curr) -> {
-                    prev.count += 1;
-                    return prev;
-                });
+        items.add(shinryou);
     }
 
     void merge(ShoshinVisit src) {
-        src.items.forEach((shinryoucode, item) -> {
-            items.merge(shinryoucode, item, (prev, curr) -> {
-                prev.count += curr.count;
-                return prev;
-            });
-        });
+        items.merge(src.items);
     }
 
     void output() {
@@ -53,13 +29,13 @@ public class ShoshinVisit extends VisitBase {
         int ten = 0;
         List<String> kasan = new ArrayList<>();
         for(int shinryoucode: items.keySet()){
-            ShoshinItem item = items.get(shinryoucode);
+            RcptItem item = items.get(shinryoucode);
             if( shinryoucode == shinryouMasterMap.初診 ){
                 kai += 1;
             } else {
-                addTekiyou(item.name, item.tanka, item.count);
+                addTekiyou(item);
             }
-            ten += item.tanka * item.count;
+            ten += item.getTen();
             if( shinryoucode == shinryouMasterMap.初診時間外加算 ||
                     shinryoucode == shinryouMasterMap.初診乳幼児時間外加算 ){
                 kasan.add("jikangai");

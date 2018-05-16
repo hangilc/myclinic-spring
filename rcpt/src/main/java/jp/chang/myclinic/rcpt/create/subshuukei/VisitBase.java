@@ -2,6 +2,9 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 class VisitBase {
 
@@ -12,12 +15,46 @@ class VisitBase {
         this.subShuukei = subShuukei;
     }
 
-    void addTekiyou(String label, int tanka, int count){
-        tekiyouList.add(new Tekiyou(label, tanka, count));
+    void addTekiyou(RcptItem item){
+        tekiyouList.add(new Tekiyou(item.name, item.tanka, item.count));
     }
 
     void outputTekiyou(){
         Tekiyou.output("" + subShuukei.getCode(), tekiyouList);
+    }
+
+    Optional<Integer> getShuukeiTanka(RcptItemMap map){
+        Set<Integer> tankaSet =  map.values().stream().map(item -> item.tanka).collect(Collectors.toSet());
+        if( tankaSet.size() == 1 ){
+            return Optional.of(tankaSet.iterator().next());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    int getTotalCount(RcptItemMap map){
+        return map.values().stream().mapToInt(item -> item.count).sum();
+    }
+
+    int getTotalTen(RcptItemMap map){
+        return map.values().stream().mapToInt(RcptItem::getTen).sum();
+    }
+
+    void outputShuukei(String prefix, RcptItemMap shuukei){
+        outputShuukei(prefix, shuukei, true, true);
+    }
+
+    void outputShuukei(String prefix, RcptItemMap shuukei, boolean showTanka, boolean showCount){
+        if( !shuukei.isEmpty() ){
+            getShuukeiTanka(shuukei).ifPresent(tanka ->
+                System.out.printf("%s.tanka %d\n", prefix, tanka));
+            if( showTanka ) {
+                System.out.printf("%s.kai %d\n", prefix, getTotalCount(shuukei));
+            }
+            if( showCount ) {
+                System.out.printf("%s.ten %d\n", prefix, getTotalTen(shuukei));
+            }
+        }
     }
 
 }
