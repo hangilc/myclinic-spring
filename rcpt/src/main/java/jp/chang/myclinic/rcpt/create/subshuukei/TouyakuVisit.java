@@ -1,5 +1,6 @@
 package jp.chang.myclinic.rcpt.create.subshuukei;
 
+import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.create.Gaiyou;
 import jp.chang.myclinic.rcpt.create.Naifuku;
 import jp.chang.myclinic.rcpt.create.Shinryou;
@@ -19,9 +20,11 @@ public class TouyakuVisit extends VisitBase {
     private List<RcptNaifukuItem> naifukuList = new ArrayList<>();
     private List<RcptTonpukuItem> tonpukuList = new ArrayList<>();
     private List<RcptGaiyouItem> gaiyouList = new ArrayList<>();
+    private ResolvedShinryouMap shinryouMasterMap;
 
-    TouyakuVisit() {
+    TouyakuVisit(ResolvedShinryouMap shinryouMasterMap) {
         super(SUB_TOUYAKU);
+        this.shinryouMasterMap = shinryouMasterMap;
         List.of(SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI, SHUUKEI_TOUYAKU_GAIYOUCHOUZAI,
                 SHUUKEI_TOUYAKU_SHOHOU, SHUUKEI_TOUYAKU_MADOKU, SHUUKEI_TOUYAKU_CHOUKI)
                 .forEach(shuukei -> shinryouShuukeiMap.put(shuukei, new RcptItemMap()));
@@ -60,6 +63,18 @@ public class TouyakuVisit extends VisitBase {
     }
 
     void output(){
+        outputShuukei("touyaku.naifuku.chouzai",
+                shinryouShuukeiMap.get(SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI));
+        outputShuukei("touyaku.gaiyou.chouzai",
+                shinryouShuukeiMap.get(SHUUKEI_TOUYAKU_GAIYOUCHOUZAI));
+        outputShohouShuukei(shinryouShuukeiMap.get(SHUUKEI_TOUYAKU_SHOHOU));
+        outputShuukei("touyaku.madoku",
+                shinryouShuukeiMap.get(SHUUKEI_TOUYAKU_MADOKU), false, true);
+        outputShuukei("touyaku.chouki",
+                shinryouShuukeiMap.get(SHUUKEI_TOUYAKU_CHOUKI), false, true);
+    }
+
+    private void outputShohouShuukei(RcptItemMap items){
 
     }
 

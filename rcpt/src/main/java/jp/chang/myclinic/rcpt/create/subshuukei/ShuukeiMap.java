@@ -11,7 +11,7 @@ public class ShuukeiMap {
     private SaishinVisit saishinVisit = new SaishinVisit(shinryouMasterMap);
     private ShidouVisit shidouVisit = new ShidouVisit();
     private ZaitakuVisit zaitakuVisit = new ZaitakuVisit(shinryouMasterMap);
-    private TouyakuVisit touyakuVisit = new TouyakuVisit();
+    private TouyakuVisit touyakuVisit = new TouyakuVisit(shinryouMasterMap);
     private ChuushaVisit chuushaVisit = new ChuushaVisit();
     private ShochiVisit shochiVisit = new ShochiVisit();
     private ShujutsuVisit shujutsuVisit = new ShujutsuVisit();
