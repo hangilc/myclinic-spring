@@ -4,6 +4,8 @@ import jp.chang.myclinic.rcpt.create.Naifuku;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 class RcptNaifukuItem {
 
     private static Logger logger = LoggerFactory.getLogger(RcptNaifukuItem.class);
@@ -17,6 +19,10 @@ class RcptNaifukuItem {
     }
 
     void extend(Naifuku drug){
+
+    }
+
+    static void merge(List<RcptNaifukuItem> dst, List<RcptNaifukuItem> src){
 
     }
 
