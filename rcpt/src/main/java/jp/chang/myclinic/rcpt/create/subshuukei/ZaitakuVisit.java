@@ -2,14 +2,15 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.create.Shinryou;
+import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 
 import static jp.chang.myclinic.rcpt.create.subshuukei.SubShuukei.SUB_ZAITAKU;
 
 public class ZaitakuVisit extends VisitBase {
 
     private ResolvedShinryouMap shinryouMasterMap;
-    private RcptItemMap oushinItems = new RcptItemMap();
-    private RcptItemMap sonotaItems = new RcptItemMap();
+    private ShinryouItemList oushinItems = new ShinryouItemList();
+    private ShinryouItemList sonotaItems = new ShinryouItemList();
 
     ZaitakuVisit(ResolvedShinryouMap shinryouMasterMap) {
         super(SUB_ZAITAKU);
@@ -18,9 +19,9 @@ public class ZaitakuVisit extends VisitBase {
 
     public void add(Shinryou shinryou){
         if( shinryou.getShinryoucode() == shinryouMasterMap.往診 ){
-            oushinItems.add(shinryou);
+            oushinItems.add(createShinryouItem(shinryou));
         } else {
-            sonotaItems.add(shinryou);
+            sonotaItems.add(createShinryouItem(shinryou));
         }
     }
 
@@ -32,7 +33,7 @@ public class ZaitakuVisit extends VisitBase {
     void output(){
         outputShuukei("zaitaku.oushin", oushinItems);
         outputShuukei("zaitaku.sonota", sonotaItems, false, false);
-        sonotaItems.values().forEach(this::addTekiyou);
+        sonotaItems.forEach(this::addTekiyou);
         outputTekiyou();
     }
 
