@@ -87,8 +87,8 @@ class Create {
             LocalDate birthday = LocalDate.parse(seikyuu.birthday);
             System.out.printf("seinengappi.gengou %s\n", getGengouSlug(birthday));
             System.out.printf("seinengappi.nen %d\n", DateTimeUtil.getNen(birthday));
-            System.out.printf("seinengappi.nen %d\n", birthday.getMonthValue());
-            System.out.printf("seinengappi.nen %d\n", birthday.getDayOfMonth());
+            System.out.printf("seinengappi.tsuki %d\n", birthday.getMonthValue());
+            System.out.printf("seinengappi.hi %d\n", birthday.getDayOfMonth());
             outputByoumei(seikyuu);
             System.out.printf("shinryounissuu.hoken %d\n", calcShinryouNissuu(seikyuu.visits));
             ShuukeiMap grandShuukei = new ShuukeiMap();

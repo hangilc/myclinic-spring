@@ -17,6 +17,7 @@ public enum Gengou {
 	Gengou(JapaneseEra era, String kanji, String romaji){
 		this.era = era;
 		this.kanji = kanji;
+		this.romaji = romaji;
 	}
 
 	public JapaneseEra getEra(){
