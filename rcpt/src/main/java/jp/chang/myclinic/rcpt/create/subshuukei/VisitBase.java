@@ -1,5 +1,8 @@
 package jp.chang.myclinic.rcpt.create.subshuukei;
 
+import jp.chang.myclinic.rcpt.create.Shinryou;
+import jp.chang.myclinic.rcpt.lib.ShinryouItem;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,8 +22,16 @@ class VisitBase {
         tekiyouList.add(new Tekiyou(item.name, item.tanka, item.count));
     }
 
+    void addTekiyou(ShinryouItem item){
+        tekiyouList.add(new Tekiyou(item.getName(), item.getTensuu(), item.getCount()));
+    }
+
     void outputTekiyou(){
         Tekiyou.output("" + subShuukei.getCode(), tekiyouList);
+    }
+
+    ShinryouItem createShinryouItem(Shinryou src){
+        return new ShinryouItem(src.getShinryoucode(), src.getName(), src.getTensuu());
     }
 
     Optional<Integer> getShuukeiTanka(RcptItemMap map){

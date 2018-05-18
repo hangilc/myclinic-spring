@@ -2,6 +2,8 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.create.Shinryou;
+import jp.chang.myclinic.rcpt.lib.ShinryouItem;
+import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,11 +13,11 @@ import static jp.chang.myclinic.consts.MyclinicConsts.*;
 public class SaishinVisit extends VisitBase {
 
     private ResolvedShinryouMap shinryouMasterMap;
-    private RcptItemMap saishinMap = new RcptItemMap();
-    private RcptItemMap gairaiKanriMap = new RcptItemMap();
-    private RcptItemMap jikangaiMap = new RcptItemMap();
-    private RcptItemMap kyuujitsuMap = new RcptItemMap();
-    private RcptItemMap shinyaMap = new RcptItemMap();
+    private ShinryouItemList saishinList = new ShinryouItemList();
+    private ShinryouItemList gairaiKanriList = new ShinryouItemList();
+    private ShinryouItemList jikangaiList = new ShinryouItemList();
+    private ShinryouItemList kyuujitsuList = new ShinryouItemList();
+    private ShinryouItemList shinyaList = new ShinryouItemList();
 
     SaishinVisit(ResolvedShinryouMap shinryouMasterMap) {
         super(SubShuukei.SUB_SAISHIN);
@@ -23,44 +25,45 @@ public class SaishinVisit extends VisitBase {
     }
 
     public void add(Shinryou shinryou){
+        ShinryouItem item = createShinryouItem(shinryou);
         switch(shinryou.getShuukeisaki()){
             case SHUUKEI_SAISHIN_SAISHIN:
-                saishinMap.add(shinryou); break;
+                saishinList.add(item); break;
             case SHUUKEI_SAISHIN_GAIRAIKANRI:
-                gairaiKanriMap.add(shinryou); break;
+                gairaiKanriList.add(item); break;
             case SHUUKEI_SAISHIN_JIKANGAI:
-                jikangaiMap.add(shinryou); break;
+                jikangaiList.add(item); break;
             case SHUUKEI_SAISHIN_KYUUJITSU:
-                kyuujitsuMap.add(shinryou); break;
+                kyuujitsuList.add(item); break;
             case SHUUKEI_SAISHIN_SHINYA:
-                shinyaMap.add(shinryou); break;
+                shinyaList.add(item); break;
             default:
                 throw new RuntimeException("Unknown saishin: " + shinryou);
         }
     }
 
     void merge(SaishinVisit src){
-        saishinMap.merge(src.saishinMap);
-        gairaiKanriMap.merge(src.gairaiKanriMap);
-        jikangaiMap.merge(src.jikangaiMap);
-        kyuujitsuMap.merge(src.kyuujitsuMap);
-        shinyaMap.merge(src.shinyaMap);
+        saishinList.merge(src.saishinList);
+        gairaiKanriList.merge(src.gairaiKanriList);
+        jikangaiList.merge(src.jikangaiList);
+        kyuujitsuList.merge(src.kyuujitsuList);
+        shinyaList.merge(src.shinyaList);
     }
 
     void output(){
         outputSaishin();
-        outputShuukei(gairaiKanriMap, "gairaikanri");
-        outputShuukei(jikangaiMap, "jikangai");
-        outputShuukei(kyuujitsuMap, "kyuujitsu");
-        outputShuukei(shinyaMap, "shinya");
+        outputShuukei(gairaiKanriList, "gairaikanri");
+        outputShuukei(jikangaiList, "jikangai");
+        outputShuukei(kyuujitsuList, "kyuujitsu");
+        outputShuukei(shinyaList, "shinya");
     }
 
     private void outputSaishin(){
         int kai = 0;
         int ten = 0;
         Set<Integer> tankaSet = new HashSet<>();
-        for(int shinryoucode: saishinMap.keySet()){
-            RcptItem item = saishinMap.get(shinryoucode);
+        for(int shinryoucode: saishinList.keySet()){
+            RcptItem item = saishinList.get(shinryoucode);
             if( shinryoucode == shinryouMasterMap.再診 ) {
                 kai += 1;
             } else {
