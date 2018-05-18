@@ -1,5 +1,7 @@
 package jp.chang.myclinic.rcpt.lib;
 
+import jp.chang.myclinic.rcpt.RcptUtil;
+
 import java.util.*;
 
 public class NaifukuItem<T> {
@@ -10,11 +12,11 @@ public class NaifukuItem<T> {
     private double kingaku;
     private List<T> drugs = new ArrayList<>();
 
-    public NaifukuItem(String usage, int days, int iyakuhincode, double yakka, double amount, T drug) {
+    public NaifukuItem(String usage, int days, int iyakuhincode, double yakkaTimesAmount, T drug) {
         this.usage = usage;
         this.days = days;
         iyakuhincodes.add(iyakuhincode);
-        this.kingaku = yakka * amount;
+        this.kingaku = yakkaTimesAmount;
         drugs.add(drug);
     }
 
@@ -22,10 +24,10 @@ public class NaifukuItem<T> {
         return Objects.equals(this.usage, usage) && this.days == days;
     }
 
-    public void extend(int iyakuhincode, double yakka, double amount, T drug){
-        iyakuhincodes.add(iyakuhincode);
-        kingaku += yakka * amount;
-        drugs.add(drug);
+    public void extend(Set<Integer> iyakuhincodes, double yakkaTimesAmount, List<T> drugs){
+        this.iyakuhincodes.addAll(iyakuhincodes);
+        kingaku += yakkaTimesAmount;
+        this.drugs.addAll(drugs);
     }
 
     public boolean canMerge(NaifukuItem src){
@@ -37,4 +39,27 @@ public class NaifukuItem<T> {
         days += src.days;
     }
 
+    public int getTanka(){
+        return RcptUtil.touyakuKingakuToTen(kingaku);
+    }
+
+    public int getDays(){
+        return days;
+    }
+
+    public String getUsage() {
+        return usage;
+    }
+
+    public Set<Integer> getIyakuhincodes() {
+        return iyakuhincodes;
+    }
+
+    public double getKingaku() {
+        return kingaku;
+    }
+
+    public List<T> getDrugs() {
+        return drugs;
+    }
 }

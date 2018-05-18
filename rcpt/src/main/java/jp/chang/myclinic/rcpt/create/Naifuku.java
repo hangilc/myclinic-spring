@@ -5,21 +5,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Naifuku {
 
     @JsonProperty("医薬品コード")
-    int iyakuhincode;
+    public int iyakuhincode;
     @JsonProperty("名称")
-    String name;
+    public String name;
     @JsonProperty("用量")
-    double amount;
+    public double amount;
     @JsonProperty("単位")
-    String unit;
+    public String unit;
     @JsonProperty("用法")
-    String usage;
+    public String usage;
     @JsonProperty("薬価")
-    double yakka;
+    public double yakka;
     @JsonProperty("麻毒")
-    char madoku;
+    public char madoku;
     @JsonProperty("日数")
-    int days;
+    public int days;
 
     Naifuku() {
 

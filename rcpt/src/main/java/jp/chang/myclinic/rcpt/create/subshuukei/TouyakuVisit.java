@@ -5,6 +5,8 @@ import jp.chang.myclinic.rcpt.create.Gaiyou;
 import jp.chang.myclinic.rcpt.create.Naifuku;
 import jp.chang.myclinic.rcpt.create.Shinryou;
 import jp.chang.myclinic.rcpt.create.Tonpuku;
+import jp.chang.myclinic.rcpt.lib.NaifukuItem;
+import jp.chang.myclinic.rcpt.lib.NaifukuItemList;
 import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ import static jp.chang.myclinic.rcpt.create.subshuukei.SubShuukei.SUB_TOUYAKU;
 public class TouyakuVisit extends VisitBase {
 
     private Map<String, ShinryouItemList> shinryouShuukeiMap = new LinkedHashMap<>();
-    private List<RcptNaifukuItem> naifukuList = new ArrayList<>();
+    private NaifukuItemList<Naifuku> naifukuList = new NaifukuItemList<>();
     private List<RcptTonpukuItem> tonpukuList = new ArrayList<>();
     private List<RcptGaiyouItem> gaiyouList = new ArrayList<>();
     private ResolvedShinryouMap shinryouMasterMap;
@@ -36,13 +38,9 @@ public class TouyakuVisit extends VisitBase {
     }
 
     public void add(Naifuku drug){
-        for(RcptNaifukuItem item: naifukuList){
-            if( item.canExtend(drug) ){
-                item.extend(drug);
-                return;
-            }
-        }
-        naifukuList.add(new RcptNaifukuItem(drug));
+        NaifukuItem<Naifuku> item = new NaifukuItem<>(drug.usage, drug.days, drug.iyakuhincode,
+                drug.yakka * drug.amount, drug);
+        naifukuList.add(item);
     }
 
     public void add(Tonpuku drug){
@@ -55,10 +53,10 @@ public class TouyakuVisit extends VisitBase {
 
     void merge(TouyakuVisit src){
         for(String key: shinryouShuukeiMap.keySet()){
-            RcptItemMap items = shinryouShuukeiMap.get(key);
+            ShinryouItemList items = shinryouShuukeiMap.get(key);
             items.merge(src.shinryouShuukeiMap.get(key));
         }
-        RcptNaifukuItem.merge(naifukuList, src.naifukuList);
+        naifukuList.merge(src.naifukuList);
         RcptTonpukuItem.merge(tonpukuList, src.tonpukuList);
         RcptGaiyouItem.merge(gaiyouList, src.gaiyouList);
     }
