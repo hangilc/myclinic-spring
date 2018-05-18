@@ -2,6 +2,7 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.rcpt.create.Shinryou;
 import jp.chang.myclinic.rcpt.lib.ShinryouItem;
+import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +35,8 @@ class VisitBase {
         return new ShinryouItem(src.getShinryoucode(), src.getName(), src.getTensuu());
     }
 
-    Optional<Integer> getShuukeiTanka(RcptItemMap map){
-        Set<Integer> tankaSet =  map.values().stream().map(item -> item.tanka).collect(Collectors.toSet());
+    Optional<Integer> getShuukeiTanka(ShinryouItemList shuukei){
+        Set<Integer> tankaSet =  shuukei.stream().map(ShinryouItem::getTensuu).collect(Collectors.toSet());
         if( tankaSet.size() == 1 ){
             return Optional.of(tankaSet.iterator().next());
         } else {
@@ -43,28 +44,38 @@ class VisitBase {
         }
     }
 
-    int getTotalCount(RcptItemMap map){
-        return map.values().stream().mapToInt(item -> item.count).sum();
+    int getTotalCount(ShinryouItemList shuukei){
+        return shuukei.stream().mapToInt(ShinryouItem::getCount).sum();
     }
 
-    int getTotalTen(RcptItemMap map){
-        return map.values().stream().mapToInt(RcptItem::getTen).sum();
+    void outputShuukei(String prefix, ShinryouItemList shuukei) {
+        outputShuukei(prefix, getShuukeiTanka(shuukei).orElse(null),
+                getTotalCount(shuukei), shuukei.getTen());
     }
 
-    void outputShuukei(String prefix, RcptItemMap shuukei){
-        outputShuukei(prefix, shuukei, true, true);
-    }
-
-    void outputShuukei(String prefix, RcptItemMap shuukei, boolean showTanka, boolean showCount){
+    void outputShuukei(String prefix, ShinryouItemList shuukei, boolean showTanka, boolean showCount){
         if( !shuukei.isEmpty() ){
-            getShuukeiTanka(shuukei).ifPresent(tanka ->
-                System.out.printf("%s.tanka %d\n", prefix, tanka));
-            if( showTanka ) {
-                System.out.printf("%s.kai %d\n", prefix, getTotalCount(shuukei));
+            Integer tanka = null, count = null, ten = null;
+            if( showTanka ){
+                tanka = getShuukeiTanka(shuukei).orElse(null);
             }
             if( showCount ) {
-                System.out.printf("%s.ten %d\n", prefix, getTotalTen(shuukei));
+                count = getTotalCount(shuukei);
             }
+            ten = shuukei.getTen();
+            outputShuukei(prefix, tanka, count, ten);
+        }
+    }
+
+    void outputShuukei(String prefix, Integer tanka, Integer count, Integer ten){
+        if( tanka != null ){
+            System.out.printf("%s.tanka %d\n", prefix, tanka);
+        }
+        if( count != null ){
+            System.out.printf("%s.kai %d\n", prefix, count);
+        }
+        if( ten != null ){
+            System.out.printf("%s.ten %d\n", prefix, ten);
         }
     }
 

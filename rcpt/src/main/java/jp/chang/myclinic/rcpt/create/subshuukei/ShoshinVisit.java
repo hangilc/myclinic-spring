@@ -56,8 +56,7 @@ public class ShoshinVisit extends VisitBase {
         });
         int ten = items.getTen();
         if( ten > 0 ){
-            System.out.printf("shoshin.kai %d\n", local.kai);
-            System.out.printf("shoshin.ten %d\n", ten);
+            outputShuukei("shoshin", null, local.kai, ten);
         }
         kasan.forEach(s -> System.out.printf("shoshinkasan %s\n", s));
         outputTekiyou();

@@ -1,17 +1,18 @@
 package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.rcpt.create.Shinryou;
+import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 
 public class ShidouVisit extends VisitBase {
 
-    private RcptItemMap items = new RcptItemMap();
+    private ShinryouItemList items = new ShinryouItemList();
 
     ShidouVisit() {
         super(SubShuukei.SUB_SHIDOU);
     }
 
     public void add(Shinryou shinryou){
-        items.add(shinryou);
+        items.add(createShinryouItem(shinryou));
     }
 
     void merge(ShidouVisit src){
@@ -19,10 +20,10 @@ public class ShidouVisit extends VisitBase {
     }
 
     void output(){
-        int ten = getTotalTen(items);
+        int ten = items.getTen();
         if( ten > 0 ){
             System.out.printf("shidou.ten %d\n", ten);
-            items.values().forEach(this::addTekiyou);
+            items.forEach(this::addTekiyou);
             outputTekiyou();
         }
     }

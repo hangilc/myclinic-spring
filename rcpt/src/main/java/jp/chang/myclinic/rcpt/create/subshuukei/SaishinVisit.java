@@ -52,45 +52,38 @@ public class SaishinVisit extends VisitBase {
 
     void output(){
         outputSaishin();
-        outputShuukei(gairaiKanriList, "gairaikanri");
-        outputShuukei(jikangaiList, "jikangai");
-        outputShuukei(kyuujitsuList, "kyuujitsu");
-        outputShuukei(shinyaList, "shinya");
-    }
-
-    private void outputSaishin(){
-        int kai = 0;
-        int ten = 0;
-        Set<Integer> tankaSet = new HashSet<>();
-        for(int shinryoucode: saishinList.keySet()){
-            RcptItem item = saishinList.get(shinryoucode);
-            if( shinryoucode == shinryouMasterMap.再診 ) {
-                kai += 1;
-            } else {
-                if( shinryoucode == shinryouMasterMap.同日再診 ){
-                    kai += 1;
-                }
-                addTekiyou(item);
-            }
-            tankaSet.add(item.tanka);
-            ten += item.getTen();
-        }
-        if( tankaSet.size() == 1 ){
-            System.out.printf("saishin.saishin.tanka %d\n", tankaSet.iterator().next());
-        }
-        if( ten > 0 ){
-            System.out.printf("saishin.saishin.kai %d\n", kai);
-            System.out.printf("saishin.saishin.ten %d\n", ten);
-        }
+        outputShuukei("saishin.gairaikanri", gairaiKanriList);
+        outputShuukei("saishin.jikangai", jikangaiList);
+        outputShuukei("saishin.kyuujitsu", kyuujitsuList);
+        outputShuukei("saishin.shinya", shinyaList);
         outputTekiyou();
     }
 
-    private void outputShuukei(RcptItemMap items, String label){
-        if( !items.isEmpty() ){
-            getShuukeiTanka(items)
-                    .ifPresent(tanka -> System.out.printf("saishin.%s.tanka %d\n", label, tanka));
-            System.out.printf("saishin.%s.kai %d\n", label, getTotalCount(items));
-            System.out.printf("saishin.%s.ten %d\n", label, getTotalTen(items));
+    private void outputSaishin(){
+        class Local {
+            private int kai = 0;
+        }
+        Local local = new Local();
+        Set<Integer> tankaSet = new HashSet<>();
+        saishinList.forEach(item -> {
+            int shinryoucode = item.getShinryoucode();
+            if( shinryoucode == shinryouMasterMap.再診 ) {
+                local.kai += 1;
+            } else {
+                if( shinryoucode == shinryouMasterMap.同日再診 ){
+                    local.kai += 1;
+                }
+                addTekiyou(item);
+            }
+            tankaSet.add(item.getTensuu());
+        });
+        int ten = saishinList.getTen();
+        if( ten > 0 ){
+            Integer tanka = null;
+            if( tankaSet.size() == 1 ){
+                tanka = tankaSet.iterator().next();
+            }
+            outputShuukei("saishin.saishin", tanka, local.kai, ten);
         }
     }
 

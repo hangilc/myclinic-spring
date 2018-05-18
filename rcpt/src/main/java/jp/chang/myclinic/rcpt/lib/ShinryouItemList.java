@@ -3,6 +3,7 @@ package jp.chang.myclinic.rcpt.lib;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class ShinryouItemList {
 
@@ -29,6 +30,14 @@ public class ShinryouItemList {
 
     public void forEach(Consumer<ShinryouItem> f){
         items.forEach(f);
+    }
+
+    public Stream<ShinryouItem> stream(){
+        return items.stream();
+    }
+
+    public boolean isEmpty(){
+        return items.isEmpty();
     }
 
     public int getTen(){
