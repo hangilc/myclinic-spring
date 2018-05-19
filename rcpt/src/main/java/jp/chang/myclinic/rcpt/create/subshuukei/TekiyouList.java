@@ -2,9 +2,11 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.create.Naifuku;
+import jp.chang.myclinic.rcpt.create.Tonpuku;
 import jp.chang.myclinic.rcpt.lib.NaifukuItem;
 import jp.chang.myclinic.rcpt.lib.ShinryouItem;
 import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
+import jp.chang.myclinic.rcpt.lib.TonpukuItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,6 +67,13 @@ class TekiyouList {
         item.getDrugs().forEach(drug -> {
             tekiyou.addDrug(drug.name, drug.amount, drug.unit);
         });
+        items.add(tekiyou);
+    }
+
+    void add(TonpukuItem<Tonpuku> item){
+        DrugTekiyou tekiyou = new DrugTekiyou(item.getTanka(), item.getCount());
+        Tonpuku drug = item.getDrug();
+        tekiyou.addDrug(drug.name, drug.amount, drug.unit);
         items.add(tekiyou);
     }
 

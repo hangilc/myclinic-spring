@@ -5,11 +5,8 @@ import jp.chang.myclinic.rcpt.create.Gaiyou;
 import jp.chang.myclinic.rcpt.create.Naifuku;
 import jp.chang.myclinic.rcpt.create.Shinryou;
 import jp.chang.myclinic.rcpt.create.Tonpuku;
-import jp.chang.myclinic.rcpt.lib.NaifukuItem;
-import jp.chang.myclinic.rcpt.lib.NaifukuItemList;
-import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
+import jp.chang.myclinic.rcpt.lib.*;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +17,8 @@ public class TouyakuVisit extends VisitBase {
 
     private Map<String, ShinryouItemList> shinryouShuukeiMap = new LinkedHashMap<>();
     private NaifukuItemList<Naifuku> naifukuList = new NaifukuItemList<>();
-    private List<RcptTonpukuItem> tonpukuList = new ArrayList<>();
-    private List<RcptGaiyouItem> gaiyouList = new ArrayList<>();
+    private TonpukuItemList<Tonpuku> tonpukuList = new TonpukuItemList<>();
+    //private List<RcptGaiyouItem> gaiyouList = new ArrayList<>();
     private ResolvedShinryouMap shinryouMasterMap;
 
     TouyakuVisit(ResolvedShinryouMap shinryouMasterMap) {
@@ -36,17 +33,16 @@ public class TouyakuVisit extends VisitBase {
     }
 
     public void add(Naifuku drug) {
-        NaifukuItem<Naifuku> item = new NaifukuItem<>(drug.usage, drug.days, drug.iyakuhincode,
-                drug.yakka * drug.amount, drug);
-        naifukuList.add(item);
+        naifukuList.extendOrAdd(drug.usage, drug.days, drug.iyakuhincode, drug.amount * drug.yakka, drug);
     }
 
     public void add(Tonpuku drug) {
-        tonpukuList.add(new RcptTonpukuItem(drug));
+        tonpukuList.add(new TonpukuItem<Tonpuku>(drug.iyakuhincode, drug.usage, drug.amount,
+                drug.yakka, drug.days, drug));
     }
 
     public void add(Gaiyou drug) {
-        gaiyouList.add(new RcptGaiyouItem(drug));
+        //gaiyouList.add(new RcptGaiyouItem(drug));
     }
 
     void merge(TouyakuVisit src) {
@@ -55,8 +51,8 @@ public class TouyakuVisit extends VisitBase {
             items.merge(src.shinryouShuukeiMap.get(key));
         }
         naifukuList.merge(src.naifukuList);
-        RcptTonpukuItem.merge(tonpukuList, src.tonpukuList);
-        RcptGaiyouItem.merge(gaiyouList, src.gaiyouList);
+        tonpukuList.merge(src.tonpukuList);
+        //RcptGaiyouItem.merge(gaiyouList, src.gaiyouList);
     }
 
     void output() {
@@ -70,8 +66,10 @@ public class TouyakuVisit extends VisitBase {
         outputShuukei("touyaku.chouki",
                 shinryouShuukeiMap.get(SHUUKEI_TOUYAKU_CHOUKI), false, false);
         outputShuukei("touyaku.naifuku.yakuzai", naifukuList, false, true);
+        outputShuukei("touyaku.tonpuku.yakuzai", tonpukuList, false, true);
         outputShohouTekiyou(shinryouShuukeiMap.get(SHUUKEI_TOUYAKU_SHOHOU));
         outputNaifukuTekiyou();
+        outputTonpukuTekiyou();
     }
 
     private void outputShohouShuukei(ShinryouItemList items) {
@@ -106,6 +104,12 @@ public class TouyakuVisit extends VisitBase {
     private void outputNaifukuTekiyou(){
         TekiyouList tekiyouList = new TekiyouList(SubShuukeiTouyaku.TouyakuNaifuku);
         naifukuList.stream().forEach(tekiyouList::add);
+        tekiyouList.output();
+    }
+
+    private void outputTonpukuTekiyou(){
+        TekiyouList tekiyouList = new TekiyouList(SubShuukeiTouyaku.TouyakuTonpuku);
+        tonpukuList.stream().forEach(tekiyouList::add);
         tekiyouList.output();
     }
 

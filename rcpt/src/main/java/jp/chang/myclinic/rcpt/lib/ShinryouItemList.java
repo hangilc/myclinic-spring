@@ -9,19 +9,9 @@ public class ShinryouItemList implements RcptShuukei<ShinryouItem> {
 
     private List<ShinryouItem> items = new ArrayList<>();
 
+    @Override
     public void add(ShinryouItem item){
-        int shinryoucode = item.getShinryoucode();
-        for(ShinryouItem e: items){
-            if( e.getShinryoucode() == shinryoucode ){
-                e.setCount(e.getCount() + item.getCount());
-                return;
-            }
-        }
         items.add(item);
-    }
-
-    public void merge(ShinryouItemList src){
-        src.items.forEach(this::add);
     }
 
     public void forEach(Consumer<ShinryouItem> f){

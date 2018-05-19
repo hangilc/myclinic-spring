@@ -4,7 +4,7 @@ import jp.chang.myclinic.rcpt.RcptUtil;
 
 import java.util.*;
 
-public class NaifukuItem<T> implements RcptItem {
+public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>> {
 
     private String usage;
     private int days;
@@ -20,21 +20,23 @@ public class NaifukuItem<T> implements RcptItem {
         drugs.add(drug);
     }
 
-    public boolean canExtend(String usage, int days){
+    boolean canExtend(String usage, int days){
         return Objects.equals(this.usage, usage) && this.days == days;
     }
 
-    public void extend(Set<Integer> iyakuhincodes, double yakkaTimesAmount, List<T> drugs){
-        this.iyakuhincodes.addAll(iyakuhincodes);
+    void extend(int iyakuhincode, double yakkaTimesAmount, T drug){
+        this.iyakuhincodes.add(iyakuhincode);
         kingaku += yakkaTimesAmount;
-        this.drugs.addAll(drugs);
+        this.drugs.add(drug);
     }
 
+    @Override
     public boolean canMerge(NaifukuItem src){
         return Objects.equals(usage, src.usage) && days == src.days &&
                 iyakuhincodes.equals(src.iyakuhincodes);
     }
 
+    @Override
     public void merge(NaifukuItem src){
         days += src.days;
     }

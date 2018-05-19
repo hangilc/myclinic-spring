@@ -1,6 +1,6 @@
 package jp.chang.myclinic.rcpt.lib;
 
-public class ShinryouItem implements RcptItem{
+public class ShinryouItem implements RcptItem, Mergeable<ShinryouItem> {
 
     private int shinryoucode;
     private String name;
@@ -38,5 +38,15 @@ public class ShinryouItem implements RcptItem{
 
     void setCount(int count) {
         this.count = count;
+    }
+
+    @Override
+    public boolean canMerge(ShinryouItem src) {
+        return shinryoucode == src.shinryoucode;
+    }
+
+    @Override
+    public void merge(ShinryouItem src) {
+        count += src.count;
     }
 }

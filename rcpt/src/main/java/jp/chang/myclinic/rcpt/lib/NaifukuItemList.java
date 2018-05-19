@@ -8,34 +8,20 @@ public class NaifukuItemList<T> implements RcptShuukei<NaifukuItem<T>> {
 
     private List<NaifukuItem<T>> items = new ArrayList<>();
 
-    public void add(NaifukuItem<T> item){
-        String usage = item.getUsage();
-        int days = item.getDays();
+    public void extendOrAdd(String usage, int days, int iyakuhincode, double amountTimesYakka, T drug){
         for(NaifukuItem<T> e: items){
             if( e.canExtend(usage, days) ){
-                e.extend(item.getIyakuhincodes(), item.getKingaku(), item.getDrugs());
+                e.extend(iyakuhincode, amountTimesYakka, drug);
                 return;
             }
         }
-        items.add(item);
+        NaifukuItem<T> item = new NaifukuItem<>(usage, days, iyakuhincode, amountTimesYakka, drug);
+        add(item);
     }
 
-    public void merge(NaifukuItemList<T> src){
-        List<NaifukuItem<T>> toBeAdded = new ArrayList<>();
-        for(NaifukuItem<T> srcItem: src.items){
-            boolean merged = false;
-            for(NaifukuItem<T> myItem: items){
-                if( myItem.canMerge(srcItem) ){
-                    myItem.merge(srcItem);
-                    merged = true;
-                    break;
-                }
-            }
-            if( !merged ){
-                toBeAdded.add(srcItem);
-            }
-        }
-        items.addAll(toBeAdded);
+    @Override
+    public void add(NaifukuItem<T> item){
+        items.add(item);
     }
 
     @Override
