@@ -2,8 +2,9 @@ package jp.chang.myclinic.rcpt.lib;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
-public class NaifukuItemList<T> {
+public class NaifukuItemList<T> implements RcptShuukei<NaifukuItem<T>> {
 
     private List<NaifukuItem<T>> items = new ArrayList<>();
 
@@ -35,6 +36,16 @@ public class NaifukuItemList<T> {
             }
         }
         items.addAll(toBeAdded);
+    }
+
+    @Override
+    public boolean isEmpty(){
+        return items.isEmpty();
+    }
+
+    @Override
+    public Stream<NaifukuItem<T>> stream(){
+        return items.stream();
     }
 
 }

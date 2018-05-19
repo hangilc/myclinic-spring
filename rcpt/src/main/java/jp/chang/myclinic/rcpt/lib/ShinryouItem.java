@@ -1,6 +1,6 @@
 package jp.chang.myclinic.rcpt.lib;
 
-public class ShinryouItem {
+public class ShinryouItem implements RcptItem{
 
     private int shinryoucode;
     private String name;
@@ -12,6 +12,11 @@ public class ShinryouItem {
         this.name = name;
         this.tensuu = tensuu;
         this.count = 1;
+    }
+
+    @Override
+    public int getTanka() {
+        return getTensuu();
     }
 
     public int getShinryoucode() {
@@ -26,6 +31,7 @@ public class ShinryouItem {
         return tensuu;
     }
 
+    @Override
     public int getCount() {
         return count;
     }

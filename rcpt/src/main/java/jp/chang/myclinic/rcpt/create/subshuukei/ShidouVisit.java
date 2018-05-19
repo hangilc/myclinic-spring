@@ -7,10 +7,6 @@ public class ShidouVisit extends VisitBase {
 
     private ShinryouItemList items = new ShinryouItemList();
 
-    ShidouVisit() {
-        super(SubShuukei.SUB_SHIDOU);
-    }
-
     public void add(Shinryou shinryou){
         items.add(createShinryouItem(shinryou));
     }
@@ -23,8 +19,7 @@ public class ShidouVisit extends VisitBase {
         int ten = items.getTen();
         if( ten > 0 ){
             System.out.printf("shidou.ten %d\n", ten);
-            items.forEach(this::addTekiyou);
-            outputTekiyou();
+            TekiyouList.outputAll(SubShuukei.SUB_SHIDOU, items);
         }
     }
 

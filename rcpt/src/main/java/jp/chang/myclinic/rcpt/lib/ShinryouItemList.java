@@ -3,16 +3,11 @@ package jp.chang.myclinic.rcpt.lib;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class ShinryouItemList {
+public class ShinryouItemList implements RcptShuukei<ShinryouItem> {
 
     private List<ShinryouItem> items = new ArrayList<>();
-
-    public ShinryouItemList() {
-
-    }
 
     public void add(ShinryouItem item){
         int shinryoucode = item.getShinryoucode();
@@ -33,10 +28,12 @@ public class ShinryouItemList {
         items.forEach(f);
     }
 
+    @Override
     public Stream<ShinryouItem> stream(){
         return items.stream();
     }
 
+    @Override
     public boolean isEmpty(){
         return items.isEmpty();
     }

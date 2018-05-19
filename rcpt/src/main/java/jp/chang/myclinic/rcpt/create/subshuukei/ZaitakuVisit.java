@@ -13,7 +13,6 @@ public class ZaitakuVisit extends VisitBase {
     private ShinryouItemList sonotaItems = new ShinryouItemList();
 
     ZaitakuVisit(ResolvedShinryouMap shinryouMasterMap) {
-        super(SUB_ZAITAKU);
         this.shinryouMasterMap = shinryouMasterMap;
     }
 
@@ -33,8 +32,7 @@ public class ZaitakuVisit extends VisitBase {
     void output(){
         outputShuukei("zaitaku.oushin", oushinItems);
         outputShuukei("zaitaku.sonota", sonotaItems, false, false);
-        sonotaItems.forEach(this::addTekiyou);
-        outputTekiyou();
+        TekiyouList.outputAll(SubShuukei.SUB_ZAITAKU, sonotaItems);
     }
 
 }

@@ -14,7 +14,6 @@ public class ShoshinVisit extends VisitBase {
     private ResolvedShinryouMap shinryouMasterMap;
 
     ShoshinVisit(ResolvedShinryouMap shinryouMasterMap) {
-        super(SubShuukei.SUB_SHOSHIN);
         this.shinryouMasterMap = shinryouMasterMap;
     }
 
@@ -34,12 +33,13 @@ public class ShoshinVisit extends VisitBase {
             private int kai = 0;
         }
         Local local = new Local();
+        TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SHOSHIN);
         items.forEach(item -> {
             int shinryoucode = item.getShinryoucode();
             if( shinryoucode == shinryouMasterMap.初診 ){
                 local.kai += 1;
             } else {
-                addTekiyou(item);
+                tekiyouList.add(item);
             }
             if( shinryoucode == shinryouMasterMap.初診時間外加算 ||
                     shinryoucode == shinryouMasterMap.初診乳幼児時間外加算 ){
@@ -59,7 +59,7 @@ public class ShoshinVisit extends VisitBase {
             outputShuukei("shoshin", null, local.kai, ten);
         }
         kasan.forEach(s -> System.out.printf("shoshinkasan %s\n", s));
-        outputTekiyou();
+        tekiyouList.output();
     }
 
 }

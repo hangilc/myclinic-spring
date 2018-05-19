@@ -4,7 +4,6 @@ import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 
 public class ShuukeiMap {
 
-    //private static Logger logger = LoggerFactory.getLogger(ShuukeiMap.class);
     private static ResolvedShinryouMap shinryouMasterMap;
 
     private ShoshinVisit shoshinVisit = new ShoshinVisit(shinryouMasterMap);
@@ -25,6 +24,7 @@ public class ShuukeiMap {
 
     public static void setShinryouMasterMap(ResolvedShinryouMap shinryouMasterMap){
         ShuukeiMap.shinryouMasterMap = shinryouMasterMap;
+        TekiyouList.setShinryouMasterMap(shinryouMasterMap);
     }
 
     public ShoshinVisit getShoshinVisit() {

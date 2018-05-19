@@ -4,7 +4,7 @@ import jp.chang.myclinic.rcpt.RcptUtil;
 
 import java.util.*;
 
-public class NaifukuItem<T> {
+public class NaifukuItem<T> implements RcptItem {
 
     private String usage;
     private int days;
@@ -39,8 +39,14 @@ public class NaifukuItem<T> {
         days += src.days;
     }
 
+    @Override
     public int getTanka(){
         return RcptUtil.touyakuKingakuToTen(kingaku);
+    }
+
+    @Override
+    public int getCount(){
+        return getDays();
     }
 
     public int getDays(){

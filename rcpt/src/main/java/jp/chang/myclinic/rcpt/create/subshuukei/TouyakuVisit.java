@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import static jp.chang.myclinic.consts.MyclinicConsts.*;
-import static jp.chang.myclinic.rcpt.create.subshuukei.SubShuukei.SUB_TOUYAKU;
 
 public class TouyakuVisit extends VisitBase {
 
@@ -26,33 +25,32 @@ public class TouyakuVisit extends VisitBase {
     private ResolvedShinryouMap shinryouMasterMap;
 
     TouyakuVisit(ResolvedShinryouMap shinryouMasterMap) {
-        super(SUB_TOUYAKU);
         this.shinryouMasterMap = shinryouMasterMap;
         List.of(SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI, SHUUKEI_TOUYAKU_GAIYOUCHOUZAI,
                 SHUUKEI_TOUYAKU_SHOHOU, SHUUKEI_TOUYAKU_MADOKU, SHUUKEI_TOUYAKU_CHOUKI)
                 .forEach(shuukei -> shinryouShuukeiMap.put(shuukei, new ShinryouItemList()));
     }
 
-    public void add(Shinryou shinryou){
+    public void add(Shinryou shinryou) {
         shinryouShuukeiMap.get(shinryou.getShuukeisaki()).add(createShinryouItem(shinryou));
     }
 
-    public void add(Naifuku drug){
+    public void add(Naifuku drug) {
         NaifukuItem<Naifuku> item = new NaifukuItem<>(drug.usage, drug.days, drug.iyakuhincode,
                 drug.yakka * drug.amount, drug);
         naifukuList.add(item);
     }
 
-    public void add(Tonpuku drug){
+    public void add(Tonpuku drug) {
         tonpukuList.add(new RcptTonpukuItem(drug));
     }
 
-    public void add(Gaiyou drug){
+    public void add(Gaiyou drug) {
         gaiyouList.add(new RcptGaiyouItem(drug));
     }
 
-    void merge(TouyakuVisit src){
-        for(String key: shinryouShuukeiMap.keySet()){
+    void merge(TouyakuVisit src) {
+        for (String key : shinryouShuukeiMap.keySet()) {
             ShinryouItemList items = shinryouShuukeiMap.get(key);
             items.merge(src.shinryouShuukeiMap.get(key));
         }
@@ -61,7 +59,7 @@ public class TouyakuVisit extends VisitBase {
         RcptGaiyouItem.merge(gaiyouList, src.gaiyouList);
     }
 
-    void output(){
+    void output() {
         outputShuukei("touyaku.naifuku.chouzai",
                 shinryouShuukeiMap.get(SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI));
         outputShuukei("touyaku.gaiyou.chouzai",
@@ -70,17 +68,20 @@ public class TouyakuVisit extends VisitBase {
         outputShuukei("touyaku.madoku",
                 shinryouShuukeiMap.get(SHUUKEI_TOUYAKU_MADOKU), false, true);
         outputShuukei("touyaku.chouki",
-                shinryouShuukeiMap.get(SHUUKEI_TOUYAKU_CHOUKI), false, true);
+                shinryouShuukeiMap.get(SHUUKEI_TOUYAKU_CHOUKI), false, false);
+        outputShuukei("touyaku.naifuku.yakuzai", naifukuList, false, true);
+        outputShohouTekiyou(shinryouShuukeiMap.get(SHUUKEI_TOUYAKU_SHOHOU));
+        outputNaifukuTekiyou();
     }
 
-    private void outputShohouShuukei(ShinryouItemList items){
+    private void outputShohouShuukei(ShinryouItemList items) {
         int ten = items.getTen();
-        if( ten > 0 ){
+        if (ten > 0) {
             int count = items.stream()
                     .mapToInt(item -> {
                         int shinryoucode = item.getShinryoucode();
-                        if( shinryoucode == shinryouMasterMap.処方料 ||
-                                shinryoucode == shinryouMasterMap.処方料７ ){
+                        if (shinryoucode == shinryouMasterMap.処方料 ||
+                                shinryoucode == shinryouMasterMap.処方料７) {
                             return item.getCount();
                         } else {
                             return 0;
@@ -92,6 +93,20 @@ public class TouyakuVisit extends VisitBase {
                     count,
                     ten);
         }
+    }
+
+    private void outputShohouTekiyou(ShinryouItemList items) {
+        TekiyouList.outputAll(SubShuukeiTouyaku.TouyakuShohou,
+                items.stream().filter(item ->
+                        item.getShinryoucode() != shinryouMasterMap.処方料 &&
+                                item.getShinryoucode() != shinryouMasterMap.処方料７)
+        );
+    }
+
+    private void outputNaifukuTekiyou(){
+        TekiyouList tekiyouList = new TekiyouList(SubShuukeiTouyaku.TouyakuNaifuku);
+        naifukuList.stream().forEach(tekiyouList::add);
+        tekiyouList.output();
     }
 
 }

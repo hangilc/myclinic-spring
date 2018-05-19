@@ -20,7 +20,6 @@ public class SaishinVisit extends VisitBase {
     private ShinryouItemList shinyaList = new ShinryouItemList();
 
     SaishinVisit(ResolvedShinryouMap shinryouMasterMap) {
-        super(SubShuukei.SUB_SAISHIN);
         this.shinryouMasterMap = shinryouMasterMap;
     }
 
@@ -56,7 +55,6 @@ public class SaishinVisit extends VisitBase {
         outputShuukei("saishin.jikangai", jikangaiList);
         outputShuukei("saishin.kyuujitsu", kyuujitsuList);
         outputShuukei("saishin.shinya", shinyaList);
-        outputTekiyou();
     }
 
     private void outputSaishin(){
@@ -64,6 +62,7 @@ public class SaishinVisit extends VisitBase {
             private int kai = 0;
         }
         Local local = new Local();
+        TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SAISHIN);
         Set<Integer> tankaSet = new HashSet<>();
         saishinList.forEach(item -> {
             int shinryoucode = item.getShinryoucode();
@@ -73,7 +72,7 @@ public class SaishinVisit extends VisitBase {
                 if( shinryoucode == shinryouMasterMap.同日再診 ){
                     local.kai += 1;
                 }
-                addTekiyou(item);
+                tekiyouList.add(item);
             }
             tankaSet.add(item.getTensuu());
         });
@@ -85,6 +84,7 @@ public class SaishinVisit extends VisitBase {
             }
             outputShuukei("saishin.saishin", tanka, local.kai, ten);
         }
+        tekiyouList.output();
     }
 
 }

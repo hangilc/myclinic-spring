@@ -38,7 +38,9 @@ public class ResolvedShinryouMap {
 	public int 処方せん料７;
 	public int 調基;
 	public int 特定疾患処方;
+	public int 特定疾患処方管理加算処方せん料;
 	public int 長期処方;
+	public int 長期投薬加算処方せん料;
 	public int 特定疾患管理;
 	public int 薬剤情報提供;
 	public int 手帳記載加算;
@@ -105,7 +107,9 @@ public class ResolvedShinryouMap {
 		this.処方せん料７ = resolver.resolve("処方せん料７", at);
 		this.調基 = resolver.resolve("調基", at);
 		this.特定疾患処方 = resolver.resolve("特定疾患処方", at);
+		this.特定疾患処方管理加算処方せん料 = resolver.resolve("特定疾患処方管理加算（処方せん料）", at);
 		this.長期処方 = resolver.resolve("長期処方", at);
+		this.長期投薬加算処方せん料 = resolver.resolve("長期投薬加算（処方せん料）", at);
 		this.特定疾患管理 = resolver.resolve("特定疾患管理", at);
 		this.薬剤情報提供 = resolver.resolve("薬剤情報提供", at);
 		this.手帳記載加算 = resolver.resolve("手帳記載加算", at);
