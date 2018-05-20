@@ -28,6 +28,7 @@ public class ResolvedShinryouMap {
 	public int 生化Ⅱ判断料;
 	public int 免疫検査判断料;
 	public int 微生物検査判断料;
+	public int 病理判断料;
 	public int 静脈採血;
 	public int 内服調剤;
 	public int 外用調剤;
@@ -97,6 +98,7 @@ public class ResolvedShinryouMap {
 		this.生化Ⅱ判断料 = resolver.resolve("生化Ⅱ判断料", at);
 		this.免疫検査判断料 = resolver.resolve("免疫検査判断料", at);
 		this.微生物検査判断料 = resolver.resolve("微生物検査判断料", at);
+		this.病理判断料 = resolver.resolve("病理判断料", at);
 		this.静脈採血 = resolver.resolve("静脈採血", at);
 		this.内服調剤 = resolver.resolve("内服調剤", at);
 		this.外用調剤 = resolver.resolve("外用調剤", at);

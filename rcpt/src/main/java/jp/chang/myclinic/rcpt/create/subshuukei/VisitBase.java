@@ -1,6 +1,7 @@
 package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.consts.ConductKind;
+import jp.chang.myclinic.consts.HoukatsuKensaKind;
 import jp.chang.myclinic.rcpt.create.ConductDrug;
 import jp.chang.myclinic.rcpt.create.ConductKizai;
 import jp.chang.myclinic.rcpt.create.ConductShinryou;
@@ -27,6 +28,10 @@ class VisitBase {
 
     KizaiItem<ConductKizai> createKizaiItem(ConductKizai src){
         return new KizaiItem<>(src.kizaicode, src.amount, src.kingaku, src);
+    }
+
+    HoukatsuKensaItem<Shinryou> createHoukatsuKensaItem(HoukatsuKensaKind kind, Shinryou shinryou){
+        return new HoukatsuKensaItem<>(kind, shinryou.getShinryoucode(), shinryou.getTensuu(), shinryou);
     }
 
     Optional<Integer> getShuukeiTanka(RcptShuukei<? extends RcptItem> shuukei){

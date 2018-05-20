@@ -1,19 +1,23 @@
 package jp.chang.myclinic.rcpt.create.subshuukei;
 
+import jp.chang.myclinic.consts.HoukatsuKensaKind;
 import jp.chang.myclinic.rcpt.create.Shinryou;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.rcpt.lib.HoukatsuKensaItemList;
+import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 
-public class KensaVisit {
+public class KensaVisit extends VisitBase {
 
-    private static Logger logger = LoggerFactory.getLogger(KensaVisit.class);
-
-    KensaVisit() {
-
-    }
+    private HoukatsuKensaItemList<Shinryou> houkatsuList = new HoukatsuKensaItemList<>();
+    private ShinryouItemList handanryouList = new ShinryouItemList();
+    private ShinryouItemList shinryouList = new ShinryouItemList();
 
     public void add(Shinryou shinryou){
+        HoukatsuKensaKind houkatsuKind = HoukatsuKensaKind.fromCode(shinryou.getKensaGroup());
+        if( houkatsuKind != null && houkatsuKind != HoukatsuKensaKind.NONE ){
+            houkatsuList.add(createHoukatsuKensaItem(houkatsuKind, shinryou));
+        } else {
 
+        }
     }
 
 }
