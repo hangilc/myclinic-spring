@@ -77,6 +77,7 @@ public class ShuukeiMap {
         shidouVisit.merge(src.shidouVisit);
         zaitakuVisit.merge(src.zaitakuVisit);
         touyakuVisit.merge(src.touyakuVisit);
+        chuushaVisit.merge(src.chuushaVisit);
     }
 
     public void output(){
@@ -85,6 +86,7 @@ public class ShuukeiMap {
         shidouVisit.output();
         zaitakuVisit.output();
         touyakuVisit.output();
+        chuushaVisit.output();
     }
 
 }

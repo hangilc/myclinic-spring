@@ -49,4 +49,8 @@ public class ShinryouItem implements RcptItem, Mergeable<ShinryouItem> {
     public void merge(ShinryouItem src) {
         count += src.count;
     }
+
+    String eqvCode(ShinryouItem src){
+        return String.format("%d:%d", shinryoucode, count);
+    }
 }
