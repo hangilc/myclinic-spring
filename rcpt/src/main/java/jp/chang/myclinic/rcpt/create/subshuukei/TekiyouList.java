@@ -35,8 +35,8 @@ class TekiyouList {
         this("" + subShuukei.getCode());
     }
 
-    static void setShinryouMasterMap(ResolvedShinryouMap shinryouMasterMap) {
-        TekiyouList.shinryouMasterMap = shinryouMasterMap;
+    static void setShinryouMasterMap(ResolvedShinryouMap shinryouMasterMapArg) {
+        shinryouMasterMap = shinryouMasterMapArg;
         setupShinryouAlias();
     }
 
@@ -87,8 +87,8 @@ class TekiyouList {
     }
 
     void add(ConductItem<ConductDrug, ConductKizai> item){
-        String label
-        StandardTekiyou tekiyou = new StandardTekiyou();
+        String label = String.join("、", enumerateLabels(item));
+        StandardTekiyou tekiyou = new StandardTekiyou(label, item.getTanka(), item.getCount());
         items.add(tekiyou);
     }
 
@@ -96,12 +96,18 @@ class TekiyouList {
         List<String> labels = new ArrayList<>();
         labels.addAll(item.getShinryouStream().map(ShinryouItem::getName).collect(Collectors.toList()));
         labels.addAll(item.getDrugStream().map(this::conductDrugLabel).collect(Collectors.toList()));
+        labels.addAll(item.getKizaiStream().map(this::kizaiLabel).collect(Collectors.toList()));
         return labels;
     }
 
     private String conductDrugLabel(ConductDrugItem<ConductDrug> drug){
         ConductDrug d = drug.getDrug();
         return String.format("%s %s%s", d.name, NumberUtil.formatNumber(d.amount), d.unit);
+    }
+
+    private String kizaiLabel(KizaiItem<ConductKizai> item){
+        ConductKizai kizai = item.getKizai();
+        return String.format("%s %s%s", kizai.name, NumberUtil.formatNumber(kizai.amount), kizai.unit);
     }
 
     void output() {

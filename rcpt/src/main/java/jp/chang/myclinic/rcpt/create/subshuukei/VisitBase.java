@@ -57,6 +57,9 @@ class VisitBase {
     }
 
     void outputShuukei(String prefix, Integer tanka, Integer count, Integer ten){
+        if( ten != null && ten == 0 ){
+            return;
+        }
         if( tanka != null ){
             System.out.printf("%s.tanka %d\n", prefix, tanka);
         }

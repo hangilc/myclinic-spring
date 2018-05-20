@@ -72,12 +72,9 @@ public class ChuushaVisit extends VisitBase {
         outputTekiyou(SubShuukeiChuusha.CHUUSHA_SONOTA, sonota);
     }
 
-    void outputTekiyou(SubShuukeiChuusha shuukei, ConductItemList<ConductDrug, ConductKizai> items){
+    private void outputTekiyou(SubShuukeiChuusha shuukei, ConductItemList<ConductDrug, ConductKizai> items){
         TekiyouList tekiyouList = new TekiyouList(shuukei);
-        items.stream().forEach(conductItem -> {
-            conductItem.getShinryouStream().forEach(tekiyouList::add);
-            conductItem.getDrugStream().forEach(tekiyouList::add);
-        });
+        items.stream().forEach(tekiyouList::add);
         tekiyouList.output();
     }
 
