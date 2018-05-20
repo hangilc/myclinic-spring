@@ -28,24 +28,23 @@ public class ChuushaVisit extends VisitBase {
     public void add(Shinryou shinryou){
         switch(shinryou.getShuukeisaki()){
             case SHUUKEI_CHUUSHA_HIKA: {
-                addSingleShinryou(hika, ConductKind.HikaChuusha, shinryou);
+                addSingleShinryou(ConductKind.HikaChuusha, shinryou);
                 break;
             }
             case SHUUKEI_CHUUSHA_JOUMYAKU: {
-                addSingleShinryou(joumyaku, ConductKind.JoumyakuChuusha, shinryou);
+                addSingleShinryou(ConductKind.JoumyakuChuusha, shinryou);
                 break;
             }
             case SHUUKEI_CHUUSHA_OTHERS: // fall through
             case SHUUKEI_CHUUSHA_SEIBUTSUETC: {
-                addSingleShinryou(sonota, ConductKind.OtherChuusha, shinryou);
+                addSingleShinryou(ConductKind.OtherChuusha, shinryou);
                 break;
             }
             default: throw new RuntimeException("Unknown shuukeisaki: " + shinryou.getShuukeisaki());
         }
     }
 
-    private void addSingleShinryou(ConductItemList<ConductDrug, ConductKizai> items,
-                                   ConductKind kind, Shinryou shinryou){
+    private void addSingleShinryou(ConductKind kind, Shinryou shinryou){
         Conduct c = new Conduct();
         c.kind = kind.getKanjiRep();
         ConductShinryou cs = new ConductShinryou();
@@ -65,6 +64,9 @@ public class ChuushaVisit extends VisitBase {
     }
 
     void output() {
-
+        outputShuukei("chuusha.hika", null, hika.getTotalCount(), hika.getTen());
+        outputShuukei("chuusha.joumyaku", null, joumyaku.getTotalCount(), joumyaku.getTen());
+        outputShuukei("chuusha.sonota", null, sonota.getTotalCount(), sonota.getTen());
     }
+
 }
