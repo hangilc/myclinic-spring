@@ -3,6 +3,7 @@ package jp.chang.myclinic.rcpt.lib;
 import jp.chang.myclinic.consts.ConductKind;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class ConductItem<D, K> implements RcptItem, Mergeable<ConductItem<D, K>> {
 
@@ -54,6 +55,18 @@ public class ConductItem<D, K> implements RcptItem, Mergeable<ConductItem<D, K>>
     @Override
     public void merge(ConductItem<D, K> src) {
         count += src.count;
+    }
+
+    public Stream<ShinryouItem> getShinryouStream(){
+        return shinryouList.stream();
+    }
+
+    public Stream<ConductDrugItem<D>> getDrugStream(){
+        return drugs.stream();
+    }
+
+    public Stream<KizaiItem<K>> getKizaiStream(){
+        return kizaiList.stream();
     }
 
 }

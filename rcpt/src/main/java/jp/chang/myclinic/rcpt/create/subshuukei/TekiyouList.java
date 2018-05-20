@@ -1,15 +1,15 @@
 package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
-import jp.chang.myclinic.rcpt.create.Gaiyou;
-import jp.chang.myclinic.rcpt.create.Naifuku;
-import jp.chang.myclinic.rcpt.create.Tonpuku;
+import jp.chang.myclinic.rcpt.create.*;
 import jp.chang.myclinic.rcpt.lib.*;
+import jp.chang.myclinic.util.NumberUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class TekiyouList {
@@ -28,6 +28,10 @@ class TekiyouList {
     }
 
     TekiyouList(SubShuukeiTouyaku subShuukei) {
+        this("" + subShuukei.getCode());
+    }
+
+    TekiyouList(SubShuukeiChuusha subShuukei){
         this("" + subShuukei.getCode());
     }
 
@@ -80,6 +84,24 @@ class TekiyouList {
         Gaiyou drug = item.getDrug();
         tekiyou.addDrug(drug.name, drug.amount, drug.unit);
         items.add(tekiyou);
+    }
+
+    void add(ConductItem<ConductDrug, ConductKizai> item){
+        String label
+        StandardTekiyou tekiyou = new StandardTekiyou();
+        items.add(tekiyou);
+    }
+
+    private List<String> enumerateLabels(ConductItem<ConductDrug, ConductKizai> item){
+        List<String> labels = new ArrayList<>();
+        labels.addAll(item.getShinryouStream().map(ShinryouItem::getName).collect(Collectors.toList()));
+        labels.addAll(item.getDrugStream().map(this::conductDrugLabel).collect(Collectors.toList()));
+        return labels;
+    }
+
+    private String conductDrugLabel(ConductDrugItem<ConductDrug> drug){
+        ConductDrug d = drug.getDrug();
+        return String.format("%s %s%s", d.name, NumberUtil.formatNumber(d.amount), d.unit);
     }
 
     void output() {
