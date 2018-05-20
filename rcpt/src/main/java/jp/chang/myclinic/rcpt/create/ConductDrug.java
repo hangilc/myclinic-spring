@@ -2,18 +2,18 @@ package jp.chang.myclinic.rcpt.create;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-class ConductDrug {
+public class ConductDrug {
 
     @JsonProperty("医薬品コード")
-    int iyakuhincode;
+    public int iyakuhincode;
     @JsonProperty("名称")
-    String name;
+    public String name;
     @JsonProperty("用量")
-    double amount;
+    public double amount;
     @JsonProperty("単位")
-    String unit;
+    public String unit;
     @JsonProperty("薬価")
-    double yakka;
+    public double yakka;
 
     ConductDrug() {
 

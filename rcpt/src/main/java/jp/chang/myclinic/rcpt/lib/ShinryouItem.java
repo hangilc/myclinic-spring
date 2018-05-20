@@ -1,6 +1,6 @@
 package jp.chang.myclinic.rcpt.lib;
 
-public class ShinryouItem implements RcptItem, Mergeable<ShinryouItem> {
+public class ShinryouItem implements RcptItem, Mergeable<ShinryouItem>, Eqv {
 
     private int shinryoucode;
     private String name;
@@ -50,7 +50,8 @@ public class ShinryouItem implements RcptItem, Mergeable<ShinryouItem> {
         count += src.count;
     }
 
-    String eqvCode(ShinryouItem src){
+    @Override
+    public String eqvCode(){
         return String.format("%d:%d", shinryoucode, count);
     }
 }

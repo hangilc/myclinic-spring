@@ -2,17 +2,14 @@ package jp.chang.myclinic.rcpt.create;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-class ConductShinryou {
+public class ConductShinryou {
 
     @JsonProperty("診療コード")
-    int shinryoucode;
+    public int shinryoucode;
     @JsonProperty("名称")
-    String name;
+    public String name;
     @JsonProperty("点数")
-    int tensuu;
+    public int tensuu;
 
-    ConductShinryou() {
-
-    }
 
 }

@@ -1,17 +1,32 @@
 package jp.chang.myclinic.rcpt.create.subshuukei;
 
+import jp.chang.myclinic.consts.ConductKind;
+import jp.chang.myclinic.rcpt.create.ConductDrug;
+import jp.chang.myclinic.rcpt.create.ConductKizai;
+import jp.chang.myclinic.rcpt.create.ConductShinryou;
 import jp.chang.myclinic.rcpt.create.Shinryou;
-import jp.chang.myclinic.rcpt.lib.RcptItem;
-import jp.chang.myclinic.rcpt.lib.RcptShuukei;
-import jp.chang.myclinic.rcpt.lib.ShinryouItem;
+import jp.chang.myclinic.rcpt.lib.*;
 
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 class VisitBase {
 
     ShinryouItem createShinryouItem(Shinryou src){
         return new ShinryouItem(src.getShinryoucode(), src.getName(), src.getTensuu());
+    }
+
+    ShinryouItem createShinryouItem(ConductShinryou src){
+        return new ShinryouItem(src.shinryoucode, src.name, src.tensuu);
+    }
+
+    ConductDrugItem<ConductDrug> createConductDrugItem(ConductKind kind, ConductDrug src){
+        return new ConductDrugItem<>(kind, src.iyakuhincode, src.amount, src.yakka, src);
+    }
+
+    KizaiItem<ConductKizai> createKizaiItem(ConductKizai src){
+        return new KizaiItem<>(src.kizaicode, src.amount, src.kingaku, src);
     }
 
     Optional<Integer> getShuukeiTanka(RcptShuukei<? extends RcptItem> shuukei){

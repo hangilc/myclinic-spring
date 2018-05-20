@@ -11,21 +11,17 @@ import java.util.List;
 public class Conduct {
 
     @JsonProperty("ラベル")
-    String label;
+    public String label;
     @JsonProperty("種類")
-    String kind;
+    public String kind;
     @JacksonXmlElementWrapper(localName="診療", useWrapping=false)
     @JsonProperty("診療")
-    List<ConductShinryou> shinryouList = new ArrayList<>();
+    public List<ConductShinryou> shinryouList = new ArrayList<>();
     @JacksonXmlElementWrapper(localName="薬剤", useWrapping=false)
     @JsonProperty("薬剤")
-    List<ConductDrug> drugs = new ArrayList<>();
+    public List<ConductDrug> drugs = new ArrayList<>();
     @JacksonXmlElementWrapper(localName="器材", useWrapping=false)
     @JsonProperty("器材")
-    List<ConductKizai> kizaiList = new ArrayList<>();
-
-    Conduct() {
-
-    }
+    public List<ConductKizai> kizaiList = new ArrayList<>();
 
 }

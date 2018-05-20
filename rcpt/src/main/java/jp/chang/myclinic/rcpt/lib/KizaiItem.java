@@ -1,8 +1,9 @@
 package jp.chang.myclinic.rcpt.lib;
 
 import jp.chang.myclinic.rcpt.RcptUtil;
+import jp.chang.myclinic.util.NumberUtil;
 
-public class KizaiItem<T> implements RcptItem, Mergeable<KizaiItem<T>> {
+public class KizaiItem<T> implements RcptItem, Mergeable<KizaiItem<T>>, Eqv {
 
     private int kizaicode;
     private double amount;
@@ -40,6 +41,11 @@ public class KizaiItem<T> implements RcptItem, Mergeable<KizaiItem<T>> {
 
     public T getKizai() {
         return kizai;
+    }
+
+    @Override
+    public String eqvCode() {
+        return String.format("%d:%s:%d", kizaicode, NumberUtil.formatNumber(amount), count);
     }
 
 }

@@ -10,12 +10,15 @@ public interface RcptShuukei<T extends RcptItem & Mergeable<T>> {
     boolean isEmpty();
     void add(T item);
     Stream<T> stream();
+
     default int getTen(){
         return stream().mapToInt(a -> a.getTanka() * a.getCount()).sum();
     }
+
     default int getTotalCount(){
         return stream().mapToInt(T::getCount).sum();
     }
+
     default void merge(RcptShuukei<T> src){
         List<T> toBeAdded = new ArrayList<>();
         src.stream().forEach(srcItem -> {
@@ -27,4 +30,5 @@ public interface RcptShuukei<T extends RcptItem & Mergeable<T>> {
         });
         toBeAdded.forEach(this::add);
     }
+
 }

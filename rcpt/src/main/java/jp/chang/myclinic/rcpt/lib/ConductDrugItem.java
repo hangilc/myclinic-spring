@@ -2,8 +2,9 @@ package jp.chang.myclinic.rcpt.lib;
 
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.rcpt.RcptUtil;
+import jp.chang.myclinic.util.NumberUtil;
 
-public class ConductDrugItem<T> implements RcptItem, Mergeable<ConductDrugItem<T>>{
+public class ConductDrugItem<T> implements RcptItem, Mergeable<ConductDrugItem<T>>, Eqv {
 
     private ConductKind kind;
     private int iyakuhincode;
@@ -47,6 +48,11 @@ public class ConductDrugItem<T> implements RcptItem, Mergeable<ConductDrugItem<T
 
     public T getDrug() {
         return drug;
+    }
+
+    public String eqvCode(){
+        return String.format("%d:%d:%s:%d", kind.getCode(), iyakuhincode, NumberUtil.formatNumber(amount),
+                count);
     }
 
 }
