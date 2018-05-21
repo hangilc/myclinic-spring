@@ -5,7 +5,6 @@ import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.rcpt.Common;
 import jp.chang.myclinic.rcpt.create.subshuukei.ShuukeiMap;
-import jp.chang.myclinic.rcpt.lib.HoukatsuKensaItem;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +46,9 @@ class Create {
     }
 
     private void outputRcpt(Rcpt rcpt) {
-        LocalDate at = rcpt.getDate(1);
-        Common.MasterMaps masterMaps = Common.getMasterMaps(at);
-        HoukatsuKensaItem.setAt(at);
-        ShuukeiMap.setShinryouMasterMap(masterMaps.resolvedMap.shinryouMap);
+        Globals.at = rcpt.getDate(1);
+        Common.MasterMaps masterMaps = Common.getMasterMaps(Globals.at);
+        Globals.shinryouMasterMap = masterMaps.resolvedMap.shinryouMap;
         rcpt.seikyuuList.forEach(seikyuu -> {
             System.out.print("rcpt_begin\n");
             System.out.printf("kikancode %s\n", rcpt.kikancode);

@@ -2,10 +2,7 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.HoukatsuKensaKind;
-import jp.chang.myclinic.rcpt.create.ConductDrug;
-import jp.chang.myclinic.rcpt.create.ConductKizai;
-import jp.chang.myclinic.rcpt.create.ConductShinryou;
-import jp.chang.myclinic.rcpt.create.Shinryou;
+import jp.chang.myclinic.rcpt.create.*;
 import jp.chang.myclinic.rcpt.lib.*;
 
 import java.util.Optional;
@@ -31,7 +28,7 @@ class VisitBase {
     }
 
     HoukatsuKensaItem<Shinryou> createHoukatsuKensaItem(HoukatsuKensaKind kind, Shinryou shinryou){
-        return new HoukatsuKensaItem<>(kind, shinryou.getShinryoucode(), shinryou.getTensuu(), shinryou);
+        return new HoukatsuKensaItem<>(kind, Globals.at, shinryou.getShinryoucode(), shinryou.getTensuu(), shinryou);
     }
 
     Optional<Integer> getShuukeiTanka(RcptShuukei<? extends RcptItem> shuukei){

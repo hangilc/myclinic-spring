@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 
 class TekiyouList {
 
-    private static ResolvedShinryouMap shinryouMasterMap;
     private static Map<Integer, String> shinryouAliasMap;
     private String code;
     private List<Tekiyou> items = new ArrayList<>();
@@ -35,12 +34,8 @@ class TekiyouList {
         this("" + subShuukei.getCode());
     }
 
-    static void setShinryouMasterMap(ResolvedShinryouMap shinryouMasterMapArg) {
-        shinryouMasterMap = shinryouMasterMapArg;
-        setupShinryouAlias();
-    }
-
     private static void setupShinryouAlias() {
+        ResolvedShinryouMap shinryouMasterMap = Globals.shinryouMasterMap;
         shinryouAliasMap = new HashMap<>();
         shinryouAliasMap.put(shinryouMasterMap.薬剤情報提供, "（薬情）");
         shinryouAliasMap.put(shinryouMasterMap.特定疾患管理, "（特）");
@@ -50,14 +45,21 @@ class TekiyouList {
         shinryouAliasMap.put(shinryouMasterMap.長期投薬加算処方せん料, "（特処長）");
     }
 
+    private Map<Integer, String> getShinryouAliasMap(){
+        if( shinryouAliasMap == null ){
+            setupShinryouAlias();
+        }
+        return shinryouAliasMap;
+    }
+
     void add(String name, int tanka, int count) {
         items.add(new StandardTekiyou(name, tanka, count));
     }
 
     void add(ShinryouItem item) {
         String name;
-        if (shinryouAliasMap.containsKey(item.getShinryoucode())) {
-            name = shinryouAliasMap.get(item.getShinryoucode());
+        if (getShinryouAliasMap().containsKey(item.getShinryoucode())) {
+            name = getShinryouAliasMap().get(item.getShinryoucode());
         } else {
             name = item.getName();
         }

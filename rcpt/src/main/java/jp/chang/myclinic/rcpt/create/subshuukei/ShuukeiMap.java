@@ -1,16 +1,14 @@
 package jp.chang.myclinic.rcpt.create.subshuukei;
 
-import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
+import jp.chang.myclinic.rcpt.create.Globals;
 
 public class ShuukeiMap {
 
-    private static ResolvedShinryouMap shinryouMasterMap;
-
-    private ShoshinVisit shoshinVisit = new ShoshinVisit(shinryouMasterMap);
-    private SaishinVisit saishinVisit = new SaishinVisit(shinryouMasterMap);
+    private ShoshinVisit shoshinVisit = new ShoshinVisit(Globals.shinryouMasterMap);
+    private SaishinVisit saishinVisit = new SaishinVisit(Globals.shinryouMasterMap);
     private ShidouVisit shidouVisit = new ShidouVisit();
-    private ZaitakuVisit zaitakuVisit = new ZaitakuVisit(shinryouMasterMap);
-    private TouyakuVisit touyakuVisit = new TouyakuVisit(shinryouMasterMap);
+    private ZaitakuVisit zaitakuVisit = new ZaitakuVisit(Globals.shinryouMasterMap);
+    private TouyakuVisit touyakuVisit = new TouyakuVisit(Globals.shinryouMasterMap);
     private ChuushaVisit chuushaVisit = new ChuushaVisit();
     private ShochiVisit shochiVisit = new ShochiVisit();
     private ShujutsuVisit shujutsuVisit = new ShujutsuVisit();
@@ -20,11 +18,6 @@ public class ShuukeiMap {
 
     public ShuukeiMap() {
 
-    }
-
-    public static void setShinryouMasterMap(ResolvedShinryouMap shinryouMasterMap){
-        ShuukeiMap.shinryouMasterMap = shinryouMasterMap;
-        TekiyouList.setShinryouMasterMap(shinryouMasterMap);
     }
 
     public ShoshinVisit getShoshinVisit() {

@@ -8,23 +8,21 @@ import java.util.*;
 public class HoukatsuKensaItem<T> implements RcptItem, Mergeable<HoukatsuKensaItem<T>> {
 
     private static HoukatsuKensa houkatsuDb = HoukatsuKensa.load();
-    private static LocalDate at;
 
     private HoukatsuKensaKind kind;
+    private LocalDate at;
     private Set<Integer> shinryoucodes = new HashSet<>();
     private int tanka = 0;
     private int count = 1;
     private List<T> shinryouList = new ArrayList<>();
 
-    public HoukatsuKensaItem(HoukatsuKensaKind kind, int shinryoucode, int tanka, T shinryou) {
+    public HoukatsuKensaItem(HoukatsuKensaKind kind, LocalDate at,
+                             int shinryoucode, int tanka, T shinryou) {
         this.kind = kind;
+        this.at = at;
         this.shinryoucodes.add(shinryoucode);
         this.tanka += tanka;
         this.shinryouList.add(shinryou);
-    }
-
-    public static void setAt(LocalDate atValue){
-        at = atValue;
     }
 
     public boolean canExtend(HoukatsuKensaKind kind){
