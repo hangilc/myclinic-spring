@@ -58,11 +58,19 @@ public class KensaVisit extends VisitBase {
     }
 
     void merge(KensaVisit src){
-
+        houkatsuList.merge(src.houkatsuList);
+        handanryouList.merge(src.handanryouList);
+        shinryouList.merge(src.shinryouList);
     }
 
     void output(){
-
+        int count = houkatsuList.getTotalCount() + handanryouList.getTotalCount() +
+                shinryouList.getTotalCount();
+        int ten = houkatsuList.getTen() + handanryouList.getTen() +
+                shinryouList.getTen();
+        if( ten > 0 ){
+            outputShuukei("kensa", null, count, ten);
+        }
     }
 
 }

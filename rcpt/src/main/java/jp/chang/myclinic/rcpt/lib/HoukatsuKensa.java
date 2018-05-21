@@ -208,16 +208,7 @@ public class HoukatsuKensa {
 	public static HoukatsuKensa load(){
 		try {
 			XmlMapper xmlMapper = new XmlMapper();
-			HoukatsuKensa houkatsuKensa = xmlMapper.readValue(new File("./config/houkatsu-kensa.xml"), HoukatsuKensa.class);
-			for (Revision r : houkatsuKensa.revisions) {
-				System.out.println("Revision");
-				System.out.println("validFrom:" + r.getValidFrom());
-				r.getMap().forEach((key, val) -> {
-					System.out.println("key:" + key);
-					System.out.println("steps:" + val);
-				});
-			}
-			return houkatsuKensa;
+			return xmlMapper.readValue(new File("./config/houkatsu-kensa.xml"), HoukatsuKensa.class);
 		} catch(IOException ex){
 			throw new UncheckedIOException(ex);
 		}
