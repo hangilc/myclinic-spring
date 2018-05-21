@@ -18,6 +18,8 @@ public class Shinryou {
     int tensuu;
     @JsonProperty("集計先")
     String shuukeisaki;
+    @JsonProperty("包括検査")
+    String houkatsuKensa;
     @JsonProperty("検査グループ")
     String kensaGroup;
 
@@ -41,6 +43,10 @@ public class Shinryou {
         return shuukeisaki;
     }
 
+    public String getHoukatsuKensa() {
+        return houkatsuKensa;
+    }
+
     public String getKensaGroup() {
         return kensaGroup;
     }
@@ -52,6 +58,7 @@ public class Shinryou {
                 ", name='" + name + '\'' +
                 ", tensuu=" + tensuu +
                 ", shuukeisaki='" + shuukeisaki + '\'' +
+                ", houkatsuKensa='" + houkatsuKensa + '\'' +
                 ", kensaGroup='" + kensaGroup + '\'' +
                 '}';
     }
