@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +22,10 @@ public class PrinterEnv {
 
     private static Logger logger = LoggerFactory.getLogger(PrinterEnv.class);
     private Path settingDir;
+
+    public PrinterEnv(){
+        this(Paths.get(System.getProperty("user.home"), "myclinic-env", "printer-settings"));
+    }
 
     public PrinterEnv(Path settingDir){
         this.settingDir = settingDir;

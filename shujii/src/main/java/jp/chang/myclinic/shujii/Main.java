@@ -7,6 +7,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.shujii.drawerpreview.DrawerPreviewDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,7 @@ public class Main extends Application {
         stage.setScene(new Scene(root));
         stage.show();
     }
-
+    // TODO: update drawer preview and save printer setting key
     private void doPreview() {
         try {
             ShujiiDrawer drawer = new ShujiiDrawer();
@@ -70,7 +71,7 @@ public class Main extends Application {
             drawer.setClinicPhone(shujiiForm.getClinicPhone());
             drawer.setClinicFax(shujiiForm.getClinicFax());
             drawer.setDetail(shujiiForm.getDetail());
-            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(null);
+            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(new PrinterEnv());
             previewDialog.setContentSize(PaperSize.A4);
             previewDialog.setScaleFactor(0.6);
             previewDialog.setOps(drawer.getOps());
