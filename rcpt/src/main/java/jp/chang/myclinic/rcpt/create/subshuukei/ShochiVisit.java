@@ -13,6 +13,14 @@ public class ShochiVisit {
     }
 
     public void add(Shinryou shinryou){
+        throw new RuntimeException("Not supported (Shochi).");
+    }
+
+    public void merge(ShochiVisit src){
+
+    }
+
+    public void output(){
 
     }
 

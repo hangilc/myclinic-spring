@@ -3,7 +3,7 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 import jp.chang.myclinic.rcpt.create.Conduct;
 import jp.chang.myclinic.rcpt.create.Shinryou;
 
-public class GazouVisit {
+public class GazouVisit extends VisitBase {
 
     GazouVisit() {
 

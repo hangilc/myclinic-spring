@@ -9,6 +9,14 @@ public class ShujutsuVisit {
     }
 
     public void add(Shinryou shinryou){
+        throw new RuntimeException("Not supported (Shujutsu).");
+    }
+
+    public void merge(ShujutsuVisit src){
+
+    }
+
+    public void output(){
 
     }
 
