@@ -55,11 +55,11 @@ public class GazouVisit extends VisitBase {
     }
 
     private Stream<String> collectLabels(ConductItem<ConductDrug, ConductKizai> item) {
-        return Stream.concat(
+        return Stream.concat(Stream.concat(
                 item.getShinryouStream().map(ShinryouItem::getName),
                 item.getDrugStream().map(c -> c.getDrug().name)
-        )
-                .concat(collectKizaiLabel(item));
+                )
+                , collectKizaiLabel(item));
     }
 
 }
