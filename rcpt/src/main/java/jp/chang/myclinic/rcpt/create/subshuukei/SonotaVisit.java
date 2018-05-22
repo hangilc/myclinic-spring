@@ -1,19 +1,25 @@
 package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.rcpt.create.Shinryou;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 
-public class SonotaVisit {
+public class SonotaVisit extends VisitBase {
 
-    private static Logger logger = LoggerFactory.getLogger(SonotaVisit.class);
-
-    SonotaVisit() {
-
-    }
+    private ShinryouItemList shinryouList = new ShinryouItemList();
 
     public void add(Shinryou shinryou){
+        shinryouList.add(createShinryouItem(shinryou));
+    }
 
+    public void merge(SonotaVisit src){
+        shinryouList.merge(src.shinryouList);
+    }
+
+    public void output(){
+        outputShuukei("shochi", null, shinryouList.getTotalCount(), shinryouList.getTen());
+        TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SONOTA);
+        shinryouList.stream().forEach(tekiyouList::add);
+        tekiyouList.output();
     }
 
 }

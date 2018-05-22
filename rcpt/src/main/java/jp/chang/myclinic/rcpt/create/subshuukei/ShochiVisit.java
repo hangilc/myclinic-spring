@@ -1,27 +1,25 @@
 package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.rcpt.create.Shinryou;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 
-public class ShochiVisit {
+public class ShochiVisit extends VisitBase {
 
-    private static Logger logger = LoggerFactory.getLogger(ShochiVisit.class);
-
-    ShochiVisit() {
-
-    }
+    private ShinryouItemList shinryouList = new ShinryouItemList();
 
     public void add(Shinryou shinryou){
-        throw new RuntimeException("Not supported (Shochi).");
+        shinryouList.add(createShinryouItem(shinryou));
     }
 
     public void merge(ShochiVisit src){
-
+        shinryouList.merge(src.shinryouList);
     }
 
     public void output(){
-
+        outputShuukei("shochi", null, shinryouList.getTotalCount(), shinryouList.getTen());
+        TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SHOCHI);
+        shinryouList.stream().forEach(tekiyouList::add);
+        tekiyouList.output();
     }
 
 }

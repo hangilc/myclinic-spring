@@ -74,6 +74,7 @@ public class ShuukeiMap {
         kensaVisit.merge(src.kensaVisit);
         shujutsuVisit.merge(src.shujutsuVisit);
         shochiVisit.merge(src.shochiVisit);
+        sonotaVisit.merge(src.sonotaVisit);
     }
 
     public void output(){
@@ -86,6 +87,7 @@ public class ShuukeiMap {
         kensaVisit.output();
         shujutsuVisit.output();
         shochiVisit.output();
+        sonotaVisit.output();
     }
 
 }
