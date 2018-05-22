@@ -11,15 +11,18 @@ public class ShujutsuVisit extends VisitBase {
         shinryouList.add(createShinryouItem(shinryou));
     }
 
-    public void merge(ShujutsuVisit src){
+    void merge(ShujutsuVisit src){
         shinryouList.merge(src.shinryouList);
     }
 
-    public void output(){
+    void output(){
         outputShuukei("shujutsu", null, shinryouList.getTotalCount(), shinryouList.getTen());
         TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SHUJUTSU);
         shinryouList.stream().forEach(tekiyouList::add);
         tekiyouList.output();
     }
 
+    int getTen(){
+        return shinryouList.getTen();
+    }
 }

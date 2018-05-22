@@ -11,15 +11,19 @@ public class SonotaVisit extends VisitBase {
         shinryouList.add(createShinryouItem(shinryou));
     }
 
-    public void merge(SonotaVisit src){
+    void merge(SonotaVisit src){
         shinryouList.merge(src.shinryouList);
     }
 
-    public void output(){
+    void output(){
         outputShuukei("shochi", null, shinryouList.getTotalCount(), shinryouList.getTen());
         TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SONOTA);
         shinryouList.stream().forEach(tekiyouList::add);
         tekiyouList.output();
+    }
+
+    int getTen(){
+        return shinryouList.getTen();
     }
 
 }

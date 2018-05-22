@@ -83,4 +83,8 @@ public class ChuushaVisit extends VisitBase {
         tekiyouList.output();
     }
 
+    int getTen(){
+        return hika.getTen() + joumyaku.getTen() + sonota.getTen();
+    }
+
 }

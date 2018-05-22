@@ -16,11 +16,15 @@ public class ShidouVisit extends VisitBase {
     }
 
     void output(){
-        int ten = items.getTen();
+        int ten = getTen();
         if( ten > 0 ){
             System.out.printf("shidou.ten %d\n", ten);
             TekiyouList.outputAll(SubShuukei.SUB_SHIDOU, items);
         }
+    }
+
+    int getTen(){
+        return items.getTen();
     }
 
 }

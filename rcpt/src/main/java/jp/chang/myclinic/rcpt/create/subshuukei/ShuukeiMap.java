@@ -71,9 +71,10 @@ public class ShuukeiMap {
         zaitakuVisit.merge(src.zaitakuVisit);
         touyakuVisit.merge(src.touyakuVisit);
         chuushaVisit.merge(src.chuushaVisit);
-        kensaVisit.merge(src.kensaVisit);
-        shujutsuVisit.merge(src.shujutsuVisit);
         shochiVisit.merge(src.shochiVisit);
+        shujutsuVisit.merge(src.shujutsuVisit);
+        kensaVisit.merge(src.kensaVisit);
+        gazouVisit.merge(src.gazouVisit);
         sonotaVisit.merge(src.sonotaVisit);
     }
 
@@ -84,10 +85,27 @@ public class ShuukeiMap {
         zaitakuVisit.output();
         touyakuVisit.output();
         chuushaVisit.output();
-        kensaVisit.output();
-        shujutsuVisit.output();
         shochiVisit.output();
+        shujutsuVisit.output();
+        kensaVisit.output();
+        gazouVisit.output();
         sonotaVisit.output();
+        System.out.printf("kyuufu.hoken.seikyuuten %d\n", calcSeikyuuTen());
     }
+
+    private int calcSeikyuuTen(){
+        return
+        shoshinVisit.getTen() +
+        saishinVisit.getTen() +
+        shidouVisit.getTen() +
+        zaitakuVisit.getTen() +
+        touyakuVisit.getTen() +
+        chuushaVisit.getTen() +
+        shochiVisit.getTen() +
+        shujutsuVisit.getTen() +
+        kensaVisit.getTen() +
+        gazouVisit.getTen() +
+        sonotaVisit.getTen();
+   }
 
 }

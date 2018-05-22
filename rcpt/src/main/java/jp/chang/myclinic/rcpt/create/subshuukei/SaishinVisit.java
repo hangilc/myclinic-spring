@@ -87,4 +87,10 @@ public class SaishinVisit extends VisitBase {
         tekiyouList.output();
     }
 
+    int getTen(){
+        return saishinList.getTen() + gairaiKanriList.getTen() +
+                jikangaiList.getTen() + kyuujitsuList.getTen() +
+                shinyaList.getTen();
+    }
+
 }

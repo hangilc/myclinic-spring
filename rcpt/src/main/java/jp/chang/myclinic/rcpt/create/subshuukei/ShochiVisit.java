@@ -11,15 +11,18 @@ public class ShochiVisit extends VisitBase {
         shinryouList.add(createShinryouItem(shinryou));
     }
 
-    public void merge(ShochiVisit src){
+    void merge(ShochiVisit src){
         shinryouList.merge(src.shinryouList);
     }
 
-    public void output(){
+    void output(){
         outputShuukei("shochi", null, shinryouList.getTotalCount(), shinryouList.getTen());
         TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SHOCHI);
         shinryouList.stream().forEach(tekiyouList::add);
         tekiyouList.output();
     }
 
+    int getTen(){
+        return shinryouList.getTen();
+    }
 }

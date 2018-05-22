@@ -62,4 +62,8 @@ public class GazouVisit extends VisitBase {
                 , collectKizaiLabel(item));
     }
 
+    int getTen(){
+        return shinryouList.getTen() + conducts.getTen();
+    }
+
 }

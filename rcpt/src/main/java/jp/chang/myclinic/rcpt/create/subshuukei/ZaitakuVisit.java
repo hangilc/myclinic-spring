@@ -4,8 +4,6 @@ import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.create.Shinryou;
 import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 
-import static jp.chang.myclinic.rcpt.create.subshuukei.SubShuukei.SUB_ZAITAKU;
-
 public class ZaitakuVisit extends VisitBase {
 
     private ResolvedShinryouMap shinryouMasterMap;
@@ -33,6 +31,10 @@ public class ZaitakuVisit extends VisitBase {
         outputShuukei("zaitaku.oushin", oushinItems);
         outputShuukei("zaitaku.sonota", sonotaItems, false, false);
         TekiyouList.outputAll(SubShuukei.SUB_ZAITAKU, sonotaItems);
+    }
+
+    int getTen(){
+        return oushinItems.getTen() + sonotaItems.getTen();
     }
 
 }

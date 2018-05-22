@@ -103,4 +103,8 @@ public class KensaVisit extends VisitBase {
         return "（判）" + names;
     }
 
+    int getTen(){
+        return houkatsuList.getTen() + handanryouList.getTen() + shinryouList.getTen();
+    }
+
 }

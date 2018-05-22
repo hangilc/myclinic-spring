@@ -122,4 +122,12 @@ public class TouyakuVisit extends VisitBase {
         tekiyouList.output();
     }
 
+    int getTen(){
+        return shinryouShuukeiMap.values().stream()
+                .mapToInt(ShinryouItemList::getTen).sum() +
+                naifukuList.getTen() +
+                tonpukuList.getTen() +
+                gaiyouList.getTen();
+    }
+
 }
