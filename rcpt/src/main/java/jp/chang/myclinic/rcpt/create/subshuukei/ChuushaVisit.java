@@ -17,12 +17,17 @@ public class ChuushaVisit extends VisitBase {
     private ConductItemList<ConductDrug, ConductKizai> sonota = new ConductItemList<>();
 
     public void add(Conduct conduct){
+        ConductItem<ConductDrug, ConductKizai> item = createConductItem(conduct);
         ConductKind kind = ConductKind.fromKanjiRep(conduct.kind);
-        ConductItem<ConductDrug, ConductKizai> item = new ConductItem<>(kind);
-        item.setGazouLabel(conduct.label);
-        conduct.shinryouList.forEach(s -> item.add(createShinryouItem(s)));
-        conduct.drugs.forEach(d -> item.add(createConductDrugItem(kind, d)));
-        conduct.kizaiList.forEach(k -> item.add(createKizaiItem(k)));
+        if( kind == null ){
+            throw new RuntimeException("Unknown conduct kind: " + conduct.kind);
+        }
+        switch(kind){
+            case HikaChuusha: hika.add(item); break;
+            case JoumyakuChuusha: joumyaku.add(item); break;
+            case OtherChuusha: sonota.add(item); break;
+            default: throw new RuntimeException("Unkonw conduct kind: " + kind);
+        }
     }
 
     public void add(Shinryou shinryou){

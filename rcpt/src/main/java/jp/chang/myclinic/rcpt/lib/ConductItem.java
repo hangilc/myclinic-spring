@@ -19,6 +19,10 @@ public class ConductItem<D, K> implements RcptItem, Mergeable<ConductItem<D, K>>
         this.count = 1;
     }
 
+    public String getGazouLabel() {
+        return gazouLabel;
+    }
+
     public void setGazouLabel(String gazouLabel){
         this.gazouLabel = gazouLabel;
     }

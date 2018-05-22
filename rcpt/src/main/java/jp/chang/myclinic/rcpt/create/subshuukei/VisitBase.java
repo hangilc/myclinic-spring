@@ -31,6 +31,16 @@ class VisitBase {
         return new HoukatsuKensaItem<>(kind, Globals.at, shinryou.getShinryoucode(), shinryou.getTensuu(), shinryou);
     }
 
+    ConductItem<ConductDrug, ConductKizai> createConductItem(Conduct conduct){
+        ConductKind kind = ConductKind.fromKanjiRep(conduct.kind);
+        ConductItem<ConductDrug, ConductKizai> item = new ConductItem<>(kind);
+        item.setGazouLabel(conduct.label);
+        conduct.shinryouList.forEach(s -> item.add(createShinryouItem(s)));
+        conduct.drugs.forEach(d -> item.add(createConductDrugItem(kind, d)));
+        conduct.kizaiList.forEach(k -> item.add(createKizaiItem(k)));
+        return item;
+    }
+
     Optional<Integer> getShuukeiTanka(RcptShuukei<? extends RcptItem> shuukei){
         Set<Integer> tankaSet =  shuukei.stream().map(RcptItem::getTanka).collect(Collectors.toSet());
         if( tankaSet.size() == 1 ){
