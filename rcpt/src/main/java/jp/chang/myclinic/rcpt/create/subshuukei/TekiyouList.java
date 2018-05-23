@@ -52,7 +52,7 @@ class TekiyouList {
         return shinryouAliasMap;
     }
 
-    void add(String name, int tanka, int count) {
+    void add(String name, Integer tanka, Integer count) {
         items.add(new StandardTekiyou(name, tanka, count));
     }
 

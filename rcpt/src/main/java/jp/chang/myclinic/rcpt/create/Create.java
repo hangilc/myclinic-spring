@@ -94,8 +94,9 @@ class Create {
             System.out.printf("shinryounissuu.hoken %d\n", calcShinryouNissuu(seikyuu.visits));
             ShuukeiMap grandShuukei = new ShuukeiMap();
             seikyuu.visits.forEach(visit -> {
+                LocalDate visitedAt = LocalDate.parse(visit.visitedAt.substring(0, 10));
                 ShuukeiMap shuukei = new ShuukeiMap();
-                visit.shinryouList.forEach(shinryou -> dispatchShinryou(shuukei, shinryou));
+                visit.shinryouList.forEach(shinryou -> dispatchShinryou(shuukei, shinryou, visitedAt));
                 visit.drug.naifukuList.forEach(drug -> shuukei.getTouyakuVisit().add(drug));
                 visit.drug.tonpukuList.forEach(drug -> shuukei.getTouyakuVisit().add(drug));
                 visit.drug.gaiyouList.forEach(drug -> shuukei.getTouyakuVisit().add(drug));
@@ -266,7 +267,7 @@ class Create {
         return (int)visits.stream().map(v -> v.visitedAt).distinct().count();
     }
 
-    private void dispatchShinryou(ShuukeiMap shuukei, Shinryou shinryou){
+    private void dispatchShinryou(ShuukeiMap shuukei, Shinryou shinryou, LocalDate visitedAt){
         switch(shinryou.shuukeisaki){
             case SHUUKEI_SHOSHIN:
                 shuukei.getShoshinVisit().add(shinryou); break;

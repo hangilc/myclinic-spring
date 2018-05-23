@@ -67,10 +67,10 @@ public class SaishinVisit extends VisitBase {
         saishinList.forEach(item -> {
             int shinryoucode = item.getShinryoucode();
             if( shinryoucode == shinryouMasterMap.再診 ) {
-                local.kai += 1;
+                local.kai += item.getCount();
             } else {
                 if( shinryoucode == shinryouMasterMap.同日再診 ){
-                    local.kai += 1;
+                    local.kai += item.getCount();
                 }
                 tekiyouList.add(item);
             }

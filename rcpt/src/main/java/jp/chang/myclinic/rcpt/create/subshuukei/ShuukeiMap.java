@@ -6,7 +6,7 @@ public class ShuukeiMap {
 
     private ShoshinVisit shoshinVisit = new ShoshinVisit(Globals.shinryouMasterMap);
     private SaishinVisit saishinVisit = new SaishinVisit(Globals.shinryouMasterMap);
-    private ShidouVisit shidouVisit = new ShidouVisit();
+    private ShidouVisit shidouVisit = new ShidouVisit(Globals.shinryouMasterMap);
     private ZaitakuVisit zaitakuVisit = new ZaitakuVisit(Globals.shinryouMasterMap);
     private TouyakuVisit touyakuVisit = new TouyakuVisit(Globals.shinryouMasterMap);
     private ChuushaVisit chuushaVisit = new ChuushaVisit();
@@ -15,10 +15,6 @@ public class ShuukeiMap {
     private KensaVisit kensaVisit = new KensaVisit();
     private GazouVisit gazouVisit = new GazouVisit();
     private SonotaVisit sonotaVisit = new SonotaVisit();
-
-    public ShuukeiMap() {
-
-    }
 
     public ShoshinVisit getShoshinVisit() {
         return shoshinVisit;
