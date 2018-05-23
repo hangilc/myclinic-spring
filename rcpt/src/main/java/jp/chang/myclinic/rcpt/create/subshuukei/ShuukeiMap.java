@@ -14,7 +14,7 @@ public class ShuukeiMap {
     private ShujutsuVisit shujutsuVisit = new ShujutsuVisit();
     private KensaVisit kensaVisit = new KensaVisit();
     private GazouVisit gazouVisit = new GazouVisit();
-    private SonotaVisit sonotaVisit = new SonotaVisit();
+    private SonotaVisit sonotaVisit = new SonotaVisit(Globals.shinryouMasterMap);
 
     public ShoshinVisit getShoshinVisit() {
         return shoshinVisit;

@@ -21,6 +21,16 @@ public class HoukatsuKensa {
 
 	private Revision[] revisions;
 
+	// required for deserialization
+	public Revision[] getRevisions() {
+		return revisions;
+	}
+
+	// required for deserialization
+	public void setRevisions(Revision[] revisions) {
+		this.revisions = revisions;
+	}
+
 	public static class LocalDateDeserializer extends StdDeserializer<LocalDate> {
 
 		protected LocalDateDeserializer(){

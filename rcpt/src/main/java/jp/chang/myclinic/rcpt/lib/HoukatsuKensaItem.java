@@ -16,12 +16,12 @@ public class HoukatsuKensaItem<T> extends RcptItemBase
     private List<T> dataList = new ArrayList<>();
 
     public HoukatsuKensaItem(HoukatsuKensaKind kind, LocalDate at,
-                             int shinryoucode, int tanka, T shinryou) {
+                             int shinryoucode, int tanka, T data) {
         super(tanka, 1);
         this.kind = kind;
         this.at = at;
         this.shinryoucodes.add(shinryoucode);
-        this.dataList.add(shinryou);
+        this.dataList.add(data);
     }
 
     @Override

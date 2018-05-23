@@ -12,7 +12,7 @@ public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>>, Exte
     private double kingaku;
     private List<T> drugs = new ArrayList<>();
 
-    NaifukuItem(String usage, int days, int iyakuhincode, double yakkaTimesAmount, T drug) {
+    public NaifukuItem(String usage, int days, int iyakuhincode, double yakkaTimesAmount, T drug) {
         this.usage = usage;
         this.days = days;
         iyakuhincodes.add(iyakuhincode);

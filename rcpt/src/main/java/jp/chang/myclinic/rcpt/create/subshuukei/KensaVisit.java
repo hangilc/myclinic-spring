@@ -18,10 +18,7 @@ public class KensaVisit extends VisitBase {
 
     public void add(Shinryou shinryou){
         HoukatsuKensaKind kind = HoukatsuKensaKind.fromCode(shinryou.getHoukatsuKensa());
-        if( kind == null ){
-            throw new RuntimeException("Unknown houkatsu kensa: " + shinryou.getHoukatsuKensa());
-        }
-        if( kind != HoukatsuKensaKind.NONE ){
+        if( kind != null && kind != HoukatsuKensaKind.NONE ){
             HoukatsuKensaItem<ShinryouItemData> item = new HoukatsuKensaItem<>(kind, Globals.at,
                     shinryou.getShinryoucode(), shinryou.getTensuu(),
                     new ShinryouItemData(shinryou.getName()));

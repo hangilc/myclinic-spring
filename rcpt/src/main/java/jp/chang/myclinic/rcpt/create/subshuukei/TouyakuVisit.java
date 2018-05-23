@@ -15,7 +15,7 @@ import static jp.chang.myclinic.consts.MyclinicConsts.*;
 
 public class TouyakuVisit extends VisitBase {
 
-    private Map<String, ShinryouItemList> shinryouShuukeiMap = new LinkedHashMap<>();
+    private Map<String, ShinryouItemList<ShinryouItemData>> shinryouShuukeiMap = new LinkedHashMap<>();
     private NaifukuItemList<Naifuku> naifukuList = new NaifukuItemList<>();
     private TonpukuItemList<Tonpuku> tonpukuList = new TonpukuItemList<>();
     private GaiyouItemList<Gaiyou> gaiyouList = new GaiyouItemList<>();
@@ -25,7 +25,7 @@ public class TouyakuVisit extends VisitBase {
         this.shinryouMasterMap = shinryouMasterMap;
         List.of(SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI, SHUUKEI_TOUYAKU_GAIYOUCHOUZAI,
                 SHUUKEI_TOUYAKU_SHOHOU, SHUUKEI_TOUYAKU_MADOKU, SHUUKEI_TOUYAKU_CHOUKI)
-                .forEach(shuukei -> shinryouShuukeiMap.put(shuukei, new ShinryouItemList()));
+                .forEach(shuukei -> shinryouShuukeiMap.put(shuukei, new ShinryouItemList<>()));
     }
 
     public void add(Shinryou shinryou) {
@@ -33,11 +33,13 @@ public class TouyakuVisit extends VisitBase {
     }
 
     public void add(Naifuku drug) {
-        naifukuList.extendOrAdd(drug.usage, drug.days, drug.iyakuhincode, drug.amount * drug.yakka, drug);
+        NaifukuItem<Naifuku> item = new NaifukuItem<>(drug.usage, drug.days, drug.iyakuhincode,
+                drug.yakka * drug.amount, drug);
+        naifukuList.extendOrAdd(item);
     }
 
     public void add(Tonpuku drug) {
-        tonpukuList.add(new TonpukuItem<Tonpuku>(drug.iyakuhincode, drug.usage, drug.amount,
+        tonpukuList.add(new TonpukuItem<>(drug.iyakuhincode, drug.usage, drug.amount,
                 drug.yakka, drug.days, drug));
     }
 
@@ -48,7 +50,7 @@ public class TouyakuVisit extends VisitBase {
 
     void merge(TouyakuVisit src) {
         for (String key : shinryouShuukeiMap.keySet()) {
-            ShinryouItemList items = shinryouShuukeiMap.get(key);
+            ShinryouItemList<ShinryouItemData> items = shinryouShuukeiMap.get(key);
             items.merge(src.shinryouShuukeiMap.get(key));
         }
         naifukuList.merge(src.naifukuList);
@@ -75,7 +77,7 @@ public class TouyakuVisit extends VisitBase {
         outputGaiyouTekiyou();
     }
 
-    private void outputShohouShuukei(ShinryouItemList items) {
+    private void outputShohouShuukei(ShinryouItemList<ShinryouItemData> items) {
         int ten = items.getTen();
         if (ten > 0) {
             int count = items.stream()
@@ -96,7 +98,7 @@ public class TouyakuVisit extends VisitBase {
         }
     }
 
-    private void outputShohouTekiyou(ShinryouItemList items) {
+    private void outputShohouTekiyou(ShinryouItemList<ShinryouItemData> items) {
         TekiyouList.outputAll(SubShuukeiTouyaku.TouyakuShohou,
                 items.stream().filter(item ->
                         item.getShinryoucode() != shinryouMasterMap.処方料 &&

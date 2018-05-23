@@ -7,8 +7,8 @@ import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 public class ZaitakuVisit extends VisitBase {
 
     private ResolvedShinryouMap shinryouMasterMap;
-    private ShinryouItemList oushinItems = new ShinryouItemList();
-    private ShinryouItemList sonotaItems = new ShinryouItemList();
+    private ShinryouItemList<ShinryouItemData> oushinItems = new ShinryouItemList<>();
+    private ShinryouItemList<ShinryouItemData> sonotaItems = new ShinryouItemList<>();
 
     ZaitakuVisit(ResolvedShinryouMap shinryouMasterMap) {
         this.shinryouMasterMap = shinryouMasterMap;

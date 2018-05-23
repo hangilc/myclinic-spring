@@ -8,7 +8,7 @@ interface ExtendableList<T extends Extendable<T>> extends Streamable<T>, Addable
                 item.extend(arg);
                 return true;
             } else {
-                return true;
+                return false;
             }
         });
         if( !extended ){
