@@ -23,22 +23,21 @@ class Data {
     //private static Logger logger = LoggerFactory.getLogger(Data.class);
     private int year;
     private int month;
+    private List<Integer> patientIds;
     private Xml xml;
 
-    Data(int year, int month) {
+    Data(int year, int month, List<Integer> patientIds) {
         this.year = year;
         this.month = month;
+        this.patientIds = patientIds;
         this.xml = new Xml();
     }
 
-    private void out(String fmt, Object... args) {
-        System.out.printf(fmt, args);
-        System.out.print('\n');
-    }
-
     void run() throws Exception {
-        List<Integer> patientIds =
-                Service.api.listVisitingPatientIdHavingHokenCall(year, month).execute().body();
+        if( patientIds == null ) {
+            patientIds =
+                    Service.api.listVisitingPatientIdHavingHokenCall(year, month).execute().body();
+        }
         System.err.printf("Patients %d\n", patientIds.size());
         xml.prelude();
         xml.element("レセプト", () -> {

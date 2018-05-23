@@ -3,6 +3,9 @@ package jp.chang.myclinic.rcpt.data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class CmdArgs {
 
     private static Logger logger = LoggerFactory.getLogger(CmdArgs.class);
@@ -10,18 +13,16 @@ class CmdArgs {
     String serverUrl;
     int year;
     int month;
+    List<Integer> patientIds;
 
     private static void usage(){
         System.err.println("Usage: java -jar rcpt.jar data [options] server-url year month");
         System.err.println("options:");
+        System.err.println("  -p123,2211,...    patientIds");
         System.err.println("  -h                output help");
     }
 
     static CmdArgs parse(String[] args){
-        if( args.length < 4 ){
-            usage();
-            System.exit(1);
-        }
         CmdArgs cmdArgs = new CmdArgs();
         int i = 1;
         for(;i<args.length;i++){
@@ -35,6 +36,10 @@ class CmdArgs {
             }
             char c = arg.charAt(1);
             switch(c){
+                case 'p': {
+                    cmdArgs.patientIds = parsePatientIds(arg.substring(2));
+                    break;
+                }
                 case 'h': {
                     usage();
                     System.exit(0);
@@ -55,5 +60,22 @@ class CmdArgs {
         return cmdArgs;
     }
 
+    private static List<Integer> parsePatientIds(String str){
+        List<Integer> patientIds = new ArrayList<>();
+        for(String s: str.split(",")){
+            try {
+                int patientId = Integer.parseInt(s);
+                patientIds.add(patientId);
+            } catch(NumberFormatException ex){
+                System.err.printf("Invalid pateint Id: %s\n", s);
+                System.exit(1);
+            }
+        }
+        if( patientIds.size() == 0 ){
+            System.err.println("No patient Ids after -p option.");
+            System.exit(1);
+        }
+        return patientIds;
+    }
 
 }

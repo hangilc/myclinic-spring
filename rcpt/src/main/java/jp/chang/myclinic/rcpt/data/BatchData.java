@@ -4,8 +4,6 @@ import jp.chang.myclinic.client.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.PrintWriter;
-
 public class BatchData {
 
     private static Logger logger = LoggerFactory.getLogger(BatchData.class);
@@ -19,10 +17,7 @@ public class BatchData {
         int year = cmdArgs.year;
         int month = cmdArgs.month;
         Service.setServerUrl(serverUrl);
-        PrintWriter out = null;
-        String encoding = "UTF-8";
-        System.setProperty("line.separator", "\n");
-        Data data = new Data(year, month);
+        Data data = new Data(year, month, cmdArgs.patientIds);
         data.run();
         Service.stop();
     }
