@@ -5,34 +5,35 @@ import jp.chang.myclinic.consts.HoukatsuKensaKind;
 import java.time.LocalDate;
 import java.util.*;
 
-public class HoukatsuKensaItem<T> implements RcptItem, Mergeable<HoukatsuKensaItem<T>> {
+public class HoukatsuKensaItem<T> extends RcptItemBase
+        implements Mergeable<HoukatsuKensaItem<T>>, Extendable<HoukatsuKensaItem<T>> {
 
     private static HoukatsuKensa houkatsuDb = HoukatsuKensa.load();
 
     private HoukatsuKensaKind kind;
     private LocalDate at;
     private Set<Integer> shinryoucodes = new HashSet<>();
-    private int tanka = 0;
-    private int count = 1;
-    private List<T> shinryouList = new ArrayList<>();
+    private List<T> dataList = new ArrayList<>();
 
     public HoukatsuKensaItem(HoukatsuKensaKind kind, LocalDate at,
                              int shinryoucode, int tanka, T shinryou) {
+        super(tanka, 1);
         this.kind = kind;
         this.at = at;
         this.shinryoucodes.add(shinryoucode);
-        this.tanka += tanka;
-        this.shinryouList.add(shinryou);
+        this.dataList.add(shinryou);
     }
 
-    public boolean canExtend(HoukatsuKensaKind kind){
-        return this.kind == kind;
+    @Override
+    public boolean canExtend(HoukatsuKensaItem<T> arg){
+        return kind == arg.kind;
     }
 
-    public void extend(int shinryoucode, int tanka, T shinryou){
-        this.shinryoucodes.add(shinryoucode);
-        this.tanka += tanka;
-        this.shinryouList.add(shinryou);
+    @Override
+    public void extend(HoukatsuKensaItem<T> arg){
+        this.shinryoucodes.addAll(arg.shinryoucodes);
+        incTanka(arg.getTanka());
+        this.dataList.addAll(arg.dataList);
     }
 
     @Override
@@ -42,20 +43,16 @@ public class HoukatsuKensaItem<T> implements RcptItem, Mergeable<HoukatsuKensaIt
 
     @Override
     public void merge(HoukatsuKensaItem<T> src) {
-        count += src.count;
+        incCount(src.getCount());
     }
 
     @Override
     public int getTanka() {
-        return houkatsuDb.calcTen(kind, shinryoucodes.size(), at).orElse(tanka);
+        return houkatsuDb.calcTen(kind, shinryoucodes.size(), at).orElse(super.getTanka());
     }
 
-    @Override
-    public int getCount() {
-        return count;
+    public List<T> getDataList() {
+        return dataList;
     }
 
-    public List<T> getShinryouList() {
-        return shinryouList;
-    }
 }

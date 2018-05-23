@@ -6,7 +6,6 @@ import jp.chang.myclinic.rcpt.create.ConductKizai;
 import jp.chang.myclinic.rcpt.create.Shinryou;
 import jp.chang.myclinic.rcpt.lib.ConductItem;
 import jp.chang.myclinic.rcpt.lib.ConductItemList;
-import jp.chang.myclinic.rcpt.lib.ShinryouItem;
 import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 
 import java.util.stream.Collectors;
@@ -14,8 +13,8 @@ import java.util.stream.Stream;
 
 public class GazouVisit extends VisitBase {
 
-    private ShinryouItemList shinryouList = new ShinryouItemList();
-    private ConductItemList<ConductDrug, ConductKizai> conducts = new ConductItemList();
+    private ShinryouItemList<ShinryouItemData> shinryouList = new ShinryouItemList<>();
+    private ConductItemList<ShinryouItemData, ConductDrug, ConductKizai> conducts = new ConductItemList<>();
 
     public void add(Shinryou shinryou) {
         shinryouList.add(createShinryouItem(shinryou));
@@ -35,7 +34,7 @@ public class GazouVisit extends VisitBase {
         int ten = shinryouList.getTen() + conducts.getTen();
         outputShuukei("gazou", null, count, ten);
         TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_GAZOU);
-        shinryouList.forEach(tekiyouList::add);
+        shinryouList.stream().forEach(tekiyouList::add);
         conducts.stream().forEach(conduct -> {
             String gazouLabel = conduct.getGazouLabel();
             String label = gazouLabel + "（";
@@ -50,14 +49,14 @@ public class GazouVisit extends VisitBase {
         tekiyouList.output();
     }
 
-    private Stream<String> collectKizaiLabel(ConductItem<ConductDrug, ConductKizai> item) {
-        return item.getKizaiStream().map(c -> c.getKizai().name);
+    private Stream<String> collectKizaiLabel(ConductItem<ShinryouItemData, ConductDrug, ConductKizai> item) {
+        return item.getKizaiStream().map(c -> c.getData().name);
     }
 
-    private Stream<String> collectLabels(ConductItem<ConductDrug, ConductKizai> item) {
+    private Stream<String> collectLabels(ConductItem<ShinryouItemData, ConductDrug, ConductKizai> item) {
         return Stream.concat(Stream.concat(
-                item.getShinryouStream().map(ShinryouItem::getName),
-                item.getDrugStream().map(c -> c.getDrug().name)
+                item.getShinryouStream().map(s -> s.getData().getName()),
+                item.getDrugStream().map(c -> c.getData().name)
                 )
                 , collectKizaiLabel(item));
     }

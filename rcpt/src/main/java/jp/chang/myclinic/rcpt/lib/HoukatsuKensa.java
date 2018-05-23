@@ -19,7 +19,7 @@ import java.util.*;
 
 public class HoukatsuKensa {
 
-	public Revision[] revisions;
+	private Revision[] revisions;
 
 	public static class LocalDateDeserializer extends StdDeserializer<LocalDate> {
 
@@ -51,7 +51,7 @@ public class HoukatsuKensa {
 		}
 	}
 
-	public Optional<Integer> calcTen(HoukatsuKensaKind kind, int n, LocalDate at){
+	Optional<Integer> calcTen(HoukatsuKensaKind kind, int n, LocalDate at){
 		Revision r = findRevision(at);
 		if( r == null ){
 			return Optional.empty();
@@ -60,7 +60,7 @@ public class HoukatsuKensa {
 		}
 	}
 
-	public Revision findRevision(LocalDate at){
+	private Revision findRevision(LocalDate at){
 		for(Revision r: revisions){
 			if( r.validFrom.compareTo(at) <= 0 ){
 				return r;
@@ -100,7 +100,7 @@ public class HoukatsuKensa {
 			return mapWrapper.getMap();
 		}
 
-		public List<Step> getSteps(HoukatsuKensaKind kind){
+		List<Step> getSteps(HoukatsuKensaKind kind){
 			List<Step> steps = mapWrapper.get(kind);
 			if( steps == null ){
 				return Collections.emptyList();
@@ -109,7 +109,7 @@ public class HoukatsuKensa {
 			}
 		}
 
-		public Optional<Integer> calcTen(HoukatsuKensaKind kind, int n){
+		Optional<Integer> calcTen(HoukatsuKensaKind kind, int n){
 			for(Step step: getSteps(kind)){
 				if( step.getThreshold() <= n ){
 					return Optional.of(step.getPoint());
@@ -123,7 +123,7 @@ public class HoukatsuKensa {
 	public static class KensaMapWrapper {
 		private  Map<HoukatsuKensaKind, List<Step>> map = new HashMap<>();
 
-		public void put(HoukatsuKensaKind kind, List<Step> steps){
+		void put(HoukatsuKensaKind kind, List<Step> steps){
 			map.put(kind, steps);
 		}
 
@@ -144,7 +144,7 @@ public class HoukatsuKensa {
 		public Group(){ }
 
 		@JacksonXmlProperty(isAttribute = true)
-		public String getKey(){
+		String getKey(){
 			return key;
 		}
 
@@ -154,7 +154,7 @@ public class HoukatsuKensa {
 
 		@JacksonXmlElementWrapper(useWrapping = false)
 		@JacksonXmlProperty(localName = "step")
-		public List<Step> getSteps(){
+		List<Step> getSteps(){
 			return steps;
 		}
 
@@ -180,7 +180,7 @@ public class HoukatsuKensa {
 
 		}
 
-		public int getThreshold(){
+		int getThreshold(){
 			return threshold;
 		}
 
@@ -188,7 +188,7 @@ public class HoukatsuKensa {
 			this.threshold = threshold;
 		}
 
-		public int getPoint(){
+		int getPoint(){
 			return point;
 		}
 
@@ -205,7 +205,7 @@ public class HoukatsuKensa {
 		}
 	}
 
-	public static HoukatsuKensa load(){
+	static HoukatsuKensa load(){
 		try {
 			XmlMapper xmlMapper = new XmlMapper();
 			return xmlMapper.readValue(new File("./config/houkatsu-kensa.xml"), HoukatsuKensa.class);

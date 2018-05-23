@@ -278,7 +278,7 @@ class Create {
             case SHUUKEI_SAISHIN_SHINYA:
                 shuukei.getSaishinVisit().add(shinryou); break;
             case SHUUKEI_SHIDOU:
-                shuukei.getShidouVisit().add(shinryou); break;
+                shuukei.getShidouVisit().add(shinryou, visitedAt); break;
             case SHUUKEI_ZAITAKU:
                 shuukei.getZaitakuVisit().add(shinryou); break;
             case SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI:

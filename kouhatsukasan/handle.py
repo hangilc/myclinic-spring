@@ -39,18 +39,18 @@ def calc_term(cursor, date_from, date_upto, yakuzaiDict):
 	c_kouhatsu = 0
 	c_senpatsu = 0
 	c_total = 0
-	for drug in drugs:
-		if drug["d_category"] == 2:
+	for data in drugs:
+		if data["d_category"] == 2:
 			days = 1
 		else:
-			days =  drug["d_days"]
-		count = float(drug["d_amount"]) * int(drug["d_days"])
-		if not (drug["yakkacode"] in yakuzaiDict):
-			#print(drug["name"] + " -> kouhatsu")
+			days =  data["d_days"]
+		count = float(data["d_amount"]) * int(data["d_days"])
+		if not (data["yakkacode"] in yakuzaiDict):
+			#print(data["name"] + " -> kouhatsu")
 			c_kouhatsu += count
 			c_total += count
 		else:
-			entry = yakuzaiDict[drug["yakkacode"]]
+			entry = yakuzaiDict[data["yakkacode"]]
 			if entry.is_kouhatsu:
 				c_kouhatsu += count
 			elif entry.has_kouhatsu:

@@ -11,19 +11,21 @@ import java.util.stream.Collectors;
 
 class VisitBase {
 
-    ShinryouItem createShinryouItem(Shinryou src){
-        return new ShinryouItem(src.getShinryoucode(), src.getName(), src.getTensuu());
+    ShinryouItem<ShinryouItemData> createShinryouItem(Shinryou src){
+        return new ShinryouItem<>(src.getShinryoucode(), src.getTensuu(),
+                new ShinryouItemData(src.getName()));
     }
 
-    ShinryouItem createShinryouItem(ConductShinryou src){
-        return new ShinryouItem(src.shinryoucode, src.name, src.tensuu);
+    ShinryouItem<ShinryouItemData> createShinryouItem(ConductShinryou src){
+        return new ShinryouItem<>(src.shinryoucode, src.tensuu,
+                new ShinryouItemData(src.name));
     }
 
-    ConductDrugItem<ConductDrug> createConductDrugItem(ConductKind kind, ConductDrug src){
+    private ConductDrugItem<ConductDrug> createConductDrugItem(ConductKind kind, ConductDrug src){
         return new ConductDrugItem<>(kind, src.iyakuhincode, src.amount, src.yakka, src);
     }
 
-    KizaiItem<ConductKizai> createKizaiItem(ConductKizai src){
+    private KizaiItem<ConductKizai> createKizaiItem(ConductKizai src){
         return new KizaiItem<>(src.kizaicode, src.amount, src.kingaku, src);
     }
 
@@ -31,9 +33,9 @@ class VisitBase {
         return new HoukatsuKensaItem<>(kind, Globals.at, shinryou.getShinryoucode(), shinryou.getTensuu(), shinryou);
     }
 
-    ConductItem<ConductDrug, ConductKizai> createConductItem(Conduct conduct){
+    ConductItem<ShinryouItemData, ConductDrug, ConductKizai> createConductItem(Conduct conduct){
         ConductKind kind = ConductKind.fromKanjiRep(conduct.kind);
-        ConductItem<ConductDrug, ConductKizai> item = new ConductItem<>(kind);
+        ConductItem<ShinryouItemData, ConductDrug, ConductKizai> item = new ConductItem<>(kind);
         item.setGazouLabel(conduct.label);
         conduct.shinryouList.forEach(s -> item.add(createShinryouItem(s)));
         conduct.drugs.forEach(d -> item.add(createConductDrugItem(kind, d)));
@@ -54,7 +56,8 @@ class VisitBase {
         outputShuukei(prefix, shuukei, true, true);
     }
 
-    void outputShuukei(String prefix, RcptShuukei<? extends RcptItem> shuukei, boolean showTanka, boolean showCount){
+    void outputShuukei(String prefix, RcptShuukei<? extends RcptItem> shuukei,
+                       boolean showTanka, boolean showCount){
         if( !shuukei.isEmpty() ){
             Integer tanka = null, count = null, ten;
             if( showTanka ){

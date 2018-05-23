@@ -11,15 +11,15 @@ public class ConductDrugItem<T> implements RcptItem, Mergeable<ConductDrugItem<T
     private double amount;
     private double yakka;
     private int count;
-    private T drug;
+    private T data;
 
-    public ConductDrugItem(ConductKind kind, int iyakuhincode, double amount, double yakka, T drug) {
+    public ConductDrugItem(ConductKind kind, int iyakuhincode, double amount, double yakka, T data) {
         this.kind = kind;
         this.iyakuhincode = iyakuhincode;
         this.amount = amount;
         this.yakka = yakka;
         this.count = 1;
-        this.drug = drug;
+        this.data = data;
     }
 
     @Override
@@ -46,8 +46,8 @@ public class ConductDrugItem<T> implements RcptItem, Mergeable<ConductDrugItem<T
         return count;
     }
 
-    public T getDrug() {
-        return drug;
+    public T getData() {
+        return data;
     }
 
     public String eqvCode(){

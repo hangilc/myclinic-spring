@@ -5,11 +5,11 @@ import jp.chang.myclinic.consts.ConductKind;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class ConductItem<D, K> implements RcptItem, Mergeable<ConductItem<D, K>> {
+public class ConductItem<S, D, K> implements RcptItem, Mergeable<ConductItem<S, D, K>> {
 
     private ConductKind kind;
     private String gazouLabel;
-    private ShinryouItemList shinryouList = new ShinryouItemList();
+    private ShinryouItemList<S> shinryouList = new ShinryouItemList<>();
     private ConductDrugItemList<D> drugs = new ConductDrugItemList<>();
     private KizaiItemList<K> kizaiList = new KizaiItemList<>();
     private int count;
@@ -27,7 +27,7 @@ public class ConductItem<D, K> implements RcptItem, Mergeable<ConductItem<D, K>>
         this.gazouLabel = gazouLabel;
     }
 
-    public void add(ShinryouItem item){
+    public void add(ShinryouItem<S> item){
         shinryouList.add(item);
     }
 
@@ -50,18 +50,18 @@ public class ConductItem<D, K> implements RcptItem, Mergeable<ConductItem<D, K>>
     }
 
     @Override
-    public boolean canMerge(ConductItem<D, K> src) {
+    public boolean canMerge(ConductItem<S, D, K> src) {
         return kind == src.kind && shinryouList.eqv(src.shinryouList) &&
                 drugs.eqv(src.drugs) && kizaiList.eqv(src.kizaiList) &&
                 Objects.equals(gazouLabel, src.gazouLabel);
     }
 
     @Override
-    public void merge(ConductItem<D, K> src) {
+    public void merge(ConductItem<S, D, K> src) {
         count += src.count;
     }
 
-    public Stream<ShinryouItem> getShinryouStream(){
+    public Stream<ShinryouItem<S>> getShinryouStream(){
         return shinryouList.stream();
     }
 

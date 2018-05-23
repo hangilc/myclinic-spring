@@ -9,14 +9,14 @@ public class KizaiItem<T> implements RcptItem, Mergeable<KizaiItem<T>>, Eqv {
     private double amount;
     private double kingaku;
     private int count;
-    private T kizai;
+    private T data;
 
-    public KizaiItem(int kizaicode, double amount, double kingaku, T kizai) {
+    public KizaiItem(int kizaicode, double amount, double kingaku, T data) {
         this.kizaicode = kizaicode;
         this.amount = amount;
         this.kingaku = kingaku;
         this.count = 1;
-        this.kizai = kizai;
+        this.data = data;
     }
 
     @Override
@@ -39,8 +39,8 @@ public class KizaiItem<T> implements RcptItem, Mergeable<KizaiItem<T>>, Eqv {
         return count;
     }
 
-    public T getKizai() {
-        return kizai;
+    public T getData() {
+        return data;
     }
 
     @Override

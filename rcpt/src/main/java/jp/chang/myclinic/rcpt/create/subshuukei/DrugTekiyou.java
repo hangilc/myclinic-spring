@@ -12,7 +12,7 @@ class DrugTekiyou implements Tekiyou {
         double amount;
         String unit;
 
-        public Drug(String name, double amount, String unit) {
+        Drug(String name, double amount, String unit) {
             this.name = name;
             this.amount = amount;
             this.unit = unit;

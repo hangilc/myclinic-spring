@@ -2,7 +2,6 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.create.Shinryou;
-import jp.chang.myclinic.rcpt.lib.ShinryouItem;
 import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 
 import java.util.ArrayList;
@@ -10,7 +9,7 @@ import java.util.List;
 
 public class ShoshinVisit extends VisitBase {
 
-    private ShinryouItemList items = new ShinryouItemList();
+    private ShinryouItemList<ShinryouItemData> items = new ShinryouItemList<>();
     private ResolvedShinryouMap shinryouMasterMap;
 
     ShoshinVisit(ResolvedShinryouMap shinryouMasterMap) {
@@ -18,9 +17,7 @@ public class ShoshinVisit extends VisitBase {
     }
 
     public void add(Shinryou shinryou) {
-        ShinryouItem item = new ShinryouItem(shinryou.getShinryoucode(), shinryou.getName(),
-                shinryou.getTensuu());
-        items.add(item);
+        items.add(createShinryouItem(shinryou));
     }
 
     void merge(ShoshinVisit src) {
@@ -34,7 +31,7 @@ public class ShoshinVisit extends VisitBase {
         }
         Local local = new Local();
         TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SHOSHIN);
-        items.forEach(item -> {
+        items.stream().forEach(item -> {
             int shinryoucode = item.getShinryoucode();
             if( shinryoucode == shinryouMasterMap.初診 ){
                 local.kai += 1;

@@ -2,31 +2,48 @@ package jp.chang.myclinic.rcpt.lib;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface RcptShuukei<T extends RcptItem & Mergeable<T>> {
+public class RcptShuukei<T extends RcptItem & Mergeable<T>> implements Streamable<T>, Addable<T> {
 
-    boolean isEmpty();
-    void add(T item);
-    Stream<T> stream();
+    private List<T> items = new ArrayList<>();
 
-    default int getTen(){
+    public boolean isEmpty(){
+        return items.isEmpty();
+    }
+
+    @Override
+    public void add(T item){
+        items.add(item);
+    }
+
+    @Override
+    public Stream<T> stream(){
+        return items.stream();
+    }
+
+    public int getTen(){
         return stream().mapToInt(a -> a.getTanka() * a.getCount()).sum();
     }
 
-    default int getTotalCount(){
+    public int getTotalCount(){
         return stream().mapToInt(T::getCount).sum();
     }
 
-    default void merge(RcptShuukei<T> src){
+    public void merge(RcptShuukei<T> src){
         List<T> toBeAdded = new ArrayList<>();
-        src.stream().forEach(srcItem -> {
-            Optional<T> mergeable =  stream().filter(item -> item.canMerge(srcItem)).findFirst();
-            mergeable.ifPresentOrElse(
-                    m -> m.merge(srcItem),
-                    () -> toBeAdded.add(srcItem)
-            );
+        src.items.forEach(srcItem -> {
+            boolean merged = stream().anyMatch(item -> {
+                if( item.canMerge(srcItem) ){
+                    item.merge(srcItem);
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            if( !merged ){
+                toBeAdded.add(srcItem);
+            }
         });
         toBeAdded.forEach(this::add);
     }

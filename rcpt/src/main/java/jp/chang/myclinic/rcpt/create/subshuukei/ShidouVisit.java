@@ -2,19 +2,22 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.create.Shinryou;
+import jp.chang.myclinic.rcpt.lib.ShinryouItem;
 import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 import jp.chang.myclinic.util.DateTimeUtil;
 
+import java.time.LocalDate;
+
 public class ShidouVisit extends VisitBase {
     private ResolvedShinryouMap shinryouMasterMap;
-    private ShinryouItemList items = new ShinryouItemList();
+    private ShinryouItemList<ShidouItemData> items = new ShinryouItemList<>();
 
     ShidouVisit(ResolvedShinryouMap shinryouMasterMap){
         this.shinryouMasterMap = shinryouMasterMap;
     }
 
-    public void add(Shinryou shinryou){
-        items.add(createShinryouItem(shinryou));
+    public void add(Shinryou shinryou, LocalDate visitedAt){
+        items.add(createShidouItem(shinryou, visitedAt));
     }
 
     void merge(ShidouVisit src){
@@ -28,8 +31,10 @@ public class ShidouVisit extends VisitBase {
             TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SHIDOU);
             items.stream().forEach(item -> {
                 if( item.getShinryoucode() == shinryouMasterMap.診療情報提供料１ ){
-                    tekiyouList.add(item.getName(), null, null);
-                    tekiyouList.add("" + DateTimeUtil.sqlDateToKanji(item.getDateTimeUtil.kanjiFormatter1));
+                    String dateLabel = DateTimeUtil.toKanji(item.getData().getVisitedAt(),
+                            DateTimeUtil.kanjiFormatter1);
+                    tekiyouList.add(item.getData().getName(), null, null);
+                    tekiyouList.add("      " + dateLabel, item.getTanka(), item.getCount());
                 } else {
                     tekiyouList.add(item);
                 }
@@ -40,6 +45,11 @@ public class ShidouVisit extends VisitBase {
 
     int getTen(){
         return items.getTen();
+    }
+
+    private ShinryouItem<ShidouItemData> createShidouItem(Shinryou shinryou, LocalDate visitedAt){
+        ShidouItemData data = new ShidouItemData(shinryou.getName(), visitedAt);
+        return new ShinryouItem<>(shinryou.getShinryoucode(), shinryou.getTensuu(), data);
     }
 
 }

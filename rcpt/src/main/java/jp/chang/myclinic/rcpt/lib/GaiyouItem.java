@@ -11,15 +11,15 @@ public class GaiyouItem<T> implements RcptItem, Mergeable<GaiyouItem<T>>  {
     private double amount;
     private double yakka;
     private int count;
-    private T drug;
+    private T data;
 
-    public GaiyouItem(int iyakuhincode, String usage, double amount, double yakka, T drug) {
+    public GaiyouItem(int iyakuhincode, String usage, double amount, double yakka, T data) {
         this.iyakuhincode = iyakuhincode;
         this.usage = usage;
         this.amount = amount;
         this.yakka = yakka;
         this.count = 1;
-        this.drug = drug;
+        this.data = data;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class GaiyouItem<T> implements RcptItem, Mergeable<GaiyouItem<T>>  {
         return count;
     }
 
-    public T getDrug() {
-        return drug;
+    public T getData() {
+        return data;
     }
 }

@@ -1,57 +1,36 @@
 package jp.chang.myclinic.rcpt.lib;
 
-public class ShinryouItem implements RcptItem, Mergeable<ShinryouItem>, Eqv {
+public class ShinryouItem<T> extends RcptItemBase implements Mergeable<ShinryouItem<T>>, Eqv {
 
     private int shinryoucode;
-    private String name;
-    private int tensuu;
-    private int count;
+    private T data;
 
-    public ShinryouItem(int shinryoucode, String name, int tensuu) {
+    public ShinryouItem(int shinryoucode, int tensuu, T data) {
+        super(tensuu, 1);
         this.shinryoucode = shinryoucode;
-        this.name = name;
-        this.tensuu = tensuu;
-        this.count = 1;
-    }
-
-    @Override
-    public int getTanka() {
-        return getTensuu();
+        this.data = data;
     }
 
     public int getShinryoucode() {
         return shinryoucode;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public int getTensuu() {
-        return tensuu;
+    public T getData(){
+        return data;
     }
 
     @Override
-    public int getCount() {
-        return count;
-    }
-
-    void setCount(int count) {
-        this.count = count;
-    }
-
-    @Override
-    public boolean canMerge(ShinryouItem src) {
+    public boolean canMerge(ShinryouItem<T> src) {
         return shinryoucode == src.shinryoucode;
     }
 
     @Override
-    public void merge(ShinryouItem src) {
-        count += src.count;
+    public void merge(ShinryouItem<T> src) {
+        incCount(src.getCount());
     }
 
     @Override
-    public String eqvCode(){
-        return String.format("%d:%d", shinryoucode, count);
+    public String eqvCode() {
+        return String.format("%d:%d", shinryoucode, getCount());
     }
 }

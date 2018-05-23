@@ -13,18 +13,18 @@ import static jp.chang.myclinic.consts.MyclinicConsts.*;
 public class SaishinVisit extends VisitBase {
 
     private ResolvedShinryouMap shinryouMasterMap;
-    private ShinryouItemList saishinList = new ShinryouItemList();
-    private ShinryouItemList gairaiKanriList = new ShinryouItemList();
-    private ShinryouItemList jikangaiList = new ShinryouItemList();
-    private ShinryouItemList kyuujitsuList = new ShinryouItemList();
-    private ShinryouItemList shinyaList = new ShinryouItemList();
+    private ShinryouItemList<ShinryouItemData> saishinList = new ShinryouItemList<>();
+    private ShinryouItemList<ShinryouItemData> gairaiKanriList = new ShinryouItemList<>();
+    private ShinryouItemList<ShinryouItemData> jikangaiList = new ShinryouItemList<>();
+    private ShinryouItemList<ShinryouItemData> kyuujitsuList = new ShinryouItemList<>();
+    private ShinryouItemList<ShinryouItemData> shinyaList = new ShinryouItemList<>();
 
     SaishinVisit(ResolvedShinryouMap shinryouMasterMap) {
         this.shinryouMasterMap = shinryouMasterMap;
     }
 
     public void add(Shinryou shinryou){
-        ShinryouItem item = createShinryouItem(shinryou);
+        ShinryouItem<ShinryouItemData> item = createShinryouItem(shinryou);
         switch(shinryou.getShuukeisaki()){
             case SHUUKEI_SAISHIN_SAISHIN:
                 saishinList.add(item); break;
@@ -64,7 +64,7 @@ public class SaishinVisit extends VisitBase {
         Local local = new Local();
         TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SAISHIN);
         Set<Integer> tankaSet = new HashSet<>();
-        saishinList.forEach(item -> {
+        saishinList.stream().forEach(item -> {
             int shinryoucode = item.getShinryoucode();
             if( shinryoucode == shinryouMasterMap.再診 ) {
                 local.kai += item.getCount();
@@ -74,7 +74,7 @@ public class SaishinVisit extends VisitBase {
                 }
                 tekiyouList.add(item);
             }
-            tankaSet.add(item.getTensuu());
+            tankaSet.add(item.getTanka());
         });
         int ten = saishinList.getTen();
         if( ten > 0 ){

@@ -4,7 +4,7 @@ import jp.chang.myclinic.rcpt.RcptUtil;
 
 import java.util.*;
 
-public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>> {
+public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>>, Extendable<NaifukuItem<T>> {
 
     private String usage;
     private int days;
@@ -12,7 +12,7 @@ public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>> {
     private double kingaku;
     private List<T> drugs = new ArrayList<>();
 
-    public NaifukuItem(String usage, int days, int iyakuhincode, double yakkaTimesAmount, T drug) {
+    NaifukuItem(String usage, int days, int iyakuhincode, double yakkaTimesAmount, T drug) {
         this.usage = usage;
         this.days = days;
         iyakuhincodes.add(iyakuhincode);
@@ -20,14 +20,16 @@ public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>> {
         drugs.add(drug);
     }
 
-    boolean canExtend(String usage, int days){
-        return Objects.equals(this.usage, usage) && this.days == days;
+    @Override
+    public boolean canExtend(NaifukuItem<T> arg){
+        return Objects.equals(usage, arg.usage) && days == arg.days;
     }
 
-    void extend(int iyakuhincode, double yakkaTimesAmount, T drug){
-        this.iyakuhincodes.add(iyakuhincode);
-        kingaku += yakkaTimesAmount;
-        this.drugs.add(drug);
+    @Override
+    public void extend(NaifukuItem<T> arg){
+        this.iyakuhincodes.addAll(arg.iyakuhincodes);
+        kingaku += arg.kingaku;
+        this.drugs.addAll(arg.drugs);
     }
 
     @Override

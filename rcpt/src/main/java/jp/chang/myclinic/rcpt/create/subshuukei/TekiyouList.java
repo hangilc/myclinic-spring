@@ -56,12 +56,12 @@ class TekiyouList {
         items.add(new StandardTekiyou(name, tanka, count));
     }
 
-    void add(ShinryouItem item) {
+    void add(ShinryouItem<? extends ShinryouItemData> item) {
         String name;
         if (getShinryouAliasMap().containsKey(item.getShinryoucode())) {
             name = getShinryouAliasMap().get(item.getShinryoucode());
         } else {
-            name = item.getName();
+            name = item.getData().getName();
         }
         items.add(new StandardTekiyou(name, item.getTanka(), item.getCount()));
     }
@@ -83,32 +83,32 @@ class TekiyouList {
 
     void add(GaiyouItem<Gaiyou> item){
         DrugTekiyou tekiyou = new DrugTekiyou(item.getTanka(), item.getCount());
-        Gaiyou drug = item.getDrug();
+        Gaiyou drug = item.getData();
         tekiyou.addDrug(drug.name, drug.amount, drug.unit);
         items.add(tekiyou);
     }
 
-    void add(ConductItem<ConductDrug, ConductKizai> item){
+    void add(ConductItem<ShinryouItemData, ConductDrug, ConductKizai> item){
         String label = String.join("、", enumerateLabels(item));
         StandardTekiyou tekiyou = new StandardTekiyou(label, item.getTanka(), item.getCount());
         items.add(tekiyou);
     }
 
-    private List<String> enumerateLabels(ConductItem<ConductDrug, ConductKizai> item){
+    private List<String> enumerateLabels(ConductItem<ShinryouItemData, ConductDrug, ConductKizai> item){
         List<String> labels = new ArrayList<>();
-        labels.addAll(item.getShinryouStream().map(ShinryouItem::getName).collect(Collectors.toList()));
+        labels.addAll(item.getShinryouStream().map(s -> s.getData().getName()).collect(Collectors.toList()));
         labels.addAll(item.getDrugStream().map(this::conductDrugLabel).collect(Collectors.toList()));
         labels.addAll(item.getKizaiStream().map(this::kizaiLabel).collect(Collectors.toList()));
         return labels;
     }
 
     private String conductDrugLabel(ConductDrugItem<ConductDrug> drug){
-        ConductDrug d = drug.getDrug();
+        ConductDrug d = drug.getData();
         return String.format("%s %s%s", d.name, NumberUtil.formatNumber(d.amount), d.unit);
     }
 
     private String kizaiLabel(KizaiItem<ConductKizai> item){
-        ConductKizai kizai = item.getKizai();
+        ConductKizai kizai = item.getData();
         return String.format("%s %s%s", kizai.name, NumberUtil.formatNumber(kizai.amount), kizai.unit);
     }
 
@@ -120,15 +120,15 @@ class TekiyouList {
         }
     }
 
-    static void outputAll(SubShuukei shuukei, ShinryouItemList shinryouList) {
+    static void outputAll(SubShuukei shuukei, ShinryouItemList<ShinryouItemData> shinryouList) {
         outputAll("" + shuukei.getCode(), shinryouList.stream());
     }
 
-    static void outputAll(SubShuukeiTouyaku shuukei, Stream<ShinryouItem> items){
+    static void outputAll(SubShuukeiTouyaku shuukei, Stream<ShinryouItem<ShinryouItemData>> items){
         outputAll("" + shuukei.getCode(), items);
     }
 
-    private static void outputAll(String shuukei, Stream<ShinryouItem> items){
+    private static void outputAll(String shuukei, Stream<ShinryouItem<ShinryouItemData>> items){
         TekiyouList tekiyouList = new TekiyouList(shuukei);
         items.forEach(tekiyouList::add);
         tekiyouList.output();

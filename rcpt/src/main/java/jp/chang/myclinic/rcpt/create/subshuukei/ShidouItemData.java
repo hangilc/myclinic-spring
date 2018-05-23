@@ -2,15 +2,16 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import java.time.LocalDate;
 
-class ShinrouData {
+class ShidouItemData extends ShinryouItemData {
 
     private LocalDate visitedAt;
 
-    ShinrouData(LocalDate visitedAt) {
+    ShidouItemData(String name, LocalDate visitedAt) {
+        super(name);
         this.visitedAt = visitedAt;
     }
 
-    public LocalDate getVisitedAt() {
+    LocalDate getVisitedAt() {
         return visitedAt;
     }
 }

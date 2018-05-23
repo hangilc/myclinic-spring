@@ -5,7 +5,7 @@ import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
 
 public class ShochiVisit extends VisitBase {
 
-    private ShinryouItemList shinryouList = new ShinryouItemList();
+    private ShinryouItemList<ShinryouItemData> shinryouList = new ShinryouItemList<>();
 
     public void add(Shinryou shinryou){
         shinryouList.add(createShinryouItem(shinryou));

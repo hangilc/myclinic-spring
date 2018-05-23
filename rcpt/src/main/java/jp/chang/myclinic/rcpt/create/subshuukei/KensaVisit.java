@@ -12,15 +12,20 @@ import java.util.stream.Collectors;
 
 public class KensaVisit extends VisitBase {
 
-    private HoukatsuKensaItemList<Shinryou> houkatsuList = new HoukatsuKensaItemList<>();
-    private ShinryouItemList handanryouList = new ShinryouItemList();
-    private ShinryouItemList shinryouList = new ShinryouItemList();
+    private HoukatsuKensaItemList<ShinryouItemData> houkatsuList = new HoukatsuKensaItemList<>();
+    private ShinryouItemList<ShinryouItemData> handanryouList = new ShinryouItemList<>();
+    private ShinryouItemList<ShinryouItemData> shinryouList = new ShinryouItemList<>();
 
     public void add(Shinryou shinryou){
         HoukatsuKensaKind kind = HoukatsuKensaKind.fromCode(shinryou.getHoukatsuKensa());
-        if( kind != null && kind != HoukatsuKensaKind.NONE ){
-            houkatsuList.extendOrAdd(kind, Globals.at, shinryou.getShinryoucode(), shinryou.getTensuu(),
-                    shinryou);
+        if( kind == null ){
+            throw new RuntimeException("Unknown houkatsu kensa: " + shinryou.getHoukatsuKensa());
+        }
+        if( kind != HoukatsuKensaKind.NONE ){
+            HoukatsuKensaItem<ShinryouItemData> item = new HoukatsuKensaItem<>(kind, Globals.at,
+                    shinryou.getShinryoucode(), shinryou.getTensuu(),
+                    new ShinryouItemData(shinryou.getName()));
+            houkatsuList.extendOrAdd(item);
         } else if( isHandanryou(shinryou.getShinryoucode()) ) {
             int shinryoucode = shinryou.getShinryoucode();
             if( handanryouList.stream().anyMatch(item -> item.getShinryoucode() == shinryoucode) ){
@@ -92,9 +97,9 @@ public class KensaVisit extends VisitBase {
         tekiyouList.output();
     }
 
-    private String houkatsuLabel(HoukatsuKensaItem<Shinryou> item){
-        return item.getShinryouList().stream()
-                .map(Shinryou::getName).collect(Collectors.joining("、"));
+    private String houkatsuLabel(HoukatsuKensaItem<ShinryouItemData> item){
+        return item.getDataList().stream()
+                .map(ShinryouItemData::getName).collect(Collectors.joining("、"));
     }
 
     private String handanryouLabel(){

@@ -12,12 +12,12 @@ import static jp.chang.myclinic.consts.MyclinicConsts.*;
 
 public class ChuushaVisit extends VisitBase {
 
-    private ConductItemList<ConductDrug, ConductKizai> hika = new ConductItemList<>();
-    private ConductItemList<ConductDrug, ConductKizai> joumyaku = new ConductItemList<>();
-    private ConductItemList<ConductDrug, ConductKizai> sonota = new ConductItemList<>();
+    private ConductItemList<ShinryouItemData, ConductDrug, ConductKizai> hika = new ConductItemList<>();
+    private ConductItemList<ShinryouItemData, ConductDrug, ConductKizai> joumyaku = new ConductItemList<>();
+    private ConductItemList<ShinryouItemData, ConductDrug, ConductKizai> sonota = new ConductItemList<>();
 
     public void add(Conduct conduct){
-        ConductItem<ConductDrug, ConductKizai> item = createConductItem(conduct);
+        ConductItem<ShinryouItemData, ConductDrug, ConductKizai> item = createConductItem(conduct);
         ConductKind kind = ConductKind.fromKanjiRep(conduct.kind);
         if( kind == null ){
             throw new RuntimeException("Unknown conduct kind: " + conduct.kind);
@@ -77,7 +77,7 @@ public class ChuushaVisit extends VisitBase {
         outputTekiyou(SubShuukeiChuusha.CHUUSHA_SONOTA, sonota);
     }
 
-    private void outputTekiyou(SubShuukeiChuusha shuukei, ConductItemList<ConductDrug, ConductKizai> items){
+    private void outputTekiyou(SubShuukeiChuusha shuukei, ConductItemList<ShinryouItemData, ConductDrug, ConductKizai> items){
         TekiyouList tekiyouList = new TekiyouList(shuukei);
         items.stream().forEach(tekiyouList::add);
         tekiyouList.output();
