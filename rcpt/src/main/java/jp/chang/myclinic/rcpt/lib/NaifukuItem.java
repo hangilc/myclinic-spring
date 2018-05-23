@@ -34,7 +34,7 @@ public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>>, Exte
 
     @Override
     public boolean canMerge(NaifukuItem src){
-        return Objects.equals(usage, src.usage) && days == src.days &&
+        return Objects.equals(usage, src.usage) && 
                 iyakuhincodes.equals(src.iyakuhincodes);
     }
 
