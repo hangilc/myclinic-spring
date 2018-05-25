@@ -22,6 +22,9 @@ public class RcptDrawer {
     private Point hokenshubetsuKouhi1;
     private Point hokenshubetsuRoujin;
     private Point hokenshubetsuTaishoku;
+    private Point hokentandokuTandoku;
+    private Point hokentandokuHei2;
+    private Point hokentandokuHei3;
 
     public RcptDrawer() {
         setupFonts();
@@ -135,6 +138,7 @@ public class RcptDrawer {
         Box[] cols = box.splitToColumns(4.5, 25, 35);
         setupHokenShubetsu1(cols[0]);
         setupHokenShubetsu2(cols[1]);
+        setupHokenShubetsu3(cols[2]);
     }
 
     private void setupHokenShubetsu1(Box box) {
@@ -181,6 +185,14 @@ public class RcptDrawer {
         hokenShubetsu(rows[1], "４", "退職", point -> this.hokenshubetsuTaishoku = point);
     }
 
+    public void markHokenshubetsuKoukikourei(){
+        markHokenshubetsu(hokenshubetsuRoujin);
+    }
+
+    public void markHokenshubetsuTaishoku(){
+        markHokenshubetsu(hokenshubetsuTaishoku);
+    }
+
     private void hokenShubetsu(Box box, String num, String label, Consumer<Point> cb){
         Box[] cols = box.splitToColumns(2.5);
         compiler.setFont("Gothic2.6");
@@ -188,6 +200,26 @@ public class RcptDrawer {
         compiler.setFont("Mincho2.6");
         compiler.textInJustified(label, cols[1], VAlign.Center);
         cb.accept(box.getCenterPoint());
+    }
+
+    private void setupHokenShubetsu3(Box box){
+        compiler.frameRight(box);
+        Box[] rows = box.splitToEvenRows(3);
+        hokenShubetsu(rows[0], "１", "単独", point -> this.hokentandokuTandoku = point);
+        hokenShubetsu(rows[1], "２", "２併", point -> this.hokentandokuHei2 = point);
+        hokenShubetsu(rows[2], "３", "３併", point -> this.hokentandokuHei3 = point);
+    }
+
+    public void markHokentandokuTandoku(){
+        markHokenshubetsu(hokentandokuTandoku);
+    }
+
+    public void markHokentandokuHei2(){
+        markHokenshubetsu(hokentandokuHei2);
+    }
+
+    public void markHokentandokuHei3(){
+        markHokenshubetsu(hokentandokuHei3);
     }
 
 }

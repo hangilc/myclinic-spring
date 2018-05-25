@@ -28,7 +28,12 @@ class MainRoot extends VBox {
         rcptDrawer.putFukenBangou(13);
         rcptDrawer.putKikanCode("12.3456.7");
         //rcptDrawer.markHokenshubetsuShakoku();
-        rcptDrawer.markHokenshubetsuKouhi1();
+        //rcptDrawer.markHokenshubetsuKouhi1();
+        //rcptDrawer.markHokenshubetsuKoukikourei();
+        rcptDrawer.markHokenshubetsuTaishoku();
+        //rcptDrawer.markHokentandokuTandoku();
+        //rcptDrawer.markHokentandokuHei2();
+        rcptDrawer.markHokentandokuHei3();
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }
