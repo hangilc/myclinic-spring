@@ -114,6 +114,9 @@ public class DrawerCanvas extends Canvas {
                 case SetTextColor: { doSetTextColor((OpSetTextColor)op); break; }
                 case CreatePen: { doCreatePen((OpCreatePen)op); break; }
                 case SetPen: { doSetPen((OpSetPen)op); break; }
+                case Circle: {
+                    doCircle((OpCircle)op); break;
+                }
             }
         }
         //gc.stroke();
@@ -247,5 +250,12 @@ public class DrawerCanvas extends Canvas {
             return;
         }
         gc.setFont(font);
+    }
+
+    private void doCircle(OpCircle op){
+        double cx = scale(op.getCx());
+        double cy = scale(op.getCy());
+        double r = scale(op.getR());
+        gc.strokeOval(cx - r, cy - r, 2*r, 2*r);
     }
 }

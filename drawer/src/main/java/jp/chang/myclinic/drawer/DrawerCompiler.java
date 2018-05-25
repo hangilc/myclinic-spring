@@ -597,6 +597,14 @@ public class DrawerCompiler {
         return text.codePoints().mapToDouble(code -> doCalcCharWidth(code, fontSize)).sum();
     }
 
+    public void circle(double cx, double cy, double r){
+        ops.add(new OpCircle(cx, cy, r));
+    }
+
+    public void circle(Point c, double r){
+        circle(c.getX(), c.getY(), r);
+    }
+
     private static List<Double> doMeasureChars(String str, double fontSize) {
         return str.codePoints().mapToDouble(code -> doCalcCharWidth(code, fontSize)).boxed().collect(Collectors.toList());
     }

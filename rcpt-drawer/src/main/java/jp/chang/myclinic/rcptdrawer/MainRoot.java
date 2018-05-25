@@ -27,6 +27,8 @@ class MainRoot extends VBox {
         rcptDrawer.putShinryouMonth(30, 5);
         rcptDrawer.putFukenBangou(13);
         rcptDrawer.putKikanCode("12.3456.7");
+        //rcptDrawer.markHokenshubetsuShakoku();
+        rcptDrawer.markHokenshubetsuKouhi1();
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }

@@ -299,6 +299,13 @@ public class DrawerPrinter {
         }
     }
 
+    private void ellipse(HDC hdc, int left, int top, int right, int bottom){
+        boolean ok = MyGdi32.INSTANCE.Ellipse(hdc, left, top, right, bottom);
+        if( !ok ){
+            throw new RuntimeException("Ellipse failed");
+        }
+    }
+
     private HFONT createFont(String fontName, int size, int weight, boolean italic){
         LOGFONT logfont = new LOGFONT();
         logfont.lfHeight = new LONG(size);
@@ -406,6 +413,18 @@ public class DrawerPrinter {
                     OpSetPen opSetPen = (OpSetPen)op;
                     HPEN pen = penMap.get(opSetPen.getName());
                     selectObject(hdc, pen);
+                    break;
+                }
+                case Circle: {
+                    OpCircle opCircle = (OpCircle)op;
+                    double cx = opCircle.getCx();
+                    double cy = opCircle.getCy();
+                    double r = opCircle.getR();
+                    int left = calcCoord((cx - r) * scale + dx, dpix);
+                    int top = calcCoord((cy - r) * scale + dy, dpiy);
+                    int right = calcCoord((cx + r) * scale + dx, dpix);
+                    int bottom = calcCoord((cy + r) * scale + dy, dpiy);
+                    ellipse(hdc, left, top, right, bottom);
                     break;
                 }
                 default: {

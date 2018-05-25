@@ -163,6 +163,18 @@ public class RcptDrawer {
         hokenShubetsu(rows[1], "２", "公費", point -> this.hokenshubetsuKouhi1 = point);
     }
 
+    private void markHokenshubetsu(Point p){
+        compiler.circle(p, 1.5);
+    }
+
+    public void markHokenshubetsuShakoku(){
+        markHokenshubetsu(hokenshubetsuShakoku);
+    }
+
+    public void markHokenshubetsuKouhi1(){
+        markHokenshubetsu(hokenshubetsuKouhi1);
+    }
+
     private void setupHokenShubetsu2_2(Box box) {
         Box[] rows = box.splitToEvenRows(2);
         hokenShubetsu(rows[0], "３", "後期", point -> this.hokenshubetsuRoujin = point);
