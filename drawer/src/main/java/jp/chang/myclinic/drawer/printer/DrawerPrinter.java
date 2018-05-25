@@ -397,7 +397,8 @@ public class DrawerPrinter {
                     OpCreatePen opCreatePen = (OpCreatePen)op;
                     int width = calcCoord(opCreatePen.getWidth() * scale, dpix);
                     int rgb = RGB(opCreatePen.getR(), opCreatePen.getG(), opCreatePen.getB());
-                    HPEN pen = createPen(PrinterConsts.PS_SOLID, width, rgb);
+                    int penStyle = opCreatePen.getPenStyle();
+                    HPEN pen = createPen(penStyle, width, rgb);
                     penMap.put(opCreatePen.getName(), pen);
                     break;
                 }

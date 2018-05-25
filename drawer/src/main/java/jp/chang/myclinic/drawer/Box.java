@@ -164,6 +164,10 @@ public class Box {
         }
     }
 
+    public Box expandHeight(double dy, VertAnchor anchor){
+        return shrinkHeight(-dy, anchor);
+    }
+
     public Box setWidth(double width, HorizAnchor anchor){
         switch(anchor){
             case Left: return new Box(left, top, left + width, bottom);

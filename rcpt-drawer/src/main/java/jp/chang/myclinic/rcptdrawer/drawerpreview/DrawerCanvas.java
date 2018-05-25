@@ -59,6 +59,9 @@ public class DrawerCanvas extends Canvas {
         double inch = mmToInch(1.0);
         pixelPerMilliMeter = 96 * inch;
     }
+    public static int mmToPixel(double mm){
+        return (int)(mm * pixelPerMilliMeter);
+    }
     private double contentWidth = 100;
     private double contentHeight = 100;
     private double scaleFactor = 1.0;
