@@ -25,6 +25,11 @@ public class RcptDrawer {
     private Point hokentandokuTandoku;
     private Point hokentandokuHei2;
     private Point hokentandokuHei3;
+    private Point hokenfutanHonnin;
+    private Point hokenfutanSansai;
+    private Point hokenfutanKazoku;
+    private Point hokenfutanKourei9;
+    private Point hokenfutanKourei7;
 
     public RcptDrawer() {
         setupFonts();
@@ -139,6 +144,7 @@ public class RcptDrawer {
         setupHokenShubetsu1(cols[0]);
         setupHokenShubetsu2(cols[1]);
         setupHokenShubetsu3(cols[2]);
+        setupHokenShubetsu4(cols[3]);
     }
 
     private void setupHokenShubetsu1(Box box) {
@@ -167,16 +173,16 @@ public class RcptDrawer {
         hokenShubetsu(rows[1], "２", "公費", point -> this.hokenshubetsuKouhi1 = point);
     }
 
-    private void markHokenshubetsu(Point p){
+    private void markCircle(Point p){
         compiler.circle(p, 1.5);
     }
 
     public void markHokenshubetsuShakoku(){
-        markHokenshubetsu(hokenshubetsuShakoku);
+        markCircle(hokenshubetsuShakoku);
     }
 
     public void markHokenshubetsuKouhi1(){
-        markHokenshubetsu(hokenshubetsuKouhi1);
+        markCircle(hokenshubetsuKouhi1);
     }
 
     private void setupHokenShubetsu2_2(Box box) {
@@ -186,11 +192,11 @@ public class RcptDrawer {
     }
 
     public void markHokenshubetsuKoukikourei(){
-        markHokenshubetsu(hokenshubetsuRoujin);
+        markCircle(hokenshubetsuRoujin);
     }
 
     public void markHokenshubetsuTaishoku(){
-        markHokenshubetsu(hokenshubetsuTaishoku);
+        markCircle(hokenshubetsuTaishoku);
     }
 
     private void hokenShubetsu(Box box, String num, String label, Consumer<Point> cb){
@@ -211,15 +217,58 @@ public class RcptDrawer {
     }
 
     public void markHokentandokuTandoku(){
-        markHokenshubetsu(hokentandokuTandoku);
+        markCircle(hokentandokuTandoku);
     }
 
     public void markHokentandokuHei2(){
-        markHokenshubetsu(hokentandokuHei2);
+        markCircle(hokentandokuHei2);
     }
 
     public void markHokentandokuHei3(){
-        markHokenshubetsu(hokentandokuHei3);
+        markCircle(hokentandokuHei3);
     }
+
+    private void setupHokenShubetsu4(Box box){
+        Box[] cols = box.splitToEvenColumns(2);
+        compiler.setPen("dot");
+        compiler.frameRight(cols[0]);
+        compiler.setPen("regular");
+        setupHokenShubetsu4_1(cols[0]);
+        setupHokenShubetsu4_2(cols[1]);
+    }
+
+    private void setupHokenShubetsu4_1(Box box) {
+        Box[] rows = box.splitToEvenRows(3);
+        hokenShubetsu(rows[0], "２", "本外", point -> this.hokenfutanHonnin = point);
+        hokenShubetsu(rows[1], "４", "六外", point -> this.hokenfutanSansai = point);
+        hokenShubetsu(rows[2], "６", "家外", point -> this.hokenfutanKazoku = point);
+    }
+
+    public void markHokenfutanHonnin(){
+        markCircle(hokenfutanHonnin);
+    }
+
+    public void markHokenfutanSansai(){
+        markCircle(hokenfutanSansai);
+    }
+
+    public void markHokenfutanKazoku(){
+        markCircle(hokenfutanKazoku);
+    }
+
+    private void setupHokenShubetsu4_2(Box box) {
+        Box[] rows = box.splitToEvenRows(2);
+        hokenShubetsu(rows[0], "８", "高外一", point -> this.hokenfutanKourei9 = point);
+        hokenShubetsu(rows[1], "０", "高外７", point -> this.hokenfutanKourei7 = point);
+   }
+
+    public void markHokenfutanKourei9(){
+        markCircle(hokenfutanKourei9);
+    }
+
+    public void markHokenfutanKourei7(){
+        markCircle(hokenfutanKourei7);
+    }
+
 
 }

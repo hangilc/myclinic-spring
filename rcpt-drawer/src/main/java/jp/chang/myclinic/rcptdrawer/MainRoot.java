@@ -13,14 +13,14 @@ import java.util.List;
 class MainRoot extends VBox {
 
     private static Logger logger = LoggerFactory.getLogger(MainRoot.class);
-    private DrawerCanvas drawerCanvas = new DrawerCanvas(PaperSize.A4, 1.0);
+    private DrawerCanvas drawerCanvas = new DrawerCanvas(PaperSize.A4, 1.1);
 
     MainRoot() {
         getStylesheets().add("Main.css");
         getStyleClass().add("app-root");
         ScrollPane scrollPane = new ScrollPane(drawerCanvas);
-        scrollPane.setPrefWidth(DrawerCanvas.mmToPixel(PaperSize.A4.getWidth() * 0.6));
-        scrollPane.setPrefHeight(DrawerCanvas.mmToPixel(PaperSize.A4.getHeight() * 0.6));
+        scrollPane.setPrefWidth(DrawerCanvas.mmToPixel(PaperSize.A4.getWidth() * 0.7));
+        scrollPane.setPrefHeight(DrawerCanvas.mmToPixel(PaperSize.A4.getHeight() * 0.7));
         getChildren().add(scrollPane);
         RcptDrawer rcptDrawer = new RcptDrawer();
         rcptDrawer.putPatientId(2360);
@@ -34,6 +34,11 @@ class MainRoot extends VBox {
         //rcptDrawer.markHokentandokuTandoku();
         //rcptDrawer.markHokentandokuHei2();
         rcptDrawer.markHokentandokuHei3();
+        //rcptDrawer.markHokenfutanHonnin();
+        //rcptDrawer.markHokenfutanSansai();
+        //rcptDrawer.markHokenfutanKazoku();
+        //rcptDrawer.markHokenfutanKourei9();
+        rcptDrawer.markHokenfutanKourei7();
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }
