@@ -1,15 +1,13 @@
 package jp.chang.myclinic.rcptdrawer;
 
-import jp.chang.myclinic.drawer.Box;
+import jp.chang.myclinic.drawer.*;
 import jp.chang.myclinic.drawer.Box.VertAnchor;
-import jp.chang.myclinic.drawer.DrawerCompiler;
 import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
 import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
-import jp.chang.myclinic.drawer.Op;
-import jp.chang.myclinic.drawer.OpCreatePen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class RcptDrawer {
 
@@ -20,6 +18,10 @@ public class RcptDrawer {
     private Box shinryouMonthBox;
     private Box fukenbangouBox;
     private Box kikancodeBox;
+    private Point hokenshubetsuShakoku;
+    private Point hokenshubetsuKouhi1;
+    private Point hokenshubetsuRoujin;
+    private Point hokenshubetsuTaishoku;
 
     public RcptDrawer() {
         setupFonts();
@@ -56,6 +58,7 @@ public class RcptDrawer {
         compiler.createFont("Gothic4", "MS Gothic", 4);
         compiler.createFont("Gothic3", "MS Gothic", 3);
         compiler.createFont("Gothic2.8", "MS Gothic", 2.8);
+        compiler.createFont("Gothic2.6", "MS Gothic", 2.6);
         compiler.createFont("Gothic2.5", "MS Gothic", 2.5);
         compiler.createFont("Gothic2.2", "MS Gothic", 2.2);
         compiler.createFont("Mincho2.6", "MS Mincho", 2.6);
@@ -63,7 +66,7 @@ public class RcptDrawer {
         compiler.createFont("Mincho2.2", "MS Mincho", 2.2);
     }
 
-    private void setupPens(){
+    private void setupPens() {
         compiler.createPen("regular", 0, 0, 0, 0.1);
         compiler.createPen("dot", 0, 0, 0, 0.1, OpCreatePen.PS_DOT);
     }
@@ -94,24 +97,24 @@ public class RcptDrawer {
         compiler.textInJustified("県番号", box, VAlign.Bottom);
     }
 
-    private Box expandToTop(Box box, double height){
+    private Box expandToTop(Box box, double height) {
         return box.setHeight(height, VertAnchor.Bottom);
     }
 
-    private Box shrinkToTop(Box box, double height){
+    private Box shrinkToTop(Box box, double height) {
         return box.setHeight(height, VertAnchor.Top);
     }
 
-    private Box markLowerPart(Box box, double height){
+    private Box markLowerPart(Box box, double height) {
         return box.setHeight(height, VertAnchor.Bottom);
     }
 
-    public void putFukenBangou(int bangou){
+    public void putFukenBangou(int bangou) {
         compiler.setFont("Gothic2.8");
         compiler.textIn("" + bangou, fukenbangouBox, HAlign.Center, VAlign.Bottom);
     }
 
-    private void setupKikanCode(){
+    private void setupKikanCode() {
         compiler.setFont("Mincho2.5");
         Box box = new Box(103, 26.3, 139.5, 28.5);
         kikancodeBox = markLowerPart(box, 3);
@@ -120,13 +123,13 @@ public class RcptDrawer {
         compiler.textIn("医療機関コード", box, HAlign.Left, VAlign.Top);
     }
 
-    public void putKikanCode(String kikancode){
+    public void putKikanCode(String kikancode) {
         compiler.setFont("Gothic4");
         Box box = kikancodeBox.inset(10, 0, 6, 0);
         compiler.textInJustified(kikancode, box, VAlign.Bottom);
     }
 
-    private void setupHokenShubetsu(){
+    private void setupHokenShubetsu() {
         Box box = new Box(141, 19, 199, 29.5);
         compiler.box(box);
         Box[] cols = box.splitToColumns(4.5, 25, 35);
@@ -134,7 +137,7 @@ public class RcptDrawer {
         setupHokenShubetsu2(cols[1]);
     }
 
-    private void setupHokenShubetsu1(Box box){
+    private void setupHokenShubetsu1(Box box) {
         compiler.frameRight(box);
         Box[] rows = box.splitToRows(3.5);
         compiler.frameBottom(rows[0]);
@@ -144,16 +147,35 @@ public class RcptDrawer {
         compiler.textInVertJustified("医科", rows[1].inset(0, 0.8), HAlign.Center);
     }
 
-    private void setupHokenShubetsu2(Box box){
+    private void setupHokenShubetsu2(Box box) {
         compiler.frameRight(box);
         Box[] cols = box.splitToEvenColumns(2);
         setupHokenShubetsu2_1(cols[0]);
+        setupHokenShubetsu2_2(cols[1]);
     }
 
-    private void setupHokenShubetsu2_1(Box box){
+    private void setupHokenShubetsu2_1(Box box) {
         compiler.setPen("dot");
         compiler.frameRight(box);
         compiler.setPen("regular");
+        Box[] rows = box.splitToEvenRows(2);
+        hokenShubetsu(rows[0], "１", "社・国", point -> this.hokenshubetsuShakoku = point);
+        hokenShubetsu(rows[1], "２", "公費", point -> this.hokenshubetsuKouhi1 = point);
+    }
+
+    private void setupHokenShubetsu2_2(Box box) {
+        Box[] rows = box.splitToEvenRows(2);
+        hokenShubetsu(rows[0], "３", "後期", point -> this.hokenshubetsuRoujin = point);
+        hokenShubetsu(rows[1], "４", "退職", point -> this.hokenshubetsuTaishoku = point);
+    }
+
+    private void hokenShubetsu(Box box, String num, String label, Consumer<Point> cb){
+        Box[] cols = box.splitToColumns(2.5);
+        compiler.setFont("Gothic2.6");
+        compiler.textIn(num, cols[0], HAlign.Center, VAlign.Center);
+        compiler.setFont("Mincho2.6");
+        compiler.textInJustified(label, cols[1], VAlign.Center);
+        cb.accept(box.getCenterPoint());
     }
 
 }

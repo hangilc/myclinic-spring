@@ -281,6 +281,10 @@ public class Box {
         return cells;
     }
 
+    public Point getCenterPoint(){
+        return new Point(getCx(), getCy());
+    }
+
     public static Box boundingBox2(Box a, Box b){
         return new Box(Math.min(a.left, b.left), Math.min(a.top, b.top),
                 Math.max(a.right, b.right), Math.max(a.bottom, b.bottom));
