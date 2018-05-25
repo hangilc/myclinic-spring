@@ -72,6 +72,8 @@ public class DrawerCanvas extends Canvas {
     private RenderMode renderMode = RenderMode.NONE;
     private Color textColor;
     private PenEnv penEnv;
+    private double prevX;
+    private double prevY;
 
     public DrawerCanvas(PaperSize paperSize, double scaleFactor){
         this(paperSize.getWidth(), paperSize.getHeight(), scaleFactor);
@@ -213,17 +215,18 @@ public class DrawerCanvas extends Canvas {
     }
 
     private void doMoveTo(OpMoveTo op){
-        double x = scale(op.getX());
-        double y = scale(op.getY());
-        gc.moveTo(x, y);
+        prevX = scale(op.getX());
+        prevY = scale(op.getY());
+        gc.moveTo(prevX, prevY);
     }
 
     private void doLineTo(OpLineTo op){
         double x = scale(op.getX());
         double y = scale(op.getY());
         enterRenderMode(RenderMode.PEN);
-        gc.lineTo(x, y);
-        gc.stroke();
+        gc.strokeLine(prevX, prevY, x, y);
+        prevX = x;
+        prevY = y;
     }
 
     private void doCreateFont(OpCreateFont op){

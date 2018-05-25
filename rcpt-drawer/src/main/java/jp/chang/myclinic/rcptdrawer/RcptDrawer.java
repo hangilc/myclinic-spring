@@ -43,7 +43,7 @@ public class RcptDrawer {
         setupFukenBangou();
         setupKikanCode();
         setupHokenShubetsu();
-        //setupHokenshaBangou();
+        setupHokenshaBangou();
     }
 
     List<List<Op>> getPages() {
@@ -147,7 +147,7 @@ public class RcptDrawer {
         setupHokenShubetsu1(cols[0]);
         setupHokenShubetsu2(cols[1]);
         setupHokenShubetsu3(cols[2]);
-//        setupHokenShubetsu4(cols[3]);
+        setupHokenShubetsu4(cols[3]);
     }
 
     private void setupHokenShubetsu1(Box box) {
@@ -298,8 +298,8 @@ public class RcptDrawer {
         List.of(0, 2, 4, 5).forEach(i -> {
             compiler.frameRight(cols[i]);
         });
-        //compiler.setPen("bold");
-        //compiler.frameRight(cols[1]);
+        compiler.setPen("bold");
+        compiler.frameRight(cols[1]);
     }
 
     private void setupHokenshaBangou_3(Box box){
