@@ -30,6 +30,7 @@ public class RcptDrawer {
     private Point hokenfutanKazoku;
     private Point hokenfutanKourei9;
     private Point hokenfutanKourei7;
+    private Box[] hokenshabangouBoxes;
 
     public RcptDrawer() {
         setupFonts();
@@ -64,6 +65,7 @@ public class RcptDrawer {
     }
 
     private void setupFonts() {
+        compiler.createFont("Gothic5", "MS Gothic", 5);
         compiler.createFont("Gothic4", "MS Gothic", 4);
         compiler.createFont("Gothic3", "MS Gothic", 3);
         compiler.createFont("Gothic2.8", "MS Gothic", 2.8);
@@ -294,16 +296,35 @@ public class RcptDrawer {
 
     private void setupHokenshaBangou_2(Box box){
         Box[] cols = box.splitToEvenColumns(8);
+        compiler.frameRight(box);
         compiler.setPen("dot");
         List.of(0, 2, 4, 5).forEach(i -> {
             compiler.frameRight(cols[i]);
         });
         compiler.setPen("bold");
         compiler.frameRight(cols[1]);
+        compiler.box(Box.boundingBox(cols[4], cols[6]));
+        compiler.setPen("regular");
+        this.hokenshabangouBoxes = cols;
+    }
+
+    public void setHokenshaBangou(int n){
+        String s = String.format("%d", n);
+        if( s.length() > 8 ){
+            throw new RuntimeException("Too large hokensha bangou: " + n);
+        }
+        int offset = 8 - s.length();
+        compiler.setFont("Gothic5");
+        for(int i=0;i<s.length();i++){
+            compiler.textIn(s.substring(i,i+1), hokenshabangouBoxes[i+offset],
+                    HAlign.Center, VAlign.Center);
+        }
     }
 
     private void setupHokenshaBangou_3(Box box){
-
+        compiler.frameRight(box);
+        compiler.setFont("Mincho2");
+        compiler.textInVertJustified("給付割合", box, HAlign.Center);
     }
 
     private void setupHokenshaBangou_4(Box box){
