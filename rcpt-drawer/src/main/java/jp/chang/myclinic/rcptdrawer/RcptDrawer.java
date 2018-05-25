@@ -43,6 +43,7 @@ public class RcptDrawer {
         setupFukenBangou();
         setupKikanCode();
         setupHokenShubetsu();
+        //setupHokenshaBangou();
     }
 
     List<List<Op>> getPages() {
@@ -72,11 +73,13 @@ public class RcptDrawer {
         compiler.createFont("Mincho2.6", "MS Mincho", 2.6);
         compiler.createFont("Mincho2.5", "MS Mincho", 2.5);
         compiler.createFont("Mincho2.2", "MS Mincho", 2.2);
+        compiler.createFont("Mincho2", "MS Mincho", 2);
     }
 
     private void setupPens() {
         compiler.createPen("regular", 0, 0, 0, 0.1);
         compiler.createPen("dot", 0, 0, 0, 0.1, OpCreatePen.PS_DOT);
+        compiler.createPen("bold", 0, 0, 0, 0.2);
     }
 
     private Box shiftCorners(Box box, double dxLeft, double dxTop, double dxRight, double dxBottom) {
@@ -144,7 +147,7 @@ public class RcptDrawer {
         setupHokenShubetsu1(cols[0]);
         setupHokenShubetsu2(cols[1]);
         setupHokenShubetsu3(cols[2]);
-        setupHokenShubetsu4(cols[3]);
+//        setupHokenShubetsu4(cols[3]);
     }
 
     private void setupHokenShubetsu1(Box box) {
@@ -174,6 +177,7 @@ public class RcptDrawer {
     }
 
     private void markCircle(Point p){
+        compiler.setPen("regular");
         compiler.circle(p, 1.5);
     }
 
@@ -270,5 +274,40 @@ public class RcptDrawer {
         markCircle(hokenfutanKourei7);
     }
 
+    public void setupHokenshaBangou(){
+        Box box = new Box(115, 29.5, 199, 38);
+        compiler.box(box);
+        Box[] cols = box.splitToColumns(8.5, 68.5, 71.5);
+        setupHokenshaBangou_1(cols[0]);
+        setupHokenshaBangou_2(cols[1]);
+        setupHokenshaBangou_3(cols[2]);
+        setupHokenshaBangou_4(cols[3]);
+    }
+
+    private void setupHokenshaBangou_1(Box box){
+        compiler.frameRight(box);
+        Box[] rows = box.splitToEvenRows(2);
+        compiler.setFont("Mincho2");
+        compiler.textInJustified("保険者", rows[0], VAlign.Center);
+        compiler.textInJustified("番号", rows[1], VAlign.Center);
+    }
+
+    private void setupHokenshaBangou_2(Box box){
+        Box[] cols = box.splitToEvenColumns(8);
+        compiler.setPen("dot");
+        List.of(0, 2, 4, 5).forEach(i -> {
+            compiler.frameRight(cols[i]);
+        });
+        //compiler.setPen("bold");
+        //compiler.frameRight(cols[1]);
+    }
+
+    private void setupHokenshaBangou_3(Box box){
+
+    }
+
+    private void setupHokenshaBangou_4(Box box){
+
+    }
 
 }

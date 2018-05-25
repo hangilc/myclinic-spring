@@ -119,7 +119,6 @@ public class DrawerCanvas extends Canvas {
                 }
             }
         }
-        //gc.stroke();
     }
 
     private double scale(double mm){
@@ -256,6 +255,7 @@ public class DrawerCanvas extends Canvas {
         double cx = scale(op.getCx());
         double cy = scale(op.getCy());
         double r = scale(op.getR());
+        enterRenderMode(RenderMode.PEN);
         gc.strokeOval(cx - r, cy - r, 2*r, 2*r);
     }
 }

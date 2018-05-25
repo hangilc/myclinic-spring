@@ -23,6 +23,7 @@ class MainRoot extends VBox {
         scrollPane.setPrefHeight(DrawerCanvas.mmToPixel(PaperSize.A4.getHeight() * 0.7));
         getChildren().add(scrollPane);
         RcptDrawer rcptDrawer = new RcptDrawer();
+        /**
         rcptDrawer.putPatientId(2360);
         rcptDrawer.putShinryouMonth(30, 5);
         rcptDrawer.putFukenBangou(13);
@@ -39,6 +40,7 @@ class MainRoot extends VBox {
         //rcptDrawer.markHokenfutanKazoku();
         //rcptDrawer.markHokenfutanKourei9();
         rcptDrawer.markHokenfutanKourei7();
+         **/
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }
