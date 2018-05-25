@@ -69,10 +69,18 @@ public class DrawerCanvas extends Canvas {
     private Color textColor;
     private PenEnv penEnv;
 
-    DrawerCanvas() {
+    public DrawerCanvas(PaperSize paperSize, double scaleFactor){
+        this(paperSize.getWidth(), paperSize.getHeight(), scaleFactor);
+    }
+
+    public DrawerCanvas(double mmWidth, double mmHeight, double scaleFactor) {
         gc = getGraphicsContext2D();
         gc.setTextBaseline(VPos.TOP);
         gc.setLineWidth(0.5);
+        this.contentWidth = mmWidth;
+        this.contentHeight = mmHeight;
+        this.scaleFactor = scaleFactor;
+        updateCanvasSize();
     }
 
     public void setScaleFactor(double scaleFactor){
