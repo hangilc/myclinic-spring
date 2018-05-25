@@ -27,6 +27,7 @@ public class DrawerCanvas extends Canvas {
     private static class PenEnv {
         Paint paint;
         double width;
+        int penStyle;
     }
 
     private static class PosList {
@@ -115,7 +116,7 @@ public class DrawerCanvas extends Canvas {
                 case SetPen: { doSetPen((OpSetPen)op); break; }
             }
         }
-        gc.stroke();
+        //gc.stroke();
     }
 
     private double scale(double mm){
@@ -132,6 +133,11 @@ public class DrawerCanvas extends Canvas {
             if( renderMode == RenderMode.PEN ){
                 gc.setStroke(env.paint);
                 gc.setLineWidth(env.width);
+                if( env.penStyle == OpCreatePen.PS_DOT ) {
+                    gc.setLineDashes(2d, 2d);
+                } else {
+                    gc.setLineDashes((double[])null);
+                }
             }
         }
     }
@@ -146,6 +152,11 @@ public class DrawerCanvas extends Canvas {
                 if( penEnv != null ){
                     gc.setStroke(penEnv.paint);
                     gc.setLineWidth(penEnv.width);
+                    if( penEnv.penStyle == OpCreatePen.PS_DOT ) {
+                        gc.setLineDashes(2d, 2d);
+                    } else {
+                        gc.setLineDashes((double[])null);
+                    }
                 }
             }
             renderMode = mode;
@@ -161,6 +172,7 @@ public class DrawerCanvas extends Canvas {
         PenEnv env = new PenEnv();
         env.paint = Color.color(r/255.0, g/255.0, b/255.0);
         env.width = width;
+        env.penStyle = op.getPenStyle();
         penMap.put(name, env);
     }
 
@@ -209,6 +221,7 @@ public class DrawerCanvas extends Canvas {
         double y = scale(op.getY());
         enterRenderMode(RenderMode.PEN);
         gc.lineTo(x, y);
+        gc.stroke();
     }
 
     private void doCreateFont(OpCreateFont op){

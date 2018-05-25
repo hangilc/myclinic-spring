@@ -6,6 +6,7 @@ import jp.chang.myclinic.drawer.DrawerCompiler;
 import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
 import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.drawer.OpCreatePen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,8 @@ public class RcptDrawer {
 
     public RcptDrawer() {
         setupFonts();
+        setupPens();
+        compiler.setPen("regular");
         compiler.setFont("Gothic3");
         compiler.textInJustified("診療報酬明細書", new Box(22, 20, 46, 23), VAlign.Bottom);
         compiler.setFont("Gothic2.2");
@@ -58,6 +61,11 @@ public class RcptDrawer {
         compiler.createFont("Mincho2.6", "MS Mincho", 2.6);
         compiler.createFont("Mincho2.5", "MS Mincho", 2.5);
         compiler.createFont("Mincho2.2", "MS Mincho", 2.2);
+    }
+
+    private void setupPens(){
+        compiler.createPen("regular", 0, 0, 0, 0.1);
+        compiler.createPen("dot", 0, 0, 0, 0.1, OpCreatePen.PS_DOT);
     }
 
     private Box shiftCorners(Box box, double dxLeft, double dxTop, double dxRight, double dxBottom) {
@@ -139,7 +147,13 @@ public class RcptDrawer {
     private void setupHokenShubetsu2(Box box){
         compiler.frameRight(box);
         Box[] cols = box.splitToEvenColumns(2);
+        setupHokenShubetsu2_1(cols[0]);
+    }
 
+    private void setupHokenShubetsu2_1(Box box){
+        compiler.setPen("dot");
+        compiler.frameRight(box);
+        compiler.setPen("regular");
     }
 
 }
