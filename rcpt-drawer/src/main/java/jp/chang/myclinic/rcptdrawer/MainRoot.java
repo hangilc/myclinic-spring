@@ -64,6 +64,9 @@ class MainRoot extends VBox {
         //rcptDrawer.markShokumujouGesen();
         rcptDrawer.markShokumujouTsuukin();
         rcptDrawer.putTokkijikou("特記事項の内容。\n２行目以降の内容。つづきの文章。");
+        rcptDrawer.putShozaichiMeishouLine1("医療機関住所");
+        rcptDrawer.putShozaichiMeishouLine2("03 (1234) 5678");
+        rcptDrawer.putShozaichiMeishouLine3("医療機関名称");
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }

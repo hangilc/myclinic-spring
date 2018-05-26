@@ -56,6 +56,9 @@ public class RcptDrawer {
     private Point shokumujouGesen;
     private Point shokumujouTsuukin;
     private Box tokkijikou;
+    private Box shozaichimeishouLine1;
+    private Box shozaichimeishouLine2;
+    private Box shozaichimeishouLine3;
 
     public RcptDrawer() {
         setupFonts();
@@ -73,6 +76,8 @@ public class RcptDrawer {
         setupHihokensha();
         setupKouhi();
         setupPatientInfo();
+        setupIryouKikanLabel();
+        setupShozaichiMeishou();
     }
 
     List<List<Op>> getPages() {
@@ -102,6 +107,8 @@ public class RcptDrawer {
         compiler.createFont("Gothic2.3", "MS Gothic", 2.3);
         compiler.createFont("Gothic2.2", "MS Gothic", 2.2);
         compiler.createFont("Gothic2", "MS Gothic", 2);
+        compiler.createFont("Mincho4.5", "MS Mincho", 4.5);
+        compiler.createFont("Mincho3.5", "MS Mincho", 3.5);
         compiler.createFont("Mincho2.6", "MS Mincho", 2.6);
         compiler.createFont("Mincho2.5", "MS Mincho", 2.5);
         compiler.createFont("Mincho2.2", "MS Mincho", 2.2);
@@ -685,6 +692,44 @@ public class RcptDrawer {
         Box rIndex = setBottomCenterAt(box, indexCenter, indexWidth);
         Box rLabel = box.shiftToRight(indexCenter + offset).setWidth(labelWidth, Box.HorizAnchor.Left);
         cb.accept(rIndex, rLabel);
+    }
+
+    private void setupIryouKikanLabel(){
+        Box box = new Box(110, 57, 120, 73.5);
+        Box[] rows = box.splitToVerticallyJustifiedRows(2, 5);
+        compiler.setFont("Mincho2");
+        compiler.textInJustified("保険医", rows[0], VAlign.Top);
+        compiler.textInJustified("療機関", rows[1], VAlign.Top);
+        compiler.textInJustified("の所在", rows[2], VAlign.Top);
+        compiler.textInJustified("地及び", rows[3], VAlign.Top);
+        compiler.textInJustified("名称", rows[4], VAlign.Top);
+    }
+
+    private void setupShozaichiMeishou(){
+        Box box = new Box(122, 57, 199, 73.5);
+        Box[] rows = box.splitToRows(4, 10);
+        this.shozaichimeishouLine1 = rows[0];
+        this.shozaichimeishouLine2 = rows[1];
+        this.shozaichimeishouLine3 = rows[2];
+        Box r = new Box(179, 73, 197, 75);
+        compiler.setFont("Mincho2");
+        compiler.textIn("（", r, HAlign.Left, VAlign.Top);
+        compiler.textIn("床）", r, HAlign.Right, VAlign.Top);
+    }
+
+    public void putShozaichiMeishouLine1(String s){
+        compiler.setFont("Mincho3.5");
+        compiler.textIn(s, shozaichimeishouLine1, HAlign.Left, VAlign.Top);
+    }
+
+    public void putShozaichiMeishouLine2(String s){
+        compiler.setFont("Mincho3.5");
+        compiler.textIn(s, shozaichimeishouLine2.displaceLeftEdge(28), HAlign.Left, VAlign.Top);
+    }
+
+    public void putShozaichiMeishouLine3(String s){
+        compiler.setFont("Mincho4.5");
+        compiler.textIn(s, shozaichimeishouLine3.displaceLeftEdge(7), HAlign.Left, VAlign.Top);
     }
 
 }
