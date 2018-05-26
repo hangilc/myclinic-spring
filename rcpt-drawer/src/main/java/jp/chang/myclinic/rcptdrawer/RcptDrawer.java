@@ -36,6 +36,7 @@ public class RcptDrawer {
     private Point kyuufuwariaiWari8;
     private Point kyuufuwariaiWari7;
     private Box kyuufuwariaiOther;
+    private Box hihokenshashou;
 
     public RcptDrawer() {
         setupFonts();
@@ -382,6 +383,18 @@ public class RcptDrawer {
     private void setupHihokensha(){
         Box box = new Box(115, 39, 199, 39+11.5);
         compiler.box(box);
+        Box[] cols = box.splitToColumns(30.5);
+        compiler.frameRight(cols[0]);
+        Box[] rows = cols[0].inset(1.5, 3).splitToEvenRows((2));
+        compiler.setFont("Mincho2");
+        compiler.textInJustified("被保険者証・被保険者", rows[0], VAlign.Top);
+        compiler.textInJustified("手帳等の記号・番号", rows[1], VAlign.Top);
+        this.hihokenshashou = cols[1];
+    }
+
+    public void putHihokenshashou(String s){
+        compiler.setFont("Gothic4");
+        compiler.textIn(s, hihokenshashou.displaceLeftEdge(3), HAlign.Left, VAlign.Center);
     }
 
 }

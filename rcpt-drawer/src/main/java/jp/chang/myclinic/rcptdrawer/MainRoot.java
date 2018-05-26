@@ -45,6 +45,7 @@ class MainRoot extends VBox {
         //rcptDrawer.markKyuufuwari8();
         //rcptDrawer.markKyuufuwari7();
         rcptDrawer.putKyuufuwariOther("5");
+        rcptDrawer.putHihokenshashou("A123 4567");
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }
