@@ -31,6 +31,11 @@ public class RcptDrawer {
     private Point hokenfutanKourei9;
     private Point hokenfutanKourei7;
     private Box[] hokenshabangouBoxes;
+    private Point kyuufuwariaiWari10;
+    private Point kyuufuwariaiWari9;
+    private Point kyuufuwariaiWari8;
+    private Point kyuufuwariaiWari7;
+    private Box kyuufuwariaiOther;
 
     public RcptDrawer() {
         setupFonts();
@@ -71,6 +76,7 @@ public class RcptDrawer {
         compiler.createFont("Gothic2.8", "MS Gothic", 2.8);
         compiler.createFont("Gothic2.6", "MS Gothic", 2.6);
         compiler.createFont("Gothic2.5", "MS Gothic", 2.5);
+        compiler.createFont("Gothic2.3", "MS Gothic", 2.3);
         compiler.createFont("Gothic2.2", "MS Gothic", 2.2);
         compiler.createFont("Mincho2.6", "MS Mincho", 2.6);
         compiler.createFont("Mincho2.5", "MS Mincho", 2.5);
@@ -328,7 +334,48 @@ public class RcptDrawer {
     }
 
     private void setupHokenshaBangou_4(Box box){
+        compiler.setFont("Mincho2");
+        box = box.inset(1, 1);
+        Box[] rows = box.splitToVerticallyJustifiedRows(2.0, 2);
+        {
+            Box[] cols = rows[0].splitToHorizontallyJustifiedColumns(2, 3);
+            compiler.textIn("10", cols[0], HAlign.Center, VAlign.Center);
+            kyuufuwariaiWari10 = cols[0].getCenterPoint();
+            compiler.textIn("9", cols[1], HAlign.Center, VAlign.Center);
+            kyuufuwariaiWari9 = cols[1].getCenterPoint();
+            compiler.textIn("8", cols[2], HAlign.Center, VAlign.Center);
+            kyuufuwariaiWari8 = cols[2].getCenterPoint();
+        }
+        {
+            Box row = rows[1];
+            Box left = row.setWidth(2, Box.HorizAnchor.Left);
+            compiler.textIn("7", left, HAlign.Center, VAlign.Center);
+            kyuufuwariaiWari7 = left.getCenterPoint();
+            Box right = row.setWidth(7, Box.HorizAnchor.Right);
+            compiler.textInJustified("()", right, VAlign.Center);
+            kyuufuwariaiOther = right.inset(1, 0);
+        }
+    }
 
+    public void markKyuufuwari10(){
+        markCircle(kyuufuwariaiWari10);
+    }
+
+    public void markKyuufuwari9(){
+        markCircle(kyuufuwariaiWari9);
+    }
+
+    public void markKyuufuwari8(){
+        markCircle(kyuufuwariaiWari8);
+    }
+
+    public void markKyuufuwari7(){
+        markCircle(kyuufuwariaiWari7);
+    }
+
+    public void putKyuufuwariOther(String s){
+        compiler.setFont("Gothic2.3");
+        compiler.textIn(s, kyuufuwariaiOther, HAlign.Center, VAlign.Bottom);
     }
 
 }

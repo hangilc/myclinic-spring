@@ -175,7 +175,7 @@ public class Box {
                 double left = getCx() - width/2.0;
                 return new Box(left, top, left + width, bottom);
             }
-            case Right: return new Box(left - width, top, right, bottom);
+            case Right: return new Box(right - width, top, right, bottom);
             default: throw new RuntimeException("unknown anchor: " + anchor);
         }
     }
@@ -270,6 +270,46 @@ public class Box {
             rowTop = rowBottom;
         }
         return rows;
+    }
+
+    public Box[] splitToVerticallyJustifiedRows(double rowHeight, int nrows){
+        if( nrows <= 1 ){
+            return new Box[] { setHeight(rowHeight, VertAnchor.Top) };
+        }
+        double gap = (getHeight() - rowHeight * nrows) / (nrows - 1);
+        double left = getLeft();
+        double right = getRight();
+        double top = getTop();
+        Box[] rows = new Box[nrows];
+        for(int i=0;i<nrows;i++){
+            if( i != (nrows - 1) ){
+                rows[i] = new Box(left, top, right, top + rowHeight);
+                top += rowHeight + gap;
+            } else {
+                rows[i] = new Box(left, getBottom() - rowHeight, right, getBottom());
+            }
+        }
+        return rows;
+    }
+
+    public Box[] splitToHorizontallyJustifiedColumns(double colWidth, int ncols){
+        if( ncols <= 1 ){
+            return new Box[] { setWidth(colWidth, HorizAnchor.Left) };
+        }
+        double gap = (getWidth() - colWidth * ncols) / (ncols - 1);
+        double top = getTop();
+        double bottom = getBottom();
+        double left = getLeft();
+        Box[] cols = new Box[ncols];
+        for(int i=0;i<ncols;i++){
+            if( i != (ncols - 1) ){
+                cols[i] = new Box(left, top, left + colWidth, bottom);
+                left += colWidth + gap;
+            } else {
+                cols[i] = new Box(getRight() - colWidth, top, getRight(), bottom);
+            }
+        }
+        return cols;
     }
 
     public Box[][] splitToEvenCells(int nrows, int ncols){
