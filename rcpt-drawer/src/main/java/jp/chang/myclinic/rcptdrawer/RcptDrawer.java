@@ -59,6 +59,8 @@ public class RcptDrawer {
     private Box shozaichimeishouLine1;
     private Box shozaichimeishouLine2;
     private Box shozaichimeishouLine3;
+    private Box[] shoubyoumeiNumbers;
+    private Box[] shoubyoumeiTexts;
 
     public RcptDrawer() {
         setupFonts();
@@ -78,6 +80,7 @@ public class RcptDrawer {
         setupPatientInfo();
         setupIryouKikanLabel();
         setupShozaichiMeishou();
+        setupRcptBody();
     }
 
     List<List<Op>> getPages() {
@@ -111,6 +114,7 @@ public class RcptDrawer {
         compiler.createFont("Mincho3.5", "MS Mincho", 3.5);
         compiler.createFont("Mincho2.6", "MS Mincho", 2.6);
         compiler.createFont("Mincho2.5", "MS Mincho", 2.5);
+        compiler.createFont("Mincho2.3", "MS Mincho", 2.3);
         compiler.createFont("Mincho2.2", "MS Mincho", 2.2);
         compiler.createFont("Mincho2", "MS Mincho", 2);
         compiler.createFont("Mincho1.8", "MS Mincho", 1.8);
@@ -730,6 +734,67 @@ public class RcptDrawer {
     public void putShozaichiMeishouLine3(String s){
         compiler.setFont("Mincho4.5");
         compiler.textIn(s, shozaichimeishouLine3.displaceLeftEdge(7), HAlign.Left, VAlign.Top);
+    }
+
+    private void setupRcptBody(){
+        Box box = new Box(17, 76.5, 199, 263);
+        compiler.box(box);
+        Box[] rows = box.splitToRows(21, 159);
+        setupRcptBodyRow1(rows[0]);
+        setupRcptBodyRow2(rows[1]);
+        setupRcptBodyRow3(rows[2]);
+    }
+
+    private void setupRcptBodyRow1(Box box){
+        compiler.frameBottom(box);
+        Box[] cols = box.splitToColumns(100, 136, 160);
+        setupRcptBodyRow1_Shoubyoumei(cols[0]);
+        setupRcptBodyRow1_ShinryouKaishi(cols[1]);
+        setupRcptBodyRow1_Tenki(cols[2]);
+        setupRcptBodyRow1_Nissuu(cols[3]);
+    }
+
+    private void setupRcptBodyRow1_Shoubyoumei(Box box){
+        compiler.frameRight(box);
+        Box[] cols = box.splitToColumns(5);
+        compiler.frameRight(cols[0]);
+        compiler.setFont("Mincho2");
+        compiler.textInVertJustified("傷病名", cols[0].inset(0, 6), HAlign.Center);
+        Box r2 = cols[1].inset(2, 3);
+        Box[] rows = r2.splitToVerticallyJustifiedRows(2.3, 4);
+        shoubyoumeiNumbers = new Box[4];
+        shoubyoumeiTexts = new Box[4];
+        compiler.setFont("Mincho2.3");
+        for(int i=0;i<4;i++){
+            Box r = rows[i];
+            Box[] rr = r.splitToColumns(4);
+            if( i < 3 ){
+                String label = String.format("(%d)", i+1);
+                compiler.textIn(label, rr[0], HAlign.Left, VAlign.Bottom);
+            }
+            shoubyoumeiNumbers[i] = rr[0];
+            shoubyoumeiTexts[i] = rr[1];
+        }
+    }
+
+    private void setupRcptBodyRow1_ShinryouKaishi(Box box){
+
+    }
+
+    private void setupRcptBodyRow1_Tenki(Box box){
+
+    }
+
+    private void setupRcptBodyRow1_Nissuu(Box box){
+
+    }
+
+    private void setupRcptBodyRow2(Box box){
+
+    }
+
+    private void setupRcptBodyRow3(Box box){
+
     }
 
 }
