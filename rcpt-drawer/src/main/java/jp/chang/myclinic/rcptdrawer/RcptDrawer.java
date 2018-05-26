@@ -71,6 +71,9 @@ public class RcptDrawer {
     private Box tenkiShibou;
     private Point tenkiChuushiMidashi;
     private Box tenkiChuushi;
+    private Box shinryounissuHoken;
+    private Box shinryounissuKouhi1;
+    private Box shinryounissuKouhi2;
 
     public RcptDrawer() {
         setupFonts();
@@ -849,7 +852,59 @@ public class RcptDrawer {
     }
 
     private void setupRcptBodyRow1_Nissuu(Box box){
+        compiler.setPen("bold");
+        compiler.box(box);
+        compiler.setPen("regular");
+        Box[] cols = box.splitToColumns(2.5);
+        compiler.frameRight(cols[0]);
+        compiler.setFont("Mincho2");
+        compiler.textInVertJustified("診療実日数", cols[0].inset(0, 3), HAlign.Center);
+        Box[] rows = cols[1].splitToEvenRows(3);
+        {
+            Box r = rows[0];
+            compiler.frameBottom(r);
+            Box[] cc = r.splitToColumns(2.5);
+            compiler.frameRight(cc[0]);
+            compiler.textInVertJustified("保健", cc[0].inset(0, 1), HAlign.Center);
+            Box q = cc[1].displaceRightEdge(-2).setHeight(2.5, VertAnchor.Center);
+            compiler.textIn("日", q, HAlign.Right, VAlign.Center);
+            this.shinryounissuHoken = q.displaceRightEdge(-4);
+        }
+        {
+            Box r = rows[1];
+            compiler.frameBottom(r);
+            Box[] cc = r.splitToColumns(2.5);
+            compiler.frameRight(cc[0]);
+            compiler.textInVertJustified("公費①", cc[0].inset(0, 1), HAlign.Center);
+            Box q = cc[1].displaceRightEdge(-2).setHeight(2.5, VertAnchor.Center);
+            compiler.textIn("日", q, HAlign.Right, VAlign.Center);
+            this.shinryounissuKouhi1 = q.displaceRightEdge(-4);
+        }
+        {
+            Box r = rows[2];
+            compiler.frameBottom(r);
+            Box[] cc = r.splitToColumns(2.5);
+            compiler.frameRight(cc[0]);
+            compiler.textInVertJustified("公費②", cc[0].inset(0, 1), HAlign.Center);
+            Box q = cc[1].displaceRightEdge(-2).setHeight(2.5, VertAnchor.Center);
+            compiler.textIn("日", q, HAlign.Right, VAlign.Center);
+            this.shinryounissuKouhi2 = q.displaceRightEdge(-4);
+        }
+    }
 
+    public void putShinryouNissuuHoken(int days){
+        compiler.setFont("Gothic2.5");
+        compiler.textIn("" + days, shinryounissuHoken, HAlign.Right, VAlign.Center);
+    }
+
+    public void putShinryouNissuuKouhi1(int days){
+        compiler.setFont("Gothic2.5");
+        compiler.textIn("" + days, shinryounissuKouhi1, HAlign.Right, VAlign.Center);
+    }
+
+    public void putShinryouNissuuKouhi2(int days){
+        compiler.setFont("Gothic2.5");
+        compiler.textIn("" + days, shinryounissuKouhi2, HAlign.Right, VAlign.Center);
     }
 
     private void setupRcptBodyRow2(Box box){

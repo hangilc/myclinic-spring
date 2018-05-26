@@ -67,6 +67,9 @@ class MainRoot extends VBox {
         rcptDrawer.putShozaichiMeishouLine1("医療機関住所");
         rcptDrawer.putShozaichiMeishouLine2("03 (1234) 5678");
         rcptDrawer.putShozaichiMeishouLine3("医療機関名称");
+        rcptDrawer.putShinryouNissuuHoken(3);
+        rcptDrawer.putShinryouNissuuKouhi1(1);
+        rcptDrawer.putShinryouNissuuKouhi2(2);
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }
