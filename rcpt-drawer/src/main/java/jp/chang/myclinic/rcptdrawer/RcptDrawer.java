@@ -61,6 +61,16 @@ public class RcptDrawer {
     private Box shozaichimeishouLine3;
     private Box[] shoubyoumeiNumbers;
     private Box[] shoubyoumeiTexts;
+    private Box[] shoubyoumeiKaishiNumbers;
+    private Box[] shoubyoumeiKaishiNen;
+    private Box[] shoubyoumeiKaishiMonths;
+    private Box[] shoubyoumeiKaishiDays;
+    private Point tenkiChiyuMidashi;
+    private Box tenkiChiyu;
+    private Point tenkiShibouMidashi;
+    private Box tenkiShibou;
+    private Point tenkiChuushiMidashi;
+    private Box tenkiChuushi;
 
     public RcptDrawer() {
         setupFonts();
@@ -778,11 +788,64 @@ public class RcptDrawer {
     }
 
     private void setupRcptBodyRow1_ShinryouKaishi(Box box){
-
+        compiler.frameRight(box);
+        Box[] cols = box.splitToColumns(2.5);
+        compiler.frameRight(cols[0]);
+        compiler.setFont("Mincho2");
+        compiler.textInVertJustified("診療開始日", cols[0].inset(0, 3), HAlign.Center);
+        Box[] rows = cols[1].inset(2, 3, 1, 3).splitToVerticallyJustifiedRows(2.3, 4);
+        compiler.setFont("Mincho2.3");
+        shoubyoumeiKaishiNumbers = new Box[4];
+        shoubyoumeiKaishiNen = new Box[4];
+        shoubyoumeiKaishiMonths = new Box[4];
+        shoubyoumeiKaishiDays = new Box[4];
+        for(int i=0;i<4;i++){
+            Box[] cc = rows[i].splitToHorizontallyJustifiedColumns(2.3, 4);
+            if( i < 3 ){
+                String label = String.format("(%d)", i+1);
+                compiler.textIn(label, cc[0], HAlign.Left, VAlign.Bottom);
+                compiler.textIn("年", cc[1], HAlign.Left, VAlign.Bottom);
+                compiler.textIn("月", cc[2], HAlign.Left, VAlign.Bottom);
+                compiler.textIn("日", cc[3], HAlign.Left, VAlign.Bottom);
+            }
+            final int index = i;
+            shoubyoumeiKaishiNen[index] = cc[i];
+            markLeft(cc[1], 6.5, b -> shoubyoumeiKaishiNen[index] = b);
+            markLeft(cc[2], 6.5, b -> shoubyoumeiKaishiMonths[index] = b);
+            markLeft(cc[3], 6.5, b -> shoubyoumeiKaishiDays[index] = b);
+        }
     }
 
     private void setupRcptBodyRow1_Tenki(Box box){
-
+        compiler.frameRight(box);
+        Box[] cols = box.splitToColumns(2.5);
+        compiler.frameRight(cols[0]);
+        compiler.setFont("Mincho2");
+        compiler.textInVertJustified("転帰", cols[0].inset(0, 3), HAlign.Center);
+        Box[] cc = cols[1].splitToEvenColumns(3);
+        compiler.setPen("dot");
+        compiler.frameRight(cc[0]);
+        compiler.frameRight(cc[1]);
+        compiler.setPen("regular");
+        cc = cols[1].shrinkHeight(3, VertAnchor.Bottom).splitToEvenColumns(3);
+        {
+            Box[] rr = cc[0].splitToRows(2);
+            compiler.textIn("治ゆ", rr[0], HAlign.Center, VAlign.Center);
+            this.tenkiChiyuMidashi = rr[0].getCenterPoint();
+            this.tenkiChiyu = rr[1];
+        }
+        {
+            Box[] rr = cc[1].splitToRows(2);
+            compiler.textIn("死亡", rr[0], HAlign.Center, VAlign.Center);
+            this.tenkiShibouMidashi = rr[0].getCenterPoint();
+            this.tenkiShibou = rr[1];
+        }
+        {
+            Box[] rr = cc[2].splitToRows(2);
+            compiler.textIn("中止", rr[0], HAlign.Center, VAlign.Center);
+            this.tenkiChuushiMidashi = rr[0].getCenterPoint();
+            this.tenkiChuushi = rr[1];
+        }
     }
 
     private void setupRcptBodyRow1_Nissuu(Box box){
