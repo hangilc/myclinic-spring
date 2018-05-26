@@ -37,6 +37,10 @@ public class RcptDrawer {
     private Point kyuufuwariaiWari7;
     private Box kyuufuwariaiOther;
     private Box hihokenshashou;
+    private Box[] kouhifutanshabangou1;
+    private Box[] kouhijukyuushabangou1;
+    private Box[] kouhifutanshabangou2;
+    private Box[] kouhijukyuushabangou2;
 
     public RcptDrawer() {
         setupFonts();
@@ -52,6 +56,7 @@ public class RcptDrawer {
         setupHokenShubetsu();
         setupHokenshaBangou();
         setupHihokensha();
+        setupKouhi();
     }
 
     List<List<Op>> getPages() {
@@ -84,6 +89,7 @@ public class RcptDrawer {
         compiler.createFont("Mincho2.5", "MS Mincho", 2.5);
         compiler.createFont("Mincho2.2", "MS Mincho", 2.2);
         compiler.createFont("Mincho2", "MS Mincho", 2);
+        compiler.createFont("Mincho1.8", "MS Mincho", 1.8);
     }
 
     private void setupPens() {
@@ -186,16 +192,16 @@ public class RcptDrawer {
         hokenShubetsu(rows[1], "２", "公費", point -> this.hokenshubetsuKouhi1 = point);
     }
 
-    private void markCircle(Point p){
+    private void markCircle(Point p) {
         compiler.setPen("regular");
         compiler.circle(p, 1.5);
     }
 
-    public void markHokenshubetsuShakoku(){
+    public void markHokenshubetsuShakoku() {
         markCircle(hokenshubetsuShakoku);
     }
 
-    public void markHokenshubetsuKouhi1(){
+    public void markHokenshubetsuKouhi1() {
         markCircle(hokenshubetsuKouhi1);
     }
 
@@ -205,15 +211,15 @@ public class RcptDrawer {
         hokenShubetsu(rows[1], "４", "退職", point -> this.hokenshubetsuTaishoku = point);
     }
 
-    public void markHokenshubetsuKoukikourei(){
+    public void markHokenshubetsuKoukikourei() {
         markCircle(hokenshubetsuRoujin);
     }
 
-    public void markHokenshubetsuTaishoku(){
+    public void markHokenshubetsuTaishoku() {
         markCircle(hokenshubetsuTaishoku);
     }
 
-    private void hokenShubetsu(Box box, String num, String label, Consumer<Point> cb){
+    private void hokenShubetsu(Box box, String num, String label, Consumer<Point> cb) {
         Box[] cols = box.splitToColumns(2.5);
         compiler.setFont("Gothic2.6");
         compiler.textIn(num, cols[0], HAlign.Center, VAlign.Center);
@@ -222,7 +228,7 @@ public class RcptDrawer {
         cb.accept(box.getCenterPoint());
     }
 
-    private void setupHokenShubetsu3(Box box){
+    private void setupHokenShubetsu3(Box box) {
         compiler.frameRight(box);
         Box[] rows = box.splitToEvenRows(3);
         hokenShubetsu(rows[0], "１", "単独", point -> this.hokentandokuTandoku = point);
@@ -230,19 +236,19 @@ public class RcptDrawer {
         hokenShubetsu(rows[2], "３", "３併", point -> this.hokentandokuHei3 = point);
     }
 
-    public void markHokentandokuTandoku(){
+    public void markHokentandokuTandoku() {
         markCircle(hokentandokuTandoku);
     }
 
-    public void markHokentandokuHei2(){
+    public void markHokentandokuHei2() {
         markCircle(hokentandokuHei2);
     }
 
-    public void markHokentandokuHei3(){
+    public void markHokentandokuHei3() {
         markCircle(hokentandokuHei3);
     }
 
-    private void setupHokenShubetsu4(Box box){
+    private void setupHokenShubetsu4(Box box) {
         Box[] cols = box.splitToEvenColumns(2);
         compiler.setPen("dot");
         compiler.frameRight(cols[0]);
@@ -258,15 +264,15 @@ public class RcptDrawer {
         hokenShubetsu(rows[2], "６", "家外", point -> this.hokenfutanKazoku = point);
     }
 
-    public void markHokenfutanHonnin(){
+    public void markHokenfutanHonnin() {
         markCircle(hokenfutanHonnin);
     }
 
-    public void markHokenfutanSansai(){
+    public void markHokenfutanSansai() {
         markCircle(hokenfutanSansai);
     }
 
-    public void markHokenfutanKazoku(){
+    public void markHokenfutanKazoku() {
         markCircle(hokenfutanKazoku);
     }
 
@@ -274,17 +280,17 @@ public class RcptDrawer {
         Box[] rows = box.splitToEvenRows(2);
         hokenShubetsu(rows[0], "８", "高外一", point -> this.hokenfutanKourei9 = point);
         hokenShubetsu(rows[1], "０", "高外７", point -> this.hokenfutanKourei7 = point);
-   }
+    }
 
-    public void markHokenfutanKourei9(){
+    public void markHokenfutanKourei9() {
         markCircle(hokenfutanKourei9);
     }
 
-    public void markHokenfutanKourei7(){
+    public void markHokenfutanKourei7() {
         markCircle(hokenfutanKourei7);
     }
 
-    public void setupHokenshaBangou(){
+    public void setupHokenshaBangou() {
         Box box = new Box(115, 29.5, 199, 38);
         compiler.box(box);
         Box[] cols = box.splitToColumns(8.5, 68.5, 71.5);
@@ -294,7 +300,7 @@ public class RcptDrawer {
         setupHokenshaBangou_4(cols[3]);
     }
 
-    private void setupHokenshaBangou_1(Box box){
+    private void setupHokenshaBangou_1(Box box) {
         compiler.frameRight(box);
         Box[] rows = box.splitToEvenRows(2);
         compiler.setFont("Mincho2");
@@ -302,7 +308,7 @@ public class RcptDrawer {
         compiler.textInJustified("番号", rows[1], VAlign.Center);
     }
 
-    private void setupHokenshaBangou_2(Box box){
+    private void setupHokenshaBangou_2(Box box) {
         Box[] cols = box.splitToEvenColumns(8);
         compiler.frameRight(box);
         compiler.setPen("dot");
@@ -316,26 +322,18 @@ public class RcptDrawer {
         this.hokenshabangouBoxes = cols;
     }
 
-    public void setHokenshaBangou(int n){
-        String s = String.format("%d", n);
-        if( s.length() > 8 ){
-            throw new RuntimeException("Too large hokensha bangou: " + n);
-        }
-        int offset = 8 - s.length();
+    public void setHokenshaBangou(int n) {
         compiler.setFont("Gothic5");
-        for(int i=0;i<s.length();i++){
-            compiler.textIn(s.substring(i,i+1), hokenshabangouBoxes[i+offset],
-                    HAlign.Center, VAlign.Center);
-        }
+        printDigits(n, hokenshabangouBoxes);
     }
 
-    private void setupHokenshaBangou_3(Box box){
+    private void setupHokenshaBangou_3(Box box) {
         compiler.frameRight(box);
         compiler.setFont("Mincho2");
         compiler.textInVertJustified("給付割合", box, HAlign.Center);
     }
 
-    private void setupHokenshaBangou_4(Box box){
+    private void setupHokenshaBangou_4(Box box) {
         compiler.setFont("Mincho2");
         box = box.inset(1, 1);
         Box[] rows = box.splitToVerticallyJustifiedRows(2.0, 2);
@@ -359,29 +357,29 @@ public class RcptDrawer {
         }
     }
 
-    public void markKyuufuwari10(){
+    public void markKyuufuwari10() {
         markCircle(kyuufuwariaiWari10);
     }
 
-    public void markKyuufuwari9(){
+    public void markKyuufuwari9() {
         markCircle(kyuufuwariaiWari9);
     }
 
-    public void markKyuufuwari8(){
+    public void markKyuufuwari8() {
         markCircle(kyuufuwariaiWari8);
     }
 
-    public void markKyuufuwari7(){
+    public void markKyuufuwari7() {
         markCircle(kyuufuwariaiWari7);
     }
 
-    public void putKyuufuwariOther(String s){
+    public void putKyuufuwariOther(String s) {
         compiler.setFont("Gothic2.3");
         compiler.textIn(s, kyuufuwariaiOther, HAlign.Center, VAlign.Bottom);
     }
 
-    private void setupHihokensha(){
-        Box box = new Box(115, 39, 199, 39+11.5);
+    private void setupHihokensha() {
+        Box box = new Box(115, 39, 199, 39 + 11.5);
         compiler.box(box);
         Box[] cols = box.splitToColumns(30.5);
         compiler.frameRight(cols[0]);
@@ -392,9 +390,109 @@ public class RcptDrawer {
         this.hihokenshashou = cols[1];
     }
 
-    public void putHihokenshashou(String s){
+    public void putHihokenshashou(String s) {
         compiler.setFont("Gothic4");
         compiler.textIn(s, hihokenshashou.displaceLeftEdge(3), HAlign.Left, VAlign.Center);
+    }
+
+    private void setupKouhi() {
+        Box box = new Box(17, 29.5, 105.5, 52.5);
+        compiler.box(box);
+        Box[] rows = box.splitToEvenRows(3);
+        compiler.frameBottom(rows[0]);
+        compiler.frameBottom(rows[1]);
+        double[] xs = new double[]{8, 47, 56.5};
+        {
+            Box[] cols = box.splitToColumns(xs);
+            compiler.frameRight(cols[0]);
+            {
+                Box[] cs = cols[1].splitToEvenColumns(8);
+                compiler.setPen("dot");
+                List.of(0, 2, 4, 5).forEach(i -> compiler.frameRight(cs[i]));
+                compiler.setPen("bold");
+                compiler.frameRight(cs[1]);
+                compiler.box(Box.boundingBox2(cs[4], cs[6]));
+                compiler.setPen("regular");
+            }
+            compiler.frameRight(cols[1]);
+            compiler.frameRight(cols[2]);
+            {
+                Box[] cs = cols[3].splitToEvenColumns(7);
+                compiler.setPen("dot");
+                List.of(0, 1, 3, 4).forEach(i -> compiler.frameRight(cs[i]));
+                compiler.setPen("bold");
+                compiler.box(Box.boundingBox2(cs[3], cs[5]));
+                compiler.setPen("regular");
+            }
+        }
+        compiler.setFont("Mincho2.6");
+        {
+            Box[] cols = rows[0].splitToColumns(xs);
+            compiler.textIn("－", cols[0], HAlign.Center, VAlign.Center);
+            compiler.textIn("－", cols[2], HAlign.Center, VAlign.Center);
+        }
+        {
+            Box[] cols = rows[1].splitToColumns(xs);
+            Box[] rs = cols[0].splitToEvenRows(3);
+            compiler.textInJustified("公費負", rs[0], VAlign.Bottom);
+            compiler.textInJustified("担者番", rs[1], VAlign.Bottom);
+            compiler.textInJustified("号①", rs[2], VAlign.Bottom);
+            rs = cols[2].splitToEvenRows(3);
+            compiler.textInJustified("公費負担", rs[0], VAlign.Bottom);
+            compiler.textInJustified("医療の受", rs[1], VAlign.Bottom);
+            compiler.setFont("Mincho1.8");
+            compiler.textInJustified("給者番号①", rs[2], VAlign.Bottom);
+            compiler.setFont("Mincho2.6");
+            this.kouhifutanshabangou1 = cols[1].splitToEvenColumns(8);
+            this.kouhijukyuushabangou1 = cols[3].splitToEvenColumns(7);
+        }
+        {
+            Box[] cols = rows[2].splitToColumns(xs);
+            Box[] rs = cols[0].splitToEvenRows(3);
+            compiler.textInJustified("公費負", rs[0], VAlign.Bottom);
+            compiler.textInJustified("担者番", rs[1], VAlign.Bottom);
+            compiler.textInJustified("号②", rs[2], VAlign.Bottom);
+            rs = cols[2].splitToEvenRows(3);
+            compiler.textInJustified("公費負担", rs[0], VAlign.Bottom);
+            compiler.textInJustified("医療の受", rs[1], VAlign.Bottom);
+            compiler.setFont("Mincho1.8");
+            compiler.textInJustified("給者番号②", rs[2], VAlign.Bottom);
+            compiler.setFont("Mincho2.6");
+            this.kouhifutanshabangou2 = cols[1].splitToEvenColumns(8);
+            this.kouhijukyuushabangou2 = cols[3].splitToEvenColumns(7);
+        }
+    }
+
+    public void putKouhiFutanshaBangou1(int n){
+        compiler.setFont("Gothic5");
+        printDigits(n, kouhifutanshabangou1);
+    }
+
+    public void putKouhiJukyuushaBangou1(int n){
+        compiler.setFont("Gothic5");
+        printDigits(n, kouhijukyuushabangou1);
+    }
+
+    public void putKouhiFutanshaBangou2(int n){
+        compiler.setFont("Gothic5");
+        printDigits(n, kouhifutanshabangou2);
+    }
+
+    public void putKouhiJukyuushaBangou2(int n){
+        compiler.setFont("Gothic5");
+        printDigits(n, kouhijukyuushabangou2);
+    }
+
+    private void printDigits(int n, Box[] boxes){
+        String s = String.format("%d", n);
+        if( s.length() > boxes.length ){
+            throw new RuntimeException("Too large number: " + n);
+        }
+        int offset = boxes.length - s.length();
+        for(int i=0;i<s.length();i++){
+            String c = s.substring(i, i+1);
+            compiler.textIn(c, boxes[offset+i], HAlign.Center, VAlign.Center);
+        }
     }
 
 }
