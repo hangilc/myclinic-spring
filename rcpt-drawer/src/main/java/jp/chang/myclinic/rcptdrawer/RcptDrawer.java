@@ -50,6 +50,7 @@ public class RcptDrawer {
         setupKikanCode();
         setupHokenShubetsu();
         setupHokenshaBangou();
+        setupHihokensha();
     }
 
     List<List<Op>> getPages() {
@@ -376,6 +377,11 @@ public class RcptDrawer {
     public void putKyuufuwariOther(String s){
         compiler.setFont("Gothic2.3");
         compiler.textIn(s, kyuufuwariaiOther, HAlign.Center, VAlign.Bottom);
+    }
+
+    private void setupHihokensha(){
+        Box box = new Box(115, 39, 199, 39+11.5);
+        compiler.box(box);
     }
 
 }
