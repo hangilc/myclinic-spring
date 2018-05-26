@@ -60,6 +60,10 @@ class MainRoot extends VBox {
         rcptDrawer.putSeinengappiNen(12);
         rcptDrawer.putSeinengappiMonth(10);
         rcptDrawer.putSeinengappiDay(31);
+        //rcptDrawer.markShokumujouShokumujou();
+        //rcptDrawer.markShokumujouGesen();
+        rcptDrawer.markShokumujouTsuukin();
+        rcptDrawer.putTokkijikou("特記事項の内容。\n２行目以降の内容。つづきの文章。");
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }

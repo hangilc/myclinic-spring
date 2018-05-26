@@ -7,6 +7,7 @@ import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class RcptDrawer {
@@ -51,6 +52,10 @@ public class RcptDrawer {
     private Box seinengappiNen;
     private Box seinengappiMonth;
     private Box seinengappiDay;
+    private Point shokumujouShokumujou;
+    private Point shokumujouGesen;
+    private Point shokumujouTsuukin;
+    private Box tokkijikou;
 
     public RcptDrawer() {
         setupFonts();
@@ -518,6 +523,7 @@ public class RcptDrawer {
             setupPatientInfo_Names(rows[0]);
             setupPatientInfo_Shokumujou(rows[1]);
         }
+        setupPatientInfo_Tokkijikou(cols[1]);
     }
 
     private void setupPatientInfo_Names(Box box){
@@ -570,6 +576,34 @@ public class RcptDrawer {
     }
 
     private void setupPatientInfo_Shokumujou(Box box){
+        Box[] cols = box.splitToColumns(16);
+        compiler.frameRight(cols[0]);
+        compiler.setFont("Mincho2");
+        compiler.textInJustified("職務上の事由", cols[0], VAlign.Center);
+        Box r2 = cols[1].setHeight(2, VertAnchor.Center);
+        makeIndexAndLabel(r2, 3, 2, 1.5, 15, (rIndex, rLabel) -> {
+            compiler.textIn("1", rIndex, HAlign.Center, VAlign.Bottom);
+            compiler.textIn("職務上", rLabel, HAlign.Left, VAlign.Bottom);
+            this.shokumujouShokumujou = rIndex.getCenterPoint();
+            rIndex = rIndex.shiftToRight(13);
+            rLabel = rLabel.shiftToRight(13);
+            compiler.textIn("2", rIndex, HAlign.Center, VAlign.Bottom);
+            compiler.textIn("下船後３月以内", rLabel, HAlign.Left, VAlign.Bottom);
+            this.shokumujouGesen = rIndex.getCenterPoint();
+            rIndex = rIndex.shiftToRight(22);
+            rLabel = rLabel.shiftToRight(22);
+            compiler.textIn("3", rIndex, HAlign.Center, VAlign.Bottom);
+            compiler.textIn("通勤災害", rLabel, HAlign.Left, VAlign.Bottom);
+            this.shokumujouTsuukin = rIndex.getCenterPoint();
+        });
+    }
+
+    private void setupPatientInfo_Tokkijikou(Box box){
+        Box[] rows = box.splitToRows(4);
+        compiler.frameBottom(rows[0]);
+        compiler.setFont("Mincho2");
+        compiler.textInJustified("特記事項", rows[0].inset(3.5, 0), VAlign.Center);
+        this.tokkijikou = rows[1];
     }
 
     public void putShimei(String s){
@@ -619,6 +653,24 @@ public class RcptDrawer {
                 HAlign.Right, VAlign.Bottom);
     }
 
+    public void markShokumujouShokumujou(){
+        markCircle(shokumujouShokumujou);
+    }
+
+    public void markShokumujouGesen(){
+        markCircle(shokumujouGesen);
+    }
+
+    public void markShokumujouTsuukin(){
+        markCircle(shokumujouTsuukin);
+    }
+
+    public void putTokkijikou(String text){
+        compiler.setFont("Mincho2.5");
+        String[] lines = text.split("\\r\\n|\\n");
+        compiler.paragraph(text, tokkijikou.inset(1, 1), HAlign.Left, VAlign.Top, 0);
+    }
+
     private Box setBottomCenterAt(Box box, double x, double width){
         double c = box.getLeft() + x;
         return new Box(c - width/2, box.getTop(), c + width/2, box.getBottom());
@@ -626,6 +678,13 @@ public class RcptDrawer {
 
     private void markLeft(Box box, double width, Consumer<Box> cb){
         cb.accept(box.flipLeft().setWidth(width, Box.HorizAnchor.Right));
+    }
+
+    private void makeIndexAndLabel(Box box, double indexCenter, double indexWidth, double offset,
+                              double labelWidth, BiConsumer<Box, Box> cb){
+        Box rIndex = setBottomCenterAt(box, indexCenter, indexWidth);
+        Box rLabel = box.shiftToRight(indexCenter + offset).setWidth(labelWidth, Box.HorizAnchor.Left);
+        cb.accept(rIndex, rLabel);
     }
 
 }
