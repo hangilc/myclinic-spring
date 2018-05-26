@@ -41,6 +41,16 @@ public class RcptDrawer {
     private Box[] kouhijukyuushabangou1;
     private Box[] kouhifutanshabangou2;
     private Box[] kouhijukyuushabangou2;
+    private Box shimei;
+    private Point seibetsuOtoko;
+    private Point seibetsuOnna;
+    private Point seinengappiMeiji;
+    private Point seinengappiTaishou;
+    private Point seinengappiShouwa;
+    private Point seinengappiHeisei;
+    private Box seinengappiNen;
+    private Box seinengappiMonth;
+    private Box seinengappiDay;
 
     public RcptDrawer() {
         setupFonts();
@@ -57,6 +67,7 @@ public class RcptDrawer {
         setupHokenshaBangou();
         setupHihokensha();
         setupKouhi();
+        setupPatientInfo();
     }
 
     List<List<Op>> getPages() {
@@ -85,6 +96,7 @@ public class RcptDrawer {
         compiler.createFont("Gothic2.5", "MS Gothic", 2.5);
         compiler.createFont("Gothic2.3", "MS Gothic", 2.3);
         compiler.createFont("Gothic2.2", "MS Gothic", 2.2);
+        compiler.createFont("Gothic2", "MS Gothic", 2);
         compiler.createFont("Mincho2.6", "MS Mincho", 2.6);
         compiler.createFont("Mincho2.5", "MS Mincho", 2.5);
         compiler.createFont("Mincho2.2", "MS Mincho", 2.2);
@@ -493,6 +505,127 @@ public class RcptDrawer {
             String c = s.substring(i, i+1);
             compiler.textIn(c, boxes[offset+i], HAlign.Center, VAlign.Center);
         }
+    }
+
+    private void setupPatientInfo(){
+        Box box = new Box(17, 55.5, 106.5, 76.5);
+        compiler.box(box);
+        Box[] cols = box.splitToColumns(68.5);
+        compiler.frameRight(cols[0]);
+        {
+            Box r = cols[0];
+            Box[] rows = r.splitToRows(15);
+            setupPatientInfo_Names(rows[0]);
+            setupPatientInfo_Shokumujou(rows[1]);
+        }
+    }
+
+    private void setupPatientInfo_Names(Box box){
+        compiler.frameBottom(box);
+        Box[] cols = box.splitToColumns(3.5);
+        compiler.frameRight(cols[0]);
+        compiler.setFont("Mincho2");
+        compiler.textInVertJustified("氏名", cols[0].inset(0, 3), HAlign.Center);
+        this.shimei = cols[1].shrinkHeight(2, VertAnchor.Top);
+        Box r = cols[1].setHeight(2, VertAnchor.Bottom);
+        Box r1 = setBottomCenterAt(r, 2.2, 2);
+        compiler.textIn("1", r1, HAlign.Center, VAlign.Bottom);
+        this.seibetsuOtoko = r1.getCenterPoint();
+        Box r2 = r.displaceLeftEdge(4).setWidth(4, Box.HorizAnchor.Left);
+        compiler.textIn("男", r2, HAlign.Left, VAlign.Bottom);
+        r1 = r1.shiftToRight(6.3);
+        r2 = r2.shiftToRight(6.3);
+        compiler.textIn("2", r1, HAlign.Center, VAlign.Bottom);
+        this.seibetsuOnna = r1.getCenterPoint();
+        compiler.textIn("女", r2, HAlign.Left, VAlign.Bottom);
+        r1 = r1.shiftToRight(7);
+        r2 = r2.shiftToRight(7);
+        compiler.textIn("1", r1, HAlign.Center, VAlign.Bottom);
+        compiler.textIn("明", r2, HAlign.Left, VAlign.Bottom);
+        this.seinengappiMeiji = r1.getCenterPoint();
+        r1 = r1.shiftToRight(7);
+        r2 = r2.shiftToRight(7);
+        compiler.textIn("2", r1, HAlign.Center, VAlign.Bottom);
+        compiler.textIn("大", r2, HAlign.Left, VAlign.Bottom);
+        this.seinengappiTaishou = r1.getCenterPoint();
+        r1 = r1.shiftToRight(7);
+        r2 = r2.shiftToRight(7);
+        compiler.textIn("3", r1, HAlign.Center, VAlign.Bottom);
+        compiler.textIn("昭", r2, HAlign.Left, VAlign.Bottom);
+        this.seinengappiShouwa = r1.getCenterPoint();
+        r1 = r1.shiftToRight(7);
+        r2 = r2.shiftToRight(7);
+        compiler.textIn("4", r1, HAlign.Center, VAlign.Bottom);
+        compiler.textIn("平", r2, HAlign.Left, VAlign.Bottom);
+        this.seinengappiHeisei = r1.getCenterPoint();
+        r1 = setBottomCenterAt(r, 47, 2);
+        compiler.textIn("・", r1, HAlign.Center, VAlign.Center);
+        markLeft(r1, 5, b -> this.seinengappiNen = b);
+        r1 = setBottomCenterAt(r, 53, 2);
+        compiler.textIn("・", r1, HAlign.Center, VAlign.Center);
+        markLeft(r1, 5, b -> this.seinengappiMonth = b);
+        r1 = setBottomCenterAt(r, 60, 2);
+        compiler.textIn("生", r1, HAlign.Center, VAlign.Center);
+        markLeft(r1, 5, b -> this.seinengappiDay = b);
+    }
+
+    private void setupPatientInfo_Shokumujou(Box box){
+    }
+
+    public void putShimei(String s){
+        compiler.setFont("Gothic4");
+        compiler.textIn(s, shimei.displaceLeftEdge(3), HAlign.Left, VAlign.Center);
+    }
+
+    public void markSeibetsuOtoko(){
+        markCircle(seibetsuOtoko);
+    }
+
+    public void markSeibetsuOnna(){
+        markCircle(seibetsuOnna);
+    }
+
+    public void markSeinengappiMeiji(){
+        markCircle(seinengappiMeiji);
+    }
+
+    public void markSeinengappiTaishou(){
+        markCircle(seinengappiTaishou);
+    }
+
+    public void markSeinengappiShouwa(){
+        markCircle(seinengappiShouwa);
+    }
+
+    public void markSeinengappiHeisei(){
+        markCircle(seinengappiHeisei);
+    }
+
+    public void putSeinengappiNen(int nen){
+        compiler.setFont("Gothic2");
+        compiler.textIn("" + nen, seinengappiNen.displaceRightEdge(-1),
+                HAlign.Right, VAlign.Bottom);
+    }
+
+    public void putSeinengappiMonth(int month){
+        compiler.setFont("Gothic2");
+        compiler.textIn("" + month, seinengappiMonth.displaceRightEdge(-1),
+                HAlign.Right, VAlign.Bottom);
+    }
+
+    public void putSeinengappiDay(int day){
+        compiler.setFont("Gothic2");
+        compiler.textIn("" + day, seinengappiDay.displaceRightEdge(-1),
+                HAlign.Right, VAlign.Bottom);
+    }
+
+    private Box setBottomCenterAt(Box box, double x, double width){
+        double c = box.getLeft() + x;
+        return new Box(c - width/2, box.getTop(), c + width/2, box.getBottom());
+    }
+
+    private void markLeft(Box box, double width, Consumer<Box> cb){
+        cb.accept(box.flipLeft().setWidth(width, Box.HorizAnchor.Right));
     }
 
 }

@@ -50,6 +50,16 @@ class MainRoot extends VBox {
         rcptDrawer.putKouhiJukyuushaBangou1(6543210);
         rcptDrawer.putKouhiFutanshaBangou2(40323431);
         rcptDrawer.putKouhiJukyuushaBangou2(5472342);
+        rcptDrawer.putShimei("苗字名前");
+        //rcptDrawer.markSeibetsuOtoko();
+        rcptDrawer.markSeibetsuOnna();
+        //rcptDrawer.markSeinengappiMeiji();
+        //rcptDrawer.markSeinengappiTaishou();
+        //rcptDrawer.markSeinengappiShouwa();
+        rcptDrawer.markSeinengappiHeisei();
+        rcptDrawer.putSeinengappiNen(12);
+        rcptDrawer.putSeinengappiMonth(10);
+        rcptDrawer.putSeinengappiDay(31);
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }
