@@ -149,8 +149,9 @@ public class RcptDrawer {
     private Box gazouTimes;
     private Box gazouTen;
     private Box gazouYakuzaiTen;
-    private Box sonotaTimes;
-    private Box sonotaTen;
+    private Box sonotaShohousenTimes;
+    private Box sonotaShohousenTen;
+    private Box sonotaSonotaTen;
     private Box sonotaYakuzaiTen;
 
     public RcptDrawer() {
@@ -1202,6 +1203,11 @@ public class RcptDrawer {
         renderTankaKaiTen(box, "回", cb);
     }
 
+    private void RcptBodyRow2_Format2_tt(Box box, String label, Consumer<Box[]> cb) {
+        compiler.textInJustified(label, box.setWidth(21, HorizAnchor.Left).displaceLeftEdge(2), VAlign.Center);
+        renderKaiTen(box, "回", cb);
+    }
+
     private void RcptBodyRow2_Format3(Box box, String label, Consumer<Box> cb) {
         compiler.textInJustified(label, box.setWidth(17, HorizAnchor.Left).displaceLeftEdge(2), VAlign.Center);
         renderTen(box, cb);
@@ -1778,15 +1784,157 @@ public class RcptDrawer {
     }
 
     private void setupRcptBodyRow2_Kensa(Box r) {
+        Box r1, r2;
 
+        compiler.frameBottom(r);
+        {
+            Box[] tmp = r.splitToColumns(5);
+            r1 = tmp[0];
+            r2 = tmp[1];
+        }
+        compiler.setFont("Mincho2.5");
+        {
+            Box p, q;
+
+            compiler.frameRight(r1);
+            {
+                Box[] tmp = r1.splitToRows(3);
+                p = tmp[0];
+                q = tmp[1];
+
+            }
+            compiler.textIn("60", p, HAlign.Center, VAlign.Bottom);
+            q = q.inset(0, 0.5);
+            compiler.textInVertJustified("検査", q, HAlign.Center);
+        }
+        {
+            Box[] rr;
+
+            rr = r2.splitToEvenRows(2);
+            renderKaiTen(rr[0], "回", boxes -> {
+                this.kensaTimes = boxes[0];
+                this.kensaTen = boxes[1];
+            });
+            RcptBodyRow2_Format3(rr[1], "薬剤", box -> this.kensaYakuzaiTen = box);
+        }
+    }
+
+    public void putKensaTimes(int n){
+        putTankaKaiTen(kensaTimes, n);
+    }
+
+    public void putKensaTen(int n){
+        putTankaKaiTen(kensaTen, n);
+    }
+
+    public void putKensaYakuzaiTen(int n){
+        putTankaKaiTen(kensaYakuzaiTen, n);
     }
 
     private void setupRcptBodyRow2_Gazou(Box r) {
+        Box r1, r2;
 
+        compiler.frameBottom(r);
+        {
+            Box[] tmp = r.splitToColumns(5);
+            r1 = tmp[0];
+            r2 = tmp[1];
+        }
+        compiler.setFont("Mincho2.5");
+        {
+            Box p, q;
+
+            compiler.frameRight(r1);
+            {
+                Box[] tmp = r1.splitToRows(3);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            compiler.textIn("70", p, HAlign.Center, VAlign.Bottom);
+            q = q.inset(0, 0.5);
+            Box[] cc = q.splitToEvenColumns(2);
+            compiler.setFont("Mincho1.8");
+            compiler.textInVertJustified("画像", cc[0], HAlign.Center);
+            compiler.textInVertJustified("診断", cc[1], HAlign.Center);
+            compiler.setFont("Mincho2.5");
+        }
+        {
+            Box[] rr;
+
+            rr = r2.splitToEvenRows(2);
+            renderKaiTen(rr[0], "回", boxes -> {
+                this.gazouTimes = boxes[0];
+                this.gazouTen = boxes[1];
+            });
+            RcptBodyRow2_Format3(rr[1], "薬剤", box -> this.gazouYakuzaiTen = box);
+        }
+    }
+
+    public void putGazouTimes(int n){
+        putTankaKaiTen(gazouTimes, n);
+    }
+
+    public void putGazouTen(int n){
+        putTankaKaiTen(gazouTen, n);
+    }
+
+    public void putGazouYakuzaiTen(int n){
+        putTankaKaiTen(gazouYakuzaiTen, n);
     }
 
     private void setupRcptBodyRow2_Sonota(Box r) {
+        Box r1, r2;
 
+        compiler.frameBottom(r);
+        {
+            Box[] tmp = r.splitToColumns(5);
+            r1 = tmp[0];
+            r2 = tmp[1];
+        }
+        compiler.setFont("Mincho2.5");
+        {
+            Box p, q;
+
+            compiler.frameRight(r1);
+            {
+                Box[] tmp = r1.splitToRows(3);
+                p = tmp[0];
+                q = tmp[1];
+
+            }
+            compiler.textIn("80", p, HAlign.Center, VAlign.Bottom);
+            q = q.inset(0, 0.5);
+            compiler.setFont("Mincho1.8");
+            compiler.textInVertJustified("その他", q, HAlign.Center);
+            compiler.setFont("Mincho2.5");
+        }
+        {
+            Box[] rr;
+
+            rr = r2.splitToEvenRows(3);
+            RcptBodyRow2_Format2_tt(rr[0], "処方せん", boxes -> {
+                this.sonotaShohousenTimes = boxes[0];
+                this.sonotaShohousenTen = boxes[1];
+            });
+            RcptBodyRow2_Format3(rr[1], "その他", box -> this.sonotaSonotaTen = box);
+            RcptBodyRow2_Format3(rr[2], "薬剤", box -> this.sonotaYakuzaiTen = box);
+        }
+    }
+
+    public void putSonotaShohousenTimes(int n){
+        putTankaKaiTen(sonotaShohousenTimes, n);
+    }
+
+    public void putSonotaShohousenTen(int n){
+        putTankaKaiTen(sonotaShohousenTen, n);
+    }
+
+    public void putSonotaSonotaTen(int n){
+        putTankaKaiTen(sonotaSonotaTen, n);
+    }
+
+    public void putSonotaYakuzaiTen(int n){
+        putTankaKaiTen(sonotaYakuzaiTen, n);
     }
 
     private void setupRcptBodyRow3(Box r) {
