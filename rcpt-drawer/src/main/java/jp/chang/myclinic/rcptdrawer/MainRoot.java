@@ -70,6 +70,11 @@ class MainRoot extends VBox {
         rcptDrawer.putShinryouNissuuHoken(3);
         rcptDrawer.putShinryouNissuuKouhi1(1);
         rcptDrawer.putShinryouNissuuKouhi2(2);
+        //rcptDrawer.markShoshinJikangai();
+        //rcptDrawer.markShoshinKyuujitsu();
+        rcptDrawer.markShoshinShinya();
+        rcptDrawer.putShoshinKai(1);
+        rcptDrawer.putShoshinTen(270);
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }

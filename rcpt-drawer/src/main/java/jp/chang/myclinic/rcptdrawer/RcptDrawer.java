@@ -1,6 +1,7 @@
 package jp.chang.myclinic.rcptdrawer;
 
 import jp.chang.myclinic.drawer.*;
+import jp.chang.myclinic.drawer.Box.HorizAnchor;
 import jp.chang.myclinic.drawer.Box.VertAnchor;
 import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
 import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
@@ -74,6 +75,8 @@ public class RcptDrawer {
     private Box shinryounissuHoken;
     private Box shinryounissuKouhi1;
     private Box shinryounissuKouhi2;
+    private Box tekiyou;
+    private int tekiyouLeftColumnWidth = 10;
 
     public RcptDrawer() {
         setupFonts();
@@ -99,6 +102,10 @@ public class RcptDrawer {
     List<List<Op>> getPages() {
         pages.add(compiler.getOps());
         return pages;
+    }
+
+    public int getTekiyouLeftColumnWidth() {
+        return tekiyouLeftColumnWidth;
     }
 
     public void putPatientId(int patientId) {
@@ -131,6 +138,7 @@ public class RcptDrawer {
         compiler.createFont("Mincho2.2", "MS Mincho", 2.2);
         compiler.createFont("Mincho2", "MS Mincho", 2);
         compiler.createFont("Mincho1.8", "MS Mincho", 1.8);
+        compiler.createFont("Mincho1.5", "MS Mincho", 1.5);
     }
 
     private void setupPens() {
@@ -504,39 +512,39 @@ public class RcptDrawer {
         }
     }
 
-    public void putKouhiFutanshaBangou1(int n){
+    public void putKouhiFutanshaBangou1(int n) {
         compiler.setFont("Gothic5");
         printDigits(n, kouhifutanshabangou1);
     }
 
-    public void putKouhiJukyuushaBangou1(int n){
+    public void putKouhiJukyuushaBangou1(int n) {
         compiler.setFont("Gothic5");
         printDigits(n, kouhijukyuushabangou1);
     }
 
-    public void putKouhiFutanshaBangou2(int n){
+    public void putKouhiFutanshaBangou2(int n) {
         compiler.setFont("Gothic5");
         printDigits(n, kouhifutanshabangou2);
     }
 
-    public void putKouhiJukyuushaBangou2(int n){
+    public void putKouhiJukyuushaBangou2(int n) {
         compiler.setFont("Gothic5");
         printDigits(n, kouhijukyuushabangou2);
     }
 
-    private void printDigits(int n, Box[] boxes){
+    private void printDigits(int n, Box[] boxes) {
         String s = String.format("%d", n);
-        if( s.length() > boxes.length ){
+        if (s.length() > boxes.length) {
             throw new RuntimeException("Too large number: " + n);
         }
         int offset = boxes.length - s.length();
-        for(int i=0;i<s.length();i++){
-            String c = s.substring(i, i+1);
-            compiler.textIn(c, boxes[offset+i], HAlign.Center, VAlign.Center);
+        for (int i = 0; i < s.length(); i++) {
+            String c = s.substring(i, i + 1);
+            compiler.textIn(c, boxes[offset + i], HAlign.Center, VAlign.Center);
         }
     }
 
-    private void setupPatientInfo(){
+    private void setupPatientInfo() {
         Box box = new Box(17, 55.5, 106.5, 76.5);
         compiler.box(box);
         Box[] cols = box.splitToColumns(68.5);
@@ -550,7 +558,7 @@ public class RcptDrawer {
         setupPatientInfo_Tokkijikou(cols[1]);
     }
 
-    private void setupPatientInfo_Names(Box box){
+    private void setupPatientInfo_Names(Box box) {
         compiler.frameBottom(box);
         Box[] cols = box.splitToColumns(3.5);
         compiler.frameRight(cols[0]);
@@ -599,7 +607,7 @@ public class RcptDrawer {
         markLeft(r1, 5, b -> this.seinengappiDay = b);
     }
 
-    private void setupPatientInfo_Shokumujou(Box box){
+    private void setupPatientInfo_Shokumujou(Box box) {
         Box[] cols = box.splitToColumns(16);
         compiler.frameRight(cols[0]);
         compiler.setFont("Mincho2");
@@ -622,7 +630,7 @@ public class RcptDrawer {
         });
     }
 
-    private void setupPatientInfo_Tokkijikou(Box box){
+    private void setupPatientInfo_Tokkijikou(Box box) {
         Box[] rows = box.splitToRows(4);
         compiler.frameBottom(rows[0]);
         compiler.setFont("Mincho2");
@@ -630,88 +638,88 @@ public class RcptDrawer {
         this.tokkijikou = rows[1];
     }
 
-    public void putShimei(String s){
+    public void putShimei(String s) {
         compiler.setFont("Gothic4");
         compiler.textIn(s, shimei.displaceLeftEdge(3), HAlign.Left, VAlign.Center);
     }
 
-    public void markSeibetsuOtoko(){
+    public void markSeibetsuOtoko() {
         markCircle(seibetsuOtoko);
     }
 
-    public void markSeibetsuOnna(){
+    public void markSeibetsuOnna() {
         markCircle(seibetsuOnna);
     }
 
-    public void markSeinengappiMeiji(){
+    public void markSeinengappiMeiji() {
         markCircle(seinengappiMeiji);
     }
 
-    public void markSeinengappiTaishou(){
+    public void markSeinengappiTaishou() {
         markCircle(seinengappiTaishou);
     }
 
-    public void markSeinengappiShouwa(){
+    public void markSeinengappiShouwa() {
         markCircle(seinengappiShouwa);
     }
 
-    public void markSeinengappiHeisei(){
+    public void markSeinengappiHeisei() {
         markCircle(seinengappiHeisei);
     }
 
-    public void putSeinengappiNen(int nen){
+    public void putSeinengappiNen(int nen) {
         compiler.setFont("Gothic2");
         compiler.textIn("" + nen, seinengappiNen.displaceRightEdge(-1),
                 HAlign.Right, VAlign.Bottom);
     }
 
-    public void putSeinengappiMonth(int month){
+    public void putSeinengappiMonth(int month) {
         compiler.setFont("Gothic2");
         compiler.textIn("" + month, seinengappiMonth.displaceRightEdge(-1),
                 HAlign.Right, VAlign.Bottom);
     }
 
-    public void putSeinengappiDay(int day){
+    public void putSeinengappiDay(int day) {
         compiler.setFont("Gothic2");
         compiler.textIn("" + day, seinengappiDay.displaceRightEdge(-1),
                 HAlign.Right, VAlign.Bottom);
     }
 
-    public void markShokumujouShokumujou(){
+    public void markShokumujouShokumujou() {
         markCircle(shokumujouShokumujou);
     }
 
-    public void markShokumujouGesen(){
+    public void markShokumujouGesen() {
         markCircle(shokumujouGesen);
     }
 
-    public void markShokumujouTsuukin(){
+    public void markShokumujouTsuukin() {
         markCircle(shokumujouTsuukin);
     }
 
-    public void putTokkijikou(String text){
+    public void putTokkijikou(String text) {
         compiler.setFont("Mincho2.5");
         String[] lines = text.split("\\r\\n|\\n");
         compiler.paragraph(text, tokkijikou.inset(1, 1), HAlign.Left, VAlign.Top, 0);
     }
 
-    private Box setBottomCenterAt(Box box, double x, double width){
+    private Box setBottomCenterAt(Box box, double x, double width) {
         double c = box.getLeft() + x;
-        return new Box(c - width/2, box.getTop(), c + width/2, box.getBottom());
+        return new Box(c - width / 2, box.getTop(), c + width / 2, box.getBottom());
     }
 
-    private void markLeft(Box box, double width, Consumer<Box> cb){
+    private void markLeft(Box box, double width, Consumer<Box> cb) {
         cb.accept(box.flipLeft().setWidth(width, Box.HorizAnchor.Right));
     }
 
     private void makeIndexAndLabel(Box box, double indexCenter, double indexWidth, double offset,
-                              double labelWidth, BiConsumer<Box, Box> cb){
+                                   double labelWidth, BiConsumer<Box, Box> cb) {
         Box rIndex = setBottomCenterAt(box, indexCenter, indexWidth);
         Box rLabel = box.shiftToRight(indexCenter + offset).setWidth(labelWidth, Box.HorizAnchor.Left);
         cb.accept(rIndex, rLabel);
     }
 
-    private void setupIryouKikanLabel(){
+    private void setupIryouKikanLabel() {
         Box box = new Box(110, 57, 120, 73.5);
         Box[] rows = box.splitToVerticallyJustifiedRows(2, 5);
         compiler.setFont("Mincho2");
@@ -722,7 +730,7 @@ public class RcptDrawer {
         compiler.textInJustified("名称", rows[4], VAlign.Top);
     }
 
-    private void setupShozaichiMeishou(){
+    private void setupShozaichiMeishou() {
         Box box = new Box(122, 57, 199, 73.5);
         Box[] rows = box.splitToRows(4, 10);
         this.shozaichimeishouLine1 = rows[0];
@@ -734,22 +742,22 @@ public class RcptDrawer {
         compiler.textIn("床）", r, HAlign.Right, VAlign.Top);
     }
 
-    public void putShozaichiMeishouLine1(String s){
+    public void putShozaichiMeishouLine1(String s) {
         compiler.setFont("Mincho3.5");
         compiler.textIn(s, shozaichimeishouLine1, HAlign.Left, VAlign.Top);
     }
 
-    public void putShozaichiMeishouLine2(String s){
+    public void putShozaichiMeishouLine2(String s) {
         compiler.setFont("Mincho3.5");
         compiler.textIn(s, shozaichimeishouLine2.displaceLeftEdge(28), HAlign.Left, VAlign.Top);
     }
 
-    public void putShozaichiMeishouLine3(String s){
+    public void putShozaichiMeishouLine3(String s) {
         compiler.setFont("Mincho4.5");
         compiler.textIn(s, shozaichimeishouLine3.displaceLeftEdge(7), HAlign.Left, VAlign.Top);
     }
 
-    private void setupRcptBody(){
+    private void setupRcptBody() {
         Box box = new Box(17, 76.5, 199, 263);
         compiler.box(box);
         Box[] rows = box.splitToRows(21, 159);
@@ -758,7 +766,7 @@ public class RcptDrawer {
         setupRcptBodyRow3(rows[2]);
     }
 
-    private void setupRcptBodyRow1(Box box){
+    private void setupRcptBodyRow1(Box box) {
         compiler.frameBottom(box);
         Box[] cols = box.splitToColumns(100, 136, 160);
         setupRcptBodyRow1_Shoubyoumei(cols[0]);
@@ -767,7 +775,7 @@ public class RcptDrawer {
         setupRcptBodyRow1_Nissuu(cols[3]);
     }
 
-    private void setupRcptBodyRow1_Shoubyoumei(Box box){
+    private void setupRcptBodyRow1_Shoubyoumei(Box box) {
         compiler.frameRight(box);
         Box[] cols = box.splitToColumns(5);
         compiler.frameRight(cols[0]);
@@ -778,11 +786,11 @@ public class RcptDrawer {
         shoubyoumeiNumbers = new Box[4];
         shoubyoumeiTexts = new Box[4];
         compiler.setFont("Mincho2.3");
-        for(int i=0;i<4;i++){
+        for (int i = 0; i < 4; i++) {
             Box r = rows[i];
             Box[] rr = r.splitToColumns(4);
-            if( i < 3 ){
-                String label = String.format("(%d)", i+1);
+            if (i < 3) {
+                String label = String.format("(%d)", i + 1);
                 compiler.textIn(label, rr[0], HAlign.Left, VAlign.Bottom);
             }
             shoubyoumeiNumbers[i] = rr[0];
@@ -790,7 +798,7 @@ public class RcptDrawer {
         }
     }
 
-    private void setupRcptBodyRow1_ShinryouKaishi(Box box){
+    private void setupRcptBodyRow1_ShinryouKaishi(Box box) {
         compiler.frameRight(box);
         Box[] cols = box.splitToColumns(2.5);
         compiler.frameRight(cols[0]);
@@ -802,10 +810,10 @@ public class RcptDrawer {
         shoubyoumeiKaishiNen = new Box[4];
         shoubyoumeiKaishiMonths = new Box[4];
         shoubyoumeiKaishiDays = new Box[4];
-        for(int i=0;i<4;i++){
+        for (int i = 0; i < 4; i++) {
             Box[] cc = rows[i].splitToHorizontallyJustifiedColumns(2.3, 4);
-            if( i < 3 ){
-                String label = String.format("(%d)", i+1);
+            if (i < 3) {
+                String label = String.format("(%d)", i + 1);
                 compiler.textIn(label, cc[0], HAlign.Left, VAlign.Bottom);
                 compiler.textIn("年", cc[1], HAlign.Left, VAlign.Bottom);
                 compiler.textIn("月", cc[2], HAlign.Left, VAlign.Bottom);
@@ -819,7 +827,7 @@ public class RcptDrawer {
         }
     }
 
-    private void setupRcptBodyRow1_Tenki(Box box){
+    private void setupRcptBodyRow1_Tenki(Box box) {
         compiler.frameRight(box);
         Box[] cols = box.splitToColumns(2.5);
         compiler.frameRight(cols[0]);
@@ -851,7 +859,7 @@ public class RcptDrawer {
         }
     }
 
-    private void setupRcptBodyRow1_Nissuu(Box box){
+    private void setupRcptBodyRow1_Nissuu(Box box) {
         compiler.setPen("bold");
         compiler.box(box);
         compiler.setPen("regular");
@@ -892,26 +900,188 @@ public class RcptDrawer {
         }
     }
 
-    public void putShinryouNissuuHoken(int days){
+    public void putShinryouNissuuHoken(int days) {
         compiler.setFont("Gothic2.5");
         compiler.textIn("" + days, shinryounissuHoken, HAlign.Right, VAlign.Center);
     }
 
-    public void putShinryouNissuuKouhi1(int days){
+    public void putShinryouNissuuKouhi1(int days) {
         compiler.setFont("Gothic2.5");
         compiler.textIn("" + days, shinryounissuKouhi1, HAlign.Right, VAlign.Center);
     }
 
-    public void putShinryouNissuuKouhi2(int days){
+    public void putShinryouNissuuKouhi2(int days) {
         compiler.setFont("Gothic2.5");
         compiler.textIn("" + days, shinryounissuKouhi2, HAlign.Right, VAlign.Center);
     }
 
-    private void setupRcptBodyRow2(Box box){
+    private void setupRcptBodyRow2(Box box) {
+        Box[] cols = box.splitToColumns(90);
+        Box r1 = cols[0];
+        Box r2 = cols[1];
+        {
+            Box p;
+            Box q;
+            compiler.frameRight(r1);
+            {
+                Box[] cc = r1.splitToColumns(71);
+                p = cc[0];
+                q = cc[1];
+            }
+            compiler.frameRight(p);
+            Box[] rr = p.splitToRows(4, 24, 28, 51, 84.5, 96.5);
+            setupRcptBodyRow2_Shoshin(rr[0]);
+            setupRcptBodyRow2_Saishin(rr[1]);
+            setupRcptBodyRow2_Shidou(rr[2]);
+            setupRcptBodyRow2_Zaitaku(rr[3]);
+            setupRcptBodyRow2_Touyaku(rr[4]);
+            setupRcptBodyRow2_Chuusha(rr[5]);
+            {
+                Box[] ss = rr[6].splitToEvenRows(5);
+                setupRcptBodyRow2_Shochi(ss[0]);
+                setupRcptBodyRow2_Shujutsu(ss[1]);
+                setupRcptBodyRow2_Kensa(ss[2]);
+                setupRcptBodyRow2_Gazou(ss[3]);
+                setupRcptBodyRow2_Sonota(ss[4]);
+            }
+            q = q.inset(3.5, 1, 3.5, 0);
+            compiler.setFont("Mincho1.5");
+            compiler.textInJustified("公費分点数", q, VAlign.Top);
+        }
+        {
+            Box p;
+            {
+                Box[] cc = r2.splitToColumns(tekiyouLeftColumnWidth);
+                p = cc[0];
+            }
+            compiler.setPen("dot");
+            compiler.frameRight(p);
+            compiler.setPen("regular");
+            this.tekiyou = r2;
+        }
+    }
+
+    private Point shoshinJikangai;
+    private Point shoshinKyuujitsu;
+    private Point shoshinShinya;
+    private Box shoshinKai;
+    private Box shoshinTen;
+
+    private void setupRcptBodyRow2_Shoshin(Box box) {
+        Box r1, r2;
+
+        compiler.setFont("Mincho2.5");
+        compiler.frameBottom(box);
+        {
+            Box[] cc = box.splitToColumns(21);
+            r1 = cc[0];
+            r2 = cc[1];
+        }
+        compiler.frameRight(r1);
+        {
+            Box p, q;
+            double x[] = {32, 46.5};
+            Box[] cc;
+            {
+                Box[] tmp = r1.splitToColumns(5);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            compiler.textIn("11", p, HAlign.Center, VAlign.Center);
+            q = q.inset(2, 0, 4.5, 0);
+            compiler.textInJustified("初診", q, VAlign.Center);
+            cc = r2.splitToColumns(x);
+            cc[0] = cc[0].displaceLeftEdge(1);
+            compiler.textIn("時間外・休日・深夜", cc[0], HAlign.Left, VAlign.Center);
+            {
+                Box r = cc[0];
+                double f = compiler.getCurrentFontSize();
+                shoshinJikangai = r.setWidth(f * 3, HorizAnchor.Left).getCenterPoint();
+                shoshinKyuujitsu = r.shiftToRight(f * 4).setWidth(f * 2, HorizAnchor.Left).getCenterPoint();
+                shoshinShinya = r.shiftToRight(f * 7).setWidth(f * 2, HorizAnchor.Left).getCenterPoint();
+            }
+            renderKaiTen(r2, "回", boxes -> {
+                shoshinKai = boxes[0];
+                shoshinTen = boxes[1];
+            });
+            compiler.textIn("点", r2.shiftToLeft(1), HAlign.Right, VAlign.Center);
+        }
+    }
+
+    private void renderKaiTen(Box box, String kaiLabel, Consumer<Box[]> cb) {
+        Box kaiBox = box.setWidth(18, HorizAnchor.Right);
+        compiler.textIn(kaiLabel, kaiBox, HAlign.Left, VAlign.Center);
+        Box kaiInput = kaiBox.flipLeft().shiftToLeft(1).setWidth(6, HorizAnchor.Right);
+        Box tenInput = box.shiftToLeft(5).setWidth(9, HorizAnchor.Right);
+        cb.accept(new Box[]{kaiInput, tenInput});
+    }
+
+    public void markShoshinJikangai() {
+        markCircle(shoshinJikangai);
+    }
+
+    public void markShoshinKyuujitsu() {
+        markCircle(shoshinKyuujitsu);
+    }
+
+    public void markShoshinShinya() {
+        markCircle(shoshinShinya);
+    }
+
+    private void putTankaKaiTen(Box box, int n) {
+        compiler.setFont("Gothic3");
+        compiler.textIn("" + n, box, HAlign.Right, VAlign.Center);
+    }
+
+    public void putShoshinKai(int n) {
+        putTankaKaiTen(shoshinKai, n);
+    }
+
+    public void putShoshinTen(int n) {
+        putTankaKaiTen(shoshinTen, n);
+    }
+
+    private void setupRcptBodyRow2_Saishin(Box box) {
 
     }
 
-    private void setupRcptBodyRow3(Box box){
+    private void setupRcptBodyRow2_Shidou(Box box) {
+
+    }
+
+    private void setupRcptBodyRow2_Zaitaku(Box box) {
+
+    }
+
+    private void setupRcptBodyRow2_Touyaku(Box box) {
+
+    }
+
+    private void setupRcptBodyRow2_Chuusha(Box box) {
+
+    }
+
+    private void setupRcptBodyRow2_Shochi(Box box) {
+
+    }
+
+    private void setupRcptBodyRow2_Shujutsu(Box box) {
+
+    }
+
+    private void setupRcptBodyRow2_Kensa(Box box) {
+
+    }
+
+    private void setupRcptBodyRow2_Gazou(Box box) {
+
+    }
+
+    private void setupRcptBodyRow2_Sonota(Box box) {
+
+    }
+
+    private void setupRcptBodyRow3(Box box) {
 
     }
 
