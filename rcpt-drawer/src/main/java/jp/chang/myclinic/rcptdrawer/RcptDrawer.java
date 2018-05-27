@@ -99,6 +99,24 @@ public class RcptDrawer {
     private Box saishinShinyaTimes;
     private Box saishinShinyaTen;
     private Box shidouTen;
+    private Box touyakuNaifukuYakuzaiTimes;
+    private Box touyakuNaifukuYakuzaiTen;
+    private Box touyakuNaifukuChouzaiTanka;
+    private Box touyakuNaifukuChouzaiTimes;
+    private Box touyakuNaifukuChouzaiTen;
+    private Box touyakuTonpukuYakuzaiTimes;
+    private Box touyakuTonpukuYakuzaiTen;
+    private Box touyakuGaiyouYakuzaiTimes;
+    private Box touyakuGaiyouYakuzaiTen;
+    private Box touyakuGaiyouChouzaiTanka;
+    private Box touyakuGaiyouChouzaiTimes;
+    private Box touyakuGaiyouChouzaiTen;
+    private Box touyakuShohouTanka;
+    private Box touyakuShohouTimes;
+    private Box touyakuShohouTen;
+    private Box touyakuMadokuTimes;
+    private Box touyakuMadokuTen;
+    private Box touyakuChoukiTen;
 
     public RcptDrawer() {
         setupFonts();
@@ -1363,25 +1381,6 @@ public class RcptDrawer {
         putTankaKaiTen(zaitakuYakuzaiTen, n);
     }
 
-    private Box touyakuNaifukuYakuzaiTimes;
-    private Box touyakuNaifukuYakuzaiTen;
-    private Box touyakuNaifukuChouzaiTanka;
-    private Box touyakuNaifukuChouzaiTimes;
-    private Box touyakuNaifukuChouzaiTen;
-    private Box touyakuTonpukuYakuzaiTimes;
-    private Box touyakuTonpukuYakuzaiTen;
-    private Box touyakuGaiyouYakuzaiTimes;
-    private Box touyakuGaiyouYakuzaiTen;
-    private Box touyakuGaiyouChouzaiTanka;
-    private Box touyakuGaiyouChouzaiTimes;
-    private Box touyakuGaiyouChouzaiTen;
-    private Box touyakuShohouTanka;
-    private Box touyakuShohouTimes;
-    private Box touyakuShohouTen;
-    private Box touyakuMadokuTimes;
-    private Box touyakuMadokuTen;
-    private Box touyakuChoukiTen;
-
     private void setupRcptBodyRow2_Touyaku(Box r) {
         Box r1, r2;
 
@@ -1455,14 +1454,6 @@ public class RcptDrawer {
             renderTen(ss[2], box -> {
                 this.touyakuChoukiTen = box;
             });
-
-
-//            b = ss[0]; b.left = r.left; b.right = r.right;
-//            mark_tanka_kai_ten(b, "touyaku.shohou");
-//            b = ss[1]; b.left = r.left; b.right = r.right;
-//            mark_tanka_kai_ten(b, "touyaku.madoku");
-//            b = ss[2]; b.left = r.left; b.right = r.right;
-//            mark_tanka_kai_ten(b, "touyaku.chouki");
         }
     }
 
@@ -1562,17 +1553,13 @@ public class RcptDrawer {
     }
 
     private void RcptBodyRow2_Format5(Box r, String index, String label) {
-        Box p, q;
-        double x[] = {37, 48};
-        Box[] cc;
+        Box p;
         {
             Box[] tmp = r.splitToColumns(21);
             p = tmp[0];
-            q = tmp[1];
         }
         {
             Box a, b;
-            Box[] rr;
             {
                 Box[] tmp = p.splitToColumns(10.5);
                 a = tmp[0];
@@ -1604,8 +1591,78 @@ public class RcptDrawer {
         }
     }
 
-    private void setupRcptBodyRow2_Chuusha(Box r) {
+    private Box chuushaHikaTimes;
+    private Box chuushaHikaTen;
+    private Box chuushaJoumyakuTimes;
+    private Box chuushaJoumyakuTen;
+    private Box chuushaSonotaTimes;
+    private Box chuushaSonotaTen;
 
+    private void setupRcptBodyRow2_Chuusha(Box r) {
+        Box r1, r2;
+        compiler.frameBottom(r);
+        {
+            Box[] tmp = r.splitToColumns(5);
+            r1 = tmp[0];
+            r2 = tmp[1];
+        }
+        compiler.setFont("Mincho2.5");
+        {
+            Box p, q;
+
+            compiler.frameRight(r1);
+            {
+                Box[] tmp = r1.splitToRows(3);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            q = q.inset(0, 2, 0, 1);
+            compiler.textIn("30", p, HAlign.Center, VAlign.Bottom);
+            compiler.textInVertJustified("注射", q, HAlign.Center);
+        }
+        {
+            Box[] rr;
+            rr = r2.splitToEvenRows(3);
+            RcptBodyRow2_Format6(rr[0], "31", "皮下筋肉内");
+            RcptBodyRow2_Format6(rr[1], "32", "静脈内");
+            RcptBodyRow2_Format6(rr[2], "33", "その他");
+            renderKaiTen(rr[0], "回", boxes -> {
+                this.chuushaHikaTimes = boxes[0];
+                this.chuushaHikaTen = boxes[1];
+            });
+            renderKaiTen(rr[1], "回", boxes -> {
+                this.chuushaJoumyakuTimes = boxes[0];
+                this.chuushaJoumyakuTen = boxes[1];
+            });
+            renderKaiTen(rr[2], "回", boxes -> {
+                this.chuushaSonotaTimes = boxes[0];
+                this.chuushaSonotaTen = boxes[1];
+            });
+        }
+    }
+
+    public void putChuushaHikaTimes(int n){
+        putTankaKaiTen(chuushaHikaTimes, n);
+    }
+
+    public void putChuushaHikaTen(int n){
+        putTankaKaiTen(chuushaHikaTen, n);
+    }
+
+    public void putChuushaJoumyakuTimes(int n){
+        putTankaKaiTen(chuushaJoumyakuTimes, n);
+    }
+
+    public void putChuushaJoumyakuTen(int n){
+        putTankaKaiTen(chuushaJoumyakuTen, n);
+    }
+
+    public void putChuushaSonotaTimes(int n){
+        putTankaKaiTen(chuushaSonotaTimes, n);
+    }
+
+    public void putChuushaSonotaTen(int n){
+        putTankaKaiTen(chuushaSonotaTen, n);
     }
 
     private void setupRcptBodyRow2_Shochi(Box r) {
