@@ -958,7 +958,7 @@ public class RcptDrawer {
             setupRcptBodyRow2_Zaitaku(rr[3]);
             setupRcptBodyRow2_Touyaku(rr[4]);
             setupRcptBodyRow2_Chuusha(rr[5]);
-            drawBottomDotLine(q, Arrays.copyOfRange(rr, 1, rr.length-1));
+            drawBottomDotLine(q, Arrays.copyOfRange(rr, 1, rr.length - 1));
             {
                 Box[] ss = rr[6].splitToEvenRows(5);
                 setupRcptBodyRow2_Shochi(ss[0]);
@@ -985,11 +985,11 @@ public class RcptDrawer {
         }
     }
 
-    private void drawBottomDotLine(Box q, Box[] boxes){
+    private void drawBottomDotLine(Box q, Box[] boxes) {
         double left = q.getLeft();
         double right = q.getRight();
         compiler.setPen("dot");
-        for(Box box: boxes){
+        for (Box box : boxes) {
             double bottom = box.getBottom();
             compiler.line(left, bottom, right, bottom);
         }
@@ -1037,7 +1037,7 @@ public class RcptDrawer {
         }
     }
 
-    private void renderTen(Box box, Consumer<Box> cb){
+    private void renderTen(Box box, Consumer<Box> cb) {
         cb.accept(box.shiftToLeft(5).setWidth(9, HorizAnchor.Right));
     }
 
@@ -1050,12 +1050,12 @@ public class RcptDrawer {
         });
     }
 
-    private void renderTankaKaiTen(Box box, String kaiLabel, Consumer<Box[]> cb){
+    private void renderTankaKaiTen(Box box, String kaiLabel, Consumer<Box[]> cb) {
         Box tankaBox = box.setWidth(29, HorizAnchor.Right);
         compiler.textIn("×", tankaBox, HAlign.Left, VAlign.Center);
         Box tankaInput = tankaBox.flipLeft().shiftToLeft(1).setWidth(6, HorizAnchor.Right);
         renderKaiTen(box, kaiLabel, boxes -> {
-            cb.accept(new Box[]{ tankaInput, boxes[0], boxes[1] });
+            cb.accept(new Box[]{tankaInput, boxes[0], boxes[1]});
         });
     }
 
@@ -1139,78 +1139,78 @@ public class RcptDrawer {
         }
     }
 
-    private void RcptBodyRow2_Format1(Box box, String label, Consumer<Box[]> cb){
+    private void RcptBodyRow2_Format1(Box box, String label, Consumer<Box[]> cb) {
         compiler.textInJustified(label, box.setWidth(17, HorizAnchor.Left).displaceLeftEdge(2), VAlign.Center);
         renderTankaKaiTen(box, "回", cb);
     }
 
-    private void RcptBodyRow2_Format2(Box box, String label, Consumer<Box[]> cb){
-        compiler.textInJustified(label, box.setWidth(19, HorizAnchor.Left).displaceLeftEdge(2), VAlign.Center);
+    private void RcptBodyRow2_Format2(Box box, String label, Consumer<Box[]> cb) {
+        compiler.textInJustified(label, box.setWidth(21, HorizAnchor.Left).displaceLeftEdge(2), VAlign.Center);
         renderTankaKaiTen(box, "回", cb);
     }
 
-    private void RcptBodyRow2_Format3(Box box, String label, Consumer<Box> cb){
+    private void RcptBodyRow2_Format3(Box box, String label, Consumer<Box> cb) {
         compiler.textInJustified(label, box.setWidth(17, HorizAnchor.Left).displaceLeftEdge(2), VAlign.Center);
         renderTen(box, cb);
     }
 
-    public void putSaishinSaishinTanka(int n){
+    public void putSaishinSaishinTanka(int n) {
         putTankaKaiTen(saishinSaishinTanka, n);
     }
 
-    public void putSaishinSaishinTimes(int n){
+    public void putSaishinSaishinTimes(int n) {
         putTankaKaiTen(saishinSaishinTimes, n);
     }
 
-    public void putSaishinSaishinTen(int n){
+    public void putSaishinSaishinTen(int n) {
         putTankaKaiTen(saishinSaishinTen, n);
     }
 
-    public void putSaishinGairaiKanriTanka(int n){
+    public void putSaishinGairaiKanriTanka(int n) {
         putTankaKaiTen(saishinGairaiKanriTanka, n);
     }
 
-    public void putSaishinGairaiKanriTimes(int n){
+    public void putSaishinGairaiKanriTimes(int n) {
         putTankaKaiTen(saishinGairaiKanriTimes, n);
     }
 
-    public void putSaishinGairaiKanriTen(int n){
+    public void putSaishinGairaiKanriTen(int n) {
         putTankaKaiTen(saishinGairaiKanriTen, n);
     }
 
-    public void putSaishinJikangaiTanka(int n){
+    public void putSaishinJikangaiTanka(int n) {
         putTankaKaiTen(saishinJikangaiTanka, n);
     }
 
-    public void putSaishinJikangaiTimes(int n){
+    public void putSaishinJikangaiTimes(int n) {
         putTankaKaiTen(saishinJikangaiTimes, n);
     }
 
-    public void putSaishinJikangaiTen(int n){
+    public void putSaishinJikangaiTen(int n) {
         putTankaKaiTen(saishinJikangaiTen, n);
     }
 
-    public void putSaishinKyuujitsuTanka(int n){
+    public void putSaishinKyuujitsuTanka(int n) {
         putTankaKaiTen(saishinKyuujitsuTanka, n);
     }
 
-    public void putSaishinKyuujitsuTimes(int n){
+    public void putSaishinKyuujitsuTimes(int n) {
         putTankaKaiTen(saishinKyuujitsuTimes, n);
     }
 
-    public void putSaishinKyuujitsuTen(int n){
+    public void putSaishinKyuujitsuTen(int n) {
         putTankaKaiTen(saishinKyuujitsuTen, n);
     }
 
-    public void putSaishinShinyaTanka(int n){
+    public void putSaishinShinyaTanka(int n) {
         putTankaKaiTen(saishinShinyaTanka, n);
     }
 
-    public void putSaishinShinyaTimes(int n){
+    public void putSaishinShinyaTimes(int n) {
         putTankaKaiTen(saishinShinyaTimes, n);
     }
 
-    public void putSaishinShinyaTen(int n){
+    public void putSaishinShinyaTen(int n) {
         putTankaKaiTen(saishinShinyaTen, n);
     }
 
@@ -1238,7 +1238,7 @@ public class RcptDrawer {
         }
     }
 
-    public void putShidouTen(int ten){
+    public void putShidouTen(int ten) {
         putTankaKaiTen(shidouTen, ten);
     }
 
@@ -1307,91 +1307,211 @@ public class RcptDrawer {
         }
     }
 
-    public void putZaitakuOushinTanka(int n){
+    public void putZaitakuOushinTanka(int n) {
         putTankaKaiTen(zaitakuOushinTanka, n);
     }
 
-    public void putZaitakuOushinTimes(int n){
+    public void putZaitakuOushinTimes(int n) {
         putTankaKaiTen(zaitakuOushinTimes, n);
     }
 
-    public void putZaitakuOushinTen(int n){
+    public void putZaitakuOushinTen(int n) {
         putTankaKaiTen(zaitakuOushinTen, n);
     }
 
-    public void putZaitakuYakanTanka(int n){
+    public void putZaitakuYakanTanka(int n) {
         putTankaKaiTen(zaitakuYakanTanka, n);
     }
 
-    public void putZaitakuYakanTimes(int n){
+    public void putZaitakuYakanTimes(int n) {
         putTankaKaiTen(zaitakuYakanTimes, n);
     }
 
-    public void putZaitakuYakanTen(int n){
+    public void putZaitakuYakanTen(int n) {
         putTankaKaiTen(zaitakuYakanTen, n);
     }
 
-    public void putZaitakuShinyaTanka(int n){
+    public void putZaitakuShinyaTanka(int n) {
         putTankaKaiTen(zaitakuShinyaTanka, n);
     }
 
-    public void putZaitakuShinyaTimes(int n){
+    public void putZaitakuShinyaTimes(int n) {
         putTankaKaiTen(zaitakuShinyaTimes, n);
     }
 
-    public void putZaitakuShinyaTen(int n){
+    public void putZaitakuShinyaTen(int n) {
         putTankaKaiTen(zaitakuShinyaTen, n);
     }
 
-    public void putZaitakuZaitakuTanka(int n){
+    public void putZaitakuZaitakuTanka(int n) {
         putTankaKaiTen(zaitakuZaitakuTanka, n);
     }
 
-    public void putZaitakuZaitakuTimes(int n){
+    public void putZaitakuZaitakuTimes(int n) {
         putTankaKaiTen(zaitakuZaitakuTimes, n);
     }
 
-    public void putZaitakuZaitakuTen(int n){
+    public void putZaitakuZaitakuTen(int n) {
         putTankaKaiTen(zaitakuZaitakuTen, n);
     }
 
-    public void putZaitakuSonotaTen(int n){
+    public void putZaitakuSonotaTen(int n) {
         putTankaKaiTen(zaitakuSonotaTen, n);
     }
 
-    public void putZaitakuYakuzaiTen(int n){
+    public void putZaitakuYakuzaiTen(int n) {
         putTankaKaiTen(zaitakuYakuzaiTen, n);
     }
 
-    private void setupRcptBodyRow2_Touyaku(Box box) {
+    private void setupRcptBodyRow2_Touyaku(Box r) {
+        Box r1, r2;
+
+        compiler.frameBottom(r);
+        {
+            Box[] tmp = r.splitToColumns(5);
+            r1 = tmp[0];
+            r2 = tmp[1];
+        }
+        compiler.setFont("Mincho2.5");
+        {
+            Box p, q;
+
+            compiler.frameRight(r1);
+            {
+                Box[] tmp = r1.splitToRows(7);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            q = q.inset(0, 3);
+            compiler.textIn("20", p, HAlign.Center, VAlign.Bottom);
+            compiler.textInVertJustified("投薬", q, HAlign.Center);
+        }
+        {
+            double x[] = {7.5, 13, 20};
+            Box[] rr, ss, tt;
+            Box b;
+
+            rr = r2.splitToRows(x);
+            ss = rr[3].splitToEvenRows(3);
+            RcptBodyRow2_Format4(rr[0], "21", "内服");
+            RcptBodyRow2_Format5(rr[1], "22", "頓服");
+            RcptBodyRow2_Format4(rr[2], "23", "外用");
+            RcptBodyRow2_Format6(ss[0], "25", "処方");
+            RcptBodyRow2_Format6(ss[1], "26", "麻毒");
+            RcptBodyRow2_Format6(ss[2], "27", "調基");
+
+//            rr[0].VEvenDivide(2, tt);
+//            b = tt[0]; b.left = r.left; b.right = r.right;
+//            mark_tanka_kai_ten(b, "touyaku.naifuku.yakuzai");
+//            b = tt[1]; b.left = r.left; b.right = r.right;
+//            mark_tanka_kai_ten(b, "touyaku.naifuku.chouzai");
+//            b = rr[1]; b.left = r.left; b.right = r.right;
+//            mark_tanka_kai_ten(b, "touyaku.tonpuku");
+//            rr[2].VEvenDivide(2, tt);
+//            b = tt[0]; b.left = r.left; b.right = r.right;
+//            mark_tanka_kai_ten(b, "touyaku.gaiyou.yakuzai");
+//            b = tt[1]; b.left = r.left; b.right = r.right;
+//            mark_tanka_kai_ten(b, "touyaku.gaiyou.chouzai");
+//            b = ss[0]; b.left = r.left; b.right = r.right;
+//            mark_tanka_kai_ten(b, "touyaku.shohou");
+//            b = ss[1]; b.left = r.left; b.right = r.right;
+//            mark_tanka_kai_ten(b, "touyaku.madoku");
+//            b = ss[2]; b.left = r.left; b.right = r.right;
+//            mark_tanka_kai_ten(b, "touyaku.chouki");
+        }
+    }
+
+    private void RcptBodyRow2_Format4(Box r, String index, String label) {
+        Box p;
+        {
+            Box[] tmp = r.splitToColumns(21);
+            p = tmp[0];
+        }
+        {
+            Box a, b;
+            Box[] rr;
+            {
+                Box[] tmp = p.splitToColumns(10.5);
+                a = tmp[0];
+                b = tmp[1];
+            }
+            a = a.inset(1, 0, 1, 0);
+            compiler.textIn(index, a, HAlign.Left, VAlign.Center);
+            compiler.textIn(label, a, HAlign.Right, VAlign.Center);
+            rr = b.splitToEvenRows(2);
+            compiler.textInJustified("薬剤", rr[0], VAlign.Center);
+            compiler.textInJustified("調剤", rr[1], VAlign.Center);
+        }
+    }
+
+    private void RcptBodyRow2_Format5(Box r, String index, String label) {
+        Box p, q;
+        double x[] = {37, 48};
+        Box[] cc;
+        {
+            Box[] tmp = r.splitToColumns(21);
+            p = tmp[0];
+            q = tmp[1];
+        }
+        {
+            Box a, b;
+            Box[] rr;
+            {
+                Box[] tmp = p.splitToColumns(10.5);
+                a = tmp[0];
+                b = tmp[1];
+            }
+            a = a.inset(1, 0, 1, 0);
+            compiler.textIn(index, a, HAlign.Left, VAlign.Center);
+            compiler.textIn(label, a, HAlign.Right, VAlign.Center);
+            compiler.textInJustified("薬剤", b, VAlign.Center);
+        }
+    }
+
+    private void RcptBodyRow2_Format6(Box r, String index, String label) {
+        Box p;
+        {
+            Box[] tmp = r.splitToColumns(21);
+            p = tmp[0];
+        }
+        {
+            Box a, b;
+            {
+                Box[] tmp = p.splitToColumns(4.5);
+                a = tmp[0];
+                b = tmp[1];
+            }
+            a = a.inset(1, 0, 1, 0);
+            compiler.textIn(index, a, HAlign.Left, VAlign.Center);
+            compiler.textInJustified(label, b, VAlign.Center);
+        }
+    }
+
+    private void setupRcptBodyRow2_Chuusha(Box r) {
 
     }
 
-    private void setupRcptBodyRow2_Chuusha(Box box) {
+    private void setupRcptBodyRow2_Shochi(Box r) {
 
     }
 
-    private void setupRcptBodyRow2_Shochi(Box box) {
+    private void setupRcptBodyRow2_Shujutsu(Box r) {
 
     }
 
-    private void setupRcptBodyRow2_Shujutsu(Box box) {
+    private void setupRcptBodyRow2_Kensa(Box r) {
 
     }
 
-    private void setupRcptBodyRow2_Kensa(Box box) {
+    private void setupRcptBodyRow2_Gazou(Box r) {
 
     }
 
-    private void setupRcptBodyRow2_Gazou(Box box) {
+    private void setupRcptBodyRow2_Sonota(Box r) {
 
     }
 
-    private void setupRcptBodyRow2_Sonota(Box box) {
-
-    }
-
-    private void setupRcptBodyRow3(Box box) {
+    private void setupRcptBodyRow3(Box r) {
 
     }
 
