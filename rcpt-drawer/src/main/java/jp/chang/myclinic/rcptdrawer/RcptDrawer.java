@@ -1483,75 +1483,75 @@ public class RcptDrawer {
         }
     }
 
-    public void putTouyakuNaifukuYakuzaiTimes(int n){
+    public void putTouyakuNaifukuYakuzaiTimes(int n) {
         putTankaKaiTen(touyakuNaifukuYakuzaiTimes, n);
     }
 
-    public void putTouyakuNaifukuYakuzaiTen(int n){
+    public void putTouyakuNaifukuYakuzaiTen(int n) {
         putTankaKaiTen(touyakuNaifukuYakuzaiTen, n);
     }
 
-    public void putTouyakuNaifukuChouzaiTanka(int n){
+    public void putTouyakuNaifukuChouzaiTanka(int n) {
         putTankaKaiTen(touyakuNaifukuChouzaiTanka, n);
     }
 
-    public void putTouyakuNaifukuChouzaiTimes(int n){
+    public void putTouyakuNaifukuChouzaiTimes(int n) {
         putTankaKaiTen(touyakuNaifukuChouzaiTimes, n);
     }
 
-    public void putTouyakuNaifukuChouzaiTen(int n){
+    public void putTouyakuNaifukuChouzaiTen(int n) {
         putTankaKaiTen(touyakuNaifukuChouzaiTen, n);
     }
 
-    public void putTouyakuTonpukuYakuzaiTimes(int n){
+    public void putTouyakuTonpukuYakuzaiTimes(int n) {
         putTankaKaiTen(touyakuTonpukuYakuzaiTimes, n);
     }
 
-    public void putTouyakuTonpukuYakuzaiTen(int n){
+    public void putTouyakuTonpukuYakuzaiTen(int n) {
         putTankaKaiTen(touyakuTonpukuYakuzaiTen, n);
     }
 
-    public void putTouyakuGaiyouYakuzaiTimes(int n){
+    public void putTouyakuGaiyouYakuzaiTimes(int n) {
         putTankaKaiTen(touyakuGaiyouYakuzaiTimes, n);
     }
 
-    public void putTouyakuGaiyouYakuzaiTen(int n){
+    public void putTouyakuGaiyouYakuzaiTen(int n) {
         putTankaKaiTen(touyakuGaiyouYakuzaiTen, n);
     }
 
-    public void putTouyakuGaiyouChouzaiTanka(int n){
+    public void putTouyakuGaiyouChouzaiTanka(int n) {
         putTankaKaiTen(touyakuGaiyouChouzaiTanka, n);
     }
 
-    public void putTouyakuGaiyouChouzaiTimes(int n){
+    public void putTouyakuGaiyouChouzaiTimes(int n) {
         putTankaKaiTen(touyakuGaiyouChouzaiTimes, n);
     }
 
-    public void putTouyakuGaiyouChouzaiTen(int n){
+    public void putTouyakuGaiyouChouzaiTen(int n) {
         putTankaKaiTen(touyakuGaiyouChouzaiTen, n);
     }
 
-    public void putTouyakuShohouTanka(int n){
+    public void putTouyakuShohouTanka(int n) {
         putTankaKaiTen(touyakuShohouTanka, n);
     }
 
-    public void putTouyakuShohouTimes(int n){
+    public void putTouyakuShohouTimes(int n) {
         putTankaKaiTen(touyakuShohouTimes, n);
     }
 
-    public void putTouyakuShohouTen(int n){
+    public void putTouyakuShohouTen(int n) {
         putTankaKaiTen(touyakuShohouTen, n);
     }
 
-    public void putTouyakuMadokuTimes(int n){
+    public void putTouyakuMadokuTimes(int n) {
         putTankaKaiTen(touyakuMadokuTimes, n);
     }
 
-    public void putTouyakuMadokuTen(int n){
+    public void putTouyakuMadokuTen(int n) {
         putTankaKaiTen(touyakuMadokuTen, n);
     }
 
-    public void putTouyakuChoukiTen(int n){
+    public void putTouyakuChoukiTen(int n) {
         putTankaKaiTen(touyakuChoukiTen, n);
     }
 
@@ -1660,27 +1660,27 @@ public class RcptDrawer {
         }
     }
 
-    public void putChuushaHikaTimes(int n){
+    public void putChuushaHikaTimes(int n) {
         putTankaKaiTen(chuushaHikaTimes, n);
     }
 
-    public void putChuushaHikaTen(int n){
+    public void putChuushaHikaTen(int n) {
         putTankaKaiTen(chuushaHikaTen, n);
     }
 
-    public void putChuushaJoumyakuTimes(int n){
+    public void putChuushaJoumyakuTimes(int n) {
         putTankaKaiTen(chuushaJoumyakuTimes, n);
     }
 
-    public void putChuushaJoumyakuTen(int n){
+    public void putChuushaJoumyakuTen(int n) {
         putTankaKaiTen(chuushaJoumyakuTen, n);
     }
 
-    public void putChuushaSonotaTimes(int n){
+    public void putChuushaSonotaTimes(int n) {
         putTankaKaiTen(chuushaSonotaTimes, n);
     }
 
-    public void putChuushaSonotaTen(int n){
+    public void putChuushaSonotaTen(int n) {
         putTankaKaiTen(chuushaSonotaTen, n);
     }
 
@@ -1720,15 +1720,15 @@ public class RcptDrawer {
         }
     }
 
-    public void putShochiTimes(int n){
+    public void putShochiTimes(int n) {
         putTankaKaiTen(shochiTimes, n);
     }
 
-    public void putShochiTen(int n){
+    public void putShochiTen(int n) {
         putTankaKaiTen(shochiTen, n);
     }
 
-    public void putShochiYakuzaiTen(int n){
+    public void putShochiYakuzaiTen(int n) {
         putTankaKaiTen(shochiYakuzaiTen, n);
     }
 
@@ -1771,15 +1771,15 @@ public class RcptDrawer {
         }
     }
 
-    public void putShujutsuTimes(int n){
+    public void putShujutsuTimes(int n) {
         putTankaKaiTen(shujutsuTimes, n);
     }
 
-    public void putShujutsuTen(int n){
+    public void putShujutsuTen(int n) {
         putTankaKaiTen(shujutsuTen, n);
     }
 
-    public void putShujutsuYakuzaiTen(int n){
+    public void putShujutsuYakuzaiTen(int n) {
         putTankaKaiTen(shujutsuYakuzaiTen, n);
     }
 
@@ -1819,15 +1819,15 @@ public class RcptDrawer {
         }
     }
 
-    public void putKensaTimes(int n){
+    public void putKensaTimes(int n) {
         putTankaKaiTen(kensaTimes, n);
     }
 
-    public void putKensaTen(int n){
+    public void putKensaTen(int n) {
         putTankaKaiTen(kensaTen, n);
     }
 
-    public void putKensaYakuzaiTen(int n){
+    public void putKensaYakuzaiTen(int n) {
         putTankaKaiTen(kensaYakuzaiTen, n);
     }
 
@@ -1870,15 +1870,15 @@ public class RcptDrawer {
         }
     }
 
-    public void putGazouTimes(int n){
+    public void putGazouTimes(int n) {
         putTankaKaiTen(gazouTimes, n);
     }
 
-    public void putGazouTen(int n){
+    public void putGazouTen(int n) {
         putTankaKaiTen(gazouTen, n);
     }
 
-    public void putGazouYakuzaiTen(int n){
+    public void putGazouYakuzaiTen(int n) {
         putTankaKaiTen(gazouYakuzaiTen, n);
     }
 
@@ -1921,24 +1921,44 @@ public class RcptDrawer {
         }
     }
 
-    public void putSonotaShohousenTimes(int n){
+    public void putSonotaShohousenTimes(int n) {
         putTankaKaiTen(sonotaShohousenTimes, n);
     }
 
-    public void putSonotaShohousenTen(int n){
+    public void putSonotaShohousenTen(int n) {
         putTankaKaiTen(sonotaShohousenTen, n);
     }
 
-    public void putSonotaSonotaTen(int n){
+    public void putSonotaSonotaTen(int n) {
         putTankaKaiTen(sonotaSonotaTen, n);
     }
 
-    public void putSonotaYakuzaiTen(int n){
+    public void putSonotaYakuzaiTen(int n) {
         putTankaKaiTen(sonotaYakuzaiTen, n);
     }
 
     private void setupRcptBodyRow3(Box r) {
+        compiler.setFont("Mincho2.5");
+        compiler.frameTop(r);
+        Box c1, c2;
+        {
+            Box[] tmp = r.splitToColumns(114);
+            c1 = tmp[0];
+            c2 = tmp[1];
+        }
+        compiler.setPen("bold");
+        compiler.box(c1);
+        compiler.setPen("regular");
+        Box[] cc = c1.splitToColumns(2.5, 5, 50, 90);
+        compiler.frameRight(cc[0]);
+        compiler.textInVertJustified("療養の給付", cc[0].inset(0, 3), HAlign.Center);
+        compiler.frameRight(cc[1]);
+        compiler.frameRight(cc[2]);
+        compiler.frameRight(cc[3]);
+        {
+            Box[] rr = cc[1].splitToEvenRows(3);
 
+        }
     }
 
 }
