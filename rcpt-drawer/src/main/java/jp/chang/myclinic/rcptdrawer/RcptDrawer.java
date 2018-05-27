@@ -99,6 +99,20 @@ public class RcptDrawer {
     private Box saishinShinyaTimes;
     private Box saishinShinyaTen;
     private Box shidouTen;
+    private Box zaitakuOushinTanka;
+    private Box zaitakuOushinTimes;
+    private Box zaitakuOushinTen;
+    private Box zaitakuYakanTanka;
+    private Box zaitakuYakanTimes;
+    private Box zaitakuYakanTen;
+    private Box zaitakuShinyaTanka;
+    private Box zaitakuShinyaTimes;
+    private Box zaitakuShinyaTen;
+    private Box zaitakuZaitakuTanka;
+    private Box zaitakuZaitakuTimes;
+    private Box zaitakuZaitakuTen;
+    private Box zaitakuSonotaTen;
+    private Box zaitakuYakuzaiTen;
     private Box touyakuNaifukuYakuzaiTimes;
     private Box touyakuNaifukuYakuzaiTen;
     private Box touyakuNaifukuChouzaiTanka;
@@ -117,6 +131,27 @@ public class RcptDrawer {
     private Box touyakuMadokuTimes;
     private Box touyakuMadokuTen;
     private Box touyakuChoukiTen;
+    private Box chuushaHikaTimes;
+    private Box chuushaHikaTen;
+    private Box chuushaJoumyakuTimes;
+    private Box chuushaJoumyakuTen;
+    private Box chuushaSonotaTimes;
+    private Box chuushaSonotaTen;
+    private Box shochiTimes;
+    private Box shochiTen;
+    private Box shochiYakuzaiTen;
+    private Box shujutsuTimes;
+    private Box shujutsuTen;
+    private Box shujutsuYakuzaiTen;
+    private Box kensaTimes;
+    private Box kensaTen;
+    private Box kensaYakuzaiTen;
+    private Box gazouTimes;
+    private Box gazouTen;
+    private Box gazouYakuzaiTen;
+    private Box sonotaTimes;
+    private Box sonotaTen;
+    private Box sonotaYakuzaiTen;
 
     public RcptDrawer() {
         setupFonts();
@@ -1260,21 +1295,6 @@ public class RcptDrawer {
         putTankaKaiTen(shidouTen, ten);
     }
 
-    private Box zaitakuOushinTanka;
-    private Box zaitakuOushinTimes;
-    private Box zaitakuOushinTen;
-    private Box zaitakuYakanTanka;
-    private Box zaitakuYakanTimes;
-    private Box zaitakuYakanTen;
-    private Box zaitakuShinyaTanka;
-    private Box zaitakuShinyaTimes;
-    private Box zaitakuShinyaTen;
-    private Box zaitakuZaitakuTanka;
-    private Box zaitakuZaitakuTimes;
-    private Box zaitakuZaitakuTen;
-    private Box zaitakuSonotaTen;
-    private Box zaitakuYakuzaiTen;
-
     private void setupRcptBodyRow2_Zaitaku(Box r) {
         Box r1, r2;
 
@@ -1591,13 +1611,6 @@ public class RcptDrawer {
         }
     }
 
-    private Box chuushaHikaTimes;
-    private Box chuushaHikaTen;
-    private Box chuushaJoumyakuTimes;
-    private Box chuushaJoumyakuTen;
-    private Box chuushaSonotaTimes;
-    private Box chuushaSonotaTen;
-
     private void setupRcptBodyRow2_Chuusha(Box r) {
         Box r1, r2;
         compiler.frameBottom(r);
@@ -1666,7 +1679,51 @@ public class RcptDrawer {
     }
 
     private void setupRcptBodyRow2_Shochi(Box r) {
+        Box r1, r2;
 
+        compiler.frameBottom(r);
+        {
+            Box[] tmp = r.splitToColumns(5);
+            r1 = tmp[0];
+            r2 = tmp[1];
+        }
+        compiler.setFont("Mincho2.5");
+        {
+            Box p, q;
+
+            compiler.frameRight(r1);
+            {
+                Box[] tmp = r1.splitToRows(3);
+                p = tmp[0];
+                q = tmp[1];
+
+            }
+            compiler.textIn("40", p, HAlign.Center, VAlign.Bottom);
+            q = q.inset(0, 0.5);
+            compiler.textInVertJustified("処置", q, HAlign.Center);
+        }
+        {
+            Box[] rr;
+
+            rr = r2.splitToEvenRows(2);
+            renderKaiTen(rr[0], "回", boxes -> {
+                this.shochiTimes = boxes[0];
+                this.shochiTen = boxes[1];
+            });
+            RcptBodyRow2_Format3(rr[1], "薬剤", box -> this.shochiYakuzaiTen = box);
+        }
+    }
+
+    public void putShochiTimes(int n){
+        putTankaKaiTen(shochiTimes, n);
+    }
+
+    public void putShochiTen(int n){
+        putTankaKaiTen(shochiTen, n);
+    }
+
+    public void putShochiYakuzaiTen(int n){
+        putTankaKaiTen(shochiYakuzaiTen, n);
     }
 
     private void setupRcptBodyRow2_Shujutsu(Box r) {
