@@ -1144,6 +1144,16 @@ public class RcptDrawer {
         renderTankaKaiTen(box, "回", cb);
     }
 
+    private void RcptBodyRow2_Format2(Box box, String label, Consumer<Box[]> cb){
+        compiler.textInJustified(label, box.setWidth(19, HorizAnchor.Left).displaceLeftEdge(2), VAlign.Center);
+        renderTankaKaiTen(box, "回", cb);
+    }
+
+    private void RcptBodyRow2_Format3(Box box, String label, Consumer<Box> cb){
+        compiler.textInJustified(label, box.setWidth(17, HorizAnchor.Left).displaceLeftEdge(2), VAlign.Center);
+        renderTen(box, cb);
+    }
+
     public void putSaishinSaishinTanka(int n){
         putTankaKaiTen(saishinSaishinTanka, n);
     }
@@ -1205,19 +1215,17 @@ public class RcptDrawer {
     }
 
     private void setupRcptBodyRow2_Shidou(Box r) {
-        Box r1, r2;
+        Box r1;
 
         compiler.frameBottom(r);
         compiler.setFont("Mincho2.5");
         {
             Box[] tmp = r.splitToColumns(21);
             r1 = tmp[0];
-            r2 = tmp[1];
         }
         compiler.frameRight(r1);
         {
             Box p, q;
-            double x[] = { 32, 46.5 };
             {
                 Box[] tmp = r1.splitToColumns(5);
                 p = tmp[0];
@@ -1234,8 +1242,125 @@ public class RcptDrawer {
         putTankaKaiTen(shidouTen, ten);
     }
 
-    private void setupRcptBodyRow2_Zaitaku(Box box) {
+    private Box zaitakuOushinTanka;
+    private Box zaitakuOushinTimes;
+    private Box zaitakuOushinTen;
+    private Box zaitakuYakanTanka;
+    private Box zaitakuYakanTimes;
+    private Box zaitakuYakanTen;
+    private Box zaitakuShinyaTanka;
+    private Box zaitakuShinyaTimes;
+    private Box zaitakuShinyaTen;
+    private Box zaitakuZaitakuTanka;
+    private Box zaitakuZaitakuTimes;
+    private Box zaitakuZaitakuTen;
+    private Box zaitakuSonotaTen;
+    private Box zaitakuYakuzaiTen;
 
+    private void setupRcptBodyRow2_Zaitaku(Box r) {
+        Box r1, r2;
+
+        compiler.frameBottom(r);
+        {
+            Box[] tmp = r.splitToColumns(5);
+            r1 = tmp[0];
+            r2 = tmp[1];
+        }
+        compiler.setFont("Mincho2.5");
+        {
+            Box p, q;
+
+            compiler.frameRight(r1);
+            {
+                Box[] tmp = r1.splitToRows(5.5);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            q = q.inset(0, 3);
+            compiler.textIn("14", p, HAlign.Center, VAlign.Bottom);
+            compiler.textInVertJustified("在宅", q, HAlign.Center);
+        }
+        {
+            Box[] rr = r2.splitToEvenRows(6);
+            RcptBodyRow2_Format1(rr[0], "往診", boxes -> {
+                this.zaitakuOushinTanka = boxes[0];
+                this.zaitakuOushinTimes = boxes[1];
+                this.zaitakuOushinTen = boxes[2];
+            });
+            RcptBodyRow2_Format1(rr[1], "夜間", boxes -> {
+                this.zaitakuYakanTanka = boxes[0];
+                this.zaitakuYakanTimes = boxes[1];
+                this.zaitakuYakanTen = boxes[2];
+            });
+            RcptBodyRow2_Format1(rr[2], "深夜・緊急", boxes -> {
+                this.zaitakuShinyaTanka = boxes[0];
+                this.zaitakuShinyaTimes = boxes[1];
+                this.zaitakuShinyaTen = boxes[2];
+            });
+            RcptBodyRow2_Format2(rr[3], "在宅患者訪問診療", boxes -> {
+                this.zaitakuZaitakuTanka = boxes[0];
+                this.zaitakuZaitakuTimes = boxes[1];
+                this.zaitakuZaitakuTen = boxes[2];
+            });
+            RcptBodyRow2_Format3(rr[4], "その他", box -> this.zaitakuSonotaTen = box);
+            RcptBodyRow2_Format3(rr[5], "薬剤", box -> this.zaitakuYakuzaiTen = box);
+        }
+    }
+
+    public void putZaitakuOushinTanka(int n){
+        putTankaKaiTen(zaitakuOushinTanka, n);
+    }
+
+    public void putZaitakuOushinTimes(int n){
+        putTankaKaiTen(zaitakuOushinTimes, n);
+    }
+
+    public void putZaitakuOushinTen(int n){
+        putTankaKaiTen(zaitakuOushinTen, n);
+    }
+
+    public void putZaitakuYakanTanka(int n){
+        putTankaKaiTen(zaitakuYakanTanka, n);
+    }
+
+    public void putZaitakuYakanTimes(int n){
+        putTankaKaiTen(zaitakuYakanTimes, n);
+    }
+
+    public void putZaitakuYakanTen(int n){
+        putTankaKaiTen(zaitakuYakanTen, n);
+    }
+
+    public void putZaitakuShinyaTanka(int n){
+        putTankaKaiTen(zaitakuShinyaTanka, n);
+    }
+
+    public void putZaitakuShinyaTimes(int n){
+        putTankaKaiTen(zaitakuShinyaTimes, n);
+    }
+
+    public void putZaitakuShinyaTen(int n){
+        putTankaKaiTen(zaitakuShinyaTen, n);
+    }
+
+    public void putZaitakuZaitakuTanka(int n){
+        putTankaKaiTen(zaitakuZaitakuTanka, n);
+    }
+
+    public void putZaitakuZaitakuTimes(int n){
+        putTankaKaiTen(zaitakuZaitakuTimes, n);
+    }
+
+    public void putZaitakuZaitakuTen(int n){
+        putTankaKaiTen(zaitakuZaitakuTen, n);
+    }
+
+    public void putZaitakuSonotaTen(int n){
+        putTankaKaiTen(zaitakuSonotaTen, n);
+    }
+
+    public void putZaitakuYakuzaiTen(int n){
+        putTankaKaiTen(zaitakuYakuzaiTen, n);
     }
 
     private void setupRcptBodyRow2_Touyaku(Box box) {
