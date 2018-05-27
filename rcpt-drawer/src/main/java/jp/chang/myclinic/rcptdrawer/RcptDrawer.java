@@ -83,7 +83,22 @@ public class RcptDrawer {
     private Point shoshinShinya;
     private Box shoshinKai;
     private Box shoshinTen;
-
+    private Box saishinSaishinTanka;
+    private Box saishinSaishinTimes;
+    private Box saishinSaishinTen;
+    private Box saishinGairaiKanriTanka;
+    private Box saishinGairaiKanriTimes;
+    private Box saishinGairaiKanriTen;
+    private Box saishinJikangaiTanka;
+    private Box saishinJikangaiTimes;
+    private Box saishinJikangaiTen;
+    private Box saishinKyuujitsuTanka;
+    private Box saishinKyuujitsuTimes;
+    private Box saishinKyuujitsuTen;
+    private Box saishinShinyaTanka;
+    private Box saishinShinyaTimes;
+    private Box saishinShinyaTen;
+    private Box shidouTen;
 
     public RcptDrawer() {
         setupFonts();
@@ -1022,12 +1037,17 @@ public class RcptDrawer {
         }
     }
 
+    private void renderTen(Box box, Consumer<Box> cb){
+        cb.accept(box.shiftToLeft(5).setWidth(9, HorizAnchor.Right));
+    }
+
     private void renderKaiTen(Box box, String kaiLabel, Consumer<Box[]> cb) {
         Box kaiBox = box.setWidth(18, HorizAnchor.Right);
         compiler.textIn(kaiLabel, kaiBox, HAlign.Left, VAlign.Center);
         Box kaiInput = kaiBox.flipLeft().shiftToLeft(1).setWidth(6, HorizAnchor.Right);
-        Box tenInput = box.shiftToLeft(5).setWidth(9, HorizAnchor.Right);
-        cb.accept(new Box[]{kaiInput, tenInput});
+        renderTen(box, tenInput -> {
+            cb.accept(new Box[]{kaiInput, tenInput});
+        });
     }
 
     private void renderTankaKaiTen(Box box, String kaiLabel, Consumer<Box[]> cb){
@@ -1063,22 +1083,6 @@ public class RcptDrawer {
     public void putShoshinTen(int n) {
         putTankaKaiTen(shoshinTen, n);
     }
-
-    private Box saishinSaishinTanka;
-    private Box saishinSaishinTimes;
-    private Box saishinSaishinTen;
-    private Box saishinGairaiKanriTanka;
-    private Box saishinGairaiKanriTimes;
-    private Box saishinGairaiKanriTen;
-    private Box saishinJikangaiTanka;
-    private Box saishinJikangaiTimes;
-    private Box saishinJikangaiTen;
-    private Box saishinKyuujitsuTanka;
-    private Box saishinKyuujitsuTimes;
-    private Box saishinKyuujitsuTen;
-    private Box saishinShinyaTanka;
-    private Box saishinShinyaTimes;
-    private Box saishinShinyaTen;
 
     private void setupRcptBodyRow2_Saishin(Box box) {
         Box r1, r2;
@@ -1200,8 +1204,34 @@ public class RcptDrawer {
         putTankaKaiTen(saishinShinyaTen, n);
     }
 
-    private void setupRcptBodyRow2_Shidou(Box box) {
+    private void setupRcptBodyRow2_Shidou(Box r) {
+        Box r1, r2;
 
+        compiler.frameBottom(r);
+        compiler.setFont("Mincho2.5");
+        {
+            Box[] tmp = r.splitToColumns(21);
+            r1 = tmp[0];
+            r2 = tmp[1];
+        }
+        compiler.frameRight(r1);
+        {
+            Box p, q;
+            double x[] = { 32, 46.5 };
+            {
+                Box[] tmp = r1.splitToColumns(5);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            compiler.textIn("13", p, HAlign.Center, VAlign.Center);
+            q = q.inset(2, 0, 4.5, 0);
+            compiler.textInJustified("指導", q, VAlign.Center);
+            renderTen(r, tenBox -> this.shidouTen = tenBox);
+        }
+    }
+
+    public void putShidouTen(int ten){
+        putTankaKaiTen(shidouTen, ten);
     }
 
     private void setupRcptBodyRow2_Zaitaku(Box box) {
