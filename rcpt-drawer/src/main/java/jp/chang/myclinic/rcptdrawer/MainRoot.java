@@ -75,6 +75,21 @@ class MainRoot extends VBox {
         rcptDrawer.markShoshinShinya();
         rcptDrawer.putShoshinKai(1);
         rcptDrawer.putShoshinTen(270);
+        rcptDrawer.putSaishinSaishinTanka(67);
+        rcptDrawer.putSaishinSaishinTimes(2);
+        rcptDrawer.putSaishinSaishinTen(134);
+        rcptDrawer.putSaishinGairaiKanriTanka(10);
+        rcptDrawer.putSaishinGairaiKanriTimes(2);
+        rcptDrawer.putSaishinGairaiKanriTen(20);
+        rcptDrawer.putSaishinJikangaiTanka(26);
+        rcptDrawer.putSaishinJikangaiTimes(1);
+        rcptDrawer.putSaishinJikangaiTen(26);
+        rcptDrawer.putSaishinKyuujitsuTanka(22);
+        rcptDrawer.putSaishinKyuujitsuTimes(3);
+        rcptDrawer.putSaishinKyuujitsuTen(66);
+        rcptDrawer.putSaishinShinyaTanka(12);
+        rcptDrawer.putSaishinShinyaTimes(1);
+        rcptDrawer.putSaishinShinyaTen(12);
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }

@@ -7,6 +7,7 @@ import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
 import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -77,6 +78,12 @@ public class RcptDrawer {
     private Box shinryounissuKouhi2;
     private Box tekiyou;
     private int tekiyouLeftColumnWidth = 10;
+    private Point shoshinJikangai;
+    private Point shoshinKyuujitsu;
+    private Point shoshinShinya;
+    private Box shoshinKai;
+    private Box shoshinTen;
+
 
     public RcptDrawer() {
         setupFonts();
@@ -936,6 +943,7 @@ public class RcptDrawer {
             setupRcptBodyRow2_Zaitaku(rr[3]);
             setupRcptBodyRow2_Touyaku(rr[4]);
             setupRcptBodyRow2_Chuusha(rr[5]);
+            drawBottomDotLine(q, Arrays.copyOfRange(rr, 1, rr.length-1));
             {
                 Box[] ss = rr[6].splitToEvenRows(5);
                 setupRcptBodyRow2_Shochi(ss[0]);
@@ -943,6 +951,7 @@ public class RcptDrawer {
                 setupRcptBodyRow2_Kensa(ss[2]);
                 setupRcptBodyRow2_Gazou(ss[3]);
                 setupRcptBodyRow2_Sonota(ss[4]);
+                drawBottomDotLine(q, Arrays.copyOfRange(ss, 0, ss.length - 1));
             }
             q = q.inset(3.5, 1, 3.5, 0);
             compiler.setFont("Mincho1.5");
@@ -961,11 +970,16 @@ public class RcptDrawer {
         }
     }
 
-    private Point shoshinJikangai;
-    private Point shoshinKyuujitsu;
-    private Point shoshinShinya;
-    private Box shoshinKai;
-    private Box shoshinTen;
+    private void drawBottomDotLine(Box q, Box[] boxes){
+        double left = q.getLeft();
+        double right = q.getRight();
+        compiler.setPen("dot");
+        for(Box box: boxes){
+            double bottom = box.getBottom();
+            compiler.line(left, bottom, right, bottom);
+        }
+        compiler.setPen("regular");
+    }
 
     private void setupRcptBodyRow2_Shoshin(Box box) {
         Box r1, r2;
@@ -1016,6 +1030,15 @@ public class RcptDrawer {
         cb.accept(new Box[]{kaiInput, tenInput});
     }
 
+    private void renderTankaKaiTen(Box box, String kaiLabel, Consumer<Box[]> cb){
+        Box tankaBox = box.setWidth(29, HorizAnchor.Right);
+        compiler.textIn("×", tankaBox, HAlign.Left, VAlign.Center);
+        Box tankaInput = tankaBox.flipLeft().shiftToLeft(1).setWidth(6, HorizAnchor.Right);
+        renderKaiTen(box, kaiLabel, boxes -> {
+            cb.accept(new Box[]{ tankaInput, boxes[0], boxes[1] });
+        });
+    }
+
     public void markShoshinJikangai() {
         markCircle(shoshinJikangai);
     }
@@ -1041,8 +1064,140 @@ public class RcptDrawer {
         putTankaKaiTen(shoshinTen, n);
     }
 
-    private void setupRcptBodyRow2_Saishin(Box box) {
+    private Box saishinSaishinTanka;
+    private Box saishinSaishinTimes;
+    private Box saishinSaishinTen;
+    private Box saishinGairaiKanriTanka;
+    private Box saishinGairaiKanriTimes;
+    private Box saishinGairaiKanriTen;
+    private Box saishinJikangaiTanka;
+    private Box saishinJikangaiTimes;
+    private Box saishinJikangaiTen;
+    private Box saishinKyuujitsuTanka;
+    private Box saishinKyuujitsuTimes;
+    private Box saishinKyuujitsuTen;
+    private Box saishinShinyaTanka;
+    private Box saishinShinyaTimes;
+    private Box saishinShinyaTen;
 
+    private void setupRcptBodyRow2_Saishin(Box box) {
+        Box r1, r2;
+
+        compiler.frameBottom(box);
+        {
+            Box[] tmp = box.splitToColumns(5);
+            r1 = tmp[0];
+            r2 = tmp[1];
+        }
+        compiler.setFont("Mincho2.5");
+        {
+            Box p, q;
+
+            compiler.frameRight(r1);
+            {
+                Box[] tmp = r1.splitToRows(5.5);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            q = q.inset(0, 3);
+            compiler.textIn("12", p, HAlign.Center, VAlign.Bottom);
+            compiler.textInVertJustified("再診", q, HAlign.Center);
+        }
+        {
+            Box[] rr;
+
+            rr = r2.splitToEvenRows(5);
+            RcptBodyRow2_Format1(rr[0], "再診", boxes -> {
+                saishinSaishinTanka = boxes[0];
+                saishinSaishinTimes = boxes[1];
+                saishinSaishinTen = boxes[2];
+            });
+            RcptBodyRow2_Format1(rr[1], "外来管理加算", boxes -> {
+                saishinGairaiKanriTanka = boxes[0];
+                saishinGairaiKanriTimes = boxes[1];
+                saishinGairaiKanriTen = boxes[2];
+            });
+            RcptBodyRow2_Format1(rr[2], "時間外", boxes -> {
+                saishinJikangaiTanka = boxes[0];
+                saishinJikangaiTimes = boxes[1];
+                saishinJikangaiTen = boxes[2];
+            });
+            RcptBodyRow2_Format1(rr[3], "休日", boxes -> {
+                saishinKyuujitsuTanka = boxes[0];
+                saishinKyuujitsuTimes = boxes[1];
+                saishinKyuujitsuTen = boxes[2];
+            });
+            RcptBodyRow2_Format1(rr[4], "深夜", boxes -> {
+                saishinShinyaTanka = boxes[0];
+                saishinShinyaTimes = boxes[1];
+                saishinShinyaTen = boxes[2];
+            });
+        }
+    }
+
+    private void RcptBodyRow2_Format1(Box box, String label, Consumer<Box[]> cb){
+        compiler.textInJustified(label, box.setWidth(17, HorizAnchor.Left).displaceLeftEdge(2), VAlign.Center);
+        renderTankaKaiTen(box, "回", cb);
+    }
+
+    public void putSaishinSaishinTanka(int n){
+        putTankaKaiTen(saishinSaishinTanka, n);
+    }
+
+    public void putSaishinSaishinTimes(int n){
+        putTankaKaiTen(saishinSaishinTimes, n);
+    }
+
+    public void putSaishinSaishinTen(int n){
+        putTankaKaiTen(saishinSaishinTen, n);
+    }
+
+    public void putSaishinGairaiKanriTanka(int n){
+        putTankaKaiTen(saishinGairaiKanriTanka, n);
+    }
+
+    public void putSaishinGairaiKanriTimes(int n){
+        putTankaKaiTen(saishinGairaiKanriTimes, n);
+    }
+
+    public void putSaishinGairaiKanriTen(int n){
+        putTankaKaiTen(saishinGairaiKanriTen, n);
+    }
+
+    public void putSaishinJikangaiTanka(int n){
+        putTankaKaiTen(saishinJikangaiTanka, n);
+    }
+
+    public void putSaishinJikangaiTimes(int n){
+        putTankaKaiTen(saishinJikangaiTimes, n);
+    }
+
+    public void putSaishinJikangaiTen(int n){
+        putTankaKaiTen(saishinJikangaiTen, n);
+    }
+
+    public void putSaishinKyuujitsuTanka(int n){
+        putTankaKaiTen(saishinKyuujitsuTanka, n);
+    }
+
+    public void putSaishinKyuujitsuTimes(int n){
+        putTankaKaiTen(saishinKyuujitsuTimes, n);
+    }
+
+    public void putSaishinKyuujitsuTen(int n){
+        putTankaKaiTen(saishinKyuujitsuTen, n);
+    }
+
+    public void putSaishinShinyaTanka(int n){
+        putTankaKaiTen(saishinShinyaTanka, n);
+    }
+
+    public void putSaishinShinyaTimes(int n){
+        putTankaKaiTen(saishinShinyaTimes, n);
+    }
+
+    public void putSaishinShinyaTen(int n){
+        putTankaKaiTen(saishinShinyaTen, n);
     }
 
     private void setupRcptBodyRow2_Shidou(Box box) {
