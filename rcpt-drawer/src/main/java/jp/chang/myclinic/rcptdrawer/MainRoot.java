@@ -132,6 +132,9 @@ class MainRoot extends VBox {
         rcptDrawer.putShochiTimes(2);
         rcptDrawer.putShochiTen(24);
         rcptDrawer.putShochiYakuzaiTen(120);
+        rcptDrawer.putShujutsuTimes(3);
+        rcptDrawer.putShujutsuTen(34);
+        rcptDrawer.putShujutsuYakuzaiTen(130);
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }

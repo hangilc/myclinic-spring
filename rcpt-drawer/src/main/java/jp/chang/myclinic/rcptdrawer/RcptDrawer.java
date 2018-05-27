@@ -1727,7 +1727,54 @@ public class RcptDrawer {
     }
 
     private void setupRcptBodyRow2_Shujutsu(Box r) {
+        Box r1, r2;
 
+        compiler.frameBottom(r);
+        {
+            Box[] tmp = r.splitToColumns(5);
+            r1 = tmp[0];
+            r2 = tmp[1];
+        }
+        compiler.setFont("Mincho2.5");
+        {
+            Box p, q;
+
+            compiler.frameRight(r1);
+            {
+                Box[] tmp = r1.splitToRows(3);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            compiler.textIn("50", p, HAlign.Center, VAlign.Bottom);
+            q = q.inset(0, 0.5);
+            Box[] cc = q.splitToEvenColumns(2);
+            compiler.setFont("Mincho1.8");
+            compiler.textInVertJustified("手術", cc[0], HAlign.Center);
+            compiler.textInVertJustified("麻酔", cc[1], HAlign.Center);
+            compiler.setFont("Mincho2.5");
+        }
+        {
+            Box[] rr;
+
+            rr = r2.splitToEvenRows(2);
+            renderKaiTen(rr[0], "回", boxes -> {
+                this.shujutsuTimes = boxes[0];
+                this.shujutsuTen = boxes[1];
+            });
+            RcptBodyRow2_Format3(rr[1], "薬剤", box -> this.shujutsuYakuzaiTen = box);
+        }
+    }
+
+    public void putShujutsuTimes(int n){
+        putTankaKaiTen(shujutsuTimes, n);
+    }
+
+    public void putShujutsuTen(int n){
+        putTankaKaiTen(shujutsuTen, n);
+    }
+
+    public void putShujutsuYakuzaiTen(int n){
+        putTankaKaiTen(shujutsuYakuzaiTen, n);
     }
 
     private void setupRcptBodyRow2_Kensa(Box r) {
