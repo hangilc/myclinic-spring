@@ -112,6 +112,17 @@ class MainRoot extends VBox {
         rcptDrawer.putTouyakuNaifukuChouzaiTen(18);
         rcptDrawer.putTouyakuTonpukuYakuzaiTimes(6);
         rcptDrawer.putTouyakuTonpukuYakuzaiTen(12);
+        rcptDrawer.putTouyakuGaiyouYakuzaiTimes(14);
+        rcptDrawer.putTouyakuGaiyouYakuzaiTen(140);
+        rcptDrawer.putTouyakuGaiyouChouzaiTanka(8);
+        rcptDrawer.putTouyakuGaiyouChouzaiTimes(3);
+        rcptDrawer.putTouyakuGaiyouChouzaiTen(24);
+        rcptDrawer.putTouyakuShohouTanka(9);
+        rcptDrawer.putTouyakuShohouTimes(4);
+        rcptDrawer.putTouyakuShohouTen(36);
+        rcptDrawer.putTouyakuMadokuTimes(5);
+        rcptDrawer.putTouyakuMadokuTen(40);
+        rcptDrawer.putTouyakuChoukiTen(8);
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }

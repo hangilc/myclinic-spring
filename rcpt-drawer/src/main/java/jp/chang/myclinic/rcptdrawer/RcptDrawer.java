@@ -1370,6 +1370,17 @@ public class RcptDrawer {
     private Box touyakuNaifukuChouzaiTen;
     private Box touyakuTonpukuYakuzaiTimes;
     private Box touyakuTonpukuYakuzaiTen;
+    private Box touyakuGaiyouYakuzaiTimes;
+    private Box touyakuGaiyouYakuzaiTen;
+    private Box touyakuGaiyouChouzaiTanka;
+    private Box touyakuGaiyouChouzaiTimes;
+    private Box touyakuGaiyouChouzaiTen;
+    private Box touyakuShohouTanka;
+    private Box touyakuShohouTimes;
+    private Box touyakuShohouTen;
+    private Box touyakuMadokuTimes;
+    private Box touyakuMadokuTen;
+    private Box touyakuChoukiTen;
 
     private void setupRcptBodyRow2_Touyaku(Box r) {
         Box r1, r2;
@@ -1422,15 +1433,30 @@ public class RcptDrawer {
                 this.touyakuTonpukuYakuzaiTimes = boxes[0];
                 this.touyakuTonpukuYakuzaiTen = boxes[1];
             });
+            tt = rr[2].splitToEvenRows(2);
+            renderKaiTen(tt[0], "単位", boxes -> {
+                this.touyakuGaiyouYakuzaiTimes = boxes[0];
+                this.touyakuGaiyouYakuzaiTen = boxes[1];
+            });
+            renderTankaKaiTen(tt[1], "回", boxes -> {
+                this.touyakuGaiyouChouzaiTanka = boxes[0];
+                this.touyakuGaiyouChouzaiTimes = boxes[1];
+                this.touyakuGaiyouChouzaiTen = boxes[2];
+            });
+            renderTankaKaiTen(ss[0], "回", boxes -> {
+                this.touyakuShohouTanka = boxes[0];
+                this.touyakuShohouTimes = boxes[1];
+                this.touyakuShohouTen = boxes[2];
+            });
+            renderKaiTen(ss[1], "回", boxes -> {
+                this.touyakuMadokuTimes = boxes[0];
+                this.touyakuMadokuTen = boxes[1];
+            });
+            renderTen(ss[2], box -> {
+                this.touyakuChoukiTen = box;
+            });
 
-//            b = rr[1]; b.left = r.left; b.right = r.right;
-//            mark_tanka_kai_ten(b, "touyaku.tonpuku");
 
-//            tt = rr[2].splitToEvenRows(2);
-//            b = tt[0]; b.left = r.left; b.right = r.right;
-//            mark_tanka_kai_ten(b, "touyaku.gaiyou.yakuzai");
-//            b = tt[1]; b.left = r.left; b.right = r.right;
-//            mark_tanka_kai_ten(b, "touyaku.gaiyou.chouzai");
 //            b = ss[0]; b.left = r.left; b.right = r.right;
 //            mark_tanka_kai_ten(b, "touyaku.shohou");
 //            b = ss[1]; b.left = r.left; b.right = r.right;
@@ -1466,6 +1492,50 @@ public class RcptDrawer {
 
     public void putTouyakuTonpukuYakuzaiTen(int n){
         putTankaKaiTen(touyakuTonpukuYakuzaiTen, n);
+    }
+
+    public void putTouyakuGaiyouYakuzaiTimes(int n){
+        putTankaKaiTen(touyakuGaiyouYakuzaiTimes, n);
+    }
+
+    public void putTouyakuGaiyouYakuzaiTen(int n){
+        putTankaKaiTen(touyakuGaiyouYakuzaiTen, n);
+    }
+
+    public void putTouyakuGaiyouChouzaiTanka(int n){
+        putTankaKaiTen(touyakuGaiyouChouzaiTanka, n);
+    }
+
+    public void putTouyakuGaiyouChouzaiTimes(int n){
+        putTankaKaiTen(touyakuGaiyouChouzaiTimes, n);
+    }
+
+    public void putTouyakuGaiyouChouzaiTen(int n){
+        putTankaKaiTen(touyakuGaiyouChouzaiTen, n);
+    }
+
+    public void putTouyakuShohouTanka(int n){
+        putTankaKaiTen(touyakuShohouTanka, n);
+    }
+
+    public void putTouyakuShohouTimes(int n){
+        putTankaKaiTen(touyakuShohouTimes, n);
+    }
+
+    public void putTouyakuShohouTen(int n){
+        putTankaKaiTen(touyakuShohouTen, n);
+    }
+
+    public void putTouyakuMadokuTimes(int n){
+        putTankaKaiTen(touyakuMadokuTimes, n);
+    }
+
+    public void putTouyakuMadokuTen(int n){
+        putTankaKaiTen(touyakuMadokuTen, n);
+    }
+
+    public void putTouyakuChoukiTen(int n){
+        putTankaKaiTen(touyakuChoukiTen, n);
     }
 
     private void RcptBodyRow2_Format4(Box r, String index, String label) {
