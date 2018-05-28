@@ -26,14 +26,11 @@ class RcptDataDispatcher {
     private int patientId;
 
     public void dispatch(RcptDrawer drawer, String cmd, String arg){
-        switch(cmd){
-            case "patient_id": {
-                break;
-            }
-            default: {
-                System.err.println("Unknown command: " + cmd);
-                break;
-            }
+        Dispatcher dispatcher = map.get(cmd);
+        if( dispatcher != null ){
+            dispatcher.dispatch(drawer, arg, this);
+        } else {
+            System.err.println("Unknown cmd: " + cmd);
         }
     }
 

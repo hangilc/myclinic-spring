@@ -18,6 +18,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
 public class Main extends Application {
@@ -28,15 +29,16 @@ public class Main extends Application {
         Application.launch(Main.class, args);
     }
     private Stage stage;
+    private MainRoot mainRoot;
 
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
         stage.setTitle("レセプト印刷");
-        MainRoot root = new MainRoot();
+        this.mainRoot = new MainRoot();
         BorderPane pane = new BorderPane();
         pane.setTop(createMenuBar());
-        pane.setCenter(root);
+        pane.setCenter(mainRoot);
         stage.setScene(new Scene(pane));
         stage.show();
     }
@@ -65,12 +67,36 @@ public class Main extends Application {
     private static Pattern sep = Pattern.compile("\\s+");
 
     private void doOpenFile() {
+        List<List<List<Op>>> rcptPages = new ArrayList<>();
+        class Local {
+            RcptDrawer rcptDrawer = null;
+            RcptDataDispatcher dispatcher = null;
+        }
+        Local local = new Local();
+        openFile((cmd, arg) -> {
+            if( "rcpt_begin".equals(cmd) ){
+                if( local.rcptDrawer != null ){
+                    System.err.println("Internal error.");
+                    System.exit(1);
+                }
+                local.rcptDrawer = new RcptDrawer();
+                local.dispatcher = new RcptDataDispatcher();
+            } else if( "rcpt_end".equals(cmd) ){
+                rcptPages.add(local.rcptDrawer.getPages());
+                local.rcptDrawer = null;
+                local.dispatcher = null;
+            } else {
+                local.dispatcher.dispatch(local.rcptDrawer, cmd, arg);
+            }
+        });
+        mainRoot.setRcptPages(rcptPages);
+    }
+
+    private void openFile(BiConsumer<String, String> cb){
         FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             try {
-                List<List<List<Op>>> rcptPages = new ArrayList<>();
-                RcptDrawer rcptDrawer = null;
                 try (BufferedReader in = new BufferedReader(
                         new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))){
                     while( true ){
@@ -78,22 +104,10 @@ public class Main extends Application {
                         if( line == null ){
                             break;
                         }
-                        String[] toks = sep.split(line, 2);
-                        if( "rcpt_begin".equals(toks[0]) ){
-                            if( rcptDrawer != null ){
-                                System.err.println("Internal error.");
-                                System.exit(1);
-                            }
-                            rcptDrawer = new RcptDrawer();
-                        } else if( "rcpt_end".equals(toks[0]) ){
-                            rcptPages.add(rcptDrawer.getPages());
-                            rcptDrawer = null;
-                        } else {
-
-                        }
+                        String[] toks = sep.split(line.trim(), 2);
+                        cb.accept(toks[0], toks.length >= 2 ? toks[1] : null);
                     }
                 }
-                System.out.println(rcptPages.size());
             } catch (IOException ex) {
                 logger.error("Failed to open file.", ex);
                 GuiUtil.alertError("ファイルを開けませんでした。");
