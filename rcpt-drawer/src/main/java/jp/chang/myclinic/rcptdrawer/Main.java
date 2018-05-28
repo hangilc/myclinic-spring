@@ -33,6 +33,11 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        Parameters params = getParameters();
+        File file = null;
+        if( params.getUnnamed().size() > 0 ){
+            file = new File(params.getUnnamed().get(0));
+        }
         this.stage = stage;
         stage.setTitle("レセプト印刷");
         this.mainRoot = new MainRoot();
@@ -41,6 +46,9 @@ public class Main extends Application {
         pane.setCenter(mainRoot);
         stage.setScene(new Scene(pane));
         stage.show();
+        if( file != null ){
+            chooseFile(file);
+        }
     }
 
     private MenuBar createMenuBar() {
@@ -74,7 +82,7 @@ public class Main extends Application {
             DispatchHook hook = null;
         }
         Local local = new Local();
-        openFile((cmd, arg) -> {
+        chooseFile((cmd, arg) -> {
             if( "rcpt_begin".equals(cmd) ){
                 if( local.rcptDrawer != null ){
                     System.err.println("Internal error.");
@@ -94,7 +102,7 @@ public class Main extends Application {
         mainRoot.setRcptPages(rcptPages);
     }
 
-    private void openFile(BiConsumer<String, String> cb){
+    private void chooseFile(BiConsumer<String, String> cb){
         FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {

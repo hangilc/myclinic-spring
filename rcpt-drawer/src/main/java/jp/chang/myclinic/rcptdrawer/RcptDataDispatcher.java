@@ -47,6 +47,12 @@ class RcptDataDispatcher {
             drawer.putPatientId(patientId);
             hook.onPatientId(patientId);
         });
+        map.put("kikancode", (drawer, arg, hook) -> {
+            drawer.putKikanCode(arg);
+        });
+        map.put("fukenbangou", (drawer, arg, hook) -> {
+            drawer.putFukenBangou(toInt(arg));
+        });
     }
 
 }
