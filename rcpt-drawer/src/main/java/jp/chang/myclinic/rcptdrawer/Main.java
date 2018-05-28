@@ -71,6 +71,7 @@ public class Main extends Application {
         class Local {
             RcptDrawer rcptDrawer = null;
             RcptDataDispatcher dispatcher = null;
+            DispatchHook hook = null;
         }
         Local local = new Local();
         openFile((cmd, arg) -> {
@@ -80,13 +81,14 @@ public class Main extends Application {
                     System.exit(1);
                 }
                 local.rcptDrawer = new RcptDrawer();
-                local.dispatcher = new RcptDataDispatcher();
+                local.hook = new StoringDispatchHook();
+                local.dispatcher = new RcptDataDispatcher(local.rcptDrawer, local.hook);
             } else if( "rcpt_end".equals(cmd) ){
                 rcptPages.add(local.rcptDrawer.getPages());
                 local.rcptDrawer = null;
                 local.dispatcher = null;
             } else {
-                local.dispatcher.dispatch(local.rcptDrawer, cmd, arg);
+                local.dispatcher.dispatch(cmd, arg);
             }
         });
         mainRoot.setRcptPages(rcptPages);

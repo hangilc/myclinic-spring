@@ -106,6 +106,7 @@ public class DrawerCanvas extends Canvas {
     }
 
     public void setOps(List<Op> ops){
+        gc.clearRect(0, 0, getWidth(), getHeight());
         for(Op op: ops){
             switch(op.getOpCode()){
                 case MoveTo: { doMoveTo((OpMoveTo)op); break; }

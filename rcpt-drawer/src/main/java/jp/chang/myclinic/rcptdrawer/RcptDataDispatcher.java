@@ -10,36 +10,25 @@ class RcptDataDispatcher {
 
     private static Logger logger = LoggerFactory.getLogger(RcptDataDispatcher.class);
 
-    private static interface Dispatcher {
-        void dispatch(RcptDrawer drawer, String arg, RcptDataDispatcher self);
+    private interface Dispatcher {
+        void dispatch(RcptDrawer drawer, String arg, DispatchHook hook);
     }
 
-    private static Map<String, Dispatcher> map = new HashMap<>();
-    static {
-        map.put("patient_id", (drawer, arg, self) -> {
-            int patientId = toInt(arg);
-            drawer.putPatientId(patientId);
-            self.setPatientId(patientId);
-        });
+    private RcptDrawer rcptDrawer;
+    private DispatchHook hook;
+
+    RcptDataDispatcher(RcptDrawer rcptDrawer, DispatchHook hook){
+        this.rcptDrawer = rcptDrawer;
+        this.hook = hook;
     }
 
-    private int patientId;
-
-    public void dispatch(RcptDrawer drawer, String cmd, String arg){
+    public void dispatch(String cmd, String arg){
         Dispatcher dispatcher = map.get(cmd);
         if( dispatcher != null ){
-            dispatcher.dispatch(drawer, arg, this);
+            dispatcher.dispatch(rcptDrawer, arg, hook);
         } else {
             System.err.println("Unknown cmd: " + cmd);
         }
-    }
-
-    public int getPatientId() {
-        return patientId;
-    }
-
-    private void setPatientId(int patientId) {
-        this.patientId = patientId;
     }
 
     private static int toInt(String arg){
@@ -49,6 +38,15 @@ class RcptDataDispatcher {
             logger.error("Invalid integer: " + arg);
             throw new RuntimeException("Invalid arg");
         }
+    }
+
+    private static Map<String, Dispatcher> map = new HashMap<>();
+    static {
+        map.put("patient_id", (drawer, arg, hook) -> {
+            int patientId = toInt(arg);
+            drawer.putPatientId(patientId);
+            hook.onPatientId(patientId);
+        });
     }
 
 }
