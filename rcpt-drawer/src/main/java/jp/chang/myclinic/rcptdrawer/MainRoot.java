@@ -13,7 +13,7 @@ import java.util.List;
 class MainRoot extends VBox {
 
     private static Logger logger = LoggerFactory.getLogger(MainRoot.class);
-    private DrawerCanvas drawerCanvas = new DrawerCanvas(PaperSize.A4, 1.1);
+    private DrawerCanvas drawerCanvas = new DrawerCanvas(PaperSize.A4, 1.3);
 
     MainRoot() {
         getStylesheets().add("Main.css");
@@ -145,6 +145,9 @@ class MainRoot extends VBox {
         rcptDrawer.putSonotaShohousenTen(65);
         rcptDrawer.putSonotaSonotaTen(160);
         rcptDrawer.putSonotaYakuzaiTen(170);
+        rcptDrawer.putKyuufuHokenSeikyuuten(661);
+        rcptDrawer.putKyuufuKouhi1Seikyuuten(541);
+        rcptDrawer.putKyuufuKouhi2Seikyuuten(432);
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }

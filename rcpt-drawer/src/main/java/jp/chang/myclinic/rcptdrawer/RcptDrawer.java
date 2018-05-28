@@ -1957,8 +1957,65 @@ public class RcptDrawer {
         compiler.frameRight(cc[3]);
         {
             Box[] rr = cc[1].splitToEvenRows(3);
+            compiler.frameBottom(rr[0]);
+            compiler.frameBottom(rr[1]);
+            compiler.textInVertJustified("保健", rr[0].inset(0, 1.5), HAlign.Center);
+            compiler.textInVertJustified("公費①", rr[1], HAlign.Center);
+            compiler.textInVertJustified("公費②", rr[2], HAlign.Center);
+        }
+        setupRcptBodyRow3_c1(cc[2]);
+    }
 
+    private Box kyuufuHokenSeikyuuten;
+    private Box kyuufuKouhi1Seikyuuten;
+    private Box kyuufuKouhi2Seikyuuten;
+
+    private void setupRcptBodyRow3_c1(Box r){
+        Box[] rr = r.splitToEvenRows(3);
+        compiler.frameBottom(rr[0]);
+        compiler.frameBottom(rr[1]);
+        {
+            Box p, q;
+            {
+                Box[] tmp = rr[0].splitToRows(4);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            p = p.inset(9, 0, 4, 0);
+            compiler.textInJustified("請求点", p, VAlign.Center);
+            this.kyuufuHokenSeikyuuten = q.inset(4, 1);
+            {
+                Box[] tmp = rr[1].splitToRows(4);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            p = p.inset(9, 0, 4, 0);
+            compiler.textIn("点", p, HAlign.Right, VAlign.Center);
+            this.kyuufuKouhi1Seikyuuten = q.inset(4, 1);
+            {
+                Box[] tmp = rr[2].splitToRows(4);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            p = p.inset(9, 0, 4, 0);
+            compiler.textIn("点", p, HAlign.Right, VAlign.Center);
+            this.kyuufuKouhi2Seikyuuten = q.inset(4, 1);
         }
     }
 
+    public void putKyuufuHokenSeikyuuten(int n){
+        compiler.setFont("Gothic3");
+        compiler.textIn("" + n, kyuufuHokenSeikyuuten, HAlign.Right, VAlign.Top);
+    }
+
+    public void putKyuufuKouhi1Seikyuuten(int n){
+        compiler.setFont("Gothic3");
+        compiler.textIn("" + n, kyuufuKouhi1Seikyuuten, HAlign.Right, VAlign.Top);
+    }
+
+    public void putKyuufuKouhi2Seikyuuten(int n){
+        compiler.setFont("Gothic3");
+        compiler.textIn("" + n, kyuufuKouhi2Seikyuuten, HAlign.Right, VAlign.Top);
+    }
 }
+
