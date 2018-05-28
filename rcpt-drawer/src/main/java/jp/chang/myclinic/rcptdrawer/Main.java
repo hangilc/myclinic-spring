@@ -9,12 +9,16 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class Main extends Application {
 
@@ -58,11 +62,15 @@ public class Main extends Application {
         return menu;
     }
 
+    private static Pattern sep = Pattern.compile("\\s+");
+
     private void doOpenFile() {
         FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showOpenDialog(stage);
         if (file != null) {
             try {
+                List<List<List<Op>>> rcptPages = new ArrayList<>();
+                RcptDrawer rcptDrawer = null;
                 try (BufferedReader in = new BufferedReader(
                         new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))){
                     while( true ){
@@ -70,9 +78,22 @@ public class Main extends Application {
                         if( line == null ){
                             break;
                         }
-                        System.out.println(line);
+                        String[] toks = sep.split(line, 2);
+                        if( "rcpt_begin".equals(toks[0]) ){
+                            if( rcptDrawer != null ){
+                                System.err.println("Internal error.");
+                                System.exit(1);
+                            }
+                            rcptDrawer = new RcptDrawer();
+                        } else if( "rcpt_end".equals(toks[0]) ){
+                            rcptPages.add(rcptDrawer.getPages());
+                            rcptDrawer = null;
+                        } else {
+
+                        }
                     }
                 }
+                System.out.println(rcptPages.size());
             } catch (IOException ex) {
                 logger.error("Failed to open file.", ex);
                 GuiUtil.alertError("ファイルを開けませんでした。");
