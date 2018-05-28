@@ -148,6 +148,9 @@ class MainRoot extends VBox {
         rcptDrawer.putKyuufuHokenSeikyuuten(661);
         rcptDrawer.putKyuufuKouhi1Seikyuuten(541);
         rcptDrawer.putKyuufuKouhi2Seikyuuten(432);
+        rcptDrawer.putIchibufutankinHoken(380);
+        rcptDrawer.putIchibufutankinKouhi1(270);
+        rcptDrawer.putIchibufutankinKouhi2(160);
         List<List<Op>> pages = rcptDrawer.getPages();
         drawerCanvas.setOps(pages.get(0));
     }

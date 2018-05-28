@@ -153,6 +153,12 @@ public class RcptDrawer {
     private Box sonotaShohousenTen;
     private Box sonotaSonotaTen;
     private Box sonotaYakuzaiTen;
+    private Box kyuufuHokenSeikyuuten;
+    private Box kyuufuKouhi1Seikyuuten;
+    private Box kyuufuKouhi2Seikyuuten;
+    private Box ichibufutankinHoken;
+    private Box ichibufutankinKouhi1;
+    private Box ichibufutankinKouhi2;
 
     public RcptDrawer() {
         setupFonts();
@@ -214,6 +220,7 @@ public class RcptDrawer {
         compiler.createFont("Mincho2.2", "MS Mincho", 2.2);
         compiler.createFont("Mincho2", "MS Mincho", 2);
         compiler.createFont("Mincho1.8", "MS Mincho", 1.8);
+        compiler.createFont("Mincho1.6", "MS Mincho", 1.6);
         compiler.createFont("Mincho1.5", "MS Mincho", 1.5);
         compiler.createFont("Mincho1.1", "MS Mincho", 1.1);
     }
@@ -1967,11 +1974,8 @@ public class RcptDrawer {
         setupRcptBodyRow3_c1(cc[2]);
         setupRcptBodyRow3_c2(cc[3]);
         setupRcptBodyRow3_c3(cc[4]);
+        setupRcptBodyRow3_c4(c2);
     }
-
-    private Box kyuufuHokenSeikyuuten;
-    private Box kyuufuKouhi1Seikyuuten;
-    private Box kyuufuKouhi2Seikyuuten;
 
     private void setupRcptBodyRow3_c1(Box r) {
         Box[] rr = r.splitToEvenRows(3);
@@ -2073,10 +2077,6 @@ public class RcptDrawer {
         }
     }
 
-    private Box ichibufutankinHoken;
-    private Box ichibufutankinKouhi1;
-    private Box ichibufutankinKouhi2;
-
     private void setupRcptBodyRow3_c3(Box r) {
         Box[] rr = r.splitToEvenRows(3);
         compiler.frameBottom(rr[0]);
@@ -2098,12 +2098,12 @@ public class RcptDrawer {
                         a = tmp[0];
                         b = tmp[1];
                     }
-                    this.ichibufutankinHoken = a;
+                    this.ichibufutankinHoken = a.inset(4, 1);
                     String fontSave = compiler.getCurrentFont();
                     compiler.setFont("Mincho1.1");
                     {
                         Box[] ss;
-                        double x[] = { 1, 4, 8 };
+                        double x[] = {1, 4, 8};
 
                         ss = b.splitToColumns(x);
                         compiler.textIn("減額", ss[1], HAlign.Left, VAlign.Bottom);
@@ -2112,15 +2112,93 @@ public class RcptDrawer {
                     compiler.setFont(fontSave);
                 }
             }
-            rr[1].VDivide(4, p, q);
+            {
+                Box[] tmp = rr[1].splitToRows(4);
+                p = tmp[0];
+                q = tmp[1];
+            }
             p = p.inset(1, 0);
-            DrawString("円", p, HorizAlignRight, VertAlignCenter);
-            MarkRect("ichibufutankin.kouhi1", q);
-            rr[2].VDivide(4, p, q);
+            compiler.textIn("円", p, HAlign.Right, VAlign.Center);
+            this.ichibufutankinKouhi1 = q.inset(4, 1);
+            {
+                Box[] tmp = rr[2].splitToRows(4);
+                p = tmp[0];
+                q = tmp[1];
+            }
             p = p.inset(1, 0);
-            DrawString("円", p, HorizAlignRight, VertAlignCenter);
-            MarkRect("ichibufutankin.kouhi2", q);
+            compiler.textIn("円", p, HAlign.Right, VAlign.Center);
+            this.ichibufutankinKouhi2 = q.inset(4, 1);
         }
+    }
+
+    public void putIchibufutankinHoken(int n) {
+        compiler.setFont("Gothic3");
+        compiler.textIn("" + n, ichibufutankinHoken, HAlign.Right, VAlign.Top);
+    }
+
+    public void putIchibufutankinKouhi1(int n) {
+        compiler.setFont("Gothic3");
+        compiler.textIn("" + n, ichibufutankinKouhi1, HAlign.Right, VAlign.Top);
+    }
+
+    public void putIchibufutankinKouhi2(int n) {
+        compiler.setFont("Gothic3");
+        compiler.textIn("" + n, ichibufutankinKouhi2, HAlign.Right, VAlign.Top);
+    }
+
+    private void setupRcptBodyRow3_c4(Box r) {
+        Box[] rr;
+
+        rr = r.splitToEvenRows(3);
+        compiler.frameTop(rr[2]);
+        double x[] = {30.5, 49};
+        Box[] cc;
+
+        cc = rr[2].splitToColumns(x);
+        compiler.frameRight(cc[0]);
+        compiler.frameRight(cc[1]);
+        {
+            Box p, q;
+            {
+                Box[] tmp = cc[0].splitToRows(4);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            p = p.inset(1, 0);
+            compiler.textIn("※", p, HAlign.Left, VAlign.Center);
+            compiler.textIn("円", p, HAlign.Right, VAlign.Center);
+            p = p.inset(3.5, 0, 7, 0);
+            compiler.textInJustified("高額療養費", p, VAlign.Center);
+        }
+        String font = compiler.getCurrentFont();
+        compiler.setFont("Mincho1.6");
+        {
+            Box p, q;
+            {
+                Box[] tmp = cc[1].splitToRows(3);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            p = p.inset(0.5, 0);
+            compiler.textIn("※", p, HAlign.Left, VAlign.Center);
+            compiler.textIn("点", p, HAlign.Right, VAlign.Center);
+            p = p.inset(2.5, 0, 3, 0);
+            compiler.textInJustified("公費負担点数", p, VAlign.Center);
+        }
+        {
+            Box p, q;
+            {
+                Box[] tmp = cc[2].splitToRows(3);
+                p = tmp[0];
+                q = tmp[1];
+            }
+            p = p.inset(0.5, 0);
+            compiler.textIn("※", p, HAlign.Left, VAlign.Center);
+            compiler.textIn("点", p, HAlign.Right, VAlign.Center);
+            p = p.inset(2.5, 0, 3, 0);
+            compiler.textInJustified("公費負担点数", p, VAlign.Center);
+        }
+        compiler.setFont(font);
     }
 }
 
