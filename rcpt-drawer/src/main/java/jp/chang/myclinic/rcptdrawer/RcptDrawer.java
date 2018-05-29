@@ -196,6 +196,7 @@ public class RcptDrawer {
 
     public void clear(){
         compiler.clear();
+        pages = new ArrayList<>();
     }
 
     public void putPatientId(int patientId) {
