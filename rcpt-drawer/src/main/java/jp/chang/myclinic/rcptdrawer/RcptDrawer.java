@@ -159,6 +159,9 @@ public class RcptDrawer {
     private Box ichibufutankinHoken;
     private Box ichibufutankinKouhi1;
     private Box ichibufutankinKouhi2;
+    private List<TekiyouLine> extraShoubyoumeiList = new ArrayList<>();
+    private List<TekiyouLine> tekiyouLines = new ArrayList<>();
+    private List<TekiyouLine> shoujoushoukiList = new ArrayList<>();
 
     public RcptDrawer() {
         setupFonts();
@@ -179,6 +182,7 @@ public class RcptDrawer {
         setupIryouKikanLabel();
         setupShozaichiMeishou();
         setupRcptBody();
+        compiler.saveToBackground();
     }
 
     List<List<Op>> getPages() {
@@ -188,6 +192,10 @@ public class RcptDrawer {
 
     public int getTekiyouLeftColumnWidth() {
         return tekiyouLeftColumnWidth;
+    }
+
+    public void clear(){
+        compiler.clear();
     }
 
     public void putPatientId(int patientId) {

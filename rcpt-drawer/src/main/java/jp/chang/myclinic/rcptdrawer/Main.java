@@ -82,24 +82,19 @@ public class Main extends Application {
 
     private void loadFile(File file){
         List<List<List<Op>>> rcptPages = new ArrayList<>();
+        RcptDrawer rcptDrawer = new RcptDrawer();
         class Local {
-            RcptDrawer rcptDrawer = null;
             RcptDataDispatcher dispatcher = null;
             DispatchHook hook = null;
         }
         Local local = new Local();
         openFile(file, (cmd, arg) -> {
             if( "rcpt_begin".equals(cmd) ){
-                if( local.rcptDrawer != null ){
-                    System.err.println("Internal error.");
-                    System.exit(1);
-                }
-                local.rcptDrawer = new RcptDrawer();
                 local.hook = new StoringDispatchHook();
-                local.dispatcher = new RcptDataDispatcher(local.rcptDrawer, local.hook);
+                local.dispatcher = new RcptDataDispatcher(rcptDrawer, local.hook);
             } else if( "rcpt_end".equals(cmd) ){
-                rcptPages.add(local.rcptDrawer.getPages());
-                local.rcptDrawer = null;
+                rcptPages.add(rcptDrawer.getPages());
+                rcptDrawer.clear();
                 local.dispatcher = null;
             } else {
                 local.dispatcher.dispatch(cmd, arg);

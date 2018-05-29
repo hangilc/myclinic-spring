@@ -24,6 +24,7 @@ public class DrawerCompiler {
         Left, Right
     }
 
+    private List<Op> background = null;
     private List<Op> ops = new ArrayList<>();
     private Map<String, Double> fontMap = new HashMap<>();
     private String currentFont;
@@ -36,7 +37,26 @@ public class DrawerCompiler {
     }
 
     public List<Op> getOps() {
-        return ops;
+        if( background == null ){
+            return ops;
+        } else {
+            List<Op> result = new ArrayList<>();
+            result.addAll(background);
+            result.addAll(ops);
+            return result;
+        }
+    }
+
+    public void saveToBackground(){
+        if( background != null ){
+            throw new RuntimeException("Background not empty");
+        }
+        background = ops;
+        ops = new ArrayList<>();
+    }
+
+    public void clear(){
+        ops.clear();
     }
 
     public void moveTo(double x, double y) {
