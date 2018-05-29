@@ -53,6 +53,51 @@ class RcptDataDispatcher {
         map.put("fukenbangou", (drawer, arg, hook) -> {
             drawer.putFukenBangou(toInt(arg));
         });
+        map.put("shinryou.nen", (drawer, arg, hook) -> {
+            drawer.putShinryouNen(toInt(arg));
+        });
+        map.put("shinryou.tsuki", (drawer, arg, hook) -> {
+            drawer.putShinryouMonth(toInt(arg));
+        });
+        map.put("hokenshabangou", (drawer, arg, hook) -> {
+            drawer.putHokenshaBangou(toInt(arg));
+        });
+        map.put("hihokenshashou", (drawer, arg, hook) -> {
+            drawer.putHihokenshashou(arg);
+        });
+        map.put("kouhifutanshabangou1", (drawer, arg, hook) -> {
+            drawer.putKouhiFutanshaBangou1(toInt(arg));
+        });
+        map.put("kouhijukyuushabangou1", (drawer, arg, hook) -> {
+            drawer.putKouhiJukyuushaBangou1(toInt(arg));
+        });
+        map.put("kouhifutanshabangou2", (drawer, arg, hook) -> {
+            drawer.putKouhiFutanshaBangou2(toInt(arg));
+        });
+        map.put("kouhijukyuushabangou2", (drawer, arg, hook) -> {
+            drawer.putKouhiJukyuushaBangou2(toInt(arg));
+        });
+        map.put("shozaichimeishou.line1", (drawer, arg, hook) -> {
+            drawer.putShozaichiMeishouLine1(arg);
+        });
+        map.put("shozaichimeishou.line2", (drawer, arg, hook) -> {
+            drawer.putShozaichiMeishouLine2(arg);
+        });
+        map.put("shozaichimeishou.line3", (drawer, arg, hook) -> {
+            drawer.putShozaichiMeishouLine3(arg);
+        });
+        map.put("shimei", (drawer, arg, hook) -> {
+            drawer.putShimei(arg);
+        });
+        map.put("seibetsu", (drawer, arg, hook) -> {
+            if( "otoko".equals(arg) ){
+                drawer.markSeibetsuOtoko();
+            } else if( "onna".equals(arg) ){
+                drawer.markSeibetsuOnna();;
+            } else {
+                System.err.println("Unknown seibtsu: " + arg);
+            }
+        });
     }
 
 }

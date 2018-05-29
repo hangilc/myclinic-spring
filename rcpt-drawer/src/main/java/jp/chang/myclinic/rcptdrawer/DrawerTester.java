@@ -9,7 +9,8 @@ class DrawerTester {
     List<List<Op>> testDrawer() {
         RcptDrawer rcptDrawer = new RcptDrawer();
         rcptDrawer.putPatientId(2360);
-        rcptDrawer.putShinryouMonth(30, 5);
+        rcptDrawer.putShinryouNen(30);
+        rcptDrawer.putShinryouMonth(5);
         rcptDrawer.putFukenBangou(13);
         rcptDrawer.putKikanCode("12.3456.7");
         //rcptDrawer.markHokenshubetsuShakoku();
@@ -24,7 +25,7 @@ class DrawerTester {
         //rcptDrawer.markHokenfutanKazoku();
         //rcptDrawer.markHokenfutanKourei9();
         rcptDrawer.markHokenfutanKourei7();
-        rcptDrawer.setHokenshaBangou((123456));
+        rcptDrawer.putHokenshaBangou((123456));
         //rcptDrawer.markKyuufuwari10();
         //rcptDrawer.markKyuufuwari9();
         //rcptDrawer.markKyuufuwari8();

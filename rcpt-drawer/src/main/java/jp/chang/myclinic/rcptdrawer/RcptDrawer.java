@@ -196,9 +196,13 @@ public class RcptDrawer {
         compiler.textIn(s, patientIdBox, HAlign.Left, VAlign.Bottom);
     }
 
-    public void putShinryouMonth(int nen, int month) {
+    public void putShinryouNen(int nen){
         compiler.setFont("Gothic2.8");
         compiler.textIn("" + nen, shinryouNenBox, HAlign.Right, VAlign.Bottom);
+    }
+
+    public void putShinryouMonth(int month) {
+        compiler.setFont("Gothic2.8");
         compiler.textIn("" + month, shinryouMonthBox, HAlign.Right, VAlign.Bottom);
     }
 
@@ -455,7 +459,7 @@ public class RcptDrawer {
         this.hokenshabangouBoxes = cols;
     }
 
-    public void setHokenshaBangou(int n) {
+    public void putHokenshaBangou(int n) {
         compiler.setFont("Gothic5");
         printDigits(n, hokenshabangouBoxes);
     }
