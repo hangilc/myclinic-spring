@@ -877,12 +877,36 @@ public class RcptDrawer {
         for (int i = 0; i < 4; i++) {
             Box r = rows[i];
             Box[] rr = r.splitToColumns(4);
-            if (i < 3) {
-                String label = String.format("(%d)", i + 1);
-                compiler.textIn(label, rr[0], HAlign.Left, VAlign.Bottom);
-            }
+//            if (i < 3) {
+//                String label = String.format("(%d)", i + 1);
+//                compiler.textIn(label, rr[0], HAlign.Left, VAlign.Bottom);
+//            }
             shoubyoumeiNumbers[i] = rr[0];
             shoubyoumeiTexts[i] = rr[1];
+        }
+        for(int i=1;i<=3;i++){
+            renderShoubyoumeiIndex(i);
+        }
+    }
+
+    private void renderShoubyoumeiIndex(int index){
+        if( index >= 1 && index <= 4 ){
+            String label = String.format("(%d)", index);
+            compiler.setFont("Mincho2.3");
+            compiler.textIn(label, shoubyoumeiNumbers[index-1], HAlign.Left, VAlign.Bottom);
+        }
+    }
+
+    // index should be: 1<=index && index <= 4
+    public void putShoubyoumei(int index, String s){
+        if( index >= 1 && index <= 4 ){
+            if( index == 4 ) {
+                renderShoubyoumeiIndex(index);
+            }
+            compiler.setFont("Gothic3");
+            compiler.textIn(s, shoubyoumeiTexts[index-1], HAlign.Left, VAlign.Center);
+        } else {
+            System.err.println("Invalid arg for putShoubyoumei: " + index);
         }
     }
 

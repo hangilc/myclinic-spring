@@ -121,7 +121,16 @@ class RcptDataDispatcher {
            drawer.putSeinengappiDay(toInt(arg));
         });
         map.put("shoubyoumei.1", (drawer, arg, hook) -> {
-           drawer.putShoubyoumei1(arg);
+           drawer.putShoubyoumei(1, arg);
+        });
+        map.put("shoubyoumei.2", (drawer, arg, hook) -> {
+           drawer.putShoubyoumei(2, arg);
+        });
+        map.put("shoubyoumei.3", (drawer, arg, hook) -> {
+           drawer.putShoubyoumei(3, arg);
+        });
+        map.put("shoubyoumei.4", (drawer, arg, hook) -> {
+           drawer.putShoubyoumei(4, arg);
         });
     }
 
