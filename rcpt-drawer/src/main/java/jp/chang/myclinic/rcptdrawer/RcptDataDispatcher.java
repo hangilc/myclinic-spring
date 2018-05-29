@@ -98,6 +98,31 @@ class RcptDataDispatcher {
                 System.err.println("Unknown seibtsu: " + arg);
             }
         });
+        map.put("seinengappi.gengou", (drawer, arg, hook) -> {
+            if( arg != null ){
+                switch(arg){
+                    case "meiji": drawer.markSeinengappiMeiji(); break;
+                    case "taishou": drawer.markSeinengappiTaishou(); break;
+                    case "shouwa": drawer.markSeinengappiShouwa(); break;
+                    case "heisei": drawer.markSeinengappiHeisei(); break;
+                    default: System.err.println("Unknown seinenngappi.gengou: " + arg); break;
+                }
+            } else {
+                System.err.println("seinengappi.gengou null");
+            }
+        });
+        map.put("seinengappi.nen", (drawer, arg, hook) -> {
+           drawer.putSeinengappiNen(toInt(arg));
+        });
+        map.put("seinengappi.tsuki", (drawer, arg, hook) -> {
+           drawer.putSeinengappiMonth(toInt(arg));
+        });
+        map.put("seinengappi.hi", (drawer, arg, hook) -> {
+           drawer.putSeinengappiDay(toInt(arg));
+        });
+        map.put("shoubyoumei.1", (drawer, arg, hook) -> {
+           drawer.putShoubyoumei1(arg);
+        });
     }
 
 }
