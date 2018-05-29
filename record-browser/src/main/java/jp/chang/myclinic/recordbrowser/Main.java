@@ -31,6 +31,7 @@ public class Main extends Application {
             serverUrl = args[0] + "/";
         }
         Service.setServerUrl(serverUrl);
+        Service.setLogBody();
         Application.launch(Main.class, args);
     }
 
