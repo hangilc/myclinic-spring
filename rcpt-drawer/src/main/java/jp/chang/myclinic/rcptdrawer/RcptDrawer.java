@@ -164,6 +164,7 @@ public class RcptDrawer {
     private List<TekiyouLine> tekiyouLines = new ArrayList<>();
     private List<TekiyouLine> shoujoushoukiList = new ArrayList<>();
     private List<Op> background;
+    private List<Runnable> identityProcs = new ArrayList<>();
 
     private static class DataValues {
         Integer patientId;
@@ -206,6 +207,7 @@ public class RcptDrawer {
 
     private void flushOps(){
         List<Op> page = new ArrayList<>();
+        identityProcs.forEach(Runnable::run);
         page.addAll(background);
         page.addAll(compiler.getOps());
         pages.add(page);
@@ -287,24 +289,31 @@ public class RcptDrawer {
     public void clear(){
         compiler.clearOps();
         pages = new ArrayList<>();
+        identityProcs = new ArrayList<>();
         dataValues = new DataValues();
     }
 
     public void putPatientId(int patientId) {
         String s = String.format("%d", patientId);
         dataValues.patientId = patientId;
-        compiler.setFont("Gothic2.5");
-        compiler.textIn(s, patientIdBox, HAlign.Left, VAlign.Bottom);
+        identityProcs.add(() -> {
+            compiler.setFont("Gothic2.5");
+            compiler.textIn(s, patientIdBox, HAlign.Left, VAlign.Bottom);
+        });
     }
 
     public void putShinryouNen(int nen){
-        compiler.setFont("Gothic2.8");
-        compiler.textIn("" + nen, shinryouNenBox, HAlign.Right, VAlign.Bottom);
+        identityProcs.add(() -> {
+            compiler.setFont("Gothic2.8");
+            compiler.textIn("" + nen, shinryouNenBox, HAlign.Right, VAlign.Bottom);
+        });
     }
 
     public void putShinryouMonth(int month) {
-        compiler.setFont("Gothic2.8");
-        compiler.textIn("" + month, shinryouMonthBox, HAlign.Right, VAlign.Bottom);
+        identityProcs.add(() -> {
+            compiler.setFont("Gothic2.8");
+            compiler.textIn("" + month, shinryouMonthBox, HAlign.Right, VAlign.Bottom);
+        });
     }
 
     private void setupFonts() {
@@ -376,8 +385,10 @@ public class RcptDrawer {
     }
 
     public void putFukenBangou(int bangou) {
-        compiler.setFont("Gothic2.8");
-        compiler.textIn("" + bangou, fukenbangouBox, HAlign.Center, VAlign.Bottom);
+        identityProcs.add(() -> {
+            compiler.setFont("Gothic2.8");
+            compiler.textIn("" + bangou, fukenbangouBox, HAlign.Center, VAlign.Bottom);
+        });
     }
 
     private void setupKikanCode() {
@@ -390,9 +401,11 @@ public class RcptDrawer {
     }
 
     public void putKikanCode(String kikancode) {
-        compiler.setFont("Gothic4");
-        Box box = kikancodeBox.inset(10, 0, 6, 0);
-        compiler.textInJustified(kikancode, box, VAlign.Bottom);
+        identityProcs.add(() -> {
+            compiler.setFont("Gothic4");
+            Box box = kikancodeBox.inset(10, 0, 6, 0);
+            compiler.textInJustified(kikancode, box, VAlign.Bottom);
+        });
     }
 
     private void setupHokenShubetsu() {
@@ -829,8 +842,10 @@ public class RcptDrawer {
     }
 
     private void doPutShimei(String s){
-        compiler.setFont("Gothic4");
-        compiler.textIn(s, shimei.displaceLeftEdge(3), HAlign.Left, VAlign.Center);
+        identityProcs.add(() -> {
+            compiler.setFont("Gothic4");
+            compiler.textIn(s, shimei.displaceLeftEdge(3), HAlign.Left, VAlign.Center);
+        });
     }
 
     public void putShimei(String s) {
@@ -839,45 +854,63 @@ public class RcptDrawer {
     }
 
     public void markSeibetsuOtoko() {
-        markCircle(seibetsuOtoko);
+        identityProcs.add(() -> {
+            markCircle(seibetsuOtoko);
+        });
     }
 
     public void markSeibetsuOnna() {
-        markCircle(seibetsuOnna);
+        identityProcs.add(() -> {
+            markCircle(seibetsuOnna);
+        });
     }
 
     public void markSeinengappiMeiji() {
-        markCircle(seinengappiMeiji);
+        identityProcs.add(() -> {
+            markCircle(seinengappiMeiji);
+        });
     }
 
     public void markSeinengappiTaishou() {
-        markCircle(seinengappiTaishou);
+        identityProcs.add(() -> {
+            markCircle(seinengappiTaishou);
+        });
     }
 
     public void markSeinengappiShouwa() {
-        markCircle(seinengappiShouwa);
+        identityProcs.add(() -> {
+            markCircle(seinengappiShouwa);
+        });
     }
 
     public void markSeinengappiHeisei() {
-        markCircle(seinengappiHeisei);
+        identityProcs.add(() -> {
+            markCircle(seinengappiHeisei);
+        });
     }
 
     public void putSeinengappiNen(int nen) {
-        compiler.setFont("Gothic2");
-        compiler.textIn("" + nen, seinengappiNen.displaceRightEdge(-1),
-                HAlign.Right, VAlign.Bottom);
+        identityProcs.add(() -> {
+            compiler.setFont("Gothic2");
+            compiler.textIn("" + nen, seinengappiNen.displaceRightEdge(-1),
+                    HAlign.Right, VAlign.Bottom);
+        });
     }
 
     public void putSeinengappiMonth(int month) {
-        compiler.setFont("Gothic2");
-        compiler.textIn("" + month, seinengappiMonth.displaceRightEdge(-1),
-                HAlign.Right, VAlign.Bottom);
+        identityProcs.add(() -> {
+            compiler.setFont("Gothic2");
+            compiler.textIn("" + month, seinengappiMonth.displaceRightEdge(-1),
+                    HAlign.Right, VAlign.Bottom);
+        });
     }
 
     public void putSeinengappiDay(int day) {
-        compiler.setFont("Gothic2");
-        compiler.textIn("" + day, seinengappiDay.displaceRightEdge(-1),
-                HAlign.Right, VAlign.Bottom);
+        identityProcs.add(() -> {
+            compiler.setFont("Gothic2");
+            compiler.textIn("" + day, seinengappiDay.displaceRightEdge(-1),
+                    HAlign.Right, VAlign.Bottom);
+        });
     }
 
     public void markShokumujouShokumujou() {
@@ -894,7 +927,6 @@ public class RcptDrawer {
 
     public void putTokkijikou(String text) {
         compiler.setFont("Mincho2.5");
-        String[] lines = text.split("\\r\\n|\\n");
         compiler.paragraph(text, tokkijikou.inset(1, 1), HAlign.Left, VAlign.Top, 0);
     }
 
@@ -938,18 +970,24 @@ public class RcptDrawer {
     }
 
     public void putShozaichiMeishouLine1(String s) {
-        compiler.setFont("Mincho3.5");
-        compiler.textIn(s, shozaichimeishouLine1, HAlign.Left, VAlign.Top);
+        identityProcs.add(() -> {
+            compiler.setFont("Mincho3.5");
+            compiler.textIn(s, shozaichimeishouLine1, HAlign.Left, VAlign.Top);
+        });
     }
 
     public void putShozaichiMeishouLine2(String s) {
-        compiler.setFont("Mincho3.5");
-        compiler.textIn(s, shozaichimeishouLine2.displaceLeftEdge(28), HAlign.Left, VAlign.Top);
+        identityProcs.add(() -> {
+            compiler.setFont("Mincho3.5");
+            compiler.textIn(s, shozaichimeishouLine2.displaceLeftEdge(28), HAlign.Left, VAlign.Top);
+        });
     }
 
     public void putShozaichiMeishouLine3(String s) {
-        compiler.setFont("Mincho4.5");
-        compiler.textIn(s, shozaichimeishouLine3.displaceLeftEdge(7), HAlign.Left, VAlign.Top);
+        identityProcs.add(() -> {
+            compiler.setFont("Mincho4.5");
+            compiler.textIn(s, shozaichimeishouLine3.displaceLeftEdge(7), HAlign.Left, VAlign.Top);
+        });
     }
 
     private void setupRcptBody() {
@@ -984,10 +1022,6 @@ public class RcptDrawer {
         for (int i = 0; i < 4; i++) {
             Box r = rows[i];
             Box[] rr = r.splitToColumns(4);
-//            if (i < 3) {
-//                String label = String.format("(%d)", i + 1);
-//                compiler.textIn(label, rr[0], HAlign.Left, VAlign.Bottom);
-//            }
             shoubyoumeiNumbers[i] = rr[0];
             shoubyoumeiTexts[i] = rr[1];
         }

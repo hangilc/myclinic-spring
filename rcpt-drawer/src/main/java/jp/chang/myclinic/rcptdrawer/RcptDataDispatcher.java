@@ -73,7 +73,7 @@ class RcptDataDispatcher {
         });
         map.put("shozaichimeishou.line1", RcptDrawer::putShozaichiMeishouLine1);
         map.put("shozaichimeishou.line2", RcptDrawer::putShozaichiMeishouLine2);
-        map.put("shozaichimeishou.line3", RcptDrawer::putShozaichiMeishouLine3);
+        map.put("shozaichimeishou.line4", RcptDrawer::putShozaichiMeishouLine3); // 4 -> 3 ; for historical reason
         map.put("shimei", RcptDrawer::putShimei);
         map.put("seibetsu", (drawer, arg) -> {
             if( "otoko".equals(arg) ){
