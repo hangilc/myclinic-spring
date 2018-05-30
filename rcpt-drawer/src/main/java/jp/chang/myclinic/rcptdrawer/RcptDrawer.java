@@ -233,8 +233,8 @@ public class RcptDrawer {
                 index = tekiyouLine.index;
             }
             String right = null;
-            if (tekiyouLine.tankaTimesTen != null && !tekiyouLine.tankaTimesTen.isEmpty()) {
-                right = tekiyouLine.tankaTimesTen;
+            if (tekiyouLine.tankaTimes != null && !tekiyouLine.tankaTimes.isEmpty()) {
+                right = tekiyouLine.tankaTimes;
             }
             List<String> bodyLines = compiler.breakLine(tekiyouLine.body, cc[1].getWidth());
             for (String body : bodyLines) {
@@ -243,7 +243,7 @@ public class RcptDrawer {
                     cc = splitTekiyou();
                 }
                 if (index != null) {
-                    compiler.textIn(index, cc[0], HAlign.Left, VAlign.Top);
+                    compiler.textIn(index, cc[0], HAlign.Center, VAlign.Top);
                     index = null;
                 }
                 if (right != null) {
@@ -253,8 +253,8 @@ public class RcptDrawer {
                 compiler.textIn(body, cc[1], tekiyouLine.halign, VAlign.Top);
                 cc[1] = cc[1].shrinkHeight(3, VertAnchor.Bottom);
             }
-            cc[0].setTop(cc[1].getTop());
-            cc[2].setTop(cc[1].getTop());
+            cc[0] = cc[0].setTop(cc[1].getTop());
+            cc[2] = cc[2].setTop(cc[1].getTop());
         }
         extraShoubyoumeiList = new ArrayList<>();
         tekiyouLines = new ArrayList<>();
@@ -266,7 +266,9 @@ public class RcptDrawer {
                 tekiyouLeftColumnWidth,
                 tekiyou.getWidth() - tekiyouRightColumnWidth
         );
+        cc[0] = cc[0].inset(0, 1);
         cc[1] = cc[1].inset(1, 1);
+        cc[2] = cc[2].inset(0, 1);
         return cc;
     }
 
@@ -2486,6 +2488,10 @@ public class RcptDrawer {
             compiler.textInJustified("公費負担点数", p, VAlign.Center);
         }
         compiler.setFont(font);
+    }
+
+    public void addTekiyou(String index, String body, String tankaTimes){
+        tekiyouLines.add(new TekiyouLine(index, body, tankaTimes));
     }
 }
 

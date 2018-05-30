@@ -6,17 +6,17 @@ class TekiyouLine {
 
     String index;
     String body;
-    String tankaTimesTen;
+    String tankaTimes;
     HAlign halign = HAlign.Left;
 
     TekiyouLine(String body){
         this("", body, "");
     }
 
-    TekiyouLine(String index, String body, String tankaTimesTen) {
+    TekiyouLine(String index, String body, String tankaTimes) {
         this.index = index;
         this.body = body;
-        this.tankaTimesTen = tankaTimesTen;
+        this.tankaTimes = tankaTimes;
     }
 
     TekiyouLine setHAlign(HAlign halign){

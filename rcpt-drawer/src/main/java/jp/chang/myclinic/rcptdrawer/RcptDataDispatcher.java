@@ -233,7 +233,7 @@ class RcptDataDispatcher {
                     drawer.markHokenfutanSansai();
                     break;
                 }
-                case "kazokku": {
+                case "kazoku": {
                     drawer.markHokenfutanKazoku();
                     break;
                 }
@@ -490,6 +490,22 @@ class RcptDataDispatcher {
         });
         map.put("sonota.yakuzai.ten", (drawer, arg) -> {
             drawer.putSonotaYakuzaiTen(toInt(arg));
+        });
+        map.put("kyuufu.hoken.seikyuuten", (drawer, arg) -> {
+            drawer.putKyuufuHokenSeikyuuten(toInt(arg));
+        });
+        map.put("tekiyou", (drawer, arg) -> {
+            String[] parts = arg.split(":");
+            assert parts.length == 4 || parts.length == 3;
+            String index = "";
+            if( !parts[0].isEmpty() ){
+                index = String.format("(%s)", parts[0]);
+            }
+            String tankaTimes = "";
+            if( parts.length == 4 && !parts[2].isEmpty() && !parts[3].isEmpty() ){
+                tankaTimes = String.format("%sx%s", parts[2], parts[3]);
+            }
+            drawer.addTekiyou(index, parts[1], tankaTimes);
         });
    }
 
