@@ -170,6 +170,8 @@ public class RcptDrawer {
     private List<TekiyouLine> shoujoushoukiList = new ArrayList<>();
     private List<Op> background;
     private List<Runnable> identityProcs = new ArrayList<>();
+    private String[] drugBegin;
+    private List<String> tekiyouDrugs = new ArrayList<>();
 
     private static class DataValues {
         Integer patientId;
@@ -2492,6 +2494,42 @@ public class RcptDrawer {
 
     public void addTekiyou(String index, String body, String tankaTimes){
         tekiyouLines.add(new TekiyouLine(index, body, tankaTimes));
+    }
+
+    public void setDrugBegin(String index, String tanka, String times){
+        if( drugBegin != null ){
+            throw new RuntimeException("drugBegin is not null");
+        }
+        drugBegin = new String[]{ index, tanka, times };
+    }
+
+    public void addDrug(String label, String amount){
+        tekiyouDrugs.add(String.format("%s %s", label, amount));
+    }
+
+    public void flushDrugBegin(){
+        String index = drugBegin[0];
+        String tanka = drugBegin[1];
+        String times = drugBegin[2];
+        for(String body: tekiyouDrugs){
+            String indexString = "";
+            String tankaTimes = "";
+            if( tanka != null ){
+                if( index != null && !index.isEmpty() ){
+                    indexString = String.format("(%s)", index);
+                }
+                tankaTimes = String.format("%sx%s", tanka, times);
+                index = null;
+                tanka = null;
+                times = null;
+            }
+            addTekiyou(indexString, body, tankaTimes);
+        }
+//        addTekiyou("", "┌バイアスピリン", "");
+//        addTekiyou("", "│プラバスタチン", "");
+//        addTekiyou("", "└フロモックス", "");
+        drugBegin = null;
+        tekiyouDrugs = new ArrayList<>();
     }
 }
 

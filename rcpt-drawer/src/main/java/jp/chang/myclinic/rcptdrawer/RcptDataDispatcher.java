@@ -16,7 +16,6 @@ class RcptDataDispatcher {
     }
 
     private RcptDrawer rcptDrawer;
-    private DispatchHook hook;
 
     RcptDataDispatcher(RcptDrawer rcptDrawer){
         this.rcptDrawer = rcptDrawer;
@@ -506,6 +505,17 @@ class RcptDataDispatcher {
                 tankaTimes = String.format("%sx%s", parts[2], parts[3]);
             }
             drawer.addTekiyou(index, parts[1], tankaTimes);
+        });
+        map.put("tekiyou_begin_drugs", (drawer, arg) -> {
+            String[] parts = arg.split(":");
+            drawer.setDrugBegin(parts[0], parts[1], parts[2]);
+        });
+        map.put("tekiyou_drug", (drawer, arg) -> {
+            String[] parts = arg.split(":");
+            drawer.addDrug(parts[0], parts[1]);
+        });
+        map.put("tekiyou_end_drugs", (drawer, arg) -> {
+            drawer.flushDrugBegin();
         });
    }
 
