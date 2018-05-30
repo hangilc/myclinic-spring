@@ -425,6 +425,72 @@ class RcptDataDispatcher {
         map.put("touyaku.chouki.ten", (drawer, arg) -> {
             drawer.putTouyakuChoukiTen(toInt(arg));
         });
+        map.put("chuusha.hika.kai", (drawer, arg) -> {
+            drawer.putChuushaHikaTimes(toInt(arg));
+        });
+        map.put("chuusha.hika.ten", (drawer, arg) -> {
+            drawer.putChuushaHikaTen(toInt(arg));
+        });
+        map.put("chuusha.joumyaku.kai", (drawer, arg) -> {
+            drawer.putChuushaJoumyakuTimes(toInt(arg));
+        });
+        map.put("chuusha.joumyaku.ten", (drawer, arg) -> {
+            drawer.putChuushaJoumyakuTen(toInt(arg));
+        });
+        map.put("chuusha.sonota.kai", (drawer, arg) -> {
+            drawer.putChuushaSonotaTimes(toInt(arg));
+        });
+        map.put("chuusha.sonota.ten", (drawer, arg) -> {
+            drawer.putChuushaSonotaTen(toInt(arg));
+        });
+        map.put("shochi.kai", (drawer, arg) -> {
+            drawer.putShochiTimes(toInt(arg));
+        });
+        map.put("shochi.ten", (drawer, arg) -> {
+            drawer.putShochiTen(toInt(arg));
+        });
+        map.put("shochi.yakuzai.ten", (drawer, arg) -> {
+            drawer.putShochiYakuzaiTen(toInt(arg));
+        });
+        map.put("shujutsu.kai", (drawer, arg) -> {
+            drawer.putShujutsuTimes(toInt(arg));
+        });
+        map.put("shujutsu.ten", (drawer, arg) -> {
+            drawer.putShujutsuTen(toInt(arg));
+        });
+        map.put("shujutsu.yakuzai.ten", (drawer, arg) -> {
+            drawer.putShujutsuYakuzaiTen(toInt(arg));
+        });
+        map.put("kensa.kai", (drawer, arg) -> {
+            drawer.putKensaTimes(toInt(arg));
+        });
+        map.put("kensa.ten", (drawer, arg) -> {
+            drawer.putKensaTen(toInt(arg));
+        });
+        map.put("kensa.yakuzai.ten", (drawer, arg) -> {
+            drawer.putKensaYakuzaiTen(toInt(arg));
+        });
+        map.put("gazou.kai", (drawer, arg) -> {
+            drawer.putGazouTimes(toInt(arg));
+        });
+        map.put("gazou.ten", (drawer, arg) -> {
+            drawer.putGazouTen(toInt(arg));
+        });
+        map.put("gazou.yakuzai.ten", (drawer, arg) -> {
+            drawer.putGazouYakuzaiTen(toInt(arg));
+        });
+        map.put("sonota.shohousen.kai", (drawer, arg) -> {
+            drawer.putSonotaShohousenTimes(toInt(arg));
+        });
+        map.put("sonota.shohousen.ten", (drawer, arg) -> {
+            drawer.putSonotaShohousenTen(toInt(arg));
+        });
+        map.put("sonota.sonota.ten", (drawer, arg) -> {
+            drawer.putSonotaSonotaTen(toInt(arg));
+        });
+        map.put("sonota.yakuzai.ten", (drawer, arg) -> {
+            drawer.putSonotaYakuzaiTen(toInt(arg));
+        });
    }
 
 }
