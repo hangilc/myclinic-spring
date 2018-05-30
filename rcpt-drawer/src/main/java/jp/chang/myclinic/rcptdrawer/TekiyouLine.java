@@ -2,12 +2,14 @@ package jp.chang.myclinic.rcptdrawer;
 
 import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
 
+import java.util.EnumSet;
+
 class TekiyouLine {
 
     String index;
     String body;
     String tankaTimes;
-    HAlign halign = HAlign.Left;
+    EnumSet<TekiyouLineOpt> opts = EnumSet.noneOf(TekiyouLineOpt.class);
 
     TekiyouLine(String body){
         this("", body, "");
@@ -19,8 +21,8 @@ class TekiyouLine {
         this.tankaTimes = tankaTimes;
     }
 
-    TekiyouLine setHAlign(HAlign halign){
-        this.halign = halign;
+    TekiyouLine setAlignRight(){
+        opts.add(TekiyouLineOpt.AlignRight);
         return this;
     }
 }

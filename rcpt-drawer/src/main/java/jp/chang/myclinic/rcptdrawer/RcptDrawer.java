@@ -252,7 +252,11 @@ public class RcptDrawer {
                     compiler.textIn(right, cc[2], HAlign.Right, VAlign.Top);
                     right = null;
                 }
-                compiler.textIn(body, cc[1], tekiyouLine.halign, VAlign.Top);
+                HAlign halign = HAlign.Left;
+                if( tekiyouLine.opts.contains(TekiyouLineOpt.AlignRight) ){
+                    halign = HAlign.Right;
+                }
+                compiler.textIn(body, cc[1], halign, VAlign.Top);
                 cc[1] = cc[1].shrinkHeight(3, VertAnchor.Bottom);
             }
             cc[0] = cc[0].setTop(cc[1].getTop());
@@ -1068,7 +1072,7 @@ public class RcptDrawer {
         String text = String.format("(%d) %s", index, name);
         extraShoubyoumeiList.add(new TekiyouLine(text));
         String date = String.format("診療開始日　平成%d年%d月%d日", nen, month, day);
-        extraShoubyoumeiList.add(new TekiyouLine(date).setHAlign(HAlign.Right));
+        extraShoubyoumeiList.add(new TekiyouLine(date).setAlignRight());
     }
 
     private void setupRcptBodyRow1_ShinryouKaishi(Box box) {
