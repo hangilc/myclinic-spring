@@ -24,7 +24,7 @@ public class RcptDrawer {
     private Box fukenbangouBox;
     private Box kikancodeBox;
     private Point hokenshubetsuShakoku;
-    private Point hokenshubetsuKouhi1;
+    private Point hokenshubetsuKouhi;
     private Point hokenshubetsuRoujin;
     private Point hokenshubetsuTaishoku;
     private Point hokentandokuTandoku;
@@ -446,7 +446,7 @@ public class RcptDrawer {
         compiler.setPen("regular");
         Box[] rows = box.splitToEvenRows(2);
         hokenShubetsu(rows[0], "１", "社・国", point -> this.hokenshubetsuShakoku = point);
-        hokenShubetsu(rows[1], "２", "公費", point -> this.hokenshubetsuKouhi1 = point);
+        hokenShubetsu(rows[1], "２", "公費", point -> this.hokenshubetsuKouhi = point);
     }
 
     private void markCircle(Point p) {
@@ -458,8 +458,8 @@ public class RcptDrawer {
         markCircle(hokenshubetsuShakoku);
     }
 
-    public void markHokenshubetsuKouhi1() {
-        markCircle(hokenshubetsuKouhi1);
+    public void markHokenshubetsuKouhi() {
+        markCircle(hokenshubetsuKouhi);
     }
 
     private void setupHokenShubetsu2_2(Box box) {
@@ -482,7 +482,7 @@ public class RcptDrawer {
         compiler.textIn(num, cols[0], HAlign.Center, VAlign.Center);
         compiler.setFont("Mincho2.6");
         compiler.textInJustified(label, cols[1], VAlign.Center);
-        cb.accept(box.getCenterPoint());
+        cb.accept(cols[0].getCenterPoint());
     }
 
     private void setupHokenShubetsu3(Box box) {
@@ -1425,7 +1425,7 @@ public class RcptDrawer {
         compiler.textIn("" + n, box, HAlign.Right, VAlign.Center);
     }
 
-    public void putShoshinKai(int n) {
+    public void putShoshinTimes(int n) {
         putTankaKaiTen(shoshinKai, n);
     }
 

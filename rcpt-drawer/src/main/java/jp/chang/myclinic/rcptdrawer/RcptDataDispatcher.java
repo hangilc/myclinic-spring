@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 class RcptDataDispatcher {
 
@@ -173,6 +174,186 @@ class RcptDataDispatcher {
         map.put("tenki.shibou", (drawer, arg) -> {
             String[] parts = arg.split(",");
             drawer.putShibou(parts);
+        });
+        map.put("hokenshubetsu", (drawer, arg) -> {
+            Objects.requireNonNull(arg);
+            switch(arg){
+                case "shakoku": {
+                    drawer.markHokenshubetsuShakoku();
+                    break;
+                }
+                case "kouhi": {
+                    drawer.markHokenshubetsuKouhi();
+                    break;
+                }
+                case "roujin": // fall through
+                case "koukikourei": {
+                    drawer.markHokenshubetsuKoukikourei();
+                    break;
+                }
+                case "taishoku": {
+                    drawer.markHokenshubetsuTaishoku();
+                    break;
+                }
+                default: {
+                    System.err.println("Unknown hokenshubetsu: " + arg);
+                    break;
+                }
+            }
+        });
+        map.put("hokentandoku", (drawer, arg) -> {
+            Objects.requireNonNull(arg);
+            switch(arg){
+                case "tandoku": {
+                    drawer.markHokentandokuTandoku();
+                    break;
+                }
+                case "hei2": {
+                    drawer.markHokentandokuHei2();
+                    break;
+                }
+                case "hei3": {
+                    drawer.markHokentandokuHei3();
+                    break;
+                }
+                default: {
+                    System.err.println("Unknown hokentandoku: " + arg);
+                    break;
+                }
+            }
+        });
+        map.put("hokenfutan", (drawer, arg) -> {
+            Objects.requireNonNull(arg);
+            switch(arg){
+                case "honnin": {
+                    drawer.markHokenfutanHonnin();
+                    break;
+                }
+                case "sansai": {
+                    drawer.markHokenfutanSansai();
+                    break;
+                }
+                case "kazokku": {
+                    drawer.markHokenfutanKazoku();
+                    break;
+                }
+                case "kourei9": // fall through
+                case "kourei8": {
+                    drawer.markHokenfutanKourei9();
+                    break;
+                }
+                 case "kourei7": {
+                    drawer.markHokenfutanKourei7();
+                    break;
+                }
+                default: {
+                    System.err.println("Unknown hokenfutan: " + arg);
+                    break;
+                }
+            }
+        });
+        map.put("kyuufuwariai", (drawer, arg) -> {
+            int value = Integer.parseInt(arg);
+            switch(value){
+                case 10: {
+                    drawer.markKyuufuwari10();
+                    break;
+                }
+                case 9: {
+                    drawer.markKyuufuwari9();
+                    break;
+                }
+                case 8: {
+                    drawer.markKyuufuwari8();
+                    break;
+                }
+                case 7: {
+                    drawer.markKyuufuwari7();
+                    break;
+                }
+                default: {
+                    drawer.putKyuufuwariOther("" + value);
+                    break;
+                }
+            }
+        });
+        map.put("shinryounissuu.hoken", (drawer, arg) -> drawer.putShinryouNissuuHoken(toInt(arg)));
+        map.put("shinryounissuu.kouhi.1", (drawer, arg) -> drawer.putShinryouNissuuKouhi1(toInt(arg)));
+        map.put("shinryounissuu.kouhi.2", (drawer, arg) -> drawer.putShinryouNissuuKouhi2(toInt(arg)));
+        map.put("shoshinkasan", (drawer, arg) -> {
+            if( arg != null ){
+                switch(arg){
+                    case "jikangai": {
+                        drawer.markShoshinJikangai();
+                        break;
+                    }
+                    case "kyuujitsu": {
+                        drawer.markShoshinKyuujitsu();
+                        break;
+                    }
+                    case "shinya": {
+                        drawer.markShoshinShinya();
+                        break;
+                    }
+                    default: {
+                        System.err.println("Unknown shoshin kasan: " + arg);
+                        break;
+                    }
+                }
+            } else {
+                System.err.println("shinryoukasan null");
+            }
+        });
+        map.put("shoshin.kai", (drawer, arg) -> {
+            drawer.putShoshinTimes(toInt(arg));
+        });
+        map.put("shoshin.ten", (drawer, arg) -> {
+            drawer.putShoshinTen(toInt(arg));
+        });
+        map.put("saishin.saishin.tanka", (drawer, arg) -> {
+            drawer.putSaishinSaishinTanka(toInt(arg));
+        });
+        map.put("saishin.saishin.kai", (drawer, arg) -> {
+            drawer.putSaishinSaishinTimes(toInt(arg));
+        });
+        map.put("saishin.saishin.ten", (drawer, arg) -> {
+            drawer.putSaishinSaishinTen(toInt(arg));
+        });
+        map.put("saishin.gairaikanri.tanka", (drawer, arg) -> {
+            drawer.putSaishinGairaiKanriTanka(toInt(arg));
+        });
+        map.put("saishin.gairaikanri.kai", (drawer, arg) -> {
+            drawer.putSaishinGairaiKanriTimes(toInt(arg));
+        });
+        map.put("saishin.gairaikanri.ten", (drawer, arg) -> {
+            drawer.putSaishinGairaiKanriTen(toInt(arg));
+        });
+        map.put("saishin.jikangai.tanka", (drawer, arg) -> {
+            drawer.putSaishinJikangaiTanka(toInt(arg));
+        });
+        map.put("saishin.jikangai.kai", (drawer, arg) -> {
+            drawer.putSaishinJikangaiTimes(toInt(arg));
+        });
+        map.put("saishin.jikangai.ten", (drawer, arg) -> {
+            drawer.putSaishinJikangaiTen(toInt(arg));
+        });
+        map.put("saishin.kyuujitsu.tanka", (drawer, arg) -> {
+            drawer.putSaishinKyuujitsuTanka(toInt(arg));
+        });
+        map.put("saishin.kyuujitsu.kai", (drawer, arg) -> {
+            drawer.putSaishinKyuujitsuTimes(toInt(arg));
+        });
+        map.put("saishin.kyuujitsu.ten", (drawer, arg) -> {
+            drawer.putSaishinKyuujitsuTen(toInt(arg));
+        });
+        map.put("saishin.shinya.tanka", (drawer, arg) -> {
+            drawer.putSaishinShinyaTanka(toInt(arg));
+        });
+        map.put("saishin.shinya.kai", (drawer, arg) -> {
+            drawer.putSaishinShinyaTimes(toInt(arg));
+        });
+        map.put("saishin.shinya.ten", (drawer, arg) -> {
+            drawer.putSaishinShinyaTen(toInt(arg));
         });
     }
 

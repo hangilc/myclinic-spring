@@ -91,7 +91,19 @@ class Create {
             System.out.printf("seinengappi.tsuki %d\n", birthday.getMonthValue());
             System.out.printf("seinengappi.hi %d\n", birthday.getDayOfMonth());
             outputByoumei(seikyuu);
-            System.out.printf("shinryounissuu.hoken %d\n", calcShinryouNissuu(seikyuu.visits));
+            System.out.printf("shinryounissuu.hoken %d\n", calcShinryouNissuuHoken(seikyuu.visits));
+            {
+                int kouhi1Count = calcShinryouNissuuKouhi1(seikyuu.visits);
+                if( kouhi1Count > 0 ){
+                    System.out.printf("shinryounissuu.kouhi.1 %d\n", kouhi1Count);
+                }
+            }
+            {
+                int kouhi2Count = calcShinryouNissuuKouhi2(seikyuu.visits);
+                if( kouhi2Count > 0 ){
+                    System.out.printf("shinryounissuu.kouhi.2 %d\n", kouhi2Count);
+                }
+            }
             ShuukeiMap grandShuukei = new ShuukeiMap();
             seikyuu.visits.forEach(visit -> {
                 LocalDate visitedAt = LocalDate.parse(visit.visitedAt.substring(0, 10));
@@ -263,8 +275,18 @@ class Create {
         return Gengou.fromEra(DateTimeUtil.getEra(date)).getKanji();
     }
 
-    private int calcShinryouNissuu(List<Visit> visits){
+    private int calcShinryouNissuuHoken(List<Visit> visits){
         return (int)visits.stream().map(v -> v.visitedAt).distinct().count();
+    }
+
+    private int calcShinryouNissuuKouhi1(List<Visit> visits){
+        // TODO: implement kouhi1 nissuu
+        return 0;
+    }
+
+    private int calcShinryouNissuuKouhi2(List<Visit> visits){
+        // TODO: implement kouhi2 nissuu
+        return 0;
     }
 
     private void dispatchShinryou(ShuukeiMap shuukei, Shinryou shinryou, LocalDate visitedAt){

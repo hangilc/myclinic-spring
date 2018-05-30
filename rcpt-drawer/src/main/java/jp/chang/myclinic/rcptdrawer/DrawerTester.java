@@ -59,7 +59,7 @@ class DrawerTester {
         //rcptDrawer.markShoshinJikangai();
         //rcptDrawer.markShoshinKyuujitsu();
         rcptDrawer.markShoshinShinya();
-        rcptDrawer.putShoshinKai(1);
+        rcptDrawer.putShoshinTimes(1);
         rcptDrawer.putShoshinTen(270);
         rcptDrawer.putSaishinSaishinTanka(67);
         rcptDrawer.putSaishinSaishinTimes(2);
