@@ -220,6 +220,9 @@ public class RcptDrawer {
         pages.add(page);
         compiler.clearOps();
     }
+//        addTekiyou("", "┌バイアスピリン", "");
+//        addTekiyou("", "│プラバスタチン", "");
+//        addTekiyou("", "└フロモックス", "");
 
     private void handleTekiyou() {
         Box[] cc = splitTekiyou();
@@ -255,6 +258,13 @@ public class RcptDrawer {
                 HAlign halign = HAlign.Left;
                 if( tekiyouLine.opts.contains(TekiyouLineOpt.AlignRight) ){
                     halign = HAlign.Right;
+                }
+                if( tekiyouLine.opts.contains(TekiyouLineOpt.GroupBegin) ){
+                    body = "┌" + body;
+                } else if( tekiyouLine.opts.contains(TekiyouLineOpt.GroupExtend) ){
+                    body = "│" + body;
+                } else if( tekiyouLine.opts.contains(TekiyouLineOpt.GroupEnd) ){
+                    body = "└" + body;
                 }
                 compiler.textIn(body, cc[1], halign, VAlign.Top);
                 cc[1] = cc[1].shrinkHeight(3, VertAnchor.Bottom);
@@ -2500,6 +2510,10 @@ public class RcptDrawer {
         tekiyouLines.add(new TekiyouLine(index, body, tankaTimes));
     }
 
+    public void addTekiyou(TekiyouLine tekiyouLine){
+        tekiyouLines.add(tekiyouLine);
+    }
+
     public void setDrugBegin(String index, String tanka, String times){
         if( drugBegin != null ){
             throw new RuntimeException("drugBegin is not null");
@@ -2515,7 +2529,8 @@ public class RcptDrawer {
         String index = drugBegin[0];
         String tanka = drugBegin[1];
         String times = drugBegin[2];
-        for(String body: tekiyouDrugs){
+        for(int i=0;i<tekiyouDrugs.size();i++){
+            String body = tekiyouDrugs.get(i);
             String indexString = "";
             String tankaTimes = "";
             if( tanka != null ){
@@ -2527,11 +2542,16 @@ public class RcptDrawer {
                 tanka = null;
                 times = null;
             }
-            addTekiyou(indexString, body, tankaTimes);
+            TekiyouLine tekiyouLine = new TekiyouLine(indexString, body, tankaTimes);
+            if( i == 0 ){
+                tekiyouLine.opts.add(TekiyouLineOpt.GroupBegin);
+            } else if( i == (tekiyouDrugs.size() - 1) ){
+                tekiyouLine.opts.add(TekiyouLineOpt.GroupEnd);
+            } else {
+                tekiyouLine.opts.add(TekiyouLineOpt.GroupExtend);
+            }
+            addTekiyou(tekiyouLine);
         }
-//        addTekiyou("", "┌バイアスピリン", "");
-//        addTekiyou("", "│プラバスタチン", "");
-//        addTekiyou("", "└フロモックス", "");
         drugBegin = null;
         tekiyouDrugs = new ArrayList<>();
     }
