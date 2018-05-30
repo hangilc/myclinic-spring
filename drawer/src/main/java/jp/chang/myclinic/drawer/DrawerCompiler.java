@@ -90,8 +90,10 @@ public class DrawerCompiler {
     }
 
     public void setFont(String name) {
-        ops.add(new OpSetFont(name));
-        currentFont = name;
+        if( !Objects.equals(currentFont, name) ){
+            ops.add(new OpSetFont(name));
+            currentFont = name;
+        }
     }
 
     public void setFontPushing(String name) {

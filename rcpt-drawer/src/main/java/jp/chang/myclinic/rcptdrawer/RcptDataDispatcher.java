@@ -126,6 +126,42 @@ class RcptDataDispatcher {
             drawer.putShoubyoumeiEtra(toInt(parts[0]), parts[1],
                     toInt(parts[2]), toInt(parts[3]), toInt(parts[4]));
         });
+        map.put("shinryoukaishi.nen.1", (drawer, arg) -> {
+            drawer.putShoubyoumeiKaishiNen(1, toInt(arg));
+        });
+        map.put("shinryoukaishi.nen.2", (drawer, arg) -> {
+            drawer.putShoubyoumeiKaishiNen(2, toInt(arg));
+        });
+        map.put("shinryoukaishi.nen.3", (drawer, arg) -> {
+            drawer.putShoubyoumeiKaishiNen(3, toInt(arg));
+        });
+        map.put("shinryoukaishi.nen.4", (drawer, arg) -> {
+            drawer.putShoubyoumeiKaishiNen(4, toInt(arg));
+        });
+        map.put("shinryoukaishi.tsuki.1", (drawer, arg) -> {
+            drawer.putShoubyoumeiKaishiMonth(1, toInt(arg));
+        });
+        map.put("shinryoukaishi.tsuki.2", (drawer, arg) -> {
+            drawer.putShoubyoumeiKaishiMonth(2, toInt(arg));
+        });
+        map.put("shinryoukaishi.tsuki.3", (drawer, arg) -> {
+            drawer.putShoubyoumeiKaishiMonth(3, toInt(arg));
+        });
+        map.put("shinryoukaishi.tsuki.4", (drawer, arg) -> {
+            drawer.putShoubyoumeiKaishiMonth(4, toInt(arg));
+        });
+        map.put("shinryoukaishi.hi.1", (drawer, arg) -> {
+            drawer.putShoubyoumeiKaishiDay(1, toInt(arg));
+        });
+        map.put("shinryoukaishi.hi.2", (drawer, arg) -> {
+            drawer.putShoubyoumeiKaishiDay(2, toInt(arg));
+        });
+        map.put("shinryoukaishi.hi.3", (drawer, arg) -> {
+            drawer.putShoubyoumeiKaishiDay(3, toInt(arg));
+        });
+        map.put("shinryoukaishi.hi.4", (drawer, arg) -> {
+            drawer.putShoubyoumeiKaishiDay(4, toInt(arg));
+        });
     }
 
 }

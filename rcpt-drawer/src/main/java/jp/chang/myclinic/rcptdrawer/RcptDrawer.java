@@ -63,10 +63,13 @@ public class RcptDrawer {
     private Box shozaichimeishouLine3;
     private Box[] shoubyoumeiNumbers;
     private Box[] shoubyoumeiTexts;
-    private Box[] shoubyoumeiKaishiNumbers;
-    private Box[] shoubyoumeiKaishiNen;
-    private Box[] shoubyoumeiKaishiMonths;
-    private Box[] shoubyoumeiKaishiDays;
+    private Box[] shoubyoumeiKaishiNumbers = new Box[4];
+    private Box[] shoubyoumeiKaishiNen = new Box[4];
+    private Box[] shoubyoumeiKaishiMonths = new Box[4];
+    private Box[] shoubyoumeiKaishiDays = new Box[4];
+    private Box[] shoubyoumeiKaishiNenLabels = new Box[4];
+    private Box[] shoubyoumeiKaishiMonthLabels = new Box[4];
+    private Box[] shoubyoumeiKaishiDayLabels = new Box[4];
     private Point tenkiChiyuMidashi;
     private Box tenkiChiyu;
     private Point tenkiShibouMidashi;
@@ -199,13 +202,13 @@ public class RcptDrawer {
     List<List<Op>> getPages() {
         handleTekiyou();
         flushOps();
-        for(int i=1;i<pages.size();i++){
+        for (int i = 1; i < pages.size(); i++) {
             setZokushi(pages.get(i), i, pages.size() - 1);
         }
         return pages;
     }
 
-    private void flushOps(){
+    private void flushOps() {
         List<Op> page = new ArrayList<>();
         identityProcs.forEach(Runnable::run);
         page.addAll(background);
@@ -214,7 +217,7 @@ public class RcptDrawer {
         compiler.clearOps();
     }
 
-    private void handleTekiyou(){
+    private void handleTekiyou() {
         Box[] cc = splitTekiyou();
         compiler.setFont("Gothic3");
         List<TekiyouLine> allLines = new ArrayList<>();
@@ -222,26 +225,26 @@ public class RcptDrawer {
         allLines.addAll(tekiyouLines);
         allLines.addAll(shoujoushoukiList);
         compiler.setFont("Gothic3");
-        for(TekiyouLine tekiyouLine: allLines){
+        for (TekiyouLine tekiyouLine : allLines) {
             String index = null;
-            if( tekiyouLine.index != null && !tekiyouLine.index.isEmpty() ) {
+            if (tekiyouLine.index != null && !tekiyouLine.index.isEmpty()) {
                 index = tekiyouLine.index;
             }
             String right = null;
-            if( tekiyouLine.tankaTimesTen != null && !tekiyouLine.tankaTimesTen.isEmpty() ){
+            if (tekiyouLine.tankaTimesTen != null && !tekiyouLine.tankaTimesTen.isEmpty()) {
                 right = tekiyouLine.tankaTimesTen;
             }
             List<String> bodyLines = compiler.breakLine(tekiyouLine.body, cc[1].getWidth());
-            for(String body: bodyLines){
-                if( cc[1].getHeight() < 3 ){
+            for (String body : bodyLines) {
+                if (cc[1].getHeight() < 3) {
                     flushOps();
                     cc = splitTekiyou();
                 }
-                if( index != null ){
+                if (index != null) {
                     compiler.textIn(index, cc[0], HAlign.Left, VAlign.Top);
                     index = null;
                 }
-                if( right != null ){
+                if (right != null) {
                     compiler.textIn(right, cc[2], HAlign.Right, VAlign.Top);
                     right = null;
                 }
@@ -256,7 +259,7 @@ public class RcptDrawer {
         shoujoushoukiList = new ArrayList<>();
     }
 
-    private Box[] splitTekiyou(){
+    private Box[] splitTekiyou() {
         Box[] cc = tekiyou.splitToColumns(
                 tekiyouLeftColumnWidth,
                 tekiyou.getWidth() - tekiyouRightColumnWidth
@@ -265,14 +268,14 @@ public class RcptDrawer {
         return cc;
     }
 
-    private void setZokushi(List<Op> target, int zokushiIndex, int zokushiTotal){
+    private void setZokushi(List<Op> target, int zokushiIndex, int zokushiTotal) {
         compiler.setOps(target);
         String font = compiler.getCurrentFont();
         compiler.setFont("Gothic6");
         String text = "続紙";
-        if( zokushiTotal > 1 ){
+        if (zokushiTotal > 1) {
             text += String.format("(%d)", zokushiIndex);
-            if( zokushiIndex == zokushiTotal ){
+            if (zokushiIndex == zokushiTotal) {
                 text += "[最後]";
             }
         }
@@ -282,11 +285,11 @@ public class RcptDrawer {
         compiler.setFont(font);
     }
 
-    public int getPatientId(){
+    public int getPatientId() {
         return dataValues.patientId;
     }
 
-    public void clear(){
+    public void clear() {
         compiler.clearOps();
         pages = new ArrayList<>();
         identityProcs = new ArrayList<>();
@@ -302,7 +305,7 @@ public class RcptDrawer {
         });
     }
 
-    public void putShinryouNen(int nen){
+    public void putShinryouNen(int nen) {
         identityProcs.add(() -> {
             compiler.setFont("Gothic2.8");
             compiler.textIn("" + nen, shinryouNenBox, HAlign.Right, VAlign.Bottom);
@@ -841,7 +844,7 @@ public class RcptDrawer {
         this.tokkijikou = rows[1];
     }
 
-    private void doPutShimei(String s){
+    private void doPutShimei(String s) {
         identityProcs.add(() -> {
             compiler.setFont("Gothic4");
             compiler.textIn(s, shimei.displaceLeftEdge(3), HAlign.Left, VAlign.Center);
@@ -1025,34 +1028,34 @@ public class RcptDrawer {
             shoubyoumeiNumbers[i] = rr[0];
             shoubyoumeiTexts[i] = rr[1];
         }
-        for(int i=1;i<=3;i++){
+        for (int i = 1; i <= 3; i++) {
             renderShoubyoumeiIndex(i);
         }
     }
 
-    private void renderShoubyoumeiIndex(int index){
-        if( index >= 1 && index <= 4 ){
+    private void renderShoubyoumeiIndex(int index) {
+        if (index >= 1 && index <= 4) {
             String label = String.format("(%d)", index);
             compiler.setFont("Mincho2.3");
-            compiler.textIn(label, shoubyoumeiNumbers[index-1], HAlign.Left, VAlign.Bottom);
+            compiler.textIn(label, shoubyoumeiNumbers[index - 1], HAlign.Left, VAlign.Bottom);
         }
     }
 
     // index should be: 1<=index && index <= 4
-    public void putShoubyoumei(int index, String s){
-        if( index >= 1 && index <= 4 ){
-            if( index == 4 ) {
+    public void putShoubyoumei(int index, String s) {
+        if (index >= 1 && index <= 4) {
+            if (index == 4) {
                 renderShoubyoumeiIndex(index);
             }
             compiler.setFont("Gothic3");
-            compiler.textIn(s, shoubyoumeiTexts[index-1], HAlign.Left, VAlign.Center);
+            compiler.textIn(s, shoubyoumeiTexts[index - 1], HAlign.Left, VAlign.Center);
         } else {
             System.err.println("Invalid arg for putShoubyoumei: " + index);
         }
     }
 
-    public void putShoubyoumeiEtra(int index, String name, int nen, int month, int day){
-        if( index == 5 ){
+    public void putShoubyoumeiEtra(int index, String name, int nen, int month, int day) {
+        if (index == 5) {
             compiler.setFont("Gothic2.5");
             compiler.textIn("以下、摘要欄に続く", shoubyoumeiTexts[3], HAlign.Right, VAlign.Center);
         }
@@ -1070,24 +1073,68 @@ public class RcptDrawer {
         compiler.textInVertJustified("診療開始日", cols[0].inset(0, 3), HAlign.Center);
         Box[] rows = cols[1].inset(2, 3, 1, 3).splitToVerticallyJustifiedRows(2.3, 4);
         compiler.setFont("Mincho2.3");
-        shoubyoumeiKaishiNumbers = new Box[4];
-        shoubyoumeiKaishiNen = new Box[4];
-        shoubyoumeiKaishiMonths = new Box[4];
-        shoubyoumeiKaishiDays = new Box[4];
         for (int i = 0; i < 4; i++) {
             Box[] cc = rows[i].splitToHorizontallyJustifiedColumns(2.3, 4);
-            if (i < 3) {
-                String label = String.format("(%d)", i + 1);
-                compiler.textIn(label, cc[0], HAlign.Left, VAlign.Bottom);
-                compiler.textIn("年", cc[1], HAlign.Left, VAlign.Bottom);
-                compiler.textIn("月", cc[2], HAlign.Left, VAlign.Bottom);
-                compiler.textIn("日", cc[3], HAlign.Left, VAlign.Bottom);
-            }
             final int index = i;
-            shoubyoumeiKaishiNen[index] = cc[i];
+            shoubyoumeiKaishiNumbers[index] = cc[0];
+            shoubyoumeiKaishiNenLabels[index] = cc[1];
+            shoubyoumeiKaishiMonthLabels[index] = cc[2];
+            shoubyoumeiKaishiDayLabels[index] = cc[3];
             markLeft(cc[1], 6.5, b -> shoubyoumeiKaishiNen[index] = b);
             markLeft(cc[2], 6.5, b -> shoubyoumeiKaishiMonths[index] = b);
             markLeft(cc[3], 6.5, b -> shoubyoumeiKaishiDays[index] = b);
+        }
+        for (int i = 1; i <= 3; i++) {
+            putShoubyoumeiKaishiIndex(i);
+            renderShoubyoumeiKaishi(i);
+        }
+    }
+
+    private void renderShoubyoumeiKaishi(int index) {
+        compiler.setFont("Mincho2.3");
+        compiler.textIn("年", shoubyoumeiKaishiNenLabels[index - 1], HAlign.Left, VAlign.Bottom);
+        compiler.textIn("月", shoubyoumeiKaishiMonthLabels[index - 1], HAlign.Left, VAlign.Bottom);
+        compiler.textIn("日", shoubyoumeiKaishiDayLabels[index - 1], HAlign.Left, VAlign.Bottom);
+    }
+
+    private void putShoubyoumeiKaishiIndex(int index) {
+        if (index >= 1 && index <= 4) {
+            compiler.setFont("Mincho2.3");
+            String label = String.format("(%d)", index);
+            compiler.textIn(label, shoubyoumeiKaishiNumbers[index-1], HAlign.Left, VAlign.Bottom);
+        } else {
+            throw new RuntimeException("Invalid shoubyoumei kaishi index: " + index);
+        }
+    }
+
+    public void putShoubyoumeiKaishiNen(int index, int nen) {
+        if (index >= 1 && index <= 4) {
+            if( index == 4 ){
+                putShoubyoumeiKaishiIndex(index);
+                renderShoubyoumeiKaishi(index);
+            }
+            compiler.setFont("Gothic3");
+            compiler.textIn("" + nen, shoubyoumeiKaishiNen[index-1], HAlign.Right, VAlign.Center);
+        } else {
+            throw new RuntimeException("Invalid shinryou kaishi index: " + index);
+        }
+    }
+
+    public void putShoubyoumeiKaishiMonth(int index, int month){
+        if (index >= 1 && index <= 4) {
+            compiler.setFont("Gothic3");
+            compiler.textIn("" + month, shoubyoumeiKaishiMonths[index-1], HAlign.Right, VAlign.Center);
+        } else {
+            throw new RuntimeException("Invalid shinryou kaishi index: " + index);
+        }
+    }
+
+    public void putShoubyoumeiKaishiDay(int index, int day){
+        if (index >= 1 && index <= 4) {
+            compiler.setFont("Gothic3");
+            compiler.textIn("" + day, shoubyoumeiKaishiDays[index-1], HAlign.Right, VAlign.Center);
+        } else {
+            throw new RuntimeException("Invalid shinryou kaishi index: " + index);
         }
     }
 
