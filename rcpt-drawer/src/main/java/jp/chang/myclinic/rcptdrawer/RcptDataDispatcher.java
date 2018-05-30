@@ -162,6 +162,18 @@ class RcptDataDispatcher {
         map.put("shinryoukaishi.hi.4", (drawer, arg) -> {
             drawer.putShoubyoumeiKaishiDay(4, toInt(arg));
         });
+        map.put("tenki.chiyu", (drawer, arg) -> {
+            String[] parts = arg.split(",");
+            drawer.putChiyu(parts);
+        });
+        map.put("tenki.chuushi", (drawer, arg) -> {
+            String[] parts = arg.split(",");
+            drawer.putChuushi(parts);
+        });
+        map.put("tenki.shibou", (drawer, arg) -> {
+            String[] parts = arg.split(",");
+            drawer.putShibou(parts);
+        });
     }
 
 }

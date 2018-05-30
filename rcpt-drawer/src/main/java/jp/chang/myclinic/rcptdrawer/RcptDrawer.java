@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RcptDrawer {
 
@@ -1154,19 +1156,77 @@ public class RcptDrawer {
             Box[] rr = cc[0].splitToRows(2);
             compiler.textIn("治ゆ", rr[0], HAlign.Center, VAlign.Center);
             this.tenkiChiyuMidashi = rr[0].getCenterPoint();
-            this.tenkiChiyu = rr[1];
+            this.tenkiChiyu = rr[1].shrinkHeight(2, VertAnchor.Bottom);
         }
         {
             Box[] rr = cc[1].splitToRows(2);
             compiler.textIn("死亡", rr[0], HAlign.Center, VAlign.Center);
             this.tenkiShibouMidashi = rr[0].getCenterPoint();
-            this.tenkiShibou = rr[1];
+            this.tenkiShibou = rr[1].shrinkHeight(2, VertAnchor.Bottom);
         }
         {
             Box[] rr = cc[2].splitToRows(2);
             compiler.textIn("中止", rr[0], HAlign.Center, VAlign.Center);
             this.tenkiChuushiMidashi = rr[0].getCenterPoint();
-            this.tenkiChuushi = rr[1];
+            this.tenkiChuushi = rr[1].shrinkHeight(2, VertAnchor.Bottom);
+        }
+    }
+
+    private static Pattern tenkiPattern = Pattern.compile("(\\d+)(?:\\((.+)\\))?");
+
+    private String[] parseTenki(String s){
+        Matcher matcher = tenkiPattern.matcher(s.trim());
+        if( matcher.matches() ){
+            return new String[]{ matcher.group(1), matcher.group(2) };
+        } else {
+            throw new RuntimeException("Invalid chiyu: " + s);
+        }
+    }
+
+    private int tenkiCount = 0;
+
+    public void putChiyu(String[] parts){
+        markCircle(tenkiChiyuMidashi);
+        compiler.setFont("Mincho2.3");
+        for(String part: parts){
+            String[] toks = parseTenki(part);
+            String text = String.format("(%s)", toks[0]);
+            if( toks.length > 1 ){
+                text += " " + toks[1];
+            }
+            Box box = tenkiChiyu.shrinkHeight(tenkiCount * 2.3, VertAnchor.Bottom).inset(2, 0);
+            compiler.textIn(text, box, HAlign.Left, VAlign.Top);
+            tenkiCount += 1;
+        }
+    }
+
+    public void putChuushi(String[] parts){
+        markCircle(tenkiChuushiMidashi);
+        compiler.setFont("Mincho2.3");
+        for(String part: parts){
+            String[] toks = parseTenki(part);
+            String text = String.format("(%s)", toks[0]);
+            if( toks.length > 1 ){
+                text = toks[1] + " " + text;
+            }
+            Box box = tenkiChuushi.shrinkHeight(tenkiCount * 2.3, VertAnchor.Bottom).inset(2, 0);
+            compiler.textIn(text, box, HAlign.Right, VAlign.Top);
+            tenkiCount += 1;
+        }
+    }
+
+    public void putShibou(String[] parts){
+        markCircle(tenkiShibouMidashi);
+        compiler.setFont("Mincho2.3");
+        if( parts.length > 0 ){
+            String part = parts[0];
+            String[] toks = parseTenki(part);
+            if( toks.length > 1 ){
+                String text = String.format("%s 死亡", toks[1]);
+                Box box = tenkiShibou.shrinkHeight(tenkiCount * 2.3, VertAnchor.Bottom).inset(2, 0);
+                compiler.textIn(text, box, HAlign.Center, VAlign.Top);
+            }
+            tenkiCount += 1;
         }
     }
 
