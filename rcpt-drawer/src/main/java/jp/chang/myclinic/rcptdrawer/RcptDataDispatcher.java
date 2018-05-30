@@ -11,21 +11,20 @@ class RcptDataDispatcher {
     private static Logger logger = LoggerFactory.getLogger(RcptDataDispatcher.class);
 
     private interface Dispatcher {
-        void dispatch(RcptDrawer drawer, String arg, DispatchHook hook);
+        void dispatch(RcptDrawer drawer, String arg);
     }
 
     private RcptDrawer rcptDrawer;
     private DispatchHook hook;
 
-    RcptDataDispatcher(RcptDrawer rcptDrawer, DispatchHook hook){
+    RcptDataDispatcher(RcptDrawer rcptDrawer){
         this.rcptDrawer = rcptDrawer;
-        this.hook = hook;
     }
 
     public void dispatch(String cmd, String arg){
         Dispatcher dispatcher = map.get(cmd);
         if( dispatcher != null ){
-            dispatcher.dispatch(rcptDrawer, arg, hook);
+            dispatcher.dispatch(rcptDrawer, arg);
         } else {
             System.err.println("Unknown cmd: " + cmd);
         }
@@ -42,54 +41,41 @@ class RcptDataDispatcher {
 
     private static Map<String, Dispatcher> map = new HashMap<>();
     static {
-        map.put("patient_id", (drawer, arg, hook) -> {
+        map.put("patient_id", (drawer, arg) -> {
             int patientId = toInt(arg);
             drawer.putPatientId(patientId);
-            hook.onPatientId(patientId);
         });
-        map.put("kikancode", (drawer, arg, hook) -> {
-            drawer.putKikanCode(arg);
-        });
-        map.put("fukenbangou", (drawer, arg, hook) -> {
+        map.put("kikancode", RcptDrawer::putKikanCode);
+        map.put("fukenbangou", (drawer, arg) -> {
             drawer.putFukenBangou(toInt(arg));
         });
-        map.put("shinryou.nen", (drawer, arg, hook) -> {
+        map.put("shinryou.nen", (drawer, arg) -> {
             drawer.putShinryouNen(toInt(arg));
         });
-        map.put("shinryou.tsuki", (drawer, arg, hook) -> {
+        map.put("shinryou.tsuki", (drawer, arg) -> {
             drawer.putShinryouMonth(toInt(arg));
         });
-        map.put("hokenshabangou", (drawer, arg, hook) -> {
+        map.put("hokenshabangou", (drawer, arg) -> {
             drawer.putHokenshaBangou(toInt(arg));
         });
-        map.put("hihokenshashou", (drawer, arg, hook) -> {
-            drawer.putHihokenshashou(arg);
-        });
-        map.put("kouhifutanshabangou1", (drawer, arg, hook) -> {
+        map.put("hihokenshashou", RcptDrawer::putHihokenshashou);
+        map.put("kouhifutanshabangou1", (drawer, arg) -> {
             drawer.putKouhiFutanshaBangou1(toInt(arg));
         });
-        map.put("kouhijukyuushabangou1", (drawer, arg, hook) -> {
+        map.put("kouhijukyuushabangou1", (drawer, arg) -> {
             drawer.putKouhiJukyuushaBangou1(toInt(arg));
         });
-        map.put("kouhifutanshabangou2", (drawer, arg, hook) -> {
+        map.put("kouhifutanshabangou2", (drawer, arg) -> {
             drawer.putKouhiFutanshaBangou2(toInt(arg));
         });
-        map.put("kouhijukyuushabangou2", (drawer, arg, hook) -> {
+        map.put("kouhijukyuushabangou2", (drawer, arg) -> {
             drawer.putKouhiJukyuushaBangou2(toInt(arg));
         });
-        map.put("shozaichimeishou.line1", (drawer, arg, hook) -> {
-            drawer.putShozaichiMeishouLine1(arg);
-        });
-        map.put("shozaichimeishou.line2", (drawer, arg, hook) -> {
-            drawer.putShozaichiMeishouLine2(arg);
-        });
-        map.put("shozaichimeishou.line3", (drawer, arg, hook) -> {
-            drawer.putShozaichiMeishouLine3(arg);
-        });
-        map.put("shimei", (drawer, arg, hook) -> {
-            drawer.putShimei(arg);
-        });
-        map.put("seibetsu", (drawer, arg, hook) -> {
+        map.put("shozaichimeishou.line1", RcptDrawer::putShozaichiMeishouLine1);
+        map.put("shozaichimeishou.line2", RcptDrawer::putShozaichiMeishouLine2);
+        map.put("shozaichimeishou.line3", RcptDrawer::putShozaichiMeishouLine3);
+        map.put("shimei", RcptDrawer::putShimei);
+        map.put("seibetsu", (drawer, arg) -> {
             if( "otoko".equals(arg) ){
                 drawer.markSeibetsuOtoko();
             } else if( "onna".equals(arg) ){
@@ -98,7 +84,7 @@ class RcptDataDispatcher {
                 System.err.println("Unknown seibtsu: " + arg);
             }
         });
-        map.put("seinengappi.gengou", (drawer, arg, hook) -> {
+        map.put("seinengappi.gengou", (drawer, arg) -> {
             if( arg != null ){
                 switch(arg){
                     case "meiji": drawer.markSeinengappiMeiji(); break;
@@ -111,28 +97,28 @@ class RcptDataDispatcher {
                 System.err.println("seinengappi.gengou null");
             }
         });
-        map.put("seinengappi.nen", (drawer, arg, hook) -> {
+        map.put("seinengappi.nen", (drawer, arg) -> {
            drawer.putSeinengappiNen(toInt(arg));
         });
-        map.put("seinengappi.tsuki", (drawer, arg, hook) -> {
+        map.put("seinengappi.tsuki", (drawer, arg) -> {
            drawer.putSeinengappiMonth(toInt(arg));
         });
-        map.put("seinengappi.hi", (drawer, arg, hook) -> {
+        map.put("seinengappi.hi", (drawer, arg) -> {
            drawer.putSeinengappiDay(toInt(arg));
         });
-        map.put("shoubyoumei.1", (drawer, arg, hook) -> {
+        map.put("shoubyoumei.1", (drawer, arg) -> {
            drawer.putShoubyoumei(1, arg);
         });
-        map.put("shoubyoumei.2", (drawer, arg, hook) -> {
+        map.put("shoubyoumei.2", (drawer, arg) -> {
            drawer.putShoubyoumei(2, arg);
         });
-        map.put("shoubyoumei.3", (drawer, arg, hook) -> {
+        map.put("shoubyoumei.3", (drawer, arg) -> {
            drawer.putShoubyoumei(3, arg);
         });
-        map.put("shoubyoumei.4", (drawer, arg, hook) -> {
+        map.put("shoubyoumei.4", (drawer, arg) -> {
            drawer.putShoubyoumei(4, arg);
         });
-        map.put("shoubyoumei_extra", (drawer, arg, hook) -> {
+        map.put("shoubyoumei_extra", (drawer, arg) -> {
             String[] parts = arg.split(":");
             if( parts.length != 5 ){
                 throw new RuntimeException("Invalid shoubyoumei.extra: " + arg);

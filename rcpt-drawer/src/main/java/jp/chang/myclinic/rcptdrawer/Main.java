@@ -83,21 +83,16 @@ public class Main extends Application {
     private void loadFile(File file){
         List<List<Op>> rcptPages = new ArrayList<>();
         RcptDrawer rcptDrawer = new RcptDrawer();
-        class Local {
-            RcptDataDispatcher dispatcher = null;
-            DispatchHook hook = null;
-        }
-        Local local = new Local();
+        RcptDataDispatcher dispatcher = new RcptDataDispatcher(rcptDrawer);
         openFile(file, (cmd, arg) -> {
+            //noinspection StatementWithEmptyBody
             if( "rcpt_begin".equals(cmd) ){
-                local.hook = new StoringDispatchHook();
-                local.dispatcher = new RcptDataDispatcher(rcptDrawer, local.hook);
+                // nop
             } else if( "rcpt_end".equals(cmd) ){
                 rcptPages.addAll(rcptDrawer.getPages());
                 rcptDrawer.clear();
-                local.dispatcher = null;
             } else {
-                local.dispatcher.dispatch(cmd, arg);
+                dispatcher.dispatch(cmd, arg);
             }
         });
         mainRoot.setRcptPages(rcptPages);

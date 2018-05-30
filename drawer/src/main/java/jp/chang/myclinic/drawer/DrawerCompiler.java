@@ -24,7 +24,6 @@ public class DrawerCompiler {
         Left, Right
     }
 
-    private List<Op> background = null;
     private List<Op> ops = new ArrayList<>();
     private Map<String, Double> fontMap = new HashMap<>();
     private String currentFont;
@@ -37,26 +36,15 @@ public class DrawerCompiler {
     }
 
     public List<Op> getOps() {
-        if( background == null ){
-            return ops;
-        } else {
-            List<Op> result = new ArrayList<>();
-            result.addAll(background);
-            result.addAll(ops);
-            return result;
-        }
+        return ops;
     }
 
-    public void saveToBackground(){
-        if( background != null ){
-            throw new RuntimeException("Background not empty");
-        }
-        background = ops;
-        ops = new ArrayList<>();
+    public void clearOps(){
+        this.ops = new ArrayList<>();
     }
 
-    public void clear(){
-        ops.clear();
+    public void setOps(List<Op> ops){
+        this.ops = ops;
     }
 
     public void moveTo(double x, double y) {
@@ -123,7 +111,7 @@ public class DrawerCompiler {
         return fontMap.get(fontName);
     }
 
-    public void textAt(String text, double x, double y, HAlign halign, VAlign valign, TextAtOpt opt) {
+    public void textAt(String text, double x, double y, HAlign halign, VAlign valign, TextAtOpt opt){
         if (text == null || text.isEmpty()) {
             return;
         }
@@ -260,7 +248,7 @@ public class DrawerCompiler {
         ops.add(new OpDrawChars(text, xs, ys));
     }
 
-    public void textIn(String text, Box box, HAlign halign, VAlign valign) {
+    public void textIn(String text, Box box, HAlign halign, VAlign valign){
         double x, y;
         switch (halign) {
             case Left:
@@ -288,7 +276,7 @@ public class DrawerCompiler {
             default:
                 throw new Error("invalid valign: " + valign);
         }
-        textAt(text, x, y, halign, valign);
+        textAt(text, x, y, halign, valign, null);
     }
 
     public void textInVert(String text, Box box, HAlign halign, VAlign valign) {

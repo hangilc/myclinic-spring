@@ -163,6 +163,14 @@ public class RcptDrawer {
     private List<TekiyouLine> extraShoubyoumeiList = new ArrayList<>();
     private List<TekiyouLine> tekiyouLines = new ArrayList<>();
     private List<TekiyouLine> shoujoushoukiList = new ArrayList<>();
+    private List<Op> background;
+
+    private static class DataValues {
+        Integer patientId;
+        String shimei;
+    }
+
+    private DataValues dataValues = new DataValues();
 
     public RcptDrawer() {
         setupFonts();
@@ -183,13 +191,25 @@ public class RcptDrawer {
         setupIryouKikanLabel();
         setupShozaichiMeishou();
         setupRcptBody();
-        compiler.saveToBackground();
+        this.background = compiler.getOps();
+        compiler.clearOps();
     }
 
     List<List<Op>> getPages() {
         handleTekiyou();
-        pages.add(compiler.getOps());
+        flushOps();
+        for(int i=1;i<pages.size();i++){
+            setZokushi(pages.get(i), i, pages.size() - 1);
+        }
         return pages;
+    }
+
+    private void flushOps(){
+        List<Op> page = new ArrayList<>();
+        page.addAll(background);
+        page.addAll(compiler.getOps());
+        pages.add(page);
+        compiler.clearOps();
     }
 
     private void handleTekiyou(){
@@ -212,7 +232,7 @@ public class RcptDrawer {
             List<String> bodyLines = compiler.breakLine(tekiyouLine.body, cc[1].getWidth());
             for(String body: bodyLines){
                 if( cc[1].getHeight() < 3 ){
-                    newPage();
+                    flushOps();
                     cc = splitTekiyou();
                 }
                 if( index != null ){
@@ -243,31 +263,36 @@ public class RcptDrawer {
         return cc;
     }
 
-    private void newPage(){
-        pages.add(compiler.getOps());
-        clearTopLayer();
-        initZokushi();
-    }
-
-    private void initZokushi(){
+    private void setZokushi(List<Op> target, int zokushiIndex, int zokushiTotal){
+        compiler.setOps(target);
         String font = compiler.getCurrentFont();
         compiler.setFont("Gothic6");
+        String text = "続紙";
+        if( zokushiTotal > 1 ){
+            text += String.format("(%d)", zokushiIndex);
+            if( zokushiIndex == zokushiTotal ){
+                text += "[最後]";
+            }
+        }
         Box r = shoubyoumeiTexts[0].shrinkHeight(3, VertAnchor.Bottom);
-        compiler.textIn("続紙", r, HAlign.Center, VAlign.Top);
+        compiler.textIn(text, r, HAlign.Center, VAlign.Top);
+        doPutShimei(dataValues.shimei);
         compiler.setFont(font);
     }
 
-    private void clearTopLayer(){
-        compiler.clear();
+    public int getPatientId(){
+        return dataValues.patientId;
     }
 
     public void clear(){
-        clearTopLayer();
+        compiler.clearOps();
         pages = new ArrayList<>();
+        dataValues = new DataValues();
     }
 
     public void putPatientId(int patientId) {
         String s = String.format("%d", patientId);
+        dataValues.patientId = patientId;
         compiler.setFont("Gothic2.5");
         compiler.textIn(s, patientIdBox, HAlign.Left, VAlign.Bottom);
     }
@@ -803,9 +828,14 @@ public class RcptDrawer {
         this.tokkijikou = rows[1];
     }
 
-    public void putShimei(String s) {
+    private void doPutShimei(String s){
         compiler.setFont("Gothic4");
         compiler.textIn(s, shimei.displaceLeftEdge(3), HAlign.Left, VAlign.Center);
+    }
+
+    public void putShimei(String s) {
+        dataValues.shimei = s;
+        doPutShimei(s);
     }
 
     public void markSeibetsuOtoko() {
