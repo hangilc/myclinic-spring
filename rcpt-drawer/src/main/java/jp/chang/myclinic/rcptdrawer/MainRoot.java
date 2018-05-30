@@ -4,6 +4,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
@@ -26,10 +27,12 @@ class MainRoot extends HBox {
         super(4);
         getStylesheets().add("Main.css");
         getStyleClass().add("app-root");
+        Node previewNode = createPreview();
         getChildren().addAll(
-                createPreview(),
+                previewNode,
                 createRightColumn()
         );
+        HBox.setHgrow(previewNode, Priority.ALWAYS);
     }
 
     public void setRcptPages(List<List<List<Op>>> rcptPages){

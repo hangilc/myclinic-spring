@@ -132,6 +132,14 @@ class RcptDataDispatcher {
         map.put("shoubyoumei.4", (drawer, arg, hook) -> {
            drawer.putShoubyoumei(4, arg);
         });
+        map.put("shoubyoumei_extra", (drawer, arg, hook) -> {
+            String[] parts = arg.split(":");
+            if( parts.length != 5 ){
+                throw new RuntimeException("Invalid shoubyoumei.extra: " + arg);
+            }
+            drawer.putShoubyoumeiEtra(toInt(parts[0]), parts[1],
+                    toInt(parts[2]), toInt(parts[3]), toInt(parts[4]));
+        });
     }
 
 }

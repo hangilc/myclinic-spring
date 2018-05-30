@@ -78,6 +78,7 @@ public class RcptDrawer {
     private Box shinryounissuKouhi2;
     private Box tekiyou;
     private int tekiyouLeftColumnWidth = 10;
+    private int tekiyouRightColumnWidth = 10;
     private Point shoshinJikangai;
     private Point shoshinKyuujitsu;
     private Point shoshinShinya;
@@ -186,16 +187,51 @@ public class RcptDrawer {
     }
 
     List<List<Op>> getPages() {
+        handleTekiyou();
         pages.add(compiler.getOps());
         return pages;
     }
 
-    public int getTekiyouLeftColumnWidth() {
-        return tekiyouLeftColumnWidth;
+    private void handleTekiyou(){
+        Box[] cc = tekiyou.splitToColumns(
+                tekiyouLeftColumnWidth,
+                tekiyou.getWidth() - tekiyouRightColumnWidth
+        );
+        cc[1] = cc[1].inset(1, 1);
+        compiler.setFont("Gothic3");
+        List<TekiyouLine> allLines = new ArrayList<>();
+        allLines.addAll(extraShoubyoumeiList);
+        allLines.addAll(tekiyouLines);
+        allLines.addAll(shoujoushoukiList);
+        compiler.setFont("Gothic3");
+        for(TekiyouLine tekiyouLine: allLines){
+            List<String> bodyLines = compiler.breakLine(tekiyouLine.body, cc[1].getWidth());
+            String index = tekiyouLine.index;
+            if( index != null && !index.isEmpty() ){
+                compiler.textIn(index, cc[0], HAlign.Left, VAlign.Top);
+            }
+            String right = tekiyouLine.tankaTimesTen;
+            if( right != null && !right.isEmpty() ){
+                compiler.textIn(right, cc[2], HAlign.Right, VAlign.Top);
+            }
+            for(String body: bodyLines){
+                compiler.textIn(body, cc[1], tekiyouLine.halign, VAlign.Top);
+                cc[1] = cc[1].shrinkHeight(3, VertAnchor.Bottom);
+            }
+            cc[0].setTop(cc[1].getTop());
+            cc[2].setTop(cc[1].getTop());
+        }
+        extraShoubyoumeiList = new ArrayList<>();
+        tekiyouLines = new ArrayList<>();
+        shoujoushoukiList = new ArrayList<>();
+    }
+
+    void clearTopLayer(){
+        compiler.clear();
     }
 
     public void clear(){
-        compiler.clear();
+        clearTopLayer();
         pages = new ArrayList<>();
     }
 
@@ -917,6 +953,17 @@ public class RcptDrawer {
         } else {
             System.err.println("Invalid arg for putShoubyoumei: " + index);
         }
+    }
+
+    public void putShoubyoumeiEtra(int index, String name, int nen, int month, int day){
+        if( index == 5 ){
+            compiler.setFont("Gothic2.5");
+            compiler.textIn("以下、摘要欄に続く", shoubyoumeiTexts[3], HAlign.Right, VAlign.Center);
+        }
+        String text = String.format("(%d) %s", index, name);
+        extraShoubyoumeiList.add(new TekiyouLine(text));
+        String date = String.format("診療開始日　平成%d年%d月%d日", nen, month, day);
+        extraShoubyoumeiList.add(new TekiyouLine(date).setHAlign(HAlign.Right));
     }
 
     private void setupRcptBodyRow1_ShinryouKaishi(Box box) {
