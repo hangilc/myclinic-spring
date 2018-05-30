@@ -81,7 +81,7 @@ public class Main extends Application {
 
 
     private void loadFile(File file){
-        List<List<List<Op>>> rcptPages = new ArrayList<>();
+        List<List<Op>> rcptPages = new ArrayList<>();
         RcptDrawer rcptDrawer = new RcptDrawer();
         class Local {
             RcptDataDispatcher dispatcher = null;
@@ -93,7 +93,7 @@ public class Main extends Application {
                 local.hook = new StoringDispatchHook();
                 local.dispatcher = new RcptDataDispatcher(rcptDrawer, local.hook);
             } else if( "rcpt_end".equals(cmd) ){
-                rcptPages.add(rcptDrawer.getPages());
+                rcptPages.addAll(rcptDrawer.getPages());
                 rcptDrawer.clear();
                 local.dispatcher = null;
             } else {
@@ -126,57 +126,6 @@ public class Main extends Application {
         FileChooser fileChooser = new FileChooser();
         return fileChooser.showOpenDialog(stage);
     }
-
-//    private void doOpenFile() {
-//        List<List<List<Op>>> rcptPages = new ArrayList<>();
-//        class Local {
-//            RcptDrawer rcptDrawer = null;
-//            RcptDataDispatcher dispatcher = null;
-//            DispatchHook hook = null;
-//        }
-//        Local local = new Local();
-//        chooseFile((cmd, arg) -> {
-//            if( "rcpt_begin".equals(cmd) ){
-//                if( local.rcptDrawer != null ){
-//                    System.err.println("Internal error.");
-//                    System.exit(1);
-//                }
-//                local.rcptDrawer = new RcptDrawer();
-//                local.hook = new StoringDispatchHook();
-//                local.dispatcher = new RcptDataDispatcher(local.rcptDrawer, local.hook);
-//            } else if( "rcpt_end".equals(cmd) ){
-//                rcptPages.add(local.rcptDrawer.getPages());
-//                local.rcptDrawer = null;
-//                local.dispatcher = null;
-//            } else {
-//                local.dispatcher.dispatch(cmd, arg);
-//            }
-//        });
-//        mainRoot.setRcptPages(rcptPages);
-//    }
-
-//    private void chooseFile(BiConsumer<String, String> cb){
-//        FileChooser fileChooser = new FileChooser();
-//        File file = fileChooser.showOpenDialog(stage);
-//        if (file != null) {
-//            try {
-//                try (BufferedReader in = new BufferedReader(
-//                        new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))){
-//                    while( true ){
-//                        String line = in.readLine();
-//                        if( line == null ){
-//                            break;
-//                        }
-//                        String[] toks = sep.split(line.trim(), 2);
-//                        cb.accept(toks[0], toks.length >= 2 ? toks[1] : null);
-//                    }
-//                }
-//            } catch (IOException ex) {
-//                logger.error("Failed to open file.", ex);
-//                GuiUtil.alertError("ファイルを開けませんでした。");
-//            }
-//        }
-//    }
 
 }
 

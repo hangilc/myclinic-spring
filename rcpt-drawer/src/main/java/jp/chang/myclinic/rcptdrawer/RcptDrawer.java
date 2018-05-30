@@ -193,11 +193,7 @@ public class RcptDrawer {
     }
 
     private void handleTekiyou(){
-        Box[] cc = tekiyou.splitToColumns(
-                tekiyouLeftColumnWidth,
-                tekiyou.getWidth() - tekiyouRightColumnWidth
-        );
-        cc[1] = cc[1].inset(1, 1);
+        Box[] cc = splitTekiyou();
         compiler.setFont("Gothic3");
         List<TekiyouLine> allLines = new ArrayList<>();
         allLines.addAll(extraShoubyoumeiList);
@@ -205,16 +201,28 @@ public class RcptDrawer {
         allLines.addAll(shoujoushoukiList);
         compiler.setFont("Gothic3");
         for(TekiyouLine tekiyouLine: allLines){
+            String index = null;
+            if( tekiyouLine.index != null && !tekiyouLine.index.isEmpty() ) {
+                index = tekiyouLine.index;
+            }
+            String right = null;
+            if( tekiyouLine.tankaTimesTen != null && !tekiyouLine.tankaTimesTen.isEmpty() ){
+                right = tekiyouLine.tankaTimesTen;
+            }
             List<String> bodyLines = compiler.breakLine(tekiyouLine.body, cc[1].getWidth());
-            String index = tekiyouLine.index;
-            if( index != null && !index.isEmpty() ){
-                compiler.textIn(index, cc[0], HAlign.Left, VAlign.Top);
-            }
-            String right = tekiyouLine.tankaTimesTen;
-            if( right != null && !right.isEmpty() ){
-                compiler.textIn(right, cc[2], HAlign.Right, VAlign.Top);
-            }
             for(String body: bodyLines){
+                if( cc[1].getHeight() < 3 ){
+                    newPage();
+                    cc = splitTekiyou();
+                }
+                if( index != null ){
+                    compiler.textIn(index, cc[0], HAlign.Left, VAlign.Top);
+                    index = null;
+                }
+                if( right != null ){
+                    compiler.textIn(right, cc[2], HAlign.Right, VAlign.Top);
+                    right = null;
+                }
                 compiler.textIn(body, cc[1], tekiyouLine.halign, VAlign.Top);
                 cc[1] = cc[1].shrinkHeight(3, VertAnchor.Bottom);
             }
@@ -226,7 +234,30 @@ public class RcptDrawer {
         shoujoushoukiList = new ArrayList<>();
     }
 
-    void clearTopLayer(){
+    private Box[] splitTekiyou(){
+        Box[] cc = tekiyou.splitToColumns(
+                tekiyouLeftColumnWidth,
+                tekiyou.getWidth() - tekiyouRightColumnWidth
+        );
+        cc[1] = cc[1].inset(1, 1);
+        return cc;
+    }
+
+    private void newPage(){
+        pages.add(compiler.getOps());
+        clearTopLayer();
+        initZokushi();
+    }
+
+    private void initZokushi(){
+        String font = compiler.getCurrentFont();
+        compiler.setFont("Gothic6");
+        Box r = shoubyoumeiTexts[0].shrinkHeight(3, VertAnchor.Bottom);
+        compiler.textIn("続紙", r, HAlign.Center, VAlign.Top);
+        compiler.setFont(font);
+    }
+
+    private void clearTopLayer(){
         compiler.clear();
     }
 
@@ -252,6 +283,7 @@ public class RcptDrawer {
     }
 
     private void setupFonts() {
+        compiler.createFont("Gothic6", "MS Gothic", 6);
         compiler.createFont("Gothic5", "MS Gothic", 5);
         compiler.createFont("Gothic4", "MS Gothic", 4);
         compiler.createFont("Gothic3", "MS Gothic", 3);
