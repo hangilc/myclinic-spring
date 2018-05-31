@@ -3,7 +3,10 @@ package jp.chang.myclinic.reception.javafx;
 import javafx.scene.control.Label;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.reception.lib.DateUtil;
+import jp.chang.myclinic.util.DateTimeUtil;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class PatientInfo extends Form {
     private Label patientIdLabel = new Label();
@@ -37,10 +40,22 @@ public class PatientInfo extends Form {
         patientIdLabel.setText("" + patient.patientId);
         nameLabel.setText(patient.lastName + " " + patient.firstName);
         yomiLabel.setText(patient.lastNameYomi + " " + patient.firstNameYomi);
-        birthdayLabel.setText(DateUtil.sqlDateToString(patient.birthday));
+        birthdayLabel.setText(createBirthdayLabel(patient.birthday));
         sexLabel.setText(Sex.codeToKanji(patient.sex));
         addressLabel.setText(patient.address);
         phoneLabel.setText(patient.phone);
+    }
+
+    private String createBirthdayLabel(String sqldate){
+        try {
+            LocalDate bd = LocalDate.parse(sqldate);
+            return String.format("%s (%d才)",
+                    DateTimeUtil.toKanji(bd, DateTimeUtil.kanjiFormatter1),
+                    DateTimeUtil.calcAge(bd)
+                    );
+        } catch(DateTimeParseException ex){
+            return "(生年月日が不適切です)";
+        }
     }
 
     public void clear(){
