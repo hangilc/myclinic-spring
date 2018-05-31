@@ -22,8 +22,26 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
     private ObjectProperty<LocalDate> validFrom = new SimpleObjectProperty<LocalDate>();
     private ObjectProperty<LocalDate> validUpto = new SimpleObjectProperty<LocalDate>();
     private IntegerProperty futanWari = new SimpleIntegerProperty();
+    private int koukikoureiId;
+    private int patientId;
+
+    public EditKoukikoureiStage(KoukikoureiDTO koukikourei){
+        this();
+        setTitle("後期高齢保険編集");
+        this.koukikoureiId = koukikourei.koukikoureiId;
+        this.patientId = koukikourei.patientId;
+        this.hokenshaBangou.setValue(koukikourei.hokenshaBangou + "");
+        this.hihokenshaBangou.setValue(koukikourei.hihokenshaBangou + "");
+        this.validFrom.setValue(LocalDate.parse(koukikourei.validFrom));
+        this.validUpto.setValue(
+                (koukikourei.validUpto == null || "0000-00-00".equals(koukikourei.validUpto) ?
+                        LocalDate.MAX: LocalDate.parse(koukikourei.validUpto))
+        );
+        this.futanWari.setValue(koukikourei.futanWari);
+    }
 
     public EditKoukikoureiStage(){
+        setTitle("新規後期高齢保険入力");
         VBox root = new VBox(4);
         {
             Form form = new Form();
@@ -44,7 +62,7 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
                 validFromInput.setGengouItems(Gengou.Recent.toArray(new Gengou[]{}));
                 validFromInput.selectGengou(Gengou.Current);
                 validFrom.bindBidirectional(validFromInput.valueProperty());
-                form.add("資格取得日", validFromInput);
+                form.add("交付年月日", validFromInput);
             }
             {
                 DateInput validUptoInput = new DateInput();
@@ -85,6 +103,8 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
 
     private void doEnter(){
         KoukikoureiDTO data = new KoukikoureiDTO();
+        data.koukikoureiId = this.koukikoureiId;
+        data.patientId = this.patientId;
         KoukikoureiConverter cvt = new KoukikoureiConverter();
         cvt.convertToHokenshaBangou(hokenshaBangou.get(), value -> { data.hokenshaBangou = value; });
         cvt.convertToHihokenshaBangou(hihokenshaBangou.get(), value -> { data.hihokenshaBangou = value; });

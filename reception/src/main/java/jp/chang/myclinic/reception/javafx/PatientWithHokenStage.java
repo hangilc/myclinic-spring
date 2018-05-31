@@ -167,7 +167,17 @@ public class PatientWithHokenStage extends Stage {
             });
             editor.showAndWait();
         } else if( model instanceof HokenTable.KoukikoureiModel ){
-
+            HokenTable.KoukikoureiModel koukiModel = (HokenTable.KoukikoureiModel) model;
+            EditKoukikoureiStage editor = new EditKoukikoureiStage(koukiModel.orig);
+            editor.setOnEnter(data -> {
+                Service.api.updateKoukikourei(data)
+                        .thenAccept(ok -> Platform.runLater(() ->{
+                            fetchAndUpdateHokenList();
+                            editor.close();
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
+            });
+            editor.showAndWait();
         } else if( model instanceof HokenTable.KouhiModel ){
 
         } else {

@@ -29,6 +29,12 @@ public class KoukikoureiController {
 		return dbGateway.enterKoukikourei(koukikoureiDTO);
 	}
 
+	@RequestMapping(value="/update-koukikourei", method=RequestMethod.POST)
+	public boolean updateKoukikourei(@RequestBody KoukikoureiDTO koukikoureiDTO){
+		dbGateway.enterKoukikourei(koukikoureiDTO);
+		return true;
+	}
+
 	@RequestMapping(value="/delete-koukikourei", method=RequestMethod.POST)
 	public boolean deleteKoukikourei(@RequestBody KoukikoureiDTO koukikoureiDTO){
 		dbGateway.deleteKoukikourei(koukikoureiDTO.koukikoureiId);

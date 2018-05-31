@@ -29,6 +29,12 @@ public class KouhiController {
 		return dbGateway.enterKouhi(kouhiDTO);
 	}
 
+	@RequestMapping(value="/update-kouhi", method=RequestMethod.POST)
+	public boolean updateKouhi(@RequestBody KouhiDTO kouhiDTO){
+		dbGateway.enterKouhi(kouhiDTO);
+		return true;
+	}
+
 	@RequestMapping(value="/delete-kouhi", method=RequestMethod.POST)
 	public boolean deleteKouhi(@RequestBody KouhiDTO kouhiDTO){
 		dbGateway.deleteKouhi(kouhiDTO.kouhiId);

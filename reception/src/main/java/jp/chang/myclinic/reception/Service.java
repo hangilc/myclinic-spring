@@ -64,6 +64,9 @@ public class Service {
         @POST("enter-koukikourei")
         CompletableFuture<Integer> enterKoukikourei(@Body KoukikoureiDTO koukikoureiDTO);
 
+        @POST("update-koukikourei")
+        CompletableFuture<Boolean> updateKoukikourei(@Body KoukikoureiDTO koukikoureiDTO);
+
         @POST("delete-koukikourei")
         CompletableFuture<Boolean> deleteKoukikourei(@Body KoukikoureiDTO koukikoureiDTO);
 
@@ -72,6 +75,9 @@ public class Service {
 
         @POST("enter-kouhi")
         CompletableFuture<Integer> enterKouhi(@Body KouhiDTO kouhiDTO);
+
+        @POST("update-kouhi")
+        CompletableFuture<Integer> updateKouhi(@Body KouhiDTO kouhiDTO);
 
         @POST("delete-kouhi")
         CompletableFuture<Boolean> deleteKouhi(@Body KouhiDTO kouhiDTO);
