@@ -17,7 +17,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.reception.Service;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.KouhiUtil;
@@ -30,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class PatientWithHokenStage extends Stage {
@@ -158,12 +156,15 @@ public class PatientWithHokenStage extends Stage {
         }
         if( model instanceof HokenTable.ShahokokuhoModel ){
             HokenTable.ShahokokuhoModel shahoModel = (HokenTable.ShahokokuhoModel) model;
-            EditShahokokuhoStage editor = new EditShahokokuhoStage(shahoModel.orig){
-                @Override
-                public void setOnEnter(Consumer<ShahokokuhoDTO> cb) {
-
-                }
-            };
+            EditShahokokuhoStage editor = new EditShahokokuhoStage(shahoModel.orig);
+            editor.setOnEnter(data -> {
+                Service.api.updateShahokokuho(data)
+                        .thenAccept(ok -> Platform.runLater(() ->{
+                            fetchAndUpdateHokenList();
+                            editor.close();
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
+            });
             editor.showAndWait();
         } else if( model instanceof HokenTable.KoukikoureiModel ){
 

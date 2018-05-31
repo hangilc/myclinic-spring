@@ -94,7 +94,7 @@ public class EditShahokokuhoStage extends Stage {
                 validFromInput.setGengouItems(Gengou.Recent.toArray(new Gengou[]{}));
                 validFromInput.selectGengou(Gengou.Current);
                 validFrom.bindBidirectional(validFromInput.valueProperty());
-                form.add("資格取得日", validFromInput);
+                form.add("交付年月日", validFromInput);
             }
             {
                 DateInput validUptoInput = new DateInput();
