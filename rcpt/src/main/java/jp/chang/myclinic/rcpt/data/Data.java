@@ -119,6 +119,10 @@ class Data {
 
     private void outPatient(PatientDTO patient, List<VisitFull2DTO> visits,
                             List<DiseaseFullDTO> diseases) {
+        if( visits.size() == 0 ){
+            System.err.println("No visits.");
+            System.err.println(patient);
+        }
         HokenDTO hoken = visits.get(0).hoken;
         String futan = getFutan(patient, hoken);
         xml.unindent();
