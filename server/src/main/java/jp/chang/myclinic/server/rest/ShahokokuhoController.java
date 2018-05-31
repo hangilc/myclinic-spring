@@ -29,6 +29,12 @@ public class ShahokokuhoController {
 		return dbGateway.enterShahokokuho(shahokokuhoDTO);
 	}
 
+	@RequestMapping(value="/update-shahokokuho", method=RequestMethod.POST)
+	public boolean updateShahokokuho(@RequestBody ShahokokuhoDTO shahokokuhoDTO){
+		dbGateway.enterShahokokuho(shahokokuhoDTO);
+		return true;
+	}
+
 	@RequestMapping(value="/find-available-shahokokuho", method=RequestMethod.GET)
 	public List<ShahokokuhoDTO> findAvailableShahokokuho(@RequestParam("patient-id") int patientId, @RequestParam("at") String atString){
 		LocalDate at = LocalDate.parse(atString, DateTimeFormatter.ISO_LOCAL_DATE);

@@ -27,10 +27,29 @@ public class EditShahokokuhoStage extends Stage {
     private StringProperty hihokenshaKigou = new SimpleStringProperty("");
     private StringProperty hihokenshaBangou = new SimpleStringProperty("");
     private IntegerProperty honnin = new SimpleIntegerProperty();
-    private Property<LocalDate> validFrom = new SimpleObjectProperty<LocalDate>();
-    private Property<LocalDate> validUpto = new SimpleObjectProperty<LocalDate>();
+    private Property<LocalDate> validFrom = new SimpleObjectProperty<>();
+    private Property<LocalDate> validUpto = new SimpleObjectProperty<>();
     private IntegerProperty kourei = new SimpleIntegerProperty();
     private Consumer<ShahokokuhoDTO> dataProcessor = System.out::println;
+    private int shahokokuhoId;
+    private int patientId;
+
+    public EditShahokokuhoStage(ShahokokuhoDTO shahokokuho){
+        this();
+        setTitle("社保国保編集");
+        this.shahokokuhoId = shahokokuho.shahokokuhoId;
+        this.patientId = shahokokuho.patientId;
+        this.hokenshaBangou.setValue("" + shahokokuho.hokenshaBangou);
+        this.hihokenshaKigou.setValue("" + shahokokuho.hihokenshaKigou);
+        this.hihokenshaBangou.setValue("" + shahokokuho.hihokenshaBangou);
+        this.honnin.setValue(shahokokuho.honnin);
+        this.validFrom.setValue(LocalDate.parse(shahokokuho.validFrom));
+        this.validUpto.setValue(
+                (shahokokuho.validUpto == null || "0000-00-00".equals(shahokokuho.validUpto) ?
+                        LocalDate.MAX: LocalDate.parse(shahokokuho.validUpto))
+        );
+        this.kourei.setValue(shahokokuho.kourei);
+    }
 
     public EditShahokokuhoStage(){
         setTitle("新規社保国保入力");
@@ -121,6 +140,8 @@ public class EditShahokokuhoStage extends Stage {
 
     private void doEnter(){
         ShahokokuhoDTO data = new ShahokokuhoDTO();
+        data.shahokokuhoId = this.shahokokuhoId;
+        data.patientId = this.patientId;
         ShahokokuhoConverter cvt = new ShahokokuhoConverter();
         List<String> errs = new ArrayList<>();
         cvt.convertToHokenshaBangou(hokenshaBangou.get(), errs, val -> data.hokenshaBangou = val );

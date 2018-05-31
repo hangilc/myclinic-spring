@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.reception.Service;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.KouhiUtil;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class PatientWithHokenStage extends Stage {
@@ -102,6 +104,7 @@ public class PatientWithHokenStage extends Stage {
                         editButton.setDisable(newValue == null);
                         deleteButton.setDisable(newValue == null);
                     });
+                    editButton.setOnAction(event -> doEdit(hokenTable));
                     deleteButton.setOnAction(event -> doDeleteHoken(tableSelection.get()));
                     buttons.getChildren().addAll(editButton, deleteButton);
                     hbox.getChildren().add(buttons);
@@ -146,6 +149,29 @@ public class PatientWithHokenStage extends Stage {
         Scene scene = new Scene(root, 500, 660);
         setScene(scene);
         sizeToScene();
+    }
+
+    private void doEdit(HokenTable hokenTable){
+        HokenTable.Model model = hokenTable.getSelectionModel().getSelectedItem();
+        if( model == null ){
+            return;
+        }
+        if( model instanceof HokenTable.ShahokokuhoModel ){
+            HokenTable.ShahokokuhoModel shahoModel = (HokenTable.ShahokokuhoModel) model;
+            EditShahokokuhoStage editor = new EditShahokokuhoStage(shahoModel.orig){
+                @Override
+                public void setOnEnter(Consumer<ShahokokuhoDTO> cb) {
+
+                }
+            };
+            editor.showAndWait();
+        } else if( model instanceof HokenTable.KoukikoureiModel ){
+
+        } else if( model instanceof HokenTable.KouhiModel ){
+
+        } else {
+            GuiUtil.alertError("Unknown hokentable model.");
+        }
     }
 
     public ObjectProperty<PatientDTO> patientProperty(){
