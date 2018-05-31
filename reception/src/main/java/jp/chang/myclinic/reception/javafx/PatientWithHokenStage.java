@@ -179,8 +179,18 @@ public class PatientWithHokenStage extends Stage {
             });
             editor.showAndWait();
         } else if( model instanceof HokenTable.KouhiModel ){
-
-        } else {
+            HokenTable.KouhiModel koukiModel = (HokenTable.KouhiModel) model;
+            EditKouhiStage editor = new EditKouhiStage(koukiModel.orig);
+            editor.setOnEnter(data -> {
+                Service.api.updateKouhi(data)
+                        .thenAccept(ok -> Platform.runLater(() ->{
+                            fetchAndUpdateHokenList();
+                            editor.close();
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
+            });
+            editor.showAndWait();
+       } else {
             GuiUtil.alertError("Unknown hokentable model.");
         }
     }

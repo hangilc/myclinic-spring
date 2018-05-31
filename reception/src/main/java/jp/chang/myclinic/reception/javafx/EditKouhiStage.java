@@ -22,6 +22,21 @@ public class EditKouhiStage extends EditHokenBaseStage<KouhiDTO> {
     private StringProperty jukyuusha = new SimpleStringProperty();
     private ObjectProperty<LocalDate> validFrom = new SimpleObjectProperty<LocalDate>();
     private ObjectProperty<LocalDate> validUpto = new SimpleObjectProperty<LocalDate>();
+    private int kouhiId;
+    private int patientId;
+
+    public EditKouhiStage(KouhiDTO kouhi){
+        this();
+        this.kouhiId = kouhi.kouhiId;
+        this.patientId = kouhi.patientId;
+        futansha.setValue(kouhi.futansha + "");
+        jukyuusha.setValue(kouhi.jukyuusha + "");
+        validFrom.setValue(LocalDate.parse(kouhi.validFrom));
+        this.validUpto.setValue(
+                (kouhi.validUpto == null || "0000-00-00".equals(kouhi.validUpto) ?
+                        LocalDate.MAX: LocalDate.parse(kouhi.validUpto))
+        );
+    }
 
     public EditKouhiStage(){
         VBox root = new VBox(4);
@@ -44,7 +59,7 @@ public class EditKouhiStage extends EditHokenBaseStage<KouhiDTO> {
                 validFromInput.setGengouItems(Gengou.Recent.toArray(new Gengou[]{}));
                 validFromInput.selectGengou(Gengou.Current);
                 validFrom.bindBidirectional(validFromInput.valueProperty());
-                form.add("資格取得日", validFromInput);
+                form.add("交付年月日", validFromInput);
             }
             {
                 DateInput validUptoInput = new DateInput();
@@ -73,6 +88,8 @@ public class EditKouhiStage extends EditHokenBaseStage<KouhiDTO> {
 
     private void doEnter(){
         KouhiDTO data = new KouhiDTO();
+        data.kouhiId = this.kouhiId;
+        data.patientId = this.patientId;
         KouhiConverter cvt = new KouhiConverter();
         cvt.convertToFutansha(futansha.get(), value -> { data.futansha = value; });
         cvt.convertToJukyuusha(jukyuusha.get(), value -> { data.jukyuusha = value; });
