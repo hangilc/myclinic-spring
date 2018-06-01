@@ -22,6 +22,7 @@ class TekiyouDrawer {
     private Box bodyColumn;
     private Box rightColumn;
     private Runnable newPageProc;
+    private Box rightBracketColumn;
     private RightBracket rightBracket;
     private static int leftColumnWidth = 10;
     private static int rightColumnWidth = 10;
@@ -35,8 +36,7 @@ class TekiyouDrawer {
         indexColumnSave = indexColumn = cc[0].inset(0, 1);
         bodyColumnSave = bodyColumn = cc[1].inset(1, 1);
         rightColumnSave = rightColumn = cc[2].inset(0, 1);
-        rightBracket = new RightBracket(compiler,
-                bodyColumn.setWidth(1.5, HorizAnchor.Right));
+        rightBracketColumn = bodyColumn.setWidth(1.5, HorizAnchor.Right);
         this.newPageProc = newPageProc;
     }
 
@@ -82,7 +82,13 @@ class TekiyouDrawer {
         List<String> lines = compiler.breakLine(body, bodyColumn.getWidth());
         for(String line: lines){
             if( bodyColumn.getHeight() < 3 ){
+                if( rightBracket != null ) {
+                    rightBracket.onPageEnding();
+                }
                 newPage();
+                if( rightBracket != null ) {
+                    rightBracket.onPageStarting();
+                }
             }
             compiler.textIn(line, bodyColumn, halign, VAlign.Top);
             bodyColumn = bodyColumn.shrinkHeight(3, VertAnchor.Bottom);
@@ -95,6 +101,7 @@ class TekiyouDrawer {
     }
 
     private void openRightBracket(double y){
+        rightBracket = new RightBracket(compiler, rightBracketColumn);
         rightBracket.open(y);
         bodyColumn = bodyColumn.shrinkWidth(rightBracket.getColumnWidth()+1,
                 HorizAnchor.Left);
@@ -103,6 +110,7 @@ class TekiyouDrawer {
     private void closeRightBracket(double y){
         rightBracket.close(y);
         rightBracket.render();
+        rightBracket = null;
         bodyColumn.setWidth(bodyColumnSave.getWidth(), HorizAnchor.Left);
     }
 
