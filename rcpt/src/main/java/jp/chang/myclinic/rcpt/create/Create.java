@@ -127,7 +127,7 @@ class Create {
             final int currentIndex = index;
             ifNotNull(byoumei.endDate, s -> {
                 LocalDate d = LocalDate.parse(s);
-                String tenkiDate = String.format("%c%d.%d.%d", getGengou(d).charAt(0), DateTimeUtil.getNen(d),
+                String tenkiDate = String.format("%c%d.%02d.%02d", getGengou(d).charAt(0), DateTimeUtil.getNen(d),
                         d.getMonthValue(), d.getDayOfMonth());
                 String tenkiStr = String.format("%d(%s)", currentIndex, tenkiDate);
                 switch(byoumei.tenki){
