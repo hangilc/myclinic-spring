@@ -23,9 +23,9 @@ public class ReceptionLib {
 
     private static Logger logger = LoggerFactory.getLogger(ReceptionLib.class);
 
-    public static void previewReceipt(MeisaiDTO meisai, PatientDTO patient, VisitDTO visit) {
+    public static void previewReceipt(MeisaiDTO meisai, PatientDTO patient, VisitDTO visit, Integer charge) {
         ClinicInfoDTO clinicInfo = ReceptionEnv.INSTANCE.getClinicInfo();
-        ReceiptDrawerData data = ReceiptDrawerDataCreator.create(meisai, patient, visit, clinicInfo);
+        ReceiptDrawerData data = ReceiptDrawerDataCreator.create(meisai, patient, visit, charge, clinicInfo);
         ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
         List<Op> ops = receiptDrawer.getOps();
         try {
@@ -39,9 +39,9 @@ public class ReceptionLib {
         }
     }
 
-    public static void previewReceipt(PatientDTO patient, VisitDTO visit) {
+    public static void previewReceipt(PatientDTO patient, VisitDTO visit, Integer charge) {
         ClinicInfoDTO clinicInfo = ReceptionEnv.INSTANCE.getClinicInfo();
-        ReceiptDrawerData data = ReceiptDrawerDataCreator.create(null, patient, visit, clinicInfo);
+        ReceiptDrawerData data = ReceiptDrawerDataCreator.create(null, patient, visit, charge, clinicInfo);
         ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
         List<Op> ops = receiptDrawer.getOps();
         try {

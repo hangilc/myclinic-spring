@@ -90,7 +90,9 @@ class SearchPaymentDialog extends JDialog {
 					})
 					.thenAccept((MeisaiDTO meisai) -> {
 						ReceiptDrawerData data = ReceiptDrawerDataCreator.create(meisai,
-								selection.patient, selection.visit, dataStore.clinicInfo);
+								selection.patient, selection.visit,
+								dataStore.charge != null ? dataStore.charge.charge : null,
+								dataStore.clinicInfo);
 						ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
 						final List<Op> ops = receiptDrawer.getOps();
 						EventQueue.invokeLater(() -> {

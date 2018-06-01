@@ -9,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.reception.Service;
 import jp.chang.myclinic.reception.lib.ReceptionLib;
 import org.slf4j.Logger;
@@ -64,12 +65,23 @@ public class SearchPaymentStage extends Stage {
     }
 
     private void doPrintReceiptAgain(){
+        class Local {
+            MeisaiDTO meisai;
+        }
+        Local local = new Local();
         PaymentTable.Model model = paymentTable.getSelectionModel().getSelectedItem();
         if( model != null ){
             int visitId = model.getVisitId();
             Service.api.getVisitMeisai(visitId)
-                    .thenAccept(meisai -> {
-                        Platform.runLater(() -> ReceptionLib.previewReceipt(meisai,  model.getPatient(), model.getVisit()));
+                    .thenCompose(meisai -> {
+                        local.meisai = meisai;
+                        return Service.api.getCharge(visitId);
+                    })
+                    .thenAccept(charge -> {
+                        Platform.runLater(() -> ReceptionLib.previewReceipt(
+                                local.meisai,  model.getPatient(), model.getVisit(),
+                                charge != null ? charge.charge : null
+                        ));
                     })
                     .exceptionally(ex -> {
                         logger.error("Failed to get meisai.", ex);

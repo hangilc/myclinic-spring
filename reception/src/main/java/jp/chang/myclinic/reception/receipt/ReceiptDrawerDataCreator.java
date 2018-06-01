@@ -14,14 +14,16 @@ public class ReceiptDrawerDataCreator {
     private ReceiptDrawerData data;
 
     public static ReceiptDrawerData create(MeisaiDTO meisai, PatientDTO patient, VisitDTO visit,
-        ClinicInfoDTO clinicInfo){
+        Integer charge, ClinicInfoDTO clinicInfo){
         ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
         ReceiptDrawerData data =creator.data;
         if( patient != null ) {
             creator.setPatient(patient);
         }
         if( meisai != null ) {
-            creator.setCharge(meisai.charge);
+            if( charge != null ) {
+                creator.setCharge(charge);
+            }
         }
         if( visit != null ) {
             creator.setVisitDate(visit);

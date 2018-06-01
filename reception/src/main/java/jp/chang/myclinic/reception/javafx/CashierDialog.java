@@ -81,8 +81,10 @@ public class CashierDialog extends Stage {
         Button printManualReceiptButton = new Button("手書き領収書印刷");
         HBox.setHgrow(spacer, Priority.SOMETIMES);
         Button finishButton = new Button("終了");
-        printReceiptButton.setOnAction(event -> ReceptionLib.previewReceipt(meisai, patient, visit));
-        printManualReceiptButton.setOnAction(event -> ReceptionLib.previewReceipt(patient, visit));
+        printReceiptButton.setOnAction(event ->
+                ReceptionLib.previewReceipt(meisai, patient, visit,
+                        charge != null ? charge.charge : null));
+        printManualReceiptButton.setOnAction(event -> ReceptionLib.previewReceipt(patient, visit, null));
         finishButton.setOnAction(event -> doFinish());
         hbox.getChildren().addAll(printReceiptButton, printManualReceiptButton, spacer, finishButton);
         return hbox;
