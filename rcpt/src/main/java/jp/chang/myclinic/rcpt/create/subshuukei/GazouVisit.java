@@ -37,13 +37,18 @@ public class GazouVisit extends VisitBase {
         shinryouList.stream().forEach(tekiyouList::add);
         conducts.stream().forEach(conduct -> {
             String gazouLabel = conduct.getGazouLabel();
-            String label = gazouLabel + "（";
+            String label;
             if ("胸部単純Ｘ線".equals(gazouLabel)) {
-                label += collectKizaiLabel(conduct).collect(Collectors.joining("、"));
+                label = String.format("%s（%s）",
+                        gazouLabel,
+                        collectKizaiLabel(conduct).collect(Collectors.joining("、"))
+                );
             } else {
-                label += collectLabels(conduct).collect(Collectors.joining("、"));
+                label = String.format("%s（%s）",
+                        gazouLabel,
+                        collectLabels(conduct).collect(Collectors.joining("、"))
+                );
             }
-            label += "）";
             tekiyouList.add(label, conduct.getTanka(), conduct.getCount());
         });
         tekiyouList.output();

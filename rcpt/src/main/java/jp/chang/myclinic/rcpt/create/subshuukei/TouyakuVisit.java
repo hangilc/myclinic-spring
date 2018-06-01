@@ -34,7 +34,7 @@ public class TouyakuVisit extends VisitBase {
 
     public void add(Naifuku drug) {
         NaifukuItem<Naifuku> item = new NaifukuItem<>(drug.usage, drug.days, drug.iyakuhincode,
-                drug.yakka * drug.amount, drug);
+                drug.amount, drug.yakka, drug);
         naifukuList.extendOrAdd(item);
     }
 
