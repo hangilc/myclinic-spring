@@ -6,17 +6,42 @@ import java.util.*;
 
 public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>>, Extendable<NaifukuItem<T>> {
 
+    private static class NaifukuItemDrug {
+        int iyakuhincode;
+        double amount;
+
+        public NaifukuItemDrug(int iyakuhincode, double amount) {
+            this.iyakuhincode = iyakuhincode;
+            this.amount = amount;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            NaifukuItemDrug that = (NaifukuItemDrug) o;
+            return iyakuhincode == that.iyakuhincode &&
+                    Double.compare(that.amount, amount) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(iyakuhincode, amount);
+        }
+    }
+
     private String usage;
     private int days;
-    private Set<Integer> iyakuhincodes = new LinkedHashSet<>();
+    private Set<NaifukuItemDrug> itemDrugs = new LinkedHashSet<>();
     private double kingaku;
     private List<T> drugs = new ArrayList<>();
 
-    public NaifukuItem(String usage, int days, int iyakuhincode, double yakkaTimesAmount, T drug) {
+    public NaifukuItem(String usage, int days, int iyakuhincode, double amount, double yakka, T drug) {
         this.usage = usage;
         this.days = days;
-        iyakuhincodes.add(iyakuhincode);
-        this.kingaku = yakkaTimesAmount;
+        itemDrugs.add(new NaifukuItemDrug(iyakuhincode, amount));
+        this.kingaku = yakka * amount;
         drugs.add(drug);
     }
 
@@ -27,7 +52,7 @@ public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>>, Exte
 
     @Override
     public void extend(NaifukuItem<T> arg){
-        this.iyakuhincodes.addAll(arg.iyakuhincodes);
+        this.itemDrugs.addAll(arg.itemDrugs);
         kingaku += arg.kingaku;
         this.drugs.addAll(arg.drugs);
     }
@@ -35,7 +60,7 @@ public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>>, Exte
     @Override
     public boolean canMerge(NaifukuItem src){
         return Objects.equals(usage, src.usage) && 
-                iyakuhincodes.equals(src.iyakuhincodes);
+                itemDrugs.equals(src.itemDrugs);
     }
 
     @Override
@@ -59,14 +84,6 @@ public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>>, Exte
 
     public String getUsage() {
         return usage;
-    }
-
-    public Set<Integer> getIyakuhincodes() {
-        return iyakuhincodes;
-    }
-
-    public double getKingaku() {
-        return kingaku;
     }
 
     public List<T> getDrugs() {

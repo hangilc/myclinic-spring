@@ -127,7 +127,7 @@ class Create {
             final int currentIndex = index;
             ifNotNull(byoumei.endDate, s -> {
                 LocalDate d = LocalDate.parse(s);
-                String tenkiDate = String.format("%c%d.%d.%d", getGengou(d).charAt(0), DateTimeUtil.getNen(d),
+                String tenkiDate = String.format("%c%d.%02d.%02d", getGengou(d).charAt(0), DateTimeUtil.getNen(d),
                         d.getMonthValue(), d.getDayOfMonth());
                 String tenkiStr = String.format("%d(%s)", currentIndex, tenkiDate);
                 switch(byoumei.tenki){
@@ -139,13 +139,13 @@ class Create {
             index += 1;
         }
         if( chiyu.size() > 0 ){
-            System.out.printf("tenki.chiyu %s", String.join(",", chiyu));
+            System.out.printf("tenki.chiyu %s\n", String.join(",", chiyu));
         }
         if( shibou.size() > 0 ){
-            System.out.printf("tenki.shibou %s", String.join(",", shibou));
+            System.out.printf("tenki.shibou %s\n", String.join(",", shibou));
         }
         if( chuushi.size() > 0 ){
-            System.out.printf("tenki.chuushi %s", String.join(",", chuushi));
+            System.out.printf("tenki.chuushi %s\n", String.join(",", chuushi));
         }
     }
 

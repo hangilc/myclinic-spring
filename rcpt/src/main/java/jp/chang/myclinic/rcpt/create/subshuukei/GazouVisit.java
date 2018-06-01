@@ -7,6 +7,7 @@ import jp.chang.myclinic.rcpt.create.Shinryou;
 import jp.chang.myclinic.rcpt.lib.ConductItem;
 import jp.chang.myclinic.rcpt.lib.ConductItemList;
 import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
+import jp.chang.myclinic.util.NumberUtil;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,20 +38,25 @@ public class GazouVisit extends VisitBase {
         shinryouList.stream().forEach(tekiyouList::add);
         conducts.stream().forEach(conduct -> {
             String gazouLabel = conduct.getGazouLabel();
-            String label = gazouLabel + "（";
+            String label;
             if ("胸部単純Ｘ線".equals(gazouLabel)) {
-                label += collectKizaiLabel(conduct).collect(Collectors.joining("、"));
+                label = String.format("%s（%s）",
+                        gazouLabel,
+                        collectKizaiLabel(conduct).collect(Collectors.joining("、"))
+                );
             } else {
-                label += collectLabels(conduct).collect(Collectors.joining("、"));
+                label = String.format("%s（%s）",
+                        gazouLabel,
+                        collectLabels(conduct).collect(Collectors.joining("、"))
+                );
             }
-            label += "）";
             tekiyouList.add(label, conduct.getTanka(), conduct.getCount());
         });
         tekiyouList.output();
     }
 
     private Stream<String> collectKizaiLabel(ConductItem<ShinryouItemData, ConductDrug, ConductKizai> item) {
-        return item.getKizaiStream().map(c -> c.getData().name);
+        return item.getKizaiStream().map(c -> kizaiRep(c.getData()));
     }
 
     private Stream<String> collectLabels(ConductItem<ShinryouItemData, ConductDrug, ConductKizai> item) {
@@ -65,4 +71,13 @@ public class GazouVisit extends VisitBase {
         return shinryouList.getTen() + conducts.getTen();
     }
 
+    private String kizaiRep(ConductKizai kizai){
+        return String.format("%s %s%s", kizai.name, NumberUtil.formatNumber(kizai.amount),
+                kizai.unit);
+    }
+
+    private String drugRep(ConductDrug drug){
+        return String.format("%s %s%s", drug.name, NumberUtil.formatNumber(drug.amount),
+                drug.unit);
+    }
 }

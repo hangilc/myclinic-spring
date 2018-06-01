@@ -75,7 +75,7 @@ public class KensaVisit extends VisitBase {
     void output(){
         // handanryou is grouped to one tekiyou (together counted as 1)
         int count = houkatsuList.getTotalCount() +
-                1 +
+                (handanryouList.isEmpty() ? 0 : 1) +
                 shinryouList.getTotalCount();
         int ten = houkatsuList.getTen() + handanryouList.getTen() +
                 shinryouList.getTen();
