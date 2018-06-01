@@ -1,14 +1,16 @@
 package jp.chang.myclinic.rcptdrawer;
 
 import jp.chang.myclinic.drawer.Box;
+import jp.chang.myclinic.drawer.Box.VertAnchor;
+import jp.chang.myclinic.drawer.Box.HorizAnchor;
 import jp.chang.myclinic.drawer.DrawerCompiler;
 import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
 import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
-import jp.chang.myclinic.drawer.Box.VertAnchor;
-import static jp.chang.myclinic.rcptdrawer.TekiyouLineOpt.*;
 
 import java.util.List;
 import java.util.Set;
+
+import static jp.chang.myclinic.rcptdrawer.TekiyouLineOpt.*;
 
 class TekiyouDrawer {
 
@@ -20,6 +22,7 @@ class TekiyouDrawer {
     private Box bodyColumn;
     private Box rightColumn;
     private Runnable newPageProc;
+    private RightBracket rightBracket;
     private static int leftColumnWidth = 10;
     private static int rightColumnWidth = 10;
 
@@ -32,6 +35,8 @@ class TekiyouDrawer {
         indexColumnSave = indexColumn = cc[0].inset(0, 1);
         bodyColumnSave = bodyColumn = cc[1].inset(1, 1);
         rightColumnSave = rightColumn = cc[2].inset(0, 1);
+        rightBracket = new RightBracket(compiler,
+                bodyColumn.setWidth(1.5, HorizAnchor.Right));
         this.newPageProc = newPageProc;
     }
 
@@ -71,7 +76,9 @@ class TekiyouDrawer {
         if( opts.contains(AlignRight) ){
             halign = HAlign.Right;
         }
-        if( opts.contains())
+        if( opts.contains(GroupBegin) && !opts.contains(GroupEnd) ){
+            openRightBracket(bodyColumn.getTop() + 0.1);
+        }
         List<String> lines = compiler.breakLine(body, bodyColumn.getWidth());
         for(String line: lines){
             if( bodyColumn.getHeight() < 3 ){
@@ -80,8 +87,23 @@ class TekiyouDrawer {
             compiler.textIn(line, bodyColumn, halign, VAlign.Top);
             bodyColumn = bodyColumn.shrinkHeight(3, VertAnchor.Bottom);
         }
+        if( opts.contains(GroupEnd) && !opts.contains(GroupBegin) ){
+            closeRightBracket(bodyColumn.getTop() - 1.4 );
+        }
         indexColumn = indexColumn.setTop(bodyColumn.getTop());
         rightColumn = rightColumn.setTop(bodyColumn.getTop());
+    }
+
+    private void openRightBracket(double y){
+        rightBracket.open(y);
+        bodyColumn = bodyColumn.shrinkWidth(rightBracket.getColumnWidth()+1,
+                HorizAnchor.Left);
+    }
+
+    private void closeRightBracket(double y){
+        rightBracket.close(y);
+        rightBracket.render();
+        bodyColumn.setWidth(bodyColumnSave.getWidth(), HorizAnchor.Left);
     }
 
     private void newPage(){

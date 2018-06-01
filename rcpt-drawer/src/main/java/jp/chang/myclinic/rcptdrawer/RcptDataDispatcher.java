@@ -62,13 +62,13 @@ class RcptDataDispatcher {
         map.put("kouhifutanshabangou1", (drawer, arg) -> {
             drawer.putKouhiFutanshaBangou1(toInt(arg));
         });
-        map.put("kouhijukyuushabangou1", (drawer, arg) -> {
+        map.put("kouhifutaniryoujukyuushabangou1", (drawer, arg) -> {
             drawer.putKouhiJukyuushaBangou1(toInt(arg));
         });
         map.put("kouhifutanshabangou2", (drawer, arg) -> {
             drawer.putKouhiFutanshaBangou2(toInt(arg));
         });
-        map.put("kouhijukyuushabangou2", (drawer, arg) -> {
+        map.put("kouhifutaniryoujukyuushabangou2", (drawer, arg) -> {
             drawer.putKouhiJukyuushaBangou2(toInt(arg));
         });
         map.put("shozaichimeishou.line1", RcptDrawer::putShozaichiMeishouLine1);

@@ -17,6 +17,10 @@ class RightBracket {
         this.column = column;
     }
 
+    double getColumnWidth(){
+        return column.getWidth();
+    }
+
     void open(double y){
         procs.add(() -> compiler.line(column.getLeft(), y, column.getRight(), y));
     }
