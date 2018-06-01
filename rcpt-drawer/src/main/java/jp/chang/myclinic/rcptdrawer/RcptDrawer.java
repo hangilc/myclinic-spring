@@ -165,6 +165,8 @@ public class RcptDrawer {
     private Box ichibufutankinHoken;
     private Box ichibufutankinKouhi1;
     private Box ichibufutankinKouhi2;
+    private Box shoubyoumeiContinuesToTekiyou;
+    private Box zokushiPresent;
     private List<TekiyouLine> extraShoubyoumeiList = new ArrayList<>();
     private List<TekiyouLine> tekiyouLines = new ArrayList<>();
     private List<TekiyouLine> shoujoushoukiList = new ArrayList<>();
@@ -206,6 +208,11 @@ public class RcptDrawer {
     List<List<Op>> getPages() {
         handleTekiyou();
         flushOps();
+        if( pages.size() > 1 ){
+            compiler.setOps(pages.get(0));
+            compiler.setFont("Gothic2.5");
+            compiler.textIn("続紙あり", zokushiPresent, HAlign.Right, VAlign.Center);
+        }
         for (int i = 1; i < pages.size(); i++) {
             setZokushi(pages.get(i), i, pages.size() - 1);
         }
@@ -220,17 +227,18 @@ public class RcptDrawer {
         pages.add(page);
         compiler.clearOps();
     }
-//        addTekiyou("", "┌バイアスピリン", "");
-//        addTekiyou("", "│プラバスタチン", "");
-//        addTekiyou("", "└フロモックス", "");
 
     private void handleTekiyou() {
-        Box[] cc = splitTekiyou();
-        compiler.setFont("Gothic3");
         List<TekiyouLine> allLines = new ArrayList<>();
         allLines.addAll(extraShoubyoumeiList);
         allLines.addAll(tekiyouLines);
         allLines.addAll(shoujoushoukiList);
+        TekiyouDrawer tekiyouDrawer = new TekiyouDrawer(compiler, tekiyou.inset(0, 0, 1, 0),
+                this::flushOps);
+        tekiyouDrawer.draw(allLines);
+        /*
+        Box[] cc = splitTekiyou();
+        compiler.setFont("Gothic3");
         compiler.setFont("Gothic3");
         for (TekiyouLine tekiyouLine : allLines) {
             String index = null;
@@ -272,6 +280,7 @@ public class RcptDrawer {
             cc[0] = cc[0].setTop(cc[1].getTop());
             cc[2] = cc[2].setTop(cc[1].getTop());
         }
+        */
         extraShoubyoumeiList = new ArrayList<>();
         tekiyouLines = new ArrayList<>();
         shoujoushoukiList = new ArrayList<>();
@@ -1051,6 +1060,8 @@ public class RcptDrawer {
         for (int i = 1; i <= 3; i++) {
             renderShoubyoumeiIndex(i);
         }
+        shoubyoumeiContinuesToTekiyou = shoubyoumeiTexts[3].shiftUp(2);
+        zokushiPresent = shoubyoumeiContinuesToTekiyou.flipDown().shiftDown(1);
     }
 
     private void renderShoubyoumeiIndex(int index) {
@@ -1077,7 +1088,7 @@ public class RcptDrawer {
     public void putShoubyoumeiEtra(int index, String name, int nen, int month, int day) {
         if (index == 5) {
             compiler.setFont("Gothic2.5");
-            compiler.textIn("以下、摘要欄に続く", shoubyoumeiTexts[3], HAlign.Right, VAlign.Center);
+            compiler.textIn("以下、摘要欄に続く", shoubyoumeiContinuesToTekiyou, HAlign.Right, VAlign.Center);
         }
         String text = String.format("(%d) %s", index, name);
         extraShoubyoumeiList.add(new TekiyouLine(text));
@@ -1121,7 +1132,7 @@ public class RcptDrawer {
         if (index >= 1 && index <= 4) {
             compiler.setFont("Mincho2.3");
             String label = String.format("(%d)", index);
-            compiler.textIn(label, shoubyoumeiKaishiNumbers[index-1], HAlign.Left, VAlign.Bottom);
+            compiler.textIn(label, shoubyoumeiKaishiNumbers[index - 1], HAlign.Left, VAlign.Bottom);
         } else {
             throw new RuntimeException("Invalid shoubyoumei kaishi index: " + index);
         }
@@ -1129,30 +1140,30 @@ public class RcptDrawer {
 
     public void putShoubyoumeiKaishiNen(int index, int nen) {
         if (index >= 1 && index <= 4) {
-            if( index == 4 ){
+            if (index == 4) {
                 putShoubyoumeiKaishiIndex(index);
                 renderShoubyoumeiKaishi(index);
             }
             compiler.setFont("Gothic3");
-            compiler.textIn("" + nen, shoubyoumeiKaishiNen[index-1], HAlign.Right, VAlign.Center);
+            compiler.textIn("" + nen, shoubyoumeiKaishiNen[index - 1], HAlign.Right, VAlign.Center);
         } else {
             throw new RuntimeException("Invalid shinryou kaishi index: " + index);
         }
     }
 
-    public void putShoubyoumeiKaishiMonth(int index, int month){
+    public void putShoubyoumeiKaishiMonth(int index, int month) {
         if (index >= 1 && index <= 4) {
             compiler.setFont("Gothic3");
-            compiler.textIn("" + month, shoubyoumeiKaishiMonths[index-1], HAlign.Right, VAlign.Center);
+            compiler.textIn("" + month, shoubyoumeiKaishiMonths[index - 1], HAlign.Right, VAlign.Center);
         } else {
             throw new RuntimeException("Invalid shinryou kaishi index: " + index);
         }
     }
 
-    public void putShoubyoumeiKaishiDay(int index, int day){
+    public void putShoubyoumeiKaishiDay(int index, int day) {
         if (index >= 1 && index <= 4) {
             compiler.setFont("Gothic3");
-            compiler.textIn("" + day, shoubyoumeiKaishiDays[index-1], HAlign.Right, VAlign.Center);
+            compiler.textIn("" + day, shoubyoumeiKaishiDays[index - 1], HAlign.Right, VAlign.Center);
         } else {
             throw new RuntimeException("Invalid shinryou kaishi index: " + index);
         }
@@ -1192,10 +1203,10 @@ public class RcptDrawer {
 
     private static Pattern tenkiPattern = Pattern.compile("(\\d+)(?:\\((.+)\\))?");
 
-    private String[] parseTenki(String s){
+    private String[] parseTenki(String s) {
         Matcher matcher = tenkiPattern.matcher(s.trim());
-        if( matcher.matches() ){
-            return new String[]{ matcher.group(1), matcher.group(2) };
+        if (matcher.matches()) {
+            return new String[]{matcher.group(1), matcher.group(2)};
         } else {
             throw new RuntimeException("Invalid chiyu: " + s);
         }
@@ -1203,13 +1214,13 @@ public class RcptDrawer {
 
     private int tenkiCount = 0;
 
-    public void putChiyu(String[] parts){
+    public void putChiyu(String[] parts) {
         markCircle(tenkiChiyuMidashi);
         compiler.setFont("Mincho2.3");
-        for(String part: parts){
+        for (String part : parts) {
             String[] toks = parseTenki(part);
             String text = String.format("(%s)", toks[0]);
-            if( toks.length > 1 ){
+            if (toks.length > 1) {
                 text += " " + toks[1];
             }
             Box box = tenkiChiyu.shrinkHeight(tenkiCount * 2.3, VertAnchor.Bottom).inset(2, 0);
@@ -1218,13 +1229,13 @@ public class RcptDrawer {
         }
     }
 
-    public void putChuushi(String[] parts){
+    public void putChuushi(String[] parts) {
         markCircle(tenkiChuushiMidashi);
         compiler.setFont("Mincho2.3");
-        for(String part: parts){
+        for (String part : parts) {
             String[] toks = parseTenki(part);
             String text = String.format("(%s)", toks[0]);
-            if( toks.length > 1 ){
+            if (toks.length > 1) {
                 text = toks[1] + " " + text;
             }
             Box box = tenkiChuushi.shrinkHeight(tenkiCount * 2.3, VertAnchor.Bottom).inset(2, 0);
@@ -1233,13 +1244,13 @@ public class RcptDrawer {
         }
     }
 
-    public void putShibou(String[] parts){
+    public void putShibou(String[] parts) {
         markCircle(tenkiShibouMidashi);
         compiler.setFont("Mincho2.3");
-        if( parts.length > 0 ){
+        if (parts.length > 0) {
             String part = parts[0];
             String[] toks = parseTenki(part);
-            if( toks.length > 1 ){
+            if (toks.length > 1) {
                 String text = String.format("%s 死亡", toks[1]);
                 Box box = tenkiShibou.shrinkHeight(tenkiCount * 2.3, VertAnchor.Bottom).inset(2, 0);
                 compiler.textIn(text, box, HAlign.Center, VAlign.Top);
@@ -2506,35 +2517,35 @@ public class RcptDrawer {
         compiler.setFont(font);
     }
 
-    public void addTekiyou(String index, String body, String tankaTimes){
+    public void addTekiyou(String index, String body, String tankaTimes) {
         tekiyouLines.add(new TekiyouLine(index, body, tankaTimes));
     }
 
-    public void addTekiyou(TekiyouLine tekiyouLine){
+    public void addTekiyou(TekiyouLine tekiyouLine) {
         tekiyouLines.add(tekiyouLine);
     }
 
-    public void setDrugBegin(String index, String tanka, String times){
-        if( drugBegin != null ){
+    public void setDrugBegin(String index, String tanka, String times) {
+        if (drugBegin != null) {
             throw new RuntimeException("drugBegin is not null");
         }
-        drugBegin = new String[]{ index, tanka, times };
+        drugBegin = new String[]{index, tanka, times};
     }
 
-    public void addDrug(String label, String amount){
+    public void addDrug(String label, String amount) {
         tekiyouDrugs.add(String.format("%s %s", label, amount));
     }
 
-    public void flushDrugBegin(){
+    public void flushDrugBegin() {
         String index = drugBegin[0];
         String tanka = drugBegin[1];
         String times = drugBegin[2];
-        for(int i=0;i<tekiyouDrugs.size();i++){
+        for (int i = 0; i < tekiyouDrugs.size(); i++) {
             String body = tekiyouDrugs.get(i);
             String indexString = "";
             String tankaTimes = "";
-            if( tanka != null ){
-                if( index != null && !index.isEmpty() ){
+            if (tanka != null) {
+                if (index != null && !index.isEmpty()) {
                     indexString = String.format("(%s)", index);
                 }
                 tankaTimes = String.format("%sx%s", tanka, times);
@@ -2543,9 +2554,9 @@ public class RcptDrawer {
                 times = null;
             }
             TekiyouLine tekiyouLine = new TekiyouLine(indexString, body, tankaTimes);
-            if( i == 0 ){
+            if (i == 0) {
                 tekiyouLine.opts.add(TekiyouLineOpt.GroupBegin);
-            } else if( i == (tekiyouDrugs.size() - 1) ){
+            } else if (i == (tekiyouDrugs.size() - 1)) {
                 tekiyouLine.opts.add(TekiyouLineOpt.GroupEnd);
             } else {
                 tekiyouLine.opts.add(TekiyouLineOpt.GroupExtend);

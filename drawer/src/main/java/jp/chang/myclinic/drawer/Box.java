@@ -200,6 +200,14 @@ public class Box {
         return shiftToLeft(getWidth());
     }
 
+    public Box flipUp(){
+        return shiftUp(getHeight());
+    }
+
+    public Box flipDown(){
+        return shiftDown(getHeight());
+    }
+
     public Box[] splitToColumns(double... borders){
         Box[] cols = new Box[borders.length + 1];
         double colLeft = left;
