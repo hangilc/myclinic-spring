@@ -43,13 +43,16 @@ class TekiyouDrawer {
     void draw(List<TekiyouLine> tekiyouLines){
         compiler.setFont("Gothic3");
         for(TekiyouLine tekiyouLine: tekiyouLines){
-            if( isNotNull(tekiyouLine.index) ){
-                drawIndex(tekiyouLine.index);
+            List<String> lines = compiler.breakLine(tekiyouLine.body, bodyColumn.getWidth());
+            for(int i=0;i<lines.size();i++){
+                String line = lines.get(i);
+                boolean isLast = i == (lines.size() - 1);
+                if( i == 0 ){
+                    drawOneLine(tekiyouLine.index, line, tekiyouLine.tankaTimes, tekiyouLine.opts, true, isLast);
+                } else {
+                    drawOneLine(null, line, null, tekiyouLine.opts, false, isLast);
+                }
             }
-            if( isNotNull(tekiyouLine.tankaTimes) ){
-                drawRight(tekiyouLine.tankaTimes);
-            }
-            drawBody(tekiyouLine.body, tekiyouLine.opts);
         }
     }
 
@@ -65,39 +68,31 @@ class TekiyouDrawer {
         compiler.textIn(right, rightColumn, HAlign.Right, VAlign.Top);
     }
 
-    private void drawBody(String body, Set<TekiyouLineOpt> opts){
+    private void drawOneLine(String index, String body, String right, Set<TekiyouLineOpt> opts,
+                             boolean isLeadLine, boolean isLastLine){
         if( bodyColumn.getHeight() < 3 ){
             newPage();
         }
-        if( body == null ){
-            body = "";
+        if( isNotNull(index) ){
+            drawIndex(index);
+        }
+        if( isNotNull(right) ){
+            drawRight(right);
         }
         HAlign halign = HAlign.Left;
         if( opts.contains(AlignRight) ){
             halign = HAlign.Right;
         }
-        if( opts.contains(GroupBegin) && !opts.contains(GroupEnd) ){
+        if( isLeadLine && opts.contains(GroupBegin) && !opts.contains(GroupEnd) ){
             openRightBracket(bodyColumn.getTop() + 0.1);
         }
-        List<String> lines = compiler.breakLine(body, bodyColumn.getWidth());
-        for(String line: lines){
-            if( bodyColumn.getHeight() < 3 ){
-                if( rightBracket != null ) {
-                    rightBracket.onPageEnding();
-                }
-                newPage();
-                if( rightBracket != null ) {
-                    rightBracket.onPageStarting();
-                }
-            }
-            compiler.textIn(line, bodyColumn, halign, VAlign.Top);
-            bodyColumn = bodyColumn.shrinkHeight(3, VertAnchor.Bottom);
-        }
-        if( opts.contains(GroupEnd) && !opts.contains(GroupBegin) ){
-            closeRightBracket(bodyColumn.getTop() - 1.4 );
-        }
+        compiler.textIn(body, bodyColumn, halign, VAlign.Top);
+        bodyColumn = bodyColumn.shrinkHeight(3, VertAnchor.Bottom);
         indexColumn = indexColumn.setTop(bodyColumn.getTop());
         rightColumn = rightColumn.setTop(bodyColumn.getTop());
+        if( isLastLine && opts.contains(GroupEnd) && !opts.contains(GroupBegin) ){
+            closeRightBracket(bodyColumn.getTop() - 1.4 );
+        }
     }
 
     private void openRightBracket(double y){
@@ -115,10 +110,16 @@ class TekiyouDrawer {
     }
 
     private void newPage(){
+        if( rightBracket != null ){
+            rightBracket.onPageEnding();
+        }
         newPageProc.run();
         indexColumn = indexColumnSave;
         bodyColumn = bodyColumnSave;
         rightColumn = rightColumnSave;
+        if( rightBracket != null ){
+            rightBracket.onPageStarting();
+        }
     }
 
 }
