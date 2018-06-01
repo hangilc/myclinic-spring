@@ -5,6 +5,7 @@ import jp.chang.myclinic.drawer.DrawerCompiler;
 import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
 import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
 import jp.chang.myclinic.drawer.Box.VertAnchor;
+import static jp.chang.myclinic.rcptdrawer.TekiyouLineOpt.*;
 
 import java.util.List;
 import java.util.Set;
@@ -67,9 +68,10 @@ class TekiyouDrawer {
             body = "";
         }
         HAlign halign = HAlign.Left;
-        if( opts.contains(TekiyouLineOpt.AlignRight) ){
+        if( opts.contains(AlignRight) ){
             halign = HAlign.Right;
         }
+        if( opts.contains())
         List<String> lines = compiler.breakLine(body, bodyColumn.getWidth());
         for(String line: lines){
             if( bodyColumn.getHeight() < 3 ){

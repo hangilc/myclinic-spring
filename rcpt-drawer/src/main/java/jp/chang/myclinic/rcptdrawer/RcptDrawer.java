@@ -2556,9 +2556,11 @@ public class RcptDrawer {
             TekiyouLine tekiyouLine = new TekiyouLine(indexString, body, tankaTimes);
             if (i == 0) {
                 tekiyouLine.opts.add(TekiyouLineOpt.GroupBegin);
-            } else if (i == (tekiyouDrugs.size() - 1)) {
+            }
+            if (i == (tekiyouDrugs.size() - 1)) {
                 tekiyouLine.opts.add(TekiyouLineOpt.GroupEnd);
-            } else {
+            }
+            if( i != 0 && i != (tekiyouDrugs.size() - 1) ) {
                 tekiyouLine.opts.add(TekiyouLineOpt.GroupExtend);
             }
             addTekiyou(tekiyouLine);
