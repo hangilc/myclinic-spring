@@ -34,7 +34,7 @@ public class ShoshinVisit extends VisitBase {
         items.stream().forEach(item -> {
             int shinryoucode = item.getShinryoucode();
             if( shinryoucode == shinryouMasterMap.初診 ){
-                local.kai += 1;
+                local.kai += item.getCount();
             } else {
                 tekiyouList.add(item);
             }
