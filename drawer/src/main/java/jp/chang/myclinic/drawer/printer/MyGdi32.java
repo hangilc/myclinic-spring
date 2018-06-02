@@ -27,4 +27,5 @@ public interface MyGdi32 extends StdCallLibrary, WinUser, WinNT {
     int SetBkMode(HDC hdc, int mode);
     HPEN CreatePen(int style, int width, int rgb);
     boolean Ellipse(HDC hdc, int left, int top, int right, int bottom);
+    HANDLE GetStockObject(int fnObject);
 }

@@ -8,8 +8,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.rcptdrawer.drawerpreview.DrawerCanvas;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,9 +60,21 @@ class MainRoot extends HBox {
         VBox vbox = new VBox(4);
         Button nextButton = new Button("次へ");
         Button prevButton = new Button("前へ");
+        Button printOneButton = new Button("１枚印刷");
+        Button printAllButton = new Button("全部印刷");
         nextButton.setOnAction(evt -> gotoNextPage());
         prevButton.setOnAction(evt -> gotoPrevPage());
-        vbox.getChildren().addAll(nextButton, prevButton);
+        printOneButton.setOnAction(evt -> printOnePage());
+        printAllButton.setOnAction(evt -> printAll());
+        vbox.setFillWidth(true);
+        nextButton.setMaxWidth(Double.MAX_VALUE);
+        prevButton.setMaxWidth(Double.MAX_VALUE);
+        vbox.getChildren().addAll(
+                nextButton,
+                prevButton,
+                printOneButton,
+                printAllButton
+        );
         return vbox;
     }
 
@@ -78,4 +92,21 @@ class MainRoot extends HBox {
             updatePreview();
         }
     }
+
+    private void printOnePage(){
+        int index = currentPageIndex;
+        if( index >= 0 && index < rcptPages.size() ){
+            List<Op> ops = rcptPages.get(index);
+            DrawerPrinter drawerPrinter = new DrawerPrinter();
+            drawerPrinter.print(ops);
+        }
+    }
+
+    private void printAll(){
+        List<List<Op>> reversed = new ArrayList<>(rcptPages);
+        Collections.reverse(reversed);
+        DrawerPrinter drawerPrinter = new DrawerPrinter();
+        drawerPrinter.printPages(reversed);
+    }
+
 }

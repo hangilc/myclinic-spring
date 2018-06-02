@@ -72,6 +72,7 @@ public class DrawerPrinter {
         int dpix = getDpix(hdc);
         int dpiy = getDpiy(hdc);
         MyGdi32.INSTANCE.SetBkMode(hdc, PrinterConsts.TRANSPARENT);
+        GDI32.INSTANCE.SelectObject(hdc, MyGdi32.INSTANCE.GetStockObject(PrinterConsts.HOLLOW_BRUSH));
         for(List<Op> ops: pages){
             startPage(hdc);
             execOps(hdc, ops, dpix, dpiy);

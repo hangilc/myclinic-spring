@@ -53,6 +53,9 @@ class TekiyouDrawer {
                     drawOneLine(null, line, null, tekiyouLine.opts, false, isLast);
                 }
             }
+            bodyColumn = bodyColumn.shrinkHeight(1, VertAnchor.Bottom);
+            indexColumn = indexColumn.setTop(bodyColumn.getTop());
+            rightColumn = rightColumn.setTop(bodyColumn.getTop());
         }
     }
 

@@ -440,4 +440,12 @@ public class PrinterConsts {
     public static final int PS_GEOMETRIC        = 0x00010000;
     public static final int PS_TYPE_MASK        = 0x000F0000;
 
+    public static final int BLACK_BRUSH			= 4;
+    public static final int DKGRAY_BRUSH		= 3;
+    public static final int GRAY_BRUSH			= 2;
+    public static final int HOLLOW_BRUSH		= 5;
+    public static final int LTGRAY_BRUSH		= 1;
+    public static final int NULL_BRUSH			= 5;
+    public static final int WHITE_BRUSH			= 0;
+
 }
