@@ -72,6 +72,7 @@ public class DrawerPrinter {
         int dpix = getDpix(hdc);
         int dpiy = getDpiy(hdc);
         MyGdi32.INSTANCE.SetBkMode(hdc, PrinterConsts.TRANSPARENT);
+        GDI32.INSTANCE.SelectObject(hdc, MyGdi32.INSTANCE.GetStockObject(PrinterConsts.HOLLOW_BRUSH));
         for(List<Op> ops: pages){
             startPage(hdc);
             execOps(hdc, ops, dpix, dpiy);
@@ -299,6 +300,13 @@ public class DrawerPrinter {
         }
     }
 
+    private void ellipse(HDC hdc, int left, int top, int right, int bottom){
+        boolean ok = MyGdi32.INSTANCE.Ellipse(hdc, left, top, right, bottom);
+        if( !ok ){
+            throw new RuntimeException("Ellipse failed");
+        }
+    }
+
     private HFONT createFont(String fontName, int size, int weight, boolean italic){
         LOGFONT logfont = new LOGFONT();
         logfont.lfHeight = new LONG(size);
@@ -397,7 +405,8 @@ public class DrawerPrinter {
                     OpCreatePen opCreatePen = (OpCreatePen)op;
                     int width = calcCoord(opCreatePen.getWidth() * scale, dpix);
                     int rgb = RGB(opCreatePen.getR(), opCreatePen.getG(), opCreatePen.getB());
-                    HPEN pen = createPen(PrinterConsts.PS_SOLID, width, rgb);
+                    int penStyle = opCreatePen.getPenStyle();
+                    HPEN pen = createPen(penStyle, width, rgb);
                     penMap.put(opCreatePen.getName(), pen);
                     break;
                 }
@@ -405,6 +414,18 @@ public class DrawerPrinter {
                     OpSetPen opSetPen = (OpSetPen)op;
                     HPEN pen = penMap.get(opSetPen.getName());
                     selectObject(hdc, pen);
+                    break;
+                }
+                case Circle: {
+                    OpCircle opCircle = (OpCircle)op;
+                    double cx = opCircle.getCx();
+                    double cy = opCircle.getCy();
+                    double r = opCircle.getR();
+                    int left = calcCoord((cx - r) * scale + dx, dpix);
+                    int top = calcCoord((cy - r) * scale + dy, dpiy);
+                    int right = calcCoord((cx + r) * scale + dx, dpix);
+                    int bottom = calcCoord((cy + r) * scale + dy, dpiy);
+                    ellipse(hdc, left, top, right, bottom);
                     break;
                 }
                 default: {

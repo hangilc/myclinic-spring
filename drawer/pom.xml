@@ -7,11 +7,9 @@
     <artifactId>project</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
-  <groupId>jp.chang.myclinic</groupId>
   <artifactId>drawer</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <name>drawer</name>
-  <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>

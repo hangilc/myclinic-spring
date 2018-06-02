@@ -31,10 +31,6 @@ public class DrawerPreviewDialog extends Stage {
     private Parent root;
     private HBox commandsBox;
 
-//    public DrawerPreviewDialog(double width, double height, double scaleFactor) {
-//        this(null, width, height, scaleFactor);
-//    }
-
     public DrawerPreviewDialog(PrinterEnv printerEnv, double width, double height, double scaleFactor) {
         this.printerEnv = printerEnv;
         BorderPane main = new BorderPane();

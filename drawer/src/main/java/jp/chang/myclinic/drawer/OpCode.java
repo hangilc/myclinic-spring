@@ -1,8 +1,5 @@
 package jp.chang.myclinic.drawer;
 
-import java.util.Map;
-import java.util.HashMap;
-
 public enum OpCode {
 
     MoveTo("move_to"),
@@ -12,7 +9,8 @@ public enum OpCode {
     DrawChars("draw_chars"),
     SetTextColor("set_text_color"),
     CreatePen("create_pen"),
-    SetPen("set_pen");
+    SetPen("set_pen"),
+    Circle("circle");
 
     private String ident;
 

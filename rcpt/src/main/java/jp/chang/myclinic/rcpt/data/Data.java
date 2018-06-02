@@ -46,6 +46,7 @@ class Data {
                 PatientDTO patient = getPatient(patientId);
                 List<DiseaseFullDTO> diseases = getDiseases(patientId, year, month);
                 List<VisitFull2DTO> visits = getVisits(patientId, year, month);
+                // TODO: change to group by shahokokuho/koukikourei
                 Map<HokenIds, List<VisitFull2DTO>> bundles = visits.stream()
                         .collect(Collectors.groupingBy(visit -> new HokenIds(visit.visit)));
                 if (bundles.keySet().size() > 1) {
