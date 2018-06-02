@@ -96,7 +96,7 @@ class MainScene extends VBox {
                     qlist.forEach(q -> patientMap.put(q.patient.patientId, q.patient));
                     ContextMenu menu = new ContextMenu();
                     List<MenuItem> items = patientMap.values().stream().map(p -> {
-                        String text = String.format("%s%s (%d) 様 ", p.lastName, p.firstName, p.patientId);
+                        String text = String.format("%s%s (%d) 様、", p.lastName, p.firstName, p.patientId);
                         MenuItem item = new MenuItem(text);
                         item.setOnAction(evt -> insertToInput(text));
                         return item;

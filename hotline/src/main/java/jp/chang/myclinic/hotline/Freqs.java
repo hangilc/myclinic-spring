@@ -20,8 +20,7 @@ public class Freqs {
     private List<String> practice = Arrays.asList(
             "おはようございます。",
             "診察室におねがいします。",
-            "処方箋おねがいします。",
-            " 様、伝。"
+            "処方箋おねがいします。"
     );
 
     private List<String> reception = Arrays.asList(
@@ -39,8 +38,9 @@ public class Freqs {
 
     private List<String> pharma = Arrays.asList(
             "おはようございます。",
-            "退出します。",
-            "戻りました。"
+            "席をはずします。",
+            "もどりました。",
+            "お薬手帳お持ちなので次回からお願いします。"
     );
 
     public List<String> listFor(String user){
@@ -48,7 +48,7 @@ public class Freqs {
         switch(user){
             case "practice": return practice;
             case "reception": return reception;
-            case "pharma": return pharma;
+            case "pharmacy": return pharma;
             default: return Collections.emptyList();
         }
     }
