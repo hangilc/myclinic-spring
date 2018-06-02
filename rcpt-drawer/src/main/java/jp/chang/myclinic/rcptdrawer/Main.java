@@ -28,6 +28,7 @@ public class Main extends Application {
     public static void main(String[] args) {
         Application.launch(Main.class, args);
     }
+
     private Stage stage;
     private MainRoot mainRoot;
 
@@ -35,7 +36,7 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         Parameters params = getParameters();
         File file = null;
-        if( params.getUnnamed().size() > 0 ){
+        if (params.getUnnamed().size() > 0) {
             file = new File(params.getUnnamed().get(0));
         }
         this.stage = stage;
@@ -46,7 +47,7 @@ public class Main extends Application {
         pane.setCenter(mainRoot);
         stage.setScene(new Scene(pane));
         stage.show();
-        if( file != null ){
+        if (file != null) {
             loadFile(file);
         }
     }
@@ -63,7 +64,7 @@ public class Main extends Application {
             MenuItem item = new MenuItem("開く");
             item.setOnAction(evt -> {
                 File file = chooseFile();
-                if( file != null ){
+                if (file != null) {
                     loadFile(file);
                 }
             });
@@ -80,31 +81,36 @@ public class Main extends Application {
     private static Pattern sep = Pattern.compile("\\s+");
 
 
-    private void loadFile(File file){
-        List<List<Op>> rcptPages = new ArrayList<>();
+    private void loadFile(File file) {
+        List<PageTag> pageTags = new ArrayList<>();
         RcptDrawer rcptDrawer = new RcptDrawer();
         RcptDataDispatcher dispatcher = new RcptDataDispatcher(rcptDrawer);
         openFile(file, (cmd, arg) -> {
             //noinspection StatementWithEmptyBody
-            if( "rcpt_begin".equals(cmd) ){
+            if ("rcpt_begin".equals(cmd)) {
                 // nop
-            } else if( "rcpt_end".equals(cmd) ){
-                rcptPages.addAll(rcptDrawer.getPages());
+            } else if ("rcpt_end".equals(cmd)) {
+                int patientId = rcptDrawer.getPatientId();
+                List<List<Op>> pages = rcptDrawer.getPages();
+                for (List<Op> page : pages) {
+                    PageTag pageTag = new PageTag(page, patientId);
+                    pageTags.add(pageTag);
+                }
                 rcptDrawer.clear();
             } else {
                 dispatcher.dispatch(cmd, arg);
             }
         });
-        mainRoot.setRcptPages(rcptPages);
+        mainRoot.setRcptPages(pageTags);
     }
 
-    private void openFile(File file, BiConsumer<String, String> cb){
+    private void openFile(File file, BiConsumer<String, String> cb) {
         try {
             try (BufferedReader in = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))){
-                while( true ){
+                    new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+                while (true) {
                     String line = in.readLine();
-                    if( line == null ){
+                    if (line == null) {
                         break;
                     }
                     String[] toks = sep.split(line.trim(), 2);
@@ -117,7 +123,7 @@ public class Main extends Application {
         }
     }
 
-    private File chooseFile(){
+    private File chooseFile() {
         FileChooser fileChooser = new FileChooser();
         return fileChooser.showOpenDialog(stage);
     }
