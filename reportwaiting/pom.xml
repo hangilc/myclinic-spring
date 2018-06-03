@@ -32,11 +32,17 @@
       <artifactId>commons-cli</artifactId>
       <version>1.4</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-dynamodb -->
     <dependency>
       <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk</artifactId>
-      <version>1.11.228</version>
+      <artifactId>aws-java-sdk-dynamodb</artifactId>
+      <version>1.11.340</version>
     </dependency>
+    <!--<dependency>-->
+      <!--<groupId>com.amazonaws</groupId>-->
+      <!--<artifactId>aws-java-sdk</artifactId>-->
+      <!--<version>1.11.228</version>-->
+    <!--</dependency>-->
     <dependency>
       <groupId>jp.chang.myclinic</groupId>
       <artifactId>dto</artifactId>
