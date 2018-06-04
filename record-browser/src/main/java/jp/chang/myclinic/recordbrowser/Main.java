@@ -17,34 +17,37 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 
+// TODO: put charge in lower place
+// TODO: add refresh button
+// TODO: automatic syncing
 public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public static void main( String[] args )
-    {
-        if( args.length != 1 ){
+    private MainRoot root = new MainRoot();
+
+    public static void main(String[] args) {
+        if (args.length != 1) {
             logger.error("Usage: mock-client server-url");
             System.exit(1);
         }
         String serverUrl = args[0];
-        if( !serverUrl.endsWith("/") ){
+        if (!serverUrl.endsWith("/")) {
             serverUrl = args[0] + "/";
         }
         Service.setServerUrl(serverUrl);
-        Service.setLogBody();
+        //Service.setLogBody();
         Application.launch(Main.class, args);
     }
 
     @Override
     public void start(Stage stage) {
         stage.setTitle("診療録閲覧");
-        MainRoot root = new MainRoot();
         BorderPane pane = new BorderPane();
         pane.setCenter(root);
-        pane.setTop(createMenu(root));
+        pane.setTop(createMenu());
         stage.setScene(new Scene(pane));
         stage.show();
-        root.loadTodaysVisits();
+        root.trigger();
     }
 
     @Override
@@ -59,23 +62,26 @@ public class Main extends Application {
         }
     }
 
-    private MenuBar createMenu(MainRoot root){
+    private MenuBar createMenu() {
         MenuBar mBar = new MenuBar();
         {
             Menu menu = new Menu("選択");
             {
                 MenuItem item = new MenuItem("本日の診察");
-                item.setOnAction(evt -> root.loadTodaysVisits());
+                item.setOnAction(evt -> {
+                    root.setDate(LocalDate.now());
+                    root.trigger();
+                });
                 menu.getItems().add(item);
             }
             {
                 MenuItem item = new MenuItem("日付を選択");
-                item.setOnAction(evt -> selectByDate(root));
+                item.setOnAction(evt -> selectByDate());
                 menu.getItems().add(item);
             }
             {
                 MenuItem item = new MenuItem("患者を選択");
-                item.setOnAction(evt -> selectPatient(root));
+                item.setOnAction(evt -> selectPatient());
                 menu.getItems().add(item);
             }
             mBar.getMenus().add(menu);
@@ -92,19 +98,25 @@ public class Main extends Application {
         return mBar;
     }
 
-    private void selectByDate(MainRoot root){
+    private void selectByDate() {
         SelectDateDialog dialog = new SelectDateDialog();
         dialog.showAndWait();
-        dialog.getValue().ifPresent(root::loadVisitsAt);
+        dialog.getValue().ifPresent(date -> {
+            root.setDate(date);
+            root.trigger();
+        });
     }
 
-    private void selectPatient(MainRoot root){
+    private void selectPatient() {
         SelectPatientDialog dialog = new SelectPatientDialog();
         dialog.showAndWait();
-        dialog.getSelectedPatient().ifPresent(root::loadVisitsOfPatient);
+        dialog.getSelectedPatient().ifPresent(patient -> {
+            PatientHistoryDialog patientDialog = new PatientHistoryDialog(patient);
+            patientDialog.show();
+        });
     }
 
-    private void doListCharge(){
+    private void doListCharge() {
         Service.api.listVisitChargePatientAt(LocalDate.now().toString())
                 .thenAccept(result -> Platform.runLater(() -> {
                     ListChargeDialog dialog = new ListChargeDialog(result);
@@ -114,4 +126,3 @@ public class Main extends Application {
     }
 
 }
-

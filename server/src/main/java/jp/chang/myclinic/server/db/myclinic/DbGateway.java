@@ -116,12 +116,12 @@ public class DbGateway {
     }
 
     public VisitFull2PatientPageDTO pageVisitsWithPatientAt(LocalDate date, int page) {
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.Direction.ASC, "visitId");
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.Direction.DESC, "visitId");
         Page<Integer> pageVisitIds = visitRepository.pageVisitIdAt(date.toString(), pageRequest);
         List<VisitFull2PatientDTO> visitFullPatients = Collections.emptyList();
         if (pageVisitIds.getContent().size() > 0) {
             List<VisitPatientDTO> visitPatients = visitRepository
-                    .findByVisitIdsWithPatient(pageVisitIds.getContent(), Sort.by("visitId"))
+                    .findByVisitIdsWithPatient(pageVisitIds.getContent(), Sort.by(Sort.Direction.DESC, "visitId"))
                     .stream()
                     .map(this::resultToVisitPatientDTO).collect(Collectors.toList());
             visitFullPatients = visitPatients.stream()

@@ -44,3 +44,7 @@
 .charge-column {
     -fx-alignment: center-right;
 }
+
+.patient-link, .patient-link:visited {
+    -fx-text-fill: #600;
+}
