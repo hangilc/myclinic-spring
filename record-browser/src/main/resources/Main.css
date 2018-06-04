@@ -48,3 +48,9 @@
 .patient-link, .patient-link:visited {
     -fx-text-fill: #600;
 }
+
+.record-charge {
+    -fx-border-style: dotted;
+    -fx-padding: 3;
+    -fx-border-insets: 4 0 4 0;
+}

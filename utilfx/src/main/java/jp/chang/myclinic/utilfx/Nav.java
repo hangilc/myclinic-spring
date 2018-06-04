@@ -1,6 +1,7 @@
 package jp.chang.myclinic.utilfx;
 
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -47,6 +48,10 @@ public class Nav extends HBox {
 
     public void trigger(){
         onPage(currentPage);
+    }
+
+    public void addNode(Node node){
+        getChildren().add(node);
     }
 
     private void set(int page, int totalPages){

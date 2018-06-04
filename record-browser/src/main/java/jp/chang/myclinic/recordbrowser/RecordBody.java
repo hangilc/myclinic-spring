@@ -1,5 +1,6 @@
 package jp.chang.myclinic.recordbrowser;
 
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DrugFullDTO;
@@ -16,7 +17,6 @@ class RecordBody extends TwoColumn {
         VBox right = getRightBox();
         visit.texts.forEach(textDTO -> left.getChildren().add(new RecordText(textDTO)));
         right.getChildren().add(new RecordHoken(visit.hoken));
-        right.getChildren().add(new RecordCharge(visit.charge));
         right.getChildren().add(new Label("[処方]"));
         if( visit.drugs.size() > 0 ){
             int index = 1;
@@ -30,6 +30,10 @@ class RecordBody extends TwoColumn {
         right.getChildren().add(new Label("[処置]"));
         visit.conducts.forEach(conduct ->
                 right.getChildren().add(new RecordConduct(conduct)));
+        RecordCharge recordCharge = new RecordCharge(visit.charge);
+        recordCharge.getStyleClass().add("record-charge");
+        recordCharge.setMaxWidth(Control.USE_PREF_SIZE);
+        right.getChildren().add(recordCharge);
     }
 
 }

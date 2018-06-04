@@ -1,7 +1,10 @@
 package jp.chang.myclinic.recordbrowser;
 
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
@@ -19,24 +22,37 @@ class PatientHistoryRoot extends VBox {
     private Nav nav = new Nav();
 
     PatientHistoryRoot(PatientDTO patient) {
+        super(2);
         getStylesheets().add("Main.css");
         getStyleClass().add("app-root");
         ScrollPane recordScroll = new ScrollPane(recordList);
         recordScroll.getStyleClass().add("record-scroll");
         recordScroll.setFitToWidth(true);
-        navHandler = new ByPatientNavHandler(patient);
-        navHandler.setPageCallback(this::pageCallback);
-        nav.setHandler(navHandler);
-        updateMainLabel(patient);
         getChildren().addAll(
                 mainLabel,
-                nav,
+                createNavRow(patient),
                 recordScroll
         );
+        updateMainLabel(patient);
     }
 
     void trigger(){
         nav.trigger();
+    }
+
+    private Node createNavRow(PatientDTO patient){
+        HBox hbox = new HBox(4);
+        navHandler = new ByPatientNavHandler(patient);
+        navHandler.setPageCallback(this::pageCallback);
+        nav.setHandler(navHandler);
+        mainLabel.setMaxWidth(Double.MAX_VALUE);
+        Button refreshButton = new Button("更新");
+        refreshButton.setOnAction(evt -> nav.trigger());
+        hbox.getChildren().addAll(
+                nav,
+                refreshButton
+        );
+        return hbox;
     }
 
     private void pageCallback(List<VisitFull2DTO> visits){
