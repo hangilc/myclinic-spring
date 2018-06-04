@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
+// TODO: automatic syncing
+// TODO: open patient's history by clicking title
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
