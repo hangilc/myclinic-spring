@@ -20,4 +20,4 @@ JavFX で実装された、デスクトップ・プログラムです。診療�
 
 ## ライセンス(License)
 
-[MIT License]("http://github.com/hangilc/myclinic-spring/LICENSE")
+[MIT License]("LICENSE")
