@@ -6,10 +6,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.utilfx.Nav;
 
+import java.time.LocalDate;
 import java.util.List;
 
 class PatientHistoryRoot extends VBox {
@@ -65,8 +68,19 @@ class PatientHistoryRoot extends VBox {
     }
 
     private String createMainLabelText(PatientDTO patient){
-        return String.format("(%d) %s %s (%s %s)", patient.patientId,
-                patient.lastName, patient.firstName, patient.lastNameYomi, patient.firstNameYomi);
+        LocalDate birthday = null;
+        if( patient.birthday != null && !"0000-00-00".equals(patient.birthday) ){
+            birthday = LocalDate.parse(patient.birthday);
+        }
+        Sex sex = Sex.fromCode(patient.sex);
+        return String.format("(%d) %s %s (%s %s) %s生 %s才 %s性",
+                patient.patientId,
+                patient.lastName, patient.firstName,
+                patient.lastNameYomi, patient.firstNameYomi,
+                birthday != null ? DateTimeUtil.toKanji(birthday, DateTimeUtil.kanjiFormatter1) : "??",
+                birthday != null ? DateTimeUtil.calcAge(birthday) + "": "??",
+                sex != null ? sex.getKanji() : "??"
+                );
     }
 
 

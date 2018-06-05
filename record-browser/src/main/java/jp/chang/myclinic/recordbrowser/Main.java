@@ -17,9 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 
-// TODO: put charge in lower place
-// TODO: add refresh button
-// TODO: automatic syncing
 public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
@@ -131,6 +128,13 @@ public class Main extends Application {
             root.trigger();
         });
         root.setOnRefreshCallback(() -> repeater.skip());
+        root.setOnSuspendCallback(suspended -> {
+            if( suspended ){
+                repeater.suspend();
+            } else {
+                repeater.unsuspend();
+            }
+        });
         Thread thread = new Thread(repeater);
         thread.setDaemon(true);
         thread.start();

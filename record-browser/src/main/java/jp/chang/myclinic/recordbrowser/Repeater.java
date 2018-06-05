@@ -15,6 +15,7 @@ public class Repeater implements Runnable {
     private int interval; // seconds
     private BlockingQueue<Integer> triggerQueue = new ArrayBlockingQueue<>(1);
     private Runnable callback;
+    private boolean suspended = false;
 
     public Repeater(int seconds, Runnable callback) {
         this.interval = seconds;
@@ -29,12 +30,17 @@ public class Repeater implements Runnable {
         while(true){
             try {
                 Integer cmd = triggerQueue.poll(interval, TimeUnit.SECONDS);
-                if( cmd == null || cmd == CMD_TRIGGER ){
-                    callback.run();
-                } else if( cmd > 0 ){
-                    this.interval = cmd;
-                } else {
-                    logger.error("Unknown command {}.", cmd);
+                if( !suspended ) {
+                    if (cmd == null || cmd == CMD_TRIGGER) {
+                        callback.run();
+                    } else if (cmd > 0) {
+                        this.interval = cmd;
+                    } else //noinspection StatementWithEmptyBody
+                        if (cmd == CMD_SKIP) {
+                            // nop
+                        } else {
+                            logger.error("Unknown command {}.", cmd);
+                        }
                 }
             } catch (InterruptedException e) {
                 logger.info("Interrupted");
@@ -49,6 +55,14 @@ public class Repeater implements Runnable {
 
     public boolean skip(){
         return triggerQueue.offer(CMD_SKIP);
+    }
+
+    public void suspend(){
+        suspended = true;
+    }
+
+    public void unsuspend(){
+        suspended = false;
     }
 
     public boolean setInterval(int seconds){
