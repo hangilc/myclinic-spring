@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
 
+// TODO: add patient info menu
 class PatientHistoryDialog extends Stage {
 
     //private static Logger logger = LoggerFactory.getLogger(PatientHistoryDialog.class);

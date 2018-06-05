@@ -24,6 +24,7 @@ public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
     private MainRoot root = new MainRoot();
+    private Repeater repeater;
 
     public static void main(String[] args) {
         if (args.length != 1) {
@@ -46,8 +47,8 @@ public class Main extends Application {
         pane.setCenter(root);
         pane.setTop(createMenu());
         stage.setScene(new Scene(pane));
+        startRepeater();
         stage.show();
-        root.trigger();
     }
 
     @Override
@@ -123,6 +124,15 @@ public class Main extends Application {
                     dialog.show();
                 }))
                 .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private void startRepeater(){
+        repeater = new Repeater(10, () -> {
+            root.trigger();
+        });
+        Thread thread = new Thread(repeater);
+        thread.setDaemon(true);
+        thread.start();
     }
 
 }

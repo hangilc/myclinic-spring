@@ -47,7 +47,7 @@ public class DrugBagDrawer {
         patientNameBox = innerBox(paper, 10, 52.88, 108, 6.35);
         patientNameYomiBox = innerBox(paper, 10, 61.23, 108, 4.94);
         drugBox = innerBox(paper, 15, 71.17, 98, 17.83);
-        drugNameBox = innerBox(paper, 18+1.5, 91, 84, 16);
+        drugNameBox = innerBox(paper, 18+1.5+4, 91, 84, 16);
         descBox = innerBox(paper, 27.5, 111, 74.8, 20+1);
         prescribedAtBox = innerBox(paper, 64, 134, 54, 3.53);
         Box footer = innerBox(paper, 10, 140, 108, 37);
@@ -125,9 +125,9 @@ public class DrugBagDrawer {
         compiler.setFont(REGULAR_FONT);
         List<String> lines = compiler.breakLine(data.drugName, drugNameBox.getWidth());
         if( lines.size() > 1 ){
-            compiler.multilineText(lines, drugNameBox, HAlign.Left, VAlign.Top, 0.5);
+            compiler.multilineText(lines, drugNameBox, HAlign.Left, VAlign.Bottom, 0.5);
         } else {
-            compiler.textIn(data.drugName, drugNameBox, HAlign.Center, VAlign.Top);
+            compiler.textIn(data.drugName, drugNameBox, HAlign.Center, VAlign.Bottom);
         }
     }
 
