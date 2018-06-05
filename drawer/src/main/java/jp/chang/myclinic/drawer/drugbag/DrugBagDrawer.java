@@ -109,16 +109,20 @@ public class DrugBagDrawer {
     private void setupInstructions(){
         compiler.setFont(REGULAR_FONT);
         HAlign halign = HAlign.Center;
-        List<String> lines = new ArrayList<>();
-        double width = drugBox.getWidth();
+        Box box = drugBox;
+        double width = box.getWidth();
+        double fontSize = compiler.getCurrentFontSize();
+        double leading = 2;
         for(String instr: data.instructions){
             List<String> chunks = compiler.breakLine(instr, width);
             if( chunks.size() > 1 ){
-                halign = HAlign.Left;
+                compiler.multilineText(chunks, box, HAlign.Left, VAlign.Top, leading);
+                box = box.shrinkHeight(chunks.size() * (fontSize + leading), Box.VertAnchor.Bottom);
+            } else {
+                compiler.textIn(instr, box, HAlign.Center, VAlign.Top);
+                box = box.shrinkHeight(fontSize + leading, Box.VertAnchor.Bottom);
             }
-            lines.addAll(chunks);
         }
-        compiler.multilineText(lines, drugBox, halign, VAlign.Top, 2);
     }
 
     private void setupDrugName(){
