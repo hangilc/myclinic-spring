@@ -20,6 +20,7 @@ class MainRoot extends VBox {
     private RecordListByDate recordList = new RecordListByDate();
     private ByDateNavHandler navHandler = new ByDateNavHandler(LocalDate.now());
     private Nav nav = new Nav();
+    private Runnable onRefreshCallback = () -> {};
 
     MainRoot() {
         super(2);
@@ -47,13 +48,20 @@ class MainRoot extends VBox {
         updateMainLabel();
     }
 
+    void setOnRefreshCallback(Runnable cb){
+        this.onRefreshCallback = cb;
+    }
+
     private Node createNavRow(){
         HBox hbox = new HBox(4);
         navHandler.setPageCallback(this::pageCallback);
         nav.setHandler(navHandler);
         mainLabel.setMaxWidth(Double.MAX_VALUE);
         Button refreshButton = new Button("更新");
-        refreshButton.setOnAction(evt -> nav.trigger());
+        refreshButton.setOnAction(evt -> {
+            onRefreshCallback.run();
+            nav.trigger();
+        });
         hbox.getChildren().addAll(
                 nav,
                 refreshButton

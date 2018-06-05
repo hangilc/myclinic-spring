@@ -130,6 +130,7 @@ public class Main extends Application {
         repeater = new Repeater(10, () -> {
             root.trigger();
         });
+        root.setOnRefreshCallback(() -> repeater.skip());
         Thread thread = new Thread(repeater);
         thread.setDaemon(true);
         thread.start();
