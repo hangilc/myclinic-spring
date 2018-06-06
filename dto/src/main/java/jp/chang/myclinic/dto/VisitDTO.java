@@ -13,6 +13,20 @@ public class VisitDTO {
 	public int kouhi2Id;
 	public int kouhi3Id;
 
+	public static VisitDTO copy(VisitDTO src){
+		VisitDTO dst = new VisitDTO();
+		dst.visitId = src.visitId;
+		dst.patientId = src.patientId;
+		dst.visitedAt = src.visitedAt;
+		dst.shahokokuhoId = src.shahokokuhoId;
+		dst.koukikoureiId = src.koukikoureiId;
+		dst.roujinId = src.roujinId;
+		dst.kouhi1Id = src.kouhi1Id;
+		dst.kouhi2Id = src.kouhi2Id;
+		dst.kouhi3Id = src.kouhi3Id;
+		return dst;
+	}
+
 	@Override
 	public String toString() {
 		return "VisitDTO{" +
