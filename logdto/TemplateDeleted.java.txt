@@ -1,0 +1,12 @@
+package jp.chang.myclinic.logdto.practicelog;
+
+import jp.chang.myclinic.dto.{{ name }}DTO;
+
+public class {{ name }}Deleted implements PracticeLogBody {
+
+    public {{ name }}DTO deleted;
+
+    public {{ name }}Deleted({{ name }}DTO deleted) {
+        this.deleted = deleted;
+    }
+}

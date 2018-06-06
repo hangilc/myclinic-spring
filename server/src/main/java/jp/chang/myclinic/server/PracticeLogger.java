@@ -73,10 +73,6 @@ public class PracticeLogger {
         logValue("text-deleted", new TextDeleted(deleted));
     }
 
-    public void logDrugUpdated(DrugDTO prev,DrugDTO updated){
-        logValue("drug-updated", new DrugUpdated(prev, updated));
-    }
-
     public void logPharmaQueueCreated(PharmaQueueDTO created){
         logValue("pharma-queue-created", new PharmaQueueCreated(created));
     }
@@ -86,7 +82,7 @@ public class PracticeLogger {
     }
 
     public void logPharmaQueueDeleted(PharmaQueueDTO deleted){
-        logValue("pharma-queue-deleted", new PharmaQueueCreated(deleted));
+        logValue("pharma-queue-deleted", new PharmaQueueDeleted(deleted));
     }
 
     public void logPatientCreated(PatientDTO created){
@@ -98,7 +94,115 @@ public class PracticeLogger {
     }
 
     public void logPatientDeleted(PatientDTO deleted){
-        logValue("patient-deleted", new PatientCreated(deleted));
+        logValue("patient-deleted", new PatientDeleted(deleted));
+    }
+
+    public void logShahokokuhoCreated(ShahokokuhoDTO created){
+        logValue("shahokokuho-created", new ShahokokuhoCreated(created));
+    }
+
+    public void logShahokokuhoUpdated(ShahokokuhoDTO prev, ShahokokuhoDTO updated){
+        logValue("shahokokuho-updated", new ShahokokuhoUpdated(prev, updated));
+    }
+
+    public void logShahokokuhoDeleted(ShahokokuhoDTO deleted){
+        logValue("shahokokuho-deleted", new ShahokokuhoDeleted(deleted));
+    }
+
+    public void logKoukikoureiCreated(KoukikoureiDTO created){
+        logValue("koukikourei-created", new KoukikoureiCreated(created));
+    }
+
+    public void logKoukikoureiUpdated(KoukikoureiDTO prev, KoukikoureiDTO updated){
+        logValue("koukikourei-updated", new KoukikoureiUpdated(prev, updated));
+    }
+
+    public void logKoukikoureiDeleted(KoukikoureiDTO deleted){
+        logValue("koukikourei-deleted", new KoukikoureiDeleted(deleted));
+    }
+
+    public void logRoujinCreated(RoujinDTO created){
+        logValue("roujin-created", new RoujinCreated(created));
+    }
+
+    public void logRoujinUpdated(RoujinDTO prev, RoujinDTO updated){
+        logValue("roujin-updated", new RoujinUpdated(prev, updated));
+    }
+
+    public void logRoujinDeleted(RoujinDTO deleted){
+        logValue("roujin-deleted", new RoujinDeleted(deleted));
+    }
+
+    public void logKouhiCreated(KouhiDTO created){
+        logValue("kouhi-created", new KouhiCreated(created));
+    }
+
+    public void logKouhiUpdated(KouhiDTO prev, KouhiDTO updated){
+        logValue("kouhi-updated", new KouhiUpdated(prev, updated));
+    }
+
+    public void logKouhiDeleted(KouhiDTO deleted){
+        logValue("kouhi-deleted", new KouhiDeleted(deleted));
+    }
+
+    public void logChargeCreated(ChargeDTO created){
+        logValue("charge-created", new ChargeCreated(created));
+    }
+
+    public void logChargeUpdated(ChargeDTO prev, ChargeDTO updated){
+        logValue("charge-updated", new ChargeUpdated(prev, updated));
+    }
+
+    public void logChargeDeleted(ChargeDTO deleted){
+        logValue("charge-deleted", new ChargeDeleted(deleted));
+    }
+
+    public void logPaymentCreated(PaymentDTO created){
+        logValue("payment-created", new PaymentCreated(created));
+    }
+
+    public void logPaymentUpdated(PaymentDTO prev, PaymentDTO updated){
+        logValue("payment-updated", new PaymentUpdated(prev, updated));
+    }
+
+    public void logPaymentDeleted(PaymentDTO deleted){
+        logValue("payment-deleted", new PaymentDeleted(deleted));
+    }
+
+    public void logShinryouCreated(ShinryouDTO created){
+        logValue("shinryou-created", new ShinryouCreated(created));
+    }
+
+    public void logShinryouUpdated(ShinryouDTO prev, ShinryouDTO updated){
+        logValue("shinryou-updated", new ShinryouUpdated(prev, updated));
+    }
+
+    public void logShinryouDeleted(ShinryouDTO deleted){
+        logValue("shinryou-deleted", new ShinryouDeleted(deleted));
+    }
+
+    public void logDrugCreated(DrugDTO created){
+        logValue("drug-created", new DrugCreated(created));
+    }
+
+    public void logDrugUpdated(DrugDTO prev, DrugDTO updated){
+        logValue("drug-updated", new DrugUpdated(prev, updated));
+    }
+
+    public void logDrugDeleted(DrugDTO deleted){
+        logValue("drug-deleted", new DrugDeleted(deleted));
+    }
+
+    public void logGazouLabelCreated(GazouLabelDTO created){
+        logValue("gazou-label-created", new GazouLabelCreated(created));
+    }
+
+    public void logGazouLabelUpdated(GazouLabelDTO prev, GazouLabelDTO updated){
+        logValue("gazou-label-updated", new GazouLabelUpdated(prev, updated));
+    }
+
+    public void logGazouLabelDeleted(GazouLabelDTO deleted){
+        logValue("gazou-label-deleted", new GazouLabelDeleted(deleted));
     }
 
 }

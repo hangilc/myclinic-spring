@@ -36,7 +36,7 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 	List<Object[]> findVisitIdVisitedAtByPatientAndIyakuhincode(@Param("patientId") int patientId,
 																@Param("iyakuhincode") int iyakuhincode);
 
-	@Modifying(clearAutomatically = true)
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query("update Drug d set d.prescribed = 1 where d.visitId = :visitId")
 	void markAsPrescribedForVisit(@Param("visitId") int visitId);
 
@@ -74,7 +74,7 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 
 	int countByVisitIdAndPrescribed(int visitId, int prescribed);
 
-	@Modifying(clearAutomatically = true)
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query("update Drug d set d.days = :days where d.drugId in :drugIds")
 	void batchUpdateDays(@Param("drugIds") List<Integer> drugIds, @Param("days") int days);
 

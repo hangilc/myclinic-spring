@@ -1,0 +1,12 @@
+package jp.chang.myclinic.logdto.practicelog;
+
+import jp.chang.myclinic.dto.{{ name }}DTO;
+
+public class {{ name }}Created implements PracticeLogBody {
+
+    public {{ name }}DTO created;
+
+    public {{ name }}Created({{ name }}DTO created) {
+        this.created = created;
+    }
+}

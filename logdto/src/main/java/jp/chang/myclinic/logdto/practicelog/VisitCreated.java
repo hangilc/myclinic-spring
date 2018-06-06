@@ -4,9 +4,9 @@ import jp.chang.myclinic.dto.VisitDTO;
 
 public class VisitCreated implements PracticeLogBody {
 
-    public VisitDTO visit;
+    public VisitDTO created;
 
-    public VisitCreated(VisitDTO visit) {
-        this.visit = visit;
+    public VisitCreated(VisitDTO created) {
+        this.created = created;
     }
 }

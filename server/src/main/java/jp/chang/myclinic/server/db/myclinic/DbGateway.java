@@ -293,6 +293,7 @@ public class DbGateway {
     public int enterShahokokuho(ShahokokuhoDTO shahokokuhoDTO) {
         Shahokokuho shahokokuho = mapper.fromShahokokuhoDTO(shahokokuhoDTO);
         shahokokuho = shahokokuhoRepository.save(shahokokuho);
+        practiceLogger.logShahokokuhoCreated(mapper.toShahokokuhoDTO(shahokokuho));
         return shahokokuho.getShahokokuhoId();
     }
 
@@ -301,7 +302,9 @@ public class DbGateway {
         if (usage != 0) {
             throw new RuntimeException("この社保・国保はすでに使用されているので、削除できません。");
         }
+        ShahokokuhoDTO deleted = mapper.toShahokokuhoDTO(shahokokuhoRepository.findById(shahokokuhoId));
         shahokokuhoRepository.deleteById(shahokokuhoId);
+        practiceLogger.logShahokokuhoDeleted(deleted);
     }
 
     public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
@@ -320,6 +323,7 @@ public class DbGateway {
     public int enterKoukikourei(KoukikoureiDTO koukikoureiDTO) {
         Koukikourei koukikourei = mapper.fromKoukikoureiDTO(koukikoureiDTO);
         koukikourei = koukikoureiRepository.save(koukikourei);
+        practiceLogger.logKoukikoureiCreated(mapper.toKoukikoureiDTO(koukikourei));
         return koukikourei.getKoukikoureiId();
     }
 
@@ -327,7 +331,9 @@ public class DbGateway {
         if (visitRepository.countByKoukikoureiId(koukikoureiId) > 0) {
             throw new RuntimeException("この後期高齢保険はすでに使用されているので、削除できません。");
         }
+        KoukikoureiDTO deleted = mapper.toKoukikoureiDTO(koukikoureiRepository.findById(koukikoureiId));
         koukikoureiRepository.deleteById(koukikoureiId);
+        practiceLogger.logKoukikoureiDeleted(deleted);
     }
 
     public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
@@ -347,6 +353,7 @@ public class DbGateway {
     public int enterRoujin(RoujinDTO roujinDTO) {
         Roujin roujin = mapper.fromRoujinDTO(roujinDTO);
         roujin = roujinRepository.save(roujin);
+        practiceLogger.logRoujinCreated(mapper.toRoujinDTO(roujin));
         return roujin.getRoujinId();
     }
 
@@ -354,7 +361,9 @@ public class DbGateway {
         if (visitRepository.countByRoujinId(roujinId) > 0) {
             throw new RuntimeException("この老人保険はすでに使用されているので、削除できません。");
         }
+        RoujinDTO deleted = mapper.toRoujinDTO(roujinRepository.findById(roujinId));
         roujinRepository.deleteById(roujinId);
+        practiceLogger.logRoujinDeleted(deleted);
     }
 
     public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
@@ -374,6 +383,7 @@ public class DbGateway {
     public int enterKouhi(KouhiDTO kouhiDTO) {
         Kouhi kouhi = mapper.fromKouhiDTO(kouhiDTO);
         kouhi = kouhiRepository.save(kouhi);
+        practiceLogger.logKouhiCreated(mapper.toKouhiDTO(kouhi));
         return kouhi.getKouhiId();
     }
 
@@ -381,7 +391,9 @@ public class DbGateway {
         if (visitRepository.countByKouhi1IdOrKouhi2IdOrKouhi3Id(kouhiId, kouhiId, kouhiId) > 0) {
             throw new RuntimeException("この公費負担はすでに使われているので、削除できません。");
         }
+        KouhiDTO deleted = mapper.toKouhiDTO(kouhiRepository.findById(kouhiId));
         kouhiRepository.deleteById(kouhiId);
+        practiceLogger.logKouhiDeleted(deleted);
     }
 
     public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at) {
@@ -431,7 +443,8 @@ public class DbGateway {
 
     public void enterCharge(ChargeDTO chargeDTO) {
         Charge charge = mapper.fromChargeDTO(chargeDTO);
-        chargeRepository.save(charge);
+        charge = chargeRepository.save(charge);
+        practiceLogger.logChargeCreated(mapper.toChargeDTO(charge));
     }
 
     public ChargeDTO getCharge(int visitId) {
@@ -448,19 +461,22 @@ public class DbGateway {
         Optional<Charge> optCharge = chargeRepository.findByVisitId(visitId);
         if (optCharge.isPresent()) {
             Charge currentCharge = optCharge.get();
+            ChargeDTO prev = mapper.toChargeDTO(currentCharge);
             currentCharge.setCharge(charge);
-            chargeRepository.save(currentCharge);
+            currentCharge = chargeRepository.save(currentCharge);
+            practiceLogger.logChargeUpdated(prev, mapper.toChargeDTO(currentCharge));
         } else {
-            Charge newCharge = new Charge();
-            newCharge.setVisitId(visitId);
-            newCharge.setCharge(charge);
-            chargeRepository.save(newCharge);
+            ChargeDTO newCharge = new ChargeDTO();
+            newCharge.visitId = visitId;
+            newCharge.charge = charge;
+            enterCharge(newCharge);
         }
     }
 
     public void enterPayment(PaymentDTO paymentDTO) {
         Payment payment = mapper.fromPaymentDTO(paymentDTO);
-        paymentRepository.save(payment);
+        payment = paymentRepository.save(payment);
+        practiceLogger.logPaymentCreated(mapper.toPaymentDTO(payment));
     }
 
     public List<PaymentDTO> listPayment(int visitId) {
@@ -477,17 +493,15 @@ public class DbGateway {
     public int enterVisit(VisitDTO visitDTO) {
         Visit visit = mapper.fromVisitDTO(visitDTO);
         visit = visitRepository.save(visit);
-        int visitId = visit.getVisitId();
-        visitDTO.visitId = visitId;
-        practiceLogger.logVisitCreated(visitDTO);
-        return visitId;
+        practiceLogger.logVisitCreated(mapper.toVisitDTO(visit));
+        return visit.getVisitId();
     }
 
     public void updateVisit(VisitDTO visitDTO) {
         VisitDTO prev = getVisit(visitDTO.visitId);
         Visit visit = mapper.fromVisitDTO(visitDTO);
-        visitRepository.save(visit);
-        practiceLogger.logVisitUpdated(prev, visitDTO);
+        visit = visitRepository.save(visit);
+        practiceLogger.logVisitUpdated(prev, mapper.toVisitDTO(visit));
     }
 
     public List<Integer> listVisitIds() {
@@ -527,8 +541,17 @@ public class DbGateway {
         return resultToShinryouFullDTO(result);
     }
 
+    public ShinryouDTO getShinryou(int shinryouId){
+        return mapper.toShinryouDTO(shinryouRepository.findById(shinryouId));
+    }
+
     public void batchDeleteShinryou(List<Integer> shinryouIds) {
-        shinryouRepository.batchDelete(shinryouIds);
+        List<ShinryouDTO> deletedList = shinryouIds.stream()
+                .map(this::getShinryou).collect(Collectors.toList());
+        if( deletedList.size() > 0 ) {
+            shinryouRepository.batchDelete(shinryouIds);
+            deletedList.forEach(practiceLogger::logShinryouDeleted);
+        }
     }
 
     public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds) {
@@ -548,15 +571,21 @@ public class DbGateway {
 
     public ShinryouDTO enterShinryou(ShinryouDTO shinryouDTO) {
         Shinryou shinryou = mapper.fromShinryouDTO(shinryouDTO);
-        return mapper.toShinryouDTO(shinryouRepository.save(shinryou));
+        ShinryouDTO created =  mapper.toShinryouDTO(shinryouRepository.save(shinryou));
+        practiceLogger.logShinryouCreated(created);
+        return created;
     }
 
     public void updateShinryou(ShinryouDTO shinryouDTO) {
-        shinryouRepository.save(mapper.fromShinryouDTO(shinryouDTO));
+        ShinryouDTO prev = getShinryou(shinryouDTO.shinryouId);
+        Shinryou updated = shinryouRepository.save(mapper.fromShinryouDTO(shinryouDTO));
+        practiceLogger.logShinryouUpdated(prev, mapper.toShinryouDTO(updated));
     }
 
     public void deleteShinryou(int shinryouId) {
+        ShinryouDTO deleted = getShinryou(shinryouId);
         shinryouRepository.deleteById(shinryouId);
+        practiceLogger.logShinryouDeleted(deleted);
     }
 
     public List<Integer> deleteDuplicateShinryou(int visitId) {
@@ -569,7 +598,7 @@ public class DbGateway {
                 shinryoucodes.add(shinryou.getShinryoucode());
             }
         });
-        shinryouIds.forEach(shinryouId -> shinryouRepository.deleteById(shinryouId));
+        batchDeleteShinryou(shinryouIds);
         return shinryouIds;
     }
 
@@ -615,16 +644,25 @@ public class DbGateway {
         Drug drug = mapper.fromDrugDTO(drugDTO);
         drug.setDrugId(null);
         drug = drugRepository.save(drug);
+        practiceLogger.logDrugCreated(mapper.toDrugDTO(drug));
         return drug.getDrugId();
     }
 
+    public DrugDTO getDrug(int drugId){
+        return mapper.toDrugDTO(drugRepository.findById(drugId));
+    }
+
     public void deleteDrug(int drugId) {
+        DrugDTO deleted = getDrug(drugId);
         drugRepository.deleteById(drugId);
+        practiceLogger.logDrugDeleted(deleted);
     }
 
     public void updateDrug(DrugDTO drugDTO) {
+        DrugDTO prev = getDrug(drugDTO.drugId);
         Drug drug = mapper.fromDrugDTO(drugDTO);
-        drugRepository.save(drug);
+        drug = drugRepository.save(drug);
+        practiceLogger.logDrugUpdated(prev, mapper.toDrugDTO(drug));
     }
 
     public void markDrugsAsPrescribedForVisit(int visitId) {
@@ -654,7 +692,17 @@ public class DbGateway {
     }
 
     public void batchUpdateDrugDays(List<Integer> drugIds, int days) {
+        List<DrugDTO> prevDrugs = drugIds.stream()
+                .map(this::getDrug).collect(Collectors.toList());
         drugRepository.batchUpdateDays(drugIds, days);
+        List<DrugDTO> updatedDrugs = drugIds.stream()
+                .map(this::getDrug).collect(Collectors.toList());
+        for(int i=0;i<prevDrugs.size();i++){
+            DrugDTO prev = prevDrugs.get(i);
+            if( prev.days != days ){
+                practiceLogger.logDrugUpdated(prev, updatedDrugs.get(i));
+            }
+        }
     }
 
     private List<TextDTO> listText(int visitId) {
@@ -710,11 +758,6 @@ public class DbGateway {
         Date atDate = Date.valueOf(at);
         return mapper.toShinryouMasterDTO(shinryouMasterRepository.findOneByShinryoucodeAndDate(shinryoucode, atDate));
     }
-
-//    public Optional<ShinryouMasterDTO> findShinryouMaster(int shinryoucode, LocalDate at){
-//        Date date = Date.valueOf(at);
-//        return shinryouMasterRepository.findByShinryoucodeAndDate(shinryoucode, date).map(mapper::toShinryouMasterDTO);
-//    }
 
     public VisitFullDTO getVisitFull(int visitId) {
         VisitDTO visitDTO = getVisit(visitId);
@@ -859,8 +902,8 @@ public class DbGateway {
     }
 
     public void enterGazouLabel(GazouLabelDTO gazoulabelDTO) {
-        GazouLabel gazoulabel = mapper.fromGazouLabelDTO(gazoulabelDTO);
-        gazouLabelRepository.save(gazoulabel);
+        GazouLabel gazouLabel = mapper.fromGazouLabelDTO(gazoulabelDTO);
+        gazouLabel = gazouLabelRepository.save(gazouLabel);
     }
 
     public void deleteConduct(int conductId) {
