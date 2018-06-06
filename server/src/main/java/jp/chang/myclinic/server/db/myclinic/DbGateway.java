@@ -225,8 +225,10 @@ public class DbGateway {
     }
 
     public void updatePatient(PatientDTO patientDTO) {
+        PatientDTO prev = getPatient(patientDTO.patientId);
         Patient patient = mapper.fromPatientDTO(patientDTO);
-        patientRepository.save(patient);
+        patient = patientRepository.save(patient);
+        practiceLogger.logPatientUpdated(prev, mapper.toPatientDTO(patient));
     }
 
     public List<PatientDTO> searchPatientByLastName(String text) {
