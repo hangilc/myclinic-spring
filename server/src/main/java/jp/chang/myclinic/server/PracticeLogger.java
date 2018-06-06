@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Component
 public class PracticeLogger {
@@ -16,7 +16,7 @@ public class PracticeLogger {
     //private static Logger logger = LoggerFactory.getLogger(PracticeLogger.class);
     private static ObjectMapper mapper;
     private String server = java.lang.management.ManagementFactory.getRuntimeMXBean().getName();
-    private AtomicInteger serialId = new AtomicInteger();
+    private int serialId = 0;
     private List<PracticeLog> logs = new ArrayList<>();
 
     PracticeLogger() {
@@ -26,15 +26,36 @@ public class PracticeLogger {
     private void logValue(String kind, PracticeLogBody obj){
         try {
             String body = mapper.writeValueAsString(obj);
-            PracticeLog practiceLog = new PracticeLog(server, serialId.incrementAndGet(), kind, body);
-            logs.add(practiceLog);
+            synchronized(this) {
+                PracticeLog practiceLog = new PracticeLog(++serialId, kind, body);
+                logs.add(practiceLog);
+            }
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to log practice.", e);
         }
     }
 
+    public String getServerId(){
+        return server;
+    }
+
+    public int getSerialId(){
+        synchronized(this){
+            return serialId;
+        }
+    }
+
     public List<PracticeLog> getLogs(){
-        return logs;
+        synchronized(this) {
+            return logs;
+        }
+    }
+
+    public List<PracticeLog> listLogsAfter(int serialId){
+        synchronized(this){
+            return logs.stream().filter(log -> log.serialId > serialId)
+                    .collect(Collectors.toList());
+        }
     }
 
     public void logVisitCreated(VisitDTO visit){

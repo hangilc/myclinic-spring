@@ -118,16 +118,15 @@ public class DbGateway {
                 .map(this::resultToVisitPatientDTO).collect(Collectors.toList());
     }
 
-    public VisitFull2PatientPageDTO pageVisitsWithPatientAt(LocalDate date, int page) {
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.Direction.DESC, "visitId");
-        Page<Integer> pageVisitIds = visitRepository.pageVisitIdAt(date.toString(), pageRequest);
-        List<VisitFull2PatientDTO> visitFullPatients = Collections.emptyList();
-        if (pageVisitIds.getContent().size() > 0) {
+    private List<VisitFull2PatientDTO> convertToVisitFull2Patients(List<Integer> visitIds){
+        if( visitIds.isEmpty() ){
+            return Collections.emptyList();
+        } else {
             List<VisitPatientDTO> visitPatients = visitRepository
-                    .findByVisitIdsWithPatient(pageVisitIds.getContent(), Sort.by(Sort.Direction.DESC, "visitId"))
+                    .findByVisitIdsWithPatient(visitIds, Sort.by(Sort.Direction.DESC, "visitId"))
                     .stream()
                     .map(this::resultToVisitPatientDTO).collect(Collectors.toList());
-            visitFullPatients = visitPatients.stream()
+            return visitPatients.stream()
                     .map(visitPatient -> {
                         VisitFull2DTO visitFull = getVisitFull2(mapper.fromVisitDTO(visitPatient.visit));
                         VisitFull2PatientDTO result = new VisitFull2PatientDTO();
@@ -136,11 +135,22 @@ public class DbGateway {
                         return result;
                     }).collect(Collectors.toList());
         }
+    }
+
+    public VisitFull2PatientPageDTO pageVisitsWithPatientAt(LocalDate date, int page) {
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.Direction.DESC, "visitId");
+        Page<Integer> pageVisitIds = visitRepository.pageVisitIdAt(date.toString(), pageRequest);
+        List<VisitFull2PatientDTO> visitFullPatients = convertToVisitFull2Patients(pageVisitIds.getContent());
         VisitFull2PatientPageDTO resultPage = new VisitFull2PatientPageDTO();
         resultPage.page = page;
         resultPage.totalPages = pageVisitIds.getTotalPages();
         resultPage.visitPatients = visitFullPatients;
         return resultPage;
+    }
+
+    public List<VisitFull2PatientDTO> listVisitFull2PatientOfToday(){
+        List<Integer> visitIds = visitRepository.findVisitIdForToday(Sort.by(Sort.Direction.DESC, "visitId"));
+        return convertToVisitFull2Patients(visitIds);
     }
 
     public void enterWqueue(WqueueDTO wqueueDTO) {
