@@ -1143,19 +1143,18 @@ public class DbGateway {
 
     public void finishCashier(PaymentDTO paymentDTO) {
         Payment payment = mapper.fromPaymentDTO(paymentDTO);
-        paymentRepository.save(payment);
+        payment = paymentRepository.save(payment);
+        practiceLogger.logPaymentCreated(mapper.toPaymentDTO(payment));
         Optional<PharmaQueue> optPharmaQueue = pharmaQueueRepository.findByVisitId(paymentDTO.visitId);
         Optional<Wqueue> optWqueue = wqueueRepository.tryFindByVisitId(paymentDTO.visitId);
         if (optPharmaQueue.isPresent()) {
             if (optWqueue.isPresent()) {
-                Wqueue wqueue = optWqueue.get();
-                wqueue.setWaitState(WqueueWaitState.WaitDrug.getCode());
-                wqueueRepository.save(wqueue);
+                changeWqueueState(paymentDTO.visitId, WqueueWaitState.WaitDrug.getCode());
             }
         } else {
             if (optWqueue.isPresent()) {
                 Wqueue wqueue = optWqueue.get();
-                wqueueRepository.delete(wqueue);
+                deleteWqueue(mapper.toWqueueDTO(wqueue));
             }
         }
     }
