@@ -13,5 +13,7 @@ public interface DiseaseAdjRepository extends CrudRepository<DiseaseAdj, Integer
             " and a.shuushokugocode = m.shuushokugocode ")
     List<Object[]> findByDiseaseIdWithMaster(@Param("diseaseId") int diseaseId, Sort sort);
 
+    List<DiseaseAdj> findByDiseaseId(int diseaseId, Sort sort);
+
     void deleteByDiseaseId(int diseaseId);
 }

@@ -253,4 +253,40 @@ public class PracticeLogger {
         logValue("conduct-shinryou-deleted", new ConductKizaiDeleted(deleted));
     }
 
+    public void logPharmaDrugCreated(PharmaDrugDTO created){
+        logValue("pharma-drug-created", new PharmaDrugCreated(created));
+    }
+
+    public void logPharmaDrugUpdated(PharmaDrugDTO prev, PharmaDrugDTO updated){
+        logValue("pharma-drug-updated", new PharmaDrugUpdated(prev, updated));
+    }
+
+    public void logPharmaDrugDeleted(PharmaDrugDTO deleted){
+        logValue("pharma-drug-deleted", new PharmaDrugDeleted(deleted));
+    }
+
+    public void logDiseaseCreated(DiseaseDTO created){
+        logValue("disease-created", new DiseaseCreated(created));
+    }
+
+    public void logDiseaseUpdated(DiseaseDTO prev, DiseaseDTO updated){
+        logValue("disease-updated", new DiseaseUpdated(prev, updated));
+    }
+
+    public void logDiseaseDeleted(DiseaseDTO deleted){
+        logValue("disease-deleted", new DiseaseDeleted(deleted));
+    }
+
+    public void logDiseaseAdjCreated(DiseaseAdjDTO created){
+        logValue("disease-adj-created", new DiseaseAdjCreated(created));
+    }
+
+    public void logDiseaseAdjUpdated(DiseaseAdjDTO prev, DiseaseAdjDTO updated){
+        logValue("disease-adj-updated", new DiseaseAdjUpdated(prev, updated));
+    }
+
+    public void logDiseaseAdjDeleted(DiseaseAdjDTO deleted){
+        logValue("disease-adj-deleted", new DiseaseAdjDeleted(deleted));
+    }
+
 }

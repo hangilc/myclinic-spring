@@ -1227,16 +1227,21 @@ public class DbGateway {
 
     public void enterPharmaDrug(PharmaDrugDTO pharmaDrugDTO) {
         PharmaDrug pharmaDrug = mapper.fromPharmaDrugDTO(pharmaDrugDTO);
-        pharmaDrugRepository.save(pharmaDrug);
+        pharmaDrug = pharmaDrugRepository.save(pharmaDrug);
+        practiceLogger.logPharmaDrugCreated(mapper.toPharmaDrugDTO(pharmaDrug));
     }
 
     public void updatePharmaDrug(PharmaDrugDTO pharmaDrugDTO) {
+        PharmaDrugDTO prev = mapper.toPharmaDrugDTO(pharmaDrugRepository.findById(pharmaDrugDTO.iyakuhincode));
         PharmaDrug pharmaDrug = mapper.fromPharmaDrugDTO(pharmaDrugDTO);
-        pharmaDrugRepository.save(pharmaDrug);
+        pharmaDrug = pharmaDrugRepository.save(pharmaDrug);
+        practiceLogger.logPharmaDrugUpdated(prev, mapper.toPharmaDrugDTO(pharmaDrug));
     }
 
     public void deletePharmaDrug(int iyakuhincode) {
+        PharmaDrugDTO deleted = mapper.toPharmaDrugDTO(pharmaDrugRepository.findById(iyakuhincode));
         pharmaDrugRepository.deleteById(iyakuhincode);
+        practiceLogger.logPharmaDrugDeleted(deleted);
     }
 
     public List<PharmaDrugNameDTO> searchPharmaDrugNames(String text) {
@@ -1474,45 +1479,72 @@ public class DbGateway {
         Disease disease = mapper.fromDiseaseDTO(diseaseDTO);
         disease.setDiseaseId(null);
         disease = diseaseRepository.save(disease);
+        practiceLogger.logDiseaseCreated(mapper.toDiseaseDTO(disease));
         int diseaseId = disease.getDiseaseId();
         adjDTOList.forEach(adjDTO -> {
             DiseaseAdj adj = mapper.fromDiseaseAdjDTO(adjDTO);
             adj.setDiseaseAdjId(null);
             adj.setDiseaseId(diseaseId);
-            diseaseAdjRepository.save(adj);
+            adj = diseaseAdjRepository.save(adj);
+            practiceLogger.logDiseaseAdjCreated(mapper.toDiseaseAdjDTO(adj));
         });
         return diseaseId;
     }
 
     public void modifyDiseaseEndReason(int diseaseId, LocalDate endDate, char reason) {
         Disease d = diseaseRepository.findById(diseaseId);
+        DiseaseDTO prev = mapper.toDiseaseDTO(d);
         d.setEndReason(reason);
         d.setEndDate(endDate.toString());
-        diseaseRepository.save(d);
+        d = diseaseRepository.save(d);
+        practiceLogger.logDiseaseUpdated(prev, mapper.toDiseaseDTO(d));
     }
 
     public void modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
         DiseaseDTO diseaseDTO = diseaseModifyDTO.disease;
         Disease d = diseaseRepository.findById(diseaseDTO.diseaseId);
-        d.setShoubyoumeicode(diseaseDTO.shoubyoumeicode);
-        d.setStartDate(diseaseDTO.startDate);
-        d.setEndDate(diseaseDTO.endDate);
-        d.setEndReason(diseaseDTO.endReason);
-        diseaseRepository.save(d);
-        diseaseAdjRepository.deleteByDiseaseId(diseaseDTO.diseaseId);
-        if (diseaseModifyDTO.shuushokugocodes != null) {
-            diseaseModifyDTO.shuushokugocodes.forEach(shuushokugocode -> {
-                DiseaseAdj adj = new DiseaseAdj();
-                adj.setDiseaseId(diseaseDTO.diseaseId);
-                adj.setShuushokugocode(shuushokugocode);
-                diseaseAdjRepository.save(adj);
-            });
+        DiseaseDTO prevDisease = mapper.toDiseaseDTO(d);
+        if( !diseaseDTO.equals(prevDisease) ){
+            d.setShoubyoumeicode(diseaseDTO.shoubyoumeicode);
+            d.setStartDate(diseaseDTO.startDate);
+            d.setEndDate(diseaseDTO.endDate);
+            d.setEndReason(diseaseDTO.endReason);
+            d = diseaseRepository.save(d);
+            practiceLogger.logDiseaseUpdated(prevDisease, mapper.toDiseaseDTO(d));
+        }
+        List<DiseaseAdj> adjList = diseaseAdjRepository.findByDiseaseId(diseaseDTO.diseaseId, Sort.by("diseaseAdjId"));
+        List<Integer> prevAdjCodes = adjList.stream().map(DiseaseAdj::getShuushokugocode).collect(Collectors.toList());
+        if( !prevAdjCodes.equals(diseaseModifyDTO.shuushokugocodes) ){
+            if( adjList.size() > 0 ){
+                adjList.forEach(adj -> {
+                    DiseaseAdjDTO deleted = mapper.toDiseaseAdjDTO(adj);
+                    diseaseAdjRepository.delete(adj);
+                    practiceLogger.logDiseaseAdjDeleted(deleted);
+                });
+            }
+            if (diseaseModifyDTO.shuushokugocodes != null) {
+                diseaseModifyDTO.shuushokugocodes.forEach(shuushokugocode -> {
+                    DiseaseAdj adj = new DiseaseAdj();
+                    adj.setDiseaseId(diseaseDTO.diseaseId);
+                    adj.setShuushokugocode(shuushokugocode);
+                    adj = diseaseAdjRepository.save(adj);
+                    practiceLogger.logDiseaseAdjCreated(mapper.toDiseaseAdjDTO(adj));
+                });
+            }
         }
     }
 
     public void deleteDisease(int diseaseId) {
-        diseaseRepository.deleteById(diseaseId);
-        diseaseAdjRepository.deleteByDiseaseId(diseaseId);
+        List<DiseaseAdj> adjList = diseaseAdjRepository.findByDiseaseId(diseaseId, Sort.by("diseaseAdjId"));
+        adjList.forEach(adj -> {
+            DiseaseAdjDTO prev = mapper.toDiseaseAdjDTO(adj);
+            diseaseAdjRepository.delete(adj);
+            practiceLogger.logDiseaseAdjDeleted(prev);
+        });
+        Disease d = diseaseRepository.findById(diseaseId);
+        DiseaseDTO prevDisease = mapper.toDiseaseDTO(d);
+        diseaseRepository.delete(d);
+        practiceLogger.logDiseaseDeleted(prevDisease);
     }
 
     public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at) {
