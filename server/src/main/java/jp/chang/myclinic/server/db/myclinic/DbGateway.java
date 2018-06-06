@@ -904,34 +904,56 @@ public class DbGateway {
     public void enterGazouLabel(GazouLabelDTO gazoulabelDTO) {
         GazouLabel gazouLabel = mapper.fromGazouLabelDTO(gazoulabelDTO);
         gazouLabel = gazouLabelRepository.save(gazouLabel);
+        practiceLogger.logGazouLabelCreated(mapper.toGazouLabelDTO(gazouLabel));
     }
 
     public void deleteConduct(int conductId) {
         Optional<GazouLabel> optGazouLabel = gazouLabelRepository.findOneByConductId(conductId);
-        optGazouLabel.ifPresent(gazouLabelRepository::delete);
-        conductShinryouRepository.findByConductId(conductId).forEach(conductShinryouRepository::delete);
-        conductDrugRepository.findByConductId(conductId).forEach(conductDrugRepository::delete);
-        conductKizaiRepository.findByConductId(conductId).forEach(conductKizaiRepository::delete);
+        optGazouLabel.ifPresent(gazouLabel -> {
+            GazouLabelDTO deleted = mapper.toGazouLabelDTO(gazouLabel);
+            gazouLabelRepository.delete(gazouLabel);
+            practiceLogger.logGazouLabelDeleted(deleted);
+        });
+        conductShinryouRepository.findByConductId(conductId).forEach(conductShinryou -> {
+            ConductShinryouDTO deleted = mapper.toConductShinryouDTO(conductShinryou);
+            conductShinryouRepository.delete(conductShinryou);
+            practiceLogger.logConductShinryouDeleted(deleted);
+        });
+        conductDrugRepository.findByConductId(conductId).forEach(conductDrug -> {
+            ConductDrugDTO deleted = mapper.toConductDrugDTO(conductDrug);
+            conductDrugRepository.delete(conductDrug);
+            practiceLogger.logConductDrugDeleted(deleted);
+        });
+        conductKizaiRepository.findByConductId(conductId).forEach(conductKizai -> {
+            ConductKizaiDTO deleted = mapper.toConductKizaiDTO(conductKizai);
+            conductKizaiRepository.delete(conductKizai);
+            practiceLogger.logConductKizaiDeleted(deleted);
+        });
+        ConductDTO deletedConduct = mapper.toConductDTO(conductRepository.findById(conductId));
         conductRepository.deleteById(conductId);
+        practiceLogger.logConductDeleted(deletedConduct);
     }
 
     public void modifyGazouLabel(int conductId, String label) {
         Optional<GazouLabel> optGazouLabel = gazouLabelRepository.findOneByConductId(conductId);
         if (optGazouLabel.isPresent()) {
             GazouLabel gazouLabel = optGazouLabel.get();
+            GazouLabelDTO prev = mapper.toGazouLabelDTO(gazouLabel);
             gazouLabel.setLabel(label);
-            gazouLabelRepository.save(gazouLabel);
+            gazouLabel = gazouLabelRepository.save(gazouLabel);
+            practiceLogger.logGazouLabelUpdated(prev, mapper.toGazouLabelDTO(gazouLabel));
         } else {
-            GazouLabel gazouLabel = new GazouLabel();
-            gazouLabel.setConductId(conductId);
-            gazouLabel.setLabel(label);
-            gazouLabelRepository.save(gazouLabel);
+            GazouLabelDTO gazouLabel = new GazouLabelDTO();
+            gazouLabel.conductId = conductId;
+            gazouLabel.label = label;
+            enterGazouLabel(gazouLabel);
         }
     }
 
     public int enterConduct(ConductDTO conductDTO) {
         Conduct conduct = mapper.fromConductDTO(conductDTO);
         conduct = conductRepository.save(conduct);
+        practiceLogger.logConductCreated(mapper.toConductDTO(conduct));
         return conduct.getConductId();
     }
 
@@ -991,11 +1013,14 @@ public class DbGateway {
     public int enterConductShinryou(ConductShinryouDTO conductShinryouDTO) {
         ConductShinryou conductShinryou = mapper.fromConductShinryouDTO(conductShinryouDTO);
         conductShinryou = conductShinryouRepository.save(conductShinryou);
+        practiceLogger.logConductShinryouCreated(mapper.toConductShinryouDTO(conductShinryou));
         return conductShinryou.getConductShinryouId();
     }
 
     public void deleteConductShinryou(int conductShinryouId) {
+        ConductShinryouDTO deleted = mapper.toConductShinryouDTO(conductShinryouRepository.findById(conductShinryouId));
         conductShinryouRepository.deleteById(conductShinryouId);
+        practiceLogger.logConductShinryouDeleted(deleted);
     }
 
     public List<ConductDrugDTO> listConductDrug(int conductId) {
@@ -1012,11 +1037,14 @@ public class DbGateway {
     public int enterConductDrug(ConductDrugDTO conductDrugDTO) {
         ConductDrug conductDrug = mapper.fromConductDrugDTO(conductDrugDTO);
         conductDrug = conductDrugRepository.save(conductDrug);
+        practiceLogger.logConductDrugCreated(mapper.toConductDrugDTO(conductDrug));
         return conductDrug.getConductDrugId();
     }
 
     public void deleteConductDrug(int conductDrugId) {
+        ConductDrugDTO deleted = mapper.toConductDrugDTO(conductDrugRepository.findById(conductDrugId));
         conductDrugRepository.deleteById(conductDrugId);
+        practiceLogger.logConductDrugDeleted(deleted);
     }
 
     public List<ConductKizaiDTO> listConductKizai(int conductId) {
@@ -1033,11 +1061,14 @@ public class DbGateway {
     public int enterConductKizai(ConductKizaiDTO conductKizaiDTO) {
         ConductKizai conductKizai = mapper.fromConductKizaiDTO(conductKizaiDTO);
         conductKizai = conductKizaiRepository.save(conductKizai);
+        practiceLogger.logConductKizaiCreated(mapper.toConductKizaiDTO(conductKizai));
         return conductKizai.getConductKizaiId();
     }
 
     public void deleteConductKizai(int conductKizaiId) {
+        ConductKizaiDTO deleted = mapper.toConductKizaiDTO(conductKizaiRepository.findById(conductKizaiId));
         conductKizaiRepository.deleteById(conductKizaiId);
+        practiceLogger.logConductKizaiDeleted(deleted);
     }
 
     public Optional<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at) {
@@ -1058,8 +1089,10 @@ public class DbGateway {
 
     public void modifyConductKind(int conductId, int kind) {
         Conduct c = conductRepository.findById(conductId);
+        ConductDTO prev = mapper.toConductDTO(c);
         c.setKind(kind);
-        conductRepository.save(c);
+        c = conductRepository.save(c);
+        practiceLogger.logConductUpdated(prev, mapper.toConductDTO(c));
     }
 
     public HokenDTO getHokenForVisit(VisitDTO visitDTO) {

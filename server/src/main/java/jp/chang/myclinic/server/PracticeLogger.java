@@ -205,4 +205,52 @@ public class PracticeLogger {
         logValue("gazou-label-deleted", new GazouLabelDeleted(deleted));
     }
 
+    public void logConductCreated(ConductDTO created){
+        logValue("conduct-created", new ConductCreated(created));
+    }
+
+    public void logConductUpdated(ConductDTO prev, ConductDTO updated){
+        logValue("conduct-updated", new ConductUpdated(prev, updated));
+    }
+
+    public void logConductDeleted(ConductDTO deleted){
+        logValue("conduct-deleted", new ConductDeleted(deleted));
+    }
+
+    public void logConductShinryouCreated(ConductShinryouDTO created){
+        logValue("conduct-shinryou-created", new ConductShinryouCreated(created));
+    }
+
+    public void logConductShinryouUpdated(ConductShinryouDTO prev, ConductShinryouDTO updated){
+        logValue("conduct-shinryou-updated", new ConductShinryouUpdated(prev, updated));
+    }
+
+    public void logConductShinryouDeleted(ConductShinryouDTO deleted){
+        logValue("conduct-shinryou-deleted", new ConductShinryouDeleted(deleted));
+    }
+
+    public void logConductDrugCreated(ConductDrugDTO created){
+        logValue("conduct-shinryou-created", new ConductDrugCreated(created));
+    }
+
+    public void logConductDrugUpdated(ConductDrugDTO prev, ConductDrugDTO updated){
+        logValue("conduct-shinryou-updated", new ConductDrugUpdated(prev, updated));
+    }
+
+    public void logConductDrugDeleted(ConductDrugDTO deleted){
+        logValue("conduct-shinryou-deleted", new ConductDrugDeleted(deleted));
+    }
+
+    public void logConductKizaiCreated(ConductKizaiDTO created){
+        logValue("conduct-shinryou-created", new ConductKizaiCreated(created));
+    }
+
+    public void logConductKizaiUpdated(ConductKizaiDTO prev, ConductKizaiDTO updated){
+        logValue("conduct-shinryou-updated", new ConductKizaiUpdated(prev, updated));
+    }
+
+    public void logConductKizaiDeleted(ConductKizaiDTO deleted){
+        logValue("conduct-shinryou-deleted", new ConductKizaiDeleted(deleted));
+    }
+
 }
