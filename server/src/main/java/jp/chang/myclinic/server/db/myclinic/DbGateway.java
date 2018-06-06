@@ -1683,13 +1683,6 @@ public class DbGateway {
         return paymentVisitPatientDTO;
     }
 
-//    private PharmaQueueFullDTO resultToPharmaQueueFull(Object[] result) {
-//        PharmaQueueFullDTO pharmaQueueFullDTO = new PharmaQueueFullDTO();
-//        pharmaQueueFullDTO.pharmaQueue = mapper.toPharmaQueueDTO((PharmaQueue) result[0]);
-//        pharmaQueueFullDTO.patient = mapper.toPatientDTO((Patient) result[1]);
-//        return pharmaQueueFullDTO;
-//    }
-
     private WqueueFullDTO resultToWqueueFull(Object[] result) {
         WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
         wqueueFullDTO.wqueue = mapper.toWqueueDTO((Wqueue) result[0]);
