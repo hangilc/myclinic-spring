@@ -3,7 +3,6 @@ package jp.chang.myclinic.server.rest;
 import jp.chang.myclinic.consts.MeisaiSection;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.server.PracticeLogger;
 import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.server.rcpt.*;
 import jp.chang.myclinic.util.DateTimeUtil;
@@ -27,10 +26,6 @@ public class VisitController {
     private DbGateway dbGateway;
     @Autowired
     private HoukatsuKensa houkatsuKensa;
-    @Autowired
-    private PracticeLogger practiceLogger;
-
-    //private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 
     @RequestMapping(value = "/start-visit", method = RequestMethod.POST)
     public int startVisit(@RequestParam("patient-id") int patientId) {
@@ -85,8 +80,6 @@ public class VisitController {
         wqueueDTO.visitId = visitId;
         wqueueDTO.waitState = MyclinicConsts.WqueueStateWaitExam;
         dbGateway.enterWqueue(wqueueDTO);
-        practiceLogger.logVisitCreated(visitDTO);
-        practiceLogger.logWqueueCreated(wqueueDTO);
         return visitId;
     }
 
@@ -145,7 +138,6 @@ public class VisitController {
         if (patientDTO.birthday != null) {
             HokenDTO hokenDTO = dbGateway.getHokenForVisit(visit);
             meisaiDTO.hoken = hokenDTO;
-            //LocalDateTime atDateTime = DateTimeUtil.parseSqlDateTime(visit.visitedAt);
             LocalDate birthdayDate = DateTimeUtil.parseSqlDate(patientDTO.birthday);
             int rcptAge = HokenUtil.calcRcptAge(birthdayDate.getYear(), birthdayDate.getMonth().getValue(),
                     birthdayDate.getDayOfMonth(), at.getYear(), at.getMonth().getValue());
@@ -186,15 +178,15 @@ public class VisitController {
 
     @RequestMapping(value = "/delete-visit-from-reception", method = RequestMethod.POST)
     public boolean deleteVisitFromReception(@RequestParam("visit-id") int visitId) {
+        VisitDTO visit = dbGateway.getVisit(visitId);
         dbGateway.deleteVisitFromReception(visitId);
-        practiceLogger.logVisitDeleted(visitId);
         return true;
     }
 
     @RequestMapping(value = "/delete-visit", method = RequestMethod.POST)
     public boolean deleteVisit(@RequestParam("visit-id") int visitId) {
+        VisitDTO visit = dbGateway.getVisit(visitId);
         dbGateway.deleteVisitSafely(visitId);
-        practiceLogger.logVisitDeleted(visitId);
         return true;
     }
 
@@ -213,7 +205,6 @@ public class VisitController {
     @RequestMapping(value = "/update-hoken", method = RequestMethod.POST)
     public boolean updateHoken(@RequestBody VisitDTO visitDTO) {
         VisitDTO origVisit = dbGateway.getVisit(visitDTO.visitId);
-        VisitDTO prev = VisitDTO.copy(origVisit);
         origVisit.shahokokuhoId = visitDTO.shahokokuhoId;
         origVisit.koukikoureiId = visitDTO.koukikoureiId;
         origVisit.roujinId = visitDTO.roujinId;
@@ -221,7 +212,6 @@ public class VisitController {
         origVisit.kouhi2Id = visitDTO.kouhi2Id;
         origVisit.kouhi3Id = visitDTO.kouhi3Id;
         dbGateway.updateVisit(origVisit);
-        practiceLogger.logHokenUpdated(prev, origVisit);
         return true;
     }
 

@@ -3,6 +3,7 @@ package jp.chang.myclinic.server.db.myclinic;
 import jp.chang.myclinic.consts.PharmaQueueState;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.server.PracticeLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -77,6 +78,8 @@ public class DbGateway {
     private ByoumeiMasterRepository byoumeiMasterRepository;
     @Autowired
     private ShuushokugoMasterRepository shuushokugoMasterRepository;
+    @Autowired
+    private PracticeLogger practiceLogger;
 
     public List<WqueueFullDTO> listWqueueFull() {
         try (Stream<Wqueue> stream = wqueueRepository.findAllAsStream()) {
@@ -143,6 +146,7 @@ public class DbGateway {
     public void enterWqueue(WqueueDTO wqueueDTO) {
         Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
         wqueueRepository.save(wqueue);
+        practiceLogger.logWqueueCreated(wqueueDTO);
     }
 
     public Optional<WqueueDTO> findWqueue(int visitId) {
@@ -152,34 +156,42 @@ public class DbGateway {
     public void deleteWqueue(WqueueDTO wqueueDTO) {
         Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
         wqueueRepository.delete(wqueue);
+        practiceLogger.logWqueueDeleted(wqueueDTO);
+    }
+
+    private void changeWqueueState(int visitId, int state){
+        Wqueue wqueue = wqueueRepository.findOneByVisitId(visitId);
+        WqueueDTO prev = mapper.toWqueueDTO(wqueue);
+        wqueue.setWaitState(state);
+        wqueue = wqueueRepository.save(wqueue);
+        WqueueDTO updated = mapper.toWqueueDTO(wqueue);
+        practiceLogger.logWqueueUpdated(prev, updated);
     }
 
     public void startExam(int visitId) {
-        Wqueue wqueue = wqueueRepository.findOneByVisitId(visitId);
-        wqueue.setWaitState(WqueueWaitState.InExam.getCode());
-        wqueueRepository.save(wqueue);
+        changeWqueueState(visitId, WqueueWaitState.InExam.getCode());
     }
 
     public void suspendExam(int visitId) {
-        Wqueue wqueue = wqueueRepository.findOneByVisitId(visitId);
-        wqueue.setWaitState(WqueueWaitState.WaitReExam.getCode());
-        wqueueRepository.save(wqueue);
+        changeWqueueState(visitId, WqueueWaitState.WaitReExam.getCode());
     }
 
     public void endExam(int visitId, int charge) {
         setChargeOfVisit(visitId, charge);
         Optional<Wqueue> currentWqueue = wqueueRepository.tryFindByVisitId(visitId);
         if (currentWqueue.isPresent()) {
-            Wqueue wqueue = currentWqueue.get();
-            wqueue.setWaitState(WqueueWaitState.WaitCashier.getCode());
-            wqueueRepository.save(wqueue);
+            changeWqueueState(visitId, WqueueWaitState.WaitCashier.getCode());
         } else {
             Wqueue wqueue = new Wqueue();
             wqueue.setVisitId(visitId);
             wqueue.setWaitState(WqueueWaitState.WaitCashier.getCode());
-            wqueueRepository.save(wqueue);
+            enterWqueue(mapper.toWqueueDTO(wqueue));
         }
-        pharmaQueueRepository.deleteByVisitId(visitId);
+        pharmaQueueRepository.findByVisitId(visitId).ifPresent(pharmaQueue -> {
+            PharmaQueueDTO deleted = mapper.toPharmaQueueDTO(pharmaQueue);
+            pharmaQueueRepository.deleteByVisitId(visitId);
+            practiceLogger.logPharmaQueueDeleted(deleted);
+        });
         Visit visit = visitRepository.findById(visitId);
         if (visit.getVisitedAt().substring(0, 10).equals(LocalDate.now().toString())) {
             int unprescribed = drugRepository.countByVisitIdAndPrescribed(visitId, 0);
@@ -188,6 +200,7 @@ public class DbGateway {
                 pharmaQueue.setVisitId(visitId);
                 pharmaQueue.setPharmaState(PharmaQueueState.WaitPack.getCode());
                 pharmaQueueRepository.save(pharmaQueue);
+                practiceLogger.logPharmaQueueCreated(mapper.toPharmaQueueDTO(pharmaQueue));
             }
         }
     }
@@ -207,6 +220,7 @@ public class DbGateway {
     public int enterPatient(PatientDTO patientDTO) {
         Patient patient = mapper.fromPatientDTO(patientDTO);
         patient = patientRepository.save(patient);
+        practiceLogger.logPatientCreated(mapper.toPatientDTO(patient));
         return patient.getPatientId();
     }
 
@@ -461,12 +475,17 @@ public class DbGateway {
     public int enterVisit(VisitDTO visitDTO) {
         Visit visit = mapper.fromVisitDTO(visitDTO);
         visit = visitRepository.save(visit);
-        return visit.getVisitId();
+        int visitId = visit.getVisitId();
+        visitDTO.visitId = visitId;
+        practiceLogger.logVisitCreated(visitDTO);
+        return visitId;
     }
 
     public void updateVisit(VisitDTO visitDTO) {
+        VisitDTO prev = getVisit(visitDTO.visitId);
         Visit visit = mapper.fromVisitDTO(visitDTO);
         visitRepository.save(visit);
+        practiceLogger.logVisitUpdated(prev, visitDTO);
     }
 
     public List<Integer> listVisitIds() {
@@ -576,6 +595,13 @@ public class DbGateway {
         }
     }
 
+    public List<DrugDTO> listDrug(int visitId){
+        return drugRepository.findByVisitId(visitId, Sort.by("drugId"))
+                .stream()
+                .map(mapper::toDrugDTO)
+                .collect(Collectors.toList());
+    }
+
     public List<DrugFullDTO> listDrugFull(int visitId) {
         Sort sort = Sort.by(Sort.Direction.ASC, "drugId");
         return drugRepository.findByVisitIdWithMaster(visitId, sort).stream()
@@ -600,7 +626,15 @@ public class DbGateway {
     }
 
     public void markDrugsAsPrescribedForVisit(int visitId) {
+        List<DrugDTO> prevDrugs = listDrug(visitId);
         drugRepository.markAsPrescribedForVisit(visitId);
+        List<DrugDTO> updatedDrugs = listDrug(visitId);
+        for(int i=0;i<prevDrugs.size();i++){
+            DrugDTO prev = prevDrugs.get(i);
+            if( prev.prescribed == 0 ){
+                practiceLogger.logDrugUpdated(prev, updatedDrugs.get(i));
+            }
+        }
     }
 
     public List<DrugFullDTO> searchPrevDrug(int patientId) {
@@ -635,16 +669,23 @@ public class DbGateway {
         Text text = mapper.fromTextDTO(textDTO);
         text.setTextId(null);
         text = textRepository.save(text);
-        return text.getTextId();
+        int textId = text.getTextId();
+        textDTO.textId = textId;
+        practiceLogger.logTextCreated(textDTO);
+        return textId;
     }
 
     public void updateText(TextDTO textDTO) {
+        TextDTO prev = getText(textDTO.textId);
         Text text = mapper.fromTextDTO(textDTO);
         textRepository.save(text);
+        practiceLogger.logTextUpdated(prev, textDTO);
     }
 
     public void deleteText(int textId) {
+        TextDTO textDTO = getText(textId);
         textRepository.deleteById(textId);
+        practiceLogger.logTextDeleted(textDTO);
     }
 
     public TextVisitPageDTO searchText(int patientId, String text, int page) {
@@ -759,7 +800,9 @@ public class DbGateway {
                 throw new RuntimeException("診察の状態が診察待ちでないため、削除できません。");
             }
         }
+        VisitDTO visitDTO = getVisit(visitId);
         deleteVisitSafely(visitId);
+        practiceLogger.logVisitDeleted(visitDTO);
     }
 
     public void deleteVisitSafely(int visitId) {
@@ -789,6 +832,7 @@ public class DbGateway {
         Optional<PharmaQueue> optPharmaQueue = pharmaQueueRepository.findByVisitId(visitId);
         optPharmaQueue.ifPresent(pharmaQueue -> pharmaQueueRepository.delete(pharmaQueue));
         visitRepository.deleteById(visitId);
+        practiceLogger.logVisitDeleted(visit.visit);
     }
 
     private ConductFullDTO extendConduct(ConductDTO conductDTO) {
@@ -1083,6 +1127,7 @@ public class DbGateway {
     public void deletePharmaQueue(PharmaQueueDTO pharmaQueueDTO) {
         PharmaQueue pharmaQueue = mapper.fromPharmaQueueDTO(pharmaQueueDTO);
         pharmaQueueRepository.delete(pharmaQueue);
+        practiceLogger.logPharmaQueueDeleted(pharmaQueueDTO);
     }
 
     public PharmaDrugDTO getPharmaDrugByIyakuhincode(int iyakuhincode) {
