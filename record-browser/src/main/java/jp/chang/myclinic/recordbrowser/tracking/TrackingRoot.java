@@ -1,15 +1,15 @@
-package jp.chang.myclinic.recordbrowser;
+package jp.chang.myclinic.recordbrowser.tracking;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 
-class TrackingRoot extends VBox {
+public class TrackingRoot extends VBox {
 
     //private static Logger logger = LoggerFactory.getLogger(TrackingRoot.class);
     private Label mainLabel = new Label("本日の診察（自動更新）");
-    private RecordListByDate recordList = new RecordListByDate();
-
+    private RecordList recordList = new RecordList();
+    
     TrackingRoot() {
         super(2);
         getStylesheets().add("Main.css");

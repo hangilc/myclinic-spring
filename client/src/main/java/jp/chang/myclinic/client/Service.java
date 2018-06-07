@@ -628,6 +628,8 @@ public class Service {
         @GET("list-todays-visits-with-log-info")
         CompletableFuture<PracticeLogList> listTodaysVisitsWithLogInfo();
 
+        @GET("list-todays-visits-with-log-info")
+        Call<PracticeLogList> listTodaysVisitsWithLogInfoCall();
 
     }
 

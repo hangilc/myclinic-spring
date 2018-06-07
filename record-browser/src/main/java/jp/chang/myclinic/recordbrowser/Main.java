@@ -9,6 +9,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.recordbrowser.tracking.TrackingRoot;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
