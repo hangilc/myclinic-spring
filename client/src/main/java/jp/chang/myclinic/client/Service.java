@@ -2,9 +2,8 @@ package jp.chang.myclinic.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import jp.chang.myclinic.drawer.JacksonOpDeserializer;
-import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.logdto.practicelog.PracticeLogList;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -626,6 +625,9 @@ public class Service {
         @GET("find-shinryou-master-by-name")
         Call<ShinryouMasterDTO> findShinryouMasterByNameCall(@Query("name") String name,
                                                                       @Query("at") String at);
+        @GET("list-todays-visits-with-log-info")
+        CompletableFuture<PracticeLogList> listTodaysVisitsWithLogInfo();
+
 
     }
 
@@ -646,7 +648,7 @@ public class Service {
 
         ObjectMapper mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
-        module.addDeserializer(Op.class, new JacksonOpDeserializer());
+        //module.addDeserializer(Op.class, new JacksonOpDeserializer());
         mapper.registerModule(module);
         Retrofit server = new Retrofit.Builder()
                 .baseUrl(serverUrl)

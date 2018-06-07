@@ -16,9 +16,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Consumer;
 
-class MainRoot extends VBox {
+class ByDateRoot extends VBox {
 
-    //private static Logger logger = LoggerFactory.getLogger(MainRoot.class);
+    //private static Logger logger = LoggerFactory.getLogger(ByDateRoot.class);
     private Label mainLabel = new Label("");
     private RecordListByDate recordList = new RecordListByDate();
     private ByDateNavHandler navHandler = new ByDateNavHandler(LocalDate.now());
@@ -26,7 +26,7 @@ class MainRoot extends VBox {
     private Runnable onRefreshCallback = () -> {};
     private Consumer<Boolean> onSuspendCallback = suspended -> {};
 
-    MainRoot() {
+    ByDateRoot() {
         super(2);
         getStylesheets().add("Main.css");
         getStyleClass().add("app-root");

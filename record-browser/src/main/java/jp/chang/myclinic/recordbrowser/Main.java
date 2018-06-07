@@ -20,7 +20,7 @@ import java.time.LocalDate;
 public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    private MainRoot root = new MainRoot();
+    private TrackingRoot root = new TrackingRoot();
     private Repeater repeater;
 
     public static void main(String[] args) {
@@ -44,7 +44,7 @@ public class Main extends Application {
         pane.setCenter(root);
         pane.setTop(createMenu());
         stage.setScene(new Scene(pane));
-        startRepeater();
+        //startRepeater();
         stage.show();
     }
 
@@ -65,12 +65,12 @@ public class Main extends Application {
         {
             Menu menu = new Menu("選択");
             {
-                MenuItem item = new MenuItem("本日の診察");
-                item.setOnAction(evt -> {
-                    root.setDate(LocalDate.now());
-                    root.trigger();
-                });
-                menu.getItems().add(item);
+//                MenuItem item = new MenuItem("本日の診察");
+//                item.setOnAction(evt -> {
+//                    root.setDate(LocalDate.now());
+//                    root.trigger();
+//                });
+//                menu.getItems().add(item);
             }
             {
                 MenuItem item = new MenuItem("日付を選択");
@@ -100,8 +100,8 @@ public class Main extends Application {
         SelectDateDialog dialog = new SelectDateDialog();
         dialog.showAndWait();
         dialog.getValue().ifPresent(date -> {
-            root.setDate(date);
-            root.trigger();
+//            root.setDate(date);
+//            root.trigger();
         });
     }
 
@@ -124,20 +124,20 @@ public class Main extends Application {
     }
 
     private void startRepeater(){
-        repeater = new Repeater(10, () -> {
-            root.trigger();
-        });
-        root.setOnRefreshCallback(() -> repeater.skip());
-        root.setOnSuspendCallback(suspended -> {
-            if( suspended ){
-                repeater.suspend();
-            } else {
-                repeater.unsuspend();
-            }
-        });
-        Thread thread = new Thread(repeater);
-        thread.setDaemon(true);
-        thread.start();
+//        repeater = new Repeater(10, () -> {
+//            root.trigger();
+//        });
+//        root.setOnRefreshCallback(() -> repeater.skip());
+//        root.setOnSuspendCallback(suspended -> {
+//            if( suspended ){
+//                repeater.suspend();
+//            } else {
+//                repeater.unsuspend();
+//            }
+//        });
+//        Thread thread = new Thread(repeater);
+//        thread.setDaemon(true);
+//        thread.start();
     }
 
 }
