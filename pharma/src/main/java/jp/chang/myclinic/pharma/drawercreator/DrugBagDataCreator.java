@@ -255,6 +255,9 @@ public class DrugBagDataCreator {
         if( powderDose != null ){
             name += "（１包" + numberToKanjiString(powderDose) +  "ｇ）";
         }
+        if( drug.category == DrugCategory.Gaiyou.getCode() ){
+            name += String.format(" %s%s", numberToKanjiString(drug.amount), master.unit);
+        }
         return name;
     }
 
