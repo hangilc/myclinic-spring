@@ -4,9 +4,9 @@ import jp.chang.myclinic.dto.WqueueDTO;
 
 public class WqueueCreated implements PracticeLogBody {
 
-    public WqueueDTO wqueue;
+    public WqueueDTO created;
 
-    public WqueueCreated(WqueueDTO wqueue) {
-        this.wqueue = wqueue;
+    public WqueueCreated(WqueueDTO created) {
+        this.created = created;
     }
 }

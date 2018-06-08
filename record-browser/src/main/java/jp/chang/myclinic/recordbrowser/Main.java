@@ -45,6 +45,7 @@ public class Main extends Application {
         pane.setCenter(root);
         pane.setTop(createMenu());
         stage.setScene(new Scene(pane));
+        root.reload();
         //startRepeater();
         stage.show();
     }

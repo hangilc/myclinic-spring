@@ -625,11 +625,11 @@ public class Service {
         @GET("find-shinryou-master-by-name")
         Call<ShinryouMasterDTO> findShinryouMasterByNameCall(@Query("name") String name,
                                                                       @Query("at") String at);
-        @GET("list-todays-visits-with-log-info")
-        CompletableFuture<PracticeLogList> listTodaysVisitsWithLogInfo();
+        @GET("list-all-practice-log")
+        CompletableFuture<PracticeLogList> listAllPracticeLog();
 
-        @GET("list-todays-visits-with-log-info")
-        Call<PracticeLogList> listTodaysVisitsWithLogInfoCall();
+        @GET("list-all-practice-log")
+        Call<PracticeLogList> listAllPracticeLogCall();
 
     }
 
