@@ -6,6 +6,9 @@ public class KoukikoureiCreated implements PracticeLogBody {
 
     public KoukikoureiDTO created;
 
+    public KoukikoureiCreated() {
+    }
+
     public KoukikoureiCreated(KoukikoureiDTO created) {
         this.created = created;
     }

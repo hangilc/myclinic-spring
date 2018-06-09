@@ -6,6 +6,9 @@ public class TextDeleted implements PracticeLogBody {
 
     public TextDTO deleted;
 
+    public TextDeleted() {
+    }
+
     public TextDeleted(TextDTO deleted) {
         this.deleted = deleted;
     }

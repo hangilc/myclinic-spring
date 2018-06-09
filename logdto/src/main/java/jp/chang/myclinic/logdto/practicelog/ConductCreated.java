@@ -6,6 +6,9 @@ public class ConductCreated implements PracticeLogBody {
 
     public ConductDTO created;
 
+    public ConductCreated() {
+    }
+
     public ConductCreated(ConductDTO created) {
         this.created = created;
     }

@@ -39,7 +39,7 @@ class Dispatcher {
     }
 
     protected void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated){
-        
+        System.out.println("wqueue updated");
     }
 
 }

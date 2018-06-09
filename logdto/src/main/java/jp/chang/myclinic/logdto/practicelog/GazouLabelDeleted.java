@@ -6,6 +6,9 @@ public class GazouLabelDeleted implements PracticeLogBody {
 
     public GazouLabelDTO deleted;
 
+    public GazouLabelDeleted() {
+    }
+
     public GazouLabelDeleted(GazouLabelDTO deleted) {
         this.deleted = deleted;
     }

@@ -7,6 +7,9 @@ public class PharmaDrugUpdated implements PracticeLogBody {
     public PharmaDrugDTO prev;
     public PharmaDrugDTO updated;
 
+    public PharmaDrugUpdated() {
+    }
+
     public PharmaDrugUpdated(PharmaDrugDTO prev, PharmaDrugDTO updated) {
         this.prev = prev;
         this.updated = updated;

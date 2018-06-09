@@ -6,6 +6,9 @@ public class ConductShinryouCreated implements PracticeLogBody {
 
     public ConductShinryouDTO created;
 
+    public ConductShinryouCreated() {
+    }
+
     public ConductShinryouCreated(ConductShinryouDTO created) {
         this.created = created;
     }

@@ -7,6 +7,9 @@ public class DiseaseUpdated implements PracticeLogBody {
     public DiseaseDTO prev;
     public DiseaseDTO updated;
 
+    public DiseaseUpdated() {
+    }
+
     public DiseaseUpdated(DiseaseDTO prev, DiseaseDTO updated) {
         this.prev = prev;
         this.updated = updated;

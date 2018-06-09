@@ -6,6 +6,9 @@ public class WqueueCreated implements PracticeLogBody {
 
     public WqueueDTO created;
 
+    public WqueueCreated() {
+    }
+
     public WqueueCreated(WqueueDTO created) {
         this.created = created;
     }

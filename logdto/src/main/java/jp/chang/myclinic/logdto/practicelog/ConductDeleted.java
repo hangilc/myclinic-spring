@@ -6,6 +6,9 @@ public class ConductDeleted implements PracticeLogBody {
 
     public ConductDTO deleted;
 
+    public ConductDeleted() {
+    }
+
     public ConductDeleted(ConductDTO deleted) {
         this.deleted = deleted;
     }

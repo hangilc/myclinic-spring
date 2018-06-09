@@ -7,6 +7,9 @@ public class ChargeUpdated implements PracticeLogBody {
     public ChargeDTO prev;
     public ChargeDTO updated;
 
+    public ChargeUpdated() {
+    }
+
     public ChargeUpdated(ChargeDTO prev, ChargeDTO updated) {
         this.prev = prev;
         this.updated = updated;

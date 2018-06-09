@@ -6,6 +6,9 @@ public class ShahokokuhoDeleted implements PracticeLogBody {
 
     public ShahokokuhoDTO deleted;
 
+    public ShahokokuhoDeleted() {
+    }
+
     public ShahokokuhoDeleted(ShahokokuhoDTO deleted) {
         this.deleted = deleted;
     }

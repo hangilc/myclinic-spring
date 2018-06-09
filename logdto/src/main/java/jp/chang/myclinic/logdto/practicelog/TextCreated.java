@@ -6,6 +6,9 @@ public class TextCreated implements PracticeLogBody {
 
     public TextDTO text;
 
+    public TextCreated() {
+    }
+
     public TextCreated(TextDTO text) {
         this.text = text;
     }

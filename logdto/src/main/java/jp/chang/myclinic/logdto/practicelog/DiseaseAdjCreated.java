@@ -6,6 +6,9 @@ public class DiseaseAdjCreated implements PracticeLogBody {
 
     public DiseaseAdjDTO created;
 
+    public DiseaseAdjCreated() {
+    }
+
     public DiseaseAdjCreated(DiseaseAdjDTO created) {
         this.created = created;
     }

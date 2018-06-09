@@ -6,6 +6,9 @@ public class PharmaQueueCreated implements PracticeLogBody {
 
     public PharmaQueueDTO created;
 
+    public PharmaQueueCreated() {
+    }
+
     public PharmaQueueCreated(PharmaQueueDTO created) {
         this.created = created;
     }

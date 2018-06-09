@@ -11,6 +11,8 @@ public class TrackingRoot extends VBox {
     //private static Logger logger = LoggerFactory.getLogger(TrackingRoot.class);
     private Label mainLabel = new Label("本日の診察（自動更新）");
     private RecordList recordList = new RecordList();
+    private Dispatcher dispatcher;
+    private String currentServer;
     
     public TrackingRoot() {
         super(2);
@@ -23,12 +25,14 @@ public class TrackingRoot extends VBox {
                 mainLabel,
                 recordScroll
         );
+        dispatcher = new Dispatcher();
     }
 
     public void reload(){
         Service.api.listAllPracticeLog()
                 .thenAccept(practiceLogList -> {
-                    System.out.println(practiceLogList);
+                    this.currentServer = practiceLogList.serverId;
+                    dispatcher.dispatch(practiceLogList.logs);
                 })
                 .exceptionally(HandlerFX::exceptionally);
     }

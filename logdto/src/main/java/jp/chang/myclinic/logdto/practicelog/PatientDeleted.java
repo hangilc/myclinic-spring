@@ -6,6 +6,9 @@ public class PatientDeleted implements PracticeLogBody {
 
     public PatientDTO deleted;
 
+    public PatientDeleted() {
+    }
+
     public PatientDeleted(PatientDTO deleted) {
         this.deleted = deleted;
     }

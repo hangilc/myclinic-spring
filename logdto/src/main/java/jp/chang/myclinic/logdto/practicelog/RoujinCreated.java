@@ -6,6 +6,9 @@ public class RoujinCreated implements PracticeLogBody {
 
     public RoujinDTO created;
 
+    public RoujinCreated() {
+    }
+
     public RoujinCreated(RoujinDTO created) {
         this.created = created;
     }

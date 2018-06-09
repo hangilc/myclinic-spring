@@ -6,6 +6,9 @@ public class KoukikoureiDeleted implements PracticeLogBody {
 
     public KoukikoureiDTO deleted;
 
+    public KoukikoureiDeleted() {
+    }
+
     public KoukikoureiDeleted(KoukikoureiDTO deleted) {
         this.deleted = deleted;
     }

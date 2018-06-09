@@ -9,4 +9,7 @@ public class ConductKizaiCreated implements PracticeLogBody {
     public ConductKizaiCreated(ConductKizaiDTO created) {
         this.created = created;
     }
+
+    public ConductKizaiCreated() {
+    }
 }

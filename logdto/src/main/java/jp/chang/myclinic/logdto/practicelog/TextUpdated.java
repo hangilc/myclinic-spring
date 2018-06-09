@@ -7,6 +7,9 @@ public class TextUpdated implements PracticeLogBody {
     public TextDTO prev;
     public TextDTO updated;
 
+    public TextUpdated() {
+    }
+
     public TextUpdated(TextDTO prev, TextDTO updated) {
         this.prev = prev;
         this.updated = updated;

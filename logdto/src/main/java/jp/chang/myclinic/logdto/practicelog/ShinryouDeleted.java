@@ -6,6 +6,9 @@ public class ShinryouDeleted implements PracticeLogBody {
 
     public ShinryouDTO deleted;
 
+    public ShinryouDeleted() {
+    }
+
     public ShinryouDeleted(ShinryouDTO deleted) {
         this.deleted = deleted;
     }
