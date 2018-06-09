@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+// TODO: improve printer setting (~/practice-env)
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
