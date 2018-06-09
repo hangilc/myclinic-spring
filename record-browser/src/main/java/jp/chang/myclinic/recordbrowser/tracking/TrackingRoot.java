@@ -1,11 +1,14 @@
 package jp.chang.myclinic.recordbrowser.tracking;
 
+import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
+import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
+import jp.chang.myclinic.recordbrowser.tracking.model.Text;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 public class TrackingRoot extends VBox implements DispatchAction {
@@ -14,9 +17,8 @@ public class TrackingRoot extends VBox implements DispatchAction {
     private Label mainLabel = new Label("本日の診察（自動更新）");
     private RecordList recordList = new RecordList();
     private Dispatcher dispatcher;
-    private String currentServer;
     private ModelRegistry registry = new ModelRegistry();
-    
+
     public TrackingRoot() {
         super(2);
         getStylesheets().add("Main.css");
@@ -34,7 +36,6 @@ public class TrackingRoot extends VBox implements DispatchAction {
     public void reload(){
         Service.api.listAllPracticeLog()
                 .thenAccept(practiceLogList -> {
-                    this.currentServer = practiceLogList.serverId;
                     dispatcher.dispatch(practiceLogList.logs, this);
                 })
                 .exceptionally(HandlerFX::exceptionally);
@@ -50,10 +51,16 @@ public class TrackingRoot extends VBox implements DispatchAction {
 
     private void addVisit(int visitId){
         registry.getVisit(visitId)
-                .thenAccept(visit -> {
-                    System.out.println(visit);
-                })
+                .thenAccept(visit -> Platform.runLater(() -> {
+                    recordList.addVisit(visit);
+                }))
                 .exceptionally(HandlerFX::exceptionally);
+    }
+
+    @Override
+    public void onTextCreated(TextDTO textDTO){
+        Text text = registry.addText(textDTO);
+        Platform.runLater(() -> recordList.addText(text));
     }
 
 }

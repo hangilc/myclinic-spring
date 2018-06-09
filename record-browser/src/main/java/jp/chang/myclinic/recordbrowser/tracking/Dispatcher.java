@@ -3,6 +3,7 @@ package jp.chang.myclinic.recordbrowser.tracking;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.logdto.practicelog.PracticeLog;
+import jp.chang.myclinic.logdto.practicelog.TextCreated;
 import jp.chang.myclinic.logdto.practicelog.WqueueUpdated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,11 @@ class Dispatcher {
         try {
             for(PracticeLog log: logs){
                 switch(log.kind){
+                    case "text-created": {
+                        TextCreated body = mapper.readValue(log.body, TextCreated.class);
+                        action.onTextCreated(body.text);
+                        break;
+                    }
                     case "wqueue-updated": {
                         WqueueUpdated body = mapper.readValue(log.body, WqueueUpdated.class);
                         action.onWqueueUpdated(body.prev, body.updated);

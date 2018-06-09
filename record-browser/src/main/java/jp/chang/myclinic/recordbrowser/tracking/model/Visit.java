@@ -1,6 +1,7 @@
 package jp.chang.myclinic.recordbrowser.tracking.model;
 
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ public class Visit {
     public Visit(VisitDTO visitDTO) {
         this.visitId = visitDTO.visitId;
         try {
-            this.visitedAt = LocalDateTime.parse(visitDTO.visitedAt);
+            this.visitedAt = DateTimeUtil.parseSqlDateTime(visitDTO.visitedAt);
         } catch (DateTimeParseException ex) {
             this.visitedAt = null;
         }
