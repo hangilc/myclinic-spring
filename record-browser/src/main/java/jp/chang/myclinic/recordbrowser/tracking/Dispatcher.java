@@ -18,13 +18,13 @@ class Dispatcher {
 
     }
 
-    public void dispatch(List<PracticeLog>logs){
+    public void dispatch(List<PracticeLog>logs, DispatchAction action){
         try {
             for(PracticeLog log: logs){
                 switch(log.kind){
                     case "wqueue-updated": {
                         WqueueUpdated body = mapper.readValue(log.body, WqueueUpdated.class);
-                        onWqueueUpdated(body.prev, body.updated);
+                        action.onWqueueUpdated(body.prev, body.updated);
                         break;
                     }
                     default: {
@@ -36,10 +36,6 @@ class Dispatcher {
             logger.error("Failed to dispatch practice log.", ex);
             throw new RuntimeException(ex);
         }
-    }
-
-    protected void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated){
-        System.out.println("wqueue updated");
     }
 
 }
