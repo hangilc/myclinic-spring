@@ -35,32 +35,38 @@ public class TrackingRoot extends VBox implements DispatchAction {
 
     public void reload(){
         Service.api.listAllPracticeLog()
-                .thenAccept(practiceLogList -> {
-                    dispatcher.dispatch(practiceLogList.logs, this);
-                })
+                .thenAccept(practiceLogList -> Platform.runLater(() -> {
+                    dispatcher.dispatch(practiceLogList.logs, this, this::onReloaded);
+                }))
                 .exceptionally(HandlerFX::exceptionally);
     }
 
+    private void onReloaded(){
+        System.out.println("reloaded");
+    }
+
     @Override
-    public void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated){
+    public void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated, Runnable cb){
         if( prev.waitState == WqueueWaitState.WaitExam.getCode() &&
                 updated.waitState == WqueueWaitState.InExam.getCode() ){
-            addVisit(updated.visitId);
+            addVisit(updated.visitId, cb);
+        } else {
+            cb.run();
         }
     }
 
-    private void addVisit(int visitId){
+    private void addVisit(int visitId, Runnable cb){
         registry.getVisit(visitId)
                 .thenAccept(visit -> Platform.runLater(() -> {
-                    recordList.addVisit(visit);
+                    recordList.addVisit(visit, cb);
                 }))
                 .exceptionally(HandlerFX::exceptionally);
     }
 
     @Override
-    public void onTextCreated(TextDTO textDTO){
+    public void onTextCreated(TextDTO textDTO, Runnable cb){
         Text text = registry.addText(textDTO);
-        Platform.runLater(() -> recordList.addText(text));
+        Platform.runLater(() -> recordList.addText(text, cb));
     }
 
 }

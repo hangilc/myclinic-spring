@@ -13,7 +13,8 @@ public class Record extends VBox {
     public Record(Visit visit){
         this.visitId = visit.getVisitId();
         getChildren().addAll(
-                new RecordTitle(visit)
+                new RecordTitle(visit),
+                body
         );
     }
 

@@ -21,20 +21,22 @@ class RecordList extends VBox {
 
     }
 
-    public void addVisit(Visit visit){
+    public void addVisit(Visit visit, Runnable cb){
         Record record = new Record(visit);
         getChildren().add(record);
         records.add(record);
+        cb.run();
     }
 
     private Optional<Record> getRecord(int visitId){
         return records.stream().filter(rec -> rec.getVisitId() == visitId).findAny();
     }
 
-    public void addText(Text text){
+    public void addText(Text text, Runnable cb){
         getRecord(text.getVisitId()).ifPresent(record -> {
             record.addText(text);
         });
+        cb.run();
     }
 
 }

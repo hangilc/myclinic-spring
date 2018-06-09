@@ -5,7 +5,7 @@ import jp.chang.myclinic.dto.WqueueDTO;
 
 public interface DispatchAction {
 
-    default void onTextCreated(TextDTO text){}
-    default void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated){ }
+    default void onTextCreated(TextDTO text, Runnable cb){}
+    default void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated, Runnable cb){ }
 
 }
