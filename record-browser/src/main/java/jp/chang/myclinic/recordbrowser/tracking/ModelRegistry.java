@@ -5,30 +5,34 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.recordbrowser.tracking.model.*;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 class ModelRegistry {
 
+    private String today = LocalDate.now().toString();
     private Map<Integer, Visit> visitRegistry = new HashMap<>();
     private Map<Integer, Patient> patientRegistry = new HashMap<>();
     private Map<Integer, Text> textRegistry = new HashMap<>();
     private Map<Integer, Shahokokuho> shahokokuhoRegistry = new HashMap<>();
     private Map<Integer, Koukikourei> koukikoureiRegistry = new HashMap<>();
     private Map<Integer, Kouhi> kouhiRegistry = new HashMap<>();
+    private Map<Integer, Drug> drugRegistry = new HashMap<>();
+    private Map<Integer, IyakuhinMasterDTO> iyakuhinMasterRegistry = new HashMap<>();
 
     public CompletableFuture<Visit> getVisit(int visitId) {
         if (visitRegistry.containsKey(visitId)) {
             return CompletableFuture.completedFuture(visitRegistry.get(visitId));
         } else {
             class Local {
-                VisitDTO visitDTO;
-                Patient patient;
-                HokenDTO hokenDTO;
-                Shahokokuho shahokokuho;
-                Koukikourei koukikourei;
-                List<Kouhi> kouhiList = new ArrayList<>();
+                private VisitDTO visitDTO;
+                private Patient patient;
+                private HokenDTO hokenDTO;
+                private Shahokokuho shahokokuho;
+                private Koukikourei koukikourei;
+                private List<Kouhi> kouhiList = new ArrayList<>();
             }
             Local local = new Local();
             return Service.api.getVisit(visitId)
@@ -44,19 +48,19 @@ class ModelRegistry {
                         local.hokenDTO = hokenDTO;
                         if (hokenDTO.shahokokuho != null) {
                             if (!shahokokuhoRegistry.containsKey(hokenDTO.shahokokuho.shahokokuhoId)) {
-                                addShahokokuho(hokenDTO.shahokokuho);
+                                local.shahokokuho = addShahokokuho(hokenDTO.shahokokuho);
                             }
                         }
                         if (hokenDTO.koukikourei != null) {
                             if (!koukikoureiRegistry.containsKey(hokenDTO.koukikourei.koukikoureiId)) {
-                                addKoukikourei(hokenDTO.koukikourei);
+                                local.koukikourei = addKoukikourei(hokenDTO.koukikourei);
                             }
                         }
                         Stream.of(local.hokenDTO.kouhi1, local.hokenDTO.kouhi2, local.hokenDTO.kouhi3)
                                 .filter(Objects::nonNull)
                                 .forEach(kouhiDTO -> {
                                     if (!kouhiRegistry.containsKey(kouhiDTO.kouhiId)) {
-                                        addKouhi(kouhiDTO);
+                                        local.kouhiList.add(addKouhi(kouhiDTO));
                                     }
                                 });
                         return null;
@@ -106,19 +110,45 @@ class ModelRegistry {
         return text;
     }
 
-    public void addShahokokuho(ShahokokuhoDTO dto) {
+    public Shahokokuho addShahokokuho(ShahokokuhoDTO dto) {
         Shahokokuho shahokokuho = new Shahokokuho(dto);
         shahokokuhoRegistry.put(dto.shahokokuhoId, shahokokuho);
+        return shahokokuho;
     }
 
-    public void addKoukikourei(KoukikoureiDTO dto) {
+    public Koukikourei addKoukikourei(KoukikoureiDTO dto) {
         Koukikourei koukikourei = new Koukikourei(dto);
         koukikoureiRegistry.put(dto.koukikoureiId, koukikourei);
+        return koukikourei;
     }
 
-    public void addKouhi(KouhiDTO dto) {
+    public Kouhi addKouhi(KouhiDTO dto) {
         Kouhi kouhi = new Kouhi(dto);
         kouhiRegistry.put(dto.kouhiId, kouhi);
+        return kouhi;
+    }
+
+    public CompletableFuture<Drug> getDrug(DrugDTO drugDTO){
+        if( drugRegistry.containsKey(drugDTO.drugId) ){
+            return CompletableFuture.completedFuture(drugRegistry.get(drugDTO.drugId));
+        } else {
+            getIyakuhinMaster(drugDTO.iyakuhincode)
+                    .thenApply(master -> {
+                        
+                    });
+        }
+    }
+
+    public CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode){
+        if( iyakuhinMasterRegistry.containsKey(iyakuhincode) ){
+            return CompletableFuture.completedFuture(iyakuhinMasterRegistry.get(iyakuhincode));
+        } else {
+            Service.api.resolveIyakuhinMaster(iyakuhincode, today)
+                    .thenApply(dto -> {
+                        iyakuhinMasterRegistry.put(iyakuhincode, dto);
+                        return dto;
+                    });
+        }
     }
 
 }

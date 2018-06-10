@@ -6,6 +6,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
+import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.recordbrowser.tracking.model.Text;
@@ -67,6 +68,11 @@ public class TrackingRoot extends VBox implements DispatchAction {
     public void onTextCreated(TextDTO textDTO, Runnable cb){
         Text text = registry.addText(textDTO);
         Platform.runLater(() -> recordList.addText(text, cb));
+    }
+
+    @Override
+    public void onDrugCreated(DrugDTO drugDTO, Runnable cb){
+
     }
 
 }

@@ -2,6 +2,7 @@ package jp.chang.myclinic.recordbrowser.tracking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.dto.WqueueDTO;
+import jp.chang.myclinic.logdto.practicelog.DrugCreated;
 import jp.chang.myclinic.logdto.practicelog.PracticeLog;
 import jp.chang.myclinic.logdto.practicelog.TextCreated;
 import jp.chang.myclinic.logdto.practicelog.WqueueUpdated;
@@ -28,12 +29,17 @@ class Dispatcher {
             cb.run();
         } else {
             PracticeLog log = logs.get(i);
-            Runnable toNext = () -> iter(i+1, logs, action, cb);
+            Runnable toNext = () -> iter(i + 1, logs, action, cb);
             try {
                 switch (log.kind) {
                     case "text-created": {
                         TextCreated body = mapper.readValue(log.body, TextCreated.class);
                         action.onTextCreated(body.text, toNext);
+                        break;
+                    }
+                    case "drug-created": {
+                        DrugCreated body = mapper.readValue(log.body, DrugCreated.class);
+                        action.onDrugCreated(body.created, toNext);
                         break;
                     }
                     case "wqueue-updated": {
