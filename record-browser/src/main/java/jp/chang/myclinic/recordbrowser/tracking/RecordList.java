@@ -2,6 +2,7 @@ package jp.chang.myclinic.recordbrowser.tracking;
 
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.recordbrowser.tracking.model.Drug;
+import jp.chang.myclinic.recordbrowser.tracking.model.Shinryou;
 import jp.chang.myclinic.recordbrowser.tracking.model.Text;
 import jp.chang.myclinic.recordbrowser.tracking.model.Visit;
 import jp.chang.myclinic.recordbrowser.tracking.ui.Record;
@@ -43,6 +44,12 @@ class RecordList extends VBox {
     public void addDrug(Drug drug){
         getRecord(drug.getVisitId()).ifPresent(record -> {
             record.addDrug(drug);
+        });
+    }
+
+    public void addShinryou(Shinryou shinryou){
+        getRecord(shinryou.getVisitId()).ifPresent(record -> {
+            record.addShinryou(shinryou);
         });
     }
 

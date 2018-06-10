@@ -47,7 +47,7 @@ public class Service {
 
         @GET("page-visit-full2-with-patient-at")
         Call<VisitFull2PatientPageDTO> pageVisitFullWithPatientAtCall(@Query("at") String at,
-                                                                               @Query("page") int page);
+                                                                      @Query("page") int page);
 
         @POST("update-text")
         CompletableFuture<Boolean> updateText(@Body TextDTO textDTO);
@@ -70,7 +70,7 @@ public class Service {
 
         @GET("search-text-by-page")
         Call<TextVisitPageDTO> searchTextByPageCall(@Query("patient-id") int patientId,
-                                                             @Query("text") String text, @Query("page") int page);
+                                                    @Query("text") String text, @Query("page") int page);
 
         @GET("list-available-hoken")
         CompletableFuture<HokenDTO> listAvailableHoken(@Query("patient-id") int patientId, @Query("at") String at);
@@ -120,7 +120,7 @@ public class Service {
 
         @GET("resolve-iyakuhin-master")
         Call<IyakuhinMasterDTO> resolveIyakuhinMasterCall(@Query("iyakuhincode") int iyakuhincode,
-                                                                   @Query("at") String at);
+                                                          @Query("at") String at);
 
         @POST("enter-drug")
         CompletableFuture<Integer> enterDrug(@Body DrugDTO drug);
@@ -212,7 +212,7 @@ public class Service {
 
         @GET("batch-resolve-iyakuhin-master")
         Call<Map<Integer, IyakuhinMasterDTO>> batchResolveIyakuhinMasterCall(@Query("iyakuhincode") List<Integer> iyakuhincodes,
-                                                                                      @Query("at") String at);
+                                                                             @Query("at") String at);
 
         @POST("batch-enter-drugs")
         CompletableFuture<List<Integer>> batchEnterDrugs(@Body List<DrugDTO> drugs);
@@ -250,7 +250,7 @@ public class Service {
 
         @POST("batch-enter-shinryou-by-name")
         Call<BatchEnterResultDTO> batchEnterShinryouByNameCall(@Query("name") List<String> names,
-                                                                        @Query("visit-id") int visitId);
+                                                               @Query("visit-id") int visitId);
 
         @POST("enter-shinryou")
         CompletableFuture<Integer> enterShinryou(@Body ShinryouDTO shinryou);
@@ -306,11 +306,27 @@ public class Service {
         @GET("resolve-shinryou-master-by-name")
         Call<ShinryouMasterDTO> resolveShinryouMasterByNameCall(@Query("name") String name, @Query("at") String at);
 
+        @GET("resolve-shinryou-master")
+        CompletableFuture<ShinryouMasterDTO> resolveShinryouMaster(@Query("shinryoucode") int shinryoucode,
+                                                                   @Query("at") String at);
+
+        @GET("resolve-shinryou-master")
+        Call<ShinryouMasterDTO> resolveShinryouMasterCall(@Query("shinryoucode") int shinryoucode,
+                                                          @Query("at") String at);
+
         @GET("resolve-kizai-master-by-name")
         CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByName(@Query("name") String name, @Query("at") String at);
 
         @GET("resolve-kizai-master-by-name")
         Call<KizaiMasterDTO> resolveKizaiMasterByNameCall(@Query("name") String name, @Query("at") String at);
+
+        @GET("resolve-kizai-master")
+        CompletableFuture<KizaiMasterDTO> resolveKizaiMaster(@Query("kizaicode") int kizaicode,
+                                                             @Query("at") String at);
+
+        @GET("resolve-kizai-master")
+        Call<KizaiMasterDTO> resolveKizaiMasterCall(@Query("kizaicode") int kizaicode,
+                                                    @Query("at") String at);
 
         @GET("get-shinryou-master")
         CompletableFuture<ShinryouMasterDTO> getShinryouMaster(@Query("shinryoucode") int shinryoucode, @Query("at") String at);
@@ -336,7 +352,7 @@ public class Service {
 
         @POST("batch-copy-shinryou")
         Call<List<Integer>> batchCopyShinryouCall(@Query("visit-id") int visitId,
-                                                           @Body List<ShinryouDTO> srcList);
+                                                  @Body List<ShinryouDTO> srcList);
 
         @POST("delete-duplicate-shinryou")
         CompletableFuture<List<Integer>> deleteDuplicateShinryou(@Query("visit-id") int visitId);
@@ -370,9 +386,9 @@ public class Service {
 
         @POST("enter-inject")
         Call<Integer> enterInjectCall(@Query("visit-id") int visitId,
-                                               @Query("kind") int conductKindCode,
-                                               @Query("iyakuhincode") int iyakuhincode,
-                                               @Query("amount") double amount);
+                                      @Query("kind") int conductKindCode,
+                                      @Query("iyakuhincode") int iyakuhincode,
+                                      @Query("amount") double amount);
 
         @POST("copy-all-conducts")
         CompletableFuture<List<Integer>> copyAllConducts(@Query("target-visit-id") int targetVisitId,
@@ -380,7 +396,7 @@ public class Service {
 
         @POST("copy-all-conducts")
         Call<List<Integer>> copyAllConductsCall(@Query("target-visit-id") int targetVisitId,
-                                                         @Query("source-visit-id") int sourceVisitId);
+                                                @Query("source-visit-id") int sourceVisitId);
 
         @POST("delete-conduct")
         CompletableFuture<Boolean> deleteConduct(@Query("conduct-id") int conductId);
@@ -436,7 +452,7 @@ public class Service {
 
         @POST("modify-conduct-kind")
         Call<Boolean> modifyConductKindCall(@Query("conduct-id") int conductId,
-                                                     @Query("kind") int kind);
+                                            @Query("kind") int kind);
 
         @POST("modify-gazou-label")
         CompletableFuture<Boolean> modifyGazouLabel(@Query("conduct-id") int conductId,
@@ -444,7 +460,7 @@ public class Service {
 
         @POST("modify-gazou-label")
         Call<Boolean> modifyGazouLabelCall(@Query("conduct-id") int conductId,
-                                                    @Query("label") String label);
+                                           @Query("label") String label);
 
         @POST("delete-conduct-shinryou")
         CompletableFuture<Boolean> deleteConductShinryou(@Query("conduct-shinryou-id") int conductShinryouId);
@@ -494,7 +510,7 @@ public class Service {
 
         @GET("count-page-of-disease-by-patient")
         Call<Integer> countPageOfDiseaseByPatientCall(@Query("patient-id") int patientId,
-                                                               @Query("items-per-page") int itemsPerPage);
+                                                      @Query("items-per-page") int itemsPerPage);
 
         @GET("page-disease-full")
         CompletableFuture<List<DiseaseFullDTO>> pageDiseaseFull(@Query("patient-id") int patientId,
@@ -503,8 +519,8 @@ public class Service {
 
         @GET("page-disease-full")
         Call<List<DiseaseFullDTO>> pageDiseaseFullCall(@Query("patient-id") int patientId,
-                                                                @Query("page") int page,
-                                                                @Query("items-per-page") int itemsPerPage);
+                                                       @Query("page") int page,
+                                                       @Query("items-per-page") int itemsPerPage);
 
         @GET("get-disease-full")
         CompletableFuture<DiseaseFullDTO> getDiseaseFull(@Query("disease-id") int diseaseId);
@@ -518,7 +534,7 @@ public class Service {
 
         @GET("search-byoumei-master")
         Call<List<ByoumeiMasterDTO>> searchByoumeiCall(@Query("text") String text,
-                                                                @Query("at") String at);
+                                                       @Query("at") String at);
 
         @GET("find-byoumei-master-by-name")
         CompletableFuture<ByoumeiMasterDTO> findByoumeiMasterByName(@Query("name") String name,
@@ -526,7 +542,7 @@ public class Service {
 
         @GET("find-byoumei-master-by-name")
         Call<ByoumeiMasterDTO> findByoumeiMasterByNameCall(@Query("name") String name,
-                                                                    @Query("at") String at);
+                                                           @Query("at") String at);
 
         @GET("search-shuushokugo-master")
         CompletableFuture<List<ShuushokugoMasterDTO>> searchShuushokugo(@Query("text") String text);
@@ -600,7 +616,7 @@ public class Service {
 
         @GET("list-visiting-patient-id-having-hoken")
         Call<List<Integer>> listVisitingPatientIdHavingHokenCall(@Query("year") int year,
-                                                             @Query("month") int month);
+                                                                 @Query("month") int month);
 
         @GET("list-visit-by-patient-having-hoken")
         CompletableFuture<List<VisitFull2DTO>> listVisitByPatientHavingHoken(
@@ -624,7 +640,8 @@ public class Service {
 
         @GET("find-shinryou-master-by-name")
         Call<ShinryouMasterDTO> findShinryouMasterByNameCall(@Query("name") String name,
-                                                                      @Query("at") String at);
+                                                             @Query("at") String at);
+
         @GET("list-all-practice-log")
         CompletableFuture<PracticeLogList> listAllPracticeLog();
 
@@ -636,12 +653,13 @@ public class Service {
     public static ServerAPI api;
     public static OkHttpClient client;
     private static HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+
     static {
         logging.setLevel(HttpLoggingInterceptor.Level.NONE);
     }
 
-    static public void setServerUrl(String serverUrl){
-        if( !serverUrl.endsWith("/") ){
+    static public void setServerUrl(String serverUrl) {
+        if (!serverUrl.endsWith("/")) {
             serverUrl += "/";
         }
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
@@ -661,7 +679,7 @@ public class Service {
         api = server.create(ServerAPI.class);
     }
 
-    public static void setLogBody(){
+    public static void setLogBody() {
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
     }
 

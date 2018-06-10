@@ -2,10 +2,7 @@ package jp.chang.myclinic.recordbrowser.tracking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.dto.WqueueDTO;
-import jp.chang.myclinic.logdto.practicelog.DrugCreated;
-import jp.chang.myclinic.logdto.practicelog.PracticeLog;
-import jp.chang.myclinic.logdto.practicelog.TextCreated;
-import jp.chang.myclinic.logdto.practicelog.WqueueUpdated;
+import jp.chang.myclinic.logdto.practicelog.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +37,11 @@ class Dispatcher {
                     case "drug-created": {
                         DrugCreated body = mapper.readValue(log.body, DrugCreated.class);
                         action.onDrugCreated(body.created, toNext);
+                        break;
+                    }
+                    case "shinryou-created": {
+                        ShinryouCreated body = mapper.readValue(log.body, ShinryouCreated.class);
+                        action.onShinryouCreated(body.created, toNext);
                         break;
                     }
                     case "wqueue-updated": {

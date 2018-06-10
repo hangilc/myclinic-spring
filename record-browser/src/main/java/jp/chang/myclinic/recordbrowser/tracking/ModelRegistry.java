@@ -20,7 +20,10 @@ class ModelRegistry {
     private Map<Integer, Koukikourei> koukikoureiRegistry = new HashMap<>();
     private Map<Integer, Kouhi> kouhiRegistry = new HashMap<>();
     private Map<Integer, Drug> drugRegistry = new HashMap<>();
+    private Map<Integer, Shinryou> shinryouRegistry = new HashMap<>();
     private Map<Integer, IyakuhinMasterDTO> iyakuhinMasterRegistry = new HashMap<>();
+    private Map<Integer, ShinryouMasterDTO> shinryouMasterRegistry = new HashMap<>();
+    private Map<Integer, KizaiMasterDTO> kizaiMasterRegistry = new HashMap<>();
 
     public CompletableFuture<Visit> getVisit(int visitId) {
         if (visitRegistry.containsKey(visitId)) {
@@ -149,6 +152,31 @@ class ModelRegistry {
                     .thenApply(dto -> {
                         iyakuhinMasterRegistry.put(iyakuhincode, dto);
                         return dto;
+                    });
+        }
+    }
+
+    public CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode){
+        if( shinryouMasterRegistry.containsKey(shinryoucode) ){
+            return CompletableFuture.completedFuture(shinryouMasterRegistry.get(shinryoucode));
+        } else {
+            return Service.api.resolveShinryouMaster(shinryoucode, today)
+                    .thenApply(dto -> {
+                        shinryouMasterRegistry.put(shinryoucode, dto);
+                        return dto;
+                    });
+        }
+    }
+
+    public CompletableFuture<Shinryou> getShinryou(ShinryouDTO shinryouDTO){
+        if( shinryouRegistry.containsKey(shinryouDTO.shinryouId) ){
+            return CompletableFuture.completedFuture(shinryouRegistry.get(shinryouDTO.shinryouId));
+        } else {
+            return getShinryouMaster(shinryouDTO.shinryoucode)
+                    .thenApply(master -> {
+                        Shinryou shinryou = new Shinryou(shinryouDTO, master);
+                        shinryouRegistry.put(shinryouDTO.shinryouId, shinryou);
+                        return shinryou;
                     });
         }
     }
