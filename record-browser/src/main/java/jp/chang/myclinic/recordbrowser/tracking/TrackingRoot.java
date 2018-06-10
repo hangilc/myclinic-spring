@@ -72,7 +72,12 @@ public class TrackingRoot extends VBox implements DispatchAction {
 
     @Override
     public void onDrugCreated(DrugDTO drugDTO, Runnable cb){
-
+        registry.getDrug(drugDTO)
+                .thenAccept(drug -> Platform.runLater(() -> {
+                    recordList.addDrug(drug);
+                    cb.run();
+                }))
+                .exceptionally(HandlerFX::exceptionally);
     }
 
 }

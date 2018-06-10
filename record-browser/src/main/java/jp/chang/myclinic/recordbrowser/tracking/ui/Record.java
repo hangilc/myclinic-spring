@@ -2,6 +2,7 @@ package jp.chang.myclinic.recordbrowser.tracking.ui;
 
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.recordbrowser.tracking.model.Drug;
 import jp.chang.myclinic.recordbrowser.tracking.model.Text;
 import jp.chang.myclinic.recordbrowser.tracking.model.Visit;
 import jp.chang.myclinic.utilfx.TwoColumn;
@@ -13,6 +14,8 @@ public class Record extends VBox {
 
     private int visitId;
     private TwoColumn body = new TwoColumn(4);
+    private VBox drugBox = new VBox();
+    private List<RecordDrug> drugs = new ArrayList<>();
 
     public Record(Visit visit){
         this.visitId = visit.getVisitId();
@@ -21,6 +24,7 @@ public class Record extends VBox {
                 body
         );
         addHoken(visit);
+        body.getRightBox().getChildren().add(drugBox);
     }
 
     public int getVisitId() {
@@ -38,5 +42,12 @@ public class Record extends VBox {
         text.textProperty().bind(visit.hokenRepProperty());
         textFlow.getChildren().add(text);
         body.getRightBox().getChildren().add(textFlow);
+    }
+
+    public void addDrug(Drug drug){
+        int index = drugs.size() + 1;
+        RecordDrug recordDrug = new RecordDrug(drug.getDrugId(), index, drug.repProperty());
+        drugBox.getChildren().add(recordDrug);
+        drugs.add(recordDrug);
     }
 }

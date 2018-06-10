@@ -132,9 +132,11 @@ class ModelRegistry {
         if( drugRegistry.containsKey(drugDTO.drugId) ){
             return CompletableFuture.completedFuture(drugRegistry.get(drugDTO.drugId));
         } else {
-            getIyakuhinMaster(drugDTO.iyakuhincode)
+            return getIyakuhinMaster(drugDTO.iyakuhincode)
                     .thenApply(master -> {
-                        
+                        Drug drug = new Drug(drugDTO, master);
+                        drugRegistry.put(drugDTO.drugId, drug);
+                        return drug;
                     });
         }
     }
@@ -143,7 +145,7 @@ class ModelRegistry {
         if( iyakuhinMasterRegistry.containsKey(iyakuhincode) ){
             return CompletableFuture.completedFuture(iyakuhinMasterRegistry.get(iyakuhincode));
         } else {
-            Service.api.resolveIyakuhinMaster(iyakuhincode, today)
+            return Service.api.resolveIyakuhinMaster(iyakuhincode, today)
                     .thenApply(dto -> {
                         iyakuhinMasterRegistry.put(iyakuhincode, dto);
                         return dto;
