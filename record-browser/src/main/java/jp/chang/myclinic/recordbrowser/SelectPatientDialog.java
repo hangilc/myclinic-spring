@@ -58,6 +58,7 @@ class SelectPatientDialog extends Stage {
 
     private ListView<PatientDTO> createList(){
         ListView<PatientDTO> list = new ListView<>();
+        list.getStyleClass().add("search-patient-list");
         list.setCellFactory(listView -> new ListCell<>(){
             @Override
             protected void updateItem(PatientDTO item, boolean empty) {
@@ -75,11 +76,14 @@ class SelectPatientDialog extends Stage {
 
     private Node createCommands(ListView<PatientDTO> listView){
         HBox hbox = new HBox(4);
-        Button selectButton = new Button("選択");
+        Button selectButton = new Button("診療録");
+        Button detailButton = new Button("詳細情報");
         Button cancelButton = new Button("キャンセル");
         selectButton.setDisable(true);
+        detailButton.setDisable(true);
         listView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             selectButton.setDisable(newValue == null);
+            detailButton.setDisable(newValue == null);
         });
         listView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if( event.getClickCount() == 2 ){
@@ -87,11 +91,19 @@ class SelectPatientDialog extends Stage {
             }
         });
         selectButton.setOnAction(evt -> doSelect(listView));
+        detailButton.setOnAction(evt -> {
+            PatientDTO patient = listView.getSelectionModel().getSelectedItem();
+            if( patient != null ){
+                PatientDetailDialog dialog = new PatientDetailDialog(patient);
+                dialog.show();
+                close();
+            }
+        });
         cancelButton.setOnAction(evt -> {
-            selectedPatient =null;
+            selectedPatient = null;
             close();
         });
-        hbox.getChildren().addAll(selectButton, cancelButton);
+        hbox.getChildren().addAll(selectButton, detailButton, cancelButton);
         return hbox;
     }
 

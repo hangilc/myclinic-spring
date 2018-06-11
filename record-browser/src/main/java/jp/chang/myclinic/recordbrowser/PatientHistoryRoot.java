@@ -2,10 +2,12 @@ package jp.chang.myclinic.recordbrowser;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
@@ -19,9 +21,7 @@ class PatientHistoryRoot extends VBox {
 
     //private static Logger logger = LoggerFactory.getLogger(PatientHistoryRoot.class);
 
-    private Label mainLabel = new Label("");
     private RecordListByPatient recordList = new RecordListByPatient();
-    private ByPatientNavHandler navHandler;
     private Nav nav = new Nav();
 
     PatientHistoryRoot(PatientDTO patient) {
@@ -32,23 +32,21 @@ class PatientHistoryRoot extends VBox {
         recordScroll.getStyleClass().add("record-scroll");
         recordScroll.setFitToWidth(true);
         getChildren().addAll(
-                mainLabel,
+                createMainLabel(patient),
                 createNavRow(patient),
                 recordScroll
         );
-        updateMainLabel(patient);
     }
 
-    void trigger(){
+    void trigger() {
         nav.trigger();
     }
 
-    private Node createNavRow(PatientDTO patient){
+    private Node createNavRow(PatientDTO patient) {
         HBox hbox = new HBox(4);
-        navHandler = new ByPatientNavHandler(patient);
+        ByPatientNavHandler navHandler = new ByPatientNavHandler(patient);
         navHandler.setPageCallback(this::pageCallback);
         nav.setHandler(navHandler);
-        mainLabel.setMaxWidth(Double.MAX_VALUE);
         Button refreshButton = new Button("更新");
         refreshButton.setOnAction(evt -> nav.trigger());
         hbox.getChildren().addAll(
@@ -58,18 +56,29 @@ class PatientHistoryRoot extends VBox {
         return hbox;
     }
 
-    private void pageCallback(List<VisitFull2DTO> visits){
+    private void pageCallback(List<VisitFull2DTO> visits) {
         recordList.clear();
         visits.forEach(recordList::add);
     }
 
-    private void updateMainLabel(PatientDTO patient){
-        mainLabel.setText(createMainLabelText(patient));
+    private Node createMainLabel(PatientDTO patient) {
+        TextFlow mainLabel = new TextFlow();
+        Hyperlink detailLink = new Hyperlink("追加情報");
+        detailLink.setOnAction(evt -> {
+            PatientDetailDialog detailDialog = new PatientDetailDialog(patient);
+            detailDialog.show();
+        });
+        mainLabel.getChildren().addAll(
+                new Text(makeMainLabelText(patient)),
+                new Text(" "),
+                detailLink
+        );
+        return mainLabel;
     }
 
-    private String createMainLabelText(PatientDTO patient){
+    private String makeMainLabelText(PatientDTO patient) {
         LocalDate birthday = null;
-        if( patient.birthday != null && !"0000-00-00".equals(patient.birthday) ){
+        if (patient.birthday != null && !"0000-00-00".equals(patient.birthday)) {
             birthday = LocalDate.parse(patient.birthday);
         }
         Sex sex = Sex.fromCode(patient.sex);
@@ -78,9 +87,9 @@ class PatientHistoryRoot extends VBox {
                 patient.lastName, patient.firstName,
                 patient.lastNameYomi, patient.firstNameYomi,
                 birthday != null ? DateTimeUtil.toKanji(birthday, DateTimeUtil.kanjiFormatter1) : "??",
-                birthday != null ? DateTimeUtil.calcAge(birthday) + "": "??",
+                birthday != null ? DateTimeUtil.calcAge(birthday) + "" : "??",
                 sex != null ? sex.getKanji() : "??"
-                );
+        );
     }
 
 

@@ -78,7 +78,7 @@ public class Main extends Application {
                 menu.getItems().add(item);
             }
             {
-                MenuItem item = new MenuItem("患者を選択");
+                MenuItem item = new MenuItem("患者検索");
                 item.setOnAction(evt -> selectPatient());
                 menu.getItems().add(item);
             }

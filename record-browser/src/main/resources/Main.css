@@ -12,6 +12,10 @@
     -fx-underline: false;
 }
 
+.dialog {
+    -fx-padding: 10px;
+}
+
 .record-title {
     -fx-font-weight: bold;
     -fx-background-color: #ccc;
@@ -35,6 +39,15 @@
 
 .select-patient-dialog {
     -fx-padding: 10px;
+}
+
+.search-patient-list {
+    -fx-pref-height: 300px;
+}
+
+.patient-info {
+    -fx-max-width: 400px;
+    -fx-max-height: 500px;
 }
 
 .patient-id-column {
