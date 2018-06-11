@@ -87,6 +87,11 @@ public class Main extends Application {
         {
             Menu menu = new Menu("その他");
             {
+                MenuItem item = new MenuItem("病名検索");
+                item.setOnAction(evt -> doSearchByoumei());
+                menu.getItems().add(item);
+            }
+            {
                 MenuItem item = new MenuItem("会計一覧");
                 item.setOnAction(evt -> doListCharge());
                 menu.getItems().add(item);
@@ -121,6 +126,11 @@ public class Main extends Application {
                     dialog.show();
                 }))
                 .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private void doSearchByoumei(){
+        SearchByoumeiDialog dialog = new SearchByoumeiDialog();
+        dialog.show();
     }
 
     private void startRepeater(){

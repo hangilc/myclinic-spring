@@ -67,3 +67,7 @@
     -fx-padding: 3;
     -fx-border-insets: 4 0 4 0;
 }
+
+.search-byoumei-dialog .search-text-input {
+    -fx-pref-width: 10em;
+}
