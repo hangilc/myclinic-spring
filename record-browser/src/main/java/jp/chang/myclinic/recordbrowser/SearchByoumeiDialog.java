@@ -1,10 +1,12 @@
 package jp.chang.myclinic.recordbrowser;
 
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -45,12 +47,18 @@ class SearchByoumeiDialog extends Stage {
         TextField inputField = new TextField();
         inputField.getStyleClass().add("search-text-input");
         Button searchButton = new Button("検索");
+        RadioButton currentRadio = new RadioButton("継続のみ");
+        RadioButton allRadio = new RadioButton("過去も");
+        Group radioGroup = new Group(currentRadio, allRadio);
+        currentRadio.setSelected(true);
         inputField.setOnAction(evt -> doSearch(inputField.getText()));
         searchButton.setOnAction(evt -> doSearch(inputField.getText()));
         hbox.getChildren().addAll(
                 new Label("患者番号："),
                 inputField,
-                searchButton
+                searchButton,
+                currentRadio,
+                allRadio
         );
         return hbox;
     }
