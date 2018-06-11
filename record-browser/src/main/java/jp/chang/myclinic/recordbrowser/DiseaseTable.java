@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Control;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -76,19 +77,24 @@ class DiseaseTable extends TableView<DiseaseTable.Model> {
     }
 
     DiseaseTable() {
+        getStyleClass().add("disease-table");
         setMaxWidth(Double.MAX_VALUE);
 
         TableColumn<Model, String> stateColumn = new TableColumn<>("転帰");
         stateColumn.setCellValueFactory(new PropertyValueFactory<>("state"));
+        stateColumn.getStyleClass().add("state-column");
 
         TableColumn<Model, String> nameColumn = new TableColumn<>("病名");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        nameColumn.getStyleClass().add("name-column");
 
         TableColumn<Model, String> startDateColumn = new TableColumn<>("開始日");
         startDateColumn.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        startDateColumn.getStyleClass().add("start-date-column");
 
         TableColumn<Model, String> endDateColumn = new TableColumn<>("終了日");
         endDateColumn.setCellValueFactory(new PropertyValueFactory<>("endDate"));
+        endDateColumn.getStyleClass().add("end-date-column");
 
         getColumns().addAll(Arrays.asList(
                 stateColumn,

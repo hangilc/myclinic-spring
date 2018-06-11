@@ -68,6 +68,28 @@
     -fx-border-insets: 4 0 4 0;
 }
 
+.search-byoumei-dialog {
+    -fx-pref-width: 38em;
+}
+
 .search-byoumei-dialog .search-text-input {
     -fx-pref-width: 10em;
 }
+
+.disease-table .state-column {
+    -fx-pref-width: 3em;
+    -fx-alignment: center;
+}
+
+.disease-table .name-column {
+    -fx-pref-width: 15em;
+}
+
+.disease-table .start-date-column {
+    -fx-pref-width: 9em;
+}
+
+.disease-table .end-date-column {
+    -fx-pref-width: 9em;
+}
+
