@@ -1,7 +1,6 @@
 package jp.chang.myclinic.recordbrowser;
 
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -14,13 +13,24 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
+import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 class SearchByoumeiDialog extends Stage {
+
+    private enum SearchMode {
+        Current,
+        All
+    }
 
     private static Logger logger = LoggerFactory.getLogger(SearchByoumeiDialog.class);
     private PatientDTO currentPatient;
@@ -41,18 +51,23 @@ class SearchByoumeiDialog extends Stage {
         setScene(new Scene(root));
     }
 
-    private Node createInput(){
+    private Node createInput() {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         TextField inputField = new TextField();
         inputField.getStyleClass().add("search-text-input");
         Button searchButton = new Button("検索");
-        RadioButton currentRadio = new RadioButton("継続のみ");
-        RadioButton allRadio = new RadioButton("過去も");
-        Group radioGroup = new Group(currentRadio, allRadio);
-        currentRadio.setSelected(true);
-        inputField.setOnAction(evt -> doSearch(inputField.getText()));
-        searchButton.setOnAction(evt -> doSearch(inputField.getText()));
+        RadioButtonGroup<SearchMode> group = new RadioButtonGroup<>();
+        RadioButton currentRadio = group.createRadioButton("継続のみ", SearchMode.Current);
+        RadioButton allRadio = group.createRadioButton("過去も", SearchMode.All);
+        group.setValue(SearchMode.Current);
+        group.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if( currentPatient!= null ){
+                search(currentPatient.patientId, newValue);
+            }
+        });
+        inputField.setOnAction(evt -> doSearch(inputField.getText(), group.getValue()));
+        searchButton.setOnAction(evt -> doSearch(inputField.getText(), group.getValue()));
         hbox.getChildren().addAll(
                 new Label("患者番号："),
                 inputField,
@@ -63,27 +78,36 @@ class SearchByoumeiDialog extends Stage {
         return hbox;
     }
 
-    private void doSearch(String text){
+    private void search(int patientId, SearchMode searchMode) {
+        CompletableFuture<List<DiseaseFullDTO>> diseases;
+        if (searchMode == SearchMode.Current) {
+            diseases = Service.api.listCurrentDiseaseFull(patientId);
+        } else if (searchMode == SearchMode.All) {
+            diseases = Service.api.listDiseaseFull(patientId);
+        } else {
+            diseases = CompletableFuture.completedFuture(Collections.emptyList());
+        }
+        diseases.thenAccept(diseaseTable::setRows)
+                .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private void doSearch(String text, SearchMode searchMode) {
         try {
             int patientId = Integer.parseInt(text);
             Service.api.getPatient(patientId)
-                    .thenCompose(patientDTO -> {
+                    .thenAccept(patientDTO -> {
                         this.currentPatient = patientDTO;
-                        return Service.api.listCurrentDiseaseFull(patientId);
-                    })
-                    .thenAccept(diseases -> {
                         updatePatientLabel();
-                        diseaseTable.setRows(diseases);
-                    })
-                    .exceptionally(HandlerFX::exceptionally);
-        } catch(NumberFormatException ex){
+                        search(patientId, searchMode);
+                    });
+        } catch (NumberFormatException ex) {
             GuiUtil.alertError("患者番号の入力が不適切です。");
         }
     }
 
-    private void updatePatientLabel(){
+    private void updatePatientLabel() {
         String s = "";
-        if( currentPatient != null ) {
+        if (currentPatient != null) {
             s = String.format("(%d) %s %s", currentPatient.patientId,
                     currentPatient.lastName, currentPatient.firstName);
         }
