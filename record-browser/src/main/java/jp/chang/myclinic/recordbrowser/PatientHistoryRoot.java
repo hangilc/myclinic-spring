@@ -87,8 +87,10 @@ class PatientHistoryRoot extends VBox {
         detailLink.setOnAction(evt -> {
             if( detailDialog == null ) {
                 detailDialog = new PatientDetailDialog(patient);
-                detailDialog.setOnCloseRequest(e -> {
-                    detailDialog = null;
+                detailDialog.showingProperty().addListener((obs, oldValue, newValue) -> {
+                    if( oldValue && !newValue ) {
+                        detailDialog = null;
+                    }
                 });
                 detailDialog.show();
             } else {
@@ -101,7 +103,11 @@ class PatientHistoryRoot extends VBox {
                         if( byoumeiDialog == null ) {
                             byoumeiDialog = new ByoumeiDialog(patient, diseases,
                                     ByoumeiDialog.SearchMode.Current);
-                            byoumeiDialog.setOnCloseRequest(e -> byoumeiDialog = null);
+                            byoumeiDialog.showingProperty().addListener((obs, oldValue, newValue) -> {
+                                if( oldValue && !newValue ){
+                                    byoumeiDialog = null;
+                                }
+                            });
                             byoumeiDialog.show();
                         } else {
                             byoumeiDialog.toFront();
