@@ -95,6 +95,7 @@ class SelectPatientDialog extends Stage {
             PatientDTO patient = listView.getSelectionModel().getSelectedItem();
             if( patient != null ){
                 PatientDetailDialog dialog = new PatientDetailDialog(patient);
+                Main.setAsChildWindow(dialog);
                 dialog.show();
                 close();
             }
@@ -110,8 +111,11 @@ class SelectPatientDialog extends Stage {
     private void doSelect(ListView<PatientDTO> listView){
         PatientDTO patient = listView.getSelectionModel().getSelectedItem();
         if( patient != null ){
-            selectedPatient = patient;
-            close();
+            PatientHistoryDialog patientDialog = new PatientHistoryDialog(patient);
+            Main.setAsChildWindow(patientDialog);
+            patientDialog.setX(Main.getXofMainStage() + 40);
+            patientDialog.setY(Main.getYofMainStage() + 20);
+            patientDialog.show();
         }
     }
 

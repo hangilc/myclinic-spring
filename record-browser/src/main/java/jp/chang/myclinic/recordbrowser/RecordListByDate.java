@@ -37,6 +37,9 @@ class RecordListByDate extends VBox {
         Hyperlink patientLink = new Hyperlink(patientText);
         patientLink.setOnAction(evt -> {
             PatientHistoryDialog dialog = new PatientHistoryDialog(patient);
+            Main.setAsChildWindow(dialog);
+            dialog.setX(Main.getXofMainStage() + 40);
+            dialog.setY(Main.getYofMainStage() + 20);
             dialog.show();
         });
         patientLink.getStyleClass().add("patient-link");

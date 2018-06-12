@@ -7,6 +7,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -20,6 +21,16 @@ import java.time.LocalDate;
 public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
+    private static Stage mainStage;
+    public static void setAsChildWindow(Stage stage){
+        stage.initOwner(mainStage);
+    }
+    public static double getXofMainStage(){
+        return mainStage.getX();
+    }
+    public static double getYofMainStage(){
+        return mainStage.getY();
+    }
     private MainRoot root = new MainRoot();
     private Repeater repeater;
 
@@ -39,6 +50,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        mainStage = stage;
         stage.setTitle("診療録閲覧");
         BorderPane pane = new BorderPane();
         pane.setCenter(root);
@@ -103,6 +115,8 @@ public class Main extends Application {
 
     private void selectByDate() {
         SelectDateDialog dialog = new SelectDateDialog();
+        Main.setAsChildWindow(dialog);
+        dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.showAndWait();
         dialog.getValue().ifPresent(date -> {
             root.setDate(date);
@@ -112,17 +126,15 @@ public class Main extends Application {
 
     private void selectPatient() {
         SelectPatientDialog dialog = new SelectPatientDialog();
-        dialog.showAndWait();
-        dialog.getSelectedPatient().ifPresent(patient -> {
-            PatientHistoryDialog patientDialog = new PatientHistoryDialog(patient);
-            patientDialog.show();
-        });
+        Main.setAsChildWindow(dialog);
+        dialog.show();
     }
 
     private void doListCharge() {
         Service.api.listVisitChargePatientAt(LocalDate.now().toString())
                 .thenAccept(result -> Platform.runLater(() -> {
                     ListChargeDialog dialog = new ListChargeDialog(result);
+                    Main.setAsChildWindow(dialog);
                     dialog.show();
                 }))
                 .exceptionally(HandlerFX::exceptionally);
@@ -130,6 +142,7 @@ public class Main extends Application {
 
     private void doSearchByoumei(){
         SearchByoumeiDialog dialog = new SearchByoumeiDialog();
+        Main.setAsChildWindow(dialog);
         dialog.show();
     }
 

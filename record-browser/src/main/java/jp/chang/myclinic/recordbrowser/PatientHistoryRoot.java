@@ -64,14 +64,19 @@ class PatientHistoryRoot extends VBox {
     private Node createMainLabel(PatientDTO patient) {
         TextFlow mainLabel = new TextFlow();
         Hyperlink detailLink = new Hyperlink("追加情報");
+        Hyperlink byoumeiLink = new Hyperlink("病名");
         detailLink.setOnAction(evt -> {
             PatientDetailDialog detailDialog = new PatientDetailDialog(patient);
+            detailDialog.initOwner(getScene().getWindow());
             detailDialog.show();
         });
+        //byoumeiLink.setOnAction(evt -> );
         mainLabel.getChildren().addAll(
                 new Text(makeMainLabelText(patient)),
                 new Text(" "),
-                detailLink
+                detailLink,
+                new Text(" "),
+                byoumeiLink
         );
         return mainLabel;
     }
