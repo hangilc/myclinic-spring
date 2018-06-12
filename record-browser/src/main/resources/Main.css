@@ -68,7 +68,7 @@
     -fx-border-insets: 4 0 4 0;
 }
 
-.search-byoumei-dialog {
+.search-byoumei-dialog, .byoumei-dialog {
     -fx-pref-width: 38em;
 }
 

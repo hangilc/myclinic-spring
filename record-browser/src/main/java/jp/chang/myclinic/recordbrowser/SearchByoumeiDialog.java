@@ -1,5 +1,6 @@
 package jp.chang.myclinic.recordbrowser;
 
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -87,7 +88,7 @@ class SearchByoumeiDialog extends Stage {
         } else {
             diseases = CompletableFuture.completedFuture(Collections.emptyList());
         }
-        diseases.thenAccept(diseaseTable::setRows)
+        diseases.thenAccept(result -> Platform.runLater(() -> diseaseTable.setRows(result)))
                 .exceptionally(HandlerFX::exceptionally);
     }
 
@@ -95,11 +96,11 @@ class SearchByoumeiDialog extends Stage {
         try {
             int patientId = Integer.parseInt(text);
             Service.api.getPatient(patientId)
-                    .thenAccept(patientDTO -> {
+                    .thenAccept(patientDTO -> Platform.runLater(() -> {
                         this.currentPatient = patientDTO;
                         updatePatientLabel();
                         search(patientId, searchMode);
-                    });
+                    }));
         } catch (NumberFormatException ex) {
             GuiUtil.alertError("患者番号の入力が不適切です。");
         }

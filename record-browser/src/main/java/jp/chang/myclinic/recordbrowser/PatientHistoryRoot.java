@@ -1,5 +1,6 @@
 package jp.chang.myclinic.recordbrowser;
 
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -8,10 +9,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.utilfx.Nav;
 
 import java.time.LocalDate;
@@ -70,7 +73,16 @@ class PatientHistoryRoot extends VBox {
             detailDialog.initOwner(getScene().getWindow());
             detailDialog.show();
         });
-        //byoumeiLink.setOnAction(evt -> );
+        byoumeiLink.setOnAction(evt -> {
+            Service.api.listCurrentDiseaseFull(patient.patientId)
+                    .thenAccept(diseases -> Platform.runLater(() -> {
+                        ByoumeiDialog byoumeiDialog = new ByoumeiDialog(patient, diseases,
+                                ByoumeiDialog.SearchMode.Current);
+                        byoumeiDialog.initOwner(getScene().getWindow());
+                        byoumeiDialog.show();
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        });
         mainLabel.getChildren().addAll(
                 new Text(makeMainLabelText(patient)),
                 new Text(" "),
