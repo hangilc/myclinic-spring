@@ -9,6 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
@@ -26,6 +27,8 @@ class PatientHistoryRoot extends VBox {
 
     private RecordListByPatient recordList = new RecordListByPatient();
     private Nav nav = new Nav();
+    private Stage detailDialog;
+    private Stage byoumeiDialog;
 
     PatientHistoryRoot(PatientDTO patient) {
         super(2);
@@ -39,6 +42,19 @@ class PatientHistoryRoot extends VBox {
                 createNavRow(patient),
                 recordScroll
         );
+    }
+
+    void setupOnClose(Stage stage){
+        stage.showingProperty().addListener((obs, oldValue, newValue) -> {
+            if( oldValue && !newValue ){
+                if( detailDialog != null ){
+                    detailDialog.close();
+                }
+                if( byoumeiDialog != null ){
+                    byoumeiDialog.close();
+                }
+            }
+        });
     }
 
     void trigger() {
@@ -69,17 +85,27 @@ class PatientHistoryRoot extends VBox {
         Hyperlink detailLink = new Hyperlink("追加情報");
         Hyperlink byoumeiLink = new Hyperlink("病名");
         detailLink.setOnAction(evt -> {
-            PatientDetailDialog detailDialog = new PatientDetailDialog(patient);
-            detailDialog.initOwner(getScene().getWindow());
-            detailDialog.show();
+            if( detailDialog == null ) {
+                detailDialog = new PatientDetailDialog(patient);
+                detailDialog.setOnCloseRequest(e -> {
+                    detailDialog = null;
+                });
+                detailDialog.show();
+            } else {
+                detailDialog.toFront();
+            }
         });
         byoumeiLink.setOnAction(evt -> {
             Service.api.listCurrentDiseaseFull(patient.patientId)
                     .thenAccept(diseases -> Platform.runLater(() -> {
-                        ByoumeiDialog byoumeiDialog = new ByoumeiDialog(patient, diseases,
-                                ByoumeiDialog.SearchMode.Current);
-                        byoumeiDialog.initOwner(getScene().getWindow());
-                        byoumeiDialog.show();
+                        if( byoumeiDialog == null ) {
+                            byoumeiDialog = new ByoumeiDialog(patient, diseases,
+                                    ByoumeiDialog.SearchMode.Current);
+                            byoumeiDialog.setOnCloseRequest(e -> byoumeiDialog = null);
+                            byoumeiDialog.show();
+                        } else {
+                            byoumeiDialog.toFront();
+                        }
                     }))
                     .exceptionally(HandlerFX::exceptionally);
         });

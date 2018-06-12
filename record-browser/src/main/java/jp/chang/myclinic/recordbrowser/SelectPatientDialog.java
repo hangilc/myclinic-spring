@@ -97,7 +97,6 @@ class SelectPatientDialog extends Stage {
                 PatientDetailDialog dialog = new PatientDetailDialog(patient);
                 Main.setAsChildWindow(dialog);
                 dialog.show();
-                close();
             }
         });
         cancelButton.setOnAction(evt -> {

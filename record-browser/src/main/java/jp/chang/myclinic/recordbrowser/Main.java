@@ -17,13 +17,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
     private static Stage mainStage;
+    private static List<Stage> dependentStages = new ArrayList<>();
     public static void setAsChildWindow(Stage stage){
-        stage.initOwner(mainStage);
+        stage.showingProperty().addListener((obs, oldValue, newValue) -> {
+            if( oldValue && !newValue ){
+                dependentStages.remove(stage);
+            }
+        });
+        dependentStages.add(stage);
     }
     public static double getXofMainStage(){
         return mainStage.getX();
@@ -51,6 +59,13 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         mainStage = stage;
+        stage.showingProperty().addListener((obs, oldValue, newValue) -> {
+            if( oldValue && !newValue ) {
+                List<Stage> stages = new ArrayList<>(dependentStages);
+                dependentStages.clear();
+                stages.forEach(Stage::close);
+            }
+        });
         stage.setTitle("診療録閲覧");
         BorderPane pane = new BorderPane();
         pane.setCenter(root);

@@ -13,6 +13,7 @@ class PatientHistoryDialog extends Stage {
         setTitle(String.format("診療録（%s%s）", patient.lastName, patient.firstName));
         PatientHistoryRoot root = new PatientHistoryRoot(patient);
         setScene(new Scene(root));
+        root.setupOnClose(this);
         root.trigger();
     }
 
