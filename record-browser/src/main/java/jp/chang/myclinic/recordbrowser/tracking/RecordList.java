@@ -29,13 +29,6 @@ class RecordList extends VBox {
         return records.stream().filter(rec -> rec.getVisitId() == visitId).findAny();
     }
 
-    public void addText(Text text, Runnable cb){
-        getRecord(text.getVisitId()).ifPresent(record -> {
-            record.addText(text);
-        });
-        cb.run();
-    }
-
     public void addDrug(Drug drug){
         getRecord(drug.getVisitId()).ifPresent(record -> {
             record.addDrug(drug);

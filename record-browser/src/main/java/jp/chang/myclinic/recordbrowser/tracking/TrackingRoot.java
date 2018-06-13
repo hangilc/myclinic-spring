@@ -116,6 +116,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
         if( visit != null ){
             visit.getCharge().setValue(created.charge);
         }
+        toNext.run();
     }
 
     @Override
@@ -138,8 +139,35 @@ public class TrackingRoot extends VBox implements DispatchAction {
 
     @Override
     public void onTextCreated(TextDTO textDTO, Runnable cb){
-        Text text = registry.addText(textDTO);
-        Platform.runLater(() -> recordList.addText(text, cb));
+        Visit visit = registry.getVisit(textDTO.visitId);
+        if( visit != null ){
+            visit.getTexts().add(new Text(textDTO));
+        }
+        cb.run();
+    }
+
+    @Override
+    public void onTextUpdated(TextDTO prev, TextDTO updated, Runnable cb) {
+        Visit visit = registry.getVisit(updated.visitId);
+        if( visit != null ){
+            Text text = visit.getText(updated.textId);
+            if( text != null ){
+                text.setContent(updated.content);
+            }
+        }
+        cb.run();
+    }
+
+    @Override
+    public void onTextDeleted(TextDTO deleted, Runnable cb) {
+        Visit visit = registry.getVisit(deleted.visitId);
+        if( visit != null ){
+            Text text = visit.getText(deleted.textId);
+            if( text != null ){
+                visit.getTexts().remove(text);
+            }
+        }
+        cb.run();
     }
 
     @Override

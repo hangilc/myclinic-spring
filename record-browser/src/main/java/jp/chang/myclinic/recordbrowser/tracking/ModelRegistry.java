@@ -14,7 +14,6 @@ class ModelRegistry {
     private String today = LocalDate.now().toString();
     private Map<Integer, Visit> visitRegistry = new HashMap<>();
     private Map<Integer, Patient> patientRegistry = new HashMap<>();
-    private Map<Integer, Text> textRegistry = new HashMap<>();
     private Map<Integer, Shahokokuho> shahokokuhoRegistry = new HashMap<>();
     private Map<Integer, Koukikourei> koukikoureiRegistry = new HashMap<>();
     private Map<Integer, Kouhi> kouhiRegistry = new HashMap<>();
@@ -109,12 +108,6 @@ class ModelRegistry {
                         return patient;
                     });
         }
-    }
-
-    public Text addText(TextDTO textDTO) {
-        Text text = new Text(textDTO);
-        textRegistry.put(textDTO.textId, text);
-        return text;
     }
 
     public Shahokokuho addShahokokuho(ShahokokuhoDTO dto) {

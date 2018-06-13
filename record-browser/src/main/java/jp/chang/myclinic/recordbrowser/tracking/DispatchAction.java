@@ -5,6 +5,8 @@ import jp.chang.myclinic.dto.*;
 public interface DispatchAction {
 
     default void onTextCreated(TextDTO text, Runnable cb){ cb.run(); }
+    default void onTextUpdated(TextDTO prev, TextDTO updated, Runnable cb){ cb.run(); }
+    default void onTextDeleted(TextDTO deleted, Runnable cb){ cb.run(); }
     default void onDrugCreated(DrugDTO created, Runnable cb){ cb.run(); }
     default void onShinryouCreated(ShinryouDTO created, Runnable cb){ cb.run(); }
     default void onConductCreated(ConductDTO created, Runnable cb){ cb.run(); }

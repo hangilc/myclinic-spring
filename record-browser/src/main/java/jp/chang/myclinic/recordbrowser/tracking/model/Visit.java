@@ -4,6 +4,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 
@@ -24,6 +26,7 @@ public class Visit {
     private ObjectProperty<Kouhi> kouhi2 = new SimpleObjectProperty<>(null);
     private ObjectProperty<Kouhi> kouhi3 = new SimpleObjectProperty<>(null);
     private StringProperty hokenRep = new SimpleStringProperty();
+    private ObservableList<Text> texts = FXCollections.observableArrayList();
     private Charge charge = new Charge();
 
     public Visit(VisitDTO visitDTO) {
@@ -113,6 +116,19 @@ public class Visit {
 
     public void setKouhi3(Kouhi kouhi3) {
         this.kouhi3.set(kouhi3);
+    }
+
+    public ObservableList<Text> getTexts() {
+        return texts;
+    }
+
+    public Text getText(int textId){
+        for(Text text: texts){
+            if( text.getTextId() == textId ){
+                return text;
+            }
+        }
+        return null;
     }
 
     public Charge getCharge() {

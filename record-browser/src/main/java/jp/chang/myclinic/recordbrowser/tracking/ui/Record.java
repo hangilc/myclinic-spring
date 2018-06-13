@@ -1,5 +1,6 @@
 package jp.chang.myclinic.recordbrowser.tracking.ui;
 
+import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -29,6 +30,25 @@ public class Record extends VBox {
         );
         addHoken(visit);
         body.getRightBox().getChildren().addAll(drugBox, shinryouBox, conductBox, createCharge(visit));
+        visit.getTexts().addListener((ListChangeListener<Text>) c -> {
+            while( c.next() ) {
+                for (Text item : c.getRemoved()) {
+                    body.getLeftBox().getChildren().removeIf(rec -> {
+                        final int textId = item.getTextId();
+                        if (rec instanceof RecordText) {
+                            RecordText recordText = (RecordText) rec;
+                            return recordText.getTextId() == textId;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
+                for (Text item : c.getAddedSubList()) {
+                    RecordText rec = new RecordText(item);
+                    body.getLeftBox().getChildren().add(rec);
+                }
+            }
+        });
     }
 
     public int getVisitId() {

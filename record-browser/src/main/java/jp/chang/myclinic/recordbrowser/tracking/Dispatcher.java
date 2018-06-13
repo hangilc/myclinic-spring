@@ -33,6 +33,16 @@ class Dispatcher {
                         action.onTextCreated(body.text, toNext);
                         break;
                     }
+                    case "text-updated": {
+                        TextUpdated body = mapper.readValue(log.body, TextUpdated.class);
+                        action.onTextUpdated(body.prev, body.updated, toNext);
+                        break;
+                    }
+                    case "text-deleted": {
+                        TextDeleted body = mapper.readValue(log.body, TextDeleted.class);
+                        action.onTextDeleted(body.deleted, toNext);
+                        break;
+                    }
                     case "drug-created": {
                         DrugCreated body = mapper.readValue(log.body, DrugCreated.class);
                         action.onDrugCreated(body.created, toNext);
