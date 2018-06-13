@@ -172,12 +172,44 @@ public class TrackingRoot extends VBox implements DispatchAction {
 
     @Override
     public void onDrugCreated(DrugDTO drugDTO, Runnable cb){
-        registry.getDrug(drugDTO)
-                .thenAccept(drug -> Platform.runLater(() -> {
-                    recordList.addDrug(drug);
-                    cb.run();
-                }))
-                .exceptionally(HandlerFX::exceptionally);
+        Visit visit = registry.getVisit(drugDTO.visitId);
+        if( visit != null ){
+            registry.getIyakuhinMaster(drugDTO.iyakuhincode)
+                    .thenAccept(master -> Platform.runLater(() -> {
+                        Drug drug = new Drug(drugDTO, master);
+                        visit.getDrugs().add(drug);
+                        cb.run();
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        }
+    }
+
+    @Override
+    public void onDrugUpdated(DrugDTO prev, DrugDTO updated, Runnable cb) {
+        Visit visit = registry.getVisit(updated.visitId);
+        if( visit != null ){
+            Drug drug = visit.getDrug(updated.drugId);
+            if( drug != null ){
+                registry.getIyakuhinMaster(updated.iyakuhincode)
+                        .thenAccept(master -> {
+                            drug.updateRep(updated, master);
+                            cb.run();
+                        })
+                        .exceptionally(HandlerFX::exceptionally);
+            }
+        }
+    }
+
+    @Override
+    public void onDrugDeleted(DrugDTO deleted, Runnable cb) {
+        Visit visit = registry.getVisit(deleted.visitId);
+        if( visit != null ){
+            Drug drug = visit.getDrug(deleted.drugId);
+            if( drug != null ){
+                visit.getDrugs().remove(drug);
+                cb.run();
+            }
+        }
     }
 
     @Override
@@ -195,7 +227,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
         Visit visit = registry.getVisit(updated.visitId);
         if( visit != null ) {
             registry.updateHoken(visit, updated)
-                    .thenAccept(r -> Platform.runLater(visit::initHokenRep))
+                    .thenAccept(r -> Platform.runLater(() -> {
+                        visit.initHokenRep();
+                        toNext.run();
+                    }))
                     .exceptionally(HandlerFX::exceptionally);
         }
     }

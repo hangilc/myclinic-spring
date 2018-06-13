@@ -29,12 +29,6 @@ class RecordList extends VBox {
         return records.stream().filter(rec -> rec.getVisitId() == visitId).findAny();
     }
 
-    public void addDrug(Drug drug){
-        getRecord(drug.getVisitId()).ifPresent(record -> {
-            record.addDrug(drug);
-        });
-    }
-
     public void addShinryou(Shinryou shinryou){
         getRecord(shinryou.getVisitId()).ifPresent(record -> {
             record.addShinryou(shinryou);

@@ -18,7 +18,6 @@ public class Record extends VBox {
     private VBox drugBox = new VBox();
     private VBox shinryouBox = new VBox();
     private VBox conductBox = new VBox();
-    private List<RecordDrug> drugs = new ArrayList<>();
     private List<RecordShinryou> shinryouList = new ArrayList<>();
     private List<RecordConduct> conducts = new ArrayList<>();
 
@@ -30,6 +29,11 @@ public class Record extends VBox {
         );
         addHoken(visit);
         body.getRightBox().getChildren().addAll(drugBox, shinryouBox, conductBox, createCharge(visit));
+        bindText(visit);
+        bindDrug(visit);
+    }
+
+    private void bindText(Visit visit){
         visit.getTexts().addListener((ListChangeListener<Text>) c -> {
             while( c.next() ) {
                 for (Text item : c.getRemoved()) {
@@ -51,13 +55,49 @@ public class Record extends VBox {
         });
     }
 
-    public int getVisitId() {
-        return visitId;
+    private void bindDrug(Visit visit){
+        visit.getDrugs().addListener((ListChangeListener<Drug>) c -> {
+            while( c.next() ){
+                for(Drug item: c.getRemoved() ){
+                    RecordDrug recordDrug = findRecordDrug(item.getDrugId());
+                    if( recordDrug != null ){
+                        drugBox.getChildren().remove(recordDrug);
+                        reIndexDrugs();
+                    }
+                }
+                for(Drug item: c.getAddedSubList()){
+                    int index = visit.getDrugs().indexOf(item);
+                    RecordDrug rec = new RecordDrug(index+1, item);
+                    drugBox.getChildren().add(rec);
+                }
+            }
+        });
     }
 
-    public void addText(Text text){
-        RecordText recordText = new RecordText(text);
-        body.getLeftBox().getChildren().add(recordText);
+    private void reIndexDrugs(){
+        int index = 1;
+        for(Node node: drugBox.getChildren()){
+            if( node instanceof RecordDrug ){
+                RecordDrug recordDrug = (RecordDrug)node;
+                recordDrug.updateIndex(index++);
+            }
+        }
+    }
+
+    private RecordDrug findRecordDrug(int drugId){
+        for(Node node: drugBox.getChildren()){
+            if( node instanceof RecordDrug ){
+                RecordDrug recordDrug = (RecordDrug)node;
+                if( recordDrug.getDrugId() == drugId ){
+                    return recordDrug;
+                }
+            }
+        }
+        return null;
+    }
+
+    public int getVisitId() {
+        return visitId;
     }
 
     private void addHoken(Visit visit){
@@ -66,13 +106,6 @@ public class Record extends VBox {
         text.textProperty().bind(visit.hokenRepProperty());
         textFlow.getChildren().add(text);
         body.getRightBox().getChildren().add(textFlow);
-    }
-
-    public void addDrug(Drug drug){
-        int index = drugs.size() + 1;
-        RecordDrug recordDrug = new RecordDrug(drug.getDrugId(), index, drug.repProperty());
-        drugBox.getChildren().add(recordDrug);
-        drugs.add(recordDrug);
     }
 
     public void addShinryou(Shinryou shinryou){

@@ -27,6 +27,7 @@ public class Visit {
     private ObjectProperty<Kouhi> kouhi3 = new SimpleObjectProperty<>(null);
     private StringProperty hokenRep = new SimpleStringProperty();
     private ObservableList<Text> texts = FXCollections.observableArrayList();
+    private ObservableList<Drug> drugs = FXCollections.observableArrayList();
     private Charge charge = new Charge();
 
     public Visit(VisitDTO visitDTO) {
@@ -126,6 +127,19 @@ public class Visit {
         for(Text text: texts){
             if( text.getTextId() == textId ){
                 return text;
+            }
+        }
+        return null;
+    }
+
+    public ObservableList<Drug> getDrugs() {
+        return drugs;
+    }
+
+    public Drug getDrug(int drugId){
+        for(Drug drug: drugs){
+            if( drug.getDrugId() == drugId ){
+                return drug;
             }
         }
         return null;

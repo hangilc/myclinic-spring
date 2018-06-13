@@ -48,6 +48,16 @@ class Dispatcher {
                         action.onDrugCreated(body.created, toNext);
                         break;
                     }
+                    case "drug-updated": {
+                        DrugUpdated body = mapper.readValue(log.body, DrugUpdated.class);
+                        action.onDrugUpdated(body.prev, body.updated, toNext);
+                        break;
+                    }
+                    case "drug-deleted": {
+                        DrugDeleted body = mapper.readValue(log.body, DrugDeleted.class);
+                        action.onDrugDeleted(body.deleted, toNext);
+                        break;
+                    }
                     case "shinryou-created": {
                         ShinryouCreated body = mapper.readValue(log.body, ShinryouCreated.class);
                         action.onShinryouCreated(body.created, toNext);

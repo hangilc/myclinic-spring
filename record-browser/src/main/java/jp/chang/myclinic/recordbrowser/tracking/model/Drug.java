@@ -11,18 +11,14 @@ public class Drug {
     private int visitId;
     private StringProperty rep = new SimpleStringProperty();
 
-    public Drug(DrugDTO drugDTO, IyakuhinMasterDTO master ){
+    public Drug(DrugDTO drugDTO, IyakuhinMasterDTO master){
         this.drugId = drugDTO.drugId;
         this.visitId = drugDTO.visitId;
-        this.rep.setValue(DrugUtil.drugRep(drugDTO, master));
+        updateRep(drugDTO, master);
     }
 
     public int getDrugId() {
         return drugId;
-    }
-
-    public int getVisitId() {
-        return visitId;
     }
 
     public String getRep() {
@@ -33,7 +29,8 @@ public class Drug {
         return rep;
     }
 
-    public void setRep(String rep) {
-        this.rep.set(rep);
+    final public void updateRep(DrugDTO drugDTO, IyakuhinMasterDTO master){
+        this.rep.setValue(DrugUtil.drugRep(drugDTO, master));
     }
+
 }
