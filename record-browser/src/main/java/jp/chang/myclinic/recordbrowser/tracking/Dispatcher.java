@@ -88,9 +88,19 @@ class Dispatcher {
                         action.onGazouLabelCreated(body.created, toNext);
                         break;
                     }
+                    case "gazou-label-updated": {
+                        GazouLabelUpdated body = mapper.readValue(log.body, GazouLabelUpdated.class);
+                        action.onGazouLabelUpdated(body.prev, body.updated, toNext);
+                        break;
+                    }
                     case "conduct-shinryou-created": {
                         ConductShinryouCreated body = mapper.readValue(log.body, ConductShinryouCreated.class);
                         action.onConductShinryouCreated(body.created, toNext);
+                        break;
+                    }
+                    case "conduct-shinryou-deleted": {
+                        ConductShinryouDeleted body = mapper.readValue(log.body, ConductShinryouDeleted.class);
+                        action.onConductShinryouDeleted(body.deleted, toNext);
                         break;
                     }
                     case "conduct-drug-created": {
@@ -98,9 +108,19 @@ class Dispatcher {
                         action.onConductDrugCreated(body.created, toNext);
                         break;
                     }
+                    case "conduct-drug-deleted": {
+                        ConductDrugDeleted body = mapper.readValue(log.body, ConductDrugDeleted.class);
+                        action.onConductDrugDeleted(body.deleted, toNext);
+                        break;
+                    }
                     case "conduct-kizai-created": {
                         ConductKizaiCreated body = mapper.readValue(log.body, ConductKizaiCreated.class);
                         action.onConductKizaiCreated(body.created, toNext);
+                        break;
+                    }
+                    case "conduct-kizai-deleted": {
+                        ConductKizaiDeleted body = mapper.readValue(log.body, ConductKizaiDeleted.class);
+                        action.onConductKizaiDeleted(body.deleted, toNext);
                         break;
                     }
                     case "charge-created": {

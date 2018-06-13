@@ -14,18 +14,23 @@ class RecordConduct extends VBox {
 
     private VBox shinryouBox = new VBox();
     private VBox drugBox = new VBox();
+    private VBox kizaiBox = new VBox();
 
     RecordConduct(Conduct conduct) {
         getChildren().addAll(
                 createKindLabel(conduct),
                 createGazouLabel(conduct),
                 shinryouBox,
-                drugBox
+                drugBox,
+                kizaiBox
         );
         conduct.getShinryouList().addListener((ListChangeListener<ConductShinryou>) c -> {
             while(c.next()){
                 for(ConductShinryou s: c.getRemoved()){
-
+                    int conductShinryouId = s.getConductShinryouId();
+                    shinryouBox.getChildren().removeIf(
+                            rec -> ((RecordConductShinryou)rec).getConductShinryouId() == conductShinryouId
+                    );
                 }
                 for(ConductShinryou s: c.getAddedSubList()){
                     RecordConductShinryou rcs = new RecordConductShinryou(s);
@@ -36,7 +41,10 @@ class RecordConduct extends VBox {
         conduct.getDrugs().addListener((ListChangeListener<ConductDrug>) c -> {
             while(c.next()){
                 for(ConductDrug d: c.getRemoved()){
-
+                    int conductDrugId = d.getConductDrugId();
+                    drugBox.getChildren().removeIf(
+                            rec -> ((RecordConductDrug)rec).getConductDrugId() == conductDrugId
+                    );
                 }
                 for(ConductDrug d: c.getAddedSubList()){
                     RecordConductDrug rcd = new RecordConductDrug(d);
@@ -47,11 +55,14 @@ class RecordConduct extends VBox {
         conduct.getKizaiList().addListener((ListChangeListener<ConductKizai>) c -> {
             while(c.next()){
                 for(ConductKizai k: c.getRemoved()){
-
+                    int conductKizaiId = k.getConductKizaiId();
+                    kizaiBox.getChildren().removeIf(
+                            rec -> ((RecordConductKizai)rec).getConductKizaiId() == conductKizaiId
+                    );
                 }
                 for(ConductKizai k: c.getAddedSubList()){
                     RecordConductKizai rck = new RecordConductKizai(k);
-                    drugBox.getChildren().add(rck);
+                    kizaiBox.getChildren().add(rck);
                 }
             }
         });

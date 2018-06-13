@@ -67,6 +67,18 @@ public class Conduct {
         return kizaiList;
     }
 
+    public void removeConductShinryou(int conductShinryouId){
+        shinryouList.removeIf(s -> s.getConductShinryouId() == conductShinryouId);
+    }
+
+    public void removeConductDrug(int conductDrugId){
+        drugs.removeIf(s -> s.getConductDrugId() == conductDrugId);
+    }
+
+    public void removeConductKizai(int conductKizaiId){
+        kizaiList.removeIf(s -> s.getConductKizaiId() == conductKizaiId);
+    }
+
     private String getConductKindRep(ConductDTO conductDTO){
         ConductKind conductKind = ConductKind.fromCode(conductDTO.kind);
         if( conductKind == null ){

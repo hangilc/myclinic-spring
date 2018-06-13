@@ -80,6 +80,15 @@ public class TrackingRoot extends VBox implements DispatchAction {
     }
 
     @Override
+    public void onGazouLabelUpdated(GazouLabelDTO prev, GazouLabelDTO updated, Runnable cb) {
+        Conduct conduct = registry.getConduct(updated.conductId);
+        if( conduct != null ){
+            conduct.setGazouLabel(updated.label);
+        }
+        cb.run();
+    }
+
+    @Override
     public void onConductShinryouCreated(ConductShinryouDTO created, Runnable cb) {
         Conduct conduct = registry.getConduct(created.conductId);
         if( conduct != null ) {
@@ -90,6 +99,15 @@ public class TrackingRoot extends VBox implements DispatchAction {
                         cb.run();
                     }))
                     .exceptionally(HandlerFX::exceptionally);
+        }
+    }
+
+    @Override
+    public void onConductShinryouDeleted(ConductShinryouDTO deleted, Runnable cb) {
+        Conduct conduct = registry.getConduct(deleted.conductId);
+        if( conduct != null ) {
+            conduct.removeConductShinryou(deleted.conductShinryouId);
+            cb.run();
         }
     }
 
@@ -108,6 +126,15 @@ public class TrackingRoot extends VBox implements DispatchAction {
     }
 
     @Override
+    public void onConductDrugDeleted(ConductDrugDTO deleted, Runnable cb) {
+        Conduct conduct = registry.getConduct(deleted.conductId);
+        if( conduct != null ) {
+            conduct.removeConductDrug(deleted.conductDrugId);
+            cb.run();
+        }
+    }
+
+    @Override
     public void onConductKizaiCreated(ConductKizaiDTO created, Runnable toNext) {
         Conduct conduct = registry.getConduct(created.conductId);
         if( conduct != null ) {
@@ -118,6 +145,15 @@ public class TrackingRoot extends VBox implements DispatchAction {
                         toNext.run();
                     }))
                     .exceptionally(HandlerFX::exceptionally);
+        }
+    }
+
+    @Override
+    public void onConductKizaiDeleted(ConductKizaiDTO deleted, Runnable cb) {
+        Conduct conduct = registry.getConduct(deleted.conductId);
+        if( conduct != null ) {
+            conduct.removeConductKizai(deleted.conductKizaiId);
+            cb.run();
         }
     }
 
