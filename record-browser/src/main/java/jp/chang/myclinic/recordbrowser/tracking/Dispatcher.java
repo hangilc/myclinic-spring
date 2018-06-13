@@ -63,6 +63,11 @@ class Dispatcher {
                         action.onShinryouCreated(body.created, toNext);
                         break;
                     }
+                    case "shinryou-deleted": {
+                        ShinryouDeleted body = mapper.readValue(log.body, ShinryouDeleted.class);
+                        action.onShinryouDeleted(body.deleted, toNext);
+                        break;
+                    }
                     case "conduct-created": {
                         ConductCreated body = mapper.readValue(log.body, ConductCreated.class);
                         action.onConductCreated(body.created, toNext);

@@ -28,6 +28,7 @@ public class Visit {
     private StringProperty hokenRep = new SimpleStringProperty();
     private ObservableList<Text> texts = FXCollections.observableArrayList();
     private ObservableList<Drug> drugs = FXCollections.observableArrayList();
+    private ObservableList<Shinryou> shinryouList = FXCollections.observableArrayList();
     private Charge charge = new Charge();
 
     public Visit(VisitDTO visitDTO) {
@@ -140,6 +141,19 @@ public class Visit {
         for(Drug drug: drugs){
             if( drug.getDrugId() == drugId ){
                 return drug;
+            }
+        }
+        return null;
+    }
+
+    public ObservableList<Shinryou> getShinryouList() {
+        return shinryouList;
+    }
+
+    public Shinryou getShinryou(int shinryouId){
+        for(Shinryou shinryou: shinryouList){
+            if( shinryou.getShinryouId() == shinryouId ){
+                return shinryou;
             }
         }
         return null;

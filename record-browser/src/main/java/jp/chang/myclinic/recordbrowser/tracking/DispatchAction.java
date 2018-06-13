@@ -11,6 +11,7 @@ public interface DispatchAction {
     default void onDrugUpdated(DrugDTO prev, DrugDTO updated, Runnable cb){ cb.run(); }
     default void onDrugDeleted(DrugDTO deleted, Runnable cb){ cb.run(); }
     default void onShinryouCreated(ShinryouDTO created, Runnable cb){ cb.run(); }
+    default void onShinryouDeleted(ShinryouDTO deleted, Runnable cb){ cb.run(); }
     default void onConductCreated(ConductDTO created, Runnable cb){ cb.run(); }
     default void onGazouLabelCreated(GazouLabelDTO created, Runnable cb){ cb.run(); }
     default void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated, Runnable cb){ cb.run(); }

@@ -29,12 +29,6 @@ class RecordList extends VBox {
         return records.stream().filter(rec -> rec.getVisitId() == visitId).findAny();
     }
 
-    public void addShinryou(Shinryou shinryou){
-        getRecord(shinryou.getVisitId()).ifPresent(record -> {
-            record.addShinryou(shinryou);
-        });
-    }
-
     public void addConduct(Conduct conduct){
         getRecord(conduct.getVisitId()).ifPresent(record -> {
             record.addConduct(conduct);

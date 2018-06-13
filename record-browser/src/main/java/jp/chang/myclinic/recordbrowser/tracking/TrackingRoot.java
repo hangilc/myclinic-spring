@@ -214,12 +214,27 @@ public class TrackingRoot extends VBox implements DispatchAction {
 
     @Override
     public void onShinryouCreated(ShinryouDTO created, Runnable cb) {
-        registry.getShinryou(created)
-                .thenAccept(shinryou -> Platform.runLater(() -> {
-                    recordList.addShinryou(shinryou);
-                    cb.run();
-                }))
-                .exceptionally(HandlerFX::exceptionally);
+        Visit visit = registry.getVisit(created.visitId);
+        if( visit != null ){
+            registry.getShinryouMaster(created.shinryoucode)
+                    .thenAccept(master -> Platform.runLater(() -> {
+                        Shinryou shinryou = new Shinryou(created, master);
+                        visit.getShinryouList().add(shinryou);
+                        cb.run();
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        }
+    }
+
+    @Override
+    public void onShinryouDeleted(ShinryouDTO deleted, Runnable cb) {
+        Visit visit = registry.getVisit(deleted.visitId);
+        if( visit != null ){
+            Shinryou shinryou = visit.getShinryou(deleted.shinryouId);
+            if( shinryou != null ){
+                visit.getShinryouList().remove(shinryou);
+            }
+        }
     }
 
     @Override

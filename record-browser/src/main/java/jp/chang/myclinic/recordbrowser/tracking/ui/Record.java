@@ -31,6 +31,7 @@ public class Record extends VBox {
         body.getRightBox().getChildren().addAll(drugBox, shinryouBox, conductBox, createCharge(visit));
         bindText(visit);
         bindDrug(visit);
+        bindShinryou(visit);
     }
 
     private void bindText(Visit visit){
@@ -74,6 +75,53 @@ public class Record extends VBox {
         });
     }
 
+    private void bindShinryou(Visit visit){
+        visit.getShinryouList().addListener(new ListChangeListener<Shinryou>() {
+            @Override
+            public void onChanged(Change<? extends Shinryou> c) {
+                while( c.next() ){
+                    for(Shinryou item: c.getRemoved()){
+                        RecordShinryou rec = findRecordShinryou(item.getShinryouId());
+                        if( rec != null ){
+                            shinryouBox.getChildren().remove(rec);
+                        }
+                    }
+                    for(Shinryou item: c.getAddedSubList()){
+                        RecordShinryou rec = new RecordShinryou(item);
+                        int i = insertingShinryouIndex(item.getShinryoucode());
+                        if( i < 0 ){
+                            shinryouBox.getChildren().add(rec);
+                        } else {
+                            shinryouBox.getChildren().add(i, rec);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private RecordShinryou findRecordShinryou(int shinryouId){
+        for(Node node: shinryouBox.getChildren()){
+            RecordShinryou rec = (RecordShinryou)node;
+            if( rec.getShinryouId() == shinryouId ){
+                return rec;
+            }
+        }
+        return null;
+    }
+
+    private int insertingShinryouIndex(int shinryoucode){
+        int n = shinryouBox.getChildren().size();
+        for(int i=0;i<n;i++){
+            Node node = shinryouBox.getChildren().get(i);
+            RecordShinryou rec = (RecordShinryou)node;
+            if( rec.getShinryoucode() > shinryoucode) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     private void reIndexDrugs(){
         int index = 1;
         for(Node node: drugBox.getChildren()){
@@ -106,12 +154,6 @@ public class Record extends VBox {
         text.textProperty().bind(visit.hokenRepProperty());
         textFlow.getChildren().add(text);
         body.getRightBox().getChildren().add(textFlow);
-    }
-
-    public void addShinryou(Shinryou shinryou){
-        RecordShinryou recordShinryou = new RecordShinryou(shinryou);
-        shinryouBox.getChildren().add(recordShinryou);
-        shinryouList.add(recordShinryou);
     }
 
     public void addConduct(Conduct conduct){
