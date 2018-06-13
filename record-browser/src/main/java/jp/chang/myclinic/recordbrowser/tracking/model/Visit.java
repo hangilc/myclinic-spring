@@ -24,6 +24,7 @@ public class Visit {
     private ObjectProperty<Kouhi> kouhi2 = new SimpleObjectProperty<>(null);
     private ObjectProperty<Kouhi> kouhi3 = new SimpleObjectProperty<>(null);
     private StringProperty hokenRep = new SimpleStringProperty();
+    private Charge charge = new Charge();
 
     public Visit(VisitDTO visitDTO) {
         this.visitId = visitDTO.visitId;
@@ -112,6 +113,10 @@ public class Visit {
 
     public void setKouhi3(Kouhi kouhi3) {
         this.kouhi3.set(kouhi3);
+    }
+
+    public Charge getCharge() {
+        return charge;
     }
 
     private String composeHokenRep(){

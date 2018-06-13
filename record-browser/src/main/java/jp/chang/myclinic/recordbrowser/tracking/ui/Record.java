@@ -1,5 +1,7 @@
 package jp.chang.myclinic.recordbrowser.tracking.ui;
 
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.recordbrowser.tracking.model.*;
@@ -26,7 +28,7 @@ public class Record extends VBox {
                 body
         );
         addHoken(visit);
-        body.getRightBox().getChildren().addAll(drugBox, shinryouBox, conductBox);
+        body.getRightBox().getChildren().addAll(drugBox, shinryouBox, conductBox, createCharge(visit));
     }
 
     public int getVisitId() {
@@ -63,5 +65,12 @@ public class Record extends VBox {
         RecordConduct recordConduct = new RecordConduct(conduct);
         conductBox.getChildren().add(recordConduct);
         conducts.add(recordConduct);
+    }
+
+    private Node createCharge(Visit visit){
+        Label label = new Label();
+        label.getStyleClass().add("record-charge");
+        label.textProperty().bind(visit.getCharge().repProperty());
+        return label;
     }
 }

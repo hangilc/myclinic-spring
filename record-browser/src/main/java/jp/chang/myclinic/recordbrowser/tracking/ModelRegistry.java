@@ -25,7 +25,7 @@ class ModelRegistry {
     private Map<Integer, ShinryouMasterDTO> shinryouMasterRegistry = new HashMap<>();
     private Map<Integer, KizaiMasterDTO> kizaiMasterRegistry = new HashMap<>();
 
-    public CompletableFuture<Visit> getVisit(int visitId) {
+    public CompletableFuture<Visit> createVisit(int visitId) {
         if (visitRegistry.containsKey(visitId)) {
             return CompletableFuture.completedFuture(visitRegistry.get(visitId));
         } else {
@@ -92,6 +92,10 @@ class ModelRegistry {
                     });
         }
 
+    }
+
+    public Visit getVisit(int visitId){
+        return visitRegistry.get(visitId);
     }
 
     public CompletableFuture<Patient> getPatient(int patientId) {

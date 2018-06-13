@@ -68,6 +68,11 @@ class Dispatcher {
                         action.onConductKizaiCreated(body.created, toNext);
                         break;
                     }
+                    case "charge-created": {
+                        ChargeCreated body = mapper.readValue(log.body, ChargeCreated.class);
+                        action.onChargeCreated(body.created, toNext);
+                        break;
+                    }
                     case "wqueue-updated": {
                         WqueueUpdated body = mapper.readValue(log.body, WqueueUpdated.class);
                         action.onWqueueUpdated(body.prev, body.updated, toNext);

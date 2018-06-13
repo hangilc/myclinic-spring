@@ -7,10 +7,7 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.recordbrowser.tracking.model.Conduct;
-import jp.chang.myclinic.recordbrowser.tracking.model.ConductDrug;
-import jp.chang.myclinic.recordbrowser.tracking.model.ConductKizai;
-import jp.chang.myclinic.recordbrowser.tracking.model.Text;
+import jp.chang.myclinic.recordbrowser.tracking.model.*;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.time.LocalDate;
@@ -114,6 +111,14 @@ public class TrackingRoot extends VBox implements DispatchAction {
     }
 
     @Override
+    public void onChargeCreated(ChargeDTO created, Runnable toNext) {
+        Visit visit = registry.getVisit(created.visitId);
+        if( visit != null ){
+            visit.getCharge().setValue(created.charge);
+        }
+    }
+
+    @Override
     public void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated, Runnable cb){
         if( prev.waitState == WqueueWaitState.WaitExam.getCode() &&
                 updated.waitState == WqueueWaitState.InExam.getCode() ){
@@ -124,7 +129,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
     }
 
     private void addVisit(int visitId, Runnable cb){
-        registry.getVisit(visitId)
+        registry.createVisit(visitId)
                 .thenAccept(visit -> Platform.runLater(() -> {
                     recordList.addVisit(visit, cb);
                 }))
