@@ -168,6 +168,18 @@ class ModelRegistry {
         }
     }
 
+    public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode){
+        if( kizaiMasterRegistry.containsKey(kizaicode) ){
+            return CompletableFuture.completedFuture(kizaiMasterRegistry.get(kizaicode));
+        } else {
+            return Service.api.resolveKizaiMaster(kizaicode, today)
+                    .thenApply(dto -> {
+                        kizaiMasterRegistry.put(kizaicode, dto);
+                        return dto;
+                    });
+        }
+    }
+
     public CompletableFuture<Shinryou> getShinryou(ShinryouDTO shinryouDTO){
         if( shinryouRegistry.containsKey(shinryouDTO.shinryouId) ){
             return CompletableFuture.completedFuture(shinryouRegistry.get(shinryouDTO.shinryouId));

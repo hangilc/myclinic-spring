@@ -14,6 +14,8 @@ public class Conduct {
     private StringProperty kind = new SimpleStringProperty();
     private StringProperty gazouLabel = new SimpleStringProperty("");
     private ObservableList<ConductShinryou> shinryouList = FXCollections.observableArrayList();
+    private ObservableList<ConductDrug> drugs = FXCollections.observableArrayList();
+    private ObservableList<ConductKizai> kizaiList = FXCollections.observableArrayList();
 
     public Conduct(ConductDTO conductDTO) {
         this.conductId = conductDTO.conductId;
@@ -57,9 +59,25 @@ public class Conduct {
         return shinryouList;
     }
 
+    public ObservableList<ConductDrug> getDrugs() {
+        return drugs;
+    }
+
+    public ObservableList<ConductKizai> getKizaiList() {
+        return kizaiList;
+    }
+
     public void addConductShinryhou(int conductShinryouId, String name){
         ConductShinryou conductShinryou = new ConductShinryou(conductShinryouId, name);
         shinryouList.add(conductShinryou);
+    }
+
+    public void addConductDrug(ConductDrug conductDrug){
+        drugs.add(conductDrug);
+    }
+
+    public void addConductKizai(ConductKizai conductKizai){
+        kizaiList.add(conductKizai);
     }
 
     private String getConductKindRep(ConductDTO conductDTO){

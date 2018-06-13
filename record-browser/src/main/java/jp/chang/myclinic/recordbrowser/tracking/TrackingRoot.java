@@ -8,6 +8,8 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.recordbrowser.tracking.model.Conduct;
+import jp.chang.myclinic.recordbrowser.tracking.model.ConductDrug;
+import jp.chang.myclinic.recordbrowser.tracking.model.ConductKizai;
 import jp.chang.myclinic.recordbrowser.tracking.model.Text;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
@@ -76,6 +78,38 @@ public class TrackingRoot extends VBox implements DispatchAction {
                     .exceptionally(HandlerFX::exceptionally);
         } else {
             cb.run();
+        }
+    }
+
+    @Override
+    public void onConductDrugCreated(ConductDrugDTO created, Runnable toNext) {
+        Conduct conduct = registry.getConduct(created.conductId);
+        if( conduct != null ) {
+            registry.getIyakuhinMaster(created.iyakuhincode)
+                    .thenAccept(master -> Platform.runLater(() -> {
+                        ConductDrug conductDrug = new ConductDrug(created, master);
+                        conduct.addConductDrug(conductDrug);
+                        toNext.run();
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        } else {
+            toNext.run();
+        }
+    }
+
+    @Override
+    public void onConductKizaiCreated(ConductKizaiDTO created, Runnable toNext) {
+        Conduct conduct = registry.getConduct(created.conductId);
+        if( conduct != null ) {
+            registry.getKizaiMaster(created.kizaicode)
+                    .thenAccept(master -> Platform.runLater(() -> {
+                        ConductKizai conductKizai = new ConductKizai(created, master);
+                        conduct.addConductKizai(conductKizai);
+                        toNext.run();
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        } else {
+            toNext.run();
         }
     }
 

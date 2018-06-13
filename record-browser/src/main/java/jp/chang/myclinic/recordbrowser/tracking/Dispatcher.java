@@ -58,6 +58,16 @@ class Dispatcher {
                         action.onConductShinryouCreated(body.created, toNext);
                         break;
                     }
+                    case "conduct-drug-created": {
+                        ConductDrugCreated body = mapper.readValue(log.body, ConductDrugCreated.class);
+                        action.onConductDrugCreated(body.created, toNext);
+                        break;
+                    }
+                    case "conduct-kizai-created": {
+                        ConductKizaiCreated body = mapper.readValue(log.body, ConductKizaiCreated.class);
+                        action.onConductKizaiCreated(body.created, toNext);
+                        break;
+                    }
                     case "wqueue-updated": {
                         WqueueUpdated body = mapper.readValue(log.body, WqueueUpdated.class);
                         action.onWqueueUpdated(body.prev, body.updated, toNext);
