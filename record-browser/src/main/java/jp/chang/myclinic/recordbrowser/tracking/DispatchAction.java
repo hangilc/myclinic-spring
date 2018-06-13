@@ -24,5 +24,7 @@ public interface DispatchAction {
     default void onConductKizaiCreated(ConductKizaiDTO created, Runnable toNext){ toNext.run(); }
     default void onConductKizaiDeleted(ConductKizaiDTO deleted, Runnable cb){ cb.run(); }
     default void onChargeCreated(ChargeDTO created, Runnable toNext){ toNext.run(); }
+    default void onChargeUpdated(ChargeDTO prev, ChargeDTO updated, Runnable cb){ cb.run(); }
+    default void onPaymentCreated(PaymentDTO created, Runnable toNext){ toNext.run(); }
     default void onHokenUpdated(VisitDTO prev, VisitDTO updated, Runnable toNext){ toNext.run(); }
 }

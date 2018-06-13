@@ -128,6 +128,16 @@ class Dispatcher {
                         action.onChargeCreated(body.created, toNext);
                         break;
                     }
+                    case "charge-updated": {
+                        ChargeUpdated body = mapper.readValue(log.body, ChargeUpdated.class);
+                        action.onChargeUpdated(body.prev, body.updated, toNext);
+                        break;
+                    }
+                    case "payment-created": {
+                        PaymentCreated body = mapper.readValue(log.body, PaymentCreated.class);
+                        action.onPaymentCreated(body.created, toNext);
+                        break;
+                    }
                     case "wqueue-updated": {
                         WqueueUpdated body = mapper.readValue(log.body, WqueueUpdated.class);
                         action.onWqueueUpdated(body.prev, body.updated, toNext);

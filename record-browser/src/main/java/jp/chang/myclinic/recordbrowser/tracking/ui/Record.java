@@ -13,7 +13,6 @@ import java.util.List;
 
 public class Record extends VBox {
 
-    private int visitId;
     private TwoColumn body = new TwoColumn(4);
     private VBox drugBox = new VBox();
     private VBox shinryouBox = new VBox();
@@ -22,7 +21,6 @@ public class Record extends VBox {
     private List<RecordConduct> conducts = new ArrayList<>();
 
     public Record(Visit visit){
-        this.visitId = visit.getVisitId();
         getChildren().addAll(
                 new RecordTitle(visit),
                 body
@@ -156,22 +154,12 @@ public class Record extends VBox {
         return null;
     }
 
-    public int getVisitId() {
-        return visitId;
-    }
-
     private void addHoken(Visit visit){
         TextFlow textFlow = new TextFlow();
         javafx.scene.text.Text text = new javafx.scene.text.Text();
         text.textProperty().bind(visit.hokenRepProperty());
         textFlow.getChildren().add(text);
         body.getRightBox().getChildren().add(textFlow);
-    }
-
-    public void addConduct(Conduct conduct){
-        RecordConduct recordConduct = new RecordConduct(conduct);
-        conductBox.getChildren().add(recordConduct);
-        conducts.add(recordConduct);
     }
 
     private Node createCharge(Visit visit){

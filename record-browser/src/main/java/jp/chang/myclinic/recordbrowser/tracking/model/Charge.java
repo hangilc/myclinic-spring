@@ -28,4 +28,7 @@ public class Charge {
         rep.setValue(String.format("請求額：%,d円", charge));
     }
 
+    public void setPayment(int payment){
+        rep.setValue(String.format("領収額：%,d円", payment));
+    }
 }

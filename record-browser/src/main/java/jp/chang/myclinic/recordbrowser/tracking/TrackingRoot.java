@@ -167,6 +167,24 @@ public class TrackingRoot extends VBox implements DispatchAction {
     }
 
     @Override
+    public void onChargeUpdated(ChargeDTO prev, ChargeDTO updated, Runnable toNext) {
+        Visit visit = registry.getVisit(updated.visitId);
+        if( visit != null ){
+            visit.getCharge().setValue(updated.charge);
+        }
+        toNext.run();
+    }
+
+    @Override
+    public void onPaymentCreated(PaymentDTO created, Runnable toNext) {
+        Visit visit = registry.getVisit(created.visitId);
+        if( visit != null ){
+            visit.getCharge().setPayment(created.amount);
+        }
+        toNext.run();
+    }
+
+    @Override
     public void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated, Runnable cb){
         cb.run();
     }
