@@ -1,7 +1,6 @@
 package jp.chang.myclinic.recordbrowser.tracking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.logdto.practicelog.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +16,15 @@ class Dispatcher {
 
     }
 
-    public void dispatch(List<PracticeLog> logs, DispatchAction action, Runnable cb) {
+    public void dispatch(List<PracticeLogDTO> logs, DispatchAction action, Runnable cb) {
         iter(0, logs, action, cb);
     }
 
-    private void iter(int i, List<PracticeLog> logs, DispatchAction action, Runnable cb) {
+    private void iter(int i, List<PracticeLogDTO> logs, DispatchAction action, Runnable cb) {
         if (i >= logs.size()) {
             cb.run();
         } else {
-            PracticeLog log = logs.get(i);
+            PracticeLogDTO log = logs.get(i);
             Runnable toNext = () -> iter(i + 1, logs, action, cb);
             try {
                 switch (log.kind) {

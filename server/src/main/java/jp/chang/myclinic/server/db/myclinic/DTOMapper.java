@@ -1,6 +1,7 @@
 package jp.chang.myclinic.server.db.myclinic;
 
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -597,6 +598,14 @@ public class DTOMapper {
 		master.setShuushokugocode(dto.shuushokugocode);
 		master.setName(dto.name);
 		return master;
+	}
+
+	public PracticeLogDTO toPracticeLogDTO(PracticeLog practiceLog){
+		PracticeLogDTO dto = new PracticeLogDTO();
+		dto.serialId = practiceLog.getPracticeLogId();
+		dto.kind = practiceLog.getKind();
+		dto.body = practiceLog.getBody();
+		return dto;
 	}
 
 	private String nullableDateToString(Date date){

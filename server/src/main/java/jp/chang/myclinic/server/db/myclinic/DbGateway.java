@@ -3,6 +3,7 @@ package jp.chang.myclinic.server.db.myclinic;
 import jp.chang.myclinic.consts.PharmaQueueState;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.server.PracticeLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -78,6 +79,8 @@ public class DbGateway {
     private ByoumeiMasterRepository byoumeiMasterRepository;
     @Autowired
     private ShuushokugoMasterRepository shuushokugoMasterRepository;
+    @Autowired
+    private PracticeLogRepository practiceLogRepository;
     @Autowired
     private PracticeLogger practiceLogger;
 
@@ -1749,4 +1752,27 @@ public class DbGateway {
                 .map(this::getDiseaseFull)
                 .collect(Collectors.toList());
     }
+
+    public List<PracticeLogDTO> listPracticeLogByDate(LocalDate at){
+        return practiceLogRepository.findByDate(at.toString(), Sort.by("practiceLogId"))
+                .stream()
+                .map(mapper::toPracticeLogDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<PracticeLogDTO> listRecentPracticeLog(LocalDate at, int lastId){
+        return practiceLogRepository.findRecent(at.toString(), lastId, Sort.by("practiceLogId"))
+                .stream()
+                .map(mapper::toPracticeLogDTO)
+                .collect(Collectors.toList());
+    }
+
+    public void insertPracticeLog(LocalDate date, String kind, String body){
+        PracticeLog data = new PracticeLog();
+        data.setDate(date.toString());
+        data.setKind(kind);
+        data.setBody(body);
+        practiceLogRepository.save(data);
+    }
+
 }

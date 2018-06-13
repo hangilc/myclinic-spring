@@ -3,15 +3,15 @@ package jp.chang.myclinic.server.db.myclinic;
 import javax.persistence.*;
 
 @Entity
-@Table(name="practice-log")
+@Table(name="practice_log")
 class PracticeLog {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="practice-log-id")
+    @Column(name="practice_log_id")
     private Integer practiceLogId;
 
-    @Column(name="practice-date")
+    @Column(name="practice_date")
     private String date;
 
     private String kind;

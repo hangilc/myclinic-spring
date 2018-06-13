@@ -3,5 +3,6 @@ create table practice_log (
     practice_date date,
     kind varchar(32),
     body text,
-    primary key (practice_log_id)
+    primary key (practice_log_id),
+    index (practice_date)
 );

@@ -3,7 +3,7 @@ package jp.chang.myclinic.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.logdto.practicelog.PracticeLogList;
+import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -643,10 +643,18 @@ public class Service {
                                                              @Query("at") String at);
 
         @GET("list-all-practice-log")
-        CompletableFuture<PracticeLogList> listAllPracticeLog();
+        CompletableFuture<List<PracticeLogDTO>> listAllPracticeLog(@Query("date") String date);
 
         @GET("list-all-practice-log")
-        Call<PracticeLogList> listAllPracticeLogCall();
+        Call<List<PracticeLogDTO>> listAllPracticeLogCall(@Query("date") String date);
+
+        @GET("list-all-practice-log-after")
+        CompletableFuture<List<PracticeLogDTO>> listAllPracticeLog(@Query("date") String date,
+                                                              @Query("last-id") int lastId);
+
+        @GET("list-all-practice-log-after")
+        Call<List<PracticeLogDTO>> listAllPracticeLogCall(@Query("date") String date,
+                                                     @Query("last-id") int lastId);
 
     }
 
