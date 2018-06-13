@@ -5,10 +5,10 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.recordbrowser.tracking.model.*;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 class ModelRegistry {
 
@@ -31,61 +31,25 @@ class ModelRegistry {
         } else {
             class Local {
                 private VisitDTO visitDTO;
-                private Patient patient;
-                private HokenDTO hokenDTO;
-                private Shahokokuho shahokokuho;
-                private Koukikourei koukikourei;
-                private List<Kouhi> kouhiList = new ArrayList<>();
+                private Visit visit;
             }
             Local local = new Local();
             return Service.api.getVisit(visitId)
                     .thenCompose(visitDTO -> {
                         local.visitDTO = visitDTO;
+                        local.visit = new Visit(visitDTO);
                         return getPatient(visitDTO.patientId);
                     })
                     .thenCompose(patient -> {
-                        local.patient = patient;
-                        return Service.api.getHoken(visitId);
+                        local.visit.setPatient(patient);
+                        return updateShahokokuho(local.visit, local.visitDTO.shahokokuhoId);
                     })
-                    .thenApply(hokenDTO -> {
-                        local.hokenDTO = hokenDTO;
-                        if (hokenDTO.shahokokuho != null) {
-                            if (!shahokokuhoRegistry.containsKey(hokenDTO.shahokokuho.shahokokuhoId)) {
-                                local.shahokokuho = addShahokokuho(hokenDTO.shahokokuho);
-                            }
-                        }
-                        if (hokenDTO.koukikourei != null) {
-                            if (!koukikoureiRegistry.containsKey(hokenDTO.koukikourei.koukikoureiId)) {
-                                local.koukikourei = addKoukikourei(hokenDTO.koukikourei);
-                            }
-                        }
-                        Stream.of(local.hokenDTO.kouhi1, local.hokenDTO.kouhi2, local.hokenDTO.kouhi3)
-                                .filter(Objects::nonNull)
-                                .forEach(kouhiDTO -> {
-                                    if (!kouhiRegistry.containsKey(kouhiDTO.kouhiId)) {
-                                        local.kouhiList.add(addKouhi(kouhiDTO));
-                                    }
-                                });
-                        return null;
-                    })
-                    .thenApply(x -> {
-                        Visit visit = new Visit(local.visitDTO);
-                        visit.setPatient(local.patient);
-                        if( local.shahokokuho != null ){
-                            visit.setShahokokuho(local.shahokokuho);
-                        }
-                        if( local.koukikourei != null ){
-                            visit.setKoukikourei(local.koukikourei);
-                        }
-                        if( local.kouhiList.size() >= 1 ){
-                            visit.setKouhi1(local.kouhiList.get(0));
-                            if( local.kouhiList.size() >= 2 ){
-                                visit.setKouhi2(local.kouhiList.get(1));
-                                if( local.kouhiList.size() > 3 ){
-                                    visit.setKouhi3(local.kouhiList.get(2));
-                                }
-                            }
-                        }
+                    .thenCompose(r -> updateKoukikourei(local.visit, local.visitDTO.koukikoureiId))
+                    .thenCompose(r -> updateKouhi(local.visitDTO.kouhi1Id, local.visit::setKouhi1))
+                    .thenCompose(r -> updateKouhi(local.visitDTO.kouhi2Id, local.visit::setKouhi2))
+                    .thenCompose(r -> updateKouhi(local.visitDTO.kouhi3Id, local.visit::setKouhi3))
+                    .thenApply(r -> {
+                        Visit visit = local.visit;
                         visit.initHokenRep();
                         visitRegistry.put(visit.getVisitId(), visit);
                         return visit;
