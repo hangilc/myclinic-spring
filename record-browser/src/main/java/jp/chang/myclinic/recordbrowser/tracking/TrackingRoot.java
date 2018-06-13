@@ -6,12 +6,12 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
-import jp.chang.myclinic.dto.DrugDTO;
-import jp.chang.myclinic.dto.ShinryouDTO;
-import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.dto.WqueueDTO;
+import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.recordbrowser.tracking.model.Conduct;
 import jp.chang.myclinic.recordbrowser.tracking.model.Text;
 import jp.chang.myclinic.utilfx.HandlerFX;
+
+import java.time.LocalDate;
 
 public class TrackingRoot extends VBox implements DispatchAction {
 
@@ -20,6 +20,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
     private RecordList recordList = new RecordList();
     private Dispatcher dispatcher;
     private ModelRegistry registry = new ModelRegistry();
+    private String today = LocalDate.now().toString();
 
     public TrackingRoot() {
         super(2);
@@ -36,15 +37,46 @@ public class TrackingRoot extends VBox implements DispatchAction {
     }
 
     public void reload(){
-        Service.api.listAllPracticeLog()
-                .thenAccept(practiceLogList -> Platform.runLater(() -> {
-                    dispatcher.dispatch(practiceLogList.logs, this, this::onReloaded);
+        Service.api.listAllPracticeLog(today)
+                .thenAccept(logs -> Platform.runLater(() -> {
+                    dispatcher.dispatch(logs, this, this::onReloaded);
                 }))
                 .exceptionally(HandlerFX::exceptionally);
     }
 
     private void onReloaded(){
         System.out.println("reloaded");
+    }
+
+    @Override
+    public void onConductCreated(ConductDTO created, Runnable cb){
+        Conduct conduct = registry.createConduct(created);
+        recordList.addConduct(conduct);
+        cb.run();
+    }
+
+    @Override
+    public void onGazouLabelCreated(GazouLabelDTO created, Runnable cb) {
+        Conduct conduct = registry.getConduct(created.conductId);
+        if( conduct != null ){
+            conduct.gazouLabelProperty().setValue(created.label);
+        }
+        cb.run();
+    }
+
+    @Override
+    public void onConductShinryouCreated(ConductShinryouDTO created, Runnable cb) {
+        Conduct conduct = registry.getConduct(created.conductId);
+        if( conduct != null ) {
+            registry.getShinryouMaster(created.shinryoucode)
+                    .thenAccept(master -> Platform.runLater(() -> {
+                        conduct.addConductShinryhou(created.conductShinryouId, master.name);
+                        cb.run();
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        } else {
+            cb.run();
+        }
     }
 
     @Override

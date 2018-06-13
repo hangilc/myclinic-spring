@@ -360,6 +360,12 @@ public class Service {
         @POST("delete-duplicate-shinryou")
         Call<List<Integer>> deleteDuplicateShinryouCall(@Query("visit-id") int visitId);
 
+        @GET("get-conduct")
+        CompletableFuture<ConductDTO> getConduct(@Query("conduct-id") int conductId);
+
+        @GET("get-conduct")
+        Call<ConductDTO> getConductCall(@Query("conduct-id") int conductId);
+
         @GET("get-conduct-full")
         CompletableFuture<ConductFullDTO> getConductFull(@Query("conduct-id") int conductId);
 

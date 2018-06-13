@@ -1,6 +1,5 @@
 package jp.chang.myclinic.recordbrowser.tracking;
 
-import javafx.beans.binding.Bindings;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.recordbrowser.tracking.model.*;
@@ -21,6 +20,7 @@ class ModelRegistry {
     private Map<Integer, Kouhi> kouhiRegistry = new HashMap<>();
     private Map<Integer, Drug> drugRegistry = new HashMap<>();
     private Map<Integer, Shinryou> shinryouRegistry = new HashMap<>();
+    private Map<Integer, Conduct> conductRegistry = new HashMap<>();
     private Map<Integer, IyakuhinMasterDTO> iyakuhinMasterRegistry = new HashMap<>();
     private Map<Integer, ShinryouMasterDTO> shinryouMasterRegistry = new HashMap<>();
     private Map<Integer, KizaiMasterDTO> kizaiMasterRegistry = new HashMap<>();
@@ -179,6 +179,16 @@ class ModelRegistry {
                         return shinryou;
                     });
         }
+    }
+
+    public Conduct createConduct(ConductDTO conductDTO){
+        Conduct conduct = new Conduct(conductDTO);
+        conductRegistry.put(conductDTO.conductId, conduct);
+        return conduct;
+    }
+
+    public Conduct getConduct(int conductId){
+        return conductRegistry.get(conductId);
     }
 
 }

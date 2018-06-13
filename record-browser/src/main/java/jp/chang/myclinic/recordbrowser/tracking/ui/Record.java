@@ -2,10 +2,7 @@ package jp.chang.myclinic.recordbrowser.tracking.ui;
 
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.recordbrowser.tracking.model.Drug;
-import jp.chang.myclinic.recordbrowser.tracking.model.Shinryou;
-import jp.chang.myclinic.recordbrowser.tracking.model.Text;
-import jp.chang.myclinic.recordbrowser.tracking.model.Visit;
+import jp.chang.myclinic.recordbrowser.tracking.model.*;
 import jp.chang.myclinic.utilfx.TwoColumn;
 
 import java.util.ArrayList;
@@ -17,8 +14,10 @@ public class Record extends VBox {
     private TwoColumn body = new TwoColumn(4);
     private VBox drugBox = new VBox();
     private VBox shinryouBox = new VBox();
+    private VBox conductBox = new VBox();
     private List<RecordDrug> drugs = new ArrayList<>();
     private List<RecordShinryou> shinryouList = new ArrayList<>();
+    private List<RecordConduct> conducts = new ArrayList<>();
 
     public Record(Visit visit){
         this.visitId = visit.getVisitId();
@@ -27,7 +26,7 @@ public class Record extends VBox {
                 body
         );
         addHoken(visit);
-        body.getRightBox().getChildren().addAll(drugBox, shinryouBox);
+        body.getRightBox().getChildren().addAll(drugBox, shinryouBox, conductBox);
     }
 
     public int getVisitId() {
@@ -58,5 +57,11 @@ public class Record extends VBox {
         RecordShinryou recordShinryou = new RecordShinryou(shinryou);
         shinryouBox.getChildren().add(recordShinryou);
         shinryouList.add(recordShinryou);
+    }
+
+    public void addConduct(Conduct conduct){
+        RecordConduct recordConduct = new RecordConduct(conduct);
+        conductBox.getChildren().add(recordConduct);
+        conducts.add(recordConduct);
     }
 }

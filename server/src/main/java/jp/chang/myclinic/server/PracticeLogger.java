@@ -234,27 +234,27 @@ public class PracticeLogger {
     }
 
     public void logConductDrugCreated(ConductDrugDTO created) {
-        logValue("conduct-shinryou-created", new ConductDrugCreated(created));
+        logValue("conduct-drug-created", new ConductDrugCreated(created));
     }
 
     public void logConductDrugUpdated(ConductDrugDTO prev, ConductDrugDTO updated) {
-        logValue("conduct-shinryou-updated", new ConductDrugUpdated(prev, updated));
+        logValue("conduct-drug-updated", new ConductDrugUpdated(prev, updated));
     }
 
     public void logConductDrugDeleted(ConductDrugDTO deleted) {
-        logValue("conduct-shinryou-deleted", new ConductDrugDeleted(deleted));
+        logValue("conduct-drug-deleted", new ConductDrugDeleted(deleted));
     }
 
     public void logConductKizaiCreated(ConductKizaiDTO created) {
-        logValue("conduct-shinryou-created", new ConductKizaiCreated(created));
+        logValue("conduct-kizai-created", new ConductKizaiCreated(created));
     }
 
     public void logConductKizaiUpdated(ConductKizaiDTO prev, ConductKizaiDTO updated) {
-        logValue("conduct-shinryou-updated", new ConductKizaiUpdated(prev, updated));
+        logValue("conduct-kizai-updated", new ConductKizaiUpdated(prev, updated));
     }
 
     public void logConductKizaiDeleted(ConductKizaiDTO deleted) {
-        logValue("conduct-shinryou-deleted", new ConductKizaiDeleted(deleted));
+        logValue("conduct-kizai-deleted", new ConductKizaiDeleted(deleted));
     }
 
     public void logPharmaDrugCreated(PharmaDrugDTO created) {

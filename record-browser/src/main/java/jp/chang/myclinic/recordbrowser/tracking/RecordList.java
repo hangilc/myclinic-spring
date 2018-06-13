@@ -1,13 +1,8 @@
 package jp.chang.myclinic.recordbrowser.tracking;
 
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.recordbrowser.tracking.model.Drug;
-import jp.chang.myclinic.recordbrowser.tracking.model.Shinryou;
-import jp.chang.myclinic.recordbrowser.tracking.model.Text;
-import jp.chang.myclinic.recordbrowser.tracking.model.Visit;
+import jp.chang.myclinic.recordbrowser.tracking.model.*;
 import jp.chang.myclinic.recordbrowser.tracking.ui.Record;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +45,12 @@ class RecordList extends VBox {
     public void addShinryou(Shinryou shinryou){
         getRecord(shinryou.getVisitId()).ifPresent(record -> {
             record.addShinryou(shinryou);
+        });
+    }
+
+    public void addConduct(Conduct conduct){
+        getRecord(conduct.getVisitId()).ifPresent(record -> {
+            record.addConduct(conduct);
         });
     }
 

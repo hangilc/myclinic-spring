@@ -43,6 +43,21 @@ class Dispatcher {
                         action.onShinryouCreated(body.created, toNext);
                         break;
                     }
+                    case "conduct-created": {
+                        ConductCreated body = mapper.readValue(log.body, ConductCreated.class);
+                        action.onConductCreated(body.created, toNext);
+                        break;
+                    }
+                    case "gazou-label-created": {
+                        GazouLabelCreated body = mapper.readValue(log.body, GazouLabelCreated.class);
+                        action.onGazouLabelCreated(body.created, toNext);
+                        break;
+                    }
+                    case "conduct-shinryou-created": {
+                        ConductShinryouCreated body = mapper.readValue(log.body, ConductShinryouCreated.class);
+                        action.onConductShinryouCreated(body.created, toNext);
+                        break;
+                    }
                     case "wqueue-updated": {
                         WqueueUpdated body = mapper.readValue(log.body, WqueueUpdated.class);
                         action.onWqueueUpdated(body.prev, body.updated, toNext);
