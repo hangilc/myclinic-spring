@@ -28,6 +28,11 @@ class Dispatcher {
             Runnable toNext = () -> iter(i + 1, logs, action, cb);
             try {
                 switch (log.kind) {
+                    case "visit-created": {
+                        VisitCreated body = mapper.readValue(log.body, VisitCreated.class);
+                        action.onVisitCreated(body.created, toNext);
+                        break;
+                    }
                     case "text-created": {
                         TextCreated body = mapper.readValue(log.body, TextCreated.class);
                         action.onTextCreated(body.text, toNext);
@@ -71,6 +76,11 @@ class Dispatcher {
                     case "conduct-created": {
                         ConductCreated body = mapper.readValue(log.body, ConductCreated.class);
                         action.onConductCreated(body.created, toNext);
+                        break;
+                    }
+                    case "conduct-updated": {
+                        ConductUpdated body = mapper.readValue(log.body, ConductUpdated.class);
+                        action.onConductUpdated(body.prev, body.updated, toNext);
                         break;
                     }
                     case "gazou-label-created": {

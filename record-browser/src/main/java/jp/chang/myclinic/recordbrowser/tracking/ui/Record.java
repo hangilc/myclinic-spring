@@ -32,6 +32,7 @@ public class Record extends VBox {
         bindText(visit);
         bindDrug(visit);
         bindShinryou(visit);
+        bindConduct(visit);
     }
 
     private void bindText(Visit visit){
@@ -95,6 +96,17 @@ public class Record extends VBox {
                             shinryouBox.getChildren().add(i, rec);
                         }
                     }
+                }
+            }
+        });
+    }
+
+    private void bindConduct(Visit visit){
+        visit.getConducts().addListener((ListChangeListener<Conduct>) c -> {
+            while( c.next() ){
+                for(Conduct item: c.getAddedSubList()){
+                    RecordConduct rec = new RecordConduct(item);
+                    conductBox.getChildren().add(rec);
                 }
             }
         });

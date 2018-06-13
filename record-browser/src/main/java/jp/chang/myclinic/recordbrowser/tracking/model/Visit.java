@@ -29,6 +29,7 @@ public class Visit {
     private ObservableList<Text> texts = FXCollections.observableArrayList();
     private ObservableList<Drug> drugs = FXCollections.observableArrayList();
     private ObservableList<Shinryou> shinryouList = FXCollections.observableArrayList();
+    private ObservableList<Conduct> conducts = FXCollections.observableArrayList();
     private Charge charge = new Charge();
 
     public Visit(VisitDTO visitDTO) {
@@ -154,6 +155,19 @@ public class Visit {
         for(Shinryou shinryou: shinryouList){
             if( shinryou.getShinryouId() == shinryouId ){
                 return shinryou;
+            }
+        }
+        return null;
+    }
+
+    public ObservableList<Conduct> getConducts() {
+        return conducts;
+    }
+
+    public Conduct getConduct(int conductId){
+        for(Conduct conduct: conducts){
+            if( conduct.getConductId() == conductId ){
+                return conduct;
             }
         }
         return null;

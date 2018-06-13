@@ -67,19 +67,6 @@ public class Conduct {
         return kizaiList;
     }
 
-    public void addConductShinryhou(int conductShinryouId, String name){
-        ConductShinryou conductShinryou = new ConductShinryou(conductShinryouId, name);
-        shinryouList.add(conductShinryou);
-    }
-
-    public void addConductDrug(ConductDrug conductDrug){
-        drugs.add(conductDrug);
-    }
-
-    public void addConductKizai(ConductKizai conductKizai){
-        kizaiList.add(conductKizai);
-    }
-
     private String getConductKindRep(ConductDTO conductDTO){
         ConductKind conductKind = ConductKind.fromCode(conductDTO.kind);
         if( conductKind == null ){

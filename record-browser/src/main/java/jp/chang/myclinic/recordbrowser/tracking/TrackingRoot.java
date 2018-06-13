@@ -5,9 +5,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.consts.WqueueWaitState;
+import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.recordbrowser.tracking.model.*;
+import jp.chang.myclinic.recordbrowser.tracking.ui.Record;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.time.LocalDate;
@@ -15,8 +16,8 @@ import java.time.LocalDate;
 public class TrackingRoot extends VBox implements DispatchAction {
 
     //private static Logger logger = LoggerFactory.getLogger(TrackingRoot.class);
-    private Label mainLabel = new Label("本日の診察（自動更新）");
-    private RecordList recordList = new RecordList();
+
+    private VBox recordList = new VBox();
     private Dispatcher dispatcher;
     private ModelRegistry registry = new ModelRegistry();
     private String today = LocalDate.now().toString();
@@ -28,6 +29,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
         ScrollPane recordScroll = new ScrollPane(recordList);
         recordScroll.getStyleClass().add("record-scroll");
         recordScroll.setFitToWidth(true);
+        Label mainLabel = new Label("本日の診察（自動更新）");
         getChildren().addAll(
                 mainLabel,
                 recordScroll
@@ -49,9 +51,23 @@ public class TrackingRoot extends VBox implements DispatchAction {
 
     @Override
     public void onConductCreated(ConductDTO created, Runnable cb){
-        Conduct conduct = registry.createConduct(created);
-        recordList.addConduct(conduct);
+        Visit visit = registry.getVisit(created.visitId);
+        if( visit != null ){
+            Conduct conduct = new Conduct(created);
+            visit.getConducts().add(conduct);
+        }
         cb.run();
+    }
+
+    @Override
+    public void onConductUpdated(ConductDTO prev, ConductDTO updated, Runnable cb) {
+        Conduct conduct = registry.getConduct(updated.conductId);
+        if( conduct != null ){
+            ConductKind kind = ConductKind.fromCode(updated.kind);
+            String kindRep = kind == null ? "??" : kind.getKanjiRep();
+            conduct.setKind(kindRep);
+            cb.run();
+        }
     }
 
     @Override
@@ -69,12 +85,11 @@ public class TrackingRoot extends VBox implements DispatchAction {
         if( conduct != null ) {
             registry.getShinryouMaster(created.shinryoucode)
                     .thenAccept(master -> Platform.runLater(() -> {
-                        conduct.addConductShinryhou(created.conductShinryouId, master.name);
+                        ConductShinryou conductShinryou = new ConductShinryou(created, master);
+                        conduct.getShinryouList().add(conductShinryou);
                         cb.run();
                     }))
                     .exceptionally(HandlerFX::exceptionally);
-        } else {
-            cb.run();
         }
     }
 
@@ -85,12 +100,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
             registry.getIyakuhinMaster(created.iyakuhincode)
                     .thenAccept(master -> Platform.runLater(() -> {
                         ConductDrug conductDrug = new ConductDrug(created, master);
-                        conduct.addConductDrug(conductDrug);
+                        conduct.getDrugs().add(conductDrug);
                         toNext.run();
                     }))
                     .exceptionally(HandlerFX::exceptionally);
-        } else {
-            toNext.run();
         }
     }
 
@@ -101,12 +114,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
             registry.getKizaiMaster(created.kizaicode)
                     .thenAccept(master -> Platform.runLater(() -> {
                         ConductKizai conductKizai = new ConductKizai(created, master);
-                        conduct.addConductKizai(conductKizai);
+                        conduct.getKizaiList().add(conductKizai);
                         toNext.run();
                     }))
                     .exceptionally(HandlerFX::exceptionally);
-        } else {
-            toNext.run();
         }
     }
 
@@ -121,18 +132,16 @@ public class TrackingRoot extends VBox implements DispatchAction {
 
     @Override
     public void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated, Runnable cb){
-        if( prev.waitState == WqueueWaitState.WaitExam.getCode() &&
-                updated.waitState == WqueueWaitState.InExam.getCode() ){
-            addVisit(updated.visitId, cb);
-        } else {
-            cb.run();
-        }
+        cb.run();
     }
 
-    private void addVisit(int visitId, Runnable cb){
-        registry.createVisit(visitId)
+    @Override
+    public void onVisitCreated(VisitDTO created, Runnable toNext) {
+        registry.createVisit(created)
                 .thenAccept(visit -> Platform.runLater(() -> {
-                    recordList.addVisit(visit, cb);
+                    Record record = new Record(visit);
+                    recordList.getChildren().add(0, record);
+                    toNext.run();
                 }))
                 .exceptionally(HandlerFX::exceptionally);
     }
@@ -233,6 +242,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
             Shinryou shinryou = visit.getShinryou(deleted.shinryouId);
             if( shinryou != null ){
                 visit.getShinryouList().remove(shinryou);
+                cb.run();
             }
         }
     }

@@ -3,7 +3,7 @@ package jp.chang.myclinic.recordbrowser.tracking;
 import jp.chang.myclinic.dto.*;
 
 public interface DispatchAction {
-
+    default void onVisitCreated(VisitDTO created, Runnable toNext){ toNext.run(); }
     default void onTextCreated(TextDTO text, Runnable cb){ cb.run(); }
     default void onTextUpdated(TextDTO prev, TextDTO updated, Runnable cb){ cb.run(); }
     default void onTextDeleted(TextDTO deleted, Runnable cb){ cb.run(); }
@@ -13,6 +13,7 @@ public interface DispatchAction {
     default void onShinryouCreated(ShinryouDTO created, Runnable cb){ cb.run(); }
     default void onShinryouDeleted(ShinryouDTO deleted, Runnable cb){ cb.run(); }
     default void onConductCreated(ConductDTO created, Runnable cb){ cb.run(); }
+    default void onConductUpdated(ConductDTO prev, ConductDTO updated, Runnable cb){ cb.run(); }
     default void onGazouLabelCreated(GazouLabelDTO created, Runnable cb){ cb.run(); }
     default void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated, Runnable cb){ cb.run(); }
     default void onConductShinryouCreated(ConductShinryouDTO created, Runnable cb){ cb.run(); }
