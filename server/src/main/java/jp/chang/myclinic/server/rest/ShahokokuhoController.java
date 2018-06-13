@@ -47,4 +47,9 @@ public class ShahokokuhoController {
 		return true;
 	}
 
+	@RequestMapping(value="get-shahokokuho", method=RequestMethod.GET)
+	public ShahokokuhoDTO getShahokokuho(@RequestParam("shahokokuho-id") int shahokokuhoId){
+		return dbGateway.getShahokokuho(shahokokuhoId);
+	}
+
 }

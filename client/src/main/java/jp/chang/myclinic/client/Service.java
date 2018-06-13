@@ -661,6 +661,29 @@ public class Service {
         @GET("list-all-practice-log-after")
         Call<List<PracticeLogDTO>> listAllPracticeLogCall(@Query("date") String date,
                                                      @Query("last-id") int lastId);
+        @GET("get-shahokokuho")
+        CompletableFuture<ShahokokuhoDTO> getShahokokuho(@Query("shahokokuho-id") int shahokokuhoId);
+
+        @GET("get-shahokokuho")
+        Call<ShahokokuhoDTO> getShahokokuhoCall(@Query("shahokokuho-id") int shahokokuhoId);
+
+        @GET("get-koukikourei")
+        CompletableFuture<KoukikoureiDTO> getKoukikourei(@Query("koukikourei-id") int koukikoureiId);
+
+        @GET("get-koukikourei")
+        Call<KoukikoureiDTO> getKoukikoureiCall(@Query("koukikourei-id") int koukikoureiId);
+
+        @GET("get-roujin")
+        CompletableFuture<RoujinDTO> getRoujin(@Query("roujin-id") int roujinId);
+
+        @GET("get-roujin")
+        Call<RoujinDTO> getRoujinCall(@Query("roujin-id") int roujinId);
+
+        @GET("get-kouhi")
+        CompletableFuture<KouhiDTO> getKouhi(@Query("kouhi-id") int kouhiId);
+
+        @GET("get-kouhi")
+        Call<KouhiDTO> getKouhiCall(@Query("kouhi-id") int kouhiId);
 
     }
 

@@ -7,6 +7,7 @@ import jp.chang.myclinic.recordbrowser.tracking.model.*;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 class ModelRegistry {
@@ -90,7 +91,43 @@ class ModelRegistry {
                         return visit;
                     });
         }
+    }
 
+    public CompletableFuture<Void> updateHoken(Visit visit, VisitDTO updated){
+        return updateShahokokuho(visit, updated.shahokokuhoId)
+                .thenCompose(result -> updateKoukikourei(visit, updated.koukikoureiId))
+                .thenCompose(result -> updateKouhi(updated.kouhi1Id, visit::setKouhi1))
+                .thenCompose(result -> updateKouhi(updated.kouhi2Id, visit::setKouhi2))
+                .thenCompose(result -> updateKouhi(updated.kouhi3Id, visit::setKouhi3));
+    }
+
+    private CompletableFuture<Void> updateShahokokuho(Visit visit, int shahokokuhoId){
+        if( shahokokuhoId == 0 ){
+            visit.setShahokokuho(null);
+            return CompletableFuture.completedFuture(null);
+        } else {
+            return getShahokokuho(shahokokuhoId)
+                    .thenAccept(visit::setShahokokuho);
+        }
+    }
+
+    private CompletableFuture<Void> updateKoukikourei(Visit visit, int koukikoureiId){
+        if( koukikoureiId == 0 ){
+            visit.setKoukikourei(null);
+            return CompletableFuture.completedFuture(null);
+        } else {
+            return getKoukikourei(koukikoureiId)
+                    .thenAccept(visit::setKoukikourei);
+        }
+    }
+
+    private CompletableFuture<Void> updateKouhi(int kouhiId, Consumer<Kouhi> updater){
+        if( kouhiId == 0 ){
+            updater.accept(null);
+            return CompletableFuture.completedFuture(null);
+        } else {
+            return getKouhi(kouhiId).thenAccept(updater);
+        }
     }
 
     public Visit getVisit(int visitId){
@@ -116,16 +153,55 @@ class ModelRegistry {
         return shahokokuho;
     }
 
+    public CompletableFuture<Shahokokuho> getShahokokuho(int shahokokuhoId){
+        if( shahokokuhoRegistry.containsKey(shahokokuhoId) ){
+            return CompletableFuture.completedFuture(shahokokuhoRegistry.get(shahokokuhoId));
+        } else {
+            return Service.api.getShahokokuho(shahokokuhoId)
+                    .thenApply(shahokokuhoDTO -> {
+                        Shahokokuho shahokokuho = new Shahokokuho(shahokokuhoDTO);
+                        shahokokuhoRegistry.put(shahokokuhoId, shahokokuho);
+                        return shahokokuho;
+                    });
+        }
+    }
+
     public Koukikourei addKoukikourei(KoukikoureiDTO dto) {
         Koukikourei koukikourei = new Koukikourei(dto);
         koukikoureiRegistry.put(dto.koukikoureiId, koukikourei);
         return koukikourei;
     }
 
+    public CompletableFuture<Koukikourei> getKoukikourei(int koukikoureiId){
+        if( koukikoureiRegistry.containsKey(koukikoureiId) ){
+            return CompletableFuture.completedFuture(koukikoureiRegistry.get(koukikoureiId));
+        } else {
+            return Service.api.getKoukikourei(koukikoureiId)
+                    .thenApply(koukikoureiDTO -> {
+                        Koukikourei koukikourei = new Koukikourei(koukikoureiDTO);
+                        koukikoureiRegistry.put(koukikoureiId, koukikourei);
+                        return koukikourei;
+                    });
+        }
+    }
+
     public Kouhi addKouhi(KouhiDTO dto) {
         Kouhi kouhi = new Kouhi(dto);
         kouhiRegistry.put(dto.kouhiId, kouhi);
         return kouhi;
+    }
+
+    public CompletableFuture<Kouhi> getKouhi(int kouhiId){
+        if( kouhiRegistry.containsKey(kouhiId) ){
+            return CompletableFuture.completedFuture(kouhiRegistry.get(kouhiId));
+        } else {
+            return Service.api.getKouhi(kouhiId)
+                    .thenApply(kouhiDTO -> {
+                        Kouhi kouhi = new Kouhi(kouhiDTO);
+                        kouhiRegistry.put(kouhiId, kouhi);
+                        return kouhi;
+                    });
+        }
     }
 
     public CompletableFuture<Drug> getDrug(DrugDTO drugDTO){

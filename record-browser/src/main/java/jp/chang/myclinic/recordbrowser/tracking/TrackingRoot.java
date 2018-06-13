@@ -189,4 +189,9 @@ public class TrackingRoot extends VBox implements DispatchAction {
                 }))
                 .exceptionally(HandlerFX::exceptionally);
     }
+
+    @Override
+    public void onHokenUpdated(VisitDTO prev, VisitDTO updated, Runnable toNext) {
+        registry.updateHoken(updated)
+    }
 }

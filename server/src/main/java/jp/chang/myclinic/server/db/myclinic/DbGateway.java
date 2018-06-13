@@ -333,6 +333,10 @@ public class DbGateway {
                 .map(mapper::toShahokokuhoDTO).collect(Collectors.toList());
     }
 
+    public ShahokokuhoDTO getShahokokuho(int shahokokuhoId){
+        return mapper.toShahokokuhoDTO(shahokokuhoRepository.findById(shahokokuhoId));
+    }
+
     public int enterKoukikourei(KoukikoureiDTO koukikoureiDTO) {
         Koukikourei koukikourei = mapper.fromKoukikoureiDTO(koukikoureiDTO);
         koukikourei = koukikoureiRepository.save(koukikourei);
@@ -370,6 +374,10 @@ public class DbGateway {
         return roujin.getRoujinId();
     }
 
+    public KoukikoureiDTO getKoukikourei(int koukikoureiId){
+        return mapper.toKoukikoureiDTO(koukikoureiRepository.findById(koukikoureiId));
+    }
+
     public void deleteRoujin(int roujinId) {
         if (visitRepository.countByRoujinId(roujinId) > 0) {
             throw new RuntimeException("この老人保険はすでに使用されているので、削除できません。");
@@ -391,6 +399,10 @@ public class DbGateway {
         Sort sort = Sort.by(Sort.Direction.DESC, "roujinId");
         return roujinRepository.findByPatientId(patientId, sort).stream()
                 .map(mapper::toRoujinDTO).collect(Collectors.toList());
+    }
+
+    public RoujinDTO getRoujin(int roujinId){
+        return mapper.toRoujinDTO(roujinRepository.findById(roujinId));
     }
 
     public int enterKouhi(KouhiDTO kouhiDTO) {
@@ -421,6 +433,10 @@ public class DbGateway {
         Sort sort = Sort.by(Sort.Direction.DESC, "kouhiId");
         return kouhiRepository.findByPatientId(patientId, sort).stream()
                 .map(mapper::toKouhiDTO).collect(Collectors.toList());
+    }
+
+    public KouhiDTO getKouhi(int kouhiId){
+        return mapper.toKouhiDTO(kouhiRepository.findById(kouhiId));
     }
 
     public HokenListDTO findHokenByPatient(int patientId) {

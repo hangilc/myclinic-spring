@@ -88,6 +88,11 @@ class Dispatcher {
                         action.onWqueueUpdated(body.prev, body.updated, toNext);
                         break;
                     }
+                    case "hoken-updated": {
+                        VisitUpdated body = mapper.readValue(log.body, VisitUpdated.class);
+                        action.onHokenUpdated(body.prev, body.updated, toNext);
+                        break;
+                    }
                     default: {
                         System.err.println("Unknown kind: " + log.kind);
                         toNext.run();

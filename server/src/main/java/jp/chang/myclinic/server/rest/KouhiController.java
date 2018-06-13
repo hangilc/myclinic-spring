@@ -47,4 +47,9 @@ public class KouhiController {
 		return dbGateway.findAvailableKouhi(patientId, at);
 	}
 
+	@RequestMapping(value="get-kouhi", method=RequestMethod.GET)
+	public KouhiDTO getKouhi(@RequestParam("kouhi-id") int kouhiId){
+		return dbGateway.getKouhi(kouhiId);
+	}
+
 }
