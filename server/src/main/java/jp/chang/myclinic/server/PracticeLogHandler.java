@@ -6,6 +6,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class PracticeLogHandler extends TextWebSocketHandler {
 
     public void sendMessage(String value) throws Exception {
         for (WebSocketSession sess : sessions) {
-            TextMessage message = new TextMessage(value.getBytes());
+            TextMessage message = new TextMessage(value.getBytes(StandardCharsets.UTF_8));
             sess.sendMessage(message);
         }
     }

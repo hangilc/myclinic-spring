@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.recordbrowser.tracking.TrackingRoot;
+import jp.chang.myclinic.recordbrowser.tracking.WebsocketClient;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -23,6 +24,7 @@ public class Main extends Application {
 
     private TrackingRoot root = new TrackingRoot();
     private Repeater repeater;
+    private static WebsocketClient websocketClient;
 
     public static void main(String[] args) {
         if (args.length != 1) {
@@ -35,6 +37,8 @@ public class Main extends Application {
         }
         Service.setServerUrl(serverUrl);
         //Service.setLogBody();
+        String wsUrl = serverUrl.replace("/json/", "/practice-log");
+        websocketClient = new WebsocketClient(wsUrl);
         Application.launch(Main.class, args);
     }
 
@@ -57,6 +61,7 @@ public class Main extends Application {
         client.dispatcher().executorService().shutdown();
         client.connectionPool().evictAll();
         Cache cache = client.cache();
+        websocketClient.shutdown();
         if (cache != null) {
             cache.close();
         }
