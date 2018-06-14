@@ -1783,12 +1783,12 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
-    public void insertPracticeLog(LocalDate date, String kind, String body){
+    public PracticeLog insertPracticeLog(LocalDate date, String kind, String body){
         PracticeLog data = new PracticeLog();
         data.setDate(date.toString());
         data.setKind(kind);
         data.setBody(body);
-        practiceLogRepository.save(data);
+        return practiceLogRepository.save(data);
     }
 
 }

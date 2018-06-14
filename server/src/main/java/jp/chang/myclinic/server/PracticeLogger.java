@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.*;
 import jp.chang.myclinic.server.db.myclinic.DbGateway;
+import jp.chang.myclinic.server.db.myclinic.PracticeLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class PracticeLogger {
     private LocalDate at = LocalDate.now();
     @Autowired
     private DbGateway dbGateway;
+    @Autowired
+    private PracticeLogHandler practiceLogHandler;
 
     PracticeLogger() {
         mapper = new ObjectMapper();
@@ -37,8 +40,17 @@ public class PracticeLogger {
     }
 
     @Transactional
-    private void saveLog(String kind, String body){
-        dbGateway.insertPracticeLog(at, kind, body);
+    private void saveLog(String kind, String body) {
+        PracticeLog practiceLog = dbGateway.insertPracticeLog(at, kind, body);
+        PracticeLogDTO dto = new PracticeLogDTO();
+        dto.serialId = practiceLog.getPracticeLogId();
+        dto.kind = kind;
+        dto.body = body;
+        try {
+            practiceLogHandler.sendMessage(mapper.writeValueAsString(dto));
+        } catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
     }
 
     public void logVisitCreated(VisitDTO visit) {
