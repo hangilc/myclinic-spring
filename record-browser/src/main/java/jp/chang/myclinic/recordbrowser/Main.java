@@ -1,5 +1,6 @@
 package jp.chang.myclinic.recordbrowser;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -9,6 +10,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.recordbrowser.tracking.Dispatcher;
 import jp.chang.myclinic.recordbrowser.tracking.TrackingRoot;
 import jp.chang.myclinic.recordbrowser.tracking.WebsocketClient;
@@ -18,6 +20,7 @@ import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,6 +31,7 @@ public class Main extends Application {
     private WebsocketClient websocketClient;
     private Dispatcher dispatcher;
     private Thread dispatcherThread;
+    private ObjectMapper mapper = new ObjectMapper();
 
     public static void main(String[] args) {
         Application.launch(Main.class, args);
@@ -46,7 +50,19 @@ public class Main extends Application {
         Service.setServerUrl(serverUrl);
         //Service.setLogBody();
         String wsUrl = serverUrl.replace("/json/", "/practice-log");
-        websocketClient = new WebsocketClient(wsUrl);
+        websocketClient = new WebsocketClient(wsUrl){
+            @Override
+            protected void onNewMessage(String text){
+                try {
+                    PracticeLogDTO plog = mapper.readValue(text, PracticeLogDTO.class);
+                    if( dispatcher != null ){
+                        dispatcher.add(plog);
+                    }
+                } catch (IOException e) {
+                    logger.error("Cannot parse practice log.", e);
+                }
+            }
+        };
     }
 
     @Override

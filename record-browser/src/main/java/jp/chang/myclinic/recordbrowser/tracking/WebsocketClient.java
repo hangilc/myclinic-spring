@@ -24,9 +24,13 @@ public class WebsocketClient extends WebSocketListener {
         websocket = client.newWebSocket(request, this);
     }
 
+    protected void onNewMessage(String text){
+
+    }
+
     @Override
     public void onMessage(WebSocket webSocket, String text) {
-        System.out.println(text);
+        onNewMessage(text);
     }
 
     public void cancel(){
