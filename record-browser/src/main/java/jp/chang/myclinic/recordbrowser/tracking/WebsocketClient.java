@@ -14,6 +14,7 @@ public class WebsocketClient extends WebSocketListener {
     public WebsocketClient(String url) {
         this.client = new OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)
+                .pingInterval(5, TimeUnit.SECONDS)
                 .build();
         Request request = new Request.Builder()
                 .url(url)
@@ -28,6 +29,20 @@ public class WebsocketClient extends WebSocketListener {
     @Override
     public void onMessage(WebSocket webSocket, String text) {
         onNewMessage(text);
+    }
+
+    @Override
+    public void onClosed(WebSocket webSocket, int code, String reason) {
+        System.out.println("WebSocket closed.");
+    }
+
+    protected void onFail(){
+
+    }
+
+    @Override
+    public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+        System.out.println("WebSocket failed.");
     }
 
     public void cancel(){
