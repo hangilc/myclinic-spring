@@ -30,8 +30,8 @@ public class Main extends Application {
     private TrackingRoot root = new TrackingRoot();
     private WebsocketClient websocketClient;
     private Dispatcher dispatcher;
-    private Thread dispatcherThread;
     private ObjectMapper mapper = new ObjectMapper();
+    private String wsUrl;
 
     public static void main(String[] args) {
         Application.launch(Main.class, args);
@@ -49,20 +49,7 @@ public class Main extends Application {
         }
         Service.setServerUrl(serverUrl);
         //Service.setLogBody();
-        String wsUrl = serverUrl.replace("/json/", "/practice-log");
-        websocketClient = new WebsocketClient(wsUrl){
-            @Override
-            protected void onNewMessage(String text){
-                try {
-                    PracticeLogDTO plog = mapper.readValue(text, PracticeLogDTO.class);
-                    if( dispatcher != null ){
-                        dispatcher.add(plog);
-                    }
-                } catch (IOException e) {
-                    logger.error("Cannot parse practice log.", e);
-                }
-            }
-        };
+        wsUrl = serverUrl.replace("/json/", "/practice-log");
     }
 
     @Override
@@ -74,10 +61,10 @@ public class Main extends Application {
         pane.setTop(createMenu());
         stage.setScene(new Scene(pane));
         this.dispatcher = new Dispatcher(root);
-        this.dispatcherThread = new Thread(dispatcher);
+        Thread dispatcherThread = new Thread(dispatcher);
         dispatcherThread.setDaemon(true);
         dispatcherThread.start();
-        reload();
+        reload(this::startWebSocket);
         stage.show();
     }
 
@@ -95,13 +82,30 @@ public class Main extends Application {
         }
     }
 
-    private void reload(){
+    private void reload(Runnable cb){
         String today = LocalDate.now().toString();
         Service.api.listAllPracticeLog(today)
                 .thenAccept(logs -> {
                     logs.forEach(dispatcher::add);
+                    cb.run();
                 })
                 .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private void startWebSocket(){
+        websocketClient = new WebsocketClient(wsUrl){
+            @Override
+            protected void onNewMessage(String text){
+                try {
+                    PracticeLogDTO plog = mapper.readValue(text, PracticeLogDTO.class);
+                    if( dispatcher != null ){
+                        dispatcher.add(plog);
+                    }
+                } catch (IOException e) {
+                    logger.error("Cannot parse practice log.", e);
+                }
+            }
+        };
     }
 
     private MenuBar createMenu() {
