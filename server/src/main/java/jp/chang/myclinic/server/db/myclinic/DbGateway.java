@@ -1783,6 +1783,13 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
+    public List<PracticeLogDTO> listPracticeLogInRange(LocalDate at, int afterId, int beforeId){
+        return practiceLogRepository.findInRange(at.toString(), afterId, beforeId, Sort.by("practiceLogId"))
+                .stream()
+                .map(mapper::toPracticeLogDTO)
+                .collect(Collectors.toList());
+    }
+
     public PracticeLog insertPracticeLog(LocalDate date, String kind, String body){
         PracticeLog data = new PracticeLog();
         data.setDate(date.toString());

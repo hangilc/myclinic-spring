@@ -15,4 +15,11 @@ public interface PracticeLogRepository extends CrudRepository<PracticeLog, Integ
     List<PracticeLog> findRecent(@Param("date") String date,
                                  @Param("id") int lastPracticeLogId, Sort sort);
 
+    @Query("select p from PracticeLog p where p.date = :date " +
+            " and p.practiceLogId > :afterId and p.practiceLogId < :beforeId")
+    List<PracticeLog> findInRange(@Param("date") String date,
+                                  @Param("afterId") int afterId,
+                                  @Param("beforeId") int beforeId,
+                                  Sort sort);
+
 }

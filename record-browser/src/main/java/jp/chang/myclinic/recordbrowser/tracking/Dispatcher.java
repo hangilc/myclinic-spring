@@ -2,10 +2,14 @@ package jp.chang.myclinic.recordbrowser.tracking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.logdto.practicelog.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -18,13 +22,14 @@ public class Dispatcher implements Runnable {
     private BlockingQueue<PracticeLogDTO> pendings = new LinkedBlockingQueue<>();
     private DispatchAction action;
     private Runnable toNext;
+    private int lastId;
 
     public Dispatcher(DispatchAction action) {
         this.action = action;
         toNext = () -> taskPermit.release();
     }
 
-    public void add(PracticeLogDTO plog){
+    public void add(PracticeLogDTO plog) {
         try {
             pendings.put(plog);
         } catch (InterruptedException e) {
@@ -34,20 +39,48 @@ public class Dispatcher implements Runnable {
     }
 
     @Override
-    public void run(){
-        //noinspection InfiniteLoopStatement
-        while(true){
-            try {
+    public void run() {
+        try {
+            taskPermit.acquire();
+            //noinspection InfiniteLoopStatement
+            while (true) {
                 PracticeLogDTO plog = pendings.take();
-                taskPermit.acquire();
-                Platform.runLater(() -> dispatchOne(plog));
-            } catch (InterruptedException e) {
-                break;
+                int plogSerialId = plog.serialId;
+                if (lastId == 0 || plogSerialId == (lastId + 1)) {
+                    Platform.runLater(() -> dispatchOne(plog));
+                    taskPermit.acquire();
+                    lastId = plog.serialId;
+                } else if (lastId != 0 && plogSerialId > (lastId + 1)) {
+                    catchUp(lastId, plogSerialId, plog);
+                }
             }
+        } catch (InterruptedException ignored) {
+
         }
     }
 
-    private void dispatchOne(PracticeLogDTO log){
+    private void catchUp(int lastId, int nextId, PracticeLogDTO nextLog) throws InterruptedException {
+        String today = LocalDate.now().toString();
+        try {
+            final List<PracticeLogDTO> logs =
+                    Service.api.listPracticeLogInRangeCall(today, lastId, nextId).execute().body();
+            logs.add(nextLog);
+            System.out.println("catchup logs: " + logs);
+            class Local {
+                private int i = 0;
+            }
+            Local local = new Local();
+            while( local.i < logs.size() ){
+                Platform.runLater(() -> dispatchOne(logs.get(local.i)));
+                taskPermit.acquire();
+                local.i += 1;
+            }
+        } catch (IOException e) {
+            logger.error("Client::listPracticeLogInRange failed.", e);
+        }
+    }
+
+    private void dispatchOne(PracticeLogDTO log) {
         try {
             switch (log.kind) {
                 case "visit-created": {

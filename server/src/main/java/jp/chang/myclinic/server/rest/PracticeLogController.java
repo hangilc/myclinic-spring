@@ -1,7 +1,6 @@
 package jp.chang.myclinic.server.rest;
 
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
-import jp.chang.myclinic.server.PracticeLogger;
 import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,9 +24,16 @@ public class PracticeLogController {
     }
 
     @RequestMapping(value = "/list-practice-log-after", method = RequestMethod.GET)
-    public List<PracticeLogDTO> listLogsAfter(@RequestParam("date") String date,
-                                         @RequestParam("last-id") int lastId){
+    public List<PracticeLogDTO> listLogAfter(@RequestParam("date") String date,
+                                             @RequestParam("last-id") int lastId) {
         return dbGateway.listRecentPracticeLog(LocalDate.parse(date), lastId);
+    }
+
+    @RequestMapping(value = "/list-practice-log-in-range", method = RequestMethod.GET)
+    public List<PracticeLogDTO> listLogInRange(@RequestParam("date") String date,
+                                               @RequestParam("after-id") int afterId,
+                                               @RequestParam("before-id") int beforeId) {
+        return dbGateway.listPracticeLogInRange(LocalDate.parse(date), afterId, beforeId);
     }
 
 }

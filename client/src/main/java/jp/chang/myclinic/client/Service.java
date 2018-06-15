@@ -661,6 +661,16 @@ public class Service {
         @GET("list-all-practice-log-after")
         Call<List<PracticeLogDTO>> listAllPracticeLogCall(@Query("date") String date,
                                                      @Query("last-id") int lastId);
+        @GET("list-practice-log-in-range")
+        CompletableFuture<List<PracticeLogDTO>> listPracticeLogInRange(
+                @Query("date") String date, @Query("after-id") int afterId,
+                @Query("before-id") int beforeId);
+
+        @GET("list-practice-log-in-range")
+        Call<List<PracticeLogDTO>> listPracticeLogInRangeCall(
+                @Query("date") String date, @Query("after-id") int afterId,
+                @Query("before-id") int beforeId);
+
         @GET("get-shahokokuho")
         CompletableFuture<ShahokokuhoDTO> getShahokokuho(@Query("shahokokuho-id") int shahokokuhoId);
 

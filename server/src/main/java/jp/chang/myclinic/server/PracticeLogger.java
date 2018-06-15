@@ -39,6 +39,8 @@ public class PracticeLogger {
         }
     }
 
+    private int skipIndex;
+
     @Transactional
     private void saveLog(String kind, String body) {
         PracticeLog practiceLog = dbGateway.insertPracticeLog(at, kind, body);
@@ -46,10 +48,12 @@ public class PracticeLogger {
         dto.serialId = practiceLog.getPracticeLogId();
         dto.kind = kind;
         dto.body = body;
-        try {
-            practiceLogHandler.sendMessage(mapper.writeValueAsString(dto));
-        } catch(Exception ex){
-            throw new RuntimeException(ex);
+        if( skipIndex++ % 2 != 0 ) { // for testing
+            try {
+                practiceLogHandler.sendMessage(mapper.writeValueAsString(dto));
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
