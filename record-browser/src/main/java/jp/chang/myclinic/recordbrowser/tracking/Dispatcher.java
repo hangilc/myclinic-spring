@@ -10,7 +10,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 
-class Dispatcher implements Runnable {
+public class Dispatcher implements Runnable {
 
     private static Logger logger = LoggerFactory.getLogger(Dispatcher.class);
     private ObjectMapper mapper = new ObjectMapper();
@@ -19,7 +19,7 @@ class Dispatcher implements Runnable {
     private DispatchAction action;
     private Runnable toNext;
 
-    Dispatcher(DispatchAction action) {
+    public Dispatcher(DispatchAction action) {
         this.action = action;
         toNext = () -> taskPermit.release();
     }

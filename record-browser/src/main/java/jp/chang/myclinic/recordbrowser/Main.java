@@ -9,6 +9,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.recordbrowser.tracking.Dispatcher;
 import jp.chang.myclinic.recordbrowser.tracking.TrackingRoot;
 import jp.chang.myclinic.recordbrowser.tracking.WebsocketClient;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -18,39 +19,45 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
     private TrackingRoot root = new TrackingRoot();
-    private Repeater repeater;
-    private static WebsocketClient websocketClient;
+    private WebsocketClient websocketClient;
+    private Dispatcher dispatcher;
 
     public static void main(String[] args) {
-        if (args.length != 1) {
+        Application.launch(Main.class, args);
+    }
+
+    private void handleArgs(){
+        List<String> args = getParameters().getUnnamed();
+        if (args.size() != 1) {
             logger.error("Usage: mock-client server-url");
             System.exit(1);
         }
-        String serverUrl = args[0];
+        String serverUrl = args.get(0);
         if (!serverUrl.endsWith("/")) {
-            serverUrl = args[0] + "/";
+            serverUrl = serverUrl + "/";
         }
         Service.setServerUrl(serverUrl);
         //Service.setLogBody();
         String wsUrl = serverUrl.replace("/json/", "/practice-log");
         websocketClient = new WebsocketClient(wsUrl);
-        Application.launch(Main.class, args);
     }
 
     @Override
     public void start(Stage stage) {
+        handleArgs();
         stage.setTitle("診療録閲覧");
         BorderPane pane = new BorderPane();
         pane.setCenter(root);
         pane.setTop(createMenu());
         stage.setScene(new Scene(pane));
-        root.reload();
-        //startRepeater();
+        this.dispatcher = new Dispatcher(root);
+        reload();
         stage.show();
     }
 
@@ -65,6 +72,15 @@ public class Main extends Application {
         if (cache != null) {
             cache.close();
         }
+    }
+
+    private void reload(){
+        String today = LocalDate.now().toString();
+        Service.api.listAllPracticeLog(today)
+                .thenAccept(logs -> {
+                    logs.forEach(dispatcher::add);
+                })
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private MenuBar createMenu() {
@@ -128,23 +144,6 @@ public class Main extends Application {
                     dialog.show();
                 }))
                 .exceptionally(HandlerFX::exceptionally);
-    }
-
-    private void startRepeater(){
-//        repeater = new Repeater(10, () -> {
-//            root.trigger();
-//        });
-//        root.setOnRefreshCallback(() -> repeater.skip());
-//        root.setOnSuspendCallback(suspended -> {
-//            if( suspended ){
-//                repeater.suspend();
-//            } else {
-//                repeater.unsuspend();
-//            }
-//        });
-//        Thread thread = new Thread(repeater);
-//        thread.setDaemon(true);
-//        thread.start();
     }
 
 }

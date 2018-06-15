@@ -18,7 +18,6 @@ public class TrackingRoot extends VBox implements DispatchAction {
     //private static Logger logger = LoggerFactory.getLogger(TrackingRoot.class);
 
     private VBox recordList = new VBox();
-    private Dispatcher dispatcher;
     private ModelRegistry registry = new ModelRegistry();
     private String today = LocalDate.now().toString();
 
@@ -34,15 +33,6 @@ public class TrackingRoot extends VBox implements DispatchAction {
                 mainLabel,
                 recordScroll
         );
-        dispatcher = new Dispatcher();
-    }
-
-    public void reload(){
-        Service.api.listAllPracticeLog(today)
-                .thenAccept(logs -> Platform.runLater(() -> {
-                    dispatcher.dispatch(logs, this, this::onReloaded);
-                }))
-                .exceptionally(HandlerFX::exceptionally);
     }
 
     private void onReloaded(){
