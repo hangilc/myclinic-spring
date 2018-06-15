@@ -27,6 +27,7 @@ public class Main extends Application {
     private TrackingRoot root = new TrackingRoot();
     private WebsocketClient websocketClient;
     private Dispatcher dispatcher;
+    private Thread dispatcherThread;
 
     public static void main(String[] args) {
         Application.launch(Main.class, args);
@@ -57,6 +58,9 @@ public class Main extends Application {
         pane.setTop(createMenu());
         stage.setScene(new Scene(pane));
         this.dispatcher = new Dispatcher(root);
+        this.dispatcherThread = new Thread(dispatcher);
+        dispatcherThread.setDaemon(true);
+        dispatcherThread.start();
         reload();
         stage.show();
     }
@@ -68,6 +72,7 @@ public class Main extends Application {
         client.dispatcher().executorService().shutdown();
         client.connectionPool().evictAll();
         Cache cache = client.cache();
+        websocketClient.cancel();
         websocketClient.shutdown();
         if (cache != null) {
             cache.close();

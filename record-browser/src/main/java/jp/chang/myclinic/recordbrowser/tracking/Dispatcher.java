@@ -42,7 +42,7 @@ public class Dispatcher implements Runnable {
                 taskPermit.acquire();
                 Platform.runLater(() -> dispatchOne(plog));
             } catch (InterruptedException e) {
-                logger.info("Dispatcher interrupted.", e);
+                break;
             }
         }
     }

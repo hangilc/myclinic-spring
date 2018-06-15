@@ -12,6 +12,7 @@ public class WebsocketClient extends WebSocketListener {
     //private static Logger logger = LoggerFactory.getLogger(WebsocketClient.class);
 
     private OkHttpClient client;
+    private WebSocket websocket;
 
     public WebsocketClient(String url) {
         this.client = new OkHttpClient.Builder()
@@ -20,12 +21,16 @@ public class WebsocketClient extends WebSocketListener {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newWebSocket(request, this);
+        websocket = client.newWebSocket(request, this);
     }
 
     @Override
     public void onMessage(WebSocket webSocket, String text) {
         System.out.println(text);
+    }
+
+    public void cancel(){
+        websocket.cancel();
     }
 
     public void shutdown(){
