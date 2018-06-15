@@ -30,7 +30,6 @@ public class WebsocketClient extends WebSocketListener {
 
     @Override
     public void onMessage(WebSocket webSocket, String text) {
-        System.out.println("message: " + text);
         onNewMessage(text);
     }
 
