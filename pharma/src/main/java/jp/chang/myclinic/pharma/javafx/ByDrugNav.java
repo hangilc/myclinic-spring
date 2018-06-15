@@ -53,6 +53,7 @@ abstract class ByDrugNav extends VBox implements Nav {
     }
 
     void reset() {
+        this.iyakuhincode = 0;
         this.patientId = 0;
         this.currentPage = 0;
         this.totalPages = 0;
