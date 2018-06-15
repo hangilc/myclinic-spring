@@ -34,7 +34,16 @@ public class Dispatcher implements Runnable {
             pendings.put(plog);
         } catch (InterruptedException e) {
             logger.error("Failed to add practice log.", e);
-            throw new RuntimeException(e);
+        }
+    }
+
+    public void addAll(List<PracticeLogDTO> logs){
+        try {
+            for (PracticeLogDTO log : logs) {
+                pendings.put(log);
+            }
+        } catch(InterruptedException e){
+            logger.error("Failed to add practice log.", e);
         }
     }
 

@@ -654,11 +654,11 @@ public class Service {
         @GET("list-all-practice-log")
         Call<List<PracticeLogDTO>> listAllPracticeLogCall(@Query("date") String date);
 
-        @GET("list-all-practice-log-after")
+        @GET("list-practice-log-after")
         CompletableFuture<List<PracticeLogDTO>> listAllPracticeLog(@Query("date") String date,
                                                               @Query("last-id") int lastId);
 
-        @GET("list-all-practice-log-after")
+        @GET("list-practice-log-after")
         Call<List<PracticeLogDTO>> listAllPracticeLogCall(@Query("date") String date,
                                                      @Query("last-id") int lastId);
         @GET("list-practice-log-in-range")

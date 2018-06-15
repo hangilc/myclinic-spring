@@ -86,10 +86,31 @@ public class Main extends Application {
         String today = LocalDate.now().toString();
         Service.api.listAllPracticeLog(today)
                 .thenAccept(logs -> {
-                    logs.forEach(dispatcher::add);
+                    if( logs.size() > 0 ) {
+                        int lastId = logs.get(logs.size() - 1).serialId;
+                        dispatcher.addAll(logs);
+                        probeLogUpdate(3, lastId);
+                    }
                     cb.run();
                 })
                 .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private void probeLogUpdate(int delaySeconds, int lastSerialId){
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(delaySeconds * 1000);
+                Service.api.listAllPracticeLog(LocalDate.now().toString(), lastSerialId)
+                        .thenAccept(logs -> {
+                            dispatcher.addAll(logs);
+                        })
+                        .exceptionally(HandlerFX::exceptionally);
+            } catch (InterruptedException e) {
+                logger.error("probeLogUpdate failed.", e);
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     private void startWebSocket(){
