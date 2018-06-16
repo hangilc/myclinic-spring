@@ -8,6 +8,7 @@ import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.server.db.myclinic.PracticeLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,10 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 
 @Component
-public class PracticeLogger {
+public class PracticeLogger implements InitializingBean {
 
     private static Logger logger = LoggerFactory.getLogger(PracticeLogger.class);
-    private static ObjectMapper mapper;
+    private static ObjectMapper mapper = new ObjectMapper();
     private LocalDate at = LocalDate.now();
     @Autowired
     private DbGateway dbGateway;
@@ -27,6 +28,19 @@ public class PracticeLogger {
 
     PracticeLogger() {
         mapper = new ObjectMapper();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        sendLastLog();
+    }
+
+    private void sendLastLog() throws Exception {
+        PracticeLogDTO lastLog = dbGateway.findLastPracticeLog();
+        logger.info("last practice log: {}", lastLog);
+        if( lastLog != null ) {
+            practiceLogHandler.sendPracticeLogMessage(mapper.writeValueAsString(lastLog));
+        }
     }
 
     private void logValue(String kind, PracticeLogBody obj) {

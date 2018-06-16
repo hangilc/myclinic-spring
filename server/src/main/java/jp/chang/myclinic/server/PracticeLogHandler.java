@@ -1,11 +1,7 @@
 package jp.chang.myclinic.server;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -21,31 +17,12 @@ public class PracticeLogHandler extends TextWebSocketHandler {
 
     private static Logger logger = LoggerFactory.getLogger(PracticeLogHandler.class);
 
-    //@Autowired
-    private DbGateway dbGateway;
-    //@Autowired
-    private ObjectMapper objectMapper;
     private List<WebSocketSession> sessions = new ArrayList<>();
     private TextMessage lastMessage;
 
-    @Autowired
-    public PracticeLogHandler(DbGateway dbGateway, ObjectMapper objectMapper) throws Exception {
-        this.dbGateway = dbGateway;
-        this.objectMapper = objectMapper;
-        sendLastLog();
-    }
-
-    private void sendLastLog() throws Exception {
-        PracticeLogDTO lastLog = dbGateway.findLastPracticeLog();
-        logger.info("last practice log: {}", lastLog);
-        if( lastLog != null ) {
-            sendPracticeLogMessage(objectMapper.writeValueAsString(lastLog));
-        }
-    }
-
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        System.out.println("connected " + session);
+        logger.info("websocket connected {}" + session);
         sessions.add(session);
     }
 
@@ -53,7 +30,7 @@ public class PracticeLogHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         if( lastMessage != null ){
             session.sendMessage(lastMessage);
-            logger.info("sent text message: " + lastMessage);
+            logger.info("sent text message: {}", lastMessage);
         }
     }
 
@@ -68,7 +45,7 @@ public class PracticeLogHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        System.out.println("disconnected " + session);
+        logger.info("websocket disconnected {}", session);
         sessions.remove(session);
     }
 }

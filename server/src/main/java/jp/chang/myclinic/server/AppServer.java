@@ -54,11 +54,6 @@ public class AppServer implements CommandLineRunner{
     }
 
     @Bean
-    public ObjectMapper getObjectMapper(){
-        return new ObjectMapper();
-    }
-
-    @Bean
     public ReferList getReferList(){
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         try {

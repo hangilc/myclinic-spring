@@ -58,7 +58,7 @@ public class Dispatcher implements Runnable {
                 if (plogSerialId == (lastId + 1)) {
                     Platform.runLater(() -> dispatchOne(plog));
                     taskPermit.acquire();
-                    lastId = plog.serialId;
+                    this.lastId = plog.serialId;
                 } else if ( plogSerialId > (lastId + 1)) {
                     catchUp(lastId, plogSerialId, plog);
                 }
@@ -74,14 +74,15 @@ public class Dispatcher implements Runnable {
             final List<PracticeLogDTO> logs =
                     Service.api.listPracticeLogInRangeCall(today, lastId, nextId).execute().body();
             logs.add(nextLog);
-            System.out.println("catchup logs: " + logs);
             class Local {
                 private int i = 0;
             }
             Local local = new Local();
             while( local.i < logs.size() ){
-                Platform.runLater(() -> dispatchOne(logs.get(local.i)));
+                PracticeLogDTO currentLog = logs.get(local.i);
+                Platform.runLater(() -> dispatchOne(currentLog));
                 taskPermit.acquire();
+                this.lastId = currentLog.serialId;
                 local.i += 1;
             }
         } catch (IOException e) {
