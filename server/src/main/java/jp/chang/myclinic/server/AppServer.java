@@ -51,18 +51,11 @@ public class AppServer implements CommandLineRunner{
     public MasterMap getMasterMap(@Value("${myclinic.master-map-file}") String masterMapLocation,
                                   @Value("${myclinic.name-map-file}") String nameMapLocation) throws IOException {
         return MasterMap.loadMap(nameMapLocation, masterMapLocation);
-//        MasterMap masterMap = new MasterMap();
-//        {
-//            try(Stream<String> lines = Files.lines(Paths.get(masterMapLocation))){
-//                masterMap.loadCodeMap(lines);
-//            }
-//        }
-//        {
-//            try(Stream<String> lines = Files.lines(Paths.get(nameMapLocation))){
-//                masterMap.loadNameMap(lines);
-//            }
-//        }
-//        return masterMap;
+    }
+
+    @Bean
+    public ObjectMapper getObjectMapper(){
+        return new ObjectMapper();
     }
 
     @Bean

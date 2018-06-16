@@ -47,7 +47,7 @@ public class PracticeLogger {
         dto.kind = kind;
         dto.body = body;
         try {
-            practiceLogHandler.sendMessage(mapper.writeValueAsString(dto));
+            practiceLogHandler.sendPracticeLogMessage(mapper.writeValueAsString(dto));
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

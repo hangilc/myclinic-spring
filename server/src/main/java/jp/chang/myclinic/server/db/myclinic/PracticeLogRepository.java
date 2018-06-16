@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PracticeLogRepository extends CrudRepository<PracticeLog, Integer> {
 
@@ -22,4 +23,5 @@ public interface PracticeLogRepository extends CrudRepository<PracticeLog, Integ
                                   @Param("beforeId") int beforeId,
                                   Sort sort);
 
+    Optional<PracticeLog> findFirstByDateOrderByPracticeLogIdDesc(String date);
 }

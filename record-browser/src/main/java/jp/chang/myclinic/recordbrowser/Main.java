@@ -17,6 +17,8 @@ import jp.chang.myclinic.recordbrowser.tracking.WebsocketClient;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import okhttp3.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +66,8 @@ public class Main extends Application {
         Thread dispatcherThread = new Thread(dispatcher);
         dispatcherThread.setDaemon(true);
         dispatcherThread.start();
-        reload(this::startWebSocket);
+        //reload(this::startWebSocket);
+        startWebSocket();
         stage.show();
     }
 
@@ -115,6 +118,11 @@ public class Main extends Application {
 
     private void startWebSocket(){
         websocketClient = new WebsocketClient(wsUrl){
+            @Override
+            public void onOpen(WebSocket webSocket, Response response) {
+                webSocket.send("hello");
+            }
+
             @Override
             protected void onNewMessage(String text){
                 try {

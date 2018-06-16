@@ -1798,4 +1798,11 @@ public class DbGateway {
         return practiceLogRepository.save(data);
     }
 
+    public PracticeLogDTO findLastPracticeLog(){
+        String today = LocalDate.now().toString();
+        return practiceLogRepository.findFirstByDateOrderByPracticeLogIdDesc(today)
+                .map(mapper::toPracticeLogDTO)
+                .orElse(null);
+    }
+
 }

@@ -55,11 +55,11 @@ public class Dispatcher implements Runnable {
             while (true) {
                 PracticeLogDTO plog = pendings.take();
                 int plogSerialId = plog.serialId;
-                if (lastId == 0 || plogSerialId == (lastId + 1)) {
+                if (plogSerialId == (lastId + 1)) {
                     Platform.runLater(() -> dispatchOne(plog));
                     taskPermit.acquire();
                     lastId = plog.serialId;
-                } else if (lastId != 0 && plogSerialId > (lastId + 1)) {
+                } else if ( plogSerialId > (lastId + 1)) {
                     catchUp(lastId, plogSerialId, plog);
                 }
             }
