@@ -41,4 +41,9 @@ public class RoujinController {
 		return dbGateway.findAvailableRoujin(patientId, at);
 	}
 
+	@RequestMapping(value="/get-roujin", method=RequestMethod.GET)
+	public RoujinDTO getRoujin(@RequestParam("roujin-id") int roujinId){
+		return dbGateway.getRoujin(roujinId);
+	}
+
 }

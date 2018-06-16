@@ -35,6 +35,11 @@
         </dependency>
         <dependency>
             <groupId>jp.chang.myclinic</groupId>
+            <artifactId>logdto</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>jp.chang.myclinic</groupId>
             <artifactId>utilfx</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
@@ -42,6 +47,12 @@
             <groupId>jp.chang.myclinic</groupId>
             <artifactId>myclinic-util</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>3.10.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

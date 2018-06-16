@@ -1,0 +1,14 @@
+package jp.chang.myclinic.logdto.practicelog;
+
+import jp.chang.myclinic.dto.{{ name }}DTO;
+
+public class {{ name }}Updated implements PracticeLogBody {
+
+    public {{ name }}DTO prev;
+    public {{ name }}DTO updated;
+
+    public {{ name }}Updated({{ name }}DTO prev, {{ name }}DTO updated) {
+        this.prev = prev;
+        this.updated = updated;
+    }
+}

@@ -26,6 +26,8 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 		" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto) ")
 	List<Object[]> findByVisitIdWithMaster(@Param("visitId") int visitId, Sort sort);
 
+	List<Drug> findByVisitId(int visitId, Sort sort);
+
 	@Query("select d.iyakuhincode from Drug d, Visit v where d.visitId = v.visitId and v.patientId = :patientId")
 	List<Integer> findIyakuhincodeByPatient(@Param("patientId") int patientId);
 
@@ -34,7 +36,7 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 	List<Object[]> findVisitIdVisitedAtByPatientAndIyakuhincode(@Param("patientId") int patientId,
 																@Param("iyakuhincode") int iyakuhincode);
 
-	@Modifying
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query("update Drug d set d.prescribed = 1 where d.visitId = :visitId")
 	void markAsPrescribedForVisit(@Param("visitId") int visitId);
 
@@ -72,7 +74,7 @@ public interface DrugRepository extends CrudRepository<Drug, Integer> {
 
 	int countByVisitIdAndPrescribed(int visitId, int prescribed);
 
-	@Modifying
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query("update Drug d set d.days = :days where d.drugId in :drugIds")
 	void batchUpdateDays(@Param("drugIds") List<Integer> drugIds, @Param("days") int days);
 

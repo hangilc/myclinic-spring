@@ -30,9 +30,14 @@ public class DateTimeUtil {
 		return toKanji(date, kanjiFormatter1);
 	}
 
-	public static String toKanji(LocalDateTime dateTime, DateTimeFormatter formatter){
+	public static String toKanji(LocalDateTime dateTime, DateTimeFormatter dateFormatter){
 			JapaneseDate jd = JapaneseDate.from(dateTime);
-			return jd.format(formatter);
+			return jd.format(dateFormatter);
+	}
+
+	public static String toKanji(LocalDateTime datetime, DateTimeFormatter dateFormatter,
+								 DateTimeFormatter timeFormatter, String sep){
+		return toKanji(datetime, dateFormatter) + sep + datetime.format(timeFormatter);
 	}
 
 	public static boolean isValidAt(LocalDate at, String validFrom, String validUpto){

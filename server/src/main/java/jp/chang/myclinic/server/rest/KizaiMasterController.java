@@ -27,32 +27,46 @@ class KizaiMasterController {
     @Autowired
     private MasterMap masterMap;
 
-    @RequestMapping(value="/search-kizai-master-by-name", method= RequestMethod.GET)
-    List<KizaiMasterDTO> searchByName(@RequestParam("text") String text, @RequestParam("at") String at){
-        if( at.length() > 10 ){
+    @RequestMapping(value = "/search-kizai-master-by-name", method = RequestMethod.GET)
+    List<KizaiMasterDTO> searchByName(@RequestParam("text") String text, @RequestParam("at") String at) {
+        if (at.length() > 10) {
             at = at.substring(0, 10);
         }
         LocalDate date = LocalDate.parse(at);
         return dbGateway.searchKizaiMasterByName(text, date);
     }
 
-    @RequestMapping(value="/resolve-kizai-master-by-name", method=RequestMethod.GET)
+    @RequestMapping(value = "/resolve-kizai-master-by-name", method = RequestMethod.GET)
     public KizaiMasterDTO resolveKizaiMasterByName(@RequestParam("name") String name,
-                                                         @RequestParam("at") String at){
+                                                   @RequestParam("at") String at) {
         LocalDate atDate = convertToDate(at);
         try {
             int kizaicode = masterMap.getKizaicodeByName(name).orElseThrow(() -> new RuntimeException("cannot find name"));
             kizaicode = masterMap.resolveKizaiCode(kizaicode, atDate);
             return dbGateway.findKizaiMasterByKizaicode(kizaicode, atDate)
                     .orElseThrow(() -> new RuntimeException("cannot find master"));
-        } catch(Exception ex){
+        } catch (Exception ex) {
             logger.error("Failed to resolve kizai master by name. {}", name, ex);
             throw new RuntimeException("器材マスターを見つけられませんでした。[" + name + "]: " + ex);
         }
     }
 
-    private LocalDate convertToDate(String at){
-        if( at.length() > 10 ){
+    @RequestMapping(value = "/resolve-kizai-master", method = RequestMethod.GET)
+    public KizaiMasterDTO resolveKizaiMaster(@RequestParam("kizaicode") int kizaicode,
+                                             @RequestParam("at") String at) {
+        LocalDate atDate = convertToDate(at);
+        try {
+            kizaicode = masterMap.resolveKizaiCode(kizaicode, atDate);
+            return dbGateway.findKizaiMasterByKizaicode(kizaicode, atDate)
+                    .orElseThrow(() -> new RuntimeException("cannot find master"));
+        } catch (Exception ex) {
+            logger.error("Failed to resolve kizai master. {}", kizaicode, ex);
+            throw new RuntimeException("器材マスターを見つけられませんでした。[" + kizaicode + "]: " + ex);
+        }
+    }
+
+    private LocalDate convertToDate(String at) {
+        if (at.length() > 10) {
             at = at.substring(0, 10);
         }
         return LocalDate.parse(at);

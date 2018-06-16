@@ -31,7 +31,7 @@ public interface ShinryouRepository extends CrudRepository<Shinryou, Integer> {
 		" and (m.validUpto = '0000-00-00' or DATE(v.visitedAt) <= m.validUpto)")
 	List<Object[]> findByVisitIdWithMaster(@Param("visitId") int visitId, Sort sort);
 
-	@Modifying
+	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query("delete from Shinryou s where s.shinryouId in :shinryouIds")
     void batchDelete(@Param("shinryouIds") List<Integer> shinryouIds);
 
@@ -39,4 +39,5 @@ public interface ShinryouRepository extends CrudRepository<Shinryou, Integer> {
 
 	void deleteById(int shinryouId);
 
+	Shinryou findById(int shinryouId);
 }

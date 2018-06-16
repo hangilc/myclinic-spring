@@ -48,6 +48,19 @@ public class ShinryouMasterController {
         }
     }
 
+    @RequestMapping(value="resolve-shinryou-master", method=RequestMethod.GET)
+    public ShinryouMasterDTO resolveShinryouMaster(@RequestParam("shinryoucode") int shinryoucode,
+                                                   @RequestParam("at") String at){
+        LocalDate atDate = convertToDate(at);
+        try {
+            shinryoucode = masterMap.resolveShinryouCode(shinryoucode, atDate);
+            return dbGateway.getShinryouMaster(shinryoucode, atDate);
+        } catch(Exception ex){
+            logger.error("Failed to resolve shinryou master. {}", ex);
+            throw new RuntimeException("診療行為マスターを見つけられませんでした。[" + shinryoucode + "]: " + ex);
+        }
+    }
+
     @RequestMapping(value="/get-shinryou-master", method=RequestMethod.GET)
     public ShinryouMasterDTO getShinryouMaster(@RequestParam("shinryoucode") int shinryoucode,
                                                @RequestParam("at") String at){

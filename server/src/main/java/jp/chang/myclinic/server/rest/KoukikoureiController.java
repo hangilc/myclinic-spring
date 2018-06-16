@@ -47,4 +47,9 @@ public class KoukikoureiController {
 		return dbGateway.findAvailableKoukikourei(patientId, at);
 	}
 
+	@RequestMapping(value="get-koukikourei", method=RequestMethod.GET)
+	public KoukikoureiDTO getKoukikourei(@RequestParam("koukikourei-id") int koukikoureiId){
+		return dbGateway.getKoukikourei(koukikoureiId);
+	}
+
 }

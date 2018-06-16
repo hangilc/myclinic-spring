@@ -1,5 +1,6 @@
 package jp.chang.myclinic.recordbrowser;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -10,15 +11,25 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.recordbrowser.tracking.Dispatcher;
+import jp.chang.myclinic.recordbrowser.tracking.TrackingRoot;
+import jp.chang.myclinic.recordbrowser.tracking.WebsocketClient;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
+import okhttp3.Response;
+import okhttp3.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -39,26 +50,34 @@ public class Main extends Application {
     public static double getYofMainStage(){
         return mainStage.getY();
     }
-    private MainRoot root = new MainRoot();
-    private Repeater repeater;
+    private TrackingRoot root = new TrackingRoot();
+    private WebsocketClient websocketClient;
+    private Dispatcher dispatcher;
+    private ObjectMapper mapper = new ObjectMapper();
+    private String wsUrl;
+    private ScheduledExecutorService timerExecutor = Executors.newSingleThreadScheduledExecutor();
 
     public static void main(String[] args) {
-        if (args.length != 1) {
+        Application.launch(Main.class, args);
+    }
+
+    private void handleArgs(){
+        List<String> args = getParameters().getUnnamed();
+        if (args.size() != 1) {
             logger.error("Usage: mock-client server-url");
             System.exit(1);
         }
-        String serverUrl = args[0];
+        String serverUrl = args.get(0);
         if (!serverUrl.endsWith("/")) {
-            serverUrl = args[0] + "/";
+            serverUrl = serverUrl + "/";
         }
         Service.setServerUrl(serverUrl);
         //Service.setLogBody();
-        Application.launch(Main.class, args);
+        wsUrl = serverUrl.replace("/json/", "/practice-log");
     }
 
     @Override
     public void start(Stage stage) {
-        mainStage = stage;
         stage.showingProperty().addListener((obs, oldValue, newValue) -> {
             if( oldValue && !newValue ) {
                 List<Stage> stages = new ArrayList<>(dependentStages);
@@ -66,39 +85,102 @@ public class Main extends Application {
                 stages.forEach(Stage::close);
             }
         });
+        handleArgs();
         stage.setTitle("診療録閲覧");
         BorderPane pane = new BorderPane();
         pane.setCenter(root);
         pane.setTop(createMenu());
         stage.setScene(new Scene(pane));
-        startRepeater();
+        this.dispatcher = new Dispatcher(root);
+        Thread dispatcherThread = new Thread(dispatcher);
+        dispatcherThread.setDaemon(true);
+        dispatcherThread.start();
+        startWebSocket();
         stage.show();
     }
 
     @Override
     public void stop() throws Exception {
         super.stop();
+        timerExecutor.shutdown();
         OkHttpClient client = Service.client;
         client.dispatcher().executorService().shutdown();
         client.connectionPool().evictAll();
         Cache cache = client.cache();
+        websocketClient.shutdown();
         if (cache != null) {
             cache.close();
         }
+    }
+
+    private void reload(Runnable cb){
+        String today = LocalDate.now().toString();
+        Service.api.listAllPracticeLog(today)
+                .thenAccept(logs -> {
+                    if( logs.size() > 0 ) {
+                        int lastId = logs.get(logs.size() - 1).serialId;
+                        dispatcher.addAll(logs);
+                        probeLogUpdate(3, lastId);
+                    }
+                    cb.run();
+                })
+                .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private void probeLogUpdate(int delaySeconds, int lastSerialId){
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(delaySeconds * 1000);
+                Service.api.listAllPracticeLog(LocalDate.now().toString(), lastSerialId)
+                        .thenAccept(logs -> {
+                            dispatcher.addAll(logs);
+                        })
+                        .exceptionally(HandlerFX::exceptionally);
+            } catch (InterruptedException e) {
+                logger.error("probeLogUpdate failed.", e);
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private void startWebSocket(){
+        if( websocketClient != null ){
+            websocketClient.cancel();
+        }
+        websocketClient = new WebsocketClient(wsUrl){
+            @Override
+            public void onOpen(WebSocket webSocket, Response response) {
+                webSocket.send("hello");
+            }
+
+            @Override
+            protected void onNewMessage(String text){
+                try {
+                    PracticeLogDTO plog = mapper.readValue(text, PracticeLogDTO.class);
+                    if( dispatcher != null ){
+                        dispatcher.add(plog);
+                    }
+                } catch (IOException e) {
+                    logger.error("Cannot parse practice log.", e);
+                }
+            }
+
+            @Override
+            protected void onFail() {
+                logger.info("Web socket failed. Scheduling reconnect at 5 seconds later.");
+                timerExecutor.schedule(() -> {
+                    startWebSocket();
+                }, 5, TimeUnit.SECONDS);
+            }
+        };
+        logger.info("Started web socket");
     }
 
     private MenuBar createMenu() {
         MenuBar mBar = new MenuBar();
         {
             Menu menu = new Menu("選択");
-            {
-                MenuItem item = new MenuItem("本日の診察");
-                item.setOnAction(evt -> {
-                    root.setDate(LocalDate.now());
-                    root.trigger();
-                });
-                menu.getItems().add(item);
-            }
             {
                 MenuItem item = new MenuItem("日付を選択");
                 item.setOnAction(evt -> selectByDate());
@@ -134,8 +216,8 @@ public class Main extends Application {
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.showAndWait();
         dialog.getValue().ifPresent(date -> {
-            root.setDate(date);
-            root.trigger();
+//            root.setDate(date);
+//            root.trigger();
         });
     }
 
@@ -159,23 +241,6 @@ public class Main extends Application {
         SearchByoumeiDialog dialog = new SearchByoumeiDialog();
         Main.setAsChildWindow(dialog);
         dialog.show();
-    }
-
-    private void startRepeater(){
-        repeater = new Repeater(10, () -> {
-            root.trigger();
-        });
-        root.setOnRefreshCallback(() -> repeater.skip());
-        root.setOnSuspendCallback(suspended -> {
-            if( suspended ){
-                repeater.suspend();
-            } else {
-                repeater.unsuspend();
-            }
-        });
-        Thread thread = new Thread(repeater);
-        thread.setDaemon(true);
-        thread.start();
     }
 
 }

@@ -25,7 +25,7 @@ public class PatientController {
 	private static Pattern allDigitsPattern = Pattern.compile("^\\d+$");
 
 	@RequestMapping(value="/get-patient", method=RequestMethod.GET)
-	public PatientDTO getPatient(@RequestParam("patient-id") int patientId){
+	public PatientDTO getPatient(@RequestParam("patient-id") int patientId) throws Exception {
 		return dbGateway.getPatient(patientId);
 	}
 
