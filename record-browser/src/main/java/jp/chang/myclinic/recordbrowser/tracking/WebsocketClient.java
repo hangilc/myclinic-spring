@@ -42,7 +42,7 @@ public class WebsocketClient extends WebSocketListener {
 
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-        System.out.println("WebSocket failed.");
+        onFail();
     }
 
     public void cancel(){
@@ -50,7 +50,10 @@ public class WebsocketClient extends WebSocketListener {
     }
 
     public void shutdown(){
+        websocket.close(1000, "shutdown");
         client.dispatcher().executorService().shutdown();
     }
+
+
 
 }

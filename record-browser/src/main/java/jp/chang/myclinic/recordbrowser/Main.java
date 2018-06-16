@@ -25,6 +25,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -34,6 +37,7 @@ public class Main extends Application {
     private Dispatcher dispatcher;
     private ObjectMapper mapper = new ObjectMapper();
     private String wsUrl;
+    private ScheduledExecutorService timerExecutor = Executors.newSingleThreadScheduledExecutor();
 
     public static void main(String[] args) {
         Application.launch(Main.class, args);
@@ -74,11 +78,13 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
+        timerExecutor.shutdown();
         OkHttpClient client = Service.client;
         client.dispatcher().executorService().shutdown();
         client.connectionPool().evictAll();
         Cache cache = client.cache();
-        websocketClient.cancel();
+        //websocketClient.cancel();
+
         websocketClient.shutdown();
         if (cache != null) {
             cache.close();
@@ -117,6 +123,9 @@ public class Main extends Application {
     }
 
     private void startWebSocket(){
+        if( websocketClient != null ){
+            websocketClient.cancel();
+        }
         websocketClient = new WebsocketClient(wsUrl){
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
@@ -134,7 +143,16 @@ public class Main extends Application {
                     logger.error("Cannot parse practice log.", e);
                 }
             }
+
+            @Override
+            protected void onFail() {
+                logger.info("Web socket failed. Scheduling reconnect at 5 seconds later.");
+                timerExecutor.schedule(() -> {
+                    startWebSocket();
+                }, 5, TimeUnit.SECONDS);
+            }
         };
+        logger.info("Started web socket");
     }
 
     private MenuBar createMenu() {
