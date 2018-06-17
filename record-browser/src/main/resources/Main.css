@@ -22,6 +22,10 @@
     -fx-padding: 2;
 }
 
+.record-title.current-visit {
+    -fx-background-color: #ff9;
+}
+
 .record-scroll {
     -fx-background-color: transparent;
     -fx-padding: 0 4px 0 0;

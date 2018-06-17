@@ -1,11 +1,9 @@
 package jp.chang.myclinic.recordbrowser.tracking.model;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 
@@ -31,6 +29,7 @@ public class Visit {
     private ObservableList<Shinryou> shinryouList = FXCollections.observableArrayList();
     private ObservableList<Conduct> conducts = FXCollections.observableArrayList();
     private Charge charge = new Charge();
+    private IntegerProperty wqueueState = new SimpleIntegerProperty(WqueueWaitState.WaitExam.getCode());
 
     public Visit(VisitDTO visitDTO) {
         this.visitId = visitDTO.visitId;
@@ -175,6 +174,18 @@ public class Visit {
 
     public Charge getCharge() {
         return charge;
+    }
+
+    public int getWqueueState() {
+        return wqueueState.get();
+    }
+
+    public IntegerProperty wqueueStateProperty() {
+        return wqueueState;
+    }
+
+    public void setWqueueState(int wqueueState) {
+        this.wqueueState.set(wqueueState);
     }
 
     private String composeHokenRep(){

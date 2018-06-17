@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.recordbrowser.tracking.model.*;
@@ -19,7 +18,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
 
     private VBox recordList = new VBox();
     private ModelRegistry registry = new ModelRegistry();
-    private String today = LocalDate.now().toString();
+    private LocalDate today = LocalDate.now();
 
     public TrackingRoot() {
         super(2);
@@ -176,6 +175,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
 
     @Override
     public void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated, Runnable cb){
+        Visit visit = registry.getVisit(updated.visitId);
+        if( visit != null ) {
+            visit.setWqueueState(updated.waitState);
+        }
         cb.run();
     }
 
@@ -183,8 +186,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
     public void onVisitCreated(VisitDTO created, Runnable toNext) {
         registry.createVisit(created)
                 .thenAccept(visit -> Platform.runLater(() -> {
-                    Record record = new Record(visit);
-                    recordList.getChildren().add(0, record);
+                    if( visit.getVisitDate().equals(today) ) {
+                        Record record = new Record(visit);
+                        recordList.getChildren().add(0, record);
+                    }
                     toNext.run();
                 }))
                 .exceptionally(HandlerFX::exceptionally);
