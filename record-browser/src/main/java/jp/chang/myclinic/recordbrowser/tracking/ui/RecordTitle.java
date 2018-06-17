@@ -1,13 +1,18 @@
 package jp.chang.myclinic.recordbrowser.tracking.ui;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
+import jp.chang.myclinic.recordbrowser.Main;
+import jp.chang.myclinic.recordbrowser.PatientHistoryDialog;
 import jp.chang.myclinic.recordbrowser.tracking.model.Patient;
 import jp.chang.myclinic.recordbrowser.tracking.model.Visit;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +26,18 @@ class RecordTitle extends TextFlow {
         patientLink.textProperty().bind(
                 Bindings.concat(patient.lastNameProperty(), patient.firstNameProperty())
         );
+        patientLink.getStyleClass().add("patient-link");
+        patientLink.setOnAction(evt -> {
+            Service.api.getPatient(patient.getPatientId())
+                    .thenAccept(patientDTO -> Platform.runLater(() -> {
+                        PatientHistoryDialog dialog = new PatientHistoryDialog(patientDTO);
+                        Main.setAsChildWindow(dialog);
+                        dialog.setX(Main.getXofMainStage() + 40);
+                        dialog.setY(Main.getYofMainStage() + 20);
+                        dialog.show();
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        });
         String s = dateTimeString(visit.getVisitedAt());
         visit.wqueueStateProperty().addListener((obs, oldValue, newValue) -> {
             if( newValue.intValue() == WqueueWaitState.InExam.getCode() ){

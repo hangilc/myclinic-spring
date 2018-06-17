@@ -2,7 +2,6 @@ package jp.chang.myclinic.recordbrowser;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
@@ -66,11 +65,11 @@ class PatientHistoryRoot extends VBox {
         ByPatientNavHandler navHandler = new ByPatientNavHandler(patient);
         navHandler.setPageCallback(this::pageCallback);
         nav.setHandler(navHandler);
-        Button refreshButton = new Button("更新");
-        refreshButton.setOnAction(evt -> nav.trigger());
+        Hyperlink refreshLink = new Hyperlink("更新");
+        refreshLink.setOnAction(evt -> nav.trigger());
         hbox.getChildren().addAll(
                 nav,
-                refreshButton
+                refreshLink
         );
         return hbox;
     }
