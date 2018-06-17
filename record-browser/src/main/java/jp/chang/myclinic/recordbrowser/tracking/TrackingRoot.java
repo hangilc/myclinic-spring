@@ -3,8 +3,10 @@ package jp.chang.myclinic.recordbrowser.tracking;
 import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.ConductKind;
@@ -21,21 +23,20 @@ public class TrackingRoot extends VBox implements DispatchAction {
 
     private VBox recordList = new VBox();
     private StackPane paddingPane = new StackPane();
-    private VBox recordListWrapper = new VBox(0, recordList, paddingPane);
     private ScrollPane recordScroll;
     private ModelRegistry registry = new ModelRegistry();
     private LocalDate today = LocalDate.now();
-
+    private CheckBox syncToCurrentVisitCheck = new CheckBox("診察に固定");
     public TrackingRoot() {
         super(2);
         getStylesheets().add("Main.css");
         getStyleClass().add("app-root");
+        VBox recordListWrapper = new VBox(0, recordList, paddingPane);
         recordScroll = new ScrollPane(recordListWrapper);
         recordScroll.getStyleClass().add("record-scroll");
         recordScroll.setFitToWidth(true);
-        Label mainLabel = new Label("本日の診察（自動更新）");
         getChildren().addAll(
-                mainLabel,
+                mainLabel(),
                 recordScroll
         );
         paddingPane.setMinHeight(0);
@@ -46,8 +47,19 @@ public class TrackingRoot extends VBox implements DispatchAction {
         });
     }
 
-    private void onReloaded() {
-        System.out.println("reloaded");
+    private Node mainLabel(){
+        HBox hbox = new HBox(4);
+        syncToCurrentVisitCheck.setSelected(true);
+        syncToCurrentVisitCheck.selectedProperty().addListener((obs, oldValue, newValue) -> {
+            if( newValue ){
+                scrollToCurrentVisit();
+            }
+        });
+        hbox.getChildren().addAll(
+                new Label("本日の診察（自動更新）"),
+                syncToCurrentVisitCheck
+        );
+        return hbox;
     }
 
     @Override
@@ -198,29 +210,27 @@ public class TrackingRoot extends VBox implements DispatchAction {
     }
 
     private void scrollToCurrentVisit() {
-        Visit visit = registry.getCurrentVisit();
-        if (visit != null) {
-            Record record = findRecord(visit.getVisitId());
-            if (record != null) {
-                double contentHeight = recordList.getBoundsInLocal().getHeight();
-                double minY = record.getBoundsInParent().getMinY();
-                double maxY = record.getBoundsInParent().getMaxY();
-                Bounds view = recordScroll.getViewportBounds();
-                double neededPad = view.getHeight() - (maxY - minY);
-                double available = contentHeight - maxY;
-                double h = 0;
-                if (available < neededPad) {
-                    h = neededPad - available;
+        if( syncToCurrentVisitCheck.isSelected() ) {
+            Visit visit = registry.getCurrentVisit();
+            if (visit != null) {
+                Record record = findRecord(visit.getVisitId());
+                if (record != null) {
+                    double contentHeight = recordList.getBoundsInLocal().getHeight();
+                    double minY = record.getBoundsInParent().getMinY();
+                    double maxY = record.getBoundsInParent().getMaxY();
+                    Bounds view = recordScroll.getViewportBounds();
+                    double neededPad = view.getHeight() - (maxY - minY);
+                    double available = contentHeight - maxY;
+                    double h = 0;
+                    if (available < neededPad) {
+                        h = neededPad - available;
+                    }
+                    paddingPane.setMinHeight(h);
+                    paddingPane.setPrefHeight(h);
+                    paddingPane.setMaxHeight(h);
+                    recordScroll.layout();
+                    recordScroll.setVvalue(recordScroll.getVmax() * (minY / (contentHeight + h - view.getHeight())));
                 }
-                paddingPane.setMinHeight(h);
-                paddingPane.setPrefHeight(h);
-                paddingPane.setMaxHeight(h);
-                recordScroll.layout();
-                final double finalH = h;
-                    recordScroll.setVvalue(recordScroll.getVmax() * (minY / (contentHeight + finalH - view.getHeight())));
-                    //recordScroll.requestLayout();
-                    System.out.println(recordScroll.getVvalue());
-                    System.out.println(recordScroll.getVmax());
             }
         }
     }
