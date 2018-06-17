@@ -68,12 +68,25 @@ public class Dispatcher implements Runnable {
         }
     }
 
+    protected void beforeCatchup(){
+
+    }
+
+    protected void afterCatchup(){
+
+    }
+
     private void catchUp(int lastId, int nextId, PracticeLogDTO nextLog) throws InterruptedException {
         String today = LocalDate.now().toString();
+        boolean needCallback = false;
         try {
             final List<PracticeLogDTO> logs =
                     Service.api.listPracticeLogInRangeCall(today, lastId, nextId).execute().body();
             logs.add(nextLog);
+            if( logs.size() > 6 ){
+                beforeCatchup();
+                needCallback = true;
+            }
             class Local {
                 private int i = 0;
             }
@@ -85,7 +98,13 @@ public class Dispatcher implements Runnable {
                 this.lastId = currentLog.serialId;
                 local.i += 1;
             }
+            if( needCallback ){
+                afterCatchup();
+            }
         } catch (IOException e) {
+            if( needCallback ){
+                afterCatchup();
+            }
             logger.error("Client::listPracticeLogInRange failed.", e);
         }
     }

@@ -45,7 +45,7 @@ public class WebsocketClient extends WebSocketListener {
 
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-        websocket.cancel();
+        websocket.close(1000, "shutdown");
         if( !(timerExecutor.isShutdown() || timerExecutor.isTerminated()) ) {
             logger.error("Reconnecting websocket 5 seconds later.");
             timerExecutor.schedule(() -> {

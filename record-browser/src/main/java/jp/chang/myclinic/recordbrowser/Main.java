@@ -4,11 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
@@ -95,11 +99,23 @@ public class Main extends Application {
                 websocketClient.sendMessage("hello");
             }
         };
-        StackPane stackPane = new StackPane(root);
-        pane.setCenter(stackPane);
+        StackPane centerStackPane = new StackPane(root);
+        pane.setCenter(centerStackPane);
         pane.setTop(createMenu());
         stage.setScene(new Scene(pane));
-        this.dispatcher = new Dispatcher(root);
+        StackPane curtain = new StackPane(new Label("同期中"));
+        curtain.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
+        this.dispatcher = new Dispatcher(root){
+            @Override
+            protected void beforeCatchup() {
+                Platform.runLater(() -> centerStackPane.getChildren().add(curtain));
+            }
+
+            @Override
+            protected void afterCatchup() {
+                Platform.runLater(() -> centerStackPane.getChildren().remove(curtain));
+            }
+        };
         Thread dispatcherThread = new Thread(dispatcher);
         dispatcherThread.setDaemon(true);
         dispatcherThread.start();
@@ -119,13 +135,6 @@ public class Main extends Application {
             cache.close();
         }
         websocketClient.shutdown();
-//        while(true){
-//            Thread.sleep(5*1000);
-//            for(Thread th: Thread.getAllStackTraces().keySet()){
-//                System.out.println(th);
-//            }
-//            System.out.println("---");
-//        }
     }
 
     private void startWebSocket(){
