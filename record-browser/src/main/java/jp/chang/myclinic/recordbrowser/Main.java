@@ -120,37 +120,6 @@ public class Main extends Application {
         }
     }
 
-    private void reload(Runnable cb){
-        String today = LocalDate.now().toString();
-        Service.api.listAllPracticeLog(today)
-                .thenAccept(logs -> {
-                    if( logs.size() > 0 ) {
-                        int lastId = logs.get(logs.size() - 1).serialId;
-                        dispatcher.addAll(logs);
-                        probeLogUpdate(3, lastId);
-                    }
-                    cb.run();
-                })
-                .exceptionally(HandlerFX::exceptionally);
-    }
-
-    private void probeLogUpdate(int delaySeconds, int lastSerialId){
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(delaySeconds * 1000);
-                Service.api.listAllPracticeLog(LocalDate.now().toString(), lastSerialId)
-                        .thenAccept(logs -> {
-                            dispatcher.addAll(logs);
-                        })
-                        .exceptionally(HandlerFX::exceptionally);
-            } catch (InterruptedException e) {
-                logger.error("probeLogUpdate failed.", e);
-            }
-        });
-        thread.setDaemon(true);
-        thread.start();
-    }
-
     private void startWebSocket(){
         if( websocketClient != null ){
             websocketClient.cancel();
@@ -224,8 +193,11 @@ public class Main extends Application {
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.showAndWait();
         dialog.getValue().ifPresent(date -> {
-//            root.setDate(date);
-//            root.trigger();
+            ByDateDialog byDateDialog = new ByDateDialog(date);
+            setAsChildWindow(byDateDialog);
+            byDateDialog.setX(getXofMainStage() + 40);
+            byDateDialog.setY(getYofMainStage() + 20);
+            byDateDialog.show();
         });
     }
 

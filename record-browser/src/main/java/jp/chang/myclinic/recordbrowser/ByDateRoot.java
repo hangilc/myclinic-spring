@@ -2,8 +2,7 @@ package jp.chang.myclinic.recordbrowser;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
@@ -65,19 +64,15 @@ class ByDateRoot extends VBox {
         navHandler.setPageCallback(this::pageCallback);
         nav.setHandler(navHandler);
         mainLabel.setMaxWidth(Double.MAX_VALUE);
-        Button refreshButton = new Button("更新");
-        refreshButton.setOnAction(evt -> {
+        Hyperlink refreshLink = new Hyperlink("更新");
+        refreshLink.setOnAction(evt -> {
             onRefreshCallback.run();
             nav.trigger();
         });
-        CheckBox autoRefreshCheck = new CheckBox("自動更新");
-        autoRefreshCheck.setSelected(true);
-        autoRefreshCheck.setOnAction(evt -> onSuspendCallback.accept(!autoRefreshCheck.isSelected()));
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getChildren().addAll(
                 nav,
-                refreshButton,
-                autoRefreshCheck
+                refreshLink
         );
         return hbox;
     }
