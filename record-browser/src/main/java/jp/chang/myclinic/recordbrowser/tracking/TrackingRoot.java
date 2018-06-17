@@ -1,6 +1,7 @@
 package jp.chang.myclinic.recordbrowser.tracking;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
@@ -17,6 +18,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
     //private static Logger logger = LoggerFactory.getLogger(TrackingRoot.class);
 
     private VBox recordList = new VBox();
+    private ScrollPane recordScroll;
     private ModelRegistry registry = new ModelRegistry();
     private LocalDate today = LocalDate.now();
 
@@ -24,7 +26,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
         super(2);
         getStylesheets().add("Main.css");
         getStyleClass().add("app-root");
-        ScrollPane recordScroll = new ScrollPane(recordList);
+        recordScroll = new ScrollPane(recordList);
         recordScroll.getStyleClass().add("record-scroll");
         recordScroll.setFitToWidth(true);
         Label mainLabel = new Label("本日の診察（自動更新）");
@@ -173,11 +175,36 @@ public class TrackingRoot extends VBox implements DispatchAction {
         toNext.run();
     }
 
+    private Record findRecord(int visitId){
+        for(Node node: recordList.getChildren()){
+            if( node instanceof Record ){
+                Record rec = (Record)node;
+                if( rec.getVisitId() == visitId ){
+                    return rec;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void scrollToCurrentVisit(){
+        Visit visit = registry.getCurrentVisit();
+        if( visit != null ){
+            Record record = findRecord(visit.getVisitId());
+            if( record != null ){
+                double contentHeight = recordScroll.getContent().getBoundsInLocal().getHeight();
+                double y = record.getBoundsInParent().getMaxY();
+                recordScroll.setVvalue(recordScroll.getVmax() * (y / contentHeight));
+            }
+        }
+    }
+
     @Override
     public void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated, Runnable cb){
         Visit visit = registry.getVisit(updated.visitId);
         if( visit != null ) {
             visit.setWqueueState(updated.waitState);
+            scrollToCurrentVisit();
         }
         cb.run();
     }

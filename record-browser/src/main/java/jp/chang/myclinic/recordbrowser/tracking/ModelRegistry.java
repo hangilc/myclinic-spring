@@ -1,6 +1,7 @@
 package jp.chang.myclinic.recordbrowser.tracking;
 
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.recordbrowser.tracking.model.*;
 
@@ -84,6 +85,15 @@ class ModelRegistry {
 
     public Visit getVisit(int visitId) {
         return visitRegistry.get(visitId);
+    }
+
+    public Visit getCurrentVisit(){
+        for(Visit visit: visitRegistry.values()){
+            if( visit.getWqueueState() == WqueueWaitState.InExam.getCode() ){
+                return visit;
+            }
+        }
+        return null;
     }
 
     public CompletableFuture<Patient> getPatient(int patientId) {

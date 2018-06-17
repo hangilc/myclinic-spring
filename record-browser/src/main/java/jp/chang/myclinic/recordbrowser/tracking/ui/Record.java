@@ -5,22 +5,21 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.recordbrowser.tracking.model.*;
 import jp.chang.myclinic.utilfx.TwoColumn;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Record extends VBox {
 
+    private int visitId;
     private TwoColumn body = new TwoColumn(4);
     private VBox drugBox = new VBox();
     private VBox shinryouBox = new VBox();
     private VBox conductBox = new VBox();
-    private List<RecordShinryou> shinryouList = new ArrayList<>();
-    private List<RecordConduct> conducts = new ArrayList<>();
 
     public Record(Visit visit){
+        this.visitId = visit.getVisitId();
+        body.getStyleClass().add("record-body");
         getChildren().addAll(
                 new RecordTitle(visit),
                 body
@@ -31,6 +30,17 @@ public class Record extends VBox {
         bindDrug(visit);
         bindShinryou(visit);
         bindConduct(visit);
+        visit.wqueueStateProperty().addListener((obs, oldValue, newValue) -> {
+            if( newValue.intValue() == WqueueWaitState.InExam.getCode() ){
+                body.getStyleClass().add("current-visit");
+            } else {
+                body.getStyleClass().removeAll("current-visit");
+            }
+        });
+    }
+
+    public int getVisitId() {
+        return visitId;
     }
 
     private void bindText(Visit visit){
