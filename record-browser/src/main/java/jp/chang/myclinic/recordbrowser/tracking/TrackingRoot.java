@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.ConductKind;
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.recordbrowser.tracking.model.*;
 import jp.chang.myclinic.recordbrowser.tracking.ui.Record;
@@ -249,7 +250,13 @@ public class TrackingRoot extends VBox implements DispatchAction {
         Visit visit = registry.getVisit(updated.visitId);
         if (visit != null) {
             visit.setWqueueState(updated.waitState);
-            scrollToCurrentVisit();
+            if( updated.waitState == WqueueWaitState.InExam.getCode() ) {
+                scrollToCurrentVisit();
+            } else {
+                if( syncToCurrentVisitCheck.isSelected() ) {
+                    recordScroll.setVvalue(0);
+                }
+            }
         }
         cb.run();
     }
