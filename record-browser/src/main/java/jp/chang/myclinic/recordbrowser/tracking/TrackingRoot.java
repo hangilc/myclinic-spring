@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
@@ -27,6 +28,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
     private ModelRegistry registry = new ModelRegistry();
     private LocalDate today = LocalDate.now();
     private CheckBox syncToCurrentVisitCheck = new CheckBox("診察に固定");
+
     public TrackingRoot() {
         super(2);
         getStylesheets().add("Main.css");
@@ -47,6 +49,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
         });
     }
 
+    protected void onRefreshRequest(){
+
+    }
+
     private Node mainLabel(){
         HBox hbox = new HBox(4);
         syncToCurrentVisitCheck.setSelected(true);
@@ -55,9 +61,12 @@ public class TrackingRoot extends VBox implements DispatchAction {
                 scrollToCurrentVisit();
             }
         });
+        Hyperlink refreshLink = new Hyperlink("手動更新");
+        refreshLink.setOnAction(evt -> onRefreshRequest());
         hbox.getChildren().addAll(
                 new Label("本日の診察（自動更新）"),
-                syncToCurrentVisitCheck
+                syncToCurrentVisitCheck,
+                refreshLink
         );
         return hbox;
     }

@@ -50,7 +50,7 @@ public class Main extends Application {
     public static double getYofMainStage(){
         return mainStage.getY();
     }
-    private TrackingRoot root = new TrackingRoot();
+    private TrackingRoot root;
     private WebsocketClient websocketClient;
     private Dispatcher dispatcher;
     private ObjectMapper mapper = new ObjectMapper();
@@ -78,6 +78,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        mainStage = stage;
         stage.showingProperty().addListener((obs, oldValue, newValue) -> {
             if( oldValue && !newValue ) {
                 List<Stage> stages = new ArrayList<>(dependentStages);
@@ -88,6 +89,12 @@ public class Main extends Application {
         handleArgs();
         stage.setTitle("診療録閲覧");
         BorderPane pane = new BorderPane();
+        root = new TrackingRoot(){
+            @Override
+            protected void onRefreshRequest() {
+                websocketClient.sendMessage("hello");
+            }
+        };
         pane.setCenter(root);
         pane.setTop(createMenu());
         stage.setScene(new Scene(pane));
@@ -156,6 +163,7 @@ public class Main extends Application {
 
             @Override
             protected void onNewMessage(String text){
+                System.out.println(text);
                 try {
                     PracticeLogDTO plog = mapper.readValue(text, PracticeLogDTO.class);
                     if( dispatcher != null ){

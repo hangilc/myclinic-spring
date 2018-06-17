@@ -45,6 +45,10 @@ public class WebsocketClient extends WebSocketListener {
         onFail();
     }
 
+    public void sendMessage(String message){
+        websocket.send(message);
+    }
+
     public void cancel(){
         websocket.cancel();
     }
