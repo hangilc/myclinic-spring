@@ -13,6 +13,6 @@ function copyModule($module){
     copy $src $dst
 }
 
-$modules = "server", "hotline", "reception", "practice", "intraclinic", "pharma"
+$modules = "server", "hotline", "reception", "practice", "intraclinic", "pharma", "record-browser", "scanner"
 $modules | %{ copyModule $_ }
 copy-item "./config" -destination "$dstDir/config" -recurse -exclude "*.git"
