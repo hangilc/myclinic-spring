@@ -8,6 +8,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
@@ -29,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -50,7 +50,7 @@ public class Main extends Application {
     public static double getYofMainStage(){
         return mainStage.getY();
     }
-    private TrackingRoot root;
+
     private WebsocketClient websocketClient;
     private Dispatcher dispatcher;
     private ObjectMapper mapper = new ObjectMapper();
@@ -89,13 +89,14 @@ public class Main extends Application {
         handleArgs();
         stage.setTitle("診療録閲覧");
         BorderPane pane = new BorderPane();
-        root = new TrackingRoot(){
+        TrackingRoot root = new TrackingRoot() {
             @Override
             protected void onRefreshRequest() {
                 websocketClient.sendMessage("hello");
             }
         };
-        pane.setCenter(root);
+        StackPane stackPane = new StackPane(root);
+        pane.setCenter(stackPane);
         pane.setTop(createMenu());
         stage.setScene(new Scene(pane));
         this.dispatcher = new Dispatcher(root);
@@ -109,22 +110,26 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        timerExecutor.shutdown();
+        timerExecutor.shutdownNow();
         OkHttpClient client = Service.client;
         client.dispatcher().executorService().shutdown();
         client.connectionPool().evictAll();
         Cache cache = client.cache();
-        websocketClient.shutdown();
         if (cache != null) {
             cache.close();
         }
+        websocketClient.shutdown();
+//        while(true){
+//            Thread.sleep(5*1000);
+//            for(Thread th: Thread.getAllStackTraces().keySet()){
+//                System.out.println(th);
+//            }
+//            System.out.println("---");
+//        }
     }
 
     private void startWebSocket(){
-        if( websocketClient != null ){
-            websocketClient.cancel();
-        }
-        websocketClient = new WebsocketClient(wsUrl){
+        websocketClient = new WebsocketClient(wsUrl, timerExecutor){
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 webSocket.send("hello");
@@ -143,13 +148,6 @@ public class Main extends Application {
                 }
             }
 
-            @Override
-            protected void onFail() {
-                logger.info("Web socket failed. Scheduling reconnect at 5 seconds later.");
-                timerExecutor.schedule(() -> {
-                    startWebSocket();
-                }, 5, TimeUnit.SECONDS);
-            }
         };
         logger.info("Started web socket");
     }

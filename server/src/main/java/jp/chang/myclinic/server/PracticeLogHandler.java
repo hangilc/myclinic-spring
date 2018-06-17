@@ -30,7 +30,6 @@ public class PracticeLogHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         if( lastMessage != null ){
             session.sendMessage(lastMessage);
-            logger.info("sent text message: {}", lastMessage);
         }
     }
 
@@ -40,7 +39,6 @@ public class PracticeLogHandler extends TextWebSocketHandler {
             sess.sendMessage(message);
         }
         this.lastMessage = message;
-        logger.info("set lastMessage: {}", message);
     }
 
     @Override
