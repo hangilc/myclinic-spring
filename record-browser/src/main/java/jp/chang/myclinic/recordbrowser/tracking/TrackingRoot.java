@@ -225,6 +225,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
             if (visit != null) {
                 Record record = findRecord(visit.getVisitId());
                 if (record != null) {
+                    recordScroll.layout();
                     double contentHeight = recordList.getBoundsInLocal().getHeight();
                     double minY = record.getBoundsInParent().getMinY();
                     double maxY = record.getBoundsInParent().getMaxY();
