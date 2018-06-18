@@ -35,9 +35,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
         super(2);
         getStylesheets().add("Main.css");
         getStyleClass().add("app-root");
-        paddingPane.setMinHeight(0);
         paddingPane.setPrefHeight(0);
-        paddingPane.setMaxHeight(0);
         recordListWrapper = new VBox(0, recordList, paddingPane);
         VBox.setVgrow(recordList, Priority.NEVER);
         VBox.setVgrow(paddingPane, Priority.NEVER);
@@ -49,9 +47,6 @@ public class TrackingRoot extends VBox implements DispatchAction {
                 mainLabel(),
                 recordScroll
         );
-//        recordList.heightProperty().addListener((obs, oldValue, newValue) -> {
-//            scrollToCurrentVisit();
-//        });
     }
 
     protected void onRefreshRequest() {
@@ -63,7 +58,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
         syncToCurrentVisitCheck.setSelected(true);
         syncToCurrentVisitCheck.selectedProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue) {
-                scrollToCurrentVisit();
+                scrollToCurrentVisit(() -> {});
             }
         });
         Hyperlink refreshLink = new Hyperlink("手動更新");
@@ -223,13 +218,12 @@ public class TrackingRoot extends VBox implements DispatchAction {
         return null;
     }
 
-    private void scrollToCurrentVisit() {
+    private void scrollToCurrentVisit(Runnable cb) {
         if (syncToCurrentVisitCheck.isSelected()) {
             Visit visit = registry.getCurrentVisit();
             if (visit != null) {
                 Record record = findRecord(visit.getVisitId());
                 if (record != null) {
-                    recordScroll.layout();
                     System.err.println("record height: " + record.getHeight());
                     double contentHeight = recordList.getBoundsInLocal().getHeight();
                     System.err.println("contentHeight: " + contentHeight);
@@ -245,14 +239,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                         h = neededPad - available;
                     }
                     System.err.println("h: " + h);
-                    recordListWrapper.getChildren().remove(paddingPane);
-                    paddingPane = new Label();
                     paddingPane.setPrefHeight(h);
-                    //recordListWrapper.getChildren().add(paddingPane);
-                    recordListWrapper.getChildren().clear();
-                    //recordListWrapper.getChildren().add(paddingPane);
-                    recordListWrapper.layout();
-                    recordListWrapper.getParent().layout();
                     Platform.runLater(() -> {
                         System.err.println("padding height: " + paddingPane.getHeight());
                         System.err.println("wrapper height: " + recordListWrapper.getHeight());
@@ -266,6 +253,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                             }
                         }
                         System.err.println(recordListWrapper.getBorder());
+                        cb.run();
                     });
 //                    paddingPane.layout();
 //                    recordListWrapper.layout();
@@ -298,14 +286,11 @@ public class TrackingRoot extends VBox implements DispatchAction {
         if (visit != null) {
             visit.setWqueueState(updated.waitState);
             if (updated.waitState == WqueueWaitState.InExam.getCode()) {
-                scrollToCurrentVisit();
-            } else if (prev.waitState == WqueueWaitState.InExam.getCode()) {
-                if (syncToCurrentVisitCheck.isSelected()) {
-                    //recordScroll.setVvalue(0);
-                }
+                Platform.runLater(() -> scrollToCurrentVisit(cb));
+            } else {
+                cb.run();
             }
         }
-        cb.run();
     }
 
     @Override
@@ -315,8 +300,13 @@ public class TrackingRoot extends VBox implements DispatchAction {
                     if (visit.getVisitDate().equals(today)) {
                         Record record = new Record(visit);
                         recordList.getChildren().add(0, record);
+                        recordList.getParent().applyCss();
+                        recordList.getParent().layout();
+                        System.err.println("Record height: " + record.getBoundsInParent().getHeight());
+                        System.err.println("Title height: " + record.getTitle().getHeight());
+                        System.err.println("Body height: " + record.getBody().getHeight());
+                        // toNext.run();
                     }
-                    toNext.run();
                 }))
                 .exceptionally(HandlerFX::exceptionally);
     }

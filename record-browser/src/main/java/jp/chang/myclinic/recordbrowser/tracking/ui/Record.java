@@ -12,6 +12,7 @@ import jp.chang.myclinic.utilfx.TwoColumn;
 public class Record extends VBox {
 
     private int visitId;
+    private RecordTitle title;
     private TwoColumn body = new TwoColumn(4);
     private VBox drugBox = new VBox();
     private VBox shinryouBox = new VBox();
@@ -19,9 +20,10 @@ public class Record extends VBox {
 
     public Record(Visit visit){
         this.visitId = visit.getVisitId();
+        title = new RecordTitle(visit);
         body.getStyleClass().add("record-body");
         getChildren().addAll(
-                new RecordTitle(visit),
+                title,
                 body
         );
         addHoken(visit);
@@ -37,6 +39,14 @@ public class Record extends VBox {
                 body.getStyleClass().removeAll("current-visit");
             }
         });
+    }
+
+    public RecordTitle getTitle() {
+        return title;
+    }
+
+    public TwoColumn getBody() {
+        return body;
     }
 
     public int getVisitId() {

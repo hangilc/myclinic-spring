@@ -16,7 +16,7 @@ import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.time.LocalDateTime;
 
-class RecordTitle extends TextFlow {
+public class RecordTitle extends TextFlow {
 
     RecordTitle(Visit visit){
         getStyleClass().add("record-title");
