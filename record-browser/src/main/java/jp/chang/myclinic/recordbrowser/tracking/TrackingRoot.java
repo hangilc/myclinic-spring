@@ -224,6 +224,8 @@ public class TrackingRoot extends VBox implements DispatchAction {
             if (visit != null) {
                 Record record = findRecord(visit.getVisitId());
                 if (record != null) {
+                    recordScroll.applyCss();
+                    recordScroll.layout();
                     System.err.println("record height: " + record.getHeight());
                     double contentHeight = recordList.getBoundsInLocal().getHeight();
                     System.err.println("contentHeight: " + contentHeight);
@@ -300,12 +302,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                     if (visit.getVisitDate().equals(today)) {
                         Record record = new Record(visit);
                         recordList.getChildren().add(0, record);
-                        recordList.getParent().applyCss();
-                        recordList.getParent().layout();
-                        System.err.println("Record height: " + record.getBoundsInParent().getHeight());
-                        System.err.println("Title height: " + record.getTitle().getHeight());
-                        System.err.println("Body height: " + record.getBody().getHeight());
-                        // toNext.run();
+                        toNext.run();
                     }
                 }))
                 .exceptionally(HandlerFX::exceptionally);
