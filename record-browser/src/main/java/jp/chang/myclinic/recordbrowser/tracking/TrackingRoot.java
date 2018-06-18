@@ -8,7 +8,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.WqueueWaitState;
@@ -24,41 +24,45 @@ public class TrackingRoot extends VBox implements DispatchAction {
     //private static Logger logger = LoggerFactory.getLogger(TrackingRoot.class);
 
     private VBox recordList = new VBox();
-    private StackPane paddingPane = new StackPane();
+    private Label paddingPane = new Label();
     private ScrollPane recordScroll;
     private ModelRegistry registry = new ModelRegistry();
     private LocalDate today = LocalDate.now();
     private CheckBox syncToCurrentVisitCheck = new CheckBox("診察に固定");
+    private VBox recordListWrapper;
 
     public TrackingRoot() {
         super(2);
         getStylesheets().add("Main.css");
         getStyleClass().add("app-root");
-        VBox recordListWrapper = new VBox(0, recordList, paddingPane);
+        paddingPane.setMinHeight(0);
+        paddingPane.setPrefHeight(0);
+        paddingPane.setMaxHeight(0);
+        recordListWrapper = new VBox(0, recordList, paddingPane);
+        VBox.setVgrow(recordList, Priority.NEVER);
+        VBox.setVgrow(paddingPane, Priority.NEVER);
         recordScroll = new ScrollPane(recordListWrapper);
         recordScroll.getStyleClass().add("record-scroll");
         recordScroll.setFitToWidth(true);
+        VBox.setVgrow(recordScroll, Priority.ALWAYS);
         getChildren().addAll(
                 mainLabel(),
                 recordScroll
         );
-        paddingPane.setMinHeight(0);
-        paddingPane.setPrefHeight(0);
-        paddingPane.setMaxHeight(0);
-        recordList.heightProperty().addListener((obs, oldValue, newValue) -> {
-            scrollToCurrentVisit();
-        });
+//        recordList.heightProperty().addListener((obs, oldValue, newValue) -> {
+//            scrollToCurrentVisit();
+//        });
     }
 
-    protected void onRefreshRequest(){
+    protected void onRefreshRequest() {
 
     }
 
-    private Node mainLabel(){
+    private Node mainLabel() {
         HBox hbox = new HBox(4);
         syncToCurrentVisitCheck.setSelected(true);
         syncToCurrentVisitCheck.selectedProperty().addListener((obs, oldValue, newValue) -> {
-            if( newValue ){
+            if (newValue) {
                 scrollToCurrentVisit();
             }
         });
@@ -220,27 +224,69 @@ public class TrackingRoot extends VBox implements DispatchAction {
     }
 
     private void scrollToCurrentVisit() {
-        if( syncToCurrentVisitCheck.isSelected() ) {
+        if (syncToCurrentVisitCheck.isSelected()) {
             Visit visit = registry.getCurrentVisit();
             if (visit != null) {
                 Record record = findRecord(visit.getVisitId());
                 if (record != null) {
                     recordScroll.layout();
+                    System.err.println("record height: " + record.getHeight());
                     double contentHeight = recordList.getBoundsInLocal().getHeight();
-                    double minY = record.getBoundsInParent().getMinY();
-                    double maxY = record.getBoundsInParent().getMaxY();
+                    System.err.println("contentHeight: " + contentHeight);
+                    double minY = record.getBoundsInLocal().getMinY();
+                    double maxY = record.getBoundsInLocal().getMaxY();
+                    System.err.printf("minY %g; maxY %g\n", minY, maxY);
                     Bounds view = recordScroll.getViewportBounds();
+                    System.err.println("viewHeight: " + view.getHeight());
                     double neededPad = view.getHeight() - (maxY - minY);
                     double available = contentHeight - maxY;
                     double h = 0;
                     if (available < neededPad) {
                         h = neededPad - available;
                     }
-                    paddingPane.setMinHeight(h);
+                    System.err.println("h: " + h);
+                    recordListWrapper.getChildren().remove(paddingPane);
+                    paddingPane = new Label();
                     paddingPane.setPrefHeight(h);
-                    paddingPane.setMaxHeight(h);
-                    recordScroll.layout();
-                    recordScroll.setVvalue(recordScroll.getVmax() * (minY / (contentHeight + h - view.getHeight())));
+                    //recordListWrapper.getChildren().add(paddingPane);
+                    recordListWrapper.getChildren().clear();
+                    //recordListWrapper.getChildren().add(paddingPane);
+                    recordListWrapper.layout();
+                    recordListWrapper.getParent().layout();
+                    Platform.runLater(() -> {
+                        System.err.println("padding height: " + paddingPane.getHeight());
+                        System.err.println("wrapper height: " + recordListWrapper.getHeight());
+                        System.err.println("children: " + recordListWrapper.getChildren().size());
+                        for(Node node: recordListWrapper.getChildren()){
+                            if( node instanceof VBox ){
+                                System.err.println(((VBox)node).getBoundsInLocal().getHeight());
+                            }
+                            if( node instanceof Label ){
+                                System.err.println(((Label)node).getBoundsInLocal().getHeight());
+                            }
+                        }
+                        System.err.println(recordListWrapper.getBorder());
+                    });
+//                    paddingPane.layout();
+//                    recordListWrapper.layout();
+//                    recordScroll.layout();
+//                    recordScroll.getParent().layout();
+//                    if (recordScroll.getContent().getBoundsInLocal().getHeight() !=
+//                            (contentHeight + h)) {
+//                        System.err.println("scrollpane height" + recordScroll.getHeight());
+//                        System.err.println("viewport height" + recordScroll.getViewportBounds().getHeight());
+//                        System.err.println("contentHeight: " + contentHeight);
+//                        System.err.println("minY: " + minY);
+//                        System.err.println("maxY: " + maxY);
+//                        System.err.println("h: " + h);
+//                        System.err.println("paddingPane height: " + paddingPane.getHeight());
+//                        System.err.println("paddingPane bounds height: " + paddingPane.getBoundsInLocal().getHeight());
+//                        System.err.println("adjusted height: " + recordScroll.getContent().getBoundsInLocal().getHeight());
+//                        System.err.println("wrapper height: " + recordListWrapper.getHeight());
+//                        System.err.println("wrapper bounds height: " + recordListWrapper.getBoundsInLocal().getHeight());
+//                        System.err.println("------");
+//                    }
+//                    recordScroll.setVvalue(recordScroll.getVmax() * (minY / (contentHeight + h - view.getHeight())));
                 }
             }
         }
@@ -251,11 +297,11 @@ public class TrackingRoot extends VBox implements DispatchAction {
         Visit visit = registry.getVisit(updated.visitId);
         if (visit != null) {
             visit.setWqueueState(updated.waitState);
-            if( updated.waitState == WqueueWaitState.InExam.getCode() ) {
+            if (updated.waitState == WqueueWaitState.InExam.getCode()) {
                 scrollToCurrentVisit();
-            } else {
-                if( syncToCurrentVisitCheck.isSelected() ) {
-                    recordScroll.setVvalue(0);
+            } else if (prev.waitState == WqueueWaitState.InExam.getCode()) {
+                if (syncToCurrentVisitCheck.isSelected()) {
+                    //recordScroll.setVvalue(0);
                 }
             }
         }
