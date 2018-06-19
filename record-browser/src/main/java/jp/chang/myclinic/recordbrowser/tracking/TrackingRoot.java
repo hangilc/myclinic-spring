@@ -58,7 +58,8 @@ public class TrackingRoot extends VBox implements DispatchAction {
         syncToCurrentVisitCheck.setSelected(true);
         syncToCurrentVisitCheck.selectedProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue) {
-                scrollToCurrentVisit(() -> {});
+                scrollToCurrentVisit(() -> {
+                });
             }
         });
         Hyperlink refreshLink = new Hyperlink("手動更新");
@@ -246,12 +247,12 @@ public class TrackingRoot extends VBox implements DispatchAction {
                         System.err.println("padding height: " + paddingPane.getHeight());
                         System.err.println("wrapper height: " + recordListWrapper.getHeight());
                         System.err.println("children: " + recordListWrapper.getChildren().size());
-                        for(Node node: recordListWrapper.getChildren()){
-                            if( node instanceof VBox ){
-                                System.err.println(((VBox)node).getBoundsInLocal().getHeight());
+                        for (Node node : recordListWrapper.getChildren()) {
+                            if (node instanceof VBox) {
+                                System.err.println(((VBox) node).getBoundsInLocal().getHeight());
                             }
-                            if( node instanceof Label ){
-                                System.err.println(((Label)node).getBoundsInLocal().getHeight());
+                            if (node instanceof Label) {
+                                System.err.println(((Label) node).getBoundsInLocal().getHeight());
                             }
                         }
                         System.err.println(recordListWrapper.getBorder());
@@ -302,7 +303,13 @@ public class TrackingRoot extends VBox implements DispatchAction {
                     if (visit.getVisitDate().equals(today)) {
                         Record record = new Record(visit);
                         recordList.getChildren().add(0, record);
-                        toNext.run();
+                        recordList.applyCss();
+                        recordList.layout();
+                        //record.adjustWidth(record.getBody().getRightBox().getWidth());
+                        recordList.getParent().applyCss();
+                        recordList.getParent().layout();
+                        System.err.println("body: " + record.getBody().getHeight());
+                        //toNext.run();
                     }
                 }))
                 .exceptionally(HandlerFX::exceptionally);
