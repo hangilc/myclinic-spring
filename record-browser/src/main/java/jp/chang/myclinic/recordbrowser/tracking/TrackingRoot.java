@@ -233,51 +233,24 @@ public class TrackingRoot extends VBox implements DispatchAction {
             if (visit != null) {
                 Record record = findRecord(visit.getVisitId());
                 if (record != null) {
-                    System.err.println("record height: " + record.getHeight());
-                    System.err.println("record visitId: " + record.getVisitId());
                     double contentHeight = recordList.getBoundsInLocal().getHeight();
-                    System.err.println("contentHeight: " + contentHeight);
                     double minY = record.getBoundsInParent().getMinY();
                     double maxY = record.getBoundsInParent().getMaxY();
-                    for(Node node: recordList.getChildren()){
-                        if( node instanceof Record){
-                            Record rec = (Record)node;
-                            System.err.printf("Record (%d) yMin %g; yMax %g\n",
-                                    rec.getVisitId(),
-                                    rec.getBoundsInParent().getMinY(),
-                                    rec.getBoundsInParent().getMaxY());
-                        }
-                    }
-                    System.err.printf("minY %g; maxY %g\n", minY, maxY);
                     Bounds view = recordScroll.getViewportBounds();
-                    System.err.println("viewHeight: " + view.getHeight());
                     double neededPad = view.getHeight() - (maxY - minY);
                     double available = contentHeight - maxY;
                     double h = 0;
                     if (available < neededPad) {
                         h = neededPad - available;
                     }
-                    System.err.println("h: " + h);
                     paddingPane.setPrefHeight(h);
                     updateUI(1);
-                    System.err.println("padding height: " + paddingPane.getHeight());
-                    System.err.println("wrapper height: " + recordListWrapper.getHeight());
-                    System.err.println("children: " + recordListWrapper.getChildren().size());
-                    for (Node node : recordListWrapper.getChildren()) {
-                        if (node instanceof VBox) {
-                            System.err.println(((VBox) node).getBoundsInLocal().getHeight());
-                        }
-                        if (node instanceof Label) {
-                            System.err.println(((Label) node).getBoundsInLocal().getHeight());
-                        }
-                    }
                     double vValue;
                     if( minY == 0 ){
                         vValue = 0;
                     } else {
                         vValue = minY / (contentHeight + h - view.getHeight());
                     }
-                    System.err.println("vValue: " + vValue);
                     recordScroll.setVvalue(vValue);
                     cb.run();
                 }
@@ -295,7 +268,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
         if (visit != null) {
             visit.setWqueueState(updated.waitState);
             if (updated.waitState == WqueueWaitState.InExam.getCode()) {
-                scrollToCurrentVisit(0, cb);
+                scrollToCurrentVisit(1, cb);
             } else {
                 cb.run();
             }
@@ -359,7 +332,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                 text.setContent(updated.content);
             }
         }
-        cb.run();
+        scrollToCurrentVisit(2, cb);
     }
 
     @Override
@@ -371,7 +344,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                 visit.getTexts().remove(text);
             }
         }
-        cb.run();
+        scrollToCurrentVisit(1, cb);
     }
 
     @Override
@@ -382,9 +355,11 @@ public class TrackingRoot extends VBox implements DispatchAction {
                     .thenAccept(master -> Platform.runLater(() -> {
                         Drug drug = new Drug(drugDTO, master);
                         visit.getDrugs().add(drug);
-                        cb.run();
+                        scrollToCurrentVisit(2, cb);
                     }))
                     .exceptionally(HandlerFX::exceptionally);
+        } else {
+            cb.run();
         }
     }
 
@@ -397,10 +372,12 @@ public class TrackingRoot extends VBox implements DispatchAction {
                 registry.getIyakuhinMaster(updated.iyakuhincode)
                         .thenAccept(master -> {
                             drug.updateRep(updated, master);
-                            cb.run();
+                            scrollToCurrentVisit(2, cb);
                         })
                         .exceptionally(HandlerFX::exceptionally);
             }
+        } else {
+            cb.run();
         }
     }
 
@@ -411,8 +388,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
             Drug drug = visit.getDrug(deleted.drugId);
             if (drug != null) {
                 visit.getDrugs().remove(drug);
-                cb.run();
+                scrollToCurrentVisit(1, cb);
             }
+        } else {
+            cb.run();
         }
     }
 
