@@ -20,7 +20,6 @@ public class PracticeLogger implements InitializingBean {
 
     private static Logger logger = LoggerFactory.getLogger(PracticeLogger.class);
     private static ObjectMapper mapper = new ObjectMapper();
-    private LocalDate at = LocalDate.now();
     @Autowired
     private DbGateway dbGateway;
     @Autowired
@@ -55,6 +54,7 @@ public class PracticeLogger implements InitializingBean {
 
     @Transactional
     private void saveLog(String kind, String body) {
+        LocalDate at = LocalDate.now();
         PracticeLog practiceLog = dbGateway.insertPracticeLog(at, kind, body);
         PracticeLogDTO dto = new PracticeLogDTO();
         dto.serialId = practiceLog.getPracticeLogId();

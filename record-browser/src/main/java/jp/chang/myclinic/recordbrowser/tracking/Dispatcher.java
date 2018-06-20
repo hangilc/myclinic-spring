@@ -117,9 +117,14 @@ public class Dispatcher implements Runnable {
                     action.onVisitCreated(body.created, toNext);
                     break;
                 }
+                case "visit-deleted": {
+                    VisitDeleted body = mapper.readValue(log.body, VisitDeleted.class);
+                    action.onVisitDeleted(body.deleted, toNext);
+                    break;
+                }
                 case "text-created": {
                     TextCreated body = mapper.readValue(log.body, TextCreated.class);
-                    action.onTextCreated(body.text, toNext);
+                    action.onTextCreated(body.created, toNext);
                     break;
                 }
                 case "text-updated": {

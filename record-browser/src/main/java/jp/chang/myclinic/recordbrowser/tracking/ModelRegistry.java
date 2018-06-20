@@ -46,6 +46,13 @@ class ModelRegistry {
                 });
     }
 
+    public void deleteVisit(int visitId){
+        Visit visit = visitRegistry.get(visitId);
+        if( visit != null ){
+            visitRegistry.remove(visit);
+        }
+    }
+
     public CompletableFuture<Void> updateHoken(Visit visit, VisitDTO updated) {
         return updateShahokokuho(visit, updated.shahokokuhoId)
                 .thenCompose(result -> updateKoukikourei(visit, updated.koukikoureiId))

@@ -304,7 +304,6 @@ public class TrackingRoot extends VBox implements DispatchAction {
 
     @Override
     public void onVisitCreated(VisitDTO created, Runnable toNext) {
-        System.out.println("visit created: " + created.visitId);
         if (created.visitedAt.substring(0, 10).equals(today)) {
             registry.createVisit(created)
                     .thenAccept(visit -> Platform.runLater(() -> {
@@ -313,6 +312,28 @@ public class TrackingRoot extends VBox implements DispatchAction {
                         scrollToCurrentVisit(2, toNext);
                     }))
                     .exceptionally(HandlerFX::exceptionally);
+        } else {
+            toNext.run();
+        }
+    }
+
+    @Override
+    public void onVisitDeleted(VisitDTO deleted, Runnable toNext) {
+        int visitId = deleted.visitId;
+        registry.deleteVisit(visitId);
+        Record rec = null;
+        for(Node node: recordList.getChildren()){
+            if( node instanceof Record ){
+                Record r = (Record)node;
+                if( r.getVisitId() == visitId ){
+                    rec = r;
+                    break;
+                }
+            }
+        }
+        if( rec != null ){
+            recordList.getChildren().remove(rec);
+            scrollToCurrentVisit(1, toNext);
         } else {
             toNext.run();
         }

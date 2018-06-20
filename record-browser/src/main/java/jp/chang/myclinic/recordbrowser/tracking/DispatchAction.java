@@ -4,6 +4,7 @@ import jp.chang.myclinic.dto.*;
 
 public interface DispatchAction {
     default void onVisitCreated(VisitDTO created, Runnable toNext){ toNext.run(); }
+    default void onVisitDeleted(VisitDTO deleted, Runnable toNext){ toNext.run(); }
     default void onTextCreated(TextDTO text, Runnable cb){ cb.run(); }
     default void onTextUpdated(TextDTO prev, TextDTO updated, Runnable cb){ cb.run(); }
     default void onTextDeleted(TextDTO deleted, Runnable cb){ cb.run(); }
