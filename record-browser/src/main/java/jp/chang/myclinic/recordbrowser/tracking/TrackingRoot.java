@@ -205,8 +205,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
         Visit visit = registry.getVisit(created.visitId);
         if (visit != null) {
             visit.getCharge().setValue(created.charge);
+            scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
         }
-        toNext.run();
     }
 
     @Override
@@ -214,8 +216,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
         Visit visit = registry.getVisit(updated.visitId);
         if (visit != null) {
             visit.getCharge().setValue(updated.charge);
+            scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
         }
-        toNext.run();
     }
 
     @Override
@@ -223,8 +227,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
         Visit visit = registry.getVisit(created.visitId);
         if (visit != null) {
             visit.getCharge().setPayment(created.amount);
+            scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
         }
-        toNext.run();
     }
 
     private Record findRecord(int visitId) {
@@ -293,6 +299,9 @@ public class TrackingRoot extends VBox implements DispatchAction {
             visit.setWqueueState(updated.waitState);
             if (updated.waitState == WqueueWaitState.InExam.getCode()) {
                 scrollToCurrentVisit(2, cb);
+            } else if( prev.waitState == WqueueWaitState.InExam.getCode() ){
+                recordScroll.setVvalue(0);
+                cb.run();
             } else {
                 cb.run();
             }
