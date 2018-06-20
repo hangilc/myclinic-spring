@@ -7,12 +7,10 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import jp.chang.myclinic.pharma.tracker.DispatchAction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MainScene extends HBox implements DispatchAction {
 
-    private static Logger logger = LoggerFactory.getLogger(MainScene.class);
+    //private static Logger logger = LoggerFactory.getLogger(MainScene.class);
     private LeftColumn leftColumn;
     private RightColumn rightColumn;
 
@@ -46,4 +44,5 @@ public class MainScene extends HBox implements DispatchAction {
         getChildren().addAll(leftColumn, rightScroll);
     }
 
+    
 }
