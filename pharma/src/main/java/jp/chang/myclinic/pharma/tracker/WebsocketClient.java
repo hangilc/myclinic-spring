@@ -30,6 +30,10 @@ class WebsocketClient extends WebSocketListener {
         this.websocket = client.newWebSocket(request, this);
     }
 
+    public void sendMessage(String text){
+        websocket.send(text);
+    }
+
     protected void onNewMessage(String text){
 
     }

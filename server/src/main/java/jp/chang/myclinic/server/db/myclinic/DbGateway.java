@@ -1230,6 +1230,18 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
+    public PharmaQueueFullDTO getPharmaQueueFull(int visitId){
+        VisitDTO visitDTO = getVisit(visitId);
+        PharmaQueueFullDTO result = new PharmaQueueFullDTO();
+        result.visitId = visitId;
+        result.patient = getPatient(visitDTO.patientId);
+        result.pharmaQueue = pharmaQueueRepository.findByVisitId(visitId)
+                .map(mapper::toPharmaQueueDTO).orElse(null);
+        result.wqueue = wqueueRepository.tryFindByVisitId(visitId)
+                .map(mapper::toWqueueDTO).orElse(null);
+        return result;
+    }
+
     public void deletePharmaQueue(PharmaQueueDTO pharmaQueueDTO) {
         PharmaQueue pharmaQueue = mapper.fromPharmaQueueDTO(pharmaQueueDTO);
         pharmaQueueRepository.delete(pharmaQueue);

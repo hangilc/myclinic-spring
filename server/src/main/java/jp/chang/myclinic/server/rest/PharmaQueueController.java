@@ -1,8 +1,7 @@
 package jp.chang.myclinic.server.rest;
 
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
-import jp.chang.myclinic.dto.PharmaQueueDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/json")
@@ -31,12 +29,14 @@ public class PharmaQueueController {
         return dbGateway.listPharmaQueueFullForToday();
     }
 
+    @RequestMapping(value="/get-pharma-queue-full", method=RequestMethod.GET)
+    public PharmaQueueFullDTO getPharmaQueueFull(@RequestParam("visit-id") int visitId){
+        return dbGateway.getPharmaQueueFull(visitId);
+    }
+
     @RequestMapping(value="/try-delete-pharma-queue", method=RequestMethod.POST)
     public boolean tryDeletePharmaQueue(@RequestParam("visit-id") int visitId){
-        Optional<PharmaQueueDTO> pharmaQueueDTO = dbGateway.findPharmaQueue(visitId);
-        if( pharmaQueueDTO.isPresent() ){
-            dbGateway.deletePharmaQueue(pharmaQueueDTO.get());
-        }
+        dbGateway.findPharmaQueue(visitId).ifPresent(pharmaQueueDTO -> dbGateway.deletePharmaQueue(pharmaQueueDTO));
         return true;
     }
 }

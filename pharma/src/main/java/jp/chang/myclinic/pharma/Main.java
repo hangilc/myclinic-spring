@@ -62,13 +62,12 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("薬局");
+        Scope scope = new Scope();
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(createMenu());
-        MainScene root = new MainScene();
+        MainScene root = new MainScene(scope);
         root.getStylesheets().add("Pharma.css");
         borderPane.setCenter(root);
-        stage.setScene(new Scene(borderPane));
-        stage.show();
         tracker = new Tracker(wsUrl, root, Service.api){
             @Override
             protected void beforeCatchup() {
@@ -80,6 +79,9 @@ public class Main extends Application {
                 System.out.println("afterCatchup");
             }
         };
+        scope.setTracker(tracker);
+        stage.setScene(new Scene(borderPane));
+        stage.show();
         tracker.start();
     }
 

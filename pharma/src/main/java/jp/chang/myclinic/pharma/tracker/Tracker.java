@@ -49,6 +49,10 @@ public class Tracker {
         }
     }
 
+    public void reload(){
+        websocketClient.sendMessage("hello");
+    }
+
     protected void beforeCatchup(){
 
     }

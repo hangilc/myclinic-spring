@@ -724,6 +724,9 @@ public class Service {
         @GET("list-pharma-queue-full-for-today")
         CompletableFuture<List<PharmaQueueFullDTO>> listPharmaQueueForToday();
 
+        @GET("get-pharma-queue-full")
+        CompletableFuture<PharmaQueueFullDTO> getPharmaQueueFull(@Query("visit-id") int visitId);
+
         @POST("presc-done")
         CompletableFuture<Boolean> prescDone(@Query("visit-id") int visitId);
 

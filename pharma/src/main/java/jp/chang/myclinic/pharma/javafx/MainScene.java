@@ -5,6 +5,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.pharma.Scope;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import jp.chang.myclinic.pharma.tracker.DispatchHook;
 import jp.chang.myclinic.pharma.tracker.model.PharmaQueue;
@@ -16,15 +17,21 @@ public class MainScene extends HBox implements DispatchHook {
     private LeftColumn leftColumn;
     private RightColumn rightColumn;
 
-    public MainScene() {
+    public MainScene(Scope scope) {
         super(4);
         getStyleClass().add("main-scene");
-        leftColumn = new LeftColumn(){
+        leftColumn = new LeftColumn(scope){
             @Override
-            protected void onPatientSelected(PharmaQueueFullDTO item) {
-                Service.api.listDrugFull(item.visitId)
+            protected void onStartPresc(int visitId) {
+                class Local { private PharmaQueueFullDTO item; }
+                Local local = new Local();
+                Service.api.getPharmaQueueFull(visitId)
+                        .thenCompose(item -> {
+                            local.item = item;
+                            return Service.api.listDrugFull(item.visitId);
+                        })
                         .thenAccept(drugs -> Platform.runLater(() -> {
-                            rightColumn.startPresc(item, drugs);
+                            rightColumn.startPresc(local.item, drugs);
                         }))
                         .exceptionally(HandlerFX::exceptionally);
             }
@@ -37,7 +44,7 @@ public class MainScene extends HBox implements DispatchHook {
 
             @Override
             void onPrescDone() {
-                leftColumn.reloadPatientList();
+                scope.reloadPatientList();
             }
         };
         ScrollPane rightScroll = new ScrollPane(rightColumn);
@@ -61,6 +68,7 @@ public class MainScene extends HBox implements DispatchHook {
 
     @Override
     public void onPharmaQueueDeleted(int visitId, Runnable toNext) {
+        leftColumn.deletePharmaQueue(visitId);
         toNext.run();
     }
 }
