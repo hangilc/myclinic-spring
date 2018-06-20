@@ -40,7 +40,7 @@ class LeftColumn extends VBox {
     }
 
     void addPharmaQueue(PharmaQueue pharmaQueue){
-        pharmaQueueList.add(new PatientList.Model(pharmaQueue.getVisit().getPatient(), null));
+        pharmaQueueList.add(new PatientList.Model(pharmaQueue.getVisit().getPatient(), pharmaQueue.getWqueue()));
     }
 
     void clearSelection(){

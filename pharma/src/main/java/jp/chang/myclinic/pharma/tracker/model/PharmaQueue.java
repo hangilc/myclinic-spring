@@ -8,10 +8,12 @@ public class PharmaQueue {
 
     private IntegerProperty pharmaState;
     private Visit visit;
+    private Wqueue wqueue;
 
-    public PharmaQueue(PharmaQueueDTO dto, Visit visit) {
+    public PharmaQueue(PharmaQueueDTO dto, Visit visit, Wqueue wqueue) {
         this.pharmaState = new SimpleIntegerProperty(dto.pharmaState);
         this.visit = visit;
+        this.wqueue = wqueue;
     }
 
     public int getPharmaState() {
@@ -28,5 +30,9 @@ public class PharmaQueue {
 
     public Visit getVisit() {
         return visit;
+    }
+
+    public Wqueue getWqueue() {
+        return wqueue;
     }
 }

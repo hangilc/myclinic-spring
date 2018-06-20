@@ -226,7 +226,7 @@ public class ModelRegistry {
     }
 
     public PharmaQueue createPharmaQueue(PharmaQueueDTO dto){
-        PharmaQueue pharmaQueue = new PharmaQueue(dto, getVisit(dto.visitId));
+        PharmaQueue pharmaQueue = new PharmaQueue(dto, getVisit(dto.visitId), getWqueue(dto.visitId));
         pharmaQueueList.add(pharmaQueue);
         return pharmaQueue;
     }
