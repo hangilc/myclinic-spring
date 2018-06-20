@@ -78,8 +78,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
         if (visit != null) {
             Conduct conduct = new Conduct(created);
             visit.getConducts().add(conduct);
+            scrollToCurrentVisit(2, cb);
+        } else {
+            cb.run();
         }
-        cb.run();
     }
 
     @Override
@@ -89,6 +91,8 @@ public class TrackingRoot extends VBox implements DispatchAction {
             ConductKind kind = ConductKind.fromCode(updated.kind);
             String kindRep = kind == null ? "??" : kind.getKanjiRep();
             conduct.setKind(kindRep);
+            scrollToCurrentVisit(2, cb);
+        } else {
             cb.run();
         }
     }
@@ -98,8 +102,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
         Conduct conduct = registry.getConduct(created.conductId);
         if (conduct != null) {
             conduct.gazouLabelProperty().setValue(created.label);
+            scrollToCurrentVisit(2, cb);
+        } else {
+            cb.run();
         }
-        cb.run();
     }
 
     @Override
@@ -107,8 +113,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
         Conduct conduct = registry.getConduct(updated.conductId);
         if (conduct != null) {
             conduct.setGazouLabel(updated.label);
+            scrollToCurrentVisit(2, cb);
+        } else {
+            cb.run();
         }
-        cb.run();
     }
 
     @Override
@@ -119,9 +127,11 @@ public class TrackingRoot extends VBox implements DispatchAction {
                     .thenAccept(master -> Platform.runLater(() -> {
                         ConductShinryou conductShinryou = new ConductShinryou(created, master);
                         conduct.getShinryouList().add(conductShinryou);
-                        cb.run();
+                        scrollToCurrentVisit(2, cb);
                     }))
                     .exceptionally(HandlerFX::exceptionally);
+        } else {
+            cb.run();
         }
     }
 
@@ -130,6 +140,8 @@ public class TrackingRoot extends VBox implements DispatchAction {
         Conduct conduct = registry.getConduct(deleted.conductId);
         if (conduct != null) {
             conduct.removeConductShinryou(deleted.conductShinryouId);
+            scrollToCurrentVisit(1, cb);
+        } else {
             cb.run();
         }
     }
@@ -142,9 +154,11 @@ public class TrackingRoot extends VBox implements DispatchAction {
                     .thenAccept(master -> Platform.runLater(() -> {
                         ConductDrug conductDrug = new ConductDrug(created, master);
                         conduct.getDrugs().add(conductDrug);
-                        toNext.run();
+                        scrollToCurrentVisit(2, toNext);
                     }))
                     .exceptionally(HandlerFX::exceptionally);
+        } else {
+            toNext.run();
         }
     }
 
@@ -153,6 +167,8 @@ public class TrackingRoot extends VBox implements DispatchAction {
         Conduct conduct = registry.getConduct(deleted.conductId);
         if (conduct != null) {
             conduct.removeConductDrug(deleted.conductDrugId);
+            scrollToCurrentVisit(1, cb);
+        } else {
             cb.run();
         }
     }
@@ -165,9 +181,11 @@ public class TrackingRoot extends VBox implements DispatchAction {
                     .thenAccept(master -> Platform.runLater(() -> {
                         ConductKizai conductKizai = new ConductKizai(created, master);
                         conduct.getKizaiList().add(conductKizai);
-                        toNext.run();
+                        scrollToCurrentVisit(2, toNext);
                     }))
                     .exceptionally(HandlerFX::exceptionally);
+        } else {
+            toNext.run();
         }
     }
 
@@ -176,6 +194,8 @@ public class TrackingRoot extends VBox implements DispatchAction {
         Conduct conduct = registry.getConduct(deleted.conductId);
         if (conduct != null) {
             conduct.removeConductKizai(deleted.conductKizaiId);
+            scrollToCurrentVisit(1, cb);
+        } else {
             cb.run();
         }
     }
@@ -243,7 +263,11 @@ public class TrackingRoot extends VBox implements DispatchAction {
                     if (available < neededPad) {
                         h = neededPad - available;
                     }
+                    paddingPane.setMinHeight(0);
+                    paddingPane.setMaxHeight(Double.MAX_VALUE);
                     paddingPane.setPrefHeight(h);
+                    paddingPane.setMinHeight(h);
+                    paddingPane.setMaxHeight(h);
                     updateUI(1);
                     double vValue;
                     if( minY == 0 ){
@@ -268,10 +292,12 @@ public class TrackingRoot extends VBox implements DispatchAction {
         if (visit != null) {
             visit.setWqueueState(updated.waitState);
             if (updated.waitState == WqueueWaitState.InExam.getCode()) {
-                scrollToCurrentVisit(1, cb);
+                scrollToCurrentVisit(2, cb);
             } else {
                 cb.run();
             }
+        } else {
+            cb.run();
         }
     }
 
@@ -370,10 +396,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
             Drug drug = visit.getDrug(updated.drugId);
             if (drug != null) {
                 registry.getIyakuhinMaster(updated.iyakuhincode)
-                        .thenAccept(master -> {
+                        .thenAccept(master -> Platform.runLater(() -> {
                             drug.updateRep(updated, master);
                             scrollToCurrentVisit(2, cb);
-                        })
+                        }))
                         .exceptionally(HandlerFX::exceptionally);
             }
         } else {
@@ -403,9 +429,11 @@ public class TrackingRoot extends VBox implements DispatchAction {
                     .thenAccept(master -> Platform.runLater(() -> {
                         Shinryou shinryou = new Shinryou(created, master);
                         visit.getShinryouList().add(shinryou);
-                        cb.run();
+                        scrollToCurrentVisit(2, cb);
                     }))
                     .exceptionally(HandlerFX::exceptionally);
+        } else {
+            cb.run();
         }
     }
 
@@ -416,8 +444,10 @@ public class TrackingRoot extends VBox implements DispatchAction {
             Shinryou shinryou = visit.getShinryou(deleted.shinryouId);
             if (shinryou != null) {
                 visit.getShinryouList().remove(shinryou);
-                cb.run();
+                scrollToCurrentVisit(1, cb);
             }
+        } else {
+            cb.run();
         }
     }
 
@@ -428,9 +458,11 @@ public class TrackingRoot extends VBox implements DispatchAction {
             registry.updateHoken(visit, updated)
                     .thenAccept(r -> Platform.runLater(() -> {
                         visit.initHokenRep();
-                        toNext.run();
+                        scrollToCurrentVisit(2, toNext);
                     }))
                     .exceptionally(HandlerFX::exceptionally);
+        } else {
+            toNext.run();
         }
     }
 }
