@@ -14,25 +14,49 @@ public class Tracker {
 
     private static Logger logger = LoggerFactory.getLogger(Tracker.class);
 
+    private String wsUrl;
     private WebsocketClient websocketClient;
     private ObjectMapper mapper = new ObjectMapper();
     private Dispatcher dispatcher;
 
     public Tracker(String wsUrl, DispatchAction action, Service.ServerAPI service) {
-        this.websocketClient = new WebsocketClient(wsUrl);
-        this.dispatcher = new Dispatcher(action, service);
+        this.wsUrl = wsUrl;
+        this.dispatcher = new Dispatcher(action, service){
+            @Override
+            protected void beforeCatchup() {
+                Tracker.this.beforeCatchup();
+            }
+
+            @Override
+            protected void afterCatchup() {
+                Tracker.this.afterCatchup();
+            }
+        };
     }
 
     public void start(){
-
+        Thread thread = new Thread(dispatcher);
+        thread.setDaemon(true);
+        thread.start();
+        startWebSocket();
     }
 
     public void shutdown(){
+        if( websocketClient != null ) {
+            websocketClient.shutdown();
+        }
+    }
+
+    protected void beforeCatchup(){
 
     }
 
-    private void startWebSocket(String wsUrl){
-        websocketClient = new WebsocketClient(wsUrl){
+    protected void afterCatchup(){
+
+    }
+
+    private void startWebSocket(){
+        this.websocketClient = new WebsocketClient(wsUrl){
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 webSocket.send("hello");
@@ -41,6 +65,7 @@ public class Tracker {
             @Override
             protected void onNewMessage(String text){
                 try {
+                    System.out.println("message: " + text);
                     PracticeLogDTO plog = mapper.readValue(text, PracticeLogDTO.class);
                     if( dispatcher != null ){
                         dispatcher.add(plog);

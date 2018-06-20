@@ -25,7 +25,7 @@ class Dispatcher implements Runnable {
     private Runnable toNext;
     private int lastId;
 
-    public Dispatcher(DispatchAction action, Service.ServerAPI service) {
+    Dispatcher(DispatchAction action, Service.ServerAPI service) {
         this.action = action;
         this.service = service;
         toNext = () -> taskPermit.release();

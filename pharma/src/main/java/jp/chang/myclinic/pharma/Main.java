@@ -18,6 +18,7 @@ import jp.chang.myclinic.pharma.javafx.drawerpreview.SelectDefaultSettingDialog;
 import jp.chang.myclinic.pharma.javafx.pharmadrug.PharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
 import jp.chang.myclinic.pharma.javafx.printing.Printing;
+import jp.chang.myclinic.pharma.tracker.Tracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,8 @@ import java.util.function.Function;
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
+    private String wsUrl;
+    private Tracker tracker;
 
     // TODO: update wqueue list automatically
     public static void main(String[] args) {
@@ -49,6 +52,7 @@ public class Main extends Application {
             Service.setServerUrl(serverUrl);
             Globals.clinicInfo = Service.api.getClinicInfoCall().execute().body();
             Globals.printerEnv = new PrinterEnv(Paths.get(System.getProperty("user.home"), "myclinic-env", "printer-settings"));
+            this.wsUrl = serverUrl.replace("/json/", "/practice-log");
         } else {
             logger.error("Usage: pharma service-url");
             System.exit(1);
@@ -65,12 +69,25 @@ public class Main extends Application {
         borderPane.setCenter(root);
         stage.setScene(new Scene(borderPane));
         stage.show();
+        tracker = new Tracker(wsUrl, root, Service.api){
+            @Override
+            protected void beforeCatchup() {
+                System.out.println("beforeCatchuyp");
+            }
+
+            @Override
+            protected void afterCatchup() {
+                System.out.println("afterCatchup");
+            }
+        };
+        tracker.start();
     }
 
     @Override
     public void stop() throws Exception {
         super.stop();
         Service.stop();
+        tracker.shutdown();
 //        OkHttpClient client = Service.client;
 //        client.dispatcher().executorService().shutdown();
 //        client.connectionPool().evictAll();
