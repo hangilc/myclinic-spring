@@ -6,8 +6,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PharmaDrugNameDTO;
-import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 
 import java.util.Collections;

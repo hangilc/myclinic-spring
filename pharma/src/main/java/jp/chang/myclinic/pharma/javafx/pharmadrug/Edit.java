@@ -10,9 +10,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
 import jp.chang.myclinic.dto.PharmaDrugNameDTO;
-import jp.chang.myclinic.pharma.Service;
 import jp.chang.myclinic.pharma.javafx.lib.GuiUtil;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 

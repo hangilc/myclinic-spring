@@ -4,26 +4,8 @@ package jp.chang.myclinic.pharma;
  * Created by hangil on 2017/06/11.
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import jp.chang.myclinic.drawer.JacksonOpDeserializer;
-import jp.chang.myclinic.drawer.Op;
-import jp.chang.myclinic.dto.*;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.adapter.java8.Java8CallAdapterFactory;
-import retrofit2.converter.jackson.JacksonConverterFactory;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Query;
-
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
-public class Service {
+public class ServiceOld {
+    /*
     public interface ServerAPI {
         @GET("list-pharma-queue-full-for-prescription")
         CompletableFuture<List<PharmaQueueFullDTO>> listPharmaQueueForPrescription();
@@ -130,5 +112,5 @@ public class Service {
                 .build();
         api = server.create(ServerAPI.class);
     }
-
+*/
 }

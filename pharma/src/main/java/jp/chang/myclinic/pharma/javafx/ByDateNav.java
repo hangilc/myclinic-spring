@@ -6,7 +6,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import jp.chang.myclinic.pharma.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

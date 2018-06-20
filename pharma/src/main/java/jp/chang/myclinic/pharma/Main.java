@@ -8,6 +8,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
 import jp.chang.myclinic.pharma.javafx.MainScene;
@@ -17,8 +18,6 @@ import jp.chang.myclinic.pharma.javafx.drawerpreview.SelectDefaultSettingDialog;
 import jp.chang.myclinic.pharma.javafx.pharmadrug.PharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
 import jp.chang.myclinic.pharma.javafx.printing.Printing;
-import okhttp3.Cache;
-import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,13 +70,14 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        OkHttpClient client = Service.client;
-        client.dispatcher().executorService().shutdown();
-        client.connectionPool().evictAll();
-        Cache cache = client.cache();
-        if (cache != null) {
-            cache.close();
-        }
+        Service.stop();
+//        OkHttpClient client = Service.client;
+//        client.dispatcher().executorService().shutdown();
+//        client.connectionPool().evictAll();
+//        Cache cache = client.cache();
+//        if (cache != null) {
+//            cache.close();
+//        }
         logger.info("pharma stopped.");
     }
 

@@ -108,12 +108,12 @@ public class Main extends Application {
         this.dispatcher = new Dispatcher(root){
             @Override
             protected void beforeCatchup() {
-                //Platform.runLater(() -> centerStackPane.getChildren().add(curtain));
+                Platform.runLater(() -> centerStackPane.getChildren().add(curtain));
             }
 
             @Override
             protected void afterCatchup() {
-                //Platform.runLater(() -> centerStackPane.getChildren().remove(curtain));
+                Platform.runLater(() -> centerStackPane.getChildren().remove(curtain));
             }
         };
         Thread dispatcherThread = new Thread(dispatcher);

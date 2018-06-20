@@ -1,10 +1,11 @@
-package jp.chang.myclinic.recordbrowser.tracking;
+package jp.chang.myclinic.pharma.tracker;
 
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -17,8 +18,8 @@ public class WebsocketClient extends WebSocketListener {
     private OkHttpClient client;
     private WebSocket websocket;
 
-    public WebsocketClient(String url, ScheduledExecutorService timeExecutor) {
-        this.timerExecutor = timeExecutor;
+    public WebsocketClient(String url) {
+        this.timerExecutor = Executors.newSingleThreadScheduledExecutor();
         this.client = new OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)
                 .pingInterval(5, TimeUnit.SECONDS)

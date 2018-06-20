@@ -1,5 +1,6 @@
 package jp.chang.myclinic.pharma.javafx.printing;
 
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
@@ -12,12 +13,14 @@ import jp.chang.myclinic.drawer.techou.TechouDrawer;
 import jp.chang.myclinic.drawer.techou.TechouDrawerData;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.pharma.*;
+import jp.chang.myclinic.pharma.CFUtil;
+import jp.chang.myclinic.pharma.Config;
+import jp.chang.myclinic.pharma.Globals;
 import jp.chang.myclinic.pharma.drawercreator.DrugBagDataCreator;
 import jp.chang.myclinic.pharma.drawercreator.PrescContentDataCreator;
+import jp.chang.myclinic.pharma.drawercreator.TechouDataCreator;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
-import jp.chang.myclinic.pharma.drawercreator.TechouDataCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
