@@ -1,6 +1,7 @@
 package jp.chang.myclinic.pharma.javafx;
 
-import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -10,17 +11,17 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
-import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.pharma.tracker.model.PharmaQueue;
+import jp.chang.myclinic.pharma.tracker.model.Wqueue;
 
 class LeftColumn extends VBox {
 
-    private static Logger logger = LoggerFactory.getLogger(LeftColumn.class);
+    //private static Logger logger = LoggerFactory.getLogger(LeftColumn.class);
     private PatientList patientList;
     private CheckBox includeAllCheckBox;
+    private ObservableList<PatientList.Model> todaysList = FXCollections.observableArrayList();
+    private ObservableList<PatientList.Model> pharmaQueueList = FXCollections.observableArrayList();
 
     LeftColumn() {
         super(4);
@@ -31,6 +32,15 @@ class LeftColumn extends VBox {
                 createImageExamples(),
                 createCommands()
         );
+        patientList.setItems(pharmaQueueList);
+    }
+
+    void addWqueue(Wqueue wqueue){
+        todaysList.add(new PatientList.Model(wqueue.getVisit().getPatient(), wqueue));
+    }
+
+    void addPharmaQueue(PharmaQueue pharmaQueue){
+        pharmaQueueList.add(new PatientList.Model(pharmaQueue.getVisit().getPatient(), null));
     }
 
     void clearSelection(){
@@ -79,26 +89,26 @@ class LeftColumn extends VBox {
     }
 
     private void doReload(){
-        if( getIncludeAllPatients() ){
-            Service.api.listPharmaQueueForToday()
-                    .thenAccept(list -> Platform.runLater(() -> {
-                        patientList.itemsProperty().getValue().setAll(list);
-                    }))
-                    .exceptionally(HandlerFX::exceptionally);
-        } else {
-            Service.api.listPharmaQueueForPrescription()
-                    .thenAccept(list -> Platform.runLater(() -> {
-                        patientList.itemsProperty().getValue().setAll(list);
-                    }))
-                    .exceptionally(HandlerFX::exceptionally);
-        }
+//        if( getIncludeAllPatients() ){
+//            Service.api.listPharmaQueueForToday()
+//                    .thenAccept(list -> Platform.runLater(() -> {
+//                        patientList.itemsProperty().getValue().setAll(list);
+//                    }))
+//                    .exceptionally(HandlerFX::exceptionally);
+//        } else {
+//            Service.api.listPharmaQueueForPrescription()
+//                    .thenAccept(list -> Platform.runLater(() -> {
+//                        patientList.itemsProperty().getValue().setAll(list);
+//                    }))
+//                    .exceptionally(HandlerFX::exceptionally);
+//        }
     }
 
     private void doStartPresc(){
-        PharmaQueueFullDTO item = patientList.getSelectionModel().getSelectedItem();
-        if( item != null ){
-            onPatientSelected(item);
-        }
+//        PharmaQueueFullDTO item = patientList.getSelectionModel().getSelectedItem();
+//        if( item != null ){
+//            onPatientSelected(item);
+//        }
     }
 
     protected void onPatientSelected(PharmaQueueFullDTO item){

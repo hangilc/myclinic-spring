@@ -238,6 +238,7 @@ public class Visit {
         return "Visit{" +
                 "visitId=" + visitId +
                 ", visitedAt=" + visitedAt +
+                ", patient=" + patient +
                 '}';
     }
 }

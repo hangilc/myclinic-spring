@@ -229,14 +229,39 @@ class Dispatcher implements Runnable {
                     action.onPaymentCreated(body.created, toNext);
                     break;
                 }
+                case "wqueue-created": {
+                    WqueueCreated body = mapper.readValue(log.body, WqueueCreated.class);
+                    action.onWqueueCreated(body.created, toNext);
+                    break;
+                }
                 case "wqueue-updated": {
                     WqueueUpdated body = mapper.readValue(log.body, WqueueUpdated.class);
                     action.onWqueueUpdated(body.prev, body.updated, toNext);
                     break;
                 }
+                case "wqueue-deleted": {
+                    WqueueDeleted body = mapper.readValue(log.body, WqueueDeleted.class);
+                    action.onWqueueDeleted(body.deleted, toNext);
+                    break;
+                }
                 case "hoken-updated": {
                     VisitUpdated body = mapper.readValue(log.body, VisitUpdated.class);
                     action.onHokenUpdated(body.prev, body.updated, toNext);
+                    break;
+                }
+                case "pharma-queue-created": {
+                    PharmaQueueCreated body = mapper.readValue(log.body, PharmaQueueCreated.class);
+                    action.onPharmaQueueCreated(body.created, toNext);
+                    break;
+                }
+                case "pharma-queue-updated": {
+                    PharmaQueueUpdated body = mapper.readValue(log.body, PharmaQueueUpdated.class);
+                    action.onPharmaQueueUpdated(body.prev, body.updated, toNext);
+                    break;
+                }
+                case "pharma-queue-deleted": {
+                    PharmaQueueDeleted body = mapper.readValue(log.body, PharmaQueueDeleted.class);
+                    action.onPharmaQueueDeleted(body.deleted, toNext);
                     break;
                 }
                 default: {

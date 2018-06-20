@@ -2,14 +2,13 @@ package jp.chang.myclinic.pharma.tracker;
 
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.dto.KizaiMasterDTO;
-import jp.chang.myclinic.dto.ShinryouMasterDTO;
-import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.pharma.tracker.model.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -22,6 +21,8 @@ public class ModelRegistry {
     private Map<Integer, Shahokokuho> shahokokuhoRegistry = new HashMap<>();
     private Map<Integer, Koukikourei> koukikoureiRegistry = new HashMap<>();
     private Map<Integer, Kouhi> kouhiRegistry = new HashMap<>();
+    private List<Wqueue> wqueueList = new ArrayList<>();
+    private List<PharmaQueue> pharmaQueueList = new ArrayList<>();
     private Map<Integer, IyakuhinMasterDTO> iyakuhinMasterRegistry = new HashMap<>();
     private Map<Integer, ShinryouMasterDTO> shinryouMasterRegistry = new HashMap<>();
     private Map<Integer, KizaiMasterDTO> kizaiMasterRegistry = new HashMap<>();
@@ -200,6 +201,44 @@ public class ModelRegistry {
                 if( conduct.getConductId() == conductId ){
                     return conduct;
                 }
+            }
+        }
+        return null;
+    }
+
+    public Wqueue createWqueue(WqueueDTO dto){
+        Wqueue wqueue = new Wqueue(dto, getVisit(dto.visitId));
+        wqueueList.add(wqueue);
+        return wqueue;
+    }
+
+    public void deleteWqueue(int visitId){
+        wqueueList.removeIf(item -> item.getVisit().getVisitId() == visitId);
+    }
+
+    public Wqueue getWqueue(int visitId){
+        for(Wqueue wqueue: wqueueList){
+            if( wqueue.getVisit().getVisitId() == visitId ){
+                return wqueue;
+            }
+        }
+        return null;
+    }
+
+    public PharmaQueue createPharmaQueue(PharmaQueueDTO dto){
+        PharmaQueue pharmaQueue = new PharmaQueue(dto, getVisit(dto.visitId));
+        pharmaQueueList.add(pharmaQueue);
+        return pharmaQueue;
+    }
+
+    public void deletePharmaQueue(int visitId){
+        pharmaQueueList.removeIf(item -> item.getVisit().getVisitId() == visitId);
+    }
+
+    public PharmaQueue getPharmaQueue(int visitId){
+        for(PharmaQueue pharmaQueue: pharmaQueueList){
+            if( pharmaQueue.getVisit().getVisitId() == visitId ){
+                return pharmaQueue;
             }
         }
         return null;

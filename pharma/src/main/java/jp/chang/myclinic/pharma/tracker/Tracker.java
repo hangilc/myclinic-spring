@@ -19,9 +19,11 @@ public class Tracker {
     private ObjectMapper mapper = new ObjectMapper();
     private Dispatcher dispatcher;
 
-    public Tracker(String wsUrl, DispatchAction action, Service.ServerAPI service) {
+    public Tracker(String wsUrl, DispatchHook hook, Service.ServerAPI service) {
         this.wsUrl = wsUrl;
-        this.dispatcher = new Dispatcher(action, service){
+        ModelRegistry registry = new ModelRegistry();
+        ActionHook actionHook = new ActionHook(registry, hook);
+        this.dispatcher = new Dispatcher(actionHook, service){
             @Override
             protected void beforeCatchup() {
                 Tracker.this.beforeCatchup();

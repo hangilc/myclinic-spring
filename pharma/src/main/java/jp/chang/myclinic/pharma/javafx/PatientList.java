@@ -6,14 +6,23 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import jp.chang.myclinic.consts.WqueueWaitState;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.PharmaQueueFullDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.pharma.tracker.model.Patient;
+import jp.chang.myclinic.pharma.tracker.model.Wqueue;
 
-class PatientList extends ListView<PharmaQueueFullDTO> {
+class PatientList extends ListView<PatientList.Model> {
 
-    private static Logger logger = LoggerFactory.getLogger(PatientList.class);
+    //private static Logger logger = LoggerFactory.getLogger(PatientList.class);
+
+    public static class Model {
+        Patient patient;
+        Wqueue wqueue;
+
+        public Model(Patient patient, Wqueue wqueue) {
+            this.patient = patient;
+            this.wqueue = wqueue;
+        }
+    }
+
     private Image waitCashierImage = new Image("/wait_cashier.bmp");
     private Image waitPrescImage = new Image("/wait_drug.bmp");
     private static WritableImage blankImage = new WritableImage(12, 12);
@@ -22,7 +31,7 @@ class PatientList extends ListView<PharmaQueueFullDTO> {
         getStyleClass().add("patient-list");
         setCellFactory(listView -> new ListCell<>(){
             @Override
-            protected void updateItem(PharmaQueueFullDTO item, boolean empty) {
+            protected void updateItem(Model item, boolean empty) {
                 super.updateItem(item, empty);
                 if( empty ){
                     setText("");
@@ -35,16 +44,16 @@ class PatientList extends ListView<PharmaQueueFullDTO> {
         });
     }
 
-    private String itemText(PharmaQueueFullDTO item){
-        PatientDTO patient = item.patient;
-        return String.format("%s%s(%s%s)", patient.lastName, patient.firstName,
-                patient.lastNameYomi, patient.firstNameYomi);
+    private String itemText(Model item){
+        Patient patient = item.patient;
+        return String.format("%s%s(%s%s)", patient.getLastName(), patient.getFirstName(),
+                patient.getLastNameYomi(), patient.getFirstNameYomi());
     }
 
-    private Image itemImage(PharmaQueueFullDTO item){
+    private Image itemImage(Model item){
         Image image = blankImage;
         if( item.wqueue != null ) {
-            WqueueWaitState state = WqueueWaitState.fromCode(item.wqueue.waitState);
+            WqueueWaitState state = WqueueWaitState.fromCode(item.wqueue.getWaitState());
             if (state != null) {
                 switch (state) {
                     case WaitCashier:
@@ -57,10 +66,6 @@ class PatientList extends ListView<PharmaQueueFullDTO> {
             }
         }
         return image;
-    }
-
-    private ImageView createBlankImage(){
-        return new ImageView(blankImage);
     }
 
 }
