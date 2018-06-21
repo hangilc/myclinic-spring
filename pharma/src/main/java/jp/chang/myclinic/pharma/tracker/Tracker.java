@@ -71,7 +71,6 @@ public class Tracker {
             @Override
             protected void onNewMessage(String text){
                 try {
-                    System.out.println("message: " + text);
                     PracticeLogDTO plog = mapper.readValue(text, PracticeLogDTO.class);
                     if( dispatcher != null ){
                         dispatcher.add(plog);
