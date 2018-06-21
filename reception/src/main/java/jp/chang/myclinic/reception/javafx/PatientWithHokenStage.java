@@ -15,14 +15,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.reception.Service;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.KouhiUtil;
 import jp.chang.myclinic.util.KoukikoureiUtil;
 import jp.chang.myclinic.util.RoujinUtil;
 import jp.chang.myclinic.util.ShahokokuhoUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +72,7 @@ public class PatientWithHokenStage extends Stage {
                             })
                             .exceptionally(ex -> {
                                 logger.error("Failed to update patient.", ex);
-                                Platform.runLater(() -> GuiUtil.alertException(ex));
+                                Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                                 return null;
                             });
                 }
@@ -345,7 +346,7 @@ public class PatientWithHokenStage extends Stage {
                         })
                         .exceptionally(ex -> {
                             logger.error("Failed to delete shahokokuho.", ex);
-                            Platform.runLater(() -> GuiUtil.alertException(ex));
+                            Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                             return null;
                         });
             }
@@ -362,7 +363,7 @@ public class PatientWithHokenStage extends Stage {
                         })
                         .exceptionally(ex -> {
                             logger.error("Failed to delete koukikourei.", ex);
-                            Platform.runLater(() -> GuiUtil.alertException(ex));
+                            Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                             return null;
                         });
             }
@@ -379,7 +380,7 @@ public class PatientWithHokenStage extends Stage {
                         })
                         .exceptionally(ex -> {
                             logger.error("Failed to delete roujin.", ex);
-                            Platform.runLater(() -> GuiUtil.alertException(ex));
+                            Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                             return null;
                         });
             }
@@ -396,7 +397,7 @@ public class PatientWithHokenStage extends Stage {
                         })
                         .exceptionally(ex -> {
                             logger.error("Failed to delete kouhi.", ex);
-                            Platform.runLater(() -> GuiUtil.alertException(ex));
+                            Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                             return null;
                         });
             }

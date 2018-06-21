@@ -9,7 +9,6 @@ import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
-import jp.chang.myclinic.reception.javafx.GuiUtil;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;

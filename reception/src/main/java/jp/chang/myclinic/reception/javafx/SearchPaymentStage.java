@@ -9,9 +9,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.MeisaiDTO;
-import jp.chang.myclinic.reception.Service;
 import jp.chang.myclinic.reception.lib.ReceptionLib;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +86,7 @@ public class SearchPaymentStage extends Stage {
                     })
                     .exceptionally(ex -> {
                         logger.error("Failed to get meisai.", ex);
-                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                         return null;
                     });
         }
@@ -104,7 +105,7 @@ public class SearchPaymentStage extends Stage {
                     })
                     .exceptionally(ex -> {
                         logger.error("Failed to get meisai", ex);
-                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                         return null;
                     });
         }
@@ -130,7 +131,7 @@ public class SearchPaymentStage extends Stage {
                     })
                     .exceptionally(ex -> {
                         logger.error("Failed ", ex);
-                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                         return null;
                     });
         } catch(NumberFormatException ex){
@@ -145,7 +146,7 @@ public class SearchPaymentStage extends Stage {
                 })
                 .exceptionally(ex -> {
                     logger.error("Failed to list recent payments.", ex);
-                    Platform.runLater(() -> GuiUtil.alertException(ex));
+                    Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                     return null;
                 });
     }

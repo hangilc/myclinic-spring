@@ -9,9 +9,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.reception.Service;
 import jp.chang.myclinic.reception.lib.ReceptionService;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +88,7 @@ public class SearchPatientStage extends Stage {
                 .thenAccept(this::setSearchResult)
                 .exceptionally(ex -> {
                     logger.error("Listing recently registered patient failed.", ex);
-                    Platform.runLater(() -> GuiUtil.alertException(ex));
+                    Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                     return null;
                 });
     }
@@ -108,7 +109,7 @@ public class SearchPatientStage extends Stage {
                     })
                     .exceptionally(ex -> {
                         logger.error("Failed to list hoken.", ex);
-                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                         return null;
                     });
         }
@@ -157,7 +158,7 @@ public class SearchPatientStage extends Stage {
                 })
                 .exceptionally(ex -> {
                     logger.error("Search patient failed.", ex);
-                    Platform.runLater(() -> GuiUtil.alertException(ex));
+                    Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                     return null;
                 });
     }

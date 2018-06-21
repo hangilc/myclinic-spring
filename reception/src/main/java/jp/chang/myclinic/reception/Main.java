@@ -5,10 +5,9 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.reception.javafx.MainPane;
-import okhttp3.Cache;
-import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,13 +73,14 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        OkHttpClient client = Service.client;
-        client.dispatcher().executorService().shutdown();
-        client.connectionPool().evictAll();
-        Cache cache = client.cache();
-        if( cache != null ){
-            cache.close();
-        }
+        Service.stop();
+//        OkHttpClient client = Service.client;
+//        client.dispatcher().executorService().shutdown();
+//        client.connectionPool().evictAll();
+//        Cache cache = client.cache();
+//        if( cache != null ){
+//            cache.close();
+//        }
     }
 
 }

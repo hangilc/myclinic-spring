@@ -18,7 +18,7 @@ import retrofit2.http.Query;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class Service {
+public class ServiceOld {
     public interface ServerAPI {
         @GET("list-wqueue-full")
         CompletableFuture<List<WqueueFullDTO>> listWqueue();

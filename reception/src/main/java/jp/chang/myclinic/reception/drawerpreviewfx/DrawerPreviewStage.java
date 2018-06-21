@@ -18,7 +18,6 @@ import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.drawerpreviewfx.printersetting.CreatePrinterSettingStage;
 import jp.chang.myclinic.reception.drawerpreviewfx.printersetting.EditPrinterSettingStage;
-import jp.chang.myclinic.reception.javafx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

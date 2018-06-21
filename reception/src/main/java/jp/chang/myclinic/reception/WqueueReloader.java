@@ -1,5 +1,6 @@
 package jp.chang.myclinic.reception;
 
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.WqueueFullDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

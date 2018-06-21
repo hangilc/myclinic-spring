@@ -5,18 +5,22 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.dto.MeisaiDTO;
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.PaymentDTO;
+import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.ReceptionEnv;
-import jp.chang.myclinic.reception.Service;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,7 +163,7 @@ public class MainPane extends VBox {
                     })
                     .exceptionally(ex -> {
                         logger.error("List hoken failed.", ex);
-                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        Platform.runLater(() -> GuiUtil.alertException("保険情報が取得できませんでした。", ex));
                         return null;
                     });
         }
@@ -260,12 +264,12 @@ public class MainPane extends VBox {
                     })
                     .exceptionally(ex -> {
                         logger.error("Failed search patient", ex);
-                        Platform.runLater(() -> GuiUtil.alertException(ex));
+                        Platform.runLater(() -> GuiUtil.alertException("患者情報が取得できませんでした。", ex));
                         return null;
                     });
         } catch(Exception ex){
             logger.error("Unexpected exception", ex);
-            GuiUtil.alertException(ex);
+            GuiUtil.alertException("Internal error.", ex);
         }
     }
 
