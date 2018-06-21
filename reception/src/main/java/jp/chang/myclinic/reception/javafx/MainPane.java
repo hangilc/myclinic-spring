@@ -12,7 +12,6 @@ import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PaymentDTO;
-import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
@@ -39,7 +38,7 @@ public class MainPane extends VBox implements DispatchHook {
 
     private WqueueTable wqueueTable = new WqueueTable();
 
-    public MainPane(){
+    public MainPane() {
         setSpacing(4);
         {
             HBox hbox = new HBox(4);
@@ -83,75 +82,81 @@ public class MainPane extends VBox implements DispatchHook {
             hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton);
             getChildren().add(hbox);
         }
-        ReceptionEnv.INSTANCE.wqueueListProperty().addListener((obs, oldValue, newValue) -> {
-            WqueueFullDTO newSelection = null;
-            WqueueFullDTO oldSelection = wqueueTable.getSelectionModel().getSelectedItem();
-            if( oldSelection != null ){
-                int visitId = oldSelection.visit.visitId;
-                for(WqueueFullDTO wq: newValue){
-                    if( wq.visit.visitId == visitId ){
-                        newSelection = wq;
-                        break;
+//        ReceptionEnv.INSTANCE.wqueueListProperty().addListener((obs, oldValue, newValue) -> {
+//            WqueueFullDTO newSelection = null;
+//            WqueueFullDTO oldSelection = wqueueTable.getSelectionModel().getSelectedItem();
+//            if( oldSelection != null ){
+//                int visitId = oldSelection.visit.visitId;
+//                for(WqueueFullDTO wq: newValue){
+//                    if( wq.visit.visitId == visitId ){
+//                        newSelection = wq;
+//                        break;
+//                    }
+//                }
+//            }
+//            wqueueTable.getItems().setAll(newValue);
+//            if( newSelection != null ){
+//                wqueueTable.getSelectionModel().select(newSelection);
+//            }
+//        });
+    }
+
+    private void doCashier() {
+        wqueueTable.getSelectedWqueueFullDTO()
+                .thenAccept(wq -> {
+                    class Store {
+                        MeisaiDTO meisai;
+                        List<PaymentDTO> payments;
                     }
-                }
-            }
-            wqueueTable.getItems().setAll(newValue);
-            if( newSelection != null ){
-                wqueueTable.getSelectionModel().select(newSelection);
-            }
-        });
+                    if (wq != null) {
+                        WqueueWaitState state = WqueueWaitState.fromCode(wq.wqueue.waitState);
+                        if (state == WqueueWaitState.WaitCashier) {
+                            int visitId = wq.visit.visitId;
+                            Store store = new Store();
+                            Service.api.getVisitMeisai(visitId)
+                                    .thenCompose(meisai -> {
+                                        store.meisai = meisai;
+                                        return Service.api.listPayment(visitId);
+                                    })
+                                    .thenCompose(payments -> {
+                                        store.payments = payments;
+                                        return Service.api.getCharge(visitId);
+                                    })
+                                    .thenAccept(charge -> Platform.runLater(() -> {
+                                        CashierDialog cashierDialog = new CashierDialog(store.meisai, wq.patient,
+                                                store.payments, wq.visit, charge);
+                                        cashierDialog.show();
+                                    }))
+                                    .exceptionally(HandlerFX::exceptionally);
+                        }
+                    }
+                })
+                .exceptionally(HandlerFX::exceptionally);
     }
 
-    private void doCashier(){
-        class Store {
-            MeisaiDTO meisai;
-            List<PaymentDTO> payments;
-        }
-        WqueueFullDTO wq = wqueueTable.getSelectionModel().getSelectedItem();
-        if( wq != null ){
-            WqueueWaitState state = WqueueWaitState.fromCode(wq.wqueue.waitState);
-            if( state == WqueueWaitState.WaitCashier ) {
-                int visitId = wq.visit.visitId;
-                Store store = new Store();
-                Service.api.getVisitMeisai(visitId)
-                        .thenCompose(meisai -> {
-                            store.meisai = meisai;
-                            return Service.api.listPayment(visitId);
-                        })
-                        .thenCompose(payments -> {
-                            store.payments = payments;
-                            return Service.api.getCharge(visitId);
-                        })
-                        .thenAccept(charge -> Platform.runLater(() -> {
-                            CashierDialog cashierDialog = new CashierDialog(store.meisai, wq.patient,
-                                    store.payments, wq.visit, charge);
-                            cashierDialog.show();
-                        }))
-                        .exceptionally(HandlerFX::exceptionally);
-            }
-        }
-    }
-
-    private void doDeselect(){
+    private void doDeselect() {
         wqueueTable.getSelectionModel().select(null);
     }
 
-    private void doDelete(){
-        WqueueFullDTO wq = wqueueTable.getSelectionModel().getSelectedItem();
-        if( wq != null ){
-            String message = String.format("この診察受付（%s%s）を削除していいですか？", wq.patient.lastName, wq.patient.firstName);
-            if( GuiUtil.confirm(message) ) {
-                ReceptionService.deleteFromWqueue(wq.visit.visitId);
-            }
-        }
+    private void doDelete() {
+        wqueueTable.getSelectedWqueueFullDTO()
+                .thenAccept(wq -> {
+                    if (wq != null) {
+                        String message = String.format("この診察受付（%s%s）を削除していいですか？", wq.patient.lastName, wq.patient.firstName);
+                        if (GuiUtil.confirm(message)) {
+                            ReceptionService.deleteFromWqueue(wq.visit.visitId);
+                        }
+                    }
+                })
+                .exceptionally(HandlerFX::exceptionally);
     }
 
-    private void doNewPatient(){
+    private void doNewPatient() {
         EditPatientStage stage = new EditPatientStage(null);
         stage.setTitle("新規患者入力");
         stage.showAndWait();
         PatientDTO formValue = stage.getFormValue();
-        if( formValue != null ){
+        if (formValue != null) {
             Service.api.enterPatient(formValue)
                     .thenCompose(patientId -> {
                         formValue.patientId = patientId;
@@ -171,19 +176,19 @@ public class MainPane extends VBox implements DispatchHook {
         }
     }
 
-    private void doSearchPatient(){
+    private void doSearchPatient() {
         SearchPatientStage stage = new SearchPatientStage();
         stage.show();
     }
 
-    private void doSearchPayment(){
+    private void doSearchPayment() {
         SearchPaymentStage stage = new SearchPaymentStage();
         stage.show();
     }
 
-    private void doPatientInfo(){
+    private void doPatientInfo() {
         String text = patientIdField.getText().trim();
-        if( text.isEmpty() ){
+        if (text.isEmpty()) {
             return;
         }
         try {
@@ -202,13 +207,13 @@ public class MainPane extends VBox implements DispatchHook {
                         alert.showAndWait();
                         return null;
                     });
-        } catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "患者番号の入力が適切でありません。", ButtonType.OK);
             alert.showAndWait();
         }
     }
 
-    private void doBlankReceipt(){
+    private void doBlankReceipt() {
         ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
         creator.setClinicInfo(ReceptionEnv.INSTANCE.getClinicInfo());
         ReceiptDrawerData data = creator.getData();
@@ -217,7 +222,7 @@ public class MainPane extends VBox implements DispatchHook {
         PrinterEnv printerEnv = null;
         try {
             printerEnv = ReceptionEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
-        } catch(IOException ex){
+        } catch (IOException ex) {
             logger.error("Failed to get PrinterEnv", ex);
             GuiUtil.alertError("Failed to get PrinterEnv");
         }
@@ -226,9 +231,9 @@ public class MainPane extends VBox implements DispatchHook {
         stage.show();
     }
 
-    private void doRegisterForPractice(){
+    private void doRegisterForPractice() {
         String patientIdInput = patientIdField.getText().trim();
-        if( patientIdInput.isEmpty() ){
+        if (patientIdInput.isEmpty()) {
             return;
         }
         try {
@@ -245,10 +250,10 @@ public class MainPane extends VBox implements DispatchHook {
                         Platform.runLater(() -> GuiUtil.alertError("該当する患者を見つけられませんでした。"));
                         return null;
                     });
-        } catch(NumberFormatException numberFormatEsception){
+        } catch (NumberFormatException numberFormatEsception) {
             Service.api.searchPatient(patientIdInput)
                     .thenAccept(patients -> {
-                        if( patients.size() == 0 ){
+                        if (patients.size() == 0) {
                             Platform.runLater(() -> {
                                 GuiUtil.alertError("該当する患者が見つかりませんでした。");
                             });
@@ -257,7 +262,7 @@ public class MainPane extends VBox implements DispatchHook {
                                 SelectPatientDialog dialog = new SelectPatientDialog("診療受付をする患者を選択してください。", patients);
                                 dialog.showAndWait();
                                 PatientDTO selection = dialog.getSelection();
-                                if( selection != null ){
+                                if (selection != null) {
                                     patientIdField.setText("");
                                     registerForPractice(selection);
                                 }
@@ -269,16 +274,16 @@ public class MainPane extends VBox implements DispatchHook {
                         Platform.runLater(() -> GuiUtil.alertException("患者情報が取得できませんでした。", ex));
                         return null;
                     });
-        } catch(Exception ex){
+        } catch (Exception ex) {
             logger.error("Unexpected exception", ex);
             GuiUtil.alertException("Internal error.", ex);
         }
     }
 
-    private void registerForPractice(PatientDTO patient){
+    private void registerForPractice(PatientDTO patient) {
         RegisterForPracticeDialog dialog = new RegisterForPracticeDialog(patient);
         dialog.showAndWait();
-        if( dialog.isOk() ){
+        if (dialog.isOk()) {
             ReceptionService.startVisit(patient.patientId);
 //            Service.api.startVisit(patient.patientId)
 //                    .thenAccept(visitId -> {
@@ -292,7 +297,7 @@ public class MainPane extends VBox implements DispatchHook {
         }
     }
 
-    private void doRefresh(){
+    private void doRefresh() {
         //ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
     }
 

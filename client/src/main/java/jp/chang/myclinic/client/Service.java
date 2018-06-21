@@ -815,6 +815,9 @@ public class Service {
         @GET("list-wqueue-full")
         CompletableFuture<List<WqueueFullDTO>> listWqueue();
 
+        @GET("get-wqueue-full")
+        CompletableFuture<WqueueFullDTO> getWqueueFull(@Query("visit-id") int visitId);
+
         @GET("list-recently-registered-patients")
         CompletableFuture<List<PatientDTO>> listRecentlyRegisteredPatients();
 

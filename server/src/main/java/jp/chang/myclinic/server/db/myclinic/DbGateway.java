@@ -84,17 +84,23 @@ public class DbGateway {
     @Autowired
     private PracticeLogger practiceLogger;
 
+    private WqueueFullDTO composeWqueueFullDTO(Wqueue wqueue){
+        WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
+        wqueueFullDTO.wqueue = mapper.toWqueueDTO(wqueue);
+        wqueueFullDTO.visit = mapper.toVisitDTO(wqueue.getVisit());
+        wqueueFullDTO.patient = mapper.toPatientDTO(wqueue.getVisit().getPatient());
+        return wqueueFullDTO;
+    }
+
     public List<WqueueFullDTO> listWqueueFull() {
         try (Stream<Wqueue> stream = wqueueRepository.findAllAsStream()) {
-            return stream.map(wqueue -> {
-                WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
-                wqueueFullDTO.wqueue = mapper.toWqueueDTO(wqueue);
-                wqueueFullDTO.visit = mapper.toVisitDTO(wqueue.getVisit());
-                wqueueFullDTO.patient = mapper.toPatientDTO(wqueue.getVisit().getPatient());
-                return wqueueFullDTO;
-            })
-                    .collect(Collectors.toList());
+            return stream.map(this::composeWqueueFullDTO).collect(Collectors.toList());
         }
+    }
+
+    public WqueueFullDTO getWqueueFull(int visitId) {
+        Wqueue wqueue = wqueueRepository.findOneByVisitId(visitId);
+        return composeWqueueFullDTO(wqueue);
     }
 
     public List<WqueueFullDTO> listWqueueFullByStates(Set<WqueueWaitState> states) {
@@ -121,8 +127,8 @@ public class DbGateway {
                 .map(this::resultToVisitPatientDTO).collect(Collectors.toList());
     }
 
-    private List<VisitFull2PatientDTO> convertToVisitFull2Patients(List<Integer> visitIds){
-        if( visitIds.isEmpty() ){
+    private List<VisitFull2PatientDTO> convertToVisitFull2Patients(List<Integer> visitIds) {
+        if (visitIds.isEmpty()) {
             return Collections.emptyList();
         } else {
             List<VisitPatientDTO> visitPatients = visitRepository
@@ -151,7 +157,7 @@ public class DbGateway {
         return resultPage;
     }
 
-    public List<VisitFull2PatientDTO> listVisitFull2PatientOfToday(){
+    public List<VisitFull2PatientDTO> listVisitFull2PatientOfToday() {
         List<Integer> visitIds = visitRepository.findVisitIdForToday(Sort.by(Sort.Direction.DESC, "visitId"));
         return convertToVisitFull2Patients(visitIds);
     }
@@ -172,7 +178,7 @@ public class DbGateway {
         practiceLogger.logWqueueDeleted(wqueueDTO);
     }
 
-    private void changeWqueueState(int visitId, int state){
+    private void changeWqueueState(int visitId, int state) {
         Wqueue wqueue = wqueueRepository.findOneByVisitId(visitId);
         WqueueDTO prev = mapper.toWqueueDTO(wqueue);
         wqueue.setWaitState(state);
@@ -333,7 +339,7 @@ public class DbGateway {
                 .map(mapper::toShahokokuhoDTO).collect(Collectors.toList());
     }
 
-    public ShahokokuhoDTO getShahokokuho(int shahokokuhoId){
+    public ShahokokuhoDTO getShahokokuho(int shahokokuhoId) {
         return mapper.toShahokokuhoDTO(shahokokuhoRepository.findById(shahokokuhoId));
     }
 
@@ -374,7 +380,7 @@ public class DbGateway {
         return roujin.getRoujinId();
     }
 
-    public KoukikoureiDTO getKoukikourei(int koukikoureiId){
+    public KoukikoureiDTO getKoukikourei(int koukikoureiId) {
         return mapper.toKoukikoureiDTO(koukikoureiRepository.findById(koukikoureiId));
     }
 
@@ -401,7 +407,7 @@ public class DbGateway {
                 .map(mapper::toRoujinDTO).collect(Collectors.toList());
     }
 
-    public RoujinDTO getRoujin(int roujinId){
+    public RoujinDTO getRoujin(int roujinId) {
         return mapper.toRoujinDTO(roujinRepository.findById(roujinId));
     }
 
@@ -435,7 +441,7 @@ public class DbGateway {
                 .map(mapper::toKouhiDTO).collect(Collectors.toList());
     }
 
-    public KouhiDTO getKouhi(int kouhiId){
+    public KouhiDTO getKouhi(int kouhiId) {
         return mapper.toKouhiDTO(kouhiRepository.findById(kouhiId));
     }
 
@@ -570,14 +576,14 @@ public class DbGateway {
         return resultToShinryouFullDTO(result);
     }
 
-    public ShinryouDTO getShinryou(int shinryouId){
+    public ShinryouDTO getShinryou(int shinryouId) {
         return mapper.toShinryouDTO(shinryouRepository.findById(shinryouId));
     }
 
     public void batchDeleteShinryou(List<Integer> shinryouIds) {
         List<ShinryouDTO> deletedList = shinryouIds.stream()
                 .map(this::getShinryou).collect(Collectors.toList());
-        if( deletedList.size() > 0 ) {
+        if (deletedList.size() > 0) {
             shinryouRepository.batchDelete(shinryouIds);
             deletedList.forEach(practiceLogger::logShinryouDeleted);
         }
@@ -600,7 +606,7 @@ public class DbGateway {
 
     public ShinryouDTO enterShinryou(ShinryouDTO shinryouDTO) {
         Shinryou shinryou = mapper.fromShinryouDTO(shinryouDTO);
-        ShinryouDTO created =  mapper.toShinryouDTO(shinryouRepository.save(shinryou));
+        ShinryouDTO created = mapper.toShinryouDTO(shinryouRepository.save(shinryou));
         practiceLogger.logShinryouCreated(created);
         return created;
     }
@@ -655,7 +661,7 @@ public class DbGateway {
         }
     }
 
-    public List<DrugDTO> listDrug(int visitId){
+    public List<DrugDTO> listDrug(int visitId) {
         return drugRepository.findByVisitId(visitId, Sort.by("drugId"))
                 .stream()
                 .map(mapper::toDrugDTO)
@@ -677,7 +683,7 @@ public class DbGateway {
         return drug.getDrugId();
     }
 
-    public DrugDTO getDrug(int drugId){
+    public DrugDTO getDrug(int drugId) {
         return mapper.toDrugDTO(drugRepository.findById(drugId));
     }
 
@@ -698,9 +704,9 @@ public class DbGateway {
         List<DrugDTO> prevDrugs = listDrug(visitId);
         drugRepository.markAsPrescribedForVisit(visitId);
         List<DrugDTO> updatedDrugs = listDrug(visitId);
-        for(int i=0;i<prevDrugs.size();i++){
+        for (int i = 0; i < prevDrugs.size(); i++) {
             DrugDTO prev = prevDrugs.get(i);
-            if( prev.prescribed == 0 ){
+            if (prev.prescribed == 0) {
                 practiceLogger.logDrugUpdated(prev, updatedDrugs.get(i));
             }
         }
@@ -726,9 +732,9 @@ public class DbGateway {
         drugRepository.batchUpdateDays(drugIds, days);
         List<DrugDTO> updatedDrugs = drugIds.stream()
                 .map(this::getDrug).collect(Collectors.toList());
-        for(int i=0;i<prevDrugs.size();i++){
+        for (int i = 0; i < prevDrugs.size(); i++) {
             DrugDTO prev = prevDrugs.get(i);
-            if( prev.days != days ){
+            if (prev.days != days) {
                 practiceLogger.logDrugUpdated(prev, updatedDrugs.get(i));
             }
         }
@@ -1230,7 +1236,7 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
-    public PharmaQueueFullDTO getPharmaQueueFull(int visitId){
+    public PharmaQueueFullDTO getPharmaQueueFull(int visitId) {
         VisitDTO visitDTO = getVisit(visitId);
         PharmaQueueFullDTO result = new PharmaQueueFullDTO();
         result.visitId = visitId;
@@ -1501,7 +1507,7 @@ public class DbGateway {
 
     public DiseaseFullDTO getDiseaseFull(int diseaseId) {
         List<Object[]> resultList = diseaseRepository.findFull(diseaseId);
-        if( resultList.size() == 0 ){
+        if (resultList.size() == 0) {
             throw new RuntimeException("Cannot find full disease. " + diseaseId);
         }
         Object[] result = resultList.get(0);
@@ -1545,7 +1551,7 @@ public class DbGateway {
         DiseaseDTO diseaseDTO = diseaseModifyDTO.disease;
         Disease d = diseaseRepository.findById(diseaseDTO.diseaseId);
         DiseaseDTO prevDisease = mapper.toDiseaseDTO(d);
-        if( !diseaseDTO.equals(prevDisease) ){
+        if (!diseaseDTO.equals(prevDisease)) {
             d.setShoubyoumeicode(diseaseDTO.shoubyoumeicode);
             d.setStartDate(diseaseDTO.startDate);
             d.setEndDate(diseaseDTO.endDate);
@@ -1555,8 +1561,8 @@ public class DbGateway {
         }
         List<DiseaseAdj> adjList = diseaseAdjRepository.findByDiseaseId(diseaseDTO.diseaseId, Sort.by("diseaseAdjId"));
         List<Integer> prevAdjCodes = adjList.stream().map(DiseaseAdj::getShuushokugocode).collect(Collectors.toList());
-        if( !prevAdjCodes.equals(diseaseModifyDTO.shuushokugocodes) ){
-            if( adjList.size() > 0 ){
+        if (!prevAdjCodes.equals(diseaseModifyDTO.shuushokugocodes)) {
+            if (adjList.size() > 0) {
                 adjList.forEach(adj -> {
                     DiseaseAdjDTO deleted = mapper.toDiseaseAdjDTO(adj);
                     diseaseAdjRepository.delete(adj);
@@ -1643,13 +1649,13 @@ public class DbGateway {
         return resultPage;
     }
 
-    public List<VisitChargePatientDTO> listVisitChargePatientAt(LocalDate at){
+    public List<VisitChargePatientDTO> listVisitChargePatientAt(LocalDate at) {
         return visitRepository.listVisitChargePatientAt(at.toString(), Sort.by("visitId"))
                 .stream()
                 .map(obs -> {
-                    VisitDTO visit = mapper.toVisitDTO((Visit)obs[0]);
-                    ChargeDTO charge = mapper.toChargeDTO((Charge)obs[1]);
-                    PatientDTO patient = mapper.toPatientDTO((Patient)obs[2]);
+                    VisitDTO visit = mapper.toVisitDTO((Visit) obs[0]);
+                    ChargeDTO charge = mapper.toChargeDTO((Charge) obs[1]);
+                    PatientDTO patient = mapper.toPatientDTO((Patient) obs[2]);
                     VisitChargePatientDTO dto = new VisitChargePatientDTO();
                     dto.visit = visit;
                     dto.charge = charge;
@@ -1760,7 +1766,7 @@ public class DbGateway {
         return visitRepository.listVisitingPatientIdHavingHoken(year, month);
     }
 
-    public List<VisitFull2DTO> listVisitByPatientHavingHoken(int patientId, int year, int month){
+    public List<VisitFull2DTO> listVisitByPatientHavingHoken(int patientId, int year, int month) {
         return visitRepository.listVisitIdByPatientHavingHoken(patientId, year, month)
                 .stream()
                 .map(visitId -> {
@@ -1781,28 +1787,28 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
-    public List<PracticeLogDTO> listPracticeLogByDate(LocalDate at){
+    public List<PracticeLogDTO> listPracticeLogByDate(LocalDate at) {
         return practiceLogRepository.findByDate(at.toString(), Sort.by("practiceLogId"))
                 .stream()
                 .map(mapper::toPracticeLogDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<PracticeLogDTO> listRecentPracticeLog(LocalDate at, int lastId){
+    public List<PracticeLogDTO> listRecentPracticeLog(LocalDate at, int lastId) {
         return practiceLogRepository.findRecent(at.toString(), lastId, Sort.by("practiceLogId"))
                 .stream()
                 .map(mapper::toPracticeLogDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<PracticeLogDTO> listPracticeLogInRange(LocalDate at, int afterId, int beforeId){
+    public List<PracticeLogDTO> listPracticeLogInRange(LocalDate at, int afterId, int beforeId) {
         return practiceLogRepository.findInRange(at.toString(), afterId, beforeId, Sort.by("practiceLogId"))
                 .stream()
                 .map(mapper::toPracticeLogDTO)
                 .collect(Collectors.toList());
     }
 
-    public PracticeLog insertPracticeLog(LocalDate date, String kind, String body){
+    public PracticeLog insertPracticeLog(LocalDate date, String kind, String body) {
         PracticeLog data = new PracticeLog();
         data.setDate(date.toString());
         data.setKind(kind);
@@ -1810,7 +1816,7 @@ public class DbGateway {
         return practiceLogRepository.save(data);
     }
 
-    public PracticeLogDTO findLastPracticeLog(){
+    public PracticeLogDTO findLastPracticeLog() {
         String today = LocalDate.now().toString();
         return practiceLogRepository.findFirstByDateOrderByPracticeLogIdDesc(today)
                 .map(mapper::toPracticeLogDTO)

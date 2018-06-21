@@ -7,12 +7,15 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
+import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.reception.tracker.model.Patient;
 import jp.chang.myclinic.reception.tracker.model.Wqueue;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
 
 public class WqueueTable extends TableView<Wqueue> {
 
@@ -166,6 +169,15 @@ public class WqueueTable extends TableView<Wqueue> {
             }
         });
         getColumns().add(ageColumn);
+    }
+
+    public CompletableFuture<WqueueFullDTO> getSelectedWqueueFullDTO(){
+        Wqueue wqueue = getSelectionModel().getSelectedItem();
+        if( wqueue == null ){
+            return CompletableFuture.completedFuture(null);
+        } else {
+            return Service.api.getWqueueFull(wqueue.getVisit().getVisitId());
+        }
     }
 
     public void printColumnWidths() {

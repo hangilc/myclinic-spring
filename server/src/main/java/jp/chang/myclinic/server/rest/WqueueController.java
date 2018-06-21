@@ -60,6 +60,11 @@ public class WqueueController {
 		return dbGateway.listWqueueFullByStates(inWaitingExamStates);
 	}
 
+	@RequestMapping(value="/get-wqueue-full", method=RequestMethod.GET)
+	public WqueueFullDTO getWqueueFull(@RequestParam("visit-id") int visitId){
+		return dbGateway.getWqueueFull(visitId);
+	}
+
 	@RequestMapping(value="/list-wqueue-for-exam", method=RequestMethod.GET)
 	public List<WqueueDTO> listWqueueForExam(){
 		return dbGateway.listWqueueByStates(forExamStates, new Sort(Sort.Direction.DESC, "visitId"));
