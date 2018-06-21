@@ -1,10 +1,9 @@
 package jp.chang.myclinic.reception.lib;
 
 import javafx.application.Platform;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.dto.PaymentDTO;
-import jp.chang.myclinic.reception.ReceptionEnv;
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,7 @@ public class ReceptionService {
         Service.api.startVisit(patientId)
                 .thenAccept(visitId -> {
                     Platform.runLater(() -> {
-                        ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
+                        //ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
                         cb.accept(visitId);
                     });
                 })
@@ -72,7 +71,7 @@ public class ReceptionService {
     public static void finishCashier(PaymentDTO payment, Runnable cb){
         Service.api.finishCashier(payment)
                 .thenAccept(result -> {
-                    ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
+                    //ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
                     Platform.runLater(() -> cb.run());
                 })
                 .exceptionally(ex -> {
@@ -85,7 +84,7 @@ public class ReceptionService {
     public static void deleteFromWqueue(int visitId){
         Service.api.deleteVisitFromReception(visitId)
                 .thenAccept(result -> {
-                    ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
+                    //ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
                 })
                 .exceptionally(ex -> {
                     logger.error("Failed to delete visit from wqueue.", ex);

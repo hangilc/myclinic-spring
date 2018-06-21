@@ -20,6 +20,7 @@ import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;
+import jp.chang.myclinic.reception.tracker.DispatchHook;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
@@ -28,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-public class MainPane extends VBox {
+public class MainPane extends VBox implements DispatchHook {
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
 
     private Button searchPatientButton = new Button("患者検索");
@@ -292,7 +293,7 @@ public class MainPane extends VBox {
     }
 
     private void doRefresh(){
-        ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
+        //ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
     }
 
 }

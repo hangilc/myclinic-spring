@@ -27,7 +27,7 @@ public class ReceptionEnv {
     private ClinicInfoDTO clinicInfo;
     private MyclinicEnv myclinicEnv;
     private ObjectProperty<List<WqueueFullDTO>> wqueueList = new SimpleObjectProperty<>(Collections.emptyList());
-    private WqueueReloader wqueueReloader;
+    //private WqueueReloader wqueueReloader;
 
     public void updateWithArgs(ReceptionArgs args) throws IOException {
         this.workdir = args.workingDirPath;
@@ -111,13 +111,13 @@ public class ReceptionEnv {
         this.wqueueList.set(wqueueList);
     }
 
-    public WqueueReloader getWqueueReloader() {
-        return wqueueReloader;
-    }
-
-    public void setWqueueReloader(WqueueReloader wqueueReloader) {
-        this.wqueueReloader = wqueueReloader;
-    }
+//    public WqueueReloader getWqueueReloader() {
+//        return wqueueReloader;
+//    }
+//
+//    public void setWqueueReloader(WqueueReloader wqueueReloader) {
+//        this.wqueueReloader = wqueueReloader;
+//    }
 
     @Override
     public String toString() {
