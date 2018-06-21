@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.javafx.Form;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

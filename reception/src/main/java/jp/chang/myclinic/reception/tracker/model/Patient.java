@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;

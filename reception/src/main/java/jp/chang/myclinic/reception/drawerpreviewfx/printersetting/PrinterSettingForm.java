@@ -6,6 +6,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.reception.javafx.Form;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
