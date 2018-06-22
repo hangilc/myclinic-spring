@@ -312,5 +312,6 @@ public class MainPane extends VBox implements DispatchHook {
     @Override
     public void onWqueueDeleted(int visitId, Runnable toNext) {
         wqueueList.removeIf(wq -> wq.getVisit().getVisitId() == visitId);
+        toNext.run();
     }
 }

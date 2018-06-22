@@ -1,5 +1,6 @@
 package jp.chang.myclinic.reception.tracker;
 
+import javafx.application.Platform;
 import jp.chang.myclinic.dto.PharmaQueueDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
@@ -20,7 +21,7 @@ class ActionHook implements DispatchAction {
     @Override
     public void onVisitCreated(VisitDTO created, Runnable toNext) {
         registry.createVisit(created)
-                .thenAccept(visit -> hook.onVisitCreated(visit, toNext))
+                .thenAccept(visit -> Platform.runLater(() -> hook.onVisitCreated(visit, toNext)))
                 .exceptionally(HandlerFX::exceptionally);
     }
 
