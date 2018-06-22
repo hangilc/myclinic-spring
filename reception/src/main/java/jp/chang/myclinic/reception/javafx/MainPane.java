@@ -1,6 +1,9 @@
 package jp.chang.myclinic.reception.javafx;
 
 import javafx.application.Platform;
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -20,6 +23,7 @@ import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;
 import jp.chang.myclinic.reception.tracker.DispatchHook;
+import jp.chang.myclinic.reception.tracker.model.Wqueue;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
@@ -37,6 +41,11 @@ public class MainPane extends VBox implements DispatchHook {
     private TextField patientIdField = new TextField();
 
     private WqueueTable wqueueTable = new WqueueTable();
+    private ObservableList<Wqueue> wqueueList = FXCollections.observableArrayList(wq -> {
+        return new Observable[]{
+                wq.waitStateProperty()
+        };
+    });
 
     public MainPane() {
         setSpacing(4);
@@ -67,6 +76,7 @@ public class MainPane extends VBox implements DispatchHook {
             getChildren().add(hbox);
         }
         {
+            wqueueTable.setItems(wqueueList);
             getChildren().add(wqueueTable);
         }
         {
@@ -82,23 +92,15 @@ public class MainPane extends VBox implements DispatchHook {
             hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton);
             getChildren().add(hbox);
         }
-//        ReceptionEnv.INSTANCE.wqueueListProperty().addListener((obs, oldValue, newValue) -> {
-//            WqueueFullDTO newSelection = null;
-//            WqueueFullDTO oldSelection = wqueueTable.getSelectionModel().getSelectedItem();
-//            if( oldSelection != null ){
-//                int visitId = oldSelection.visit.visitId;
-//                for(WqueueFullDTO wq: newValue){
-//                    if( wq.visit.visitId == visitId ){
-//                        newSelection = wq;
-//                        break;
-//                    }
-//                }
-//            }
-//            wqueueTable.getItems().setAll(newValue);
-//            if( newSelection != null ){
-//                wqueueTable.getSelectionModel().select(newSelection);
-//            }
-//        });
+    }
+
+    public void setWqueueList(ObservableList<Wqueue> wqueueList){
+        ObservableList<Wqueue> list = FXCollections.observableList(wqueueList, wq -> {
+            return new Observable[]{
+                wq.waitStateProperty()
+            };
+        });
+        wqueueTable.setItems(list);
     }
 
     private void doCashier() {
@@ -301,4 +303,14 @@ public class MainPane extends VBox implements DispatchHook {
         //ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
     }
 
+    @Override
+    public void onWqueueCreated(Wqueue created, Runnable toNext) {
+        wqueueList.add(created);
+        toNext.run();
+    }
+
+    @Override
+    public void onWqueueDeleted(int visitId, Runnable toNext) {
+        wqueueList.removeIf(wq -> wq.getVisit().getVisitId() == visitId);
+    }
 }

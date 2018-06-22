@@ -3,9 +3,9 @@ package jp.chang.myclinic.reception.tracker;
 import jp.chang.myclinic.dto.PharmaQueueDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
-import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.reception.tracker.model.PharmaQueue;
 import jp.chang.myclinic.reception.tracker.model.Wqueue;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 class ActionHook implements DispatchAction {
 
