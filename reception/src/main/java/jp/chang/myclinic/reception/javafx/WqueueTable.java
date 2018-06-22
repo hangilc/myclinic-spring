@@ -1,13 +1,14 @@
 package jp.chang.myclinic.reception.javafx;
 
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.reception.tracker.model.Patient;
@@ -21,34 +22,30 @@ public class WqueueTable extends TableView<Wqueue> {
 
     public WqueueTable() {
         getStyleClass().add("wqueue-table");
-        TableColumn<Wqueue, String> waitStateColumn = new TableColumn<>("状態");
-        waitStateColumn.setCellValueFactory(feature -> {
-            String label = WqueueWaitState.codeToLabel(feature.getValue().getWaitState());
-            return new SimpleStringProperty(label);
-        });
+        TableColumn<Wqueue, Number> waitStateColumn = new TableColumn<>("状態");
+        waitStateColumn.setCellValueFactory(feature -> feature.getValue().waitStateProperty());
         waitStateColumn.getStyleClass().add("state-column");
-        waitStateColumn.setCellFactory(param -> new TableCell<Wqueue, String>() {
+        waitStateColumn.setCellFactory(param -> new TableCell<Wqueue, Number>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
+            protected void updateItem(Number item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty ? "" : item);
-                if (!empty) {
-                    Wqueue wqueue = (Wqueue) getTableRow().getItem();
-                    if (wqueue != null) {
-                        WqueueWaitState state = WqueueWaitState.fromCode(wqueue.getWaitState());
-                        if (state != null) {
-                            TableRow tableRow = getTableRow();
-                            tableRow.getStyleClass().removeAll("wait-cashier", "wait-drug");
-                            switch (state) {
-                                case WaitCashier:
-                                    tableRow.getStyleClass().add("wait-cashier");
-                                    break;
-                                case WaitDrug:
-                                    tableRow.getStyleClass().add("wait-drug");
-                                    break;
-                            }
+                if (!empty && item != null) {
+                    WqueueWaitState state = WqueueWaitState.fromCode(item.intValue());
+                    if (state != null) {
+                        setText(state.getLabel());
+                        TableRow tableRow = getTableRow();
+                        tableRow.getStyleClass().removeAll("wait-cashier", "wait-drug");
+                        switch (state) {
+                            case WaitCashier:
+                                tableRow.getStyleClass().add("wait-cashier");
+                                break;
+                            case WaitDrug:
+                                tableRow.getStyleClass().add("wait-drug");
+                                break;
                         }
                     }
+                } else {
+                    setText("");
                 }
             }
         });
@@ -71,8 +68,7 @@ public class WqueueTable extends TableView<Wqueue> {
         TableColumn<Wqueue, String> nameColumn = new TableColumn<>("氏名");
         nameColumn.setCellValueFactory(feature -> {
             Patient patient = feature.getValue().getVisit().getPatient();
-            String text = patient.getLastName() + " " + patient.getFirstName();
-            return new SimpleStringProperty(text);
+            return Bindings.concat(patient.lastNameProperty(), " ", patient.firstNameProperty());
         });
         nameColumn.setPrefWidth(90);
         nameColumn.setCellFactory(col -> new TableCell<Wqueue, String>() {
@@ -87,8 +83,7 @@ public class WqueueTable extends TableView<Wqueue> {
         TableColumn<Wqueue, String> yomiColumn = new TableColumn<>("よみ");
         yomiColumn.setCellValueFactory(feature -> {
             Patient patient = feature.getValue().getVisit().getPatient();
-            String text = patient.getLastNameYomi() + " " + patient.getFirstNameYomi();
-            return new SimpleStringProperty(text);
+            return Bindings.concat(patient.lastNameYomiProperty(), " ", patient.firstNameYomiProperty());
         });
         yomiColumn.setPrefWidth(100);
         yomiColumn.setCellFactory(col -> new TableCell<Wqueue, String>() {
@@ -100,80 +95,68 @@ public class WqueueTable extends TableView<Wqueue> {
         });
         getColumns().add(yomiColumn);
 
-        TableColumn<Wqueue, String> sexColumn = new TableColumn<>("性別");
+        TableColumn<Wqueue, Sex> sexColumn = new TableColumn<>("性別");
         sexColumn.setCellValueFactory(feature -> {
-            String text = feature.getValue().getVisit().getPatient().getSex().getKanji();
-            return new SimpleStringProperty(text);
+            return feature.getValue().getVisit().getPatient().sexProperty();
         });
         sexColumn.setPrefWidth(38);
-        sexColumn.setCellFactory(col -> new TableCell<Wqueue, String>() {
+        sexColumn.setCellFactory(col -> new TableCell<Wqueue, Sex>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
+            protected void updateItem(Sex item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty ? "" : item);
+                if( !empty && item != null ){
+                    setText(item.getKanji());
+                } else {
+                    setText("");
+                }
                 setStyle("-fx-alignment: center");
             }
         });
         getColumns().add(sexColumn);
 
-        TableColumn<Wqueue, String> birthdayColumn = new TableColumn<>("生年月日");
+        TableColumn<Wqueue, LocalDate> birthdayColumn = new TableColumn<>("生年月日");
         birthdayColumn.setCellValueFactory(feature -> {
-            Patient patient = feature.getValue().getVisit().getPatient();
-            String text;
-            try {
-                if( patient.getBirthday() != null ){
-                    text = DateTimeUtil.toKanji(patient.getBirthday(),
-                            DateTimeUtil.kanjiFormatter2);
-                } else {
-                    text = "";
-                }
-            } catch (Exception ex) {
-                text = "";
-            }
-            return new SimpleStringProperty(text);
+            return feature.getValue().getVisit().getPatient().birthdayProperty();
         });
         birthdayColumn.setPrefWidth(112);
-        birthdayColumn.setCellFactory(col -> new TableCell<Wqueue, String>() {
+        birthdayColumn.setCellFactory(col -> new TableCell<Wqueue, LocalDate>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
+            protected void updateItem(LocalDate item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty ? "" : item);
+                if( !empty && item != null ){
+                    setText(DateTimeUtil.toKanji(item, DateTimeUtil.kanjiFormatter2));
+                } else {
+                    setText("");
+                }
                 setStyle("-fx-alignment: center");
             }
         });
         getColumns().add(birthdayColumn);
 
-        TableColumn<Wqueue, String> ageColumn = new TableColumn<>("年齢");
+        TableColumn<Wqueue, LocalDate> ageColumn = new TableColumn<>("年齢");
         ageColumn.setCellValueFactory(feature -> {
-            Patient patient = feature.getValue().getVisit().getPatient();
-            String text;
-            try {
-                LocalDate d = patient.getBirthday();
-                if( d != null ) {
-                    text = String.format("% 2d才", DateTimeUtil.calcAge(d));
-                } else {
-                    text = "";
-                }
-            } catch (Exception ex) {
-                text = "";
-            }
-            return new SimpleStringProperty(text);
+            return feature.getValue().getVisit().getPatient().birthdayProperty();
         });
         ageColumn.setPrefWidth(40);
-        ageColumn.setCellFactory(col -> new TableCell<Wqueue, String>() {
+        ageColumn.setCellFactory(col -> new TableCell<Wqueue, LocalDate>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
+            protected void updateItem(LocalDate item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(empty ? "" : item);
+                if( !empty && item != null ){
+                    int age = DateTimeUtil.calcAge(item);
+                    setText(age + "才");
+                } else {
+                    setText("");
+                }
                 setStyle("-fx-alignment: center");
             }
         });
         getColumns().add(ageColumn);
     }
 
-    public CompletableFuture<WqueueFullDTO> getSelectedWqueueFullDTO(){
+    public CompletableFuture<WqueueFullDTO> getSelectedWqueueFullDTO() {
         Wqueue wqueue = getSelectionModel().getSelectedItem();
-        if( wqueue == null ){
+        if (wqueue == null) {
             return CompletableFuture.completedFuture(null);
         } else {
             return Service.api.getWqueueFull(wqueue.getVisit().getVisitId());

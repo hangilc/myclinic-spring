@@ -107,7 +107,7 @@ public class ModelRegistry {
         return null;
     }
 
-    public CompletableFuture<Patient> getPatient(int patientId) {
+    private CompletableFuture<Patient> getPatient(int patientId) {
         if (patientRegistry.containsKey(patientId)) {
             return CompletableFuture.completedFuture(patientRegistry.get(patientId));
         } else {
@@ -120,7 +120,7 @@ public class ModelRegistry {
         }
     }
 
-    public CompletableFuture<Shahokokuho> getShahokokuho(int shahokokuhoId) {
+    private CompletableFuture<Shahokokuho> getShahokokuho(int shahokokuhoId) {
         if (shahokokuhoRegistry.containsKey(shahokokuhoId)) {
             return CompletableFuture.completedFuture(shahokokuhoRegistry.get(shahokokuhoId));
         } else {
@@ -133,7 +133,7 @@ public class ModelRegistry {
         }
     }
 
-    public CompletableFuture<Koukikourei> getKoukikourei(int koukikoureiId) {
+    private CompletableFuture<Koukikourei> getKoukikourei(int koukikoureiId) {
         if (koukikoureiRegistry.containsKey(koukikoureiId)) {
             return CompletableFuture.completedFuture(koukikoureiRegistry.get(koukikoureiId));
         } else {
@@ -146,7 +146,7 @@ public class ModelRegistry {
         }
     }
 
-    public CompletableFuture<Kouhi> getKouhi(int kouhiId) {
+    private CompletableFuture<Kouhi> getKouhi(int kouhiId) {
         if (kouhiRegistry.containsKey(kouhiId)) {
             return CompletableFuture.completedFuture(kouhiRegistry.get(kouhiId));
         } else {
@@ -159,7 +159,7 @@ public class ModelRegistry {
         }
     }
 
-    public CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode) {
+    private CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode) {
         if (iyakuhinMasterRegistry.containsKey(iyakuhincode)) {
             return CompletableFuture.completedFuture(iyakuhinMasterRegistry.get(iyakuhincode));
         } else {
@@ -171,7 +171,7 @@ public class ModelRegistry {
         }
     }
 
-    public CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode) {
+    private CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode) {
         if (shinryouMasterRegistry.containsKey(shinryoucode)) {
             return CompletableFuture.completedFuture(shinryouMasterRegistry.get(shinryoucode));
         } else {
@@ -183,7 +183,7 @@ public class ModelRegistry {
         }
     }
 
-    public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode) {
+    private CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode) {
         if (kizaiMasterRegistry.containsKey(kizaicode)) {
             return CompletableFuture.completedFuture(kizaiMasterRegistry.get(kizaicode));
         } else {

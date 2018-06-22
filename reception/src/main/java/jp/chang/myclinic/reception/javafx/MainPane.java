@@ -41,10 +41,8 @@ public class MainPane extends VBox implements DispatchHook {
     private TextField patientIdField = new TextField();
 
     private WqueueTable wqueueTable = new WqueueTable();
-    private ObservableList<Wqueue> wqueueList = FXCollections.observableArrayList(wq -> {
-        return new Observable[]{
-                wq.waitStateProperty()
-        };
+    private ObservableList<Wqueue> wqueueList = FXCollections.observableArrayList(wq -> new Observable[]{
+            wq.waitStateProperty()
     });
 
     public MainPane() {
@@ -76,7 +74,7 @@ public class MainPane extends VBox implements DispatchHook {
             getChildren().add(hbox);
         }
         {
-            wqueueTable.setItems(wqueueList);
+            wqueueTable.itemsProperty().set(wqueueList);
             getChildren().add(wqueueTable);
         }
         {

@@ -7,8 +7,12 @@ import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.reception.tracker.model.PharmaQueue;
 import jp.chang.myclinic.reception.tracker.model.Wqueue;
 import jp.chang.myclinic.utilfx.HandlerFX;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ActionHook implements DispatchAction {
+
+    private static Logger logger = LoggerFactory.getLogger(ActionHook.class);
 
     private ModelRegistry registry;
     private DispatchHook hook;
