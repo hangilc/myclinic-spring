@@ -264,6 +264,21 @@ class Dispatcher implements Runnable {
                     action.onPharmaQueueDeleted(body.deleted, toNext);
                     break;
                 }
+                case "patient-created": {
+                    PatientCreated body = mapper.readValue(log.body, PatientCreated.class);
+                    action.onPatientCreated(body.created, toNext);
+                    break;
+                }
+                case "patient-updated": {
+                    PatientUpdated body = mapper.readValue(log.body, PatientUpdated.class);
+                    action.onPatientUpdated(body.prev, body.updated, toNext);
+                    break;
+                }
+                case "patient-deleted": {
+                    PatientDeleted body = mapper.readValue(log.body, PatientDeleted.class);
+                    action.onPatientDeleted(body.deleted, toNext);
+                    break;
+                }
                 default: {
                     System.err.println("Unknown kind: " + log.kind);
                     toNext.run();

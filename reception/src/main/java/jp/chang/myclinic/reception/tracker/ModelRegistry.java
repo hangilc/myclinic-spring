@@ -1,7 +1,6 @@
 package jp.chang.myclinic.reception.tracker;
 
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.reception.tracker.model.*;
 
@@ -98,14 +97,14 @@ public class ModelRegistry {
         return visitRegistry.get(visitId);
     }
 
-    public Visit getCurrentVisit(){
-        for(Visit visit: visitRegistry.values()){
-            if( visit.getWqueueState() == WqueueWaitState.InExam.getCode() ){
-                return visit;
-            }
-        }
-        return null;
-    }
+//    public Visit getCurrentVisit(){
+//        for(Visit visit: visitRegistry.values()){
+//            if( visit.getWqueueState() == WqueueWaitState.InExam.getCode() ){
+//                return visit;
+//            }
+//        }
+//        return null;
+//    }
 
     private CompletableFuture<Patient> getPatient(int patientId) {
         if (patientRegistry.containsKey(patientId)) {
@@ -118,6 +117,10 @@ public class ModelRegistry {
                         return patient;
                     });
         }
+    }
+
+    public Patient findPatient(int patientId){
+        return patientRegistry.get(patientId);
     }
 
     private CompletableFuture<Shahokokuho> getShahokokuho(int shahokokuhoId) {

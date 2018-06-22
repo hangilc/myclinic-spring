@@ -33,4 +33,7 @@ public interface DispatchAction {
     default void onPharmaQueueCreated(PharmaQueueDTO created, Runnable cb){ cb.run(); }
     default void onPharmaQueueUpdated(PharmaQueueDTO prev, PharmaQueueDTO updated, Runnable cb){ cb.run(); }
     default void onPharmaQueueDeleted(PharmaQueueDTO deleted, Runnable cb){ cb.run(); }
+    default void onPatientCreated(PatientDTO created, Runnable cb){ cb.run(); }
+    default void onPatientUpdated(PatientDTO prev, PatientDTO updated, Runnable cb){ cb.run(); }
+    default void onPatientDeleted(PatientDTO deleted, Runnable cb){ cb.run(); }
 }
