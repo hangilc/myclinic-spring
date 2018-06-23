@@ -1447,7 +1447,7 @@ public class DbGateway {
     }
 
     public List<HotlineDTO> listTodaysHotlineInRange(int afterId, int beforeId){
-        return hotlineRepository.findTodaysHotlineInRange(afterId, beforeId, Sort.by(Sort.Direction.DESC, "hotlineId"))
+        return hotlineRepository.findTodaysHotlineInRange(afterId, beforeId, Sort.by("hotlineId"))
                 .stream()
                 .map(mapper::toHotlineDTO)
                 .collect(Collectors.toList());

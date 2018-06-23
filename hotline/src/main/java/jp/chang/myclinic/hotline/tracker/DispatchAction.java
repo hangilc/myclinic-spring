@@ -4,6 +4,6 @@ import jp.chang.myclinic.dto.HotlineDTO;
 
 public interface DispatchAction {
 
-    default public void onHotlineCreated(HotlineDTO created, Runnable toNext){ toNext.run(); }
+    default public void onHotlineCreated(HotlineDTO created, boolean initialSetup, Runnable toNext){ toNext.run(); }
 
 }

@@ -38,16 +38,6 @@ class Dispatcher implements Runnable {
         }
     }
 
-    public void addAll(List<HotlineDTO> logs){
-        try {
-            for (HotlineDTO log : logs) {
-                pendings.put(log);
-            }
-        } catch(InterruptedException e){
-            logger.error("Failed to add practice log.", e);
-        }
-    }
-
     @Override
     public void run() {
         try {
@@ -57,7 +47,7 @@ class Dispatcher implements Runnable {
                 HotlineDTO log = pendings.take();
                 int logSerialId = log.hotlineId;
                 if (logSerialId == (lastId + 1)) {
-                    Platform.runLater(() -> dispatchOne(log));
+                    Platform.runLater(() -> dispatchOne(log, false));
                     taskPermit.acquire();
                     this.lastId = logSerialId;
                 } else if ( logSerialId > (lastId + 1)) {
@@ -78,6 +68,7 @@ class Dispatcher implements Runnable {
     }
 
     private void catchUp(int lastId, int nextId, HotlineDTO nextLog) throws InterruptedException {
+        boolean initialSetup = lastId == 0;
         boolean needCallback = false;
         try {
             final List<HotlineDTO> logs =
@@ -93,7 +84,7 @@ class Dispatcher implements Runnable {
             Local local = new Local();
             while( local.i < logs.size() ){
                 HotlineDTO currentLog = logs.get(local.i);
-                Platform.runLater(() -> dispatchOne(currentLog));
+                Platform.runLater(() -> dispatchOne(currentLog, initialSetup));
                 taskPermit.acquire();
                 this.lastId = currentLog.hotlineId;
                 local.i += 1;
@@ -109,8 +100,8 @@ class Dispatcher implements Runnable {
         }
     }
 
-    private void dispatchOne(HotlineDTO log) {
-        action.onHotlineCreated(log, toNext);
+    private void dispatchOne(HotlineDTO log, boolean initialSetup) {
+        action.onHotlineCreated(log, initialSetup, toNext);
     }
 
 }

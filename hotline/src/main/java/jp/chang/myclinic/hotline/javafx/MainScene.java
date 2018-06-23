@@ -15,7 +15,6 @@ import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.hotline.*;
 import jp.chang.myclinic.hotline.lib.HotlineUtil;
-import jp.chang.myclinic.hotline.lib.PeriodicFetcher;
 import jp.chang.myclinic.hotline.tracker.DispatchAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,6 +129,31 @@ class MainScene extends VBox implements DispatchAction {
         label.setWrapText(true);
         errorMessage = label;
         return label;
+    }
+
+    public void addHotlinePost(HotlineDTO post, boolean initialSetup){
+        User myself = Context.INSTANCE.getSender();
+        User postSender = User.fromName(post.sender);
+        User postRecipient = User.fromName(post.recipient);
+        if( postSender != null && postRecipient != null ){
+            if( isMyPost(postSender, postRecipient) ){
+                if( isBeepPost(post.message) ){
+                    if( !initialSetup && postRecipient == Context.INSTANCE.getSender() ){
+                        playBeep();
+                    }
+                } else {
+                    String prefix = HotlineUtil.makeHotlinePrefix(postSender.getDispName(), post.hotlineId);
+                    Node label = createLabel(prefix, post.message);
+                    messageBox.getChildren().add(label);
+                    if( postRecipient == myself ) {
+                        if( !initialSetup ){
+                            playBeep();
+                        }
+                    }
+                }
+            }
+        }
+        hideErrorMessage();
     }
 
     public void addHotlinePosts(List<HotlineDTO> posts, boolean initialSetup) {
@@ -251,7 +275,7 @@ class MainScene extends VBox implements DispatchAction {
     private void postMessage(String message){
         HotlineUtil.postMessge(Context.INSTANCE.getSender().getName(), Context.INSTANCE.getRecipient().getName(), message)
                 .thenAccept(result -> {
-                    Context.INSTANCE.getPeriodicFetcher().trigger(PeriodicFetcher.CMD_FETCH);
+                    //Context.INSTANCE.getPeriodicFetcher().trigger(PeriodicFetcher.CMD_FETCH);
                 })
                 .exceptionally(t -> {
                     logger.error("failed to post message", t);
@@ -263,4 +287,9 @@ class MainScene extends VBox implements DispatchAction {
         freqContextMenu.show(link, event.getScreenX(), event.getScreenY());
     }
 
+    @Override
+    public void onHotlineCreated(HotlineDTO created, boolean initialSetup, Runnable toNext) {
+        addHotlinePost(created, initialSetup);
+        toNext.run();
+    }
 }

@@ -1,7 +1,6 @@
 package jp.chang.myclinic.hotline.javafx;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -13,7 +12,6 @@ import jp.chang.myclinic.hotline.Context;
 import jp.chang.myclinic.hotline.ResizeRequiredEvent;
 import jp.chang.myclinic.hotline.Service;
 import jp.chang.myclinic.hotline.User;
-import jp.chang.myclinic.hotline.lib.PeriodicFetcher;
 import jp.chang.myclinic.hotline.tracker.Tracker;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -69,19 +67,19 @@ public class AppMain extends Application {
         });
         MainScene root = new MainScene();
         root.getStylesheets().add("Hotline.css");
-        PeriodicFetcher fetcher = new PeriodicFetcher((hotlines, initialSetup) -> {
-            Platform.runLater(() -> {
-                root.addHotlinePosts(hotlines, initialSetup);
-            });
-        }, error -> {
-            Platform.runLater(() -> {
-                root.showErrorMessage(error);
-            });
-        });
-        Context.INSTANCE.setPeriodicFetcher(fetcher);
-        Thread fetcherThread = new Thread(fetcher);
-        fetcherThread.setDaemon(true);
-        fetcherThread.start();
+//        PeriodicFetcher fetcher = new PeriodicFetcher((hotlines, initialSetup) -> {
+//            Platform.runLater(() -> {
+//                root.addHotlinePosts(hotlines, initialSetup);
+//            });
+//        }, error -> {
+//            Platform.runLater(() -> {
+//                root.showErrorMessage(error);
+//            });
+//        });
+//        Context.INSTANCE.setPeriodicFetcher(fetcher);
+//        Thread fetcherThread = new Thread(fetcher);
+//        fetcherThread.setDaemon(true);
+//        fetcherThread.start();
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(createMenu());
         borderPane.setCenter(root);
@@ -122,6 +120,7 @@ public class AppMain extends Application {
     }
 
     private void doReload(){
-        Context.INSTANCE.getPeriodicFetcher().trigger(PeriodicFetcher.CMD_RESET);
+        tracker.reload();
+        //Context.INSTANCE.getPeriodicFetcher().trigger(PeriodicFetcher.CMD_RESET);
     }
 }

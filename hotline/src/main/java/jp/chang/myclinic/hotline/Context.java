@@ -1,13 +1,11 @@
 package jp.chang.myclinic.hotline;
 
-import jp.chang.myclinic.hotline.lib.PeriodicFetcher;
-
 public class Context {
 
     public static Context INSTANCE;
     private User sender;
     private User recipient;
-    private PeriodicFetcher periodicFetcher;
+    //private PeriodicFetcher periodicFetcher;
 
     public Context(User sender, User recipient) {
         this.sender = sender;
@@ -26,15 +24,15 @@ public class Context {
         return recipient;
     }
 
-    public void setRecipient(User recipient) {
-        this.recipient = recipient;
-    }
+//    public void setRecipient(User recipient) {
+//        this.recipient = recipient;
+//    }
 
-    public PeriodicFetcher getPeriodicFetcher() {
-        return periodicFetcher;
-    }
+//    public PeriodicFetcher getPeriodicFetcher() {
+//        return periodicFetcher;
+//    }
 
-    public void setPeriodicFetcher(PeriodicFetcher periodicFetcher) {
-        this.periodicFetcher = periodicFetcher;
-    }
+//    public void setPeriodicFetcher(PeriodicFetcher periodicFetcher) {
+//        this.periodicFetcher = periodicFetcher;
+//    }
 }
