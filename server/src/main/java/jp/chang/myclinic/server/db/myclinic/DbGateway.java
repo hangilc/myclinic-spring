@@ -1461,8 +1461,8 @@ public class DbGateway {
     public int enterHotline(HotlineDTO hotlineDTO) {
         Hotline hotline = mapper.fromHotlineDTO(hotlineDTO);
         hotline = hotlineRepository.save(hotline);
-        hotlineLogger.logHotline(hotlineDTO);
-        return hotline.getHotlineId();
+        hotlineLogger.logHotline(mapper.toHotlineDTO(hotline));
+        return  hotline.getHotlineId();
     }
 
     public List<HotlineDTO> listTodaysHotline() {

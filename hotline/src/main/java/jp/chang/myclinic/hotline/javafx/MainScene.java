@@ -16,6 +16,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.hotline.*;
 import jp.chang.myclinic.hotline.lib.HotlineUtil;
 import jp.chang.myclinic.hotline.lib.PeriodicFetcher;
+import jp.chang.myclinic.hotline.tracker.DispatchAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class MainScene extends VBox {
+class MainScene extends VBox implements DispatchAction {
 
     private static Logger logger = LoggerFactory.getLogger(MainScene.class);
     private static final String beepMessage = "[BEEP]";

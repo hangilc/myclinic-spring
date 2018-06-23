@@ -14,6 +14,7 @@ import jp.chang.myclinic.hotline.ResizeRequiredEvent;
 import jp.chang.myclinic.hotline.Service;
 import jp.chang.myclinic.hotline.User;
 import jp.chang.myclinic.hotline.lib.PeriodicFetcher;
+import jp.chang.myclinic.hotline.tracker.Tracker;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -23,6 +24,8 @@ import java.util.List;
 
 public class AppMain extends Application {
     private static Logger logger = LoggerFactory.getLogger(AppMain.class);
+    private String wsUrl;
+    private Tracker tracker;
 
     public static void main(String[] args) {
         launch(args);
@@ -44,6 +47,7 @@ public class AppMain extends Application {
             serverUrl = serverUrl + "/";
         }
         Service.setServerUrl(serverUrl);
+        this.wsUrl = serverUrl.replace("/json/", "/hotline");
         User sender = User.fromNameIgnoreCase(args.get(1));
         User recipient = User.fromNameIgnoreCase(args.get(2));
         if (sender == null) {
@@ -83,6 +87,8 @@ public class AppMain extends Application {
         borderPane.setCenter(root);
         stage.setScene(new Scene(borderPane));
         stage.show();
+        this.tracker = new Tracker(wsUrl, root, Service.api);
+        tracker.start();
     }
 
     @Override
@@ -97,6 +103,7 @@ public class AppMain extends Application {
         if (cache != null) {
             cache.close();
         }
+        tracker.shutdown();
         logger.info("Hotline stopped.");
     }
 

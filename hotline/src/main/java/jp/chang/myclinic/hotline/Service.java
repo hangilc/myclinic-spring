@@ -39,6 +39,14 @@ public class Service {
 
         @GET("list-wqueue-full")
         CompletableFuture<List<WqueueFullDTO>> listWqueue();
+
+        @GET("list-todays-hotline-in-range")
+        CompletableFuture<List<HotlineDTO>> listTodaysHotlineInRange(@Query("after") int afterId,
+                                                                     @Query("before") int beforeId);
+
+        @GET("list-todays-hotline-in-range")
+        Call<List<HotlineDTO>> listTodaysHotlineInRangeCall(@Query("after") int afterId,
+                                                                     @Query("before") int beforeId);
     }
 
     public static ServerAPI api;
