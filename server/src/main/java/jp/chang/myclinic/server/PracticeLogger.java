@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +24,8 @@ public class PracticeLogger implements InitializingBean {
     @Autowired
     private DbGateway dbGateway;
     @Autowired
-    private PracticeLogHandler practiceLogHandler;
-
-    PracticeLogger() {
-        mapper = new ObjectMapper();
-    }
+    @Qualifier("practice-logger")
+    private PublishingWebSocketHandler practiceLogHandler;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -38,7 +36,7 @@ public class PracticeLogger implements InitializingBean {
         PracticeLogDTO lastLog = dbGateway.findLastPracticeLog();
         logger.info("last practice log: {}", lastLog);
         if( lastLog != null ) {
-            practiceLogHandler.sendPracticeLogMessage(mapper.writeValueAsString(lastLog));
+            practiceLogHandler.publish(mapper.writeValueAsString(lastLog));
         }
     }
 
@@ -61,7 +59,7 @@ public class PracticeLogger implements InitializingBean {
         dto.kind = kind;
         dto.body = body;
         try {
-            practiceLogHandler.sendPracticeLogMessage(mapper.writeValueAsString(dto));
+            practiceLogHandler.publish(mapper.writeValueAsString(dto));
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

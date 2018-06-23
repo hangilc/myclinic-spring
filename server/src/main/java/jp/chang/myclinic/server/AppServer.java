@@ -68,6 +68,16 @@ public class AppServer implements CommandLineRunner{
         }
     }
 
+    @Bean(name="practice-logger")
+    public PublishingWebSocketHandler getPracticeLogHandler(){
+        return new PublishingWebSocketHandler();
+    }
+
+    @Bean(name="hotline-logger")
+    public PublishingWebSocketHandler getHotlineLogHandler(){
+        return new PublishingWebSocketHandler();
+    }
+
     @Override
     public void run(String... strings) throws Exception {
         System.out.println("DataSource: " + dataSource);

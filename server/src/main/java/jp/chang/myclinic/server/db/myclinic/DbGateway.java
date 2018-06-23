@@ -4,6 +4,7 @@ import jp.chang.myclinic.consts.PharmaQueueState;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.server.HotlineLogger;
 import jp.chang.myclinic.server.PracticeLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -83,6 +84,8 @@ public class DbGateway {
     private PracticeLogRepository practiceLogRepository;
     @Autowired
     private PracticeLogger practiceLogger;
+    @Autowired
+    private HotlineLogger hotlineLogger;
 
     private WqueueFullDTO composeWqueueFullDTO(Wqueue wqueue){
         WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
@@ -1431,10 +1434,23 @@ public class DbGateway {
         return hotline.map(Hotline::getHotlineId).orElse(0);
     }
 
+    public HotlineDTO getLastHotline(){
+        return hotlineRepository.findTopByOrderByHotlineIdDesc()
+                .map(mapper::toHotlineDTO)
+                .orElse(null);
+    }
+
     public List<HotlineDTO> listHotlineInRange(int lowerHotlineId, int upperHotlineId) {
         Sort sort = Sort.by(Sort.Direction.ASC, "hotlineId");
         return hotlineRepository.findInRange(lowerHotlineId, upperHotlineId, sort).stream()
                 .map(mapper::toHotlineDTO).collect(Collectors.toList());
+    }
+
+    public List<HotlineDTO> listTodaysHotlineInRange(int afterId, int beforeId){
+        return hotlineRepository.findTodaysHotlineInRange(afterId, beforeId, Sort.by(Sort.Direction.DESC, "hotlineId"))
+                .stream()
+                .map(mapper::toHotlineDTO)
+                .collect(Collectors.toList());
     }
 
     public List<HotlineDTO> listRecentHotline(int thresholdHotlineId) {
@@ -1445,6 +1461,7 @@ public class DbGateway {
     public int enterHotline(HotlineDTO hotlineDTO) {
         Hotline hotline = mapper.fromHotlineDTO(hotlineDTO);
         hotline = hotlineRepository.save(hotline);
+        hotlineLogger.logHotline(hotlineDTO);
         return hotline.getHotlineId();
     }
 
