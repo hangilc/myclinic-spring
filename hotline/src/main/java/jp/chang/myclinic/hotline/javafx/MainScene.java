@@ -131,61 +131,25 @@ class MainScene extends VBox implements DispatchAction {
         return label;
     }
 
-    public void addHotlinePost(HotlineDTO post, boolean initialSetup){
+    public void addHotlinePost(HotlineDTO post){
         User myself = Context.INSTANCE.getSender();
         User postSender = User.fromName(post.sender);
         User postRecipient = User.fromName(post.recipient);
         if( postSender != null && postRecipient != null ){
             if( isMyPost(postSender, postRecipient) ){
                 if( isBeepPost(post.message) ){
-                    if( !initialSetup && postRecipient == Context.INSTANCE.getSender() ){
-                        playBeep();
-                    }
+                    // nop
                 } else {
                     String prefix = HotlineUtil.makeHotlinePrefix(postSender.getDispName(), post.hotlineId);
                     Node label = createLabel(prefix, post.message);
                     messageBox.getChildren().add(label);
                     if( postRecipient == myself ) {
-                        if( !initialSetup ){
-                            playBeep();
-                        }
+                        playBeep();
                     }
                 }
             }
         }
         hideErrorMessage();
-    }
-
-    public void addHotlinePosts(List<HotlineDTO> posts, boolean initialSetup) {
-        int count = 0;
-        User myself = Context.INSTANCE.getSender();
-        if( initialSetup ){
-            messageBox.getChildren().clear();
-        }
-        for(HotlineDTO post: posts){
-            User postSender = User.fromName(post.sender);
-            User postRecipient = User.fromName(post.recipient);
-            if( postSender != null && postRecipient != null ){
-                if( isMyPost(postSender, postRecipient) ){
-                    if( isBeepPost(post.message) ){
-                        if( !initialSetup && postRecipient == Context.INSTANCE.getSender() ){
-                            playBeep();
-                        }
-                    } else {
-                        String prefix = HotlineUtil.makeHotlinePrefix(postSender.getDispName(), post.hotlineId);
-                        Node label = createLabel(prefix, post.message);
-                        messageBox.getChildren().add(label);
-                        if( postRecipient == myself ) {
-                            count += 1;
-                        }
-                    }
-                }
-           }
-        }
-        hideErrorMessage();
-        if( !initialSetup && count > 0 ){
-            playBeep();
-        }
     }
 
     public void showErrorMessage(String message){
@@ -288,8 +252,8 @@ class MainScene extends VBox implements DispatchAction {
     }
 
     @Override
-    public void onHotlineCreated(HotlineDTO created, boolean initialSetup, Runnable toNext) {
-        addHotlinePost(created, initialSetup);
+    public void onHotlineCreated(HotlineDTO created, Runnable toNext) {
+        addHotlinePost(created);
         toNext.run();
     }
 }

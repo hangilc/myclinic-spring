@@ -1434,12 +1434,6 @@ public class DbGateway {
         return hotline.map(Hotline::getHotlineId).orElse(0);
     }
 
-    public HotlineDTO getLastHotline(){
-        return hotlineRepository.findTopByOrderByHotlineIdDesc()
-                .map(mapper::toHotlineDTO)
-                .orElse(null);
-    }
-
     public List<HotlineDTO> listHotlineInRange(int lowerHotlineId, int upperHotlineId) {
         Sort sort = Sort.by(Sort.Direction.ASC, "hotlineId");
         return hotlineRepository.findInRange(lowerHotlineId, upperHotlineId, sort).stream()
@@ -1461,14 +1455,24 @@ public class DbGateway {
     public int enterHotline(HotlineDTO hotlineDTO) {
         Hotline hotline = mapper.fromHotlineDTO(hotlineDTO);
         hotline = hotlineRepository.save(hotline);
-        hotlineLogger.logHotline(mapper.toHotlineDTO(hotline));
+        hotlineLogger.logHotlineCreated(mapper.toHotlineDTO(hotline));
         return  hotline.getHotlineId();
     }
 
     public List<HotlineDTO> listTodaysHotline() {
-        return hotlineRepository.findTodaysHotline().stream()
+        return hotlineRepository.findTodaysHotline(Sort.by("hotlineId")).stream()
                 .map(mapper::toHotlineDTO)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<HotlineDTO> getTodaysLastHotline(){
+        List<Hotline> result = hotlineRepository.findTodaysHotline(
+                PageRequest.of(0, 1, Sort.by("hotlineId").descending()));
+        if( result.size() == 0 ){
+            return Optional.empty();
+        } else {
+            return Optional.of(mapper.toHotlineDTO(result.get(0)));
+        }
     }
 
     public List<PrescExampleFullDTO> searchPrescExampleFullByName(String text) {

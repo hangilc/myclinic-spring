@@ -1,8 +1,8 @@
 package jp.chang.myclinic.hotline.tracker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.hotline.Service;
+import jp.chang.myclinic.logdto.hotline.HotlineLogDTO;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public class Tracker {
             @Override
             protected void onNewMessage(String text){
                 try {
-                    HotlineDTO log = mapper.readValue(text, HotlineDTO.class);
+                    HotlineLogDTO log = mapper.readValue(text, HotlineLogDTO.class);
                     if( dispatcher != null ){
                         dispatcher.add(log);
                     }
