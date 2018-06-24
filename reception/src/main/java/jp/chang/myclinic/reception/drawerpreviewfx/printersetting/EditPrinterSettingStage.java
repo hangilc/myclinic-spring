@@ -8,7 +8,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,9 +64,9 @@ public class EditPrinterSettingStage extends Stage {
         PrinterSettingForm.FormResult result = form.getConfirmedResult();
         if( result != null ){
             try {
-                printerEnv.savePrintSetting(result.name, result.devnames, result.devmode, result.auxSetting);
+                printerEnv.saveSetting(result.name, result.devnames, result.devmode, result.auxSetting);
                 if( !result.name.equals(origName) ){
-                    printerEnv.deletePrintSetting(origName);
+                    printerEnv.deleteSetting(origName);
                 }
                 if( callback != null ){
                     callback.onEnter(result.name);
@@ -83,11 +83,11 @@ public class EditPrinterSettingStage extends Stage {
             return;
         }
         try {
-            printerEnv.deletePrintSetting(origName);
+            printerEnv.deleteSetting(origName);
             if( callback != null ){
                 callback.onDelete();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Failed to delete printer setting: {}.", origName, e);
             GuiUtil.alertException("Failed to delete printer setting.", e);
         }

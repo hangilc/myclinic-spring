@@ -15,7 +15,7 @@ import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PaymentDTO;
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
 import jp.chang.myclinic.reception.lib.ReceptionService;
@@ -222,7 +222,7 @@ public class MainPane extends VBox implements DispatchHook {
         PrinterEnv printerEnv = null;
         try {
             printerEnv = ReceptionEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             logger.error("Failed to get PrinterEnv", ex);
             GuiUtil.alertError("Failed to get PrinterEnv");
         }

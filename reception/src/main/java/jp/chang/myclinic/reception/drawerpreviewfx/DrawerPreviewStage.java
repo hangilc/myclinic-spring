@@ -194,7 +194,7 @@ public class DrawerPreviewStage extends Stage {
                     if( !name.equals(newName) ){
                         try {
                             printerSettingNames.setAll(printerEnv.listNames());
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             logger.error("Failed to list printer setting names.", e);
                             GuiUtil.alertException("Failed to list printer setting names.", e);
                         }

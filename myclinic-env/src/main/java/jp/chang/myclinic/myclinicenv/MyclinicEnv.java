@@ -1,8 +1,6 @@
 package jp.chang.myclinic.myclinicenv;
 
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,23 +14,14 @@ import java.util.Properties;
 
 public class MyclinicEnv {
 
-    private static Logger logger = LoggerFactory.getLogger(MyclinicEnv.class);
+    //private static Logger logger = LoggerFactory.getLogger(MyclinicEnv.class);
 
+    private String appName;
     private Path baseDir;
 
-    private static Path defaultBaseDir() {
-        return Paths.get(System.getProperty("user.home"), "myclinic-env");
-    }
-
-    public MyclinicEnv() {
-        this(null);
-    }
-
-    public MyclinicEnv(Path baseDir) {
-        if (baseDir == null) {
-            baseDir = defaultBaseDir();
-        }
-        this.baseDir = baseDir;
+    public MyclinicEnv(String appName) {
+        this.appName = appName;
+        this.baseDir = Paths.get(System.getProperty("user.home"), "myclinic-env");
     }
 
     public PrinterEnv getPrinterEnv() {
@@ -41,14 +30,24 @@ public class MyclinicEnv {
         return new PrinterEnv(printerSettingDir);
     }
 
-    public Properties getAppProperties(String app) {
-        Path path = getAppPropertiesPath(app);
+    private Path getPrinterSettingDir() {
+        ensureDirectory(baseDir);
+        return baseDir.resolve("printer-settings");
+    }
+
+    public Properties getAppProperties() {
+        Path path = getAppPropertiesPath();
         ensureFile(path);
         return readProperties(path);
     }
 
-    public void saveAppProperties(String app, Properties props) throws IOException {
-        Path path = getAppPropertiesPath(app);
+    private Path getAppPropertiesPath() {
+        ensureDirectory(baseDir);
+        return baseDir.resolve(String.format("%s.properties", appName));
+    }
+
+    public void saveAppProperties(Properties props){
+        Path path = getAppPropertiesPath();
         saveProperties(path, props);
     }
 
@@ -70,11 +69,6 @@ public class MyclinicEnv {
         }
     }
 
-    private Path getAppPropertiesPath(String app) {
-        ensureDirectory(baseDir);
-        return baseDir.resolve(String.format("%s.properties", app));
-    }
-
     private void ensureFile(Path path) {
         try {
             if (!Files.exists(path)) {
@@ -93,11 +87,6 @@ public class MyclinicEnv {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-    }
-
-    private Path getPrinterSettingDir() {
-        ensureDirectory(baseDir);
-        return baseDir.resolve("printer-settings");
     }
 
 }

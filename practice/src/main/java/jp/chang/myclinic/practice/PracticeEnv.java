@@ -52,7 +52,7 @@ public class PracticeEnv {
             logger.error("Invalid printer settings directory: " + printerSettingsDir);
             System.exit(1);
         }
-        myclinicEnv = new MyclinicEnv();
+        myclinicEnv = new MyclinicEnv(APP_NAME);
     }
 
     public Path getPrinterSettingsDir() {
@@ -156,7 +156,7 @@ public class PracticeEnv {
     }
 
     public Properties getAppProperties() throws IOException {
-        return getMyclinicEnv().getAppProperties(APP_NAME);
+        return getMyclinicEnv().getAppProperties();
     }
 
     public String getAppProperty(String key) throws IOException {
@@ -174,7 +174,7 @@ public class PracticeEnv {
     }
 
     public void saveAppProperties(Properties properties) throws IOException {
-        getMyclinicEnv().saveAppProperties(APP_NAME, properties);
+        getMyclinicEnv().saveAppProperties(properties);
     }
 
     public String getDefaultPrinterSetting() throws IOException {
