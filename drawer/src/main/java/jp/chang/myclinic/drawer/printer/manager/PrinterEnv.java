@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,10 +32,10 @@ public class PrinterEnv {
         this.settingDir = settingDir;
     }
 
-    public PrintResult print(List<List<Op>> pages, String settingName){
+    public void print(List<List<Op>> pages, String settingName){
         DrawerPrinter drawerPrinter = new DrawerPrinter();
-        byte[] devmode = null, devnames = null;
-        AuxSetting auxSetting = null;
+        byte[] devmode, devnames;
+        AuxSetting auxSetting;
         try {
             if( settingName == null || settingName.isEmpty() ) {
                 DrawerPrinter.DialogResult result = drawerPrinter.printDialog(null, null);
@@ -43,23 +44,22 @@ public class PrinterEnv {
                     devnames = result.devnamesData;
                     auxSetting = null;
                 } else {
-                    return PrintResult.OK;
+                    return;
                 }
             } else if( settingDir == null ){
-                return PrintResult.SettingDirNotSpecified;
+                throw new RuntimeException("Printer setting directory is not specified.");
             } else {
                 if( !nameExists(settingName) ){
-                    return PrintResult.NoSuchSetting;
+                    throw new RuntimeException("No such setting. " + settingName);
                 }
                 devmode = readDevmode(settingName);
                 devnames = readDevnames(settingName);
                 auxSetting = readAuxSetting(settingName);
             }
             drawerPrinter.printPages(pages, devmode, devnames, auxSetting);
-            return PrintResult.OK;
         } catch(IOException ex){
-            ex.printStackTrace();
-            return PrintResult.IOError;
+            logger.error("print failed.", ex);
+            throw new UncheckedIOException(ex);
         }
     }
 
