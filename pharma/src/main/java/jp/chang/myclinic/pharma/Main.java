@@ -27,14 +27,12 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-// TODO: in drugbag, put drug name to bottom
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private String wsUrl;
     private Tracker tracker;
 
-    // TODO: update wqueue list automatically
     public static void main(String[] args) {
         logger.info("pharma invoked");
         Application.launch(Main.class, args);
