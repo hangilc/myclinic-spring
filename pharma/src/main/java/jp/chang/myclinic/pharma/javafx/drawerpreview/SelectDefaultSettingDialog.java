@@ -13,7 +13,7 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DevmodeInfo;
 import jp.chang.myclinic.drawer.printer.DevnamesInfo;
-import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public abstract class SelectDefaultSettingDialog extends Stage {
         List<String> names = Collections.emptyList();
         try {
             names = printerEnv.listNames();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Failed to list printer setting names.", e);
             GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", e);
         }
@@ -96,7 +96,7 @@ public abstract class SelectDefaultSettingDialog extends Stage {
                     devmodeInfo.getOrientationLabel(),
                     auxSetting.getDx(), auxSetting.getDy(), auxSetting.getScale());
             GuiUtil.alertInfo(text);
-        } catch (IOException e) {
+        } catch (Exception e) {
             GuiUtil.alertException("印刷設定情報の取得に失敗しました。", e);
         }
     }

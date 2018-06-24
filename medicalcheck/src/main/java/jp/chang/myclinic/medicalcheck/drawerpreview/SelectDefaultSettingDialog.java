@@ -13,11 +13,10 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DevmodeInfo;
 import jp.chang.myclinic.drawer.printer.DevnamesInfo;
-import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -88,7 +87,7 @@ abstract class SelectDefaultSettingDialog extends Stage {
                     devmodeInfo.getOrientationLabel(),
                     auxSetting.getDx(), auxSetting.getDy(), auxSetting.getScale());
             GuiUtil.alertInfo(text);
-        } catch (IOException e) {
+        } catch (Exception e) {
             GuiUtil.alertException("印刷設定情報の取得に失敗しました。", e);
         }
     }

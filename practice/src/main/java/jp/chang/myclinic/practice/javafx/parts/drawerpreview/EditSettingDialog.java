@@ -84,7 +84,7 @@ public class EditSettingDialog extends Stage {
                 } catch (IOException e) {
                     logger.error("Failed to save printer setting.", e);
                     GuiUtil.alertException("印刷設定の保存に失敗しました。", e);
-                } catch (jp.chang.myclinic.drawer.printer.manager.PrinterEnv.SettingDirNotSuppliedException e) {
+                } catch (jp.chang.myclinic.drawer.printer.PrinterEnv.SettingDirNotSuppliedException e) {
                     logger.error("No printer setting directory is not specified.", e);
                     GuiUtil.alertException("印刷設定ディレクトリーが設定されていません。", e);
                 }

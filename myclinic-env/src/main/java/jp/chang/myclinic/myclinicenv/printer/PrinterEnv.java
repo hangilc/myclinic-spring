@@ -66,7 +66,7 @@ public class PrinterEnv {
     }
 
     public boolean settingExists(String name){
-        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
+        jp.chang.myclinic.drawer.printer.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.PrinterEnv(baseDir);
         return manager.settingExists(name);
     }
 
@@ -116,14 +116,14 @@ public class PrinterEnv {
         }
     }
 
-    public void savePrinterAuxSetting(String name, AuxSetting auxSetting) throws IOException, jp.chang.myclinic.drawer.printer.manager.PrinterEnv.SettingDirNotSuppliedException {
-        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
+    public void savePrinterAuxSetting(String name, AuxSetting auxSetting) throws IOException, jp.chang.myclinic.drawer.printer.PrinterEnv.SettingDirNotSuppliedException {
+        jp.chang.myclinic.drawer.printer.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.PrinterEnv(baseDir);
         manager.saveSetting(name, auxSetting);
     }
 
     public void savePrintSetting(String name, byte[] devnames, byte[] devmode, AuxSetting auxSetting)
-            throws IOException, jp.chang.myclinic.drawer.printer.manager.PrinterEnv.SettingDirNotSuppliedException {
-        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
+            throws IOException, jp.chang.myclinic.drawer.printer.PrinterEnv.SettingDirNotSuppliedException {
+        jp.chang.myclinic.drawer.printer.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.PrinterEnv(baseDir);
         try {
             manager.saveSetting(name, devnames, devmode);
         } catch (Exception ex) {
@@ -140,7 +140,7 @@ public class PrinterEnv {
     }
 
     public void deletePrintSetting(String name) throws IOException {
-        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
+        jp.chang.myclinic.drawer.printer.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.PrinterEnv(baseDir);
         manager.deleteSetting(name);
     }
 
@@ -172,17 +172,17 @@ public class PrinterEnv {
     }
 
     public byte[] getDevnames(String settingName) throws IOException {
-        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
+        jp.chang.myclinic.drawer.printer.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.PrinterEnv(baseDir);
         return manager.readDevnames(settingName);
     }
 
     public byte[] getDevmode(String settingName) throws IOException {
-        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
+        jp.chang.myclinic.drawer.printer.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.PrinterEnv(baseDir);
         return manager.readDevmode(settingName);
     }
 
     public AuxSetting getAuxSetting(String settingName) throws IOException {
-        jp.chang.myclinic.drawer.printer.manager.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.manager.PrinterEnv(baseDir);
+        jp.chang.myclinic.drawer.printer.PrinterEnv manager = new jp.chang.myclinic.drawer.printer.PrinterEnv(baseDir);
         return manager.readAuxSetting(settingName);
     }
 

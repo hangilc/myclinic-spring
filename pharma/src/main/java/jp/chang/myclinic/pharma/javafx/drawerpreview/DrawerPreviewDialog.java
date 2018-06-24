@@ -11,7 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
-import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,7 +145,7 @@ public class DrawerPreviewDialog extends Stage {
                 for (String name : printerEnv.listNames()) {
                     settingChoice.getItems().add(name);
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error("failed to list printer settings.", e);
                 GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", e);
             }

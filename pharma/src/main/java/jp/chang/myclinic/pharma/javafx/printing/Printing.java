@@ -8,7 +8,7 @@ import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawer;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawerData;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
-import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.drawer.techou.TechouDrawer;
 import jp.chang.myclinic.drawer.techou.TechouDrawerData;
 import jp.chang.myclinic.dto.DrugFullDTO;

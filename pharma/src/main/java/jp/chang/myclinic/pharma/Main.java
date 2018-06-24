@@ -10,7 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.pharma.javafx.MainScene;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.ListSettingDialog;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.NewSetting;

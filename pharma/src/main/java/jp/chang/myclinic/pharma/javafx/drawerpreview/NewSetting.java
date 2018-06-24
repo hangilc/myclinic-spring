@@ -3,11 +3,10 @@ package jp.chang.myclinic.pharma.javafx.drawerpreview;
 import javafx.scene.control.TextInputDialog;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
-import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -41,11 +40,9 @@ public class NewSetting {
                             printerEnv, name, devmode, devnames, auxSetting);
                     editSettingDialog.showAndWait();
                     cb.accept(name);
-                } catch (IOException e) {
+                } catch(Exception e){
                     logger.error("Failed to save printer settng.", e);
                     GuiUtil.alertException("印刷設定の保存に失敗しました。", e);
-                } catch (PrinterEnv.SettingDirNotSuppliedException e) {
-                    GuiUtil.alertError("Printer setting directory is not specified.");
                 }
             }
         }

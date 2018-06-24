@@ -7,7 +7,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.PaperSize;
-import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.shujii.drawerpreview.DrawerPreviewDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
