@@ -1,5 +1,6 @@
 package jp.chang.myclinic.hotline.tracker;
 
+import javafx.application.Platform;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,11 +50,16 @@ class WebsocketClient extends WebSocketListener {
         System.out.println("WebSocket closed.");
     }
 
+    protected void onError(String message){
+        logger.error(message);
+    }
+
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
         websocket.close(1000, "shutdown");
         if( !(timerExecutor.isShutdown() || timerExecutor.isTerminated()) ) {
             logger.error("Reconnecting websocket 5 seconds later.");
+            Platform.runLater(() -> onError("通信エラー (５秒後に再試行)"));
             timerExecutor.schedule(() -> {
                 websocket = client.newWebSocket(request, this);
             }, 5, TimeUnit.SECONDS);

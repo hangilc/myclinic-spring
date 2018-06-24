@@ -84,15 +84,11 @@ class Dispatcher implements Runnable {
     }
 
     private void catchUp(int lastId, int nextId, HotlineDTO nextLog) throws InterruptedException {
-        boolean needCallback = false;
+        Platform.runLater(this::beforeCatchup);
         try {
             final List<HotlineDTO> logs =
                     service.listTodaysHotlineInRangeCall(lastId, nextId).execute().body();
             logs.add(nextLog);
-            if (logs.size() > 6) {
-                beforeCatchup();
-                needCallback = true;
-            }
             class Local {
                 private int i = 0;
             }
@@ -104,14 +100,10 @@ class Dispatcher implements Runnable {
                 this.lastId = currentLog.hotlineId;
                 local.i += 1;
             }
-            if (needCallback) {
-                afterCatchup();
-            }
         } catch (IOException e) {
-            if (needCallback) {
-                afterCatchup();
-            }
             logger.error("Client::listPracticeLogInRange failed.", e);
+        } finally {
+            Platform.runLater(this::afterCatchup);
         }
     }
 

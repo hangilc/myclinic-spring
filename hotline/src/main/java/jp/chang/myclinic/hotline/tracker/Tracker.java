@@ -59,11 +59,20 @@ public class Tracker {
 
     }
 
+    protected void onError(String message){
+
+    }
+
+    protected void onOpen(){
+
+    }
+
     private void startWebSocket(){
         this.websocketClient = new WebsocketClient(wsUrl){
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 webSocket.send("hello");
+                Tracker.this.onOpen();
             }
 
             @Override
@@ -78,6 +87,11 @@ public class Tracker {
                 }
             }
 
+            @Override
+            protected void onError(String message) {
+                super.onError(message);
+                Tracker.this.onError(message);
+            }
         };
         logger.info("Started web socket");
     }

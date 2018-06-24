@@ -1,6 +1,7 @@
 package jp.chang.myclinic.server.rest;
 
 import jp.chang.myclinic.dto.HotlineDTO;
+import jp.chang.myclinic.server.HotlineLogger;
 import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,8 @@ public class HotlineController {
 
     @Autowired
     private DbGateway dbGateway;
+    @Autowired
+    private HotlineLogger hotlineLogger;
 
     @RequestMapping(value="/get-last-hotline-id", method=GET)
     public int getLastHotlineId(){

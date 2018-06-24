@@ -34,9 +34,11 @@ class MainScene extends VBox implements DispatchAction {
     private Label errorMessage;
     private ContextMenu freqContextMenu;
     private static final String templateMarker = "{}";
+    private Scope scope;
 
-    MainScene() {
+    MainScene(Scope scope) {
         super(4);
+        this.scope = scope;
         getStyleClass().add("main-scene");
         getChildren().addAll(
                 createDisp(),
@@ -138,7 +140,9 @@ class MainScene extends VBox implements DispatchAction {
         if( postSender != null && postRecipient != null ){
             if( isMyPost(postSender, postRecipient) ){
                 if( isBeepPost(post.message) ){
-                    // nop
+                    if( postRecipient == Context.INSTANCE.getSender() ){
+                        playBeep();
+                    }
                 } else {
                     String prefix = HotlineUtil.makeHotlinePrefix(postSender.getDispName(), post.hotlineId);
                     Node label = createLabel(prefix, post.message);
@@ -158,14 +162,14 @@ class MainScene extends VBox implements DispatchAction {
             errorMessage.setManaged(true);
             errorMessage.setVisible(true);
         }
-        fireEvent(new ResizeRequiredEvent());
+        scope.resizeStage();
     }
 
-    private void hideErrorMessage(){
+    public void hideErrorMessage(){
         if( errorMessage.isVisible() ){
             errorMessage.setManaged(false);
             errorMessage.setVisible(false);
-            fireEvent(new ResizeRequiredEvent());
+            scope.resizeStage();
         }
     }
 
@@ -198,7 +202,9 @@ class MainScene extends VBox implements DispatchAction {
     }
 
     private void playBeep() {
-        java.awt.Toolkit.getDefaultToolkit().beep();
+        if( scope.isBeepEnabled() ) {
+            java.awt.Toolkit.getDefaultToolkit().beep();
+        }
     }
 
     private Node createLabel(String prefix, String message){
@@ -255,5 +261,14 @@ class MainScene extends VBox implements DispatchAction {
     public void onHotlineCreated(HotlineDTO created, Runnable toNext) {
         addHotlinePost(created);
         toNext.run();
+    }
+
+    @Override
+    public void onHotlineBeep(String receiver, Runnable toNext) {
+        if( Context.INSTANCE.getSender().getName().equals(receiver) ){
+            playBeep();
+            logger.info("Beep {}.", receiver);
+            toNext.run();
+        }
     }
 }

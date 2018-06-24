@@ -8,10 +8,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import jp.chang.myclinic.hotline.Context;
-import jp.chang.myclinic.hotline.ResizeRequiredEvent;
-import jp.chang.myclinic.hotline.Service;
-import jp.chang.myclinic.hotline.User;
+import jp.chang.myclinic.hotline.*;
 import jp.chang.myclinic.hotline.tracker.Tracker;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -62,30 +59,38 @@ public class AppMain extends Application {
     @Override
     public void start(Stage stage) {
         stage.setTitle("Hotline to " + Context.INSTANCE.getRecipient().getDispName());
-        stage.addEventHandler(ResizeRequiredEvent.eventType, evt -> {
-            stage.sizeToScene();
-        });
-        MainScene root = new MainScene();
+        Scope scope = new Scope();
+        MainScene root = new MainScene(scope);
         root.getStylesheets().add("Hotline.css");
-//        PeriodicFetcher fetcher = new PeriodicFetcher((hotlines, initialSetup) -> {
-//            Platform.runLater(() -> {
-//                root.addHotlinePosts(hotlines, initialSetup);
-//            });
-//        }, error -> {
-//            Platform.runLater(() -> {
-//                root.showErrorMessage(error);
-//            });
-//        });
-//        Context.INSTANCE.setPeriodicFetcher(fetcher);
-//        Thread fetcherThread = new Thread(fetcher);
-//        fetcherThread.setDaemon(true);
-//        fetcherThread.start();
+        scope.setShowErrorHandler(root::showErrorMessage);
+        scope.setHideErrorHandler(root::hideErrorMessage);
+        scope.setResizeStageHandler(stage::sizeToScene);
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(createMenu());
         borderPane.setCenter(root);
         stage.setScene(new Scene(borderPane));
         stage.show();
-        this.tracker = new Tracker(wsUrl, root, Service.api);
+        this.tracker = new Tracker(wsUrl, root, Service.api){
+            @Override
+            protected void onOpen() {
+                scope.hideError();
+            }
+
+            @Override
+            protected void beforeCatchup() {
+                scope.setBeepEnabled(false);
+            }
+
+            @Override
+            protected void afterCatchup() {
+                scope.setBeepEnabled(true);
+            }
+
+            @Override
+            protected void onError(String message){
+                scope.showError(message);
+            }
+        };
         tracker.start();
     }
 
@@ -110,7 +115,7 @@ public class AppMain extends Application {
         {
             Menu menu = new Menu("メニュー");
             {
-                MenuItem item = new MenuItem("再読み込み");
+                MenuItem item = new MenuItem("手動更新");
                 item.setOnAction(evt -> doReload());
                 menu.getItems().add(item);
             }
@@ -121,6 +126,5 @@ public class AppMain extends Application {
 
     private void doReload(){
         tracker.reload();
-        //Context.INSTANCE.getPeriodicFetcher().trigger(PeriodicFetcher.CMD_RESET);
     }
 }

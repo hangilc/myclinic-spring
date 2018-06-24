@@ -24,8 +24,8 @@
 .main-scene .error {
     -fx-padding: 3px;
     -fx-text-fill: red;
-    -fx-border-color: red;
-    -fx-border-radius: 3;
+    /* -fx-border-color: red; */
+    /* -fx-border-radius: 3; */
 }
 
 .edit-dialog {

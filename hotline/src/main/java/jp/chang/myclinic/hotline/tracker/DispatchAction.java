@@ -6,4 +6,5 @@ public interface DispatchAction {
 
     default void onHotlineCreated(HotlineDTO created, Runnable toNext){ toNext.run(); }
     default void onHotlineBeep(String receiver, Runnable toNext){ toNext.run(); }
+
 }
