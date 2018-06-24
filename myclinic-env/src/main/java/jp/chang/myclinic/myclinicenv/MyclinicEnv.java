@@ -1,12 +1,13 @@
 package jp.chang.myclinic.myclinicenv;
 
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,28 +20,28 @@ public class MyclinicEnv {
 
     private Path baseDir;
 
-    private static Path defaultBaseDir(){
+    private static Path defaultBaseDir() {
         return Paths.get(System.getProperty("user.home"), "myclinic-env");
     }
 
-    public MyclinicEnv() throws IOException {
+    public MyclinicEnv() {
         this(null);
     }
 
-    public MyclinicEnv(Path baseDir) throws IOException {
-        if( baseDir == null ){
+    public MyclinicEnv(Path baseDir) {
+        if (baseDir == null) {
             baseDir = defaultBaseDir();
         }
         this.baseDir = baseDir;
     }
 
-    public PrinterEnv getPrinterEnv() throws IOException {
+    public PrinterEnv getPrinterEnv() {
         Path printerSettingDir = getPrinterSettingDir();
         ensureDirectory(printerSettingDir);
         return new PrinterEnv(printerSettingDir);
     }
 
-    public Properties getAppProperties(String app) throws IOException {
+    public Properties getAppProperties(String app) {
         Path path = getAppPropertiesPath(app);
         ensureFile(path);
         return readProperties(path);
@@ -51,38 +52,50 @@ public class MyclinicEnv {
         saveProperties(path, props);
     }
 
-    private Properties readProperties(Path path) throws IOException {
+    private Properties readProperties(Path path) {
         Properties props = new Properties();
-        try(BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)){
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             props.load(reader);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
         return props;
     }
 
-    private void saveProperties(Path path, Properties props) throws IOException {
-        try(BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)){
+    private void saveProperties(Path path, Properties props) {
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             props.store(writer, "");
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
-    private Path getAppPropertiesPath(String app) throws IOException {
+    private Path getAppPropertiesPath(String app) {
         ensureDirectory(baseDir);
         return baseDir.resolve(String.format("%s.properties", app));
     }
 
-    private void ensureFile(Path path) throws IOException {
-        if( !Files.exists(path) ){
-            Files.createFile(path);
+    private void ensureFile(Path path) {
+        try {
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
-    private void ensureDirectory(Path dir) throws IOException {
-        if( !Files.isDirectory(dir) ){
-            Files.createDirectory(dir);
+    private void ensureDirectory(Path dir) {
+        try {
+            if (!Files.isDirectory(dir)) {
+                Files.createDirectory(dir);
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
-    private Path getPrinterSettingDir() throws IOException {
+    private Path getPrinterSettingDir() {
         ensureDirectory(baseDir);
         return baseDir.resolve("printer-settings");
     }

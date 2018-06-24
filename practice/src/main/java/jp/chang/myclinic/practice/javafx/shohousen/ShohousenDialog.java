@@ -10,7 +10,7 @@ import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;

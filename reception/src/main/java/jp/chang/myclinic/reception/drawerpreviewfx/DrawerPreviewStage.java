@@ -15,7 +15,7 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.reception.drawerpreviewfx.printersetting.CreatePrinterSettingStage;
 import jp.chang.myclinic.reception.drawerpreviewfx.printersetting.EditPrinterSettingStage;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -88,7 +88,7 @@ public class DrawerPreviewStage extends Stage {
             root.setTop(mbar);
             if( printerEnv != null ){
                 try {
-                    List<String> names = printerEnv.listSettingNames();
+                    List<String> names = printerEnv.listNames();
                     printerSettingNames.setAll(names);
                     String defaultName = printerEnv.getDefaultSettingName(settingKey);
                     if( defaultName == null ){
@@ -127,9 +127,9 @@ public class DrawerPreviewStage extends Stage {
         String settingName = currentSettingName.getValue();
         if( devnamesCache == null && devmodeCache == null && auxSettingCache == null ){
             try {
-                devnamesCache = printerEnv.getDevnames(settingName);
-                devmodeCache = printerEnv.getDevmode(settingName);
-                auxSettingCache = printerEnv.getAuxSetting(settingName);
+                devnamesCache = printerEnv.readDevnames(settingName);
+                devmodeCache = printerEnv.readDevmode(settingName);
+                auxSettingCache = printerEnv.readAuxSetting(settingName);
             } catch (IOException e) {
                 logger.error("Failed to get printer setting data.", e);
                 GuiUtil.alertException("印刷設定データの取得に失敗しました。", e);
@@ -183,9 +183,9 @@ public class DrawerPreviewStage extends Stage {
             return;
         }
         try {
-            byte[] devnames = printerEnv.getDevnames(name);
-            byte[] devmode = printerEnv.getDevmode(name);
-            AuxSetting auxSetting = printerEnv.getAuxSetting(name);
+            byte[] devnames = printerEnv.readDevnames(name);
+            byte[] devmode = printerEnv.readDevmode(name);
+            AuxSetting auxSetting = printerEnv.readAuxSetting(name);
             EditPrinterSettingStage editStage = new EditPrinterSettingStage(printerEnv, name, devnames,
                     devmode, auxSetting);
             editStage.setCallback(new EditPrinterSettingStage.Callback() {
@@ -193,7 +193,7 @@ public class DrawerPreviewStage extends Stage {
                 public void onEnter(String newName) {
                     if( !name.equals(newName) ){
                         try {
-                            printerSettingNames.setAll(printerEnv.listSettingNames());
+                            printerSettingNames.setAll(printerEnv.listNames());
                         } catch (IOException e) {
                             logger.error("Failed to list printer setting names.", e);
                             GuiUtil.alertException("Failed to list printer setting names.", e);
@@ -215,8 +215,8 @@ public class DrawerPreviewStage extends Stage {
                 @Override
                 public void onDelete() {
                     try {
-                        printerSettingNames.setAll(printerEnv.listSettingNames());
-                    } catch (IOException e) {
+                        printerSettingNames.setAll(printerEnv.listNames());
+                    } catch (Exception e) {
                         logger.error("Failed to list printer setting names.", e);
                         GuiUtil.alertException("Failed to list printer setting names.", e);
                     }
@@ -249,8 +249,8 @@ public class DrawerPreviewStage extends Stage {
         stage.showAndWait();
         if( stage.isCreated() ){
             try {
-                printerSettingNames.setAll(printerEnv.listSettingNames());
-            } catch (IOException e) {
+                printerSettingNames.setAll(printerEnv.listNames());
+            } catch (Exception e) {
                 logger.error("Failed to list printer setting names.", e);
                 GuiUtil.alertException("Failed to list printer setting names.", e);
             }

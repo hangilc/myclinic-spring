@@ -13,7 +13,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.events.EventTypes;
@@ -252,7 +252,7 @@ public class MainPane extends BorderPane {
             dialog.setClinicInfo(clinicInfo);
             dialog.setDoctorName(clinicInfo.doctorName);
             dialog.show();
-        } catch(IOException ex){
+        } catch(Exception ex){
             logger.error("Failed to do shohousen.", ex);
             GuiUtil.alertException("処方箋ダイアログの表示に失敗しました。", ex);
         }

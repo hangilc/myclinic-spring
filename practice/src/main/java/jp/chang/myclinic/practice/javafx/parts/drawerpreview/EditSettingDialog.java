@@ -16,7 +16,7 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DevnamesInfo;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import org.slf4j.Logger;
@@ -77,16 +77,13 @@ public class EditSettingDialog extends Stage {
                 byte[] newDevmode = result.devmodeData;
                 byte[] newDevnames = result.devnamesData;
                 try {
-                    printerEnv.savePrintSetting(name, newDevnames, newDevmode, auxSetting);
+                    printerEnv.saveSetting(name, newDevnames, newDevmode, auxSetting);
                     EditSettingDialog.this.devmode = newDevmode;
                     EditSettingDialog.this.devnames = newDevnames;
                     update();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     logger.error("Failed to save printer setting.", e);
                     GuiUtil.alertException("印刷設定の保存に失敗しました。", e);
-                } catch (jp.chang.myclinic.drawer.printer.PrinterEnv.SettingDirNotSuppliedException e) {
-                    logger.error("No printer setting directory is not specified.", e);
-                    GuiUtil.alertException("印刷設定ディレクトリーが設定されていません。", e);
                 }
             }
         }
@@ -122,7 +119,7 @@ public class EditSettingDialog extends Stage {
                         try {
                             double newValue = Double.parseDouble(input);
                             setter.accept(newValue);
-                            printerEnv.savePrinterAuxSetting(name, auxSetting);
+                            printerEnv.saveSetting(name, auxSetting);
                             text.setText("" + getter.get());
                         } catch(NumberFormatException ex){
                             GuiUtil.alertError(label + " の入力が不適切です。");

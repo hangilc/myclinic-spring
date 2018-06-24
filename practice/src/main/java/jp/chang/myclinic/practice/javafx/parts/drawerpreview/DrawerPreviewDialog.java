@@ -11,7 +11,7 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.lib.PracticeLib;
@@ -148,15 +148,13 @@ public class DrawerPreviewDialog extends Stage {
                 byte[] devnames = dialogResult.devnamesData;
                 AuxSetting auxSetting = new AuxSetting();
                 try {
-                    printerEnv.savePrintSetting(name, devnames, devmode, auxSetting);
+                    printerEnv.saveSetting(name, devnames, devmode, auxSetting);
                     EditSettingDialog editSettingDialog = new EditSettingDialog(printerEnv, name, devmode, devnames, auxSetting);
                     editSettingDialog.setTestPrintOps(getOps());
                     editSettingDialog.showAndWait();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     logger.error("Failed to save printer settng.", e);
                     GuiUtil.alertException("印刷設定の保存に失敗しました。", e);
-                } catch (jp.chang.myclinic.drawer.printer.PrinterEnv.SettingDirNotSuppliedException e) {
-                    GuiUtil.alertError("Printer setting directory is not specified.");
                 }
             }
         }
@@ -185,10 +183,10 @@ public class DrawerPreviewDialog extends Stage {
         settingChoice.getItems().setAll(NO_PRINTER_SETTING);
         if (printerEnv != null) {
             try {
-                for (String name : printerEnv.listSettingNames()) {
+                for (String name : printerEnv.listNames()) {
                     settingChoice.getItems().add(name);
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error("failed to list printer settings.", e);
                 GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", e);
             }
@@ -212,9 +210,9 @@ public class DrawerPreviewDialog extends Stage {
     private void doPrint() {
         if (printerEnv != null) {
             try {
-                printerEnv.print(ops, getSettingName());
+                printerEnv.printSinglePage(ops, getSettingName());
                 close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error("Printing error.", e);
                 GuiUtil.alertException("印刷に失敗しました。", e);
             }
@@ -224,7 +222,7 @@ public class DrawerPreviewDialog extends Stage {
     private void doDefaultSetting() {
         String defaultSetting = this.defaultPrinterSetting;
         try {
-            List<String> names = printerEnv.listSettingNames();
+            List<String> names = printerEnv.listNames();
             SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(defaultSetting, names, printerEnv) {
                 @Override
                 protected void onChange(String newDefaultSetting) {
@@ -234,7 +232,7 @@ public class DrawerPreviewDialog extends Stage {
             };
             dialog.setTestPrintOps(ops);
             dialog.showAndWait();
-        } catch (IOException e) {
+        } catch (Exception e) {
             HandlerFX.exception("印刷設定のリストの取得に失敗しました。", e);
         }
     }
