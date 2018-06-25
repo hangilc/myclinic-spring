@@ -29,8 +29,12 @@ public class ReceptionLib {
         List<Op> ops = receiptDrawer.getOps();
         try {
             PrinterEnv printerEnv = ReceptionEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
+//            DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
+//                    printerEnv, "reception-receipt");
             DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
-                    printerEnv, "reception-receipt");
+                    printerEnv,
+                    () -> ReceptionEnv.INSTANCE.getMyclinicEnv().getAppProperty("reception-receipt"),
+                    name -> ReceptionEnv.INSTANCE.getMyclinicEnv().saveAppProperty("reception-receipt", name));
             stage.show();
         } catch (Exception e) {
             logger.error("Failed to get printer env.", e);
@@ -45,8 +49,12 @@ public class ReceptionLib {
         List<Op> ops = receiptDrawer.getOps();
         try {
             PrinterEnv printerEnv = ReceptionEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
+//            DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
+//                    printerEnv, "reception-receipt");
             DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
-                    printerEnv, "reception-receipt");
+                    printerEnv,
+                    () -> ReceptionEnv.INSTANCE.getMyclinicEnv().getAppProperty("reception-receipt"),
+                    name -> ReceptionEnv.INSTANCE.getMyclinicEnv().saveAppProperty("reception-receipt", name));
             stage.show();
         } catch (Exception e) {
             logger.error("Failed to get printer env.", e);

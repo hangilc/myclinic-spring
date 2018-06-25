@@ -41,6 +41,15 @@ public class MyclinicEnv {
         return readProperties(path);
     }
 
+    public String getAppProperty(String key){
+        Properties props = getAppProperties();
+        if( props != null ){
+            return props.getProperty(key);
+        } else {
+            return null;
+        }
+    }
+
     private Path getAppPropertiesPath() {
         ensureDirectory(baseDir);
         return baseDir.resolve(String.format("%s.properties", appName));
@@ -49,6 +58,12 @@ public class MyclinicEnv {
     public void saveAppProperties(Properties props){
         Path path = getAppPropertiesPath();
         saveProperties(path, props);
+    }
+
+    public void saveAppProperty(String key, String value){
+        Properties props = getAppProperties();
+        props.put(key, value);
+        saveAppProperties(props);
     }
 
     private Properties readProperties(Path path) {

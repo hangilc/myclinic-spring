@@ -2,7 +2,7 @@ package jp.chang.myclinic.practice.lib;
 
 import javafx.application.Platform;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
@@ -320,9 +320,9 @@ public class PracticeLib {
     public static Optional<ListSettingDialog> openPrinterSettingList(){
         try {
             PrinterEnv printerEnv = PracticeEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
-            List<String> names = printerEnv.listSettingNames();
+            List<String> names = printerEnv.listNames();
             return Optional.of(new ListSettingDialog(names, printerEnv));
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Failed to list printer setting names.", e);
             GuiUtil.alertException("印刷設定のリストの取得に失敗しました。", e);
             return Optional.empty();

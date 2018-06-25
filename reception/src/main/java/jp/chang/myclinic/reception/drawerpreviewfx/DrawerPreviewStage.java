@@ -26,26 +26,32 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class DrawerPreviewStage extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(DrawerPreviewStage.class);
     private PrinterEnv printerEnv;
-    private String settingKey;
+    //private String settingKey;
     private ObservableList<String> printerSettingNames = FXCollections.observableArrayList();
     private StringProperty currentSettingName = new SimpleStringProperty();
     private byte[] devnamesCache;
     private byte[] devmodeCache;
     private AuxSetting auxSettingCache;
+    private Supplier<String> pkeyGettr;
+    private Consumer<String> pkeySetter;
 
-    public DrawerPreviewStage(List<Op> ops, PaperSize paperSize, PrinterEnv printerEnv, String settingKey) {
-        this(ops, paperSize.getWidth(), paperSize.getHeight(), printerEnv, settingKey);
+    public DrawerPreviewStage(List<Op> ops, PaperSize paperSize, PrinterEnv printerEnv,
+                              Supplier<String> pkeyGetter, Consumer<String> pkeySetter) {
+        this(ops, paperSize.getWidth(), paperSize.getHeight(), printerEnv, pkeyGetter, pkeySetter);
     }
 
-    public DrawerPreviewStage(List<Op> ops, double mmWidth, double mmHeight, PrinterEnv printerEnv, String settingKey){
+    public DrawerPreviewStage(List<Op> ops, double mmWidth, double mmHeight, PrinterEnv printerEnv,
+                              Supplier<String> pkeyGetter, Consumer<String> pkeySetter){
         this.printerEnv = printerEnv;
-        this.settingKey = settingKey;
+        this.pkeySetter = pkeySetter;
         BorderPane root = new BorderPane();
         {
             MenuBar mbar = new MenuBar();
@@ -90,7 +96,8 @@ public class DrawerPreviewStage extends Stage {
                 try {
                     List<String> names = printerEnv.listNames();
                     printerSettingNames.setAll(names);
-                    String defaultName = printerEnv.getDefaultSettingName(settingKey);
+                    //String defaultName = printerEnv.getDefaultSettingName(settingKey);
+                    String defaultName = pkeyGetter.get();
                     if( defaultName == null ){
                         defaultName = "";
                     }
@@ -130,7 +137,7 @@ public class DrawerPreviewStage extends Stage {
                 devnamesCache = printerEnv.readDevnames(settingName);
                 devmodeCache = printerEnv.readDevmode(settingName);
                 auxSettingCache = printerEnv.readAuxSetting(settingName);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error("Failed to get printer setting data.", e);
                 GuiUtil.alertException("印刷設定データの取得に失敗しました。", e);
             }
@@ -158,9 +165,10 @@ public class DrawerPreviewStage extends Stage {
             item.setOnAction(event -> {
                 String name = (String)item.getUserData();
                 try {
-                    printerEnv.saveDefaultSettingName(this.settingKey, name);
+                    //printerEnv.saveDefaultSettingName(this.settingKey, name);
+                    pkeySetter.accept(name);
                     currentSettingName.setValue(name);
-                } catch(IOException ex){
+                } catch(Exception ex){
                     GuiUtil.alertException("既定の印刷設定の保存に失敗しました。", ex);
                 }
             });
@@ -201,8 +209,9 @@ public class DrawerPreviewStage extends Stage {
                         String currentName = currentSettingName.getValue();
                         if( currentName != null && currentName.equals(name) ){
                             try {
-                                printerEnv.saveDefaultSettingName(settingKey, newName);
-                            } catch (IOException e) {
+                                //printerEnv.saveDefaultSettingName(settingKey, newName);
+                                pkeySetter.accept(newName);
+                            } catch (Exception e) {
                                 logger.error("Failed to save current printer setting name.", e);
                                 GuiUtil.alertException("Failed to save current printer setting name.", e);
                             }
@@ -223,8 +232,9 @@ public class DrawerPreviewStage extends Stage {
                     String currentName = currentSettingName.getValue();
                     if( currentName != null && currentName.equals(name) ){
                         try {
-                            printerEnv.saveDefaultSettingName(settingKey, "");
-                        } catch (IOException e) {
+                            //printerEnv.saveDefaultSettingName(settingKey, "");
+                            pkeySetter.accept("");
+                        } catch (Exception e) {
                             logger.error("Failed to save current printer setting name.", e);
                             GuiUtil.alertException("Failed to save current printer setting name.", e);
                         }
@@ -234,7 +244,7 @@ public class DrawerPreviewStage extends Stage {
                 }
             });
             editStage.showAndWait();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             logger.error("Failed to get printer setting data.", ex);
             GuiUtil.alertException("Failed to get printer setting data.", ex);
         }
