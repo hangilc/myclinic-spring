@@ -7,6 +7,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.pharma.tracker.model.Patient;
+import jp.chang.myclinic.pharma.tracker.model.Visit;
 import jp.chang.myclinic.pharma.tracker.model.Wqueue;
 
 class PatientList extends ListView<PatientList.Model> {
@@ -16,10 +17,12 @@ class PatientList extends ListView<PatientList.Model> {
     public static class Model {
         Patient patient;
         Wqueue wqueue;
+        Visit visit;
 
         public Model(Patient patient, Wqueue wqueue) {
             this.patient = patient;
             this.wqueue = wqueue;
+            this.visit = wqueue.getVisit();
         }
     }
 

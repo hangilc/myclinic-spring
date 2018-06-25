@@ -141,7 +141,7 @@ class LeftColumn extends VBox {
     private void doStartPresc(){
         PatientList.Model item = patientList.getSelectionModel().getSelectedItem();
         if( item != null ){
-            onStartPresc(item.wqueue.getVisit().getVisitId());
+            onStartPresc(item.visit.getVisitId());
         }
     }
 

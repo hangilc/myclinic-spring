@@ -228,7 +228,7 @@ class PrescPane extends VBox {
                         List<List<Op>> unprescribedPages = pages.stream()
                                 .filter(p -> !p.prescribed).map(p -> p.ops).collect(Collectors.toList());
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(
-                                Globals.printerEnv, 128, 182, 1.0){
+                                Globals.printerEnv, 128, 182, 0.6){
                             @Override
                             protected String getDefaultPrinterSettingName() {
                                 return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);

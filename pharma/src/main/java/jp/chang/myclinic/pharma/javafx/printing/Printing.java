@@ -50,7 +50,7 @@ public class Printing {
         DrugBagDrawer drawer = new DrugBagDrawer(data);
         List<Op> ops = drawer.getOps();
         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv,
-                128, 182, 0.8){
+                128, 182, 0.6){
             @Override
             protected String getDefaultPrinterSettingName() {
                 return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
