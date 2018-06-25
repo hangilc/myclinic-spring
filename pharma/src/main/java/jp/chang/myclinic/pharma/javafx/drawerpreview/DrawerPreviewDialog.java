@@ -51,6 +51,7 @@ public class DrawerPreviewDialog extends Stage {
     }
 
     public void setPages(List<List<Op>> pages) {
+        drawerCanvas.clear();
         this.pages = pages;
         pageNav.set(pages.size());
         pageNav.trigger();

@@ -29,7 +29,6 @@ class LeftColumn extends VBox {
     };
 
     private PatientList patientList;
-    private CheckBox includeAllCheckBox;
     private ObservableList<PatientList.Model> todaysList = FXCollections.observableArrayList(modelExtractor);
     private ObservableList<PatientList.Model> pharmaQueueList = FXCollections.observableArrayList(modelExtractor);
 
@@ -101,7 +100,7 @@ class LeftColumn extends VBox {
     private Node createCommands(Scope scope){
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
-        includeAllCheckBox = new CheckBox("処方済の患者も含める");
+        CheckBox includeAllCheckBox = new CheckBox("処方済の患者も含める");
         includeAllCheckBox.setSelected(false);
         includeAllCheckBox.selectedProperty().addListener((obs, oldValue, newValue) -> {
             if( newValue ){

@@ -166,7 +166,7 @@ class PrescPane extends VBox {
             PrescContentDrawerData drawerData = creator.createData();
             List<Op> ops = new PrescContentDrawer(drawerData).getOps();
             DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv,
-                    148, 210, 0.8){
+                    148, 210, 0.55){
                 @Override
                 protected String getDefaultPrinterSettingName() {
                     return Config.load().map(Config::getPrescContentPrinterSetting).orElse(null);
@@ -245,17 +245,13 @@ class PrescPane extends VBox {
                         };
                         previewDialog.setTitle("薬袋印刷");
                         previewDialog.addStylesheet("Pharma.css");
-                        CheckBox unprescribedOnlyCheck = new CheckBox("処方済も含める");
-                        unprescribedOnlyCheck.setSelected(true);
-                        unprescribedOnlyCheck.selectedProperty().addListener((obs, oldValue, newValue) -> {
-                            if( newValue ){
-                                previewDialog.setPages(allPages);
-                            } else {
-                                previewDialog.setPages(unprescribedPages);
-                            }
-                        });
-                        previewDialog.addToCommands(unprescribedOnlyCheck);
+                        CheckBox includePrescribedCheck = new CheckBox("処方済も含める");
+                        includePrescribedCheck.setSelected(false);
                         previewDialog.setPages(unprescribedPages);
+                        includePrescribedCheck.selectedProperty().addListener((obs, oldValue, newValue) -> {
+                            previewDialog.setPages(newValue ? allPages: unprescribedPages);
+                        });
+                        previewDialog.addToCommands(includePrescribedCheck);
                         previewDialog.show();
                     }))
                     .exceptionally(HandlerFX::exceptionally);
@@ -267,7 +263,7 @@ class PrescPane extends VBox {
             TechouDataCreator creator = new TechouDataCreator(patient, LocalDate.now(), drugs, Globals.clinicInfo);
             TechouDrawerData drawerData = creator.createData();
             List<Op> ops = new TechouDrawer(drawerData).getOps();
-            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv, 99, 120, 1.0){
+            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv, 99, 120, 0.9){
                 @Override
                 protected String getDefaultPrinterSettingName() {
                     return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
