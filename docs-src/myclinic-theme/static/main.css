@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans:700');
+
 html {
   box-sizing: border-box;
 }
@@ -8,15 +10,21 @@ html {
 #main-content {
 	max-width: 680px;
 	margin: 10px auto;
-	background-color: #ffe;
+	/*background-color: #ffe;*/
 	padding: 10px;
 	font-family: sans-serif;
 }
 
+#site-name {
+	font-family: 'Noto Sans', sans-serif;
+	font-weight: bold;
+}
+
 .article-title {
 	border-radius: 6px;
-	background-color: #c0c0c0;
-	padding: 6px;
+	background-color: #eee;
+	padding: 8px 6px 6px 6px;
+	color: #333;
 }
 
 .highlight pre {
