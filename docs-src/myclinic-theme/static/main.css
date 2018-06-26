@@ -1,0 +1,44 @@
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+#main-content {
+	max-width: 680px;
+	margin: 10px auto;
+	background-color: #ffe;
+	padding: 10px;
+	font-family: sans-serif;
+}
+
+.article-title {
+	border-radius: 6px;
+	background-color: #c0c0c0;
+	padding: 6px;
+}
+
+.highlight pre {
+	background-color: black;
+	color: white;
+	padding: 10px;
+	border-radius: 6px;
+}
+
+.highlight pre .kt {
+	color: green;
+	font-weight: bold;
+}
+
+.highlight pre .n {
+	color: yellow;
+	font-weight: bold;
+}
+
+.highlight pre .nf {
+	color: fuchsia;
+	font-weight: bold;
+}
+
+

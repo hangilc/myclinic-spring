@@ -17,6 +17,7 @@ application.yml
 /my-pyenv
 /work
 __pycache__/
+docs-src/output
 
 
 

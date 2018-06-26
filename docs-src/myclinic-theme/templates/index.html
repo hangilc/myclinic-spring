@@ -2,14 +2,18 @@
 <html>
 <head>
 	<meta charset="UTF-8">
+	<link rel="stylesheet" href="theme/normalize.css">
+	<link rel="stylesheet" href="theme/main.css">
 </head>
-<body>
-	<h1>{{ SITENAME }}</h1>
-	<div>By {{ AUTHOR }}</div>
+<body width="100%">
+	<div id="main-content">
+	<h1 id="site-name">{{ SITENAME }}</h1>
+	<div id="author">By {{ AUTHOR }}</div>
 	{% for article in articles %}
-		<h2>{{ article.title }}</h2>
+		<h2 class="article-title">{{ article.title }}</h2>
 		<div>{{ article.locale_date }}</div>
 		{{ article.content }}
 	{% endfor %}
+	</div>
 </body>
 </html>
