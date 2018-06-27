@@ -16,3 +16,12 @@ server-id には、そのサーバーの ID を設定（MySQL server ごとに�
 
 log-bin を設定することで、binary log を保存するようになり、マスターとして機能できるようになる。
 
+ユーザー権限の付与。
+
+```
+mysql> grant all on myclinic.* to (USER);
+mysql> grant all on intraclinic.* to (USER);
+mysql> grant reload on *.* to (USER);
+mysql> grant replication client on *.* to (USER);
+```
+
