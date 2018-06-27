@@ -4,19 +4,15 @@ import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 class CommandArgs {
 
     private static final Logger logger = LoggerFactory.getLogger(CommandArgs.class);
-    private Path workingDirectory;
+    //private Path workingDirectory;
     private String serverUrl;
 
     CommandArgs(String[] args){
         Options options = new Options();
-        options.addOption("d", "workdir", true, "Working directory");
+        //options.addOption("d", "workdir", true, "Working directory");
         options.addOption("h", "help", false, "printPages this help");
         CommandLineParser commandParser = new DefaultParser();
         try {
@@ -26,9 +22,9 @@ class CommandArgs {
                 helpFormatter.printHelp("practice", options);
                 System.exit(0);
             }
-            if( commandLine.hasOption("d") ){
-                workingDirectory = Paths.get(commandLine.getOptionValue("d"));
-            }
+//            if( commandLine.hasOption("d") ){
+//                workingDirectory = Paths.get(commandLine.getOptionValue("d"));
+//            }
             String[] rem = commandLine.getArgs();
             if( rem.length == 0 ){
                 logger.error("サーバーの URL が設定されていません。");
@@ -49,9 +45,9 @@ class CommandArgs {
         }
     }
 
-    public Path getWorkingDirectory(){
-        return workingDirectory;
-    }
+//    public Path getWorkingDirectory(){
+//        return workingDirectory;
+//    }
 
     public String getServerUrl(){
         return serverUrl;
@@ -60,7 +56,7 @@ class CommandArgs {
     @Override
     public String toString() {
         return "CommandArgs{" +
-                "workingDirectory=" + workingDirectory +
+                //"workingDirectory=" + workingDirectory +
                 '}';
     }
 }

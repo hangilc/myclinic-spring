@@ -13,9 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -30,7 +27,7 @@ public class PracticeEnv {
     public static final String REFER_PRINTER_SETTING_KEY = "refer-printer-setting";
     public static PracticeEnv INSTANCE;
 
-    private Path printerSettingsDir;
+    //private Path printerSettingsDir;
     private ClinicInfoDTO clinicInfo;
     private ObjectProperty<PatientDTO> currentPatient = new SimpleObjectProperty<>();
     private IntegerProperty currentVisitId = new SimpleIntegerProperty(0);
@@ -44,24 +41,24 @@ public class PracticeEnv {
     private String kouhatsuKasan;
 
     public PracticeEnv(CommandArgs commandArgs) throws IOException {
-        printerSettingsDir = commandArgs.getWorkingDirectory();
-        if (printerSettingsDir == null) {
-            printerSettingsDir = Paths.get(System.getProperty("user.home"), "practice-home");
-        }
-        if (!(Files.exists(printerSettingsDir) && Files.isDirectory(printerSettingsDir))) {
-            logger.error("Invalid printer settings directory: " + printerSettingsDir);
-            System.exit(1);
-        }
+//        printerSettingsDir = commandArgs.getWorkingDirectory();
+//        if (printerSettingsDir == null) {
+//            printerSettingsDir = Paths.get(System.getProperty("user.home"), "practice-home");
+//        }
+//        if (!(Files.exists(printerSettingsDir) && Files.isDirectory(printerSettingsDir))) {
+//            logger.error("Invalid printer settings directory: " + printerSettingsDir);
+//            System.exit(1);
+//        }
         myclinicEnv = new MyclinicEnv(APP_NAME);
     }
 
-    public Path getPrinterSettingsDir() {
-        return printerSettingsDir;
-    }
-
-    public void setPrinterSettingsDir(Path printerSettingsDir) {
-        this.printerSettingsDir = printerSettingsDir;
-    }
+//    public Path getPrinterSettingsDir() {
+//        return printerSettingsDir;
+//    }
+//
+//    public void setPrinterSettingsDir(Path printerSettingsDir) {
+//        this.printerSettingsDir = printerSettingsDir;
+//    }
 
     public ClinicInfoDTO getClinicInfo() {
         return clinicInfo;
@@ -210,7 +207,7 @@ public class PracticeEnv {
     @Override
     public String toString() {
         return "PracticeEnv{" +
-                "printerSettingsDir=" + printerSettingsDir +
+                //"printerSettingsDir=" + printerSettingsDir +
                 ", clinicInfo=" + clinicInfo +
                 '}';
     }
