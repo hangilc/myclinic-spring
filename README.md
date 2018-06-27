@@ -31,3 +31,7 @@ JavFX で実装された、デスクトップ・プログラムです。薬袋�
 ## ライセンス(License)
 
 [MIT License](LICENSE)
+
+## その他
+
+[Blog](https://hangilc.github.io/myclinic-spring)
