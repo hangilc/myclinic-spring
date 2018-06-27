@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="theme/normalize.css">
+	<link rel="stylesheet" href="theme/main.css">
+</head>
+<body width="100%">
+	<div id="main-content">
+	<h1 id="site-name">myclinic-doc</h1>
+	<div id="author">By Hangil Chang</div>
+		<h2 class="article-title">新規インストール</h2>
+		<div>2018年6月25日</div>
+		<p>myclinic-spring を新しいＰＣにインストールしてみる。今回使ったＰＣは Lenovo ノートパソコン ideapad 320 (Core i5, 8GB Memory, 256GB SSD) で、価格は 76,400 円だった。</p>
+<p>不要なソフトをアンインストールして、Windows の更新プログラムをインストール（２時間かかった）。</p>
+<p>Chocholatey をインストール。PowerShell を管理者として起動。プログラムを shell から起動できるようにする。</p>
+<div class="highlight"><pre><span></span>&gt; Set-ExecutionPolicy -Force RemoteSigned
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>&gt;  iex <span class="o">((</span>New-Object System.Net.WebClient<span class="o">)</span>.DownloadString<span class="o">(</span><span class="s1">&#39;https://chocolatey.org/install.ps1&#39;</span><span class="o">))</span>
+</pre></div>
+
+
+<p>JDK10 のインストール</p>
+<div class="highlight"><pre><span></span>&gt; choco install -y jdk10
+</pre></div>
+
+
+<p>GIT のインストール</p>
+<div class="highlight"><pre><span></span>&gt; choco install -y git
+</pre></div>
+
+
+<p>Maven のインストール</p>
+<div class="highlight"><pre><span></span>&gt; choco install -y maven
+</pre></div>
+
+
+<p>Chocolatey では、 mysql 5.6 がインストールできなかったので、手動でインストール。</p>
+	</div>
+</body>
+</html>

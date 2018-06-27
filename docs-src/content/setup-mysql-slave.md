@@ -1,4 +1,4 @@
-Title: MySQL マスターの設定
+Title: MySQL slave の設定
 Date: 2018-06-27 14:28
 Category: development, mysql
 

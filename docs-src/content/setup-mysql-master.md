@@ -1,4 +1,4 @@
-Title: MySQL マスターの設定
+Title: MySQL master の設定
 Date: 2018-06-27 08:34
 Category: development, mysql
 

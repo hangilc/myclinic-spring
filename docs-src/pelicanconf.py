@@ -36,4 +36,5 @@ DEFAULT_PAGINATION = 10
 
 THEME = 'myclinic-theme'
 DEFAULT_DATE_FORMAT = '%Y年%-m月%-d日'
+OUTPUT_PATH = '../docs'
 
