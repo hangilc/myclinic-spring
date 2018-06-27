@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans:700');
+
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+#main-content {
+	max-width: 680px;
+	margin: 10px auto;
+	/*background-color: #ffe;*/
+	padding: 10px;
+	font-family: sans-serif;
+}
+
+#site-name {
+	font-family: 'Noto Sans', sans-serif;
+	font-weight: bold;
+}
+
+.article-title {
+	border-radius: 6px;
+	background-color: #eee;
+	padding: 8px 6px 6px 6px;
+	color: #333;
+}
+
+.highlight pre {
+	background-color: black;
+	color: white;
+	padding: 10px;
+	border-radius: 6px;
+}
+
+.highlight pre .kt {
+	color: green;
+	font-weight: bold;
+}
+
+.highlight pre .n {
+	color: yellow;
+	font-weight: bold;
+}
+
+.highlight pre .nf {
+	color: fuchsia;
+	font-weight: bold;
+}
+
+
