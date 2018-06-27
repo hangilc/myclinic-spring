@@ -16,6 +16,9 @@ application.yml
 /kouhatsukasan/work
 /my-pyenv
 /work
+__pycache__
+docs-src/output
+
 
 
 
