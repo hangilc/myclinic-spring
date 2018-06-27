@@ -8,7 +8,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import org.slf4j.Logger;
@@ -54,13 +54,13 @@ public class ListSettingDialog extends Stage {
 
     private void doEdit(String name){
         try {
-            byte[] devmode = printerEnv.getDevmode(name);
-            byte[] devnames = printerEnv.getDevnames(name);
-            AuxSetting auxSetting = printerEnv.getAuxSetting(name);
+            byte[] devmode = printerEnv.readDevmode(name);
+            byte[] devnames = printerEnv.readDevnames(name);
+            AuxSetting auxSetting = printerEnv.readAuxSetting(name);
             EditSettingDialog editSettingDialog = new EditSettingDialog(printerEnv, name, devmode, devnames, auxSetting);
             editSettingDialog.setTestPrintOps(testPrintOps);
             editSettingDialog.show();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Failed to get printer setting info.", e);
             GuiUtil.alertException("印刷設定情報の取得に失敗しました。", e);
         }
@@ -71,13 +71,13 @@ public class ListSettingDialog extends Stage {
             return;
         }
         try {
-            printerEnv.deletePrintSetting(name);
+            printerEnv.deleteSetting(name);
             int index = names.indexOf(name);
             assert index >= 0;
             names.remove(index);
             dispGrid.removeRow(index);
             sizeToScene();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Failed to delete printer setting.", e);
             GuiUtil.alertException("印刷設定の削除に失敗しました。", e);
         }

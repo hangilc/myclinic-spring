@@ -16,7 +16,7 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DevnamesInfo;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
-import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,12 +79,9 @@ class EditSettingDialog extends Stage {
                     EditSettingDialog.this.devmode = newDevmode;
                     EditSettingDialog.this.devnames = newDevnames;
                     update();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     logger.error("Failed to save printer setting.", e);
                     GuiUtil.alertException("印刷設定の保存に失敗しました。", e);
-                } catch (jp.chang.myclinic.drawer.printer.manager.PrinterEnv.SettingDirNotSuppliedException e) {
-                    logger.error("No printer setting directory is not specified.", e);
-                    GuiUtil.alertException("印刷設定ディレクトリーが設定されていません。", e);
                 }
             }
         }

@@ -1,6 +1,6 @@
 package jp.chang.myclinic.pharma;
 
-import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

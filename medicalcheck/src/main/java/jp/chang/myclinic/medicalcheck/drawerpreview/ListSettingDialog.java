@@ -8,7 +8,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
-import jp.chang.myclinic.drawer.printer.manager.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ class ListSettingDialog extends Stage {
             EditSettingDialog editSettingDialog = new EditSettingDialog(printerEnv, name, devmode, devnames, auxSetting);
             editSettingDialog.setTestPrintOps(testPrintOps);
             editSettingDialog.show();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Failed to get printer setting info.", e);
             GuiUtil.alertException("印刷設定情報の取得に失敗しました。", e);
         }
@@ -75,7 +75,7 @@ class ListSettingDialog extends Stage {
             names.remove(index);
             dispGrid.removeRow(index);
             sizeToScene();
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Failed to delete printer setting.", e);
             GuiUtil.alertException("印刷設定の削除に失敗しました。", e);
         }

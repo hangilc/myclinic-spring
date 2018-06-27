@@ -13,7 +13,7 @@ import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DevmodeInfo;
 import jp.chang.myclinic.drawer.printer.DevnamesInfo;
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
@@ -82,22 +82,22 @@ public abstract class SelectDefaultSettingDialog extends Stage {
 
     private void doDetail(String label, String nameValue){
         try {
-            DevmodeInfo devmodeInfo = new DevmodeInfo(printerEnv.getDevmode(nameValue));
-            DevnamesInfo devnamesInfo = new DevnamesInfo(printerEnv.getDevnames(nameValue));
-            AuxSetting auxSetting = printerEnv.getAuxSetting(nameValue);
+            DevmodeInfo devmodeInfo = new DevmodeInfo(printerEnv.readDevmode(nameValue));
+            DevnamesInfo devnamesInfo = new DevnamesInfo(printerEnv.readDevnames(nameValue));
+            AuxSetting auxSetting = printerEnv.readAuxSetting(nameValue);
             String text = String.format("%s\n%s; %s; dx=%s; dy=%s; scale=%s",
                     devnamesInfo.getDevice(), devmodeInfo.getDefaultSourceLabel(),
                     devmodeInfo.getOrientationLabel(),
                     auxSetting.getDx(), auxSetting.getDy(), auxSetting.getScale());
             GuiUtil.alertInfo(text);
-        } catch (IOException e) {
+        } catch (Exception e) {
             HandlerFX.exception("印刷設定情報の取得に失敗しました。", e);
         }
     }
 
     private void doTestPrint(String name){
         try {
-            printerEnv.print(testPrintOps, name);
+            printerEnv.printSinglePage(testPrintOps, name);
         } catch(Exception ex){
             HandlerFX.exception("テスト印刷に失敗しました。", ex);
         }

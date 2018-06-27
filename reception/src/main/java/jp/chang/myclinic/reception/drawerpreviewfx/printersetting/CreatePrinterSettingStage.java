@@ -11,7 +11,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.reception.javafx.Form;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
@@ -117,12 +117,12 @@ public class CreatePrinterSettingStage extends Stage {
         auxSetting.setDy(dy);
         auxSetting.setScale(scale);
         try {
-            List<String> existingNames = printerEnv.listSettingNames();
+            List<String> existingNames = printerEnv.listNames();
             if( existingNames.contains(name) ){
                 GuiUtil.alertError(name + " という設定はすでに存在します。");
                 return;
             }
-            printerEnv.savePrintSetting(name, devnames, devmode, auxSetting);
+            printerEnv.saveSetting(name, devnames, devmode, auxSetting);
             created = true;
             close();
         } catch(Exception ex){

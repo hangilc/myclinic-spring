@@ -14,7 +14,7 @@ public class ReceptionEnv {
     public static ReceptionEnv INSTANCE = new ReceptionEnv();
 
     private static final Logger logger = LoggerFactory.getLogger(ReceptionEnv.class);
-
+    private static final String APP_NAME = "reception";
     private Path workdir;
     private Path configFilePath;
     private ReceptionConfig config;
@@ -24,7 +24,7 @@ public class ReceptionEnv {
     //private ObjectProperty<List<WqueueFullDTO>> wqueueList = new SimpleObjectProperty<>(Collections.emptyList());
     //private WqueueReloader wqueueReloader;
 
-    public void updateWithArgs(ReceptionArgs args) throws IOException {
+    public void updateWithArgs(ReceptionArgs args){
         this.workdir = args.workingDirPath;
         if( this.workdir == null ){
             this.workdir = Paths.get(System.getProperty("user.dir"));
@@ -43,7 +43,7 @@ public class ReceptionEnv {
         if( this.printerSettingsDir == null ){
             this.printerSettingsDir = workdir;
         }
-        myclinicEnv = new MyclinicEnv();
+        myclinicEnv = new MyclinicEnv(APP_NAME);
     }
 
     public Path getWorkdir(){

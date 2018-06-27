@@ -12,10 +12,10 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PaymentDTO;
-import jp.chang.myclinic.myclinicenv.printer.PrinterEnv;
 import jp.chang.myclinic.reception.ReceptionEnv;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
 import jp.chang.myclinic.reception.lib.ReceptionService;
@@ -29,7 +29,6 @@ import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 
 public class MainPane extends VBox implements DispatchHook {
@@ -92,10 +91,10 @@ public class MainPane extends VBox implements DispatchHook {
         }
     }
 
-    public void setWqueueList(ObservableList<Wqueue> wqueueList){
+    public void setWqueueList(ObservableList<Wqueue> wqueueList) {
         ObservableList<Wqueue> list = FXCollections.observableList(wqueueList, wq -> {
             return new Observable[]{
-                wq.waitStateProperty()
+                    wq.waitStateProperty()
             };
         });
         wqueueTable.setItems(list);
@@ -222,12 +221,16 @@ public class MainPane extends VBox implements DispatchHook {
         PrinterEnv printerEnv = null;
         try {
             printerEnv = ReceptionEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             logger.error("Failed to get PrinterEnv", ex);
             GuiUtil.alertError("Failed to get PrinterEnv");
         }
+//        DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
+//                printerEnv, "reception-receipt");
         DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
-                printerEnv, "reception-receipt");
+                printerEnv,
+                () -> ReceptionEnv.INSTANCE.getMyclinicEnv().getAppProperty("reception-receipt"),
+                name -> ReceptionEnv.INSTANCE.getMyclinicEnv().saveAppProperty("ReceptionEnv.INSTANCE.getMyclinicEnv().g", name));
         stage.show();
     }
 
