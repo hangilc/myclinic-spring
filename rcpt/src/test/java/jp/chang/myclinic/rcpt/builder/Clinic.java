@@ -246,7 +246,6 @@ public class Clinic {
             result.days = 7;
         }
         result.prescribed = 0;
-        result.shuukeisaki = 0; // not used
         return result;
     }
 

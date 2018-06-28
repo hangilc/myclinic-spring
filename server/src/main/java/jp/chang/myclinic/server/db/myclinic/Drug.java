@@ -2,10 +2,6 @@ package jp.chang.myclinic.server.db.myclinic;
 
 import javax.persistence.*;
 
-// import javax.persistence.NamedEntityGraphs;
-// import javax.persistence.NamedEntityGraph;
-// import javax.persistence.NamedAttributeNode;
-
 @Entity
 @Table(name="visit_drug")
 public class Drug {
@@ -101,18 +97,6 @@ public class Drug {
 		this.category = category;
 	}
 
-	// TODO: remove d_shuukeisaki (not used)
-	@Column(name="d_shuukeisaki")
-	private Integer shuukeisaki;
-
-	public Integer getShuukeisaki(){
-		return shuukeisaki;
-	}
-
-	public void setShuukeisaki(Integer shuukeisaki){
-		this.shuukeisaki = shuukeisaki;
-	}
-
 	@Column(name="d_prescribed")
 	private Integer prescribed;
 
@@ -124,32 +108,6 @@ public class Drug {
 		this.prescribed = prescribed;
 	}
 
-	// @Column(name="d_master_valid_from")
-	// private Date masterValidFrom;
-
-	// public Date getMasterValidFrom(){
-	// 	return masterValidFrom;
-	// }
-
-	// public void setMasterValidFrom(Date masterValidFrom){
-	// 	this.masterValidFrom = masterValidFrom;
-	// }
-
-	// @ManyToOne(fetch=FetchType.LAZY)
-	// @JoinColumns({
-	// 	@JoinColumn(name="d_iyakuhincode", referencedColumnName="iyakuhincode", insertable=false, updatable=false),
-	// 	@JoinColumn(name="d_master_valid_from", referencedColumnName="valid_from", insertable=false, updatable=false),
-	// })
-	// private IyakuhinMaster master;
-
-	// public IyakuhinMaster getMaster(){
-	// 	return master;
-	// }
-
-	// public void setMaster(IyakuhinMaster master){
-	// 	this.master = master;
-	// }
-
 	@Override
 	public String toString(){
 		return "Drug[" +
@@ -160,7 +118,6 @@ public class Drug {
 			"usage=" + usage + ", " +
 			"days=" + days + ", " +
 			"category=" + category + ", " +
-			"shuukeisaki=" + shuukeisaki + ", " +
 			"prescribed=" + prescribed + //", " +
 			//"masterValidFrom=" + masterValidFrom +
 		"]";
