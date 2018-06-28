@@ -1,0 +1,19 @@
+* columns to be deleted
+
+	hoken_rujin.active
+	hoken_shahokokuho.active
+	iyakuhin_master_arch.yakkacode (some program parts need modifications)
+	kouhi.active
+	kouhi.category
+	presc_example.m_group
+	shinryoukoui_master_arch.roujintekiyou (needs code modification)
+	shinryoukoui_master_arch.code_shou (needs code modification)
+	shinryoukoui_master_arch.code_bu(needs code modification)
+	shinryoukoui_master_arch.code_alpha (needs code modification)
+	shinryoukoui_master_arch.code_kubun (needs code modification)
+	visit.jihi
+	visit_charge.jindouteki_mishuu
+	visit_charge.inchou_kessai
+	visit_drug.d_shuukeisaki
+	visit_text.pos
+	
