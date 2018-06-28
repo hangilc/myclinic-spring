@@ -1,19 +1,23 @@
 * columns to be deleted
 
-	hoken_rujin.active
-	hoken_shahokokuho.active
+	- hoken_roujin.active [deleted at 2018-06-28]
+	- hoken_shahokokuho.active [deleted at 2018-06-28]
+	- kouhi.active [deleted at 2018-06-28]
+	- kouhi.category [deleted at 2018-06-28]
+	- presc_example.m_group [deleted at 2018-06-28]
+	- visit.jihi [deleted at 2018-06-28]
+	- visit_charge.jindouteki_mishuu [deleted at 2018-06-28]
+	- visit_charge.inchou_kessai [deleted at 2018-06-28]
+	- visit_drug.d_pos [deleted at 2018-06-28]
+	- visit_drug.d_shuukeisaki [deleted at 2018-06-28]
+	- visit_text.pos [deleted at 2018-06-28]
+
 	iyakuhin_master_arch.yakkacode (some program parts need modifications)
-	kouhi.active
-	kouhi.category
-	presc_example.m_group
 	shinryoukoui_master_arch.roujintekiyou (needs code modification)
 	shinryoukoui_master_arch.code_shou (needs code modification)
 	shinryoukoui_master_arch.code_bu(needs code modification)
 	shinryoukoui_master_arch.code_alpha (needs code modification)
 	shinryoukoui_master_arch.code_kubun (needs code modification)
-	visit.jihi
-	visit_charge.jindouteki_mishuu
-	visit_charge.inchou_kessai
-	visit_drug.d_shuukeisaki
-	visit_text.pos
-	
+
+
+
