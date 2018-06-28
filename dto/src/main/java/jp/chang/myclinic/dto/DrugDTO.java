@@ -1,5 +1,8 @@
 package jp.chang.myclinic.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DrugDTO {
 	public int drugId;
 	public int visitId;
