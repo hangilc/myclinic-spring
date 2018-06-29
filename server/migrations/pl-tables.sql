@@ -1,3 +1,9 @@
+create table pl_practice_log (
+  `kind` varchar(255) not null,
+  `index_1` int(11) not null,
+  `index_2` int(11) not null,
+) ENGINE=InnoDB DEFAULT CHARSET=cp932;
+
 
 CREATE TABLE `pl_disease` (
   `pl_disease_id` int not null auto_increment,
