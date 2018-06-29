@@ -23,5 +23,6 @@ mysql> grant all on myclinic.* to (USER);
 mysql> grant all on intraclinic.* to (USER);
 mysql> grant reload on *.* to (USER);
 mysql> grant replication client on *.* to (USER);
+mysql> grant replication slave on *.* to (USER);
 ```
 

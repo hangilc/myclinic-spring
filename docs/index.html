@@ -13,7 +13,7 @@
 		<div>2018年6月27日</div>
 		<p>Windows 10 で、ネットワークにホストが表示されない場合の対処法。</p>
 <p>まず、WORKGROUP が正しく設定されているか確認。</p>
-<p>「コントロールパネル」 -&gt; 「管理ツール」 -&gt; 「サービス」で、 </p>
+<p>「コントロールパネル」 -&gt; 「管理ツール」 -&gt; 「サービス」で、</p>
 <ul>
 <li>Function Discovery Provider Host</li>
 <li>Function Discovery Resource Publication</li>
@@ -66,6 +66,7 @@ mysql&gt; show slave status\G
 mysql&gt; grant all on intraclinic.* to (USER);
 mysql&gt; grant reload on *.* to (USER);
 mysql&gt; grant replication client on *.* to (USER);
+mysql&gt; grant replication slave on *.* to (USER);
 </pre></div>
 		<h2 class="article-title">MySQL の 5.6 から 5.7 へのアップグレード</h2>
 		<div>2018年6月27日</div>
