@@ -139,14 +139,14 @@ public class MainPane extends VBox implements DispatchHook {
 
     private void doDelete() {
         wqueueTable.getSelectedWqueueFullDTO()
-                .thenAccept(wq -> {
+                .thenAccept(wq -> Platform.runLater(() -> {
                     if (wq != null) {
                         String message = String.format("この診察受付（%s%s）を削除していいですか？", wq.patient.lastName, wq.patient.firstName);
                         if (GuiUtil.confirm(message)) {
                             ReceptionService.deleteFromWqueue(wq.visit.visitId);
                         }
                     }
-                })
+                }))
                 .exceptionally(HandlerFX::exceptionally);
     }
 
@@ -288,15 +288,6 @@ public class MainPane extends VBox implements DispatchHook {
         dialog.showAndWait();
         if (dialog.isOk()) {
             ReceptionService.startVisit(patient.patientId);
-//            Service.api.startVisit(patient.patientId)
-//                    .thenAccept(visitId -> {
-//                        // TODO: update wqueue table
-//                    })
-//                    .exceptionally(ex -> {
-//                        logger.error("Failed start visit.", ex);
-//                        Platform.runLater(() -> GuiUtil.alertException(ex));
-//                        return null;
-//                    });
         }
     }
 
@@ -313,6 +304,7 @@ public class MainPane extends VBox implements DispatchHook {
     @Override
     public void onWqueueDeleted(int visitId, Runnable toNext) {
         wqueueList.removeIf(wq -> wq.getVisit().getVisitId() == visitId);
+        wqueueTable.getSelectionModel().clearSelection();
         toNext.run();
     }
 }

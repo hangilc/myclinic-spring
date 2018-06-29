@@ -282,7 +282,6 @@ public class DTOMapper {
 		drugDTO.usage = drug.getUsage();
 		drugDTO.days = drug.getDays();
 		drugDTO.category = drug.getCategory();
-		drugDTO.shuukeisaki = drug.getShuukeisaki();
 		drugDTO.prescribed = drug.getPrescribed();
 		return drugDTO;
 	}
@@ -297,7 +296,6 @@ public class DTOMapper {
 		drug.setUsage(drugDTO.usage);
 		drug.setDays(drugDTO.days);
 		drug.setCategory(drugDTO.category);
-		drug.setShuukeisaki(drugDTO.shuukeisaki);
 		drug.setPrescribed(drugDTO.prescribed);
 		return drug;
 	}

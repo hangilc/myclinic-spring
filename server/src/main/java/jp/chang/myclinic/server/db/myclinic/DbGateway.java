@@ -885,7 +885,6 @@ public class DbGateway {
         }
         VisitDTO visitDTO = getVisit(visitId);
         deleteVisitSafely(visitId);
-        practiceLogger.logVisitDeleted(visitDTO);
     }
 
     public void deleteVisitSafely(int visitId) {
@@ -911,9 +910,15 @@ public class DbGateway {
             throw new RuntimeException("支払い記録があるので、診察を削除できません。");
         }
         Optional<Wqueue> optWqueue = wqueueRepository.tryFindByVisitId(visitId);
-        optWqueue.ifPresent(wqueue -> wqueueRepository.delete(wqueue));
+        optWqueue.ifPresent(wqueue -> {
+            wqueueRepository.delete(wqueue);
+            practiceLogger.logWqueueDeleted(mapper.toWqueueDTO(wqueue));
+        });
         Optional<PharmaQueue> optPharmaQueue = pharmaQueueRepository.findByVisitId(visitId);
-        optPharmaQueue.ifPresent(pharmaQueue -> pharmaQueueRepository.delete(pharmaQueue));
+        optPharmaQueue.ifPresent(pharmaQueue -> {
+            pharmaQueueRepository.delete(pharmaQueue);
+            practiceLogger.logPharmaQueueDeleted(mapper.toPharmaQueueDTO(pharmaQueue));
+        });
         visitRepository.deleteById(visitId);
         practiceLogger.logVisitDeleted(visit.visit);
     }

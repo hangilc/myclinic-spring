@@ -178,7 +178,6 @@ public class VisitController {
 
     @RequestMapping(value = "/delete-visit-from-reception", method = RequestMethod.POST)
     public boolean deleteVisitFromReception(@RequestParam("visit-id") int visitId) {
-        VisitDTO visit = dbGateway.getVisit(visitId);
         dbGateway.deleteVisitFromReception(visitId);
         return true;
     }
