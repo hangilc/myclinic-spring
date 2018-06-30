@@ -1,14 +1,16 @@
 package jp.chang.myclinic;
 
-import java.awt.*;
 import javax.swing.*;
+import java.awt.*;
 
 public class MainFrame extends JFrame {
 
 	public MainFrame(){
+	    setTitle("スキャナー");
 		setJMenuBar(makeMenuBar());
 		JPanel panel = new JPanel();
 		JButton patient = new JButton("患者書類");
+		JButton hokensho = new JButton("保険証");
 		JButton general = new JButton("一般書類");
 		patient.addActionListener(event -> {
 			String patientIdInput = JOptionPane.showInputDialog(this, "患者番号を入力してください。");
@@ -32,12 +34,35 @@ public class MainFrame extends JFrame {
 			docScanner.setLocationByPlatform(true);
 			docScanner.setVisible(true);
 		});
+		hokensho.addActionListener(event -> {
+			String patientIdInput = JOptionPane.showInputDialog(this, "患者番号を入力してください。");
+			Integer patientId = null;
+			while( true ){
+				if( patientIdInput == null ){
+					break;
+				}
+				try {
+					patientId = Integer.parseInt(patientIdInput);
+					break;
+				} catch(NumberFormatException ex){
+					patientIdInput = JOptionPane.showInputDialog(this,
+						"患者番号を入力してください。\n（患者番号の値が不適切です。）", patientIdInput);
+				}
+			}
+			if( patientId == null ){
+				return;
+			}
+			PatientDocScanner docScanner = new PatientDocScanner(this, patientId, true);
+			docScanner.setLocationByPlatform(true);
+			docScanner.setVisible(true);
+		});
 		general.addActionListener(event -> {
 			GeneralDocScanner docScanner = new GeneralDocScanner(this);
 			docScanner.setLocationByPlatform(true);
 			docScanner.setVisible(true);
 		});
 		panel.add(patient);
+		panel.add(hokensho);
 		panel.add(general);
 		add(panel, BorderLayout.CENTER);
 		pack();
