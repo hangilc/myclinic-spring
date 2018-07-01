@@ -19,7 +19,8 @@ class NewPostDialog extends JDialog {
     private Callback callback;
     private JTextArea textarea = new JTextArea(10, 30);
 
-    NewPostDialog(Callback callback){
+    NewPostDialog(Window owner, Callback callback){
+        super(owner);
         setTitle("新規投稿");
         this.callback = callback;
         setLayout(new MigLayout("fill", "", ""));

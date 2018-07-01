@@ -91,7 +91,7 @@ class MainWindow extends JFrame {
     }
 
     private void doNew(){
-        NewPostDialog dialog = new NewPostDialog(new NewPostDialog.Callback(){
+        NewPostDialog dialog = new NewPostDialog(getOwner(), new NewPostDialog.Callback(){
             @Override
             public void onPost(int postId){
                 Service.api.listPost(currentPage)
