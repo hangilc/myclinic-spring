@@ -12,12 +12,13 @@
 	- visit_drug.d_shuukeisaki [deleted at 2018-06-28]
 	- visit_text.pos [deleted at 2018-06-28]
 
-	iyakuhin_master_arch.yakkacode (some program parts need modifications)
 	shinryoukoui_master_arch.roujintekiyou (needs code modification)
 	shinryoukoui_master_arch.code_shou (needs code modification)
 	shinryoukoui_master_arch.code_bu(needs code modification)
 	shinryoukoui_master_arch.code_alpha (needs code modification)
 	shinryoukoui_master_arch.code_kubun (needs code modification)
+
+	iyakuhin_master_arch.yakkacode --> DO NOT REMOVE! (used in kouhatsukasan)
 
 
 
