@@ -3,16 +3,18 @@ package jp.chang.myclinic.server.rest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,5 +39,22 @@ class HokenshoController {
                 .filter(p -> matcher.matches(p.getFileName()))
                 .map(p -> p.getFileName().toString())
                 .collect(Collectors.toList());
+    }
+
+    @RequestMapping(value="/get-hokensho", method=RequestMethod.GET)
+    public ResponseEntity<Resource> getHokensho(@RequestParam("patient-id") int patientId, @RequestParam("file") String file) throws IOException {
+        if( storageDir == null ){
+            logger.error("Failed to get property: myclinic.scanner.paper-scan-directory");
+            throw new RuntimeException("Paper scan directory is not available.");
+        }
+        Path path = Paths.get(storageDir, "" + patientId, file);
+        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file);
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(resource.contentLength())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(resource);
     }
 }
