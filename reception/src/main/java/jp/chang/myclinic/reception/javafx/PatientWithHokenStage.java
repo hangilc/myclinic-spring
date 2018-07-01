@@ -19,22 +19,26 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.lib.ReceptionService;
-import jp.chang.myclinic.util.KouhiUtil;
-import jp.chang.myclinic.util.KoukikoureiUtil;
-import jp.chang.myclinic.util.RoujinUtil;
-import jp.chang.myclinic.util.ShahokokuhoUtil;
+import jp.chang.myclinic.util.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PatientWithHokenStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(PatientWithHokenStage.class);
+    private static Pattern scannedDateTimePattern  = Pattern.compile(
+            "(\\d{8}+)-(\\d{6}+)-\\d+\\.[^.]+$"
+    ); // (yyyymmdd)-(hhmmss)
 
     private ObjectProperty<PatientDTO> thePatient = new SimpleObjectProperty<>();
     private BooleanProperty currentActiveOnly = new SimpleBooleanProperty(true);
@@ -44,6 +48,7 @@ public class PatientWithHokenStage extends Stage {
     private ObjectProperty<HokenTable.Model> tableSelection = new SimpleObjectProperty<>();
 
     public PatientWithHokenStage(PatientDTO patient, HokenListDTO hokenList) {
+        setTitle("患者情報編集（" + patient.patientId + ")");
         thePatient.setValue(patient);
         this.hokenList = hokenList;
         HokenTable hokenTable = new HokenTable();
@@ -62,7 +67,7 @@ public class PatientWithHokenStage extends Stage {
             editPatientButton.setOnAction(event -> {
                 EditPatientStage editStage = new EditPatientStage(thePatient.getValue());
                 editStage.showAndWait();
-                if( editStage.getFormValue() != null ){
+                if (editStage.getFormValue() != null) {
                     PatientDTO data = editStage.getFormValue();
                     Service.api.updatePatient(data)
                             .thenAccept(ok -> {
@@ -125,10 +130,16 @@ public class PatientWithHokenStage extends Stage {
                 Button newShahokokuhoButton = new Button("新規社保国保");
                 Button newKoukikoureiButton = new Button("新規後期高齢");
                 Button newKouhiButton = new Button("新規公費負担");
+                Hyperlink hokenshoLink = new Hyperlink("保険証画像");
                 newShahokokuhoButton.setOnAction(event -> doNewShahokokuho());
                 newKoukikoureiButton.setOnAction(event -> doNewKoukikourei());
                 newKouhiButton.setOnAction(event -> doNewKouhi());
-                row.getChildren().addAll(newShahokokuhoButton, newKoukikoureiButton, newKouhiButton);
+                hokenshoLink.setOnAction(event -> doHokenshoImage());
+                row.getChildren().addAll(
+                        newShahokokuhoButton,
+                        newKoukikoureiButton,
+                        newKouhiButton,
+                        hokenshoLink);
                 vbox.getChildren().add(row);
             }
             TitledPane titledPane = new TitledPane("保険情報", vbox);
@@ -151,53 +162,97 @@ public class PatientWithHokenStage extends Stage {
         sizeToScene();
     }
 
-    private void doEdit(HokenTable hokenTable){
+    private void doHokenshoImage() {
+        final int patientId = thePatient.getValue().patientId;
+        Service.api.listHokensho(patientId)
+                .thenAccept(files -> Platform.runLater(() -> {
+                    List<HokenshoListStage.Model> models = files.stream()
+                            .map(file -> {
+                                String label = extractHokenshoDateTime(file);
+                                if( label == null ){
+                                    label = file;
+                                }
+                                return new HokenshoListStage.Model(label, file);
+                            })
+                            .collect(Collectors.toList());
+                    HokenshoListStage stage = new HokenshoListStage(patientId, models);
+                    stage.initOwner(PatientWithHokenStage.this);
+                    stage.show();
+                }))
+                .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private String extractHokenshoDateTime(String file){
+        Matcher matcher = scannedDateTimePattern.matcher(file);
+        if( matcher.find() ){
+            String datePart = matcher.group(1);
+            String timePart = matcher.group(2);
+            String dt = String.format("%s-%s-%sT%s:%s:%s",
+                    datePart.substring(0, 4), datePart.substring(4, 6), datePart.substring(6, 8),
+                    timePart.substring(0, 2), timePart.substring(2, 4), timePart.substring(4, 6));
+            try {
+                LocalDateTime dateTime = LocalDateTime.parse(dt);
+                return DateTimeUtil.toKanji(dateTime,
+                        DateTimeUtil.kanjiFormatter2,
+                        DateTimeUtil.kanjiFormatter4,
+                        " "
+                );
+            } catch(DateTimeParseException ex){
+                logger.error("Invalid scanner file: {}", file);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private void doEdit(HokenTable hokenTable) {
         HokenTable.Model model = hokenTable.getSelectionModel().getSelectedItem();
-        if( model == null ){
+        if (model == null) {
             return;
         }
-        if( model instanceof HokenTable.ShahokokuhoModel ){
+        if (model instanceof HokenTable.ShahokokuhoModel) {
             HokenTable.ShahokokuhoModel shahoModel = (HokenTable.ShahokokuhoModel) model;
             EditShahokokuhoStage editor = new EditShahokokuhoStage(shahoModel.orig);
             editor.setOnEnter(data -> {
                 Service.api.updateShahokokuho(data)
-                        .thenAccept(ok -> Platform.runLater(() ->{
+                        .thenAccept(ok -> Platform.runLater(() -> {
                             fetchAndUpdateHokenList();
                             editor.close();
                         }))
                         .exceptionally(HandlerFX::exceptionally);
             });
             editor.showAndWait();
-        } else if( model instanceof HokenTable.KoukikoureiModel ){
+        } else if (model instanceof HokenTable.KoukikoureiModel) {
             HokenTable.KoukikoureiModel koukiModel = (HokenTable.KoukikoureiModel) model;
             EditKoukikoureiStage editor = new EditKoukikoureiStage(koukiModel.orig);
             editor.setOnEnter(data -> {
                 Service.api.updateKoukikourei(data)
-                        .thenAccept(ok -> Platform.runLater(() ->{
+                        .thenAccept(ok -> Platform.runLater(() -> {
                             fetchAndUpdateHokenList();
                             editor.close();
                         }))
                         .exceptionally(HandlerFX::exceptionally);
             });
             editor.showAndWait();
-        } else if( model instanceof HokenTable.KouhiModel ){
+        } else if (model instanceof HokenTable.KouhiModel) {
             HokenTable.KouhiModel koukiModel = (HokenTable.KouhiModel) model;
             EditKouhiStage editor = new EditKouhiStage(koukiModel.orig);
             editor.setOnEnter(data -> {
                 Service.api.updateKouhi(data)
-                        .thenAccept(ok -> Platform.runLater(() ->{
+                        .thenAccept(ok -> Platform.runLater(() -> {
                             fetchAndUpdateHokenList();
                             editor.close();
                         }))
                         .exceptionally(HandlerFX::exceptionally);
             });
             editor.showAndWait();
-       } else {
+        } else {
             GuiUtil.alertError("Unknown hokentable model.");
         }
     }
 
-    public ObjectProperty<PatientDTO> patientProperty(){
+    public ObjectProperty<PatientDTO> patientProperty() {
         return thePatient;
     }
 
@@ -308,12 +363,12 @@ public class PatientWithHokenStage extends Stage {
         return models;
     }
 
-    private ObservableList<HokenTable.Model> composeTableModels(){
+    private ObservableList<HokenTable.Model> composeTableModels() {
         List<HokenTable.Model> models = hokenListToModelList(currentActiveOnly.get() ? currentActiveHokenList() : hokenList);
         return FXCollections.observableArrayList(models);
     }
 
-    private void updateHokenTable(){
+    private void updateHokenTable() {
         tableModels.setValue(composeTableModels());
     }
 
@@ -334,14 +389,14 @@ public class PatientWithHokenStage extends Stage {
                 });
     }
 
-    private void doDeleteHoken(HokenTable.Model model){
-        if( model instanceof HokenTable.ShahokokuhoModel ){
-            HokenTable.ShahokokuhoModel shahokokuhoModel = (HokenTable.ShahokokuhoModel)model;
+    private void doDeleteHoken(HokenTable.Model model) {
+        if (model instanceof HokenTable.ShahokokuhoModel) {
+            HokenTable.ShahokokuhoModel shahokokuhoModel = (HokenTable.ShahokokuhoModel) model;
             String rep = ShahokokuhoUtil.rep(shahokokuhoModel.orig);
-            if( GuiUtil.confirm("この保険情報を削除しますか？\n" + rep) ){
+            if (GuiUtil.confirm("この保険情報を削除しますか？\n" + rep)) {
                 Service.api.deleteShahokokuho(shahokokuhoModel.orig)
                         .thenAccept(ok -> {
-                            if( ok ){
+                            if (ok) {
                                 Platform.runLater(this::fetchAndUpdateHokenList);
                             }
                         })
@@ -351,14 +406,13 @@ public class PatientWithHokenStage extends Stage {
                             return null;
                         });
             }
-        }
-        else if( model instanceof HokenTable.KoukikoureiModel ){
-            HokenTable.KoukikoureiModel koukikoureiModel = (HokenTable.KoukikoureiModel)model;
+        } else if (model instanceof HokenTable.KoukikoureiModel) {
+            HokenTable.KoukikoureiModel koukikoureiModel = (HokenTable.KoukikoureiModel) model;
             String rep = KoukikoureiUtil.rep(koukikoureiModel.orig);
-            if( GuiUtil.confirm("この保険情報を削除しますか？\n" + rep) ){
+            if (GuiUtil.confirm("この保険情報を削除しますか？\n" + rep)) {
                 Service.api.deleteKoukikourei(koukikoureiModel.orig)
                         .thenAccept(ok -> {
-                            if( ok ){
+                            if (ok) {
                                 Platform.runLater(this::fetchAndUpdateHokenList);
                             }
                         })
@@ -368,14 +422,13 @@ public class PatientWithHokenStage extends Stage {
                             return null;
                         });
             }
-        }
-        else if( model instanceof HokenTable.RoujinModel ){
-            HokenTable.RoujinModel roujinModel = (HokenTable.RoujinModel)model;
+        } else if (model instanceof HokenTable.RoujinModel) {
+            HokenTable.RoujinModel roujinModel = (HokenTable.RoujinModel) model;
             String rep = RoujinUtil.rep(roujinModel.orig);
-            if( GuiUtil.confirm("この保険情報を削除しますか？\n" + rep) ){
+            if (GuiUtil.confirm("この保険情報を削除しますか？\n" + rep)) {
                 Service.api.deleteRoujin(roujinModel.orig)
                         .thenAccept(ok -> {
-                            if( ok ){
+                            if (ok) {
                                 Platform.runLater(this::fetchAndUpdateHokenList);
                             }
                         })
@@ -385,14 +438,13 @@ public class PatientWithHokenStage extends Stage {
                             return null;
                         });
             }
-        }
-        else if( model instanceof HokenTable.KouhiModel ){
-            HokenTable.KouhiModel kouhiModel = (HokenTable.KouhiModel)model;
+        } else if (model instanceof HokenTable.KouhiModel) {
+            HokenTable.KouhiModel kouhiModel = (HokenTable.KouhiModel) model;
             String rep = KouhiUtil.rep(kouhiModel.orig);
-            if( GuiUtil.confirm("この保険情報を削除しますか？\n" + rep) ){
+            if (GuiUtil.confirm("この保険情報を削除しますか？\n" + rep)) {
                 Service.api.deleteKouhi(kouhiModel.orig)
                         .thenAccept(ok -> {
-                            if( ok ){
+                            if (ok) {
                                 Platform.runLater(this::fetchAndUpdateHokenList);
                             }
                         })
@@ -405,16 +457,16 @@ public class PatientWithHokenStage extends Stage {
         }
     }
 
-    private void doRegister(){
+    private void doRegister() {
         System.out.println("enter doRegister");
         PatientDTO patient = thePatient.getValue();
         System.out.println("register patient: " + patient);
-        if( patient == null ){
+        if (patient == null) {
             return;
         }
         RegisterForPracticeDialog confirmStage = new RegisterForPracticeDialog(patient);
         confirmStage.showAndWait();
-        if( confirmStage.isOk() ){
+        if (confirmStage.isOk()) {
             ReceptionService.startVisit(thePatient.getValue().patientId);
 //            Service.api.startVisit(thePatient.getValue().patientId)
 //                    .thenAccept(visitId -> {

@@ -33,7 +33,7 @@ class HokenshoController {
             logger.error("Failed to get property: myclinic.scanner.paper-scan-directory");
             throw new RuntimeException("Paper scan directory is not available.");
         }
-        String pat = String.format("glob:%d-hokensho-*.{jpg,jpeg}", patientId);
+        String pat = String.format("glob:%d-hokensho-*.{jpg,jpeg,bmp}", patientId);
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher(pat);
         return Files.list(Paths.get(storageDir, "" + patientId))
                 .filter(p -> matcher.matches(p.getFileName()))

@@ -91,21 +91,21 @@ public class MainPane extends VBox implements DispatchHook {
         }
     }
 
-    public void setWqueueList(ObservableList<Wqueue> wqueueList) {
-        ObservableList<Wqueue> list = FXCollections.observableList(wqueueList, wq -> {
-            return new Observable[]{
-                    wq.waitStateProperty()
-            };
-        });
-        wqueueTable.setItems(list);
-    }
+//    public void setWqueueList(ObservableList<Wqueue> wqueueList) {
+//        ObservableList<Wqueue> list = FXCollections.observableList(wqueueList, wq -> {
+//            return new Observable[]{
+//                    wq.waitStateProperty()
+//            };
+//        });
+//        wqueueTable.setItems(list);
+//    }
 
     private void doCashier() {
         wqueueTable.getSelectedWqueueFullDTO()
                 .thenAccept(wq -> {
                     class Store {
-                        MeisaiDTO meisai;
-                        List<PaymentDTO> payments;
+                        private MeisaiDTO meisai;
+                        private List<PaymentDTO> payments;
                     }
                     if (wq != null) {
                         WqueueWaitState state = WqueueWaitState.fromCode(wq.wqueue.waitState);

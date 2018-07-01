@@ -1,0 +1,8 @@
+.dialog-root {
+    -fx-padding: 10px;
+}
+
+.list-hokensho-dialog {
+    -fx-pref-width: 200px;
+    -fx-pref-height: 160px;
+}

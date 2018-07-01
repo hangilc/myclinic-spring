@@ -821,7 +821,8 @@ public class Service {
         @GET("list-recently-registered-patients")
         CompletableFuture<List<PatientDTO>> listRecentlyRegisteredPatients();
 
-
+        @GET("list-hokensho")
+        CompletableFuture<List<String>> listHokensho(@Query("patient-id") int patientId);
     }
 
     public static ServerAPI api;
