@@ -164,6 +164,7 @@ public class MainPane extends VBox implements DispatchHook {
                     .thenAccept(hokenList -> {
                         Platform.runLater(() -> {
                             PatientWithHokenStage patientWithHokenStage = new PatientWithHokenStage(formValue, hokenList);
+                            patientWithHokenStage.initOwner(MainPane.this.getScene().getWindow());
                             patientWithHokenStage.showAndWait();
                         });
                     })

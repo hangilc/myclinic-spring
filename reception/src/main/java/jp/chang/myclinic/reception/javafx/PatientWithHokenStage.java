@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class PatientWithHokenStage extends Stage {
+class PatientWithHokenStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(PatientWithHokenStage.class);
     private static Pattern scannedDateTimePattern  = Pattern.compile(
             "(\\d{8}+)-(\\d{6}+)-\\d+\\.[^.]+$"
@@ -47,7 +47,7 @@ public class PatientWithHokenStage extends Stage {
             new SimpleObjectProperty<>(FXCollections.emptyObservableList());
     private ObjectProperty<HokenTable.Model> tableSelection = new SimpleObjectProperty<>();
 
-    public PatientWithHokenStage(PatientDTO patient, HokenListDTO hokenList) {
+    PatientWithHokenStage(PatientDTO patient, HokenListDTO hokenList) {
         setTitle("患者情報編集（" + patient.patientId + ")");
         thePatient.setValue(patient);
         this.hokenList = hokenList;

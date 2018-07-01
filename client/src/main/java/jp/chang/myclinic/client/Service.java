@@ -824,6 +824,10 @@ public class Service {
 
         @GET("get-hokensho")
         @Streaming
+        CompletableFuture<ResponseBody> getHokensho(@Query("patient-id") int patientId, @Query("file") String file);
+
+        @GET("get-hokensho")
+        @Streaming
         Call<ResponseBody> getHokenshoCall(@Query("patient-id") int patientId, @Query("file") String file);
     }
 
