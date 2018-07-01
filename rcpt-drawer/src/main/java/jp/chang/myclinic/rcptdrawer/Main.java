@@ -15,12 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
+// TODO: add goto last page menu
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -107,7 +107,7 @@ public class Main extends Application {
     private void openFile(File file, BiConsumer<String, String> cb) {
         try {
             try (BufferedReader in = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+                    new InputStreamReader(new FileInputStream(file)))) {
                 while (true) {
                     String line = in.readLine();
                     if (line == null) {
