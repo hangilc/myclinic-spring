@@ -18,7 +18,7 @@
 	shinryoukoui_master_arch.code_alpha (needs code modification)
 	shinryoukoui_master_arch.code_kubun (needs code modification)
 
-	iyakuhin_master_arch.yakkacode --> DO NOT REMOVE! (used in kouhatsukasan)
+	- iyakuhin_master_arch.yakkacode --> DO NOT REMOVE! (used in kouhatsukasan)
 
 
 
