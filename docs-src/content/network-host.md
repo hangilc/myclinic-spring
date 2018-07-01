@@ -6,7 +6,7 @@ Windows 10 で、ネットワークにホストが表示されない場合の対
 
 まず、WORKGROUP が正しく設定されているか確認。
 
-「コントロールパネル」 -> 「管理ツール」 -> 「サービス」で、
+WORKGROUP の設定が確認できたら、「コントロールパネル」 -> 「管理ツール」 -> 「サービス」で、
 
 * Function Discovery Provider Host
 * Function Discovery Resource Publication
