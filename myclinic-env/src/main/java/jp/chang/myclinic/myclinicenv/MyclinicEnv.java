@@ -66,6 +66,14 @@ public class MyclinicEnv {
         saveAppProperties(props);
     }
 
+    public Path createTempDir(String prefix){
+        try {
+            return Files.createTempDirectory(baseDir, prefix);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
     private Properties readProperties(Path path) {
         Properties props = new Properties();
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {

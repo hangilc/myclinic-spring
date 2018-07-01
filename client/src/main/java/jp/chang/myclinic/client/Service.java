@@ -6,15 +6,13 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-import retrofit2.http.Body;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Query;
+import retrofit2.http.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -823,6 +821,10 @@ public class Service {
 
         @GET("list-hokensho")
         CompletableFuture<List<String>> listHokensho(@Query("patient-id") int patientId);
+
+        @GET("get-hokensho")
+        @Streaming
+        Call<ResponseBody> getHokenshoCall(@Query("patient-id") int patientId, @Query("file") String file);
     }
 
     public static ServerAPI api;

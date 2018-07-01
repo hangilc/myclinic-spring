@@ -21,10 +21,9 @@ public class ReceptionEnv {
     private Path printerSettingsDir;
     private ClinicInfoDTO clinicInfo;
     private MyclinicEnv myclinicEnv;
-    //private ObjectProperty<List<WqueueFullDTO>> wqueueList = new SimpleObjectProperty<>(Collections.emptyList());
-    //private WqueueReloader wqueueReloader;
+    private Path imageSaveDir;
 
-    public void updateWithArgs(ReceptionArgs args){
+    void updateWithArgs(ReceptionArgs args){
         this.workdir = args.workingDirPath;
         if( this.workdir == null ){
             this.workdir = Paths.get(System.getProperty("user.dir"));
@@ -46,17 +45,17 @@ public class ReceptionEnv {
         myclinicEnv = new MyclinicEnv(APP_NAME);
     }
 
-    public Path getWorkdir(){
-        return workdir;
-    }
-
-    public Path getConfigFilePath() {
-        return configFilePath;
-    }
-
-    public void setConfigFilePath(Path configFilePath) {
-        this.configFilePath = configFilePath;
-    }
+//    public Path getWorkdir(){
+//        return workdir;
+//    }
+//
+//    public Path getConfigFilePath() {
+//        return configFilePath;
+//    }
+//
+//    public void setConfigFilePath(Path configFilePath) {
+//        this.configFilePath = configFilePath;
+//    }
 
     public ReceptionConfig getConfig(){
         return config;
@@ -66,21 +65,21 @@ public class ReceptionEnv {
         config.loadFromFile(configFilePath);
     }
 
-    public void saveConfig() throws IOException {
-        config.saveToFile(configFilePath);
-    }
+//    public void saveConfig() throws IOException {
+//        config.saveToFile(configFilePath);
+//    }
 
-    public Path getPrinterSettingsDir() {
-        return printerSettingsDir;
-    }
-
-    public void setPrinterSettingsDir(Path printerSettingsDir) {
-        this.printerSettingsDir = printerSettingsDir;
-    }
-
-    public String getPrinterSettingName(){
-        return config.getPrinterSettingName();
-    }
+//    public Path getPrinterSettingsDir() {
+//        return printerSettingsDir;
+//    }
+//
+//    public void setPrinterSettingsDir(Path printerSettingsDir) {
+//        this.printerSettingsDir = printerSettingsDir;
+//    }
+//
+//    public String getPrinterSettingName(){
+//        return config.getPrinterSettingName();
+//    }
 
     public ClinicInfoDTO getClinicInfo() {
         return clinicInfo;
@@ -94,25 +93,13 @@ public class ReceptionEnv {
         return myclinicEnv;
     }
 
-//    public List<WqueueFullDTO> getWqueueList() {
-//        return wqueueList.get();
-//    }
-//
-//    public ObjectProperty<List<WqueueFullDTO>> wqueueListProperty() {
-//        return wqueueList;
-//    }
-//
-//    public void setWqueueList(List<WqueueFullDTO> wqueueList) {
-//        this.wqueueList.set(wqueueList);
-//    }
-
-//    public WqueueReloader getWqueueReloader() {
-//        return wqueueReloader;
-//    }
-//
-//    public void setWqueueReloader(WqueueReloader wqueueReloader) {
-//        this.wqueueReloader = wqueueReloader;
-//    }
+    public Path getImageSaveDir() {
+        if( this.imageSaveDir == null ) {
+            this.imageSaveDir = myclinicEnv.createTempDir("image-save-dir");
+            this.imageSaveDir.toFile().deleteOnExit();
+        }
+        return imageSaveDir;
+    }
 
     @Override
     public String toString() {

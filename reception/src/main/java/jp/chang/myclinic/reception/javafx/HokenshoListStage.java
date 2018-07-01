@@ -5,12 +5,22 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.reception.ReceptionEnv;
+import jp.chang.myclinic.utilfx.GuiUtil;
+import okhttp3.ResponseBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 class HokenshoListStage extends Stage {
 
-    //private static Logger logger = LoggerFactory.getLogger(HokenshoListStage.class);
+    private static Logger logger = LoggerFactory.getLogger(HokenshoListStage.class);
 
     static class Model {
         String label;
@@ -40,7 +50,19 @@ class HokenshoListStage extends Stage {
     }
 
     private void doOpenImage(int patientId, String file){
-        
+        try {
+            Path saveDir = ReceptionEnv.INSTANCE.getImageSaveDir();
+            ResponseBody body = Service.api.getHokenshoCall(patientId, file)
+                    .execute().body();
+            Path savePath = Paths.get(saveDir.toString(), file);
+            try(FileOutputStream outStream = new FileOutputStream(savePath.toFile())) {
+                body.byteStream().transferTo(outStream);
+                savePath.toFile().deleteOnExit();
+            }
+        } catch (IOException e) {
+            logger.error("Failed to download file. {}", file, e);
+            GuiUtil.alertError("Failed to download file.");
+        }
     }
 
 }
