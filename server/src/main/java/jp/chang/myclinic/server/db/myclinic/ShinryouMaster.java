@@ -116,49 +116,49 @@ public class ShinryouMaster {
 //		this.roujintekiyou = roujintekiyou;
 //	}
 
-	@Column(name="code_shou")
-	private Character codeShou;
+//	@Column(name="code_shou")
+//	private Character codeShou;
+//
+//	public Character getCodeShou(){
+//		return codeShou;
+//	}
+//
+//	public void setCodeShou(Character codeShou){
+//		this.codeShou = codeShou;
+//	}
 
-	public Character getCodeShou(){
-		return codeShou;
-	}
+//	@Column(name="code_bu")
+//	private String codeBu;
+//
+//	public String getCodeBu(){
+//		return codeBu;
+//	}
+//
+//	public void setCodeBu(String codeBu){
+//		this.codeBu = codeBu;
+//	}
 
-	public void setCodeShou(Character codeShou){
-		this.codeShou = codeShou;
-	}
+//	@Column(name="code_alpha")
+//	private Character codeAlpha;
+//
+//	public Character getCodeAlpha(){
+//		return codeAlpha;
+//	}
+//
+//	public void setCodeAlpha(Character codeAlpha){
+//		this.codeAlpha = codeAlpha;
+//	}
 
-	@Column(name="code_bu")
-	private String codeBu;
-
-	public String getCodeBu(){
-		return codeBu;
-	}
-
-	public void setCodeBu(String codeBu){
-		this.codeBu = codeBu;
-	}
-
-	@Column(name="code_alpha")
-	private Character codeAlpha;
-
-	public Character getCodeAlpha(){
-		return codeAlpha;
-	}
-
-	public void setCodeAlpha(Character codeAlpha){
-		this.codeAlpha = codeAlpha;
-	}
-
-	@Column(name="code_kubun")
-	private String codeKubun;
-
-	public String getCodeKubun(){
-		return codeKubun;
-	}
-
-	public void setCodeKubun(String codeKubun){
-		this.codeKubun = codeKubun;
-	}
+//	@Column(name="code_kubun")
+//	private String codeKubun;
+//
+//	public String getCodeKubun(){
+//		return codeKubun;
+//	}
+//
+//	public void setCodeKubun(String codeKubun){
+//		this.codeKubun = codeKubun;
+//	}
 
 	@Column(name="valid_upto")
 	private String validUpto;
@@ -184,10 +184,10 @@ public class ShinryouMaster {
 			"oushinkubun=" + oushinkubun + ", " +
 			"kensagroup=" + kensagroup + ", " +
 			//"roujintekiyou=" + roujintekiyou + ", " +
-			"codeShou=" + codeShou + ", " +
-			"codeBu=" + codeBu + ", " +
-			"codeAlpha=" + codeAlpha + ", " +
-			"codeKubun=" + codeKubun + ", " +
+//			"codeShou=" + codeShou + ", " +
+//			"codeBu=" + codeBu + ", " +
+//			"codeAlpha=" + codeAlpha + ", " +
+//			"codeKubun=" + codeKubun + ", " +
 			"validUpto=" + validUpto +
 		"]";
 	}

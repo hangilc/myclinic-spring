@@ -143,10 +143,10 @@ public class Clinic {
         result.validFrom = defaultMasterValidFromDate.toString();
         result.validUpto = "0000-00-00";
         result.name = G.gensym();
-        result.codeAlpha = 'D';
-        result.codeKubun = "007";
-        result.codeBu = "03";
-        result.codeShou = '2';
+//        result.codeAlpha = 'D';
+//        result.codeKubun = "007";
+//        result.codeBu = "03";
+//        result.codeShou = '2';
         //result.roujinTekiyou = '0';
         result.oushinkubun = '0';
         result.houkatsukensa = "00";

@@ -245,10 +245,10 @@ public class DTOMapper {
 		masterDTO.oushinkubun = master.getOushinkubun();
 		masterDTO.kensaGroup = master.getKensagroup();
 		//masterDTO.roujinTekiyou = master.getRoujintekiyou();
-		masterDTO.codeShou = master.getCodeShou();
-		masterDTO.codeBu = master.getCodeBu();
-		masterDTO.codeAlpha = master.getCodeAlpha();
-		masterDTO.codeKubun = master.getCodeKubun();
+//		masterDTO.codeShou = master.getCodeShou();
+//		masterDTO.codeBu = master.getCodeBu();
+//		masterDTO.codeAlpha = master.getCodeAlpha();
+//		masterDTO.codeKubun = master.getCodeKubun();
 		masterDTO.validUpto = master.getValidUpto();
 		return masterDTO;
 	}
@@ -265,10 +265,10 @@ public class DTOMapper {
 		master.setOushinkubun(masterDTO.oushinkubun);
 		master.setKensagroup(masterDTO.kensaGroup);
 		//master.setRoujintekiyou(masterDTO.roujinTekiyou);
-		master.setCodeShou(masterDTO.codeShou);
-		master.setCodeBu(masterDTO.codeBu);
-		master.setCodeAlpha(masterDTO.codeAlpha);
-		master.setCodeKubun(masterDTO.codeKubun);
+//		master.setCodeShou(masterDTO.codeShou);
+//		master.setCodeBu(masterDTO.codeBu);
+//		master.setCodeAlpha(masterDTO.codeAlpha);
+//		master.setCodeKubun(masterDTO.codeKubun);
 		master.setValidUpto(masterDTO.validUpto);
 		return master;
 	}

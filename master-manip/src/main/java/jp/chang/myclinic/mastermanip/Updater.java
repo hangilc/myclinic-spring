@@ -140,10 +140,10 @@ public class Updater {
                 "oushinkubun='%s',",
                 "kensagroup='%s',",
                 // "roujintekiyou='%s',",
-                "code_shou='%s',",
-                "code_bu='%s',",
-                "code_alpha='%s',",
-                "code_kubun='%s',",
+//                "code_shou='%s',",
+//                "code_bu='%s',",
+//                "code_alpha='%s',",
+//                "code_kubun='%s',",
                 "valid_from='%s',",
                 "valid_upto='%s';"
         );
@@ -160,10 +160,10 @@ public class Updater {
                 master.oushinKubun,
                 master.kensaGroup,
                 //master.roujinTekiyou,
-                master.codeShou,
-                master.codeBu,
-                master.codeAlpha,
-                master.codeKubun,
+//                master.codeShou,
+//                master.codeBu,
+//                master.codeAlpha,
+//                master.codeKubun,
                 validFrom,
                 "0000-00-00"
         );

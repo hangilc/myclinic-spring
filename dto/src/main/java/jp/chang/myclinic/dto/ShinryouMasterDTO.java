@@ -11,10 +11,10 @@ public class ShinryouMasterDTO {
 	public char oushinkubun;
 	public String kensaGroup;
 	//public char roujinTekiyou;
-	public char codeShou;
-	public String codeBu;
-	public char codeAlpha;
-	public String codeKubun;
+//	public char codeShou;
+//	public String codeBu;
+//	public char codeAlpha;
+//	public String codeKubun;
 	public String validUpto;
 
 	@Override
@@ -30,10 +30,10 @@ public class ShinryouMasterDTO {
 			"oushinkubun=" + oushinkubun + "," +
 			"kensaGroup=" + kensaGroup + "," +
 			//"roujinTekiyou=" + roujinTekiyou + "," +
-			"codeShou=" + codeShou + "," +
-			"codeBu=" + codeBu + "," +
-			"codeAlpha=" + codeAlpha + "," +
-			"codeKubun=" + codeKubun + "," +
+//			"codeShou=" + codeShou + "," +
+//			"codeBu=" + codeBu + "," +
+//			"codeAlpha=" + codeAlpha + "," +
+//			"codeKubun=" + codeKubun + "," +
 			"validUpto=" + validUpto +
 		"]";
 	}
