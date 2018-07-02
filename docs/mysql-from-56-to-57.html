@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="theme/normalize.css">
+	<link rel="stylesheet" href="theme/main.css">
+</head>
+<body width="100%">
+	<div id="main-content">
+	<h1 id="site-name">myclinic-doc</h1>
+	<div id="author">By Hangil Chang</div>
+	<h2 class="article-title">MySQL の 5.6 から 5.7 へのアップグレード</h2>
+	<div>2018年6月27日</div>
+	<p>MySQL を version 5.6 から 5.7 へアップグレードした記録。
+Chocolatey では、MySQL 5.7 がインストールされるので、新規インストールの便宜のために、現在使用している MySQL 5.6 から MySQL 5.7 にアップグレードした。</p>
+<p>まず、現在のデータベースの内容の保存。 以下、<strong>cmd.exe</strong> で実行しているものとする。 </p>
+<div class="highlight"><pre><span></span>&gt; start cmd.exe
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>&gt; mysqldump -u (USER) -p --databases myclinic intraclinic --single-transaction --flush-logs --master-data=2 --add-drop-table &gt;dump56.sql 
+</pre></div>
+
+
+<p>「プログラムと機能」で、MySQL 5.6 をアンインストールする。</p>
+<p>MySQL Installer で MySQL 5.7 をインストール。</p>
+<p>データベースの内容の読み込み。これは、cmd.exe で実行する！</p>
+<div class="highlight"><pre><span></span>&gt; mysql -u (USER) -p &lt;dump56.sql 
+</pre></div>
+
+
+<p>データベースの upgrade を確認する。</p>
+<div class="highlight"><pre><span></span>&gt; mysql_upgrade -u root -p
+</pre></div>
+
+
+<p>ユーザーの追加。</p>
+<div class="highlight"><pre><span></span>&gt; mysql -u root -p
+mysql&gt; grant all on myclinic.* to staff identified by &#39;...&#39;;
+mysql&gt; grant all on intraclinic.* to staff;
+</pre></div>
+	</div>
+</body>
+</html>

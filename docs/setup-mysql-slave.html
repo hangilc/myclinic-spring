@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="theme/normalize.css">
+	<link rel="stylesheet" href="theme/main.css">
+</head>
+<body width="100%">
+	<div id="main-content">
+	<h1 id="site-name">myclinic-doc</h1>
+	<div id="author">By Hangil Chang</div>
+	<h2 class="article-title">MySQL slave の設定</h2>
+	<div>2018年6月27日</div>
+	<p>MySQL slave の設定。</p>
+<p>MySQL master でバックアップファイルを作成。</p>
+<p>my.cnf の設定 (slave で)</p>
+<div class="highlight"><pre><span></span><span class="k">[mysqld]</span>
+<span class="na">server-id</span><span class="o">=</span><span class="s">2</span>
+</pre></div>
+
+
+<p>ユーザー権限の設定 (slave で)</p>
+<div class="highlight"><pre><span></span>mysql&gt; grant all on myclinic.* to (USER) identified by &#39;...&#39;;
+mysql&gt; grant all on intraclinic.* to (USER)
+</pre></div>
+
+
+<p>(master で)</p>
+<div class="highlight"><pre><span></span>&gt; mysqldump -u (USER) -p --databases myclinic intraclinic --single-transaction --flush-logs --master-data=2 --add-drop-table &gt;dump.sql 
+&gt; mysql -h (SLAVE-HOST) -u (USER) -p &lt;dump.sql
+&gt; grep &#39;CHANGE MASTER TO&#39; dump.sql
+</pre></div>
+
+
+<p>(salve で)</p>
+<div class="highlight"><pre><span></span>&gt; mysql -u root -p
+mysql&gt; stop slave;
+mysql&gt; change master to master_host=&#39;...&#39;, master_user=&#39;...&#39;, master_password=&#39;...&#39;, master_log_file=&#39;...&#39;, master_log_pos=...;
+mysql&gt; start slave;
+mysql&gt; show slave status\G
+</pre></div>
+	</div>
+</body>
+</html>

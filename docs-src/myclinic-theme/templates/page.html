@@ -9,11 +9,9 @@
 	<div id="main-content">
 	<h1 id="site-name">{{ SITENAME }}</h1>
 	<div id="author">By {{ AUTHOR }}</div>
-	{% for article in articles %}
-		<h2 class="article-title"><a href="{{ article.url }}">{{ article.title }}</a></h2>
-		<div>{{ article.locale_date }}</div>
-		{{ article.summary }}
-	{% endfor %}
+	<h2 class="article-title">{{ article.title }}</h2>
+	<div>{{ article.locale_date }}</div>
+	{{ article.content }}
 	</div>
 </body>
 </html>
