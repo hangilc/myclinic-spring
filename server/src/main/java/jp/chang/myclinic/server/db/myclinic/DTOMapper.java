@@ -244,7 +244,7 @@ public class DTOMapper {
 		masterDTO.houkatsukensa = master.getHoukatsukensa();
 		masterDTO.oushinkubun = master.getOushinkubun();
 		masterDTO.kensaGroup = master.getKensagroup();
-		masterDTO.roujinTekiyou = master.getRoujintekiyou();
+		//masterDTO.roujinTekiyou = master.getRoujintekiyou();
 		masterDTO.codeShou = master.getCodeShou();
 		masterDTO.codeBu = master.getCodeBu();
 		masterDTO.codeAlpha = master.getCodeAlpha();
@@ -264,7 +264,7 @@ public class DTOMapper {
 		master.setHoukatsukensa(masterDTO.houkatsukensa);
 		master.setOushinkubun(masterDTO.oushinkubun);
 		master.setKensagroup(masterDTO.kensaGroup);
-		master.setRoujintekiyou(masterDTO.roujinTekiyou);
+		//master.setRoujintekiyou(masterDTO.roujinTekiyou);
 		master.setCodeShou(masterDTO.codeShou);
 		master.setCodeBu(masterDTO.codeBu);
 		master.setCodeAlpha(masterDTO.codeAlpha);

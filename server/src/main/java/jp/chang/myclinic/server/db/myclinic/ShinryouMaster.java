@@ -106,15 +106,15 @@ public class ShinryouMaster {
 		this.kensagroup = kensagroup;
 	}
 
-	private Character roujintekiyou;
+	//private Character roujintekiyou;
 
-	public Character getRoujintekiyou(){
-		return roujintekiyou;
-	}
-
-	public void setRoujintekiyou(Character roujintekiyou){
-		this.roujintekiyou = roujintekiyou;
-	}
+//	public Character getRoujintekiyou(){
+//		return roujintekiyou;
+//	}
+//
+//	public void setRoujintekiyou(Character roujintekiyou){
+//		this.roujintekiyou = roujintekiyou;
+//	}
 
 	@Column(name="code_shou")
 	private Character codeShou;
@@ -183,7 +183,7 @@ public class ShinryouMaster {
 			"houkatsukensa=" + houkatsukensa + ", " +
 			"oushinkubun=" + oushinkubun + ", " +
 			"kensagroup=" + kensagroup + ", " +
-			"roujintekiyou=" + roujintekiyou + ", " +
+			//"roujintekiyou=" + roujintekiyou + ", " +
 			"codeShou=" + codeShou + ", " +
 			"codeBu=" + codeBu + ", " +
 			"codeAlpha=" + codeAlpha + ", " +

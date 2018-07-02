@@ -10,7 +10,7 @@ public class ShinryouMasterDTO {
 	public String houkatsukensa;
 	public char oushinkubun;
 	public String kensaGroup;
-	public char roujinTekiyou;
+	//public char roujinTekiyou;
 	public char codeShou;
 	public String codeBu;
 	public char codeAlpha;
@@ -29,7 +29,7 @@ public class ShinryouMasterDTO {
 			"houkatsukensa=" + houkatsukensa + "," +
 			"oushinkubun=" + oushinkubun + "," +
 			"kensaGroup=" + kensaGroup + "," +
-			"roujinTekiyou=" + roujinTekiyou + "," +
+			//"roujinTekiyou=" + roujinTekiyou + "," +
 			"codeShou=" + codeShou + "," +
 			"codeBu=" + codeBu + "," +
 			"codeAlpha=" + codeAlpha + "," +

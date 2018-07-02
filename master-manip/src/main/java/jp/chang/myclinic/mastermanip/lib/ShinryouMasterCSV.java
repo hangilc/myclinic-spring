@@ -13,7 +13,7 @@ public class ShinryouMasterCSV {
     public String houkatsukensa;
     public String oushinKubun;
     public String kensaGroup;
-    public String roujinTekiyou;
+    //public String roujinTekiyou;
     public String codeShou;
     public String codeBu;
     public String codeAlpha;
@@ -36,7 +36,7 @@ public class ShinryouMasterCSV {
         houkatsukensa = twoChars(row.getString(16));
         oushinKubun = row.getString(17);
         kensaGroup = twoChars(row.getString(51));
-        roujinTekiyou = row.getString(14);
+        //roujinTekiyou = row.getString(14);
         codeShou = row.getString(90);
         codeBu = row.getString(91);
         codeAlpha = row.getString(85);
