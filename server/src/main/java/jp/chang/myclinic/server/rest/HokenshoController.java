@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,10 +36,15 @@ class HokenshoController {
         }
         String pat = String.format("glob:%d-hokensho-*.{jpg,jpeg,bmp}", patientId);
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher(pat);
-        return Files.list(Paths.get(storageDir, "" + patientId))
-                .filter(p -> matcher.matches(p.getFileName()))
-                .map(p -> p.getFileName().toString())
-                .collect(Collectors.toList());
+        Path patientDir = Paths.get(storageDir, "" + patientId);
+        if( Files.exists(patientDir) && Files.isDirectory(patientDir) ){
+            return Files.list(patientDir)
+                    .filter(p -> matcher.matches(p.getFileName()))
+                    .map(p -> p.getFileName().toString())
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @RequestMapping(value="/get-hokensho", method=RequestMethod.GET)
