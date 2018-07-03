@@ -1,3 +1,140 @@
+
+* fixed valid_from of hoken_koukikourei (koukikourei_id = 1494) [2018-07-03]
+
+    mysql> select * from hoken_koukikourei where koukikourei_id = 1494;
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    | koukikourei_id | patient_id | hokensha_bangou | hihokensha_bangou | futan_wari | valid_from | valid_upto |
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    |           1494 |       6850 | 39131156        | 18112201          |          1 | 2016-08-00 | 2018-07-31 |
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    1 row in set (0.00 sec)
+
+    mysql> update hoken_koukikourei set valid_from = '2016-08-01' where koukikourei_id = 1494;
+    Query OK, 1 row affected (0.01 sec)
+    Rows matched: 1  Changed: 1  Warnings: 0
+
+    mysql> select * from hoken_koukikourei where koukikourei_id = 1494;
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    | koukikourei_id | patient_id | hokensha_bangou | hihokensha_bangou | futan_wari | valid_from | valid_upto |
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    |           1494 |       6850 | 39131156        | 18112201          |          1 | 2016-08-01 | 2018-07-31 |
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    1 row in set (0.00 sec)
+
+* fixed valid_from of hoken_koukikourei (koukikourei_id = 1471) [2018-07-03]
+
+    mysql> select * from hoken_koukikourei where patient_id = 575;
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    | koukikourei_id | patient_id | hokensha_bangou | hihokensha_bangou | futan_wari | valid_from | valid_upto |
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    |           1471 |        575 | 39131156        | 15626658          |          1 | 2016-08-00 | 2018-07-31 |
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    1 row in set (0.00 sec)
+
+    mysql> update hoken_koukikourei set valid_from = '2016-08-01' where koukikourei_id = 1471;
+    Query OK, 1 row affected (0.01 sec)
+    Rows matched: 1  Changed: 1  Warnings: 0
+
+    mysql> select * from hoken_koukikourei where patient_id = 575;
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    | koukikourei_id | patient_id | hokensha_bangou | hihokensha_bangou | futan_wari | valid_from | valid_upto |
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    |           1471 |        575 | 39131156        | 15626658          |          1 | 2016-08-01 | 2018-07-31 |
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    1 row in set (0.00 sec)
+
+* deleted hoken_koukikourei (id = 1437) that is not used [2018-07-03]
+
+    mysql> select * from hoken_koukikourei where koukikourei_id = 1437;
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    | koukikourei_id | patient_id | hokensha_bangou | hihokensha_bangou | futan_wari | valid_from | valid_upto |
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    |           1437 |       2059 | 39131156        | 23495724          |          1 | 2286-01-00 | 2018-07-31 |
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    1 row in set (0.00 sec)
+
+    mysql> select * from visit where koukikourei_id = 1437;
+    Empty set (0.04 sec)
+
+    mysql> delete from hoken_koukikourei where koukikourei_id = 1437;
+    Query OK, 1 row affected (0.01 sec)
+
+* deleted hoken_koukikourei (id = 1418) that is not used [2018-07-03]
+
+    mysql> select * from hoken_koukikourei where koukikourei_id = 1418;
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    | koukikourei_id | patient_id | hokensha_bangou | hihokensha_bangou | futan_wari | valid_from | valid_upto |
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    |           1418 |       2233 |                 |                   |          1 | 2007-08-01 | 2017-07-31 |
+    +----------------+------------+-----------------+-------------------+------------+------------+------------+
+    1 row in set (0.00 sec)
+
+    mysql> select * from visit where koukikourei_id = 1418;
+    Empty set (0.04 sec)
+
+    mysql> delete from hoken_koukikourei where koukikourei_id = 1418;
+    Query OK, 1 row affected (0.01 sec)
+
+* fixed valid_from of hoken_shahokokuho [2018-07-03]
+
+    mysql> select valid_from from hoken_shahokokuho where shahokokuho_id = 9543;
+    +------------+
+    | valid_from |
+    +------------+
+    | 2013-11-00 |
+    +------------+
+    1 row in set (0.00 sec)
+
+    mysql> update hoken_shahokokuho set valid_from = '2013-11-01'  where shahokokuho_id = 9543;
+    Query OK, 1 row affected (0.01 sec)
+    Rows matched: 1  Changed: 1  Warnings: 0
+
+* fixed valid_from of hoken_shahokokuho [2018-07-03]
+
+    mysql> select valid_from from hoken_shahokokuho where shahokokuho_id = 9532;
+    +------------+
+    | valid_from |
+    +------------+
+    | 2017-04-00 |
+    +------------+
+    1 row in set (0.01 sec)
+
+    mysql> update hoken_shahokokuho set valid_from = '2017-04-01' where shahokokuho_id = 9532;
+    Query OK, 1 row affected (0.01 sec)
+    Rows matched: 1  Changed: 1  Warnings: 0
+
+* delete visit_conduct_kizai that has kizaicode of 0 [2018-07-03]
+
+    mysql> select * from visit_conduct_kizai where id = 158;
+    +-----+------------------+-----------+--------+
+    | id  | visit_conduct_id | kizaicode | amount |
+    +-----+------------------+-----------+--------+
+    | 158 |              289 |         0 |      1 |
+    +-----+------------------+-----------+--------+
+    1 row in set (0.00 sec)
+
+    mysql> delete from visit_conduct_kizai where id = 158;
+    Query OK, 1 row affected (0.01 sec)
+
+* deleted orphan visit_conduct_kizai [2018-07-03]
+
+    mysql> select * from visit_conduct_kizai where id in( 29, 78, 109, 132, 177);
+    +-----+------------------+-----------+--------+
+    | id  | visit_conduct_id | kizaicode | amount |
+    +-----+------------------+-----------+--------+
+    |  29 |               34 | 700030000 |      1 |
+    |  78 |              117 | 700080000 |      1 |
+    | 109 |              182 | 700010000 |      1 |
+    | 132 |              227 | 700010000 |      1 |
+    | 177 |              347 | 700080000 |      1 |
+    +-----+------------------+-----------+--------+
+    5 rows in set (0.00 sec)
+
+    mysql> select * from visit_conduct where id in (34, 117, 182, 227, 347);
+    Empty set (0.00 sec)
+
+    mysql> delete from visit_conduct_kizai where id in( 29, 78, 109, 132, 177);
+
 * check database consistency [2018-07-03]
 
     - check-conduct-drug-master.sql -> OK (no output)
