@@ -1,24 +1,64 @@
+* check database consistency [2018-07-03]
+
+    - check-conduct-drug-master.sql -> OK (no output)
+    - check-conduct-shinryou-master.sql -> OK (no output)
+    - check-visit-drug-master.sql -> OK (no output)
+    - check-visit-shinryou-master.sql -> OK (no output)
+
+    * check-conduct-kizai-mster.sql made following output
+
+        CHECKING ORPHAN VISIT_CONDUCT_ID
+        id      visit_conduct_id        id
+        29      34      NULL
+        78      117     NULL
+        109     182     NULL
+        132     227     NULL
+        177     347     NULL
+        id      kizaicode       kizaicode
+        158     0       NULL
+
+    * check-dates.sql made following output
+
+        CHECKING SHAHOKOKUHO...
+        shahokokuho_id  patient_id      valid_from      valid_upto
+        9532    6444    2017-04-00      2018-03-31
+        9543    4269    2013-11-00      2018-10-13
+
+        CHECKING KOUKIKOUREI...
+        koukikourei_id  patient_id      valid_from      valid_upto
+        1418    2233    0000-00-00      2017-00-00
+        1437    2059    2286-01-00      2018-07-31
+        1471    575     2016-08-00      2018-07-31
+        1494    6850    2016-08-00      2018-07-31
+
+    * check-visit-conduct-kizai.sql made following output
+
+        INVALID VISIT_CONDUCT_KIZAI
+        id      visit_conduct_id        kizaicode       amount
+        158     289     0       1   
+
+
 * columns to be deleted
 
-	- hoken_roujin.active [deleted at 2018-06-28]
-	- hoken_shahokokuho.active [deleted at 2018-06-28]
-	- kouhi.active [deleted at 2018-06-28]
-	- kouhi.category [deleted at 2018-06-28]
-	- presc_example.m_group [deleted at 2018-06-28]
-	- visit.jihi [deleted at 2018-06-28]
-	- visit_charge.jindouteki_mishuu [deleted at 2018-06-28]
-	- visit_charge.inchou_kessai [deleted at 2018-06-28]
-	- visit_drug.d_pos [deleted at 2018-06-28]
-	- visit_drug.d_shuukeisaki [deleted at 2018-06-28]
-	- visit_text.pos [deleted at 2018-06-28]
+    - hoken_roujin.active [deleted at 2018-06-28]
+    - hoken_shahokokuho.active [deleted at 2018-06-28]
+    - kouhi.active [deleted at 2018-06-28]
+    - kouhi.category [deleted at 2018-06-28]
+    - presc_example.m_group [deleted at 2018-06-28]
+    - visit.jihi [deleted at 2018-06-28]
+    - visit_charge.jindouteki_mishuu [deleted at 2018-06-28]
+    - visit_charge.inchou_kessai [deleted at 2018-06-28]
+    - visit_drug.d_pos [deleted at 2018-06-28]
+    - visit_drug.d_shuukeisaki [deleted at 2018-06-28]
+    - visit_text.pos [deleted at 2018-06-28]
 
-	shinryoukoui_master_arch.roujintekiyou (needs code modification)
-	shinryoukoui_master_arch.code_shou (needs code modification)
-	shinryoukoui_master_arch.code_bu(needs code modification)
-	shinryoukoui_master_arch.code_alpha (needs code modification)
-	shinryoukoui_master_arch.code_kubun (needs code modification)
+    - shinryoukoui_master_arch.roujintekiyou (needs code modification) [deleted at 2018-07-02]
+    - shinryoukoui_master_arch.code_shou (needs code modification) [deleted at 2018-07-02]
+    - shinryoukoui_master_arch.code_bu(needs code modification) [deleted at 2018-07-02]
+    - shinryoukoui_master_arch.code_alpha (needs code modification) [deleted at 2018-07-02]
+    - shinryoukoui_master_arch.code_kubun (needs code modification) [deleted at 2018-07-02]
 
-	- iyakuhin_master_arch.yakkacode --> DO NOT REMOVE! (used in kouhatsukasan)
+    - iyakuhin_master_arch.yakkacode --> DO NOT REMOVE! (used in kouhatsukasan)
 
 
 
