@@ -37,12 +37,6 @@ Maven のインストール
 
 Chocolatey では、 mysql 5.6 がインストールできなかったので、手動でインストール。
 
-Visual C++ Build Tools のインストール
-
-```shell
-> choco install -y visualcpp-build-tools --version 14.0.25420.1
-```
-
 venv のインストール
 
 ```shell
@@ -60,6 +54,7 @@ master-map のセットアップ
 ```shell
 > my-pyenv\scripts\activate
 > pip install -r scripts\pip-freeze.txt
+> mkdir master-files
 > python master-map\gencode.py
 ```
 
