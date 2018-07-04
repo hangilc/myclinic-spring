@@ -13,12 +13,16 @@
 	<div>2018年6月25日</div>
 	<p>myclinic-spring を新しいＰＣにインストールしてみる。今回使ったＰＣは Lenovo ノートパソコン ideapad 320 (Core i5, 8GB Memory, 256GB SSD) で、価格は 76,400 円だった。</p>
 <p>不要なソフトをアンインストールして、Windows の更新プログラムをインストール（２時間かかった）。</p>
-<p>Chocholatey をインストール。PowerShell を管理者として起動。プログラムを shell から起動できるようにする。</p>
-<div class="highlight"><pre><span></span>&gt; Set-ExecutionPolicy -Force RemoteSigned
+<p>Chocholatey をインストール。cmd.exe を管理者として起動。</p>
+<p>Temporary directory を作成し、そこに移動。</p>
+<div class="highlight"><pre><span></span>&gt; <span class="nb">cd</span> C:<span class="se">\</span>
+&gt; mkdir temp
+&gt; <span class="nb">cd</span> temp
 </pre></div>
 
 
-<div class="highlight"><pre><span></span>&gt;  iex <span class="o">((</span>New-Object System.Net.WebClient<span class="o">)</span>.DownloadString<span class="o">(</span><span class="s1">&#39;https://chocolatey.org/install.ps1&#39;</span><span class="o">))</span>
+<p>Chocolatey をインストール。</p>
+<div class="highlight"><pre><span></span>&gt;  @<span class="s2">&quot;%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe&quot;</span> -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command <span class="s2">&quot;iex ((New-Object System.Net.WebClient).DownloadString(&#39;https://chocolatey.org/install.ps1&#39;))&quot;</span> <span class="o">&amp;&amp;</span> SET <span class="s2">&quot;PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin&quot;</span>
 </pre></div>
 
 
@@ -29,15 +33,67 @@
 
 <p>GIT のインストール</p>
 <div class="highlight"><pre><span></span>&gt; choco install -y git
+&gt; setx /M PATH <span class="s2">&quot;%PATH%;C:\Program Files\Git\bin&quot;</span>
+</pre></div>
+
+
+<p>MySQL のインストール</p>
+<div class="highlight"><pre><span></span>&gt; choco install -y mysql
+&gt; choco install -y vcredist2013 --version <span class="m">12</span>.0.0.20140222
+</pre></div>
+
+
+<p>Curl のインストール</p>
+<div class="highlight"><pre><span></span>&gt; choco install -y curl
 </pre></div>
 
 
 <p>Maven のインストール</p>
-<div class="highlight"><pre><span></span>&gt; choco install -y maven
+<div class="highlight"><pre><span></span>&gt; curl http://ftp.kddilabs.jp/infosystems/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.zip &gt;maven.zip
+&gt; 7z x maven.zip -omaven
+&gt; move maven<span class="se">\a</span>pache-maven-3.5.4 C:<span class="se">\m</span>aven
+&gt; setx /M PATH <span class="s2">&quot;%PATH%;C:\maven\bin&quot;</span>
 </pre></div>
 
 
-<p>Chocolatey では、 mysql 5.6 がインストールできなかったので、手動でインストール。</p>
+<p>Python のインストール</p>
+<div class="highlight"><pre><span></span>&gt; choco install -y python
+</pre></div>
+
+
+<p>クリーンアップ</p>
+<div class="highlight"><pre><span></span>&gt; <span class="nb">cd</span> C:<span class="se">\</span>
+&gt; rmdir /S /Q C:<span class="se">\t</span>emp
+</pre></div>
+
+
+<p>以上で、依存プログラムのインストールが完了したので、管理者として実行している cmd.exe を閉じる。</p>
+<p>通常のユーザーとして cmd.exe を起動する。</p>
+<div class="highlight"><pre><span></span>&gt; <span class="nb">cd</span> %HOMEDRIVE%%HOMEPATH%
+</pre></div>
+
+
+<p>myclinic-spring.git をクローン</p>
+<div class="highlight"><pre><span></span>&gt; git clone https://github.com/hangilc/myclinic-spring.git
+</pre></div>
+
+
+<p>venv のインストール</p>
+<div class="highlight"><pre><span></span>&gt; python -m venv my-pyenv
+</pre></div>
+
+
+<p>config フォルダーの作成</p>
+<div class="highlight"><pre><span></span>&gt; xcopy /e /i /h config-example config
+</pre></div>
+
+
+<p>master-map のセットアップ</p>
+<div class="highlight"><pre><span></span>&gt; my-pyenv<span class="se">\s</span>cripts<span class="se">\a</span>ctivate
+&gt; pip install -r scripts<span class="se">\p</span>ip-freeze.txt
+&gt; mkdir master-files
+&gt; python master-map<span class="se">\g</span>encode.py
+</pre></div>
 	</div>
 </body>
 </html>
