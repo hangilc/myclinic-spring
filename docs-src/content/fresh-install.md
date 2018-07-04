@@ -7,14 +7,18 @@ myclinic-spring を新しいＰＣにインストールしてみる。今回使�
 
 不要なソフトをアンインストールして、Windows の更新プログラムをインストール（２時間かかった）。
 
-Chocholatey をインストール。PowerShell を管理者として起動。プログラムを shell から起動できるようにする。
+Chocholatey をインストール。cmd.exe を管理者として起動。
 
+Temporary directory を作成し、そこに移動。
 ```shell
-> Set-ExecutionPolicy -Force RemoteSigned
+> cd C:\
+> mkdir temp
+> cd temp
 ```
 
+Chocolatey をインストール。
 ```shell
->  iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+>  @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 ```
 
 JDK10 のインストール
@@ -29,12 +33,39 @@ GIT のインストール
 > choco install -y git
 ```
 
+MySQL のインストール
+
+```shell
+> choco install -y mysql
+> choco install -y vcredist2013 --version 12.0.0.20140222
+```
+
+Curl のインストール
+
+```shell
+> choco install -y curl
+```
+
 Maven のインストール
 
 ```shell
-> choco install -y maven
+> curl http://ftp.kddilabs.jp/infosystems/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.zip >maven.zip
+> 7z x maven.zip -omaven
+> move maven\apache-maven-3.5.4 C:\maven
+> setx /M PATH "%PATH%;C:\maven\bin"
 ```
 
-Chocolatey では、 mysql 5.6 がインストールできなかったので、手動でインストール。
+Python のインストール
+
+```shell
+> choco install -y python
+```
+
+クリーンアップ
+
+```shell
+> cd C:\
+> rmdir /S /Q C:\temp
+```
 
 
