@@ -2,6 +2,7 @@ package jp.chang.myclinic.server.db.myclinic;
 
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.util.DateTimeUtil;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -601,6 +602,7 @@ public class DTOMapper {
 	public PracticeLogDTO toPracticeLogDTO(PracticeLog practiceLog){
 		PracticeLogDTO dto = new PracticeLogDTO();
 		dto.serialId = practiceLog.getPracticeLogId();
+		dto.createdAt = DateTimeUtil.toSqlDateTime(practiceLog.getCreatedAt());
 		dto.kind = practiceLog.getKind();
 		dto.body = practiceLog.getBody();
 		return dto;
