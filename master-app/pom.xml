@@ -50,32 +50,6 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
-      <!--<plugin>-->
-        <!--<groupId>org.codehaus.mojo</groupId>-->
-        <!--<artifactId>appassembler-maven-plugin</artifactId>-->
-        <!--<version>1.10</version>-->
-        <!--<executions>-->
-          <!--<execution>-->
-            <!--<phase>package</phase>-->
-            <!--<goals>-->
-              <!--<goal>assemble</goal>-->
-            <!--</goals>-->
-          <!--</execution>-->
-        <!--</executions>-->
-        <!--<configuration>-->
-          <!--<assembleDirectory>${project.basedir}/../programs</assembleDirectory>-->
-          <!--<repositoryName>repo-master</repositoryName>-->
-          <!--<programs>-->
-            <!--<program>-->
-              <!--<mainClass>jp.chang.myclinic.MasterApplication</mainClass>-->
-              <!--<id>master</id>-->
-            <!--</program>-->
-          <!--</programs>-->
-          <!--<platforms>-->
-            <!--<platform>windows</platform>-->
-          <!--</platforms>-->
-        <!--</configuration>-->
-      <!--</plugin>-->
     </plugins>
   </build>
 </project>

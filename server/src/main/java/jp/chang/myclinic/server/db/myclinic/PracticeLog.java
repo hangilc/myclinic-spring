@@ -1,6 +1,7 @@
 package jp.chang.myclinic.server.db.myclinic;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="practice_log")
@@ -11,20 +12,12 @@ public class PracticeLog {
     @Column(name="practice_log_id")
     private Integer practiceLogId;
 
-    @Column(name="practice_date")
-    private String date;
+    @Column(name="created_at")
+    private LocalDateTime createdAt;
 
     private String kind;
 
     private String body;
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
 
     public Integer getPracticeLogId() {
         return practiceLogId;
@@ -32,6 +25,14 @@ public class PracticeLog {
 
     public void setPracticeLogId(Integer practiceLogId) {
         this.practiceLogId = practiceLogId;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getKind() {

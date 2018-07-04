@@ -1,7 +1,7 @@
 # usage: python check-master-name-map.py year month day
 import sys
 import os
-import MySQLdb
+import mysql.connector
 
 year = int(sys.argv[1])
 month = int(sys.argv[2])
@@ -9,9 +9,11 @@ day = int(sys.argv[3])
 
 at = "{}-{:02d}-{:02d}".format(year, month, day)
 
-conn = MySQLdb.connect(user=os.environ["MYCLINIC_DB_USER"], 
-    passwd=os.environ["MYCLINIC_DB_PASS"], db="myclinic", charset="utf8")
-cursor = conn.cursor(MySQLdb.cursors.DictCursor)
+conn = mysql.connector.connect(
+	host=os.environ["MYCLINIC_DB_HOST"],
+	user=os.environ["MYCLINIC_DB_USER"], 
+    password=os.environ["MYCLINIC_DB_PASS"], database="myclinic", charset="utf8")
+cursor = conn.cursor()
 
 master_map_file = "./config/master-name.txt"
 code_map_file = "./config/master-map.txt"
@@ -70,4 +72,7 @@ with open(master_map_file, encoding="utf-8") as f:
         kind = parts[0]
         if kind == 's':
             handle_shinryou(parts[1], int(parts[2]))
+            
+cursor.close()
+conn.close()
 

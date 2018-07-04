@@ -6,6 +6,7 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.*;
 import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.server.db.myclinic.PracticeLog;
+import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -14,7 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
 public class PracticeLogger implements InitializingBean {
@@ -52,10 +53,11 @@ public class PracticeLogger implements InitializingBean {
 
     @Transactional
     private void saveLog(String kind, String body) {
-        LocalDate at = LocalDate.now();
+        LocalDateTime at = LocalDateTime.now();
         PracticeLog practiceLog = dbGateway.insertPracticeLog(at, kind, body);
         PracticeLogDTO dto = new PracticeLogDTO();
         dto.serialId = practiceLog.getPracticeLogId();
+        dto.createdAt = DateTimeUtil.toSqlDateTime(at);
         dto.kind = kind;
         dto.body = body;
         try {

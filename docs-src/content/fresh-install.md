@@ -83,4 +83,24 @@ myclinic-spring.git をクローン
 > git clone https://github.com/hangilc/myclinic-spring.git
 ```
 
+venv のインストール
+
+```shell
+> python -m venv my-pyenv
+```
+
+config フォルダーの作成
+
+```shell
+> xcopy /e /i /h config-example config
+```
+
+master-map のセットアップ
+
+```shell
+> my-pyenv\scripts\activate
+> pip install -r scripts\pip-freeze.txt
+> mkdir master-files
+> python master-map\gencode.py
+```
 
