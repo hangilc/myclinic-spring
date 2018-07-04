@@ -61,6 +61,10 @@ class LeftColumn extends VBox {
         pharmaQueueList.removeIf(model -> model.wqueue.getVisit().getVisitId() == visitId);
     }
 
+    void deleteVisit(int visitId){
+        todaysList.removeIf(model -> model.visit.getVisitId() == visitId);
+    }
+
     private void selectTodaysList(){
         patientList.itemsProperty().set(todaysList);
     }

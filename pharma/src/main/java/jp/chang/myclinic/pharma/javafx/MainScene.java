@@ -71,4 +71,10 @@ public class MainScene extends HBox implements DispatchHook {
         leftColumn.deletePharmaQueue(visitId);
         toNext.run();
     }
+
+    @Override
+    public void onVisitDeleted(int visitId, Runnable toNext) {
+        leftColumn.deleteVisit(visitId);
+        toNext.run();
+    }
 }
