@@ -31,6 +31,7 @@ GIT のインストール
 
 ```shell
 > choco install -y git
+> setx /M PATH "%PATH%;C:\Program Files\Git\bin"
 ```
 
 MySQL のインストール
@@ -66,6 +67,20 @@ Python のインストール
 ```shell
 > cd C:\
 > rmdir /S /Q C:\temp
+```
+
+以上で、依存プログラムのインストールが完了したので、管理者として実行している cmd.exe を閉じる。
+
+通常のユーザーとして cmd.exe を起動する。
+
+```shell
+> cd %HOMEDRIVE%%HOMEPATH%
+```
+
+myclinic-spring.git をクローン
+
+```shell
+> git clone https://github.com/hangilc/myclinic-spring.git
 ```
 
 
