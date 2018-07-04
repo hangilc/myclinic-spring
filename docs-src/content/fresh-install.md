@@ -37,4 +37,16 @@ Maven のインストール
 
 Chocolatey では、 mysql 5.6 がインストールできなかったので、手動でインストール。
 
+venv のインストール
+
+```shell
+> python -m venv my-pyenv
+```
+
+config フォルダーの作成
+
+```shell
+> xcopy 
+```
+
 

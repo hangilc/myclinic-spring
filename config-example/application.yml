@@ -1,0 +1,85 @@
+spring:
+  datasource:
+    jdbc-url: jdbc:mysql://${MYCLINIC_DB_HOST}:3306/myclinic?zeroDateTimeBehavior=convertToNull&noDatetimeStringSync=true&useUnicode=true&characterEncoding=utf8&verifyServerCertificate=false&useSSL=true
+    url: jdbc:mysql://${MYCLINIC_DB_HOST}:3306/myclinic?zeroDateTimeBehavior=convertToNull&noDatetimeStringSync=true&useUnicode=true&characterEncoding=utf8
+    username: ${MYCLINIC_DB_USER}
+    password: ${MYCLINIC_DB_PASS}
+    driver-class-name: com.mysql.jdbc.Driver
+    test-on-borrow: true
+    validation-query: SELECT 1
+  jpa:
+    open-in-view: false
+
+server:
+  port: 18080
+
+logging:
+  file: "work/application.log"
+
+myclinic:
+  master-map-file: "./config/master-map.txt"
+  name-map-file: "./config/master-name.txt"
+  shinryou-byoumei-file: "./config/shinryou-byoumei.yml"
+  master-files-directory: master-files
+  clinic:
+    name: 内科クリニック
+    postal-code: 〒123-4567
+    address: クリニック住所
+    tel: 03-1234-5678
+    fax: 03-1111-2222
+    todoufukencode: 13
+    tensuuhyoucode: 1
+    kikancode: 1234567
+    homepage: http://www.example.com
+    doctor-name: 院長氏名
+  db:
+    intraclinic:
+      jdbc-url: jdbc:mysql://${MYCLINIC_DB_HOST}:3306/intraclinic?zeroDateTimeBehavior=convertToNull&noDatetimeStringSync=true&useUnicode=true&characterEncoding=utf8&verifyServerCertificate=false&useSSL=true
+#      url: jdbc:mysql://${MYCLINIC_DB_HOST}:3306/intraclinic?zeroDateTimeBehavior=convertToNull&noDatetimeStringSync=true&useUnicode=true&characterEncoding=utf8
+      username: ${MYCLINIC_DB_USER}
+      password: ${MYCLINIC_DB_PASS}
+      driver-class-name: com.mysql.jdbc.Driver
+      test-on-borrow: true
+      validation-query: SELECT 1
+  practice:
+    kouhatsu-kasan: "外来後発医薬品使用体制加算２"
+  scanner:
+    paper-scan-directory: "path/to/paper-scan/directory"
+
+  users:
+    hangil:
+      name: 院長
+      password: "password"
+      roles: admin, practice
+    kawamura:
+      name: 薬剤師
+      password: "password"
+      roles: pharma, reception
+    masaki:
+      name: 受付
+      password: "password"
+      roles: reception, pharma
+  disease-example:
+    - byoumei: 急性咽頭炎
+    - byoumei: 急性気管支炎
+    - byoumei: アレルギー性鼻炎
+    - byoumei: アレルギー性結膜炎
+    - byoumei: 気管支喘息
+    - byoumei: 急性胃腸炎
+    - byoumei: 頭痛
+    - byoumei: 糖尿病
+    - label: 糖尿病の疑い
+      byoumei: 糖尿病
+      post: ["の疑い"]
+    - byoumei: インフルエンザＡ型
+    - label: "(の疑い)"
+      post: ["の疑い"]
+
+homepage:
+  dynamodb:
+    region: ap-northeast-1
+    table: name-of-homepage-variables
+
+
+
+
