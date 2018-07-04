@@ -1,3 +1,6 @@
+* migrate to practice_log created_at
+
+    source server/migrations/practice-log-created-at.sql
 
 * fixed valid_from of hoken_koukikourei (koukikourei_id = 1494) [2018-07-03]
 

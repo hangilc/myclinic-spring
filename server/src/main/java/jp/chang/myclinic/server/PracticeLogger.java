@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
 public class PracticeLogger implements InitializingBean {
@@ -52,7 +52,7 @@ public class PracticeLogger implements InitializingBean {
 
     @Transactional
     private void saveLog(String kind, String body) {
-        LocalDate at = LocalDate.now();
+        LocalDateTime at = LocalDateTime.now();
         PracticeLog practiceLog = dbGateway.insertPracticeLog(at, kind, body);
         PracticeLogDTO dto = new PracticeLogDTO();
         dto.serialId = practiceLog.getPracticeLogId();

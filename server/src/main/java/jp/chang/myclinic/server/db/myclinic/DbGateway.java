@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1814,37 +1815,36 @@ public class DbGateway {
     }
 
     public List<PracticeLogDTO> listPracticeLogByDate(LocalDate at) {
-        return practiceLogRepository.findByDate(at.toString(), Sort.by("practiceLogId"))
+        return practiceLogRepository.findByDate(at, Sort.by("practiceLogId"))
                 .stream()
                 .map(mapper::toPracticeLogDTO)
                 .collect(Collectors.toList());
     }
 
     public List<PracticeLogDTO> listRecentPracticeLog(LocalDate at, int lastId) {
-        return practiceLogRepository.findRecent(at.toString(), lastId, Sort.by("practiceLogId"))
+        return practiceLogRepository.findRecent(at, lastId, Sort.by("practiceLogId"))
                 .stream()
                 .map(mapper::toPracticeLogDTO)
                 .collect(Collectors.toList());
     }
 
     public List<PracticeLogDTO> listPracticeLogInRange(LocalDate at, int afterId, int beforeId) {
-        return practiceLogRepository.findInRange(at.toString(), afterId, beforeId, Sort.by("practiceLogId"))
+        return practiceLogRepository.findInRange(at, afterId, beforeId, Sort.by("practiceLogId"))
                 .stream()
                 .map(mapper::toPracticeLogDTO)
                 .collect(Collectors.toList());
     }
 
-    public PracticeLog insertPracticeLog(LocalDate date, String kind, String body) {
+    public PracticeLog insertPracticeLog(LocalDateTime createdAt, String kind, String body) {
         PracticeLog data = new PracticeLog();
-        data.setDate(date.toString());
+        data.setCreatedAt(createdAt);
         data.setKind(kind);
         data.setBody(body);
         return practiceLogRepository.save(data);
     }
 
     public PracticeLogDTO findLastPracticeLog() {
-        String today = LocalDate.now().toString();
-        return practiceLogRepository.findFirstByDateOrderByPracticeLogIdDesc(today)
+        return practiceLogRepository.findFirstByOrderByPracticeLogIdDesc()
                 .map(mapper::toPracticeLogDTO)
                 .orElse(null);
     }
