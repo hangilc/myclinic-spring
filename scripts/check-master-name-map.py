@@ -72,6 +72,7 @@ with open(master_map_file, encoding="utf-8") as f:
         kind = parts[0]
         if kind == 's':
             handle_shinryou(parts[1], int(parts[2]))
-
+            
+cursor.close()
 conn.close()
 
