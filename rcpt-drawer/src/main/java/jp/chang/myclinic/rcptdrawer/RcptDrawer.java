@@ -608,7 +608,11 @@ public class RcptDrawer {
 
     public void putHokenshaBangou(int n) {
         compiler.setFont("Gothic5");
-        printDigits(n, hokenshabangouBoxes);
+        String digits = String.format("%d", n);
+        if( digits.length() == 7  || digits.length() == 5 ){
+            digits = "0" + digits;
+        }
+        printDigits(digits, hokenshabangouBoxes);
     }
 
     private void setupHokenshaBangou_3(Box box) {
@@ -767,16 +771,29 @@ public class RcptDrawer {
         printDigits(n, kouhijukyuushabangou2);
     }
 
-    private void printDigits(int n, Box[] boxes) {
-        String s = String.format("%d", n);
-        if (s.length() > boxes.length) {
-            throw new RuntimeException("Too large number: " + n);
+    private void printDigits(String digits, Box[] boxes){
+        if (digits.length() > boxes.length) {
+            throw new RuntimeException("Too large number: " + digits);
         }
-        int offset = boxes.length - s.length();
-        for (int i = 0; i < s.length(); i++) {
-            String c = s.substring(i, i + 1);
+        int offset = boxes.length - digits.length();
+        for (int i = 0; i < digits.length(); i++) {
+            String c = digits.substring(i, i + 1);
             compiler.textIn(c, boxes[offset + i], HAlign.Center, VAlign.Center);
         }
+    }
+
+    private void printDigits(int n, Box[] boxes) {
+        String s = String.format("%d", n);
+        printDigits(s, boxes);
+//        String s = String.format("%d", n);
+//        if (s.length() > boxes.length) {
+//            throw new RuntimeException("Too large number: " + n);
+//        }
+//        int offset = boxes.length - s.length();
+//        for (int i = 0; i < s.length(); i++) {
+//            String c = s.substring(i, i + 1);
+//            compiler.textIn(c, boxes[offset + i], HAlign.Center, VAlign.Center);
+//        }
     }
 
     private void setupPatientInfo() {
