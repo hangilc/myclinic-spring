@@ -49,7 +49,7 @@ class ModelRegistry {
     public void deleteVisit(int visitId){
         Visit visit = visitRegistry.get(visitId);
         if( visit != null ){
-            visitRegistry.remove(visit);
+            visitRegistry.remove(visitId);
         }
     }
 

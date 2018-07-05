@@ -276,20 +276,16 @@ public class TrackingRoot extends VBox implements DispatchAction {
                     paddingPane.setMaxHeight(h);
                     updateUI(1);
                     double vValue;
-                    if( minY == 0 ){
+                    if (minY == 0) {
                         vValue = 0;
                     } else {
                         vValue = minY / (contentHeight + h - view.getHeight());
                     }
                     recordScroll.setVvalue(vValue);
-                    cb.run();
                 }
-            } else {
-                cb.run();
             }
-        } else {
-            cb.run();
         }
+        cb.run();
     }
 
     @Override
