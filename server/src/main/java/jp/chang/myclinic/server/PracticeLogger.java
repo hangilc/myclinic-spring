@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Component
 public class PracticeLogger implements InitializingBean {
@@ -36,8 +38,14 @@ public class PracticeLogger implements InitializingBean {
     private void sendLastLog() throws Exception {
         PracticeLogDTO lastLog = dbGateway.findLastPracticeLog();
         logger.info("last practice log: {}", lastLog);
-        if( lastLog != null ) {
-            practiceLogHandler.publish(mapper.writeValueAsString(lastLog));
+        try {
+            LocalDate date = LocalDate.parse(lastLog.createdAt.substring(0, 10));
+            if( Objects.equals(date, LocalDate.now() ) ){
+                logger.info("todays last practice log sent.");
+                practiceLogHandler.publish(mapper.writeValueAsString(lastLog));
+            }
+        } catch(Exception ex){
+            logger.error("Failed to get last log", ex);
         }
     }
 
