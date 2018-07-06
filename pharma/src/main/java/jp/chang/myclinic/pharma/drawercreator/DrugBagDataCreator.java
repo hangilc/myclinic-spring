@@ -22,7 +22,7 @@ public class DrugBagDataCreator {
     private ClinicInfoDTO clinicInfo;
     private DrugCategory category;
     private static Pattern timesPattern = Pattern.compile("分([0-9０-９]+)(.*)");
-    private static Pattern unevenPattern = Pattern.compile(".*[(（]([- 　0-9０-９.．ー－]+)[)）](.*)");
+    private static Pattern unevenPattern = Pattern.compile(".*([(（]([- 　0-9０-９.．ー－]+)[)）]).*");
     private static Pattern mealsPattern = Pattern.compile("([朝昼夕]+)食(.)");
     private static NumberFormat numberFormat = NumberFormat.getNumberInstance();
     private static Map<Integer, Double> powderDrugMap = new HashMap<>();
@@ -162,11 +162,12 @@ public class DrugBagDataCreator {
         );
         Matcher matcher = unevenPattern.matcher(usage);
         if( matcher.matches() ){
-            List<Double> weights = parseUnevenWeights(matcher.group(1));
+            List<Double> weights = parseUnevenWeights(matcher.group(2));
             if( times != weights.size() ){
                 throw new RuntimeException("invalid uneven prescription (times and weights does not match)");
             }
-            String restUsage = trim(matcher.group(2));
+            //String restUsage = trim(matcher.group(2));
+            String restUsage = trim(usage.replace(matcher.group(1), ""));
             List<String> timings = extractTimingParts(restUsage);
             if( timings.size() != weights.size() ){
                 throw new RuntimeException("invalid uneven prescription (timings and weights does not match)");
