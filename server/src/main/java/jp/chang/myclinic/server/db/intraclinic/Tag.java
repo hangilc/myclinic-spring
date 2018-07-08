@@ -3,7 +3,7 @@ package jp.chang.myclinic.server.db.intraclinic;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tag")
+@Table(name = "intraclinic_tag")
 public class Tag {
 
     @Id

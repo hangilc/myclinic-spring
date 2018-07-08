@@ -1,11 +1,11 @@
 package jp.chang.myclinic.server.rest;
 
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.server.UserRegistry;
 import jp.chang.myclinic.server.db.intraclinic.Comment;
 import jp.chang.myclinic.server.db.intraclinic.CommentRepository;
 import jp.chang.myclinic.server.db.intraclinic.Post;
 import jp.chang.myclinic.server.db.intraclinic.PostRepository;
-import jp.chang.myclinic.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/json/intraclinic")
-@Transactional("intraclinicTransactionManager")
+//@Transactional("intraclinicTransactionManager")
+@Transactional
 class IntraclinicController {
 
     @Autowired
@@ -28,18 +29,18 @@ class IntraclinicController {
     @Autowired
     private UserRegistry userRegistry;
 
-    @RequestMapping(value="/get-post-full", method= RequestMethod.GET)
-    public IntraclinicPostFullDTO getPostFull(@RequestParam("post-id") int id){
+    @RequestMapping(value = "/get-post-full", method = RequestMethod.GET)
+    public IntraclinicPostFullDTO getPostFull(@RequestParam("post-id") int id) {
         return toPostFullDTO(postRepository.findById(id));
     }
 
-    @RequestMapping(value="/list-recent-full", method=RequestMethod.GET)
-    public List<IntraclinicPostFullDTO> listRecentFull(){
+    @RequestMapping(value = "/list-recent-full", method = RequestMethod.GET)
+    public List<IntraclinicPostFullDTO> listRecentFull() {
         return postRepository.findTop7ByOrderByIdDesc().stream().map(this::toPostFullDTO).collect(Collectors.toList());
     }
 
-    @RequestMapping(value="/list-post-full", method=RequestMethod.GET)
-    public IntraclinicPostFullPageDTO listPostFull(@RequestParam("page") int page){
+    @RequestMapping(value = "/list-post-full", method = RequestMethod.GET)
+    public IntraclinicPostFullPageDTO listPostFull(@RequestParam("page") int page) {
         Page<Post> postPage = postRepository.findAll(PageRequest.of(page, 7, Sort.Direction.DESC, "id"));
         IntraclinicPostFullPageDTO pageDTO = new IntraclinicPostFullPageDTO();
         pageDTO.totalPages = postPage.getTotalPages();
@@ -47,39 +48,39 @@ class IntraclinicController {
         return pageDTO;
     }
 
-    @RequestMapping(value="/enter-post", method=RequestMethod.POST)
-    public int enterPost(@RequestBody IntraclinicPostDTO postDTO){
+    @RequestMapping(value = "/enter-post", method = RequestMethod.POST)
+    public int enterPost(@RequestBody IntraclinicPostDTO postDTO) {
         Post post = fromPostDTO(postDTO);
         post.setId(null);
         post = postRepository.save(post);
         return post.getId();
     }
 
-    @RequestMapping(value="/update-post", method=RequestMethod.POST)
-    public boolean updatePost(@RequestBody IntraclinicPostDTO postDTO){
+    @RequestMapping(value = "/update-post", method = RequestMethod.POST)
+    public boolean updatePost(@RequestBody IntraclinicPostDTO postDTO) {
         Post post = fromPostDTO(postDTO);
         postRepository.save(post);
         return true;
     }
 
-    @RequestMapping(value="/delete-post", method=RequestMethod.POST)
-    public boolean deletePost(@RequestParam("post-id") int postId){
+    @RequestMapping(value = "/delete-post", method = RequestMethod.POST)
+    public boolean deletePost(@RequestParam("post-id") int postId) {
         postRepository.deleteById(postId);
         return true;
     }
 
-    @RequestMapping(value="/enter-comment", method=RequestMethod.POST)
-    public int enterComment(@RequestBody IntraclinicCommentDTO commentDTO){
+    @RequestMapping(value = "/enter-comment", method = RequestMethod.POST)
+    public int enterComment(@RequestBody IntraclinicCommentDTO commentDTO) {
         Comment comment = fromCommentDTO(commentDTO);
         comment.setId(null);
         comment = commentRepository.save(comment);
         return comment.getId();
     }
 
-    @RequestMapping(value="/login", method=RequestMethod.POST)
-    public UserInfoDTO login(@RequestParam("user") String user, @RequestParam("password") String password){
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public UserInfoDTO login(@RequestParam("user") String user, @RequestParam("password") String password) {
         UserRegistry.UserInfo userInfo = userRegistry.getInfo(user);
-        if( userInfo.getPassword().equals(password) ){
+        if (userInfo.getPassword().equals(password)) {
             UserInfoDTO userInfoDTO = new UserInfoDTO();
             userInfoDTO.user = user;
             userInfoDTO.name = userInfo.getName();
@@ -98,7 +99,7 @@ class IntraclinicController {
         return postDTO;
     }
 
-    private Post fromPostDTO(IntraclinicPostDTO postDTO){
+    private Post fromPostDTO(IntraclinicPostDTO postDTO) {
         Post post = new Post();
         post.setId(postDTO.id);
         post.setContent(postDTO.content);
@@ -106,7 +107,7 @@ class IntraclinicController {
         return post;
     }
 
-    private IntraclinicPostFullDTO toPostFullDTO(Post post){
+    private IntraclinicPostFullDTO toPostFullDTO(Post post) {
         IntraclinicPostFullDTO postFullDTO = new IntraclinicPostFullDTO();
         postFullDTO.post = toPostDTO(post);
         postFullDTO.comments = commentRepository.findByPostId(post.getId(), Sort.by("id")).stream()
@@ -114,7 +115,7 @@ class IntraclinicController {
         return postFullDTO;
     }
 
-    private IntraclinicCommentDTO toCommentDTO(Comment comment){
+    private IntraclinicCommentDTO toCommentDTO(Comment comment) {
         IntraclinicCommentDTO commentDTO = new IntraclinicCommentDTO();
         commentDTO.id = comment.getId();
         commentDTO.name = comment.getName();
@@ -124,7 +125,7 @@ class IntraclinicController {
         return commentDTO;
     }
 
-    private Comment fromCommentDTO(IntraclinicCommentDTO commentDTO){
+    private Comment fromCommentDTO(IntraclinicCommentDTO commentDTO) {
         Comment comment = new Comment();
         comment.setId(commentDTO.id);
         comment.setName(commentDTO.name);
