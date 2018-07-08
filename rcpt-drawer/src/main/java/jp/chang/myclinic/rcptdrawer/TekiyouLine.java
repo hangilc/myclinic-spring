@@ -1,7 +1,5 @@
 package jp.chang.myclinic.rcptdrawer;
 
-import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
-
 import java.util.EnumSet;
 
 class TekiyouLine {
@@ -10,6 +8,7 @@ class TekiyouLine {
     String body;
     String tankaTimes;
     EnumSet<TekiyouLineOpt> opts = EnumSet.noneOf(TekiyouLineOpt.class);
+    double leftMargin = 0;
 
     TekiyouLine(String body){
         this("", body, "");
@@ -24,5 +23,9 @@ class TekiyouLine {
     TekiyouLine setAlignRight(){
         opts.add(TekiyouLineOpt.AlignRight);
         return this;
+    }
+
+    void setLeftMargin(double leftMargin){
+        this.leftMargin = leftMargin;
     }
 }

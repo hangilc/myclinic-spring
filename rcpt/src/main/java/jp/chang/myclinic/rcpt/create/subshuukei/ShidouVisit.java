@@ -33,8 +33,9 @@ public class ShidouVisit extends VisitBase {
                 if( item.getShinryoucode() == shinryouMasterMap.診療情報提供料１ ){
                     String dateLabel = DateTimeUtil.toKanji(item.getData().getVisitedAt(),
                             DateTimeUtil.kanjiFormatter1);
-                    tekiyouList.add(item.getData().getName(), null, null);
-                    tekiyouList.add("      " + dateLabel, item.getTanka(), item.getCount());
+                    tekiyouList.add(item.getData().getName(),item.getTanka(), item.getCount());
+                    //tekiyouList.add("      " + dateLabel, null, null);
+                    tekiyouList.add(new TekiyouAux(dateLabel));
                 } else {
                     tekiyouList.add(item);
                 }

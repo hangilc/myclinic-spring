@@ -6,11 +6,15 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class RcptDataDispatcher {
 
     private static Logger logger = LoggerFactory.getLogger(RcptDataDispatcher.class);
-
+    private static Pattern tekiyouAuxPattern = Pattern.compile(
+            "\\s*\\{(.*)}\\s*(.*)\\s*"
+    );
     private interface Dispatcher {
         void dispatch(RcptDrawer drawer, String arg);
     }
@@ -505,6 +509,42 @@ class RcptDataDispatcher {
                 tankaTimes = String.format("%sx%s", parts[2], parts[3]);
             }
             drawer.addTekiyou(index, parts[1], tankaTimes);
+        });
+        map.put("tekiyou_aux", (drawer, arg) -> {
+            Matcher matcher = tekiyouAuxPattern.matcher(arg);
+            if( matcher.matches() ){
+                Map<String, String> opts = new HashMap<>();
+                double leftMargin = 0;
+                for(String item: matcher.group(1).split(",")){
+                    item = item.trim();
+                    String[] parts = item.split(":");
+                    if( parts.length != 2 ){
+                        logger.error("Invalid tekiyou_aux item: {}", item);
+                        continue;
+                    }
+                    String key = parts[0].trim();
+                    String value = parts[1].trim();
+                    switch(key){
+                        case "left-margin":{
+                            try {
+                                leftMargin = Double.parseDouble(value);
+                            } catch(NumberFormatException ex){
+                                logger.error("Invalid left-margin: {}", value);
+                            }
+                            break;
+                        }
+                        default: {
+                            logger.error("Unknown tekiyou_aux option key: {}", key);
+                            break;
+                        }
+                    }
+                }
+                TekiyouLine tekiyouLine = new TekiyouLine(matcher.group(2));
+                tekiyouLine.setLeftMargin(leftMargin);
+                drawer.addTekiyou(tekiyouLine);
+            } else {
+                logger.error("Invalid tekiyou_aux: {}", arg);
+            }
         });
         map.put("tekiyou_begin_drugs", (drawer, arg) -> {
             String[] parts = arg.split(":");
