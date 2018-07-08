@@ -30,7 +30,8 @@ public class ShidouVisit extends VisitBase {
             System.out.printf("shidou.ten %d\n", ten);
             TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SHIDOU);
             items.stream().forEach(item -> {
-                if( item.getShinryoucode() == shinryouMasterMap.診療情報提供料１ ){
+                if( item.getShinryoucode() == shinryouMasterMap.診療情報提供料１  ||
+                        item.getShinryoucode() == shinryouMasterMap.療養費同意書交付料 ){
                     String dateLabel = DateTimeUtil.toKanji(item.getData().getVisitedAt(),
                             DateTimeUtil.kanjiFormatter1);
                     tekiyouList.add(item.getData().getName(),item.getTanka(), item.getCount());

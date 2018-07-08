@@ -2,6 +2,7 @@ import io
 import os
 from jinja2 import Environment, FileSystemLoader
 
+print("generating java source codes for master-map [gencode.py]")
 prog_dir = os.path.abspath(os.path.dirname(__file__))
 config_dir = prog_dir + "/../config"
 name_config_file = config_dir + "/master-name.txt"
