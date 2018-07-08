@@ -2,24 +2,28 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.create.Shinryou;
+import jp.chang.myclinic.rcpt.lib.ShinryouItem;
 import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
+import jp.chang.myclinic.util.DateTimeUtil;
+
+import java.time.LocalDate;
 
 public class ZaitakuVisit extends VisitBase {
 
     private ResolvedShinryouMap shinryouMasterMap;
-    private ShinryouItemList<ShinryouItemData> oushinItems = new ShinryouItemList<>();
-    private ShinryouItemList<ShinryouItemData> sonotaItems = new ShinryouItemList<>();
+    private ShinryouItemList<ZaitakuItemData> oushinItems = new ShinryouItemList<>();
+    private ShinryouItemList<ZaitakuItemData> sonotaItems = new ShinryouItemList<>();
 
     ZaitakuVisit(ResolvedShinryouMap shinryouMasterMap) {
         this.shinryouMasterMap = shinryouMasterMap;
     }
 
-    public void add(Shinryou shinryou){
+    public void add(Shinryou shinryou, LocalDate visitedAt){
         // TODO: add yakan, shinya, houmon, yakuzai
         if( shinryou.getShinryoucode() == shinryouMasterMap.往診 ){
-            oushinItems.add(createShinryouItem(shinryou));
+            oushinItems.add(createZaitakuItem(shinryou, visitedAt));
         } else {
-            sonotaItems.add(createShinryouItem(shinryou));
+            sonotaItems.add(createZaitakuItem(shinryou, visitedAt));
         }
     }
 
@@ -31,11 +35,30 @@ public class ZaitakuVisit extends VisitBase {
     void output(){
         outputShuukei("zaitaku.oushin", oushinItems);
         outputShuukei("zaitaku.sonota", sonotaItems, false, false);
-        TekiyouList.outputAll(SubShuukei.SUB_ZAITAKU, sonotaItems);
+        //TekiyouList.outputAll(SubShuukei.SUB_ZAITAKU, sonotaItems);
+        if( sonotaItems.getTen() > 0 ){
+            TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_ZAITAKU);
+            sonotaItems.stream().forEach(item -> {
+                if( item.getShinryoucode() == shinryouMasterMap.訪問看護指示料 ){
+                    String dateLabel = DateTimeUtil.toKanji(item.getData().getVisitedAt(),
+                            DateTimeUtil.kanjiFormatter1);
+                    tekiyouList.add(item.getData().getName(),item.getTanka(), item.getCount());
+                    tekiyouList.add(new TekiyouAux(dateLabel));
+                } else {
+                    tekiyouList.add(item);
+                }
+            });
+            tekiyouList.output();
+        }
     }
 
     int getTen(){
         return oushinItems.getTen() + sonotaItems.getTen();
+    }
+
+    private ShinryouItem<ZaitakuItemData> createZaitakuItem(Shinryou shinryou, LocalDate visitedAt){
+        ZaitakuItemData data = new ZaitakuItemData(shinryou.getName(), visitedAt);
+        return new ShinryouItem<>(shinryou.getShinryoucode(), shinryou.getTensuu(), data);
     }
 
 }
