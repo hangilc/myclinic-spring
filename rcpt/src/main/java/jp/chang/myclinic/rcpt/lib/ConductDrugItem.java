@@ -1,7 +1,7 @@
 package jp.chang.myclinic.rcpt.lib;
 
 import jp.chang.myclinic.consts.ConductKind;
-import jp.chang.myclinic.rcpt.RcptUtil;
+import jp.chang.myclinic.util.RcptUtil;
 import jp.chang.myclinic.util.NumberUtil;
 
 public class ConductDrugItem<T> implements RcptItem, Mergeable<ConductDrugItem<T>>, Eqv {

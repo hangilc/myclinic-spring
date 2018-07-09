@@ -6,7 +6,7 @@ import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.rcpt.RcptUtil;
+import jp.chang.myclinic.util.RcptUtil;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DiseaseUtil;
 import jp.chang.myclinic.util.NumberUtil;

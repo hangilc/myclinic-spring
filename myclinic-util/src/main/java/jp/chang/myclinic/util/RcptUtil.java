@@ -1,4 +1,4 @@
-package jp.chang.myclinic.rcpt;
+package jp.chang.myclinic.util;
 
 public class RcptUtil {
 

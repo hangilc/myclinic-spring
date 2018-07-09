@@ -1,6 +1,6 @@
 package jp.chang.myclinic.rcpt.lib;
 
-import jp.chang.myclinic.rcpt.RcptUtil;
+import jp.chang.myclinic.util.RcptUtil;
 import jp.chang.myclinic.util.NumberUtil;
 
 public class KizaiItem<T> implements RcptItem, Mergeable<KizaiItem<T>>, Eqv {

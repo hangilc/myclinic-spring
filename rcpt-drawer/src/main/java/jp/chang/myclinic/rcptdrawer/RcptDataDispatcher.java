@@ -497,6 +497,12 @@ class RcptDataDispatcher {
         map.put("kyuufu.hoken.seikyuuten", (drawer, arg) -> {
             drawer.putKyuufuHokenSeikyuuten(toInt(arg));
         });
+        map.put("ichibu-futankin-kouhi-1", (drawer, arg) -> {
+            drawer.putIchibufutankinKouhi1(toInt(arg));
+        });
+        map.put("ichibu-futankin-kouhi-2", (drawer, arg) -> {
+            drawer.putIchibufutankinKouhi2(toInt(arg));
+        });
         map.put("tekiyou", (drawer, arg) -> {
             String[] parts = arg.split(":");
             assert parts.length == 4 || parts.length == 3;
