@@ -48,6 +48,19 @@ class LeftColumn extends VBox {
         todaysList.add(new PatientList.Model(wqueue.getVisit().getPatient(), wqueue));
     }
 
+    void deleteWqueue(int visitId){
+        todaysList.forEach(model -> {
+            if( model.wqueue != null && model.wqueue.getVisit().getVisitId() == visitId ){
+                model.wqueue = null;
+            }
+        });
+        pharmaQueueList.forEach(model -> {
+            if( model.wqueue != null && model.wqueue.getVisit().getVisitId() == visitId ){
+                model.wqueue = null;
+            }
+        });
+    }
+
     void addPharmaQueue(PharmaQueue pharmaQueue){
         pharmaQueueList.add(new PatientList.Model(pharmaQueue.getVisit().getPatient(), pharmaQueue.getWqueue()));
     }
