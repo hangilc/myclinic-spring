@@ -8,6 +8,7 @@ import jp.chang.myclinic.rcpt.data.BatchData;
 // TODO: 湿布処方に、１日何枚と摘要欄に加える
 // TODO: 「血糖自己測定器加算」、「在宅自己注射指導管理料」に何回分を加える。
 // TODO: インスリン処方に何日分を加える。
+// TODO: 内服薬処方の際、調剤料が算定されているかチェックする。
 public class Main {
 
     //private static Logger logger = LoggerFactory.getLogger(Main.class);
