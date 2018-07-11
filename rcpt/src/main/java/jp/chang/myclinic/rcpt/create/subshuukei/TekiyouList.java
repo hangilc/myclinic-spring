@@ -71,6 +71,12 @@ class TekiyouList {
             name = item.getData().getName();
         }
         items.add(new StandardTekiyou(name, item.getTanka(), item.getCount()));
+        if( item.getData().getTekiyou() != null ){
+            items.add(new TekiyouAux(item.getData().getTekiyou()));
+        }
+        if( item.getData().getShoujouShouki() != null ){
+            // TODO: add shoujou shouki
+        }
     }
 
     void add(NaifukuItem<Naifuku> item){

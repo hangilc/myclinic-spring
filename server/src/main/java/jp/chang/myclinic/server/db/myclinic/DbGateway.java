@@ -87,6 +87,8 @@ public class DbGateway {
     private PracticeLogger practiceLogger;
     @Autowired
     private HotlineLogger hotlineLogger;
+    @Autowired
+    private ShinryouAttrRepository shinryouAttrRepository;
 
     private WqueueFullDTO composeWqueueFullDTO(Wqueue wqueue){
         WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
@@ -1847,6 +1849,15 @@ public class DbGateway {
         return practiceLogRepository.findFirstByOrderByPracticeLogIdDesc()
                 .map(mapper::toPracticeLogDTO)
                 .orElse(null);
+    }
+
+    public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds){
+        if( shinryouIds.size() == 0 ){
+            return Collections.emptyList();
+        } else {
+            return shinryouAttrRepository.batchGetShinryouAttr(shinryouIds).stream()
+                    .map(mapper::toShinryouAttrDTO).collect(Collectors.toList());
+        }
     }
 
 }

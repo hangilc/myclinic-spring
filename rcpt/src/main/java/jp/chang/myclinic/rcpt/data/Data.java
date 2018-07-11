@@ -6,10 +6,12 @@ import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.util.RcptUtil;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DiseaseUtil;
 import jp.chang.myclinic.util.NumberUtil;
+import jp.chang.myclinic.util.RcptUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
 
 class Data {
 
-    //private static Logger logger = LoggerFactory.getLogger(Data.class);
+    private static Logger logger = LoggerFactory.getLogger(Data.class);
     private int year;
     private int month;
     private List<Integer> patientIds;
@@ -309,14 +311,29 @@ class Data {
         xml.element("受診", () -> {
             xml.element("受診日", visit.visit.visitedAt);
             List<ShinryouFullDTO> shinryouList = new ArrayList<>(visit.shinryouList);
+            List<Integer> shinryouIds = shinryouList.stream().map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
+            Map<Integer, ShinryouAttrDTO> attrMap = collectShinryouAttr(shinryouIds);
             shinryouList.sort(Comparator.comparingInt(a -> a.shinryou.shinryouId)); // for backwork compatibility (not necessary for funtion)
-            shinryouList.forEach(this::outShinryou);
+            shinryouList.forEach(s -> outShinryou(s, attrMap.get(s.shinryou.shinryouId)));
             outDrugs(visit.drugs);
             visit.conducts.forEach(this::outConduct);
         });
     }
 
-    private void outShinryou(ShinryouFullDTO shinryou) {
+    private Map<Integer, ShinryouAttrDTO> collectShinryouAttr(List<Integer> shinryouIds){
+        Map<Integer, ShinryouAttrDTO> map = new HashMap<>();
+        try {
+            List<ShinryouAttrDTO> list = Service.api.batchGetShinryouAttrCall(shinryouIds).execute().body();
+            for(ShinryouAttrDTO attr: list){
+                map.put(attr.shinryouId, attr);
+            }
+        } catch (IOException e) {
+            logger.error("Failed to get shinryou attr: {}", shinryouIds);
+        }
+        return map;
+    }
+
+    private void outShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
         xml.element("診療", () -> {
             xml.element("診療コード", shinryou.master.shinryoucode);
             xml.element("名称", shinryou.master.name);
@@ -327,6 +344,14 @@ class Data {
             }
             if (!shinryou.master.kensaGroup.equals("00")) {
                 xml.element("検査グループ", shinryou.master.kensaGroup);
+            }
+            if( attr != null ){
+                if( attr.tekiyou != null ){
+                    xml.element("摘要", attr.tekiyou);
+                }
+                if( attr.shoujouShouki != null ){
+                    xml.element("症状詳記", attr.shoujouShouki);
+                }
             }
         });
     }

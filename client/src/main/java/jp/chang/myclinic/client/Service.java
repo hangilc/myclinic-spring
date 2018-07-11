@@ -829,6 +829,12 @@ public class Service {
         @GET("get-hokensho")
         @Streaming
         Call<ResponseBody> getHokenshoCall(@Query("patient-id") int patientId, @Query("file") String file);
+
+        @GET("batch-get-shinryou-attr")
+        CompletableFuture<List<ShinryouAttrDTO>> batchGetShinryouAttr(@Query("shinryou-ids") List<Integer> shinryouIds);
+
+        @GET("batch-get-shinryou-attr")
+        Call<List<ShinryouAttrDTO>> batchGetShinryouAttrCall(@Query("shinryou-ids") List<Integer> shinryouIds);
     }
 
     public static ServerAPI api;

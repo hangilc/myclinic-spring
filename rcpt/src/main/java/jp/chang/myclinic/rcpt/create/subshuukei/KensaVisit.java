@@ -21,7 +21,7 @@ public class KensaVisit extends VisitBase {
         if( kind != null && kind != HoukatsuKensaKind.NONE ){
             HoukatsuKensaItem<ShinryouItemData> item = new HoukatsuKensaItem<>(kind, Globals.at,
                     shinryou.getShinryoucode(), shinryou.getTensuu(),
-                    new ShinryouItemData(shinryou.getName()));
+                    new ShinryouItemData(shinryou));
             houkatsuList.extendOrAdd(item);
         } else if( isHandanryou(shinryou.getShinryoucode()) ) {
             int shinryoucode = shinryou.getShinryoucode();

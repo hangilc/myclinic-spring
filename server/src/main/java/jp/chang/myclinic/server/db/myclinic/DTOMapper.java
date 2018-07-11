@@ -608,6 +608,14 @@ public class DTOMapper {
 		return dto;
 	}
 
+	public ShinryouAttrDTO toShinryouAttrDTO(ShinryouAttr row){
+		ShinryouAttrDTO dto = new ShinryouAttrDTO();
+		dto.shinryouId = row.getShinryouId();
+		dto.tekiyou = row.getTekiyou();
+		dto.shoujouShouki = row.getShoujouShouki();
+		return dto;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;

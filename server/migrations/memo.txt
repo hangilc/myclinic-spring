@@ -1,3 +1,7 @@
+* add shinryou_attr table
+
+    - source server/migrations/add-shinryou-attr.sql;
+
 * migrate to practice_log created_at
 
     source server/migrations/practice-log-created-at.sql

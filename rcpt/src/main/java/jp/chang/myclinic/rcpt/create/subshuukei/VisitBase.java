@@ -13,7 +13,7 @@ class VisitBase {
 
     ShinryouItem<ShinryouItemData> createShinryouItem(Shinryou src){
         return new ShinryouItem<>(src.getShinryoucode(), src.getTensuu(),
-                new ShinryouItemData(src.getName()));
+                new ShinryouItemData(src));
     }
 
     ShinryouItem<ShinryouItemData> createShinryouItem(ConductShinryou src){

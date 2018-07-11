@@ -22,6 +22,10 @@ public class Shinryou {
     String houkatsuKensa;
     @JsonProperty("検査グループ")
     String kensaGroup;
+    @JsonProperty("摘要")
+    String tekiyou;
+    @JsonProperty("症状詳記")
+    String shoujouShouki;
 
     Shinryou() {
 
@@ -51,6 +55,14 @@ public class Shinryou {
         return kensaGroup;
     }
 
+    public String getTekiyou() {
+        return tekiyou;
+    }
+
+    public String getShoujouShouki() {
+        return shoujouShouki;
+    }
+
     @Override
     public String toString() {
         return "Shinryou{" +
@@ -60,6 +72,8 @@ public class Shinryou {
                 ", shuukeisaki='" + shuukeisaki + '\'' +
                 ", houkatsuKensa='" + houkatsuKensa + '\'' +
                 ", kensaGroup='" + kensaGroup + '\'' +
+                ", tekiyou='" + tekiyou + '\'' +
+                ", shoujouShouki='" + shoujouShouki + '\'' +
                 '}';
     }
 }
