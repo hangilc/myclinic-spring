@@ -21,7 +21,7 @@ public class Main extends Application {
     public static void main(String[] args) throws IOException {
         CommandArgs commandArgs = new CommandArgs(args);
         Service.setServerUrl(commandArgs.getServerUrl());
-        Service.setLogBody();
+        //Service.setLogBody();
         setupPracticeEnv(commandArgs, () -> Application.launch(Main.class, args));
     }
 

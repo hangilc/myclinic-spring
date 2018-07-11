@@ -58,7 +58,7 @@ public class ZaitakuVisit extends VisitBase {
 
     private ShinryouItem<ZaitakuItemData> createZaitakuItem(Shinryou shinryou, LocalDate visitedAt){
         ZaitakuItemData data = new ZaitakuItemData(shinryou, visitedAt);
-        return new ShinryouItem<>(shinryou.getShinryoucode(), shinryou.getTensuu(), data);
+        return new ShinryouItem<>(shinryou.getShinryoucode(), shinryou.getTensuu(), shinryou.getTekiyou(), data);
     }
 
 }

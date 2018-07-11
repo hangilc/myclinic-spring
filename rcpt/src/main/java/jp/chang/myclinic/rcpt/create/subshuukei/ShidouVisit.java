@@ -51,7 +51,7 @@ public class ShidouVisit extends VisitBase {
 
     private ShinryouItem<ShidouItemData> createShidouItem(Shinryou shinryou, LocalDate visitedAt){
         ShidouItemData data = new ShidouItemData(shinryou, visitedAt);
-        return new ShinryouItem<>(shinryou.getShinryoucode(), shinryou.getTensuu(), data);
+        return new ShinryouItem<>(shinryou.getShinryoucode(), shinryou.getTensuu(), data.getTekiyou(), data);
     }
 
 }

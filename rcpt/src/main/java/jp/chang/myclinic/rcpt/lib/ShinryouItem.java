@@ -1,13 +1,17 @@
 package jp.chang.myclinic.rcpt.lib;
 
+import java.util.Objects;
+
 public class ShinryouItem<T> extends RcptItemBase implements Mergeable<ShinryouItem<T>>, Eqv {
 
     private int shinryoucode;
+    private String tekiyou;
     private T data;
 
-    public ShinryouItem(int shinryoucode, int tensuu, T data) {
+    public ShinryouItem(int shinryoucode, int tensuu, String tekiyou, T data) {
         super(tensuu, 1);
         this.shinryoucode = shinryoucode;
+        this.tekiyou = tekiyou;
         this.data = data;
     }
 
@@ -21,7 +25,7 @@ public class ShinryouItem<T> extends RcptItemBase implements Mergeable<ShinryouI
 
     @Override
     public boolean canMerge(ShinryouItem<T> src) {
-        return shinryoucode == src.shinryoucode;
+        return shinryoucode == src.shinryoucode && Objects.equals(tekiyou, src.tekiyou);
     }
 
     @Override

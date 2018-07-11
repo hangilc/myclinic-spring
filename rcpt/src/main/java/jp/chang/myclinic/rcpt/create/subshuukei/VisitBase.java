@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 class VisitBase {
 
     ShinryouItem<ShinryouItemData> createShinryouItem(Shinryou src){
-        return new ShinryouItem<>(src.getShinryoucode(), src.getTensuu(),
+        return new ShinryouItem<>(src.getShinryoucode(), src.getTensuu(), src.getTekiyou(),
                 new ShinryouItemData(src));
     }
 
     ShinryouItem<ShinryouItemData> createShinryouItem(ConductShinryou src){
-        return new ShinryouItem<>(src.shinryoucode, src.tensuu,
+        return new ShinryouItem<>(src.shinryoucode, src.tensuu, null,
                 new ShinryouItemData(src.name));
     }
 
