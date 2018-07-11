@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.lib.shinryou;
 
+import javafx.application.Platform;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouDTO;
@@ -7,6 +8,7 @@ import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -59,17 +61,31 @@ public class ShinryouCopier {
                         } else {
                             ShinryouDTO dst = composeShinryou(src.shinryou, shinryoucode);
                             class Local {
-                                private ShinryouFullDTO entered;
+                                private ShinryouAttrDTO srcAttr;
+                                private ShinryouAttrDTO dstAttr;
+                                private int enteredShinryouId;
                             }
                             Local local = new Local();
-                            Service.api.enterShinryou(dst)
-                                    .thenCompose(Service.api::getShinryouFull)
-                                    .thenCompose(entered -> {
-                                        local.entered = entered;
-                                        return Service.api.findShinryouAttr(entered.shinryou.shinryouId);
+                            Service.api.findShinryouAttr(src.shinryou.shinryouId)
+                                    .thenCompose(srcAttr -> {
+                                        local.srcAttr = srcAttr;
+                                        return Service.api.enterShinryou(dst);
                                     })
-                                    .thenAccept(attr -> {
-                                        onEnterCallback.accept(local.entered, attr);
+                                    .thenCompose(enteredShinryouId -> {
+                                        local.enteredShinryouId = enteredShinryouId;
+                                        if( local.srcAttr != null ){
+                                            ShinryouAttrDTO dstAttr = ShinryouAttrDTO.copy(local.srcAttr);
+                                            dstAttr.shinryouId = local.enteredShinryouId;
+                                            local.dstAttr = dstAttr;
+                                            return Service.api.enterShinryouAttr(dstAttr);
+                                        } else {
+                                            local.dstAttr = null;
+                                            return CompletableFuture.completedFuture(null);
+                                        }
+                                    })
+                                    .thenCompose(ok -> Service.api.getShinryouFull(local.enteredShinryouId))
+                                    .thenAccept(entered -> {
+                                        Platform.runLater(() -> onEnterCallback.accept(entered, local.dstAttr));
                                         iterate();
                                     })
                                     .exceptionally(ex -> {

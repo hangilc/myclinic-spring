@@ -856,6 +856,12 @@ public class Service {
         @POST("delete-shinryou-tekiyou")
         Call<ShinryouAttrDTO> deleteShinryouTekiyouCall(@Query("shinryou-id") int shinryouId);
 
+        @POST("enter-shinryou-attr")
+        CompletableFuture<Boolean> enterShinryouAttr(@Body() ShinryouAttrDTO attr);
+
+        @POST("enter-shinryou-attr")
+        Call<Boolean> enterShinryouAttrCall(@Body() ShinryouAttrDTO attr);
+
         @GET("search-text-globally")
         CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(@Query("text") String text,
                                                                       @Query("page") int page);

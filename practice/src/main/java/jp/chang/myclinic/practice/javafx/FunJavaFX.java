@@ -27,7 +27,8 @@ public class FunJavaFX {
     public static void batchCopyShinryou(int targetVisitId, List<ShinryouFullDTO> srcList,
                                          BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> onEntered,
                                          Runnable onEnd) {
-        ShinryouCopier copier = new ShinryouCopier(targetVisitId, srcList, onEntered, createErrorHandler(), onEnd);
+        ShinryouCopier copier = new ShinryouCopier(targetVisitId, srcList, onEntered, createErrorHandler(),
+                () -> Platform.runLater(onEnd));
         copier.start();
     }
 

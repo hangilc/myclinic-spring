@@ -1887,4 +1887,9 @@ public class DbGateway {
                 });
     }
 
+    public void enterShinryouAttr(ShinryouAttrDTO dto){
+        ShinryouAttr attr = mapper.fromShinryouAttrDTO(dto);
+        shinryouAttrRepository.save(attr);
+    }
+
 }

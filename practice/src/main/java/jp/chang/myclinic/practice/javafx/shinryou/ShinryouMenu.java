@@ -17,14 +17,10 @@ import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.lib.CFUtil;
-import jp.chang.myclinic.practice.lib.PracticeAPI;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 public class ShinryouMenu extends VBox {
 
@@ -191,28 +187,32 @@ public class ShinryouMenu extends VBox {
                             CopySelectedForm form = new CopySelectedForm(shinryouList) {
                                 @Override
                                 protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection) {
-                                    class Local {
-                                        private List<ShinryouFullDTO> entered;
-                                    }
-                                    Local local = new Local();
-                                    PracticeAPI.batchCopyShinryou(targetVisitId, selection)
-                                            .thenCompose(entered -> {
-                                                local.entered = entered;
-                                                List<Integer> shinryouIds = entered.stream()
-                                                        .map(s -> s.shinryou.shinryouId)
-                                                        .collect(Collectors.toList());
-                                                return Service.api.batchGetShinryouAttr(shinryouIds);
-                                            })
-                                            .thenAccept(attrList -> {
-                                                Map<Integer, ShinryouAttrDTO> attrMap = new HashMap<>();
-                                                attrList.forEach(attr -> attrMap.put(attr.shinryouId, attr));
-                                                Platform.runLater(() -> {
-                                                    local.entered.forEach(e ->
-                                                            fireShinryouEnteredEvent(e, attrMap.get(e.shinryou.shinryouId)));
-                                                    hideWorkarea();
-                                                });
-                                            })
-                                            .exceptionally(HandlerFX::exceptionally);
+                                    FunJavaFX.batchCopyShinryou(targetVisitId, selection,
+                                            (entered, attr) -> {
+                                                Platform.runLater(() -> fireShinryouEnteredEvent(entered, attr));
+                                            }, () -> hideWorkarea());
+//                                    class Local {
+//                                        private List<ShinryouFullDTO> entered;
+//                                    }
+//                                    Local local = new Local();
+//                                    PracticeAPI.batchCopyShinryou(targetVisitId, selection)
+//                                            .thenCompose(entered -> {
+//                                                local.entered = entered;
+//                                                List<Integer> shinryouIds = entered.stream()
+//                                                        .map(s -> s.shinryou.shinryouId)
+//                                                        .collect(Collectors.toList());
+//                                                return Service.api.batchGetShinryouAttr(shinryouIds);
+//                                            })
+//                                            .thenAccept(attrList -> {
+//                                                Map<Integer, ShinryouAttrDTO> attrMap = new HashMap<>();
+//                                                attrList.forEach(attr -> attrMap.put(attr.shinryouId, attr));
+//                                                Platform.runLater(() -> {
+//                                                    local.entered.forEach(e ->
+//                                                            fireShinryouEnteredEvent(e, attrMap.get(e.shinryou.shinryouId)));
+//                                                    hideWorkarea();
+//                                                });
+//                                            })
+//                                            .exceptionally(HandlerFX::exceptionally);
                                 }
 
                                 @Override
@@ -228,6 +228,53 @@ public class ShinryouMenu extends VBox {
             }
         }
     }
+
+//    private void doCopySelected() {
+//        if (isWorkareaEmpty()) {
+//            int targetVisitId = PracticeUtil.findCopyTarget(visitId);
+//            if (targetVisitId != 0) {
+//                Service.api.listShinryouFull(visitId)
+//                        .thenAccept(shinryouList -> {
+//                            CopySelectedForm form = new CopySelectedForm(shinryouList) {
+//                                @Override
+//                                protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection) {
+//                                    class Local {
+//                                        private List<ShinryouFullDTO> entered;
+//                                    }
+//                                    Local local = new Local();
+//                                    PracticeAPI.batchCopyShinryou(targetVisitId, selection)
+//                                            .thenCompose(entered -> {
+//                                                local.entered = entered;
+//                                                List<Integer> shinryouIds = entered.stream()
+//                                                        .map(s -> s.shinryou.shinryouId)
+//                                                        .collect(Collectors.toList());
+//                                                return Service.api.batchGetShinryouAttr(shinryouIds);
+//                                            })
+//                                            .thenAccept(attrList -> {
+//                                                Map<Integer, ShinryouAttrDTO> attrMap = new HashMap<>();
+//                                                attrList.forEach(attr -> attrMap.put(attr.shinryouId, attr));
+//                                                Platform.runLater(() -> {
+//                                                    local.entered.forEach(e ->
+//                                                            fireShinryouEnteredEvent(e, attrMap.get(e.shinryou.shinryouId)));
+//                                                    hideWorkarea();
+//                                                });
+//                                            })
+//                                            .exceptionally(HandlerFX::exceptionally);
+//                                }
+//
+//                                @Override
+//                                protected void onCancel(HandleSelectedForm form) {
+//                                    hideWorkarea();
+//                                }
+//                            };
+//                            Platform.runLater(() ->
+//
+//                                    showWorkarea(form));
+//                        })
+//                        .exceptionally(HandlerFX::exceptionally);
+//            }
+//        }
+//    }
 
     private void doDeleteSelected() {
         if (isWorkareaEmpty()) {

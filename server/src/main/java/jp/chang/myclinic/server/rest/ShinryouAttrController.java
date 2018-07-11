@@ -4,11 +4,9 @@ import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +21,11 @@ public class ShinryouAttrController {
     private DbGateway dbGateway;
 
     @RequestMapping(value="batch-get-shinryou-attr", method=RequestMethod.GET)
-    public List<ShinryouAttrDTO> batchGetShinryouAttr(@RequestParam("shinryou-ids") List<Integer> shinryouIds){
+    public List<ShinryouAttrDTO> batchGetShinryouAttr(
+            @RequestParam(value="shinryou-ids", required=false) List<Integer> shinryouIds){
+        if( shinryouIds == null ){
+            return Collections.emptyList();
+        }
         return dbGateway.batchGetShinryouAttr(shinryouIds);
     }
 
@@ -41,6 +43,12 @@ public class ShinryouAttrController {
     @RequestMapping(value="delete-shinryou-tekiyou", method=RequestMethod.POST)
     public Optional<ShinryouAttrDTO> deleteShinryouTekiyou(@RequestParam("shinryou-id") int shinryouId){
         return dbGateway.deleteShinryouTekiyou(shinryouId);
+    }
+
+    @RequestMapping(value="enter-shinryou-attr", method=RequestMethod.POST)
+    public boolean enterShinryouAttr(@RequestBody() ShinryouAttrDTO shinryouAttr){
+        dbGateway.enterShinryouAttr(shinryouAttr);
+        return true;
     }
 
 }
