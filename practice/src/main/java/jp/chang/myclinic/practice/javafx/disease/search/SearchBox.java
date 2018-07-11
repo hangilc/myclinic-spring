@@ -5,7 +5,7 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.DiseaseExampleDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.SelectableList;

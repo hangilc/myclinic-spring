@@ -13,7 +13,7 @@ import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;

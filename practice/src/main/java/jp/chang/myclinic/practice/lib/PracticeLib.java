@@ -1,17 +1,16 @@
 package jp.chang.myclinic.practice.lib;
 
 import javafx.application.Platform;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.ListSettingDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

@@ -7,8 +7,7 @@ import javafx.scene.layout.HBox;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.ConductDrugDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.practice.Service;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.SearchResult;
 import jp.chang.myclinic.practice.javafx.parts.SearchTextBox;
@@ -16,8 +15,6 @@ import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import jp.chang.myclinic.practice.lib.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class EnterInjectionForm extends WorkForm {
 

@@ -2,7 +2,7 @@ package jp.chang.myclinic.practice.javafx.shinryou;
 
 import javafx.application.Platform;
 import jp.chang.myclinic.dto.ShinryouDTO;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 

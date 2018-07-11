@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice.javafx.parts;
 
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.parts.searchbox.SimpleSearchBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

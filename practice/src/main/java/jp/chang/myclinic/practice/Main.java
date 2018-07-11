@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.javafx.MainPane;
+import jp.chang.myclinic.client.Service;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;

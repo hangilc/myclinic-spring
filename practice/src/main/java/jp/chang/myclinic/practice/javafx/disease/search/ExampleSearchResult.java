@@ -1,19 +1,12 @@
 package jp.chang.myclinic.practice.javafx.disease.search;
 
-import javafx.application.Platform;
 import jp.chang.myclinic.dto.DiseaseExampleDTO;
-import jp.chang.myclinic.practice.Service;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
-import jp.chang.myclinic.practice.javafx.disease.add.DiseaseInput;
-import jp.chang.myclinic.practice.lib.CFUtil;
 import jp.chang.myclinic.practice.lib.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 public class ExampleSearchResult implements DiseaseSearchResultModel {

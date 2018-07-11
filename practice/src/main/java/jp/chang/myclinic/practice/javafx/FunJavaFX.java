@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import jp.chang.myclinic.dto.BatchEnterResultDTO;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.lib.ErrorMessageExtractor;
 import jp.chang.myclinic.practice.lib.shinryou.ShinryouCopier;
 

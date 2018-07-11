@@ -3,7 +3,7 @@ package jp.chang.myclinic.practice.lib.shinryou;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

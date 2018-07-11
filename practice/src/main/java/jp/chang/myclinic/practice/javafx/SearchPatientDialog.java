@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.parts.searchbox.SimpleSearchBox;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import org.slf4j.Logger;
