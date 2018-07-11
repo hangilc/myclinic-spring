@@ -1865,4 +1865,26 @@ public class DbGateway {
                 .map(mapper::toShinryouAttrDTO);
     }
 
+    public ShinryouAttrDTO setShinryouTekiyou(int shinryouId, String tekiyou){
+        ShinryouAttr attr = shinryouAttrRepository.findOneByShinryouId(shinryouId)
+                .orElseGet(() -> new ShinryouAttr(shinryouId, tekiyou, null));
+        attr.setTekiyou(tekiyou);
+        attr = shinryouAttrRepository.save(attr);
+        return mapper.toShinryouAttrDTO(attr);
+    }
+
+    public Optional<ShinryouAttrDTO> deleteShinryouTekiyou(int shinryouId){
+        return shinryouAttrRepository.findOneByShinryouId(shinryouId)
+                .flatMap(shinryouAttr -> {
+                    shinryouAttr.setTekiyou(null);
+                    if( shinryouAttr.isEmpty() ){
+                        shinryouAttrRepository.delete(shinryouAttr);
+                        return Optional.empty();
+                    } else {
+                        shinryouAttrRepository.save(shinryouAttr);
+                        return Optional.of(mapper.toShinryouAttrDTO(shinryouAttr));
+                    }
+                });
+    }
+
 }

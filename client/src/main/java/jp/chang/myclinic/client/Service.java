@@ -842,6 +842,20 @@ public class Service {
         @GET("find-shinryou-attr")
         Call<ShinryouAttrDTO> findShinryouAttrCall(@Query("shinryou-id") int shinryouId);
 
+        @POST("set-shinryou-tekiyou")
+        CompletableFuture<ShinryouAttrDTO> setShinryouTekiyou(@Query("shinryou-id") int shinryouId,
+                                                              @Query("tekiyou") String tekiyou);
+
+        @POST("set-shinryou-tekiyou")
+        Call<ShinryouAttrDTO> setShinryouTekiyouCall(@Query("shinryou-id") int shinryouId,
+                                                              @Query("tekiyou") String tekiyou);
+
+        @POST("delete-shinryou-tekiyou")
+        CompletableFuture<ShinryouAttrDTO> deleteShinryouTekiyou(@Query("shinryou-id") int shinryouId);
+
+        @POST("delete-shinryou-tekiyou")
+        Call<ShinryouAttrDTO> deleteShinryouTekiyouCall(@Query("shinryou-id") int shinryouId);
+
         @GET("search-text-globally")
         CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(@Query("text") String text,
                                                                       @Query("page") int page);

@@ -14,50 +14,52 @@ import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 class RecordShinryou extends StackPane {
 
-    private int shinryouId;
-    private int visitId;
-    private int shinryoucode;
-    private Node disp;
+    private ShinryouFullDTO shinryou;
+    private ShinryouAttrDTO attr;
+    private TextFlow disp;
+    private Text labelText = new Text();
 
     RecordShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
-        this.shinryouId = shinryou.shinryou.shinryouId;
-        this.visitId = shinryou.shinryou.visitId;
-        this.shinryoucode = shinryou.shinryou.shinryoucode;
-        this.disp = createDisp(shinryou, attr);
-        getChildren().add(disp);
+        this.shinryou = shinryou;
+        this.attr = attr;
+        getChildren().add(createDisp());
     }
 
-    private Node createDisp(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
+    private void updateLabelText(){
         String label = shinryou.master.name;
         if( attr != null ){
             if( attr.tekiyou != null ){
                 label += " " + attr.tekiyou;
             }
         }
-        Text text = new Text(label);
+        labelText.setText(label);
+    }
+
+    private Node createDisp(){
+        updateLabelText();
         TextFlow textFlow = new TextFlow();
         textFlow.getStyleClass().add("shinryou-disp");
-        textFlow.setOnMouseClicked(event -> doMouseClick(shinryou));
-        textFlow.getChildren().add(text);
+        textFlow.setOnMouseClicked(event -> doMouseClick(attr));
+        textFlow.getChildren().add(labelText);
         this.disp = textFlow;
-        return textFlow;
+        return disp;
     }
 
     int getShinryouId() {
-        return shinryouId;
+        return shinryou.shinryou.shinryouId;
     }
 
     public int getVisitId() {
-        return visitId;
+        return shinryou.shinryou.visitId;
     }
 
     public int getShinryoucode() {
-        return shinryoucode;
+        return shinryou.shinryou.shinryoucode;
     }
 
-    private void doMouseClick(ShinryouFullDTO shinryou){
-        if( PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を編集しますか？") ){
-            ShinryouEditForm form = new ShinryouEditForm(shinryou){
+    private void doMouseClick(ShinryouAttrDTO attr){
+        if( PracticeUtil.confirmCurrentVisitAction(shinryou.shinryou.visitId, "診療行為を編集しますか？") ){
+            ShinryouEditForm form = new ShinryouEditForm(shinryou, attr){
                 @Override
                 protected void onDelete(ShinryouEditForm form) {
                     Service.api.deleteShinryou(shinryou.shinryou.shinryouId)
@@ -71,6 +73,12 @@ class RecordShinryou extends StackPane {
                 @Override
                 protected void onCancel(ShinryouEditForm form) {
                     showDisp();
+                }
+
+                @Override
+                protected void onAttrModified(ShinryouAttrDTO modified) {
+                    RecordShinryou.this.attr = modified;
+                    updateLabelText();
                 }
             };
             getChildren().clear();

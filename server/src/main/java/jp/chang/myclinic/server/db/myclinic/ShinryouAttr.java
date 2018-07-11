@@ -6,6 +6,16 @@ import javax.persistence.*;
 @Table(name="shinryou_attr")
 public class ShinryouAttr {
 
+    public ShinryouAttr(){
+
+    }
+
+    public ShinryouAttr(int shinryouId, String tekiyou, String shoujouShouki){
+        this.shinryouId = shinryouId;
+        this.tekiyou = tekiyou;
+        this.shoujouShouki = shoujouShouki;
+    }
+
     @Id
     @Column(name="shinryou_id")
     private Integer shinryouId;
@@ -36,6 +46,10 @@ public class ShinryouAttr {
 
     public void setShoujouShouki(String shoujouShouki) {
         this.shoujouShouki = shoujouShouki;
+    }
+
+    public boolean isEmpty(){
+        return tekiyou == null && shoujouShouki == null;
     }
 
     @Override

@@ -3,4 +3,5 @@ create table shinryou_attr (
 	tekiyou text,
 	shoujou_shouki text,
 	foreign key fk_attr_shinryou_id (shinryou_id) references visit_shinryou(shinryou_id)
+	    on delete cascade
 );
