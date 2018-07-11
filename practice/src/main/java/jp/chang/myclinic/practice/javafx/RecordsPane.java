@@ -2,11 +2,10 @@ package jp.chang.myclinic.practice.javafx;
 
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.dto.ConductFullDTO;
-import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.dto.ShinryouFullDTO;
-import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.javafx.events.*;
+
+import java.util.Map;
 
 public class RecordsPane extends VBox {
 
@@ -27,8 +26,8 @@ public class RecordsPane extends VBox {
         addEventHandler(TextEnteredEvent.eventType, this::onTextEntered);
     }
 
-    public void addRecord(VisitFull2DTO visit){
-        Record record = new Record(visit);
+    public void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap){
+        Record record = new Record(visit, shinryouAttrMap);
         getChildren().add(record);
     }
 
@@ -76,7 +75,7 @@ public class RecordsPane extends VBox {
         ShinryouFullDTO shinryou = event.getShinryou();
         Record record = findRecord(shinryou.shinryou.visitId);
         if( record != null ){
-            record.insertShinryou(shinryou);
+            record.insertShinryou(shinryou, event.getAttr());
         }
     }
 

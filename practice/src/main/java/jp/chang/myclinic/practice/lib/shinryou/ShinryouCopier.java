@@ -1,18 +1,16 @@
 package jp.chang.myclinic.practice.lib.shinryou;
 
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.client.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 public class ShinryouCopier {
 
-    private static Logger logger = LoggerFactory.getLogger(ShinryouCopier.class);
+    //private static Logger logger = LoggerFactory.getLogger(ShinryouCopier.class);
 
     private int targetVisitId;
     private List<ShinryouFullDTO> srcList;

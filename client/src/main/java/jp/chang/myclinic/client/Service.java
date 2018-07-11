@@ -836,6 +836,12 @@ public class Service {
         @GET("batch-get-shinryou-attr")
         Call<List<ShinryouAttrDTO>> batchGetShinryouAttrCall(@Query("shinryou-ids") List<Integer> shinryouIds);
 
+        @GET("find-shinryou-attr")
+        CompletableFuture<ShinryouAttrDTO> findShinryouAttr(@Query("shinryou-id") int shinryouId);
+
+        @GET("find-shinryou-attr")
+        Call<ShinryouAttrDTO> findShinryouAttrCall(@Query("shinryou-id") int shinryouId);
+
         @GET("search-text-globally")
         CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(@Query("text") String text,
                                                                       @Query("page") int page);

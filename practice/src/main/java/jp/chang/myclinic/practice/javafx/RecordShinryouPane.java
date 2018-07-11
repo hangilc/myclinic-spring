@@ -2,32 +2,35 @@ package jp.chang.myclinic.practice.javafx;
 
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.shinryou.ShinryouMenu;
 
 import java.util.List;
+import java.util.Map;
 
 class RecordShinryouPane extends VBox {
 
     private VBox shinryouList;
 
-    RecordShinryouPane(List<ShinryouFullDTO> shinryouList, VisitDTO visit){
+    RecordShinryouPane(List<ShinryouFullDTO> shinryouList, VisitDTO visit,
+                       Map<Integer, ShinryouAttrDTO> shinryouAttrMap){
         getChildren().addAll(
                 createMenu(visit),
                 createShinryouList()
         );
-        shinryouList.forEach(this::addShinryou);
+        shinryouList.forEach(s -> addShinryou(s, shinryouAttrMap.get(s.shinryou.shinryouId)));
     }
 
-    private void addShinryou(ShinryouFullDTO shinryou){
-        shinryouList.getChildren().add(new RecordShinryou(shinryou));
+    private void addShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
+        shinryouList.getChildren().add(new RecordShinryou(shinryou, attr));
     }
 
-    public void insertShinryou(ShinryouFullDTO shinryou){
+    public void insertShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
         int i = 0;
         int shinryoucode = shinryou.shinryou.shinryoucode;
-        RecordShinryou newRecordShinryou = new RecordShinryou(shinryou);
+        RecordShinryou newRecordShinryou = new RecordShinryou(shinryou, attr);
         for(Node node: shinryouList.getChildren()){
             if( node instanceof RecordShinryou ){
                 RecordShinryou r = (RecordShinryou)node;

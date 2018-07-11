@@ -5,8 +5,9 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.ShinryouAttrDTO;
+import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.practice.javafx.events.ShinryouDeletedEvent;
 import jp.chang.myclinic.practice.javafx.shinryou.ShinryouEditForm;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
@@ -18,7 +19,7 @@ class RecordShinryou extends StackPane {
     private int shinryoucode;
     private Node disp;
 
-    RecordShinryou(ShinryouFullDTO shinryou){
+    RecordShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
         this.shinryouId = shinryou.shinryou.shinryouId;
         this.visitId = shinryou.shinryou.visitId;
         this.shinryoucode = shinryou.shinryou.shinryoucode;

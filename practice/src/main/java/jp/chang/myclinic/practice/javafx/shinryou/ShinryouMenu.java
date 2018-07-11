@@ -9,11 +9,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.dto.ConductFullDTO;
-import jp.chang.myclinic.dto.ShinryouDTO;
-import jp.chang.myclinic.dto.ShinryouFullDTO;
-import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
@@ -118,8 +115,8 @@ public class ShinryouMenu extends VBox {
         }
     }
 
-    private void fireShinryouEnteredEvent(ShinryouFullDTO shinryou) {
-        fireEvent(new ShinryouEnteredEvent(shinryou));
+    private void fireShinryouEnteredEvent(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
+        fireEvent(new ShinryouEnteredEvent(shinryou, attr));
     }
 
     private void fireShinryouDeletedEvent(ShinryouDTO shinryou){
@@ -135,10 +132,11 @@ public class ShinryouMenu extends VBox {
             AddKensaForm form = new AddKensaForm() {
                 @Override
                 protected void onEnter(List<String> selected) {
-                    FunJavaFX.batchEnterShinryouByNames(visitId, selected, (shinryouList, conductList) -> {
+                    FunJavaFX.batchEnterShinryouByNames(visitId, selected, result -> {
                         Platform.runLater(() -> {
-                            shinryouList.forEach(shinryou -> fireShinryouEnteredEvent(shinryou));
-                            conductList.forEach(conduct -> fireConductEnteredEvent(conduct));
+                            result.shinryouList.forEach(shinryou ->
+                                    fireShinryouEnteredEvent(shinryou, result.attrMap.get(shinryou.shinryou.shinryouId)));
+                            result.conducts.forEach(conduct -> fireConductEnteredEvent(conduct));
                             hideWorkarea();
                         });
                     });

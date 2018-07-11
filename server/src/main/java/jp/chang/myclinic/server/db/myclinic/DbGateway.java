@@ -1860,4 +1860,9 @@ public class DbGateway {
         }
     }
 
+    public Optional<ShinryouAttrDTO> findShinryouAttr(int shinryouId){
+        return shinryouAttrRepository.findOneByShinryouId(shinryouId)
+                .map(mapper::toShinryouAttrDTO);
+    }
+
 }

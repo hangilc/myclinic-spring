@@ -11,11 +11,12 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.events.EventTypes;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.javafx.globalsearch.GlobalSearchDialog;
@@ -28,7 +29,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MainPane extends BorderPane {
@@ -270,7 +273,13 @@ public class MainPane extends BorderPane {
             if (newValue != null) {
                 List<Integer> shinryouIds = newValue.stream().flatMap(v -> v.shinryouList.stream())
                         .map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
-                newValue.forEach(recordsPane::addRecord);
+                Service.api.batchGetShinryouAttr(shinryouIds)
+                        .thenAccept(attrList -> {
+                            Map<Integer, ShinryouAttrDTO> shinryouAttrMap = new HashMap<>();
+                            attrList.forEach(attr -> shinryouAttrMap.put(attr.shinryouId, attr));
+                            Platform.runLater(() -> newValue.forEach(v -> recordsPane.addRecord(v, shinryouAttrMap)));
+                        })
+                        .exceptionally(HandlerFX::exceptionally);
             }
         });
         sp.setContent(recordsPane);

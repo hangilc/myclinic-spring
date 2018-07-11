@@ -12,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.ConductFullDTO;
+import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
@@ -31,7 +32,7 @@ class AddRegularForm extends VBox {
     private CheckBox shohouryouCheckBox;
     private CheckBox kouhatsuKasanCheckBox;
 
-    AddRegularForm(int visitId){
+    AddRegularForm(int visitId) {
         super(4);
         this.visitId = visitId;
         getStyleClass().add("form");
@@ -40,7 +41,7 @@ class AddRegularForm extends VBox {
                 createInputs(),
                 createCommands()
         );
-        if( getKouhatsuKasan() != null ) {
+        if (getKouhatsuKasan() != null) {
             if (shohouryouCheckBox != null && kouhatsuKasanCheckBox != null) {
                 shohouryouCheckBox.selectedProperty().addListener((obs, oldValue, newValue) -> {
                     kouhatsuKasanCheckBox.setSelected(newValue);
@@ -49,15 +50,15 @@ class AddRegularForm extends VBox {
         }
     }
 
-    private String getKouhatsuKasan(){
+    private String getKouhatsuKasan() {
         String kasan = PracticeEnv.INSTANCE.getKouhatsuKasan();
-        if( kasan != null && kasan.isEmpty() ){
+        if (kasan != null && kasan.isEmpty()) {
             kasan = null;
         }
         return kasan;
     }
 
-    private Node createInputs(){
+    private Node createInputs() {
         VBox vbox = new VBox(4);
         vbox.getChildren().addAll(
                 createTwoColumn(),
@@ -66,7 +67,7 @@ class AddRegularForm extends VBox {
         return vbox;
     }
 
-    private Node createTwoColumn(){
+    private Node createTwoColumn() {
         HBox hbox = new HBox(0);
         VBox left = new VBox(2);
         VBox right = new VBox(2);
@@ -81,10 +82,10 @@ class AddRegularForm extends VBox {
         return hbox;
     }
 
-    private void setupItems(Pane pane, String[] items){
+    private void setupItems(Pane pane, String[] items) {
         String kouhatsu = getKouhatsuKasan();
-        for(String item: items) {
-            if( item == null ){
+        for (String item : items) {
+            if (item == null) {
                 continue;
             }
             if (item.equals("-")) {
@@ -94,18 +95,18 @@ class AddRegularForm extends VBox {
                 check.setWrapText(true);
                 checks.add(check);
                 pane.getChildren().add(check);
-                if( item.equals("処方料") ){
+                if (item.equals("処方料")) {
                     shohouryouCheckBox = check;
-                } else if( item.equals(kouhatsu) ){
+                } else if (item.equals(kouhatsu)) {
                     kouhatsuKasanCheckBox = check;
                 }
             }
         }
     }
 
-    private Node createBottom(){
+    private Node createBottom() {
         FlowPane pane = new FlowPane(4, 4);
-        for(String item: RegularShinryou.getBottomItems()){
+        for (String item : RegularShinryou.getBottomItems()) {
             CheckBox check = new CheckBox(item);
             checks.add(check);
             pane.getChildren().add(check);
@@ -113,7 +114,7 @@ class AddRegularForm extends VBox {
         return pane;
     }
 
-    private Node createCommands(){
+    private Node createCommands() {
         HBox hbox = new HBox(4);
         Button enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
@@ -123,31 +124,31 @@ class AddRegularForm extends VBox {
         return hbox;
     }
 
-    void onEntered(AddRegularForm form){
+    void onEntered(AddRegularForm form) {
 
     }
 
-    private void doEnter(){
+    private void doEnter() {
         List<String> selected = checks.stream().filter(CheckBox::isSelected).map(CheckBox::getText)
                 .collect(Collectors.toList());
-        FunJavaFX.batchEnterShinryouByNames(visitId, selected, (shinryouList, conductList) -> {
+        FunJavaFX.batchEnterShinryouByNames(visitId, selected, result-> {
             Platform.runLater(() -> {
-                shinryouList.forEach(this::fireShinryouEnteredEvent);
-                conductList.forEach(this::fireConductEnteredEvent);
+                result.shinryouList.forEach(s -> fireShinryouEnteredEvent(s, result.attrMap.get(s.shinryou.shinryouId)));
+                result.conducts.forEach(this::fireConductEnteredEvent);
                 onEntered(AddRegularForm.this);
             });
         });
     }
 
-    private void fireShinryouEnteredEvent(ShinryouFullDTO shinryou){
-        fireEvent(new ShinryouEnteredEvent(shinryou));
+    private void fireShinryouEnteredEvent(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
+        fireEvent(new ShinryouEnteredEvent(shinryou, attr));
     }
 
-    private void fireConductEnteredEvent(ConductFullDTO conduct){
+    private void fireConductEnteredEvent(ConductFullDTO conduct) {
         fireEvent(new ConductEnteredEvent(conduct));
     }
 
-    void onCancel(){
+    void onCancel() {
 
     }
 
