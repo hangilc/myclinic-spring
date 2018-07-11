@@ -1,11 +1,13 @@
 package jp.chang.myclinic.practice.lib.shinryou;
 
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class ShinryouCopier {
@@ -14,12 +16,13 @@ public class ShinryouCopier {
 
     private int targetVisitId;
     private List<ShinryouFullDTO> srcList;
-    private Consumer<ShinryouFullDTO> onEnterCallback;
+    private BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> onEnterCallback;
     private Consumer<Throwable> errorCallback;
     private Runnable finishedCallback;
     private VisitDTO targetVisit;
 
-    public ShinryouCopier(int targetVisitId, List<ShinryouFullDTO> srcList, Consumer<ShinryouFullDTO> cb,
+    public ShinryouCopier(int targetVisitId, List<ShinryouFullDTO> srcList,
+                          BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> cb,
                           Consumer<Throwable> errorHandler, Runnable finishedCallback){
         this.targetVisitId = targetVisitId;
         this.srcList = srcList;
@@ -55,10 +58,18 @@ public class ShinryouCopier {
                             iterate();
                         } else {
                             ShinryouDTO dst = composeShinryou(src.shinryou, shinryoucode);
+                            class Local {
+                                private ShinryouFullDTO entered;
+                            }
+                            Local local = new Local();
                             Service.api.enterShinryou(dst)
                                     .thenCompose(Service.api::getShinryouFull)
-                                    .thenAccept(entered -> {
-                                        onEnterCallback.accept(entered);
+                                    .thenCompose(entered -> {
+                                        local.entered = entered;
+                                        return Service.api.findShinryouAttr(entered.shinryou.shinryouId);
+                                    })
+                                    .thenAccept(attr -> {
+                                        onEnterCallback.accept(local.entered, attr);
                                         iterate();
                                     })
                                     .exceptionally(ex -> {

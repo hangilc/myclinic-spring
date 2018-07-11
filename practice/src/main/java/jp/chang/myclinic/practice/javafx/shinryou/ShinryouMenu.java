@@ -20,8 +20,11 @@ import jp.chang.myclinic.practice.lib.CFUtil;
 import jp.chang.myclinic.practice.lib.PracticeAPI;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class ShinryouMenu extends VBox {
 
@@ -119,7 +122,7 @@ public class ShinryouMenu extends VBox {
         fireEvent(new ShinryouEnteredEvent(shinryou, attr));
     }
 
-    private void fireShinryouDeletedEvent(ShinryouDTO shinryou){
+    private void fireShinryouDeletedEvent(ShinryouDTO shinryou) {
         fireEvent(new ShinryouDeletedEvent(shinryou));
     }
 
@@ -170,8 +173,8 @@ public class ShinryouMenu extends VBox {
             Service.api.listShinryouFull(visitId)
                     .thenAccept(srcList -> {
                         FunJavaFX.batchCopyShinryou(targetVisitId, srcList,
-                                entered -> {
-                                    Platform.runLater(() -> fireShinryouEnteredEvent(entered));
+                                (entered, attr) -> {
+                                    Platform.runLater(() -> fireShinryouEnteredEvent(entered, attr));
                                 },
                                 () -> {
                                 });
@@ -188,11 +191,27 @@ public class ShinryouMenu extends VBox {
                             CopySelectedForm form = new CopySelectedForm(shinryouList) {
                                 @Override
                                 protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection) {
+                                    class Local {
+                                        private List<ShinryouFullDTO> entered;
+                                    }
+                                    Local local = new Local();
                                     PracticeAPI.batchCopyShinryou(targetVisitId, selection)
-                                            .thenAccept(entered -> Platform.runLater(() -> {
-                                                entered.forEach(e -> fireShinryouEnteredEvent(e));
-                                                hideWorkarea();
-                                            }))
+                                            .thenCompose(entered -> {
+                                                local.entered = entered;
+                                                List<Integer> shinryouIds = entered.stream()
+                                                        .map(s -> s.shinryou.shinryouId)
+                                                        .collect(Collectors.toList());
+                                                return Service.api.batchGetShinryouAttr(shinryouIds);
+                                            })
+                                            .thenAccept(attrList -> {
+                                                Map<Integer, ShinryouAttrDTO> attrMap = new HashMap<>();
+                                                attrList.forEach(attr -> attrMap.put(attr.shinryouId, attr));
+                                                Platform.runLater(() -> {
+                                                    local.entered.forEach(e ->
+                                                            fireShinryouEnteredEvent(e, attrMap.get(e.shinryou.shinryouId)));
+                                                    hideWorkarea();
+                                                });
+                                            })
                                             .exceptionally(HandlerFX::exceptionally);
                                 }
 
@@ -201,7 +220,9 @@ public class ShinryouMenu extends VBox {
                                     hideWorkarea();
                                 }
                             };
-                            Platform.runLater(() -> showWorkarea(form));
+                            Platform.runLater(() ->
+
+                                    showWorkarea(form));
                         })
                         .exceptionally(HandlerFX::exceptionally);
             }
@@ -214,7 +235,7 @@ public class ShinryouMenu extends VBox {
                 Service.api.listShinryouFull(visitId)
                         .thenAccept(shinryouList -> {
                             DeleteSelectedForm form = new DeleteSelectedForm(shinryouList) {
-                                private CompletableFuture<Void> deleteShinryou(ShinryouFullDTO shinryou){
+                                private CompletableFuture<Void> deleteShinryou(ShinryouFullDTO shinryou) {
                                     return Service.api.deleteShinryou(shinryou.shinryou.shinryouId)
                                             .thenAccept(result -> Platform.runLater(() ->
                                                     fireShinryouDeletedEvent(shinryou.shinryou)));
@@ -241,7 +262,7 @@ public class ShinryouMenu extends VBox {
 
     private void doDeleteDuplicate() {
         Service.api.deleteDuplicateShinryou(visitId)
-                .thenAccept(shinryouIds -> Platform.runLater(() ->{
+                .thenAccept(shinryouIds -> Platform.runLater(() -> {
                     shinryouIds.forEach(shinryouId -> {
                         ShinryouDeletedEvent e = new ShinryouDeletedEvent(visitId, shinryouId);
                         ShinryouMenu.this.fireEvent(e);

@@ -23,12 +23,17 @@ class RecordShinryou extends StackPane {
         this.shinryouId = shinryou.shinryou.shinryouId;
         this.visitId = shinryou.shinryou.visitId;
         this.shinryoucode = shinryou.shinryou.shinryoucode;
-        this.disp = createDisp(shinryou);
+        this.disp = createDisp(shinryou, attr);
         getChildren().add(disp);
     }
 
-    private Node createDisp(ShinryouFullDTO shinryou){
+    private Node createDisp(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
         String label = shinryou.master.name;
+        if( attr != null ){
+            if( attr.tekiyou != null ){
+                label += " " + attr.tekiyou;
+            }
+        }
         Text text = new Text(label);
         TextFlow textFlow = new TextFlow();
         textFlow.getStyleClass().add("shinryou-disp");

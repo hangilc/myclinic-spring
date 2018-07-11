@@ -12,19 +12,21 @@ import jp.chang.myclinic.practice.lib.shinryou.ShinryouCopier;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class FunJavaFX {
 
-    public static Consumer<Throwable> createErrorHandler(){
+    public static Consumer<Throwable> createErrorHandler() {
         return (Throwable th) -> {
             String message = ErrorMessageExtractor.extract(th);
             Platform.runLater(() -> GuiUtil.alertError(message));
         };
     }
 
-    public static void batchCopyShinryou(int targetVisitId, List<ShinryouFullDTO> srcList, Consumer<ShinryouFullDTO> onEntered,
-                                  Runnable onEnd){
+    public static void batchCopyShinryou(int targetVisitId, List<ShinryouFullDTO> srcList,
+                                         BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> onEntered,
+                                         Runnable onEnd) {
         ShinryouCopier copier = new ShinryouCopier(targetVisitId, srcList, onEntered, createErrorHandler(), onEnd);
         copier.start();
     }
@@ -36,7 +38,7 @@ public class FunJavaFX {
     }
 
     public static void batchEnterShinryouByNames(int visitId, List<String> names,
-                                                 Consumer<BatchEnteredShinryou> cb){
+                                                 Consumer<BatchEnteredShinryou> cb) {
         class Local {
             private BatchEnterResultDTO enterResult;
             private List<ShinryouFullDTO> shinryouList;
