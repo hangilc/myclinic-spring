@@ -23,7 +23,7 @@ public class ShinryouAttrController {
     @RequestMapping(value="batch-get-shinryou-attr", method=RequestMethod.GET)
     public List<ShinryouAttrDTO> batchGetShinryouAttr(
             @RequestParam(value="shinryou-ids", required=false) List<Integer> shinryouIds){
-        if( shinryouIds == null ){
+        if( shinryouIds == null || shinryouIds.size() == 0 ){
             return Collections.emptyList();
         }
         return dbGateway.batchGetShinryouAttr(shinryouIds);
