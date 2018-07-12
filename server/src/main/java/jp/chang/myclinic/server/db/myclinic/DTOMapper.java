@@ -612,7 +612,6 @@ public class DTOMapper {
 		ShinryouAttrDTO dto = new ShinryouAttrDTO();
 		dto.shinryouId = row.getShinryouId();
 		dto.tekiyou = row.getTekiyou();
-		dto.shoujouShouki = row.getShoujouShouki();
 		return dto;
 	}
 
@@ -620,7 +619,6 @@ public class DTOMapper {
 		ShinryouAttr row = new ShinryouAttr();
 		row.setShinryouId(dto.shinryouId);
 		row.setTekiyou(dto.tekiyou);
-		row.setShoujouShouki(dto.shoujouShouki);
 		return row;
 	}
 

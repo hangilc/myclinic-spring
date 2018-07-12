@@ -4,13 +4,11 @@ public class ShinryouAttrDTO {
 
     public int shinryouId;
     public String tekiyou;
-    public String shoujouShouki;
 
     public static ShinryouAttrDTO copy(ShinryouAttrDTO src){
         ShinryouAttrDTO dst = new ShinryouAttrDTO();
         dst.shinryouId = src.shinryouId;
         dst.tekiyou = src.tekiyou;
-        dst.shoujouShouki = src.shoujouShouki;
         return dst;
     }
 
@@ -19,7 +17,6 @@ public class ShinryouAttrDTO {
         return "ShinryouAttrDTO{" +
                 "shinryouId=" + shinryouId +
                 ", tekiyou='" + tekiyou + '\'' +
-                ", shoujouShouki='" + shoujouShouki + '\'' +
                 '}';
     }
 }

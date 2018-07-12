@@ -1867,7 +1867,7 @@ public class DbGateway {
 
     public ShinryouAttrDTO setShinryouTekiyou(int shinryouId, String tekiyou){
         ShinryouAttr attr = shinryouAttrRepository.findOneByShinryouId(shinryouId)
-                .orElseGet(() -> new ShinryouAttr(shinryouId, tekiyou, null));
+                .orElseGet(() -> new ShinryouAttr(shinryouId, tekiyou));
         attr.setTekiyou(tekiyou);
         attr = shinryouAttrRepository.save(attr);
         return mapper.toShinryouAttrDTO(attr);

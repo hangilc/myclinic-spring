@@ -349,9 +349,6 @@ class Data {
                 if( attr.tekiyou != null ){
                     xml.element("摘要", attr.tekiyou);
                 }
-                if( attr.shoujouShouki != null ){
-                    xml.element("症状詳記", attr.shoujouShouki);
-                }
             }
         });
     }
