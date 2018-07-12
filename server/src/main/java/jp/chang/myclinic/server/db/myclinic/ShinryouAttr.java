@@ -13,7 +13,6 @@ public class ShinryouAttr {
     public ShinryouAttr(int shinryouId, String tekiyou, String shoujouShouki){
         this.shinryouId = shinryouId;
         this.tekiyou = tekiyou;
-        this.shoujouShouki = shoujouShouki;
     }
 
     @Id
@@ -21,8 +20,6 @@ public class ShinryouAttr {
     private Integer shinryouId;
 
     private String tekiyou;
-    @Column(name="shoujou_shouki")
-    private String shoujouShouki;
 
     public Integer getShinryouId() {
         return shinryouId;
@@ -40,16 +37,8 @@ public class ShinryouAttr {
         this.tekiyou = tekiyou;
     }
 
-    public String getShoujouShouki() {
-        return shoujouShouki;
-    }
-
-    public void setShoujouShouki(String shoujouShouki) {
-        this.shoujouShouki = shoujouShouki;
-    }
-
     public boolean isEmpty(){
-        return tekiyou == null && shoujouShouki == null;
+        return tekiyou == null;
     }
 
     @Override
@@ -57,7 +46,6 @@ public class ShinryouAttr {
         return "ShinryouAttr{" +
                 "shinryouId=" + shinryouId +
                 ", tekiyou='" + tekiyou + '\'' +
-                ", shoujouShouki='" + shoujouShouki + '\'' +
                 '}';
     }
 }

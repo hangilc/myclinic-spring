@@ -67,7 +67,7 @@ public class FunJavaFX {
                     arg.shinryouList = local.shinryouList;
                     arg.conducts = local.conducts;
                     arg.attrMap = attrMap;
-                    cb.accept(arg);
+                    Platform.runLater(() -> cb.accept(arg));
                 })
                 .exceptionally(ex -> {
                     FunJavaFX.createErrorHandler().accept(ex);

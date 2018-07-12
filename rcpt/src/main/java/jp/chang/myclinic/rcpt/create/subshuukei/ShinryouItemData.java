@@ -15,7 +15,6 @@ class ShinryouItemData {
     ShinryouItemData(Shinryou shinryou) {
         this.name = shinryou.getName();
         this.tekiyou = shinryou.getTekiyou();
-        this.shoujouShouki = shinryou.getShoujouShouki();
     }
 
     public String getName() {
