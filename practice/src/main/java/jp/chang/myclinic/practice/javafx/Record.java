@@ -56,8 +56,8 @@ public class Record extends VBox {
         return hbox;
     }
 
-    public void addDrug(DrugFullDTO drug){
-        drugsPane.addDrug(drug);
+    public void addDrug(DrugFullDTO drug, DrugAttrDTO attr){
+        drugsPane.addDrug(drug, attr);
     }
 
     public void modifyDrugDays(int drugId, int days) {

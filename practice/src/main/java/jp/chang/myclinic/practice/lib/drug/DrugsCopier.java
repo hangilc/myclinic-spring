@@ -1,11 +1,15 @@
 package jp.chang.myclinic.practice.lib.drug;
 
 import javafx.application.Platform;
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.lib.PracticeService;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class DrugsCopier {
@@ -31,6 +35,11 @@ public class DrugsCopier {
             Platform.runLater(cb);
         } else {
             DrugFullDTO srcDrug = drugs.get(0);
+            class Local {
+                private int enteredDrugId;
+                private DrugAttrDTO dstAttr;
+            }
+            Local local = new Local();
             PracticeService.resolveIyakuhinMaster(srcDrug, targetVisitedAt)
                     .thenCompose(master -> {
                         DrugDTO newDrug = DrugDTO.copy(srcDrug.drug);
@@ -40,11 +49,28 @@ public class DrugsCopier {
                         newDrug.prescribed = 0;
                         return PracticeService.enterDrug(newDrug);
                     })
+                    .thenCompose(enteredDrugId -> {
+                        local.enteredDrugId = enteredDrugId;
+                        return Service.api.findDrugAttr(srcDrug.drug.drugId);
+                    })
+                    .thenCompose(srcAttr -> {
+                        if( srcAttr != null ) {
+                            DrugAttrDTO dstAttr = DrugAttrDTO.copy(srcAttr);
+                            dstAttr.drugId = local.enteredDrugId;
+                            return Service.api.enterDrugAttr(dstAttr);
+                        } else {
+                            return CompletableFuture.completedFuture(true);
+                        }
+                    })
+                    .thenCompose(ok -> {
+                        
+                    })
                     .thenCompose(PracticeService::getDrugFull)
                     .thenAccept(newDrugFull -> {
                         Platform.runLater(() -> drugEnteredCallback.accept(newDrugFull));
                         doCopy(drugs.subList(1, drugs.size()));
-                    });
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
         }
     }
 }

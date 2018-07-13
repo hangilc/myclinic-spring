@@ -15,7 +15,7 @@ public class RecordsPane extends VBox {
             deleteRecord(event.getVisitId());
         });
         addEventHandler(EventTypes.drugEnteredEventType, event -> {
-            addDrug(event.getEnteredDrug());
+            addDrug(event.getEnteredDrug(), event.getAttr());
         });
         addEventHandler(EventTypes.drugDaysModifiedEventType, this::drugDaysModified);
         addEventHandler(EventTypes.drugDeletedEventType, this::drugDeleted);
@@ -51,10 +51,10 @@ public class RecordsPane extends VBox {
         return null;
     }
 
-    private void addDrug(DrugFullDTO drug){
+    private void addDrug(DrugFullDTO drug, DrugAttrDTO attr){
         Record record = findRecord(drug.drug.visitId);
         if( record != null ){
-            record.addDrug(drug);
+            record.addDrug(drug, attr);
         }
     }
 
