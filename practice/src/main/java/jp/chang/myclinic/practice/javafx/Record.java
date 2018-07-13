@@ -15,9 +15,10 @@ public class Record extends VBox {
     private RecordShinryouPane shinryouPane;
     private RecordConductsPane conductsPane;
 
-    public Record(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap){
+    public Record(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
+                  Map<Integer, DrugAttrDTO> drugAttrMap){
         this.visitId = visit.visit.visitId;
-        getChildren().addAll(createTitle(visit.visit), createBody(visit, shinryouAttrMap));
+        getChildren().addAll(createTitle(visit.visit), createBody(visit, shinryouAttrMap, drugAttrMap));
         setPrefWidth(400);
     }
 
@@ -30,7 +31,8 @@ public class Record extends VBox {
         return recordTitle;
     }
 
-    private Node createBody(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap){
+    private Node createBody(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
+                            Map<Integer, DrugAttrDTO> drugAttrMap){
         HBox hbox = new HBox();
         VBox left = new VBox();
         VBox right = new VBox();
@@ -41,7 +43,7 @@ public class Record extends VBox {
         hbox.getChildren().addAll(left, right);
         textPane = new RecordTextsPane(visit.texts, visit.visit.visitId);
         left.getChildren().add(textPane);
-        drugsPane = new RecordDrugsPane(visit.drugs, visit.visit);
+        drugsPane = new RecordDrugsPane(visit.drugs, visit.visit, drugAttrMap);
         shinryouPane = new RecordShinryouPane(visit.shinryouList, visit.visit, shinryouAttrMap);
         conductsPane = new RecordConductsPane(visit.conducts, visit.visit.visitId, visit.visit.visitedAt);
         right.getChildren().addAll(

@@ -6,6 +6,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
@@ -24,7 +25,7 @@ class RecordDrug extends StackPane {
     private int index;
     private TextFlow disp = new TextFlow();
 
-    RecordDrug(DrugFullDTO drug, VisitDTO visit, int index){
+    RecordDrug(DrugFullDTO drug, VisitDTO visit, int index, DrugAttrDTO attr){
         this.drug = drug;
         this.visit = visit;
         this.index = index;

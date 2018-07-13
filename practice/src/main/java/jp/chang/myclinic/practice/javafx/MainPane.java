@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
+import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
@@ -273,11 +274,25 @@ public class MainPane extends BorderPane {
             if (newValue != null) {
                 List<Integer> shinryouIds = newValue.stream().flatMap(v -> v.shinryouList.stream())
                         .map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
+                List<Integer> drugIds = newValue.stream().flatMap(v -> v.drugs.stream())
+                        .map(d -> d.drug.drugId).collect(Collectors.toList());
+                class Local {
+                    private Map<Integer, ShinryouAttrDTO> shinryouAttrMap;
+                }
+                Local local = new Local();
                 Service.api.batchGetShinryouAttr(shinryouIds)
-                        .thenAccept(attrList -> {
+                        .thenCompose(attrList -> {
                             Map<Integer, ShinryouAttrDTO> shinryouAttrMap = new HashMap<>();
                             attrList.forEach(attr -> shinryouAttrMap.put(attr.shinryouId, attr));
-                            Platform.runLater(() -> newValue.forEach(v -> recordsPane.addRecord(v, shinryouAttrMap)));
+                            local.shinryouAttrMap = shinryouAttrMap;
+                            return Service.api.batchGetDrugAttr(drugIds);
+                        })
+                        .thenAccept(attrList -> {
+                            Map<Integer, DrugAttrDTO> drugAttrMap = new HashMap<>();
+                            attrList.forEach(attr -> drugAttrMap.put(attr.drugId, attr));
+                            Platform.runLater(() ->
+                                    newValue.forEach(v -> recordsPane.addRecord(v, local.shinryouAttrMap,
+                                            drugAttrMap)));
                         })
                         .exceptionally(HandlerFX::exceptionally);
             }

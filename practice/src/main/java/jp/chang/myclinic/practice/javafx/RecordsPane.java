@@ -26,8 +26,9 @@ public class RecordsPane extends VBox {
         addEventHandler(TextEnteredEvent.eventType, this::onTextEntered);
     }
 
-    public void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap){
-        Record record = new Record(visit, shinryouAttrMap);
+    public void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
+                          Map<Integer, DrugAttrDTO> drugAttrMap){
+        Record record = new Record(visit, shinryouAttrMap, drugAttrMap);
         getChildren().add(record);
     }
 

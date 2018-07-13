@@ -863,7 +863,7 @@ public class Service {
         Call<Boolean> enterShinryouAttrCall(@Body() ShinryouAttrDTO attr);
 
         @GET("batch-get-drug-attr")
-        CompletableFuture<List<ShinryouAttrDTO>> batchGetDrugAttr(@Query("drug-ids") List<Integer> drugIds);
+        CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(@Query("drug-ids") List<Integer> drugIds);
 
         @GET("batch-get-drug-attr")
         Call<List<DrugAttrDTO>> batchGetDrugAttrCall(@Query("drug-ids") List<Integer> drugIds);
