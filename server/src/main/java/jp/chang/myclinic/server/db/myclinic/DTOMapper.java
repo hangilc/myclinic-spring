@@ -622,6 +622,20 @@ public class DTOMapper {
 		return row;
 	}
 
+	public DrugAttrDTO toDrugAttrDTO(DrugAttr row){
+		DrugAttrDTO dto = new DrugAttrDTO();
+		dto.drugId = row.getDrugId();
+		dto.tekiyou = row.getTekiyou();
+		return dto;
+	}
+
+	public DrugAttr fromDrugAttrDTO(DrugAttrDTO dto){
+		DrugAttr row = new DrugAttr();
+		row.setDrugId(dto.drugId);
+		row.setTekiyou(dto.tekiyou);
+		return row;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;

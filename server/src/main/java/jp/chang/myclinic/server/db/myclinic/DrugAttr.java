@@ -41,4 +41,16 @@ public class DrugAttr {
     public void setTekiyou(String tekiyou) {
         this.tekiyou = tekiyou;
     }
+
+    public boolean isEmpty(){
+        return tekiyou == null;
+    }
+
+    @Override
+    public String toString() {
+        return "DrugAttr{" +
+                "drugId=" + drugId +
+                ", tekiyou='" + tekiyou + '\'' +
+                '}';
+    }
 }

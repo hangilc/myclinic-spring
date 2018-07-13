@@ -862,6 +862,38 @@ public class Service {
         @POST("enter-shinryou-attr")
         Call<Boolean> enterShinryouAttrCall(@Body() ShinryouAttrDTO attr);
 
+        @GET("batch-get-drug-attr")
+        CompletableFuture<List<ShinryouAttrDTO>> batchGetDrugAttr(@Query("drug-ids") List<Integer> drugIds);
+
+        @GET("batch-get-drug-attr")
+        Call<List<DrugAttrDTO>> batchGetDrugAttrCall(@Query("drug-ids") List<Integer> drugIds);
+
+        @GET("find-drug-attr")
+        CompletableFuture<DrugAttrDTO> findDrugAttr(@Query("drug-id") int drugId);
+
+        @GET("find-drug-attr")
+        Call<DrugAttrDTO> findDrugAttrCall(@Query("drug-id") int drugId);
+
+        @POST("set-drug-tekiyou")
+        CompletableFuture<DrugAttrDTO> setDrugTekiyou(@Query("drug-id") int drugId,
+                                                              @Query("tekiyou") String tekiyou);
+
+        @POST("set-drug-tekiyou")
+        Call<DrugAttrDTO> setDrugTekiyouCall(@Query("drug-id") int drugId,
+                                                              @Query("tekiyou") String tekiyou);
+
+        @POST("delete-drug-tekiyou")
+        CompletableFuture<DrugAttrDTO> deleteDrugTekiyou(@Query("drug-id") int drugId);
+
+        @POST("delete-drug-tekiyou")
+        Call<DrugAttrDTO> deleteDrugTekiyouCall(@Query("drug-id") int drugId);
+
+        @POST("enter-drug-attr")
+        CompletableFuture<Boolean> enterDrugAttr(@Body() DrugAttrDTO attr);
+
+        @POST("enter-drug-attr")
+        Call<Boolean> enterDrugAttrCall(@Body() DrugAttrDTO attr);
+
         @GET("search-text-globally")
         CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(@Query("text") String text,
                                                                       @Query("page") int page);
