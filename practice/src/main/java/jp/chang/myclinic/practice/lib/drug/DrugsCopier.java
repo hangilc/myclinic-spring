@@ -10,16 +10,17 @@ import jp.chang.myclinic.practice.lib.PracticeService;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class DrugsCopier {
 
     private int targetVisitId;
     private String targetVisitedAt;
-    private Consumer<DrugFullDTO> drugEnteredCallback;
+    private BiConsumer<DrugFullDTO, DrugAttrDTO> drugEnteredCallback;
     private Runnable cb;
 
-    public DrugsCopier(int targetVisitId, List<DrugFullDTO> drugs, Consumer<DrugFullDTO> drugEnteredCallback, Runnable cb){
+    public DrugsCopier(int targetVisitId, List<DrugFullDTO> drugs,
+                       BiConsumer<DrugFullDTO, DrugAttrDTO> drugEnteredCallback, Runnable cb){
         this.targetVisitId = targetVisitId;
         this.drugEnteredCallback = drugEnteredCallback;
         this.cb = cb;
@@ -57,17 +58,15 @@ public class DrugsCopier {
                         if( srcAttr != null ) {
                             DrugAttrDTO dstAttr = DrugAttrDTO.copy(srcAttr);
                             dstAttr.drugId = local.enteredDrugId;
+                            local.dstAttr = dstAttr;
                             return Service.api.enterDrugAttr(dstAttr);
                         } else {
                             return CompletableFuture.completedFuture(true);
                         }
                     })
-                    .thenCompose(ok -> {
-                        
-                    })
-                    .thenCompose(PracticeService::getDrugFull)
+                    .thenCompose(ok -> PracticeService.getDrugFull(local.enteredDrugId))
                     .thenAccept(newDrugFull -> {
-                        Platform.runLater(() -> drugEnteredCallback.accept(newDrugFull));
+                        Platform.runLater(() -> drugEnteredCallback.accept(newDrugFull, local.dstAttr));
                         doCopy(drugs.subList(1, drugs.size()));
                     })
                     .exceptionally(HandlerFX::exceptionally);

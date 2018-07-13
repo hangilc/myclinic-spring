@@ -1,13 +1,13 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
-import javafx.application.Platform;
 import javafx.scene.control.CheckBox;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
-import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.drug.DrugFormHelper;
 import jp.chang.myclinic.practice.lib.drug.DrugInputConstraints;
 
@@ -49,12 +49,13 @@ class DrugEnterForm extends DrugForm {
             if( errors.size() > 0 ){
                 GuiUtil.alertError(String.join("\n", errors));
             } else {
-                PracticeService.enterDrug(drug)
-                        .thenCompose(PracticeService::getDrugFull)
-                        .thenAccept(drugFull -> Platform.runLater(() -> {
-                            onEntered(drugFull);
+                Service.api.enterDrug(drug)
+                        .thenCompose(Service.api::getDrugFull)
+                        .thenAccept(enteredDrug -> {
+                            onEntered(enteredDrug, null);
                             DrugEnterForm.this.clear();
-                        }));
+                        })
+                        .exceptionally(HandlerFX::exceptionally);
             }
         });
     }

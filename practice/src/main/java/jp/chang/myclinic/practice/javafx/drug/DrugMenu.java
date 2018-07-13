@@ -90,7 +90,7 @@ public class DrugMenu extends VBox {
             PracticeService.listDrugFull(visitId)
                     .thenAccept(drugs -> {
                         new DrugsCopier(targetVisitId, drugs,
-                                enteredDrug -> fireEvent(new DrugEnteredEvent(enteredDrug)),
+                                (enteredDrug, attr) -> fireEvent(new DrugEnteredEvent(enteredDrug, attr)),
                                 () -> { }
                         );
                     });
@@ -114,7 +114,8 @@ public class DrugMenu extends VBox {
                             @Override
                             protected void onEnter(List<DrugFullDTO> selected, boolean keepOpen) {
                                 new DrugsCopier(targetVisitId, selected,
-                                        enteredDrug -> fireEvent(new DrugEnteredEvent(enteredDrug)),
+                                        (enteredDrug, attr) ->
+                                                fireEvent(new DrugEnteredEvent(enteredDrug, attr)),
                                         () -> {
                                             if (keepOpen) {
                                                 int remain = cleanUpForKeepOpen();
