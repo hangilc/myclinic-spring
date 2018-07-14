@@ -93,6 +93,8 @@ public class EditForm extends VBox {
         HBox hbox = new HBox(4);
         Hyperlink editTekiyouLink = new Hyperlink("摘要編集");
         Hyperlink deleteTekiyouLink = new Hyperlink("摘要削除");
+        editTekiyouLink.setOnAction(evt -> doEnterTekiyou());
+        deleteTekiyouLink.setOnAction(evt -> doDeleteTekiyou());
         hbox.getChildren().addAll(editTekiyouLink, deleteTekiyouLink);
         return hbox;
     }
@@ -106,16 +108,12 @@ public class EditForm extends VBox {
     }
 
     private void doEnterTekiyou() {
-        GuiUtil.askForString("摘要の内容", "").ifPresent(str -> {
-            Service.api.findDrugAttr(drugId)
-                    .thenCompose(currentAttr -> {
-                        if (currentAttr == null) {
-                            currentAttr = new DrugAttrDTO();
-                            currentAttr.drugId = drugId;
-                        }
-                        currentAttr.tekiyou = str;
-                        return Service.api.enterDrugAttr(currentAttr);
-                    })
+        String curr = tekiyou.getValue();
+        if (curr == null) {
+            curr = "";
+        }
+        GuiUtil.askForString("摘要の内容", curr).ifPresent(str -> {
+            Service.api.setDrugTekiyou(drugId, str)
                     .thenAccept(ok -> {
                         Platform.runLater(() -> {
                             EditForm.this.tekiyou.setValue(str);
@@ -124,6 +122,19 @@ public class EditForm extends VBox {
                     })
                     .exceptionally(HandlerFX::exceptionally);
         });
+    }
+
+    private void doDeleteTekiyou() {
+        if (GuiUtil.confirm("現在の摘要を削除しますか？")) {
+            Service.api.deleteDrugTekiyou(drugId)
+                    .thenAccept(ok -> {
+                        Platform.runLater(() -> {
+                            EditForm.this.tekiyou.setValue(null);
+                            onTekiyouModified(null);
+                        });
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
 
     private void setNodeVisible(Node node, boolean visible) {
