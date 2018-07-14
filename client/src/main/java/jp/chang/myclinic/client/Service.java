@@ -132,6 +132,12 @@ public class Service {
         @POST("enter-drug")
         Call<Integer> enterDrugCall(@Body DrugDTO drug);
 
+        @GET("get-drug")
+        CompletableFuture<DrugDTO> getDrug(@Query("drug-id") int drugId);
+
+        @GET("get-drug")
+        Call<DrugDTO> getDrugCall(@Query("drug-id") int drugId);
+
         @GET("get-drug-full")
         CompletableFuture<DrugFullDTO> getDrugFull(@Query("drug-id") int drugId);
 

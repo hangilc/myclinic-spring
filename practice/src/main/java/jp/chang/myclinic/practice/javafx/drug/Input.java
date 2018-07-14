@@ -1,6 +1,8 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -11,7 +13,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Zaikei;
-import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
@@ -40,7 +41,7 @@ class Input extends VBox {
     private TextField daysInput = new TextField();
     private Label daysUnit = new Label("");
     private Text commentText = new Text(null);
-    private Text tekiyouText = new Text(null);
+    private StringProperty tekiyou = new SimpleStringProperty();
     private ObjectProperty<DrugCategory> category;
     private DecimalFormat amountFormatter = new DecimalFormat("###.##");
 
@@ -49,6 +50,8 @@ class Input extends VBox {
         getStyleClass().add("drug-input");
         amountInput.getStyleClass().add("amount-input");
         daysInput.getStyleClass().add("days-input");
+        Text tekiyouText = new Text(null);
+        tekiyouText.textProperty().bind(tekiyou);
         addRow(new Label("名称："), new TextFlow(drugNameLabel));
         addRow(amountLabel, createAmountContent());
         addRow(new Label("用法："), createUsageContent());
@@ -87,14 +90,13 @@ class Input extends VBox {
         amountUnitLabel.setText("");
     }
 
-    void setDrug(DrugFullDTO drug, DrugAttrDTO attr){
+    void setDrug(DrugFullDTO drug){
         setMaster(drug.master);
         setAmount(drug.drug.amount);
         setUsage(drug.drug.usage);
         setDays(drug.drug.days);
         setCategory(drug.drug.category);
         commentText.setText(null);
-        tekiyouText.setText(attr == null ? null : attr.tekiyou);
     }
 
     Node addRow(Label label, Node content) {
@@ -272,6 +274,10 @@ class Input extends VBox {
             err.add("Invalid prescribed value.");
         }
         cb.accept(drug, err);
+    }
+
+    StringProperty tekiyouProperty(){
+        return tekiyou;
     }
 
 }

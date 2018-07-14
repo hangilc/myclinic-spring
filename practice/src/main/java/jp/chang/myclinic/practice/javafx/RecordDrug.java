@@ -17,14 +17,16 @@ import jp.chang.myclinic.util.DrugUtil;
 class RecordDrug extends StackPane {
 
     private DrugFullDTO drug;
-    private DrugAttrDTO attr;
+    private String tekiyou;
     private VisitDTO visit;
     private int index;
     private TextFlow disp = new TextFlow();
 
     RecordDrug(DrugFullDTO drug, VisitDTO visit, int index, DrugAttrDTO attr){
         this.drug = drug;
-        this.attr = attr;
+        if( attr != null ){
+            this.tekiyou = attr.tekiyou;
+        }
         this.visit = visit;
         this.index = index;
         disp.getStyleClass().add("drug-disp");
@@ -35,8 +37,8 @@ class RecordDrug extends StackPane {
 
     private void updateDisp(){
         String text = String.format("%d)%s", index, DrugUtil.drugRep(drug));
-        if( attr != null && attr.tekiyou != null ){
-            text += " [" + attr.tekiyou + "]";
+        if( tekiyou != null ){
+            text += " [摘要：" + tekiyou + "]";
         }
         disp.getChildren().clear();
         disp.getChildren().add(new Text(text));
@@ -69,7 +71,7 @@ class RecordDrug extends StackPane {
                     return;
                 }
             }
-            EditForm form = new EditForm(drug, attr, visit){
+            EditForm form = new EditForm(drug, tekiyou, visit){
                 @Override
                 protected void onUpdated(DrugFullDTO updated) {
                     RecordDrug.this.drug = updated;
@@ -80,6 +82,12 @@ class RecordDrug extends StackPane {
                 @Override
                 protected void onClose() {
                     showDisp();
+                }
+
+                @Override
+                protected void onTekiyouModified(String newTekiyou) {
+                    RecordDrug.this.tekiyou = newTekiyou;
+                    updateDisp();
                 }
             };
             getChildren().remove(disp);
