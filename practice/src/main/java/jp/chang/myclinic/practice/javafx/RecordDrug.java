@@ -76,6 +76,11 @@ class RecordDrug extends StackPane {
                     updateDisp();
                     showDisp();
                 }
+
+                @Override
+                protected void onClose() {
+                    showDisp();
+                }
             };
             getChildren().remove(disp);
             getChildren().add(form);

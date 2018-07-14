@@ -81,6 +81,12 @@ class Input extends VBox {
         }
     }
 
+    void clearMaster(){
+        this.iyakuhincode = 0;
+        drugNameLabel.setText("");
+        amountUnitLabel.setText("");
+    }
+
     void setDrug(DrugFullDTO drug, DrugAttrDTO attr){
         setMaster(drug.master);
         setAmount(drug.drug.amount);
@@ -111,6 +117,10 @@ class Input extends VBox {
         daysInput.setText("" + days);
     }
 
+    void clearDays(){
+        daysInput.setText("");
+    }
+
     void setCategory(int code){
         DrugCategory cat = DrugCategory.fromCode(code);
         if( cat == null ){
@@ -122,6 +132,10 @@ class Input extends VBox {
 
     void setAmount(double value){
         amountInput.setText(amountFormatter.format(value));
+   }
+
+   void clearAmount(){
+        amountInput.setText("");
    }
 
     private Node createAmountContent() {

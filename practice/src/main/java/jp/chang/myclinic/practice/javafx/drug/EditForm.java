@@ -89,8 +89,8 @@ public class EditForm extends VBox {
         Button closeButton = new Button("閉じる");
         Hyperlink clearLink = new Hyperlink("クリア");
         enterButton.setOnAction(event -> doEnter());
-        //closeButton.setOnAction(event -> onClose(this));
-        //clearLink.setOnAction(event -> DrugFormHelper.clear(drugInput, constraints));
+        closeButton.setOnAction(event -> onClose());
+        clearLink.setOnAction(event -> doClearInput());
         hbox.getChildren().addAll(enterButton, closeButton, clearLink);
         return hbox;
     }
@@ -110,8 +110,21 @@ public class EditForm extends VBox {
         });
     }
 
+    private void doClearInput(){
+        input.clearMaster();
+        if( !isAllFixed() ){
+            input.clearAmount();
+            input.setUsage("");
+            input.clearDays();
+        }
+    }
+
     protected void onUpdated(DrugFullDTO updated){
         
+    }
+
+    protected void onClose(){
+
     }
 
 
