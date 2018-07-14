@@ -6,11 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.practice.lib.PracticeLib;
-import jp.chang.myclinic.practice.lib.RadioButtonGroup;
-import jp.chang.myclinic.practice.lib.drug.DrugSearchResultModel;
-import jp.chang.myclinic.practice.lib.drug.ExampleSearchResult;
-import jp.chang.myclinic.practice.lib.drug.MasterSearchResult;
-import jp.chang.myclinic.practice.lib.drug.PreviousPrescSearchResult;
+import jp.chang.myclinic.utilfx.RadioButtonGroup;
 
 import java.util.List;
 import java.util.stream.Collectors;

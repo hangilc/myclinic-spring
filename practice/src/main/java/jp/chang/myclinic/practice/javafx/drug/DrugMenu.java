@@ -19,7 +19,6 @@ import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
-import jp.chang.myclinic.practice.lib.drug.DrugsCopier;
 import jp.chang.myclinic.util.DrugUtil;
 
 import java.util.ArrayList;

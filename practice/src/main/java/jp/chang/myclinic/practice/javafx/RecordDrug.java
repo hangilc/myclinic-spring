@@ -69,33 +69,14 @@ class RecordDrug extends StackPane {
                     return;
                 }
             }
-            EditForm form = new EditForm(drug, attr);
-//            DrugEditForm form = new DrugEditForm(visit, drug, attr) {
-//                @Override
-//                protected void onEnter(DrugForm self) {
-//                    DrugFormHelper.convertToDrug(self.getDrugFormGetter(), drug.drug.drugId, visit.visitId, 0, (drug, errors) -> {
-//                        if (errors.size() > 0) {
-//                            GuiUtil.alertError(String.join("\n", errors));
-//                        } else {
-//                            PracticeLib.updateDrug(drug, newDrugFull -> {
-//                                RecordDrug.this.drug = newDrugFull;
-//                                updateDisp();
-//                                showDisp();
-//                            });
-//                        }
-//                    });
-//                }
-//
-//                @Override
-//                protected void onClose(DrugForm self) {
-//                    showDisp();
-//                }
-//
-//                @Override
-//                protected void onDeleted() {
-//                    RecordDrug.this.fireEvent(new DrugDeletedEvent(drug.drug));
-//                }
-//            };
+            EditForm form = new EditForm(drug, attr, visit){
+                @Override
+                protected void onUpdated(DrugFullDTO updated) {
+                    RecordDrug.this.drug = updated;
+                    updateDisp();
+                    showDisp();
+                }
+            };
             getChildren().remove(disp);
             getChildren().add(form);
         }

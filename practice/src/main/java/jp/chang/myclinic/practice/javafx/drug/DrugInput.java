@@ -12,7 +12,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
-import jp.chang.myclinic.practice.lib.RadioButtonGroup;
+import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import jp.chang.myclinic.practice.lib.drug.DrugFormGetter;
 import jp.chang.myclinic.practice.lib.drug.DrugFormSetter;
 

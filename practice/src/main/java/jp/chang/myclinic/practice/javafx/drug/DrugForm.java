@@ -92,12 +92,12 @@ public class DrugForm extends VBox {
 
     private Node createSearch(int patientId, String at) {
         drugSearch = new DrugSearch(patientId, at);
-        drugSearch.setCallback(new DrugSearch.Callback() {
-            @Override
-            public void onSelect(DrugSearchResultModel searchResultModel) {
-                searchResultModel.stuffInto(drugInput, drugInput, constraints);
-            }
-        });
+//        drugSearch.setCallback(new DrugSearch.Callback() {
+//            @Override
+//            public void onSelect(DrugSearchResultModel searchResultModel) {
+//                searchResultModel.stuffInto(drugInput, drugInput, constraints);
+//            }
+//        });
         return drugSearch;
     }
 

@@ -19,7 +19,7 @@ import jp.chang.myclinic.practice.javafx.disease.end.DiseaseList;
 import jp.chang.myclinic.practice.javafx.parts.CheckBoxWithData;
 import jp.chang.myclinic.practice.javafx.parts.dateinput.DateInput;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
-import jp.chang.myclinic.practice.lib.RadioButtonGroup;
+import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import jp.chang.myclinic.practice.lib.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.lib.drug;
+package jp.chang.myclinic.practice.javafx.drug;
 
 import javafx.application.Platform;
 import jp.chang.myclinic.client.Service;

@@ -16,11 +16,10 @@ import jp.chang.myclinic.drawer.printer.DevnamesInfo;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
-import jp.chang.myclinic.practice.lib.RadioButtonGroup;
+import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

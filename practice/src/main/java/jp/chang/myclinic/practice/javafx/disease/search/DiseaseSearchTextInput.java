@@ -4,7 +4,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.practice.javafx.parts.searchbox.ExtendedSearchTextInput;
-import jp.chang.myclinic.practice.lib.RadioButtonGroup;
+import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
