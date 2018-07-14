@@ -60,8 +60,7 @@ class DrugEnterForm extends DrugForm {
         });
     }
 
-    @Override
-    protected void onClose(DrugForm self){
+    protected void onClose(){
 
     }
 }

@@ -48,9 +48,9 @@ public class DrugMenu extends VBox {
                 if (!PracticeUtil.confirmCurrentVisitAction(visit.visitId, "処方を追加しますか？")) {
                     return;
                 }
-                DrugForm form = new DrugEnterForm(visit) {
+                EnterForm form = new EnterForm(visit) {
                     @Override
-                    protected void onClose(DrugForm form) {
+                    protected void onClose() {
                         hideWorkarea();
                     }
                 };

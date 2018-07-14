@@ -36,6 +36,7 @@ class Input extends VBox {
     private TextField amountInput = new TextField();
     private Label amountUnitLabel = new Label("");
     private TextField usageInput = new TextField();
+    private HBox daysContent;
     private Node daysRow;
     private Label daysLabel = new Label("");
     private TextField daysInput = new TextField();
@@ -123,6 +124,10 @@ class Input extends VBox {
         daysInput.setText("");
     }
 
+    boolean isDaysEmpty(){
+        return daysInput.getText() == null || daysInput.getText().isEmpty();
+    }
+
     void setCategory(int code){
         DrugCategory cat = DrugCategory.fromCode(code);
         if( cat == null ){
@@ -160,6 +165,7 @@ class Input extends VBox {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getChildren().addAll(daysInput, daysUnit);
+        daysContent = hbox;
         return hbox;
     }
 
@@ -278,6 +284,10 @@ class Input extends VBox {
 
     StringProperty tekiyouProperty(){
         return tekiyou;
+    }
+
+    void addToDaysContent(Node node){
+        daysContent.getChildren().add(node);
     }
 
 }
