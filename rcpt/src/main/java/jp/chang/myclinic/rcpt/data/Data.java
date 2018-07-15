@@ -312,10 +312,12 @@ class Data {
             xml.element("受診日", visit.visit.visitedAt);
             List<ShinryouFullDTO> shinryouList = new ArrayList<>(visit.shinryouList);
             List<Integer> shinryouIds = shinryouList.stream().map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
-            Map<Integer, ShinryouAttrDTO> attrMap = collectShinryouAttr(shinryouIds);
+            Map<Integer, ShinryouAttrDTO> shinryouAttrMap = collectShinryouAttr(shinryouIds);
             shinryouList.sort(Comparator.comparingInt(a -> a.shinryou.shinryouId)); // for backwork compatibility (not necessary for funtion)
-            shinryouList.forEach(s -> outShinryou(s, attrMap.get(s.shinryou.shinryouId)));
-            outDrugs(visit.drugs);
+            shinryouList.forEach(s -> outShinryou(s, shinryouAttrMap.get(s.shinryou.shinryouId)));
+            List<Integer> drugIds = visit.drugs.stream().map(d -> d.drug.drugId).collect(Collectors.toList());
+            Map<Integer, DrugAttrDTO> drugAttrMap = collectDrugAttr(drugIds);
+            outDrugs(visit.drugs, drugAttrMap);
             visit.conducts.forEach(this::outConduct);
         });
     }
@@ -329,6 +331,19 @@ class Data {
             }
         } catch (IOException e) {
             logger.error("Failed to get shinryou attr: {}", shinryouIds);
+        }
+        return map;
+    }
+
+    private Map<Integer, DrugAttrDTO> collectDrugAttr(List<Integer> drugIds){
+        Map<Integer, DrugAttrDTO> map = new HashMap<>();
+        try {
+            List<DrugAttrDTO> list = Service.api.batchGetDrugAttrCall(drugIds).execute().body();
+            for(DrugAttrDTO attr: list){
+                map.put(attr.drugId, attr);
+            }
+        } catch (IOException e) {
+            logger.error("Failed to get shinryou attr: {}", drugIds);
         }
         return map;
     }
@@ -353,13 +368,13 @@ class Data {
         });
     }
 
-    private void outDrugs(List<DrugFullDTO> drugs) {
+    private void outDrugs(List<DrugFullDTO> drugs, Map<Integer, DrugAttrDTO> attrMap) {
         if (drugs.size() > 0) {
-            xml.element("投薬", () -> drugs.forEach(this::outOneDrug));
+            xml.element("投薬", () -> drugs.forEach(d -> outOneDrug(d, attrMap.get(d.drug.drugId))));
         }
     }
 
-    private void outOneDrug(DrugFullDTO drug) {
+    private void outOneDrug(DrugFullDTO drug, DrugAttrDTO attr) {
         DrugCategory drugCategory = DrugCategory.fromCode(drug.drug.category);
         String category = "????";
         if (drugCategory == null) {
@@ -367,6 +382,11 @@ class Data {
         } else {
             category = drugCategory.getKanji();
         }
+        String tekiyouTmp = null;
+        if( attr != null && attr.tekiyou != null && !attr.tekiyou.isEmpty() ){
+            tekiyouTmp = attr.tekiyou;
+        }
+        final String tekiyou = tekiyouTmp;
         xml.element(category, () ->{
             xml.element("医薬品コード", drug.master.iyakuhincode);
             xml.element("名称", drug.master.name);
@@ -379,6 +399,9 @@ class Data {
                 xml.element("日数", drug.drug.days);
             } else if (drugCategory == DrugCategory.Tonpuku) {
                 xml.element("回数", drug.drug.days);
+            }
+            if( tekiyou != null ){
+                xml.element("摘要", tekiyou);
             }
         });
     }
