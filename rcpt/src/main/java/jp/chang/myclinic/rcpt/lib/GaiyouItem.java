@@ -9,14 +9,16 @@ public class GaiyouItem<T> implements RcptItem, Mergeable<GaiyouItem<T>>  {
     private int iyakuhincode;
     private String usage;
     private double amount;
+    private String tekiyou;
     private double yakka;
     private int count;
     private T data;
 
-    public GaiyouItem(int iyakuhincode, String usage, double amount, double yakka, T data) {
+    public GaiyouItem(int iyakuhincode, String usage, double amount, double yakka, String tekiyou, T data) {
         this.iyakuhincode = iyakuhincode;
         this.usage = usage;
         this.amount = amount;
+        this.tekiyou = tekiyou;
         this.yakka = yakka;
         this.count = 1;
         this.data = data;
@@ -25,7 +27,7 @@ public class GaiyouItem<T> implements RcptItem, Mergeable<GaiyouItem<T>>  {
     @Override
     public boolean canMerge(GaiyouItem<T> src) {
         return iyakuhincode == src.iyakuhincode && Objects.equals(usage, src.usage) &&
-                amount == src.amount;
+                amount == src.amount && Objects.equals(tekiyou, src.tekiyou);
     }
 
     @Override
@@ -45,5 +47,9 @@ public class GaiyouItem<T> implements RcptItem, Mergeable<GaiyouItem<T>>  {
 
     public T getData() {
         return data;
+    }
+
+    public String getTekiyou() {
+        return tekiyou;
     }
 }

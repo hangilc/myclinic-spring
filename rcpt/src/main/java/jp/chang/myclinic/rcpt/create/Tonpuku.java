@@ -20,10 +20,8 @@ public class Tonpuku {
     public char madoku;
     @JsonProperty("回数")
     public int days;
-
-    Tonpuku() {
-
-    }
+    @JsonProperty("摘要")
+    public String tekiyou;
 
     @Override
     public String toString() {
@@ -36,6 +34,7 @@ public class Tonpuku {
                 ", yakka=" + yakka +
                 ", madoku=" + madoku +
                 ", days=" + days +
+                ", tekiyou='" + tekiyou + '\'' +
                 '}';
     }
 }

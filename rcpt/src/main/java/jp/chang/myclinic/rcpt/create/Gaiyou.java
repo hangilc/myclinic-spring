@@ -18,10 +18,8 @@ public class Gaiyou {
     public double yakka;
     @JsonProperty("麻毒")
     public char madoku;
-
-    Gaiyou() {
-
-    }
+    @JsonProperty("摘要")
+    public String tekiyou;
 
     @Override
     public String toString() {
@@ -33,6 +31,7 @@ public class Gaiyou {
                 ", usage='" + usage + '\'' +
                 ", yakka=" + yakka +
                 ", madoku=" + madoku +
+                ", tekiyou='" + tekiyou + '\'' +
                 '}';
     }
 }

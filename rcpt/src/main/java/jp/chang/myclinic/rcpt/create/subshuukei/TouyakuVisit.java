@@ -45,7 +45,7 @@ public class TouyakuVisit extends VisitBase {
 
     public void add(Gaiyou drug) {
         gaiyouList.add(new GaiyouItem<>(drug.iyakuhincode, drug.usage, drug.amount,
-                drug.yakka, drug));
+                drug.yakka, drug.tekiyou, drug));
     }
 
     void merge(TouyakuVisit src) {
@@ -120,7 +120,12 @@ public class TouyakuVisit extends VisitBase {
 
     private void outputGaiyouTekiyou(){
         TekiyouList tekiyouList = new TekiyouList(SubShuukeiTouyaku.TouyakuGaiyou);
-        gaiyouList.stream().forEach(tekiyouList::add);
+        gaiyouList.stream().forEach(g -> {
+            tekiyouList.add(g);
+            if( g.getTekiyou() != null ){
+                tekiyouList.add(new TekiyouAux(g.getTekiyou()));
+            }
+        });
         tekiyouList.output();
     }
 

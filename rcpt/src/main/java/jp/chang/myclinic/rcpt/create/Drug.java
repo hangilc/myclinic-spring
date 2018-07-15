@@ -25,10 +25,6 @@ class Drug {
     @JsonMerge(OptBoolean.TRUE)
     List<Gaiyou> gaiyouList = new ArrayList<>();
 
-    Drug() {
-
-    }
-
     @Override
     public String toString() {
         return "Drug{" +
