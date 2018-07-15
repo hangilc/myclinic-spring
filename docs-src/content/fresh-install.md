@@ -29,10 +29,6 @@ Git をインストール。
 
 https://git-scm.com/downloads
 
-Kotlin のインストール
-
-https://github.com/JetBrains/kotlin/releases/latest
-
 MySQL 5.7 のインストール
 
 ```shell
@@ -51,6 +47,12 @@ myclinic-spring の clone
 > py-myenv\scripts\activate
 > pip install -r scripts\pip-freeze.txt
 > mvn install
+```
+
+master files のダウンロード
+
+```shell
+> scripts\download-all-masters.bat
 ```
 
 database の作成
