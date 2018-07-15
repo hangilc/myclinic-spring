@@ -29,6 +29,10 @@ Git をインストール。
 
 https://git-scm.com/downloads
 
+Kotlin のインストール
+
+https://github.com/JetBrains/kotlin/releases/latest
+
 MySQL 5.7 のインストール
 
 ```shell
@@ -36,6 +40,25 @@ MySQL 5.7 のインストール
 
 mysql> grant all on myclinic.* to {USERNAME} identified by '{PASSWORD}';
 ```
+
+myclinic-spring の clone
+
+```shell
+> git clone https://github.com/hangilc/myclinic-spring.git
+```
+
+database の作成
+
+```shell
+> mysql -u root -p
+
+mysql> create database myclinic;
+mysql> exit;
+
+> cd myclinic-spring
+> mysql -u hangil -p myclinic <server\migrations\schema.sql
+```
+
 
 
 Chocholatey をインストール。cmd.exe を管理者として起動。
