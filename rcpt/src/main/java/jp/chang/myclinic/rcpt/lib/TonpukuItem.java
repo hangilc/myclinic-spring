@@ -9,14 +9,17 @@ public class TonpukuItem<T> implements RcptItem, Mergeable<TonpukuItem<T>> {
     private int iyakuhincode;
     private String usage;
     private double amount;
+    private String tekiyou;
     private double yakka;
     private int count;
     private T drug;
 
-    public TonpukuItem(int iyakuhincode, String usage, double amount, double yakka, int count, T drug) {
+    public TonpukuItem(int iyakuhincode, String usage, double amount, double yakka, int count,
+                       String tekiyou, T drug) {
         this.iyakuhincode = iyakuhincode;
         this.usage = usage;
         this.amount = amount;
+        this.tekiyou = tekiyou;
         this.yakka = yakka;
         this.count = count;
         this.drug = drug;
@@ -51,4 +54,7 @@ public class TonpukuItem<T> implements RcptItem, Mergeable<TonpukuItem<T>> {
         return drug;
     }
 
+    public String getTekiyou() {
+        return tekiyou;
+    }
 }
