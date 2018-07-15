@@ -4,7 +4,6 @@ import jp.chang.myclinic.rcpt.check.BatchCheck;
 import jp.chang.myclinic.rcpt.create.BatchCreate;
 import jp.chang.myclinic.rcpt.data.BatchData;
 
-// TODO: インスリン処方に何日分を加える。
 // TODO: 内服薬処方の際、調剤料が算定されているかチェックする。
 public class Main {
 
