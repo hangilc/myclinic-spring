@@ -45,6 +45,12 @@ myclinic-spring の clone
 
 ```shell
 > git clone https://github.com/hangilc/myclinic-spring.git
+> cd myclinic-spring
+> xcopy config-example config /i
+> python -m venv my-pyenv
+> py-myenv\scripts\activate
+> pip install -r scripts\pip-freeze.txt
+> mvn install
 ```
 
 database の作成
