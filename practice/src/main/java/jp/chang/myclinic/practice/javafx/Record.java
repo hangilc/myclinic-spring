@@ -5,6 +5,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.*;
 
+import java.util.Map;
+
 public class Record extends VBox {
 
     private int visitId;
@@ -13,9 +15,10 @@ public class Record extends VBox {
     private RecordShinryouPane shinryouPane;
     private RecordConductsPane conductsPane;
 
-    public Record(VisitFull2DTO visit){
+    public Record(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
+                  Map<Integer, DrugAttrDTO> drugAttrMap){
         this.visitId = visit.visit.visitId;
-        getChildren().addAll(createTitle(visit.visit), createBody(visit));
+        getChildren().addAll(createTitle(visit.visit), createBody(visit, shinryouAttrMap, drugAttrMap));
         setPrefWidth(400);
     }
 
@@ -28,7 +31,8 @@ public class Record extends VBox {
         return recordTitle;
     }
 
-    private Node createBody(VisitFull2DTO visit){
+    private Node createBody(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
+                            Map<Integer, DrugAttrDTO> drugAttrMap){
         HBox hbox = new HBox();
         VBox left = new VBox();
         VBox right = new VBox();
@@ -39,8 +43,8 @@ public class Record extends VBox {
         hbox.getChildren().addAll(left, right);
         textPane = new RecordTextsPane(visit.texts, visit.visit.visitId);
         left.getChildren().add(textPane);
-        drugsPane = new RecordDrugsPane(visit.drugs, visit.visit);
-        shinryouPane = new RecordShinryouPane(visit.shinryouList, visit.visit);
+        drugsPane = new RecordDrugsPane(visit.drugs, visit.visit, drugAttrMap);
+        shinryouPane = new RecordShinryouPane(visit.shinryouList, visit.visit, shinryouAttrMap);
         conductsPane = new RecordConductsPane(visit.conducts, visit.visit.visitId, visit.visit.visitedAt);
         right.getChildren().addAll(
                 new RecordHoken(visit.hoken, visit.visit),
@@ -52,8 +56,8 @@ public class Record extends VBox {
         return hbox;
     }
 
-    public void addDrug(DrugFullDTO drug){
-        drugsPane.addDrug(drug);
+    public void addDrug(DrugFullDTO drug, DrugAttrDTO attr){
+        drugsPane.addDrug(drug, attr);
     }
 
     public void modifyDrugDays(int drugId, int days) {
@@ -64,8 +68,8 @@ public class Record extends VBox {
         drugsPane.deleteDrug(drugId);
     }
 
-    public void insertShinryou(ShinryouFullDTO shinryou){
-        shinryouPane.insertShinryou(shinryou);
+    public void insertShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
+        shinryouPane.insertShinryou(shinryou, attr);
     }
 
     public void deleteShinryou(int shinryouId) {

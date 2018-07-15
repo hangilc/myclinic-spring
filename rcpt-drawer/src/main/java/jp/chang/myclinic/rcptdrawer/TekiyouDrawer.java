@@ -43,14 +43,16 @@ class TekiyouDrawer {
     void draw(List<TekiyouLine> tekiyouLines){
         compiler.setFont("Gothic3");
         for(TekiyouLine tekiyouLine: tekiyouLines){
-            List<String> lines = compiler.breakLine(tekiyouLine.body, bodyColumn.getWidth());
+            double leftMargin = tekiyouLine.leftMargin;
+            List<String> lines = compiler.breakLine(tekiyouLine.body, bodyColumn.getWidth() - leftMargin);
             for(int i=0;i<lines.size();i++){
                 String line = lines.get(i);
                 boolean isLast = i == (lines.size() - 1);
                 if( i == 0 ){
-                    drawOneLine(tekiyouLine.index, line, tekiyouLine.tankaTimes, tekiyouLine.opts, true, isLast);
+                    drawOneLine(tekiyouLine.index, line, tekiyouLine.tankaTimes, tekiyouLine.opts, true, isLast,
+                            leftMargin);
                 } else {
-                    drawOneLine(null, line, null, tekiyouLine.opts, false, isLast);
+                    drawOneLine(null, line, null, tekiyouLine.opts, false, isLast, leftMargin);
                 }
             }
             bodyColumn = bodyColumn.shrinkHeight(1, VertAnchor.Bottom);
@@ -72,7 +74,7 @@ class TekiyouDrawer {
     }
 
     private void drawOneLine(String index, String body, String right, Set<TekiyouLineOpt> opts,
-                             boolean isLeadLine, boolean isLastLine){
+                             boolean isLeadLine, boolean isLastLine, double leftMargin){
         if( bodyColumn.getHeight() < 3 ){
             newPage();
         }
@@ -89,7 +91,13 @@ class TekiyouDrawer {
         if( isLeadLine && opts.contains(GroupBegin) && !opts.contains(GroupEnd) ){
             openRightBracket(bodyColumn.getTop() + 0.1);
         }
-        compiler.textIn(body, bodyColumn, halign, VAlign.Top);
+        Box actualBodyColumn;
+        if( leftMargin != 0 ){
+            actualBodyColumn = bodyColumn.shrinkWidth(leftMargin, HorizAnchor.Right);
+        } else {
+            actualBodyColumn = bodyColumn;
+        }
+        compiler.textIn(body, actualBodyColumn, halign, VAlign.Top);
         bodyColumn = bodyColumn.shrinkHeight(3, VertAnchor.Bottom);
         indexColumn = indexColumn.setTop(bodyColumn.getTop());
         rightColumn = rightColumn.setTop(bodyColumn.getTop());

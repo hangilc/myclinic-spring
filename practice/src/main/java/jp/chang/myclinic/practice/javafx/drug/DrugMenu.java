@@ -11,7 +11,7 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
@@ -19,7 +19,6 @@ import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
-import jp.chang.myclinic.practice.lib.drug.DrugsCopier;
 import jp.chang.myclinic.util.DrugUtil;
 
 import java.util.ArrayList;
@@ -49,9 +48,9 @@ public class DrugMenu extends VBox {
                 if (!PracticeUtil.confirmCurrentVisitAction(visit.visitId, "処方を追加しますか？")) {
                     return;
                 }
-                DrugForm form = new DrugEnterForm(visit) {
+                EnterForm form = new EnterForm(visit) {
                     @Override
-                    protected void onClose(DrugForm form) {
+                    protected void onClose() {
                         hideWorkarea();
                     }
                 };
@@ -90,7 +89,7 @@ public class DrugMenu extends VBox {
             PracticeService.listDrugFull(visitId)
                     .thenAccept(drugs -> {
                         new DrugsCopier(targetVisitId, drugs,
-                                enteredDrug -> fireEvent(new DrugEnteredEvent(enteredDrug)),
+                                (enteredDrug, attr) -> fireEvent(new DrugEnteredEvent(enteredDrug, attr)),
                                 () -> { }
                         );
                     });
@@ -114,7 +113,8 @@ public class DrugMenu extends VBox {
                             @Override
                             protected void onEnter(List<DrugFullDTO> selected, boolean keepOpen) {
                                 new DrugsCopier(targetVisitId, selected,
-                                        enteredDrug -> fireEvent(new DrugEnteredEvent(enteredDrug)),
+                                        (enteredDrug, attr) ->
+                                                fireEvent(new DrugEnteredEvent(enteredDrug, attr)),
                                         () -> {
                                             if (keepOpen) {
                                                 int remain = cleanUpForKeepOpen();

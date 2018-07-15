@@ -5,7 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.parts.SearchInputBox;
 import jp.chang.myclinic.practice.javafx.parts.SearchResult;

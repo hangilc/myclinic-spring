@@ -7,6 +7,7 @@ import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import jp.chang.myclinic.server.rcpt.*;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.HokenUtil;
+import jp.chang.myclinic.util.RcptUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;

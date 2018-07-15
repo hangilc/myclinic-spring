@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.text.DecimalFormat;
 
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.util.RcptUtil;
 
 class NaifukuItem extends SectionItem {
 

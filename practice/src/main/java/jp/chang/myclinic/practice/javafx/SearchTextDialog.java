@@ -11,7 +11,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.TextVisitDTO;
 import jp.chang.myclinic.dto.TextVisitPageDTO;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.parts.PageNav;
 import jp.chang.myclinic.practice.javafx.parts.SimplePageNav;
 import jp.chang.myclinic.practice.javafx.parts.searchbox.BasicSearchTextInput;

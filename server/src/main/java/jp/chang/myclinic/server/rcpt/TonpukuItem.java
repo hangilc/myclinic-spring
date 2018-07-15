@@ -3,6 +3,7 @@ package jp.chang.myclinic.server.rcpt;
 import java.text.DecimalFormat;
 
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.util.RcptUtil;
 
 class TonpukuItem extends SectionItem {
 

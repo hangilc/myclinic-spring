@@ -1,27 +1,30 @@
 package jp.chang.myclinic.practice.lib.shinryou;
 
+import javafx.application.Platform;
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.practice.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class ShinryouCopier {
 
-    private static Logger logger = LoggerFactory.getLogger(ShinryouCopier.class);
+    //private static Logger logger = LoggerFactory.getLogger(ShinryouCopier.class);
 
     private int targetVisitId;
     private List<ShinryouFullDTO> srcList;
-    private Consumer<ShinryouFullDTO> onEnterCallback;
+    private BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> onEnterCallback;
     private Consumer<Throwable> errorCallback;
     private Runnable finishedCallback;
     private VisitDTO targetVisit;
 
-    public ShinryouCopier(int targetVisitId, List<ShinryouFullDTO> srcList, Consumer<ShinryouFullDTO> cb,
+    public ShinryouCopier(int targetVisitId, List<ShinryouFullDTO> srcList,
+                          BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> cb,
                           Consumer<Throwable> errorHandler, Runnable finishedCallback){
         this.targetVisitId = targetVisitId;
         this.srcList = srcList;
@@ -57,10 +60,32 @@ public class ShinryouCopier {
                             iterate();
                         } else {
                             ShinryouDTO dst = composeShinryou(src.shinryou, shinryoucode);
-                            Service.api.enterShinryou(dst)
-                                    .thenCompose(Service.api::getShinryouFull)
+                            class Local {
+                                private ShinryouAttrDTO srcAttr;
+                                private ShinryouAttrDTO dstAttr;
+                                private int enteredShinryouId;
+                            }
+                            Local local = new Local();
+                            Service.api.findShinryouAttr(src.shinryou.shinryouId)
+                                    .thenCompose(srcAttr -> {
+                                        local.srcAttr = srcAttr;
+                                        return Service.api.enterShinryou(dst);
+                                    })
+                                    .thenCompose(enteredShinryouId -> {
+                                        local.enteredShinryouId = enteredShinryouId;
+                                        if( local.srcAttr != null ){
+                                            ShinryouAttrDTO dstAttr = ShinryouAttrDTO.copy(local.srcAttr);
+                                            dstAttr.shinryouId = local.enteredShinryouId;
+                                            local.dstAttr = dstAttr;
+                                            return Service.api.enterShinryouAttr(dstAttr);
+                                        } else {
+                                            local.dstAttr = null;
+                                            return CompletableFuture.completedFuture(null);
+                                        }
+                                    })
+                                    .thenCompose(ok -> Service.api.getShinryouFull(local.enteredShinryouId))
                                     .thenAccept(entered -> {
-                                        onEnterCallback.accept(entered);
+                                        Platform.runLater(() -> onEnterCallback.accept(entered, local.dstAttr));
                                         iterate();
                                     })
                                     .exceptionally(ex -> {

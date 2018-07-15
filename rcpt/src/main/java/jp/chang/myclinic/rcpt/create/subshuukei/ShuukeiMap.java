@@ -89,7 +89,7 @@ public class ShuukeiMap {
         System.out.printf("kyuufu.hoken.seikyuuten %d\n", calcSeikyuuTen());
     }
 
-    private int calcSeikyuuTen(){
+    public int calcSeikyuuTen(){
         return
         shoshinVisit.getTen() +
         saishinVisit.getTen() +

@@ -6,26 +6,27 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.javafx.drug.DrugEditForm;
-import jp.chang.myclinic.practice.javafx.drug.DrugForm;
-import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
-import jp.chang.myclinic.practice.lib.PracticeLib;
-import jp.chang.myclinic.practice.lib.drug.DrugFormHelper;
+import jp.chang.myclinic.practice.javafx.drug.EditForm;
 import jp.chang.myclinic.util.DrugUtil;
 
 class RecordDrug extends StackPane {
 
     private DrugFullDTO drug;
+    private String tekiyou;
     private VisitDTO visit;
     private int index;
     private TextFlow disp = new TextFlow();
 
-    RecordDrug(DrugFullDTO drug, VisitDTO visit, int index){
+    RecordDrug(DrugFullDTO drug, VisitDTO visit, int index, DrugAttrDTO attr){
         this.drug = drug;
+        if( attr != null ){
+            this.tekiyou = attr.tekiyou;
+        }
         this.visit = visit;
         this.index = index;
         disp.getStyleClass().add("drug-disp");
@@ -36,6 +37,9 @@ class RecordDrug extends StackPane {
 
     private void updateDisp(){
         String text = String.format("%d)%s", index, DrugUtil.drugRep(drug));
+        if( tekiyou != null ){
+            text += " [摘要：" + tekiyou + "]";
+        }
         disp.getChildren().clear();
         disp.getChildren().add(new Text(text));
     }
@@ -67,30 +71,23 @@ class RecordDrug extends StackPane {
                     return;
                 }
             }
-            DrugEditForm form = new DrugEditForm(visit, drug) {
+            EditForm form = new EditForm(drug, tekiyou, visit){
                 @Override
-                protected void onEnter(DrugForm self) {
-                    DrugFormHelper.convertToDrug(self.getDrugFormGetter(), drug.drug.drugId, visit.visitId, 0, (drug, errors) -> {
-                        if (errors.size() > 0) {
-                            GuiUtil.alertError(String.join("\n", errors));
-                        } else {
-                            PracticeLib.updateDrug(drug, newDrugFull -> {
-                                RecordDrug.this.drug = newDrugFull;
-                                updateDisp();
-                                showDisp();
-                            });
-                        }
-                    });
-                }
-
-                @Override
-                protected void onClose(DrugForm self) {
+                protected void onUpdated(DrugFullDTO updated) {
+                    RecordDrug.this.drug = updated;
+                    updateDisp();
                     showDisp();
                 }
 
                 @Override
-                protected void onDeleted() {
-                    RecordDrug.this.fireEvent(new DrugDeletedEvent(drug.drug));
+                protected void onClose() {
+                    showDisp();
+                }
+
+                @Override
+                protected void onTekiyouModified(String newTekiyou) {
+                    RecordDrug.this.tekiyou = newTekiyou;
+                    updateDisp();
                 }
             };
             getChildren().remove(disp);

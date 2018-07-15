@@ -1,6 +1,6 @@
 package jp.chang.myclinic.rcpt.util;
 
-import jp.chang.myclinic.rcpt.RcptUtil;
+import jp.chang.myclinic.util.RcptUtil;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

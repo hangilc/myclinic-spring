@@ -11,11 +11,13 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import jp.chang.myclinic.dto.ClinicInfoDTO;
-import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
+import jp.chang.myclinic.dto.DrugAttrDTO;
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.events.EventTypes;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.javafx.globalsearch.GlobalSearchDialog;
@@ -28,6 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MainPane extends BorderPane {
 
@@ -266,7 +272,29 @@ public class MainPane extends BorderPane {
         PracticeEnv.INSTANCE.pageVisitsProperty().addListener((obs, oldValue, newValue) -> {
             recordsPane.getChildren().clear();
             if (newValue != null) {
-                newValue.forEach(recordsPane::addRecord);
+                List<Integer> shinryouIds = newValue.stream().flatMap(v -> v.shinryouList.stream())
+                        .map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
+                List<Integer> drugIds = newValue.stream().flatMap(v -> v.drugs.stream())
+                        .map(d -> d.drug.drugId).collect(Collectors.toList());
+                class Local {
+                    private Map<Integer, ShinryouAttrDTO> shinryouAttrMap;
+                }
+                Local local = new Local();
+                Service.api.batchGetShinryouAttr(shinryouIds)
+                        .thenCompose(attrList -> {
+                            Map<Integer, ShinryouAttrDTO> shinryouAttrMap = new HashMap<>();
+                            attrList.forEach(attr -> shinryouAttrMap.put(attr.shinryouId, attr));
+                            local.shinryouAttrMap = shinryouAttrMap;
+                            return Service.api.batchGetDrugAttr(drugIds);
+                        })
+                        .thenAccept(attrList -> {
+                            Map<Integer, DrugAttrDTO> drugAttrMap = new HashMap<>();
+                            attrList.forEach(attr -> drugAttrMap.put(attr.drugId, attr));
+                            Platform.runLater(() ->
+                                    newValue.forEach(v -> recordsPane.addRecord(v, local.shinryouAttrMap,
+                                            drugAttrMap)));
+                        })
+                        .exceptionally(HandlerFX::exceptionally);
             }
         });
         sp.setContent(recordsPane);

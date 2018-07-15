@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import jp.chang.myclinic.dto.GazouLabelDTO;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

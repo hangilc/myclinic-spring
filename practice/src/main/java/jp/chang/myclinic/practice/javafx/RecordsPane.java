@@ -2,11 +2,10 @@ package jp.chang.myclinic.practice.javafx;
 
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.dto.ConductFullDTO;
-import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.dto.ShinryouFullDTO;
-import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.javafx.events.*;
+
+import java.util.Map;
 
 public class RecordsPane extends VBox {
 
@@ -16,7 +15,7 @@ public class RecordsPane extends VBox {
             deleteRecord(event.getVisitId());
         });
         addEventHandler(EventTypes.drugEnteredEventType, event -> {
-            addDrug(event.getEnteredDrug());
+            addDrug(event.getEnteredDrug(), event.getAttr());
         });
         addEventHandler(EventTypes.drugDaysModifiedEventType, this::drugDaysModified);
         addEventHandler(EventTypes.drugDeletedEventType, this::drugDeleted);
@@ -27,8 +26,9 @@ public class RecordsPane extends VBox {
         addEventHandler(TextEnteredEvent.eventType, this::onTextEntered);
     }
 
-    public void addRecord(VisitFull2DTO visit){
-        Record record = new Record(visit);
+    public void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
+                          Map<Integer, DrugAttrDTO> drugAttrMap){
+        Record record = new Record(visit, shinryouAttrMap, drugAttrMap);
         getChildren().add(record);
     }
 
@@ -51,10 +51,10 @@ public class RecordsPane extends VBox {
         return null;
     }
 
-    private void addDrug(DrugFullDTO drug){
+    private void addDrug(DrugFullDTO drug, DrugAttrDTO attr){
         Record record = findRecord(drug.drug.visitId);
         if( record != null ){
-            record.addDrug(drug);
+            record.addDrug(drug, attr);
         }
     }
 
@@ -76,7 +76,7 @@ public class RecordsPane extends VBox {
         ShinryouFullDTO shinryou = event.getShinryou();
         Record record = findRecord(shinryou.shinryou.visitId);
         if( record != null ){
-            record.insertShinryou(shinryou);
+            record.insertShinryou(shinryou, event.getAttr());
         }
     }
 

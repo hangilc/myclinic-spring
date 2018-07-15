@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.javafx.MainPane;
+import jp.chang.myclinic.client.Service;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-// TODO: improve printer setting (~/practice-env)
+// TODO: fix batch enter shinryou by names failure
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -20,6 +21,7 @@ public class Main extends Application {
     public static void main(String[] args) throws IOException {
         CommandArgs commandArgs = new CommandArgs(args);
         Service.setServerUrl(commandArgs.getServerUrl());
+        //Service.setLogBody();
         setupPracticeEnv(commandArgs, () -> Application.launch(Main.class, args));
     }
 

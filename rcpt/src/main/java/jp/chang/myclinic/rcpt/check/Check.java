@@ -40,13 +40,14 @@ public class Check {
                 }
                 Scope scope = new Scope(patient, visits, masterMaps.resolvedMap, masterMaps.shinryouByoumeiMap,
                         diseases, runEnv.errorHandler, runEnv.api);
-                new CheckChouki(scope).check();
+                new CheckChouzai(scope).check();
                 new CheckDuplicates(scope).check();
                 new CheckTokuteiShikkanKanri(scope).check();
                 new CheckChoukiTouyakuKasan(scope).check();
                 new CheckHandanryou(scope).check();
                 new CheckShoshinSaishin(scope).check();
                 new CheckKouseishinyaku(scope).check();
+                new CheckNaifuku(scope).check();
                 new CheckGaiyou(scope).check();
                 new CheckShohouryou(scope).check();
                 new CheckShoshinByoumei(scope).check();

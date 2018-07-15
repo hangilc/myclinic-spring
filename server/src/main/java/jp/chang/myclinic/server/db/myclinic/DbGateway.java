@@ -87,6 +87,10 @@ public class DbGateway {
     private PracticeLogger practiceLogger;
     @Autowired
     private HotlineLogger hotlineLogger;
+    @Autowired
+    private ShinryouAttrRepository shinryouAttrRepository;
+    @Autowired
+    private DrugAttrRepository drugAttrRepository;
 
     private WqueueFullDTO composeWqueueFullDTO(Wqueue wqueue){
         WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
@@ -1847,6 +1851,88 @@ public class DbGateway {
         return practiceLogRepository.findFirstByOrderByPracticeLogIdDesc()
                 .map(mapper::toPracticeLogDTO)
                 .orElse(null);
+    }
+
+    public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds){
+        if( shinryouIds.size() == 0 ){
+            return Collections.emptyList();
+        } else {
+            return shinryouAttrRepository.batchGetShinryouAttr(shinryouIds).stream()
+                    .map(mapper::toShinryouAttrDTO).collect(Collectors.toList());
+        }
+    }
+
+    public Optional<ShinryouAttrDTO> findShinryouAttr(int shinryouId){
+        return shinryouAttrRepository.findOneByShinryouId(shinryouId)
+                .map(mapper::toShinryouAttrDTO);
+    }
+
+    public ShinryouAttrDTO setShinryouTekiyou(int shinryouId, String tekiyou){
+        ShinryouAttr attr = shinryouAttrRepository.findOneByShinryouId(shinryouId)
+                .orElseGet(() -> new ShinryouAttr(shinryouId, tekiyou));
+        attr.setTekiyou(tekiyou);
+        attr = shinryouAttrRepository.save(attr);
+        return mapper.toShinryouAttrDTO(attr);
+    }
+
+    public Optional<ShinryouAttrDTO> deleteShinryouTekiyou(int shinryouId){
+        return shinryouAttrRepository.findOneByShinryouId(shinryouId)
+                .flatMap(shinryouAttr -> {
+                    shinryouAttr.setTekiyou(null);
+                    if( shinryouAttr.isEmpty() ){
+                        shinryouAttrRepository.delete(shinryouAttr);
+                        return Optional.empty();
+                    } else {
+                        shinryouAttrRepository.save(shinryouAttr);
+                        return Optional.of(mapper.toShinryouAttrDTO(shinryouAttr));
+                    }
+                });
+    }
+
+    public void enterShinryouAttr(ShinryouAttrDTO dto){
+        ShinryouAttr attr = mapper.fromShinryouAttrDTO(dto);
+        shinryouAttrRepository.save(attr);
+    }
+
+    public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds){
+        if( drugIds.size() == 0 ){
+            return Collections.emptyList();
+        } else {
+            return drugAttrRepository.batchGetDrugAttr(drugIds).stream()
+                    .map(mapper::toDrugAttrDTO).collect(Collectors.toList());
+        }
+    }
+
+    public Optional<DrugAttrDTO> findDrugAttr(int drugId){
+        return drugAttrRepository.findOneByDrugId(drugId)
+                .map(mapper::toDrugAttrDTO);
+    }
+
+    public DrugAttrDTO setDrugTekiyou(int drugId, String tekiyou){
+        DrugAttr attr = drugAttrRepository.findOneByDrugId(drugId)
+                .orElseGet(() -> new DrugAttr(drugId, tekiyou));
+        attr.setTekiyou(tekiyou);
+        attr = drugAttrRepository.save(attr);
+        return mapper.toDrugAttrDTO(attr);
+    }
+
+    public Optional<DrugAttrDTO> deleteDrugTekiyou(int drugId){
+        return drugAttrRepository.findOneByDrugId(drugId)
+                .flatMap(drugAttr -> {
+                    drugAttr.setTekiyou(null);
+                    if( drugAttr.isEmpty() ){
+                        drugAttrRepository.delete(drugAttr);
+                        return Optional.empty();
+                    } else {
+                        drugAttrRepository.save(drugAttr);
+                        return Optional.of(mapper.toDrugAttrDTO(drugAttr));
+                    }
+                });
+    }
+
+    public void enterDrugAttr(DrugAttrDTO dto){
+        DrugAttr attr = mapper.fromDrugAttrDTO(dto);
+        drugAttrRepository.save(attr);
     }
 
 }

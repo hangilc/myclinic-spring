@@ -132,6 +132,12 @@ public class Service {
         @POST("enter-drug")
         Call<Integer> enterDrugCall(@Body DrugDTO drug);
 
+        @GET("get-drug")
+        CompletableFuture<DrugDTO> getDrug(@Query("drug-id") int drugId);
+
+        @GET("get-drug")
+        Call<DrugDTO> getDrugCall(@Query("drug-id") int drugId);
+
         @GET("get-drug-full")
         CompletableFuture<DrugFullDTO> getDrugFull(@Query("drug-id") int drugId);
 
@@ -829,6 +835,74 @@ public class Service {
         @GET("get-hokensho")
         @Streaming
         Call<ResponseBody> getHokenshoCall(@Query("patient-id") int patientId, @Query("file") String file);
+
+        @GET("batch-get-shinryou-attr")
+        CompletableFuture<List<ShinryouAttrDTO>> batchGetShinryouAttr(@Query("shinryou-ids") List<Integer> shinryouIds);
+
+        @GET("batch-get-shinryou-attr")
+        Call<List<ShinryouAttrDTO>> batchGetShinryouAttrCall(@Query("shinryou-ids") List<Integer> shinryouIds);
+
+        @GET("find-shinryou-attr")
+        CompletableFuture<ShinryouAttrDTO> findShinryouAttr(@Query("shinryou-id") int shinryouId);
+
+        @GET("find-shinryou-attr")
+        Call<ShinryouAttrDTO> findShinryouAttrCall(@Query("shinryou-id") int shinryouId);
+
+        @POST("set-shinryou-tekiyou")
+        CompletableFuture<ShinryouAttrDTO> setShinryouTekiyou(@Query("shinryou-id") int shinryouId,
+                                                              @Query("tekiyou") String tekiyou);
+
+        @POST("set-shinryou-tekiyou")
+        Call<ShinryouAttrDTO> setShinryouTekiyouCall(@Query("shinryou-id") int shinryouId,
+                                                              @Query("tekiyou") String tekiyou);
+
+        @POST("delete-shinryou-tekiyou")
+        CompletableFuture<ShinryouAttrDTO> deleteShinryouTekiyou(@Query("shinryou-id") int shinryouId);
+
+        @POST("delete-shinryou-tekiyou")
+        Call<ShinryouAttrDTO> deleteShinryouTekiyouCall(@Query("shinryou-id") int shinryouId);
+
+        @POST("enter-shinryou-attr")
+        CompletableFuture<Boolean> enterShinryouAttr(@Body() ShinryouAttrDTO attr);
+
+        @POST("enter-shinryou-attr")
+        Call<Boolean> enterShinryouAttrCall(@Body() ShinryouAttrDTO attr);
+
+        @GET("batch-get-drug-attr")
+        CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(@Query("drug-ids") List<Integer> drugIds);
+
+        @GET("batch-get-drug-attr")
+        Call<List<DrugAttrDTO>> batchGetDrugAttrCall(@Query("drug-ids") List<Integer> drugIds);
+
+        @GET("find-drug-attr")
+        CompletableFuture<DrugAttrDTO> findDrugAttr(@Query("drug-id") int drugId);
+
+        @GET("find-drug-attr")
+        Call<DrugAttrDTO> findDrugAttrCall(@Query("drug-id") int drugId);
+
+        @POST("set-drug-tekiyou")
+        CompletableFuture<DrugAttrDTO> setDrugTekiyou(@Query("drug-id") int drugId,
+                                                              @Query("tekiyou") String tekiyou);
+
+        @POST("set-drug-tekiyou")
+        Call<DrugAttrDTO> setDrugTekiyouCall(@Query("drug-id") int drugId,
+                                                              @Query("tekiyou") String tekiyou);
+
+        @POST("delete-drug-tekiyou")
+        CompletableFuture<DrugAttrDTO> deleteDrugTekiyou(@Query("drug-id") int drugId);
+
+        @POST("delete-drug-tekiyou")
+        Call<DrugAttrDTO> deleteDrugTekiyouCall(@Query("drug-id") int drugId);
+
+        @POST("enter-drug-attr")
+        CompletableFuture<Boolean> enterDrugAttr(@Body() DrugAttrDTO attr);
+
+        @POST("enter-drug-attr")
+        Call<Boolean> enterDrugAttrCall(@Body() DrugAttrDTO attr);
+
+        @GET("search-text-globally")
+        CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(@Query("text") String text,
+                                                                      @Query("page") int page);
     }
 
     public static ServerAPI api;

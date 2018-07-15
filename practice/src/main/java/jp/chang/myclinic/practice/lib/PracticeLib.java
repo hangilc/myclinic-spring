@@ -1,17 +1,16 @@
 package jp.chang.myclinic.practice.lib;
 
 import javafx.application.Platform;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.Service;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.ListSettingDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -263,59 +262,59 @@ public class PracticeLib {
                 });
     }
 
-    public static void searchIyakuhinMaster(String text, String at, Consumer<List<IyakuhinMasterDTO>> cb) {
-        Service.api.searchIyakuhinMaster(text, at)
-                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
-                .exceptionally(ex -> {
-                    logger.error("Failed search iyakuhin master.", ex);
-                    Platform.runLater(() -> GuiUtil.alertException("医薬品マスターの検索に失敗しました。", ex));
-                    return null;
-                });
-    }
-
-    public static void searchPrescExample(String text, Consumer<List<PrescExampleFullDTO>> cb) {
-        Service.api.searchPrescExample(text)
-                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
-                .exceptionally(ex -> {
-                    logger.error("Failed search presc example.", ex);
-                    Platform.runLater(() -> GuiUtil.alertException("約束処方の検索に失敗しました。", ex));
-                    return null;
-                });
-    }
-
-    public static void searchPreviousPresc(String text, int patientId, Consumer<List<DrugFullDTO>> cb) {
-        Service.api.searchPrevDrug(text, patientId)
-                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
-                .exceptionally(ex -> {
-                    logger.error("Failed search previous prescription.", ex);
-                    Platform.runLater(() -> GuiUtil.alertException("過去の処方の検索に失敗しました。", ex));
-                    return null;
-                });
-    }
-
-    public static void updateDrug(DrugDTO drug, Consumer<DrugFullDTO> cb){
-        PracticeService.updateDrug(drug)
-                .thenCompose(result -> PracticeService.getDrugFull(drug.drugId))
-                .thenAccept(updatedDrug -> Platform.runLater(() -> cb.accept(updatedDrug)));
-    }
-
-    public static void deleteDrug(DrugDTO drug, Runnable cb){
-        PracticeService.deleteDrug(drug)
-                .thenAccept(result -> Platform.runLater(cb));
-    }
-
-    public static void resolveIyakuhinMaster(int iyakuhincode, String at, Consumer<IyakuhinMasterDTO> cb) {
-        if (at.length() > 10) {
-            at = at.substring(0, 10);
-        }
-        Service.api.resolveIyakuhinMaster(iyakuhincode, at)
-                .thenAccept(master -> Platform.runLater(() -> cb.accept(master)))
-                .exceptionally(ex -> {
-                    logger.error("Failed resolve iyakuhin master.", ex);
-                    Platform.runLater(() -> GuiUtil.alertException("医薬品マスターの特定に失敗しました。", ex));
-                    return null;
-                });
-    }
+//    public static void searchIyakuhinMaster(String text, String at, Consumer<List<IyakuhinMasterDTO>> cb) {
+//        Service.api.searchIyakuhinMaster(text, at)
+//                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
+//                .exceptionally(ex -> {
+//                    logger.error("Failed search iyakuhin master.", ex);
+//                    Platform.runLater(() -> GuiUtil.alertException("医薬品マスターの検索に失敗しました。", ex));
+//                    return null;
+//                });
+//    }
+//
+//    public static void searchPrescExample(String text, Consumer<List<PrescExampleFullDTO>> cb) {
+//        Service.api.searchPrescExample(text)
+//                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
+//                .exceptionally(ex -> {
+//                    logger.error("Failed search presc example.", ex);
+//                    Platform.runLater(() -> GuiUtil.alertException("約束処方の検索に失敗しました。", ex));
+//                    return null;
+//                });
+//    }
+//
+//    public static void searchPreviousPresc(String text, int patientId, Consumer<List<DrugFullDTO>> cb) {
+//        Service.api.searchPrevDrug(text, patientId)
+//                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
+//                .exceptionally(ex -> {
+//                    logger.error("Failed search previous prescription.", ex);
+//                    Platform.runLater(() -> GuiUtil.alertException("過去の処方の検索に失敗しました。", ex));
+//                    return null;
+//                });
+//    }
+//
+//    public static void updateDrug(DrugDTO drug, Consumer<DrugFullDTO> cb){
+//        PracticeService.updateDrug(drug)
+//                .thenCompose(result -> PracticeService.getDrugFull(drug.drugId))
+//                .thenAccept(updatedDrug -> Platform.runLater(() -> cb.accept(updatedDrug)));
+//    }
+//
+//    public static void deleteDrug(DrugDTO drug, Runnable cb){
+//        PracticeService.deleteDrug(drug)
+//                .thenAccept(result -> Platform.runLater(cb));
+//    }
+//
+//    public static void resolveIyakuhinMaster(int iyakuhincode, String at, Consumer<IyakuhinMasterDTO> cb) {
+//        if (at.length() > 10) {
+//            at = at.substring(0, 10);
+//        }
+//        Service.api.resolveIyakuhinMaster(iyakuhincode, at)
+//                .thenAccept(master -> Platform.runLater(() -> cb.accept(master)))
+//                .exceptionally(ex -> {
+//                    logger.error("Failed resolve iyakuhin master.", ex);
+//                    Platform.runLater(() -> GuiUtil.alertException("医薬品マスターの特定に失敗しました。", ex));
+//                    return null;
+//                });
+//    }
 
     public static Optional<ListSettingDialog> openPrinterSettingList(){
         try {

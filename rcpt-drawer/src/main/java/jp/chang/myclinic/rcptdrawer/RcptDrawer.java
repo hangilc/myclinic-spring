@@ -236,67 +236,22 @@ public class RcptDrawer {
         TekiyouDrawer tekiyouDrawer = new TekiyouDrawer(compiler, tekiyou.inset(0, 0, 1, 0),
                 this::flushOps);
         tekiyouDrawer.draw(allLines);
-        /*
-        Box[] cc = splitTekiyou();
-        compiler.setFont("Gothic3");
-        compiler.setFont("Gothic3");
-        for (TekiyouLine tekiyouLine : allLines) {
-            String index = null;
-            if (tekiyouLine.index != null && !tekiyouLine.index.isEmpty()) {
-                index = tekiyouLine.index;
-            }
-            String right = null;
-            if (tekiyouLine.tankaTimes != null && !tekiyouLine.tankaTimes.isEmpty()) {
-                right = tekiyouLine.tankaTimes;
-            }
-            List<String> bodyLines = compiler.breakLine(tekiyouLine.body, cc[1].getWidth());
-            for (String body : bodyLines) {
-                if (cc[1].getHeight() < 3) {
-                    flushOps();
-                    cc = splitTekiyou();
-                }
-                if (index != null) {
-                    compiler.textIn(index, cc[0], HAlign.Center, VAlign.Top);
-                    index = null;
-                }
-                if (right != null) {
-                    compiler.textIn(right, cc[2], HAlign.Right, VAlign.Top);
-                    right = null;
-                }
-                HAlign halign = HAlign.Left;
-                if( tekiyouLine.opts.contains(TekiyouLineOpt.AlignRight) ){
-                    halign = HAlign.Right;
-                }
-                if( tekiyouLine.opts.contains(TekiyouLineOpt.GroupBegin) ){
-                    body = "┌" + body;
-                } else if( tekiyouLine.opts.contains(TekiyouLineOpt.GroupExtend) ){
-                    body = "│" + body;
-                } else if( tekiyouLine.opts.contains(TekiyouLineOpt.GroupEnd) ){
-                    body = "└" + body;
-                }
-                compiler.textIn(body, cc[1], halign, VAlign.Top);
-                cc[1] = cc[1].shrinkHeight(3, VertAnchor.Bottom);
-            }
-            cc[0] = cc[0].setTop(cc[1].getTop());
-            cc[2] = cc[2].setTop(cc[1].getTop());
-        }
-        */
         extraShoubyoumeiList = new ArrayList<>();
         tekiyouLines = new ArrayList<>();
         shoujoushoukiList = new ArrayList<>();
     }
 
-    private Box[] splitTekiyou() {
-        Box[] cc = tekiyou.splitToColumns(
-                tekiyouLeftColumnWidth,
-                tekiyou.getWidth() - tekiyouRightColumnWidth
-        );
-        cc[0] = cc[0].inset(0, 1);
-        cc[1] = cc[1].inset(1, 1);
-        cc[2] = cc[2].inset(0, 1);
-        return cc;
-    }
-
+//    private Box[] splitTekiyou() {
+//        Box[] cc = tekiyou.splitToColumns(
+//                tekiyouLeftColumnWidth,
+//                tekiyou.getWidth() - tekiyouRightColumnWidth
+//        );
+//        cc[0] = cc[0].inset(0, 1);
+//        cc[1] = cc[1].inset(1, 1);
+//        cc[2] = cc[2].inset(0, 1);
+//        return cc;
+//    }
+//
     private void setZokushi(List<Op> target, int zokushiIndex, int zokushiTotal) {
         compiler.setOps(target);
         String font = compiler.getCurrentFont();

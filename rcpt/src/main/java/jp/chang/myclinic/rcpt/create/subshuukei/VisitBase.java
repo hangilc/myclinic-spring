@@ -3,7 +3,7 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.HoukatsuKensaKind;
 import jp.chang.myclinic.rcpt.create.*;
-import jp.chang.myclinic.rcpt.lib.*;
+import jp.chang.myclinic.rcpt.create.lib.*;
 
 import java.util.Optional;
 import java.util.Set;
@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 class VisitBase {
 
     ShinryouItem<ShinryouItemData> createShinryouItem(Shinryou src){
-        return new ShinryouItem<>(src.getShinryoucode(), src.getTensuu(),
-                new ShinryouItemData(src.getName()));
+        return new ShinryouItem<>(src.getShinryoucode(), src.getTensuu(), src.getTekiyou(),
+                new ShinryouItemData(src));
     }
 
     ShinryouItem<ShinryouItemData> createShinryouItem(ConductShinryou src){
-        return new ShinryouItem<>(src.shinryoucode, src.tensuu,
+        return new ShinryouItem<>(src.shinryoucode, src.tensuu, null,
                 new ShinryouItemData(src.name));
     }
 

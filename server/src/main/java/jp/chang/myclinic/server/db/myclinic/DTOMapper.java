@@ -608,6 +608,34 @@ public class DTOMapper {
 		return dto;
 	}
 
+	public ShinryouAttrDTO toShinryouAttrDTO(ShinryouAttr row){
+		ShinryouAttrDTO dto = new ShinryouAttrDTO();
+		dto.shinryouId = row.getShinryouId();
+		dto.tekiyou = row.getTekiyou();
+		return dto;
+	}
+
+	public ShinryouAttr fromShinryouAttrDTO(ShinryouAttrDTO dto){
+		ShinryouAttr row = new ShinryouAttr();
+		row.setShinryouId(dto.shinryouId);
+		row.setTekiyou(dto.tekiyou);
+		return row;
+	}
+
+	public DrugAttrDTO toDrugAttrDTO(DrugAttr row){
+		DrugAttrDTO dto = new DrugAttrDTO();
+		dto.drugId = row.getDrugId();
+		dto.tekiyou = row.getTekiyou();
+		return dto;
+	}
+
+	public DrugAttr fromDrugAttrDTO(DrugAttrDTO dto){
+		DrugAttr row = new DrugAttr();
+		row.setDrugId(dto.drugId);
+		row.setTekiyou(dto.tekiyou);
+		return row;
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;

@@ -10,7 +10,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.disease.*;
 
 import java.util.ArrayList;

@@ -24,6 +24,7 @@ public class CopySelectedForm extends VBox {
     private TextField daysField = new TextField();
     private CheckBox keepOpenCheck;
 
+    // TODO: support DrugAttrDTO
     CopySelectedForm(List<DrugFullDTO> drugs) {
         super(4);
         PracticeUtil.addFormClass(this);

@@ -4,9 +4,9 @@ import jp.chang.myclinic.consts.HoukatsuKensaKind;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.create.Globals;
 import jp.chang.myclinic.rcpt.create.Shinryou;
-import jp.chang.myclinic.rcpt.lib.HoukatsuKensaItem;
-import jp.chang.myclinic.rcpt.lib.HoukatsuKensaItemList;
-import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
+import jp.chang.myclinic.rcpt.create.lib.HoukatsuKensaItem;
+import jp.chang.myclinic.rcpt.create.lib.HoukatsuKensaItemList;
+import jp.chang.myclinic.rcpt.create.lib.ShinryouItemList;
 
 import java.util.stream.Collectors;
 
@@ -21,7 +21,7 @@ public class KensaVisit extends VisitBase {
         if( kind != null && kind != HoukatsuKensaKind.NONE ){
             HoukatsuKensaItem<ShinryouItemData> item = new HoukatsuKensaItem<>(kind, Globals.at,
                     shinryou.getShinryoucode(), shinryou.getTensuu(),
-                    new ShinryouItemData(shinryou.getName()));
+                    new ShinryouItemData(shinryou));
             houkatsuList.extendOrAdd(item);
         } else if( isHandanryou(shinryou.getShinryoucode()) ) {
             int shinryoucode = shinryou.getShinryoucode();

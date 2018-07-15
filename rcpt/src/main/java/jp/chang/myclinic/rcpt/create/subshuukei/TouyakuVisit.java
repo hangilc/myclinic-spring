@@ -5,7 +5,7 @@ import jp.chang.myclinic.rcpt.create.Gaiyou;
 import jp.chang.myclinic.rcpt.create.Naifuku;
 import jp.chang.myclinic.rcpt.create.Shinryou;
 import jp.chang.myclinic.rcpt.create.Tonpuku;
-import jp.chang.myclinic.rcpt.lib.*;
+import jp.chang.myclinic.rcpt.create.lib.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,18 +34,18 @@ public class TouyakuVisit extends VisitBase {
 
     public void add(Naifuku drug) {
         NaifukuItem<Naifuku> item = new NaifukuItem<>(drug.usage, drug.days, drug.iyakuhincode,
-                drug.amount, drug.yakka, drug);
+                drug.amount, drug.yakka, drug.tekiyou, drug);
         naifukuList.extendOrAdd(item);
     }
 
     public void add(Tonpuku drug) {
         tonpukuList.add(new TonpukuItem<>(drug.iyakuhincode, drug.usage, drug.amount,
-                drug.yakka, drug.days, drug));
+                drug.yakka, drug.days, drug.tekiyou, drug));
     }
 
     public void add(Gaiyou drug) {
         gaiyouList.add(new GaiyouItem<>(drug.iyakuhincode, drug.usage, drug.amount,
-                drug.yakka, drug));
+                drug.yakka, drug.tekiyou, drug));
     }
 
     void merge(TouyakuVisit src) {
@@ -108,19 +108,40 @@ public class TouyakuVisit extends VisitBase {
 
     private void outputNaifukuTekiyou(){
         TekiyouList tekiyouList = new TekiyouList(SubShuukeiTouyaku.TouyakuNaifuku);
-        naifukuList.stream().forEach(tekiyouList::add);
+        naifukuList.stream().forEach(n -> {
+            tekiyouList.add(n);
+            for(Naifuku naifuku: n.getDrugs()){
+                if( naifuku.tekiyou != null && !naifuku.tekiyou.isEmpty() ){
+                    String str = naifuku.tekiyou;
+                    if( n.getDrugs().size() > 1 ){
+                        str += String.format("（%s）", naifuku.name);
+                    }
+                    tekiyouList.add(new TekiyouAux(str));
+                }
+            }
+        });
         tekiyouList.output();
     }
 
     private void outputTonpukuTekiyou(){
         TekiyouList tekiyouList = new TekiyouList(SubShuukeiTouyaku.TouyakuTonpuku);
-        tonpukuList.stream().forEach(tekiyouList::add);
+        tonpukuList.stream().forEach(t -> {
+            tekiyouList.add(t);
+            if( t.getTekiyou() != null ){
+                tekiyouList.add(new TekiyouAux(t.getTekiyou()));
+            }
+        });
         tekiyouList.output();
     }
 
     private void outputGaiyouTekiyou(){
         TekiyouList tekiyouList = new TekiyouList(SubShuukeiTouyaku.TouyakuGaiyou);
-        gaiyouList.stream().forEach(tekiyouList::add);
+        gaiyouList.stream().forEach(g -> {
+            tekiyouList.add(g);
+            if( g.getTekiyou() != null ){
+                tekiyouList.add(new TekiyouAux(g.getTekiyou()));
+            }
+        });
         tekiyouList.output();
     }
 

@@ -2,17 +2,20 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.create.*;
-import jp.chang.myclinic.rcpt.lib.*;
+import jp.chang.myclinic.rcpt.create.lib.*;
 import jp.chang.myclinic.util.NumberUtil;
+import jp.chang.myclinic.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class TekiyouList {
+    private static Logger logger = LoggerFactory.getLogger(TekiyouList.class);
 
     private static Map<Integer, String> shinryouAliasMap;
     private String code;
@@ -52,6 +55,10 @@ class TekiyouList {
         return shinryouAliasMap;
     }
 
+    void add(Tekiyou tekiyou){
+        items.add(tekiyou);
+    }
+
     void add(String name, Integer tanka, Integer count) {
         items.add(new StandardTekiyou(name, tanka, count));
     }
@@ -64,6 +71,12 @@ class TekiyouList {
             name = item.getData().getName();
         }
         items.add(new StandardTekiyou(name, item.getTanka(), item.getCount()));
+        if( item.getData().getTekiyou() != null ){
+            items.add(new TekiyouAux(item.getData().getTekiyou()));
+        }
+        if( item.getData().getShoujouShouki() != null ){
+            // TODO: add shoujou shouki
+        }
     }
 
     void add(NaifukuItem<Naifuku> item){
@@ -86,6 +99,53 @@ class TekiyouList {
         Gaiyou drug = item.getData();
         tekiyou.addDrug(drug.name, drug.amount, drug.unit);
         items.add(tekiyou);
+        if( Objects.equals(item.getData().unit, "枚") ){
+            int timesPerDay = parseGaiyouTimesPerDay(item.getData().usage, 1);
+            int sheetsPerTimes = parseGaiyouSheetsPerTimes(item.getData().usage, 1);
+            String digits = String.format("%d", timesPerDay * sheetsPerTimes);
+            String kanjiDigits = StringUtil.transliterate(digits, StringUtil::digitToKanji);
+            String text = String.format("１日%s枚", kanjiDigits);
+            TekiyouAux tekiyouAux = new TekiyouAux(text);
+            items.add(tekiyouAux);
+        }
+    }
+
+    private static Pattern gaiyouTaimesPerDayPattern = Pattern.compile(
+            "[1１一]日\\s*([0-9０-９]+)回"
+    );
+
+    private Integer parseGaiyouTimesPerDay(String usage, Integer defaultValue){
+        Matcher matcher = gaiyouTaimesPerDayPattern.matcher(usage);
+        if( matcher.find() ){
+            String src = StringUtil.transliterate(matcher.group(1), StringUtil::kanjiToDigit);
+            try {
+                return Integer.parseInt(src);
+            } catch(NumberFormatException ex){
+                logger.error("Invalid gaiyou times per day: {}", usage);
+                return defaultValue;
+            }
+        } else {
+            return defaultValue;
+        }
+    }
+
+    private static Pattern gaiyouSheetsPerTimesPattern = Pattern.compile(
+            "[1１一]回\\s*([0-9０-９]+)枚"
+    );
+
+    private Integer parseGaiyouSheetsPerTimes(String usage, Integer defaultValue){
+        Matcher matcher = gaiyouTaimesPerDayPattern.matcher(usage);
+        if( matcher.find() ){
+            String src = StringUtil.transliterate(matcher.group(1), StringUtil::kanjiToDigit);
+            try {
+                return Integer.parseInt(src);
+            } catch(NumberFormatException ex){
+                logger.error("Invalid gaiyou sheets per times: {}", usage);
+                return defaultValue;
+            }
+        } else {
+            return defaultValue;
+        }
     }
 
     void add(ConductItem<ShinryouItemData, ConductDrug, ConductKizai> item){

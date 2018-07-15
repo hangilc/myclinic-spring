@@ -19,6 +19,11 @@ public class DrugController {
     @Autowired
     private DbGateway dbGateway;
 
+    @RequestMapping(value = "/get-drug", method=RequestMethod.GET)
+    public DrugDTO getDrug(@RequestParam("drug-id") int drugId){
+        return dbGateway.getDrug(drugId);
+    }
+
     @RequestMapping(value = "/get-drug-full", method = RequestMethod.GET)
     public DrugFullDTO getDrugFull(@RequestParam("drug-id") int drugId) {
         return dbGateway.getDrugFull(drugId);

@@ -6,10 +6,12 @@ import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.rcpt.RcptUtil;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DiseaseUtil;
 import jp.chang.myclinic.util.NumberUtil;
+import jp.chang.myclinic.util.RcptUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
 
 class Data {
 
-    //private static Logger logger = LoggerFactory.getLogger(Data.class);
+    private static Logger logger = LoggerFactory.getLogger(Data.class);
     private int year;
     private int month;
     private List<Integer> patientIds;
@@ -309,14 +311,44 @@ class Data {
         xml.element("受診", () -> {
             xml.element("受診日", visit.visit.visitedAt);
             List<ShinryouFullDTO> shinryouList = new ArrayList<>(visit.shinryouList);
+            List<Integer> shinryouIds = shinryouList.stream().map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
+            Map<Integer, ShinryouAttrDTO> shinryouAttrMap = collectShinryouAttr(shinryouIds);
             shinryouList.sort(Comparator.comparingInt(a -> a.shinryou.shinryouId)); // for backwork compatibility (not necessary for funtion)
-            shinryouList.forEach(this::outShinryou);
-            outDrugs(visit.drugs);
+            shinryouList.forEach(s -> outShinryou(s, shinryouAttrMap.get(s.shinryou.shinryouId)));
+            List<Integer> drugIds = visit.drugs.stream().map(d -> d.drug.drugId).collect(Collectors.toList());
+            Map<Integer, DrugAttrDTO> drugAttrMap = collectDrugAttr(drugIds);
+            outDrugs(visit.drugs, drugAttrMap);
             visit.conducts.forEach(this::outConduct);
         });
     }
 
-    private void outShinryou(ShinryouFullDTO shinryou) {
+    private Map<Integer, ShinryouAttrDTO> collectShinryouAttr(List<Integer> shinryouIds){
+        Map<Integer, ShinryouAttrDTO> map = new HashMap<>();
+        try {
+            List<ShinryouAttrDTO> list = Service.api.batchGetShinryouAttrCall(shinryouIds).execute().body();
+            for(ShinryouAttrDTO attr: list){
+                map.put(attr.shinryouId, attr);
+            }
+        } catch (IOException e) {
+            logger.error("Failed to get shinryou attr: {}", shinryouIds);
+        }
+        return map;
+    }
+
+    private Map<Integer, DrugAttrDTO> collectDrugAttr(List<Integer> drugIds){
+        Map<Integer, DrugAttrDTO> map = new HashMap<>();
+        try {
+            List<DrugAttrDTO> list = Service.api.batchGetDrugAttrCall(drugIds).execute().body();
+            for(DrugAttrDTO attr: list){
+                map.put(attr.drugId, attr);
+            }
+        } catch (IOException e) {
+            logger.error("Failed to get shinryou attr: {}", drugIds);
+        }
+        return map;
+    }
+
+    private void outShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
         xml.element("診療", () -> {
             xml.element("診療コード", shinryou.master.shinryoucode);
             xml.element("名称", shinryou.master.name);
@@ -328,16 +360,21 @@ class Data {
             if (!shinryou.master.kensaGroup.equals("00")) {
                 xml.element("検査グループ", shinryou.master.kensaGroup);
             }
+            if( attr != null ){
+                if( attr.tekiyou != null ){
+                    xml.element("摘要", attr.tekiyou);
+                }
+            }
         });
     }
 
-    private void outDrugs(List<DrugFullDTO> drugs) {
+    private void outDrugs(List<DrugFullDTO> drugs, Map<Integer, DrugAttrDTO> attrMap) {
         if (drugs.size() > 0) {
-            xml.element("投薬", () -> drugs.forEach(this::outOneDrug));
+            xml.element("投薬", () -> drugs.forEach(d -> outOneDrug(d, attrMap.get(d.drug.drugId))));
         }
     }
 
-    private void outOneDrug(DrugFullDTO drug) {
+    private void outOneDrug(DrugFullDTO drug, DrugAttrDTO attr) {
         DrugCategory drugCategory = DrugCategory.fromCode(drug.drug.category);
         String category = "????";
         if (drugCategory == null) {
@@ -345,6 +382,11 @@ class Data {
         } else {
             category = drugCategory.getKanji();
         }
+        String tekiyouTmp = null;
+        if( attr != null && attr.tekiyou != null && !attr.tekiyou.isEmpty() ){
+            tekiyouTmp = attr.tekiyou;
+        }
+        final String tekiyou = tekiyouTmp;
         xml.element(category, () ->{
             xml.element("医薬品コード", drug.master.iyakuhincode);
             xml.element("名称", drug.master.name);
@@ -357,6 +399,9 @@ class Data {
                 xml.element("日数", drug.drug.days);
             } else if (drugCategory == DrugCategory.Tonpuku) {
                 xml.element("回数", drug.drug.days);
+            }
+            if( tekiyou != null ){
+                xml.element("摘要", tekiyou);
             }
         });
     }

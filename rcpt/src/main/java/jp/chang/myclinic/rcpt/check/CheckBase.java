@@ -221,6 +221,10 @@ class CheckBase {
         return drugCategoryOf(drug) == DrugCategory.Naifuku;
     }
 
+    boolean isTonpuku(DrugFullDTO drug) {
+        return drugCategoryOf(drug) == DrugCategory.Tonpuku;
+    }
+
     boolean isGaiyou(DrugFullDTO drug) {
         return drug.master.zaikei == Zaikei.Gaiyou.getCode();
         //return drugCategoryOf(drug) == DrugCategory.Gaiyou;

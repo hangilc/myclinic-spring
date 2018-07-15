@@ -1,6 +1,6 @@
 package jp.chang.myclinic.practice.javafx.disease.search;
 
-import jp.chang.myclinic.practice.Service;
+import jp.chang.myclinic.client.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

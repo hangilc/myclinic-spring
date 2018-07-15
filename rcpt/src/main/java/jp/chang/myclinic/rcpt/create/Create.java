@@ -6,6 +6,8 @@ import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.rcpt.Common;
 import jp.chang.myclinic.rcpt.create.subshuukei.ShuukeiMap;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.HokenUtil;
+import jp.chang.myclinic.util.RcptUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,17 +96,18 @@ class Create {
             System.out.printf("shinryounissuu.hoken %d\n", calcShinryouNissuuHoken(seikyuu.visits));
             {
                 int kouhi1Count = calcShinryouNissuuKouhi1(seikyuu.visits);
-                if( kouhi1Count > 0 ){
+                if (kouhi1Count > 0) {
                     System.out.printf("shinryounissuu.kouhi.1 %d\n", kouhi1Count);
                 }
             }
             {
                 int kouhi2Count = calcShinryouNissuuKouhi2(seikyuu.visits);
-                if( kouhi2Count > 0 ){
+                if (kouhi2Count > 0) {
                     System.out.printf("shinryounissuu.kouhi.2 %d\n", kouhi2Count);
                 }
             }
             ShuukeiMap grandShuukei = new ShuukeiMap();
+            List<ShuukeiMap> shuukeiMapList = new ArrayList<>();
             seikyuu.visits.forEach(visit -> {
                 LocalDate visitedAt = LocalDate.parse(visit.visitedAt.substring(0, 10));
                 ShuukeiMap shuukei = new ShuukeiMap();
@@ -113,9 +116,11 @@ class Create {
                 visit.drug.tonpukuList.forEach(drug -> shuukei.getTouyakuVisit().add(drug));
                 visit.drug.gaiyouList.forEach(drug -> shuukei.getTouyakuVisit().add(drug));
                 visit.conducts.forEach(conduct -> dispatchConduct(shuukei, conduct));
+                shuukeiMapList.add(shuukei);
                 grandShuukei.merge(shuukei);
             });
             grandShuukei.output();
+            outputKouhiJikofutan(seikyuu, shuukeiMapList);
             System.out.print("rcpt_end\n");
         });
     }
@@ -142,21 +147,27 @@ class Create {
                 String tenkiDate = String.format("%c%d.%02d.%02d", getGengou(d).charAt(0), DateTimeUtil.getNen(d),
                         d.getMonthValue(), d.getDayOfMonth());
                 String tenkiStr = String.format("%d(%s)", currentIndex, tenkiDate);
-                switch(byoumei.tenki){
-                    case "治ゆ": chiyu.add(tenkiStr); break;
-                    case "死亡": shibou.add(tenkiStr); break;
-                    case "中止": chuushi.add(tenkiStr); break;
+                switch (byoumei.tenki) {
+                    case "治ゆ":
+                        chiyu.add(tenkiStr);
+                        break;
+                    case "死亡":
+                        shibou.add(tenkiStr);
+                        break;
+                    case "中止":
+                        chuushi.add(tenkiStr);
+                        break;
                 }
             });
             index += 1;
         }
-        if( chiyu.size() > 0 ){
+        if (chiyu.size() > 0) {
             System.out.printf("tenki.chiyu %s\n", String.join(",", chiyu));
         }
-        if( shibou.size() > 0 ){
+        if (shibou.size() > 0) {
             System.out.printf("tenki.shibou %s\n", String.join(",", shibou));
         }
-        if( chuushi.size() > 0 ){
+        if (chuushi.size() > 0) {
             System.out.printf("tenki.chuushi %s\n", String.join(",", chuushi));
         }
     }
@@ -189,8 +200,8 @@ class Create {
         }
     }
 
-    private void ifNotNull(String s, Consumer<String> cb){
-        if( s != null ){
+    private void ifNotNull(String s, Consumer<String> cb) {
+        if (s != null) {
             cb.accept(s);
         }
     }
@@ -246,6 +257,22 @@ class Create {
         }
     }
 
+    private void outputKouhiJikofutan(Seikyuu seikyuu, List<ShuukeiMap> shuukeiMapList) {
+        if (seikyuu.kouhiFutanshaBangou1 > 0) {
+            int futanWari = HokenUtil.kouhiFutanWari(seikyuu.kouhiFutanshaBangou1);
+            if( seikyuu.kouhiFutanshaBangou2 > 0){
+                int futanWari2 = HokenUtil.kouhiFutanWari(seikyuu.kouhiFutanshaBangou2);
+                futanWari =  Math.min(futanWari, futanWari2);
+            }
+            int jikofutan = 0;
+            for(ShuukeiMap shuukeiMap: shuukeiMapList){
+                int ten = shuukeiMap.calcSeikyuuTen();
+                jikofutan += RcptUtil.calcCharge(ten, futanWari);
+            }
+            System.out.printf("ichibu-futankin-kouhi-1 %d\n", jikofutan);
+        }
+    }
+
     private String formatHokenshaBangou(int hokenshaBangou) {
         if (hokenshaBangou < 10000)
             return String.format("%04d", hokenshaBangou);
@@ -271,72 +298,84 @@ class Create {
         return Gengou.fromEra(DateTimeUtil.getEra(date)).getRomaji();
     }
 
-    private String getGengou(LocalDate date){
+    private String getGengou(LocalDate date) {
         return Gengou.fromEra(DateTimeUtil.getEra(date)).getKanji();
     }
 
-    private int calcShinryouNissuuHoken(List<Visit> visits){
-        return (int)visits.stream().map(v -> v.visitedAt).distinct().count();
+    private int calcShinryouNissuuHoken(List<Visit> visits) {
+        return (int) visits.stream().map(v -> v.visitedAt).distinct().count();
     }
 
-    private int calcShinryouNissuuKouhi1(List<Visit> visits){
+    private int calcShinryouNissuuKouhi1(List<Visit> visits) {
         // TODO: implement kouhi1 nissuu
         return 0;
     }
 
-    private int calcShinryouNissuuKouhi2(List<Visit> visits){
+    private int calcShinryouNissuuKouhi2(List<Visit> visits) {
         // TODO: implement kouhi2 nissuu
         return 0;
     }
 
-    private void dispatchShinryou(ShuukeiMap shuukei, Shinryou shinryou, LocalDate visitedAt){
-        switch(shinryou.shuukeisaki){
+    private void dispatchShinryou(ShuukeiMap shuukei, Shinryou shinryou, LocalDate visitedAt) {
+        switch (shinryou.shuukeisaki) {
             case SHUUKEI_SHOSHIN:
-                shuukei.getShoshinVisit().add(shinryou); break;
+                shuukei.getShoshinVisit().add(shinryou);
+                break;
             case SHUUKEI_SAISHIN_SAISHIN:
             case SHUUKEI_SAISHIN_GAIRAIKANRI:
             case SHUUKEI_SAISHIN_JIKANGAI:
             case SHUUKEI_SAISHIN_KYUUJITSU:
             case SHUUKEI_SAISHIN_SHINYA:
-                shuukei.getSaishinVisit().add(shinryou); break;
+                shuukei.getSaishinVisit().add(shinryou);
+                break;
             case SHUUKEI_SHIDOU:
-                shuukei.getShidouVisit().add(shinryou, visitedAt); break;
+                shuukei.getShidouVisit().add(shinryou, visitedAt);
+                break;
             case SHUUKEI_ZAITAKU:
-                shuukei.getZaitakuVisit().add(shinryou); break;
+                shuukei.getZaitakuVisit().add(shinryou, visitedAt);
+                break;
             case SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI:
             case SHUUKEI_TOUYAKU_GAIYOUCHOUZAI:
             case SHUUKEI_TOUYAKU_SHOHOU:
             case SHUUKEI_TOUYAKU_MADOKU:
             case SHUUKEI_TOUYAKU_CHOUKI:
-                shuukei.getTouyakuVisit().add(shinryou); break;
+                shuukei.getTouyakuVisit().add(shinryou);
+                break;
             case SHUUKEI_CHUUSHA_SEIBUTSUETC:
             case SHUUKEI_CHUUSHA_HIKA:
             case SHUUKEI_CHUUSHA_JOUMYAKU:
             case SHUUKEI_CHUUSHA_OTHERS:
-                shuukei.getChuushaVisit().add(shinryou); break;
+                shuukei.getChuushaVisit().add(shinryou);
+                break;
             case SHUUKEI_SHOCHI:
-                shuukei.getShochiVisit().add(shinryou); break;
+                shuukei.getShochiVisit().add(shinryou);
+                break;
             case SHUUKEI_SHUJUTSU_SHUJUTSU:
             case SHUUKEI_SHUJUTSU_YUKETSU:
             case SHUUKEI_MASUI:
-                shuukei.getShujutsuVisit().add(shinryou); break;
+                shuukei.getShujutsuVisit().add(shinryou);
+                break;
             case SHUUKEI_KENSA:
-                shuukei.getKensaVisit().add(shinryou); break;
+                shuukei.getKensaVisit().add(shinryou);
+                break;
             case SHUUKEI_GAZOUSHINDAN:
-                shuukei.getGazouVisit().add(shinryou); break;
+                shuukei.getGazouVisit().add(shinryou);
+                break;
             case SHUUKEI_OTHERS:
-                shuukei.getSonotaVisit().add(shinryou); break;
+                shuukei.getSonotaVisit().add(shinryou);
+                break;
             default:
-                shuukei.getSonotaVisit().add(shinryou); break;
+                shuukei.getSonotaVisit().add(shinryou);
+                break;
         }
     }
 
-    private void dispatchConduct(ShuukeiMap shuukei, Conduct conduct){
+    private void dispatchConduct(ShuukeiMap shuukei, Conduct conduct) {
         ConductKind kind = ConductKind.fromKanjiRep(conduct.kind);
-        if( kind == null ){
+        if (kind == null) {
             throw new RuntimeException("Unknown conduct kind: " + conduct.kind);
         }
-        switch(kind){
+        switch (kind) {
             case HikaChuusha:
             case JoumyakuChuusha:
             case OtherChuusha:

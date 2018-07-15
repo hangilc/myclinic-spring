@@ -1,9 +1,6 @@
 package jp.chang.myclinic.server.db.myclinic;
 
 import javax.persistence.*;
-// import javax.persistence.NamedEntityGraphs;
-// import javax.persistence.NamedEntityGraph;
-// import javax.persistence.NamedAttributeNode;
 
 
 @Entity

@@ -20,10 +20,8 @@ public class Naifuku {
     public char madoku;
     @JsonProperty("日数")
     public int days;
-
-    Naifuku() {
-
-    }
+    @JsonProperty("摘要")
+    public String tekiyou;
 
     @Override
     public String toString() {
@@ -36,6 +34,7 @@ public class Naifuku {
                 ", yakka=" + yakka +
                 ", madoku=" + madoku +
                 ", days=" + days +
+                ", tekiyou='" + tekiyou + '\'' +
                 '}';
     }
 }
