@@ -16,14 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `myclinic`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `myclinic` /*!40100 DEFAULT CHARACTER SET utf8 */;
-
-USE `myclinic`;
-
---
 -- Table structure for table `disease`
 --
 
@@ -54,6 +46,21 @@ CREATE TABLE `disease_adj` (
   `shuushokugocode` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`disease_adj_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9101 DEFAULT CHARSET=cp932;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `drug_attr`
+--
+
+DROP TABLE IF EXISTS `drug_attr`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `drug_attr` (
+  `drug_id` int(10) unsigned NOT NULL,
+  `tekiyou` text,
+  PRIMARY KEY (`drug_id`),
+  CONSTRAINT `drug_attr_ibfk_1` FOREIGN KEY (`drug_id`) REFERENCES `visit_drug` (`drug_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -133,6 +140,66 @@ CREATE TABLE `hotline` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `intraclinic_comment`
+--
+
+DROP TABLE IF EXISTS `intraclinic_comment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `intraclinic_comment` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL DEFAULT '',
+  `content` varchar(255) NOT NULL DEFAULT '',
+  `post_id` int(11) NOT NULL DEFAULT '0',
+  `created_at` date NOT NULL DEFAULT '0000-00-00',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2220 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `intraclinic_post`
+--
+
+DROP TABLE IF EXISTS `intraclinic_post`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `intraclinic_post` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `content` text NOT NULL,
+  `created_at` date NOT NULL DEFAULT '0000-00-00',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1135 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `intraclinic_tag`
+--
+
+DROP TABLE IF EXISTS `intraclinic_tag`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `intraclinic_tag` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `intraclinic_tag_post`
+--
+
+DROP TABLE IF EXISTS `intraclinic_tag_post`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `intraclinic_tag_post` (
+  `post_id` int(11) NOT NULL,
+  `tag_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `iyakuhin_master_arch`
 --
 
@@ -170,7 +237,7 @@ CREATE TABLE `kouhi` (
   `valid_upto` date NOT NULL DEFAULT '0000-00-00',
   `patient_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`kouhi_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1320 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=1321 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -237,7 +304,7 @@ CREATE TABLE `practice_log` (
   `body` json DEFAULT NULL,
   PRIMARY KEY (`practice_log_id`),
   KEY `practice_date` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=7831 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8026 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -259,6 +326,37 @@ CREATE TABLE `presc_example` (
   PRIMARY KEY (`presc_example_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=866 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `shinryou_attr`
+--
+
+DROP TABLE IF EXISTS `shinryou_attr`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shinryou_attr` (
+  `shinryou_id` int(10) unsigned NOT NULL,
+  `tekiyou` text,
+  PRIMARY KEY (`shinryou_id`),
+  CONSTRAINT `shinryou_attr_ibfk_1` FOREIGN KEY (`shinryou_id`) REFERENCES `visit_shinryou` (`shinryou_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Temporary view structure for view `shinryou_view`
+--
+
+DROP TABLE IF EXISTS `shinryou_view`;
+/*!50001 DROP VIEW IF EXISTS `shinryou_view`*/;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+/*!50001 CREATE VIEW `shinryou_view` AS SELECT 
+ 1 AS `shinryou_id`,
+ 1 AS `visit_id`,
+ 1 AS `visited_at`,
+ 1 AS `name`,
+ 1 AS `shinryoucode`*/;
+SET character_set_client = @saved_cs_client;
 
 --
 -- Table structure for table `shinryoukoui_master_arch`
@@ -370,7 +468,7 @@ CREATE TABLE `visit` (
   PRIMARY KEY (`visit_id`),
   KEY `patient_id` (`patient_id`),
   KEY `idx_v_datetime` (`v_datetime`)
-) ENGINE=InnoDB AUTO_INCREMENT=91703 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=91713 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -468,7 +566,7 @@ CREATE TABLE `visit_drug` (
   `d_prescribed` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`drug_id`),
   KEY `visit_id` (`visit_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=174179 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=174188 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -513,7 +611,7 @@ CREATE TABLE `visit_shinryou` (
   `shinryoucode` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`shinryou_id`),
   KEY `visit_id` (`visit_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=607321 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=607401 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -529,7 +627,7 @@ CREATE TABLE `visit_text` (
   `content` text NOT NULL,
   PRIMARY KEY (`text_id`),
   KEY `visit_id` (`visit_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=112262 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=112264 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -547,78 +645,22 @@ CREATE TABLE `wqueue` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Current Database: `intraclinic`
+-- Final view structure for view `shinryou_view`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `intraclinic` /*!40100 DEFAULT CHARACTER SET utf8 */;
-
-USE `intraclinic`;
-
---
--- Table structure for table `comment`
---
-
-DROP TABLE IF EXISTS `comment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `comment` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL DEFAULT '',
-  `content` varchar(255) NOT NULL DEFAULT '',
-  `post_id` int(11) NOT NULL DEFAULT '0',
-  `created_at` date NOT NULL DEFAULT '0000-00-00',
-  PRIMARY KEY (`id`),
-  KEY `fk_comment_post` (`post_id`),
-  CONSTRAINT `fk_comment_post` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2218 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `post`
---
-
-DROP TABLE IF EXISTS `post`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `post` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `content` text NOT NULL,
-  `created_at` date NOT NULL DEFAULT '0000-00-00',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1134 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `tag`
---
-
-DROP TABLE IF EXISTS `tag`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `tag` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=cp932;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `tag_post`
---
-
-DROP TABLE IF EXISTS `tag_post`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `tag_post` (
-  `post_id` int(11) NOT NULL,
-  `tag_id` int(11) NOT NULL,
-  PRIMARY KEY (`post_id`,`tag_id`),
-  KEY `tag_id` (`tag_id`),
-  CONSTRAINT `tag_post_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`),
-  CONSTRAINT `tag_post_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tag` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=cp932;
-/*!40101 SET character_set_client = @saved_cs_client */;
+/*!50001 DROP VIEW IF EXISTS `shinryou_view`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = cp932 */;
+/*!50001 SET character_set_results     = cp932 */;
+/*!50001 SET collation_connection      = cp932_japanese_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`hangil`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `shinryou_view` AS select `s`.`shinryou_id` AS `shinryou_id`,`v`.`visit_id` AS `visit_id`,`v`.`v_datetime` AS `visited_at`,`m`.`name` AS `name`,`s`.`shinryoucode` AS `shinryoucode` from ((`visit_shinryou` `s` join `visit` `v`) join `shinryoukoui_master_arch` `m`) where ((`s`.`visit_id` = `v`.`visit_id`) and (`m`.`shinryoucode` = `s`.`shinryoucode`) and (`m`.`valid_from` <= cast(`v`.`v_datetime` as date)) and ((`m`.`valid_upto` = '0000-00-00') or (`m`.`valid_upto` >= cast(`v`.`v_datetime` as date)))) */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -629,4 +671,4 @@ CREATE TABLE `tag_post` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-07-04 15:35:49
+-- Dump completed on 2018-07-15 15:28:52

@@ -7,6 +7,37 @@ myclinic-spring を新しいＰＣにインストールしてみる。今回使�
 
 不要なソフトをアンインストールして、Windows の更新プログラムをインストール（２時間かかった）。
 
+JDK10 のインストール
+
+http://www.oracle.com/technetwork/java/javase/downloads/index.html
+
+環境変数 JAVA_HOME, PATH を設定する。
+
+Maven のインストール
+
+https://maven.apache.org/download.cgi
+
+環境変数 PATH を設定。
+
+Python 3 をインストール
+
+https://www.python.org/downloads/
+
+環境変数 PATH を設定。
+
+Git をインストール。
+
+https://git-scm.com/downloads
+
+MySQL 5.7 のインストール
+
+```shell
+> mysql -u root -p
+
+mysql> grant all on myclinic.* to {USERNAME} identified by '{PASSWORD}';
+```
+
+
 Chocholatey をインストール。cmd.exe を管理者として起動。
 
 Temporary directory を作成し、そこに移動。
