@@ -4,7 +4,6 @@ import jp.chang.myclinic.rcpt.check.BatchCheck;
 import jp.chang.myclinic.rcpt.create.BatchCreate;
 import jp.chang.myclinic.rcpt.data.BatchData;
 
-// TODO: 内服薬処方の際、調剤料が算定されているかチェックする。
 public class Main {
 
     //private static Logger logger = LoggerFactory.getLogger(Main.class);

@@ -2,9 +2,9 @@ package jp.chang.myclinic.rcpt.check;
 
 import jp.chang.myclinic.dto.VisitFull2DTO;
 
-class CheckChouki extends CheckBase {
+class CheckChouzai extends CheckBase {
 
-    CheckChouki(Scope scope) {
+    CheckChouzai(Scope scope) {
         super(scope);
     }
 

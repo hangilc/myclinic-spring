@@ -1,4 +1,4 @@
-package jp.chang.myclinic.rcpt.lib;
+package jp.chang.myclinic.rcpt.create.lib;
 
 import java.util.Objects;
 

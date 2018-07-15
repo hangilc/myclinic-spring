@@ -2,8 +2,8 @@ package jp.chang.myclinic.rcpt.create.subshuukei;
 
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.create.Shinryou;
-import jp.chang.myclinic.rcpt.lib.ShinryouItem;
-import jp.chang.myclinic.rcpt.lib.ShinryouItemList;
+import jp.chang.myclinic.rcpt.create.lib.ShinryouItem;
+import jp.chang.myclinic.rcpt.create.lib.ShinryouItemList;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDate;

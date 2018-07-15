@@ -1,4 +1,4 @@
-package jp.chang.myclinic.rcpt.lib;
+package jp.chang.myclinic.rcpt.create.lib;
 
 interface ExtendableList<T extends Extendable<T>> extends Streamable<T>, Addable<T> {
 

@@ -1,4 +1,4 @@
-package jp.chang.myclinic.rcpt.lib;
+package jp.chang.myclinic.rcpt.create.lib;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

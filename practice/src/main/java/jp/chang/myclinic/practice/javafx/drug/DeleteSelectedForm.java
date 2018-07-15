@@ -1,10 +1,12 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
@@ -32,14 +34,11 @@ public class DeleteSelectedForm extends VBox {
     private Node createList(List<DrugFullDTO> drugs) {
         VBox list = new VBox(2);
         drugs.forEach(drug -> {
-            DrugCategory category = DrugCategory.fromCode(drug.drug.category);
-            if (category == DrugCategory.Naifuku) {
-                CheckBox check = new CheckBox(DrugUtil.drugRep(drug));
-                check.setUserData(drug);
-                check.setWrapText(true);
-                drugChecks.add(check);
-                list.getChildren().add(check);
-            }
+            CheckBox check = new CheckBox(DrugUtil.drugRep(drug));
+            check.setUserData(drug);
+            check.setWrapText(true);
+            drugChecks.add(check);
+            list.getChildren().add(check);
         });
         return list;
     }

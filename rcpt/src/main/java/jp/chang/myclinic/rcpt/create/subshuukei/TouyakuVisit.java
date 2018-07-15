@@ -5,7 +5,7 @@ import jp.chang.myclinic.rcpt.create.Gaiyou;
 import jp.chang.myclinic.rcpt.create.Naifuku;
 import jp.chang.myclinic.rcpt.create.Shinryou;
 import jp.chang.myclinic.rcpt.create.Tonpuku;
-import jp.chang.myclinic.rcpt.lib.*;
+import jp.chang.myclinic.rcpt.create.lib.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;

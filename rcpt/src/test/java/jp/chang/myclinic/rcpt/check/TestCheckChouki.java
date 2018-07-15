@@ -13,7 +13,7 @@ public class TestCheckChouki extends Base {
         clinic.addDrug();
         clinic.addShinryou(shinryouMap.調基);
         scope.visits = clinic.getVisits();
-        new CheckChouki(scope).check();
+        new CheckChouzai(scope).check();
         assertEquals("1 chouki", 0, nerror);
     }
 
@@ -24,7 +24,7 @@ public class TestCheckChouki extends Base {
         int shinryouId = clinic.addShinryou(shinryouMap.調基);
         clinic.addShinryou(shinryouMap.処方せん料);
         scope.visits = clinic.getVisits();
-        new CheckChouki(scope).check();
+        new CheckChouzai(scope).check();
         assertEquals("shohouryu chouki dupliate", 1, nerror);
         assertBatchDeleteShinryou(shinryouId);
     }
@@ -35,7 +35,7 @@ public class TestCheckChouki extends Base {
         clinic.addShinryou(shinryouMap.再診);
         int shinryouId = clinic.addShinryou(shinryouMap.調基);
         scope.visits = clinic.getVisits();
-        new CheckChouki(scope).check();
+        new CheckChouzai(scope).check();
         assertEquals(1, nerror);
         assertBatchDeleteShinryou(shinryouId);
     }
@@ -48,7 +48,7 @@ public class TestCheckChouki extends Base {
         clinic.addShinryou(shinryouMap.調基);
         int shinryouId = clinic.addShinryou(shinryouMap.調基);
         scope.visits = clinic.getVisits();
-        new CheckChouki(scope).check();
+        new CheckChouzai(scope).check();
         assertEquals(1, nerror);
         assertBatchDeleteShinryou(shinryouId);
     }
@@ -60,7 +60,7 @@ public class TestCheckChouki extends Base {
         clinic.addDrug();
         clinic.addShinryou(shinryouMap.再診);
         scope.visits = clinic.getVisits();
-        new CheckChouki(scope).check();
+        new CheckChouzai(scope).check();
         assertEquals(1, nerror);
         assertEnterShinryou(visitId, shinryouMap.調基);
     }
