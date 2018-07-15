@@ -34,7 +34,7 @@ public class TouyakuVisit extends VisitBase {
 
     public void add(Naifuku drug) {
         NaifukuItem<Naifuku> item = new NaifukuItem<>(drug.usage, drug.days, drug.iyakuhincode,
-                drug.amount, drug.yakka, drug);
+                drug.amount, drug.yakka, drug.tekiyou, drug);
         naifukuList.extendOrAdd(item);
     }
 
@@ -108,7 +108,18 @@ public class TouyakuVisit extends VisitBase {
 
     private void outputNaifukuTekiyou(){
         TekiyouList tekiyouList = new TekiyouList(SubShuukeiTouyaku.TouyakuNaifuku);
-        naifukuList.stream().forEach(tekiyouList::add);
+        naifukuList.stream().forEach(n -> {
+            tekiyouList.add(n);
+            for(Naifuku naifuku: n.getDrugs()){
+                if( naifuku.tekiyou != null && !naifuku.tekiyou.isEmpty() ){
+                    String str = naifuku.tekiyou;
+                    if( n.getDrugs().size() > 1 ){
+                        str += String.format("（%s）", naifuku.name);
+                    }
+                    tekiyouList.add(new TekiyouAux(str));
+                }
+            }
+        });
         tekiyouList.output();
     }
 

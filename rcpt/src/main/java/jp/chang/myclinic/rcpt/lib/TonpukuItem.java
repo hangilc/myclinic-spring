@@ -38,7 +38,7 @@ public class TonpukuItem<T> implements RcptItem, Mergeable<TonpukuItem<T>> {
     @Override
     public boolean canMerge(TonpukuItem<T> src) {
         return iyakuhincode == src.iyakuhincode && Objects.equals(usage, src.usage) &&
-                amount == src.amount;
+                amount == src.amount && Objects.equals(tekiyou, src.tekiyou);
     }
 
     @Override

@@ -18,7 +18,9 @@ class TekiyouAux implements Tekiyou {
 
     @Override
     public void output(String shuukei) {
-        System.out.printf("tekiyou_aux {%s} %s\n", composeOption(), text);
+        if( text != null && !text.isEmpty() ) {
+            System.out.printf("tekiyou_aux {%s} %s\n", composeOption(), text);
+        }
     }
 
     private String composeOption(){

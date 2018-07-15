@@ -9,10 +9,12 @@ public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>>, Exte
     private static class NaifukuItemDrug {
         int iyakuhincode;
         double amount;
+        String tekiyou;
 
-        public NaifukuItemDrug(int iyakuhincode, double amount) {
+        public NaifukuItemDrug(int iyakuhincode, double amount, String tekiyou) {
             this.iyakuhincode = iyakuhincode;
             this.amount = amount;
+            this.tekiyou = tekiyou;
         }
 
         @Override
@@ -21,13 +23,13 @@ public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>>, Exte
             if (o == null || getClass() != o.getClass()) return false;
             NaifukuItemDrug that = (NaifukuItemDrug) o;
             return iyakuhincode == that.iyakuhincode &&
-                    Double.compare(that.amount, amount) == 0;
+                    Double.compare(that.amount, amount) == 0 &&
+                    Objects.equals(tekiyou, that.tekiyou);
         }
 
         @Override
         public int hashCode() {
-
-            return Objects.hash(iyakuhincode, amount);
+            return Objects.hash(iyakuhincode, amount, tekiyou);
         }
     }
 
@@ -37,10 +39,11 @@ public class NaifukuItem<T> implements RcptItem, Mergeable<NaifukuItem<T>>, Exte
     private double kingaku;
     private List<T> drugs = new ArrayList<>();
 
-    public NaifukuItem(String usage, int days, int iyakuhincode, double amount, double yakka, T drug) {
+    public NaifukuItem(String usage, int days, int iyakuhincode, double amount, double yakka,
+                       String tekiyou, T drug) {
         this.usage = usage;
         this.days = days;
-        itemDrugs.add(new NaifukuItemDrug(iyakuhincode, amount));
+        itemDrugs.add(new NaifukuItemDrug(iyakuhincode, amount, tekiyou));
         this.kingaku = yakka * amount;
         drugs.add(drug);
     }
