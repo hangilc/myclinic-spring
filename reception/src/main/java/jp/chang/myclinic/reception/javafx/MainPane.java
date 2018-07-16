@@ -38,13 +38,17 @@ public class MainPane extends VBox implements DispatchHook {
 
     private TextField patientIdField = new TextField();
     private WqueueTable wqueueTable = new WqueueTable();
-    private ObservableList<Wqueue> wqueueList = FXCollections.observableArrayList(wq -> new Observable[]{
-            wq.waitStateProperty()
+    private ObservableList<WqueueTable.Model> wqueueList = FXCollections.observableArrayList(wq -> new Observable[]{
+            wq.waitStateProperty(),
+            wq.lastNameProperty(),
+            wq.firstNameProperty(),
+            wq.lastNameYomiProperty(),
+            wq.firstNameYomiProperty(),
+            wq.sexProperty(),
+            wq.birthdayProperty()
     });
-    private Scope scope;
 
     public MainPane(Scope scope) {
-        this.scope = scope;
         setSpacing(4);
         {
             HBox hbox = new HBox(4);
@@ -298,15 +302,19 @@ public class MainPane extends VBox implements DispatchHook {
         fireEvent(new RefreshEvent());
     }
 
+    public void setWqueueModels(List<WqueueTable.Model> models){
+        wqueueList.setAll(models);
+    }
+
     @Override
     public void onWqueueCreated(Wqueue created, Runnable toNext) {
-        wqueueList.add(created);
+        wqueueList.add(new WqueueModel(created));
         toNext.run();
     }
 
     @Override
     public void onWqueueDeleted(int visitId, Runnable toNext) {
-        wqueueList.removeIf(wq -> wq.getVisit().getVisitId() == visitId);
+        wqueueList.removeIf(wq -> wq.getVisitId() == visitId);
         wqueueTable.getSelectionModel().clearSelection();
         toNext.run();
     }

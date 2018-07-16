@@ -13,10 +13,15 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.reception.event.RefreshEvent;
 import jp.chang.myclinic.reception.javafx.MainPane;
+import jp.chang.myclinic.reception.javafx.WqueueDTOModel;
+import jp.chang.myclinic.reception.javafx.WqueueTable;
 import jp.chang.myclinic.reception.tracker.Tracker;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Main extends Application {
 
@@ -24,6 +29,7 @@ public class Main extends Application {
     private static String wsUrl;
     private Tracker tracker;
     private Scope scope;
+    private MainPane mainPane;
 
     public static void main(String[] args) {
         ReceptionArgs receptionArgs = ReceptionArgs.parseArgs(args);
@@ -47,7 +53,7 @@ public class Main extends Application {
         primaryStage.setTitle("受付");
         this.scope = new Scope();
         BorderPane root = new BorderPane();
-        MainPane mainPane = new MainPane(scope);
+        mainPane = new MainPane(scope);
         mainPane.setPadding(new Insets(10, 10, 10, 10));
         root.setCenter(mainPane);
         root.setTop(createMenuBar());
@@ -116,7 +122,9 @@ public class Main extends Application {
     private void doManualUpdate(){
         Service.api.listWqueueFull()
                 .thenAccept(result -> {
-                    System.out.println(result);
+                    List<WqueueTable.Model> list = result.stream()
+                            .map(WqueueDTOModel::new).collect(Collectors.toList());
+                    mainPane.setWqueueModels(list);
                 })
                 .exceptionally(HandlerFX::exceptionally);
     }
