@@ -19,7 +19,13 @@ public class MasterDownloader {
 	public static final String DEFAULT_IYAKUHIN_FILENAME = "y.zip"; 
 	public static final String DEFAULT_KIZAI_FILENAME = "t.zip"; 
 	public static final String DEFAULT_SHOUBYOUMEI_FILENAME = "b.zip"; 
-	public static final String DEFAULT_SHUUSHOKUGO_FILENAME = "z.zip"; 
+	public static final String DEFAULT_SHUUSHOKUGO_FILENAME = "z.zip";
+
+	public static final String SHINRYOU_PREFIX = "s";
+	public static final String IYAKUHIN_PREFIX = "y";
+	public static final String KIZAI_PREFIX = "t";
+	public static final String SHOUBYOUMEI_PREFIX = "b";
+	public static final String SHUUSHOKUGO_PREFIX = "z";
 
 	public String getStartPageUrl(){
 		return startPageUrl;
