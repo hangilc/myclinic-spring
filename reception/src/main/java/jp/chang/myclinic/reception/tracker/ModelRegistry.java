@@ -97,15 +97,6 @@ public class ModelRegistry {
         return visitRegistry.get(visitId);
     }
 
-//    public Visit getCurrentVisit(){
-//        for(Visit visit: visitRegistry.values()){
-//            if( visit.getWqueueState() == WqueueWaitState.InExam.getCode() ){
-//                return visit;
-//            }
-//        }
-//        return null;
-//    }
-
     private CompletableFuture<Patient> getPatient(int patientId) {
         if (patientRegistry.containsKey(patientId)) {
             return CompletableFuture.completedFuture(patientRegistry.get(patientId));
@@ -226,6 +217,10 @@ public class ModelRegistry {
             }
         }
         return null;
+    }
+
+    public List<Wqueue> getWqueueList(){
+        return wqueueList;
     }
 
     public PharmaQueue createPharmaQueue(PharmaQueueDTO dto){

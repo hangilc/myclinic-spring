@@ -9,12 +9,12 @@ import jp.chang.myclinic.reception.tracker.model.Wqueue;
 
 import java.time.LocalDate;
 
-class WqueueModel implements WqueueTable.Model {
+public class WqueueModel implements WqueueTable.Model {
 
     private Wqueue wqueue;
     private IntegerProperty patientId;
 
-    WqueueModel(Wqueue wqueue) {
+    public WqueueModel(Wqueue wqueue) {
         this.wqueue = wqueue;
         this.patientId = new SimpleIntegerProperty(wqueue.getVisit().getPatient().getPatientId());
     }

@@ -3,12 +3,14 @@ package jp.chang.myclinic.reception.tracker;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.reception.tracker.model.Wqueue;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 public class Tracker {
 
@@ -18,10 +20,11 @@ public class Tracker {
     private WebsocketClient websocketClient;
     private ObjectMapper mapper = new ObjectMapper();
     private Dispatcher dispatcher;
+    private ModelRegistry registry;
 
     public Tracker(String wsUrl, DispatchHook hook, Service.ServerAPI service) {
         this.wsUrl = wsUrl;
-        ModelRegistry registry = new ModelRegistry();
+        registry = new ModelRegistry();
         ActionHook actionHook = new ActionHook(registry, hook);
         this.dispatcher = new Dispatcher(actionHook, service){
             @Override
@@ -95,4 +98,7 @@ public class Tracker {
         logger.info("Started web socket");
     }
 
+    public List<Wqueue> getWqueueList(){
+        return registry.getWqueueList();
+    }
 }

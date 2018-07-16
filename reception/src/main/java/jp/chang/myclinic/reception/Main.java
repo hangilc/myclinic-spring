@@ -14,6 +14,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.reception.event.RefreshEvent;
 import jp.chang.myclinic.reception.javafx.MainPane;
 import jp.chang.myclinic.reception.javafx.WqueueDTOModel;
+import jp.chang.myclinic.reception.javafx.WqueueModel;
 import jp.chang.myclinic.reception.javafx.WqueueTable;
 import jp.chang.myclinic.reception.tracker.Tracker;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -111,7 +112,12 @@ public class Main extends Application {
     }
 
     private void doRestartTracking(){
-        tracker.restart(() -> Platform.runLater(() -> scope.setTracking(true)));
+        if( !tracker.isRunning() ){
+            List<WqueueTable.Model> models = tracker.getWqueueList().stream()
+                    .map(WqueueModel::new).collect(Collectors.toList());
+            mainPane.setWqueueModels(models);
+            tracker.restart(() -> Platform.runLater(() -> scope.setTracking(true)));
+        }
     }
 
     private void doStopTracking() {
