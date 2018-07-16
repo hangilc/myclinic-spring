@@ -34,7 +34,7 @@ class ZipFileParser {
                 throw new RuntimeException("CSV file expected");
             }
             try (InputStream is = zip.getInputStream(entry)) {
-                try (InputStreamReader inputStreamReader = new InputStreamReader(is)) {
+                try (InputStreamReader inputStreamReader = new InputStreamReader(is, "MS932")) {
                     Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(inputStreamReader);
                     for (CSVRecord record : records) {
                         consumer.accept(record);
