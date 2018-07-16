@@ -36,16 +36,26 @@ public class Tracker {
         };
     }
 
-    public void start(){
+    public void start(Runnable openCallback){
         Thread thread = new Thread(dispatcher);
         thread.setDaemon(true);
         thread.start();
-        startWebSocket();
+        startWebSocket(openCallback);
+    }
+
+    public void restart(Runnable openCallback){
+        shutdown();
+        startWebSocket(openCallback);
+    }
+
+    public boolean isRunning(){
+        return websocketClient != null;
     }
 
     public void shutdown(){
         if( websocketClient != null ) {
             websocketClient.shutdown();
+            websocketClient = null;
         }
     }
 
@@ -61,10 +71,11 @@ public class Tracker {
 
     }
 
-    private void startWebSocket(){
+    private void startWebSocket(Runnable openCallback){
         this.websocketClient = new WebsocketClient(wsUrl){
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
+                openCallback.run();
                 webSocket.send("hello");
             }
 

@@ -17,7 +17,9 @@ import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PaymentDTO;
 import jp.chang.myclinic.reception.ReceptionEnv;
+import jp.chang.myclinic.reception.Scope;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
+import jp.chang.myclinic.reception.event.RefreshEvent;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
@@ -34,17 +36,15 @@ import java.util.List;
 public class MainPane extends VBox implements DispatchHook {
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
 
-    private Button searchPatientButton = new Button("患者検索");
-    private Button searchPaymentButton = new Button("会計検索");
-
     private TextField patientIdField = new TextField();
-
     private WqueueTable wqueueTable = new WqueueTable();
     private ObservableList<Wqueue> wqueueList = FXCollections.observableArrayList(wq -> new Observable[]{
             wq.waitStateProperty()
     });
+    private Scope scope;
 
-    public MainPane() {
+    public MainPane(Scope scope) {
+        this.scope = scope;
         setSpacing(4);
         {
             HBox hbox = new HBox(4);
@@ -52,7 +52,9 @@ public class MainPane extends VBox implements DispatchHook {
             Button newPatientButton = new Button("新規患者");
             Button blankReceiptButton = new Button("領収書用紙");
             newPatientButton.setOnAction(event -> doNewPatient());
+            Button searchPatientButton = new Button("患者検索");
             searchPatientButton.setOnAction(event -> doSearchPatient());
+            Button searchPaymentButton = new Button("会計検索");
             searchPaymentButton.setOnAction(event -> doSearchPayment());
             blankReceiptButton.setOnAction(event -> doBlankReceipt());
             hbox.getChildren().addAll(newPatientButton, searchPatientButton, searchPaymentButton, blankReceiptButton);
@@ -78,27 +80,29 @@ public class MainPane extends VBox implements DispatchHook {
         }
         {
             HBox hbox = new HBox(4);
+            hbox.setAlignment(Pos.CENTER_LEFT);
             Button refreshButton = new Button("更新");
             Button cashierButton = new Button("会計");
             Button deselectButton = new Button("選択解除");
             Button deleteButton = new Button("削除");
+            Label noSyncNotice = new Label("非同期中");
+            noSyncNotice.getStyleClass().add("no-sync-notice");
             refreshButton.setOnAction(event -> doRefresh());
             cashierButton.setOnAction(event -> doCashier());
             deselectButton.setOnAction(event -> doDeselect());
             deleteButton.setOnAction(event -> doDelete());
-            hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton);
+            Runnable noSyncNoticeUpdater = () -> {
+                boolean visible = !scope.isTracking();
+                noSyncNotice.setVisible(visible);
+                noSyncNotice.setManaged(visible);
+            };
+            noSyncNoticeUpdater.run();
+            scope.trackingProperty().addListener((obs, oldValue, newValue) -> noSyncNoticeUpdater.run());
+            hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton,
+                    noSyncNotice);
             getChildren().add(hbox);
         }
     }
-
-//    public void setWqueueList(ObservableList<Wqueue> wqueueList) {
-//        ObservableList<Wqueue> list = FXCollections.observableList(wqueueList, wq -> {
-//            return new Observable[]{
-//                    wq.waitStateProperty()
-//            };
-//        });
-//        wqueueTable.setItems(list);
-//    }
 
     private void doCashier() {
         wqueueTable.getSelectedWqueueFullDTO()
@@ -226,8 +230,6 @@ public class MainPane extends VBox implements DispatchHook {
             logger.error("Failed to get PrinterEnv", ex);
             GuiUtil.alertError("Failed to get PrinterEnv");
         }
-//        DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
-//                printerEnv, "reception-receipt");
         DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
                 printerEnv,
                 () -> ReceptionEnv.INSTANCE.getMyclinicEnv().getAppProperty("reception-receipt"),
@@ -293,7 +295,7 @@ public class MainPane extends VBox implements DispatchHook {
     }
 
     private void doRefresh() {
-        //ReceptionEnv.INSTANCE.getWqueueReloader().trigger();
+        fireEvent(new RefreshEvent());
     }
 
     @Override

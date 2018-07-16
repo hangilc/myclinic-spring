@@ -18,4 +18,8 @@
     /*-fx-background-color: derive(-fx-selection-bar-non-focused, 20%), -fx-selection-bar-non-focused;*/
 }
 
+.no-sync-notice {
+    -fx-text-fill: red;
+}
+
 

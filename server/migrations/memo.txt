@@ -1,3 +1,7 @@
+* add drug_attr table
+
+    - source server/migrations/add-drug-attr.sql;
+
 * add shinryou_attr table
 
     - source server/migrations/add-shinryou-attr.sql;

@@ -26,6 +26,7 @@ class PublishingWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        System.out.println("Message received: " + message.getPayload());
         if( lastMessage != null ){
             session.sendMessage(lastMessage);
         }
