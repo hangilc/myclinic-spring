@@ -25,6 +25,9 @@ public class MainInitMaster {
         System.out.println("Entering iyakuhin master.");
         count = enterIyakuhinMaster(saveDir.resolve(MasterDownloader.DEFAULT_IYAKUHIN_FILENAME), validFrom, handler);
         System.out.println(count + " iyakuhin master entered.");
+        System.out.println("Entering kizai master.");
+        count = enterKizaiMaster(saveDir.resolve(MasterDownloader.DEFAULT_KIZAI_FILENAME), validFrom, handler);
+        System.out.println(count + " kizai master entered.");
         stmt.close();
         conn.close();
     }
@@ -70,9 +73,30 @@ public class MainInitMaster {
         String file = MasterDownloader.IYAKUHIN_PREFIX + ".csv";
         ZipFileParser.parse(zipFile.toFile(), file, record -> {
             CSVRow csvRow = new CommonsCSVRow(record);
-            IyakuhinMasterCSV shinryouCSV = new IyakuhinMasterCSV(csvRow);
+            IyakuhinMasterCSV iyakuhinCSV = new IyakuhinMasterCSV(csvRow);
             try {
-                if( handler.enterIyakuhinMaster(shinryouCSV, validFrom) ){
+                if( handler.enterIyakuhinMaster(iyakuhinCSV, validFrom) ){
+                    local.count += 1;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return local.count;
+    }
+
+    private static int enterKizaiMaster(Path zipFile, String validFrom, MasterHandler handler) throws IOException {
+        class Local {
+            private int count;
+        }
+        Local local = new Local();
+        local.count = 0;
+        String file = MasterDownloader.KIZAI_PREFIX + ".csv";
+        ZipFileParser.parse(zipFile.toFile(), file, record -> {
+            CSVRow csvRow = new CommonsCSVRow(record);
+            KizaiMasterCSV kizaiCSV = new KizaiMasterCSV(csvRow);
+            try {
+                if( handler.enterKizaiMaster(kizaiCSV, validFrom) ){
                     local.count += 1;
                 }
             } catch (SQLException e) {

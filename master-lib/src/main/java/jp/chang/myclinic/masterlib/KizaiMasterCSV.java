@@ -2,7 +2,7 @@ package jp.chang.myclinic.masterlib;
 
 public class KizaiMasterCSV {
 
-    public String kubun;
+    public int kubun;
     public String masterShubetsu;
     public int kizaicode;
     public String name;
@@ -12,7 +12,7 @@ public class KizaiMasterCSV {
     public String kingaku;
 
     public KizaiMasterCSV(CSVRow row) {
-        kubun = row.getString(1);
+        kubun = row.getInt(1);
         masterShubetsu = row.getString(2);
         kizaicode = row.getInt(3);
         name = row.getString(5);
