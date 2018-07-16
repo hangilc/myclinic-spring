@@ -65,6 +65,7 @@ public class MainInitMaster {
                     local.count += 1;
                 }
             } catch (SQLException e) {
+                System.err.println("line: " + shinryouCSV.name);
                 throw new RuntimeException(e);
             }
         });
