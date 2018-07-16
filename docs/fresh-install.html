@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="theme/normalize.css">
+	<link rel="stylesheet" href="theme/main.css">
+</head>
+<body width="100%">
+	<div id="main-content">
+	<h1 id="site-name">myclinic-doc</h1>
+	<div id="author">By Hangil Chang</div>
+	<h2 class="article-title">新規インストール</h2>
+	<div>2018年6月25日</div>
+	<p>myclinic-spring を新しいＰＣにインストールしてみる。今回使ったＰＣは Lenovo ノートパソコン ideapad 320 (Core i5, 8GB Memory, 256GB SSD) で、価格は 76,400 円だった。</p>
+<p>不要なソフトをアンインストールして、Windows の更新プログラムをインストール（２時間かかった）。</p>
+<p>JDK10 のインストール</p>
+<p>http://www.oracle.com/technetwork/java/javase/downloads/index.html</p>
+<p>環境変数 JAVA_HOME, PATH を設定する。</p>
+<p>Maven のインストール</p>
+<p>https://maven.apache.org/download.cgi</p>
+<p>環境変数 PATH を設定。</p>
+<p>Python 3 をインストール</p>
+<p>https://www.python.org/downloads/</p>
+<p>環境変数 PATH を設定。</p>
+<p>Git をインストール。</p>
+<p>https://git-scm.com/downloads</p>
+<p>MySQL 5.7 のインストール</p>
+<div class="highlight"><pre><span></span>&gt; mysql -u root -p
+
+mysql&gt; grant all on myclinic.* to <span class="o">{</span>USERNAME<span class="o">}</span> identified by <span class="s1">&#39;{PASSWORD}&#39;</span><span class="p">;</span>
+</pre></div>
+
+
+<p>myclinic-spring の clone</p>
+<div class="highlight"><pre><span></span>&gt; git clone https://github.com/hangilc/myclinic-spring.git
+&gt; <span class="nb">cd</span> myclinic-spring
+&gt; xcopy config-example config /i
+&gt; python -m venv my-pyenv
+&gt; py-myenv<span class="se">\s</span>cripts<span class="se">\a</span>ctivate
+&gt; pip install -r scripts<span class="se">\p</span>ip-freeze.txt
+&gt; mvn install
+</pre></div>
+
+
+<p>master files のダウンロード</p>
+<div class="highlight"><pre><span></span>&gt; scripts<span class="se">\d</span>ownload-all-masters.bat
+</pre></div>
+
+
+<p>環境変数の設定。</p>
+<div class="highlight"><pre><span></span>MYCLINIC_DB_HOST -- database host の名前 (localhost)
+MYCLINIC_DB_USER -- name of db user
+MYCLINIC_DB_PASS -- db password
+</pre></div>
+
+
+<p>database の作成</p>
+<div class="highlight"><pre><span></span>&gt; mysql -u root -p
+
+mysql&gt; create database myclinic<span class="p">;</span>
+mysql&gt; exit<span class="p">;</span>
+
+&gt; <span class="nb">cd</span> myclinic-spring
+&gt; mysql -u hangil -p myclinic &lt;server<span class="se">\m</span>igrations<span class="se">\s</span>chema.sql
+</pre></div>
+	</div>
+</body>
+</html>
