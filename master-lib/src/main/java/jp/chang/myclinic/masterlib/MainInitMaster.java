@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.regex.Pattern;
 
 public class MainInitMaster {
 
@@ -28,6 +29,12 @@ public class MainInitMaster {
         System.out.println("Entering kizai master.");
         count = enterKizaiMaster(saveDir.resolve(MasterDownloader.DEFAULT_KIZAI_FILENAME), validFrom, handler);
         System.out.println(count + " kizai master entered.");
+        System.out.println("Entering shoubyoumei master.");
+        count = enterShoubyoumeiMaster(saveDir.resolve(MasterDownloader.DEFAULT_SHOUBYOUMEI_FILENAME), validFrom, handler);
+        System.out.println(count + " shoubyoumei master entered.");
+        System.out.println("Entering shuushokugo master.");
+        count = enterShuushokugoMaster(saveDir.resolve(MasterDownloader.DEFAULT_SHUUSHOKUGO_FILENAME), validFrom, handler);
+        System.out.println(count + " shuushokugo master entered.");
         stmt.close();
         conn.close();
     }
@@ -49,7 +56,7 @@ public class MainInitMaster {
         }
         Local local = new Local();
         local.count = 0;
-        String file = MasterDownloader.SHINRYOU_PREFIX + ".csv";
+        Pattern file = Pattern.compile(MasterDownloader.SHINRYOU_PREFIX + "\\.csv");
         ZipFileParser.parse(zipFile.toFile(), file, record -> {
             CSVRow csvRow = new CommonsCSVRow(record);
             ShinryouMasterCSV shinryouCSV = new ShinryouMasterCSV(csvRow);
@@ -70,7 +77,7 @@ public class MainInitMaster {
         }
         Local local = new Local();
         local.count = 0;
-        String file = MasterDownloader.IYAKUHIN_PREFIX + ".csv";
+        Pattern file = Pattern.compile(MasterDownloader.IYAKUHIN_PREFIX + "\\.csv");
         ZipFileParser.parse(zipFile.toFile(), file, record -> {
             CSVRow csvRow = new CommonsCSVRow(record);
             IyakuhinMasterCSV iyakuhinCSV = new IyakuhinMasterCSV(csvRow);
@@ -91,12 +98,54 @@ public class MainInitMaster {
         }
         Local local = new Local();
         local.count = 0;
-        String file = MasterDownloader.KIZAI_PREFIX + ".csv";
+        Pattern file = Pattern.compile(MasterDownloader.KIZAI_PREFIX + "\\.csv");
         ZipFileParser.parse(zipFile.toFile(), file, record -> {
             CSVRow csvRow = new CommonsCSVRow(record);
             KizaiMasterCSV kizaiCSV = new KizaiMasterCSV(csvRow);
             try {
                 if( handler.enterKizaiMaster(kizaiCSV, validFrom) ){
+                    local.count += 1;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return local.count;
+    }
+
+    private static int enterShoubyoumeiMaster(Path zipFile, String validFrom, MasterHandler handler) throws IOException {
+        class Local {
+            private int count;
+        }
+        Local local = new Local();
+        local.count = 0;
+        Pattern file = Pattern.compile(MasterDownloader.SHOUBYOUMEI_PREFIX + ".*\\.txt");
+        ZipFileParser.parse(zipFile.toFile(), file, record -> {
+            CSVRow csvRow = new CommonsCSVRow(record);
+            ShoubyoumeiMasterCSV shoubyoumeiCSV = new ShoubyoumeiMasterCSV(csvRow);
+            try {
+                if( handler.enterShoubyoumeiMaster(shoubyoumeiCSV, validFrom) ){
+                    local.count += 1;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return local.count;
+    }
+
+    private static int enterShuushokugoMaster(Path zipFile, String validFrom, MasterHandler handler) throws IOException {
+        class Local {
+            private int count;
+        }
+        Local local = new Local();
+        local.count = 0;
+        Pattern file = Pattern.compile(MasterDownloader.SHUUSHOKUGO_PREFIX + ".*\\.txt");
+        ZipFileParser.parse(zipFile.toFile(), file, record -> {
+            CSVRow csvRow = new CommonsCSVRow(record);
+            ShuushokugoMasterCSV shuushokugoCSV = new ShuushokugoMasterCSV(csvRow);
+            try {
+                if( handler.enterShuushokugoMaster(shuushokugoCSV, validFrom) ){
                     local.count += 1;
                 }
             } catch (SQLException e) {

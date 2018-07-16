@@ -47,6 +47,30 @@ class MasterHandler {
 
     }
 
+    boolean enterShoubyoumeiMaster(ShoubyoumeiMasterCSV shoubyoumeiCSV, String validFrom) throws SQLException {
+        int kubun = shoubyoumeiCSV.kubun;
+        if (kubun == 0 || kubun == 3 || kubun == 5) {
+            String sql = shoubyoumeiSql(shoubyoumeiCSV, validFrom);
+            stmt.executeUpdate(sql);
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    boolean enterShuushokugoMaster(ShuushokugoMasterCSV shuushokugoCSV, String validFrom) throws SQLException {
+        int kubun = shuushokugoCSV.kubun;
+        if (kubun == 0 || kubun == 3 || kubun == 5) {
+            String sql = shuushokugoSql(shuushokugoCSV, validFrom);
+            stmt.executeUpdate(sql);
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
     private static String shinryouTemplate;
 
     static {
@@ -117,7 +141,7 @@ class MasterHandler {
 
     static {
         kizaiTemplate = String.join(" ",
-                "insert into tokuteikizai_master_arch set",
+                "insert into tokuteikizai_master_arch set ",
                 "kizaicode=%d,",
                 "name='%s',",
                 "yomi='%s',",
@@ -137,6 +161,44 @@ class MasterHandler {
                 master.kingaku,
                 validFrom,
                 "0000-00-00"
+        );
+    }
+
+    private static String shoubyoumeiTemplate;
+
+    static {
+        shoubyoumeiTemplate = String.join(" ",
+                "insert into shoubyoumei_master_arch set ",
+                "shoubyoumeicode=%d,",
+                "name='%s',",
+                "valid_from='%s',",
+                "valid_upto='%s';"
+        );
+    }
+
+    private static String shoubyoumeiSql(ShoubyoumeiMasterCSV master, String validFrom) {
+        return String.format(shoubyoumeiTemplate,
+                master.shoubyoumeicode,
+                master.name,
+                validFrom,
+                "0000-00-00"
+        );
+    }
+
+    private static String shuushokugoTemplate;
+
+    static {
+        shuushokugoTemplate = String.join(" ",
+                "insert into shuushokugo_master set ",
+                "shuushokugocode=%d,",
+                "name='%s'"
+        );
+    }
+
+    private static String shuushokugoSql(ShuushokugoMasterCSV master, String validFrom){
+        return String.format(shuushokugoTemplate,
+                master.shuushokugocode,
+                master.name
         );
     }
 
