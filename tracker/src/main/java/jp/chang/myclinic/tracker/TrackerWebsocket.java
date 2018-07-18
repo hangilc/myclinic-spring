@@ -18,6 +18,7 @@ public class TrackerWebsocket {
     private OkHttpClient client;
     private WebSocket websocket;
     private Consumer<String> messageHandler;
+    private boolean isShutDown = false;
 
     public TrackerWebsocket(String url, Consumer<String> messageHandler) {
         this.messageHandler = messageHandler;
@@ -39,8 +40,10 @@ public class TrackerWebsocket {
                 @Override
                 public void onOpen(WebSocket webSocket, Response response) {
                     synchronized (self) {
-                        if (TrackerWebsocket.this.websocket == null) {
+                        if (!isShutDown && TrackerWebsocket.this.websocket == null) {
                             TrackerWebsocket.this.websocket = webSocket;
+                        } else {
+                            webSocket.cancel();
                         }
                     }
                     if (TrackerWebsocket.this.websocket == webSocket) {
@@ -77,6 +80,9 @@ public class TrackerWebsocket {
     }
 
     public void shutdown(){
+        synchronized(this){
+            this.isShutDown = true;
+        }
         timerExecutor.shutdownNow();
         synchronized(this) {
             if (websocket != null) {
