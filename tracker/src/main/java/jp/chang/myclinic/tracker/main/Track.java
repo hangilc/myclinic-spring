@@ -56,4 +56,16 @@ public class Track implements ModelAction {
         System.out.printf("text created %d: %s\n", text.getTextId(), text.getContent());
         toNext.run();
     }
+
+    @Override
+    public void onTextUpdated(Text text, Runnable toNext) {
+        System.out.printf("text updated %d: %s\n", text.getTextId(), text.getContent());
+        toNext.run();
+    }
+
+    @Override
+    public void onTextDeleted(int textId, Runnable toNext) {
+        System.out.println("text deleted: " + textId);
+        toNext.run();
+    }
 }

@@ -22,4 +22,8 @@ public class Text {
     public String getContent() {
         return content;
     }
+
+    public void update(TextDTO dto){
+        this.content = dto.content;
+    }
 }

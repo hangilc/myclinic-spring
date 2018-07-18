@@ -58,12 +58,32 @@ class ModelDispatchAction implements DispatchAction {
 
     @Override
     public void onTextUpdated(TextDTO prev, TextDTO updated, Runnable toNext) {
-        toNext.run();
+        Text text = null;
+        Visit visit = registry.getVisit(updated.visitId);
+        if( visit != null ){
+            for(Text t: visit.getTexts()){
+                if( t.getTextId() == updated.textId ){
+                    text = t;
+                    break;
+                }
+            }
+        }
+        if( text != null ){
+            text.update(updated);
+            modelAction.onTextUpdated(text, toNext);
+        } else {
+            toNext.run();
+        }
     }
 
     @Override
     public void onTextDeleted(TextDTO deleted, Runnable toNext) {
-        toNext.run();
+        Visit visit = registry.getVisit(deleted.visitId);
+        if( visit != null && visit.getTexts().removeIf(t -> t.getTextId() == deleted.textId) ){
+            modelAction.onTextDeleted(deleted.textId, toNext);
+        } else {
+            toNext.run();
+        }
     }
 
     @Override
