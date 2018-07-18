@@ -1,5 +1,10 @@
 package jp.chang.myclinic.recordbrowser.tracking;
 
+public class WebsocketClient {
+
+}
+
+/*
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,3 +80,4 @@ public class WebsocketClient extends WebSocketListener {
 
 
 }
+*/

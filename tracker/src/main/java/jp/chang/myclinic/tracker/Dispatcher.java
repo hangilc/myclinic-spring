@@ -15,11 +15,6 @@ import java.util.concurrent.Semaphore;
 
 class Dispatcher implements Runnable {
 
-    @FunctionalInterface
-    public interface ListLogFunction {
-        Call<List<PracticeLogDTO>> listPracticeLogInRangeCall(String date, int afterId, int beforeId);
-    }
-
     private static Logger logger = LoggerFactory.getLogger(Dispatcher.class);
     private ObjectMapper mapper = new ObjectMapper();
     private Semaphore taskPermit = new Semaphore(1);
