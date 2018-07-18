@@ -1,7 +1,7 @@
-package jp.chang.myclinic.recordbrowser.tracking.ui;
+package jp.chang.myclinic.recordbrowser.tracking.uiold;
 
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.recordbrowser.tracking.model.Text;
+import jp.chang.myclinic.recordbrowser.tracking.modelold.Text;
 
 class RecordText extends TextFlow {
 

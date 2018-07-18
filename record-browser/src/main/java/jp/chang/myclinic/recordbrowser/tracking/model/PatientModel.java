@@ -4,13 +4,13 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jp.chang.myclinic.dto.PatientDTO;
 
-public class Patient {
+public class PatientModel {
 
     private int patientId;
     private StringProperty lastName;
     private StringProperty firstName;
 
-    public Patient(PatientDTO dto){
+    public PatientModel(PatientDTO dto){
         this.patientId = dto.patientId;
         this.lastName = new SimpleStringProperty(dto.lastName);
         this.firstName = new SimpleStringProperty(dto.firstName);
@@ -43,4 +43,5 @@ public class Patient {
     public void setFirstName(String firstName) {
         this.firstName.set(firstName);
     }
+
 }

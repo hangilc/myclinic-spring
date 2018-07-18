@@ -3,7 +3,7 @@ package jp.chang.myclinic.recordbrowser.tracking;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.recordbrowser.tracking.model.*;
+import jp.chang.myclinic.recordbrowser.tracking.modelold.*;
 
 import java.time.LocalDate;
 import java.util.HashMap;

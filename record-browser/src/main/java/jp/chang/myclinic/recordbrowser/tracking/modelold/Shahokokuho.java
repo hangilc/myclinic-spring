@@ -1,15 +1,16 @@
-package jp.chang.myclinic.recordbrowser.tracking.model;
+package jp.chang.myclinic.recordbrowser.tracking.modelold;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import jp.chang.myclinic.dto.KouhiDTO;
-import jp.chang.myclinic.util.KouhiUtil;
+import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.util.ShahokokuhoUtil;
 
-public class Kouhi {
+public class Shahokokuho {
+
     private StringProperty rep = new SimpleStringProperty();
 
-    public Kouhi(KouhiDTO dto){
-        rep.setValue(KouhiUtil.rep(dto));
+    public Shahokokuho(ShahokokuhoDTO dto){
+        rep.setValue(ShahokokuhoUtil.rep(dto));
     }
 
     public String getRep() {

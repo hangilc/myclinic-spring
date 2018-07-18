@@ -1,7 +1,7 @@
-package jp.chang.myclinic.recordbrowser.tracking;
+package jp.chang.myclinic.recordbrowser.tracking.ui;
 
-import javafx.application.Platform;
-import javafx.geometry.Bounds;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
@@ -10,14 +10,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.consts.ConductKind;
-import jp.chang.myclinic.consts.WqueueWaitState;
-import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.recordbrowser.tracking.model.*;
-import jp.chang.myclinic.recordbrowser.tracking.ui.Record;
-import jp.chang.myclinic.utilfx.HandlerFX;
-
-import java.time.LocalDate;
+import jp.chang.myclinic.recordbrowser.tracking.model.RecordModel;
+import jp.chang.myclinic.tracker.DispatchAction;
 
 public class TrackingRoot extends VBox implements DispatchAction {
 
@@ -26,17 +20,14 @@ public class TrackingRoot extends VBox implements DispatchAction {
     private VBox recordList = new VBox();
     private Label paddingPane = new Label();
     private ScrollPane recordScroll;
-    private ModelRegistry registry = new ModelRegistry();
     private CheckBox syncToCurrentVisitCheck = new CheckBox("診察に固定");
-    private VBox recordListWrapper;
-    private String today = LocalDate.now().toString();
 
-    public TrackingRoot() {
+    protected TrackingRoot(ObservableList<RecordModel> recordModels) {
         super(2);
         getStylesheets().add("Main.css");
         getStyleClass().add("app-root");
         paddingPane.setPrefHeight(0);
-        recordListWrapper = new VBox(0, recordList, paddingPane);
+        VBox recordListWrapper = new VBox(0, recordList, paddingPane);
         VBox.setVgrow(recordList, Priority.NEVER);
         VBox.setVgrow(paddingPane, Priority.NEVER);
         recordScroll = new ScrollPane(recordListWrapper);
@@ -47,6 +38,25 @@ public class TrackingRoot extends VBox implements DispatchAction {
                 mainLabel(),
                 recordScroll
         );
+        recordModels.addListener((ListChangeListener<RecordModel>) c -> {
+            while(c.next()){
+                for(RecordModel model: c.getRemoved()){
+                    int visitId = model.getVisitId();
+                    recordList.getChildren().removeIf(node -> {
+                        if( node instanceof Record ){
+                            Record record = (Record)node;
+                            return record.getVisitId() == visitId;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
+                for(RecordModel model: c.getAddedSubList()){
+                    Record record = new Record(model);
+                    recordList.getChildren().add(record);
+                }
+            }
+        });
     }
 
     protected void onRefreshRequest() {
@@ -62,7 +72,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
                 });
             }
         });
-        Hyperlink refreshLink = new Hyperlink("手動更新");
+        Hyperlink refreshLink = new Hyperlink("更新");
         refreshLink.setOnAction(evt -> onRefreshRequest());
         hbox.getChildren().addAll(
                 new Label("本日の診察（自動更新）"),
@@ -72,6 +82,67 @@ public class TrackingRoot extends VBox implements DispatchAction {
         return hbox;
     }
 
+    private void scrollToCurrentVisit(int nUpdate, Runnable cb) {
+    }
+
+    /*
+    private Record findRecord(int visitId) {
+        for (Node node : recordList.getChildren()) {
+            if (node instanceof Record) {
+                Record rec = (Record) node;
+                if (rec.getVisitId() == visitId) {
+                    return rec;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void updateUI(int n) {
+        for (int i = 0; i < n; i++) {
+            applyCss();
+            layout();
+        }
+    }
+
+    private void scrollToCurrentVisit(int nUpdate, Runnable cb) {
+        updateUI(nUpdate);
+        if (syncToCurrentVisitCheck.isSelected()) {
+            Visit visit = registry.getCurrentVisit();
+            if (visit != null) {
+                Record record = findRecord(visit.getVisitId());
+                if (record != null) {
+                    double contentHeight = recordList.getBoundsInLocal().getHeight();
+                    double minY = record.getBoundsInParent().getMinY();
+                    double maxY = record.getBoundsInParent().getMaxY();
+                    Bounds view = recordScroll.getViewportBounds();
+                    double neededPad = view.getHeight() - (maxY - minY);
+                    double available = contentHeight - maxY;
+                    double h = 0;
+                    if (available < neededPad) {
+                        h = neededPad - available;
+                    }
+                    paddingPane.setMinHeight(0);
+                    paddingPane.setMaxHeight(Double.MAX_VALUE);
+                    paddingPane.setPrefHeight(h);
+                    paddingPane.setMinHeight(h);
+                    paddingPane.setMaxHeight(h);
+                    updateUI(1);
+                    double vValue;
+                    if (minY == 0) {
+                        vValue = 0;
+                    } else {
+                        vValue = minY / (contentHeight + h - view.getHeight());
+                    }
+                    recordScroll.setVvalue(vValue);
+                }
+            }
+        }
+        cb.run();
+    }
+*/
+
+    /*
     @Override
     public void onConductCreated(ConductDTO created, Runnable cb) {
         Visit visit = registry.getVisit(created.visitId);
@@ -231,61 +302,6 @@ public class TrackingRoot extends VBox implements DispatchAction {
         } else {
             toNext.run();
         }
-    }
-
-    private Record findRecord(int visitId) {
-        for (Node node : recordList.getChildren()) {
-            if (node instanceof Record) {
-                Record rec = (Record) node;
-                if (rec.getVisitId() == visitId) {
-                    return rec;
-                }
-            }
-        }
-        return null;
-    }
-
-    private void updateUI(int n) {
-        for (int i = 0; i < n; i++) {
-            applyCss();
-            layout();
-        }
-    }
-
-    private void scrollToCurrentVisit(int nUpdate, Runnable cb) {
-        updateUI(nUpdate);
-        if (syncToCurrentVisitCheck.isSelected()) {
-            Visit visit = registry.getCurrentVisit();
-            if (visit != null) {
-                Record record = findRecord(visit.getVisitId());
-                if (record != null) {
-                    double contentHeight = recordList.getBoundsInLocal().getHeight();
-                    double minY = record.getBoundsInParent().getMinY();
-                    double maxY = record.getBoundsInParent().getMaxY();
-                    Bounds view = recordScroll.getViewportBounds();
-                    double neededPad = view.getHeight() - (maxY - minY);
-                    double available = contentHeight - maxY;
-                    double h = 0;
-                    if (available < neededPad) {
-                        h = neededPad - available;
-                    }
-                    paddingPane.setMinHeight(0);
-                    paddingPane.setMaxHeight(Double.MAX_VALUE);
-                    paddingPane.setPrefHeight(h);
-                    paddingPane.setMinHeight(h);
-                    paddingPane.setMaxHeight(h);
-                    updateUI(1);
-                    double vValue;
-                    if (minY == 0) {
-                        vValue = 0;
-                    } else {
-                        vValue = minY / (contentHeight + h - view.getHeight());
-                    }
-                    recordScroll.setVvalue(vValue);
-                }
-            }
-        }
-        cb.run();
     }
 
     @Override
@@ -470,4 +486,7 @@ public class TrackingRoot extends VBox implements DispatchAction {
             toNext.run();
         }
     }
+   */
+
+
 }

@@ -1,4 +1,4 @@
-package jp.chang.myclinic.recordbrowser.tracking.model;
+package jp.chang.myclinic.recordbrowser.tracking.modelold;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

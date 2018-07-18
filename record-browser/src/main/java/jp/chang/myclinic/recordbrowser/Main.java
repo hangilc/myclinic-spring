@@ -16,19 +16,17 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.recordbrowser.event.OpenPatientRecordsEvent;
 import jp.chang.myclinic.recordbrowser.tracking.Dispatcher;
-import jp.chang.myclinic.recordbrowser.tracking.TrackingRoot;
+import jp.chang.myclinic.recordbrowser.tracking.RecordDispatchAction;
 import jp.chang.myclinic.recordbrowser.tracking.WebsocketClient;
+import jp.chang.myclinic.recordbrowser.tracking.model.ModelRegistry;
+import jp.chang.myclinic.recordbrowser.tracking.ui.TrackingRoot;
+import jp.chang.myclinic.tracker.Tracker;
 import jp.chang.myclinic.utilfx.HandlerFX;
-import okhttp3.Cache;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
-import okhttp3.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +58,7 @@ public class Main extends Application {
     private ObjectMapper mapper = new ObjectMapper();
     private String wsUrl;
     private ScheduledExecutorService timerExecutor = Executors.newSingleThreadScheduledExecutor();
+    private Tracker tracker;
 
     public static void main(String[] args) {
         Application.launch(Main.class, args);
@@ -93,72 +92,89 @@ public class Main extends Application {
         handleArgs();
         stage.setTitle("診療録閲覧");
         BorderPane pane = new BorderPane();
-        TrackingRoot root = new TrackingRoot() {
+        ModelRegistry modelRegistry = new ModelRegistry(Service.api);
+        TrackingRoot root = new TrackingRoot(modelRegistry.getRecordModels()) {
             @Override
             protected void onRefreshRequest() {
-                websocketClient.sendMessage("hello");
+                ;
             }
         };
+        RecordDispatchAction dispatchAction = new RecordDispatchAction(modelRegistry);
         StackPane centerStackPane = new StackPane(root);
         pane.setCenter(centerStackPane);
         pane.setTop(createMenu());
         stage.setScene(new Scene(pane));
         StackPane curtain = new StackPane(new Label("同期中"));
         curtain.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
-        this.dispatcher = new Dispatcher(root){
-            @Override
-            protected void beforeCatchup() {
-                Platform.runLater(() -> centerStackPane.getChildren().add(curtain));
-            }
-
-            @Override
-            protected void afterCatchup() {
-                Platform.runLater(() -> centerStackPane.getChildren().remove(curtain));
-            }
-        };
-        Thread dispatcherThread = new Thread(dispatcher);
-        dispatcherThread.setDaemon(true);
-        dispatcherThread.start();
-        startWebSocket();
+        tracker = new Tracker(wsUrl, dispatchAction, Service.api::listPracticeLogInRangeCall);
+        tracker.start(() -> {});
+        stage.addEventHandler(OpenPatientRecordsEvent.eventType, event -> {
+            Service.api.getPatient(event.getPatientId())
+                    .thenAccept(patientDTO -> Platform.runLater(() -> {
+                        PatientHistoryDialog dialog = new PatientHistoryDialog(patientDTO);
+                        Main.setAsChildWindow(dialog);
+                        dialog.setX(Main.getXofMainStage() + 40);
+                        dialog.setY(Main.getYofMainStage() + 20);
+                        dialog.show();
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        });
+//        this.dispatcher = new Dispatcher(root){
+//            @Override
+//            protected void beforeCatchup() {
+//                Platform.runLater(() -> centerStackPane.getChildren().add(curtain));
+//            }
+//
+//            @Override
+//            protected void afterCatchup() {
+//                Platform.runLater(() -> centerStackPane.getChildren().remove(curtain));
+//            }
+//        };
+//        Thread dispatcherThread = new Thread(dispatcher);
+//        dispatcherThread.setDaemon(true);
+//        dispatcherThread.start();
+//        startWebSocket();
         stage.show();
     }
 
     @Override
     public void stop() throws Exception {
         super.stop();
-        timerExecutor.shutdownNow();
-        OkHttpClient client = Service.client;
-        client.dispatcher().executorService().shutdown();
-        client.connectionPool().evictAll();
-        Cache cache = client.cache();
-        if (cache != null) {
-            cache.close();
-        }
-        websocketClient.shutdown();
+        Service.stop();
+        tracker.shutdown();
+//        timerExecutor.shutdownNow();
+//        OkHttpClient client = Service.client;
+//        client.dispatcher().executorService().shutdown();
+//        client.connectionPool().evictAll();
+//        Cache cache = client.cache();
+//        if (cache != null) {
+//            cache.close();
+//        }
+//        websocketClient.shutdown();
     }
 
-    private void startWebSocket(){
-        websocketClient = new WebsocketClient(wsUrl, timerExecutor){
-            @Override
-            public void onOpen(WebSocket webSocket, Response response) {
-                webSocket.send("hello");
-            }
-
-            @Override
-            protected void onNewMessage(String text){
-                try {
-                    PracticeLogDTO plog = mapper.readValue(text, PracticeLogDTO.class);
-                    if( dispatcher != null ){
-                        dispatcher.add(plog);
-                    }
-                } catch (IOException e) {
-                    logger.error("Cannot parse practice log.", e);
-                }
-            }
-
-        };
-        logger.info("Started web socket");
-    }
+//    private void startWebSocket(){
+//        websocketClient = new WebsocketClient(wsUrl, timerExecutor){
+//            @Override
+//            public void onOpen(WebSocket webSocket, Response response) {
+//                webSocket.send("hello");
+//            }
+//
+//            @Override
+//            protected void onNewMessage(String text){
+//                try {
+//                    PracticeLogDTO plog = mapper.readValue(text, PracticeLogDTO.class);
+//                    if( dispatcher != null ){
+//                        dispatcher.add(plog);
+//                    }
+//                } catch (IOException e) {
+//                    logger.error("Cannot parse practice log.", e);
+//                }
+//            }
+//
+//        };
+//        logger.info("Started web socket");
+//    }
 
     private MenuBar createMenu() {
         MenuBar mBar = new MenuBar();

@@ -1,14 +1,14 @@
-package jp.chang.myclinic.recordbrowser.tracking.ui;
+package jp.chang.myclinic.recordbrowser.tracking.uiold;
 
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.recordbrowser.tracking.model.Conduct;
-import jp.chang.myclinic.recordbrowser.tracking.model.ConductDrug;
-import jp.chang.myclinic.recordbrowser.tracking.model.ConductKizai;
-import jp.chang.myclinic.recordbrowser.tracking.model.ConductShinryou;
+import jp.chang.myclinic.recordbrowser.tracking.modelold.Conduct;
+import jp.chang.myclinic.recordbrowser.tracking.modelold.ConductDrug;
+import jp.chang.myclinic.recordbrowser.tracking.modelold.ConductKizai;
+import jp.chang.myclinic.recordbrowser.tracking.modelold.ConductShinryou;
 
 class RecordConduct extends VBox {
 

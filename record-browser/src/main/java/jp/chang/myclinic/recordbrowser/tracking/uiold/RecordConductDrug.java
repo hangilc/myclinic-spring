@@ -1,8 +1,8 @@
-package jp.chang.myclinic.recordbrowser.tracking.ui;
+package jp.chang.myclinic.recordbrowser.tracking.uiold;
 
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.recordbrowser.tracking.model.ConductDrug;
+import jp.chang.myclinic.recordbrowser.tracking.modelold.ConductDrug;
 
 class RecordConductDrug extends TextFlow {
 

@@ -85,7 +85,7 @@ class Search extends VBox {
                     })
                     .exceptionally(HandlerFX::exceptionally);
         } else {
-            logger.error("Invalid model: {}", model);
+            logger.error("Invalid modelold: {}", model);
         }
     }
 
