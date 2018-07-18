@@ -4,6 +4,8 @@ import jp.chang.myclinic.dto.VisitDTO;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Visit {
 
@@ -13,6 +15,7 @@ public class Visit {
     private LocalDateTime visitedAt;
     private int patientId;
     private Patient patient;
+    private List<Text> texts = new ArrayList<>();
 
     public Visit(ModelRegistry registry, VisitDTO dto) {
         this.registry = registry;
@@ -26,6 +29,10 @@ public class Visit {
             this.patient = registry.getPatient(patientId);
         }
         return patient;
+    }
+
+    public List<Text> getTexts(){
+        return texts;
     }
 
 }

@@ -1,9 +1,7 @@
 package jp.chang.myclinic.tracker;
 
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.tracker.model.ModelAction;
-import jp.chang.myclinic.tracker.model.ModelRegistry;
-import jp.chang.myclinic.tracker.model.Visit;
+import jp.chang.myclinic.tracker.model.*;
 
 class ModelDispatchAction implements DispatchAction {
 
@@ -29,22 +27,33 @@ class ModelDispatchAction implements DispatchAction {
 
     @Override
     public void onWqueueCreated(WqueueDTO created, Runnable toNext) {
-        toNext.run();
+        Wqueue wqueue = registry.createWqueue(created);
+        modelAction.onWqueueCreated(wqueue, toNext);
     }
 
     @Override
     public void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated, Runnable toNext) {
-        toNext.run();
+        Wqueue wqueue = registry.updateWqueue(updated);
+        if( wqueue != null ){
+            modelAction.onWqueueUpdated(wqueue, toNext);
+        } else {
+            toNext.run();
+        }
     }
 
     @Override
     public void onWqueueDeleted(WqueueDTO deleted, Runnable toNext) {
-        toNext.run();
+        if( registry.deleteWqueue(deleted.visitId) ){
+            modelAction.onWqueueDeleted(deleted.visitId, toNext);
+        } else {
+            toNext.run();
+        }
     }
 
     @Override
     public void onTextCreated(TextDTO created, Runnable toNext) {
-        toNext.run();
+        Text text = registry.createText(created);
+        modelAction.onTextCreated(text, toNext);
     }
 
     @Override
