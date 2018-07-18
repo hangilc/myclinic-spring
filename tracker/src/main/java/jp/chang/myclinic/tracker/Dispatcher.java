@@ -1,7 +1,6 @@
 package jp.chang.myclinic.tracker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.application.Platform;
 import jp.chang.myclinic.logdto.practicelog.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,20 +35,10 @@ class Dispatcher implements Runnable {
         toNext = () -> taskPermit.release();
     }
 
-    public void add(PracticeLogDTO plog) {
+    void add(PracticeLogDTO plog) {
         try {
             pendings.put(plog);
         } catch (InterruptedException e) {
-            logger.error("Failed to add practice log.", e);
-        }
-    }
-
-    public void addAll(List<PracticeLogDTO> logs){
-        try {
-            for (PracticeLogDTO log : logs) {
-                pendings.put(log);
-            }
-        } catch(InterruptedException e){
             logger.error("Failed to add practice log.", e);
         }
     }
@@ -63,7 +52,7 @@ class Dispatcher implements Runnable {
                 PracticeLogDTO plog = pendings.take();
                 int plogSerialId = plog.serialId;
                 if (plogSerialId == (lastId + 1)) {
-                    Platform.runLater(() -> dispatchOne(plog));
+                    dispatchOne(plog);
                     taskPermit.acquire();
                     this.lastId = plog.serialId;
                 } else if ( plogSerialId > (lastId + 1)) {
@@ -75,11 +64,11 @@ class Dispatcher implements Runnable {
         }
     }
 
-    protected void beforeCatchup(){
+    void beforeCatchup(){
 
     }
 
-    protected void afterCatchup(){
+    void afterCatchup(){
 
     }
 
@@ -100,7 +89,7 @@ class Dispatcher implements Runnable {
             Local local = new Local();
             while( local.i < logs.size() ){
                 PracticeLogDTO currentLog = logs.get(local.i);
-                Platform.runLater(() -> dispatchOne(currentLog));
+                dispatchOne(currentLog);
                 taskPermit.acquire();
                 this.lastId = currentLog.serialId;
                 local.i += 1;
@@ -117,6 +106,7 @@ class Dispatcher implements Runnable {
     }
 
     private void dispatchOne(PracticeLogDTO log) {
+        //System.err.println("DispatchOne: " + log);
         try {
             switch (log.kind) {
                 case "visit-created": {
