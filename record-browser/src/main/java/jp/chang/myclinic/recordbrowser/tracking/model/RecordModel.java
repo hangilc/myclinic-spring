@@ -2,6 +2,8 @@ package jp.chang.myclinic.recordbrowser.tracking.model;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import jp.chang.myclinic.consts.WqueueWaitState;
@@ -20,11 +22,13 @@ public class RecordModel {
     private ObjectProperty<WqueueWaitState> waitState = new SimpleObjectProperty(WqueueWaitState.WaitExam);
     private PatientModel patient;
     private ObservableList<TextModel> texts = FXCollections.observableArrayList();
+    private StringProperty hokenRep = new SimpleStringProperty();
 
-    public RecordModel(VisitDTO visitDTO, PatientModel patient) {
+    public RecordModel(VisitDTO visitDTO, PatientModel patient, String hokenRep) {
         this.visitId = visitDTO.visitId;
         this.visitedAt = LocalDateTime.parse(visitDTO.visitedAt, DateTimeUtil.sqlDateTimeFormatter);
         this.patient = patient;
+        this.hokenRep.setValue(hokenRep);
     }
 
     public int getVisitId() {
@@ -55,4 +59,15 @@ public class RecordModel {
         return texts;
     }
 
+    public String getHokenRep() {
+        return hokenRep.get();
+    }
+
+    public StringProperty hokenRepProperty() {
+        return hokenRep;
+    }
+
+    public void setHokenRep(String hokenRep) {
+        this.hokenRep.set(hokenRep);
+    }
 }

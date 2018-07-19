@@ -1,7 +1,9 @@
 package jp.chang.myclinic.recordbrowser.tracking.ui;
 
+import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.recordbrowser.tracking.model.RecordModel;
 import jp.chang.myclinic.recordbrowser.tracking.model.TextModel;
 import jp.chang.myclinic.utilfx.TwoColumn;
@@ -38,6 +40,7 @@ class Record extends VBox {
                 }
             }
         });
+        addHoken(recordModel.hokenRepProperty());
         getChildren().addAll(title, body);
     }
 
@@ -48,4 +51,13 @@ class Record extends VBox {
     public boolean isCurrent() {
         return title.isCurrent();
     }
+
+    private void addHoken(StringProperty hokenRepProperty){
+        TextFlow textFlow = new TextFlow();
+        javafx.scene.text.Text text = new javafx.scene.text.Text();
+        text.textProperty().bind(hokenRepProperty);
+        textFlow.getChildren().add(text);
+        body.getRightBox().getChildren().add(textFlow);
+    }
+
 }

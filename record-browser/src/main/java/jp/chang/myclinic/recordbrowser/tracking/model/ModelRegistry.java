@@ -8,6 +8,7 @@ import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
+import jp.chang.myclinic.util.HokenUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +33,13 @@ public class ModelRegistry {
         }
         Local local = new Local();
         api.getPatient(visitDTO.patientId)
-                .thenAccept(patientDTO -> {
+                .thenCompose(patientDTO -> {
                     local.patientModel = new PatientModel(patientDTO);
-                    RecordModel recordModel = new RecordModel(visitDTO, local.patientModel);
+                    return api.convertToHoken(visitDTO);
+                })
+                .thenAccept(hokenDTO -> {
+                    String hokenRep = HokenUtil.hokenRep(hokenDTO);
+                    RecordModel recordModel = new RecordModel(visitDTO, local.patientModel, hokenRep);
                     Platform.runLater(() -> {
                         recordModels.add(recordModel);
                         toNext.run();

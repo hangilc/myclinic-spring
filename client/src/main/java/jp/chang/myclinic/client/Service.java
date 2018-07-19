@@ -100,6 +100,12 @@ public class Service {
         @GET("get-hoken")
         Call<HokenDTO> getHokenCall(@Query("visit-id") int visitId);
 
+        @POST("convert-to-hoken")
+        CompletableFuture<HokenDTO> convertToHoken(@Body VisitDTO visitDTO);
+
+        @POST("convert-to-hoken")
+        Call<HokenDTO> convertToHokenCall(@Body VisitDTO visitDTO);
+
         @GET("search-iyakuhin-master-by-name")
         CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMaster(@Query("text") String text, @Query("at") String at);
 
