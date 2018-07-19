@@ -5,6 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
+import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -42,17 +43,38 @@ public class ModelRegistry {
                 .exceptionally(HandlerFX::exceptionally);
     }
 
-    public void deleteRecord(int visitId){
-        recordModels.removeIf(r -> r.getVisitId() == visitId);
+    public boolean deleteRecord(int visitId){
+        return recordModels.removeIf(r -> r.getVisitId() == visitId);
     }
 
-    public void updateWqueue(WqueueDTO wqueueDTO){
+    public boolean updateWqueue(WqueueDTO wqueueDTO){
         int visitId = wqueueDTO.visitId;
         for(RecordModel recordModel: recordModels){
             if( recordModel.getVisitId() == visitId ){
                 recordModel.setWaitState(WqueueWaitState.fromCode(wqueueDTO.waitState));
-                break;
+                return true;
             }
+        }
+        return false;
+    }
+
+    private RecordModel findRecordModel(int visitId){
+        for(RecordModel recordModel: recordModels){
+            if( recordModel.getVisitId() == visitId ){
+                return recordModel;
+            }
+        }
+        return null;
+    }
+
+    public boolean createText(TextDTO textDTO){
+        RecordModel recordModel = findRecordModel(textDTO.visitId);
+        if( recordModel != null ){
+            TextModel textModel = new TextModel(textDTO);
+            recordModel.getTexts().add(textModel);
+            return true;
+        } else {
+            return false;
         }
     }
 

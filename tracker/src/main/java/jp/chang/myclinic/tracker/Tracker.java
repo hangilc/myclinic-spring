@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 public class Tracker {
 
@@ -18,9 +19,6 @@ public class Tracker {
     public Tracker(String url, DispatchAction dispatchAction, ListLogFunction listLogFunction) {
         this.mapper = new ObjectMapper();
         this.dispatcher = new Dispatcher(dispatchAction, listLogFunction);
-        this.dispatcherThread = new Thread(dispatcher);
-        dispatcherThread.setDaemon(true);
-        dispatcherThread.start();
         this.websocket = new TrackerWebsocket(url, message -> {
             try {
                 PracticeLogDTO plog = mapper.readValue(message, PracticeLogDTO.class);
@@ -34,7 +32,16 @@ public class Tracker {
         });
     }
 
+    public void setCallbackWrapper(Consumer<Runnable> callbackWrapper){
+        dispatcher.setCallbackWrapper(callbackWrapper);
+    }
+
     public void start(Runnable cb){
+        if( dispatcherThread == null ){
+            this.dispatcherThread = new Thread(dispatcher);
+            dispatcherThread.setDaemon(true);
+            dispatcherThread.start();
+        }
         websocket.start(cb);
     }
 
@@ -44,7 +51,9 @@ public class Tracker {
 
     public void shutdown(){
         websocket.shutdown();
-        dispatcherThread.interrupt();
+        if( dispatcherThread != null ) {
+            dispatcherThread.interrupt();
+        }
     }
 
     public boolean isConnected(){

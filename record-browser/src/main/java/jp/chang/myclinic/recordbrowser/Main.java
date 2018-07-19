@@ -99,7 +99,7 @@ public class Main extends Application {
                 ;
             }
         };
-        RecordDispatchAction dispatchAction = new RecordDispatchAction(modelRegistry);
+        RecordDispatchAction dispatchAction = new RecordDispatchAction(modelRegistry, root);
         StackPane centerStackPane = new StackPane(root);
         pane.setCenter(centerStackPane);
         pane.setTop(createMenu());
@@ -107,6 +107,7 @@ public class Main extends Application {
         StackPane curtain = new StackPane(new Label("同期中"));
         curtain.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
         tracker = new Tracker(wsUrl, dispatchAction, Service.api::listPracticeLogInRangeCall);
+        tracker.setCallbackWrapper(Platform::runLater);
         tracker.start(() -> {});
         stage.addEventHandler(OpenPatientRecordsEvent.eventType, event -> {
             Service.api.getPatient(event.getPatientId())
@@ -119,21 +120,6 @@ public class Main extends Application {
                     }))
                     .exceptionally(HandlerFX::exceptionally);
         });
-//        this.dispatcher = new Dispatcher(root){
-//            @Override
-//            protected void beforeCatchup() {
-//                Platform.runLater(() -> centerStackPane.getChildren().add(curtain));
-//            }
-//
-//            @Override
-//            protected void afterCatchup() {
-//                Platform.runLater(() -> centerStackPane.getChildren().remove(curtain));
-//            }
-//        };
-//        Thread dispatcherThread = new Thread(dispatcher);
-//        dispatcherThread.setDaemon(true);
-//        dispatcherThread.start();
-//        startWebSocket();
         stage.show();
     }
 
@@ -142,15 +128,6 @@ public class Main extends Application {
         super.stop();
         Service.stop();
         tracker.shutdown();
-//        timerExecutor.shutdownNow();
-//        OkHttpClient client = Service.client;
-//        client.dispatcher().executorService().shutdown();
-//        client.connectionPool().evictAll();
-//        Cache cache = client.cache();
-//        if (cache != null) {
-//            cache.close();
-//        }
-//        websocketClient.shutdown();
     }
 
 //    private void startWebSocket(){

@@ -2,6 +2,7 @@ package jp.chang.myclinic.recordbrowser.tracking.ui;
 
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
@@ -39,19 +40,19 @@ public class TrackingRoot extends VBox implements DispatchAction {
                 recordScroll
         );
         recordModels.addListener((ListChangeListener<RecordModel>) c -> {
-            while(c.next()){
-                for(RecordModel model: c.getRemoved()){
+            while (c.next()) {
+                for (RecordModel model : c.getRemoved()) {
                     int visitId = model.getVisitId();
                     recordList.getChildren().removeIf(node -> {
-                        if( node instanceof Record ){
-                            Record record = (Record)node;
+                        if (node instanceof Record) {
+                            Record record = (Record) node;
                             return record.getVisitId() == visitId;
                         } else {
                             return false;
                         }
                     });
                 }
-                for(RecordModel model: c.getAddedSubList()){
+                for (RecordModel model : c.getAddedSubList()) {
                     Record record = new Record(model);
                     recordList.getChildren().add(record);
                 }
@@ -82,7 +83,56 @@ public class TrackingRoot extends VBox implements DispatchAction {
         return hbox;
     }
 
-    private void scrollToCurrentVisit(int nUpdate, Runnable cb) {
+    private void updateUI(int n) {
+        for (int i = 0; i < n; i++) {
+            applyCss();
+            layout();
+        }
+    }
+
+    private Record findCurrentVisit() {
+        for (Node node : recordList.getChildren()) {
+            if (node instanceof Record) {
+                Record r = (Record) node;
+                if (r.isCurrent()) {
+                    return r;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void scrollToCurrentVisit(int nUpdate, Runnable toNext) {
+        updateUI(nUpdate);
+        if (syncToCurrentVisitCheck.isSelected()) {
+            Record record = findCurrentVisit();
+            if (record != null) {
+                double contentHeight = recordList.getBoundsInLocal().getHeight();
+                double minY = record.getBoundsInParent().getMinY();
+                double maxY = record.getBoundsInParent().getMaxY();
+                Bounds view = recordScroll.getViewportBounds();
+                double neededPad = view.getHeight() - (maxY - minY);
+                double available = contentHeight - maxY;
+                double h = 0;
+                if (available < neededPad) {
+                    h = neededPad - available;
+                }
+                paddingPane.setMinHeight(0);
+                paddingPane.setMaxHeight(Double.MAX_VALUE);
+                paddingPane.setPrefHeight(h);
+                paddingPane.setMinHeight(h);
+                paddingPane.setMaxHeight(h);
+                updateUI(1);
+                double vValue;
+                if (minY == 0) {
+                    vValue = 0;
+                } else {
+                    vValue = minY / (contentHeight + h - view.getHeight());
+                }
+                recordScroll.setVvalue(vValue);
+            }
+        }
+        toNext.run();
     }
 
     /*

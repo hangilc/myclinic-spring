@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 
 public class RecordTitle extends TextFlow {
 
+    private boolean current = false;
+
     RecordTitle(RecordModel recordModel){
         getStyleClass().add("record-title");
         setMaxWidth(Double.MAX_VALUE);
@@ -26,23 +28,14 @@ public class RecordTitle extends TextFlow {
         patientLink.setOnAction(evt -> {
             RecordTitle.this.fireEvent(new OpenPatientRecordsEvent(recordModel.getPatient().getPatientId()));
         });
-//        patientLink.setOnAction(evt -> {
-//            Service.api.getPatient(patient.getPatientId())
-//                    .thenAccept(patientDTO -> Platform.runLater(() -> {
-//                        PatientHistoryDialog dialog = new PatientHistoryDialog(patientDTO);
-//                        Main.setAsChildWindow(dialog);
-//                        dialog.setX(Main.getXofMainStage() + 40);
-//                        dialog.setY(Main.getYofMainStage() + 20);
-//                        dialog.show();
-//                    }))
-//                    .exceptionally(HandlerFX::exceptionally);
-//        });
         String s = dateTimeString(recordModel.getVisitedAt());
         recordModel.waitStateProperty().addListener((obs, oldValue, newValue) -> {
             if( newValue == WqueueWaitState.InExam ){
                 getStyleClass().add("current-visit");
+                this.current = true;
             } else {
                 getStyleClass().removeAll("current-visit");
+                this.current = false;
             }
         });
         getChildren().addAll(
@@ -50,6 +43,10 @@ public class RecordTitle extends TextFlow {
                 patientLink,
                 new Label(s)
         );
+    }
+
+    public boolean isCurrent(){
+        return current;
     }
 
     private String dateTimeString(LocalDateTime at){
