@@ -21,8 +21,9 @@ public class RecordModel {
     private LocalDateTime visitedAt;
     private ObjectProperty<WqueueWaitState> waitState = new SimpleObjectProperty(WqueueWaitState.WaitExam);
     private PatientModel patient;
-    private ObservableList<TextModel> texts = FXCollections.observableArrayList();
     private StringProperty hokenRep = new SimpleStringProperty();
+    private ObservableList<TextModel> texts = FXCollections.observableArrayList();
+    private ObservableList<DrugModel> drugs = FXCollections.observableArrayList();
 
     public RecordModel(VisitDTO visitDTO, PatientModel patient, String hokenRep) {
         this.visitId = visitDTO.visitId;
@@ -75,6 +76,19 @@ public class RecordModel {
         for(TextModel textModel: texts){
             if( textModel.getTextId() == textId ){
                 return textModel;
+            }
+        }
+        return null;
+    }
+
+    public ObservableList<DrugModel> getDrugs() {
+        return drugs;
+    }
+
+    public DrugModel findDrugModel(int drugId){
+        for(DrugModel drugModel: drugs){
+            if( drugModel.getDrugId() == drugId ){
+                return drugModel;
             }
         }
         return null;

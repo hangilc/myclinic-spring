@@ -1,5 +1,6 @@
 package jp.chang.myclinic.recordbrowser.tracking;
 
+import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
@@ -77,6 +78,29 @@ public class RecordDispatchAction implements DispatchAction {
             root.scrollToCurrentVisit(1, toNext);
         } else {
             toNext.run();
+        }
+    }
+
+    @Override
+    public void onDrugCreated(DrugDTO created, Runnable toNext) {
+        modelRegistry.createDrug(created, () -> root.scrollToCurrentVisit(2, toNext));
+    }
+
+    @Override
+    public void onDrugUpdated(DrugDTO prev, DrugDTO updated, Runnable toNext) {
+        modelRegistry.updateDrug(updated, altered -> {
+            if( altered ){
+                root.scrollToCurrentVisit(2, toNext);
+            } else {
+                toNext.run();
+            }
+        });
+    }
+
+    @Override
+    public void onDrugDeleted(DrugDTO deleted, Runnable toNext) {
+        if( modelRegistry.deleteDrug(deleted) ){
+            
         }
     }
 }

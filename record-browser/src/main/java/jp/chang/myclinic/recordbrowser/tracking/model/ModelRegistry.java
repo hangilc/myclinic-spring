@@ -5,19 +5,28 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
-import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.dto.WqueueDTO;
+import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.HokenUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class ModelRegistry {
 
     private static Logger logger = LoggerFactory.getLogger(ModelRegistry.class);
     private Service.ServerAPI api;
     private ObservableList<RecordModel> recordModels = FXCollections.observableArrayList();
+    private Map<Integer, IyakuhinMasterDTO> iyakuhinMasterMap = new HashMap<>();
+    private Map<Integer, ShinryouMasterDTO> shinryouMasterMap = new HashMap<>();
+    private Map<Integer, KizaiMasterDTO> kizaiMasterMap = new HashMap<>();
+    private String today = LocalDate.now().toString();
 
     public ModelRegistry(Service.ServerAPI api) {
         this.api = api;
@@ -106,7 +115,77 @@ public class ModelRegistry {
         } else {
             return false;
         }
+    }
 
+    public void createDrug(DrugDTO drug, Runnable toNext){
+        RecordModel recordModel = findRecordModel(drug.visitId);
+        if( recordModel != null ) {
+            getIyakuhinMaster(drug.iyakuhincode)
+                    .thenAccept(master -> {
+                        DrugFullDTO drugFullDTO = new DrugFullDTO();
+                        drugFullDTO.drug = drug;
+                        drugFullDTO.master = master;
+                        String rep = DrugUtil.drugRep(drugFullDTO);
+                        DrugModel drugModel = new DrugModel(drug.drugId, rep);
+                        Platform.runLater(() -> {
+                            recordModel.getDrugs().add(drugModel);
+                            toNext.run();
+                        });
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        } else {
+            toNext.run();
+        }
+    }
+
+    public void updateDrug(DrugDTO drug, Consumer<Boolean> cb){
+        RecordModel recordModel = findRecordModel(drug.visitId);
+        if( recordModel != null ){
+            DrugModel drugModel = recordModel.findDrugModel(drug.drugId);
+            if( drugModel != null ){
+                getIyakuhinMaster(drug.iyakuhincode)
+                        .thenAccept(master -> {
+                            DrugFullDTO drugFullDTO = new DrugFullDTO();
+                            drugFullDTO.drug = drug;
+                            drugFullDTO.master = master;
+                            String rep = DrugUtil.drugRep(drugFullDTO);
+                            Platform.runLater(() -> {
+                                drugModel.setRep(rep);
+                                cb.accept(true);
+                            });
+                        })
+                        .exceptionally(HandlerFX::exceptionally);
+
+            } else {
+                logger.error("Cannot find drug: " + drug);
+                cb.accept(false);
+            }
+        } else {
+            cb.accept(false);
+        }
+    }
+
+    public boolean deleteDrug(DrugDTO drug){
+        RecordModel recordModel = findRecordModel(drug.visitId);
+        if( recordModel != null ){
+            return recordModel.getDrugs().removeIf(d -> d.getDrugId() == drug.drugId);
+        } else {
+            return false;
+        }
+    }
+
+    private CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode){
+        IyakuhinMasterDTO masterDTO = iyakuhinMasterMap.get(iyakuhincode);
+        if( masterDTO != null ){
+            return CompletableFuture.completedFuture(masterDTO);
+        } else {
+            return api.resolveIyakuhinMaster(iyakuhincode, today)
+                    .thenApply(result -> {
+                        iyakuhinMasterMap.put(iyakuhincode, result);
+                        return result;
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
 
 }
