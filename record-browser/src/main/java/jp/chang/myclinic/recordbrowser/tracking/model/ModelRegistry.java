@@ -183,7 +183,8 @@ public class ModelRegistry {
                         drugFullDTO.shinryou = shinryouDTO;
                         drugFullDTO.master = master;
                         String rep = master.name;
-                        ShinryouModel shinryouModel = new ShinryouModel(shinryouDTO.shinryouId, rep);
+                        ShinryouModel shinryouModel = new ShinryouModel(shinryouDTO.shinryouId,
+                                shinryouDTO.shinryoucode, rep);
                         Platform.runLater(() -> {
                             recordModel.getShinryouList().add(shinryouModel);
                             toNext.run();
@@ -192,6 +193,15 @@ public class ModelRegistry {
                     .exceptionally(HandlerFX::exceptionally);
         } else {
             toNext.run();
+        }
+    }
+
+    public boolean deleteShinryou(ShinryouDTO shinryouDTO){
+        RecordModel recordModel = findRecordModel(shinryouDTO.visitId);
+        if( recordModel != null ){
+            return recordModel.getShinryouList().removeIf(s -> s.getShinryouId() == shinryouDTO.shinryouId);
+        } else {
+            return false;
         }
     }
 

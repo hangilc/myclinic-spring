@@ -110,6 +110,10 @@ public class RecordDispatchAction implements DispatchAction {
 
     @Override
     public void onShinryouDeleted(ShinryouDTO deleted, Runnable toNext) {
-        toNext.run();
+        if( modelRegistry.deleteShinryou(deleted) ){
+            root.scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
+        }
     }
 }

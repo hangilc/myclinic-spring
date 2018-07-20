@@ -7,6 +7,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.recordbrowser.tracking.model.DrugModel;
 import jp.chang.myclinic.recordbrowser.tracking.model.RecordModel;
+import jp.chang.myclinic.recordbrowser.tracking.model.ShinryouModel;
 import jp.chang.myclinic.recordbrowser.tracking.model.TextModel;
 import jp.chang.myclinic.utilfx.TwoColumn;
 import org.slf4j.Logger;
@@ -20,6 +21,8 @@ class Record extends VBox {
     private RecordTitle title;
     private TwoColumn body = new TwoColumn(4);
     private VBox drugBox = new VBox(4);
+    private VBox shinryouBox = new VBox(0);
+    private VBox conductBox = new VBox(4);
 
     Record(RecordModel recordModel) {
         this.visitId = recordModel.getVisitId();
@@ -67,9 +70,31 @@ class Record extends VBox {
                 }
             }
         });
+        recordModel.getShinryouList().addListener((ListChangeListener<ShinryouModel>) c -> {
+            while(c.next()){
+                for(ShinryouModel shinryouModel: c.getRemoved()){
+                    int shinryouId = shinryouModel.getShinryouId();
+                    shinryouBox.getChildren().removeIf(node -> {
+                        if( node instanceof RecordShinryou ){
+                            RecordShinryou r = (RecordShinryou)node;
+                            return r.getShinryouId() == shinryouId;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
+                for(ShinryouModel shinryouModel: c.getAddedSubList()){
+                    RecordShinryou recordShinryou = new RecordShinryou(shinryouModel.getShinryouId(),
+                            shinryouModel.getShinryoucode(), shinryouModel.getRep());
+                    addShinryou(recordShinryou);
+                }
+            }
+        });
         body.getRightBox().getChildren().addAll(
                 createHoken(recordModel.hokenRepProperty()),
-                drugBox
+                drugBox,
+                shinryouBox,
+                conductBox
         );
         getChildren().addAll(title, body);
     }
@@ -97,6 +122,23 @@ class Record extends VBox {
                 RecordDrug d = (RecordDrug)node;
                 d.setIndex(index++);
             }
+        }
+    }
+
+    private void addShinryou(RecordShinryou recordShinryou){
+        int i = 0;
+        int n = shinryouBox.getChildren().size();
+        for(;i<n;i++){
+            Node node = shinryouBox.getChildren().get(i);
+            RecordShinryou r = (RecordShinryou)node;
+            if( r.getShinryoucode() > recordShinryou.getShinryoucode() ){
+                break;
+            }
+        }
+        if( i < n ){
+            shinryouBox.getChildren().add(i, recordShinryou);
+        } else {
+            shinryouBox.getChildren().add(recordShinryou);
         }
     }
 

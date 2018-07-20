@@ -7,15 +7,21 @@ public class ShinryouModel {
 
     //private static Logger logger = LoggerFactory.getLogger(ShinryouModel.class);
     private int shinryouId;
+    private int shinryoucode;
     private StringProperty rep;
 
-    ShinryouModel(int shinryouId, String rep) {
+    ShinryouModel(int shinryouId, int shinryoucode, String rep) {
         this.shinryouId = shinryouId;
+        this.shinryoucode = shinryoucode;
         this.rep = new SimpleStringProperty(rep);
     }
 
     public int getShinryouId() {
         return shinryouId;
+    }
+
+    public int getShinryoucode() {
+        return shinryoucode;
     }
 
     public String getRep() {
