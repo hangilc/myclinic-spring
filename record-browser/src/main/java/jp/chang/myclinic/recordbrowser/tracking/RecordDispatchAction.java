@@ -100,7 +100,9 @@ public class RecordDispatchAction implements DispatchAction {
     @Override
     public void onDrugDeleted(DrugDTO deleted, Runnable toNext) {
         if( modelRegistry.deleteDrug(deleted) ){
-            
+            root.scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
         }
     }
 }
