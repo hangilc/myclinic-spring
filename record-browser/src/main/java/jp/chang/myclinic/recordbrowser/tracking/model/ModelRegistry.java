@@ -174,6 +174,27 @@ public class ModelRegistry {
         }
     }
 
+    public void createShinryou(ShinryouDTO shinryouDTO, Runnable toNext){
+        RecordModel recordModel = findRecordModel(shinryouDTO.visitId);
+        if( recordModel != null ) {
+            getShinryouMaster(shinryouDTO.shinryoucode)
+                    .thenAccept(master -> {
+                        ShinryouFullDTO drugFullDTO = new ShinryouFullDTO();
+                        drugFullDTO.shinryou = shinryouDTO;
+                        drugFullDTO.master = master;
+                        String rep = master.name;
+                        ShinryouModel shinryouModel = new ShinryouModel(shinryouDTO.shinryouId, rep);
+                        Platform.runLater(() -> {
+                            recordModel.getShinryouList().add(shinryouModel);
+                            toNext.run();
+                        });
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        } else {
+            toNext.run();
+        }
+    }
+
     private CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode){
         IyakuhinMasterDTO masterDTO = iyakuhinMasterMap.get(iyakuhincode);
         if( masterDTO != null ){
@@ -182,6 +203,34 @@ public class ModelRegistry {
             return api.resolveIyakuhinMaster(iyakuhincode, today)
                     .thenApply(result -> {
                         iyakuhinMasterMap.put(iyakuhincode, result);
+                        return result;
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        }
+    }
+
+    private CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode){
+        ShinryouMasterDTO masterDTO = shinryouMasterMap.get(shinryoucode);
+        if( masterDTO != null ){
+            return CompletableFuture.completedFuture(masterDTO);
+        } else {
+            return api.resolveShinryouMaster(shinryoucode, today)
+                    .thenApply(result -> {
+                        shinryouMasterMap.put(shinryoucode, result);
+                        return result;
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        }
+    }
+
+    private CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode){
+        KizaiMasterDTO masterDTO = kizaiMasterMap.get(kizaicode);
+        if( masterDTO != null ){
+            return CompletableFuture.completedFuture(masterDTO);
+        } else {
+            return api.resolveKizaiMaster(kizaicode, today)
+                    .thenApply(result -> {
+                        kizaiMasterMap.put(kizaicode, result);
                         return result;
                     })
                     .exceptionally(HandlerFX::exceptionally);

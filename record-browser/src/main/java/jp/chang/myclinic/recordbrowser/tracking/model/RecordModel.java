@@ -24,6 +24,7 @@ public class RecordModel {
     private StringProperty hokenRep = new SimpleStringProperty();
     private ObservableList<TextModel> texts = FXCollections.observableArrayList();
     private ObservableList<DrugModel> drugs = FXCollections.observableArrayList();
+    private ObservableList<ShinryouModel> shinryouList = FXCollections.observableArrayList();
 
     public RecordModel(VisitDTO visitDTO, PatientModel patient, String hokenRep) {
         this.visitId = visitDTO.visitId;
@@ -93,4 +94,18 @@ public class RecordModel {
         }
         return null;
     }
+
+    public ObservableList<ShinryouModel> getShinryouList() {
+        return shinryouList;
+    }
+
+    public ShinryouModel findShinryouModel(int shinryouId){
+        for(ShinryouModel shinryouModel: shinryouList){
+            if( shinryouModel.getShinryouId() == shinryouId ){
+                return shinryouModel;
+            }
+        }
+        return null;
+    }
+
 }

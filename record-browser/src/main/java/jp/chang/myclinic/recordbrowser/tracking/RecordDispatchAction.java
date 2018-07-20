@@ -1,9 +1,6 @@
 package jp.chang.myclinic.recordbrowser.tracking;
 
-import jp.chang.myclinic.dto.DrugDTO;
-import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.dto.WqueueDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.recordbrowser.tracking.model.ModelRegistry;
 import jp.chang.myclinic.recordbrowser.tracking.ui.TrackingRoot;
 import jp.chang.myclinic.tracker.DispatchAction;
@@ -104,5 +101,15 @@ public class RecordDispatchAction implements DispatchAction {
         } else {
             toNext.run();
         }
+    }
+
+    @Override
+    public void onShinryouCreated(ShinryouDTO created, Runnable toNext) {
+        modelRegistry.createShinryou(created, () -> root.scrollToCurrentVisit(2, toNext));
+    }
+
+    @Override
+    public void onShinryouDeleted(ShinryouDTO deleted, Runnable toNext) {
+        toNext.run();
     }
 }
