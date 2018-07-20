@@ -83,4 +83,30 @@ public class ModelRegistry {
         }
     }
 
+    public boolean updateText(TextDTO textDTO){
+        RecordModel recordModel = findRecordModel(textDTO.visitId);
+        if( recordModel != null ){
+            TextModel textModel = recordModel.findTextModel(textDTO.textId);
+            if (textModel != null) {
+                textModel.setContent(textDTO.content);
+                return true;
+            } else {
+                logger.error("Cannot find text: " + textDTO);
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public boolean deleteText(TextDTO deleted){
+        RecordModel recordModel = findRecordModel(deleted.visitId);
+        if( recordModel != null ){
+            return recordModel.getTexts().removeIf(t -> t.getTextId() == deleted.textId);
+        } else {
+            return false;
+        }
+
+    }
+
 }

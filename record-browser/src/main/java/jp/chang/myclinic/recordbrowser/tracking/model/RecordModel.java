@@ -70,4 +70,13 @@ public class RecordModel {
     public void setHokenRep(String hokenRep) {
         this.hokenRep.set(hokenRep);
     }
+
+    public TextModel findTextModel(int textId){
+        for(TextModel textModel: texts){
+            if( textModel.getTextId() == textId ){
+                return textModel;
+            }
+        }
+        return null;
+    }
 }

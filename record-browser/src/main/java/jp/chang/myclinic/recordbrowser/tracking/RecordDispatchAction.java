@@ -64,11 +64,19 @@ public class RecordDispatchAction implements DispatchAction {
 
     @Override
     public void onTextUpdated(TextDTO prev, TextDTO updated, Runnable toNext) {
-        toNext.run();
+        if( modelRegistry.updateText(updated) ){
+            root.scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
+        }
     }
 
     @Override
     public void onTextDeleted(TextDTO deleted, Runnable toNext) {
-        toNext.run();
+        if( modelRegistry.deleteText(deleted) ){
+            root.scrollToCurrentVisit(1, toNext);
+        } else {
+            toNext.run();
+        }
     }
 }
