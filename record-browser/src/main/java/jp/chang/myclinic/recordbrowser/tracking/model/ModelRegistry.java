@@ -205,6 +205,14 @@ public class ModelRegistry {
         }
     }
 
+    public void createConduct(ConductDTO created){
+        RecordModel recordModel = findRecordModel(created.visitId);
+        if( recordModel != null ) {
+            ConductModel conductModel = new ConductModel(created);
+            recordModel.getConducts().add(conductModel);
+        }
+    }
+
     private CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode){
         IyakuhinMasterDTO masterDTO = iyakuhinMasterMap.get(iyakuhincode);
         if( masterDTO != null ){

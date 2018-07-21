@@ -382,6 +382,12 @@ public class Service {
         @GET("get-conduct")
         Call<ConductDTO> getConductCall(@Query("conduct-id") int conductId);
 
+        @GET("get-find-label")
+        CompletableFuture<GazouLabelDTO> findGazouLabel(@Query("conduct-id") int conductId);
+
+        @GET("get-find-label")
+        Call<GazouLabelDTO> findGazouLabelCall(@Query("conduct-id") int conductId);
+
         @GET("get-conduct-full")
         CompletableFuture<ConductFullDTO> getConductFull(@Query("conduct-id") int conductId);
 

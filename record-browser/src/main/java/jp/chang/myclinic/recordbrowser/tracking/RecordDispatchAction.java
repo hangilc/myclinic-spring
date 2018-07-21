@@ -116,4 +116,20 @@ public class RecordDispatchAction implements DispatchAction {
             toNext.run();
         }
     }
+
+    @Override
+    public void onConductCreated(ConductDTO created, Runnable toNext) {
+        modelRegistry.createConduct(created);
+        root.scrollToCurrentVisit(2, toNext);
+    }
+
+    @Override
+    public void onConductUpdated(ConductDTO prev, ConductDTO updated, Runnable toNext) {
+        toNext.run();
+    }
+
+    @Override
+    public void onConductDeleted(ConductDTO deleted, Runnable toNext) {
+        toNext.run();
+    }
 }

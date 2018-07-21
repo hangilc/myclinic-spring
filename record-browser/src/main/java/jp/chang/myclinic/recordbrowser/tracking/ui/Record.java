@@ -5,10 +5,7 @@ import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.recordbrowser.tracking.model.DrugModel;
-import jp.chang.myclinic.recordbrowser.tracking.model.RecordModel;
-import jp.chang.myclinic.recordbrowser.tracking.model.ShinryouModel;
-import jp.chang.myclinic.recordbrowser.tracking.model.TextModel;
+import jp.chang.myclinic.recordbrowser.tracking.model.*;
 import jp.chang.myclinic.utilfx.TwoColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +84,24 @@ class Record extends VBox {
                     RecordShinryou recordShinryou = new RecordShinryou(shinryouModel.getShinryouId(),
                             shinryouModel.getShinryoucode(), shinryouModel.getRep());
                     addShinryou(recordShinryou);
+                }
+            }
+        });
+        recordModel.getConducts().addListener((ListChangeListener<ConductModel>) c -> {
+            while(c.next()){
+                for(ConductModel conductModel: c.getRemoved()){
+                    int conductId = conductModel.getConductId();
+                    conductBox.getChildren().removeIf(node -> {
+                        if( node instanceof RecordConduct ){
+                            RecordConduct rc = (RecordConduct)node;
+                            return rc.getConductId() == conductId;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
+                for(ConductModel conductModel: c.getAddedSubList()){
+                    conductBox.getChildren().add(new RecordConduct(conductModel));
                 }
             }
         });
