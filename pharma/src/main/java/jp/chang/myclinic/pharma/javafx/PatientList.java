@@ -8,23 +8,10 @@ import javafx.scene.image.WritableImage;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.pharma.tracker.model.Patient;
 import jp.chang.myclinic.pharma.tracker.model.Visit;
-import jp.chang.myclinic.pharma.tracker.model.Wqueue;
 
-class PatientList extends ListView<PatientList.Model> {
+class PatientList extends ListView<Visit> {
 
     //private static Logger logger = LoggerFactory.getLogger(PatientList.class);
-
-    public static class Model {
-        Patient patient;
-        Wqueue wqueue;
-        Visit visit;
-
-        public Model(Patient patient, Wqueue wqueue) {
-            this.patient = patient;
-            this.wqueue = wqueue;
-            this.visit = wqueue.getVisit();
-        }
-    }
 
     private Image waitCashierImage = new Image("/wait_cashier.bmp");
     private Image waitPrescImage = new Image("/wait_drug.bmp");
@@ -34,7 +21,7 @@ class PatientList extends ListView<PatientList.Model> {
         getStyleClass().add("patient-list");
         setCellFactory(listView -> new ListCell<>(){
             @Override
-            protected void updateItem(Model item, boolean empty) {
+            protected void updateItem(Visit item, boolean empty) {
                 super.updateItem(item, empty);
                 if( empty ){
                     setText("");
@@ -47,16 +34,16 @@ class PatientList extends ListView<PatientList.Model> {
         });
     }
 
-    private String itemText(Model item){
-        Patient patient = item.patient;
+    private String itemText(Visit item){
+        Patient patient = item.getPatient();
         return String.format("%s%s(%s%s)", patient.getLastName(), patient.getFirstName(),
                 patient.getLastNameYomi(), patient.getFirstNameYomi());
     }
 
-    private Image itemImage(Model item){
+    private Image itemImage(Visit item){
         Image image = blankImage;
-        if( item.wqueue != null ) {
-            WqueueWaitState state = WqueueWaitState.fromCode(item.wqueue.getWaitState());
+        if( item.getWqueueState() != null ) {
+            WqueueWaitState state = item.getWqueueState();
             if (state != null) {
                 switch (state) {
                     case WaitCashier:

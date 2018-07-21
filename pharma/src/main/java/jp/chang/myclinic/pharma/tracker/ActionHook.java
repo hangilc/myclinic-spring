@@ -1,11 +1,11 @@
 package jp.chang.myclinic.pharma.tracker;
 
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.PharmaQueueDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
-import jp.chang.myclinic.pharma.tracker.model.PharmaQueue;
-import jp.chang.myclinic.pharma.tracker.model.Wqueue;
+import jp.chang.myclinic.pharma.tracker.model.Visit;
 
 class ActionHook implements DispatchAction {
 
@@ -32,36 +32,43 @@ class ActionHook implements DispatchAction {
 
     @Override
     public void onWqueueCreated(WqueueDTO created, Runnable toNext) {
-        Wqueue wqueue = registry.createWqueue(created);
-        hook.onWqueueCreated(wqueue, toNext);
+        Visit visit = registry.getVisit(created.visitId);
+        if( visit != null ){
+            visit.setWqueueState(WqueueWaitState.fromCode(created.waitState));
+        }
+        hook.onWqueueUpdated(created.visitId, WqueueWaitState.fromCode(created.waitState), toNext);
     }
 
     @Override
-    public void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated, Runnable cb) {
-        Wqueue wqueue = registry.getWqueue(updated.visitId);
-        if (wqueue != null) {
-            wqueue.setWaitState(updated.waitState);
-            hook.onWqueueUpdated(wqueue, cb);
-        } else {
-            cb.run();
+    public void onWqueueUpdated(WqueueDTO prev, WqueueDTO updated, Runnable toNext) {
+        Visit visit = registry.getVisit(updated.visitId);
+        if( visit != null ){
+            visit.setWqueueState(WqueueWaitState.fromCode(updated.waitState));
         }
+        hook.onWqueueUpdated(updated.visitId, WqueueWaitState.fromCode(updated.waitState), toNext);
     }
 
     @Override
     public void onWqueueDeleted(WqueueDTO deleted, Runnable toNext) {
-        registry.deleteWqueue(deleted.visitId);
+        Visit visit = registry.getVisit(deleted.visitId);
+        if( visit != null ){
+            visit.setWqueueState(null);
+        }
         hook.onWqueueDeleted(deleted.visitId, toNext);
     }
 
     @Override
     public void onPharmaQueueCreated(PharmaQueueDTO created, Runnable toNext) {
-        PharmaQueue pharmaQueue = registry.createPharmaQueue(created);
-        hook.onPharmaQueueCreated(pharmaQueue, toNext);
+        Visit visit = registry.getVisit(created.visitId);
+        if( visit != null ) {
+            hook.onPharmaQueueCreated(visit, toNext);
+        } else {
+            toNext.run();
+        }
     }
 
     @Override
     public void onPharmaQueueDeleted(PharmaQueueDTO deleted, Runnable toNext) {
-        registry.deletePharmaQueue(deleted.visitId);
         hook.onPharmaQueueDeleted(deleted.visitId, toNext);
     }
 

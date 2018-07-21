@@ -14,23 +14,22 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import jp.chang.myclinic.pharma.Scope;
-import jp.chang.myclinic.pharma.tracker.model.PharmaQueue;
-import jp.chang.myclinic.pharma.tracker.model.Wqueue;
+import jp.chang.myclinic.pharma.tracker.model.Visit;
 
 class LeftColumn extends VBox {
 
     //private static Logger logger = LoggerFactory.getLogger(LeftColumn.class);
-    private static Callback<PatientList.Model, Observable[]> modelExtractor = model -> new Observable[]{
-            model.wqueue.waitStateProperty(),
-            model.patient.lastNameProperty(),
-            model.patient.firstNameProperty(),
-            model.patient.lastNameYomiProperty(),
-            model.patient.firstNameYomiProperty()
+    private static Callback<Visit, Observable[]> modelExtractor = model -> new Observable[]{
+            model.wqueueStateProperty(),
+            model.getPatient().lastNameProperty(),
+            model.getPatient().firstNameProperty(),
+            model.getPatient().lastNameYomiProperty(),
+            model.getPatient().firstNameYomiProperty()
     };
 
     private PatientList patientList;
-    private ObservableList<PatientList.Model> todaysList = FXCollections.observableArrayList(modelExtractor);
-    private ObservableList<PatientList.Model> pharmaQueueList = FXCollections.observableArrayList(modelExtractor);
+    private ObservableList<Visit> todaysList = FXCollections.observableArrayList(modelExtractor);
+    private ObservableList<Visit> pharmaQueueList = FXCollections.observableArrayList(modelExtractor);
 
     LeftColumn(Scope scope) {
         super(4);
@@ -44,38 +43,21 @@ class LeftColumn extends VBox {
         patientList.setItems(pharmaQueueList);
     }
 
-    void addWqueue(Wqueue wqueue){
-        todaysList.add(new PatientList.Model(wqueue.getVisit().getPatient(), wqueue));
-    }
-
-    void deleteWqueue(int visitId){
-        todaysList.forEach(model -> {
-            if( model.wqueue != null && model.wqueue.getVisit().getVisitId() == visitId ){
-                model.wqueue = null;
-            }
-        });
-        pharmaQueueList.forEach(model -> {
-            if( model.wqueue != null && model.wqueue.getVisit().getVisitId() == visitId ){
-                model.wqueue = null;
-            }
-        });
-    }
-
-    void addPharmaQueue(PharmaQueue pharmaQueue){
-        pharmaQueueList.add(new PatientList.Model(pharmaQueue.getVisit().getPatient(), pharmaQueue.getWqueue()));
-    }
-
-    void deletePharmaQueue(int visitId){
-        todaysList.forEach(model -> {
-            if( model.wqueue != null && model.wqueue.getVisit().getVisitId() == visitId ){
-                model.wqueue = null;
-            }
-        });
-        pharmaQueueList.removeIf(model -> model.wqueue.getVisit().getVisitId() == visitId);
+    void addVisit(Visit visit){
+        todaysList.add(visit);
     }
 
     void deleteVisit(int visitId){
-        todaysList.removeIf(model -> model.visit.getVisitId() == visitId);
+        todaysList.removeIf(model -> model.getVisitId() == visitId);
+        pharmaQueueList.removeIf(model -> model.getVisitId() == visitId);
+    }
+
+    void addPharmaQueue(Visit visit){
+        pharmaQueueList.add(visit);
+    }
+
+    void deletePharmaQueue(int visitId){
+        pharmaQueueList.removeIf(model -> model.getVisitId() == visitId);
     }
 
     private void selectTodaysList(){
@@ -89,10 +71,6 @@ class LeftColumn extends VBox {
     void clearSelection(){
         patientList.getSelectionModel().clearSelection();
     }
-
-//    void reloadPatientList(){
-//        onReload();
-//    }
 
     private Node createPatientList(){
         patientList = new PatientList();
@@ -155,9 +133,9 @@ class LeftColumn extends VBox {
 //    }
 
     private void doStartPresc(){
-        PatientList.Model item = patientList.getSelectionModel().getSelectedItem();
+        Visit item = patientList.getSelectionModel().getSelectedItem();
         if( item != null ){
-            onStartPresc(item.visit.getVisitId());
+            onStartPresc(item.getVisitId());
         }
     }
 

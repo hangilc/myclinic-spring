@@ -8,8 +8,7 @@ import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import jp.chang.myclinic.pharma.Scope;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import jp.chang.myclinic.pharma.tracker.DispatchHook;
-import jp.chang.myclinic.pharma.tracker.model.PharmaQueue;
-import jp.chang.myclinic.pharma.tracker.model.Wqueue;
+import jp.chang.myclinic.pharma.tracker.model.Visit;
 
 public class MainScene extends HBox implements DispatchHook {
 
@@ -54,21 +53,20 @@ public class MainScene extends HBox implements DispatchHook {
     }
 
     @Override
-    public void onWqueueCreated(Wqueue created, Runnable toNext) {
-        leftColumn.addWqueue(created);
-        System.out.println("wqueue created: " + created);
+    public void onVisitCreated(Visit created, Runnable toNext) {
+        leftColumn.addVisit(created);
         toNext.run();
     }
 
     @Override
-    public void onWqueueDeleted(int visitId, Runnable toNext) {
-        leftColumn.deleteWqueue(visitId);
+    public void onVisitDeleted(int visitId, Runnable toNext) {
+        leftColumn.deleteVisit(visitId);
         toNext.run();
     }
 
     @Override
-    public void onPharmaQueueCreated(PharmaQueue created, Runnable toNext) {
-        leftColumn.addPharmaQueue(created);
+    public void onPharmaQueueCreated(Visit visit, Runnable toNext) {
+        leftColumn.addPharmaQueue(visit);
         toNext.run();
     }
 
@@ -78,9 +76,4 @@ public class MainScene extends HBox implements DispatchHook {
         toNext.run();
     }
 
-    @Override
-    public void onVisitDeleted(int visitId, Runnable toNext) {
-        leftColumn.deleteVisit(visitId);
-        toNext.run();
-    }
 }
