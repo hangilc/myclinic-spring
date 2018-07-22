@@ -33,6 +33,7 @@ public class RecordModel {
     private ObjectProperty<Integer> kouhi2FutanshaBangou = new SimpleObjectProperty<>(null);
     private ObjectProperty<Integer> kouhi3FutanshaBangou = new SimpleObjectProperty<>(null);
     private StringProperty hokenRep = new SimpleStringProperty();
+    private StringProperty paymentRep = new SimpleStringProperty("(未請求)");
 
     public RecordModel(VisitDTO visitDTO, PatientModel patient, HokenModel hokenModel) {
         this.visitId = visitDTO.visitId;
@@ -181,4 +182,15 @@ public class RecordModel {
         return conducts;
     }
 
+    public String getPaymentRep() {
+        return paymentRep.get();
+    }
+
+    public StringProperty paymentRepProperty() {
+        return paymentRep;
+    }
+
+    public void setPaymentRep(String paymentRep) {
+        this.paymentRep.set(paymentRep);
+    }
 }

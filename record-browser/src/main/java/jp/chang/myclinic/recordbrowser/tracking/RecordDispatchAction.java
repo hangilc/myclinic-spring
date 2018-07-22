@@ -292,4 +292,31 @@ public class RecordDispatchAction implements DispatchAction {
             }
         });
     }
+
+    @Override
+    public void onChargeCreated(ChargeDTO created, Runnable toNext) {
+        if( modelRegistry.createCharge(created) ) {
+            root.scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
+        }
+    }
+
+    @Override
+    public void onChargeUpdated(ChargeDTO prev, ChargeDTO updated, Runnable toNext) {
+        if( modelRegistry.updateCharge(updated) ) {
+            root.scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
+        }
+    }
+
+    @Override
+    public void onPaymentCreated(PaymentDTO created, Runnable toNext) {
+        if( modelRegistry.createPayment(created) ) {
+            root.scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
+        }
+    }
 }

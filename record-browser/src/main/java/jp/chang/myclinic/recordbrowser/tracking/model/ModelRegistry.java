@@ -9,6 +9,7 @@ import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.KizaiUtil;
+import jp.chang.myclinic.util.NumberUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -427,6 +428,39 @@ public class ModelRegistry {
                     .exceptionally(HandlerFX::exceptionally);
         } else {
             altered.accept(false);
+        }
+    }
+
+    public boolean createCharge(ChargeDTO created){
+        RecordModel recordModel = findRecordModel(created.visitId);
+        if( recordModel != null ){
+            String rep = String.format("請求額 %s円", NumberUtil.formatNumber(created.charge));
+            recordModel.setPaymentRep(rep);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean updateCharge(ChargeDTO updated){
+        RecordModel recordModel = findRecordModel(updated.visitId);
+        if( recordModel != null ){
+            String rep = String.format("請求額 %s円", NumberUtil.formatNumber(updated.charge));
+            recordModel.setPaymentRep(rep);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean createPayment(PaymentDTO created){
+        RecordModel recordModel = findRecordModel(created.visitId);
+        if( recordModel != null ){
+            String rep = String.format("領収額 %s円", NumberUtil.formatNumber(created.amount));
+            recordModel.setPaymentRep(rep);
+            return true;
+        } else {
+            return false;
         }
     }
 

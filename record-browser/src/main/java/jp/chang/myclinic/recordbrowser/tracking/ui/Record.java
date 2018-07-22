@@ -4,6 +4,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.recordbrowser.tracking.model.*;
 import jp.chang.myclinic.utilfx.TwoColumn;
@@ -20,10 +21,12 @@ class Record extends VBox {
     private VBox drugBox = new VBox(4);
     private VBox shinryouBox = new VBox(0);
     private VBox conductBox = new VBox(4);
+    private Text paymentText = new Text();
 
     Record(RecordModel recordModel) {
         this.visitId = recordModel.getVisitId();
         this.title = new RecordTitle(recordModel);
+        paymentText.textProperty().bind(recordModel.paymentRepProperty());
         recordModel.getTexts().addListener((ListChangeListener<TextModel>) c -> {
             while (c.next()) {
                 for (TextModel textModel : c.getRemoved()) {
@@ -109,7 +112,8 @@ class Record extends VBox {
                 createHoken(recordModel.hokenRepProperty()),
                 drugBox,
                 shinryouBox,
-                conductBox
+                conductBox,
+                new TextFlow(paymentText)
         );
         getChildren().addAll(title, body);
     }
