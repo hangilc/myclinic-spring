@@ -36,47 +36,23 @@ public class ModelRegistry {
         this.api = api;
     }
 
-    public ObservableList<RecordModel> getRecordModels(){
+    public ObservableList<RecordModel> getRecordModels() {
         return recordModels;
     }
 
-    public void createRecord(VisitDTO visitDTO, Runnable toNext){
+    public void createRecord(VisitDTO visitDTO, Runnable toNext) {
         class Local {
             private PatientModel patientModel;
-            private ShahokokuhoModel shahokokuhoModel;
-            private KoukikoureiModel koukikoureiModel;
-            private KouhiModel kouhi1Model;
-            private KouhiModel kouhi2Model;
-            private KouhiModel kouhi3Model;
         }
         Local local = new Local();
         api.getPatient(visitDTO.patientId)
                 .thenCompose(patientDTO -> {
                     local.patientModel = new PatientModel(patientDTO);
-                    return getShahokokuho(visitDTO.shahokokuhoId);
+                    return getHokenModel(visitDTO);
                 })
-                .thenCompose(shahokokuhoModel -> {
-                    local.shahokokuhoModel = shahokokuhoModel;
-                    return getKoukikourei(visitDTO.koukikoureiId);
-                })
-                .thenCompose(koukikoureiModel -> {
-                    local.koukikoureiModel = koukikoureiModel;
-                    return getKouhi(visitDTO.kouhi1Id);
-                })
-                .thenCompose(kouhi1Model -> {
-                    local.kouhi1Model = kouhi1Model;
-                    return getKouhi(visitDTO.kouhi2Id);
-                })
-                .thenCompose(kouhi2Model -> {
-                    local.kouhi2Model = kouhi2Model;
-                    return getKouhi(visitDTO.kouhi3Id);
-                })
-                .thenAccept(kouhi3Model -> {
-                    local.kouhi3Model = kouhi3Model;
-                    RecordModel recordModel = new RecordModel(visitDTO, local.patientModel,
-                            local.shahokokuhoModel, local.koukikoureiModel,
-                            local.kouhi1Model, local.kouhi2Model, local.kouhi3Model);
+                .thenAccept(hokenModel -> {
                     Platform.runLater(() -> {
+                        RecordModel recordModel = new RecordModel(visitDTO, local.patientModel, hokenModel);
                         recordModels.add(recordModel);
                         toNext.run();
                     });
@@ -84,14 +60,14 @@ public class ModelRegistry {
                 .exceptionally(HandlerFX::exceptionally);
     }
 
-    public boolean deleteRecord(int visitId){
+    public boolean deleteRecord(int visitId) {
         return recordModels.removeIf(r -> r.getVisitId() == visitId);
     }
 
-    public boolean updateWqueue(WqueueDTO wqueueDTO){
+    public boolean updateWqueue(WqueueDTO wqueueDTO) {
         int visitId = wqueueDTO.visitId;
-        for(RecordModel recordModel: recordModels){
-            if( recordModel.getVisitId() == visitId ){
+        for (RecordModel recordModel : recordModels) {
+            if (recordModel.getVisitId() == visitId) {
                 recordModel.setWaitState(WqueueWaitState.fromCode(wqueueDTO.waitState));
                 return true;
             }
@@ -99,18 +75,18 @@ public class ModelRegistry {
         return false;
     }
 
-    private RecordModel findRecordModel(int visitId){
-        for(RecordModel recordModel: recordModels){
-            if( recordModel.getVisitId() == visitId ){
+    private RecordModel findRecordModel(int visitId) {
+        for (RecordModel recordModel : recordModels) {
+            if (recordModel.getVisitId() == visitId) {
                 return recordModel;
             }
         }
         return null;
     }
 
-    public boolean createText(TextDTO textDTO){
+    public boolean createText(TextDTO textDTO) {
         RecordModel recordModel = findRecordModel(textDTO.visitId);
-        if( recordModel != null ){
+        if (recordModel != null) {
             TextModel textModel = new TextModel(textDTO);
             recordModel.getTexts().add(textModel);
             return true;
@@ -119,9 +95,9 @@ public class ModelRegistry {
         }
     }
 
-    public boolean updateText(TextDTO textDTO){
+    public boolean updateText(TextDTO textDTO) {
         RecordModel recordModel = findRecordModel(textDTO.visitId);
-        if( recordModel != null ){
+        if (recordModel != null) {
             TextModel textModel = recordModel.findTextModel(textDTO.textId);
             if (textModel != null) {
                 textModel.setContent(textDTO.content);
@@ -135,18 +111,18 @@ public class ModelRegistry {
         }
     }
 
-    public boolean deleteText(TextDTO deleted){
+    public boolean deleteText(TextDTO deleted) {
         RecordModel recordModel = findRecordModel(deleted.visitId);
-        if( recordModel != null ){
+        if (recordModel != null) {
             return recordModel.getTexts().removeIf(t -> t.getTextId() == deleted.textId);
         } else {
             return false;
         }
     }
 
-    public void createDrug(DrugDTO drug, Runnable toNext){
+    public void createDrug(DrugDTO drug, Runnable toNext) {
         RecordModel recordModel = findRecordModel(drug.visitId);
-        if( recordModel != null ) {
+        if (recordModel != null) {
             getIyakuhinMaster(drug.iyakuhincode)
                     .thenAccept(master -> {
                         DrugFullDTO drugFullDTO = new DrugFullDTO();
@@ -165,11 +141,11 @@ public class ModelRegistry {
         }
     }
 
-    public void updateDrug(DrugDTO drug, Consumer<Boolean> cb){
+    public void updateDrug(DrugDTO drug, Consumer<Boolean> cb) {
         RecordModel recordModel = findRecordModel(drug.visitId);
-        if( recordModel != null ){
+        if (recordModel != null) {
             DrugModel drugModel = recordModel.findDrugModel(drug.drugId);
-            if( drugModel != null ){
+            if (drugModel != null) {
                 getIyakuhinMaster(drug.iyakuhincode)
                         .thenAccept(master -> {
                             DrugFullDTO drugFullDTO = new DrugFullDTO();
@@ -192,18 +168,18 @@ public class ModelRegistry {
         }
     }
 
-    public boolean deleteDrug(DrugDTO drug){
+    public boolean deleteDrug(DrugDTO drug) {
         RecordModel recordModel = findRecordModel(drug.visitId);
-        if( recordModel != null ){
+        if (recordModel != null) {
             return recordModel.getDrugs().removeIf(d -> d.getDrugId() == drug.drugId);
         } else {
             return false;
         }
     }
 
-    public void createShinryou(ShinryouDTO shinryouDTO, Runnable toNext){
+    public void createShinryou(ShinryouDTO shinryouDTO, Runnable toNext) {
         RecordModel recordModel = findRecordModel(shinryouDTO.visitId);
-        if( recordModel != null ) {
+        if (recordModel != null) {
             getShinryouMaster(shinryouDTO.shinryoucode)
                     .thenAccept(master -> {
                         ShinryouFullDTO drugFullDTO = new ShinryouFullDTO();
@@ -223,47 +199,49 @@ public class ModelRegistry {
         }
     }
 
-    public boolean deleteShinryou(ShinryouDTO shinryouDTO){
+    public boolean deleteShinryou(ShinryouDTO shinryouDTO) {
         RecordModel recordModel = findRecordModel(shinryouDTO.visitId);
-        if( recordModel != null ){
+        if (recordModel != null) {
             return recordModel.getShinryouList().removeIf(s -> s.getShinryouId() == shinryouDTO.shinryouId);
         } else {
             return false;
         }
     }
 
-    public void createConduct(ConductDTO created){
+    public void createConduct(ConductDTO created) {
         RecordModel recordModel = findRecordModel(created.visitId);
-        if( recordModel != null ) {
+        if (recordModel != null) {
             ConductModel conductModel = new ConductModel(created);
             recordModel.getConducts().add(conductModel);
         }
     }
 
-    public boolean updateConduct(ConductDTO updated){
+    public boolean updateConduct(ConductDTO updated) {
         ConductModel conductModel = findConductModel(updated.conductId);
-        if( conductModel != null ){
+        if (conductModel != null) {
             ConductKind conductKind = ConductKind.fromCode(updated.kind);
-            conductModel.setConductKindRep(conductKind.getKanjiRep());
+            if (conductKind != null) {
+                conductModel.setConductKindRep(conductKind.getKanjiRep());
+            }
             return true;
         } else {
             return false;
         }
     }
 
-    public boolean deleteConduct(ConductDTO deleted){
+    public boolean deleteConduct(ConductDTO deleted) {
         RecordModel recordModel = findRecordModel(deleted.visitId);
-        if( recordModel != null ){
+        if (recordModel != null) {
             return recordModel.getConducts().removeIf(c -> c.getConductId() == deleted.conductId);
         } else {
             return false;
         }
     }
 
-    private ConductModel findConductModel(int conductId){
-        for(RecordModel recordModel: recordModels){
-            for(ConductModel conductModel: recordModel.getConducts()){
-                if( conductModel.getConductId() == conductId ){
+    private ConductModel findConductModel(int conductId) {
+        for (RecordModel recordModel : recordModels) {
+            for (ConductModel conductModel : recordModel.getConducts()) {
+                if (conductModel.getConductId() == conductId) {
                     return conductModel;
                 }
             }
@@ -271,9 +249,9 @@ public class ModelRegistry {
         return null;
     }
 
-    public boolean createGazouLabel(GazouLabelDTO created){
+    public boolean createGazouLabel(GazouLabelDTO created) {
         ConductModel conductModel = findConductModel(created.conductId);
-        if( conductModel != null ){
+        if (conductModel != null) {
             conductModel.setGazouLabel(created.label);
             return true;
         } else {
@@ -281,9 +259,9 @@ public class ModelRegistry {
         }
     }
 
-    public boolean updateGazouLabel(GazouLabelDTO updated){
+    public boolean updateGazouLabel(GazouLabelDTO updated) {
         ConductModel conductModel = findConductModel(updated.conductId);
-        if( conductModel != null ){
+        if (conductModel != null) {
             conductModel.setGazouLabel(updated.label);
             return true;
         } else {
@@ -291,9 +269,9 @@ public class ModelRegistry {
         }
     }
 
-    public boolean deleteGazouLabel(GazouLabelDTO deleted){
+    public boolean deleteGazouLabel(GazouLabelDTO deleted) {
         ConductModel conductModel = findConductModel(deleted.conductId);
-        if( conductModel != null ){
+        if (conductModel != null) {
             conductModel.setGazouLabel(null);
             return true;
         } else {
@@ -301,9 +279,9 @@ public class ModelRegistry {
         }
     }
 
-    public void createConductShinryou(ConductShinryouDTO created, Consumer<Boolean> altered){
+    public void createConductShinryou(ConductShinryouDTO created, Consumer<Boolean> altered) {
         ConductModel conductModel = findConductModel(created.conductId);
-        if( conductModel != null ) {
+        if (conductModel != null) {
             getShinryouMaster(created.shinryoucode)
                     .thenAccept(master -> {
                         ConductShinryouModel model = new ConductShinryouModel(created.conductShinryouId, master.name);
@@ -318,9 +296,9 @@ public class ModelRegistry {
         }
     }
 
-    public boolean deleteConductShinryou(ConductShinryouDTO deleted){
+    public boolean deleteConductShinryou(ConductShinryouDTO deleted) {
         ConductModel conductModel = findConductModel(deleted.conductId);
-        if( conductModel != null ){
+        if (conductModel != null) {
             return conductModel.getConductShinryouList().removeIf(m ->
                     m.getConductShinryouId() == deleted.conductShinryouId);
         } else {
@@ -328,9 +306,9 @@ public class ModelRegistry {
         }
     }
 
-    public void createConductDrug(ConductDrugDTO created, Consumer<Boolean> altered){
+    public void createConductDrug(ConductDrugDTO created, Consumer<Boolean> altered) {
         ConductModel conductModel = findConductModel(created.conductId);
-        if( conductModel != null ) {
+        if (conductModel != null) {
             getIyakuhinMaster(created.iyakuhincode)
                     .thenAccept(master -> {
                         String rep = DrugUtil.conductDrugRep(created, master);
@@ -346,9 +324,9 @@ public class ModelRegistry {
         }
     }
 
-    public boolean deleteConductDrug(ConductDrugDTO deleted){
+    public boolean deleteConductDrug(ConductDrugDTO deleted) {
         ConductModel conductModel = findConductModel(deleted.conductId);
-        if( conductModel != null ){
+        if (conductModel != null) {
             return conductModel.getConductDrugs().removeIf(m ->
                     m.getConductDrugId() == deleted.conductDrugId);
         } else {
@@ -356,9 +334,9 @@ public class ModelRegistry {
         }
     }
 
-    public void createConductKizai(ConductKizaiDTO created, Consumer<Boolean> altered){
+    public void createConductKizai(ConductKizaiDTO created, Consumer<Boolean> altered) {
         ConductModel conductModel = findConductModel(created.conductId);
-        if( conductModel != null ) {
+        if (conductModel != null) {
             getKizaiMaster(created.kizaicode)
                     .thenAccept(master -> {
                         String rep = KizaiUtil.kizaiRep(created, master);
@@ -374,13 +352,13 @@ public class ModelRegistry {
         }
     }
 
-    public void createShahokokuho(ShahokokuhoDTO created){
+    public void createShahokokuho(ShahokokuhoDTO created) {
         shahokokuhoMap.put(created.shahokokuhoId, new ShahokokuhoModel(created));
     }
 
-    public void updateShahokokuho(ShahokokuhoDTO updated){
+    public void updateShahokokuho(ShahokokuhoDTO updated) {
         ShahokokuhoModel model = shahokokuhoMap.get(updated.shahokokuhoId);
-        if( model != null ){
+        if (model != null) {
             model.setHokenshaBangou(updated.hokenshaBangou);
             model.setKoureiFutanWari(updated.kourei);
         } else {
@@ -388,49 +366,49 @@ public class ModelRegistry {
         }
     }
 
-    public void deleteShahokokuho(ShahokokuhoDTO deleted){
+    public void deleteShahokokuho(ShahokokuhoDTO deleted) {
         shahokokuhoMap.remove(deleted.shahokokuhoId);
     }
 
-    public void createKoukikourei(KoukikoureiDTO created){
+    public void createKoukikourei(KoukikoureiDTO created) {
         KoukikoureiModel model = new KoukikoureiModel(created);
         koukikoureiMap.put(created.koukikoureiId, model);
     }
 
-    public void updateKoukikourei(KoukikoureiDTO updated){
+    public void updateKoukikourei(KoukikoureiDTO updated) {
         KoukikoureiModel model = koukikoureiMap.get(updated.koukikoureiId);
-        if( model != null ){
+        if (model != null) {
             model.setFutanWari(updated.futanWari);
         } else {
             createKoukikourei(updated);
         }
     }
 
-    public void deleteKoukikourei(KoukikoureiDTO deleted){
+    public void deleteKoukikourei(KoukikoureiDTO deleted) {
         koukikoureiMap.remove(deleted.koukikoureiId);
     }
 
-    public void createKouhi(KouhiDTO created){
+    public void createKouhi(KouhiDTO created) {
         KouhiModel model = new KouhiModel(created);
         kouhiMap.put(created.kouhiId, model);
     }
 
-    public void updateKouhi(KouhiDTO updated){
+    public void updateKouhi(KouhiDTO updated) {
         KouhiModel model = kouhiMap.get(updated.kouhiId);
-        if( model != null ){
+        if (model != null) {
             model.setFutanshaBangou(updated.futansha);
         } else {
             createKouhi(updated);
         }
     }
 
-    public void deleteKouhi(KouhiDTO deleted){
+    public void deleteKouhi(KouhiDTO deleted) {
         kouhiMap.remove(deleted.kouhiId);
     }
 
-    public boolean deleteConductKizai(ConductKizaiDTO deleted){
+    public boolean deleteConductKizai(ConductKizaiDTO deleted) {
         ConductModel conductModel = findConductModel(deleted.conductId);
-        if( conductModel != null ){
+        if (conductModel != null) {
             return conductModel.getConductKizaiList().removeIf(m ->
                     m.getConductKizaiId() == deleted.conductKizaiId);
         } else {
@@ -438,53 +416,64 @@ public class ModelRegistry {
         }
     }
 
-    private CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode){
+    public void updateHoken(VisitDTO visitDTO, Consumer<Boolean> altered) {
+        RecordModel recordModel = findRecordModel(visitDTO.visitId);
+        if (recordModel != null) {
+            getHokenModel(visitDTO)
+                    .thenAccept(hokenModel -> Platform.runLater(() -> {
+                        recordModel.updateHoken(hokenModel);
+                        altered.accept(true);
+                    }))
+                    .exceptionally(HandlerFX::exceptionally);
+        } else {
+            altered.accept(false);
+        }
+    }
+
+    private CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode) {
         IyakuhinMasterDTO masterDTO = iyakuhinMasterMap.get(iyakuhincode);
-        if( masterDTO != null ){
+        if (masterDTO != null) {
             return CompletableFuture.completedFuture(masterDTO);
         } else {
             return api.resolveIyakuhinMaster(iyakuhincode, today)
                     .thenApply(result -> {
                         iyakuhinMasterMap.put(iyakuhincode, result);
                         return result;
-                    })
-                    .exceptionally(HandlerFX::exceptionally);
+                    });
         }
     }
 
-    private CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode){
+    private CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode) {
         ShinryouMasterDTO masterDTO = shinryouMasterMap.get(shinryoucode);
-        if( masterDTO != null ){
+        if (masterDTO != null) {
             return CompletableFuture.completedFuture(masterDTO);
         } else {
             return api.resolveShinryouMaster(shinryoucode, today)
                     .thenApply(result -> {
                         shinryouMasterMap.put(shinryoucode, result);
                         return result;
-                    })
-                    .exceptionally(HandlerFX::exceptionally);
+                    });
         }
     }
 
-    private CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode){
+    private CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode) {
         KizaiMasterDTO masterDTO = kizaiMasterMap.get(kizaicode);
-        if( masterDTO != null ){
+        if (masterDTO != null) {
             return CompletableFuture.completedFuture(masterDTO);
         } else {
             return api.resolveKizaiMaster(kizaicode, today)
                     .thenApply(result -> {
                         kizaiMasterMap.put(kizaicode, result);
                         return result;
-                    })
-                    .exceptionally(HandlerFX::exceptionally);
+                    });
         }
     }
 
-    private CompletableFuture<ShahokokuhoModel> getShahokokuho(int shahokokuhoId){
-        if( shahokokuhoId == 0 ){
+    private CompletableFuture<ShahokokuhoModel> getShahokokuho(int shahokokuhoId) {
+        if (shahokokuhoId == 0) {
             return CompletableFuture.completedFuture(null);
         }
-        if( shahokokuhoMap.containsKey(shahokokuhoId) ){
+        if (shahokokuhoMap.containsKey(shahokokuhoId)) {
             return CompletableFuture.completedFuture(shahokokuhoMap.get(shahokokuhoId));
         } else {
             return api.getShahokokuho(shahokokuhoId)
@@ -492,16 +481,15 @@ public class ModelRegistry {
                         ShahokokuhoModel model = new ShahokokuhoModel(result);
                         shahokokuhoMap.put(shahokokuhoId, model);
                         return model;
-                    })
-                    .exceptionally(HandlerFX::exceptionally);
+                    });
         }
     }
 
-    private CompletableFuture<KoukikoureiModel> getKoukikourei(int koukikoureiId){
-        if( koukikoureiId == 0 ){
+    private CompletableFuture<KoukikoureiModel> getKoukikourei(int koukikoureiId) {
+        if (koukikoureiId == 0) {
             return CompletableFuture.completedFuture(null);
         }
-        if( koukikoureiMap.containsKey(koukikoureiId) ){
+        if (koukikoureiMap.containsKey(koukikoureiId)) {
             return CompletableFuture.completedFuture(koukikoureiMap.get(koukikoureiId));
         } else {
             return api.getKoukikourei(koukikoureiId)
@@ -509,16 +497,15 @@ public class ModelRegistry {
                         KoukikoureiModel model = new KoukikoureiModel(result);
                         koukikoureiMap.put(koukikoureiId, model);
                         return model;
-                    })
-                    .exceptionally(HandlerFX::exceptionally);
+                    });
         }
     }
 
-    private CompletableFuture<KouhiModel> getKouhi(int kouhiId){
-        if( kouhiId == 0 ){
+    private CompletableFuture<KouhiModel> getKouhi(int kouhiId) {
+        if (kouhiId == 0) {
             return CompletableFuture.completedFuture(null);
         }
-        if( kouhiMap.containsKey(kouhiId) ){
+        if (kouhiMap.containsKey(kouhiId)) {
             return CompletableFuture.completedFuture(kouhiMap.get(kouhiId));
         } else {
             return api.getKouhi(kouhiId)
@@ -526,9 +513,33 @@ public class ModelRegistry {
                         KouhiModel model = new KouhiModel(result);
                         kouhiMap.put(kouhiId, model);
                         return model;
-                    })
-                    .exceptionally(HandlerFX::exceptionally);
+                    });
         }
+    }
+
+    private CompletableFuture<HokenModel> getHokenModel(VisitDTO visitDTO) {
+        HokenModel hokenModel = new HokenModel();
+        return getShahokokuho(visitDTO.shahokokuhoId)
+                .thenCompose(shahokokuhoModel -> {
+                    hokenModel.setShahokokuhoModel(shahokokuhoModel);
+                    return getKoukikourei(visitDTO.koukikoureiId);
+                })
+                .thenCompose(koukikoureiModel -> {
+                    hokenModel.setKoukikoureiModel(koukikoureiModel);
+                    return getKouhi(visitDTO.kouhi1Id);
+                })
+                .thenCompose(kouhi1Model -> {
+                    hokenModel.setKouhi1Model(kouhi1Model);
+                    return getKouhi(visitDTO.kouhi2Id);
+                })
+                .thenCompose(kouhi2Model -> {
+                    hokenModel.setKouhi2Model(kouhi2Model);
+                    return getKouhi(visitDTO.kouhi3Id);
+                })
+                .thenApply(kouhi2Model -> {
+                    hokenModel.setKouhi2Model(kouhi2Model);
+                    return hokenModel;
+                });
     }
 
 }

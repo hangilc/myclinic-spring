@@ -17,9 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.recordbrowser.event.OpenPatientRecordsEvent;
-import jp.chang.myclinic.recordbrowser.tracking.Dispatcher;
 import jp.chang.myclinic.recordbrowser.tracking.RecordDispatchAction;
-import jp.chang.myclinic.recordbrowser.tracking.WebsocketClient;
 import jp.chang.myclinic.recordbrowser.tracking.model.ModelRegistry;
 import jp.chang.myclinic.recordbrowser.tracking.ui.TrackingRoot;
 import jp.chang.myclinic.tracker.Tracker;
@@ -53,8 +51,6 @@ public class Main extends Application {
         return mainStage.getY();
     }
 
-    private WebsocketClient websocketClient;
-    private Dispatcher dispatcher;
     private ObjectMapper mapper = new ObjectMapper();
     private String wsUrl;
     private ScheduledExecutorService timerExecutor = Executors.newSingleThreadScheduledExecutor();

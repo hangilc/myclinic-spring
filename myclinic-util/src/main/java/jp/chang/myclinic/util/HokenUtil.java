@@ -15,7 +15,7 @@ public class HokenUtil {
                                   Integer kouhi2FutanshaBangou,
                                   Integer kouhi3FutanshaBangou){
         List<String> terms = new ArrayList<>();
-        if( shahokokuhoHokenshaBangou != null ){
+        if( shahokokuhoHokenshaBangou != null && shahokokuhoKoureiFutanWari != null ){
             terms.add(ShahokokuhoUtil.rep(shahokokuhoHokenshaBangou, shahokokuhoKoureiFutanWari));
         }
         if( koukikoureiFutanWari != null ){

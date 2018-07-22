@@ -281,4 +281,15 @@ public class RecordDispatchAction implements DispatchAction {
         modelRegistry.deleteKouhi(deleted);
         toNext.run();
     }
+
+    @Override
+    public void onHokenUpdated(VisitDTO prev, VisitDTO updated, Runnable toNext) {
+        modelRegistry.updateHoken(updated, altered -> {
+            if( altered ){
+                root.scrollToCurrentVisit(2, toNext);
+            } else {
+                toNext.run();
+            }
+        });
+    }
 }
