@@ -254,6 +254,51 @@ class Dispatcher implements Runnable {
                     callbackWrapper.accept(() -> action.onHokenUpdated(body.prev, body.updated, toNext));
                     break;
                 }
+                case "shahokokuho-created": {
+                    ShahokokuhoCreated body = mapper.readValue(log.body, ShahokokuhoCreated.class);
+                    callbackWrapper.accept(() -> action.onShahokokuhoCreated(body.created, toNext));
+                    break;
+                }
+                case "shahokokuho-updated": {
+                    ShahokokuhoUpdated body = mapper.readValue(log.body, ShahokokuhoUpdated.class);
+                    action.onShahokokuhoUpdated(body.prev, body.updated, toNext);
+                    break;
+                }
+                case "shahokokuho-deleted": {
+                    ShahokokuhoDeleted body = mapper.readValue(log.body, ShahokokuhoDeleted.class);
+                    action.onShahokokuhoDeleted(body.deleted, toNext);
+                    break;
+                }
+                case "koukikourei-created": {
+                    KoukikoureiCreated body = mapper.readValue(log.body, KoukikoureiCreated.class);
+                    callbackWrapper.accept(() -> action.onKoukikoureiCreated(body.created, toNext));
+                    break;
+                }
+                case "koukikourei-updated": {
+                    KoukikoureiUpdated body = mapper.readValue(log.body, KoukikoureiUpdated.class);
+                    action.onKoukikoureiUpdated(body.prev, body.updated, toNext);
+                    break;
+                }
+                case "koukikourei-deleted": {
+                    KoukikoureiDeleted body = mapper.readValue(log.body, KoukikoureiDeleted.class);
+                    action.onKoukikoureiDeleted(body.deleted, toNext);
+                    break;
+                }
+                case "kouhi-created": {
+                    KouhiCreated body = mapper.readValue(log.body, KouhiCreated.class);
+                    callbackWrapper.accept(() -> action.onKouhiCreated(body.created, toNext));
+                    break;
+                }
+                case "kouhi-updated": {
+                    KouhiUpdated body = mapper.readValue(log.body, KouhiUpdated.class);
+                    action.onKouhiUpdated(body.prev, body.updated, toNext);
+                    break;
+                }
+                case "kouhi-deleted": {
+                    KouhiDeleted body = mapper.readValue(log.body, KouhiDeleted.class);
+                    action.onKouhiDeleted(body.deleted, toNext);
+                    break;
+                }
                 case "pharma-queue-created": {
                     PharmaQueueCreated body = mapper.readValue(log.body, PharmaQueueCreated.class);
                     callbackWrapper.accept(() -> action.onPharmaQueueCreated(body.created, toNext));

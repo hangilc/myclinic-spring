@@ -32,6 +32,15 @@ public interface DispatchAction {
     default void onChargeUpdated(ChargeDTO prev, ChargeDTO updated, Runnable toNext){ toNext.run(); }
     default void onPaymentCreated(PaymentDTO created, Runnable toNext){ toNext.run(); }
     default void onHokenUpdated(VisitDTO prev, VisitDTO updated, Runnable toNext){ toNext.run(); }
+    default void onShahokokuhoCreated(ShahokokuhoDTO created, Runnable toNext){ toNext.run(); }
+    default void onShahokokuhoUpdated(ShahokokuhoDTO prev, ShahokokuhoDTO updated, Runnable toNext){ toNext.run(); }
+    default void onShahokokuhoDeleted(ShahokokuhoDTO deleted, Runnable toNext){ toNext.run(); }
+    default void onKoukikoureiCreated(KoukikoureiDTO created, Runnable toNext){ toNext.run(); }
+    default void onKoukikoureiUpdated(KoukikoureiDTO prev, KoukikoureiDTO updated, Runnable toNext){ toNext.run(); }
+    default void onKoukikoureiDeleted(KoukikoureiDTO deleted, Runnable toNext){ toNext.run(); }
+    default void onKouhiCreated(KouhiDTO created, Runnable toNext){ toNext.run(); }
+    default void onKouhiUpdated(KouhiDTO prev, KouhiDTO updated, Runnable toNext){ toNext.run(); }
+    default void onKouhiDeleted(KouhiDTO deleted, Runnable toNext){ toNext.run(); }
     default void onPharmaQueueCreated(PharmaQueueDTO created, Runnable toNext){ toNext.run(); }
     default void onPharmaQueueUpdated(PharmaQueueDTO prev, PharmaQueueDTO updated, Runnable toNext){ toNext.run(); }
     default void onPharmaQueueDeleted(PharmaQueueDTO deleted, Runnable toNext){ toNext.run(); }

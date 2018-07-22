@@ -228,4 +228,57 @@ public class RecordDispatchAction implements DispatchAction {
         }
     }
 
+    @Override
+    public void onShahokokuhoCreated(ShahokokuhoDTO created, Runnable toNext) {
+        modelRegistry.createShahokokuho(created);
+        toNext.run();
+    }
+
+    @Override
+    public void onShahokokuhoUpdated(ShahokokuhoDTO prev, ShahokokuhoDTO updated, Runnable toNext) {
+        modelRegistry.updateShahokokuho(updated);
+        root.scrollToCurrentVisit(2, toNext);
+    }
+
+    @Override
+    public void onShahokokuhoDeleted(ShahokokuhoDTO deleted, Runnable toNext) {
+        modelRegistry.deleteShahokokuho(deleted);
+        root.scrollToCurrentVisit(1, toNext);
+    }
+
+    @Override
+    public void onKoukikoureiCreated(KoukikoureiDTO created, Runnable toNext) {
+        modelRegistry.createKoukikourei(created);
+        toNext.run();
+    }
+
+    @Override
+    public void onKoukikoureiUpdated(KoukikoureiDTO prev, KoukikoureiDTO updated, Runnable toNext) {
+        modelRegistry.updateKoukikourei(updated);
+        root.scrollToCurrentVisit(2, toNext);
+    }
+
+    @Override
+    public void onKoukikoureiDeleted(KoukikoureiDTO deleted, Runnable toNext) {
+        modelRegistry.deleteKoukikourei(deleted);
+        toNext.run();
+    }
+
+    @Override
+    public void onKouhiCreated(KouhiDTO created, Runnable toNext) {
+        modelRegistry.createKouhi(created);
+        toNext.run();
+    }
+
+    @Override
+    public void onKouhiUpdated(KouhiDTO prev, KouhiDTO updated, Runnable toNext) {
+        modelRegistry.updateKouhi(updated);
+        root.scrollToCurrentVisit(2, toNext);
+    }
+
+    @Override
+    public void onKouhiDeleted(KouhiDTO deleted, Runnable toNext) {
+        modelRegistry.deleteKouhi(deleted);
+        toNext.run();
+    }
 }

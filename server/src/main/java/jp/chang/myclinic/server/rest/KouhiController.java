@@ -26,12 +26,18 @@ public class KouhiController {
 
 	@RequestMapping(value="/enter-kouhi", method=RequestMethod.POST)
 	public int enterKouhi(@RequestBody KouhiDTO kouhiDTO){
+		if( kouhiDTO.kouhiId != 0 ){
+			throw new RuntimeException("Invalid kouhiId (should be zero).");
+		}
 		return dbGateway.enterKouhi(kouhiDTO);
 	}
 
 	@RequestMapping(value="/update-kouhi", method=RequestMethod.POST)
 	public boolean updateKouhi(@RequestBody KouhiDTO kouhiDTO){
-		dbGateway.enterKouhi(kouhiDTO);
+		if( kouhiDTO.kouhiId == 0 ){
+			throw new RuntimeException("Invalid kouhiId (should be non-zero).");
+		}
+		dbGateway.updateKouhi(kouhiDTO);
 		return true;
 	}
 

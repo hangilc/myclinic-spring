@@ -1,6 +1,7 @@
 package jp.chang.myclinic.recordbrowser.tracking;
 
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.logdto.practicelog.ShahokokuhoCreated;
 
 public interface DispatchAction {
     default void onVisitCreated(VisitDTO created, Runnable toNext){ toNext.run(); }
@@ -28,4 +29,5 @@ public interface DispatchAction {
     default void onChargeUpdated(ChargeDTO prev, ChargeDTO updated, Runnable cb){ cb.run(); }
     default void onPaymentCreated(PaymentDTO created, Runnable toNext){ toNext.run(); }
     default void onHokenUpdated(VisitDTO prev, VisitDTO updated, Runnable toNext){ toNext.run(); }
+    default void onShahokokuhoCreated(ShahokokuhoCreated created, Runnable toNext){ toNext.run(); }
 }

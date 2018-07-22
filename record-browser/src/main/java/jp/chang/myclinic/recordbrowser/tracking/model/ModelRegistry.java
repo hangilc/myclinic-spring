@@ -8,7 +8,6 @@ import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DrugUtil;
-import jp.chang.myclinic.util.HokenUtil;
 import jp.chang.myclinic.util.KizaiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
@@ -28,6 +27,9 @@ public class ModelRegistry {
     private Map<Integer, IyakuhinMasterDTO> iyakuhinMasterMap = new HashMap<>();
     private Map<Integer, ShinryouMasterDTO> shinryouMasterMap = new HashMap<>();
     private Map<Integer, KizaiMasterDTO> kizaiMasterMap = new HashMap<>();
+    private Map<Integer, ShahokokuhoModel> shahokokuhoMap = new HashMap<>();
+    private Map<Integer, KoukikoureiModel> koukikoureiMap = new HashMap<>();
+    private Map<Integer, KouhiModel> kouhiMap = new HashMap<>();
     private String today = LocalDate.now().toString();
 
     public ModelRegistry(Service.ServerAPI api) {
@@ -41,16 +43,39 @@ public class ModelRegistry {
     public void createRecord(VisitDTO visitDTO, Runnable toNext){
         class Local {
             private PatientModel patientModel;
+            private ShahokokuhoModel shahokokuhoModel;
+            private KoukikoureiModel koukikoureiModel;
+            private KouhiModel kouhi1Model;
+            private KouhiModel kouhi2Model;
+            private KouhiModel kouhi3Model;
         }
         Local local = new Local();
         api.getPatient(visitDTO.patientId)
                 .thenCompose(patientDTO -> {
                     local.patientModel = new PatientModel(patientDTO);
-                    return api.convertToHoken(visitDTO);
+                    return getShahokokuho(visitDTO.shahokokuhoId);
                 })
-                .thenAccept(hokenDTO -> {
-                    String hokenRep = HokenUtil.hokenRep(hokenDTO);
-                    RecordModel recordModel = new RecordModel(visitDTO, local.patientModel, hokenRep);
+                .thenCompose(shahokokuhoModel -> {
+                    local.shahokokuhoModel = shahokokuhoModel;
+                    return getKoukikourei(visitDTO.koukikoureiId);
+                })
+                .thenCompose(koukikoureiModel -> {
+                    local.koukikoureiModel = koukikoureiModel;
+                    return getKouhi(visitDTO.kouhi1Id);
+                })
+                .thenCompose(kouhi1Model -> {
+                    local.kouhi1Model = kouhi1Model;
+                    return getKouhi(visitDTO.kouhi2Id);
+                })
+                .thenCompose(kouhi2Model -> {
+                    local.kouhi2Model = kouhi2Model;
+                    return getKouhi(visitDTO.kouhi3Id);
+                })
+                .thenAccept(kouhi3Model -> {
+                    local.kouhi3Model = kouhi3Model;
+                    RecordModel recordModel = new RecordModel(visitDTO, local.patientModel,
+                            local.shahokokuhoModel, local.koukikoureiModel,
+                            local.kouhi1Model, local.kouhi2Model, local.kouhi3Model);
                     Platform.runLater(() -> {
                         recordModels.add(recordModel);
                         toNext.run();
@@ -349,6 +374,60 @@ public class ModelRegistry {
         }
     }
 
+    public void createShahokokuho(ShahokokuhoDTO created){
+        shahokokuhoMap.put(created.shahokokuhoId, new ShahokokuhoModel(created));
+    }
+
+    public void updateShahokokuho(ShahokokuhoDTO updated){
+        ShahokokuhoModel model = shahokokuhoMap.get(updated.shahokokuhoId);
+        if( model != null ){
+            model.setHokenshaBangou(updated.hokenshaBangou);
+            model.setKoureiFutanWari(updated.kourei);
+        } else {
+            createShahokokuho(updated);
+        }
+    }
+
+    public void deleteShahokokuho(ShahokokuhoDTO deleted){
+        shahokokuhoMap.remove(deleted.shahokokuhoId);
+    }
+
+    public void createKoukikourei(KoukikoureiDTO created){
+        KoukikoureiModel model = new KoukikoureiModel(created);
+        koukikoureiMap.put(created.koukikoureiId, model);
+    }
+
+    public void updateKoukikourei(KoukikoureiDTO updated){
+        KoukikoureiModel model = koukikoureiMap.get(updated.koukikoureiId);
+        if( model != null ){
+            model.setFutanWari(updated.futanWari);
+        } else {
+            createKoukikourei(updated);
+        }
+    }
+
+    public void deleteKoukikourei(KoukikoureiDTO deleted){
+        koukikoureiMap.remove(deleted.koukikoureiId);
+    }
+
+    public void createKouhi(KouhiDTO created){
+        KouhiModel model = new KouhiModel(created);
+        kouhiMap.put(created.kouhiId, model);
+    }
+
+    public void updateKouhi(KouhiDTO updated){
+        KouhiModel model = kouhiMap.get(updated.kouhiId);
+        if( model != null ){
+            model.setFutanshaBangou(updated.futansha);
+        } else {
+            createKouhi(updated);
+        }
+    }
+
+    public void deleteKouhi(KouhiDTO deleted){
+        kouhiMap.remove(deleted.kouhiId);
+    }
+
     public boolean deleteConductKizai(ConductKizaiDTO deleted){
         ConductModel conductModel = findConductModel(deleted.conductId);
         if( conductModel != null ){
@@ -396,6 +475,57 @@ public class ModelRegistry {
                     .thenApply(result -> {
                         kizaiMasterMap.put(kizaicode, result);
                         return result;
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        }
+    }
+
+    private CompletableFuture<ShahokokuhoModel> getShahokokuho(int shahokokuhoId){
+        if( shahokokuhoId == 0 ){
+            return CompletableFuture.completedFuture(null);
+        }
+        if( shahokokuhoMap.containsKey(shahokokuhoId) ){
+            return CompletableFuture.completedFuture(shahokokuhoMap.get(shahokokuhoId));
+        } else {
+            return api.getShahokokuho(shahokokuhoId)
+                    .thenApply(result -> {
+                        ShahokokuhoModel model = new ShahokokuhoModel(result);
+                        shahokokuhoMap.put(shahokokuhoId, model);
+                        return model;
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        }
+    }
+
+    private CompletableFuture<KoukikoureiModel> getKoukikourei(int koukikoureiId){
+        if( koukikoureiId == 0 ){
+            return CompletableFuture.completedFuture(null);
+        }
+        if( koukikoureiMap.containsKey(koukikoureiId) ){
+            return CompletableFuture.completedFuture(koukikoureiMap.get(koukikoureiId));
+        } else {
+            return api.getKoukikourei(koukikoureiId)
+                    .thenApply(result -> {
+                        KoukikoureiModel model = new KoukikoureiModel(result);
+                        koukikoureiMap.put(koukikoureiId, model);
+                        return model;
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        }
+    }
+
+    private CompletableFuture<KouhiModel> getKouhi(int kouhiId){
+        if( kouhiId == 0 ){
+            return CompletableFuture.completedFuture(null);
+        }
+        if( kouhiMap.containsKey(kouhiId) ){
+            return CompletableFuture.completedFuture(kouhiMap.get(kouhiId));
+        } else {
+            return api.getKouhi(kouhiId)
+                    .thenApply(result -> {
+                        KouhiModel model = new KouhiModel(result);
+                        kouhiMap.put(kouhiId, model);
+                        return model;
                     })
                     .exceptionally(HandlerFX::exceptionally);
         }

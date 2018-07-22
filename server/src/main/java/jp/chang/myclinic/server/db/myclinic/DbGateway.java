@@ -324,6 +324,13 @@ public class DbGateway {
         return shahokokuho.getShahokokuhoId();
     }
 
+    public void updateShahokokuho(ShahokokuhoDTO shahokokuhoDTO){
+        ShahokokuhoDTO prev = getShahokokuho(shahokokuhoDTO.shahokokuhoId);
+        Shahokokuho shahokokuho = mapper.fromShahokokuhoDTO(shahokokuhoDTO);
+        shahokokuhoRepository.save(shahokokuho);
+        practiceLogger.logShahokokuhoUpdated(prev, shahokokuhoDTO);
+    }
+
     public void deleteShahokokuho(int shahokokuhoId) {
         int usage = visitRepository.countByShahokokuhoId(shahokokuhoId);
         if (usage != 0) {
@@ -356,6 +363,13 @@ public class DbGateway {
         koukikourei = koukikoureiRepository.save(koukikourei);
         practiceLogger.logKoukikoureiCreated(mapper.toKoukikoureiDTO(koukikourei));
         return koukikourei.getKoukikoureiId();
+    }
+
+    public void updateKoukikourei(KoukikoureiDTO koukikoureiDTO){
+        KoukikoureiDTO prev = getKoukikourei(koukikoureiDTO.koukikoureiId);
+        Koukikourei koukikourei = mapper.fromKoukikoureiDTO(koukikoureiDTO);
+        koukikoureiRepository.save(koukikourei);
+        practiceLogger.logKoukikoureiUpdated(prev, koukikoureiDTO);
     }
 
     public void deleteKoukikourei(int koukikoureiId) {
@@ -424,6 +438,13 @@ public class DbGateway {
         kouhi = kouhiRepository.save(kouhi);
         practiceLogger.logKouhiCreated(mapper.toKouhiDTO(kouhi));
         return kouhi.getKouhiId();
+    }
+
+    public void updateKouhi(KouhiDTO kouhiDTO){
+        KouhiDTO prev = getKouhi(kouhiDTO.kouhiId);
+        Kouhi kouhi = mapper.fromKouhiDTO(kouhiDTO);
+        kouhiRepository.save(kouhi);
+        practiceLogger.logKouhiUpdated(prev, kouhiDTO);
     }
 
     public void deleteKouhi(int kouhiId) {
