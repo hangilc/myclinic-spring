@@ -9,6 +9,7 @@ import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.HokenUtil;
+import jp.chang.myclinic.util.KizaiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -317,6 +318,44 @@ public class ModelRegistry {
                     .exceptionally(HandlerFX::exceptionally);
         } else {
             altered.accept(false);
+        }
+    }
+
+    public boolean deleteConductDrug(ConductDrugDTO deleted){
+        ConductModel conductModel = findConductModel(deleted.conductId);
+        if( conductModel != null ){
+            return conductModel.getConductDrugs().removeIf(m ->
+                    m.getConductDrugId() == deleted.conductDrugId);
+        } else {
+            return false;
+        }
+    }
+
+    public void createConductKizai(ConductKizaiDTO created, Consumer<Boolean> altered){
+        ConductModel conductModel = findConductModel(created.conductId);
+        if( conductModel != null ) {
+            getKizaiMaster(created.kizaicode)
+                    .thenAccept(master -> {
+                        String rep = KizaiUtil.kizaiRep(created, master);
+                        ConductKizaiModel model = new ConductKizaiModel(created.conductKizaiId, rep);
+                        Platform.runLater(() -> {
+                            conductModel.getConductKizaiList().add(model);
+                            altered.accept(true);
+                        });
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        } else {
+            altered.accept(false);
+        }
+    }
+
+    public boolean deleteConductKizai(ConductKizaiDTO deleted){
+        ConductModel conductModel = findConductModel(deleted.conductId);
+        if( conductModel != null ){
+            return conductModel.getConductKizaiList().removeIf(m ->
+                    m.getConductKizaiId() == deleted.conductKizaiId);
+        } else {
+            return false;
         }
     }
 

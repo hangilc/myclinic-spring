@@ -77,7 +77,21 @@ class RecordConduct extends VBox {
         });
         conductModel.getConductKizaiList().addListener((ListChangeListener<ConductKizaiModel>) c -> {
             while(c.next()){
-
+                for(ConductKizaiModel model: c.getRemoved()){
+                    int conductKizaiId = model.getConductKizaiId();
+                    drugBox.getChildren().removeIf(node -> {
+                        if( node instanceof RecordConductKizai ){
+                            RecordConductKizai r = (RecordConductKizai)node;
+                            return r.getConductKizaiId() == conductKizaiId;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
+                for(ConductKizaiModel model: c.getAddedSubList()){
+                    RecordConductKizai rec = new RecordConductKizai(model);
+                    drugBox.getChildren().add(rec);
+                }
             }
         });
     }

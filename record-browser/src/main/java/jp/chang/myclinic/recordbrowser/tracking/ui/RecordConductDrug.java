@@ -11,7 +11,7 @@ class RecordConductDrug extends TextFlow {
 
     RecordConductDrug(ConductDrugModel model) {
         this.conductDrugId = model.getConductDrugId();
-        getChildren().add(new TextFlow(new Text(model.getRep())));
+        getChildren().add(new Text(model.getRep()));
     }
 
     public int getConductDrugId() {

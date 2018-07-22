@@ -11,7 +11,7 @@ class RecordConductShinryou extends TextFlow {
 
     RecordConductShinryou(ConductShinryouModel model) {
         this.conductShinryouId = model.getConductShinryouId();
-        getChildren().add(new TextFlow(new Text(model.getRep())));
+        getChildren().add(new Text(model.getRep()));
     }
 
     public int getConductShinryouId() {

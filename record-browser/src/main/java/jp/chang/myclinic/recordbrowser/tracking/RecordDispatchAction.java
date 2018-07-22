@@ -182,7 +182,7 @@ public class RecordDispatchAction implements DispatchAction {
     @Override
     public void onConductShinryouDeleted(ConductShinryouDTO deleted, Runnable toNext) {
         if( modelRegistry.deleteConductShinryou(deleted) ){
-            root.scrollToCurrentVisit(2, toNext);
+            root.scrollToCurrentVisit(1, toNext);
         } else {
             toNext.run();
         }
@@ -201,6 +201,31 @@ public class RecordDispatchAction implements DispatchAction {
 
     @Override
     public void onConductDrugDeleted(ConductDrugDTO deleted, Runnable toNext) {
-        toNext.run();
+        if( modelRegistry.deleteConductDrug(deleted) ){
+            root.scrollToCurrentVisit(1, toNext);
+        } else {
+            toNext.run();
+        }
     }
+
+    @Override
+    public void onConductKizaiCreated(ConductKizaiDTO created, Runnable toNext) {
+        modelRegistry.createConductKizai(created, altered -> {
+            if( altered ) {
+                root.scrollToCurrentVisit(2, toNext);
+            } else {
+                toNext.run();
+            }
+        });
+    }
+
+    @Override
+    public void onConductKizaiDeleted(ConductKizaiDTO deleted, Runnable toNext) {
+        if( modelRegistry.deleteConductKizai(deleted) ){
+            root.scrollToCurrentVisit(1, toNext);
+        } else {
+            toNext.run();
+        }
+    }
+
 }
