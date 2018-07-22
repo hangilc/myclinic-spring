@@ -248,7 +248,7 @@ class PatientWithHokenStage extends Stage {
             });
             editor.showAndWait();
         } else {
-            GuiUtil.alertError("Unknown hokentable model.");
+            GuiUtil.alertError("Unknown hokentable modelold.");
         }
     }
 

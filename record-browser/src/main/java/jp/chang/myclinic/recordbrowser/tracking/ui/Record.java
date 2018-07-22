@@ -1,191 +1,164 @@
 package jp.chang.myclinic.recordbrowser.tracking.ui;
 
+import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.recordbrowser.tracking.model.*;
 import jp.chang.myclinic.utilfx.TwoColumn;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class Record extends VBox {
+class Record extends VBox {
+
+    private static Logger logger = LoggerFactory.getLogger(Record.class);
 
     private int visitId;
     private RecordTitle title;
     private TwoColumn body = new TwoColumn(4);
-    private VBox drugBox = new VBox();
-    private VBox shinryouBox = new VBox();
-    private VBox conductBox = new VBox();
+    private VBox drugBox = new VBox(4);
+    private VBox shinryouBox = new VBox(0);
+    private VBox conductBox = new VBox(4);
+    private Text paymentText = new Text();
 
-    public Record(Visit visit){
-        this.visitId = visit.getVisitId();
-        title = new RecordTitle(visit);
-        body.getStyleClass().add("record-body");
-        getChildren().addAll(
-                title,
-                body
-        );
-        addHoken(visit);
-        body.getRightBox().getChildren().addAll(drugBox, shinryouBox, conductBox, createCharge(visit));
-        bindText(visit);
-        bindDrug(visit);
-        bindShinryou(visit);
-        bindConduct(visit);
-        visit.wqueueStateProperty().addListener((obs, oldValue, newValue) -> {
-            if( newValue.intValue() == WqueueWaitState.InExam.getCode() ){
-                body.getStyleClass().add("current-visit");
-            } else {
-                body.getStyleClass().removeAll("current-visit");
+    Record(RecordModel recordModel) {
+        this.visitId = recordModel.getVisitId();
+        this.title = new RecordTitle(recordModel);
+        paymentText.textProperty().bind(recordModel.paymentRepProperty());
+        recordModel.getTexts().addListener((ListChangeListener<TextModel>) c -> {
+            while (c.next()) {
+                for (TextModel textModel : c.getRemoved()) {
+                    int textId = textModel.getTextId();
+                    body.getLeftBox().getChildren().removeIf(node -> {
+                        if (node instanceof RecordText) {
+                            RecordText t = (RecordText) node;
+                            return t.getTextId() == textId;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
+                for (TextModel textModel : c.getAddedSubList()) {
+                    RecordText recordText = new RecordText(textModel);
+                    body.getLeftBox().getChildren().add(recordText);
+                }
             }
         });
-    }
-
-    public RecordTitle getTitle() {
-        return title;
-    }
-
-    public TwoColumn getBody() {
-        return body;
+        recordModel.getDrugs().addListener((ListChangeListener<DrugModel>) c -> {
+            while(c.next()){
+                boolean needReorder = false;
+                for(DrugModel drugModel : c.getRemoved()){
+                    int drugId = drugModel.getDrugId();
+                    drugBox.getChildren().removeIf(node -> {
+                        if( node instanceof RecordDrug ){
+                            RecordDrug d = (RecordDrug)node;
+                            return d.getDrugId() == drugId;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
+                reIndexDrugs();
+                for(DrugModel drugModel : c.getAddedSubList()){
+                    long n = drugBox.getChildren().stream()
+                            .filter(node ->  node instanceof RecordDrug)
+                            .count();
+                    RecordDrug recordDrug = new RecordDrug((int)n+1, drugModel);
+                    drugBox.getChildren().add(recordDrug);
+                }
+            }
+        });
+        recordModel.getShinryouList().addListener((ListChangeListener<ShinryouModel>) c -> {
+            while(c.next()){
+                for(ShinryouModel shinryouModel: c.getRemoved()){
+                    int shinryouId = shinryouModel.getShinryouId();
+                    shinryouBox.getChildren().removeIf(node -> {
+                        if( node instanceof RecordShinryou ){
+                            RecordShinryou r = (RecordShinryou)node;
+                            return r.getShinryouId() == shinryouId;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
+                for(ShinryouModel shinryouModel: c.getAddedSubList()){
+                    RecordShinryou recordShinryou = new RecordShinryou(shinryouModel.getShinryouId(),
+                            shinryouModel.getShinryoucode(), shinryouModel.getRep());
+                    addShinryou(recordShinryou);
+                }
+            }
+        });
+        recordModel.getConducts().addListener((ListChangeListener<ConductModel>) c -> {
+            while(c.next()){
+                for(ConductModel conductModel: c.getRemoved()){
+                    int conductId = conductModel.getConductId();
+                    conductBox.getChildren().removeIf(node -> {
+                        if( node instanceof RecordConduct ){
+                            RecordConduct rc = (RecordConduct)node;
+                            return rc.getConductId() == conductId;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
+                for(ConductModel conductModel: c.getAddedSubList()){
+                    conductBox.getChildren().add(new RecordConduct(conductModel));
+                }
+            }
+        });
+        body.getRightBox().getChildren().addAll(
+                createHoken(recordModel.hokenRepProperty()),
+                drugBox,
+                shinryouBox,
+                conductBox,
+                new TextFlow(paymentText)
+        );
+        getChildren().addAll(title, body);
     }
 
     public int getVisitId() {
         return visitId;
     }
 
-    private void bindText(Visit visit){
-        visit.getTexts().addListener((ListChangeListener<Text>) c -> {
-            while( c.next() ) {
-                for (Text item : c.getRemoved()) {
-                    body.getLeftBox().getChildren().removeIf(rec -> {
-                        final int textId = item.getTextId();
-                        if (rec instanceof RecordText) {
-                            RecordText recordText = (RecordText) rec;
-                            return recordText.getTextId() == textId;
-                        } else {
-                            return false;
-                        }
-                    });
-                }
-                for (Text item : c.getAddedSubList()) {
-                    RecordText rec = new RecordText(item);
-                    body.getLeftBox().getChildren().add(rec);
-                }
-            }
-        });
+    public boolean isCurrent() {
+        return title.isCurrent();
     }
 
-    private void bindDrug(Visit visit){
-        visit.getDrugs().addListener((ListChangeListener<Drug>) c -> {
-            while( c.next() ){
-                for(Drug item: c.getRemoved() ){
-                    RecordDrug recordDrug = findRecordDrug(item.getDrugId());
-                    if( recordDrug != null ){
-                        drugBox.getChildren().remove(recordDrug);
-                        reIndexDrugs();
-                    }
-                }
-                for(Drug item: c.getAddedSubList()){
-                    int index = visit.getDrugs().indexOf(item);
-                    RecordDrug rec = new RecordDrug(index+1, item);
-                    drugBox.getChildren().add(rec);
-                }
-            }
-        });
-    }
-
-    private void bindShinryou(Visit visit){
-        visit.getShinryouList().addListener(new ListChangeListener<Shinryou>() {
-            @Override
-            public void onChanged(Change<? extends Shinryou> c) {
-                while( c.next() ){
-                    for(Shinryou item: c.getRemoved()){
-                        RecordShinryou rec = findRecordShinryou(item.getShinryouId());
-                        if( rec != null ){
-                            shinryouBox.getChildren().remove(rec);
-                        }
-                    }
-                    for(Shinryou item: c.getAddedSubList()){
-                        RecordShinryou rec = new RecordShinryou(item);
-                        int i = insertingShinryouIndex(item.getShinryoucode());
-                        if( i < 0 ){
-                            shinryouBox.getChildren().add(rec);
-                        } else {
-                            shinryouBox.getChildren().add(i, rec);
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    private void bindConduct(Visit visit){
-        visit.getConducts().addListener((ListChangeListener<Conduct>) c -> {
-            while( c.next() ){
-                for(Conduct item: c.getAddedSubList()){
-                    RecordConduct rec = new RecordConduct(item);
-                    conductBox.getChildren().add(rec);
-                }
-            }
-        });
-    }
-
-    private RecordShinryou findRecordShinryou(int shinryouId){
-        for(Node node: shinryouBox.getChildren()){
-            RecordShinryou rec = (RecordShinryou)node;
-            if( rec.getShinryouId() == shinryouId ){
-                return rec;
-            }
-        }
-        return null;
-    }
-
-    private int insertingShinryouIndex(int shinryoucode){
-        int n = shinryouBox.getChildren().size();
-        for(int i=0;i<n;i++){
-            Node node = shinryouBox.getChildren().get(i);
-            RecordShinryou rec = (RecordShinryou)node;
-            if( rec.getShinryoucode() > shinryoucode) {
-                return i;
-            }
-        }
-        return -1;
+    private Node createHoken(StringProperty hokenRepProperty){
+        TextFlow textFlow = new TextFlow();
+        javafx.scene.text.Text text = new javafx.scene.text.Text();
+        text.textProperty().bind(hokenRepProperty);
+        textFlow.getChildren().add(text);
+        return textFlow;
     }
 
     private void reIndexDrugs(){
         int index = 1;
-        for(Node node: drugBox.getChildren()){
+        for(Node node : drugBox.getChildren()){
             if( node instanceof RecordDrug ){
-                RecordDrug recordDrug = (RecordDrug)node;
-                recordDrug.updateIndex(index++);
+                RecordDrug d = (RecordDrug)node;
+                d.setIndex(index++);
             }
         }
     }
 
-    private RecordDrug findRecordDrug(int drugId){
-        for(Node node: drugBox.getChildren()){
-            if( node instanceof RecordDrug ){
-                RecordDrug recordDrug = (RecordDrug)node;
-                if( recordDrug.getDrugId() == drugId ){
-                    return recordDrug;
-                }
+    private void addShinryou(RecordShinryou recordShinryou){
+        int i = 0;
+        int n = shinryouBox.getChildren().size();
+        for(;i<n;i++){
+            Node node = shinryouBox.getChildren().get(i);
+            RecordShinryou r = (RecordShinryou)node;
+            if( r.getShinryoucode() > recordShinryou.getShinryoucode() ){
+                break;
             }
         }
-        return null;
+        if( i < n ){
+            shinryouBox.getChildren().add(i, recordShinryou);
+        } else {
+            shinryouBox.getChildren().add(recordShinryou);
+        }
     }
 
-    private void addHoken(Visit visit){
-        TextFlow textFlow = new TextFlow();
-        javafx.scene.text.Text text = new javafx.scene.text.Text();
-        text.textProperty().bind(visit.hokenRepProperty());
-        textFlow.getChildren().add(text);
-        body.getRightBox().getChildren().add(textFlow);
-    }
-
-    private Node createCharge(Visit visit){
-        Label label = new Label();
-        label.getStyleClass().add("record-charge");
-        label.textProperty().bind(visit.getCharge().repProperty());
-        return label;
-    }
 }

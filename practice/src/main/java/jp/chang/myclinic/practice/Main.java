@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-// TODO: fix batch enter shinryou by names failure
+// TODO: add delete gazou label link
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);

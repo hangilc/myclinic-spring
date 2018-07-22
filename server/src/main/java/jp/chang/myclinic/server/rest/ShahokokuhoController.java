@@ -26,12 +26,18 @@ public class ShahokokuhoController {
 
 	@RequestMapping(value="/enter-shahokokuho", method=RequestMethod.POST)
 	public int enterShahokokuho(@RequestBody ShahokokuhoDTO shahokokuhoDTO){
+		if( shahokokuhoDTO.shahokokuhoId != 0 ){
+			throw new RuntimeException("Invalid shahokokuhoId (should be zero).");
+		}
 		return dbGateway.enterShahokokuho(shahokokuhoDTO);
 	}
 
 	@RequestMapping(value="/update-shahokokuho", method=RequestMethod.POST)
 	public boolean updateShahokokuho(@RequestBody ShahokokuhoDTO shahokokuhoDTO){
-		dbGateway.enterShahokokuho(shahokokuhoDTO);
+		if( shahokokuhoDTO.shahokokuhoId == 0 ){
+			throw new RuntimeException("Invalid shahokokuhoId (should be non-zero).");
+		}
+		dbGateway.updateShahokokuho(shahokokuhoDTO);
 		return true;
 	}
 

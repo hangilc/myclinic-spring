@@ -5,9 +5,13 @@ import jp.chang.myclinic.dto.ShahokokuhoDTO;
 public class ShahokokuhoUtil {
 
 	public static String rep(ShahokokuhoDTO shahokokuhoDTO){
-		String name = name(shahokokuhoDTO.hokenshaBangou);
-		if( shahokokuhoDTO.kourei > 0 ){
-			return name + "・高齢" + shahokokuhoDTO.kourei + "割";
+		return rep(shahokokuhoDTO.hokenshaBangou, shahokokuhoDTO.kourei);
+	}
+
+	public static String rep(int hokenshaBangou, int koureiFutan){
+		String name = name(hokenshaBangou);
+		if( koureiFutan > 0 ){
+			return name + "・高齢" + koureiFutan + "割";
 		} else {
 			return name;
 		}

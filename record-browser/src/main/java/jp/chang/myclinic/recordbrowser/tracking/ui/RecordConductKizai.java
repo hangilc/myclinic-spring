@@ -2,17 +2,16 @@ package jp.chang.myclinic.recordbrowser.tracking.ui;
 
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.recordbrowser.tracking.model.ConductKizai;
+import jp.chang.myclinic.recordbrowser.tracking.model.ConductKizaiModel;
 
 class RecordConductKizai extends TextFlow {
 
+    //private static Logger logger = LoggerFactory.getLogger(RecordConductKizai.class);
     private int conductKizaiId;
-    private Text rep = new Text();
 
-    RecordConductKizai(ConductKizai conductKizai) {
-        this.conductKizaiId = conductKizai.getConductKizaiId();
-        this.rep.textProperty().bind(conductKizai.repProperty());
-        getChildren().add(rep);
+    RecordConductKizai(ConductKizaiModel model) {
+        this.conductKizaiId = model.getConductKizaiId();
+        getChildren().add(new Text(model.getRep()));
     }
 
     public int getConductKizaiId() {

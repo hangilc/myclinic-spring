@@ -33,11 +33,6 @@ public class ConductController {
 		return dbGateway.getConductFull(conductId);
 	}
 
-	@RequestMapping(value="/get-gazou-label", method=RequestMethod.GET)
-	public GazouLabelDTO getGazouLabel(@RequestParam("conduct-id") int conductId){
-		return dbGateway.findGazouLabel(conductId);
-	}
-
 	@RequestMapping(value="/list-conduct-full-by-ids", method=RequestMethod.GET)
 	public List<ConductFullDTO> listByIds(@RequestParam(value="conduct-id", defaultValue="") List<Integer> conductIds){
 		return dbGateway.listConductFullByIds(conductIds);

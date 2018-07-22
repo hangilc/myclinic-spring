@@ -1,49 +1,41 @@
 package jp.chang.myclinic.recordbrowser.tracking.ui;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
-import jp.chang.myclinic.recordbrowser.Main;
-import jp.chang.myclinic.recordbrowser.PatientHistoryDialog;
-import jp.chang.myclinic.recordbrowser.tracking.model.Patient;
-import jp.chang.myclinic.recordbrowser.tracking.model.Visit;
+import jp.chang.myclinic.recordbrowser.event.OpenPatientRecordsEvent;
+import jp.chang.myclinic.recordbrowser.tracking.model.PatientModel;
+import jp.chang.myclinic.recordbrowser.tracking.model.RecordModel;
 import jp.chang.myclinic.util.DateTimeUtil;
-import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.time.LocalDateTime;
 
 public class RecordTitle extends TextFlow {
 
-    RecordTitle(Visit visit){
+    private boolean current = false;
+
+    RecordTitle(RecordModel recordModel){
         getStyleClass().add("record-title");
         setMaxWidth(Double.MAX_VALUE);
-        Patient patient = visit.getPatient();
+        PatientModel patient = recordModel.getPatient();
         Hyperlink patientLink = new Hyperlink();
         patientLink.textProperty().bind(
                 Bindings.concat(patient.lastNameProperty(), patient.firstNameProperty())
         );
         patientLink.getStyleClass().add("patient-link");
         patientLink.setOnAction(evt -> {
-            Service.api.getPatient(patient.getPatientId())
-                    .thenAccept(patientDTO -> Platform.runLater(() -> {
-                        PatientHistoryDialog dialog = new PatientHistoryDialog(patientDTO);
-                        Main.setAsChildWindow(dialog);
-                        dialog.setX(Main.getXofMainStage() + 40);
-                        dialog.setY(Main.getYofMainStage() + 20);
-                        dialog.show();
-                    }))
-                    .exceptionally(HandlerFX::exceptionally);
+            RecordTitle.this.fireEvent(new OpenPatientRecordsEvent(recordModel.getPatient().getPatientId()));
         });
-        String s = dateTimeString(visit.getVisitedAt());
-        visit.wqueueStateProperty().addListener((obs, oldValue, newValue) -> {
-            if( newValue.intValue() == WqueueWaitState.InExam.getCode() ){
+        String s = dateTimeString(recordModel.getVisitedAt());
+        recordModel.waitStateProperty().addListener((obs, oldValue, newValue) -> {
+            if( newValue == WqueueWaitState.InExam ){
                 getStyleClass().add("current-visit");
+                this.current = true;
             } else {
                 getStyleClass().removeAll("current-visit");
+                this.current = false;
             }
         });
         getChildren().addAll(
@@ -51,6 +43,10 @@ public class RecordTitle extends TextFlow {
                 patientLink,
                 new Label(s)
         );
+    }
+
+    public boolean isCurrent(){
+        return current;
     }
 
     private String dateTimeString(LocalDateTime at){

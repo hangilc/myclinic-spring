@@ -2,17 +2,16 @@ package jp.chang.myclinic.recordbrowser.tracking.ui;
 
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.recordbrowser.tracking.model.ConductDrug;
+import jp.chang.myclinic.recordbrowser.tracking.model.ConductDrugModel;
 
 class RecordConductDrug extends TextFlow {
 
+    //private static Logger logger = LoggerFactory.getLogger(RecordConductDrug.class);
     private int conductDrugId;
-    private Text rep = new Text();
 
-    RecordConductDrug(ConductDrug conductDrug) {
-        this.conductDrugId = conductDrug.getConductDrugId();
-        this.rep.textProperty().bind(conductDrug.repProperty());
-        getChildren().add(rep);
+    RecordConductDrug(ConductDrugModel model) {
+        this.conductDrugId = model.getConductDrugId();
+        getChildren().add(new Text(model.getRep()));
     }
 
     public int getConductDrugId() {

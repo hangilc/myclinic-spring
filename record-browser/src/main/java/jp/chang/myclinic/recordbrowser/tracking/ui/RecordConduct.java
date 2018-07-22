@@ -1,96 +1,104 @@
 package jp.chang.myclinic.recordbrowser.tracking.ui;
 
-import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.recordbrowser.tracking.model.Conduct;
-import jp.chang.myclinic.recordbrowser.tracking.model.ConductDrug;
-import jp.chang.myclinic.recordbrowser.tracking.model.ConductKizai;
-import jp.chang.myclinic.recordbrowser.tracking.model.ConductShinryou;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.recordbrowser.tracking.model.ConductDrugModel;
+import jp.chang.myclinic.recordbrowser.tracking.model.ConductKizaiModel;
+import jp.chang.myclinic.recordbrowser.tracking.model.ConductModel;
+import jp.chang.myclinic.recordbrowser.tracking.model.ConductShinryouModel;
 
 class RecordConduct extends VBox {
 
+    //private static Logger logger = LoggerFactory.getLogger(RecordConduct.class);
+    private int conductId;
+    private VBox gazouLabelBox = new VBox();
     private VBox shinryouBox = new VBox();
     private VBox drugBox = new VBox();
     private VBox kizaiBox = new VBox();
 
-    RecordConduct(Conduct conduct) {
+    RecordConduct(ConductModel conductModel) {
+        super(0);
+        this.conductId = conductModel.getConductId();
+        Text kindText = new Text();
+        kindText.textProperty().bind(conductModel.conductKindRepProperty());
         getChildren().addAll(
-                createKindLabel(conduct),
-                createGazouLabel(conduct),
+                new TextFlow(new Text("<"), kindText, new Text(">")),
+                gazouLabelBox,
                 shinryouBox,
                 drugBox,
                 kizaiBox
         );
-        conduct.getShinryouList().addListener((ListChangeListener<ConductShinryou>) c -> {
-            while(c.next()){
-                for(ConductShinryou s: c.getRemoved()){
-                    int conductShinryouId = s.getConductShinryouId();
-                    shinryouBox.getChildren().removeIf(
-                            rec -> ((RecordConductShinryou)rec).getConductShinryouId() == conductShinryouId
-                    );
-                }
-                for(ConductShinryou s: c.getAddedSubList()){
-                    RecordConductShinryou rcs = new RecordConductShinryou(s);
-                    shinryouBox.getChildren().add(rcs);
-                }
-            }
-        });
-        conduct.getDrugs().addListener((ListChangeListener<ConductDrug>) c -> {
-            while(c.next()){
-                for(ConductDrug d: c.getRemoved()){
-                    int conductDrugId = d.getConductDrugId();
-                    drugBox.getChildren().removeIf(
-                            rec -> ((RecordConductDrug)rec).getConductDrugId() == conductDrugId
-                    );
-                }
-                for(ConductDrug d: c.getAddedSubList()){
-                    RecordConductDrug rcd = new RecordConductDrug(d);
-                    drugBox.getChildren().add(rcd);
-                }
-            }
-        });
-        conduct.getKizaiList().addListener((ListChangeListener<ConductKizai>) c -> {
-            while(c.next()){
-                for(ConductKizai k: c.getRemoved()){
-                    int conductKizaiId = k.getConductKizaiId();
-                    kizaiBox.getChildren().removeIf(
-                            rec -> ((RecordConductKizai)rec).getConductKizaiId() == conductKizaiId
-                    );
-                }
-                for(ConductKizai k: c.getAddedSubList()){
-                    RecordConductKizai rck = new RecordConductKizai(k);
-                    kizaiBox.getChildren().add(rck);
-                }
-            }
-        });
-    }
-
-    private Node createKindLabel(Conduct conduct) {
-        Label label = new Label();
-        label.textProperty().bind(Bindings.concat("[", conduct.kindProperty(), "]"));
-        return label;
-    }
-
-    private Node createGazouLabel(Conduct conduct) {
-        Label label = new Label();
-        label.textProperty().bind(conduct.gazouLabelProperty());
-        if( label.getText().isEmpty() ){
-            label.setVisible(false);
-            label.setManaged(false);
-        }
-        conduct.gazouLabelProperty().addListener((obs, oldValue, newValue) -> {
-            if( newValue.isEmpty() ){
-                label.setVisible(false);
-                label.setManaged(false);
+        conductModel.gazouLabelProperty().addListener((obs, oldValue, newValue) -> {
+            if( newValue == null ){
+                gazouLabelBox.getChildren().clear();
             } else {
-                label.setVisible(true);
-                label.setManaged(true);
+                gazouLabelBox.getChildren().setAll(new TextFlow(new Text(newValue)));
             }
         });
-        return label;
+        conductModel.getConductShinryouList().addListener((ListChangeListener<ConductShinryouModel>) c -> {
+            while(c.next()){
+                for(ConductShinryouModel model: c.getRemoved()){
+                    int conductShinryouId = model.getConductShinryouId();
+                    shinryouBox.getChildren().removeIf(node -> {
+                        if( node instanceof RecordConductShinryou ){
+                            RecordConductShinryou r = (RecordConductShinryou)node;
+                            return r.getConductShinryouId() == conductShinryouId;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
+                for(ConductShinryouModel model: c.getAddedSubList()){
+                    RecordConductShinryou rec = new RecordConductShinryou(model);
+                    shinryouBox.getChildren().add(rec);
+                }
+            }
+        });
+        conductModel.getConductDrugs().addListener((ListChangeListener<ConductDrugModel>) c -> {
+            while(c.next()){
+                for(ConductDrugModel model: c.getRemoved()){
+                    int conductDrugId = model.getConductDrugId();
+                    drugBox.getChildren().removeIf(node -> {
+                        if( node instanceof RecordConductDrug ){
+                            RecordConductDrug r = (RecordConductDrug)node;
+                            return r.getConductDrugId() == conductDrugId;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
+                for(ConductDrugModel model: c.getAddedSubList()){
+                    RecordConductDrug rec = new RecordConductDrug(model);
+                    drugBox.getChildren().add(rec);
+                }
+            }
+        });
+        conductModel.getConductKizaiList().addListener((ListChangeListener<ConductKizaiModel>) c -> {
+            while(c.next()){
+                for(ConductKizaiModel model: c.getRemoved()){
+                    int conductKizaiId = model.getConductKizaiId();
+                    drugBox.getChildren().removeIf(node -> {
+                        if( node instanceof RecordConductKizai ){
+                            RecordConductKizai r = (RecordConductKizai)node;
+                            return r.getConductKizaiId() == conductKizaiId;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
+                for(ConductKizaiModel model: c.getAddedSubList()){
+                    RecordConductKizai rec = new RecordConductKizai(model);
+                    drugBox.getChildren().add(rec);
+                }
+            }
+        });
     }
+
+    int getConductId() {
+        return conductId;
+    }
+
 
 }

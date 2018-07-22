@@ -26,12 +26,18 @@ public class KoukikoureiController {
 
 	@RequestMapping(value="/enter-koukikourei", method=RequestMethod.POST)
 	public int enterKoukikourei(@RequestBody KoukikoureiDTO koukikoureiDTO){
+		if( koukikoureiDTO.koukikoureiId != 0 ){
+			throw new RuntimeException("Invalid koukikooureiId (should be zero).");
+		}
 		return dbGateway.enterKoukikourei(koukikoureiDTO);
 	}
 
 	@RequestMapping(value="/update-koukikourei", method=RequestMethod.POST)
 	public boolean updateKoukikourei(@RequestBody KoukikoureiDTO koukikoureiDTO){
-		dbGateway.enterKoukikourei(koukikoureiDTO);
+		if( koukikoureiDTO.koukikoureiId == 0 ){
+			throw new RuntimeException("Invalid koukikooureiId (should be non-zero).");
+		}
+		dbGateway.updateKoukikourei(koukikoureiDTO);
 		return true;
 	}
 

@@ -2,19 +2,17 @@ package jp.chang.myclinic.recordbrowser.tracking.ui;
 
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.recordbrowser.tracking.model.Shinryou;
 
 public class RecordShinryou extends TextFlow {
 
+    //private static Logger logger = LoggerFactory.getLogger(RecordShinryou.class);
     private int shinryouId;
     private int shinryoucode;
 
-    public RecordShinryou(Shinryou shinryou){
-        this.shinryouId = shinryou.getShinryouId();
-        this.shinryoucode = shinryou.getShinryoucode();
-        Text rep = new Text();
-        rep.textProperty().bind(shinryou.repProperty());
-        getChildren().add(rep);
+    RecordShinryou(int shinryouId, int shinryoucode, String rep) {
+        this.shinryouId = shinryouId;
+        this.shinryoucode = shinryoucode;
+        this.getChildren().add(new Text(rep));
     }
 
     public int getShinryouId() {

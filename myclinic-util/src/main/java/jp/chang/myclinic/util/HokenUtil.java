@@ -8,30 +8,63 @@ import java.util.List;
 
 public class HokenUtil {
 
-    public static String hokenRep(HokenDTO hoken){
+    public static String hokenRep(Integer shahokokuhoHokenshaBangou, Integer shahokokuhoKoureiFutanWari,
+                                  Integer koukikoureiFutanWari,
+                                  Integer roujinFutanWari,
+                                  Integer kouhi1FutanshaBangou,
+                                  Integer kouhi2FutanshaBangou,
+                                  Integer kouhi3FutanshaBangou){
         List<String> terms = new ArrayList<>();
-        if( hoken.shahokokuho != null ){
-            terms.add(ShahokokuhoUtil.name(hoken.shahokokuho.hokenshaBangou));
-            if( hoken.shahokokuho.kourei > 0 ){
-                terms.add("高齢" + hoken.shahokokuho.kourei + "割");
-            }
+        if( shahokokuhoHokenshaBangou != null && shahokokuhoKoureiFutanWari != null ){
+            terms.add(ShahokokuhoUtil.rep(shahokokuhoHokenshaBangou, shahokokuhoKoureiFutanWari));
         }
-        if( hoken.koukikourei != null ){
-            terms.add(KoukikoureiUtil.rep(hoken.koukikourei));
+        if( koukikoureiFutanWari != null ){
+            terms.add(KoukikoureiUtil.rep(koukikoureiFutanWari));
         }
-        if( hoken.roujin != null ){
-            terms.add(RoujinUtil.rep(hoken.roujin));
+        if( roujinFutanWari != null ){
+            terms.add(RoujinUtil.rep(roujinFutanWari));
         }
-        if( hoken.kouhi1 != null ){
-            terms.add(KouhiUtil.rep(hoken.kouhi1));
+        if( kouhi1FutanshaBangou != null ){
+            terms.add(KouhiUtil.rep(kouhi1FutanshaBangou));
         }
-        if( hoken.kouhi2 != null ){
-            terms.add(KouhiUtil.rep(hoken.kouhi2));
+        if( kouhi2FutanshaBangou != null ){
+            terms.add(KouhiUtil.rep(kouhi2FutanshaBangou));
         }
-        if( hoken.kouhi3 != null ){
-            terms.add(KouhiUtil.rep(hoken.kouhi3));
+        if( kouhi3FutanshaBangou != null ){
+            terms.add(KouhiUtil.rep(kouhi3FutanshaBangou));
         }
         return String.join("・", terms);
+    }
+
+    public static String hokenRep(HokenDTO hoken){
+        Integer shahokokuhoHokenshaBangou = null;
+        Integer shahokokuhoKoureiFutanWari = null;
+        Integer koukikoureiFutanWari = null;
+        Integer roujinFutanWari = null;
+        Integer kouhi1FutanshaBangou = null;
+        Integer kouhi2FutanshaBangou = null;
+        Integer kouhi3FutanshaBangou = null;
+        if( hoken.shahokokuho != null ){
+            shahokokuhoHokenshaBangou = hoken.shahokokuho.hokenshaBangou;
+            shahokokuhoKoureiFutanWari = hoken.shahokokuho.kourei;
+        }
+        if( hoken.koukikourei != null ){
+            koukikoureiFutanWari = hoken.koukikourei.futanWari;
+        }
+        if( hoken.roujin != null ){
+            roujinFutanWari = hoken.roujin.futanWari;
+        }
+        if( hoken.kouhi1 != null ){
+            kouhi1FutanshaBangou = hoken.kouhi1.futansha;
+        }
+        if( hoken.kouhi2 != null ){
+            kouhi2FutanshaBangou = hoken.kouhi2.futansha;
+        }
+        if( hoken.kouhi3 != null ){
+            kouhi3FutanshaBangou = hoken.kouhi3.futansha;
+        }
+        return hokenRep(shahokokuhoHokenshaBangou, shahokokuhoKoureiFutanWari, koukikoureiFutanWari,
+                roujinFutanWari, kouhi1FutanshaBangou, kouhi2FutanshaBangou, kouhi3FutanshaBangou);
     }
 
     public static int calcFutanWari(HokenDTO hoken, int rcptAge){

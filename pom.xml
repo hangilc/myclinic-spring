@@ -53,6 +53,7 @@
         <module>rcpt-drawer</module>
     <module>logdto</module>
     <module>master-lib</module>
+    <module>tracker</module>
   </modules>
 
 </project>
