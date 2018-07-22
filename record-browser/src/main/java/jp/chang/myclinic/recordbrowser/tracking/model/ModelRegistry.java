@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DrugUtil;
@@ -210,6 +211,112 @@ public class ModelRegistry {
         if( recordModel != null ) {
             ConductModel conductModel = new ConductModel(created);
             recordModel.getConducts().add(conductModel);
+        }
+    }
+
+    public boolean updateConduct(ConductDTO updated){
+        ConductModel conductModel = findConductModel(updated.conductId);
+        if( conductModel != null ){
+            ConductKind conductKind = ConductKind.fromCode(updated.kind);
+            conductModel.setConductKindRep(conductKind.getKanjiRep());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean deleteConduct(ConductDTO deleted){
+        RecordModel recordModel = findRecordModel(deleted.visitId);
+        if( recordModel != null ){
+            return recordModel.getConducts().removeIf(c -> c.getConductId() == deleted.conductId);
+        } else {
+            return false;
+        }
+    }
+
+    private ConductModel findConductModel(int conductId){
+        for(RecordModel recordModel: recordModels){
+            for(ConductModel conductModel: recordModel.getConducts()){
+                if( conductModel.getConductId() == conductId ){
+                    return conductModel;
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean createGazouLabel(GazouLabelDTO created){
+        ConductModel conductModel = findConductModel(created.conductId);
+        if( conductModel != null ){
+            conductModel.setGazouLabel(created.label);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean updateGazouLabel(GazouLabelDTO updated){
+        ConductModel conductModel = findConductModel(updated.conductId);
+        if( conductModel != null ){
+            conductModel.setGazouLabel(updated.label);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean deleteGazouLabel(GazouLabelDTO deleted){
+        ConductModel conductModel = findConductModel(deleted.conductId);
+        if( conductModel != null ){
+            conductModel.setGazouLabel(null);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void createConductShinryou(ConductShinryouDTO created, Consumer<Boolean> altered){
+        ConductModel conductModel = findConductModel(created.conductId);
+        if( conductModel != null ) {
+            getShinryouMaster(created.shinryoucode)
+                    .thenAccept(master -> {
+                        ConductShinryouModel model = new ConductShinryouModel(created.conductShinryouId, master.name);
+                        Platform.runLater(() -> {
+                            conductModel.getConductShinryouList().add(model);
+                            altered.accept(true);
+                        });
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        } else {
+            altered.accept(false);
+        }
+    }
+
+    public boolean deleteConductShinryou(ConductShinryouDTO deleted){
+        ConductModel conductModel = findConductModel(deleted.conductId);
+        if( conductModel != null ){
+            return conductModel.getConductShinryouList().removeIf(m ->
+                    m.getConductShinryouId() == deleted.conductShinryouId);
+        } else {
+            return false;
+        }
+    }
+
+    public void createConductDrug(ConductDrugDTO created, Consumer<Boolean> altered){
+        ConductModel conductModel = findConductModel(created.conductId);
+        if( conductModel != null ) {
+            getIyakuhinMaster(created.iyakuhincode)
+                    .thenAccept(master -> {
+                        String rep = DrugUtil.conductDrugRep(created, master);
+                        ConductDrugModel model = new ConductDrugModel(created.conductDrugId, rep);
+                        Platform.runLater(() -> {
+                            conductModel.getConductDrugs().add(model);
+                            altered.accept(true);
+                        });
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        } else {
+            altered.accept(false);
         }
     }
 

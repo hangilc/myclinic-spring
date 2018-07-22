@@ -21,6 +21,7 @@ public interface DispatchAction {
     default void onConductDeleted(ConductDTO deleted, Runnable toNext){ toNext.run(); }
     default void onGazouLabelCreated(GazouLabelDTO created, Runnable toNext){ toNext.run(); }
     default void onGazouLabelUpdated(GazouLabelDTO prev, GazouLabelDTO updated, Runnable toNext){ toNext.run(); }
+    default void onGazouLabelDeleted(GazouLabelDTO deleted, Runnable toNext){ toNext.run(); }
     default void onConductShinryouCreated(ConductShinryouDTO created, Runnable toNext){ toNext.run(); }
     default void onConductShinryouDeleted(ConductShinryouDTO deleted, Runnable toNext){ toNext.run(); }
     default void onConductDrugCreated(ConductDrugDTO created, Runnable toNext){ toNext.run(); }

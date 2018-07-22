@@ -125,11 +125,82 @@ public class RecordDispatchAction implements DispatchAction {
 
     @Override
     public void onConductUpdated(ConductDTO prev, ConductDTO updated, Runnable toNext) {
-        toNext.run();
+        if( modelRegistry.updateConduct(updated) ) {
+            root.scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
+        }
     }
 
     @Override
     public void onConductDeleted(ConductDTO deleted, Runnable toNext) {
+        if( modelRegistry.deleteConduct(deleted) ) {
+            root.scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
+        }
+    }
+
+    @Override
+    public void onGazouLabelCreated(GazouLabelDTO created, Runnable toNext) {
+        if( modelRegistry.createGazouLabel(created) ){
+            root.scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
+        }
+    }
+
+    @Override
+    public void onGazouLabelUpdated(GazouLabelDTO prev, GazouLabelDTO updated, Runnable toNext) {
+        if( modelRegistry.updateGazouLabel(updated) ){
+            root.scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
+        }
+    }
+
+    @Override
+    public void onGazouLabelDeleted(GazouLabelDTO deleted, Runnable toNext) {
+        if( modelRegistry.deleteGazouLabel(deleted) ){
+            root.scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
+        }
+    }
+
+    @Override
+    public void onConductShinryouCreated(ConductShinryouDTO created, Runnable toNext) {
+        modelRegistry.createConductShinryou(created, altered -> {
+            if( altered ) {
+                root.scrollToCurrentVisit(2, toNext);
+            } else {
+                toNext.run();
+            }
+        });
+    }
+
+    @Override
+    public void onConductShinryouDeleted(ConductShinryouDTO deleted, Runnable toNext) {
+        if( modelRegistry.deleteConductShinryou(deleted) ){
+            root.scrollToCurrentVisit(2, toNext);
+        } else {
+            toNext.run();
+        }
+    }
+
+    @Override
+    public void onConductDrugCreated(ConductDrugDTO created, Runnable toNext) {
+        modelRegistry.createConductDrug(created, altered -> {
+            if( altered ) {
+                root.scrollToCurrentVisit(2, toNext);
+            } else {
+                toNext.run();
+            }
+        });
+    }
+
+    @Override
+    public void onConductDrugDeleted(ConductDrugDTO deleted, Runnable toNext) {
         toNext.run();
     }
 }

@@ -184,6 +184,11 @@ class Dispatcher implements Runnable {
                     callbackWrapper.accept(() -> action.onGazouLabelUpdated(body.prev, body.updated, toNext));
                     break;
                 }
+                case "gazou-label-deleted": {
+                    GazouLabelDeleted body = mapper.readValue(log.body, GazouLabelDeleted.class);
+                    callbackWrapper.accept(() -> action.onGazouLabelDeleted(body.deleted, toNext));
+                    break;
+                }
                 case "conduct-shinryou-created": {
                     ConductShinryouCreated body = mapper.readValue(log.body, ConductShinryouCreated.class);
                     callbackWrapper.accept(() -> action.onConductShinryouCreated(body.created, toNext));
