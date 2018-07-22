@@ -319,4 +319,22 @@ public class RecordDispatchAction implements DispatchAction {
             toNext.run();
         }
     }
+
+    @Override
+    public void onPatientCreated(PatientDTO created, Runnable toNext) {
+        modelRegistry.createPatient(created);
+        toNext.run();
+    }
+
+    @Override
+    public void onPatientUpdated(PatientDTO prev, PatientDTO updated, Runnable toNext) {
+        modelRegistry.updatePatient(updated);
+        root.scrollToCurrentVisit(2, toNext);
+    }
+
+    @Override
+    public void onPatientDeleted(PatientDTO deleted, Runnable toNext) {
+        modelRegistry.deletePatient(deleted);
+        toNext.run();
+    }
 }

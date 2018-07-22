@@ -31,6 +31,7 @@ public class ModelRegistry {
     private Map<Integer, ShahokokuhoModel> shahokokuhoMap = new HashMap<>();
     private Map<Integer, KoukikoureiModel> koukikoureiMap = new HashMap<>();
     private Map<Integer, KouhiModel> kouhiMap = new HashMap<>();
+    private Map<Integer, PatientModel> patientMap = new HashMap<>();
     private String today = LocalDate.now().toString();
 
     public ModelRegistry(Service.ServerAPI api) {
@@ -46,9 +47,9 @@ public class ModelRegistry {
             private PatientModel patientModel;
         }
         Local local = new Local();
-        api.getPatient(visitDTO.patientId)
-                .thenCompose(patientDTO -> {
-                    local.patientModel = new PatientModel(patientDTO);
+        getPatient(visitDTO.patientId)
+                .thenCompose(patientModel -> {
+                    local.patientModel = patientModel;
                     return getHokenModel(visitDTO);
                 })
                 .thenAccept(hokenModel -> {
@@ -464,6 +465,23 @@ public class ModelRegistry {
         }
     }
 
+    public void createPatient(PatientDTO created){
+        PatientModel patientModel = new PatientModel(created);
+        patientMap.put(created.patientId, patientModel);
+    }
+
+    public void updatePatient(PatientDTO updated){
+        PatientModel patientModel = patientMap.get(updated.patientId);
+        if( patientModel != null ){
+            patientModel.setLastName(updated.lastName);
+            patientModel.setFirstName(updated.firstName);
+        }
+    }
+
+    public void deletePatient(PatientDTO deleted){
+        patientMap.remove(deleted.patientId);
+    }
+
     private CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode) {
         IyakuhinMasterDTO masterDTO = iyakuhinMasterMap.get(iyakuhincode);
         if (masterDTO != null) {
@@ -574,6 +592,20 @@ public class ModelRegistry {
                     hokenModel.setKouhi2Model(kouhi2Model);
                     return hokenModel;
                 });
+    }
+
+    private CompletableFuture<PatientModel> getPatient(int patientId){
+        PatientModel patient = patientMap.get(patientId);
+        if( patient != null ){
+            return CompletableFuture.completedFuture(patient);
+        } else {
+            return api.getPatient(patientId)
+                    .thenApply(result -> {
+                        PatientModel p = new PatientModel(result);
+                        patientMap.put(patientId, p);
+                        return p;
+                    });
+        }
     }
 
 }
