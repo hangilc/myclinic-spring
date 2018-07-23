@@ -1,5 +1,7 @@
 package jp.chang.myclinic.pharma.javafx;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
@@ -9,9 +11,13 @@ import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.pharma.tracker.model.Patient;
 import jp.chang.myclinic.pharma.tracker.model.Visit;
 
-class PatientList extends ListView<Visit> {
+class PatientList extends ListView<PatientList.Model> {
 
     //private static Logger logger = LoggerFactory.getLogger(PatientList.class);
+    public interface Model {
+        ObjectProperty<WqueueWaitState> waitStateProperty();
+        StringProperty nameProperty();
+    }
 
     private Image waitCashierImage = new Image("/wait_cashier.bmp");
     private Image waitPrescImage = new Image("/wait_drug.bmp");
@@ -21,13 +27,14 @@ class PatientList extends ListView<Visit> {
         getStyleClass().add("patient-list");
         setCellFactory(listView -> new ListCell<>(){
             @Override
-            protected void updateItem(Visit item, boolean empty) {
+            protected void updateItem(Model item, boolean empty) {
                 super.updateItem(item, empty);
                 if( empty ){
                     setText("");
                     setGraphic(null);
                 } else {
-                    setText(itemText(item));
+                    textProperty().bind(item.nameProperty());
+                    graphicProperty().bind()
                     setGraphic(new ImageView(itemImage(item)));
                 }
             }
