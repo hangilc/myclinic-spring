@@ -43,7 +43,7 @@ public class MainScene extends HBox implements DispatchHook {
 
             @Override
             void onPrescDone() {
-                scope.reloadPatientList();
+                //scope.reloadPatientList();
             }
         };
         ScrollPane rightScroll = new ScrollPane(rightColumn);
