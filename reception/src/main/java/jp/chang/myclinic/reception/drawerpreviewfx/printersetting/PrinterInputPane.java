@@ -65,7 +65,7 @@ class PrinterInputPane extends VBox {
 
     private void doChoosePrinter(){
         DrawerPrinter drawerPrinter = new DrawerPrinter();
-        DrawerPrinter.DialogResult dialogResult = drawerPrinter.printDialog(null, null);
+        DrawerPrinter.DialogResult dialogResult = drawerPrinter.printDialog(devmode, devnames);
         if( dialogResult.ok ){
             setData(dialogResult.devmodeData, dialogResult.devnamesData);
         }
