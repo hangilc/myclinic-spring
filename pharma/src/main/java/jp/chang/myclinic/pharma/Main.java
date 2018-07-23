@@ -1,6 +1,7 @@
 package jp.chang.myclinic.pharma;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -18,7 +19,9 @@ import jp.chang.myclinic.pharma.javafx.drawerpreview.SelectDefaultSettingDialog;
 import jp.chang.myclinic.pharma.javafx.pharmadrug.PharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
 import jp.chang.myclinic.pharma.javafx.printing.Printing;
-import jp.chang.myclinic.pharma.tracker.Tracker;
+import jp.chang.myclinic.pharma.tracker.ActionHook;
+import jp.chang.myclinic.pharma.tracker.ModelRegistry;
+import jp.chang.myclinic.tracker.Tracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +69,8 @@ public class Main extends Application {
         MainScene root = new MainScene(scope);
         root.getStylesheets().add("Pharma.css");
         borderPane.setCenter(root);
-        tracker = new Tracker(wsUrl, root, Service.api){
+        ActionHook actionHook = new ActionHook(new ModelRegistry(), root);
+        tracker = new Tracker(wsUrl, actionHook, Service.api::listPracticeLogInRangeCall){
             @Override
             protected void beforeCatchup() {
                 System.out.println("beforeCatchuyp");
@@ -77,10 +81,11 @@ public class Main extends Application {
                 System.out.println("afterCatchup");
             }
         };
+        tracker.setCallbackWrapper(Platform::runLater);
         scope.setTracker(tracker);
         stage.setScene(new Scene(borderPane));
         stage.show();
-        tracker.start();
+        tracker.start(() -> {});
     }
 
     @Override

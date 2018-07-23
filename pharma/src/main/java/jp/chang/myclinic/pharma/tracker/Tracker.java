@@ -1,17 +1,7 @@
 package jp.chang.myclinic.pharma.tracker;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
-import okhttp3.Response;
-import okhttp3.WebSocket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-
 public class Tracker {
-
+/*
     private static Logger logger = LoggerFactory.getLogger(Tracker.class);
 
     private String wsUrl;
@@ -83,5 +73,5 @@ public class Tracker {
         };
         logger.info("Started web socket");
     }
-
+*/
 }

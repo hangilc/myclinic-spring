@@ -1,6 +1,6 @@
 package jp.chang.myclinic.pharma;
 
-import jp.chang.myclinic.pharma.tracker.Tracker;
+import jp.chang.myclinic.tracker.Tracker;
 
 public class Scope {
 
@@ -15,7 +15,6 @@ public class Scope {
     }
 
     public void reloadPatientList(){
-        tracker.reload();
-    }
+            }
 
 }

@@ -6,13 +6,14 @@ import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import jp.chang.myclinic.pharma.tracker.model.Visit;
+import jp.chang.myclinic.tracker.DispatchAction;
 
-class ActionHook implements DispatchAction {
+public class ActionHook implements DispatchAction {
 
     private ModelRegistry registry;
     private DispatchHook hook;
 
-    ActionHook(ModelRegistry registry, DispatchHook hook) {
+    public ActionHook(ModelRegistry registry, DispatchHook hook) {
         this.registry = registry;
         this.hook = hook;
     }

@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-class ModelRegistry {
+public class ModelRegistry {
 
     private Map<Integer, Visit> visitRegistry = new HashMap<>();
     private Map<Integer, Patient> patientRegistry = new HashMap<>();

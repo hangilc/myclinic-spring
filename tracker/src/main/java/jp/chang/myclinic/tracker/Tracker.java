@@ -18,7 +18,17 @@ public class Tracker {
 
     public Tracker(String url, DispatchAction dispatchAction, ListLogFunction listLogFunction) {
         this.mapper = new ObjectMapper();
-        this.dispatcher = new Dispatcher(dispatchAction, listLogFunction);
+        this.dispatcher = new Dispatcher(dispatchAction, listLogFunction){
+            @Override
+            void beforeCatchup() {
+                Tracker.this.beforeCatchup();
+            }
+
+            @Override
+            void afterCatchup() {
+                Tracker.this.afterCatchup();
+            }
+        };
         this.websocket = new TrackerWebsocket(url, message -> {
             try {
                 PracticeLogDTO plog = mapper.readValue(message, PracticeLogDTO.class);
@@ -58,6 +68,14 @@ public class Tracker {
 
     public boolean isConnected(){
         return websocket.isConnected();
+    }
+
+    protected void beforeCatchup(){
+
+    }
+
+    protected void afterCatchup(){
+
     }
 
 }
