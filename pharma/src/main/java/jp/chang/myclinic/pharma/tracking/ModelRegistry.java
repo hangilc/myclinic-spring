@@ -1,8 +1,6 @@
 package jp.chang.myclinic.pharma.tracking;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.PatientDTO;
@@ -11,30 +9,33 @@ import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import jp.chang.myclinic.pharma.tracking.model.Patient;
 import jp.chang.myclinic.pharma.tracking.model.Visit;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class ModelRegistry {
 
     private Map<Integer, Patient> patientRegistry = new HashMap<>();
-    private ObservableList<Visit> visitList = FXCollections.observableArrayList();
-    private ObservableList<Visit> pharmaList = FXCollections.observableArrayList();
+    private List<Visit> visitList = new ArrayList<>();
+    private List<Visit> pharmaList = new ArrayList<>();
 
-    public ObservableList<Visit> getVisitList(){
+    public List<Visit> getVisitList(){
         return visitList;
     }
 
-    public ObservableList<Visit> getPharmaList(){
+    public List<Visit> getPharmaList(){
         return pharmaList;
     }
 
-    void createVisit(VisitDTO visitDTO, Runnable toNext) {
+    void createVisit(VisitDTO visitDTO, Consumer<Visit> cb) {
         getPatient(visitDTO.patientId)
                 .thenAccept(patient -> Platform.runLater(() -> {
                     Visit visit = new Visit(visitDTO.visitId, patient);
                     visitList.add(visit);
-                    toNext.run();
+                    cb.accept(visit);
                 }))
                 .exceptionally(HandlerFX::exceptionally);
     }

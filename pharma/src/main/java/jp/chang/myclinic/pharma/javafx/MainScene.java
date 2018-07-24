@@ -7,10 +7,9 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import jp.chang.myclinic.pharma.Scope;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
-import jp.chang.myclinic.pharma.tracking.DispatchHook;
 import jp.chang.myclinic.pharma.tracking.model.Visit;
 
-public class MainScene extends HBox implements DispatchHook {
+public class MainScene extends HBox {
 
     //private static Logger logger = LoggerFactory.getLogger(MainScene.class);
     private LeftColumn leftColumn;
@@ -52,25 +51,21 @@ public class MainScene extends HBox implements DispatchHook {
         getChildren().addAll(leftColumn, rightScroll);
     }
 
-    @Override
     public void onVisitCreated(Visit created, Runnable toNext) {
         leftColumn.addVisit(created);
         toNext.run();
     }
 
-    @Override
     public void onVisitDeleted(int visitId, Runnable toNext) {
         leftColumn.deleteVisit(visitId);
         toNext.run();
     }
 
-    @Override
     public void onPharmaQueueCreated(Visit visit, Runnable toNext) {
         leftColumn.addPharmaQueue(visit);
         toNext.run();
     }
 
-    @Override
     public void onPharmaQueueDeleted(int visitId, Runnable toNext) {
         leftColumn.deletePharmaQueue(visitId);
         toNext.run();

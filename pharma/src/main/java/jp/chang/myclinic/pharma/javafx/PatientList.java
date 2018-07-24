@@ -8,14 +8,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import jp.chang.myclinic.consts.WqueueWaitState;
-import jp.chang.myclinic.pharma.tracking.model.Patient;
-import jp.chang.myclinic.pharma.tracking.model.Visit;
 
 class PatientList extends ListView<PatientList.Model> {
 
     //private static Logger logger = LoggerFactory.getLogger(PatientList.class);
     public interface Model {
+        int getVisitId();
+
         ObjectProperty<WqueueWaitState> waitStateProperty();
+
         StringProperty nameProperty();
     }
 
@@ -25,11 +26,11 @@ class PatientList extends ListView<PatientList.Model> {
 
     PatientList() {
         getStyleClass().add("patient-list");
-        setCellFactory(listView -> new ListCell<>(){
+        setCellFactory(listView -> new ListCell<>() {
             @Override
             protected void updateItem(Model item, boolean empty) {
                 super.updateItem(item, empty);
-                if( empty ){
+                if (empty) {
                     setText("");
                     setGraphic(null);
                 } else {
@@ -40,25 +41,21 @@ class PatientList extends ListView<PatientList.Model> {
         });
     }
 
-    private String itemText(Visit item){
-        Patient patient = item.getPatient();
-        return String.format("%s%s(%s%s)", patient.getLastName(), patient.getFirstName(),
-                patient.getLastNameYomi(), patient.getFirstNameYomi());
+    private String itemText(Model item) {
+        return item.nameProperty().getValue();
     }
 
-    private Image itemImage(Visit item){
+    private Image itemImage(Model item) {
         Image image = blankImage;
-        if( item.getWqueueState() != null ) {
-            WqueueWaitState state = item.getWqueueState();
-            if (state != null) {
-                switch (state) {
-                    case WaitCashier:
-                        image = waitCashierImage;
-                        break;
-                    case WaitDrug:
-                        image = waitPrescImage;
-                        break;
-                }
+        WqueueWaitState state = item.waitStateProperty().getValue();
+        if (state != null) {
+            switch (state) {
+                case WaitCashier:
+                    image = waitCashierImage;
+                    break;
+                case WaitDrug:
+                    image = waitPrescImage;
+                    break;
             }
         }
         return image;

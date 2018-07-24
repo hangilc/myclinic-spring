@@ -1,6 +1,9 @@
 package jp.chang.myclinic.pharma.javafx;
 
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -14,22 +17,21 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import jp.chang.myclinic.pharma.Scope;
+import jp.chang.myclinic.pharma.tracking.model.Patient;
 import jp.chang.myclinic.pharma.tracking.model.Visit;
 
 class LeftColumn extends VBox {
 
     //private static Logger logger = LoggerFactory.getLogger(LeftColumn.class);
-    private static Callback<Visit, Observable[]> modelExtractor = model -> new Observable[]{
-            model.wqueueStateProperty(),
-            model.getPatient().lastNameProperty(),
-            model.getPatient().firstNameProperty(),
-            model.getPatient().lastNameYomiProperty(),
-            model.getPatient().firstNameYomiProperty()
+    private static Callback<PatientList.Model, Observable[]> modelExtractor = model -> new Observable[]{
+            model.nameProperty(),
+            model.waitStateProperty()
     };
 
     private PatientList patientList;
-    private ObservableList<Visit> todaysList = FXCollections.observableArrayList(modelExtractor);
-    private ObservableList<Visit> pharmaQueueList = FXCollections.observableArrayList(modelExtractor);
+    private ObservableList<PatientList.Model> todaysList = FXCollections.observableArrayList(modelExtractor);
+    private ObservableList<PatientList.Model> pharmaQueueList = FXCollections.observableArrayList(modelExtractor);
+    private ObservableList<PatientList.Model> nonTrackingPatientList = FXCollections.observableArrayList();
 
     LeftColumn(Scope scope) {
         super(4);
@@ -43,8 +45,16 @@ class LeftColumn extends VBox {
         patientList.setItems(pharmaQueueList);
     }
 
+    private ModelImpl createModelImpl(Visit visit){
+        Patient patient = visit.getPatient();
+        StringProperty name = new SimpleStringProperty();
+        name.bind(Bindings.concat(patient.lastNameProperty(), patient.firstNameProperty(),
+                "(", patient.lastNameYomiProperty(), patient.firstNameYomiProperty(), ")");
+        return new ModelImpl(visit.getVisitId(), name, visit.wqueueStateProperty()));
+    }
+
     void addVisit(Visit visit){
-        todaysList.add(visit);
+        todaysList.add(createModelImpl(visit));
     }
 
     void deleteVisit(int visitId){
@@ -53,7 +63,7 @@ class LeftColumn extends VBox {
     }
 
     void addPharmaQueue(Visit visit){
-        pharmaQueueList.add(visit);
+        pharmaQueueList.add(createModelImpl(visit));
     }
 
     void deletePharmaQueue(int visitId){
@@ -66,6 +76,10 @@ class LeftColumn extends VBox {
 
     private void selectPharmaQueue(){
         patientList.itemsProperty().set(pharmaQueueList);
+    }
+
+    private void selectNonTrackingList(){
+        patientList.itemsProperty().set(nonTrackingPatientList);
     }
 
     void clearSelection(){
