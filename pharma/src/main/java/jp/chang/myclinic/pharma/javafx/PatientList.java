@@ -26,7 +26,7 @@ class PatientList extends ListView<PatientList.Model> {
 
     PatientList() {
         getStyleClass().add("patient-list");
-        setCellFactory(listView -> new ListCell<>() {
+        setCellFactory(listView -> new ListCell<Model>() {
             @Override
             protected void updateItem(Model item, boolean empty) {
                 super.updateItem(item, empty);

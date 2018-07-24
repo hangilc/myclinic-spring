@@ -25,20 +25,26 @@ import jp.chang.myclinic.tracker.DispatchAction;
 import jp.chang.myclinic.tracker.Tracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+@SpringBootApplication
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
+    private static ConfigurableApplicationContext ctx;
     private String wsUrl;
     private Tracker tracker;
 
     public static void main(String[] args) {
         logger.info("pharma invoked");
+        ctx = SpringApplication.run(Main.class, args);
         Application.launch(Main.class, args);
     }
 
@@ -71,7 +77,7 @@ public class Main extends Application {
         root.getStylesheets().add("Pharma.css");
         borderPane.setCenter(root);
         ModelRegistry modelRegistry = new ModelRegistry();
-        DispatchAction dispatchAction = new ModelDispatchAction(modelRegistry);
+        DispatchAction dispatchAction = new ModelDispatchAction(modelRegistry, root);
         tracker = new Tracker(wsUrl, dispatchAction, Service.api::listPracticeLogInRangeCall){
             @Override
             protected void beforeCatchup() {

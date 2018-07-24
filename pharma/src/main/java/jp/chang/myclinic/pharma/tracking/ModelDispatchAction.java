@@ -51,7 +51,7 @@ public class ModelDispatchAction implements DispatchAction {
     @Override
     public void onPharmaQueueCreated(PharmaQueueDTO created, Runnable toNext) {
         registry.addToPharmaQueue(created.visitId);
-        mainScene.onPharmaQueueCreated();
+        //mainScene.onPharmaQueueCreated();
         toNext.run();
     }
 
