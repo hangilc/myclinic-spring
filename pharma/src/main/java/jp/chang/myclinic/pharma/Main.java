@@ -19,8 +19,9 @@ import jp.chang.myclinic.pharma.javafx.drawerpreview.SelectDefaultSettingDialog;
 import jp.chang.myclinic.pharma.javafx.pharmadrug.PharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
 import jp.chang.myclinic.pharma.javafx.printing.Printing;
-import jp.chang.myclinic.pharma.tracker.ActionHook;
-import jp.chang.myclinic.pharma.tracker.ModelRegistry;
+import jp.chang.myclinic.pharma.tracking.ModelDispatchAction;
+import jp.chang.myclinic.pharma.tracking.ModelRegistry;
+import jp.chang.myclinic.tracker.DispatchAction;
 import jp.chang.myclinic.tracker.Tracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,8 +70,9 @@ public class Main extends Application {
         MainScene root = new MainScene(scope);
         root.getStylesheets().add("Pharma.css");
         borderPane.setCenter(root);
-        ActionHook actionHook = new ActionHook(new ModelRegistry(), root);
-        tracker = new Tracker(wsUrl, actionHook, Service.api::listPracticeLogInRangeCall){
+        ModelRegistry modelRegistry = new ModelRegistry();
+        DispatchAction dispatchAction = new ModelDispatchAction(modelRegistry);
+        tracker = new Tracker(wsUrl, dispatchAction, Service.api::listPracticeLogInRangeCall){
             @Override
             protected void beforeCatchup() {
                 System.out.println("beforeCatchuyp");
@@ -93,13 +95,6 @@ public class Main extends Application {
         super.stop();
         Service.stop();
         tracker.shutdown();
-//        OkHttpClient client = Service.client;
-//        client.dispatcher().executorService().shutdown();
-//        client.connectionPool().evictAll();
-//        Cache cache = client.cache();
-//        if (cache != null) {
-//            cache.close();
-//        }
         logger.info("pharma stopped.");
     }
 

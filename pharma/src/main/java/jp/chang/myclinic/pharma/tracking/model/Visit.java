@@ -1,4 +1,4 @@
-package jp.chang.myclinic.pharma.tracker.model;
+package jp.chang.myclinic.pharma.tracking.model;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

@@ -1,4 +1,4 @@
-package jp.chang.myclinic.pharma.tracker.model;
+package jp.chang.myclinic.pharma.tracking.model;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -7,36 +7,48 @@ import javafx.beans.property.StringProperty;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.pharma.javafx.lib.GuiUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 public class Patient {
 
+    private static Logger logger = LoggerFactory.getLogger(Patient.class);
     private int patientId;
-    private StringProperty lastName;
-    private StringProperty firstName;
-    private StringProperty lastNameYomi;
-    private StringProperty firstNameYomi;
+    private StringProperty lastName = new SimpleStringProperty();
+    private StringProperty firstName = new SimpleStringProperty();
+    private StringProperty lastNameYomi = new SimpleStringProperty();
+    private StringProperty firstNameYomi = new SimpleStringProperty();
     private ObjectProperty<LocalDate> birthday = new SimpleObjectProperty<>();
-    private ObjectProperty<Sex> sex = new SimpleObjectProperty<>(Sex.Female);
+    private ObjectProperty<Sex> sex = new SimpleObjectProperty<>();
 
-    public Patient(PatientDTO dto){
+    public Patient(PatientDTO dto) {
         this.patientId = dto.patientId;
-        this.lastName = new SimpleStringProperty(dto.lastName);
-        this.firstName = new SimpleStringProperty(dto.firstName);
-        this.lastNameYomi = new SimpleStringProperty(dto.lastNameYomi);
-        this.firstNameYomi = new SimpleStringProperty(dto.firstNameYomi);
+        doUpdate(dto);
+    }
+
+    private void doUpdate(PatientDTO patientDTO) {
+        lastName.setValue(patientDTO.lastName);
+        firstName.setValue(patientDTO.firstName);
+        lastNameYomi.setValue(patientDTO.lastNameYomi);
+        firstNameYomi.setValue(patientDTO.firstNameYomi);
         try {
-            this.birthday.setValue(LocalDate.parse(dto.birthday));
-        } catch(DateTimeParseException ex){
-            GuiUtil.alertError("生年月日を取得できませんでした。");
+            birthday.setValue(LocalDate.parse(patientDTO.birthday));
+        } catch (DateTimeParseException ex) {
+            logger.error("Invalid birthday. {}", patientDTO);
         }
-        try {
-            this.sex.setValue(Sex.fromCode(dto.sex));
-        } catch(Exception ex){
-            GuiUtil.alertError("性別の値を取得できませんでした。");
+        Sex sexValue = Sex.fromCode(patientDTO.sex);
+        if (sex != null) {
+            sex.setValue(sexValue);
+        } else {
+            logger.error("Invalid sex. {}", patientDTO);
         }
+    }
+
+    public void update(PatientDTO patientDTO){
+        doUpdate(patientDTO);
     }
 
     public int getPatientId() {

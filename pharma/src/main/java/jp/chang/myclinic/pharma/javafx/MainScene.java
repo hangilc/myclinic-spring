@@ -7,8 +7,8 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import jp.chang.myclinic.pharma.Scope;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
-import jp.chang.myclinic.pharma.tracker.DispatchHook;
-import jp.chang.myclinic.pharma.tracker.model.Visit;
+import jp.chang.myclinic.pharma.tracking.DispatchHook;
+import jp.chang.myclinic.pharma.tracking.model.Visit;
 
 public class MainScene extends HBox implements DispatchHook {
 

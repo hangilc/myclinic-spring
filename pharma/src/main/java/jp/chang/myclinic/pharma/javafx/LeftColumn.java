@@ -14,7 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import jp.chang.myclinic.pharma.Scope;
-import jp.chang.myclinic.pharma.tracker.model.Visit;
+import jp.chang.myclinic.pharma.tracking.model.Visit;
 
 class LeftColumn extends VBox {
 

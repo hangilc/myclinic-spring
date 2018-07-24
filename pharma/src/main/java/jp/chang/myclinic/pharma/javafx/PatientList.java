@@ -8,8 +8,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import jp.chang.myclinic.consts.WqueueWaitState;
-import jp.chang.myclinic.pharma.tracker.model.Patient;
-import jp.chang.myclinic.pharma.tracker.model.Visit;
+import jp.chang.myclinic.pharma.tracking.model.Patient;
+import jp.chang.myclinic.pharma.tracking.model.Visit;
 
 class PatientList extends ListView<PatientList.Model> {
 
@@ -34,7 +34,6 @@ class PatientList extends ListView<PatientList.Model> {
                     setGraphic(null);
                 } else {
                     textProperty().bind(item.nameProperty());
-                    graphicProperty().bind()
                     setGraphic(new ImageView(itemImage(item)));
                 }
             }
