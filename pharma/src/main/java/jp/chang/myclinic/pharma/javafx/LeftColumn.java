@@ -49,8 +49,8 @@ class LeftColumn extends VBox {
         Patient patient = visit.getPatient();
         StringProperty name = new SimpleStringProperty();
         name.bind(Bindings.concat(patient.lastNameProperty(), patient.firstNameProperty(),
-                "(", patient.lastNameYomiProperty(), patient.firstNameYomiProperty(), ")");
-        return new ModelImpl(visit.getVisitId(), name, visit.wqueueStateProperty()));
+                "(", patient.lastNameYomiProperty(), patient.firstNameYomiProperty(), ")"));
+        return new ModelImpl(visit.getVisitId(), name, visit.wqueueStateProperty());
     }
 
     void addVisit(Visit visit){
@@ -147,7 +147,7 @@ class LeftColumn extends VBox {
 //    }
 
     private void doStartPresc(){
-        Visit item = patientList.getSelectionModel().getSelectedItem();
+        PatientList.Model item = patientList.getSelectionModel().getSelectedItem();
         if( item != null ){
             onStartPresc(item.getVisitId());
         }
