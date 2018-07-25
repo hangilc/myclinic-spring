@@ -9,14 +9,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import jp.chang.myclinic.consts.WqueueWaitState;
 
-class PatientList extends ListView<PatientList.Model> {
+public class PatientList extends ListView<PatientList.Model> {
 
     //private static Logger logger = LoggerFactory.getLogger(PatientList.class);
     public interface Model {
         int getVisitId();
-
         ObjectProperty<WqueueWaitState> waitStateProperty();
-
         StringProperty nameProperty();
     }
 
@@ -34,7 +32,7 @@ class PatientList extends ListView<PatientList.Model> {
                     setText("");
                     setGraphic(null);
                 } else {
-                    textProperty().bind(item.nameProperty());
+                    setText(item.nameProperty().getValue());
                     setGraphic(new ImageView(itemImage(item)));
                 }
             }

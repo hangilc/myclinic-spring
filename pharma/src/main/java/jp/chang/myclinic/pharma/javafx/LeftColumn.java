@@ -1,9 +1,6 @@
 package jp.chang.myclinic.pharma.javafx;
 
 import javafx.beans.Observable;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -16,10 +13,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
-import jp.chang.myclinic.pharma.Scope;
-import jp.chang.myclinic.pharma.tracking.model.Patient;
-import jp.chang.myclinic.pharma.tracking.model.Visit;
+import jp.chang.myclinic.pharma.javafx.event.StartPrescEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
+@Component
 class LeftColumn extends VBox {
 
     //private static Logger logger = LoggerFactory.getLogger(LeftColumn.class);
@@ -29,46 +30,47 @@ class LeftColumn extends VBox {
     };
 
     private PatientList patientList;
-    private ObservableList<PatientList.Model> todaysList = FXCollections.observableArrayList(modelExtractor);
+    @Autowired
+    @Qualifier("tracking-visit-list")
+    private ObservableList<PatientList.Model> todaysList;
+    @Autowired
+    @Qualifier("tracking-pharma-list")
     private ObservableList<PatientList.Model> pharmaQueueList = FXCollections.observableArrayList(modelExtractor);
     private ObservableList<PatientList.Model> nonTrackingPatientList = FXCollections.observableArrayList();
 
-    LeftColumn(Scope scope) {
+    LeftColumn() {
         super(4);
         getStyleClass().add("left-column");
+    }
+
+    @PostConstruct
+    public void postConstruct(){
         getChildren().addAll(
                 new Label("患者リスト"),
                 createPatientList(),
                 createImageExamples(),
-                createCommands(scope)
+                createCommands()
         );
         patientList.setItems(pharmaQueueList);
     }
 
-    private ModelImpl createModelImpl(Visit visit){
-        Patient patient = visit.getPatient();
-        StringProperty name = new SimpleStringProperty();
-        name.bind(Bindings.concat(patient.lastNameProperty(), patient.firstNameProperty(),
-                "(", patient.lastNameYomiProperty(), patient.firstNameYomiProperty(), ")"));
-        return new ModelImpl(visit.getVisitId(), name, visit.wqueueStateProperty());
-    }
-
-    void addVisit(Visit visit){
-        todaysList.add(createModelImpl(visit));
-    }
-
-    void deleteVisit(int visitId){
-        todaysList.removeIf(model -> model.getVisitId() == visitId);
-        pharmaQueueList.removeIf(model -> model.getVisitId() == visitId);
-    }
-
-    void addPharmaQueue(Visit visit){
-        pharmaQueueList.add(createModelImpl(visit));
-    }
-
-    void deletePharmaQueue(int visitId){
-        pharmaQueueList.removeIf(model -> model.getVisitId() == visitId);
-    }
+//
+//    void addVisit(Visit visit){
+//        todaysList.add(createModelImpl(visit));
+//    }
+//
+//    void deleteVisit(int visitId){
+//        todaysList.removeIf(model -> model.getVisitId() == visitId);
+//        pharmaQueueList.removeIf(model -> model.getVisitId() == visitId);
+//    }
+//
+//    void addPharmaQueue(Visit visit){
+//        pharmaQueueList.add(createModelImpl(visit));
+//    }
+//
+//    void deletePharmaQueue(int visitId){
+//        pharmaQueueList.removeIf(model -> model.getVisitId() == visitId);
+//    }
 
     private void selectTodaysList(){
         patientList.itemsProperty().set(todaysList);
@@ -106,7 +108,7 @@ class LeftColumn extends VBox {
         return new ImageView(image);
     }
 
-    private Node createCommands(Scope scope){
+    private Node createCommands(){
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         CheckBox includeAllCheckBox = new CheckBox("処方済の患者も含める");
@@ -120,10 +122,14 @@ class LeftColumn extends VBox {
         });
         Button reloadButton = new Button("更新");
         Button startPrescButton = new Button("調剤開始");
-        reloadButton.setOnAction(evt -> scope.reloadPatientList());
+        reloadButton.setOnAction(evt -> doReload());
         startPrescButton.setOnAction(evt -> doStartPresc());
         hbox.getChildren().addAll(includeAllCheckBox, reloadButton, startPrescButton);
         return hbox;
+    }
+
+    private void doReload(){
+
     }
 
 //    private boolean getIncludeAllPatients(){
@@ -154,7 +160,7 @@ class LeftColumn extends VBox {
     }
 
     protected void onStartPresc(int visitId){
-
+        fireEvent(new StartPrescEvent(visitId));
     }
 
 }

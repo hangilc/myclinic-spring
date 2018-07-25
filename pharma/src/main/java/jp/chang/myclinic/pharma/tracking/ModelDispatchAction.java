@@ -5,29 +5,30 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
-import jp.chang.myclinic.pharma.javafx.MainScene;
 import jp.chang.myclinic.tracker.DispatchAction;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ModelDispatchAction implements DispatchAction {
 
     //private static Logger logger = LoggerFactory.getLogger(ModelDispatchAction.class);
+    @Autowired
     private ModelRegistry registry;
-    private MainScene mainScene;
 
-    public ModelDispatchAction(ModelRegistry registry, MainScene mainScene) {
-        this.registry = registry;
-        this.mainScene = mainScene;
+    public ModelDispatchAction() {
+
     }
 
     @Override
     public void onVisitCreated(VisitDTO created, Runnable toNext) {
-        registry.createVisit(created, visit -> mainScene.onVisitCreated(visit, toNext));
+        registry.createVisit(created, toNext);
     }
 
     @Override
     public void onVisitDeleted(VisitDTO deleted, Runnable toNext) {
         registry.deleteVisit(deleted.visitId);
-        mainScene.onVisitDeleted(deleted.visitId, toNext);
+        toNext.run();
     }
 
     @Override
@@ -51,7 +52,6 @@ public class ModelDispatchAction implements DispatchAction {
     @Override
     public void onPharmaQueueCreated(PharmaQueueDTO created, Runnable toNext) {
         registry.addToPharmaQueue(created.visitId);
-        //mainScene.onPharmaQueueCreated();
         toNext.run();
     }
 

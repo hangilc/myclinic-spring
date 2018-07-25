@@ -1,52 +1,49 @@
 package jp.chang.myclinic.pharma.tracking;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.pharma.javafx.ModelImpl;
+import jp.chang.myclinic.pharma.javafx.PatientList;
 import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
 import jp.chang.myclinic.pharma.tracking.model.Patient;
 import jp.chang.myclinic.pharma.tracking.model.Visit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
+@Component
 public class ModelRegistry {
 
     private Map<Integer, Patient> patientRegistry = new HashMap<>();
-    private List<Visit> visitList = new ArrayList<>();
-    private List<Visit> pharmaList = new ArrayList<>();
+    private Map<Integer, Visit> visitRegistry = new HashMap<>();
+    @Autowired
+    @Qualifier("tracking-visit-list")
+    private ObservableList<PatientList.Model> visitList;
+    @Autowired
+    @Qualifier("tracking-pharma-list")
+    private ObservableList<PatientList.Model> pharmaList;
 
-    public List<Visit> getVisitList(){
-        return visitList;
-    }
-
-    public List<Visit> getPharmaList(){
-        return pharmaList;
-    }
-
-    void createVisit(VisitDTO visitDTO, Consumer<Visit> cb) {
+    void createVisit(VisitDTO visitDTO, Runnable toNext) {
         getPatient(visitDTO.patientId)
                 .thenAccept(patient -> Platform.runLater(() -> {
                     Visit visit = new Visit(visitDTO.visitId, patient);
-                    visitList.add(visit);
-                    cb.accept(visit);
+                    visitRegistry.put(visitDTO.visitId, visit);
+                    visitList.add(ModelImpl.fromModel(visit));
+                    toNext.run();
                 }))
                 .exceptionally(HandlerFX::exceptionally);
     }
 
     private Visit findVisit(int visitId){
-        for(Visit visit: visitList){
-            if( visit.getVisitId() == visitId ){
-                return visit;
-            }
-        }
-        return null;
+        return visitRegistry.get(visitId);
     }
 
     void deleteVisit(int visitId) {
@@ -64,7 +61,7 @@ public class ModelRegistry {
     void addToPharmaQueue(int visitId){
         Visit visit = findVisit(visitId);
         if( visit != null ) {
-            pharmaList.add(visit);
+            pharmaList.add(ModelImpl.fromModel(visit));
         }
     }
 

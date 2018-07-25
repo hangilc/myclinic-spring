@@ -9,10 +9,12 @@ import jp.chang.myclinic.dto.VisitTextDrugDTO;
 import jp.chang.myclinic.pharma.javafx.records.Records;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-class RightColumn extends VBox {
+@Component
+public class RightColumn extends VBox {
 
     private static Logger logger = LoggerFactory.getLogger(RightColumn.class);
     private PrescPane prescPane;
@@ -46,7 +48,7 @@ class RightColumn extends VBox {
         );
     }
 
-    void startPresc(PharmaQueueFullDTO item, List<DrugFullDTO> drugs) {
+    public void startPresc(PharmaQueueFullDTO item, List<DrugFullDTO> drugs) {
         PatientDTO patient = item.patient;
         String patientName = patientName(item.patient);
         prescPane.setItem(item, drugs);

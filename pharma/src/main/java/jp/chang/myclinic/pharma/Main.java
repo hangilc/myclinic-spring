@@ -4,9 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
@@ -20,8 +18,6 @@ import jp.chang.myclinic.pharma.javafx.pharmadrug.PharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
 import jp.chang.myclinic.pharma.javafx.printing.Printing;
 import jp.chang.myclinic.pharma.tracking.ModelDispatchAction;
-import jp.chang.myclinic.pharma.tracking.ModelRegistry;
-import jp.chang.myclinic.tracker.DispatchAction;
 import jp.chang.myclinic.tracker.Tracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,16 +37,18 @@ public class Main extends Application {
     private static ConfigurableApplicationContext ctx;
     private String wsUrl;
     private Tracker tracker;
+    private static String[] args;
 
     public static void main(String[] args) {
         logger.info("pharma invoked");
-        ctx = SpringApplication.run(Main.class, args);
+        Main.args = args;
         Application.launch(Main.class, args);
     }
 
     @Override
     public void init() throws Exception {
         super.init();
+        ctx = SpringApplication.run(Main.class, args);
         List<String> args = getParameters().getUnnamed();
         if( args.size() == 1 ){
             String serverUrl = args.get(0);
@@ -70,15 +68,13 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("薬局");
-        Scope scope = new Scope();
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(createMenu());
-        MainScene root = new MainScene(scope);
+        MainScene root = ctx.getBean(MainScene.class);
         root.getStylesheets().add("Pharma.css");
         borderPane.setCenter(root);
-        ModelRegistry modelRegistry = new ModelRegistry();
-        DispatchAction dispatchAction = new ModelDispatchAction(modelRegistry, root);
-        tracker = new Tracker(wsUrl, dispatchAction, Service.api::listPracticeLogInRangeCall){
+        ModelDispatchAction modelDispatchAction = ctx.getBean(ModelDispatchAction.class);
+        tracker = new Tracker(wsUrl, modelDispatchAction, Service.api::listPracticeLogInRangeCall){
             @Override
             protected void beforeCatchup() {
                 System.out.println("beforeCatchuyp");
@@ -90,7 +86,6 @@ public class Main extends Application {
             }
         };
         tracker.setCallbackWrapper(Platform::runLater);
-        scope.setTracker(tracker);
         stage.setScene(new Scene(borderPane));
         stage.show();
         tracker.start(() -> {});
@@ -101,6 +96,7 @@ public class Main extends Application {
         super.stop();
         Service.stop();
         tracker.shutdown();
+        ctx.close();
         logger.info("pharma stopped.");
     }
 
@@ -175,6 +171,24 @@ public class Main extends Application {
                 item.setOnAction(evt -> Printing.previewDrugBag(null));
                 menu.getItems().add(item);
             }
+            mbar.getMenus().add(menu);
+        }
+        {
+            Menu menu = new Menu("同期");
+            ToggleGroup toggleGroup = new ToggleGroup();
+            RadioMenuItem syncItem = new RadioMenuItem("同期する");
+            syncItem.setSelected(true);
+            menu.getItems().add(syncItem);
+            RadioMenuItem unsyncItem = new RadioMenuItem("同期しない");
+            menu.getItems().add(unsyncItem);
+            toggleGroup.getToggles().addAll(syncItem, unsyncItem);
+            toggleGroup.selectedToggleProperty().addListener((obs, oldValue, newValue) -> {
+                if( newValue == syncItem ){
+                    System.out.println("Toggle Sync");
+                } else if( newValue == unsyncItem ){
+                    System.out.println("Toggle Unsync");
+                }
+            });
             mbar.getMenus().add(menu);
         }
         return mbar;
