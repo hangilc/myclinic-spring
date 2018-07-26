@@ -22,6 +22,15 @@ public class ToggleGroupWithValue<E> {
             E v = valueMap.get(newValue);
             value.setValue(v);
         });
+        value.addListener((obs, oldValue, newValue) -> {
+            for(Toggle toggle: valueMap.keySet()){
+                E v = valueMap.get(toggle);
+                if( Objects.equals(v, newValue) ){
+                    toggle.setSelected(true);
+                    return;
+                }
+            }
+        });
     }
 
     public void addToggle(Toggle toggle, E value){

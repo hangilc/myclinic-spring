@@ -183,16 +183,12 @@ public class Main extends Application {
             Menu menu = new Menu("同期");
             ToggleGroupWithValue<Boolean> group = new ToggleGroupWithValue<>();
             RadioMenuItem syncItem = new RadioMenuItem("同期する");
-            syncItem.setSelected(mainScope.isTracking());
             menu.getItems().add(syncItem);
             RadioMenuItem unsyncItem = new RadioMenuItem("同期しない");
-            unsyncItem.setSelected(!mainScope.isTracking());
             menu.getItems().add(unsyncItem);
             group.addToggle(syncItem, true);
             group.addToggle(unsyncItem, false);
-            group.valueProperty().addListener((obs, oldValue, newValue) -> {
-                mainScope.setTracking(newValue);
-            });
+            group.valueProperty().bindBidirectional(mainScope.trackingProperty());
             mbar.getMenus().add(menu);
         }
         return mbar;
