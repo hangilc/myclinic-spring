@@ -17,7 +17,7 @@ import jp.chang.myclinic.pharma.Config;
 import jp.chang.myclinic.pharma.Globals;
 import jp.chang.myclinic.pharma.drawercreator.DrugBagDataCreator;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
-import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.util.DrugUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

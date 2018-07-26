@@ -4,7 +4,10 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
@@ -14,6 +17,7 @@ import jp.chang.myclinic.pharma.javafx.MainScene;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.ListSettingDialog;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.NewSetting;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.SelectDefaultSettingDialog;
+import jp.chang.myclinic.pharma.javafx.lib.ToggleGroupWithValue;
 import jp.chang.myclinic.pharma.javafx.pharmadrug.PharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
 import jp.chang.myclinic.pharma.javafx.printing.Printing;
@@ -38,6 +42,7 @@ public class Main extends Application {
     private String wsUrl;
     private Tracker tracker;
     private static String[] args;
+    private MainScope mainScope;
 
     public static void main(String[] args) {
         logger.info("pharma invoked");
@@ -68,16 +73,17 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("薬局");
+        mainScope = ctx.getBean(MainScope.class);
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(createMenu());
         MainScene root = ctx.getBean(MainScene.class);
         root.getStylesheets().add("Pharma.css");
         borderPane.setCenter(root);
-        ModelDispatchAction modelDispatchAction = ctx.getBean(ModelDispatchAction.class);
+        ModelDispatchAction modelDispatchAction = mainScope.getModelDispatchAction();
         tracker = new Tracker(wsUrl, modelDispatchAction, Service.api::listPracticeLogInRangeCall){
             @Override
             protected void beforeCatchup() {
-                System.out.println("beforeCatchuyp");
+                System.out.println("beforeCatchup");
             }
 
             @Override
@@ -175,19 +181,17 @@ public class Main extends Application {
         }
         {
             Menu menu = new Menu("同期");
-            ToggleGroup toggleGroup = new ToggleGroup();
+            ToggleGroupWithValue<Boolean> group = new ToggleGroupWithValue<>();
             RadioMenuItem syncItem = new RadioMenuItem("同期する");
-            syncItem.setSelected(true);
+            syncItem.setSelected(mainScope.isTracking());
             menu.getItems().add(syncItem);
             RadioMenuItem unsyncItem = new RadioMenuItem("同期しない");
+            unsyncItem.setSelected(!mainScope.isTracking());
             menu.getItems().add(unsyncItem);
-            toggleGroup.getToggles().addAll(syncItem, unsyncItem);
-            toggleGroup.selectedToggleProperty().addListener((obs, oldValue, newValue) -> {
-                if( newValue == syncItem ){
-                    System.out.println("Toggle Sync");
-                } else if( newValue == unsyncItem ){
-                    System.out.println("Toggle Unsync");
-                }
+            group.addToggle(syncItem, true);
+            group.addToggle(unsyncItem, false);
+            group.valueProperty().addListener((obs, oldValue, newValue) -> {
+                mainScope.setTracking(newValue);
             });
             mbar.getMenus().add(menu);
         }

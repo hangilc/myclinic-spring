@@ -8,7 +8,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.pharma.javafx.ModelImpl;
 import jp.chang.myclinic.pharma.javafx.PatientList;
-import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.pharma.tracking.model.Patient;
 import jp.chang.myclinic.pharma.tracking.model.Visit;
 import org.springframework.beans.factory.annotation.Autowired;

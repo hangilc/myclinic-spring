@@ -13,8 +13,8 @@ import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
-import jp.chang.myclinic.pharma.javafx.lib.GuiUtil;
-import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
+import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

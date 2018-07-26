@@ -58,6 +58,7 @@ public class ModelDispatchAction implements DispatchAction {
     @Override
     public void onPharmaQueueDeleted(PharmaQueueDTO deleted, Runnable toNext) {
         registry.removeFromPharmaQueue(deleted.visitId);
+        toNext.run();
     }
 
     @Override

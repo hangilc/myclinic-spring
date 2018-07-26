@@ -1,6 +1,8 @@
 package jp.chang.myclinic.pharma;
 
 import javafx.beans.Observable;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Callback;
@@ -28,4 +30,8 @@ public class GlobalConfig {
         return FXCollections.observableArrayList(modelExtractor);
     }
 
+    @Bean(name="tracking-flag")
+    public ObjectProperty<Boolean> trackingFlag(){
+        return new SimpleObjectProperty<>(true);
+    }
 }

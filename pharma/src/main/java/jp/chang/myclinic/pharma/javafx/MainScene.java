@@ -6,7 +6,7 @@ import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import jp.chang.myclinic.pharma.javafx.event.StartPrescEvent;
-import jp.chang.myclinic.pharma.javafx.lib.HandlerFX;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -2,7 +2,7 @@ package jp.chang.myclinic.pharma.javafx;
 
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.HBox;
-import jp.chang.myclinic.pharma.javafx.lib.RadioButtonGroup;
+import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

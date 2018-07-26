@@ -3,7 +3,7 @@ package jp.chang.myclinic.pharma.javafx.records;
 import javafx.scene.control.Label;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitTextDrugDTO;
-import jp.chang.myclinic.pharma.javafx.lib.TwoColumn;
+import jp.chang.myclinic.utilfx.TwoColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
