@@ -1,5 +1,6 @@
 package jp.chang.myclinic.pharma.javafx;
 
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -15,12 +16,17 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.pharma.javafx.event.ReloadTrackingEvent;
 import jp.chang.myclinic.pharma.javafx.event.StartPrescEvent;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 class LeftColumn extends VBox {
@@ -60,9 +66,9 @@ class LeftColumn extends VBox {
         updateListSource();
     }
 
-    private void updateListSource(){
-        if( isTracking.getValue() ){
-            if( listAllVisitsFlag.getValue() ){
+    private void updateListSource() {
+        if (isTracking.getValue()) {
+            if (listAllVisitsFlag.getValue()) {
                 patientList.setItems(todaysList);
             } else {
                 patientList.setItems(pharmaQueueList);
@@ -70,18 +76,6 @@ class LeftColumn extends VBox {
         } else {
             patientList.setItems(noTrackingList);
         }
-    }
-
-    private void selectTodaysList() {
-        patientList.itemsProperty().set(todaysList);
-    }
-
-    private void selectPharmaQueue() {
-        patientList.itemsProperty().set(pharmaQueueList);
-    }
-
-    private void selectNonTrackingList() {
-        patientList.itemsProperty().set(noTrackingList);
     }
 
     void clearSelection() {
@@ -112,14 +106,7 @@ class LeftColumn extends VBox {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         CheckBox includeAllCheckBox = new CheckBox("処方済の患者も含める");
-        includeAllCheckBox.setSelected(false);
-        includeAllCheckBox.selectedProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue) {
-                selectTodaysList();
-            } else {
-                selectPharmaQueue();
-            }
-        });
+        includeAllCheckBox.selectedProperty().bindBidirectional(listAllVisitsFlag);
         Button reloadButton = new Button("更新");
         Button startPrescButton = new Button("調剤開始");
         reloadButton.setOnAction(evt -> doReload());
@@ -129,40 +116,44 @@ class LeftColumn extends VBox {
     }
 
     private void doReload() {
-        if( isTracking.getValue() ){
+        if (isTracking.getValue()) {
             doTrackingReload();
         } else {
             doNoTrackingReload();
         }
     }
 
-    private void doTrackingReload(){
-        System.out.println("tracking reload");
+    private void doTrackingReload() {
+        fireEvent(new ReloadTrackingEvent());
     }
 
-    private void doNoTrackingReload(){
-        System.out.println("no tracking reload");
+    private void doNoTrackingReload() {
+        if (listAllVisitsFlag.getValue()) {
+            doNoTrackingAllVisitsReload();
+        } else {
+            doNoTrackingPharmaQueueReload();
+        }
     }
 
-//    private boolean getIncludeAllPatients(){
-//        return includeAllCheckBox.isSelected();
-//    }
-//
-//    private void doReload(){
-//        if( getIncludeAllPatients() ){
-//            Service.api.listPharmaQueueForToday()
-//                    .thenAccept(list -> Platform.runLater(() -> {
-//                        patientList.itemsProperty().getValue().setAll(list);
-//                    }))
-//                    .exceptionally(HandlerFX::exceptionally);
-//        } else {
-//            Service.api.listPharmaQueueForPrescription()
-//                    .thenAccept(list -> Platform.runLater(() -> {
-//                        patientList.itemsProperty().getValue().setAll(list);
-//                    }))
-//                    .exceptionally(HandlerFX::exceptionally);
-//        }
-//    }
+    private void doNoTrackingAllVisitsReload() {
+        Service.api.listPharmaQueueForToday()
+                .thenAccept(list -> Platform.runLater(() -> {
+                    List<PatientList.Model> models = list.stream().map(ModelImpl::fromPharmaQueueFullDTO)
+                            .collect(Collectors.toList());
+                    noTrackingList.setAll(models);
+                }))
+                .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private void doNoTrackingPharmaQueueReload() {
+        Service.api.listPharmaQueueForPrescription()
+                .thenAccept(list -> Platform.runLater(() -> {
+                    List<PatientList.Model> models = list.stream().map(ModelImpl::fromPharmaQueueFullDTO)
+                            .collect(Collectors.toList());
+                    noTrackingList.setAll(models);
+                }))
+                .exceptionally(HandlerFX::exceptionally);
+    }
 
     private void doStartPresc() {
         PatientList.Model item = patientList.getSelectionModel().getSelectedItem();
