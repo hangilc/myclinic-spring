@@ -1,6 +1,6 @@
 package jp.chang.myclinic.pharma;
 
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import jp.chang.myclinic.pharma.tracking.ModelDispatchAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,7 +11,7 @@ public class MainScope {
 
     @Autowired
     @Qualifier("tracking-flag")
-    private ObjectProperty<Boolean> tracking;
+    private SimpleBooleanProperty tracking;
 
     @Autowired
     private ModelDispatchAction modelDispatchAction;
@@ -20,16 +20,8 @@ public class MainScope {
 
     }
 
-    public Boolean isTracking() {
-        return tracking.get();
-    }
-
-    public ObjectProperty<Boolean> trackingProperty() {
+    public SimpleBooleanProperty trackingProperty() {
         return tracking;
-    }
-
-    public void setTracking(Boolean tracking) {
-        this.tracking.set(tracking);
     }
 
     public ModelDispatchAction getModelDispatchAction() {

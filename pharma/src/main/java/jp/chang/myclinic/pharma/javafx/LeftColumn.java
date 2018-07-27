@@ -2,7 +2,9 @@ package jp.chang.myclinic.pharma.javafx;
 
 import javafx.application.Platform;
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -47,7 +49,7 @@ class LeftColumn extends VBox {
     private ObservableList<PatientList.Model> noTrackingList = FXCollections.observableArrayList();
     @Autowired
     @Qualifier("tracking-flag")
-    private ObjectProperty<Boolean> isTracking;
+    private SimpleBooleanProperty isTracking;
     private ObjectProperty<Boolean> listAllVisitsFlag = new SimpleObjectProperty<Boolean>(false);
 
     LeftColumn() {
@@ -58,7 +60,7 @@ class LeftColumn extends VBox {
     @PostConstruct
     public void postConstruct() {
         getChildren().addAll(
-                new Label("患者リスト"),
+                new HBox(4, new Label("患者リスト"), createNoTrackingNotice()),
                 createPatientList(),
                 createImageExamples(),
                 createCommands()
@@ -68,6 +70,13 @@ class LeftColumn extends VBox {
         });
         listAllVisitsFlag.addListener((obs, oldValue, newValue) -> updateListSource());
         updateListSource();
+    }
+
+    private Node createNoTrackingNotice(){
+        Label label = new Label("（非同期中）");
+        label.visibleProperty().bind(Bindings.not(isTracking));
+        label.managedProperty().bind(Bindings.not(isTracking));
+        return label;
     }
 
     private void updateListSource() {
