@@ -21,7 +21,8 @@ public class ModelImpl implements PatientList.Model {
 
     }
 
-    private ModelImpl(String nameValue, WqueueWaitState waitStateValue){
+    private ModelImpl(int visitId, String nameValue, WqueueWaitState waitStateValue){
+        this.visitId = visitId;
         this.name = new SimpleStringProperty(nameValue);
         this.waitState = new SimpleObjectProperty<>(waitStateValue);
     }
@@ -45,7 +46,7 @@ public class ModelImpl implements PatientList.Model {
         if( dto.wqueue != null ) {
             waitStateValue = WqueueWaitState.fromCode(dto.wqueue.waitState);
         }
-        return new ModelImpl(nameValue, waitStateValue);
+        return new ModelImpl(dto.visitId, nameValue, waitStateValue);
     }
 
     @Override

@@ -74,6 +74,7 @@ class LeftColumn extends VBox {
 
     private Node createNoTrackingNotice(){
         Label label = new Label("（非同期中）");
+        label.getStyleClass().add("no-tracking-notice");
         label.visibleProperty().bind(Bindings.not(isTracking));
         label.managedProperty().bind(Bindings.not(isTracking));
         return label;
@@ -95,6 +96,17 @@ class LeftColumn extends VBox {
 
     void clearSelection() {
         patientList.getSelectionModel().clearSelection();
+    }
+
+    void onPrescDone(){
+        clearSelection();
+        if( !isTracking.getValue() ){
+            doNoTrackingReload();
+        }
+    }
+
+    void onPrescCancel(){
+        clearSelection();
     }
 
     private Node createPatientList() {

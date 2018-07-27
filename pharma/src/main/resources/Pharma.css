@@ -99,6 +99,10 @@
     -fx-pref-height: 260px;
 }
 
+.no-tracking-notice {
+    -fx-text-fill: red;
+}
+
 
 
 

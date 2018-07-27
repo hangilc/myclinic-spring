@@ -5,6 +5,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.pharma.javafx.event.PrescCancelEvent;
+import jp.chang.myclinic.pharma.javafx.event.PrescDoneEvent;
 import jp.chang.myclinic.pharma.javafx.event.StartPrescEvent;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ public class MainScene extends HBox {
         super(4);
         getStyleClass().add("main-scene");
         addEventHandler(StartPrescEvent.eventType, this::onStartPresc);
+        addEventHandler(PrescDoneEvent.eventType, event -> leftColumn.onPrescDone());
+        addEventHandler(PrescCancelEvent.eventType, event -> leftColumn.onPrescCancel());
     }
 
     @PostConstruct

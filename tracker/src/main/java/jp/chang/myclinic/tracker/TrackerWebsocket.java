@@ -105,4 +105,9 @@ public class TrackerWebsocket {
         return websocket != null;
     }
 
+    public void probeUpdate(){
+        if( websocket != null ){
+            websocket.send("hello");
+        }
+    }
 }

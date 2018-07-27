@@ -6,6 +6,8 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
 import jp.chang.myclinic.dto.VisitTextDrugDTO;
+import jp.chang.myclinic.pharma.javafx.event.PrescCancelEvent;
+import jp.chang.myclinic.pharma.javafx.event.PrescDoneEvent;
 import jp.chang.myclinic.pharma.javafx.records.Records;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,12 +85,12 @@ public class RightColumn extends VBox {
         return prescPane;
     }
 
-    void onCancel(){
-
+    private void onCancel(){
+        fireEvent(new PrescCancelEvent());
     }
 
-    void onPrescDone(){
-
+    private void onPrescDone(){
+        fireEvent(new PrescDoneEvent());
     }
 
     private Node createAuxSwitch() {

@@ -17,6 +17,7 @@ import jp.chang.myclinic.pharma.javafx.MainScene;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.ListSettingDialog;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.NewSetting;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.SelectDefaultSettingDialog;
+import jp.chang.myclinic.pharma.javafx.event.ReloadTrackingEvent;
 import jp.chang.myclinic.pharma.javafx.lib.ToggleGroupWithValue;
 import jp.chang.myclinic.pharma.javafx.pharmadrug.PharmaDrugDialog;
 import jp.chang.myclinic.pharma.javafx.prevtechou.PrevTechouDialog;
@@ -95,6 +96,7 @@ public class Main extends Application {
         stage.setScene(new Scene(borderPane));
         stage.show();
         tracker.start(() -> {});
+        root.addEventHandler(ReloadTrackingEvent.eventType, event -> tracker.probeUpdate());
     }
 
     @Override

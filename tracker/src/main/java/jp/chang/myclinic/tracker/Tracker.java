@@ -66,6 +66,10 @@ public class Tracker {
         }
     }
 
+    public void probeUpdate(){
+        websocket.probeUpdate();
+    }
+
     public boolean isConnected(){
         return websocket.isConnected();
     }
