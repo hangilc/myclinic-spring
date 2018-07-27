@@ -41,7 +41,10 @@ public class ModelImpl implements PatientList.Model {
         PatientDTO patient = dto.patient;
         String nameValue = String.format("%s%s(%s%s)", patient.lastName, patient.firstName,
                 patient.lastNameYomi, patient.firstNameYomi);
-        WqueueWaitState waitStateValue = WqueueWaitState.fromCode(dto.wqueue.waitState);
+        WqueueWaitState waitStateValue = null;
+        if( dto.wqueue != null ) {
+            waitStateValue = WqueueWaitState.fromCode(dto.wqueue.waitState);
+        }
         return new ModelImpl(nameValue, waitStateValue);
     }
 

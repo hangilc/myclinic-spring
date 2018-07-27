@@ -63,6 +63,10 @@ class LeftColumn extends VBox {
                 createImageExamples(),
                 createCommands()
         );
+        isTracking.addListener((obs, oldValue, newValue) -> {
+            updateListSource();
+        });
+        listAllVisitsFlag.addListener((obs, oldValue, newValue) -> updateListSource());
         updateListSource();
     }
 
@@ -74,7 +78,9 @@ class LeftColumn extends VBox {
                 patientList.setItems(pharmaQueueList);
             }
         } else {
+            noTrackingList.clear();
             patientList.setItems(noTrackingList);
+            doNoTrackingReload();
         }
     }
 
