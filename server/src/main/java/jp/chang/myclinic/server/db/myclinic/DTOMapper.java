@@ -636,6 +636,17 @@ public class DTOMapper {
 		return row;
 	}
 
+	public ShoukiDTO toShoukiDTO(Shouki shouki){
+		ShoukiDTO dto = new ShoukiDTO();
+		dto.visitId = shouki.getVisitId();
+		dto.shouki = shouki.getShouki();
+		return dto;
+	}
+
+	public Shouki fromShoukiDTO(ShoukiDTO dto){
+		return new Shouki(dto.visitId, dto.shouki);
+	}
+
 	private String nullableDateToString(Date date){
 		if( date == null ){
 			return null;

@@ -912,6 +912,36 @@ public class Service {
         @POST("enter-drug-attr")
         Call<Boolean> enterDrugAttrCall(@Body() DrugAttrDTO attr);
 
+        @GET("batchy-get-shouki")
+        CompletableFuture<List<ShoukiDTO>> batchGetShouki(@Query("visit-id") int visitId);
+
+        @GET("batchy-get-shouki")
+        Call<List<ShoukiDTO>> batchGetShoukiCall(@Query("visit-id") int visitId);
+
+        @GET("find-shouki")
+        CompletableFuture<ShoukiDTO> findShouki(@Query("visit-id") int visitId);
+
+        @GET("find-shouki")
+        Call<ShoukiDTO> findShoukiCall(@Query("visit-id") int visitId);
+
+        @POST("enter-shouki")
+        CompletableFuture<Boolean> enterShouki(@Body ShoukiDTO shouki);
+
+        @POST("enter-shouki")
+        Call<Boolean> enterShoukiCall(@Body ShoukiDTO shouki);
+
+        @POST("update-shouki")
+        CompletableFuture<Boolean> updateShouki(@Body ShoukiDTO shouki);
+
+        @POST("update-shouki")
+        Call<Boolean> updateShoukiCall(@Body ShoukiDTO shouki);
+
+        @POST("delete-shouki")
+        CompletableFuture<Boolean> deleteShouki(@Query("visit-id") int visitId);
+
+        @POST("delete-shouki")
+        Call<Boolean> deleteShoukiCall(@Query("visit-id") int visitId);
+
         @GET("search-text-globally")
         CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(@Query("text") String text,
                                                                       @Query("page") int page);

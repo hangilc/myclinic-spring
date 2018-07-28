@@ -91,6 +91,8 @@ public class DbGateway {
     private ShinryouAttrRepository shinryouAttrRepository;
     @Autowired
     private DrugAttrRepository drugAttrRepository;
+    @Autowired
+    private ShoukiRepository shoukiRepository;
 
     private WqueueFullDTO composeWqueueFullDTO(Wqueue wqueue){
         WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
@@ -1715,6 +1717,30 @@ public class DbGateway {
                     return dto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds){
+        return shoukiRepository.batchGetShouki(visitIds).stream()
+                .map(mapper::toShoukiDTO).collect(Collectors.toList());
+    }
+
+    public Optional<ShoukiDTO> findShouki(int visitId){
+        return shoukiRepository.findOneByVisitId(visitId).map(mapper::toShoukiDTO);
+    }
+
+    public void enterShouki(ShoukiDTO shoukiDTO){
+        Shouki shouki = mapper.fromShoukiDTO(shoukiDTO);
+        shoukiRepository.save(shouki);
+    }
+
+    public void updateShouki(ShoukiDTO shoukiDTO){
+        Shouki shouki = mapper.fromShoukiDTO(shoukiDTO);
+        shoukiRepository.save(shouki);
+    }
+
+    public void deleteShouki(int visitId){
+        shoukiRepository.findOneByVisitId(visitId)
+                .ifPresent(shouki -> shoukiRepository.delete(shouki));
     }
 
     private ShinryouFullDTO resultToShinryouFullDTO(Object[] result) {

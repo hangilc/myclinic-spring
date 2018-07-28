@@ -1,3 +1,7 @@
+* add shouki table
+
+    - source server/migrations/add-shouki.sql
+
 * add drug_attr table
 
     - source server/migrations/add-drug-attr.sql;
