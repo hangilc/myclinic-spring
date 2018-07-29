@@ -27,8 +27,8 @@ public class RecordsPane extends VBox {
     }
 
     public void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
-                          Map<Integer, DrugAttrDTO> drugAttrMap){
-        Record record = new Record(visit, shinryouAttrMap, drugAttrMap);
+                          Map<Integer, DrugAttrDTO> drugAttrMap, Map<Integer, ShoukiDTO> shoukiMap){
+        Record record = new Record(visit, shinryouAttrMap, drugAttrMap, shoukiMap.get(visit.visit.visitId));
         getChildren().add(record);
     }
 

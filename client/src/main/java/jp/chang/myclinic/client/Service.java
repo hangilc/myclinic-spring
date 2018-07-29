@@ -913,10 +913,10 @@ public class Service {
         Call<Boolean> enterDrugAttrCall(@Body() DrugAttrDTO attr);
 
         @GET("batchy-get-shouki")
-        CompletableFuture<List<ShoukiDTO>> batchGetShouki(@Query("visit-id") int visitId);
+        CompletableFuture<List<ShoukiDTO>> batchGetShouki(@Query("visit-ids") List<Integer> visitIds);
 
         @GET("batchy-get-shouki")
-        Call<List<ShoukiDTO>> batchGetShoukiCall(@Query("visit-id") int visitId);
+        Call<List<ShoukiDTO>> batchGetShoukiCall(@Query("visit-ids") List<Integer> visitIds);
 
         @GET("find-shouki")
         CompletableFuture<ShoukiDTO> findShouki(@Query("visit-id") int visitId);

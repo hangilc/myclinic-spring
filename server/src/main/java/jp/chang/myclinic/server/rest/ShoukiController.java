@@ -20,7 +20,7 @@ class ShoukiController {
     private DbGateway dbGateway;
 
     @RequestMapping(value="batchy-get-shouki", method=RequestMethod.GET)
-    List<ShoukiDTO> batchGetShouki(@RequestParam(value="visit=ids", required=false) List<Integer> visitIds){
+    List<ShoukiDTO> batchGetShouki(@RequestParam(value="visit-ids", required=false) List<Integer> visitIds){
         if( visitIds == null || visitIds.size() == 0 ){
             return Collections.emptyList();
         }

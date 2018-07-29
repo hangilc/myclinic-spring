@@ -13,10 +13,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
-import jp.chang.myclinic.dto.ClinicInfoDTO;
-import jp.chang.myclinic.dto.DrugAttrDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.ShinryouAttrDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.events.EventTypes;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
@@ -278,8 +275,10 @@ public class MainPane extends BorderPane {
                         .map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
                 List<Integer> drugIds = newValue.stream().flatMap(v -> v.drugs.stream())
                         .map(d -> d.drug.drugId).collect(Collectors.toList());
+                List<Integer> visitIds = newValue.stream().map(vf -> vf.visit.visitId).collect(Collectors.toList());
                 class Local {
                     private Map<Integer, ShinryouAttrDTO> shinryouAttrMap;
+                    private Map<Integer, DrugAttrDTO> drugAttrMap;
                 }
                 Local local = new Local();
                 Service.api.batchGetShinryouAttr(shinryouIds)
@@ -289,12 +288,18 @@ public class MainPane extends BorderPane {
                             local.shinryouAttrMap = shinryouAttrMap;
                             return Service.api.batchGetDrugAttr(drugIds);
                         })
-                        .thenAccept(attrList -> {
+                        .thenCompose(attrList -> {
                             Map<Integer, DrugAttrDTO> drugAttrMap = new HashMap<>();
                             attrList.forEach(attr -> drugAttrMap.put(attr.drugId, attr));
+                            local.drugAttrMap = drugAttrMap;
+                            return Service.api.batchGetShouki(visitIds);
+                        })
+                        .thenAccept(shoukiList -> {
+                            Map<Integer, ShoukiDTO> shoukiMap = new HashMap<>();
+                            shoukiList.forEach(s -> shoukiMap.put(s.visitId, s));
                             Platform.runLater(() ->
                                     newValue.forEach(v -> recordsPane.addRecord(v, local.shinryouAttrMap,
-                                            drugAttrMap)));
+                                            local.drugAttrMap, shoukiMap)));
                         })
                         .exceptionally(HandlerFX::exceptionally);
             }

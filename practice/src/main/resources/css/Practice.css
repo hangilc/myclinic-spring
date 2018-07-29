@@ -216,3 +216,7 @@
     -fx-fill: red;
     -fx-font-weight: bold;
 }
+
+.shouki-form {
+    -fx-padding: 10px;
+}

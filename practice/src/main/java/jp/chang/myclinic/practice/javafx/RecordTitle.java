@@ -1,13 +1,16 @@
 package jp.chang.myclinic.practice.javafx;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.ShoukiDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.util.DateTimeUtil;
@@ -15,9 +18,11 @@ import jp.chang.myclinic.util.DateTimeUtil;
 public class RecordTitle extends TextFlow {
 
     private int visitId;
+    private ObjectProperty<ShoukiDTO> shoukiProperty;
 
-    public RecordTitle(VisitDTO visit) {
+    public RecordTitle(VisitDTO visit, ObjectProperty<ShoukiDTO> shoukiProperty) {
         this.visitId = visit.visitId;
+        this.shoukiProperty = shoukiProperty;
         getStyleClass().add("record-title-text");
         getChildren().addAll(new Text(createText(visit.visitedAt)));
         addContextMenu();
@@ -26,7 +31,7 @@ public class RecordTitle extends TextFlow {
         PracticeEnv.INSTANCE.tempVisitIdProperty().addListener((obs, oldValue, newValue) -> adaptToEnv());
     }
 
-    private void adaptToEnv(){
+    private void adaptToEnv() {
         getStyleClass().removeAll("current-visit", "temp-visit");
         if (PracticeEnv.INSTANCE.getCurrentVisitId() == visitId) {
             getStyleClass().add("current-visit");
@@ -40,12 +45,12 @@ public class RecordTitle extends TextFlow {
                 DateTimeUtil.kanjiFormatter3, DateTimeUtil.kanjiFormatter4);
     }
 
-    private void addContextMenu(){
+    private void addContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         {
             MenuItem item = new MenuItem("この診察を削除");
             item.setOnAction(event -> {
-                if( !GuiUtil.confirm("この診察を削除しますか？") ){
+                if (!GuiUtil.confirm("この診察を削除しますか？")) {
                     return;
                 }
                 PracticeService.doDeleteVisit(visitId, result -> {
@@ -71,33 +76,45 @@ public class RecordTitle extends TextFlow {
             item.setOnAction(event -> doRcptDetail());
             contextMenu.getItems().add(item);
         }
+        {
+            MenuItem item = new MenuItem();
+            item.textProperty().bind(Bindings.when(Bindings.isNull(shoukiProperty))
+                    .then("症状詳記の追加").otherwise("症状詳記の編集"));
+            item.setOnAction(evt -> doModifyShouki());
+            contextMenu.getItems().add(item);
+        }
         setOnContextMenuRequested(event -> {
             contextMenu.show(this, event.getScreenX(), event.getScreenY());
         });
     }
 
-    private void doSetTempVisit(){
+    private void doSetTempVisit() {
         PracticeEnv env = PracticeEnv.INSTANCE;
-        if( env.getCurrentVisitId() > 0 ){
+        if (env.getCurrentVisitId() > 0) {
             GuiUtil.alertError("現在診察中なので、暫定診察を設定できません。");
         } else {
             env.setTempVisitId(visitId);
         }
     }
 
-    private void doUnsetTempVisit(){
+    private void doUnsetTempVisit() {
         PracticeEnv env = PracticeEnv.INSTANCE;
-        if( env.getTempVisitId() == visitId ){
+        if (env.getTempVisitId() == visitId) {
             env.setTempVisitId(0);
         }
     }
 
-    private void doRcptDetail(){
+    private void doRcptDetail() {
         Service.api.getMeisai(visitId)
                 .thenAccept(meisai -> Platform.runLater(() -> {
                     RcptDetailDialog dialog = new RcptDetailDialog(meisai);
                     dialog.showAndWait();
                 }))
                 .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private void doModifyShouki(){
+        ShoukiForm form = new ShoukiForm(visitId, shoukiProperty);
+        form.showAndWait();
     }
 }
