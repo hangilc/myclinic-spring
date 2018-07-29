@@ -563,6 +563,7 @@ class RcptDataDispatcher {
         map.put("tekiyou_end_drugs", (drawer, arg) -> {
             drawer.flushDrugBegin();
         });
+        map.put("shoujoushouki", RcptDrawer::setShouki);
    }
 
 }

@@ -33,7 +33,7 @@ public class Main extends Application {
     private MainRoot mainRoot;
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage){
         Parameters params = getParameters();
         File file = null;
         if (params.getUnnamed().size() > 0) {

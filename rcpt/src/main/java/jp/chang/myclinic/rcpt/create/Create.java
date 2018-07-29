@@ -109,7 +109,7 @@ class Create {
             ShuukeiMap grandShuukei = new ShuukeiMap();
             List<ShuukeiMap> shuukeiMapList = new ArrayList<>();
             if( seikyuu.shouki != null && !seikyuu.shouki.isEmpty() ){
-                System.out.printf("shoujoushouki: %s\n", seikyuu.shouki);
+                System.out.printf("shoujoushouki %s\n", seikyuu.shouki);
             }
             seikyuu.visits.forEach(visit -> {
                 LocalDate visitedAt = LocalDate.parse(visit.visitedAt.substring(0, 10));

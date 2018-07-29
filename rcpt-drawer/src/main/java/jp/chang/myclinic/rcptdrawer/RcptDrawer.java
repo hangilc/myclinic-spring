@@ -232,7 +232,12 @@ public class RcptDrawer {
         List<TekiyouLine> allLines = new ArrayList<>();
         allLines.addAll(extraShoubyoumeiList);
         allLines.addAll(tekiyouLines);
-        allLines.addAll(shoujoushoukiList);
+        if( shoujoushoukiList.size() > 0 ){
+            TekiyouLine title = new TekiyouLine("", "【症状詳記】", "");
+            title.leftMargin = -10;
+            allLines.add(title);
+            allLines.addAll(shoujoushoukiList);
+        }
         TekiyouDrawer tekiyouDrawer = new TekiyouDrawer(compiler, tekiyou.inset(0, 0, 1, 0),
                 this::flushOps);
         tekiyouDrawer.draw(allLines);
@@ -241,17 +246,6 @@ public class RcptDrawer {
         shoujoushoukiList = new ArrayList<>();
     }
 
-//    private Box[] splitTekiyou() {
-//        Box[] cc = tekiyou.splitToColumns(
-//                tekiyouLeftColumnWidth,
-//                tekiyou.getWidth() - tekiyouRightColumnWidth
-//        );
-//        cc[0] = cc[0].inset(0, 1);
-//        cc[1] = cc[1].inset(1, 1);
-//        cc[2] = cc[2].inset(0, 1);
-//        return cc;
-//    }
-//
     private void setZokushi(List<Op> target, int zokushiIndex, int zokushiTotal) {
         compiler.setOps(target);
         String font = compiler.getCurrentFont();
@@ -2540,5 +2534,11 @@ public class RcptDrawer {
         drugBegin = null;
         tekiyouDrugs = new ArrayList<>();
     }
+
+    public void setShouki(String shouki){
+        TekiyouLine line = new TekiyouLine("", shouki, "");
+        shoujoushoukiList.add(line);
+    }
+
 }
 
