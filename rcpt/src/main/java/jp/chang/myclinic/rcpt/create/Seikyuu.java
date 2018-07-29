@@ -45,6 +45,8 @@ class Seikyuu {
     @JacksonXmlElementWrapper(localName="傷病名", useWrapping=false)
     @JsonProperty("傷病名")
     List<Byoumei> byoumeiList = new ArrayList<>();
+    @JsonProperty("症状詳記")
+    String shouki;
     @JacksonXmlElementWrapper(localName="受診", useWrapping=false)
     @JsonProperty("受診")
     List<Visit> visits = new ArrayList<>();

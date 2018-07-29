@@ -128,6 +128,11 @@ class Data {
         }
         HokenDTO hoken = visits.get(0).hoken;
         String futan = getFutan(patient, hoken);
+        String shouki = getShouki(visits.stream().map(v -> v.visit.visitId).collect(Collectors.toList()));
+        if( !shouki.isEmpty() ){
+            System.err.printf("症状詳記（%d）%s%s：%s\n", patient.patientId,
+                    patient.lastName, patient.firstName, shouki);
+        }
         xml.unindent();
         xml.element("請求", () -> {
             xml.element("患者番号", patient.patientId);
@@ -140,9 +145,20 @@ class Data {
             xml.element("性別",
                     patient.sex.equals("F") ? "女" : "男");
             xml.element("生年月日", patient.birthday);
+            xml.element("症状詳記", shouki);
             diseases.forEach(this::outDisease);
             visits.forEach(this::outVisit);
         });
+    }
+
+    private String getShouki(List<Integer> visitIds){
+        try {
+            List<ShoukiDTO> shoukiList = Service.api.batchGetShoukiCall(visitIds).execute().body();
+            return shoukiList.stream().map(s -> s.shouki).collect(Collectors.joining("\n"));
+        } catch (IOException e) {
+            logger.error("Failed to get shouki. {}", e);
+            throw new UncheckedIOException(e);
+        }
     }
 
     private String getShubetsu(HokenDTO hoken) {
