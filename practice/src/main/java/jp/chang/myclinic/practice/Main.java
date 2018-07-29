@@ -3,39 +3,58 @@ package jp.chang.myclinic.practice;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.javafx.MainPane;
-import jp.chang.myclinic.client.Service;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 // TODO: add delete gazou label link
-public class Main extends Application {
+@SpringBootApplication
+public class Main extends Application implements CommandLineRunner {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
+    private static ConfigurableApplicationContext ctx;
 
     public static void main(String[] args) throws IOException {
-        CommandArgs commandArgs = new CommandArgs(args);
-        Service.setServerUrl(commandArgs.getServerUrl());
-        //Service.setLogBody();
-        setupPracticeEnv(commandArgs, () -> Application.launch(Main.class, args));
+        Application.launch(Main.class, args);
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
+        ctx = SpringApplication.run(Main.class, getParameters().getRaw().toArray(new String[]{}));
+        MainScope mainScope = ctx.getBean(MainScope.class);
+        if( mainScope.debugHttp ){
+            Service.setLogBody();
+        }
+        setupPracticeEnv();
         stage.setTitle("診療");
         PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
                 updateTitle(stage, newValue));
-        MainPane root = new MainPane();
+        MainPane root = ctx.getBean(MainPane.class);
         root.getStylesheets().addAll(
                 "css/Practice.css"
         );
         stage.setScene(new Scene(root));
         stage.show();
+    }
+
+    @Override
+    public void run(String... args){
+        if (args.length != 1) {
+            System.err.println("Usage: practice SERVER-URL");
+            System.exit(1);
+        }
+        Service.setServerUrl(args[0]);
     }
 
     @Override
@@ -48,27 +67,19 @@ public class Main extends Application {
         if (cache != null) {
             cache.close();
         }
+        ctx.close();
     }
 
-    private static void setupPracticeEnv(CommandArgs commandArgs, Runnable cb) throws IOException {
-        PracticeEnv.INSTANCE = new PracticeEnv(commandArgs);
-        Service.api.getClinicInfo()
-                .thenCompose(clinicInfo -> {
-                    PracticeEnv.INSTANCE.setClinicInfo(clinicInfo);
-                    return Service.api.getReferList();
-                })
-                .thenCompose(referItems -> {
-                    PracticeEnv.INSTANCE.setReferList(referItems);
-                    return Service.api.getPracticeConfig();
-                })
-                .thenAccept(config -> {
-                    PracticeEnv.INSTANCE.setKouhatsuKasan(config.kouhatsuKasan);
-                    cb.run();
-                })
-                .exceptionally(t -> {
-                    t.printStackTrace();
-                    return null;
-                });
+    private static void setupPracticeEnv() {
+        CompletableFuture.allOf(
+                Service.api.getClinicInfo().thenAccept(PracticeEnv.INSTANCE::setClinicInfo),
+                Service.api.getReferList().thenAccept(PracticeEnv.INSTANCE::setReferList),
+                Service.api.getPracticeConfig().thenAccept(c -> PracticeEnv.INSTANCE.setKouhatsuKasan(c.kouhatsuKasan))
+        ).exceptionally(t -> {
+            logger.error("setupPracticeEnv failed. {}", t);
+            System.exit(1);
+            return null;
+        }).join();
     }
 
     private void updateTitle(Stage stage, PatientDTO patient) {
@@ -82,5 +93,4 @@ public class Main extends Application {
             stage.setTitle(title);
         }
     }
-
 }

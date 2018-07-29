@@ -25,7 +25,7 @@ public class PracticeEnv {
     public static final String PRINTER_SETTING_KEY = "default-printer-setting";
     public static final String SHOHOUSEN_PRINTER_SETTING_KEY = "shohousen-printer-setting";
     public static final String REFER_PRINTER_SETTING_KEY = "refer-printer-setting";
-    public static PracticeEnv INSTANCE;
+    public static PracticeEnv INSTANCE = new PracticeEnv();
 
     //private Path printerSettingsDir;
     private ClinicInfoDTO clinicInfo;
@@ -40,7 +40,7 @@ public class PracticeEnv {
     private List<ReferItemDTO> referList;
     private String kouhatsuKasan;
 
-    public PracticeEnv(CommandArgs commandArgs) throws IOException {
+    public PracticeEnv(){
 //        printerSettingsDir = commandArgs.getWorkingDirectory();
 //        if (printerSettingsDir == null) {
 //            printerSettingsDir = Paths.get(System.getProperty("user.home"), "practice-home");
@@ -207,8 +207,16 @@ public class PracticeEnv {
     @Override
     public String toString() {
         return "PracticeEnv{" +
-                //"printerSettingsDir=" + printerSettingsDir +
-                ", clinicInfo=" + clinicInfo +
+                "clinicInfo=" + clinicInfo +
+                ", currentPatient=" + currentPatient +
+                ", currentVisitId=" + currentVisitId +
+                ", tempVisitId=" + tempVisitId +
+                ", totalRecordPages=" + totalRecordPages +
+                ", currentRecordPage=" + currentRecordPage +
+                ", pageVisits=" + pageVisits +
+                ", myclinicEnv=" + myclinicEnv +
+                ", referList=" + referList +
+                ", kouhatsuKasan='" + kouhatsuKasan + '\'' +
                 '}';
     }
 }
