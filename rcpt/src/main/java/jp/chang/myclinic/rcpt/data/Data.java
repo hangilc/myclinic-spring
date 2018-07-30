@@ -55,8 +55,12 @@ class Data {
                     System.err.printf("Multiple hoken for (%d) %s%s\n", patient.patientId,
                             patient.lastName, patient.firstName);
                 }
-                // TODO: handle bundles seprately
-                outPatient(patient, visits, diseases);
+                for(HokenIds hokenIds: bundles.keySet()){
+                    List<VisitFull2DTO> bundle = bundles.get(hokenIds);
+                    outPatient(patient, bundle, diseases);
+                }
+//                // TODO: handle bundles seprately
+//                outPatient(patient, visits, diseases);
             }
         });
     }
