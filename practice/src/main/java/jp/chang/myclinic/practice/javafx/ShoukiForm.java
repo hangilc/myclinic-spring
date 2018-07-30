@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.ShoukiDTO;
 
+// TODO: fire event instead of modifying observable (it becomes broken with page transition)
 class ShoukiForm extends Stage {
 
     //private static Logger logger = LoggerFactory.getLogger(ShoukiForm.class);
