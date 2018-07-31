@@ -2508,31 +2508,42 @@ public class RcptDrawer {
         String index = drugBegin[0];
         String tanka = drugBegin[1];
         String times = drugBegin[2];
-        for (int i = 0; i < tekiyouDrugs.size(); i++) {
-            String body = tekiyouDrugs.get(i);
-            String indexString = "";
-            String tankaTimes = "";
-            if (tanka != null) {
-                if (index != null && !index.isEmpty()) {
-                    indexString = String.format("(%s)", index);
-                }
-                tankaTimes = String.format("%sx%s", tanka, times);
-                index = null;
-                tanka = null;
-                times = null;
-            }
-            TekiyouLine tekiyouLine = new TekiyouLine(indexString, body, tankaTimes);
-            if (i == 0) {
-                tekiyouLine.opts.add(TekiyouLineOpt.GroupBegin);
-            }
-            if (i == (tekiyouDrugs.size() - 1)) {
-                tekiyouLine.opts.add(TekiyouLineOpt.GroupEnd);
-            }
-            if( i != 0 && i != (tekiyouDrugs.size() - 1) ) {
-                tekiyouLine.opts.add(TekiyouLineOpt.GroupExtend);
-            }
-            addTekiyou(new TekiyouNop());
+        String indexString = "";
+        if( index != null && !index.isEmpty() ){
+            indexString = String.format("(%s)", index);
         }
+        String tankaTimes = "";
+        if( tanka != null && !tanka.isEmpty() && times != null && !times.isEmpty() ){
+            tankaTimes = String.format("%sx%s", tanka, times);
+        }
+        addTekiyou(new TekiyouDrugs(indexString, tekiyouDrugs, tankaTimes));
+
+//        for (int i = 0; i < tekiyouDrugs.size(); i++) {
+//            String body = tekiyouDrugs.get(i);
+//            String indexString = "";
+//            String tankaTimes = "";
+//            if (tanka != null) {
+//                if (index != null && !index.isEmpty()) {
+//                    indexString = String.format("(%s)", index);
+//                }
+//                tankaTimes = String.format("%sx%s", tanka, times);
+//                index = null;
+//                tanka = null;
+//                times = null;
+//            }
+//            TekiyouLine tekiyouLine = new TekiyouLine(indexString, body, tankaTimes);
+//            if (i == 0) {
+//                tekiyouLine.opts.add(TekiyouLineOpt.GroupBegin);
+//            }
+//            if (i == (tekiyouDrugs.size() - 1)) {
+//                tekiyouLine.opts.add(TekiyouLineOpt.GroupEnd);
+//            }
+//            if( i != 0 && i != (tekiyouDrugs.size() - 1) ) {
+//                tekiyouLine.opts.add(TekiyouLineOpt.GroupExtend);
+//            }
+//            addTekiyou(new TekiyouNop());
+//        }
+
         drugBegin = null;
         tekiyouDrugs = new ArrayList<>();
     }
