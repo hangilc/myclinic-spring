@@ -2488,9 +2488,9 @@ public class RcptDrawer {
         tekiyouLines.add(new TekiyouThreeParts(index, body, tankaTimes));
     }
 
-    public void addTekiyou(TekiyouLine tekiyouLine) {
+    public void addTekiyou(Tekiyou tekiyou) {
         //tekiyouLines.add(tekiyouLine);
-        tekiyouLines.add(new TekiyouNop());
+        tekiyouLines.add(tekiyou);
     }
 
     public void setDrugBegin(String index, String tanka, String times) {
@@ -2531,7 +2531,7 @@ public class RcptDrawer {
             if( i != 0 && i != (tekiyouDrugs.size() - 1) ) {
                 tekiyouLine.opts.add(TekiyouLineOpt.GroupExtend);
             }
-            addTekiyou(tekiyouLine);
+            addTekiyou(new TekiyouNop());
         }
         drugBegin = null;
         tekiyouDrugs = new ArrayList<>();

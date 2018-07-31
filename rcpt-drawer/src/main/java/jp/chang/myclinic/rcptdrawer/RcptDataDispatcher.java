@@ -1,5 +1,6 @@
 package jp.chang.myclinic.rcptdrawer;
 
+import jp.chang.myclinic.rcptdrawer.tekiyou.TekiyouAux;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -545,9 +546,12 @@ class RcptDataDispatcher {
                         }
                     }
                 }
-                TekiyouLine tekiyouLine = new TekiyouLine(matcher.group(2));
-                tekiyouLine.setLeftMargin(leftMargin);
-                drawer.addTekiyou(tekiyouLine);
+                TekiyouAux tekiyouAux = new TekiyouAux(matcher.group(2));
+                tekiyouAux.setLeftMargin(leftMargin);
+                drawer.addTekiyou(tekiyouAux);
+//                TekiyouLine tekiyouLine = new TekiyouLine(matcher.group(2));
+//                tekiyouLine.setLeftMargin(leftMargin);
+//                drawer.addTekiyou(tekiyouLine);
             } else {
                 logger.error("Invalid tekiyou_aux: {}", arg);
             }
