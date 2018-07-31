@@ -63,6 +63,10 @@ public class TekiyouContext {
         currentBox = currentBox.shrinkHeight(compiler.getCurrentFontSize() + lineLeading, Box.VertAnchor.Bottom);
     }
 
+    public void shiftDown(double dy){
+        currentBox = currentBox.shrinkHeight(dy, Box.VertAnchor.Bottom);
+    }
+
     public void newPage(){
         newPageProc.run();
         initCurrentBox();

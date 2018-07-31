@@ -234,7 +234,8 @@ public class RcptDrawer {
         extraShoubyoumeiList.forEach(t -> t.render(ctx));
         tekiyouLines.forEach(t -> t.render(ctx));
         if( shoujoushoukiList.size() > 0 ){
-            new TekiyouNop().render(ctx);
+            new TekiyouShoukiTitle().render(ctx);
+            shoujoushoukiList.forEach(t -> t.render(ctx));
 //            TekiyouLine title = new TekiyouLine("", "【症状詳記】", "");
 //            title.leftMargin = -10;
 //            allLines.add(title);
@@ -2517,41 +2518,14 @@ public class RcptDrawer {
             tankaTimes = String.format("%sx%s", tanka, times);
         }
         addTekiyou(new TekiyouDrugs(indexString, tekiyouDrugs, tankaTimes));
-
-//        for (int i = 0; i < tekiyouDrugs.size(); i++) {
-//            String body = tekiyouDrugs.get(i);
-//            String indexString = "";
-//            String tankaTimes = "";
-//            if (tanka != null) {
-//                if (index != null && !index.isEmpty()) {
-//                    indexString = String.format("(%s)", index);
-//                }
-//                tankaTimes = String.format("%sx%s", tanka, times);
-//                index = null;
-//                tanka = null;
-//                times = null;
-//            }
-//            TekiyouLine tekiyouLine = new TekiyouLine(indexString, body, tankaTimes);
-//            if (i == 0) {
-//                tekiyouLine.opts.add(TekiyouLineOpt.GroupBegin);
-//            }
-//            if (i == (tekiyouDrugs.size() - 1)) {
-//                tekiyouLine.opts.add(TekiyouLineOpt.GroupEnd);
-//            }
-//            if( i != 0 && i != (tekiyouDrugs.size() - 1) ) {
-//                tekiyouLine.opts.add(TekiyouLineOpt.GroupExtend);
-//            }
-//            addTekiyou(new TekiyouNop());
-//        }
-
         drugBegin = null;
         tekiyouDrugs = new ArrayList<>();
     }
 
     public void setShouki(String shouki){
-        TekiyouLine line = new TekiyouLine("", shouki, "");
+        //TekiyouLine line = new TekiyouLine("", shouki, "");
         //shoujoushoukiList.add(line);
-        shoujoushoukiList.add(new TekiyouNop());
+        shoujoushoukiList.add(new TekiyouThreeParts(shouki));
     }
 
 }
