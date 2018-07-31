@@ -81,4 +81,8 @@ public class TekiyouContext {
     public void setLineLeading(double lineLeading) {
         this.lineLeading = lineLeading;
     }
+
+    public double getMiddleWidth(){
+        return getMiddleColumn().getWidth();
+    }
 }
