@@ -5,9 +5,7 @@ import jp.chang.myclinic.drawer.Box.HorizAnchor;
 import jp.chang.myclinic.drawer.Box.VertAnchor;
 import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
 import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
-import jp.chang.myclinic.rcptdrawer.tekiyou.Tekiyou;
-import jp.chang.myclinic.rcptdrawer.tekiyou.TekiyouContext;
-import jp.chang.myclinic.rcptdrawer.tekiyou.TekiyouNop;
+import jp.chang.myclinic.rcptdrawer.tekiyou.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1058,11 +1056,10 @@ public class RcptDrawer {
             compiler.textIn("以下、摘要欄に続く", shoubyoumeiContinuesToTekiyou, HAlign.Right, VAlign.Center);
         }
         String text = String.format("(%d) %s", index, name);
-        extraShoubyoumeiList.add(new TekiyouNop());
         //extraShoubyoumeiList.add(new TekiyouLine(text));
         String date = String.format("診療開始日　平成%d年%d月%d日", nen, month, day);
-        extraShoubyoumeiList.add(new TekiyouNop());
         //extraShoubyoumeiList.add(new TekiyouLine(date).setAlignRight());
+        extraShoubyoumeiList.add(new TekiyouByoumei(text, date));
     }
 
     private void setupRcptBodyRow1_ShinryouKaishi(Box box) {
@@ -2488,7 +2485,7 @@ public class RcptDrawer {
 
     public void addTekiyou(String index, String body, String tankaTimes) {
         //tekiyouLines.add(new TekiyouLine(index, body, tankaTimes));
-        tekiyouLines.add(new TekiyouNop());
+        tekiyouLines.add(new TekiyouThreeParts(index, body, tankaTimes));
     }
 
     public void addTekiyou(TekiyouLine tekiyouLine) {

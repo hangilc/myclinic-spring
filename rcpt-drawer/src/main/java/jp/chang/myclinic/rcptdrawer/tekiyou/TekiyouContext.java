@@ -47,11 +47,11 @@ public class TekiyouContext {
     }
 
     public Box getLeftColumn(){
-        return getCurrentBox().shrinkWidth(leftColumnWidth, Box.HorizAnchor.Left);
+        return getCurrentBox().setWidth(leftColumnWidth, Box.HorizAnchor.Left);
     }
 
     public Box getRightColumn(){
-        return getCurrentBox().shrinkWidth(rightColumnWidth, Box.HorizAnchor.Right);
+        return getCurrentBox().setWidth(rightColumnWidth, Box.HorizAnchor.Right);
     }
 
     public Box getMiddleColumn(){
@@ -60,7 +60,7 @@ public class TekiyouContext {
     }
 
     public void shrink(){
-        currentBox.shrinkHeight(compiler.getCurrentFontSize() + lineLeading, Box.VertAnchor.Bottom);
+        currentBox = currentBox.shrinkHeight(compiler.getCurrentFontSize() + lineLeading, Box.VertAnchor.Bottom);
     }
 
     public void newPage(){
@@ -72,5 +72,13 @@ public class TekiyouContext {
         if( !hasSpace() ){
             newPage();
         }
+    }
+
+    public double getLineLeading() {
+        return lineLeading;
+    }
+
+    public void setLineLeading(double lineLeading) {
+        this.lineLeading = lineLeading;
     }
 }

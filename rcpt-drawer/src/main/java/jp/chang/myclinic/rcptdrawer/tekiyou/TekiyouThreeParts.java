@@ -35,6 +35,8 @@ public class TekiyouThreeParts implements Tekiyou {
             compiler.textIn(right, ctx.getRightColumn(), HAlign.Right, VAlign.Top);
         }
         if( !middle.isEmpty() ) {
+            double leadingSave = ctx.getLineLeading();
+            ctx.setLineLeading(0);
             Box middleBox = ctx.getMiddleColumn();
             List<String> lines = compiler.breakLine(middle, middleBox.getWidth());
             for(String line: lines){
@@ -43,6 +45,9 @@ public class TekiyouThreeParts implements Tekiyou {
                 compiler.textIn(line, middleBox, HAlign.Left, VAlign.Top);
                 ctx.shrink();
             }
+            ctx.setLineLeading(leadingSave);
+        } else {
+            ctx.shrink();
         }
     }
 
