@@ -5,6 +5,9 @@ import jp.chang.myclinic.drawer.Box.HorizAnchor;
 import jp.chang.myclinic.drawer.Box.VertAnchor;
 import jp.chang.myclinic.drawer.DrawerCompiler.HAlign;
 import jp.chang.myclinic.drawer.DrawerCompiler.VAlign;
+import jp.chang.myclinic.rcptdrawer.tekiyou.Tekiyou;
+import jp.chang.myclinic.rcptdrawer.tekiyou.TekiyouContext;
+import jp.chang.myclinic.rcptdrawer.tekiyou.TekiyouNop;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -167,9 +170,9 @@ public class RcptDrawer {
     private Box ichibufutankinKouhi2;
     private Box shoubyoumeiContinuesToTekiyou;
     private Box zokushiPresent;
-    private List<TekiyouLine> extraShoubyoumeiList = new ArrayList<>();
-    private List<TekiyouLine> tekiyouLines = new ArrayList<>();
-    private List<TekiyouLine> shoujoushoukiList = new ArrayList<>();
+    private List<Tekiyou> extraShoubyoumeiList = new ArrayList<>();
+    private List<Tekiyou> tekiyouLines = new ArrayList<>();
+    private List<Tekiyou> shoujoushoukiList = new ArrayList<>();
     private List<Op> background;
     private List<Runnable> identityProcs = new ArrayList<>();
     private String[] drugBegin;
@@ -229,18 +232,16 @@ public class RcptDrawer {
     }
 
     private void handleTekiyou() {
-        List<TekiyouLine> allLines = new ArrayList<>();
-        allLines.addAll(extraShoubyoumeiList);
-        allLines.addAll(tekiyouLines);
+        TekiyouContext ctx = new TekiyouContext(compiler, tekiyou, this::flushOps);
+        extraShoubyoumeiList.forEach(t -> t.render(ctx));
+        tekiyouLines.forEach(t -> t.render(ctx));
         if( shoujoushoukiList.size() > 0 ){
-            TekiyouLine title = new TekiyouLine("", "【症状詳記】", "");
-            title.leftMargin = -10;
-            allLines.add(title);
-            allLines.addAll(shoujoushoukiList);
+            new TekiyouNop().render(ctx);
+//            TekiyouLine title = new TekiyouLine("", "【症状詳記】", "");
+//            title.leftMargin = -10;
+//            allLines.add(title);
+//            allLines.addAll(shoujoushoukiList);
         }
-        TekiyouDrawer tekiyouDrawer = new TekiyouDrawer(compiler, tekiyou.inset(0, 0, 1, 0),
-                this::flushOps);
-        tekiyouDrawer.draw(allLines);
         extraShoubyoumeiList = new ArrayList<>();
         tekiyouLines = new ArrayList<>();
         shoujoushoukiList = new ArrayList<>();
@@ -1057,9 +1058,11 @@ public class RcptDrawer {
             compiler.textIn("以下、摘要欄に続く", shoubyoumeiContinuesToTekiyou, HAlign.Right, VAlign.Center);
         }
         String text = String.format("(%d) %s", index, name);
-        extraShoubyoumeiList.add(new TekiyouLine(text));
+        extraShoubyoumeiList.add(new TekiyouNop());
+        //extraShoubyoumeiList.add(new TekiyouLine(text));
         String date = String.format("診療開始日　平成%d年%d月%d日", nen, month, day);
-        extraShoubyoumeiList.add(new TekiyouLine(date).setAlignRight());
+        extraShoubyoumeiList.add(new TekiyouNop());
+        //extraShoubyoumeiList.add(new TekiyouLine(date).setAlignRight());
     }
 
     private void setupRcptBodyRow1_ShinryouKaishi(Box box) {
@@ -2484,11 +2487,13 @@ public class RcptDrawer {
     }
 
     public void addTekiyou(String index, String body, String tankaTimes) {
-        tekiyouLines.add(new TekiyouLine(index, body, tankaTimes));
+        //tekiyouLines.add(new TekiyouLine(index, body, tankaTimes));
+        tekiyouLines.add(new TekiyouNop());
     }
 
     public void addTekiyou(TekiyouLine tekiyouLine) {
-        tekiyouLines.add(tekiyouLine);
+        //tekiyouLines.add(tekiyouLine);
+        tekiyouLines.add(new TekiyouNop());
     }
 
     public void setDrugBegin(String index, String tanka, String times) {
@@ -2537,7 +2542,8 @@ public class RcptDrawer {
 
     public void setShouki(String shouki){
         TekiyouLine line = new TekiyouLine("", shouki, "");
-        shoujoushoukiList.add(line);
+        //shoujoushoukiList.add(line);
+        shoujoushoukiList.add(new TekiyouNop());
     }
 
 }

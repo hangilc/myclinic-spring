@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+// TODO: prevent presc done if cashire is not finished
 @SpringBootApplication
 public class Main extends Application {
 
