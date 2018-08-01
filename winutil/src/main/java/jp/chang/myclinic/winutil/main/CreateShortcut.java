@@ -29,11 +29,25 @@ public class CreateShortcut {
         Pointer path = new Memory((WinDef.MAX_PATH + 1)*2);
         hr = shellLink.GetPath(path, WinDef.MAX_PATH+1, new Pointer(0), 0);
         COMUtils.checkRC(hr);
+        System.out.println(path.getWideString(0));
+        System.out.println("hello, world");
+        {
+            String argStr = "--help";
+            Pointer argStrPointer = new Memory((argStr.length()+1)*2);
+            argStrPointer.setWideString(0, argStr);
+            hr = shellLink.SetArguments(argStrPointer);
+            COMUtils.checkRC(hr);
+        }
+        {
+            String str = "C:/Users/hangil/work/learn-java/myclinic-spring";
+            Pointer p = new Memory((str.length()+1)*2);
+            p.setWideString(0, str);
+            hr = shellLink.SetWorkingDirectory(p);
+            COMUtils.checkRC(hr);
+        }
         PointerByReference persistFilePointer = new PointerByReference();
         hr = shellLink.QueryInterface(new REFIID(IPersistFile.IID_IPersistFile), persistFilePointer);
         COMUtils.checkRC(hr);
-        System.out.println(path.getWideString(0));
-        System.out.println("hello, world");
         PersistFile persistFile = new PersistFile(persistFilePointer.getValue());
         String savePath = "C:/Users/hangil/shortcut.lnk";
         Pointer saveFile = Ole32.INSTANCE.CoTaskMemAlloc((savePath.length()+1)*2);

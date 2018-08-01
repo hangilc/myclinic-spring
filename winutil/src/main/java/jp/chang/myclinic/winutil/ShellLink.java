@@ -20,13 +20,24 @@ public class ShellLink extends Unknown implements IShellLink{
     public HRESULT GetPath(Pointer pszFile, int cchMaxPath, Pointer pdf, int fFlags) {
         return (HRESULT) this._invokeNativeObject(3,
                 new Object[]{ this.getPointer(), pszFile, cchMaxPath, pdf, fFlags }, HRESULT.class);
-
     }
 
     @Override
     public HRESULT SetPath(Pointer pszFile) {
         return (HRESULT) this._invokeNativeObject(20,
                 new Object[]{ this.getPointer(), pszFile }, HRESULT.class);
+    }
+
+    @Override
+    public HRESULT SetArguments(Pointer pszArgs) {
+        return (HRESULT) this._invokeNativeObject(11,
+                new Object[]{ this.getPointer(), pszArgs }, HRESULT.class);
+    }
+
+    @Override
+    public HRESULT SetWorkingDirectory(Pointer pszDir) {
+        return (HRESULT) this._invokeNativeObject(9,
+                new Object[]{ this.getPointer(), pszDir }, HRESULT.class);
     }
 
 }

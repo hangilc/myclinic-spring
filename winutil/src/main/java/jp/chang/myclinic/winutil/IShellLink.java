@@ -11,4 +11,6 @@ public interface IShellLink extends IUnknown {
 
     HRESULT GetPath(Pointer pszFile, int cchMaxPath, Pointer pdf, int fFlags);
     HRESULT SetPath(Pointer pszFile);
+    HRESULT SetArguments(Pointer pszArgs);
+    HRESULT SetWorkingDirectory(Pointer pszDir);
 }
