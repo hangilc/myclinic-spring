@@ -54,6 +54,7 @@
     <module>logdto</module>
     <module>master-lib</module>
     <module>tracker</module>
+    <module>winutil</module>
   </modules>
 
 </project>
