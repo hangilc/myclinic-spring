@@ -21,6 +21,6 @@ public class PersistFile extends Unknown implements IPersistFile {
     @Override
     public HRESULT Save(LPOLESTR pszFileName, BOOL fRememebr) {
         return (HRESULT)this._invokeNativeObject(6,
-                new Object[]{ this.getPointer(), pszFileName}, HRESULT.class);
+                new Object[]{ this.getPointer(), pszFileName, fRememebr}, HRESULT.class);
     }
 }

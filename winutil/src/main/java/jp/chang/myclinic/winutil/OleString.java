@@ -7,12 +7,12 @@ import com.sun.jna.platform.win32.WTypes;
 public class OleString {
 
     //private static Logger logger = LoggerFactory.getLogger(OleString.class);
-    private Pointer pointer;
+    Pointer pointer;
     private WTypes.LPOLESTR olestr;
 
     public OleString(String src) {
-        Pointer saveFile = Ole32.INSTANCE.CoTaskMemAlloc((src.length()+1)*2);
-        olestr = new WTypes.LPOLESTR(saveFile);
+        Pointer pointer = Ole32.INSTANCE.CoTaskMemAlloc((src.length()+1)*2);
+        olestr = new WTypes.LPOLESTR(pointer);
         olestr.setValue(src);
     }
 

@@ -13,6 +13,10 @@ public class CreateShortcut {
         String arguments = args[1];
         String workDir = args[2];
         String savePath = args[3];
+        System.err.println("target: " + target);
+        System.err.println("arguments: " + arguments);
+        System.err.println("workDir: " + workDir);
+        System.err.println("savePath: " + savePath);
         ShellLink shellLink = new ShellLink();
         shellLink.setPath(target);
         shellLink.setArguments(arguments);
