@@ -1,4 +1,7 @@
-rem @echo off
+:: 
+:: Usage: create-shortcuts-for-practice [RELEASE_FOLDER] [NAME_EXTRA]
+:: 
+@echo off
 
 set RELEASE_FOLDER=%~1
 set NAME_EXTRA=%~2

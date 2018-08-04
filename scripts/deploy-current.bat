@@ -1,5 +1,15 @@
+::
+:: Usage: deploy-current [TARGET-FOLDER]
+:: Default target folder is ~/myclinic-releases/current
+::
 @echo off
-set RELEASE_FOLDER=C:\Users\hangil\current-test
+
+set RELEASE_FOLDER=%~1
+
+if "%RELEASE_FOLDER%" == "" (
+	set RELEASE_FOLDER=%HOMEDRIVE%%HOMEPATH%\myclinic-releases\current
+)
+
 if exist %RELEASE_FOLDER% (
 	set time0=%time::=%
 	set date0=%date:/=%
@@ -7,12 +17,11 @@ if exist %RELEASE_FOLDER% (
 	for %%a in ("%RELEASE_FOLDER%") do (
 		set rename_path=%%~na-%stamp%
 	)
-	rename "%RELEASE_FOLDER%" "%rename_path%"
+	rename "%RELEASE_FOLDER%" "%rename_path%" || exit /B 1
 	if not "%errorlevel%" == "0" (goto end)
 ) 
 echo creating release folder^: %RELEASE_FOLDER%
-mkdir "%RELEASE_FOLDER%"
-if not "%errorlevel%" == "0" (goto end)
+mkdir "%RELEASE_FOLDER%" || exit /B 2
 
 xcopy /Y /I config "%RELEASE_FOLDER%/config"
 copy /Y hotline\target\hotline-1.0.0-SNAPSHOT.jar "%RELEASE_FOLDER%\hotline.jar"
@@ -30,4 +39,3 @@ mkdir "%RELEASE_FOLDER%\work"
 
 echo @cmd /K >"%RELEASE_FOLDER%"/console.bat
 
-:END
