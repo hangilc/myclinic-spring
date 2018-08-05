@@ -29,7 +29,6 @@ public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private static String wsUrl;
     private Tracker tracker;
-    private Scope scope;
     private MainPane mainPane;
 
     public static void main(String[] args) {
@@ -66,9 +65,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("受付");
-        this.scope = new Scope();
         BorderPane root = new BorderPane();
-        mainPane = new MainPane(scope);
+        mainPane = new MainPane();
         mainPane.setPadding(new Insets(10, 10, 10, 10));
         root.setCenter(mainPane);
         root.setTop(createMenuBar());
@@ -79,7 +77,7 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         tracker = new Tracker(wsUrl, mainPane, Service.api);
-        tracker.start(() -> Platform.runLater(() -> scope.setTracking(true)));
+        tracker.start(() -> Platform.runLater(() -> Globals.setTracking(true)));
         mainPane.addEventHandler(RefreshEvent.eventType, evt -> {
             if (tracker.isRunning()) {
                 tracker.reload();
@@ -106,13 +104,13 @@ public class Main extends Application {
             RadioMenuItem unsyncItem = new RadioMenuItem("同期しない");
             menu.getItems().add(unsyncItem);
             toggleGroup.getToggles().addAll(syncItem, unsyncItem);
-            if( scope.isTracking() ){
+            if( Globals.isTracking() ){
                 syncItem.setSelected(true);
             } else {
                 unsyncItem.setSelected(true);
             }
-            scope.trackingProperty().addListener((obs, oldValue, newValue) -> {
-                if( scope.isTracking() ){
+            Globals.trackingProperty().addListener((obs, oldValue, newValue) -> {
+                if( Globals.isTracking() ){
                     syncItem.setSelected(true);
                 } else {
                     unsyncItem.setSelected(true);
@@ -130,13 +128,13 @@ public class Main extends Application {
             List<WqueueTable.Model> models = tracker.getWqueueList().stream()
                     .map(WqueueModel::new).collect(Collectors.toList());
             mainPane.setWqueueModels(models);
-            tracker.restart(() -> Platform.runLater(() -> scope.setTracking(true)));
+            tracker.restart(() -> Platform.runLater(() -> Globals.setTracking(true)));
         }
     }
 
     private void doStopTracking() {
         tracker.shutdown();
-        scope.setTracking(false);
+        Globals.setTracking(false);
     }
 
     private void doManualUpdate(){

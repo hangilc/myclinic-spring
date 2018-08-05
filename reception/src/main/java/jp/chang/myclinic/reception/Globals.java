@@ -1,5 +1,7 @@
 package jp.chang.myclinic.reception;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
@@ -68,5 +70,19 @@ public class Globals {
         return imageSaveDir;
     }
 
+    // Tracking property
+    private static BooleanProperty tracking = new SimpleBooleanProperty();
+
+    public static boolean isTracking() {
+        return tracking.get();
+    }
+
+    public static BooleanProperty trackingProperty() {
+        return tracking;
+    }
+
+    public static void setTracking(boolean value) {
+        tracking.set(value);
+    }
 
 }

@@ -17,7 +17,6 @@ import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PaymentDTO;
 import jp.chang.myclinic.reception.Globals;
-import jp.chang.myclinic.reception.Scope;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
 import jp.chang.myclinic.reception.event.RefreshEvent;
 import jp.chang.myclinic.reception.lib.ReceptionService;
@@ -48,7 +47,7 @@ public class MainPane extends VBox implements DispatchHook {
             wq.birthdayProperty()
     });
 
-    public MainPane(Scope scope) {
+    public MainPane() {
         setSpacing(4);
         {
             HBox hbox = new HBox(4);
@@ -96,12 +95,12 @@ public class MainPane extends VBox implements DispatchHook {
             deselectButton.setOnAction(event -> doDeselect());
             deleteButton.setOnAction(event -> doDelete());
             Runnable noSyncNoticeUpdater = () -> {
-                boolean visible = !scope.isTracking();
+                boolean visible = !Globals.isTracking();
                 noSyncNotice.setVisible(visible);
                 noSyncNotice.setManaged(visible);
             };
             noSyncNoticeUpdater.run();
-            scope.trackingProperty().addListener((obs, oldValue, newValue) -> noSyncNoticeUpdater.run());
+            Globals.trackingProperty().addListener((obs, oldValue, newValue) -> noSyncNoticeUpdater.run());
             hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton,
                     noSyncNotice);
             getChildren().add(hbox);
