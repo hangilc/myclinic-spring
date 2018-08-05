@@ -28,8 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 // TODO: prevent presc done if cashire is not finished
 public class Main extends Application {
@@ -187,38 +187,39 @@ public class Main extends Application {
         return mbar;
     }
 
-    private void openDefaultPrinterSettingDialog(String titleName, Function<Config, String> currentGetter,
-                                                 BiConsumer<Config, String> currentSetter) {
-        Config.load().ifPresent(config -> {
-            String current = currentGetter.apply(config);
-            PrinterEnv printerEnv = Globals.getPrinterEnv();
-            SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(current, printerEnv) {
-                @Override
-                protected void onChange(String newDefaultSetting) {
-                    Config.load().ifPresent(config -> {
-                        currentSetter.accept(config, newDefaultSetting);
-                        config.save();
-                    });
-                }
-            };
-            dialog.setTitle(titleName + "の既定印刷設定の選択");
-            dialog.show();
-        });
+    private void openDefaultPrinterSettingDialog(String titleName, Supplier<String> currentGetter,
+                                                 Consumer<String> currentSetter) {
+        String current = currentGetter.get();
+        PrinterEnv printerEnv = Globals.getPrinterEnv();
+        SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(current, printerEnv) {
+            @Override
+            protected void onChange(String newDefaultSetting) {
+                currentSetter.accept(newDefaultSetting);
+            }
+        };
+        dialog.setTitle(titleName + "の既定印刷設定の選択");
+        dialog.show();
     }
 
     private void openPrescContentPrinterSettingDialog() {
-        openDefaultPrinterSettingDialog("印刷内容", Config::getPrescContentPrinterSetting,
-                Config::setPrescContentPrinterSetting);
+        openDefaultPrinterSettingDialog("印刷内容",
+                Globals::getPrescContentPrinterSetting, //Config::getPrescContentPrinterSetting,
+                Globals::setPrescContentPrinterSetting  //Config::setPrescContentPrinterSetting
+        );
     }
 
     private void openDrugBagPrinterSettingDialog() {
-        openDefaultPrinterSettingDialog("薬袋", Config::getDrugBagPrinterSetting,
-                Config::setDrugBagPrinterSetting);
+        openDefaultPrinterSettingDialog("薬袋",
+                Globals::getDrugBagPrinterSetting,  //Config::getDrugBagPrinterSetting,
+                Globals::setDrugBagPrinterSetting   //Config::setDrugBagPrinterSetting
+        );
     }
 
     private void openTechouPrinterSettingDialog() {
-        openDefaultPrinterSettingDialog("薬手帳", Config::getTechouPrinterSetting,
-                Config::setTechouPrinterSetting);
+        openDefaultPrinterSettingDialog("薬手帳",
+                Globals::getTechouPrinterSetting,  //Config::getTechouPrinterSetting,
+                Globals::setTechouPrinterSetting   //Config::setTechouPrinterSetting
+        );
     }
 
 }
