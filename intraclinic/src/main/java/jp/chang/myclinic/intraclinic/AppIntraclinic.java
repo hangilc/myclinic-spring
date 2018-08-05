@@ -6,27 +6,32 @@ import jp.chang.myclinic.dto.UserInfoDTO;
 import javax.swing.*;
 import java.awt.*;
 
-public class AppIntraclinic
-{
-    public static void main( String[] args ) {
-        if( args.length != 1 ){
-            System.out.println("Usage: server-url");
+public class AppIntraclinic {
+    public static void main(String[] args) throws Exception {
+        String serverUrl = null;
+        if (args.length == 0) {
+            serverUrl = System.getenv("MYCLINIC_SERVICE");
+        } else if (args.length == 1) {
+            serverUrl = args[0];
+        } else {
+            System.out.println("Usage: [server-url]");
             System.exit(1);
         }
-        {
-            String serverUrl = args[0];
-            if( !serverUrl.endsWith("/") ){
-                serverUrl = serverUrl + "/";
-            }
-            serverUrl += "/intraclinic/";
-            Service.setServerUrl(serverUrl);
+        if (serverUrl == null || serverUrl.isEmpty()) {
+            throw new RuntimeException("Cannot find server url.");
         }
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(2);
+        if (!serverUrl.endsWith("/")) {
+            serverUrl = serverUrl + "/";
         }
+        serverUrl += "/intraclinic/";
+        Service.setServerUrl(serverUrl);
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//        try {
+//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.exit(2);
+//        }
         LoginDialog loginDialog = new LoginDialog(userInfo -> {
             Service.api.listPost(0)
                     .thenAccept(page -> {
@@ -34,7 +39,7 @@ public class AppIntraclinic
                     })
                     .exceptionally(t -> {
                         t.printStackTrace();
-                        EventQueue.invokeLater(() ->JOptionPane.showMessageDialog(null, t.toString()));
+                        EventQueue.invokeLater(() -> JOptionPane.showMessageDialog(null, t.toString()));
                         return null;
                     });
         });
@@ -43,8 +48,8 @@ public class AppIntraclinic
         loginDialog.setVisible(true);
     }
 
-    private static void openMainWindow(UserInfoDTO userInfo, IntraclinicPostFullPageDTO page){
-        if( userInfo != null && userInfo.roles != null ){
+    private static void openMainWindow(UserInfoDTO userInfo, IntraclinicPostFullPageDTO page) {
+        if (userInfo != null && userInfo.roles != null) {
             boolean isAdmin = userInfo.roles.contains("admin");
             MainWindow mainWindow = new MainWindow(isAdmin, userInfo.name, page);
             mainWindow.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
