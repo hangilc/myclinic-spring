@@ -22,7 +22,6 @@ import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +39,7 @@ public class DrawerPreviewStage extends Stage {
     private byte[] devnamesCache;
     private byte[] devmodeCache;
     private AuxSetting auxSettingCache;
-    private Supplier<String> pkeyGettr;
+    private Supplier<String> pkeyGetter;
     private Consumer<String> pkeySetter;
 
     public DrawerPreviewStage(List<Op> ops, PaperSize paperSize, PrinterEnv printerEnv,
@@ -51,6 +50,7 @@ public class DrawerPreviewStage extends Stage {
     public DrawerPreviewStage(List<Op> ops, double mmWidth, double mmHeight, PrinterEnv printerEnv,
                               Supplier<String> pkeyGetter, Consumer<String> pkeySetter){
         this.printerEnv = printerEnv;
+        this.pkeyGetter = pkeyGetter;
         this.pkeySetter = pkeySetter;
         BorderPane root = new BorderPane();
         {

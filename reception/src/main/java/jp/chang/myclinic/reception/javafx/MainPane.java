@@ -16,7 +16,7 @@ import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PaymentDTO;
-import jp.chang.myclinic.reception.ReceptionEnv;
+import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.Scope;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
 import jp.chang.myclinic.reception.event.RefreshEvent;
@@ -223,21 +223,21 @@ public class MainPane extends VBox implements DispatchHook {
 
     private void doBlankReceipt() {
         ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
-        creator.setClinicInfo(ReceptionEnv.INSTANCE.getClinicInfo());
+        creator.setClinicInfo(Globals.getClinicInfo());
         ReceiptDrawerData data = creator.getData();
         ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
         final List<Op> ops = receiptDrawer.getOps();
         PrinterEnv printerEnv = null;
         try {
-            printerEnv = ReceptionEnv.INSTANCE.getMyclinicEnv().getPrinterEnv();
+            printerEnv = Globals.getPrinterEnv();
         } catch (Exception ex) {
             logger.error("Failed to get PrinterEnv", ex);
             GuiUtil.alertError("Failed to get PrinterEnv");
         }
         DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
                 printerEnv,
-                () -> ReceptionEnv.INSTANCE.getMyclinicEnv().getAppProperty("reception-receipt"),
-                name -> ReceptionEnv.INSTANCE.getMyclinicEnv().saveAppProperty("ReceptionEnv.INSTANCE.getMyclinicEnv().g", name));
+                Globals::getReceiptPrinterSetting,
+                Globals::setReceiptPrinterSetting);
         stage.show();
     }
 
@@ -302,7 +302,7 @@ public class MainPane extends VBox implements DispatchHook {
         fireEvent(new RefreshEvent());
     }
 
-    public void setWqueueModels(List<WqueueTable.Model> models){
+    public void setWqueueModels(List<WqueueTable.Model> models) {
         wqueueList.setAll(models);
     }
 

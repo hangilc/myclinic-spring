@@ -33,13 +33,27 @@ public class Main extends Application {
     private MainPane mainPane;
 
     public static void main(String[] args) {
-        ReceptionArgs receptionArgs = ReceptionArgs.parseArgs(args);
-        Service.setServerUrl(receptionArgs.serverUrl);
-        wsUrl = receptionArgs.serverUrl.replace("/json/", "/practice-log");
-        ReceptionEnv.INSTANCE.updateWithArgs(receptionArgs);
+        //ReceptionArgs receptionArgs = ReceptionArgs.parseArgs(args);
+        String serviceUrl;
+        if( args.length == 0 ){
+            serviceUrl = System.getenv("MYCLINIC_SERVICE");
+        } else {
+            serviceUrl = args[0];
+        }
+        if( serviceUrl.isEmpty() ){
+            logger.error("Cannot find service url.");
+            System.exit(1);
+        }
+        if( !serviceUrl.endsWith("/") ){
+            serviceUrl += "/";
+        }
+        Service.setServerUrl(serviceUrl);
+        wsUrl = serviceUrl.replace("/json/", "/practice-log");
+        //ReceptionEnv.INSTANCE.updateWithArgs(receptionArgs);
         Service.api.getClinicInfo()
                 .thenAccept(clinicInfo -> {
-                    ReceptionEnv.INSTANCE.setClinicInfo(clinicInfo);
+                    //ReceptionEnv.INSTANCE.setClinicInfo(clinicInfo);
+                    Globals.setClinicInfo(clinicInfo);
                     Application.launch(Main.class, args);
                 })
                 .exceptionally(ex -> {

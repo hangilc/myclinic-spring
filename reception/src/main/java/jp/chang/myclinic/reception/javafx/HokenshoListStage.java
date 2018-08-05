@@ -7,7 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.reception.ReceptionEnv;
+import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
@@ -61,7 +61,7 @@ class HokenshoListStage extends Stage {
     }
 
     private void downloadImage(int patientId, String file, Consumer<Path> cb) {
-        Path saveDir = ReceptionEnv.INSTANCE.getImageSaveDir();
+        Path saveDir = Globals.getImageSaveDir();
         Path savePath = Paths.get(saveDir.toString(), file);
         if (!Files.exists(savePath)) {
             Service.api.getHokensho(patientId, file)
