@@ -18,15 +18,14 @@ import jp.chang.myclinic.drawer.techou.TechouDrawer;
 import jp.chang.myclinic.drawer.techou.TechouDrawerData;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.pharma.CFUtil;
-import jp.chang.myclinic.pharma.Config;
 import jp.chang.myclinic.pharma.Globals;
 import jp.chang.myclinic.pharma.drawercreator.DrugBagDataCreator;
 import jp.chang.myclinic.pharma.drawercreator.PrescContentDataCreator;
 import jp.chang.myclinic.pharma.drawercreator.TechouDataCreator;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
-import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.pharma.javafx.printing.Printing;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,15 +168,17 @@ class PrescPane extends VBox {
                     148, 210, 0.55){
                 @Override
                 protected String getDefaultPrinterSettingName() {
-                    return Config.load().map(Config::getPrescContentPrinterSetting).orElse(null);
+                    return Globals.getPrescContentPrinterSetting();
+                    //return Config.load().map(Config::getPrescContentPrinterSetting).orElse(null);
                 }
 
                 @Override
                 protected void setDefaultPrinterSettingName(String newName) {
-                    Config.load().ifPresent(config -> {
-                        config.setPrescContentPrinterSetting(newName);
-                        config.save();
-                    });
+                    Globals.setPrescContentPrinterSetting(newName);
+//                    Config.load().ifPresent(config -> {
+//                        config.setPrescContentPrinterSetting(newName);
+//                        config.save();
+//                    });
                 }
             };
             previewDialog.setTitle("処方内容印刷");
@@ -231,16 +232,18 @@ class PrescPane extends VBox {
                                 Globals.getPrinterEnv(), 128, 182, 0.6){
                             @Override
                             protected String getDefaultPrinterSettingName() {
-                                return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
+                                return Globals.getDrugBagPrinterSetting();
+                                //return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
                             }
 
                             @Override
                             protected void setDefaultPrinterSettingName(String newName) {
-                                Config.load()
-                                        .ifPresent(config -> {
-                                            config.setDrugBagPrinterSetting(newName);
-                                            config.save();
-                                        });
+                                Globals.setDrugBagPrinterSetting(newName);
+//                                Config.load()
+//                                        .ifPresent(config -> {
+//                                            config.setDrugBagPrinterSetting(newName);
+//                                            config.save();
+//                                        });
                             }
                         };
                         previewDialog.setTitle("薬袋印刷");
@@ -266,15 +269,17 @@ class PrescPane extends VBox {
             DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.getPrinterEnv(), 99, 120, 0.9){
                 @Override
                 protected String getDefaultPrinterSettingName() {
-                    return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
+                    return Globals.getTechouPrinterSetting();
+                    //return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
                 }
 
                 @Override
                 protected void setDefaultPrinterSettingName(String newName) {
-                    Config.load().ifPresent(config -> {
-                        config.setTechouPrinterSetting(newName);
-                        config.save();
-                    });
+                    Globals.setTechouPrinterSetting(newName);
+//                    Config.load().ifPresent(config -> {
+//                        config.setTechouPrinterSetting(newName);
+//                        config.save();
+//                    });
                 }
             };
             previewDialog.setTitle("薬手帳印刷");

@@ -2,6 +2,8 @@ package jp.chang.myclinic.pharma;
 
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Callback;
@@ -78,6 +80,62 @@ public class Globals {
     // PrinterEnv ////////////////////////////////////////////////////////////////////////////
     public static PrinterEnv getPrinterEnv() {
         return myclinicEnv.getPrinterEnv();
+    }
+
+    private static void setupPrinterSetting(StringProperty prop, String key){
+        prop.setValue(myclinicEnv.getAppProperty(key));
+        prop.addListener((obs, oldValue, newValue) -> myclinicEnv.saveAppProperty(key, newValue));
+    }
+
+    private static StringProperty prescContentPrinterSetting = new SimpleStringProperty();
+    static {
+        setupPrinterSetting(prescContentPrinterSetting, "presc-content-printer-setting");
+    }
+
+    public static String getPrescContentPrinterSetting() {
+        return prescContentPrinterSetting.get();
+    }
+
+    public static StringProperty prescContentPrinterSettingProperty() {
+        return prescContentPrinterSetting;
+    }
+
+    public static void setPrescContentPrinterSetting(String prescContentPrinterSetting) {
+        Globals.prescContentPrinterSetting.set(prescContentPrinterSetting);
+    }
+
+    private static StringProperty drugBagPrinterSetting = new SimpleStringProperty();
+    static {
+        setupPrinterSetting(drugBagPrinterSetting, "drug-bag-printer-setting");
+    }
+
+    public static String getDrugBagPrinterSetting() {
+        return drugBagPrinterSetting.get();
+    }
+
+    public static StringProperty drugBagPrinterSettingProperty() {
+        return drugBagPrinterSetting;
+    }
+
+    public static void setDrugBagPrinterSetting(String drugBagPrinterSetting) {
+        Globals.drugBagPrinterSetting.set(drugBagPrinterSetting);
+    }
+
+    private static StringProperty techouPrinterSetting = new SimpleStringProperty();
+    static {
+        setupPrinterSetting(techouPrinterSetting, "techou-printer-setting");
+    }
+
+    public static String getTechouPrinterSetting() {
+        return techouPrinterSetting.get();
+    }
+
+    public static StringProperty techouPrinterSettingProperty() {
+        return techouPrinterSetting;
+    }
+
+    public static void setTechouPrinterSetting(String techouPrinterSetting) {
+        Globals.techouPrinterSetting.set(techouPrinterSetting);
     }
 
     // ModelDispatchAction ////////////////////////////////////////////////////////////////////

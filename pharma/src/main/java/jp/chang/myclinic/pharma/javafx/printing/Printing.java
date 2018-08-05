@@ -14,7 +14,6 @@ import jp.chang.myclinic.drawer.techou.TechouDrawerData;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.pharma.CFUtil;
-import jp.chang.myclinic.pharma.Config;
 import jp.chang.myclinic.pharma.Globals;
 import jp.chang.myclinic.pharma.drawercreator.DrugBagDataCreator;
 import jp.chang.myclinic.pharma.drawercreator.PrescContentDataCreator;
@@ -53,16 +52,18 @@ public class Printing {
                 128, 182, 0.6){
             @Override
             protected String getDefaultPrinterSettingName() {
-                return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
+                return Globals.getDrugBagPrinterSetting();
+                //return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
             }
 
             @Override
             protected void setDefaultPrinterSettingName(String newName) {
-                Config.load()
-                        .ifPresent(config -> {
-                            config.setDrugBagPrinterSetting(newName);
-                            config.save();
-                        });
+                Globals.setDrugBagPrinterSetting(newName);
+//                Config.load()
+//                        .ifPresent(config -> {
+//                            config.setDrugBagPrinterSetting(newName);
+//                            config.save();
+//                        });
             }
         };
         previewDialog.setTitle("薬袋印刷");
@@ -78,15 +79,17 @@ public class Printing {
         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.getPrinterEnv(), 99, 120, 1.0) {
             @Override
             protected String getDefaultPrinterSettingName() {
-                return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
+                return Globals.getTechouPrinterSetting();
+                //return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
             }
 
             @Override
             protected void setDefaultPrinterSettingName(String newName) {
-                Config.load().ifPresent(config -> {
-                    config.setTechouPrinterSetting(newName);
-                    config.save();
-                });
+                Globals.setTechouPrinterSetting(newName);
+//                Config.load().ifPresent(config -> {
+//                    config.setTechouPrinterSetting(newName);
+//                    config.save();
+//                });
             }
         };
         previewDialog.setTitle("薬手帳印刷");
@@ -152,15 +155,18 @@ public class Printing {
     }
 
     private static String getPrescContentPrinterSetting() {
-        return Config.load().map(Config::getPrescContentPrinterSetting).orElse(null);
+        return Globals.getPrescContentPrinterSetting();
+        //return Config.load().map(Config::getPrescContentPrinterSetting).orElse(null);
     }
 
     private static String getDrugBagPrinterSetting() {
-        return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
+        return Globals.getDrugBagPrinterSetting();
+        //return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
     }
 
     private static String getTechouPrinterSetting() {
-        return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
+        return Globals.getTechouPrinterSetting();
+        //return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
     }
 
 }

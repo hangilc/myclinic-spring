@@ -13,12 +13,11 @@ import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.pharma.Config;
 import jp.chang.myclinic.pharma.Globals;
 import jp.chang.myclinic.pharma.drawercreator.DrugBagDataCreator;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
-import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.util.DrugUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,16 +87,18 @@ class DrugsPart extends VBox {
                                 128, 182, 0.6){
                             @Override
                             protected String getDefaultPrinterSettingName() {
-                                return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
+                                return Globals.getDrugBagPrinterSetting();
+                                //return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
                             }
 
                             @Override
                             protected void setDefaultPrinterSettingName(String newName) {
-                                Config.load()
-                                        .ifPresent(config -> {
-                                            config.setDrugBagPrinterSetting(newName);
-                                            config.save();
-                                        });
+                                Globals.setDrugBagPrinterSetting(newName);
+//                                Config.load()
+//                                        .ifPresent(config -> {
+//                                            config.setDrugBagPrinterSetting(newName);
+//                                            config.save();
+//                                        });
                             }
                         };
                         previewDialog.setTitle("薬袋印刷");
