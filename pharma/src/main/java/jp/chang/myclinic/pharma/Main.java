@@ -26,63 +26,52 @@ import jp.chang.myclinic.pharma.tracking.ModelDispatchAction;
 import jp.chang.myclinic.tracker.Tracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 // TODO: prevent presc done if cashire is not finished
-@SpringBootApplication
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
-    private static ConfigurableApplicationContext ctx;
     private String wsUrl;
     private Tracker tracker;
     private static String[] args;
-    private MainScope mainScope;
 
     public static void main(String[] args) {
         logger.info("pharma invoked");
-        Main.args = args;
         Application.launch(Main.class, args);
     }
 
     @Override
     public void init() throws Exception {
         super.init();
-        ctx = SpringApplication.run(Main.class, args);
         List<String> args = getParameters().getUnnamed();
-        if( args.size() == 1 ){
-            String serverUrl = args.get(0);
-            if( !serverUrl.endsWith("/") ){
-                serverUrl = serverUrl + "/";
-            }
-            Service.setServerUrl(serverUrl);
-            Globals.clinicInfo = Service.api.getClinicInfoCall().execute().body();
-            Globals.printerEnv = new PrinterEnv(Paths.get(System.getProperty("user.home"), "myclinic-env", "printer-settings"));
-            this.wsUrl = serverUrl.replace("/json/", "/practice-log");
+        String serviceUrl;
+        if (args.size() == 0) {
+            serviceUrl = System.getenv("MYCLINIC_SERVICE");
         } else {
-            logger.error("Usage: pharma service-url");
-            System.exit(1);
+            serviceUrl = args.get(0);
         }
+        if (!serviceUrl.endsWith("/")) {
+            serviceUrl += "/";
+        }
+        Service.setServerUrl(serviceUrl);
+        Globals.setClinicInfo(Service.api.getClinicInfoCall().execute().body());
+        this.wsUrl = serviceUrl.replace("/json/", "/practice-log");
     }
 
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("薬局");
-        mainScope = ctx.getBean(MainScope.class);
         BorderPane borderPane = new BorderPane();
         borderPane.setTop(createMenu());
-        MainScene root = ctx.getBean(MainScene.class);
+        MainScene root = new MainScene();
         root.getStylesheets().add("Pharma.css");
         borderPane.setCenter(root);
-        ModelDispatchAction modelDispatchAction = mainScope.getModelDispatchAction();
-        tracker = new Tracker(wsUrl, modelDispatchAction, Service.api::listPracticeLogInRangeCall){
+        ModelDispatchAction modelDispatchAction = Globals.createModelDispatchAction();
+        tracker = new Tracker(wsUrl, modelDispatchAction, Service.api::listPracticeLogInRangeCall) {
             @Override
             protected void beforeCatchup() {
                 System.out.println("beforeCatchup");
@@ -96,7 +85,8 @@ public class Main extends Application {
         tracker.setCallbackWrapper(Platform::runLater);
         stage.setScene(new Scene(borderPane));
         stage.show();
-        tracker.start(() -> {});
+        tracker.start(() -> {
+        });
         root.addEventHandler(ReloadTrackingEvent.eventType, event -> tracker.probeUpdate());
     }
 
@@ -105,11 +95,10 @@ public class Main extends Application {
         super.stop();
         Service.stop();
         tracker.shutdown();
-        ctx.close();
         logger.info("pharma stopped.");
     }
 
-    private Node createMenu(){
+    private Node createMenu() {
         MenuBar mbar = new MenuBar();
         {
             Menu menu = new Menu("アクション");
@@ -148,12 +137,13 @@ public class Main extends Application {
             }
             {
                 MenuItem item = new MenuItem("新規印刷設定");
-                item.setOnAction(evt -> NewSetting.createNewPrinterSetting(Globals.printerEnv, name -> {}));
+                item.setOnAction(evt -> NewSetting.createNewPrinterSetting(Globals.getPrinterEnv(), name -> {
+                }));
                 menu.getItems().add(item);
             }
             {
                 MenuItem item = new MenuItem("印刷設定の一覧");
-                item.setOnAction(evt -> new ListSettingDialog(Globals.printerEnv).show());
+                item.setOnAction(evt -> new ListSettingDialog(Globals.getPrinterEnv()).show());
                 menu.getItems().add(item);
             }
             mbar.getMenus().add(menu);
@@ -191,17 +181,17 @@ public class Main extends Application {
             menu.getItems().add(unsyncItem);
             group.addToggle(syncItem, true);
             group.addToggle(unsyncItem, false);
-            group.valueProperty().bindBidirectional(mainScope.trackingProperty());
+            group.valueProperty().bindBidirectional(Globals.trackingProperty());
             mbar.getMenus().add(menu);
         }
         return mbar;
     }
 
     private void openDefaultPrinterSettingDialog(String titleName, Function<Config, String> currentGetter,
-                                                 BiConsumer<Config, String> currentSetter){
+                                                 BiConsumer<Config, String> currentSetter) {
         Config.load().ifPresent(config -> {
             String current = currentGetter.apply(config);
-            PrinterEnv printerEnv = Globals.printerEnv;
+            PrinterEnv printerEnv = Globals.getPrinterEnv();
             SelectDefaultSettingDialog dialog = new SelectDefaultSettingDialog(current, printerEnv) {
                 @Override
                 protected void onChange(String newDefaultSetting) {
@@ -221,12 +211,12 @@ public class Main extends Application {
                 Config::setPrescContentPrinterSetting);
     }
 
-    private void openDrugBagPrinterSettingDialog(){
+    private void openDrugBagPrinterSettingDialog() {
         openDefaultPrinterSettingDialog("薬袋", Config::getDrugBagPrinterSetting,
                 Config::setDrugBagPrinterSetting);
     }
 
-    private void openTechouPrinterSettingDialog(){
+    private void openTechouPrinterSettingDialog() {
         openDefaultPrinterSettingDialog("薬手帳", Config::getTechouPrinterSetting,
                 Config::setTechouPrinterSetting);
     }

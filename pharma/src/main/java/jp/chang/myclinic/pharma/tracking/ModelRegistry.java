@@ -8,28 +8,25 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.pharma.javafx.ModelImpl;
 import jp.chang.myclinic.pharma.javafx.PatientList;
-import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.pharma.tracking.model.Patient;
 import jp.chang.myclinic.pharma.tracking.model.Visit;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-@Component
 public class ModelRegistry {
 
     private Map<Integer, Patient> patientRegistry = new HashMap<>();
     private Map<Integer, Visit> visitRegistry = new HashMap<>();
-    @Autowired
-    @Qualifier("tracking-visit-list")
     private ObservableList<PatientList.Model> visitList;
-    @Autowired
-    @Qualifier("tracking-pharma-list")
     private ObservableList<PatientList.Model> pharmaList;
+
+    public ModelRegistry(ObservableList<PatientList.Model> visitList, ObservableList<PatientList.Model> pharmaList){
+        this.visitList = visitList;
+        this.pharmaList = pharmaList;
+    }
 
     void createVisit(VisitDTO visitDTO, Runnable toNext) {
         getPatient(visitDTO.patientId)

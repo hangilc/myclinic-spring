@@ -78,13 +78,13 @@ class DrugsPart extends VBox {
                     return Service.api.findPharmaDrug(drug.drug.iyakuhincode);
                 })
                 .thenAccept(pharmaDrug -> {
-                    ClinicInfoDTO clinicInfo = Globals.clinicInfo;
+                    ClinicInfoDTO clinicInfo = Globals.getClinicInfo();
                     DrugBagDataCreator creator = new DrugBagDataCreator(drug, data.patient,
                             pharmaDrug, clinicInfo);
                     DrugBagDrawerData drawerData = creator.createData();
                     List<Op> ops = new DrugBagDrawer(drawerData).getOps();
                     Platform.runLater(() -> {
-                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv,
+                        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.getPrinterEnv(),
                                 128, 182, 0.6){
                             @Override
                             protected String getDefaultPrinterSettingName() {

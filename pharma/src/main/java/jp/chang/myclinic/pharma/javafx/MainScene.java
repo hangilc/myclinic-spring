@@ -5,23 +5,18 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PharmaQueueFullDTO;
+import jp.chang.myclinic.pharma.Globals;
 import jp.chang.myclinic.pharma.javafx.event.PrescCancelEvent;
 import jp.chang.myclinic.pharma.javafx.event.PrescDoneEvent;
 import jp.chang.myclinic.pharma.javafx.event.StartPrescEvent;
 import jp.chang.myclinic.utilfx.HandlerFX;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-
-@Component
 public class MainScene extends HBox {
 
     //private static Logger logger = LoggerFactory.getLogger(MainScene.class);
-    @Autowired
-    private LeftColumn leftColumn;
-    @Autowired
-    private RightColumn rightColumn;
+    private LeftColumn leftColumn = new LeftColumn(Globals.getTrackingVisitList(),
+            Globals.getTrackingPharmaList(), Globals.trackingProperty());
+    private RightColumn rightColumn = new RightColumn();
 
     public MainScene() {
         super(4);
@@ -29,10 +24,6 @@ public class MainScene extends HBox {
         addEventHandler(StartPrescEvent.eventType, this::onStartPresc);
         addEventHandler(PrescDoneEvent.eventType, event -> leftColumn.onPrescDone());
         addEventHandler(PrescCancelEvent.eventType, event -> leftColumn.onPrescCancel());
-    }
-
-    @PostConstruct
-    public void postConstruct(){
         ScrollPane rightScroll = new ScrollPane(rightColumn);
         rightScroll.getStyleClass().add("right-column-scroll");
         rightScroll.setFitToWidth(true);

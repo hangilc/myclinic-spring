@@ -1,3 +1,7 @@
+* Update pharma properties (2018-06-05)
+
+  Convert ~/myclinic-env/pharma.yml to ~/myclinic-env/pharma.properties
+
 * Update reception properties (2018-06-05)
 
   In ~/myclinic-env/reception.properties, convert key "ReceptionEnv.INSTANCE.getMyclinicEnv().g" to "receipt-printer-setting" (or create the key with same value).

@@ -11,11 +11,9 @@ import jp.chang.myclinic.pharma.javafx.event.PrescDoneEvent;
 import jp.chang.myclinic.pharma.javafx.records.Records;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public class RightColumn extends VBox {
 
     private static Logger logger = LoggerFactory.getLogger(RightColumn.class);

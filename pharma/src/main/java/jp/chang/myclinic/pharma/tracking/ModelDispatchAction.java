@@ -6,18 +6,14 @@ import jp.chang.myclinic.dto.PharmaQueueDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.tracker.DispatchAction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ModelDispatchAction implements DispatchAction {
 
     //private static Logger logger = LoggerFactory.getLogger(ModelDispatchAction.class);
-    @Autowired
     private ModelRegistry registry;
 
-    public ModelDispatchAction() {
-
+    public ModelDispatchAction(ModelRegistry registry) {
+        this.registry = registry;
     }
 
     @Override

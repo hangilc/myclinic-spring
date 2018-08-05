@@ -22,15 +22,10 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.pharma.javafx.event.ReloadTrackingEvent;
 import jp.chang.myclinic.pharma.javafx.event.StartPrescEvent;
 import jp.chang.myclinic.utilfx.HandlerFX;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
 class LeftColumn extends VBox {
 
     //private static Logger logger = LoggerFactory.getLogger(LeftColumn.class);
@@ -40,25 +35,23 @@ class LeftColumn extends VBox {
     };
 
     private PatientList patientList;
-    @Autowired
-    @Qualifier("tracking-visit-list")
     private ObservableList<PatientList.Model> todaysList;
-    @Autowired
-    @Qualifier("tracking-pharma-list")
     private ObservableList<PatientList.Model> pharmaQueueList;
     private ObservableList<PatientList.Model> noTrackingList = FXCollections.observableArrayList();
-    @Autowired
-    @Qualifier("tracking-flag")
     private SimpleBooleanProperty isTracking;
     private ObjectProperty<Boolean> listAllVisitsFlag = new SimpleObjectProperty<Boolean>(false);
 
-    LeftColumn() {
+    LeftColumn(ObservableList<PatientList.Model> trackingVisitList, ObservableList<PatientList.Model> pharmaList,
+               SimpleBooleanProperty tracking) {
         super(4);
+        this.todaysList = trackingVisitList;
+        this.pharmaQueueList = pharmaList;
+        this.isTracking = tracking;
         getStyleClass().add("left-column");
+        postConstruct();
     }
 
-    @PostConstruct
-    public void postConstruct() {
+    private void postConstruct() {
         getChildren().addAll(
                 new HBox(4, new Label("患者リスト"), createNoTrackingNotice()),
                 createPatientList(),

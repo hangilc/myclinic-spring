@@ -45,11 +45,11 @@ public class Printing {
     }
 
     public static void previewDrugBag(DrugCategory category){
-        DrugBagDataCreator creator = new DrugBagDataCreator(category, null, null, Globals.clinicInfo);
+        DrugBagDataCreator creator = new DrugBagDataCreator(category, null, null, Globals.getClinicInfo());
         DrugBagDrawerData data = creator.createData();
         DrugBagDrawer drawer = new DrugBagDrawer(data);
         List<Op> ops = drawer.getOps();
-        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv,
+        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.getPrinterEnv(),
                 128, 182, 0.6){
             @Override
             protected String getDefaultPrinterSettingName() {
@@ -72,10 +72,10 @@ public class Printing {
     }
 
     public static void previewTechou(List<DrugFullDTO> drugs, PatientDTO patient) {
-        TechouDataCreator creator = new TechouDataCreator(patient, LocalDate.now(), drugs, Globals.clinicInfo);
+        TechouDataCreator creator = new TechouDataCreator(patient, LocalDate.now(), drugs, Globals.getClinicInfo());
         TechouDrawerData drawerData = creator.createData();
         List<Op> ops = new TechouDrawer(drawerData).getOps();
-        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv, 99, 120, 1.0) {
+        DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.getPrinterEnv(), 99, 120, 1.0) {
             @Override
             protected String getDefaultPrinterSettingName() {
                 return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
@@ -100,7 +100,7 @@ public class Printing {
     }
 
     private static void printPages(List<List<Op>> pages, String setting) {
-        PrinterEnv printerEnv = Globals.printerEnv;
+        PrinterEnv printerEnv = Globals.getPrinterEnv();
         if (printerEnv != null) {
             printerEnv.print(pages, setting);
         } else {
@@ -124,7 +124,7 @@ public class Printing {
         return Service.api.getPharmaDrug(drug.drug.iyakuhincode)
                 .thenApply(pharmaDrug -> {
                     DrugBagDataCreator creator = new DrugBagDataCreator(drug, patient,
-                            pharmaDrug, Globals.clinicInfo);
+                            pharmaDrug, Globals.getClinicInfo());
                     DrugBagDrawer drawer = new DrugBagDrawer(creator.createData());
                     return drawer.getOps();
                 });
@@ -141,7 +141,7 @@ public class Printing {
 
     private static List<Op> createTechouOps(List<DrugFullDTO> drugs, PatientDTO patient) {
         TechouDataCreator creator = new TechouDataCreator(patient, LocalDate.now(),
-                drugs, Globals.clinicInfo);
+                drugs, Globals.getClinicInfo());
         TechouDrawerData drawerData = creator.createData();
         return new TechouDrawer(drawerData).getOps();
     }

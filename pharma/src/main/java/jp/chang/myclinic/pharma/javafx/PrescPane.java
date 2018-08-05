@@ -165,7 +165,7 @@ class PrescPane extends VBox {
             PrescContentDataCreator creator = new PrescContentDataCreator(patient, LocalDate.now(), drugs);
             PrescContentDrawerData drawerData = creator.createData();
             List<Op> ops = new PrescContentDrawer(drawerData).getOps();
-            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv,
+            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.getPrinterEnv(),
                     148, 210, 0.55){
                 @Override
                 protected String getDefaultPrinterSettingName() {
@@ -212,7 +212,7 @@ class PrescPane extends VBox {
             }
         }
         if( drugs.size() > 0 ){
-            ClinicInfoDTO clinicInfo = Globals.clinicInfo;
+            ClinicInfoDTO clinicInfo = Globals.getClinicInfo();
             collectPharmaDrugs(drugs)
                     .thenAccept(dps -> Platform.runLater(() -> {
                         List<TaggedPage> pages = dps.stream()
@@ -228,7 +228,7 @@ class PrescPane extends VBox {
                         List<List<Op>> unprescribedPages = pages.stream()
                                 .filter(p -> !p.prescribed).map(p -> p.ops).collect(Collectors.toList());
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(
-                                Globals.printerEnv, 128, 182, 0.6){
+                                Globals.getPrinterEnv(), 128, 182, 0.6){
                             @Override
                             protected String getDefaultPrinterSettingName() {
                                 return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
@@ -260,10 +260,10 @@ class PrescPane extends VBox {
 
     private void doPrintTechou(){
         if( patient != null ){
-            TechouDataCreator creator = new TechouDataCreator(patient, LocalDate.now(), drugs, Globals.clinicInfo);
+            TechouDataCreator creator = new TechouDataCreator(patient, LocalDate.now(), drugs, Globals.getClinicInfo());
             TechouDrawerData drawerData = creator.createData();
             List<Op> ops = new TechouDrawer(drawerData).getOps();
-            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.printerEnv, 99, 120, 0.9){
+            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.getPrinterEnv(), 99, 120, 0.9){
                 @Override
                 protected String getDefaultPrinterSettingName() {
                     return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
