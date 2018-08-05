@@ -1,7 +1,7 @@
 package jp.chang.myclinic.hotline.tracker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.hotline.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.logdto.hotline.HotlineLogDTO;
 import okhttp3.Response;
 import okhttp3.WebSocket;

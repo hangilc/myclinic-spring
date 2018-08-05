@@ -1,7 +1,7 @@
 package jp.chang.myclinic.hotline.lib;
 
 import jp.chang.myclinic.dto.HotlineDTO;
-import jp.chang.myclinic.hotline.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDateTime;

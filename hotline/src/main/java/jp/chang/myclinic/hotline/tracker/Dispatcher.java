@@ -3,7 +3,7 @@ package jp.chang.myclinic.hotline.tracker;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import jp.chang.myclinic.dto.HotlineDTO;
-import jp.chang.myclinic.hotline.Service;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.logdto.hotline.HotlineBeep;
 import jp.chang.myclinic.logdto.hotline.HotlineCreated;
 import jp.chang.myclinic.logdto.hotline.HotlineLogDTO;

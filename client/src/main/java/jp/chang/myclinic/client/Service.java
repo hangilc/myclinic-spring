@@ -828,8 +828,8 @@ public class Service {
         @POST("delete-visit-from-reception")
         CompletableFuture<Boolean> deleteVisitFromReception(@Query("visit-id") int visitId);
 
-        @GET("list-wqueue-full")
-        CompletableFuture<List<WqueueFullDTO>> listWqueue();
+//        @GET("list-wqueue-full")
+//        CompletableFuture<List<WqueueFullDTO>> listWqueue();
 
         @GET("get-wqueue-full")
         CompletableFuture<WqueueFullDTO> getWqueueFull(@Query("visit-id") int visitId);
@@ -945,6 +945,30 @@ public class Service {
         @GET("search-text-globally")
         CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(@Query("text") String text,
                                                                       @Query("page") int page);
+
+        @GET("list-todays-hotline")
+        CompletableFuture<List<HotlineDTO>> listTodaysHotline();
+
+        @GET("list-todays-hotline")
+        Call<List<HotlineDTO>> listTodaysHotlineSync();
+
+        @GET("list-recent-hotline")
+        CompletableFuture<List<HotlineDTO>> listRecentHotline(@Query("threshold-hotline-id") int thresholdHotlineId);
+
+        @GET("list-recent-hotline")
+        Call<List<HotlineDTO>> listRecentHotlineSync(@Query("threshold-hotline-id") int thresholdHotlineId);
+
+        @POST("enter-hotline")
+        CompletableFuture<Integer> enterHotline(@Body HotlineDTO hotline);
+
+        @GET("list-todays-hotline-in-range")
+        CompletableFuture<List<HotlineDTO>> listTodaysHotlineInRange(@Query("after") int afterId,
+                                                                     @Query("before") int beforeId);
+
+        @GET("list-todays-hotline-in-range")
+        Call<List<HotlineDTO>> listTodaysHotlineInRangeCall(@Query("after") int afterId,
+                                                            @Query("before") int beforeId);
+
     }
 
     public static ServerAPI api;

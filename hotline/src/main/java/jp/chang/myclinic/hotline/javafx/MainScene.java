@@ -18,13 +18,14 @@ import jp.chang.myclinic.hotline.lib.HotlineUtil;
 import jp.chang.myclinic.hotline.tracker.DispatchAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.client.Service;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class MainScene extends VBox implements DispatchAction {
+public class MainScene extends VBox implements DispatchAction {
 
     private static Logger logger = LoggerFactory.getLogger(MainScene.class);
     private static final String beepMessage = "[BEEP]";
@@ -36,7 +37,7 @@ class MainScene extends VBox implements DispatchAction {
     private static final String templateMarker = "{}";
     private Scope scope;
 
-    MainScene(Scope scope) {
+    public MainScene(Scope scope) {
         super(4);
         this.scope = scope;
         getStyleClass().add("main-scene");
@@ -92,7 +93,7 @@ class MainScene extends VBox implements DispatchAction {
     }
 
     private void doPatient(Node anchor, MouseEvent event){
-        Service.api.listWqueue()
+        Service.api.listWqueueFull()
                 .thenAccept(qlist -> Platform.runLater(() -> {
                     Map<Integer, PatientDTO> patientMap = new LinkedHashMap<>();
                     qlist.forEach(q -> patientMap.put(q.patient.patientId, q.patient));

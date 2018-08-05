@@ -1,4 +1,4 @@
-package jp.chang.myclinic.hotline.javafx;
+package jp.chang.myclinic.hotline;
 
 import javafx.application.Application;
 import javafx.scene.Node;
@@ -8,14 +8,15 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import jp.chang.myclinic.hotline.*;
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.hotline.javafx.MainScene;
 import jp.chang.myclinic.hotline.tracker.Tracker;
-import okhttp3.Cache;
-import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+
+//import jp.chang.myclinic.hotline.Service;
 
 public class AppMain extends Application {
     private static Logger logger = LoggerFactory.getLogger(AppMain.class);
@@ -31,20 +32,32 @@ public class AppMain extends Application {
         super.init();
         logger.info("Hotline invoked.");
         List<String> args = getParameters().getUnnamed();
-        if (args.size() != 3) {
+        String serverUrl;
+        User sender;
+        User recipient;
+        if( args.size() == 2 ){
+            serverUrl = System.getenv("MYCLINIC_SERVICE");
+            sender = User.fromNameIgnoreCase(args.get(0));
+            recipient = User.fromNameIgnoreCase(args.get(1));
+        } else if( args.size() == 3 ){
+            serverUrl = args.get(0);
+            sender = User.fromNameIgnoreCase(args.get(1));
+            recipient = User.fromNameIgnoreCase(args.get(2));
+        } else {
             logger.error("Hotline aborting.");
-            logger.error("Usage: server-url sender recipient");
+            logger.error("Usage: [server-url] sender recipient");
             logger.error("ssender/receipient should be one of practice, pharmacy, or reception");
-            System.exit(1);
+            throw new RuntimeException("Invalid invocation.");
         }
-        String serverUrl = args.get(0);
+        if( serverUrl == null || serverUrl.isEmpty() ){
+            logger.error("Cannot get server-url.");
+            throw new RuntimeException("Cannot get server-url.");
+        }
         if (!serverUrl.endsWith("/")) {
             serverUrl = serverUrl + "/";
         }
         Service.setServerUrl(serverUrl);
         this.wsUrl = serverUrl.replace("/json/", "/hotline");
-        User sender = User.fromNameIgnoreCase(args.get(1));
-        User recipient = User.fromNameIgnoreCase(args.get(2));
         if (sender == null) {
             logger.error("invalid sender name");
             System.exit(1);
@@ -99,13 +112,14 @@ public class AppMain extends Application {
         super.stop();
 //        Set<Thread> threads = Thread.getAllStackTraces().keySet();
 //        System.out.println(threads);
-        OkHttpClient client = Service.client;
-        client.dispatcher().executorService().shutdown();
-        client.connectionPool().evictAll();
-        Cache cache = client.cache();
-        if (cache != null) {
-            cache.close();
-        }
+//        OkHttpClient client = Service.client;
+//        client.dispatcher().executorService().shutdown();
+//        client.connectionPool().evictAll();
+//        Cache cache = client.cache();
+//        if (cache != null) {
+//            cache.close();
+//        }
+        Service.stop();
         tracker.shutdown();
         logger.info("Hotline stopped.");
     }
