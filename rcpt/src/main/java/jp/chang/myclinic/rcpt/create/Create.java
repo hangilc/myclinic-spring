@@ -7,7 +7,6 @@ import jp.chang.myclinic.rcpt.Common;
 import jp.chang.myclinic.rcpt.create.subshuukei.ShuukeiMap;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.HokenUtil;
-import jp.chang.myclinic.util.RcptUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -267,12 +266,15 @@ class Create {
                 int futanWari2 = HokenUtil.kouhiFutanWari(seikyuu.kouhiFutanshaBangou2);
                 futanWari =  Math.min(futanWari, futanWari2);
             }
-            int jikofutan = 0;
-            for(ShuukeiMap shuukeiMap: shuukeiMapList){
-                int ten = shuukeiMap.calcSeikyuuTen();
-                jikofutan += RcptUtil.calcCharge(ten, futanWari);
+            if( futanWari == 1 ){
+                int sum = 0;
+                for(ShuukeiMap shuukeiMap: shuukeiMapList){
+                    int ten = shuukeiMap.calcSeikyuuTen();
+                    sum += ten;
+                    //jikofutan += RcptUtil.calcCharge(ten, futanWari);
+                }
+                System.out.printf("ichibu-futankin-kouhi-1 %d\n", sum);
             }
-            System.out.printf("ichibu-futankin-kouhi-1 %d\n", jikofutan);
         }
     }
 
