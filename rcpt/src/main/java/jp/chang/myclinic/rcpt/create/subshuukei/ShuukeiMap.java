@@ -104,4 +104,18 @@ public class ShuukeiMap {
         sonotaVisit.getTen();
    }
 
+   public void debug(){
+        System.err.printf("shoshin %d\n", shoshinVisit.getTen());
+        System.err.printf("saishin %d\n", saishinVisit.getTen());
+        System.err.printf("shidou %d\n", shidouVisit.getTen());
+        System.err.printf("zaitaku %d\n", zaitakuVisit.getTen());
+        System.err.printf("touyaku %d\n", touyakuVisit.getTen());
+        System.err.printf("chuusha %d\n", chuushaVisit.getTen());
+        System.err.printf("shochi %d\n", shochiVisit.getTen());
+       System.err.printf("shujutsu %d\n", shujutsuVisit.getTen());
+       System.err.printf("kensa %d\n", kensaVisit.getTen());
+       System.err.printf("gazou %d\n", gazouVisit.getTen());
+       System.err.printf("sonota %d\n", sonotaVisit.getTen());
+   }
+
 }

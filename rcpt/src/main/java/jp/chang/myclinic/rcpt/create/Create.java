@@ -121,6 +121,10 @@ class Create {
                 shuukeiMapList.add(shuukei);
                 grandShuukei.merge(shuukei);
             });
+            for(ShuukeiMap shuukei: shuukeiMapList){
+                shuukei.debug();
+                System.err.println("+++++++++++++++++++++++++");
+            }
             grandShuukei.output();
             outputKouhiJikofutan(seikyuu, shuukeiMapList);
             System.out.print("rcpt_end\n");
@@ -270,6 +274,9 @@ class Create {
                 int sum = 0;
                 for(ShuukeiMap shuukeiMap: shuukeiMapList){
                     int ten = shuukeiMap.calcSeikyuuTen();
+                    //shuukeiMap.debug();
+                    //System.err.println("ten: " + ten);
+                    //System.err.println("-------------------------------");
                     sum += ten;
                     //jikofutan += RcptUtil.calcCharge(ten, futanWari);
                 }
