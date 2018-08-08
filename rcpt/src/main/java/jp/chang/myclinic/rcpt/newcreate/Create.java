@@ -1,25 +1,31 @@
 package jp.chang.myclinic.rcpt.newcreate;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import jp.chang.myclinic.rcpt.newcreate.bill.PatientBill;
 import jp.chang.myclinic.rcpt.newcreate.input.Rcpt;
 import jp.chang.myclinic.rcpt.newcreate.input.Seikyuu;
+import jp.chang.myclinic.rcpt.newcreate.output.Output;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
+import java.io.PrintStream;
 import java.util.Comparator;
 
 public class Create {
 
     private static Logger logger = LoggerFactory.getLogger(Create.class);
 
-    public static void run(String xmlDataFile){
+    public static void run(String xmlDataFile, PrintStream printStream){
         try (FileInputStream ins = new FileInputStream(xmlDataFile)) {
             XmlMapper mapper = new XmlMapper();
             Rcpt rcpt = mapper.readValue(ins, Rcpt.class);
             rcpt.seikyuuList.sort(seikyuuComparator());
-//            outputRcpt(rcpt);
-            System.out.println("dummy");
+            Output output = new Output(printStream);
+            rcpt.seikyuuList.forEach(seikyuu -> {
+                PatientBill patientBill = new PatientBill(rcpt, seikyuu);
+                patientBill.print(output);
+            });
         } catch (Exception ex) {
             logger.error("Failed to run create.", ex);
             System.exit(1);

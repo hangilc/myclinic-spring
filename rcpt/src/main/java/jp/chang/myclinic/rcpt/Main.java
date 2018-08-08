@@ -32,7 +32,7 @@ public class Main {
                     System.err.println("Usage: newcreate DATA-XML-FILE");
                     System.exit(1);
                 }
-                jp.chang.myclinic.rcpt.newcreate.Create.run(args[1]);
+                jp.chang.myclinic.rcpt.newcreate.Create.run(args[1], System.out);
                 break;
             }
             default: {
