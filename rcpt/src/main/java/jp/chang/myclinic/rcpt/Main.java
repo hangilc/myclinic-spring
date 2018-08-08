@@ -27,6 +27,14 @@ public class Main {
                 BatchCreate.run(args);
                 break;
             }
+            case "newcreate": {
+                if( args.length != 2 ){
+                    System.err.println("Usage: newcreate DATA-XML-FILE");
+                    System.exit(1);
+                }
+                jp.chang.myclinic.rcpt.newcreate.Create.run(args[1]);
+                break;
+            }
             default: {
                 System.err.println("Unknown command: " + command);
                 System.exit(1);
