@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 
+// TODO: set font for teikyou in zokushi
 // TODO: add goto last page menu
 public class Main extends Application {
 
