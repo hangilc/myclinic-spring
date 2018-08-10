@@ -1,7 +1,7 @@
 package jp.chang.myclinic.rcpt.newcreate;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import jp.chang.myclinic.rcpt.newcreate.bill.PatientBill;
+import jp.chang.myclinic.rcpt.newcreate.bill.Bill;
 import jp.chang.myclinic.rcpt.newcreate.input.Rcpt;
 import jp.chang.myclinic.rcpt.newcreate.input.Seikyuu;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
@@ -22,10 +22,8 @@ public class Create {
             Rcpt rcpt = mapper.readValue(ins, Rcpt.class);
             rcpt.seikyuuList.sort(seikyuuComparator());
             Output output = new Output(printStream);
-            rcpt.seikyuuList.forEach(seikyuu -> {
-                PatientBill patientBill = new PatientBill(rcpt, seikyuu);
-                patientBill.print(output);
-            });
+            Bill bill = new Bill(rcpt, output);
+            bill.run();
         } catch (Exception ex) {
             logger.error("Failed to run create.", ex);
             System.exit(1);

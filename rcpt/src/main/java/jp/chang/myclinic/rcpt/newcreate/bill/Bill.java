@@ -1,6 +1,7 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.rcpt.newcreate.input.Byoumei;
 import jp.chang.myclinic.rcpt.newcreate.input.Rcpt;
 import jp.chang.myclinic.rcpt.newcreate.input.Seikyuu;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
@@ -9,22 +10,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class PatientBill {
+public class Bill {
 
-    private static Logger logger = LoggerFactory.getLogger(PatientBill.class);
+    private static Logger logger = LoggerFactory.getLogger(Bill.class);
     private Rcpt rcpt;
-    private Seikyuu seikyuu;
+    private Output out;
 
-    public PatientBill(Rcpt rcpt, Seikyuu seikyuu) {
+    public Bill(Rcpt rcpt, Output output) {
         this.rcpt = rcpt;
-        this.seikyuu = seikyuu;
+        this.out = output;
     }
 
-    public void print(Output out) {
-        out.print("rcpt_begin");
+    public void run() {
+        for (Seikyuu seikyuu : rcpt.seikyuuList) {
+            out.print("rcpt_begin");
+            runProlog();
+            runPatient(seikyuu);
+            out.print("rcpt_end");
+        }
+    }
+
+    private void runProlog() {
         out.printStr("kikancode", rcpt.kikancode);
         out.printInt("fukenbangou", rcpt.todoufukenBangou);
         out.printInt("shinryou.nen", rcpt.nen);
@@ -32,6 +43,9 @@ public class PatientBill {
         out.printStr("shozaichimeishou.line1", rcpt.clinicAddress);
         out.printStr("shozaichimeishou.line2", rcpt.clinicPhone);
         out.printStr("shozaichimeishou.line4", rcpt.clinicName);
+    }
+
+    private void runPatient(Seikyuu seikyuu) {
         out.printInt("patient_id", seikyuu.patientId);
         out.printStr("hokenshubetsu", hokenShubetsuSlug(seikyuu.hokenShubetsu));
         out.printStr("hokentandoku", hokenTandokuSlug(seikyuu.hokenTandoku));
@@ -71,7 +85,7 @@ public class PatientBill {
         out.printInt("seinengappi.nen", DateTimeUtil.getNen(birthday));
         out.printInt("seinengappi.tsuki", birthday.getMonthValue());
         out.printInt("seinengappi.hi", birthday.getDayOfMonth());
-        out.print("rcpt_end");
+        runByoumei(seikyuu);
     }
 
     private String hokenShubetsuSlug(String hokenShubetsu) {
@@ -188,5 +202,60 @@ public class PatientBill {
         return Gengou.fromEra(DateTimeUtil.getEra(date)).getKanji();
     }
 
+    private void runByoumei(Seikyuu seikyuu) {
+        int index = 1;
+        List<String> chiyu = new ArrayList<>();
+        List<String> shibou = new ArrayList<>();
+        List<String> chuushi = new ArrayList<>();
+        for (Byoumei byoumei : seikyuu.byoumeiList) {
+            LocalDate startDate = LocalDate.parse(byoumei.startDate);
+            if (index <= 4) {
+                out.printStr(String.format("shoubyoumei.%d", index), byoumei.name);
+                out.printInt(String.format("shinryoukaishi.nen.%dn", index), DateTimeUtil.getNen(startDate));
+                out.printInt(String.format("shinryoukaishi.tsuki.%d", index), startDate.getMonthValue());
+                out.printInt(String.format("shinryoukaishi.hi.%d", index), startDate.getDayOfMonth());
+//                System.out.printf("shoubyoumei.%d %s\n", index, byoumei.name);
+//                System.out.printf("shinryoukaishi.nen.%d %d\n", index, DateTimeUtil.getNen(startDate));
+//                System.out.printf("shinryoukaishi.tsuki.%d %d\n", index, startDate.getMonthValue());
+//                System.out.printf("shinryoukaishi.hi.%d %d\n", index, startDate.getDayOfMonth());
+            } else {
+                out.printStr("shoubyoumei_extra",
+                        String.format("%d:%s:%d:%d:%d",
+                                index,
+                                byoumei.name,
+                                DateTimeUtil.getNen(startDate),
+                                startDate.getMonthValue(),
+                                startDate.getDayOfMonth()));
+            }
+            final int currentIndex = index;
+            ifNotNull(byoumei.endDate, s -> {
+                LocalDate d = LocalDate.parse(s);
+                String tenkiDate = String.format("%c%d.%02d.%02d", getGengou(d).charAt(0), DateTimeUtil.getNen(d),
+                        d.getMonthValue(), d.getDayOfMonth());
+                String tenkiStr = String.format("%d(%s)", currentIndex, tenkiDate);
+                switch (byoumei.tenki) {
+                    case "治ゆ":
+                        chiyu.add(tenkiStr);
+                        break;
+                    case "死亡":
+                        shibou.add(tenkiStr);
+                        break;
+                    case "中止":
+                        chuushi.add(tenkiStr);
+                        break;
+                }
+            });
+            index += 1;
+        }
+        if (chiyu.size() > 0) {
+            out.printStr("tenki.chiyu", String.join(",", chiyu));
+        }
+        if (shibou.size() > 0) {
+            out.printStr("tenki.shibou", String.join(",", shibou));
+        }
+        if (chuushi.size() > 0) {
+            out.printStr("tenki.chuushi", String.join(",", chuushi));
+        }
+    }
 
 }
