@@ -26,4 +26,23 @@ public class Output {
         outStream.printf("%s %s\n", key, value);
     }
 
+    public void printTekiyou(String shuukei, String body, int tanka, int count){
+        outStream.printf("tekiyou %s:%s:%d:%d", shuukei, body, tanka, count);
+    }
+
+    public void printShuukei(String prefix, Integer tanka, Integer count, Integer ten){
+        if( ten != null && ten == 0 ){
+            return;
+        }
+        if( tanka != null ){
+            outStream.printf("%s.tanka %d\n", prefix, tanka);
+        }
+        if( count != null ){
+            outStream.printf("%s.kai %d\n", prefix, count);
+        }
+        if( ten != null ){
+            outStream.printf("%s.ten %d\n", prefix, ten);
+        }
+    }
+
 }

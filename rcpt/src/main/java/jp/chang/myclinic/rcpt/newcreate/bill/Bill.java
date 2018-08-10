@@ -1,16 +1,19 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.consts.Gengou;
-import jp.chang.myclinic.rcpt.create.subshuukei.ShuukeiMap;
+import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.newcreate.input.*;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
+import jp.chang.myclinic.rcpt.newcreate.output.Shuukei;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -21,10 +24,17 @@ public class Bill {
     private static Logger logger = LoggerFactory.getLogger(Bill.class);
     private Rcpt rcpt;
     private Output out;
+    private ResolvedShinryouMap resolvedShinryouMap;
+    private Map<SubShuukei, List<Item>> itemMap = new HashMap<>();
+    private Shuukei shoshinShuukei = new Shuukei("shoshin");
+    {
+        shoshinShuukei.setPrintTanka(false);
+    }
 
-    public Bill(Rcpt rcpt, Output output) {
+    public Bill(Rcpt rcpt, Output output, ResolvedShinryouMap resolvedShinryouMap) {
         this.rcpt = rcpt;
         this.out = output;
+        this.resolvedShinryouMap = resolvedShinryouMap;
     }
 
     public void run() {
@@ -278,58 +288,102 @@ public class Bill {
         return 0;
     }
 
+    private void addItem(SubShuukei subShuukei, Item item){
+        if( itemMap.containsKey(subShuukei) ){
+            List<Item> items = itemMap.get(subShuukei);
+            Item prev = null;
+            for(Item i: items){
+                if( i.canMerge(item) ){
+                    prev = i;
+                    break;
+                }
+            }
+            if( prev != null ){
+                prev.count += 1;
+            } else {
+                items.add(item);
+            }
+        } else {
+            List<Item> items = new ArrayList<>();
+            items.add(item);
+            itemMap.put(subShuukei, items);
+        }
+    }
+
+    private void runShoshinKasan(int shinryoucode){
+        if( shinryoucode == resolvedShinryouMap.初診時間外加算 ||
+                shinryoucode == resolvedShinryouMap.初診乳幼児時間外加算 ){
+            out.printStr("shoshinkasan", "jikangai");
+        }
+        if( shinryoucode == resolvedShinryouMap.初診休日加算 ||
+                shinryoucode == resolvedShinryouMap.初診乳幼児休日加算 ){
+            out.printStr("shoshinkasan", "kyuujitsu");
+        }
+        if( shinryoucode == resolvedShinryouMap.初診深夜加算 ||
+                shinryoucode == resolvedShinryouMap.初診乳幼児深夜加算 ){
+            out.printStr("shoshinkasan", "shinya");
+        }
+
+    }
+
     private void dispatchShinryou(Shinryou shinryou, LocalDate visitedAt) {
         switch (shinryou.shuukeisaki) {
             case SHUUKEI_SHOSHIN: {
-                shuukei.getShoshinVisit().add(shinryou);
+                if( shinryou.shinryoucode == resolvedShinryouMap.初診 ){
+                    shoshinShuukei.add(shinryou.tensuu);
+                    Item item = Item.fromShinryou(shinryou, TekiyouProc.noOutput);
+                    addItem(SubShuukei.SUB_SHOSHIN, item);
+                }
+                runShoshinKasan(shinryou.shinryoucode);
+                addItem(SubShuukei.SUB_SHOSHIN, Item.fromShinryou(shinryou));
                 break;
             }
-            case SHUUKEI_SAISHIN_SAISHIN:
-            case SHUUKEI_SAISHIN_GAIRAIKANRI:
-            case SHUUKEI_SAISHIN_JIKANGAI:
-            case SHUUKEI_SAISHIN_KYUUJITSU:
-            case SHUUKEI_SAISHIN_SHINYA:
-                shuukei.getSaishinVisit().add(shinryou);
-                break;
-            case SHUUKEI_SHIDOU:
-                shuukei.getShidouVisit().add(shinryou, visitedAt);
-                break;
-            case SHUUKEI_ZAITAKU:
-                shuukei.getZaitakuVisit().add(shinryou, visitedAt);
-                break;
-            case SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI:
-            case SHUUKEI_TOUYAKU_GAIYOUCHOUZAI:
-            case SHUUKEI_TOUYAKU_SHOHOU:
-            case SHUUKEI_TOUYAKU_MADOKU:
-            case SHUUKEI_TOUYAKU_CHOUKI:
-                shuukei.getTouyakuVisit().add(shinryou);
-                break;
-            case SHUUKEI_CHUUSHA_SEIBUTSUETC:
-            case SHUUKEI_CHUUSHA_HIKA:
-            case SHUUKEI_CHUUSHA_JOUMYAKU:
-            case SHUUKEI_CHUUSHA_OTHERS:
-                shuukei.getChuushaVisit().add(shinryou);
-                break;
-            case SHUUKEI_SHOCHI:
-                shuukei.getShochiVisit().add(shinryou);
-                break;
-            case SHUUKEI_SHUJUTSU_SHUJUTSU:
-            case SHUUKEI_SHUJUTSU_YUKETSU:
-            case SHUUKEI_MASUI:
-                shuukei.getShujutsuVisit().add(shinryou);
-                break;
-            case SHUUKEI_KENSA:
-                shuukei.getKensaVisit().add(shinryou);
-                break;
-            case SHUUKEI_GAZOUSHINDAN:
-                shuukei.getGazouVisit().add(shinryou);
-                break;
-            case SHUUKEI_OTHERS:
-                shuukei.getSonotaVisit().add(shinryou);
-                break;
-            default:
-                shuukei.getSonotaVisit().add(shinryou);
-                break;
+//            case SHUUKEI_SAISHIN_SAISHIN:
+//            case SHUUKEI_SAISHIN_GAIRAIKANRI:
+//            case SHUUKEI_SAISHIN_JIKANGAI:
+//            case SHUUKEI_SAISHIN_KYUUJITSU:
+//            case SHUUKEI_SAISHIN_SHINYA:
+//                shuukei.getSaishinVisit().add(shinryou);
+//                break;
+//            case SHUUKEI_SHIDOU:
+//                shuukei.getShidouVisit().add(shinryou, visitedAt);
+//                break;
+//            case SHUUKEI_ZAITAKU:
+//                shuukei.getZaitakuVisit().add(shinryou, visitedAt);
+//                break;
+//            case SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI:
+//            case SHUUKEI_TOUYAKU_GAIYOUCHOUZAI:
+//            case SHUUKEI_TOUYAKU_SHOHOU:
+//            case SHUUKEI_TOUYAKU_MADOKU:
+//            case SHUUKEI_TOUYAKU_CHOUKI:
+//                shuukei.getTouyakuVisit().add(shinryou);
+//                break;
+//            case SHUUKEI_CHUUSHA_SEIBUTSUETC:
+//            case SHUUKEI_CHUUSHA_HIKA:
+//            case SHUUKEI_CHUUSHA_JOUMYAKU:
+//            case SHUUKEI_CHUUSHA_OTHERS:
+//                shuukei.getChuushaVisit().add(shinryou);
+//                break;
+//            case SHUUKEI_SHOCHI:
+//                shuukei.getShochiVisit().add(shinryou);
+//                break;
+//            case SHUUKEI_SHUJUTSU_SHUJUTSU:
+//            case SHUUKEI_SHUJUTSU_YUKETSU:
+//            case SHUUKEI_MASUI:
+//                shuukei.getShujutsuVisit().add(shinryou);
+//                break;
+//            case SHUUKEI_KENSA:
+//                shuukei.getKensaVisit().add(shinryou);
+//                break;
+//            case SHUUKEI_GAZOUSHINDAN:
+//                shuukei.getGazouVisit().add(shinryou);
+//                break;
+//            case SHUUKEI_OTHERS:
+//                shuukei.getSonotaVisit().add(shinryou);
+//                break;
+//            default:
+//                shuukei.getSonotaVisit().add(shinryou);
+//                break;
         }
     }
 
