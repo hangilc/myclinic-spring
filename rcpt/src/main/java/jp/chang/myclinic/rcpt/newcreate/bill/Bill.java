@@ -1,9 +1,8 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.consts.Gengou;
-import jp.chang.myclinic.rcpt.newcreate.input.Byoumei;
-import jp.chang.myclinic.rcpt.newcreate.input.Rcpt;
-import jp.chang.myclinic.rcpt.newcreate.input.Seikyuu;
+import jp.chang.myclinic.rcpt.create.subshuukei.ShuukeiMap;
+import jp.chang.myclinic.rcpt.newcreate.input.*;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
@@ -14,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import static jp.chang.myclinic.consts.MyclinicConsts.*;
 
 public class Bill {
 
@@ -86,6 +87,11 @@ public class Bill {
         out.printInt("seinengappi.tsuki", birthday.getMonthValue());
         out.printInt("seinengappi.hi", birthday.getDayOfMonth());
         runByoumei(seikyuu);
+        System.out.printf("shinryounissuu.hoken %d\n", calcShinryouNissuuHoken(seikyuu.visits));
+        ifPositive(calcShinryouNissuuKouhi1(seikyuu.visits), kouhi1Count ->
+                out.printInt("shinryounissuu.kouhi.1", kouhi1Count));
+        ifPositive(calcShinryouNissuuKouhi2(seikyuu.visits), kouhi2Count ->
+                out.printInt("shinryounissuu.kouhi.2", kouhi2Count));
     }
 
     private String hokenShubetsuSlug(String hokenShubetsu) {
@@ -257,5 +263,75 @@ public class Bill {
             out.printStr("tenki.chuushi", String.join(",", chuushi));
         }
     }
+
+    private int calcShinryouNissuuHoken(List<Visit> visits) {
+        return (int) visits.stream().map(v -> v.visitedAt).distinct().count();
+    }
+
+    private int calcShinryouNissuuKouhi1(List<Visit> visits) {
+        // TODO: implement kouhi1 nissuu
+        return 0;
+    }
+
+    private int calcShinryouNissuuKouhi2(List<Visit> visits) {
+        // TODO: implement kouhi2 nissuu
+        return 0;
+    }
+
+    private void dispatchShinryou(Shinryou shinryou, LocalDate visitedAt) {
+        switch (shinryou.shuukeisaki) {
+            case SHUUKEI_SHOSHIN: {
+                shuukei.getShoshinVisit().add(shinryou);
+                break;
+            }
+            case SHUUKEI_SAISHIN_SAISHIN:
+            case SHUUKEI_SAISHIN_GAIRAIKANRI:
+            case SHUUKEI_SAISHIN_JIKANGAI:
+            case SHUUKEI_SAISHIN_KYUUJITSU:
+            case SHUUKEI_SAISHIN_SHINYA:
+                shuukei.getSaishinVisit().add(shinryou);
+                break;
+            case SHUUKEI_SHIDOU:
+                shuukei.getShidouVisit().add(shinryou, visitedAt);
+                break;
+            case SHUUKEI_ZAITAKU:
+                shuukei.getZaitakuVisit().add(shinryou, visitedAt);
+                break;
+            case SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI:
+            case SHUUKEI_TOUYAKU_GAIYOUCHOUZAI:
+            case SHUUKEI_TOUYAKU_SHOHOU:
+            case SHUUKEI_TOUYAKU_MADOKU:
+            case SHUUKEI_TOUYAKU_CHOUKI:
+                shuukei.getTouyakuVisit().add(shinryou);
+                break;
+            case SHUUKEI_CHUUSHA_SEIBUTSUETC:
+            case SHUUKEI_CHUUSHA_HIKA:
+            case SHUUKEI_CHUUSHA_JOUMYAKU:
+            case SHUUKEI_CHUUSHA_OTHERS:
+                shuukei.getChuushaVisit().add(shinryou);
+                break;
+            case SHUUKEI_SHOCHI:
+                shuukei.getShochiVisit().add(shinryou);
+                break;
+            case SHUUKEI_SHUJUTSU_SHUJUTSU:
+            case SHUUKEI_SHUJUTSU_YUKETSU:
+            case SHUUKEI_MASUI:
+                shuukei.getShujutsuVisit().add(shinryou);
+                break;
+            case SHUUKEI_KENSA:
+                shuukei.getKensaVisit().add(shinryou);
+                break;
+            case SHUUKEI_GAZOUSHINDAN:
+                shuukei.getGazouVisit().add(shinryou);
+                break;
+            case SHUUKEI_OTHERS:
+                shuukei.getSonotaVisit().add(shinryou);
+                break;
+            default:
+                shuukei.getSonotaVisit().add(shinryou);
+                break;
+        }
+    }
+
 
 }
