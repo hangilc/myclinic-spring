@@ -121,10 +121,6 @@ class Create {
                 shuukeiMapList.add(shuukei);
                 grandShuukei.merge(shuukei);
             });
-            for(ShuukeiMap shuukei: shuukeiMapList){
-                shuukei.debug();
-                System.err.println("+++++++++++++++++++++++++");
-            }
             grandShuukei.output();
             outputKouhiJikofutan(seikyuu, shuukeiMapList);
             System.out.print("rcpt_end\n");

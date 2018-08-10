@@ -1,6 +1,8 @@
 package jp.chang.myclinic.rcpt.newcreate;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
+import jp.chang.myclinic.rcpt.Common;
 import jp.chang.myclinic.rcpt.newcreate.bill.Bill;
 import jp.chang.myclinic.rcpt.newcreate.input.Rcpt;
 import jp.chang.myclinic.rcpt.newcreate.input.Seikyuu;
@@ -21,8 +23,10 @@ public class Create {
             XmlMapper mapper = new XmlMapper();
             Rcpt rcpt = mapper.readValue(ins, Rcpt.class);
             rcpt.seikyuuList.sort(seikyuuComparator());
+            Common.MasterMaps masterMaps = Common.getMasterMaps(rcpt.getDate(1));
+            ResolvedShinryouMap shinryouMasterMap = masterMaps.resolvedMap.shinryouMap;
             Output output = new Output(printStream);
-            Bill bill = new Bill(rcpt, output);
+            Bill bill = new Bill(rcpt, output, shinryouMasterMap);
             bill.run();
         } catch (Exception ex) {
             logger.error("Failed to run create.", ex);

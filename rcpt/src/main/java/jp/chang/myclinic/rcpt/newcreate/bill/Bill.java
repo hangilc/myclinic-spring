@@ -102,6 +102,12 @@ public class Bill {
                 out.printInt("shinryounissuu.kouhi.1", kouhi1Count));
         ifPositive(calcShinryouNissuuKouhi2(seikyuu.visits), kouhi2Count ->
                 out.printInt("shinryounissuu.kouhi.2", kouhi2Count));
+        for(Visit visit: seikyuu.visits){
+            for(Shinryou shinryou: visit.shinryouList){
+                dispatchShinryou(shinryou, LocalDate.parse(visit.visitedAt.substring(0, 10)));
+            }
+        }
+        shoshinShuukei.print(out);
     }
 
     private String hokenShubetsuSlug(String hokenShubetsu) {
@@ -227,7 +233,7 @@ public class Bill {
             LocalDate startDate = LocalDate.parse(byoumei.startDate);
             if (index <= 4) {
                 out.printStr(String.format("shoubyoumei.%d", index), byoumei.name);
-                out.printInt(String.format("shinryoukaishi.nen.%dn", index), DateTimeUtil.getNen(startDate));
+                out.printInt(String.format("shinryoukaishi.nen.%d", index), DateTimeUtil.getNen(startDate));
                 out.printInt(String.format("shinryoukaishi.tsuki.%d", index), startDate.getMonthValue());
                 out.printInt(String.format("shinryoukaishi.hi.%d", index), startDate.getDayOfMonth());
 //                System.out.printf("shoubyoumei.%d %s\n", index, byoumei.name);
