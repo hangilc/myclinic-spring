@@ -1,7 +1,7 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.rcpt.newcreate.input.*;
-import jp.chang.myclinic.util.DrugUtil;
+import jp.chang.myclinic.util.NumberUtil;
 import jp.chang.myclinic.util.RcptUtil;
 import jp.chang.myclinic.util.StringUtil;
 import org.slf4j.Logger;
@@ -175,14 +175,34 @@ public class Item {
         } else {
             ten = RcptUtil.touyakuKingakuToTen(drug.yakka * drug.amount);
         }
-        String label = DrugUtil.conductDrugRep()
+        String label = conductDrugLabel(drug);
         return new Item(
                 new ConductDrugRep(drug),
                 ten,
-                (output, shuukei, tanka, count) -> {
-                },
+                (output, shuukei, tanka, count) ->
+                        output.printTekiyou(shuukei, label, tanka, count),
                 1
         );
     }
+
+    public static Item fromConductKizai(ConductKizai kizai){
+        String label = conductKizaiLabel(kizai);
+        return new Item(
+                new ConductKizaiRep(kizai),
+                RcptUtil.kizaiKingakuToTen(kizai.kingaku * kizai.amount),
+                (output, shuukei, tanka, count) ->
+                        output.printTekiyou(shuukei, label, tanka, count),
+                1
+        );
+    }
+
+    private static String conductDrugLabel(ConductDrug d) {
+        return String.format("%s %s%s", d.name, NumberUtil.formatNumber(d.amount), d.unit);
+    }
+
+    private static String conductKizaiLabel(ConductKizai kizai) {
+        return String.format("%s %s%s", kizai.name, NumberUtil.formatNumber(kizai.amount), kizai.unit);
+    }
+
 
 }

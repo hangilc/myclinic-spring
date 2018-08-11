@@ -599,6 +599,14 @@ class PatientBill {
                     Item item = Item.fromConductShinryou(shinryou);
                     Item.add(items, item);
                 }
+                for(ConductDrug drug: conduct.drugs){
+                    Item item = Item.fromConductDrug(SubShuukei.SUB_CHUUSHA_HIKA, drug);
+                    Item.add(items, item);
+                }
+                for(ConductKizai kizai: conduct.kizaiList){
+                    Item item = Item.fromConductKizai(kizai);
+                    Item.add(items, item);
+                }
                 int ten = items.stream().mapToInt(item -> item.tanka * item.count).sum();
                 chuushaHikaShuukei.add(ten);
                 items.forEach(item -> addItem(SubShuukei.SUB_CHUUSHA_HIKA, item));
