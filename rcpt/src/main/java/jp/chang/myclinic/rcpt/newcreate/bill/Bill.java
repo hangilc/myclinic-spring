@@ -7,24 +7,28 @@ import jp.chang.myclinic.rcpt.newcreate.output.Output;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 public class Bill {
 
     private static Logger logger = LoggerFactory.getLogger(Bill.class);
     private Rcpt rcpt;
     private Output out;
     private ResolvedShinryouMap resolvedShinryouMap;
+    private Map<Integer, String> shinryouAliasMap;
 
     public Bill(Rcpt rcpt, Output output, ResolvedShinryouMap resolvedShinryouMap) {
         this.rcpt = rcpt;
         this.out = output;
         this.resolvedShinryouMap = resolvedShinryouMap;
+        this.shinryouAliasMap = ShinryouAliasMap.create(resolvedShinryouMap);
     }
 
     public void run() {
         for (Seikyuu seikyuu : rcpt.seikyuuList) {
             out.print("rcpt_begin");
             runProlog();
-            PatientBill patientBill = new PatientBill(seikyuu, out, resolvedShinryouMap);
+            PatientBill patientBill = new PatientBill(seikyuu, out, resolvedShinryouMap, shinryouAliasMap);
             patientBill.run();
             out.print("rcpt_end");
         }

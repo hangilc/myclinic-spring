@@ -7,7 +7,6 @@ import jp.chang.myclinic.rcpt.newcreate.input.Seikyuu;
 import jp.chang.myclinic.rcpt.newcreate.input.Shinryou;
 import jp.chang.myclinic.rcpt.newcreate.input.Visit;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
-import jp.chang.myclinic.rcpt.newcreate.output.Shuukei;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDate;
@@ -26,6 +25,7 @@ class PatientBill {
     private Seikyuu seikyuu;
     private Output out;
     private ResolvedShinryouMap resolvedShinryouMap;
+    private Map<Integer, String> shinryouAliasMap;
     private Map<SubShuukei, List<Item>> itemMap = new HashMap<>();
     private Shuukei shoshinShuukei = new Shuukei("shoshin");
 
@@ -39,11 +39,18 @@ class PatientBill {
     private Shuukei saishinJikangaiShuukei = new Shuukei("saishin.jikangai");
     private Shuukei saishinKyuujitsuShuukei = new Shuukei("saishin.kyuujitsu");
     private Shuukei saishinShinyaShuukei = new Shuukei("saishin.shinya");
+    private Shuukei shidouShuukei = new Shuukei("shidou");
+    {
+        shidouShuukei.setPrintTanka(false);
+        shidouShuukei.setPrintCount(false);
+    }
 
-    PatientBill(Seikyuu seikyuu, Output output, ResolvedShinryouMap resolvedShinryouMap) {
+    PatientBill(Seikyuu seikyuu, Output output, ResolvedShinryouMap resolvedShinryouMap,
+                Map<Integer, String> shinryouAliasMap) {
         this.seikyuu = seikyuu;
         this.out = output;
         this.resolvedShinryouMap = resolvedShinryouMap;
+        this.shinryouAliasMap = shinryouAliasMap;
     }
 
     void run() {
@@ -99,11 +106,15 @@ class PatientBill {
         }
         shoshinShuukei.print(out);
         shoshinKasan.forEach(kasan -> out.printStr("shoshinkasan", kasan));
+        outputTekiyou(SubShuukei.SUB_SHOSHIN);
         saishinSaishinShuukei.print(out);
         saishinGairaiKanriShuukei.print(out);
         saishinJikangaiShuukei.print(out);
         saishinKyuujitsuShuukei.print(out);
         saishinShinyaShuukei.print(out);
+        outputTekiyou(SubShuukei.SUB_SAISHIN);
+        shidouShuukei.print(out);
+        outputTekiyou(SubShuukei.SUB_SHIDOU);
         out.printInt("kyuufu.hoken.seikyuuten", calcTotalTen());
     }
 
@@ -334,7 +345,7 @@ class PatientBill {
                     addItem(SubShuukei.SUB_SHOSHIN, item);
                 } else {
                     runShoshinKasan(shinryou.shinryoucode);
-                    addItem(SubShuukei.SUB_SHOSHIN, Item.fromShinryou(shinryou));
+                    addItem(SubShuukei.SUB_SHOSHIN, Item.fromShinryou(shinryou, shinryouAliasMap));
                 }
                 break;
             }
@@ -345,33 +356,35 @@ class PatientBill {
                     addItem(SubShuukei.SUB_SAISHIN, item);
                 } else if( shinryou.shinryoucode == resolvedShinryouMap.同日再診 ){
                     saishinSaishinShuukei.add(shinryou.tensuu);
-                    addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou));
+                    addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou, shinryouAliasMap));
                 }
                 break;
             }
             case SHUUKEI_SAISHIN_GAIRAIKANRI: {
                 saishinGairaiKanriShuukei.add(shinryou.tensuu);
-                addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou));
+                addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou, TekiyouProc.noOutput));
                 break;
             }
             case SHUUKEI_SAISHIN_JIKANGAI: {
                 saishinJikangaiShuukei.add(shinryou.tensuu);
-                addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou));
+                addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou, TekiyouProc.noOutput));
                 break;
             }
             case SHUUKEI_SAISHIN_KYUUJITSU: {
                 saishinKyuujitsuShuukei.add(shinryou.tensuu);
-                addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou));
+                addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou, TekiyouProc.noOutput));
                 break;
             }
             case SHUUKEI_SAISHIN_SHINYA: {
                 saishinShinyaShuukei.add(shinryou.tensuu);
-                addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou));
+                addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou, TekiyouProc.noOutput));
                 break;
             }
-//            case SHUUKEI_SHIDOU:
-//                shuukei.getShidouVisit().add(shinryou, visitedAt);
-//                break;
+            case SHUUKEI_SHIDOU: {
+                shidouShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_SHIDOU, Item.fromShinryou(shinryou, shinryouAliasMap));
+                break;
+            }
 //            case SHUUKEI_ZAITAKU:
 //                shuukei.getZaitakuVisit().add(shinryou, visitedAt);
 //                break;
@@ -419,6 +432,26 @@ class PatientBill {
             }
         }
         return ten;
+    }
+
+    private void outputTekiyou(SubShuukei subShuukei){
+        List<Item> items = itemMap.get(subShuukei);
+        int n = items.size();
+        for(int i=0;i<n;i++){
+            Item item = items.get(i);
+            String shuukei;
+            if( i == 0 ){
+                shuukei = "" +  subShuukei.getCode();
+            } else {
+                shuukei = "";
+            }
+            item.tekiyouProc.outputTekiyou(out, shuukei, item.tanka, item.count);
+        }
+    }
+
+    private String getShinryouTekiyouName(Shinryou shinryou){
+        String a = shinryouAliasMap.get(shinryou.shinryoucode);
+        return a == null ? shinryou.name : a;
     }
 
 

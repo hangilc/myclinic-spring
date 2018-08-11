@@ -1,4 +1,6 @@
-package jp.chang.myclinic.rcpt.newcreate.output;
+package jp.chang.myclinic.rcpt.newcreate.bill;
+
+import jp.chang.myclinic.rcpt.newcreate.output.Output;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -11,6 +13,7 @@ public class Shuukei {
     private int count;
     private int ten;
     private boolean printTanka = true;
+    private boolean printCount = true;
 
     public Shuukei(String prefix) {
         this.prefix = prefix;
@@ -30,6 +33,14 @@ public class Shuukei {
         this.printTanka = printTanka;
     }
 
+    public boolean getPrintCount() {
+        return printCount;
+    }
+
+    public void setPrintCount(boolean printCount) {
+        this.printCount = printCount;
+    }
+
     public void print(Output output){
         if( ten == 0 ){
             return;
@@ -38,7 +49,11 @@ public class Shuukei {
         if( printTanka && tankaSet.size() == 1 ){
             tankaValue = tankaSet.toArray(new Integer[]{})[0];
         }
-        output.printShuukei(prefix, tankaValue, count, ten);
+        Integer countValue = null;
+        if( printCount ){
+            countValue = count;
+        }
+        output.printShuukei(prefix, tankaValue, countValue, ten);
     }
 
 }

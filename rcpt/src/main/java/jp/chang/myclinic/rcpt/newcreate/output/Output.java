@@ -1,13 +1,10 @@
 package jp.chang.myclinic.rcpt.newcreate.output;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.PrintStream;
 
 public class Output {
 
-    private static Logger logger = LoggerFactory.getLogger(Output.class);
+    //private static Logger logger = LoggerFactory.getLogger(Output.class);
     private PrintStream outStream;
 
     public Output(PrintStream outStream) {
@@ -27,7 +24,7 @@ public class Output {
     }
 
     public void printTekiyou(String shuukei, String body, int tanka, int count){
-        outStream.printf("tekiyou %s:%s:%d:%d", shuukei, body, tanka, count);
+        outStream.printf("tekiyou %s:%s:%d:%d\n", shuukei, body, tanka, count);
     }
 
     public void printShuukei(String prefix, Integer tanka, Integer count, Integer ten){

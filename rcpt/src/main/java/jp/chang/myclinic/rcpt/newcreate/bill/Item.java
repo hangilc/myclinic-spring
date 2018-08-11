@@ -2,6 +2,7 @@ package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.rcpt.newcreate.input.Shinryou;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class Item {
@@ -25,7 +26,6 @@ public class Item {
     }
 
     public static Item fromShinryou(Shinryou shinryou, TekiyouProc tekiyouProc){
-        final String label = shinryou.name;
         return new Item(
                 new ShinryouRep(shinryou),
                 shinryou.tensuu,
@@ -34,9 +34,11 @@ public class Item {
         );
     }
 
-    public static Item fromShinryou(Shinryou shinryou){
+    public static Item fromShinryou(Shinryou shinryou, Map<Integer, String> aliasMap){
+        String a = aliasMap.get(shinryou.shinryoucode);
+        String name = a == null ? shinryou.name : a;
         return fromShinryou(shinryou,
-                (output, shuukei, tanka, count) -> output.printTekiyou(shuukei, shinryou.name, tanka, count));
+                (output, shuukei, tanka, count) -> output.printTekiyou(shuukei, name, tanka, count));
     }
 
 }
