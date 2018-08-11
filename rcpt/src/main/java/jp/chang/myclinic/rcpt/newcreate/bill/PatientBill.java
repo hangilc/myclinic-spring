@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static jp.chang.myclinic.consts.MyclinicConsts.SHUUKEI_SHOSHIN;
+import static jp.chang.myclinic.consts.MyclinicConsts.*;
 
 class PatientBill {
 
@@ -28,10 +28,17 @@ class PatientBill {
     private ResolvedShinryouMap resolvedShinryouMap;
     private Map<SubShuukei, List<Item>> itemMap = new HashMap<>();
     private Shuukei shoshinShuukei = new Shuukei("shoshin");
+
     {
         shoshinShuukei.setPrintTanka(false);
     }
+
     private List<String> shoshinKasan = new ArrayList<>();
+    private Shuukei saishinSaishinShuukei = new Shuukei("saishin.saishin");
+    private Shuukei saishinGairaiKanriShuukei = new Shuukei("saishin.gairaikanri");
+    private Shuukei saishinJikangaiShuukei = new Shuukei("saishin.jikangai");
+    private Shuukei saishinKyuujitsuShuukei = new Shuukei("saishin.kyuujitsu");
+    private Shuukei saishinShinyaShuukei = new Shuukei("saishin.shinya");
 
     PatientBill(Seikyuu seikyuu, Output output, ResolvedShinryouMap resolvedShinryouMap) {
         this.seikyuu = seikyuu;
@@ -39,7 +46,7 @@ class PatientBill {
         this.resolvedShinryouMap = resolvedShinryouMap;
     }
 
-    void run(){
+    void run() {
         out.printInt("patient_id", seikyuu.patientId);
         out.printStr("hokenshubetsu", hokenShubetsuSlug(seikyuu.hokenShubetsu));
         out.printStr("hokentandoku", hokenTandokuSlug(seikyuu.hokenTandoku));
@@ -85,13 +92,18 @@ class PatientBill {
                 out.printInt("shinryounissuu.kouhi.1", kouhi1Count));
         ifPositive(calcShinryouNissuuKouhi2(seikyuu.visits), kouhi2Count ->
                 out.printInt("shinryounissuu.kouhi.2", kouhi2Count));
-        for(Visit visit: seikyuu.visits){
-            for(Shinryou shinryou: visit.shinryouList){
+        for (Visit visit : seikyuu.visits) {
+            for (Shinryou shinryou : visit.shinryouList) {
                 dispatchShinryou(shinryou, LocalDate.parse(visit.visitedAt.substring(0, 10)));
             }
         }
         shoshinShuukei.print(out);
         shoshinKasan.forEach(kasan -> out.printStr("shoshinkasan", kasan));
+        saishinSaishinShuukei.print(out);
+        saishinGairaiKanriShuukei.print(out);
+        saishinJikangaiShuukei.print(out);
+        saishinKyuujitsuShuukei.print(out);
+        saishinShinyaShuukei.print(out);
         out.printInt("kyuufu.hoken.seikyuuten", calcTotalTen());
     }
 
@@ -275,17 +287,17 @@ class PatientBill {
         return 0;
     }
 
-    private void addItem(SubShuukei subShuukei, Item item){
-        if( itemMap.containsKey(subShuukei) ){
+    private void addItem(SubShuukei subShuukei, Item item) {
+        if (itemMap.containsKey(subShuukei)) {
             List<Item> items = itemMap.get(subShuukei);
             Item prev = null;
-            for(Item i: items){
-                if( i.canMerge(item) ){
+            for (Item i : items) {
+                if (i.canMerge(item)) {
                     prev = i;
                     break;
                 }
             }
-            if( prev != null ){
+            if (prev != null) {
                 prev.count += 1;
             } else {
                 items.add(item);
@@ -297,17 +309,17 @@ class PatientBill {
         }
     }
 
-    private void runShoshinKasan(int shinryoucode){
-        if( shinryoucode == resolvedShinryouMap.初診時間外加算 ||
-                shinryoucode == resolvedShinryouMap.初診乳幼児時間外加算 ){
+    private void runShoshinKasan(int shinryoucode) {
+        if (shinryoucode == resolvedShinryouMap.初診時間外加算 ||
+                shinryoucode == resolvedShinryouMap.初診乳幼児時間外加算) {
             shoshinKasan.add("jikangai");
         }
-        if( shinryoucode == resolvedShinryouMap.初診休日加算 ||
-                shinryoucode == resolvedShinryouMap.初診乳幼児休日加算 ){
+        if (shinryoucode == resolvedShinryouMap.初診休日加算 ||
+                shinryoucode == resolvedShinryouMap.初診乳幼児休日加算) {
             shoshinKasan.add("kyuujitsu");
         }
-        if( shinryoucode == resolvedShinryouMap.初診深夜加算 ||
-                shinryoucode == resolvedShinryouMap.初診乳幼児深夜加算 ){
+        if (shinryoucode == resolvedShinryouMap.初診深夜加算 ||
+                shinryoucode == resolvedShinryouMap.初診乳幼児深夜加算) {
             shoshinKasan.add("shinya");
         }
 
@@ -316,7 +328,7 @@ class PatientBill {
     private void dispatchShinryou(Shinryou shinryou, LocalDate visitedAt) {
         switch (shinryou.shuukeisaki) {
             case SHUUKEI_SHOSHIN: {
-                if( shinryou.shinryoucode == resolvedShinryouMap.初診 ){
+                if (shinryou.shinryoucode == resolvedShinryouMap.初診) {
                     shoshinShuukei.add(shinryou.tensuu);
                     Item item = Item.fromShinryou(shinryou, TekiyouProc.noOutput);
                     addItem(SubShuukei.SUB_SHOSHIN, item);
@@ -326,13 +338,37 @@ class PatientBill {
                 }
                 break;
             }
-//            case SHUUKEI_SAISHIN_SAISHIN:
-//            case SHUUKEI_SAISHIN_GAIRAIKANRI:
-//            case SHUUKEI_SAISHIN_JIKANGAI:
-//            case SHUUKEI_SAISHIN_KYUUJITSU:
-//            case SHUUKEI_SAISHIN_SHINYA:
-//                shuukei.getSaishinVisit().add(shinryou);
-//                break;
+            case SHUUKEI_SAISHIN_SAISHIN: {
+                if( shinryou.shinryoucode == resolvedShinryouMap.再診 ){
+                    saishinSaishinShuukei.add(shinryou.tensuu);
+                    Item item = Item.fromShinryou(shinryou, TekiyouProc.noOutput);
+                    addItem(SubShuukei.SUB_SAISHIN, item);
+                } else if( shinryou.shinryoucode == resolvedShinryouMap.同日再診 ){
+                    saishinSaishinShuukei.add(shinryou.tensuu);
+                    addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou));
+                }
+                break;
+            }
+            case SHUUKEI_SAISHIN_GAIRAIKANRI: {
+                saishinGairaiKanriShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou));
+                break;
+            }
+            case SHUUKEI_SAISHIN_JIKANGAI: {
+                saishinJikangaiShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou));
+                break;
+            }
+            case SHUUKEI_SAISHIN_KYUUJITSU: {
+                saishinKyuujitsuShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou));
+                break;
+            }
+            case SHUUKEI_SAISHIN_SHINYA: {
+                saishinShinyaShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_SAISHIN, Item.fromShinryou(shinryou));
+                break;
+            }
 //            case SHUUKEI_SHIDOU:
 //                shuukei.getShidouVisit().add(shinryou, visitedAt);
 //                break;
@@ -375,10 +411,10 @@ class PatientBill {
         }
     }
 
-    private int calcTotalTen(){
+    private int calcTotalTen() {
         int ten = 0;
-        for(List<Item> items: itemMap.values()){
-            for(Item item: items){
+        for (List<Item> items : itemMap.values()) {
+            for (Item item : items) {
                 ten += item.tanka * item.count;
             }
         }
