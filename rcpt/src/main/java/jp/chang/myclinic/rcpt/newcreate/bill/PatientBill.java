@@ -104,6 +104,7 @@ class PatientBill {
             }
         }
         handleNaifukuYakuzai();
+        handleTonpukuYakuzai();
         shoshinShuukei.print(out);
         shoshinKasan.forEach(kasan -> out.printStr("shoshinkasan", kasan));
         outputTekiyou(SubShuukei.SUB_SHOSHIN);
@@ -125,7 +126,11 @@ class PatientBill {
         touyakuChoukiShuukei.print(out);
         outputTekiyou(SubShuukei.SUB_TOUYAKU_SHOHOU);
         touyakuNaifukuYakuzai.print(out);
+        touyakuTonpukuYakuzai.print(out);
+        touyakuGaiyouYakuzai.print(out);
         outputTekiyou(SubShuukei.SUB_TOUYAKU_NAIFUKU);
+        outputTekiyou(SubShuukei.SUB_TOUYAKU_TONPUKU);
+        outputTekiyou(SubShuukei.SUB_TOUYAKU_GAIYOU);
         out.printInt("kyuufu.hoken.seikyuuten", calcTotalTen());
     }
 
@@ -517,4 +522,17 @@ class PatientBill {
         items.forEach(item -> addItem(SubShuukei.SUB_TOUYAKU_NAIFUKU, item));
     }
 
+    private void handleTonpukuYakuzai(){
+        List<Item> items = new ArrayList<>();
+        for(Visit visit: seikyuu.visits){
+            for(Tonpuku tonpuku: visit.drug.tonpukuList){
+                Item item = Item.fromTonpuku(tonpuku);
+                Item.add(items, item);
+            }
+        }
+        int count = items.stream().mapToInt(item -> item.count).sum();
+        int ten = items.stream().mapToInt(item -> item.tanka * item.count).sum();
+        touyakuTonpukuYakuzai.set(null, count, ten);
+        items.forEach(item -> addItem(SubShuukei.SUB_TOUYAKU_TONPUKU, item));
+    }
 }
