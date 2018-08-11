@@ -15,7 +15,7 @@ public class Output {
     }
 
     public void print(String s){
-        outStream.println(s);
+        outStream.printf("%s\n", s);
     }
 
     public void printInt(String key, int value){
