@@ -27,6 +27,11 @@ public class Shuukei {
         ten += tanka;
     }
 
+    public void addWithoutCount(int tanka){
+        tankaSet.add(tanka);
+        this.ten += tanka;
+    }
+
     public void print(Output output){
         if( ten == 0 ){
             return;

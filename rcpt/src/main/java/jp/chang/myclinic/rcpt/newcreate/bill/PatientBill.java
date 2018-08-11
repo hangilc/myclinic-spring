@@ -38,6 +38,11 @@ class PatientBill {
     private Shuukei zaitakuOushinShuukei = new Shuukei("zaitaku.oushin", false, true);
     private Shuukei zaitakuSonotaShuukei = new Shuukei("zaitaku.sonota", false, false);
     // TODO: (Zaitaku) add yakan, shinya, houmon, yakuzai
+    private Shuukei touyakuNaifukuChouzaiShuukei = new Shuukei("touyaku.naifuku.chouzai", true, true);
+    private Shuukei touyakuGaiyouChouzaiShuukei = new Shuukei("touyaku.gaiyou.chouzai", true, true);
+    private Shuukei touyakuShohouShuukei = new Shuukei("touyaku.shohou", true, true);
+    private Shuukei touyakuMadokuShuukei = new Shuukei("touyaku.madoku", false, true);
+    private Shuukei touyakuChoukiShuukei = new Shuukei("touyaku.chouki", false, false);
 
     PatientBill(Seikyuu seikyuu, Output output, ResolvedShinryouMap resolvedShinryouMap,
                 Map<Integer, String> shinryouAliasMap) {
@@ -112,6 +117,13 @@ class PatientBill {
         zaitakuOushinShuukei.print(out);
         zaitakuSonotaShuukei.print(out);
         outputTekiyou(SubShuukei.SUB_ZAITAKU);
+        touyakuNaifukuChouzaiShuukei.print(out);
+        touyakuGaiyouChouzaiShuukei.print(out);
+        touyakuShohouShuukei.print(out);
+        touyakuMadokuShuukei.print(out);
+        touyakuChoukiShuukei.print(out);
+        outputTekiyou(SubShuukei.SUB_TOUYAKU_SHOHOU);
+
         out.printInt("kyuufu.hoken.seikyuuten", calcTotalTen());
     }
 
@@ -408,11 +420,34 @@ class PatientBill {
                     }
                 }
                 break;
-//            case SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI:
-//            case SHUUKEI_TOUYAKU_GAIYOUCHOUZAI:
-//            case SHUUKEI_TOUYAKU_SHOHOU:
-//            case SHUUKEI_TOUYAKU_MADOKU:
-//            case SHUUKEI_TOUYAKU_CHOUKI:
+            case SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI:{
+                touyakuNaifukuChouzaiShuukei.add(shinryou.tensuu);
+                break;
+            }
+            case SHUUKEI_TOUYAKU_GAIYOUCHOUZAI:{
+                touyakuGaiyouChouzaiShuukei.add(shinryou.tensuu);
+                break;
+            }
+            case SHUUKEI_TOUYAKU_SHOHOU:{
+                if( shinryou.shinryoucode == resolvedShinryouMap.処方料 ||
+                        shinryou.shinryoucode == resolvedShinryouMap.処方料７ ){
+                    touyakuShohouShuukei.add(shinryou.tensuu);
+                } else {
+                    touyakuShohouShuukei.addWithoutCount(shinryou.tensuu);
+                    addItem(SubShuukei.SUB_TOUYAKU_SHOHOU, Item.fromShinryou(shinryou, shinryouAliasMap));
+                }
+                break;
+            }
+            case SHUUKEI_TOUYAKU_MADOKU:{
+                touyakuMadokuShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_TOUYAKU_MADOKU, Item.fromShinryou(shinryou, shinryouAliasMap));
+                break;
+            }
+            case SHUUKEI_TOUYAKU_CHOUKI:{
+                touyakuChoukiShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_TOUYAKU_CHOUKI, Item.fromShinryou(shinryou, shinryouAliasMap));
+                break;
+            }
 //                shuukei.getTouyakuVisit().add(shinryou);
 //                break;
 //            case SHUUKEI_CHUUSHA_SEIBUTSUETC:
