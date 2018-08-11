@@ -15,30 +15,16 @@ public class Shuukei {
     private boolean printTanka = true;
     private boolean printCount = true;
 
-    public Shuukei(String prefix) {
+    public Shuukei(String prefix, boolean printTanka, boolean printCount) {
         this.prefix = prefix;
+        this.printTanka = printTanka;
+        this.printCount = printCount;
     }
 
     public void add(int tanka){
         tankaSet.add(tanka);
         count += 1;
         ten += tanka;
-    }
-
-    public boolean getPrintTanka() {
-        return printTanka;
-    }
-
-    public void setPrintTanka(boolean printTanka) {
-        this.printTanka = printTanka;
-    }
-
-    public boolean getPrintCount() {
-        return printCount;
-    }
-
-    public void setPrintCount(boolean printCount) {
-        this.printCount = printCount;
     }
 
     public void print(Output output){

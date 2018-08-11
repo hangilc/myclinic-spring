@@ -27,6 +27,12 @@ public class Output {
         outStream.printf("tekiyou %s:%s:%d:%d\n", shuukei, body, tanka, count);
     }
 
+    public void printTekiyouAux(String text){
+        if( text != null && !text.isEmpty() ){
+            outStream.printf("tekiyou_aux {left-margin:8.0} %s\n", text);
+        }
+    }
+
     public void printShuukei(String prefix, Integer tanka, Integer count, Integer ten){
         if( ten != null && ten == 0 ){
             return;
