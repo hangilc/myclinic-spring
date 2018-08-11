@@ -15,6 +15,11 @@ class ShinryouRep {
         this.tekiyou = shinryou.tekiyou;
     }
 
+    ShinryouRep(int shinryoucode, String tekiyou){
+        this.shinryoucode = shinryoucode;
+        this.tekiyou = tekiyou;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

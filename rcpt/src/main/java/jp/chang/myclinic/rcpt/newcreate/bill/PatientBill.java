@@ -1,10 +1,13 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
+import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.newcreate.input.*;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
 import jp.chang.myclinic.util.DateTimeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,7 +21,7 @@ import static jp.chang.myclinic.consts.MyclinicConsts.*;
 
 class PatientBill {
 
-    //private static Logger logger = LoggerFactory.getLogger(PatientBill.class);
+    private static Logger logger = LoggerFactory.getLogger(PatientBill.class);
     private Seikyuu seikyuu;
     private Output out;
     private ResolvedShinryouMap resolvedShinryouMap;
@@ -43,6 +46,9 @@ class PatientBill {
     private Shuukei touyakuNaifukuYakuzai = new Shuukei("touyaku.naifuku.yakuzai", false, true);
     private Shuukei touyakuTonpukuYakuzai = new Shuukei("touyaku.tonpuku.yakuzai", false, true);
     private Shuukei touyakuGaiyouYakuzai = new Shuukei("touyaku.gaiyou.yakuzai", false, true);
+    private Shuukei chuushaHikaShuukei = new Shuukei("chuusha.hika", false, true);
+    private Shuukei chuushaJoumyakuShuukei = new Shuukei("chuusha.joumyaku", false, true);
+    private Shuukei chuushaSonotaShuukei = new Shuukei("chuusha.sonota", false, true);
 
     PatientBill(Seikyuu seikyuu, Output output, ResolvedShinryouMap resolvedShinryouMap,
                 Map<Integer, String> shinryouAliasMap) {
@@ -102,9 +108,13 @@ class PatientBill {
             for (Shinryou shinryou : visit.shinryouList) {
                 dispatchShinryou(shinryou, LocalDate.parse(visit.visitedAt.substring(0, 10)));
             }
+            for(Conduct conduct: visit.conducts){
+                dispatchConduct(conduct);
+            }
         }
         handleNaifukuYakuzai();
         handleTonpukuYakuzai();
+        handleGaiyouYakuzai();
         shoshinShuukei.print(out);
         shoshinKasan.forEach(kasan -> out.printStr("shoshinkasan", kasan));
         outputTekiyou(SubShuukei.SUB_SHOSHIN);
@@ -124,13 +134,19 @@ class PatientBill {
         touyakuShohouShuukei.print(out);
         touyakuMadokuShuukei.print(out);
         touyakuChoukiShuukei.print(out);
-        outputTekiyou(SubShuukei.SUB_TOUYAKU_SHOHOU);
         touyakuNaifukuYakuzai.print(out);
         touyakuTonpukuYakuzai.print(out);
         touyakuGaiyouYakuzai.print(out);
+        outputTekiyou(SubShuukei.SUB_TOUYAKU_SHOHOU);
         outputTekiyou(SubShuukei.SUB_TOUYAKU_NAIFUKU);
         outputTekiyou(SubShuukei.SUB_TOUYAKU_TONPUKU);
         outputTekiyou(SubShuukei.SUB_TOUYAKU_GAIYOU);
+        chuushaHikaShuukei.print(out);
+        chuushaJoumyakuShuukei.print(out);
+        chuushaSonotaShuukei.print(out);
+        outputTekiyou(SubShuukei.SUB_CHUUSHA_HIKA);
+        outputTekiyou(SubShuukei.SUB_CHUUSHA_JOUMYAKU);
+        outputTekiyou(SubShuukei.SUB_CHUUSHA_SONOTA);
         out.printInt("kyuufu.hoken.seikyuuten", calcTotalTen());
     }
 
@@ -418,16 +434,19 @@ class PatientBill {
                 break;
             case SHUUKEI_TOUYAKU_NAIFUKUTONPUKUCHOUZAI:{
                 touyakuNaifukuChouzaiShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_TOUYAKU_NAIFUKU, Item.fromShinryou(shinryou, TekiyouProc.noOutput));
                 break;
             }
             case SHUUKEI_TOUYAKU_GAIYOUCHOUZAI:{
                 touyakuGaiyouChouzaiShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_TOUYAKU_GAIYOU, Item.fromShinryou(shinryou, TekiyouProc.noOutput));
                 break;
             }
             case SHUUKEI_TOUYAKU_SHOHOU:{
                 if( shinryou.shinryoucode == resolvedShinryouMap.処方料 ||
                         shinryou.shinryoucode == resolvedShinryouMap.処方料７ ){
                     touyakuShohouShuukei.add(shinryou.tensuu);
+                    addItem(SubShuukei.SUB_TOUYAKU_SHOHOU, Item.fromShinryou(shinryou, TekiyouProc.noOutput));
                 } else {
                     touyakuShohouShuukei.addWithoutCount(shinryou.tensuu);
                     addItem(SubShuukei.SUB_TOUYAKU_SHOHOU, Item.fromShinryou(shinryou, shinryouAliasMap));
@@ -444,14 +463,28 @@ class PatientBill {
                 addItem(SubShuukei.SUB_TOUYAKU_CHOUKI, Item.fromShinryou(shinryou, shinryouAliasMap));
                 break;
             }
-//                shuukei.getTouyakuVisit().add(shinryou);
-//                break;
-//            case SHUUKEI_CHUUSHA_SEIBUTSUETC:
-//            case SHUUKEI_CHUUSHA_HIKA:
-//            case SHUUKEI_CHUUSHA_JOUMYAKU:
-//            case SHUUKEI_CHUUSHA_OTHERS:
-//                shuukei.getChuushaVisit().add(shinryou);
-//                break;
+            case SHUUKEI_CHUUSHA_HIKA:{
+                logger.warn("SHUUKEI_CHUUSHA_HIKA encountered (ignored)");
+//                chuushaHikaShuukei.add(shinryou.tensuu);
+//                addItem(SubShuukei.SUB_CHUUSHA_HIKA, Item.fromShinryou(shinryou, shinryouAliasMap));
+                break;
+            }
+            case SHUUKEI_CHUUSHA_JOUMYAKU:{
+                logger.warn("SHUUKEI_CHUUSHA_JOUMYAKU encountered (ignored)");
+//                chuushaJoumyakuShuukei.add(shinryou.tensuu);
+//                addItem(SubShuukei.SUB_CHUUSHA_JOUMYAKU, Item.fromShinryou(shinryou, shinryouAliasMap));
+                break;
+            }
+            case SHUUKEI_CHUUSHA_OTHERS:{
+                logger.warn("SHUUKEI_CHUUSHA_OTHERS encountered (ignored)");
+                break;
+            }
+            case SHUUKEI_CHUUSHA_SEIBUTSUETC:{
+                logger.warn("SHUUKEI_CHUUSHA_SEIBUTSUETC encountered (ignored)");
+//                chuushaSonotaShuukei.add(shinryou.tensuu);
+//                addItem(SubShuukei.SUB_CHUUSHA_SONOTA, Item.fromShinryou(shinryou, shinryouAliasMap));
+                break;
+            }
 //            case SHUUKEI_SHOCHI:
 //                shuukei.getShochiVisit().add(shinryou);
 //                break;
@@ -494,17 +527,20 @@ class PatientBill {
             return;
         }
         int n = items.size();
-        for (int i = 0; i < n; i++) {
-            Item item = items.get(i);
+        boolean isFirst = true;
+        for (Item item: items) {
+            if( item.tekiyouProc == TekiyouProc.noOutput ){
+                continue;
+            }
             String shuukei;
-            if (i == 0) {
+            if (isFirst) {
                 shuukei = "" + subShuukei.getCode();
+                isFirst = false;
             } else {
                 shuukei = "";
             }
             item.tekiyouProc.outputTekiyou(out, shuukei, item.tanka, item.count);
         }
-
     }
 
     private void handleNaifukuYakuzai(){
@@ -534,5 +570,52 @@ class PatientBill {
         int ten = items.stream().mapToInt(item -> item.tanka * item.count).sum();
         touyakuTonpukuYakuzai.set(null, count, ten);
         items.forEach(item -> addItem(SubShuukei.SUB_TOUYAKU_TONPUKU, item));
+    }
+
+    private void handleGaiyouYakuzai(){
+        List<Item> items = new ArrayList<>();
+        for(Visit visit: seikyuu.visits){
+            for(Gaiyou gaiyou : visit.drug.gaiyouList){
+                Item item = Item.fromGaiyou(gaiyou);
+                Item.add(items, item);
+            }
+        }
+        int count = items.stream().mapToInt(item -> item.count).sum();
+        int ten = items.stream().mapToInt(item -> item.tanka * item.count).sum();
+        touyakuGaiyouYakuzai.set(null, count, ten);
+        items.forEach(item -> addItem(SubShuukei.SUB_TOUYAKU_GAIYOU, item));
+    }
+
+    private void dispatchConduct(Conduct conduct){
+        ConductKind kind = ConductKind.fromKanjiRep(conduct.kind);
+        if (kind == null) {
+            logger.error("Unknown conduct kind: " + conduct.kind);
+            return;
+        }
+        switch (kind) {
+            case HikaChuusha:{
+                List<Item> items = new ArrayList<>();
+                for(ConductShinryou shinryou: conduct.shinryouList){
+                    Item item = Item.fromConductShinryou(shinryou);
+                    Item.add(items, item);
+                }
+                int ten = items.stream().mapToInt(item -> item.tanka * item.count).sum();
+                chuushaHikaShuukei.add(ten);
+                items.forEach(item -> addItem(SubShuukei.SUB_CHUUSHA_HIKA, item));
+                break;
+            }
+//            case JoumyakuChuusha:
+//            case OtherChuusha:
+//                shuukei.getChuushaVisit().add(conduct);
+//                break;
+            case Gazou: {
+                //shuukei.getGazouVisit().add(conduct);
+                break;
+            }
+            default:
+                logger.error("Unknown conduct kind: " + kind);
+                break;
+        }
+
     }
 }
