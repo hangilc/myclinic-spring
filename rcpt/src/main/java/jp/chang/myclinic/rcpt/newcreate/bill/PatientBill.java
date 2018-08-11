@@ -49,6 +49,7 @@ class PatientBill {
     private Shuukei chuushaHikaShuukei = new Shuukei("chuusha.hika", false, true);
     private Shuukei chuushaJoumyakuShuukei = new Shuukei("chuusha.joumyaku", false, true);
     private Shuukei chuushaSonotaShuukei = new Shuukei("chuusha.sonota", false, true);
+    private Shuukei gazouShuukei = new Shuukei("gazou", false, true);
 
     PatientBill(Seikyuu seikyuu, Output output, ResolvedShinryouMap resolvedShinryouMap,
                 Map<Integer, String> shinryouAliasMap) {
@@ -147,6 +148,8 @@ class PatientBill {
         outputTekiyou(SubShuukei.SUB_CHUUSHA_HIKA);
         outputTekiyou(SubShuukei.SUB_CHUUSHA_JOUMYAKU);
         outputTekiyou(SubShuukei.SUB_CHUUSHA_SONOTA);
+        gazouShuukei.print(out);
+        outputTekiyou(SubShuukei.SUB_GAZOU);
         out.printInt("kyuufu.hoken.seikyuuten", calcTotalTen());
     }
 
@@ -594,36 +597,45 @@ class PatientBill {
         }
         switch (kind) {
             case HikaChuusha:{
-                List<Item> items = new ArrayList<>();
-                for(ConductShinryou shinryou: conduct.shinryouList){
-                    Item item = Item.fromConductShinryou(shinryou);
-                    Item.add(items, item);
-                }
-                for(ConductDrug drug: conduct.drugs){
-                    Item item = Item.fromConductDrug(SubShuukei.SUB_CHUUSHA_HIKA, drug);
-                    Item.add(items, item);
-                }
-                for(ConductKizai kizai: conduct.kizaiList){
-                    Item item = Item.fromConductKizai(kizai);
-                    Item.add(items, item);
-                }
-                int ten = items.stream().mapToInt(item -> item.tanka * item.count).sum();
-                chuushaHikaShuukei.add(ten);
-                items.forEach(item -> addItem(SubShuukei.SUB_CHUUSHA_HIKA, item));
+                addConduct(chuushaHikaShuukei, SubShuukei.SUB_CHUUSHA_HIKA, conduct);
                 break;
             }
-//            case JoumyakuChuusha:
-//            case OtherChuusha:
-//                shuukei.getChuushaVisit().add(conduct);
-//                break;
+            case JoumyakuChuusha:{
+                addConduct(chuushaJoumyakuShuukei, SubShuukei.SUB_CHUUSHA_JOUMYAKU, conduct);
+                break;
+            }
+            case OtherChuusha:{
+                addConduct(chuushaSonotaShuukei, SubShuukei.SUB_CHUUSHA_SONOTA, conduct);
+                break;
+            }
             case Gazou: {
-                //shuukei.getGazouVisit().add(conduct);
+                addConduct(gazouShuukei, SubShuukei.SUB_GAZOU, conduct);
                 break;
             }
             default:
                 logger.error("Unknown conduct kind: " + kind);
                 break;
         }
-
     }
+
+    // TODO: seprate yakuzai for chuusha and gazou
+    private void addConduct(Shuukei shuukei, SubShuukei subShuukei, Conduct conduct){
+        List<Item> items = new ArrayList<>();
+        for(ConductShinryou shinryou: conduct.shinryouList){
+            Item item = Item.fromConductShinryou(shinryou);
+            Item.add(items, item);
+        }
+        for(ConductDrug drug: conduct.drugs){
+            Item item = Item.fromConductDrug(subShuukei, drug);
+            Item.add(items, item);
+        }
+        for(ConductKizai kizai: conduct.kizaiList){
+            Item item = Item.fromConductKizai(kizai);
+            Item.add(items, item);
+        }
+        int ten = items.stream().mapToInt(item -> item.tanka * item.count).sum();
+        shuukei.add(ten);
+        items.forEach(item -> addItem(subShuukei, item));
+    }
+
 }
