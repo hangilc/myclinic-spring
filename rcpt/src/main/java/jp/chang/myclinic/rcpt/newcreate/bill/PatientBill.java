@@ -2,10 +2,7 @@ package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
-import jp.chang.myclinic.rcpt.newcreate.input.Byoumei;
-import jp.chang.myclinic.rcpt.newcreate.input.Seikyuu;
-import jp.chang.myclinic.rcpt.newcreate.input.Shinryou;
-import jp.chang.myclinic.rcpt.newcreate.input.Visit;
+import jp.chang.myclinic.rcpt.newcreate.input.*;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
 import jp.chang.myclinic.util.DateTimeUtil;
 
@@ -43,6 +40,9 @@ class PatientBill {
     private Shuukei touyakuShohouShuukei = new Shuukei("touyaku.shohou", true, true);
     private Shuukei touyakuMadokuShuukei = new Shuukei("touyaku.madoku", false, true);
     private Shuukei touyakuChoukiShuukei = new Shuukei("touyaku.chouki", false, false);
+    private Shuukei touyakuNaifukuYakuzai = new Shuukei("touyaku.naifuku.yakuzai", false, true);
+    private Shuukei touyakuTonpukuYakuzai = new Shuukei("touyaku.tonpuku.yakuzai", false, true);
+    private Shuukei touyakuGaiyouYakuzai = new Shuukei("touyaku.gaiyou.yakuzai", false, true);
 
     PatientBill(Seikyuu seikyuu, Output output, ResolvedShinryouMap resolvedShinryouMap,
                 Map<Integer, String> shinryouAliasMap) {
@@ -103,6 +103,7 @@ class PatientBill {
                 dispatchShinryou(shinryou, LocalDate.parse(visit.visitedAt.substring(0, 10)));
             }
         }
+        handleNaifukuYakuzai();
         shoshinShuukei.print(out);
         shoshinKasan.forEach(kasan -> out.printStr("shoshinkasan", kasan));
         outputTekiyou(SubShuukei.SUB_SHOSHIN);
@@ -123,7 +124,8 @@ class PatientBill {
         touyakuMadokuShuukei.print(out);
         touyakuChoukiShuukei.print(out);
         outputTekiyou(SubShuukei.SUB_TOUYAKU_SHOHOU);
-
+        touyakuNaifukuYakuzai.print(out);
+        outputTekiyou(SubShuukei.SUB_TOUYAKU_NAIFUKU);
         out.printInt("kyuufu.hoken.seikyuuten", calcTotalTen());
     }
 
@@ -310,18 +312,7 @@ class PatientBill {
     private void addItem(SubShuukei subShuukei, Item item) {
         if (itemMap.containsKey(subShuukei)) {
             List<Item> items = itemMap.get(subShuukei);
-            Item prev = null;
-            for (Item i : items) {
-                if (i.canMerge(item)) {
-                    prev = i;
-                    break;
-                }
-            }
-            if (prev != null) {
-                prev.count += 1;
-            } else {
-                items.add(item);
-            }
+            Item.add(items, item);
         } else {
             List<Item> items = new ArrayList<>();
             items.add(item);
@@ -490,7 +481,10 @@ class PatientBill {
     }
 
     private void outputTekiyou(SubShuukei subShuukei) {
-        List<Item> items = itemMap.get(subShuukei);
+        outputTekiyou(itemMap.get(subShuukei), subShuukei);
+    }
+
+    private void outputTekiyou(List<Item> items, SubShuukei subShuukei){
         if( items == null ){
             return;
         }
@@ -505,12 +499,22 @@ class PatientBill {
             }
             item.tekiyouProc.outputTekiyou(out, shuukei, item.tanka, item.count);
         }
+
     }
 
-    private String getShinryouTekiyouName(Shinryou shinryou) {
-        String a = shinryouAliasMap.get(shinryou.shinryoucode);
-        return a == null ? shinryou.name : a;
+    private void handleNaifukuYakuzai(){
+        List<Item> items = new ArrayList<>();
+        for(Visit visit: seikyuu.visits){
+            List<NaifukuCollector> collectors = NaifukuCollector.fromNaifukuList(visit.drug.naifukuList);
+            for(NaifukuCollector collector: collectors){
+                Item item = Item.fromNaifukuCollector(collector);
+                Item.add(items, item);
+            }
+        }
+        int count = items.stream().mapToInt(item -> item.count).sum();
+        int ten = items.stream().mapToInt(item -> item.tanka * item.count).sum();
+        touyakuNaifukuYakuzai.set(null, count, ten);
+        items.forEach(item -> addItem(SubShuukei.SUB_TOUYAKU_NAIFUKU, item));
     }
-
 
 }

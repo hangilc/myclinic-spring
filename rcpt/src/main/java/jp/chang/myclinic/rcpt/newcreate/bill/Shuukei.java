@@ -32,6 +32,13 @@ public class Shuukei {
         this.ten += tanka;
     }
 
+    public void set(Integer tanka, Integer count, Integer ten){
+        this.tankaSet = new LinkedHashSet<>();
+        tankaSet.add(tanka);
+        this.count = count;
+        this.ten = ten;
+    }
+
     public void print(Output output){
         if( ten == 0 ){
             return;

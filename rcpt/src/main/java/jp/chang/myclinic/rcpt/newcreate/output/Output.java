@@ -1,5 +1,7 @@
 package jp.chang.myclinic.rcpt.newcreate.output;
 
+import jp.chang.myclinic.util.NumberUtil;
+
 import java.io.PrintStream;
 
 public class Output {
@@ -31,6 +33,18 @@ public class Output {
         if( text != null && !text.isEmpty() ){
             outStream.printf("tekiyou_aux {left-margin:8.0} %s\n", text);
         }
+    }
+
+    public void beginDrug(String shuukei, int tanka, int count){
+        outStream.printf("tekiyou_begin_drugs %s:%d:%d\n", shuukei, tanka, count);
+   }
+
+    public void addDrug(String name, double amount, String unit){
+        outStream.printf("tekiyou_drug %s:%s%s\n", name, NumberUtil.formatNumber(amount), unit);
+    }
+
+    public void endDrug(){
+        outStream.println("tekiyou_end_drugs");
     }
 
     public void printShuukei(String prefix, Integer tanka, Integer count, Integer ten){

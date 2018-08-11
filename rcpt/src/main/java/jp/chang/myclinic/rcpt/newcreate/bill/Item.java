@@ -1,7 +1,9 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
+import jp.chang.myclinic.rcpt.newcreate.input.Naifuku;
 import jp.chang.myclinic.rcpt.newcreate.input.Shinryou;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -25,6 +27,16 @@ public class Item {
         return Objects.equals(rep, arg.rep);
     }
 
+    public static void add(List<Item> items, Item item){
+        for(Item i: items){
+            if( i.canMerge(item) ){
+                i.count += item.count;
+                return;
+            }
+        }
+        items.add(item);
+    }
+
     public static Item fromShinryou(Shinryou shinryou, TekiyouProc tekiyouProc){
         return new Item(
                 new ShinryouRep(shinryou),
@@ -40,5 +52,21 @@ public class Item {
         return fromShinryou(shinryou,
                 (output, shuukei, tanka, count) -> output.printTekiyou(shuukei, name, tanka, count));
     }
+
+    public static Item fromNaifukuCollector(NaifukuCollector collector){
+        return new Item(
+            collector.getNaifukuRep(),
+                collector.getTanka(),
+                (output, shuukei, tanka, count) -> {
+                    output.beginDrug(shuukei, tanka, count);
+                    for(Naifuku drug: collector.getNaifukuList()){
+                        output.addDrug(drug.name, drug.amount, drug.unit);
+                    }
+                    output.endDrug();
+                },
+                collector.getDays()
+        );
+    }
+
 
 }
