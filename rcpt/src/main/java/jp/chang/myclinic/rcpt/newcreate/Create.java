@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.Common;
 import jp.chang.myclinic.rcpt.newcreate.bill.Bill;
+import jp.chang.myclinic.rcpt.newcreate.bill.HoukatsuKensaRevision;
 import jp.chang.myclinic.rcpt.newcreate.input.Rcpt;
 import jp.chang.myclinic.rcpt.newcreate.input.Seikyuu;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.PrintStream;
+import java.time.LocalDate;
 import java.util.Comparator;
 
 public class Create {
@@ -23,10 +25,13 @@ public class Create {
             XmlMapper mapper = new XmlMapper();
             Rcpt rcpt = mapper.readValue(ins, Rcpt.class);
             rcpt.seikyuuList.sort(seikyuuComparator());
-            Common.MasterMaps masterMaps = Common.getMasterMaps(rcpt.getDate(1));
+            LocalDate at = rcpt.getDate(1);
+            Common.MasterMaps masterMaps = Common.getMasterMaps(at);
             ResolvedShinryouMap shinryouMasterMap = masterMaps.resolvedMap.shinryouMap;
+            HoukatsuKensaRevision houkatsuKensaRevision = HoukatsuKensaRevision.load();
+            HoukatsuKensaRevision.Revision revision = houkatsuKensaRevision.findRevision(at);
             Output output = new Output(printStream);
-            Bill bill = new Bill(rcpt, output, shinryouMasterMap);
+            Bill bill = new Bill(rcpt, output, shinryouMasterMap, revision);
             bill.run();
         } catch (Exception ex) {
             logger.error("Failed to run create.", ex);

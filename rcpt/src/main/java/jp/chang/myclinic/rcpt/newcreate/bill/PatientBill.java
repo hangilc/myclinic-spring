@@ -2,6 +2,7 @@ package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.consts.HoukatsuKensaKind;
 import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.newcreate.input.*;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
@@ -26,6 +27,7 @@ class PatientBill {
     private Output out;
     private ResolvedShinryouMap resolvedShinryouMap;
     private Map<Integer, String> shinryouAliasMap;
+    private HoukatsuKensaRevision.Revision houkatsuKensaRevision;
     private Map<SubShuukei, List<Item>> itemMap = new HashMap<>();
     private Shuukei shoshinShuukei = new Shuukei("shoshin", false, true);
     private List<String> shoshinKasan = new ArrayList<>();
@@ -49,14 +51,22 @@ class PatientBill {
     private Shuukei chuushaHikaShuukei = new Shuukei("chuusha.hika", false, true);
     private Shuukei chuushaJoumyakuShuukei = new Shuukei("chuusha.joumyaku", false, true);
     private Shuukei chuushaSonotaShuukei = new Shuukei("chuusha.sonota", false, true);
+    private Shuukei shochiShuukei = new Shuukei("shochi", false, true);
+    private Shuukei shujutsuShuukei = new Shuukei("shujutsu", false, true);
+    private Shuukei kensaShuukei = new Shuukei("kensa", false, true);
     private Shuukei gazouShuukei = new Shuukei("gazou", false, true);
+    private Shuukei shohousenShuukei = new Shuukei("sonota.shohousen", false, true);
+    private Shuukei sonotaShuukei = new Shuukei("", false, true);
+    private KensaCollector kensaCollector;
 
     PatientBill(Seikyuu seikyuu, Output output, ResolvedShinryouMap resolvedShinryouMap,
-                Map<Integer, String> shinryouAliasMap) {
+                Map<Integer, String> shinryouAliasMap, HoukatsuKensaRevision.Revision houkatsuKensaRevision) {
         this.seikyuu = seikyuu;
         this.out = output;
         this.resolvedShinryouMap = resolvedShinryouMap;
         this.shinryouAliasMap = shinryouAliasMap;
+        this.houkatsuKensaRevision = houkatsuKensaRevision;
+        this.kensaCollector = new KensaCollector(resolvedShinryouMap);
     }
 
     void run() {
@@ -148,6 +158,13 @@ class PatientBill {
         outputTekiyou(SubShuukei.SUB_CHUUSHA_HIKA);
         outputTekiyou(SubShuukei.SUB_CHUUSHA_JOUMYAKU);
         outputTekiyou(SubShuukei.SUB_CHUUSHA_SONOTA);
+        shochiShuukei.print(out);
+        outputTekiyou(SubShuukei.SUB_SHOCHI);
+        shujutsuShuukei.print(out);
+        outputTekiyou(SubShuukei.SUB_SHUJUTSU);
+        handleKensa();
+        kensaShuukei.print(out);
+        outputTekiyou(SubShuukei.SUB_KENSA);
         gazouShuukei.print(out);
         outputTekiyou(SubShuukei.SUB_GAZOU);
         out.printInt("kyuufu.hoken.seikyuuten", calcTotalTen());
@@ -468,37 +485,44 @@ class PatientBill {
             }
             case SHUUKEI_CHUUSHA_HIKA:{
                 logger.warn("SHUUKEI_CHUUSHA_HIKA encountered (ignored)");
-//                chuushaHikaShuukei.add(shinryou.tensuu);
-//                addItem(SubShuukei.SUB_CHUUSHA_HIKA, Item.fromShinryou(shinryou, shinryouAliasMap));
+                chuushaHikaShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_CHUUSHA_HIKA, Item.fromShinryou(shinryou, shinryouAliasMap));
                 break;
             }
             case SHUUKEI_CHUUSHA_JOUMYAKU:{
                 logger.warn("SHUUKEI_CHUUSHA_JOUMYAKU encountered (ignored)");
-//                chuushaJoumyakuShuukei.add(shinryou.tensuu);
-//                addItem(SubShuukei.SUB_CHUUSHA_JOUMYAKU, Item.fromShinryou(shinryou, shinryouAliasMap));
+                chuushaJoumyakuShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_CHUUSHA_JOUMYAKU, Item.fromShinryou(shinryou, shinryouAliasMap));
                 break;
             }
             case SHUUKEI_CHUUSHA_OTHERS:{
                 logger.warn("SHUUKEI_CHUUSHA_OTHERS encountered (ignored)");
+                chuushaSonotaShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_CHUUSHA_SONOTA, Item.fromShinryou(shinryou, shinryouAliasMap));
                 break;
             }
             case SHUUKEI_CHUUSHA_SEIBUTSUETC:{
                 logger.warn("SHUUKEI_CHUUSHA_SEIBUTSUETC encountered (ignored)");
-//                chuushaSonotaShuukei.add(shinryou.tensuu);
-//                addItem(SubShuukei.SUB_CHUUSHA_SONOTA, Item.fromShinryou(shinryou, shinryouAliasMap));
+                chuushaSonotaShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_CHUUSHA_SONOTA, Item.fromShinryou(shinryou, shinryouAliasMap));
                 break;
             }
-//            case SHUUKEI_SHOCHI:
-//                shuukei.getShochiVisit().add(shinryou);
-//                break;
-//            case SHUUKEI_SHUJUTSU_SHUJUTSU:
-//            case SHUUKEI_SHUJUTSU_YUKETSU:
-//            case SHUUKEI_MASUI:
-//                shuukei.getShujutsuVisit().add(shinryou);
-//                break;
-//            case SHUUKEI_KENSA:
-//                shuukei.getKensaVisit().add(shinryou);
-//                break;
+            case SHUUKEI_SHOCHI:{
+                shochiShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_SHOCHI, Item.fromShinryou(shinryou, shinryouAliasMap));
+                break;
+            }
+            case SHUUKEI_SHUJUTSU_SHUJUTSU: // fall through
+            case SHUUKEI_SHUJUTSU_YUKETSU:  // fall through
+            case SHUUKEI_MASUI:{
+                shujutsuShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_SHUJUTSU, Item.fromShinryou(shinryou, shinryouAliasMap));
+                break;
+            }
+            case SHUUKEI_KENSA:{
+                kensaCollector.add(shinryou);
+                break;
+            }
 //            case SHUUKEI_GAZOUSHINDAN:
 //                shuukei.getGazouVisit().add(shinryou);
 //                break;
@@ -636,6 +660,16 @@ class PatientBill {
         int ten = items.stream().mapToInt(item -> item.tanka * item.count).sum();
         shuukei.add(ten);
         items.forEach(item -> addItem(subShuukei, item));
+    }
+
+    private void handleKensa(){
+        Map<HoukatsuKensaKind, List<Shinryou>> houkatsuMap = kensaCollector.getHoukatsuMap();
+        for(HoukatsuKensaKind kind: houkatsuMap.keySet()){
+            List<Shinryou> list = houkatsuMap.get(kind);
+            Item item = Item.fromHoukatsuKensa(kind, list, houkatsuKensaRevision);
+            kensaShuukei.add(item.tanka);
+            addItem(SubShuukei.SUB_KENSA, item);
+        }
     }
 
 }

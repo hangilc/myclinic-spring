@@ -1,5 +1,6 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
+import jp.chang.myclinic.consts.HoukatsuKensaKind;
 import jp.chang.myclinic.rcpt.newcreate.input.*;
 import jp.chang.myclinic.util.NumberUtil;
 import jp.chang.myclinic.util.RcptUtil;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Item {
     private static Logger logger = LoggerFactory.getLogger(Item.class);
@@ -185,7 +187,7 @@ public class Item {
         );
     }
 
-    public static Item fromConductKizai(ConductKizai kizai){
+    public static Item fromConductKizai(ConductKizai kizai) {
         String label = conductKizaiLabel(kizai);
         return new Item(
                 new ConductKizaiRep(kizai),
@@ -204,5 +206,25 @@ public class Item {
         return String.format("%s %s%s", kizai.name, NumberUtil.formatNumber(kizai.amount), kizai.unit);
     }
 
+    public static Item fromHoukatsuKensa(HoukatsuKensaKind kind, List<Shinryou> list,
+                                         HoukatsuKensaRevision.Revision revision) {
+        return new Item(
+                new HoukatsuKensaRep(kind, list),
+                calcHoukatsuTen(revision, kind, list),
+                (output, shuukei, tanka, count) ->
+                    output.printTekiyou(shuukei, createHoukatsuKensaLabel(list), tanka, count),
+                1
+        );
+    }
+
+    public static int calcHoukatsuTen(HoukatsuKensaRevision.Revision revision,
+                                      HoukatsuKensaKind kind, List<Shinryou> list) {
+        return revision.calcTen(kind, list.size()).orElseGet(() ->
+                list.stream().mapToInt(shinryou -> shinryou.tensuu).sum());
+    }
+
+    public static String createHoukatsuKensaLabel(List<Shinryou> list){
+        return list.stream().map(shinryou -> shinryou.name).collect(Collectors.joining("、"));
+    }
 
 }

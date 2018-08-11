@@ -16,19 +16,23 @@ public class Bill {
     private Output out;
     private ResolvedShinryouMap resolvedShinryouMap;
     private Map<Integer, String> shinryouAliasMap;
+    private HoukatsuKensaRevision.Revision houkatsuKensaRevision;
 
-    public Bill(Rcpt rcpt, Output output, ResolvedShinryouMap resolvedShinryouMap) {
+    public Bill(Rcpt rcpt, Output output, ResolvedShinryouMap resolvedShinryouMap,
+                HoukatsuKensaRevision.Revision houkatsuKensaRevision) {
         this.rcpt = rcpt;
         this.out = output;
         this.resolvedShinryouMap = resolvedShinryouMap;
         this.shinryouAliasMap = ShinryouAliasMap.create(resolvedShinryouMap);
+        this.houkatsuKensaRevision = houkatsuKensaRevision;
     }
 
     public void run() {
         for (Seikyuu seikyuu : rcpt.seikyuuList) {
             out.print("rcpt_begin");
             runProlog();
-            PatientBill patientBill = new PatientBill(seikyuu, out, resolvedShinryouMap, shinryouAliasMap);
+            PatientBill patientBill = new PatientBill(seikyuu, out, resolvedShinryouMap, shinryouAliasMap,
+                    houkatsuKensaRevision);
             patientBill.run();
             out.print("rcpt_end");
         }
