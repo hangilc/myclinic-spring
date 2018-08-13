@@ -678,6 +678,17 @@ class PatientBill {
             kensaShuukei.add(item.tanka);
             addItem(SubShuukei.SUB_KENSA, item);
         }
+        List<Shinryou> handanryouList = kensaCollector.getHandanryouList();
+        if( handanryouList.size() > 0 ){
+            Item item = Item.fromHandanryouList(handanryouList, resolvedShinryouMap);
+            kensaShuukei.add(item.tanka);
+            addItem(SubShuukei.SUB_KENSA, item);
+        }
+        for(Shinryou shinryou: kensaCollector.getShinryouList()){
+            Item item = Item.fromShinryou(shinryou, shinryouAliasMap);
+            kensaShuukei.add(item.tanka);
+            addItem(SubShuukei.SUB_KENSA, item);
+        }
     }
 
 }

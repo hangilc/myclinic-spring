@@ -2,6 +2,7 @@ package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.HoukatsuKensaKind;
+import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.newcreate.input.*;
 import jp.chang.myclinic.util.NumberUtil;
 import jp.chang.myclinic.util.RcptUtil;
@@ -251,14 +252,47 @@ public class Item {
         );
     }
 
-    public static int calcHoukatsuTen(HoukatsuKensaRevision.Revision revision,
+    private static int calcHoukatsuTen(HoukatsuKensaRevision.Revision revision,
                                       HoukatsuKensaKind kind, List<Shinryou> list) {
         return revision.calcTen(kind, list.size()).orElseGet(() ->
                 list.stream().mapToInt(shinryou -> shinryou.tensuu).sum());
     }
 
-    public static String createHoukatsuKensaLabel(List<Shinryou> list) {
+    private static String createHoukatsuKensaLabel(List<Shinryou> list) {
         return list.stream().map(shinryou -> shinryou.name).collect(Collectors.joining("、"));
+    }
+
+    public static Item fromHandanryouList(List<Shinryou> handanryouList, ResolvedShinryouMap resolvedShinryouMap){
+        String label = "（判）" + handanryouList.stream().map(s -> Item.rewriteHandanryouName(s, resolvedShinryouMap))
+                .collect(Collectors.joining("、"));
+        return new Item(
+                new HandanryouListRep(handanryouList),
+                handanryouList.stream().mapToInt(s -> s.tensuu).sum(),
+                (output, shuukei, tanka, count) -> output.printTekiyou(shuukei, label, tanka, count),
+                1
+        );
+    }
+
+    private static String rewriteHandanryouName(Shinryou shinryou, ResolvedShinryouMap map){
+        int shinryoucode = shinryou.shinryoucode;
+        if( shinryoucode == map.尿便検査判断料 ){
+            return "尿";
+        } else if( shinryoucode == map.血液検査判断料 ){
+            return "血";
+        } else if( shinryoucode == map.生化Ⅰ判断料 ){
+            return "生Ⅰ";
+        } else if( shinryoucode == map.生化Ⅱ判断料 ){
+            return "生Ⅱ";
+        } else if( shinryoucode == map.免疫検査判断料 ){
+            return "免";
+        } else if( shinryoucode == map.微生物検査判断料 ){
+            return "微";
+        } else if( shinryoucode == map.病理判断料 ){
+            return "病学";
+        } else {
+            logger.warn("Unknown handanryou: " + shinryou.name);
+            return shinryou.name;
+        }
     }
 
 }
