@@ -643,7 +643,7 @@ class PatientBill {
     }
 
     // TODO: seprate yakuzai for chuusha and gazou
-    private void addConduct(Shuukei shuukei, SubShuukei subShuukei, Conduct conduct){
+    private void addConductImproved(Shuukei shuukei, SubShuukei subShuukei, Conduct conduct){
         List<Item> items = new ArrayList<>();
         for(ConductShinryou shinryou: conduct.shinryouList){
             Item item = Item.fromConductShinryou(shinryou);
@@ -660,6 +660,14 @@ class PatientBill {
         int ten = items.stream().mapToInt(item -> item.tanka * item.count).sum();
         shuukei.add(ten);
         items.forEach(item -> addItem(subShuukei, item));
+    }
+
+    // For compatibility with previsou version
+    private void addConduct(Shuukei shuukei, SubShuukei subShuukei, Conduct conduct){
+        Item item = Item.fromConduct(conduct);
+        int ten = item.tanka * item.count;
+        shuukei.add(ten);
+        addItem(subShuukei, item);
     }
 
     private void handleKensa(){

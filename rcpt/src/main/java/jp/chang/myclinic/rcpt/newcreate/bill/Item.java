@@ -1,5 +1,6 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
+import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.HoukatsuKensaKind;
 import jp.chang.myclinic.rcpt.newcreate.input.*;
 import jp.chang.myclinic.util.NumberUtil;
@@ -8,9 +9,11 @@ import jp.chang.myclinic.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -206,13 +209,44 @@ public class Item {
         return String.format("%s %s%s", kizai.name, NumberUtil.formatNumber(kizai.amount), kizai.unit);
     }
 
+    // For compatibility with previous version
+    public static Item fromConduct(Conduct conduct) {
+        int ten = 0;
+        ten += conduct.shinryouList.stream().mapToInt(s -> s.tensuu).sum();
+        Function<Double, Integer> drugKingakuConverter;
+        if (ConductKind.fromKanjiRep(conduct.kind) == ConductKind.Gazou) {
+            drugKingakuConverter = RcptUtil::shochiKingakuToTen;
+        } else {
+            drugKingakuConverter = RcptUtil::touyakuKingakuToTen;
+        }
+        ten += conduct.drugs.stream().mapToInt(d -> drugKingakuConverter.apply(d.yakka * d.amount)).sum();
+        ten += conduct.kizaiList.stream().mapToInt(k -> RcptUtil.kizaiKingakuToTen(k.kingaku * k.amount)).sum();
+        String label;
+        if ("胸部単純Ｘ線".equals(conduct.label)) {
+            label = String.format("胸部単純Ｘ線（%s）",
+                    conduct.kizaiList.stream().map(Item::conductKizaiLabel).collect(Collectors.joining("、")));
+        } else {
+            List<String> labelItems = new ArrayList<>();
+            labelItems.addAll(conduct.shinryouList.stream().map(s -> s.name).collect(Collectors.toList()));
+            labelItems.addAll(conduct.drugs.stream().map(Item::conductDrugLabel).collect(Collectors.toList()));
+            labelItems.addAll(conduct.kizaiList.stream().map(Item::conductKizaiLabel).collect(Collectors.toList()));
+            label = String.join("、", labelItems);
+        }
+        return new Item(
+                new ConductRep(conduct),
+                ten,
+                (output, shuukei, tanka, count) -> output.printTekiyou(shuukei, label, tanka, count),
+                1
+        );
+    }
+
     public static Item fromHoukatsuKensa(HoukatsuKensaKind kind, List<Shinryou> list,
                                          HoukatsuKensaRevision.Revision revision) {
         return new Item(
                 new HoukatsuKensaRep(kind, list),
                 calcHoukatsuTen(revision, kind, list),
                 (output, shuukei, tanka, count) ->
-                    output.printTekiyou(shuukei, createHoukatsuKensaLabel(list), tanka, count),
+                        output.printTekiyou(shuukei, createHoukatsuKensaLabel(list), tanka, count),
                 1
         );
     }
@@ -223,7 +257,7 @@ public class Item {
                 list.stream().mapToInt(shinryou -> shinryou.tensuu).sum());
     }
 
-    public static String createHoukatsuKensaLabel(List<Shinryou> list){
+    public static String createHoukatsuKensaLabel(List<Shinryou> list) {
         return list.stream().map(shinryou -> shinryou.name).collect(Collectors.joining("、"));
     }
 
