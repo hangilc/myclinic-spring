@@ -55,8 +55,8 @@ class PatientBill {
     private Shuukei shujutsuShuukei = new Shuukei("shujutsu", false, true);
     private Shuukei kensaShuukei = new Shuukei("kensa", false, true);
     private Shuukei gazouShuukei = new Shuukei("gazou", false, true);
-    private Shuukei shohousenShuukei = new Shuukei("sonota.shohousen", false, true);
-    private Shuukei sonotaShuukei = new Shuukei("", false, true);
+    private Shuukei sonotaShohousenShuukei = new Shuukei("sonota.shohousen", false, true);
+    private Shuukei sonotaSonotaShuukei = new Shuukei("sonota.sonota", false, true);
     private KensaCollector kensaCollector;
 
     PatientBill(Seikyuu seikyuu, Output output, ResolvedShinryouMap resolvedShinryouMap,
@@ -167,6 +167,9 @@ class PatientBill {
         outputTekiyou(SubShuukei.SUB_KENSA);
         gazouShuukei.print(out);
         outputTekiyou(SubShuukei.SUB_GAZOU);
+        sonotaShohousenShuukei.print(out);
+        sonotaSonotaShuukei.print(out);
+        outputTekiyou(SubShuukei.SUB_SONOTA);
         out.printInt("kyuufu.hoken.seikyuuten", calcTotalTen());
     }
 
@@ -523,15 +526,29 @@ class PatientBill {
                 kensaCollector.add(shinryou);
                 break;
             }
-//            case SHUUKEI_GAZOUSHINDAN:
-//                shuukei.getGazouVisit().add(shinryou);
-//                break;
-//            case SHUUKEI_OTHERS:
-//                shuukei.getSonotaVisit().add(shinryou);
-//                break;
-//            default:
-//                shuukei.getSonotaVisit().add(shinryou);
-//                break;
+            case SHUUKEI_GAZOUSHINDAN: {
+                logger.warn("Gazoushindann encountered in dispatch shinryou.");
+                gazouShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_GAZOU, Item.fromShinryou(shinryou, shinryouAliasMap));
+                break;
+            }
+            case SHUUKEI_OTHERS: {
+                if( shinryou.shinryoucode == resolvedShinryouMap.処方せん料 ||
+                        shinryou.shinryoucode == resolvedShinryouMap.処方せん料７ ){
+                    sonotaShohousenShuukei.add(shinryou.tensuu);
+                    addItem(SubShuukei.SUB_SONOTA, Item.fromShinryou(shinryou, TekiyouProc.noOutput));
+                } else {
+                    //sonotaSonotaShuukei.add(shinryou.tensuu);
+                    sonotaShohousenShuukei.addWithoutCount(shinryou.tensuu); // for backward compatibility
+                    addItem(SubShuukei.SUB_SONOTA, Item.fromShinryou(shinryou, shinryouAliasMap));
+                }
+                break;
+            }
+            default:
+                logger.warn("Unknown shuukei: " + shinryou.shuukeisaki);
+                sonotaSonotaShuukei.add(shinryou.tensuu);
+                addItem(SubShuukei.SUB_SONOTA, Item.fromShinryou(shinryou, shinryouAliasMap));
+                break;
         }
     }
 
