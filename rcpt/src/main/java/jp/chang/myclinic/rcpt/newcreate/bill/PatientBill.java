@@ -111,11 +111,14 @@ class PatientBill {
         out.printInt("seinengappi.tsuki", birthday.getMonthValue());
         out.printInt("seinengappi.hi", birthday.getDayOfMonth());
         runByoumei(seikyuu);
-        System.out.printf("shinryounissuu.hoken %d\n", calcShinryouNissuuHoken(seikyuu.visits));
+        out.printInt("shinryounissuu.hoken", calcShinryouNissuuHoken(seikyuu.visits));
         ifPositive(calcShinryouNissuuKouhi1(seikyuu.visits), kouhi1Count ->
                 out.printInt("shinryounissuu.kouhi.1", kouhi1Count));
         ifPositive(calcShinryouNissuuKouhi2(seikyuu.visits), kouhi2Count ->
                 out.printInt("shinryounissuu.kouhi.2", kouhi2Count));
+        if( seikyuu.shouki != null && !seikyuu.shouki.isEmpty() ){
+            out.printStr("shoujoushouki", seikyuu.shouki);
+        }
         for (Visit visit : seikyuu.visits) {
             for (Shinryou shinryou : visit.shinryouList) {
                 dispatchShinryou(shinryou, LocalDate.parse(visit.visitedAt.substring(0, 10)));
@@ -719,7 +722,7 @@ class PatientBill {
                 futanWari =  Math.min(futanWari, futanWari2);
             }
             int jikofutan = totalTen * futanWari;
-            System.out.printf("ichibu-futankin-kouhi-1 %d\n", jikofutan);
+            out.printInt("ichibu-futankin-kouhi-1", jikofutan);
         }
     }
 
