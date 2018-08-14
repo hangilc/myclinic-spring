@@ -7,6 +7,7 @@ import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.newcreate.input.*;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.HokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +171,9 @@ class PatientBill {
         sonotaShohousenShuukei.print(out);
         sonotaSonotaShuukei.print(out);
         outputTekiyou(SubShuukei.SUB_SONOTA);
-        out.printInt("kyuufu.hoken.seikyuuten", calcTotalTen());
+        int totalTen = calcTotalTen();
+        out.printInt("kyuufu.hoken.seikyuuten", totalTen);
+        outputKouhiJikofutan(totalTen);
     }
 
     private String hokenShubetsuSlug(String hokenShubetsu) {
@@ -705,6 +708,18 @@ class PatientBill {
             Item item = Item.fromShinryou(shinryou, shinryouAliasMap);
             kensaShuukei.add(item.tanka);
             addItem(SubShuukei.SUB_KENSA, item);
+        }
+    }
+
+    private void outputKouhiJikofutan(int totalTen){
+        if (seikyuu.kouhiFutanshaBangou1 > 0) {
+            int futanWari = HokenUtil.kouhiFutanWari(seikyuu.kouhiFutanshaBangou1);
+            if( seikyuu.kouhiFutanshaBangou2 > 0){
+                int futanWari2 = HokenUtil.kouhiFutanWari(seikyuu.kouhiFutanshaBangou2);
+                futanWari =  Math.min(futanWari, futanWari2);
+            }
+            int jikofutan = totalTen * futanWari;
+            System.out.printf("ichibu-futankin-kouhi-1 %d\n", jikofutan);
         }
     }
 
