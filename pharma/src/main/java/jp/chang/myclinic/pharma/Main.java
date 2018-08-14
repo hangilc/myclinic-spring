@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-// TODO: prevent presc done if cashire is not finished
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);

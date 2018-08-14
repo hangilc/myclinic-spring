@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawer;
 import jp.chang.myclinic.drawer.presccontent.PrescContentDrawer;
@@ -25,6 +26,7 @@ import jp.chang.myclinic.pharma.drawercreator.TechouDataCreator;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.pharma.javafx.printing.Printing;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,7 +147,21 @@ class PrescPane extends VBox {
         onCancel();
     }
 
+    private WqueueWaitState getWqueueStateOfCurrentPatient(){
+        for(PatientList.Model model: Globals.getTrackingVisitList()){
+            if( model.getVisitId() == visitId ){
+                return model.waitStateProperty().getValue();
+            }
+        }
+        return null;
+    }
+
     private void doPrescDone(){
+        WqueueWaitState wqueueState = getWqueueStateOfCurrentPatient();
+        if( wqueueState != WqueueWaitState.WaitDrug ){
+            GuiUtil.alertError("まだ会計が終了していないので、薬渡しは終了できません。");
+            return;
+        }
         Service.api.prescDone(visitId)
                 .thenAccept(result -> Platform.runLater(this::onPrescDone))
                 .exceptionally(HandlerFX::exceptionally);

@@ -50,11 +50,17 @@ public class Main extends Application implements CommandLineRunner {
 
     @Override
     public void run(String... args){
-        if (args.length != 1) {
-            System.err.println("Usage: practice SERVER-URL");
+        String serverUrl = null;
+        if( args.length == 0 ){
+            serverUrl = System.getenv("MYCLINIC_SERVICE");
+        } else {
+            serverUrl = args[0];
+        }
+        if( serverUrl == null ){
+            logger.error("Cannot find server url.");
             System.exit(1);
         }
-        Service.setServerUrl(args[0]);
+        Service.setServerUrl(serverUrl);
     }
 
     @Override
