@@ -34,6 +34,10 @@ public class Item {
         this.count = count;
     }
 
+    public Item copy(){
+        return new Item(rep, tanka, tekiyouProc, count);
+    }
+
     public boolean canMerge(Item arg) {
         if (arg == null) {
             return false;
@@ -48,7 +52,7 @@ public class Item {
                 return;
             }
         }
-        items.add(item);
+        items.add(item.copy());
     }
 
     public static Item fromShinryou(Shinryou shinryou, TekiyouProc tekiyouProc) {
