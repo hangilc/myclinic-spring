@@ -8,10 +8,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
@@ -23,6 +24,7 @@ import jp.chang.myclinic.util.DrugUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DrugMenu extends VBox {
@@ -99,6 +101,10 @@ public class DrugMenu extends VBox {
 
     private MenuItem createCopySelectedMenuItem(int visitId) {
         MenuItem item = new MenuItem("部分コピー");
+        class Local {
+            private List<DrugFullDTO> fullDrugs;
+        }
+        Local local = new Local();
         item.setOnAction(evt -> {
             if (!isWorkareaEmpty()) {
                 return;
@@ -107,9 +113,17 @@ public class DrugMenu extends VBox {
             if (targetVisitId == 0) {
                 return;
             }
-            PracticeService.listDrugFull(visitId)
-                    .thenAccept(drugs -> {
-                        CopySelectedForm form = new CopySelectedForm(drugs) {
+            Service.api.listDrugFull(visitId)
+                    .thenCompose(drugs -> {
+                        local.fullDrugs = drugs;
+                        List<Integer> drugIds = drugs.stream().map(d -> d.drug.drugId).collect(Collectors.toList());
+                        return Service.api.batchGetDrugAttr(drugIds);
+                    })
+                    .thenAccept(attrList -> {
+                        Map<Integer, DrugAttrDTO> attrMap = attrList.stream().collect(Collectors.toMap(
+                                a -> a.drugId, a -> a
+                        ));
+                        CopySelectedForm form = new CopySelectedForm(local.fullDrugs, attrMap) {
                             @Override
                             protected void onEnter(List<DrugFullDTO> selected, boolean keepOpen) {
                                 new DrugsCopier(targetVisitId, selected,
@@ -134,7 +148,36 @@ public class DrugMenu extends VBox {
                             }
                         };
                         Platform.runLater(() -> showWorkarea(form));
-                    });
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+//            PracticeService.listDrugFull(visitId)
+//                    .thenAccept(drugs -> {
+//                        CopySelectedForm form = new CopySelectedForm(drugs) {
+//                            @Override
+//                            protected void onEnter(List<DrugFullDTO> selected, boolean keepOpen) {
+//                                new DrugsCopier(targetVisitId, selected,
+//                                        (enteredDrug, attr) ->
+//                                                fireEvent(new DrugEnteredEvent(enteredDrug, attr)),
+//                                        () -> {
+//                                            if (keepOpen) {
+//                                                int remain = cleanUpForKeepOpen();
+//                                                if( remain == 0 ){
+//                                                    hideWorkarea();
+//                                                }
+//                                            } else {
+//                                                hideWorkarea();
+//                                            }
+//                                        }
+//                                );
+//                            }
+//
+//                            @Override
+//                            protected void onClose() {
+//                                hideWorkarea();
+//                            }
+//                        };
+//                        Platform.runLater(() -> showWorkarea(form));
+//                    });
         });
         return item;
     }

@@ -6,6 +6,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.practice.javafx.GuiUtil;
@@ -14,6 +15,7 @@ import jp.chang.myclinic.util.DrugUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -23,10 +25,11 @@ public class CopySelectedForm extends VBox {
     private Pane drugChecksWrapper;
     private TextField daysField = new TextField();
     private CheckBox keepOpenCheck;
+    private Map<Integer, DrugAttrDTO> attrMap;
 
-    // TODO: support DrugAttrDTO
-    CopySelectedForm(List<DrugFullDTO> drugs) {
+    CopySelectedForm(List<DrugFullDTO> drugs, Map<Integer, DrugAttrDTO> attrMap) {
         super(4);
+        this.attrMap = attrMap;
         PracticeUtil.addFormClass(this);
         getChildren().addAll(
                 PracticeUtil.createFormTitle("選択して処方をコピー"),
@@ -40,7 +43,8 @@ public class CopySelectedForm extends VBox {
     private Node createList(List<DrugFullDTO> drugs) {
         VBox list = new VBox(2);
         drugs.forEach(drug -> {
-            CheckBox check = new CheckBox(DrugUtil.drugRep(drug));
+            DrugAttrDTO attr = attrMap.get(drug.drug.drugId);
+            CheckBox check = new CheckBox(DrugUtil.drugRep(drug, attr));
             check.setUserData(drug);
             check.setWrapText(true);
             drugChecks.add(check);

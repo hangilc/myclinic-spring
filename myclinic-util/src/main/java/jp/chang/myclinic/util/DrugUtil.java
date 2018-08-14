@@ -12,12 +12,20 @@ public class DrugUtil {
 
     private static NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
-    public static String drugRep(DrugDTO drug, IyakuhinMasterDTO master){
+    public static String drugRep(DrugDTO drug, IyakuhinMasterDTO master, DrugAttrDTO attr) {
+        if (attr != null && attr.tekiyou != null && !attr.tekiyou.isEmpty()) {
+            return drugRep(drug, master) + String.format(" [摘要：%s]", attr.tekiyou);
+        } else {
+            return drugRep(drug, master);
+        }
+    }
+
+    public static String drugRep(DrugDTO drug, IyakuhinMasterDTO master) {
         DrugCategory category = DrugCategory.fromCode(drug.category);
-        if( category == null ){
+        if (category == null) {
             return "Unknown drug category: " + drug.category;
         }
-        switch(category){
+        switch (category) {
             case Naifuku: {
                 return String.format("%s %s%s %s %d日分", master.name,
                         numberFormat.format(drug.amount),
@@ -38,21 +46,28 @@ public class DrugUtil {
                         master.unit,
                         drug.usage);
             }
-            default: return "Unknown drug category: " + drug.category;
+            default:
+                return "Unknown drug category: " + drug.category;
         }
     }
 
-    public static String drugRep(DrugFullDTO drugFull){
+    public static String drugRep(DrugFullDTO drugFull) {
         DrugDTO drug = drugFull.drug;
         IyakuhinMasterDTO master = drugFull.master;
         return drugRep(drug, master);
     }
 
-    public static String conductDrugRep(ConductDrugFullDTO drugFull){
+    public static String drugRep(DrugFullDTO drugFull, DrugAttrDTO attr) {
+        DrugDTO drug = drugFull.drug;
+        IyakuhinMasterDTO master = drugFull.master;
+        return drugRep(drug, master, attr);
+    }
+
+    public static String conductDrugRep(ConductDrugFullDTO drugFull) {
         return conductDrugRep(drugFull.conductDrug, drugFull.master);
     }
 
-    public static String conductDrugRep(ConductDrugDTO dto, IyakuhinMasterDTO master){
+    public static String conductDrugRep(ConductDrugDTO dto, IyakuhinMasterDTO master) {
         return String.format("%s %s%s", master.name, numberFormat.format(dto.amount), master.unit);
     }
 
