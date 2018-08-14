@@ -4,18 +4,19 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.stage.Stage;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ReferItemDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.myclinicenv.MyclinicEnv;
+import jp.chang.myclinic.practice.javafx.ShoukiForm;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class PracticeEnv {
 
@@ -36,29 +37,18 @@ public class PracticeEnv {
     private IntegerProperty totalRecordPages = new SimpleIntegerProperty(0);
     private IntegerProperty currentRecordPage = new SimpleIntegerProperty(0);
     private ObjectProperty<List<VisitFull2DTO>> pageVisits = new SimpleObjectProperty<>(Collections.emptyList());
+    private Map<Integer, ShoukiForm> shoukiFormMap = new HashMap<>();
     private MyclinicEnv myclinicEnv;
     private List<ReferItemDTO> referList;
     private String kouhatsuKasan;
 
     public PracticeEnv(){
-//        printerSettingsDir = commandArgs.getWorkingDirectory();
-//        if (printerSettingsDir == null) {
-//            printerSettingsDir = Paths.get(System.getProperty("user.home"), "practice-home");
-//        }
-//        if (!(Files.exists(printerSettingsDir) && Files.isDirectory(printerSettingsDir))) {
-//            logger.error("Invalid printer settings directory: " + printerSettingsDir);
-//            System.exit(1);
-//        }
         myclinicEnv = new MyclinicEnv(APP_NAME);
+        currentPatient.addListener((obs, oldValue, newValue) -> {
+            shoukiFormMap.values().forEach(Stage::close);
+            shoukiFormMap.clear();
+        });
     }
-
-//    public Path getPrinterSettingsDir() {
-//        return printerSettingsDir;
-//    }
-//
-//    public void setPrinterSettingsDir(Path printerSettingsDir) {
-//        this.printerSettingsDir = printerSettingsDir;
-//    }
 
     public ClinicInfoDTO getClinicInfo() {
         return clinicInfo;
@@ -202,6 +192,42 @@ public class PracticeEnv {
 
     public void setKouhatsuKasan(String kouhatsuKasan) {
         this.kouhatsuKasan = kouhatsuKasan;
+    }
+
+    public ShoukiForm getShoukiForm(int visitId){
+        return shoukiFormMap.get(visitId);
+    }
+
+    public void registerShoukiForm(ShoukiForm shoukiForm){
+        ShoukiForm prev = shoukiFormMap.putIfAbsent(shoukiForm.getVisitId(), shoukiForm);
+        if( prev != null ){
+            GuiUtil.alertError("ShoukiForm is already opened.");
+        }
+    }
+
+    public void unregisterShoukiForm(ShoukiForm shoukiForm){
+        shoukiFormMap.remove(shoukiForm.getVisitId());
+    }
+
+    public boolean confirmClosingPatient(){
+        if( shoukiFormMap.size() != 0 ){
+            boolean force = GuiUtil.confirm("閉じられていない詳記入力フォームがありますが、このまま、この診察を終了しますか？");
+            if( force ){
+                for(ShoukiForm shoukiForm: shoukiFormMap.values()){
+                    shoukiForm.close();
+                }
+                shoukiFormMap.clear();
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void closeRemainingWindows(){
+        for(ShoukiForm form: shoukiFormMap.values()){
+            form.close();
+        }
     }
 
     @Override

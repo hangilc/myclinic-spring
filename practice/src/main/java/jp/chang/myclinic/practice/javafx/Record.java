@@ -16,14 +16,14 @@ public class Record extends VBox {
     private RecordDrugsPane drugsPane;
     private RecordShinryouPane shinryouPane;
     private RecordConductsPane conductsPane;
-    private ObjectProperty<ShoukiDTO> shoukiProperty;
+    private ObjectProperty<ShoukiDTO> shouki;
 
     public Record(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
-                  Map<Integer, DrugAttrDTO> drugAttrMap, ShoukiDTO shoukiProperty) {
+                  Map<Integer, DrugAttrDTO> drugAttrMap, ShoukiDTO shouki) {
         this.visitId = visit.visit.visitId;
-        this.shoukiProperty = new SimpleObjectProperty<>(shoukiProperty);
+        this.shouki = new SimpleObjectProperty<>(shouki);
         getChildren().addAll(
-                new RecordTitle(visit.visit, this.shoukiProperty),
+                new RecordTitle(visit.visit, this.shouki),
                 createBody(visit, shinryouAttrMap, drugAttrMap)
         );
         setPrefWidth(400);
@@ -54,7 +54,7 @@ public class Record extends VBox {
                 shinryouPane,
                 conductsPane,
                 new RecordCharge(visit.charge),
-                new RecordShouki(shoukiProperty)
+                new RecordShouki(shouki)
         );
         return hbox;
     }
@@ -89,5 +89,9 @@ public class Record extends VBox {
 
     public void appendText(TextDTO enteredText) {
         textPane.appendText(enteredText);
+    }
+
+    public void setShouki(ShoukiDTO shoukiDTO){
+        this.shouki.setValue(shoukiDTO);
     }
 }

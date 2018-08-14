@@ -1,7 +1,6 @@
 package jp.chang.myclinic.practice.javafx;
 
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -15,19 +14,17 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.ShoukiDTO;
 
 // TODO: fire event instead of modifying observable (it becomes broken with page transition)
-class ShoukiForm extends Stage {
+public class ShoukiForm extends Stage {
 
     //private static Logger logger = LoggerFactory.getLogger(ShoukiForm.class);
     private int visitId;
-    private ObjectProperty<ShoukiDTO> shoukiProperty;
+    private ShoukiDTO orig;
     private TextArea textArea = new TextArea();
 
-    ShoukiForm(int visitId, ObjectProperty<ShoukiDTO> shoukiProperty) {
+    ShoukiForm(int visitId, ShoukiDTO orig) {
         this.visitId = visitId;
-        this.shoukiProperty = shoukiProperty;
-        setTitle(shoukiProperty.getValue() == null
-                ? "症状詳記の追加" : "症状詳記の編集"
-        );
+        this.orig = orig;
+        setTitle(orig == null ? "症状詳記の追加" : "症状詳記の編集");
         VBox root = new VBox(4);
         root.getStylesheets().add("css/Practice.css");
         root.getStyleClass().add("shouki-form");
@@ -38,10 +35,14 @@ class ShoukiForm extends Stage {
         setScene(new Scene(root));
     }
 
+    public int getVisitId(){
+        return visitId;
+    }
+
     private Node createTextArea() {
         textArea.setWrapText(true);
-        if (shoukiProperty.getValue() != null) {
-            textArea.setText(shoukiProperty.getValue().shouki);
+        if (orig != null) {
+            textArea.setText(orig.shouki);
         }
         return textArea;
     }
@@ -60,37 +61,45 @@ class ShoukiForm extends Stage {
     }
 
     private void doEnter() {
-        if (shoukiProperty.getValue() == null) {
+        if (orig == null) {
             ShoukiDTO shoukiDTO = new ShoukiDTO();
             shoukiDTO.visitId = visitId;
             shoukiDTO.shouki = textArea.getText();
             Service.api.updateShouki(shoukiDTO)
                     .thenAcceptAsync(result -> {
-                        shoukiProperty.setValue(shoukiDTO);
+                        onShoukiModified(shoukiDTO);
                         close();
                     }, Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
         } else {
-            ShoukiDTO edited = ShoukiDTO.copy(shoukiProperty.getValue());
+            ShoukiDTO edited = ShoukiDTO.copy(orig);
             edited.shouki = textArea.getText();
             Service.api.updateShouki(edited)
                     .thenAcceptAsync(result -> {
-                        shoukiProperty.setValue(edited);
+                        onShoukiModified(edited);
                         close();
                     }, Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
         }
     }
 
+    protected void onShoukiModified(ShoukiDTO shoukiDTO){
+
+    }
+
     private void doDelete() {
         if (GuiUtil.confirm("この症状詳記を削除していいですか？")) {
             Service.api.deleteShouki(visitId)
                     .thenAcceptAsync(result -> {
-                        shoukiProperty.setValue(null);
+                        onShoukiDeleted(visitId);
                         close();
                     }, Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
         }
+    }
+
+    protected void onShoukiDeleted(int visitId){
+
     }
 
 }

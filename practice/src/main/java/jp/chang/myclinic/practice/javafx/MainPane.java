@@ -206,6 +206,9 @@ public class MainPane extends BorderPane {
     }
 
     private void doCashier() {
+        if( !PracticeEnv.INSTANCE.confirmClosingPatient() ){
+            return;
+        }
         int visitId = PracticeEnv.INSTANCE.getCurrentVisitId();
         if (visitId > 0) {
             Service.api.getMeisai(visitId)
@@ -218,6 +221,9 @@ public class MainPane extends BorderPane {
     }
 
     private void doEndPatient() {
+        if( !PracticeEnv.INSTANCE.confirmClosingPatient() ){
+            return;
+        }
         PracticeLib.endPatient();
     }
 

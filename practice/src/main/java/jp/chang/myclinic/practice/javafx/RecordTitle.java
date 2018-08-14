@@ -11,6 +11,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.ShoukiDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.javafx.events.ShoukiChangedEvent;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.util.DateTimeUtil;
@@ -114,7 +115,28 @@ public class RecordTitle extends TextFlow {
     }
 
     private void doModifyShouki(){
-        ShoukiForm form = new ShoukiForm(visitId, shoukiProperty);
-        form.showAndWait();
+        ShoukiForm current = PracticeEnv.INSTANCE.getShoukiForm(visitId);
+        if( current != null ){
+            current.toFront();
+        } else {
+            ShoukiForm form = new ShoukiForm(visitId, shoukiProperty.getValue()){
+                @Override
+                protected void onShoukiModified(ShoukiDTO shoukiDTO) {
+                    RecordTitle.this.fireEvent(new ShoukiChangedEvent(visitId, shoukiDTO));
+                }
+
+                @Override
+                protected void onShoukiDeleted(int visitId) {
+                    RecordTitle.this.fireEvent(new ShoukiChangedEvent(visitId, null));
+                }
+            };
+            PracticeEnv.INSTANCE.registerShoukiForm(form);
+            form.showingProperty().addListener((obs, oldValue, newValue) -> {
+                if( !newValue ){
+                    PracticeEnv.INSTANCE.unregisterShoukiForm(form);
+                }
+            });
+            form.show();
+        }
     }
 }

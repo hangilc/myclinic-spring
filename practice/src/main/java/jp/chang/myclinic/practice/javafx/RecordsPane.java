@@ -24,6 +24,7 @@ public class RecordsPane extends VBox {
         addEventHandler(ConductEnteredEvent.eventType, this::onConductEntered);
         addEventHandler(ConductDeletedEvent.eventType, this::onConductDeleted);
         addEventHandler(TextEnteredEvent.eventType, this::onTextEntered);
+        addEventHandler(ShoukiChangedEvent.eventType, this::onShoukiChanged);
     }
 
     public void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
@@ -107,6 +108,13 @@ public class RecordsPane extends VBox {
         Record record = findRecord(event.getEnteredText().visitId);
         if( record != null ){
             record.appendText(event.getEnteredText());
+        }
+    }
+
+    private void onShoukiChanged(ShoukiChangedEvent event){
+        Record record = findRecord(event.getVisitId());
+        if( record != null ){
+            record.setShouki(event.getShoukiDTO());
         }
     }
 

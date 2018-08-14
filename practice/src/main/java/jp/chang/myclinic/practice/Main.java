@@ -45,6 +45,11 @@ public class Main extends Application implements CommandLineRunner {
                 "css/Practice.css"
         );
         stage.setScene(new Scene(root));
+        stage.showingProperty().addListener((obs, oldVaue, newValue) -> {
+            if( !newValue ){
+                PracticeEnv.INSTANCE.closeRemainingWindows();
+            }
+        });
         stage.show();
     }
 
