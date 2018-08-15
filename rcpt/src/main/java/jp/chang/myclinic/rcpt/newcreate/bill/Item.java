@@ -86,6 +86,17 @@ public class Item {
                         output.addDrug(drug.name, drug.amount, drug.unit);
                     }
                     output.endDrug();
+                    boolean multiple = collector.getNaifukuList().size() > 1;
+                    for(Naifuku drug: collector.getNaifukuList()){
+                        if( drug.tekiyou != null && !drug.tekiyou.isEmpty() ){
+                            if( multiple ){
+                                String text = String.format("%s（%s）", drug.tekiyou, drug.name);
+                                output.printTekiyouAux(text);
+                            } else {
+                                output.printTekiyouAux(drug.tekiyou);
+                            }
+                        }
+                    }
                 },
                 collector.getDays()
         );
@@ -99,6 +110,9 @@ public class Item {
                     output.beginDrug(shuukei, tanka, count);
                     output.addDrug(drug.name, drug.amount, drug.unit);
                     output.endDrug();
+                    if( drug.tekiyou != null && !drug.tekiyou.isEmpty() ){
+                        output.printTekiyouAux(drug.tekiyou);
+                    }
                 },
                 drug.days
         );
@@ -119,6 +133,9 @@ public class Item {
                         output.addDrug(drug.name, drug.amount, drug.unit);
                         output.endDrug();
                         output.printTekiyouAux(text);
+                        if( drug.tekiyou != null && !drug.tekiyou.isEmpty() ){
+                            output.printTekiyouAux(drug.tekiyou);
+                        }
                     },
                     1
             );
@@ -130,6 +147,9 @@ public class Item {
                         output.beginDrug(shuukei, tanka, count);
                         output.addDrug(drug.name, drug.amount, drug.unit);
                         output.endDrug();
+                        if( drug.tekiyou != null && !drug.tekiyou.isEmpty() ){
+                            output.printTekiyouAux(drug.tekiyou);
+                        }
                     },
                     1
             );
