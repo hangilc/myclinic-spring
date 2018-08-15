@@ -315,12 +315,10 @@ class Create {
     }
 
     private int calcShinryouNissuuKouhi1(List<Visit> visits) {
-        // TODO: implement kouhi1 nissuu
         return 0;
     }
 
     private int calcShinryouNissuuKouhi2(List<Visit> visits) {
-        // TODO: implement kouhi2 nissuu
         return 0;
     }
 
