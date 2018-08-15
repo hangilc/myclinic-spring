@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 
 import static jp.chang.myclinic.consts.MyclinicConsts.*;
 
-// TODO: add tekiyou for drug and shinryou
 class Create {
 
     private static Logger logger = LoggerFactory.getLogger(Create.class);

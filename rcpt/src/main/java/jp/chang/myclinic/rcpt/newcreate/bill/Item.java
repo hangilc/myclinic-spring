@@ -120,11 +120,16 @@ public class Item {
 
     public static Item fromGaiyou(Gaiyou drug) {
         if (drug.unit.equals("枚")) {
-            int timesPerDay = parseGaiyouTimesPerDay(drug.usage, 1);
-            int sheetsPerTimes = parseGaiyouSheetsPerTimes(drug.usage, 1);
-            String digits = String.format("%d", timesPerDay * sheetsPerTimes);
-            String kanjiDigits = StringUtil.transliterate(digits, StringUtil::digitToKanji);
-            String text = String.format("１日%s枚", kanjiDigits);
+            final String tekiyouText;
+            if( drug.tekiyou == null ) {
+                int timesPerDay = parseGaiyouTimesPerDay(drug.usage, 1);
+                int sheetsPerTimes = parseGaiyouSheetsPerTimes(drug.usage, 1);
+                String digits = String.format("%d", timesPerDay * sheetsPerTimes);
+                String kanjiDigits = StringUtil.transliterate(digits, StringUtil::digitToKanji);
+                tekiyouText = String.format("１日%s枚", kanjiDigits);
+            } else {
+                tekiyouText = drug.tekiyou;
+            }
             return new Item(
                     new GaiyouRep(drug),
                     RcptUtil.touyakuKingakuToTen(drug.amount * drug.yakka),
@@ -132,9 +137,8 @@ public class Item {
                         output.beginDrug(shuukei, tanka, count);
                         output.addDrug(drug.name, drug.amount, drug.unit);
                         output.endDrug();
-                        output.printTekiyouAux(text);
-                        if( drug.tekiyou != null && !drug.tekiyou.isEmpty() ){
-                            output.printTekiyouAux(drug.tekiyou);
+                        if( tekiyouText != null && !tekiyouText.isEmpty() ) {
+                            output.printTekiyouAux(tekiyouText);
                         }
                     },
                     1
