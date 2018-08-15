@@ -74,9 +74,6 @@ class TekiyouList {
         if( item.getData().getTekiyou() != null ){
             items.add(new TekiyouAux(item.getData().getTekiyou()));
         }
-        if( item.getData().getShoujouShouki() != null ){
-            // TODO: add shoujou shouki
-        }
     }
 
     void add(NaifukuItem<Naifuku> item){

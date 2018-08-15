@@ -18,7 +18,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
-// TODO: add delete gazou label link
 @SpringBootApplication
 public class Main extends Application implements CommandLineRunner {
 

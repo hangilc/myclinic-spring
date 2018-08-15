@@ -23,6 +23,7 @@ public class SimpleSearchBox<T> extends VBox {
         super(4);
         this.input = new BasicSearchTextInput();
         this.result = new SelectableList<>(converter);
+        this.result.getStyleClass().add("search-result");
         input.setOnSearchCallback(t -> {
             searcher.apply(t)
                     .thenAccept(list -> Platform.runLater(() -> result.setList(list)))

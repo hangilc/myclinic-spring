@@ -139,6 +139,10 @@
     -fx-padding: 10px;
 }
 
+.new-visit-dialog .search-result {
+    -fx-pref-height: 100px;
+}
+
 .search-text-dialog {
     -fx-padding: 10px;
     -fx-pref-width: 300px;

@@ -19,7 +19,6 @@ public class ZaitakuVisit extends VisitBase {
     }
 
     public void add(Shinryou shinryou, LocalDate visitedAt){
-        // TODO: add yakan, shinya, houmon, yakuzai
         if( shinryou.getShinryoucode() == shinryouMasterMap.往診 ){
             oushinItems.add(createZaitakuItem(shinryou, visitedAt));
         } else {
