@@ -34,7 +34,7 @@ public class Item {
         this.count = count;
     }
 
-    public Item copy(){
+    public Item copy() {
         return new Item(rep, tanka, tekiyouProc, count);
     }
 
@@ -68,7 +68,12 @@ public class Item {
         String a = aliasMap.get(shinryou.shinryoucode);
         String name = a == null ? shinryou.name : a;
         return fromShinryou(shinryou,
-                (output, shuukei, tanka, count) -> output.printTekiyou(shuukei, name, tanka, count));
+                (output, shuukei, tanka, count) -> {
+                    output.printTekiyou(shuukei, name, tanka, count);
+                    if( shinryou.tekiyou != null && !shinryou.tekiyou.isEmpty()){
+                        output.printTekiyouAux(shinryou.tekiyou);
+                    }
+                });
     }
 
     public static Item fromNaifukuCollector(NaifukuCollector collector) {
@@ -228,7 +233,7 @@ public class Item {
         ten += conduct.drugs.stream().mapToInt(d -> drugKingakuConverter.apply(d.yakka * d.amount)).sum();
         ten += conduct.kizaiList.stream().mapToInt(k -> RcptUtil.kizaiKingakuToTen(k.kingaku * k.amount)).sum();
         String label;
-        if( conductKind == ConductKind.Gazou ) {
+        if (conductKind == ConductKind.Gazou) {
             if ("胸部単純Ｘ線".equals(conduct.label)) {
                 label = String.format("胸部単純Ｘ線（%s）",
                         conduct.kizaiList.stream().map(Item::conductKizaiLabel).collect(Collectors.joining("、")));
@@ -246,7 +251,7 @@ public class Item {
         );
     }
 
-    private static String collectConductLabels(Conduct conduct){
+    private static String collectConductLabels(Conduct conduct) {
         List<String> labelItems = new ArrayList<>();
         labelItems.addAll(conduct.shinryouList.stream().map(s -> s.name).collect(Collectors.toList()));
         labelItems.addAll(conduct.drugs.stream().map(Item::conductDrugLabel).collect(Collectors.toList()));
@@ -266,7 +271,7 @@ public class Item {
     }
 
     private static int calcHoukatsuTen(HoukatsuKensaRevision.Revision revision,
-                                      HoukatsuKensaKind kind, List<Shinryou> list) {
+                                       HoukatsuKensaKind kind, List<Shinryou> list) {
         return revision.calcTen(kind, list.size()).orElseGet(() ->
                 list.stream().mapToInt(shinryou -> shinryou.tensuu).sum());
     }
@@ -275,7 +280,7 @@ public class Item {
         return list.stream().map(shinryou -> shinryou.name).collect(Collectors.joining("、"));
     }
 
-    public static Item fromHandanryouList(List<Shinryou> handanryouList, ResolvedShinryouMap resolvedShinryouMap){
+    public static Item fromHandanryouList(List<Shinryou> handanryouList, ResolvedShinryouMap resolvedShinryouMap) {
         String label = "（判）" + handanryouList.stream().map(s -> Item.rewriteHandanryouName(s, resolvedShinryouMap))
                 .collect(Collectors.joining("、"));
         return new Item(
@@ -286,21 +291,21 @@ public class Item {
         );
     }
 
-    private static String rewriteHandanryouName(Shinryou shinryou, ResolvedShinryouMap map){
+    private static String rewriteHandanryouName(Shinryou shinryou, ResolvedShinryouMap map) {
         int shinryoucode = shinryou.shinryoucode;
-        if( shinryoucode == map.尿便検査判断料 ){
+        if (shinryoucode == map.尿便検査判断料) {
             return "尿";
-        } else if( shinryoucode == map.血液検査判断料 ){
+        } else if (shinryoucode == map.血液検査判断料) {
             return "血";
-        } else if( shinryoucode == map.生化Ⅰ判断料 ){
+        } else if (shinryoucode == map.生化Ⅰ判断料) {
             return "生Ⅰ";
-        } else if( shinryoucode == map.生化Ⅱ判断料 ){
+        } else if (shinryoucode == map.生化Ⅱ判断料) {
             return "生Ⅱ";
-        } else if( shinryoucode == map.免疫検査判断料 ){
+        } else if (shinryoucode == map.免疫検査判断料) {
             return "免";
-        } else if( shinryoucode == map.微生物検査判断料 ){
+        } else if (shinryoucode == map.微生物検査判断料) {
             return "微";
-        } else if( shinryoucode == map.病理判断料 ){
+        } else if (shinryoucode == map.病理判断料) {
             return "病学";
         } else {
             logger.warn("Unknown handanryou: " + shinryou.name);
