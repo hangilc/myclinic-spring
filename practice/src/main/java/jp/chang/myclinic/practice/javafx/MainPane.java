@@ -77,17 +77,20 @@ public class MainPane extends BorderPane {
         {
             Menu menu = new Menu("その他");
             MenuItem newVisitItem = new MenuItem("受付");
+            MenuItem newVisitOfCurrentPatientItem = new MenuItem("現在診察中患者の再受付");
             MenuItem referItem = new MenuItem("紹介状作成");
             MenuItem shohousenItem = new MenuItem("処方箋作成");
             MenuItem listPrinterSettingItem = new MenuItem("印刷設定の一覧");
             MenuItem searchTextMenuItem = new MenuItem("全文検索");
             newVisitItem.setOnAction(evt -> doNewVisit());
+            newVisitOfCurrentPatientItem.setOnAction(evt -> doNewVisitOfCurrentPatient());
             referItem.setOnAction(evt -> doRefer(false));
             shohousenItem.setOnAction(evt -> doShohousen());
             listPrinterSettingItem.setOnAction(evt -> doListPrinterSetting());
             searchTextMenuItem.setOnAction(evt -> doGlobalSearchText());
             menu.getItems().addAll(
                     newVisitItem,
+                    newVisitOfCurrentPatientItem,
                     referItem,
                     shohousenItem,
                     listPrinterSettingItem,
@@ -121,6 +124,18 @@ public class MainPane extends BorderPane {
     private void doNewVisit() {
         NewVisitDialog dialog = new NewVisitDialog();
         dialog.showAndWait();
+    }
+
+    private void doNewVisitOfCurrentPatient(){
+        PatientDTO patient = PracticeEnv.INSTANCE.getCurrentPatient();
+        if( patient != null ){
+            String confirmText = String.format("(%d) %s%s様を再受付しますか？", patient.patientId,
+                    patient.lastName, patient.firstName);
+            if( GuiUtil.confirm(confirmText) ){
+                Service.api.startVisit(patient.patientId)
+                        .exceptionally(HandlerFX::exceptionally);
+            }
+        }
     }
 
     private void doListPrinterSetting() {
