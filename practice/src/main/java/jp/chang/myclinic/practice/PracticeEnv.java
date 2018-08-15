@@ -5,10 +5,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.stage.Stage;
-import jp.chang.myclinic.dto.ClinicInfoDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.ReferItemDTO;
-import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.myclinicenv.MyclinicEnv;
 import jp.chang.myclinic.practice.javafx.ShoukiForm;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -17,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 public class PracticeEnv {
 
@@ -38,6 +36,7 @@ public class PracticeEnv {
     private IntegerProperty currentRecordPage = new SimpleIntegerProperty(0);
     private ObjectProperty<List<VisitFull2DTO>> pageVisits = new SimpleObjectProperty<>(Collections.emptyList());
     private Map<Integer, ShoukiForm> shoukiFormMap = new HashMap<>();
+    private List<BiConsumer<Integer, ShoukiDTO>> shoukiChangeListeners = new ArrayList<>();
     private MyclinicEnv myclinicEnv;
     private List<ReferItemDTO> referList;
     private String kouhatsuKasan;
@@ -194,6 +193,12 @@ public class PracticeEnv {
         this.kouhatsuKasan = kouhatsuKasan;
     }
 
+    // ShoukiForm ///////////////////////////////////////////////////////////////////////////////////////
+
+    public void addShoukiFormChangeListener(BiConsumer<Integer, ShoukiDTO> listener){
+        shoukiChangeListeners.add(listener);
+    }
+
     public ShoukiForm getShoukiForm(int visitId){
         return shoukiFormMap.get(visitId);
     }
@@ -203,6 +208,11 @@ public class PracticeEnv {
         if( prev != null ){
             GuiUtil.alertError("ShoukiForm is already opened.");
         }
+        shoukiForm.setCallback((visitId, shoukiDTO) -> {
+            for(BiConsumer<Integer, ShoukiDTO> callback: shoukiChangeListeners){
+                callback.accept(visitId, shoukiDTO);
+            }
+        });
     }
 
     public void unregisterShoukiForm(ShoukiForm shoukiForm){

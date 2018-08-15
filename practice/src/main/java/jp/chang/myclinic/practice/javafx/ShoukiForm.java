@@ -13,13 +13,15 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.ShoukiDTO;
 
-// TODO: fire event instead of modifying observable (it becomes broken with page transition)
+import java.util.function.BiConsumer;
+
 public class ShoukiForm extends Stage {
 
     //private static Logger logger = LoggerFactory.getLogger(ShoukiForm.class);
     private int visitId;
     private ShoukiDTO orig;
     private TextArea textArea = new TextArea();
+    private BiConsumer<Integer, ShoukiDTO> callback = (visitId, shoukiDTO) -> {};
 
     ShoukiForm(int visitId, ShoukiDTO orig) {
         this.visitId = visitId;
@@ -37,6 +39,10 @@ public class ShoukiForm extends Stage {
 
     public int getVisitId(){
         return visitId;
+    }
+
+    public void setCallback(BiConsumer<Integer, ShoukiDTO> callback){
+        this.callback = callback;
     }
 
     private Node createTextArea() {
@@ -67,7 +73,7 @@ public class ShoukiForm extends Stage {
             shoukiDTO.shouki = textArea.getText();
             Service.api.updateShouki(shoukiDTO)
                     .thenAcceptAsync(result -> {
-                        onShoukiModified(shoukiDTO);
+                        callback.accept(visitId, shoukiDTO);
                         close();
                     }, Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
@@ -76,30 +82,22 @@ public class ShoukiForm extends Stage {
             edited.shouki = textArea.getText();
             Service.api.updateShouki(edited)
                     .thenAcceptAsync(result -> {
-                        onShoukiModified(edited);
+                        callback.accept(visitId, edited);
                         close();
                     }, Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
         }
-    }
-
-    protected void onShoukiModified(ShoukiDTO shoukiDTO){
-
     }
 
     private void doDelete() {
         if (GuiUtil.confirm("この症状詳記を削除していいですか？")) {
             Service.api.deleteShouki(visitId)
                     .thenAcceptAsync(result -> {
-                        onShoukiDeleted(visitId);
+                        callback.accept(visitId, null);
                         close();
                     }, Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
         }
-    }
-
-    protected void onShoukiDeleted(int visitId){
-
     }
 
 }

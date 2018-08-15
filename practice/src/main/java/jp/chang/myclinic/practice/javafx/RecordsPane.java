@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.javafx;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.events.*;
 
 import java.util.Map;
@@ -24,7 +25,7 @@ public class RecordsPane extends VBox {
         addEventHandler(ConductEnteredEvent.eventType, this::onConductEntered);
         addEventHandler(ConductDeletedEvent.eventType, this::onConductDeleted);
         addEventHandler(TextEnteredEvent.eventType, this::onTextEntered);
-        addEventHandler(ShoukiChangedEvent.eventType, this::onShoukiChanged);
+        PracticeEnv.INSTANCE.addShoukiFormChangeListener(this::onShoukiChanged);
     }
 
     public void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
@@ -111,10 +112,10 @@ public class RecordsPane extends VBox {
         }
     }
 
-    private void onShoukiChanged(ShoukiChangedEvent event){
-        Record record = findRecord(event.getVisitId());
+    private void onShoukiChanged(int visitId, ShoukiDTO shoukiDTO){
+        Record record = findRecord(visitId);
         if( record != null ){
-            record.setShouki(event.getShoukiDTO());
+            record.setShouki(shoukiDTO);
         }
     }
 
