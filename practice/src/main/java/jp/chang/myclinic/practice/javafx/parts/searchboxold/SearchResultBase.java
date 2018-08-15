@@ -5,7 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

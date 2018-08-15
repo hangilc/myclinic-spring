@@ -7,7 +7,7 @@ import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.time.LocalDate;
 import java.util.List;

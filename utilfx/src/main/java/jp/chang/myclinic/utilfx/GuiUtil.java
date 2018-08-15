@@ -3,9 +3,13 @@ package jp.chang.myclinic.utilfx;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionException;
 
@@ -48,4 +52,12 @@ public class GuiUtil {
         textInputDialog.setHeaderText(prompt);
         return textInputDialog.showAndWait();
     }
+
+    public static  boolean copyToClipboard(String text){
+        Map<DataFormat,Object> content = new HashMap<>();
+        content.put(DataFormat.PLAIN_TEXT, text);
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        return clipboard.setContent(content);
+    }
+
 }

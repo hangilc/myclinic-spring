@@ -12,7 +12,7 @@ import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import jp.chang.myclinic.practice.javafx.parts.SexInput;
 import jp.chang.myclinic.practice.javafx.parts.dateinput.DateInput;

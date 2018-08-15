@@ -3,7 +3,7 @@ package jp.chang.myclinic.practice.lib;
 import javafx.application.Platform;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

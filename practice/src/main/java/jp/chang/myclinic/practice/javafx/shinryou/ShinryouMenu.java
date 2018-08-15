@@ -12,7 +12,7 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;

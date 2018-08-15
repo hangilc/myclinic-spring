@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice.javafx.conduct;
 
 import jp.chang.myclinic.dto.ConductShinryouDTO;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.EnterCancelBox;
 import jp.chang.myclinic.practice.javafx.parts.ShinryouSearchBox;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;

@@ -14,6 +14,7 @@ import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 
 public class RecordTitle extends TextFlow {
 

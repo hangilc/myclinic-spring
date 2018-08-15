@@ -7,8 +7,8 @@ import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 
 public class ShinryouEditForm extends WorkForm {

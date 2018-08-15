@@ -9,7 +9,7 @@ import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.util.DrugUtil;
 

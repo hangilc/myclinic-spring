@@ -5,7 +5,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.lib.PracticeService;
 
 import java.util.List;

@@ -12,13 +12,12 @@ import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.lib.PracticeLib;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 

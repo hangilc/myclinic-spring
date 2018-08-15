@@ -2,7 +2,7 @@ package jp.chang.myclinic.practice.javafx.parts.searchbox;
 
 import javafx.application.Platform;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.SelectableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

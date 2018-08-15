@@ -16,6 +16,7 @@ import jp.chang.myclinic.practice.javafx.shohousen.ShohousenData;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDrawer;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenInfo;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

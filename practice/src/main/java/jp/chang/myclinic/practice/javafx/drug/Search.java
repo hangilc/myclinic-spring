@@ -10,7 +10,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

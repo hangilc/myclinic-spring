@@ -8,7 +8,7 @@ import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.ConductDrugDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.SearchResult;
 import jp.chang.myclinic.practice.javafx.parts.SearchTextBox;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;

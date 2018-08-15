@@ -3,7 +3,7 @@ package jp.chang.myclinic.practice.javafx.conduct;
 import jp.chang.myclinic.dto.ConductDrugDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.practice.javafx.HandlerFX;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.EnterCancelBox;
 import jp.chang.myclinic.practice.javafx.parts.SearchBoxOld;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;

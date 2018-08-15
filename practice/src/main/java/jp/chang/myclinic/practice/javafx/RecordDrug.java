@@ -13,6 +13,7 @@ import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.drug.EditForm;
 import jp.chang.myclinic.util.DrugUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 
 class RecordDrug extends StackPane {
 

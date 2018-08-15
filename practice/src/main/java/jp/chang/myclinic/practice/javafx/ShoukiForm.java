@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.ShoukiDTO;
+import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.util.function.BiConsumer;
 

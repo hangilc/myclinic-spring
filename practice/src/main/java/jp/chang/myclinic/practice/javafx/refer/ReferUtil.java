@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice.javafx.refer;
 
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

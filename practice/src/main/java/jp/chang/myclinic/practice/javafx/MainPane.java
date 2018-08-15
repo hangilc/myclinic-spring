@@ -22,6 +22,7 @@ import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeService;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

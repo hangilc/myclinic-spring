@@ -8,7 +8,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.ChargeDTO;
 import jp.chang.myclinic.dto.MeisaiDTO;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.EnterCancelBox;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import org.slf4j.Logger;

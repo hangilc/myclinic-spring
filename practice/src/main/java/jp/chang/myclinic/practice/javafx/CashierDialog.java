@@ -12,6 +12,7 @@ import jp.chang.myclinic.dto.MeisaiDTO;
 import jp.chang.myclinic.practice.javafx.parts.MeisaiDisp;
 import jp.chang.myclinic.practice.javafx.parts.inplaceediting.InPlaceEditable;
 import jp.chang.myclinic.practice.lib.PracticeLib;
+import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.util.function.Consumer;
 

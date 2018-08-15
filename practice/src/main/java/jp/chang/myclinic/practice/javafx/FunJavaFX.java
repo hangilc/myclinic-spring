@@ -8,6 +8,7 @@ import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.practice.lib.ErrorMessageExtractor;
 import jp.chang.myclinic.practice.lib.shinryou.ShinryouCopier;
+import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.util.HashMap;
 import java.util.List;

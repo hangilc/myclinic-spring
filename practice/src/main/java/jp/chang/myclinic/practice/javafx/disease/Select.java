@@ -4,7 +4,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.disease.select.Disp;
 import jp.chang.myclinic.practice.javafx.disease.select.SelectionList;
 import org.slf4j.Logger;

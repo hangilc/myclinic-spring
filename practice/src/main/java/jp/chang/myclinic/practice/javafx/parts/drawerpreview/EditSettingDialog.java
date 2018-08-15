@@ -17,12 +17,11 @@ import jp.chang.myclinic.drawer.printer.AuxSetting;
 import jp.chang.myclinic.drawer.printer.DevnamesInfo;
 import jp.chang.myclinic.drawer.printer.DrawerPrinter;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
-import jp.chang.myclinic.practice.javafx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
