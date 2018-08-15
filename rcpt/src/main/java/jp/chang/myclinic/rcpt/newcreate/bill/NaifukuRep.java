@@ -4,6 +4,7 @@ import jp.chang.myclinic.rcpt.newcreate.input.Naifuku;
 import jp.chang.myclinic.util.RcptUtil;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -49,7 +50,7 @@ class NaifukuRep {
     }
 
     boolean canAdd(Naifuku drug){
-        return usage.equals(drug.usage);
+        return usage.equals(normalizeUsage(drug.usage));
     }
 
     void add(Naifuku drug){
@@ -80,12 +81,28 @@ class NaifukuRep {
         return Objects.hash(usage, drugs);
     }
 
+    private static boolean newUsageNormalization;
+    static {
+        newUsageNormalization = Boolean.getBoolean("jp.chang.myclinic.new_usage_normalization");
+        System.err.println("newUsageNormalization: " + newUsageNormalization);
+    }
+
+    // TODO: more aggresively normalize usage (e.g., 分２ (2-1) 朝夕食後)
     private String normalizeUsage(String usage){
-        // TODO: extend conversion (眠前, 2x 朝、就寝前...)
-        if( usage.equals("就寝前") ){
-            return "寝る前";
-        } else {
+        if( newUsageNormalization ){
+            for(String s: List.of("就寝前", "眠前")){
+                if( usage.contains(s) ){
+                    usage = usage.replace(s, "寝る前");
+                }
+            }
+            System.err.println("usage: " + usage);
             return usage;
+        } else {
+            if (usage.equals("就寝前")) {
+                return "寝る前";
+            } else {
+                return usage;
+            }
         }
     }
 }
