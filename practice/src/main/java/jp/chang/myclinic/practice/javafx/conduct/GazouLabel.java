@@ -3,8 +3,9 @@ package jp.chang.myclinic.practice.javafx.conduct;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
-import jp.chang.myclinic.dto.GazouLabelDTO;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.GazouLabelDTO;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,19 @@ public class GazouLabel extends StackPane {
             @Override
             protected void onCancel() {
                 GazouLabel.this.getChildren().setAll(disp);
+            }
+
+            @Override
+            protected void onDelete() {
+                if( GuiUtil.confirm("この画像ラベルを消去していいですか？") ){
+                    Service.api.deleteGazouLabel(conductId)
+                            .thenAcceptAsync(result -> {
+                                GazouLabel.this.label = "";
+                                GazouLabel.this.getChildren().setAll(createDisp());
+                                onModified(null);
+                           }, Platform::runLater)
+                            .exceptionally(HandlerFX::exceptionally);
+                }
             }
         };
         getChildren().setAll(form);

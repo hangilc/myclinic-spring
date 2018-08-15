@@ -11,6 +11,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.parts.PatientDisp;
 import jp.chang.myclinic.practice.javafx.parts.PatientSearchBox;
 import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.javafx.conduct;
 
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -11,16 +12,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.StringConverter;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.utilfx.GuiUtil;
-import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductDeletedEvent;
 import jp.chang.myclinic.practice.javafx.parts.OptionalWrapper;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.util.KizaiUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,10 +38,10 @@ public class ConductEditForm extends WorkForm {
     private VBox drugBox = new VBox(4);
     private VBox kizaiBox = new VBox(4);
 
-    public ConductEditForm(ConductFullDTO conduct, String at) {
+    public ConductEditForm(ConductFullDTO origConduct, String at) {
         super("処置の編集");
         this.at = at;
-        this.conduct = conduct;
+        this.conduct = ConductFullDTO.deepCopy(origConduct);
         getChildren().addAll(
                 createTopMenu(),
                 workarea,
@@ -67,6 +68,7 @@ public class ConductEditForm extends WorkForm {
 
     private Node createKindInput(int kind) {
         HBox hbox = new HBox(4);
+        hbox.setAlignment(Pos.CENTER_LEFT);
         ChoiceBox<ConductKind> choiceBox = new ChoiceBox<>();
         choiceBox.setConverter(new StringConverter<ConductKind>() {
             @Override
@@ -100,13 +102,17 @@ public class ConductEditForm extends WorkForm {
         return new GazouLabel(gazouLabelDTO, getConductId()){
             @Override
             protected void onModified(String value) {
-                if( conduct.gazouLabel != null ){
-                    conduct.gazouLabel.label = value;
+                if( value == null ){
+                    conduct.gazouLabel = null;
                 } else {
-                    GazouLabelDTO dto = new GazouLabelDTO();
-                    dto.label = value;
-                    dto.conductId = getConductId();
-                    conduct.gazouLabel = dto;
+                    if (conduct.gazouLabel != null) {
+                        conduct.gazouLabel.label = value;
+                    } else {
+                        GazouLabelDTO dto = new GazouLabelDTO();
+                        dto.label = value;
+                        dto.conductId = getConductId();
+                        conduct.gazouLabel = dto;
+                    }
                 }
             }
         };

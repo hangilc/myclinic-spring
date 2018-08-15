@@ -1,9 +1,9 @@
 package jp.chang.myclinic.practice.javafx.conduct;
 
 import javafx.scene.control.ComboBox;
-import jp.chang.myclinic.practice.lib.PracticeUtil;
-import jp.chang.myclinic.practice.javafx.parts.EnterCancelBox;
+import jp.chang.myclinic.practice.javafx.parts.EnterCancelDeleteBox;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
+import jp.chang.myclinic.practice.lib.PracticeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,9 +17,10 @@ public class GazouLabelForm extends WorkForm {
         combo.getItems().addAll(PracticeUtil.gazouLabelExamples);
         combo.setEditable(true);
         combo.setValue(value);
-        EnterCancelBox commands = new EnterCancelBox();
+        EnterCancelDeleteBox commands = new EnterCancelDeleteBox();
         commands.setEnterCallback(() -> onEnter(combo.getSelectionModel().getSelectedItem()));
         commands.setCancelCallback(this::onCancel);
+        commands.setDeleteCallback(this::onDelete);
         getChildren().addAll(
                 combo,
                 commands
@@ -31,6 +32,10 @@ public class GazouLabelForm extends WorkForm {
     }
 
     protected void onCancel(){
+
+    }
+
+    protected void onDelete(){
 
     }
 

@@ -9,13 +9,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.TextVisitDTO;
 import jp.chang.myclinic.dto.TextVisitPageDTO;
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.javafx.parts.PageNav;
 import jp.chang.myclinic.practice.javafx.parts.SimplePageNav;
 import jp.chang.myclinic.practice.javafx.parts.searchbox.BasicSearchTextInput;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

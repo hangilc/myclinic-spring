@@ -11,6 +11,7 @@ import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.practice.javafx.events.ShinryouDeletedEvent;
 import jp.chang.myclinic.practice.javafx.shinryou.ShinryouEditForm;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 class RecordShinryou extends StackPane {
 

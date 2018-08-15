@@ -5,9 +5,10 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.dto.ChargeDTO;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.ChargeDTO;
 import jp.chang.myclinic.practice.javafx.charge.ChargeForm;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 class RecordCharge extends StackPane {
 

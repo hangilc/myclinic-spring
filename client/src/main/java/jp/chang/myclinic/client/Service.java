@@ -490,6 +490,12 @@ public class Service {
         Call<Boolean> modifyGazouLabelCall(@Query("conduct-id") int conductId,
                                            @Query("label") String label);
 
+        @POST("delete-gazou-label")
+        CompletableFuture<Boolean> deleteGazouLabel(@Query("conduct-id") int conductId);
+
+        @POST("delete-gazou-label")
+        Call<Boolean> deleteGazouLabelCall(@Query("conduct-id") int conductId);
+
         @POST("delete-conduct-shinryou")
         CompletableFuture<Boolean> deleteConductShinryou(@Query("conduct-shinryou-id") int conductShinryouId);
 

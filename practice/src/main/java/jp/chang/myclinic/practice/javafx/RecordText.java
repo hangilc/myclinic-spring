@@ -5,11 +5,12 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.javafx.events.TextEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 public class RecordText extends StackPane {
 

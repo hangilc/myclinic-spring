@@ -1021,6 +1021,11 @@ public class DbGateway {
         }
     }
 
+    public void deleteGazouLabel(int conductId){
+        gazouLabelRepository.findOneByConductId(conductId)
+                .ifPresent(gazouLabel -> gazouLabelRepository.delete(gazouLabel));
+    }
+
     public int enterConduct(ConductDTO conductDTO) {
         Conduct conduct = mapper.fromConductDTO(conductDTO);
         conduct = conductRepository.save(conduct);

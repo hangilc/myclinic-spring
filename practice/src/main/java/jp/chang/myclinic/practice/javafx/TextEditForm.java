@@ -7,9 +7,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.drawer.PaperSize;
+import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenData;
@@ -17,6 +17,7 @@ import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDrawer;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenInfo;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenUtil;
 import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

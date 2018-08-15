@@ -34,4 +34,10 @@ class GazouLabelController {
     public Optional<GazouLabelDTO> findGazouLabel(@RequestParam("conduct-id") int conductId){
         return Optional.ofNullable(dbGateway.findGazouLabel(conductId));
     }
+
+    @RequestMapping(value="/delete-gazou-label", method=RequestMethod.POST)
+    public Boolean deleteGazouLabel(@RequestParam("conduct-id") int conductId){
+        dbGateway.deleteGazouLabel(conductId);
+        return true;
+    }
 }
