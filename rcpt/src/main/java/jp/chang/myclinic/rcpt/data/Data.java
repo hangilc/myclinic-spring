@@ -59,8 +59,6 @@ class Data {
                     List<VisitFull2DTO> bundle = bundles.get(hokenIds);
                     outPatient(patient, bundle, diseases);
                 }
-//                // TODO: handle bundles seprately
-//                outPatient(patient, visits, diseases);
             }
         });
     }

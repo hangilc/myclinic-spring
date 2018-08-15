@@ -215,11 +215,15 @@ public class HoukatsuKensaRevision {
 		}
 	}
 
-	// TODO: add method to set file location of houkatsu-kensa.xml
 	public static HoukatsuKensaRevision load(){
+		String filePath = "./config/houkatsu-kensa.xml";
+		String pathFromProperty = System.getProperty("jp.chang.myclinic.houkatsukensa.file");
+		if( pathFromProperty != null ){
+			filePath = pathFromProperty;
+		}
 		try {
 			XmlMapper xmlMapper = new XmlMapper();
-			return xmlMapper.readValue(new File("./config/houkatsu-kensa.xml"), HoukatsuKensaRevision.class);
+			return xmlMapper.readValue(new File(filePath), HoukatsuKensaRevision.class);
 		} catch(IOException ex){
 			throw new UncheckedIOException(ex);
 		}
