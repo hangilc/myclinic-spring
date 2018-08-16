@@ -10,6 +10,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import org.slf4j.Logger;
@@ -48,40 +49,50 @@ class Search extends VBox {
 
     }
 
-    protected void onExampleSelect(PrescExampleFullDTO example){
+    protected void onExampleSelect(PrescExampleFullDTO example) {
 
     }
 
-    protected void onPrevSelect(DrugFullDTO drug){
+    protected void onPrevSelect(DrugFullDTO drug) {
 
     }
 
-    private void dispatchSelect(DrugSearchResultModel model){
-        if( model instanceof MasterSearchResult ){
-            MasterSearchResult masterSearchResult = (MasterSearchResult)model;
+    private void dispatchSelect(DrugSearchResultModel model) {
+        if (model instanceof MasterSearchResult) {
+            MasterSearchResult masterSearchResult = (MasterSearchResult) model;
             onMasterSelect(masterSearchResult.getMaster());
-        } else if( model instanceof ExampleSearchResult ){
+        } else if (model instanceof ExampleSearchResult) {
             ExampleSearchResult exampleSearchResult = (ExampleSearchResult) model;
             PrescExampleFullDTO example = exampleSearchResult.getPrescExample();
             String at = exampleSearchResult.getVisitedAt();
             int origIyakuhincode = example.master.iyakuhincode;
             Service.api.resolveIyakuhinMaster(origIyakuhincode, at)
                     .thenAccept(master -> {
-                        PrescExampleFullDTO resolved = PrescExampleFullDTO.copy(example);
-                        resolved.master = master;
-                        Platform.runLater(() -> onExampleSelect(resolved));
+                        if (master == null) {
+                            Platform.runLater(() ->
+                                    GuiUtil.alertError("この薬剤は現在使用できません。"));
+                        } else {
+                            PrescExampleFullDTO resolved = PrescExampleFullDTO.copy(example);
+                            resolved.master = master;
+                            Platform.runLater(() -> onExampleSelect(resolved));
+                        }
                     })
                     .exceptionally(HandlerFX::exceptionally);
-        } else if( model instanceof PreviousPrescSearchResult ){
+        } else if (model instanceof PreviousPrescSearchResult) {
             PreviousPrescSearchResult prevSearchResult = (PreviousPrescSearchResult) model;
             DrugFullDTO drugFull = prevSearchResult.getDrug();
             String at = prevSearchResult.getVisitedAt();
             int origIyakuhincode = drugFull.master.iyakuhincode;
             Service.api.resolveIyakuhinMaster(origIyakuhincode, at)
                     .thenAccept(master -> {
-                        DrugFullDTO resolved = DrugFullDTO.copy(drugFull);
-                        resolved.master = master;
-                        Platform.runLater(() -> onPrevSelect(resolved));
+                        if( master == null ){
+                            Platform.runLater(() ->
+                                    GuiUtil.alertError("この薬剤は現在使用できません。"));
+                        } else {
+                            DrugFullDTO resolved = DrugFullDTO.copy(drugFull);
+                            resolved.master = master;
+                            Platform.runLater(() -> onPrevSelect(resolved));
+                        }
                     })
                     .exceptionally(HandlerFX::exceptionally);
         } else {
