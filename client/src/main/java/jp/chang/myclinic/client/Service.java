@@ -975,6 +975,17 @@ public class Service {
         Call<List<HotlineDTO>> listTodaysHotlineInRangeCall(@Query("after") int afterId,
                                                             @Query("before") int beforeId);
 
+        @GET("get-powder-drug-config-file-path")
+        CompletableFuture<StringResultDTO> getPowderDrugConfigFilePath();
+
+        @GET("get-powder-drug-config-file-path")
+        Call<StringResultDTO> getPowderDrugConfigFilePathCall();
+
+        @GET("get-master-map-config-file-path")
+        CompletableFuture<StringResultDTO> getMasterMapConfigFilePath();
+
+        @GET("get-master-map-config-file-path")
+        Call<StringResultDTO> getMasterMapConfigFilePathCall();
     }
 
     public static ServerAPI api;

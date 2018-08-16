@@ -11,7 +11,6 @@ import static java.util.stream.Collectors.toList;
 
 public class NormalizedDrugUsage {
 
-    private static Pattern trimPattern = Pattern.compile("^[ 　]+|[ 　]+$");
     private static Pattern timesPattern = Pattern.compile("分([0-9０-９]+)(.*)");
     private static Pattern unevenPattern = Pattern.compile("[(（]([- 　0-9０-９.．ー－]+)[)）]");
     private static Pattern mealsPattern = Pattern.compile("([朝昼夕]+)食(.)");
@@ -24,7 +23,7 @@ public class NormalizedDrugUsage {
 
     public NormalizedDrugUsage(String usage) {
         if( usage != null ){
-            usage = trimSpaces(usage);
+            usage = StringUtil.trimSpaces(usage);
             Matcher unevenMatcher = unevenPattern.matcher(usage);
             if( unevenMatcher.find() ){
                 this.unevenText = unevenMatcher.group();
@@ -34,7 +33,7 @@ public class NormalizedDrugUsage {
             Matcher matcher = timesPattern.matcher(usage);
             if( matcher.matches() ){
                 this.times = Integer.parseInt(kanjiStringToDigitString(matcher.group(1)));
-                this.usageWithoutTimes = trimSpaces(matcher.group(2));
+                this.usageWithoutTimes = StringUtil.trimSpaces(matcher.group(2));
             } else {
                 this.usageWithoutTimes = usage;
             }
@@ -80,7 +79,7 @@ public class NormalizedDrugUsage {
             } else if( ch == '.' || ch == '．' ){
                 sb.append('.');
             } else {
-                ch = kanjiToDigit(ch);
+                ch = StringUtil.kanjiToDigit(ch);
                 if( ch >= '0' && ch <= '9' ){
                     sb.appendCodePoint(ch);
                 } else {
@@ -124,58 +123,11 @@ public class NormalizedDrugUsage {
         return parts;
     }
 
-    private String trimSpaces(String s){
-        Matcher matcher = trimPattern.matcher(s);
-        if( matcher.find() ){
-            return matcher.replaceAll("");
-        } else {
-            return s;
-        }
-    }
-
-    private int digitToKanji(int codePoint){
-        switch(codePoint){
-            case '0': return '０';
-            case '1': return '１';
-            case '2': return '２';
-            case '3': return '３';
-            case '4': return '４';
-            case '5': return '５';
-            case '6': return '６';
-            case '7': return '７';
-            case '8': return '８';
-            case '9': return '９';
-            default: return codePoint;
-        }
-    }
-
-    private int kanjiToDigit(int codePoint){
-        switch(codePoint){
-            case '０': return '0';
-            case '１': return '1';
-            case '２': return '2';
-            case '３': return '3';
-            case '４': return '4';
-            case '５': return '5';
-            case '６': return '6';
-            case '７': return '7';
-            case '８': return '8';
-            case '９': return '9';
-            default: return codePoint;
-        }
-    }
-
     private int numToKanji(int codePoint){
         switch(codePoint){
             case '.': return '．';
-            default: return digitToKanji(codePoint);
+            default: return StringUtil.digitToKanji(codePoint);
         }
-    }
-
-    private String numberStringToKanjiString(String s){
-        return s.codePoints().map(this::numToKanji)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
     }
 
     private String kanjiStringToDigitString(String s){
@@ -183,6 +135,5 @@ public class NormalizedDrugUsage {
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
     }
-
 
 }
