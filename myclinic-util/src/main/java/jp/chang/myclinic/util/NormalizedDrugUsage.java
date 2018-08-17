@@ -41,6 +41,8 @@ public class NormalizedDrugUsage {
                     extractTimingParts(usageWithoutTimes).stream().map(this::normalizePart).collect(toList())
             );
             if( times != null && times != parts.size() ){
+                System.err.println("times: " + times);
+                System.err.println("pargs: " + parts);
                 throw new DrugUsageFormatException("分服の回数と服用時の回数が一致しません。");
             }
             if( weights != null && weights.size() != parts.size() ){
@@ -109,8 +111,8 @@ public class NormalizedDrugUsage {
                 parts.add("昼食" + suffix);
                 parts.add("夕食" + suffix);
             } else {
-                Matcher matcher = mealsPattern.matcher(usage);
-                if( matcher.matches() ){
+                Matcher matcher = mealsPattern.matcher(part);
+                if( matcher.find() ){
                     String suffix = matcher.group(2);
                     matcher.group(1).chars().forEach(ch -> {
                         parts.add(String.format("%c食%s", ch, suffix));

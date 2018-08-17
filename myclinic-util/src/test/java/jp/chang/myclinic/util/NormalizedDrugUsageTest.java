@@ -68,4 +68,10 @@ public class NormalizedDrugUsageTest {
         assertThrows(DrugUsageFormatException.class, () -> new NormalizedDrugUsage("分１  毎食後"));
     }
 
+    @Test void timesTest(){
+        NormalizedDrugUsage nu = new NormalizedDrugUsage("分３　朝昼食後、眠前");
+        assertEquals(3, (Object)nu.getTimes());
+        assertEquals(List.of("朝食後", "昼食後", "寝る前"), nu.getParts());
+    }
+
 }

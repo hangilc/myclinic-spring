@@ -1,10 +1,10 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.rcpt.newcreate.input.Naifuku;
+import jp.chang.myclinic.util.NormalizedDrugUsage;
 import jp.chang.myclinic.util.RcptUtil;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -40,7 +40,7 @@ class NaifukuRep {
         }
     }
 
-    private String usage;
+    private Object usage;
     private Set<NaifukuDrug> drugs = new HashSet<>();
     private double kingaku;
 
@@ -88,15 +88,11 @@ class NaifukuRep {
     }
 
     // TODO: more aggresively normalize usage (e.g., 分２ (2-1) 朝夕食後)
-    private String normalizeUsage(String usage){
+    private Object normalizeUsage(String usage){
         if( newUsageNormalization ){
-            for(String s: List.of("就寝前", "眠前")){
-                if( usage.contains(s) ){
-                    usage = usage.replace(s, "寝る前");
-                }
-            }
-            System.err.println("usage: " + usage);
-            return usage;
+            NormalizedDrugUsage normalized = new NormalizedDrugUsage(usage);
+            System.err.println(normalized.getParts());
+            return new HashSet<>(normalized.getParts());
         } else {
             if (usage.equals("就寝前")) {
                 return "寝る前";
