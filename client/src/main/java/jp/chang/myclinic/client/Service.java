@@ -987,6 +987,12 @@ public class Service {
         @GET("get-master-map-config-file-path")
         Call<StringResultDTO> getMasterMapConfigFilePathCall();
 
+        @GET("get-shinryou-byoumei-map-config-file-path")
+        CompletableFuture<StringResultDTO> getShinryouByoumeiMapConfigFilePath();
+
+        @GET("get-shinryou-byoumei-map-config-file-path")
+        Call<StringResultDTO> getShinryouByoumeiMapConfigFilePathCall();
+
         @GET("get-name-map-config-file-path")
         CompletableFuture<StringResultDTO> getNameMapConfigFilePath();
 

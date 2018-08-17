@@ -2,8 +2,8 @@ package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.HoukatsuKensaKind;
-import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.newcreate.input.*;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
 import jp.chang.myclinic.util.NumberUtil;
 import jp.chang.myclinic.util.RcptUtil;
 import jp.chang.myclinic.util.StringUtil;

@@ -1,9 +1,9 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
-import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
 import jp.chang.myclinic.rcpt.newcreate.input.Rcpt;
 import jp.chang.myclinic.rcpt.newcreate.input.Seikyuu;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class Bill {
 
-    private static Logger logger = LoggerFactory.getLogger(Bill.class);
+    //private static Logger logger = LoggerFactory.getLogger(Bill.class);
     private Rcpt rcpt;
     private Output out;
     private ResolvedShinryouMap resolvedShinryouMap;

@@ -1,6 +1,6 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
-import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
 
 import java.util.HashMap;
 import java.util.Map;

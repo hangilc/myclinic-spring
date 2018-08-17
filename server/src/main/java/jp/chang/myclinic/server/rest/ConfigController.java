@@ -21,6 +21,8 @@ public class ConfigController {
     private String masterMapConfigFilePath;
     @Value("${myclinic.name-map-file}")
     private String nameMapConfigFilePath;
+    @Value("${myclinic.shinryou-byoumei-file}")
+    private String shinryouByoumeiMapConfigFilePath;
     @Value("${myclinic.powder-drug-file}")
     private String powderDrugFilePath;
 
@@ -43,6 +45,14 @@ public class ConfigController {
     @RequestMapping(value = "/get-name-map-config-file-path", method = RequestMethod.GET)
     public StringResultDTO getNameMapConfigFilePath() {
         Path path = Paths.get(nameMapConfigFilePath);
+        StringResultDTO result = new StringResultDTO();
+        result.value = path.toAbsolutePath().toString();
+        return result;
+    }
+
+    @RequestMapping(value = "/get-shinryou-byoumei-map-config-file-path", method = RequestMethod.GET)
+    public StringResultDTO getShinryouByoumeiMapConfigFilePath() {
+        Path path = Paths.get(shinryouByoumeiMapConfigFilePath);
         StringResultDTO result = new StringResultDTO();
         result.value = path.toAbsolutePath().toString();
         return result;
