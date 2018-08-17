@@ -19,6 +19,8 @@ public class ConfigController {
     //private static Logger logger = LoggerFactory.getLogger(ConfigController.class);
     @Value("${myclinic.master-map-file}")
     private String masterMapConfigFilePath;
+    @Value("${myclinic.name-map-file}")
+    private String nameMapConfigFilePath;
     @Value("${myclinic.powder-drug-file}")
     private String powderDrugFilePath;
 
@@ -33,6 +35,14 @@ public class ConfigController {
     @RequestMapping(value = "/get-master-map-config-file-path", method = RequestMethod.GET)
     public StringResultDTO getMasterMapConfigFilePath() {
         Path path = Paths.get(masterMapConfigFilePath);
+        StringResultDTO result = new StringResultDTO();
+        result.value = path.toAbsolutePath().toString();
+        return result;
+    }
+
+    @RequestMapping(value = "/get-name-map-config-file-path", method = RequestMethod.GET)
+    public StringResultDTO getNameMapConfigFilePath() {
+        Path path = Paths.get(nameMapConfigFilePath);
         StringResultDTO result = new StringResultDTO();
         result.value = path.toAbsolutePath().toString();
         return result;

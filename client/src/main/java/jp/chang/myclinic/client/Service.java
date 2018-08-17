@@ -986,6 +986,13 @@ public class Service {
 
         @GET("get-master-map-config-file-path")
         Call<StringResultDTO> getMasterMapConfigFilePathCall();
+
+        @GET("get-name-map-config-file-path")
+        CompletableFuture<StringResultDTO> getNameMapConfigFilePath();
+
+        @GET("get-name-map-config-file-path")
+        Call<StringResultDTO> getNameMapConfigFilePathCall();
+
     }
 
     public static ServerAPI api;
