@@ -8,6 +8,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,8 +58,19 @@ class MainPane extends BorderPane {
         Button patientDocButton = new Button("患者書類");
         Button hokenshoButton = new Button("保険証");
         Button regularDocButton = new Button("一般書類");
+        patientDocButton.setOnAction(evt -> doPatientDoc());
         hbox.getChildren().addAll(patientDocButton, hokenshoButton, regularDocButton);
         return hbox;
+    }
+
+    private void doPatientDoc(){
+        GuiUtil.askForString("患者番号を入力してください。", "").ifPresent(input -> {
+            try {
+                int patientId = Integer.parseInt(input);
+            } catch(NumberFormatException ex){
+                GuiUtil.alertError("患者番号の入力が不適切です。");
+            }
+        });
     }
 
 }
