@@ -117,9 +117,9 @@ class ScanTask implements Runnable {
             	}
             }
             COMUtils.checkRC(hr);
-			reportSuccess();
 		} catch(Exception ex){
 			reportError("スキャン中にエラーが発生しました(1)。", ex);
+			return;
 		} finally{
 			if( dataCallback != null ){
 				dataCallback.Release();
@@ -134,6 +134,7 @@ class ScanTask implements Runnable {
 				deviceItem.Release();
 			}
 		}
+		reportSuccess();
 	}
 
 	private void reportSuccess(){

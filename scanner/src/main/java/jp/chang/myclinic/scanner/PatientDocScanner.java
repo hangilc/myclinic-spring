@@ -3,6 +3,8 @@ package jp.chang.myclinic.scanner;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -10,6 +12,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -31,6 +35,7 @@ class PatientDocScanner extends Stage {
     private static DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
     private IntegerProperty numberOfScannedPages = new SimpleIntegerProperty(0);
     private IntegerProperty currentPreviewPage = new SimpleIntegerProperty(0);
+    private StringProperty currentImagePath = new SimpleStringProperty();
 
     PatientDocScanner(int patientId, boolean scanningHokensho) {
         this.patientId = patientId;
@@ -73,7 +78,20 @@ class PatientDocScanner extends Stage {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         StackPane imageWrapper = new StackPane();
-        imageWrapper.getChildren().add(new Label("（空白）"));
+        Label blankLabel = new Label("（空白）");
+        imageWrapper.getChildren().add(blankLabel);
+        currentImagePath.addListener((obs, oldValue, newValue) -> {
+           if( newValue == null ){
+               imageWrapper.getChildren().setAll(blankLabel);
+           } else {
+               Image image = new Image("file:" + newValue);
+               ImageView imageView = new ImageView(image);
+               imageView.setFitWidth(imageWrapper.getWidth());
+               imageView.setFitHeight(imageWrapper.getHeight());
+               imageView.setPreserveRatio(true);
+               imageWrapper.getChildren().setAll(imageView);
+           }
+        });
         imageWrapper.getStyleClass().add("preview-view");
         hbox.getChildren().addAll(
                 imageWrapper,
@@ -137,6 +155,13 @@ class PatientDocScanner extends Stage {
         scannerDialog.initModality(Modality.WINDOW_MODAL);
         scannerDialog.start();
         scannerDialog.showAndWait();
+        if( !scannerDialog.isCanceled() ){
+            Path savedPath = scannerDialog.getOutPath();
+            currentImagePath.setValue(savedPath.toString());
+            int index = numberOfScannedPages.getValue() + 1;
+            numberOfScannedPages.setValue(index);
+            currentPreviewPage.setValue(index);
+        }
     }
 
     private String composeSaveFileName() {
