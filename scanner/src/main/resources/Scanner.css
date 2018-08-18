@@ -33,3 +33,11 @@
     -fx-padding: -2 0 -2 0;
 }
 
+.scanner-dialog {
+    -fx-padding: 10px;
+}
+
+.scanner-dialog .progress-bar {
+    -fx-pref-width: 200px;
+}
+

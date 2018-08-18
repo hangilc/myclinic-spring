@@ -13,20 +13,31 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import jp.chang.myclinic.utilfx.GuiUtil;
+
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 class PatientDocScanner extends Stage {
 
     //private static Logger logger = LoggerFactory.getLogger(PatientDocScanner.class);
     private int patientId;
     private boolean scanningHokensho;
+    private String timeStamp;
+    private Path saveDir;
+    private static DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
     private IntegerProperty numberOfScannedPages = new SimpleIntegerProperty(0);
     private IntegerProperty currentPreviewPage = new SimpleIntegerProperty(0);
 
     PatientDocScanner(int patientId, boolean scanningHokensho) {
         this.patientId = patientId;
         this.scanningHokensho = scanningHokensho;
-        if( scanningHokensho ){
+        this.timeStamp = makeTimeStamp();
+        this.saveDir = getSaveDir();
+        if (scanningHokensho) {
             setTitle(String.format("保険証のスキャン（%d）", patientId));
         } else {
             setTitle(String.format("患者書類のスキャン（%d）", patientId));
@@ -34,7 +45,7 @@ class PatientDocScanner extends Stage {
         setScene(new Scene(createMain()));
     }
 
-    private Parent createMain(){
+    private Parent createMain() {
         VBox vbox = new VBox(4);
         vbox.getStyleClass().add("patient-doc-scanner-dialog");
         vbox.getStylesheets().add("Scanner.css");
@@ -46,7 +57,7 @@ class PatientDocScanner extends Stage {
         return vbox;
     }
 
-    private Node createPatientInfoPane(){
+    private Node createPatientInfoPane() {
         VBox vbox = new VBox(0);
         vbox.setAlignment(Pos.CENTER);
         Label scannedPagesLabel = new Label();
@@ -58,10 +69,11 @@ class PatientDocScanner extends Stage {
         return vbox;
     }
 
-    private Node createCenterPane(){
+    private Node createCenterPane() {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         StackPane imageWrapper = new StackPane();
+        imageWrapper.getChildren().add(new Label("（空白）"));
         imageWrapper.getStyleClass().add("preview-view");
         hbox.getChildren().addAll(
                 imageWrapper,
@@ -70,7 +82,7 @@ class PatientDocScanner extends Stage {
         return hbox;
     }
 
-    private Node createPreviewControlPane(){
+    private Node createPreviewControlPane() {
         VBox vbox = new VBox(0);
         vbox.getStyleClass().add("preview-control");
         vbox.setAlignment(Pos.CENTER);
@@ -91,15 +103,58 @@ class PatientDocScanner extends Stage {
         return vbox;
     }
 
-    private Node createCommandPane(){
+    private Node createCommandPane() {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER);
         Button startButton = new Button("スタート");
         Button endButton = new Button("終了");
+        startButton.setOnAction(evt -> doStart());
         hbox.getChildren().addAll(
                 startButton,
                 endButton
         );
         return hbox;
     }
+
+    private String makeTimeStamp() {
+        LocalDateTime dt = LocalDateTime.now();
+        return dt.format(timeStampFormatter);
+    }
+
+    private Path getSaveDir() {
+        return ScannerSetting.INSTANCE.savingDir;
+    }
+
+    private void doStart() {
+        String deviceId = resolveDeviceId();
+        if (deviceId == null) {
+            return;
+        }
+        String saveFileName = composeSaveFileName();
+        Path savePath = saveDir.resolve(saveFileName);
+        ScannerDialog scannerDialog = new ScannerDialog(deviceId, savePath);
+        scannerDialog.initOwner(this);
+        scannerDialog.initModality(Modality.WINDOW_MODAL);
+        scannerDialog.showAndWait();
+    }
+
+    private String composeSaveFileName() {
+        int nextPageIndex = numberOfScannedPages.getValue() + 1;
+        if (scanningHokensho) {
+            return String.format("%d-hokensho-%s-%02d.bmp", patientId, timeStamp, nextPageIndex);
+        } else {
+            return String.format("%d-%s-%02d.bmp", patientId, timeStamp, nextPageIndex);
+        }
+    }
+
+    private String resolveDeviceId() {
+        String deviceId = ScannerLib.getSacnnerDeviceSetting();
+        if (deviceId != null) {
+            return deviceId;
+        } else {
+            return ScannerLib.chooseScannerDevice(GuiUtil::alertError);
+        }
+    }
+
+
 }

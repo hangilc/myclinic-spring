@@ -1,4 +1,4 @@
-package jp.chang.myclinic.scanner.wia;
+package jp.chang.wia;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.WString;
@@ -11,7 +11,6 @@ import com.sun.jna.platform.win32.WinDef.LONG;
 import com.sun.jna.platform.win32.WinDef.ULONG;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.ptr.PointerByReference;
-import jp.chang.wia.*;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,19 +2,19 @@ package jp.chang.wia;
 
 import com.sun.jna.platform.win32.COM.COMUtils;
 import com.sun.jna.platform.win32.Guid.REFIID;
-import com.sun.jna.platform.win32.Ole32;
-import com.sun.jna.platform.win32.Variant;
+import com.sun.jna.platform.win32.*;
+import com.sun.jna.platform.win32.WTypes.*;
+import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinDef.LONG;
 import com.sun.jna.platform.win32.WinDef.ULONG;
-import com.sun.jna.platform.win32.WinError;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
-import com.sun.jna.platform.win32.WTypes.VARTYPE;
-import static com.sun.jna.platform.win32.WTypes.CLSCTX_LOCAL_SERVER;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
-import java.util.List;
+
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
+
+import static com.sun.jna.platform.win32.WTypes.CLSCTX_LOCAL_SERVER;
 
 public class Wia {
 
@@ -158,4 +158,24 @@ public class Wia {
         COMUtils.checkRC(hr);
         return new WiaPropertyStorage(pStorage.getValue());
     }
+
+    public static String pickScannerDevice(){
+        WiaDevMgr devMgr = Wia.createWiaDevMgr();
+        try{
+            HWND hwnd = Kernel32.INSTANCE.GetConsoleWindow();
+            PointerByReference pp = new PointerByReference();
+            HRESULT hr = devMgr.SelectDeviceDlgID(hwnd, new LONG(WiaConsts.StiDeviceTypeScanner),
+                    new LONG(WiaConsts.WIA_SELECT_DEVICE_NODEFAULT), pp);
+            COMUtils.checkRC(hr);
+            if( hr.intValue() == COMUtils.S_FALSE ){
+                return null;
+            } else {
+                BSTR bstr = new BSTR(pp.getValue());
+                return bstr.toString();
+            }
+        } finally {
+            devMgr.Release();
+        }
+    }
+
 }
