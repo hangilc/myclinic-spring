@@ -135,6 +135,7 @@ class PatientDocScanner extends Stage {
         ScannerDialog scannerDialog = new ScannerDialog(deviceId, savePath);
         scannerDialog.initOwner(this);
         scannerDialog.initModality(Modality.WINDOW_MODAL);
+        scannerDialog.start();
         scannerDialog.showAndWait();
     }
 

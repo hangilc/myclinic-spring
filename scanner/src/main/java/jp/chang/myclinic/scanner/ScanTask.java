@@ -45,6 +45,10 @@ class ScanTask implements Runnable {
 		this.canceled = canceled;
 	}
 
+	public boolean isCanceled(){
+		return canceled;
+	}
+
 	@Override
 	public void run(){
 		WiaItem deviceItem = null;
