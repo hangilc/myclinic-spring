@@ -26,19 +26,13 @@ class ScanTask implements Runnable {
 	private Path savePath;
 	private int resolution;
 	private Consumer<Integer> progressCallback; // percent callback
-	private Runnable successCallback;
-	private Consumer<String> errorCallback;
-	private boolean canceled;
+	private boolean canceled = false;
 
-	public ScanTask(String deviceId, Path savePath, int resolution,
-					Consumer<Integer> progressCallback, Runnable successCallback, Consumer<String> errorCallback){
+	public ScanTask(String deviceId, Path savePath, int resolution, Consumer<Integer> progressCallback){
 		this.deviceId = deviceId;
 		this.savePath = savePath;
 		this.resolution = resolution;
 		this.progressCallback = progressCallback;
-		this.successCallback = successCallback;
-		this.errorCallback = errorCallback;
-		this.canceled = false;
 	}
 
 	public void setCanceled(boolean canceled){
@@ -59,13 +53,11 @@ class ScanTask implements Runnable {
 			Wia.CoInitialize();
 			deviceItem = getDeviceWiaItem(deviceId);
 			if( deviceItem == null ){
-				reportError("スキャナーが見つかりません。", null);
-				return;
+				throw new RuntimeException("スキャナーが見つかりません。");
 			}
         	wiaItem = findScannerFile(deviceItem);
         	if( wiaItem == null ){
-        		reportError("スキャンを開始できません。", null);
-        		return;
+        		throw new RuntimeException("スキャンを開始できません。");
         	}
     		final WiaItem scanWiaItem = wiaItem;
             new PropertyWriter()
@@ -73,7 +65,7 @@ class ScanTask implements Runnable {
             	.set(WiaConsts.WIA_IPA_TYMED, new LONG(WiaConsts.TYMED_FILE))
             	.set(WiaConsts.WIA_IPS_XRES, new LONG(resolution))
             	.set(WiaConsts.WIA_IPS_YRES, new LONG(resolution))
-            	.write(wiaItem);	
+            	.write(wiaItem);
             PointerByReference pWiaDataTransfer = new PointerByReference();
             HRESULT hr = scanWiaItem.QueryInterface(new REFIID(IWiaDataTransfer.IID_IWiaDataTransfer), pWiaDataTransfer);
             COMUtils.checkRC(hr);
@@ -112,14 +104,11 @@ class ScanTask implements Runnable {
             if( canceled ){
             	try{
             		Files.deleteIfExists(savePath);
-            	} catch(IOException ex){
+				} catch(IOException ex){
             		logger.error("failed to delete file: {}", savePath, ex);
             	}
             }
             COMUtils.checkRC(hr);
-		} catch(Exception ex){
-			reportError("スキャン中にエラーが発生しました(1)。", ex);
-			return;
 		} finally{
 			if( dataCallback != null ){
 				dataCallback.Release();
@@ -134,16 +123,14 @@ class ScanTask implements Runnable {
 				deviceItem.Release();
 			}
 		}
-		reportSuccess();
-	}
-
-	private void reportSuccess(){
-		successCallback.run();
 	}
 
 	private void reportError(String message, Exception ex){
 		setCanceled(true);
-		errorCallback.accept(message + "\n" + ex.toString());
+		this.errorMessage = message;
+		if( ex != null ){
+			this.errorMessage += ex.toString();
+		}
 	}
 
 	private void reportProgress(int percent){

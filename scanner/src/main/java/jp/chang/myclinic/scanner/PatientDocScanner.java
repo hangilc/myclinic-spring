@@ -1,6 +1,8 @@
 package jp.chang.myclinic.scanner;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -20,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -81,16 +84,16 @@ class PatientDocScanner extends Stage {
         Label blankLabel = new Label("（空白）");
         imageWrapper.getChildren().add(blankLabel);
         currentImagePath.addListener((obs, oldValue, newValue) -> {
-           if( newValue == null ){
-               imageWrapper.getChildren().setAll(blankLabel);
-           } else {
-               Image image = new Image("file:" + newValue);
-               ImageView imageView = new ImageView(image);
-               imageView.setFitWidth(imageWrapper.getWidth());
-               imageView.setFitHeight(imageWrapper.getHeight());
-               imageView.setPreserveRatio(true);
-               imageWrapper.getChildren().setAll(imageView);
-           }
+            if (newValue == null) {
+                imageWrapper.getChildren().setAll(blankLabel);
+            } else {
+                Image image = new Image("file:" + newValue);
+                ImageView imageView = new ImageView(image);
+                imageView.setFitWidth(imageWrapper.getWidth());
+                imageView.setFitHeight(imageWrapper.getHeight());
+                imageView.setPreserveRatio(true);
+                imageWrapper.getChildren().setAll(imageView);
+            }
         });
         imageWrapper.getStyleClass().add("preview-view");
         hbox.getChildren().addAll(
@@ -110,6 +113,17 @@ class PatientDocScanner extends Stage {
         Button nextButton = new Button("次へ");
         Hyperlink rescanLink = new Hyperlink("再スキャン");
         Hyperlink deleteLink = new Hyperlink("削除");
+        prevButton.setDisable(true);
+        nextButton.setDisable(true);
+        currentPreviewPage.addListener((obs, oldValue, newValue) -> {
+            prevButton.setDisable(newValue.intValue() <= 1);
+        });
+        BooleanBinding disableNextButton = Bindings.createBooleanBinding(
+                () -> currentPreviewPage.getValue() >= numberOfScannedPages.getValue(),
+                currentPreviewPage,
+                numberOfScannedPages
+        );
+        disableNextButton.addListener((obs, oldValue, newValue) -> nextButton.setDisable(newValue));
         rescanLink.getStyleClass().add("rescan");
         deleteLink.getStyleClass().add("delete");
         vbox.getChildren().addAll(
@@ -153,15 +167,25 @@ class PatientDocScanner extends Stage {
         ScannerDialog scannerDialog = new ScannerDialog(deviceId, savePath);
         scannerDialog.initOwner(this);
         scannerDialog.initModality(Modality.WINDOW_MODAL);
-        scannerDialog.start();
+        scannerDialog.start()
+                .thenAcceptAsync(result -> {
+                    if (!scannerDialog.isCanceled()) {
+                        Path savedPath = scannerDialog.getOutPath();
+                        currentImagePath.setValue(savedPath.toString());
+                        int index = numberOfScannedPages.getValue() + 1;
+                        numberOfScannedPages.setValue(index);
+                        currentPreviewPage.setValue(index);
+                    }
+                    scannerDialog.close();
+                }, Platform::runLater)
+                .exceptionally(ex -> {
+                    Platform.runLater(() -> {
+                        HandlerFX.exceptionally(ex);
+                        scannerDialog.close();
+                    });
+                    return null;
+                });
         scannerDialog.showAndWait();
-        if( !scannerDialog.isCanceled() ){
-            Path savedPath = scannerDialog.getOutPath();
-            currentImagePath.setValue(savedPath.toString());
-            int index = numberOfScannedPages.getValue() + 1;
-            numberOfScannedPages.setValue(index);
-            currentPreviewPage.setValue(index);
-        }
     }
 
     private String composeSaveFileName() {

@@ -12,13 +12,14 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 
 class ScannerDialog extends Stage {
 
@@ -26,32 +27,36 @@ class ScannerDialog extends Stage {
     private ProgressBar progressBar;
     private ScanTask task;
     private Stage alertClosing;
+    private Path savePath;
     private Path outPath;
 
     ScannerDialog(String deviceId, Path savePath) {
+        this.savePath = savePath;
         setTitle("スキャン実行中");
         task = new ScanTask(deviceId, savePath, ScannerLib.getScannerResolutionSetting(),
-                percent -> Platform.runLater(() -> progressBar.setProgress(percent / 100.0)),
-                () -> onSuccess(savePath),
-                msg -> Platform.runLater(() -> {
-                    GuiUtil.alertError(msg);
-                    close();
-                })
-        );
+                percent -> Platform.runLater(() -> progressBar.setProgress(percent / 100.0)));
         this.setOnCloseRequest(evt -> {
             evt.consume();
             doCancel();
-            alertClosing = createAlertClosing();
-            alertClosing.show();
+            openAlertClosing();
         });
         Parent mainPanel = createMainPanel();
         setScene(new Scene(mainPanel));
     }
 
-    public void start() {
-        Thread thr = new Thread(task);
-        thr.setDaemon(true);
-        thr.start();
+    public CompletableFuture<Void> start() {
+        return CompletableFuture.runAsync(task)
+                .thenAccept(result -> {
+                    if( !task.isCanceled() ){
+                        try {
+                            outPath = ScannerLib.convertImage(savePath, "jpg");
+                            logger.info("saved image: {}", outPath);
+                            Files.delete(savePath);
+                        } catch(IOException ex){
+                            throw new UncheckedIOException(ex);
+                        }
+                    }
+                });
     }
 
     private Parent createMainPanel() {
@@ -73,34 +78,19 @@ class ScannerDialog extends Stage {
         return task.isCanceled();
     }
 
-    public Path getOutPath(){
+    public Path getOutPath() {
         return outPath;
     }
 
     private void doCancel() {
         task.setCanceled(true);
+        openAlertClosing();
     }
 
-    private void onSuccess(Path savePath) {
-        if (!task.isCanceled()) {
-            try {
-                outPath = ScannerLib.convertImage(savePath, "jpg");
-                logger.info("saved image: {}", outPath);
-                Files.delete(savePath);
-            } catch (IOException e) {
-                logger.error("Failed to convert image. {}", e);
-                GuiUtil.alertError("画像の変換に失敗しました。" + e.toString());
-            }
+    private void openAlertClosing() {
+        if (alertClosing != null) {
+            return;
         }
-        Platform.runLater(() -> {
-            if( alertClosing != null ){
-                alertClosing.close();
-            }
-            close();
-        });
-    }
-
-    private Stage createAlertClosing(){
         Stage stage = new Stage();
         stage.setTitle("アラート");
         StackPane stackPane = new StackPane();
@@ -108,6 +98,7 @@ class ScannerDialog extends Stage {
         stackPane.setPadding(new Insets(10, 10, 10, 10));
         stage.setScene(new Scene(stackPane));
         stage.setOnCloseRequest(Event::consume);
-        return stage;
+        this.alertClosing = stage;
+        stage.show();
     }
 }
