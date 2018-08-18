@@ -8,6 +8,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,10 @@ class MainPane extends BorderPane {
         GuiUtil.askForString("患者番号を入力してください。", "").ifPresent(input -> {
             try {
                 int patientId = Integer.parseInt(input);
+                PatientDocScanner patientDocScanner = new PatientDocScanner(patientId, false);
+                patientDocScanner.initOwner(getScene().getWindow());
+                patientDocScanner.initModality(Modality.WINDOW_MODAL);
+                patientDocScanner.showAndWait();
             } catch(NumberFormatException ex){
                 GuiUtil.alertError("患者番号の入力が不適切です。");
             }

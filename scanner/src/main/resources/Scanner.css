@@ -1,3 +1,35 @@
+.hyperlink {
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 0 0;
+}
+
+.hyperlink:visited {
+    -fx-text-fill: -fx-accent;
+    -fx-underline: false;
+}
+
+.hyperlink:hover {
+    -fx-underline: false;
+}
+
 .main-pane {
     -fx-padding: 10px;
 }
+
+.patient-doc-scanner-dialog {
+    -fx-padding: 10px;
+}
+
+.patient-doc-scanner-dialog .preview-view{
+    -fx-pref-width: 210px;
+    -fx-pref-height: 297px;
+}
+
+.patient-doc-scanner-dialog .preview-control .hyperlink.rescan {
+    -fx-padding: 1 0 -2 0;
+}
+
+.patient-doc-scanner-dialog .preview-control .hyperlink.delete {
+    -fx-padding: -2 0 -2 0;
+}
+
