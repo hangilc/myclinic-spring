@@ -109,6 +109,8 @@ class MainPane extends BorderPane {
                 if( !ok ){
                     GuiUtil.alertError("画像の変換に失敗しました。");
                     Files.deleteIfExists(file.toPath());
+                } else {
+                    logger.info("Saved regular doc: " + file.toString());
                 }
             }
         } catch(IOException ex){
