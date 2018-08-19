@@ -38,21 +38,9 @@ class ScannerLib {
         }
     }
 
-    static int getScannerResolutionSetting(){
-        return ScannerSetting.INSTANCE.dpi;
-    }
-
-    static Path convertImage(Path source, String format) throws IOException {
-        String srcFileName = source.getFileName().toString();
-        String dstFileName = srcFileName.replaceFirst("\\.bmp$", "." + format);
-        Path output = source.resolveSibling(dstFileName);
+    static boolean convertImage(Path source, String format, Path output) throws IOException {
         BufferedImage src = ImageIO.read(source.toFile());
-        boolean ok = ImageIO.write(src, format, output.toFile());
-        if( !ok ){
-            throw new RuntimeException("image conversion failed");
-        }
-        return output;
+        return ImageIO.write(src, format, output.toFile());
     }
-
 
 }

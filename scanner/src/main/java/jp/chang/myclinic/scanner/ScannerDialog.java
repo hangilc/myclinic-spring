@@ -22,37 +22,49 @@ class ScannerDialog extends Stage {
     private static Logger logger = LoggerFactory.getLogger(ScannerDialog.class);
     private ProgressBar progressBar;
     private ScanTask task;
-    private Path savePath;
-    private Path outPath;
+    private boolean success;
 
-    ScannerDialog(String deviceId, Path savePath) {
-        this.savePath = savePath;
+    ScannerDialog(String deviceId, Path savePath, int resolution) {
         setTitle("スキャン実行中");
-        task = new ScanTask(deviceId, savePath, ScannerLib.getScannerResolutionSetting(),
+        task = new ScanTask(deviceId, savePath, resolution,
                 percent -> Platform.runLater(() -> progressBar.setProgress(percent / 100.0)));
         this.setOnCloseRequest(evt -> doCancel());
         Parent mainPanel = createMainPanel();
         setScene(new Scene(mainPanel));
+        this.showingProperty().addListener((obs, oldValue, newValue) -> {
+            if( newValue ){
+                start(savePath);
+            }
+        });
     }
 
-    public void start() {
+    private void start(Path savePath) {
         CompletableFuture.runAsync(task)
                 .whenCompleteAsync((result, ex) -> {
-                    if( !task.isCancelled() ){
-                        try {
-                            ScannerDialog.this.outPath = ScannerLib.convertImage(savePath, "jpg");
-                            logger.info("saved image: {}", outPath);
-                            Files.delete(savePath);
-                        } catch(IOException e){
-                            ex = e;
-                        }
-                    }
-                    if( ex != null ){
-                        GuiUtil.alertError("エラー：" + ex);
+//                    if( !task.isCancelled() ){
+//                        try {
+//                            ScannerDialog.this.outPath = ScannerLib.convertImage(savePath, "jpg");
+//                            logger.info("saved image: {}", outPath);
+//                            Files.delete(savePath);
+//                        } catch(IOException e){
+//                            ex = e;
+//                        }
+//                    }
+                    if( !task.isCancelled() && ex == null ){
+                        ScannerDialog.this.success = true;
                     } else {
-                        String errorMessage = task.getErrorMessage();
-                        if( errorMessage != null && !errorMessage.isEmpty() ){
-                            GuiUtil.alertError("エラー：" + errorMessage);
+                        try {
+                            Files.deleteIfExists(savePath);
+                        } catch (IOException e) {
+                            logger.error("Failed to delete file. {}", e);
+                        }
+                        if (ex != null) {
+                           Platform.runLater(() -> GuiUtil.alertError("エラー：" + ex));
+                        } else {
+                            String errorMessage = task.getErrorMessage();
+                            if (errorMessage != null && !errorMessage.isEmpty()) {
+                                Platform.runLater(() -> GuiUtil.alertError("エラー：" + errorMessage));
+                            }
                         }
                     }
                     Platform.runLater(ScannerDialog.this::close);
@@ -74,30 +86,12 @@ class ScannerDialog extends Stage {
         return vbox;
     }
 
-    public boolean isCancelled(){
-        return task.isCancelled();
-    }
-
-    public Path getOutPath(){
-        return outPath;
+    public boolean isSuccess(){
+        return success;
     }
 
     private void doCancel() {
         task.setCancelled(true);
     }
 
-//    private void openAlertClosing() {
-//        if (alertClosing != null) {
-//            return;
-//        }
-//        Stage stage = new Stage();
-//        stage.setTitle("アラート");
-//        StackPane stackPane = new StackPane();
-//        stackPane.getChildren().add(new Label("現在進行中のスキャンをキャンセルしています。"));
-//        stackPane.setPadding(new Insets(10, 10, 10, 10));
-//        stage.setScene(new Scene(stackPane));
-//        stage.setOnCloseRequest(Event::consume);
-//        this.alertClosing = stage;
-//        stage.show();
-//    }
 }

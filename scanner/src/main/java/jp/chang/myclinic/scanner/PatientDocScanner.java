@@ -19,7 +19,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jp.chang.myclinic.utilfx.GuiUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -28,7 +32,7 @@ import java.util.List;
 
 class PatientDocScanner extends Stage {
 
-    //private static Logger logger = LoggerFactory.getLogger(PatientDocScanner.class);
+    private static Logger logger = LoggerFactory.getLogger(PatientDocScanner.class);
     private int patientId;
     private boolean scanningHokensho;
     private String timeStamp;
@@ -38,6 +42,7 @@ class PatientDocScanner extends Stage {
     private IntegerProperty currentPreviewPage = new SimpleIntegerProperty(0);
     private String deviceId;
     private List<Path> savedFilePaths = new ArrayList<>();
+    private StackPane previewImageWrapper;
 
     PatientDocScanner(int patientId, boolean scanningHokensho) {
         this.patientId = patientId;
@@ -79,30 +84,33 @@ class PatientDocScanner extends Stage {
     private Node createCenterPane() {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
-        StackPane imageWrapper = new StackPane();
+        this.previewImageWrapper = new StackPane();
         Label blankLabel = new Label("（空白）");
-        imageWrapper.getChildren().add(blankLabel);
+        previewImageWrapper.getChildren().add(blankLabel);
         currentPreviewPage.addListener((obs, oldValue, newValue) -> {
             int index = newValue.intValue() - 1;
-            if( index >= 0 && index < savedFilePaths.size() ){
+            if (index >= 0 && index < savedFilePaths.size()) {
                 Path path = savedFilePaths.get(index);
-                Image image = new Image("file:" + path.toString());
-                ImageView imageView = new ImageView(image);
-                imageView.setFitWidth(imageWrapper.getWidth());
-                imageView.setFitHeight(imageWrapper.getHeight());
-                imageView.setPreserveRatio(true);
-                imageWrapper.getChildren().setAll(imageView);
-
+                setPreviewImage(path.toString());
             } else {
-                imageWrapper.getChildren().setAll(blankLabel);
+                previewImageWrapper.getChildren().setAll(blankLabel);
             }
         });
-        imageWrapper.getStyleClass().add("preview-view");
+        previewImageWrapper.getStyleClass().add("preview-view");
         hbox.getChildren().addAll(
-                imageWrapper,
+                previewImageWrapper,
                 createPreviewControlPane()
         );
         return hbox;
+    }
+
+    private void setPreviewImage(String file) {
+        Image image = new Image("file:" + file);
+        ImageView imageView = new ImageView(image);
+        imageView.fitWidthProperty().bind(previewImageWrapper.widthProperty());
+        imageView.fitHeightProperty().bind(previewImageWrapper.heightProperty());
+        imageView.setPreserveRatio(true);
+        previewImageWrapper.getChildren().setAll(imageView);
     }
 
     private Node createPreviewControlPane() {
@@ -115,6 +123,8 @@ class PatientDocScanner extends Stage {
         Button nextButton = new Button("次へ");
         Hyperlink rescanLink = new Hyperlink("再スキャン");
         Hyperlink deleteLink = new Hyperlink("削除");
+        rescanLink.getStyleClass().add("rescan");
+        deleteLink.getStyleClass().add("delete");
         prevButton.setDisable(true);
         nextButton.setDisable(true);
         currentPreviewPage.addListener((obs, oldValue, newValue) -> {
@@ -126,10 +136,21 @@ class PatientDocScanner extends Stage {
                 numberOfScannedPages
         );
         nextButton.disableProperty().bind(disableNextButton);
+        BooleanBinding noCurrentPageBinding = Bindings.createBooleanBinding(
+                () -> {
+                    int i = currentPreviewPage.getValue() - 1;
+                    int n = numberOfScannedPages.getValue();
+                    return !(i >= 0 && i < n);
+                },
+                currentPreviewPage,
+                numberOfScannedPages
+        );
+        rescanLink.disableProperty().bind(noCurrentPageBinding);
+        deleteLink.disableProperty().bind(noCurrentPageBinding);
         prevButton.setOnAction(evt -> doPrev());
         nextButton.setOnAction(evt -> doNext());
-        rescanLink.getStyleClass().add("rescan");
-        deleteLink.getStyleClass().add("delete");
+        rescanLink.setOnAction(evt -> doRescan());
+        deleteLink.setOnAction(evt -> doDelete());
         vbox.getChildren().addAll(
                 pageIndexLabel,
                 new HBox(4, prevButton, nextButton),
@@ -162,27 +183,67 @@ class PatientDocScanner extends Stage {
     }
 
     private void doStart() {
-        if( deviceId == null ){
+        if (deviceId == null) {
             this.deviceId = resolveDeviceId();
             if (deviceId == null) {
                 return;
             }
         }
-        String saveFileName = composeSaveFileName(numberOfScannedPages.getValue() + 1);
+        int outputIndex = numberOfScannedPages.getValue() + 1;
+        String saveFileName = composeSaveFileName(outputIndex);
         Path savePath = saveDir.resolve(saveFileName);
-        ScannerDialog scannerDialog = new ScannerDialog(deviceId, savePath);
+        ScannerDialog scannerDialog = new ScannerDialog(deviceId, savePath, ScannerSetting.INSTANCE.dpi);
         scannerDialog.initOwner(this);
         scannerDialog.initModality(Modality.WINDOW_MODAL);
-        scannerDialog.start();
         scannerDialog.showAndWait();
-        if( !scannerDialog.isCancelled() ){
-            Path outPath = scannerDialog.getOutPath();
-            if( outPath != null ){
-                savedFilePaths.add(outPath);
-                int index = numberOfScannedPages.getValue() + 1;
-                numberOfScannedPages.setValue(index);
-                currentPreviewPage.setValue(index);
+        if (!scannerDialog.isSuccess()) {
+            String outputFileName = composeOutputFileName(outputIndex);
+            Path outPath = saveDir.resolve(outputFileName);
+            try {
+                boolean ok = ScannerLib.convertImage(savePath, "jpg", outPath);
+                if( ok ){
+                    savedFilePaths.add(outPath);
+                    int index = numberOfScannedPages.getValue() + 1;
+                    numberOfScannedPages.setValue(index);
+                    currentPreviewPage.setValue(index);
+                } else {
+                    GuiUtil.alertError("画像の変換に失敗しました。");
+                }
+            } catch(IOException ex){
+                logger.error("Failed to convert image. {}", ex);
+                GuiUtil.alertError("画像の変換に失敗しました。" + ex);
             }
+        }
+    }
+
+    private void doRescan() {
+        if (!GuiUtil.confirm("再スキャンを開始しますか？")) {
+            return;
+        }
+        if (deviceId == null) {
+            this.deviceId = resolveDeviceId();
+            if (deviceId == null) {
+                return;
+            }
+        }
+        int index = currentPreviewPage.getValue();
+        if (!(index >= 1 && index <= numberOfScannedPages.getValue())) {
+            logger.error("Invalid index");
+            GuiUtil.alertError("Invalid page index");
+            return;
+        }
+        String saveFileName = composeSaveFileName(index);
+        Path savePath = saveDir.resolve(saveFileName);
+        ScannerDialog scannerDialog = new ScannerDialog(deviceId, savePath, ScannerSetting.INSTANCE.dpi);
+        scannerDialog.initOwner(this);
+        scannerDialog.initModality(Modality.WINDOW_MODAL);
+        scannerDialog.showAndWait();
+        if (scannerDialog.isSuccess()) {
+//            Path outPath = scannerDialog.getOutPath();
+//            if( outPath != null ){
+//                savedFilePaths.set(index - 1, outPath);
+//                setPreviewImage(outPath.toString());
+//            }
         }
     }
 
@@ -191,6 +252,14 @@ class PatientDocScanner extends Stage {
             return String.format("%d-hokensho-%s-%02d.bmp", patientId, timeStamp, index);
         } else {
             return String.format("%d-%s-%02d.bmp", patientId, timeStamp, index);
+        }
+    }
+
+    private String composeOutputFileName(int index) {
+        if (scanningHokensho) {
+            return String.format("%d-hokensho-%s-%02d.jpg", patientId, timeStamp, index);
+        } else {
+            return String.format("%d-%s-%02d.jpg", patientId, timeStamp, index);
         }
     }
 
@@ -203,20 +272,50 @@ class PatientDocScanner extends Stage {
         }
     }
 
-    private void doPrev(){
+    private void doPrev() {
         int index = currentPreviewPage.getValue();
-        if( index > 1 ){
+        if (index > 1) {
             index -= 1;
             currentPreviewPage.setValue(index);
         }
     }
 
-    private void doNext(){
+    private void doNext() {
         int n = numberOfScannedPages.getValue();
         int i = currentPreviewPage.getValue();
-        if( i < n ){
+        if (i < n) {
             i += 1;
             currentPreviewPage.setValue(i);
+        }
+    }
+
+    private void doDelete() {
+        int i = currentPreviewPage.getValue();
+        if (!(i >= 1 && i <= numberOfScannedPages.getValue())) {
+            return;
+        }
+        if (!GuiUtil.confirm("このスキャン画像を削除していいですか？")) {
+            return;
+        }
+        Path path = savedFilePaths.get(i - 1);
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            logger.error("Failed to delete file. {}", e);
+            GuiUtil.alertError("ファイルの削除に失敗しました。" + e);
+            return;
+        }
+        savedFilePaths.remove(i - 1);
+        int n = numberOfScannedPages.getValue();
+        n -= 1;
+        if (n == 0) {
+            currentPreviewPage.setValue(0);
+            numberOfScannedPages.setValue(0);
+        } else {
+            if (i > n) {
+                i = n;
+                currentPreviewPage.setValue(i);
+            }
         }
     }
 
