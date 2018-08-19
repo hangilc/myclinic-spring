@@ -27,6 +27,7 @@ class ScanTask implements Runnable {
 	private int resolution;
 	private Consumer<Integer> progressCallback; // percent callback
 	private boolean canceled = false;
+	private String errorMessage;
 
 	public ScanTask(String deviceId, Path savePath, int resolution, Consumer<Integer> progressCallback){
 		this.deviceId = deviceId;
@@ -35,12 +36,16 @@ class ScanTask implements Runnable {
 		this.progressCallback = progressCallback;
 	}
 
-	public void setCanceled(boolean canceled){
+	public void setCancelled(boolean canceled){
 		this.canceled = canceled;
 	}
 
-	public boolean isCanceled(){
+	public boolean isCancelled(){
 		return canceled;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
 	}
 
 	@Override
@@ -93,7 +98,8 @@ class ScanTask implements Runnable {
                     	logger.debug("invoke returns S_OK");
 	                    return WinError.S_OK;
 	                } catch(Exception ex){
-	                	reportError("スキャン中にエラーが発生しました(2)。", ex);
+	                	errorMessage = "スキャン中にエラーが発生しました(2)。" + ex;
+	                	canceled = true;
                     	logger.debug("invoke returns S_FALSE");
 	                	return WinError.S_FALSE;
 	                }
@@ -122,14 +128,6 @@ class ScanTask implements Runnable {
 			if( deviceItem != null ){
 				deviceItem.Release();
 			}
-		}
-	}
-
-	private void reportError(String message, Exception ex){
-		setCanceled(true);
-		this.errorMessage = message;
-		if( ex != null ){
-			this.errorMessage += ex.toString();
 		}
 	}
 

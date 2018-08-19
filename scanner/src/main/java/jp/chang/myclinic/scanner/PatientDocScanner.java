@@ -1,6 +1,5 @@
 package jp.chang.myclinic.scanner;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
@@ -22,7 +21,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import jp.chang.myclinic.utilfx.GuiUtil;
-import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -39,6 +37,7 @@ class PatientDocScanner extends Stage {
     private IntegerProperty numberOfScannedPages = new SimpleIntegerProperty(0);
     private IntegerProperty currentPreviewPage = new SimpleIntegerProperty(0);
     private StringProperty currentImagePath = new SimpleStringProperty();
+    private String deviceId;
 
     PatientDocScanner(int patientId, boolean scanningHokensho) {
         this.patientId = patientId;
@@ -158,34 +157,28 @@ class PatientDocScanner extends Stage {
     }
 
     private void doStart() {
-        String deviceId = resolveDeviceId();
-        if (deviceId == null) {
-            return;
+        if( deviceId == null ){
+            this.deviceId = resolveDeviceId();
+            if (deviceId == null) {
+                return;
+            }
         }
         String saveFileName = composeSaveFileName();
         Path savePath = saveDir.resolve(saveFileName);
         ScannerDialog scannerDialog = new ScannerDialog(deviceId, savePath);
         scannerDialog.initOwner(this);
         scannerDialog.initModality(Modality.WINDOW_MODAL);
-        scannerDialog.start()
-                .thenAcceptAsync(result -> {
-                    if (!scannerDialog.isCanceled()) {
-                        Path savedPath = scannerDialog.getOutPath();
-                        currentImagePath.setValue(savedPath.toString());
-                        int index = numberOfScannedPages.getValue() + 1;
-                        numberOfScannedPages.setValue(index);
-                        currentPreviewPage.setValue(index);
-                    }
-                    scannerDialog.close();
-                }, Platform::runLater)
-                .exceptionally(ex -> {
-                    Platform.runLater(() -> {
-                        HandlerFX.exceptionally(ex);
-                        scannerDialog.close();
-                    });
-                    return null;
-                });
+        scannerDialog.start();
         scannerDialog.showAndWait();
+        if( !scannerDialog.isCancelled() ){
+            Path outPath = scannerDialog.getOutPath();
+            if( outPath != null ){
+                currentImagePath.setValue(outPath.toString());
+                int index = numberOfScannedPages.getValue() + 1;
+                numberOfScannedPages.setValue(index);
+                currentPreviewPage.setValue(index);
+            }
+        }
     }
 
     private String composeSaveFileName() {

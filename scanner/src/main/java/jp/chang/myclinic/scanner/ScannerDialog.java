@@ -1,22 +1,18 @@
 package jp.chang.myclinic.scanner;
 
 import javafx.application.Platform;
-import javafx.event.Event;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -26,7 +22,6 @@ class ScannerDialog extends Stage {
     private static Logger logger = LoggerFactory.getLogger(ScannerDialog.class);
     private ProgressBar progressBar;
     private ScanTask task;
-    private Stage alertClosing;
     private Path savePath;
     private Path outPath;
 
@@ -35,27 +30,32 @@ class ScannerDialog extends Stage {
         setTitle("スキャン実行中");
         task = new ScanTask(deviceId, savePath, ScannerLib.getScannerResolutionSetting(),
                 percent -> Platform.runLater(() -> progressBar.setProgress(percent / 100.0)));
-        this.setOnCloseRequest(evt -> {
-            evt.consume();
-            doCancel();
-            openAlertClosing();
-        });
+        this.setOnCloseRequest(evt -> doCancel());
         Parent mainPanel = createMainPanel();
         setScene(new Scene(mainPanel));
     }
 
-    public CompletableFuture<Void> start() {
-        return CompletableFuture.runAsync(task)
-                .thenAccept(result -> {
-                    if( !task.isCanceled() ){
+    public void start() {
+        CompletableFuture.runAsync(task)
+                .whenCompleteAsync((result, ex) -> {
+                    if( !task.isCancelled() ){
                         try {
-                            outPath = ScannerLib.convertImage(savePath, "jpg");
+                            ScannerDialog.this.outPath = ScannerLib.convertImage(savePath, "jpg");
                             logger.info("saved image: {}", outPath);
                             Files.delete(savePath);
-                        } catch(IOException ex){
-                            throw new UncheckedIOException(ex);
+                        } catch(IOException e){
+                            ex = e;
                         }
                     }
+                    if( ex != null ){
+                        GuiUtil.alertError("エラー：" + ex);
+                    } else {
+                        String errorMessage = task.getErrorMessage();
+                        if( errorMessage != null && !errorMessage.isEmpty() ){
+                            GuiUtil.alertError("エラー：" + errorMessage);
+                        }
+                    }
+                    Platform.runLater(ScannerDialog.this::close);
                 });
     }
 
@@ -74,31 +74,30 @@ class ScannerDialog extends Stage {
         return vbox;
     }
 
-    public boolean isCanceled() {
-        return task.isCanceled();
+    public boolean isCancelled(){
+        return task.isCancelled();
     }
 
-    public Path getOutPath() {
+    public Path getOutPath(){
         return outPath;
     }
 
     private void doCancel() {
-        task.setCanceled(true);
-        openAlertClosing();
+        task.setCancelled(true);
     }
 
-    private void openAlertClosing() {
-        if (alertClosing != null) {
-            return;
-        }
-        Stage stage = new Stage();
-        stage.setTitle("アラート");
-        StackPane stackPane = new StackPane();
-        stackPane.getChildren().add(new Label("現在進行中のスキャンをキャンセルしています。"));
-        stackPane.setPadding(new Insets(10, 10, 10, 10));
-        stage.setScene(new Scene(stackPane));
-        stage.setOnCloseRequest(Event::consume);
-        this.alertClosing = stage;
-        stage.show();
-    }
+//    private void openAlertClosing() {
+//        if (alertClosing != null) {
+//            return;
+//        }
+//        Stage stage = new Stage();
+//        stage.setTitle("アラート");
+//        StackPane stackPane = new StackPane();
+//        stackPane.getChildren().add(new Label("現在進行中のスキャンをキャンセルしています。"));
+//        stackPane.setPadding(new Insets(10, 10, 10, 10));
+//        stage.setScene(new Scene(stackPane));
+//        stage.setOnCloseRequest(Event::consume);
+//        this.alertClosing = stage;
+//        stage.show();
+//    }
 }
