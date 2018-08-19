@@ -8,10 +8,16 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 class MainPane extends BorderPane {
 
@@ -61,6 +67,7 @@ class MainPane extends BorderPane {
         Button regularDocButton = new Button("一般書類");
         patientDocButton.setOnAction(evt -> doPatientDoc(false));
         hokenshoButton.setOnAction(evt -> doPatientDoc(true));
+        regularDocButton.setOnAction(evt -> doRegularDoc());
         hbox.getChildren().addAll(patientDocButton, hokenshoButton, regularDocButton);
         return hbox;
     }
@@ -77,6 +84,44 @@ class MainPane extends BorderPane {
                 GuiUtil.alertError("患者番号の入力が不適切です。");
             }
         });
+    }
+
+    private void doRegularDoc(){
+        String deviceId = ScannerLib.getScannerDevice(GuiUtil::alertError);
+        if( deviceId == null ){
+            return;
+        }
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("保存先の指定");
+        File file = fileChooser.showSaveDialog(getScene().getWindow());
+        if( file == null ){
+            return;
+        }
+        Path tmpPath = null;
+        try {
+            tmpPath = Files.createTempFile("scanner", ".bmp");
+            ScannerDialog scannerDialog = new ScannerDialog(deviceId, tmpPath, ScannerSetting.INSTANCE.dpi);
+            scannerDialog.initOwner(getScene().getWindow());
+            scannerDialog.initModality(Modality.WINDOW_MODAL);
+            scannerDialog.showAndWait();
+            if( scannerDialog.isSuccess() ){
+                boolean ok = ScannerLib.convertImage(tmpPath, "jpg", file.toPath());
+                if( !ok ){
+                    GuiUtil.alertError("画像の変換に失敗しました。");
+                    Files.deleteIfExists(file.toPath());
+                }
+            }
+        } catch(IOException ex){
+            GuiUtil.alertError("一般書類のスキャンに失敗しました。" + ex);
+        } finally {
+            try {
+                if (tmpPath != null) {
+                    Files.deleteIfExists(tmpPath);
+                }
+            } catch (IOException ex){
+                logger.error("Failed to delete tmp file." + ex);
+            }
+        }
     }
 
 }

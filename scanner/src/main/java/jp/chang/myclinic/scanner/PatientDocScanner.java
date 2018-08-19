@@ -278,7 +278,7 @@ class PatientDocScanner extends Stage {
     }
 
     private String resolveDeviceId() {
-        String deviceId = ScannerLib.getSacnnerDeviceSetting();
+        String deviceId = ScannerLib.getScannerDeviceSetting();
         if (deviceId != null) {
             return deviceId;
         } else {

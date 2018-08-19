@@ -17,7 +17,15 @@ class ScannerLib {
 
     }
 
-    static String getSacnnerDeviceSetting(){
+    static String getScannerDevice(Consumer<String> alertFunc){
+        String deviceId = getScannerDeviceSetting();
+        if( deviceId == null ){
+            deviceId = chooseScannerDevice(alertFunc);
+        }
+        return deviceId;
+    }
+
+    static String getScannerDeviceSetting(){
         String deviceId = ScannerSetting.INSTANCE.defaultDevice;
         if( !"".equals(deviceId) ){
             return deviceId;
