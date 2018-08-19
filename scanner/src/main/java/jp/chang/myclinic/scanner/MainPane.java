@@ -55,20 +55,21 @@ class MainPane extends BorderPane {
     private Node createCenterPane(){
         HBox hbox = new HBox(4);
         hbox.getStyleClass().add("main-pane");
-        hbox.getStylesheets().add("/Scanner.css");
+        hbox.getStylesheets().add("Scanner.css");
         Button patientDocButton = new Button("患者書類");
         Button hokenshoButton = new Button("保険証");
         Button regularDocButton = new Button("一般書類");
-        patientDocButton.setOnAction(evt -> doPatientDoc());
+        patientDocButton.setOnAction(evt -> doPatientDoc(false));
+        hokenshoButton.setOnAction(evt -> doPatientDoc(true));
         hbox.getChildren().addAll(patientDocButton, hokenshoButton, regularDocButton);
         return hbox;
     }
 
-    private void doPatientDoc(){
+    private void doPatientDoc(boolean hokensho){
         GuiUtil.askForString("患者番号を入力してください。", "").ifPresent(input -> {
             try {
                 int patientId = Integer.parseInt(input);
-                PatientDocScanner patientDocScanner = new PatientDocScanner(patientId, false);
+                PatientDocScanner patientDocScanner = new PatientDocScanner(patientId, hokensho);
                 patientDocScanner.initOwner(getScene().getWindow());
                 patientDocScanner.initModality(Modality.WINDOW_MODAL);
                 patientDocScanner.showAndWait();

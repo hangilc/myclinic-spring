@@ -170,6 +170,7 @@ class PatientDocScanner extends Stage {
         Button startButton = new Button("スタート");
         Button endButton = new Button("終了");
         startButton.setOnAction(evt -> doStart());
+        endButton.setOnAction(evt -> close());
         hbox.getChildren().addAll(
                 startButton,
                 endButton
