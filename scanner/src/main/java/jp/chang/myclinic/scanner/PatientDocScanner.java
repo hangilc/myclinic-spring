@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -298,6 +299,17 @@ class PatientDocScanner extends Stage {
         }
     }
 
+    private void reNumberSavedFiles() throws IOException {
+        for(int i=0;i<savedFilePaths.size();i++){
+            Path prevPath = savedFilePaths.get(i);
+            String newPathName = composeOutputFileName(i+1);
+            Path newPath = saveDir.resolve(newPathName);
+            if( !prevPath.equals(newPath) ){
+                Files.move(prevPath, newPath, StandardCopyOption.REPLACE_EXISTING);
+            }
+        }
+    }
+
     private void doDelete() {
         int i = currentPreviewPage.getValue();
         if (!(i >= 1 && i <= numberOfScannedPages.getValue())) {
@@ -309,22 +321,23 @@ class PatientDocScanner extends Stage {
         Path path = savedFilePaths.get(i - 1);
         try {
             Files.delete(path);
+            savedFilePaths.remove(i - 1);
+            reNumberSavedFiles();
+            int n = numberOfScannedPages.getValue();
+            n -= 1;
+            if( n == 0 ){
+                currentPreviewPage.setValue(0);
+            } else {
+                if( i > n ){
+                    currentPreviewPage.setValue(n);
+                } else {
+                    setPreviewImage(savedFilePaths.get(i - 1).toString());
+                }
+            }
+            numberOfScannedPages.setValue(n);
         } catch (IOException e) {
             logger.error("Failed to delete file. {}", e);
             GuiUtil.alertError("ファイルの削除に失敗しました。" + e);
-            return;
-        }
-        savedFilePaths.remove(i - 1);
-        int n = numberOfScannedPages.getValue();
-        n -= 1;
-        if (n == 0) {
-            currentPreviewPage.setValue(0);
-            numberOfScannedPages.setValue(0);
-        } else {
-            if (i > n) {
-                i = n;
-                currentPreviewPage.setValue(i);
-            }
         }
     }
 

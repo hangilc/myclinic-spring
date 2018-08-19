@@ -135,9 +135,9 @@ class ScanTask implements Runnable {
     private static WiaItem getDeviceWiaItem(String deviceId){
         WiaDevMgr devMgr = Wia.createWiaDevMgr();
         PointerByReference pp = new PointerByReference();
-        HRESULT hr = devMgr.CreateDevice(new BSTR(deviceId), pp);
         try {
-        	COMUtils.checkRC(hr);
+			HRESULT hr = devMgr.CreateDevice(new BSTR(deviceId), pp);
+			COMUtils.checkRC(hr);
         	return new WiaItem(pp.getValue());
 		} finally {
         	devMgr.Release();
