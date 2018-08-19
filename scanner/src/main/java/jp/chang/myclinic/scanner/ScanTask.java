@@ -57,9 +57,6 @@ class ScanTask implements Runnable {
 		try{
 			Wia.CoInitialize();
 			deviceItem = getDeviceWiaItem(deviceId);
-			if( deviceItem == null ){
-				throw new RuntimeException("スキャナーが見つかりません。");
-			}
         	wiaItem = findScannerFile(deviceItem);
         	if( wiaItem == null ){
         		throw new RuntimeException("スキャンを開始できません。");
@@ -139,12 +136,12 @@ class ScanTask implements Runnable {
         WiaDevMgr devMgr = Wia.createWiaDevMgr();
         PointerByReference pp = new PointerByReference();
         HRESULT hr = devMgr.CreateDevice(new BSTR(deviceId), pp);
-        WiaItem item = null;
-        if( hr.intValue() == COMUtils.S_OK ){
-        	item = new WiaItem(pp.getValue());
-        }
-        devMgr.Release();
-        return item;
+        try {
+        	COMUtils.checkRC(hr);
+        	return new WiaItem(pp.getValue());
+		} finally {
+        	devMgr.Release();
+		}
     }
 
     private static WiaItem findScannerFile(WiaItem deviceItem){

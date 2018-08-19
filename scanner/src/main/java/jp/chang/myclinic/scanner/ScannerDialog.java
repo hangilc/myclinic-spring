@@ -32,7 +32,7 @@ class ScannerDialog extends Stage {
         Parent mainPanel = createMainPanel();
         setScene(new Scene(mainPanel));
         this.showingProperty().addListener((obs, oldValue, newValue) -> {
-            if( newValue ){
+            if (newValue) {
                 start(savePath);
             }
         });
@@ -41,16 +41,7 @@ class ScannerDialog extends Stage {
     private void start(Path savePath) {
         CompletableFuture.runAsync(task)
                 .whenCompleteAsync((result, ex) -> {
-//                    if( !task.isCancelled() ){
-//                        try {
-//                            ScannerDialog.this.outPath = ScannerLib.convertImage(savePath, "jpg");
-//                            logger.info("saved image: {}", outPath);
-//                            Files.delete(savePath);
-//                        } catch(IOException e){
-//                            ex = e;
-//                        }
-//                    }
-                    if( !task.isCancelled() && ex == null ){
+                    if (!task.isCancelled() && ex == null) {
                         ScannerDialog.this.success = true;
                     } else {
                         try {
@@ -59,7 +50,7 @@ class ScannerDialog extends Stage {
                             logger.error("Failed to delete file. {}", e);
                         }
                         if (ex != null) {
-                           Platform.runLater(() -> GuiUtil.alertError("エラー：" + ex));
+                            Platform.runLater(() -> GuiUtil.alertError("エラー：" + ex));
                         } else {
                             String errorMessage = task.getErrorMessage();
                             if (errorMessage != null && !errorMessage.isEmpty()) {
@@ -86,7 +77,7 @@ class ScannerDialog extends Stage {
         return vbox;
     }
 
-    public boolean isSuccess(){
+    public boolean isSuccess() {
         return success;
     }
 

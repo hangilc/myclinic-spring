@@ -196,11 +196,12 @@ class PatientDocScanner extends Stage {
         scannerDialog.initOwner(this);
         scannerDialog.initModality(Modality.WINDOW_MODAL);
         scannerDialog.showAndWait();
-        if (!scannerDialog.isSuccess()) {
+        if (scannerDialog.isSuccess()) {
             String outputFileName = composeOutputFileName(outputIndex);
             Path outPath = saveDir.resolve(outputFileName);
             try {
                 boolean ok = ScannerLib.convertImage(savePath, "jpg", outPath);
+                Files.delete(savePath);
                 if( ok ){
                     savedFilePaths.add(outPath);
                     int index = numberOfScannedPages.getValue() + 1;
@@ -239,11 +240,19 @@ class PatientDocScanner extends Stage {
         scannerDialog.initModality(Modality.WINDOW_MODAL);
         scannerDialog.showAndWait();
         if (scannerDialog.isSuccess()) {
-//            Path outPath = scannerDialog.getOutPath();
-//            if( outPath != null ){
-//                savedFilePaths.set(index - 1, outPath);
-//                setPreviewImage(outPath.toString());
-//            }
+            Path outPath = savedFilePaths.get(index-1);
+            try {
+                boolean ok = ScannerLib.convertImage(savePath, "jpg", outPath);
+                Files.delete(savePath);
+                if( ok ){
+                    setPreviewImage(outPath.toString());
+                } else {
+                    GuiUtil.alertError("画像の変換に失敗しました。");
+                }
+            } catch(IOException ex){
+                logger.error("Failed to convert image. {}", ex);
+                GuiUtil.alertError("画像の変換に失敗しました。" + ex);
+            }
         }
     }
 
