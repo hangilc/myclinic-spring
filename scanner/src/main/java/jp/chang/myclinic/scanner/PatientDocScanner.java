@@ -25,11 +25,14 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class PatientDocScanner extends Stage {
 
@@ -299,14 +302,27 @@ class PatientDocScanner extends Stage {
         }
     }
 
+    private String changeSerial(String origFileName, int index){
+        Pattern pat = Pattern.compile("(\\d+)\\.([^.]+)$");
+        Matcher matcher = pat.matcher(origFileName);
+        if( matcher.find() ){
+            String s = String.format("%02d.$2", index);
+            return matcher.replaceFirst(s);
+        } else {
+            return origFileName;
+        }
+    }
+
     private void reNumberSavedFiles() throws IOException {
         for(int i=0;i<savedFilePaths.size();i++){
             Path prevPath = savedFilePaths.get(i);
-            String newPathName = composeOutputFileName(i+1);
-            Path newPath = saveDir.resolve(newPathName);
-            if( !prevPath.equals(newPath) ){
+            String prevFile = prevPath.toString();
+            String newFile = changeSerial(prevFile, i+1);
+            Path newPath = Paths.get(newFile);
+            if( !newFile.equals(prevFile) ){
                 Files.move(prevPath, newPath, StandardCopyOption.REPLACE_EXISTING);
             }
+            savedFilePaths.set(i, newPath);
         }
     }
 
