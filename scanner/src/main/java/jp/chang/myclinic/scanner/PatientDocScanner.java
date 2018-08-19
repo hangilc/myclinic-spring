@@ -4,8 +4,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -25,6 +23,8 @@ import jp.chang.myclinic.utilfx.GuiUtil;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 class PatientDocScanner extends Stage {
 
@@ -36,8 +36,8 @@ class PatientDocScanner extends Stage {
     private static DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("uuuuMMdd-HHmmss");
     private IntegerProperty numberOfScannedPages = new SimpleIntegerProperty(0);
     private IntegerProperty currentPreviewPage = new SimpleIntegerProperty(0);
-    private StringProperty currentImagePath = new SimpleStringProperty();
     private String deviceId;
+    private List<Path> savedFilePaths = new ArrayList<>();
 
     PatientDocScanner(int patientId, boolean scanningHokensho) {
         this.patientId = patientId;
@@ -82,16 +82,19 @@ class PatientDocScanner extends Stage {
         StackPane imageWrapper = new StackPane();
         Label blankLabel = new Label("（空白）");
         imageWrapper.getChildren().add(blankLabel);
-        currentImagePath.addListener((obs, oldValue, newValue) -> {
-            if (newValue == null) {
-                imageWrapper.getChildren().setAll(blankLabel);
-            } else {
-                Image image = new Image("file:" + newValue);
+        currentPreviewPage.addListener((obs, oldValue, newValue) -> {
+            int index = newValue.intValue() - 1;
+            if( index >= 0 && index < savedFilePaths.size() ){
+                Path path = savedFilePaths.get(index);
+                Image image = new Image("file:" + path.toString());
                 ImageView imageView = new ImageView(image);
                 imageView.setFitWidth(imageWrapper.getWidth());
                 imageView.setFitHeight(imageWrapper.getHeight());
                 imageView.setPreserveRatio(true);
                 imageWrapper.getChildren().setAll(imageView);
+
+            } else {
+                imageWrapper.getChildren().setAll(blankLabel);
             }
         });
         imageWrapper.getStyleClass().add("preview-view");
@@ -122,7 +125,9 @@ class PatientDocScanner extends Stage {
                 currentPreviewPage,
                 numberOfScannedPages
         );
-        disableNextButton.addListener((obs, oldValue, newValue) -> nextButton.setDisable(newValue));
+        nextButton.disableProperty().bind(disableNextButton);
+        prevButton.setOnAction(evt -> doPrev());
+        nextButton.setOnAction(evt -> doNext());
         rescanLink.getStyleClass().add("rescan");
         deleteLink.getStyleClass().add("delete");
         vbox.getChildren().addAll(
@@ -163,7 +168,7 @@ class PatientDocScanner extends Stage {
                 return;
             }
         }
-        String saveFileName = composeSaveFileName();
+        String saveFileName = composeSaveFileName(numberOfScannedPages.getValue() + 1);
         Path savePath = saveDir.resolve(saveFileName);
         ScannerDialog scannerDialog = new ScannerDialog(deviceId, savePath);
         scannerDialog.initOwner(this);
@@ -173,7 +178,7 @@ class PatientDocScanner extends Stage {
         if( !scannerDialog.isCancelled() ){
             Path outPath = scannerDialog.getOutPath();
             if( outPath != null ){
-                currentImagePath.setValue(outPath.toString());
+                savedFilePaths.add(outPath);
                 int index = numberOfScannedPages.getValue() + 1;
                 numberOfScannedPages.setValue(index);
                 currentPreviewPage.setValue(index);
@@ -181,12 +186,11 @@ class PatientDocScanner extends Stage {
         }
     }
 
-    private String composeSaveFileName() {
-        int nextPageIndex = numberOfScannedPages.getValue() + 1;
+    private String composeSaveFileName(int index) {
         if (scanningHokensho) {
-            return String.format("%d-hokensho-%s-%02d.bmp", patientId, timeStamp, nextPageIndex);
+            return String.format("%d-hokensho-%s-%02d.bmp", patientId, timeStamp, index);
         } else {
-            return String.format("%d-%s-%02d.bmp", patientId, timeStamp, nextPageIndex);
+            return String.format("%d-%s-%02d.bmp", patientId, timeStamp, index);
         }
     }
 
@@ -199,5 +203,21 @@ class PatientDocScanner extends Stage {
         }
     }
 
+    private void doPrev(){
+        int index = currentPreviewPage.getValue();
+        if( index > 1 ){
+            index -= 1;
+            currentPreviewPage.setValue(index);
+        }
+    }
+
+    private void doNext(){
+        int n = numberOfScannedPages.getValue();
+        int i = currentPreviewPage.getValue();
+        if( i < n ){
+            i += 1;
+            currentPreviewPage.setValue(i);
+        }
+    }
 
 }
