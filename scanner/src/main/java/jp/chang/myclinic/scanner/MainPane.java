@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 class MainPane extends BorderPane {
 
@@ -43,6 +44,7 @@ class MainPane extends BorderPane {
             Menu menu = new Menu("設定");
             {
                 MenuItem item = new MenuItem("保存フォルダー");
+                item.setOnAction(evt -> doSetSavingDir());
                 menu.getItems().add(item);
             }
             {
@@ -93,6 +95,7 @@ class MainPane extends BorderPane {
         }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("保存先の指定");
+        fileChooser.setInitialDirectory(Globals.regularDocSavingDirHint.toFile());
         File file = fileChooser.showSaveDialog(getScene().getWindow());
         if( file == null ){
             return;
@@ -100,7 +103,7 @@ class MainPane extends BorderPane {
         Path tmpPath = null;
         try {
             tmpPath = Files.createTempFile("scanner", ".bmp");
-            ScannerDialog scannerDialog = new ScannerDialog(deviceId, tmpPath, ScannerSetting.INSTANCE.getDpi());
+            ScannerDialog scannerDialog = new ScannerDialog(deviceId, tmpPath, Globals.dpi);
             scannerDialog.initOwner(getScene().getWindow());
             scannerDialog.initModality(Modality.WINDOW_MODAL);
             scannerDialog.showAndWait();
@@ -110,7 +113,7 @@ class MainPane extends BorderPane {
                     GuiUtil.alertError("画像の変換に失敗しました。");
                     Files.deleteIfExists(file.toPath());
                 } else {
-                    Globals.defaultRegularDocDir = file.toPath().getParent().toString();
+                    Globals.regularDocSavingDirHint = file.toPath().getParent();
                     logger.info("Saved regular doc: " + file.toString());
                 }
             }
@@ -123,6 +126,25 @@ class MainPane extends BorderPane {
                 }
             } catch (IOException ex){
                 logger.error("Failed to delete tmp file." + ex);
+            }
+        }
+    }
+
+    private void doSetSavingDir(){
+        SetSavingDirDialog dialog = new SetSavingDirDialog();
+        dialog.initOwner(getScene().getWindow());
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.showAndWait();
+        if( dialog.isEnterPushed() ){
+            Path dir = Paths.get(dialog.getSavingDir());
+            Globals.savingDir = dir;
+            if( dialog.saveToSettingSelected() ){
+                try {
+                    ScannerSetting.INSTANCE.setSavingDir(dir);
+                } catch(IOException ex){
+                    logger.error("Failed to save saving dir. {}", ex);
+                    GuiUtil.alertError("設定ファイルへの保存に失敗しました。");
+                }
             }
         }
     }

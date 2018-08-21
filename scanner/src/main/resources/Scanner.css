@@ -41,3 +41,7 @@
     -fx-pref-width: 200px;
 }
 
+.set-saving-dir-dialog {
+    -fx-padding: 10px;
+}
+

@@ -24,6 +24,10 @@ class ScannerSetting {
 	static {
 		try {
 			INSTANCE = new ScannerSetting();
+			Globals.defaultDevice = INSTANCE.getDefaultDevice();
+			Globals.savingDir = INSTANCE.getSavingDir();
+			Globals.dpi = INSTANCE.getDpi();
+			Globals.regularDocSavingDirHint = INSTANCE.getRegularDocSavingDirHint();
 		} catch(IOException ex){
 			throw new UncheckedIOException(ex);
 		}

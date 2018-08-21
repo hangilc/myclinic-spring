@@ -22,14 +22,20 @@ public class Main extends Application {
         MainPane mainPane = new MainPane();
         stage.setScene(new Scene(mainPane));
         stage.showingProperty().addListener((obs, oldValue, newValue) -> {
-            if( newValue == false ){
+            if( !newValue ){
                 onClosing();
             }
         });
         stage.show();
     }
 
-    private void onClosing(){
-        System.out.println(Globals.defaultRegularDocDir);
+    private void onClosing() {
+        try {
+            if( Globals.regularDocSavingDirHint != null ) {
+                ScannerSetting.INSTANCE.setRegularDocSavingDirHint(Globals.regularDocSavingDirHint);
+            }
+        } catch(Exception ex){
+            logger.error("Error on onClosing: {}", ex);
+        }
     }
 }
