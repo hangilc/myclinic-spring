@@ -21,6 +21,15 @@ public class Main extends Application {
         Wia.CoInitialize();
         MainPane mainPane = new MainPane();
         stage.setScene(new Scene(mainPane));
+        stage.showingProperty().addListener((obs, oldValue, newValue) -> {
+            if( newValue == false ){
+                onClosing();
+            }
+        });
         stage.show();
+    }
+
+    private void onClosing(){
+        System.out.println(Globals.defaultRegularDocDir);
     }
 }

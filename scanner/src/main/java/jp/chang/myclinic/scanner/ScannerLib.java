@@ -26,7 +26,7 @@ class ScannerLib {
     }
 
     static String getScannerDeviceSetting(){
-        String deviceId = ScannerSetting.INSTANCE.defaultDevice;
+        String deviceId = ScannerSetting.INSTANCE.getDefaultDevice();
         if( !"".equals(deviceId) ){
             return deviceId;
         } else {

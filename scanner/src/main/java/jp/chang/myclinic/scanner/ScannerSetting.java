@@ -3,10 +3,7 @@ package jp.chang.myclinic.scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,6 +18,7 @@ class ScannerSetting {
 	private static String keySaveDir = "myclinic.scanner.save.dir";
 	private static String keyDpi     = "myclinic.scanner.dpi";
 	private static String keyDefaultDevice = "myclinic.scanner.defaultDevice";
+	private static String keyRegularDocSavingDirHint = "regular_doc_saving_dir_hint";
 	public static ScannerSetting INSTANCE;
 
 	static {
@@ -31,36 +29,22 @@ class ScannerSetting {
 		}
 	}
 
-	public Path settingFile = Paths.get(System.getProperty("user.home"), "myclinic-scanner.properties");
-	public Path savingDir = Paths.get(System.getProperty("user.dir"));
-	public int dpi = 200;
-	public String defaultDevice = "";
+	private Path settingFile;
+	private Properties cache;
 
 	private ScannerSetting() throws IOException {
-		resolveSettingFile();
-		Properties properties = loadProperties();
-		resolveSavingDir(properties);
-		resolveDpi(properties);
-		resolveDefaultDevice(properties);
+		this.settingFile = resolveSettingFile();
+		logger.info("resolved setting file to {}", settingFile);
+		this.cache = loadProperties();
 	}
 
-	public void saveToFile() throws IOException {
-		Properties props = new Properties();
-		props.setProperty(keySaveDir, savingDir.toString());
-		props.setProperty(keyDpi, String.valueOf(dpi));
-		props.setProperty(keyDefaultDevice, defaultDevice);
-		try(BufferedWriter writer = Files.newBufferedWriter(settingFile, StandardCharsets.UTF_8, 
-			CREATE, TRUNCATE_EXISTING, WRITE)){
-			props.store(writer, "");
-		}
-	}
-
-	private void resolveSettingFile(){
+	private Path resolveSettingFile(){
 		String prop = System.getProperty("myclinic.scanner.settingFile");
 		if( prop != null ){
-			settingFile = Paths.get(prop);
+			return Paths.get(prop);
+		} else {
+			return Paths.get(System.getProperty("user.home"), "myclinic-scanner.properties");
 		}
-		logger.info("resolved setting file to {}", settingFile);
 	}
 
 	private Properties loadProperties() throws IOException {
@@ -77,52 +61,68 @@ class ScannerSetting {
 		return properties;
 	}
 
-	private String getPropValue(Properties properties, String key){
-		String value = properties.getProperty(key);
-		{
-			String other = System.getProperty(key);
-			if( other != null ){
-				value = other;
-			}
+	private void saveProperties(Properties props) throws IOException {
+		try(BufferedWriter writer = Files.newBufferedWriter(settingFile, StandardCharsets.UTF_8,
+				CREATE, TRUNCATE_EXISTING, WRITE)){
+			props.store(writer, "");
 		}
-		return value;
+
 	}
 
-	private void resolveSavingDir(Properties properties){
-		String value = properties.getProperty(keySaveDir);
-		{
-			String other = System.getProperty(keySaveDir);
-			if( other != null ){
-				value = other;
-			}
+	public Path getSavingDir(){
+		String value = cache.getProperty(keySaveDir);
+		if( value == null ){
+			value = System.getProperty("jp.chang.myclinic.scanner.saving_dir");
 		}
-		if( value != null ){
-			savingDir = Paths.get(value);
+		if( value == null ){
+			value = System.getProperty("user.dir");
 		}
+		return Paths.get(value);
 	}
 
-	private void resolveDpi(Properties properties){
-		String value = properties.getProperty(keyDpi);
-		{
-			String arg = System.getProperty(keyDpi);
-			if( arg != null ){
-				value = arg;
-			}
-		}
-		if( value != null ){
-			try{ 
-				dpi = Integer.parseInt(value);
-			} catch(NumberFormatException ex){
-				throw new RuntimeException(ex);
-			}
-		}
+	public void setSavingDir(Path dir) throws IOException {
+		cache.put(keySaveDir, dir);
+		saveProperties(cache);
 	}
 
-	private void resolveDefaultDevice(Properties properties){
-		String value = getPropValue(properties, keyDefaultDevice);
-		if( value != null ){
-			defaultDevice = value;
+	public int getDpi(){
+		String value = cache.getProperty(keyDpi);
+		if( value == null ){
+			value = System.getProperty("jp.chang.myclinic.scanner.dpi");
 		}
+		if( value == null ){
+			value = "200";
+		}
+		return Integer.parseInt(value);
 	}
 
+	public void setDpi(int dpi) throws IOException {
+		cache.put(keyDpi, String.format("%d", dpi));
+		saveProperties(cache);
+	}
+
+	public String getDefaultDevice(){
+		return cache.getProperty(keyDefaultDevice);
+	}
+
+	public void setDefaultDevice(String device) throws IOException {
+		cache.put(keyDefaultDevice, device);
+		saveProperties(cache);
+	}
+
+	public Path getRegularDocSavingDirHint(){
+		String value = cache.getProperty(keyRegularDocSavingDirHint);
+		if( value == null ){
+			value = System.getProperty("jp.chang.myclinic.scanner.regular_doc_saving_dir_hint");
+		}
+		if( value == null ){
+			value = System.getProperty("user.dir");
+		}
+		return Paths.get(value);
+	}
+
+	public void setRegularDocSavingDirHint(Path dir) throws IOException {
+		cache.put(keyRegularDocSavingDirHint, dir.toString());
+		saveProperties(cache);
+	}
 }

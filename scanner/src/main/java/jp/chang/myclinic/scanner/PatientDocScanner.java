@@ -184,7 +184,7 @@ class PatientDocScanner extends Stage {
     }
 
     private Path getSaveDir() {
-        return ScannerSetting.INSTANCE.savingDir;
+        return ScannerSetting.INSTANCE.getSavingDir();
     }
 
     private void doStart() {
@@ -197,7 +197,7 @@ class PatientDocScanner extends Stage {
         int outputIndex = numberOfScannedPages.getValue() + 1;
         String saveFileName = composeSaveFileName(outputIndex);
         Path savePath = saveDir.resolve(saveFileName);
-        ScannerDialog scannerDialog = new ScannerDialog(deviceId, savePath, ScannerSetting.INSTANCE.dpi);
+        ScannerDialog scannerDialog = new ScannerDialog(deviceId, savePath, ScannerSetting.INSTANCE.getDpi());
         scannerDialog.initOwner(this);
         scannerDialog.initModality(Modality.WINDOW_MODAL);
         scannerDialog.showAndWait();
@@ -240,7 +240,7 @@ class PatientDocScanner extends Stage {
         }
         String saveFileName = composeSaveFileName(index);
         Path savePath = saveDir.resolve(saveFileName);
-        ScannerDialog scannerDialog = new ScannerDialog(deviceId, savePath, ScannerSetting.INSTANCE.dpi);
+        ScannerDialog scannerDialog = new ScannerDialog(deviceId, savePath, ScannerSetting.INSTANCE.getDpi());
         scannerDialog.initOwner(this);
         scannerDialog.initModality(Modality.WINDOW_MODAL);
         scannerDialog.showAndWait();

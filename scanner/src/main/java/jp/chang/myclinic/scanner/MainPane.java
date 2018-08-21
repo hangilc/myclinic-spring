@@ -100,7 +100,7 @@ class MainPane extends BorderPane {
         Path tmpPath = null;
         try {
             tmpPath = Files.createTempFile("scanner", ".bmp");
-            ScannerDialog scannerDialog = new ScannerDialog(deviceId, tmpPath, ScannerSetting.INSTANCE.dpi);
+            ScannerDialog scannerDialog = new ScannerDialog(deviceId, tmpPath, ScannerSetting.INSTANCE.getDpi());
             scannerDialog.initOwner(getScene().getWindow());
             scannerDialog.initModality(Modality.WINDOW_MODAL);
             scannerDialog.showAndWait();
@@ -110,6 +110,7 @@ class MainPane extends BorderPane {
                     GuiUtil.alertError("画像の変換に失敗しました。");
                     Files.deleteIfExists(file.toPath());
                 } else {
+                    Globals.defaultRegularDocDir = file.toPath().getParent().toString();
                     logger.info("Saved regular doc: " + file.toString());
                 }
             }
