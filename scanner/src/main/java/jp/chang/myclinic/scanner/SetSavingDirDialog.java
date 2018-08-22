@@ -29,6 +29,11 @@ class SetSavingDirDialog extends SetSettingDialogBase {
     }
 
     @Override
+    protected String getChangeButtonLabel() {
+        return "参照";
+    }
+
+    @Override
     ObservableValue<String> getCurrentValue() {
         return currentSavingDir;
     }
@@ -36,6 +41,7 @@ class SetSavingDirDialog extends SetSettingDialogBase {
     @Override
     void doChange() {
         DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("保存先フォルダー");
         directoryChooser.setInitialDirectory(Paths.get(currentSavingDir.getValue()).toFile());
         File dir = directoryChooser.showDialog(this);
         if( dir != null ){

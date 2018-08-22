@@ -57,6 +57,11 @@ class MainPane extends BorderPane {
                 item.setOnAction(evt -> doSetDefaultDevice());
                 menu.getItems().add(item);
             }
+            {
+                MenuItem item = new MenuItem("一般書類の保存先");
+                item.setOnAction(evt -> doSetRegularDocSavingHint());
+                menu.getItems().add(item);
+            }
             mbar.getMenus().add(menu);
         }
         return mbar;
@@ -188,5 +193,24 @@ class MainPane extends BorderPane {
             }
         }
     }
+
+    private void doSetRegularDocSavingHint(){
+        SetRegularDocSavingHintDialog dialog = new SetRegularDocSavingHintDialog();
+        dialog.initOwner(getScene().getWindow());
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.showAndWait();
+        if( dialog.isEnterPushed() ){
+            Path newValue = Paths.get(dialog.getSavingHint());
+            Globals.regularDocSavingDirHint = newValue;
+            if( dialog.saveToSettingSelected() ){
+                try {
+                    ScannerSetting.INSTANCE.setRegularDocSavingDirHint(newValue);
+                } catch(IOException ex){
+                    logger.error("Failed to save dpi. {}", ex);
+                    GuiUtil.alertError("設定ファイルへの保存に失敗しました。");
+                }
+            }
+        }
+   }
 
 }
