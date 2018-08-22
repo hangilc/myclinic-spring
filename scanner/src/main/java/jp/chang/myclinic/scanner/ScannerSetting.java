@@ -24,10 +24,6 @@ class ScannerSetting {
 	static {
 		try {
 			INSTANCE = new ScannerSetting();
-			Globals.defaultDevice = INSTANCE.getDefaultDevice();
-			Globals.savingDir = INSTANCE.getSavingDir();
-			Globals.dpi = INSTANCE.getDpi();
-			Globals.regularDocSavingDirHint = INSTANCE.getRegularDocSavingDirHint();
 		} catch(IOException ex){
 			throw new UncheckedIOException(ex);
 		}
@@ -85,7 +81,7 @@ class ScannerSetting {
 	}
 
 	public void setSavingDir(Path dir) throws IOException {
-		cache.put(keySaveDir, dir);
+		cache.put(keySaveDir, dir.toAbsolutePath().toString());
 		saveProperties(cache);
 	}
 
@@ -126,7 +122,7 @@ class ScannerSetting {
 	}
 
 	public void setRegularDocSavingDirHint(Path dir) throws IOException {
-		cache.put(keyRegularDocSavingDirHint, dir.toString());
+		cache.put(keyRegularDocSavingDirHint, dir.toAbsolutePath().toString());
 		saveProperties(cache);
 	}
 }

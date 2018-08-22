@@ -1,9 +1,10 @@
 package jp.chang.myclinic.scanner;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,24 +15,21 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import jp.chang.myclinic.utilfx.GuiUtil;
 
-import java.io.File;
-import java.nio.file.Paths;
+class SetDpiDialog extends Stage {
 
-class SetSavingDirDialog extends Stage {
-
-    //private static Logger logger = LoggerFactory.getLogger(SetSavingDirDialog.class);
-    private StringProperty currentSavingDir = new SimpleStringProperty();
+    //private static Logger logger = LoggerFactory.getLogger(SetDpiDialog.class);
+    private IntegerProperty dpi = new SimpleIntegerProperty(200);
     private BooleanProperty saveToSetting = new SimpleBooleanProperty(true);
     private boolean enterPushed = false;
 
-    SetSavingDirDialog() {
-        setTitle("保存先フォルダーの設定");
-        currentSavingDir.setValue(Globals.savingDir.toString());
+    SetDpiDialog() {
+        setTitle("ＤＰＩの設定");
+        dpi.setValue(Globals.dpi);
         Parent mainPane = createMainPane();
-        mainPane.getStyleClass().add("set-saving-dir-dialog");
+        mainPane.getStyleClass().add("set-dpi-dialog");
         mainPane.getStylesheets().add("Scanner.css");
         setScene(new Scene(mainPane));
     }
@@ -40,8 +38,8 @@ class SetSavingDirDialog extends Stage {
         return enterPushed;
     }
 
-    String getSavingDir(){
-        return currentSavingDir.getValue();
+    int getDpi(){
+        return dpi.getValue();
     }
 
     boolean saveToSettingSelected(){
@@ -51,12 +49,12 @@ class SetSavingDirDialog extends Stage {
     private Parent createMainPane(){
         VBox vbox = new VBox(4);
         vbox.setAlignment(Pos.CENTER);
-        Text currentSavingDirText = new Text();
-        currentSavingDirText.textProperty().bind(currentSavingDir);
-        TextFlow dispFlow = new TextFlow(currentSavingDirText);
+        Text currentSetting = new Text();
+        currentSetting.textProperty().bind(Bindings.convert(dpi));
+        TextFlow dispFlow = new TextFlow(currentSetting);
         dispFlow.setTextAlignment(TextAlignment.CENTER);
-        Button chooseButton = new Button("参照");
-        chooseButton.setOnAction(evt -> doChoose());
+        Button changeButton = new Button("変更");
+        changeButton.setOnAction(evt -> doChange());
         CheckBox saveToSettingCheck = new CheckBox("設定ファイルに保存する");
         saveToSettingCheck.selectedProperty().bindBidirectional(saveToSetting);
         Button enterButton = new Button("決定");
@@ -71,19 +69,21 @@ class SetSavingDirDialog extends Stage {
         commandBox.getChildren().addAll(saveToSettingCheck, enterButton, cancelButton);
         vbox.getChildren().addAll(
                 dispFlow,
-                chooseButton,
+                changeButton,
                 commandBox
         );
         return vbox;
     }
 
-    private void doChoose(){
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(Paths.get(currentSavingDir.getValue()).toFile());
-        File dir = directoryChooser.showDialog(this);
-        if( dir != null ){
-            currentSavingDir.setValue(dir.toString());
-        }
+    private void doChange(){
+        GuiUtil.askForString("DPIの値の入力", dpi.getValue().toString()).ifPresent(input -> {
+            try {
+                int intValue = Integer.parseInt(input);
+                dpi.setValue(intValue);
+            } catch(NumberFormatException ex){
+                GuiUtil.alertError("dpiの入力が不適切です。");
+            }
+        });
     }
 
 }

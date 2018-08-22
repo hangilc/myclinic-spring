@@ -49,6 +49,7 @@ class MainPane extends BorderPane {
             }
             {
                 MenuItem item = new MenuItem("DPI");
+                item.setOnAction(evt -> doSetDpi());
                 menu.getItems().add(item);
             }
             {
@@ -143,6 +144,25 @@ class MainPane extends BorderPane {
                     ScannerSetting.INSTANCE.setSavingDir(dir);
                 } catch(IOException ex){
                     logger.error("Failed to save saving dir. {}", ex);
+                    GuiUtil.alertError("設定ファイルへの保存に失敗しました。");
+                }
+            }
+        }
+    }
+
+    private void doSetDpi(){
+        SetDpiDialog dialog = new SetDpiDialog();
+        dialog.initOwner(getScene().getWindow());
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.showAndWait();
+        if( dialog.isEnterPushed() ){
+            int newDpi = dialog.getDpi();
+            Globals.dpi = newDpi;
+            if( dialog.saveToSettingSelected() ){
+                try {
+                    ScannerSetting.INSTANCE.setDpi(newDpi);
+                } catch(IOException ex){
+                    logger.error("Failed to save dpi. {}", ex);
                     GuiUtil.alertError("設定ファイルへの保存に失敗しました。");
                 }
             }

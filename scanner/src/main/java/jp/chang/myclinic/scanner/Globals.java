@@ -15,4 +15,12 @@ public class Globals {
     public static int dpi;
     public static Path regularDocSavingDirHint;
 
+    static {
+        ScannerSetting setting = ScannerSetting.INSTANCE;
+        defaultDevice = setting.getDefaultDevice();
+        savingDir = setting.getSavingDir();
+        dpi = setting.getDpi();
+        regularDocSavingDirHint = setting.getRegularDocSavingDirHint();
+    }
+
 }
