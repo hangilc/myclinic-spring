@@ -54,6 +54,7 @@ class MainPane extends BorderPane {
             }
             {
                 MenuItem item = new MenuItem("スキャナーデバイス");
+                item.setOnAction(evt -> doSetDefaultDevice());
                 menu.getItems().add(item);
             }
             mbar.getMenus().add(menu);
@@ -161,6 +162,25 @@ class MainPane extends BorderPane {
             if( dialog.saveToSettingSelected() ){
                 try {
                     ScannerSetting.INSTANCE.setDpi(newDpi);
+                } catch(IOException ex){
+                    logger.error("Failed to save dpi. {}", ex);
+                    GuiUtil.alertError("設定ファイルへの保存に失敗しました。");
+                }
+            }
+        }
+    }
+
+    private void doSetDefaultDevice(){
+        SetDefaultDeviceDialog dialog = new SetDefaultDeviceDialog();
+        dialog.initOwner(getScene().getWindow());
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.showAndWait();
+        if( dialog.isEnterPushed() ){
+            String newValue = dialog.getDefaultDevice();
+            Globals.defaultDevice = newValue;
+            if( dialog.saveToSettingSelected() ){
+                try {
+                    ScannerSetting.INSTANCE.setDefaultDevice(newValue);
                 } catch(IOException ex){
                     logger.error("Failed to save dpi. {}", ex);
                     GuiUtil.alertError("設定ファイルへの保存に失敗しました。");
