@@ -32,12 +32,21 @@ public class CreateShortcuts {
         this.releaseDir = releaseDir;
         this.targetDir = targetDir;
         this.javaHome = Paths.get(System.getenv("JAVA_HOME"), "bin");
+        this.suffix = suffix;
     }
 
     private void run(){
         switch(role){
             case "practice": {
                 runPractice();
+                break;
+            }
+            case "reception": {
+                runReception();
+                break;
+            }
+            case "pharma": {
+                runPharma();
                 break;
             }
             default: {
@@ -53,6 +62,22 @@ public class CreateShortcuts {
         createShortcut("javaw", "-jar hotline.jar practice pharmacy", "ホットライン（薬局）");
         createShortcut("javaw", "-jar reception.jar", "受付");
         createShortcut("javaw", "-jar practice.jar", "診察");
+        createShortcut("javaw", "-jar intraclinic.jar", "院内ミーティング");
+        createShortcut("javaw", "-jar pharma.jar", "薬局");
+        createShortcut("javaw", "-jar record-browser.jar", "診療録");
+        createShortcut("javaw", "-jar scanner.jar", "スキャナー");
+    }
+
+    private void runReception(){
+        createShortcut("javaw", "-jar hotline.jar reception practice", "ホットライン");
+        createShortcut("javaw", "-jar reception.jar", "受付");
+        createShortcut("javaw", "-jar intraclinic.jar", "院内ミーティング");
+        createShortcut("javaw", "-jar record-browser.jar", "診療録");
+        createShortcut("javaw", "-jar scanner.jar", "スキャナー");
+    }
+
+    private void runPharma(){
+        createShortcut("javaw", "-jar hotline.jar pharmacy practice", "ホットライン");
         createShortcut("javaw", "-jar intraclinic.jar", "院内ミーティング");
         createShortcut("javaw", "-jar pharma.jar", "薬局");
         createShortcut("javaw", "-jar record-browser.jar", "診療録");
