@@ -11,9 +11,11 @@ import java.time.format.DateTimeFormatter;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 
+// Usage: DeployCurrent role [release-dir]
 public class DeployCurrent {
 
     private static Logger logger = LoggerFactory.getLogger(DeployCurrent.class);
+    private String role;
     private Path targetDir;
     private Path baseDir;
 
@@ -22,20 +24,38 @@ public class DeployCurrent {
     }
 
     private DeployCurrent(String[] args) {
-        if (args.length > 0) {
-            this.targetDir = Paths.get(args[0]);
-        } else {
+        if( args.length == 1 ){
+            this.role = args[0];
             Path homeDir = Paths.get(System.getProperty("user.home"));
             this.targetDir = homeDir.resolve("myclinic-releases").resolve("current");
+        } else if( args.length == 2 ){
+            this.role = args[0];
+            this.targetDir = Paths.get(args[1]);
+        } else {
+            System.err.println("Usage: DeployCurrent role [release-dir]");
         }
         this.baseDir = Paths.get(System.getProperty("user.dir"));
     }
 
     private void run() throws IOException {
-        if (Files.exists(targetDir)) {
-            moveTargetDir();
+        switch(role){
+            case "practice": {
+                runPractice();
+                break;
+            }
+            case "reception": {
+                runReception();
+                break;
+            }
+            case "pharma": {
+                runPharma();
+                break;
+            }
         }
-        Files.createDirectory(targetDir);
+    }
+
+    private void runPractice() throws IOException {
+        ensureTargetDir();
         copyRecursively(
                 baseDir.resolve("config"),
                 targetDir.resolve("config")
@@ -49,7 +69,30 @@ public class DeployCurrent {
         copyJar("scanner");
         copyJar("server");
         copyJar("rcpt-drawer");
-        copyJar("winutil");
+    }
+
+    private void runReception() throws IOException {
+        ensureTargetDir();
+        copyJar("hotline");
+        copyJar("intraclinic");
+        copyJar("reception");
+        copyJar("record-browser");
+        copyJar("scanner");
+    }
+
+    private void runPharma() throws IOException {
+        ensureTargetDir();
+        copyJar("hotline");
+        copyJar("intraclinic");
+        copyJar("pharma");
+        copyJar("record-browser");
+    }
+
+    private void ensureTargetDir() throws IOException {
+        if (Files.exists(targetDir)) {
+            moveTargetDir();
+        }
+        Files.createDirectory(targetDir);
     }
 
     private void copyJar(String name) throws IOException {
