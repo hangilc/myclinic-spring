@@ -62,11 +62,15 @@ public class Main extends Application {
 
     private void handleArgs(){
         List<String> args = getParameters().getUnnamed();
-        if (args.size() != 1) {
-            logger.error("Usage: mock-client server-url");
+        String serverUrl = null;
+        if( args.size() == 0 ){
+            serverUrl = System.getenv("MYCLINIC_SERVICE");
+        } else if( args.size() == 1 ){
+            serverUrl = args.get(0);
+        } else {
+            logger.error("Usage: record-browser [server-url]");
             System.exit(1);
         }
-        String serverUrl = args.get(0);
         if (!serverUrl.endsWith("/")) {
             serverUrl = serverUrl + "/";
         }

@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 
-// Usage: DeployCurrent role [release-dir]
+// Usage: DeployCurrent role release-dir
 public class DeployCurrent {
 
     private static Logger logger = LoggerFactory.getLogger(DeployCurrent.class);
@@ -24,11 +24,7 @@ public class DeployCurrent {
     }
 
     private DeployCurrent(String[] args) {
-        if( args.length == 1 ){
-            this.role = args[0];
-            Path homeDir = Paths.get(System.getProperty("user.home"));
-            this.targetDir = homeDir.resolve("myclinic-releases").resolve("current");
-        } else if( args.length == 2 ){
+        if( args.length == 2 ){
             this.role = args[0];
             this.targetDir = Paths.get(args[1]);
         } else {
@@ -50,6 +46,10 @@ public class DeployCurrent {
             case "pharma": {
                 runPharma();
                 break;
+            }
+            default: {
+                System.err.println("Invalid role: " + role);
+                System.exit(1);
             }
         }
     }
