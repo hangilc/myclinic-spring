@@ -92,7 +92,7 @@ public class DeployCurrent {
         if (Files.exists(targetDir)) {
             moveTargetDir();
         }
-        Files.createDirectory(targetDir);
+        Files.createDirectories(targetDir);
     }
 
     private void copyJar(String name) throws IOException {
