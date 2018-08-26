@@ -13,5 +13,8 @@ if "%folder%" == "" (
 java -cp management\target\management-1.0.0-SNAPSHOT-jar-with-dependencies.jar ^
     jp.chang.myclinic.management.DeployCurrent ^
     practice "%folder%"
+java -cp management\target\management-1.0.0-SNAPSHOT-jar-with-dependencies.jar ^
+    jp.chang.myclinic.management.CreateShortcuts ^
+    practice "%folder%" "%folder%"
 
 endlocal
