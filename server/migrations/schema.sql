@@ -79,7 +79,7 @@ CREATE TABLE `hoken_koukikourei` (
   `valid_from` date NOT NULL DEFAULT '0000-00-00',
   `valid_upto` date NOT NULL DEFAULT '0000-00-00',
   PRIMARY KEY (`koukikourei_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1510 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=1511 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -119,7 +119,7 @@ CREATE TABLE `hoken_shahokokuho` (
   `valid_upto` date NOT NULL DEFAULT '0000-00-00',
   `kourei` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`shahokokuho_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10474 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=10475 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -136,7 +136,7 @@ CREATE TABLE `hotline` (
   `recipient` varchar(255) NOT NULL DEFAULT '',
   `m_datetime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`hotline_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=208962 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=208964 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -153,7 +153,7 @@ CREATE TABLE `intraclinic_comment` (
   `post_id` int(11) NOT NULL DEFAULT '0',
   `created_at` date NOT NULL DEFAULT '0000-00-00',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2220 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -168,7 +168,7 @@ CREATE TABLE `intraclinic_post` (
   `content` text NOT NULL,
   `created_at` date NOT NULL DEFAULT '0000-00-00',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1135 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -258,7 +258,7 @@ CREATE TABLE `patient` (
   `address` varchar(80) NOT NULL DEFAULT '',
   `phone` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`patient_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6946 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=6947 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -304,7 +304,7 @@ CREATE TABLE `practice_log` (
   `body` json DEFAULT NULL,
   PRIMARY KEY (`practice_log_id`),
   KEY `practice_date` (`created_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=8026 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8162 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -397,6 +397,21 @@ CREATE TABLE `shoubyoumei_master_arch` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `shouki`
+--
+
+DROP TABLE IF EXISTS `shouki`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shouki` (
+  `visit_id` int(10) unsigned NOT NULL,
+  `shouki` text,
+  PRIMARY KEY (`visit_id`),
+  CONSTRAINT `shouki_ibfk_1` FOREIGN KEY (`visit_id`) REFERENCES `visit` (`visit_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `shuushokugo_master`
 --
 
@@ -468,7 +483,7 @@ CREATE TABLE `visit` (
   PRIMARY KEY (`visit_id`),
   KEY `patient_id` (`patient_id`),
   KEY `idx_v_datetime` (`v_datetime`)
-) ENGINE=InnoDB AUTO_INCREMENT=91713 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=91727 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -498,7 +513,7 @@ CREATE TABLE `visit_conduct` (
   `visit_id` int(10) unsigned NOT NULL DEFAULT '0',
   `kind` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1160 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=1166 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -514,7 +529,7 @@ CREATE TABLE `visit_conduct_drug` (
   `iyakuhincode` int(10) unsigned NOT NULL DEFAULT '0',
   `amount` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=440 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=442 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -530,7 +545,7 @@ CREATE TABLE `visit_conduct_kizai` (
   `kizaicode` int(10) unsigned NOT NULL DEFAULT '0',
   `amount` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=744 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=749 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -545,7 +560,7 @@ CREATE TABLE `visit_conduct_shinryou` (
   `visit_conduct_id` int(10) unsigned NOT NULL DEFAULT '0',
   `shinryoucode` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1717 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=1727 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -566,7 +581,7 @@ CREATE TABLE `visit_drug` (
   `d_prescribed` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`drug_id`),
   KEY `visit_id` (`visit_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=174188 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=174199 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -611,7 +626,7 @@ CREATE TABLE `visit_shinryou` (
   `shinryoucode` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`shinryou_id`),
   KEY `visit_id` (`visit_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=607401 DEFAULT CHARSET=cp932;
+) ENGINE=InnoDB AUTO_INCREMENT=607370 DEFAULT CHARSET=cp932;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -671,4 +686,4 @@ CREATE TABLE `wqueue` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-07-15 15:28:52
+-- Dump completed on 2018-08-26 16:31:37
