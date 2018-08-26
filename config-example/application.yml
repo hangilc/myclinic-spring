@@ -20,6 +20,7 @@ myclinic:
   master-map-file: "./config/master-map.txt"
   name-map-file: "./config/master-name.txt"
   shinryou-byoumei-file: "./config/shinryou-byoumei.yml"
+  powder-drug-file: "./config/powder-drug.txt"
   master-files-directory: master-files
   clinic:
     name: 内科クリニック
