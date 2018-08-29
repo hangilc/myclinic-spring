@@ -210,7 +210,7 @@ class PrescPane extends VBox {
     }
 
     private CompletableFuture<List<DrugWithPharmaDrug>> collectPharmaDrugs(List<DrugFullDTO> drugs){
-        return CFUtil.map(drugs, drug -> Service.api.getPharmaDrug(drug.drug.iyakuhincode)
+        return CFUtil.map(drugs, drug -> Service.api.findPharmaDrug(drug.drug.iyakuhincode)
                 .thenApply(pharmaDrug -> {
                     DrugWithPharmaDrug result = new DrugWithPharmaDrug();
                     result.pharmaDrug = pharmaDrug;

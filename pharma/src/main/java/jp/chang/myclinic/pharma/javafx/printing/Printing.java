@@ -19,6 +19,7 @@ import jp.chang.myclinic.pharma.drawercreator.DrugBagDataCreator;
 import jp.chang.myclinic.pharma.drawercreator.PrescContentDataCreator;
 import jp.chang.myclinic.pharma.drawercreator.TechouDataCreator;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,27 +44,21 @@ public class Printing {
         printDrugBagSet(drugs, patient);
     }
 
-    public static void previewDrugBag(DrugCategory category){
+    public static void previewDrugBag(DrugCategory category) {
         DrugBagDataCreator creator = new DrugBagDataCreator(category, null, null, Globals.getClinicInfo());
         DrugBagDrawerData data = creator.createData();
         DrugBagDrawer drawer = new DrugBagDrawer(data);
         List<Op> ops = drawer.getOps();
         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.getPrinterEnv(),
-                128, 182, 0.6){
+                128, 182, 0.6) {
             @Override
             protected String getDefaultPrinterSettingName() {
                 return Globals.getDrugBagPrinterSetting();
-                //return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
             }
 
             @Override
             protected void setDefaultPrinterSettingName(String newName) {
                 Globals.setDrugBagPrinterSetting(newName);
-//                Config.load()
-//                        .ifPresent(config -> {
-//                            config.setDrugBagPrinterSetting(newName);
-//                            config.save();
-//                        });
             }
         };
         previewDialog.setTitle("薬袋印刷");
@@ -80,16 +75,11 @@ public class Printing {
             @Override
             protected String getDefaultPrinterSettingName() {
                 return Globals.getTechouPrinterSetting();
-                //return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
             }
 
             @Override
             protected void setDefaultPrinterSettingName(String newName) {
                 Globals.setTechouPrinterSetting(newName);
-//                Config.load().ifPresent(config -> {
-//                    config.setTechouPrinterSetting(newName);
-//                    config.save();
-//                });
             }
         };
         previewDialog.setTitle("薬手帳印刷");
@@ -119,12 +109,16 @@ public class Printing {
     }
 
     private static void printPrescContent(List<DrugFullDTO> drugs, PatientDTO patient) {
-        List<Op> ops = createPrescContentOps(drugs, patient);
-        print(ops, getPrescContentPrinterSetting());
+        try {
+            List<Op> ops = createPrescContentOps(drugs, patient);
+            print(ops, getPrescContentPrinterSetting());
+        } catch(Exception ex){
+            GuiUtil.alertException("処方内容の印刷に失敗しました。", ex);
+        }
     }
 
     private static CompletableFuture<List<Op>> createDrugBagOps(DrugFullDTO drug, PatientDTO patient) {
-        return Service.api.getPharmaDrug(drug.drug.iyakuhincode)
+        return Service.api.findPharmaDrug(drug.drug.iyakuhincode)
                 .thenApply(pharmaDrug -> {
                     DrugBagDataCreator creator = new DrugBagDataCreator(drug, patient,
                             pharmaDrug, Globals.getClinicInfo());
@@ -150,23 +144,24 @@ public class Printing {
     }
 
     private static void printTechou(List<DrugFullDTO> drugs, PatientDTO patient) {
-        List<Op> ops = createTechouOps(drugs, patient);
-        print(ops, getTechouPrinterSetting());
+        try {
+            List<Op> ops = createTechouOps(drugs, patient);
+            print(ops, getTechouPrinterSetting());
+        } catch(Exception ex){
+            GuiUtil.alertException("お薬手帳の印刷に失敗しました。", ex);
+        }
     }
 
     private static String getPrescContentPrinterSetting() {
         return Globals.getPrescContentPrinterSetting();
-        //return Config.load().map(Config::getPrescContentPrinterSetting).orElse(null);
     }
 
     private static String getDrugBagPrinterSetting() {
         return Globals.getDrugBagPrinterSetting();
-        //return Config.load().map(Config::getDrugBagPrinterSetting).orElse(null);
     }
 
     private static String getTechouPrinterSetting() {
         return Globals.getTechouPrinterSetting();
-        //return Config.load().map(Config::getTechouPrinterSetting).orElse(null);
     }
 
 }

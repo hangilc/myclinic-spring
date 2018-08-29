@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+// TODO: adapt to the case where pharma drug is not available
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);

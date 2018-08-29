@@ -62,7 +62,7 @@ public class DrawerPrinter {
             setScale(auxSetting.getScale());
         }
         HDC hdc = createDC(devnames, devmode);
-        if( hdc.getPointer() == Pointer.NULL ){
+        if( hdc == null ){
             throw new RuntimeException("createDC faield");
         }
         int jobId = beginPrint(hdc);
@@ -163,7 +163,6 @@ public class DrawerPrinter {
         DialogResult result;
         if( res.intValue() == 0 && pd.dwResultAction.intValue() == 1 ){
             Pointer pDevMode = MyKernel32.INSTANCE.GlobalLock(pd.hDevMode);
-            DEVMODE devmode = new DEVMODE(pDevMode);
             byte[] devmodeData = copyDevModeData(pDevMode);
             MyKernel32.INSTANCE.GlobalUnlock(pd.hDevMode);
             MyKernel32.INSTANCE.GlobalFree(pd.hDevMode);
