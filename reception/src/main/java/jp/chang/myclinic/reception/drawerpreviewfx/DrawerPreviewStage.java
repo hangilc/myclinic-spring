@@ -133,13 +133,15 @@ public class DrawerPreviewStage extends Stage {
         }
         String settingName = currentSettingName.getValue();
         if( devnamesCache == null && devmodeCache == null && auxSettingCache == null ){
-            try {
-                devnamesCache = printerEnv.readDevnames(settingName);
-                devmodeCache = printerEnv.readDevmode(settingName);
-                auxSettingCache = printerEnv.readAuxSetting(settingName);
-            } catch (Exception e) {
-                logger.error("Failed to get printer setting data.", e);
-                GuiUtil.alertException("印刷設定データの取得に失敗しました。", e);
+            if( settingName != null && !settingName.isEmpty() ) {
+                try {
+                    devnamesCache = printerEnv.readDevnames(settingName);
+                    devmodeCache = printerEnv.readDevmode(settingName);
+                    auxSettingCache = printerEnv.readAuxSetting(settingName);
+                } catch (Exception e) {
+                    logger.error("Failed to get printer setting data.", e);
+                    GuiUtil.alertException("印刷設定データの取得に失敗しました。", e);
+                }
             }
         } else {
             if( devnamesCache == null || devmodeCache == null || auxSettingCache == null ){

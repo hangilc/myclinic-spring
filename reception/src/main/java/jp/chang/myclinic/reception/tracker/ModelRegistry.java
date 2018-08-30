@@ -94,7 +94,14 @@ public class ModelRegistry {
     }
 
     public Visit getVisit(int visitId) {
-        return visitRegistry.get(visitId);
+        Visit visit =  visitRegistry.get(visitId);
+        if( visit != null ){
+            return visit;
+        } else {
+            return Service.api.getVisit(visitId)
+                    .thenCompose(visitDTO -> createVisit(visitDTO))
+                    .join();
+        }
     }
 
     private CompletableFuture<Patient> getPatient(int patientId) {
