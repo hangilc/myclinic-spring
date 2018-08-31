@@ -2,25 +2,39 @@ package jp.chang.myclinic.winutil.main;
 
 import jp.chang.myclinic.winutil.ShellLink;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class CreateShortcut {
 
     public static void main(String[] args) {
-        if (args.length != 4) {
-            System.err.println("Usage: create-shortcut TARGET ARGS WORKING-DIR SAVE-PAT");
+        if ( !(args.length >= 2 && args.length <= 4) ) {
+            System.err.println("Usage: create-shortcut SAVE-PATH TARGET [ARGS] [WORKING-DIR]");
             System.exit(1);
         }
-        String target = args[0];
-        String arguments = args[1];
-        String workDir = args[2];
-        String savePath = args[3];
+        String savePath = args[0];
+        String target = args[1];
+        String arguments = null;
+        String workDir = null;
+        if( args.length >= 3 ){
+            arguments = args[2];
+            if( args.length >= 4 ){
+                workDir = args[3];
+            }
+        }
+        System.err.println("savePath: " + savePath);
         System.err.println("target: " + target);
         System.err.println("arguments: " + arguments);
         System.err.println("workDir: " + workDir);
-        System.err.println("savePath: " + savePath);
         ShellLink shellLink = new ShellLink();
-        shellLink.setPath(target);
-        shellLink.setArguments(arguments);
-        shellLink.setWorkingDirectory(workDir);
+        Path targetPath = Paths.get(target);
+        shellLink.setPath(targetPath.toAbsolutePath().toString());
+        if( arguments != null ) {
+            shellLink.setArguments(arguments);
+        }
+        if( workDir != null ) {
+            shellLink.setWorkingDirectory(workDir);
+        }
         shellLink.save(savePath);
         shellLink.close();
     }

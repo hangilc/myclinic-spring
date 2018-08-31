@@ -1,6 +1,6 @@
 ::
 :: Usage: install-release [RELEASE-REPOSITORY-FOLDER]
-:: Default RELEASE-REPOSITORY-FOLDER is %MYCLINIC_RELEASE%
+:: Default RELEASE-REPOSITORY-FOLDER is %MYCLINIC_REPOSITORY%
 ::
 @echo off
 setlocal enabledelayedexpansion
@@ -11,7 +11,7 @@ for /f "tokens=* usebackq" %%t in (`timestamp`) do (
 
 set repo=%1
 if "%repo%" == "" (
-    set repo=%MYCLINIC_RELEASE%
+    set repo=%MYCLINIC_REPOSITORY%
 )
 
 set folder=%repo%\myclinic-release-%ts%
