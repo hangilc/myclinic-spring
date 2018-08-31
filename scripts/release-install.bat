@@ -18,5 +18,6 @@ set folder=%repo%\myclinic-release-%ts%
 
 java -cp management\target\management-1.0.0-SNAPSHOT-jar-with-dependencies.jar ^
     jp.chang.myclinic.management.DeployCurrent "%folder%"
+echo %folder% > "%repo%\current.txt"
 call shortcut-create.bat "%repo%"\current.lnk "%folder%"
 endlocal
