@@ -1,8 +1,9 @@
 ::
-:: 
+:: Usage: create-shortcuts-for-practice
+:: create shortcuts in the current directory
 ::
-@echo off
 
+@echo off
 java -cp management.jar jp.chang.myclinic.management.CreateShortcut ^
   "ホットライン（受付）".lnk "%JAVA_HOME%\bin\javaw.exe" "-jar hotline.jar practice reception" "."
 java -cp management.jar jp.chang.myclinic.management.CreateShortcut ^
