@@ -1,0 +1,11 @@
+::
+
+:: Usage: create-shortcuts-for-practice
+:: creates shortcuts in the current directory
+
+::
+@echo off
+
+java -cp management.jar jp.chang.myclinic.management.CreateShortcut ^
+
+    "ホットライン（受付）" "%JAVA_HOME%\bin\javaw.exe" "-jar hotline.jar practice reception" "."
