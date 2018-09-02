@@ -10,5 +10,6 @@ public interface IPersistFile extends IUnknown {
 
     IID IID_IPersistFile = new IID("0000010b-0000-0000-C000-000000000046");
 
+    HRESULT Load(LPOLESTR pszFileName, DWORD dwMode);
     HRESULT Save(LPOLESTR pszFileName, BOOL fRememebr);
 }

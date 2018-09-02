@@ -8,6 +8,8 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT.HRESULT;
 import com.sun.jna.ptr.PointerByReference;
 
+import static jp.chang.myclinic.winutil.WinConsts.STGM_READWRITE;
+
 public class ShellLink {
 
     //private static Logger logger = LoggerFactory.getLogger(ShellLink.class);
@@ -60,6 +62,18 @@ public class ShellLink {
         COMUtils.checkRC(hr);
         persistFile.Release();
         savePathOle.close();
+    }
+
+    public void load(String path){
+        PointerByReference pp = new PointerByReference();
+        HRESULT hr = api.QueryInterface(new Guid.REFIID(IPersistFile.IID_IPersistFile), pp);
+        COMUtils.checkRC(hr);
+        PersistFile persistFile = new PersistFile(pp.getValue());
+        OleString loadPathOle = new OleString(path);
+        hr = persistFile.Load(loadPathOle.asOleStr(), new WinDef.DWORD(STGM_READWRITE));
+        COMUtils.checkRC(hr);
+        persistFile.Release();
+        loadPathOle.close();
     }
 
 }

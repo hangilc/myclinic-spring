@@ -1,4 +1,4 @@
-package jp.chang.myclinic.winutil.main;
+package jp.chang.myclinic.management;
 
 import jp.chang.myclinic.winutil.ShellLink;
 
@@ -33,9 +33,10 @@ public class CreateShortcut {
             shellLink.setArguments(arguments);
         }
         if( workDir != null ) {
-            shellLink.setWorkingDirectory(workDir);
+            Path workDirPath = Paths.get(workDir);
+            shellLink.setWorkingDirectory(workDirPath.toAbsolutePath().toString());
         }
-        shellLink.save(savePath);
+        shellLink.save(Paths.get(savePath).toAbsolutePath().toString());
         shellLink.close();
     }
 
