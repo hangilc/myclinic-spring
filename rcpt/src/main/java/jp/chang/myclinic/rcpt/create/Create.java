@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 
 import static jp.chang.myclinic.consts.MyclinicConsts.*;
 
+// TODO: output warning in case of too large hokensha bangou, instead of throwing exception
 class Create {
 
     private static Logger logger = LoggerFactory.getLogger(Create.class);
