@@ -28,11 +28,17 @@ public class ReleaseCurrent {
             case "show":
                 doShow();
                 break;
+            case "open":
+                doOpen();
+                break;
             case "list":
                 doList();
                 break;
             case "rollback":
                 doRollback();
+                break;
+            case "help":
+                doUsage(System.out);
                 break;
             default:
                 System.err.println("Unknown command: " + command);
@@ -42,16 +48,27 @@ public class ReleaseCurrent {
     }
 
     private static void doUsage(PrintStream out) {
-        out.println("Usage: ReleaseCurrent ");
-        out.println("Usage: REleaseCurrent show");
+        out.println("Usage: REleaseCurrent [show]");
+        out.println("Usage: REleaseCurrent open");
         out.println("Usage: REleaseCurrent list");
         out.println("Usage: REleaseCurrent rollback");
+        out.println("Usage: REleaseCurrent help");
     }
 
     private static void doShow() throws IOException {
         Path current = getCurrentPath();
         String ver = getVersion(current);
         System.out.println(ver);
+    }
+
+    private static void doOpen() throws IOException {
+        Path current = getCurrentPath();
+        Runtime.getRuntime().exec(new String[]{
+                "cmd.exe",
+                "/c",
+                "start",
+                current.toAbsolutePath().toString()
+        });
     }
 
     private static Path getRepositoryPath() {
@@ -139,7 +156,7 @@ public class ReleaseCurrent {
                 tmpCurrent.toAbsolutePath().toString(),
                 release
         }).waitFor();
-        if( retCode == 0 ){
+        if (retCode == 0) {
             Files.deleteIfExists(current);
             Files.move(tmpCurrent, current);
         }
