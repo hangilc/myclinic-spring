@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ReleaseCurrent {
 
@@ -30,6 +31,9 @@ public class ReleaseCurrent {
             case "list":
                 doList();
                 break;
+            case "rollback":
+                doRollback();
+                break;
             default:
                 System.err.println("Unknown command: " + command);
                 doUsage(System.err);
@@ -40,6 +44,8 @@ public class ReleaseCurrent {
     private static void doUsage(PrintStream out) {
         out.println("Usage: ReleaseCurrent ");
         out.println("Usage: REleaseCurrent show");
+        out.println("Usage: REleaseCurrent list");
+        out.println("Usage: REleaseCurrent rollback");
     }
 
     private static void doShow() throws IOException {
@@ -68,6 +74,10 @@ public class ReleaseCurrent {
         return null;
     }
 
+    private static String getCurrentVersion() throws IOException {
+        return getVersion(getCurrentPath());
+    }
+
     private static List<Path> listReleases() throws IOException {
         List<Path> result = new ArrayList<>();
         for (Path path : Files.newDirectoryStream(getRepositoryPath())) {
@@ -77,13 +87,63 @@ public class ReleaseCurrent {
             }
         }
         Collections.sort(result);
+        Collections.reverse(result);
         return result;
     }
 
     private static void doList() throws IOException {
-        for(Path path: listReleases()){
-            System.out.println(path.getFileName().toString());
+        String currentVersion = getCurrentVersion();
+        for (Path path : listReleases()) {
+            String release = path.getFileName().toString();
+            if (release.equals(currentVersion)) {
+                System.out.print("* ");
+            }
+            System.out.println(release);
         }
+    }
+
+    private static void doRollback() throws IOException, InterruptedException {
+        String currentVersion = getCurrentVersion();
+        List<String> releases = listReleases().stream().map(p -> p.getFileName().toString()).collect(Collectors.toList());
+        Integer index = null;
+        for (int i = 0; i < releases.size(); i++) {
+            String release = releases.get(i);
+            if (release.equals(currentVersion)) {
+                index = i;
+                break;
+            }
+        }
+        if (index == null) {
+            System.err.println("Cannot find current release.");
+            System.exit(1);
+        }
+        index += 1;
+        if (index < releases.size()) {
+            String rollback = releases.get(index);
+            Path newCurrent = getRepositoryPath().resolve(rollback);
+            changeCurrent(newCurrent.toAbsolutePath().toString());
+        } else {
+            System.err.println("Cannot rollback.");
+            System.exit(1);
+        }
+    }
+
+    private static int changeCurrent(String release) throws IOException, InterruptedException {
+        Path current = getCurrentPath();
+        Path tmpCurrent = Paths.get(current.toAbsolutePath().toString() + "-tmp");
+        int retCode = Runtime.getRuntime().exec(new String[]{
+                "cmd.exe",
+                "/c",
+                "mklink",
+                "/J",
+                tmpCurrent.toAbsolutePath().toString(),
+                release
+        }).waitFor();
+        if( retCode == 0 ){
+            Files.deleteIfExists(current);
+            Files.move(tmpCurrent, current);
+        }
+        return retCode;
     }
 
 }
