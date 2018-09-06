@@ -42,10 +42,10 @@ class TekiyouList {
         shinryouAliasMap = new HashMap<>();
         shinryouAliasMap.put(shinryouMasterMap.薬剤情報提供, "（薬情）");
         shinryouAliasMap.put(shinryouMasterMap.特定疾患管理, "（特）");
-        shinryouAliasMap.put(shinryouMasterMap.特定疾患処方, "（特処）");
-        shinryouAliasMap.put(shinryouMasterMap.特定疾患処方管理加算処方せん料, "（特処）");
-        shinryouAliasMap.put(shinryouMasterMap.長期処方, "（特処長）");
-        shinryouAliasMap.put(shinryouMasterMap.長期投薬加算処方せん料, "（特処長）");
+//        shinryouAliasMap.put(shinryouMasterMap.特定疾患処方, "（特処）");
+//        shinryouAliasMap.put(shinryouMasterMap.特定疾患処方管理加算処方せん料, "（特処）");
+//        shinryouAliasMap.put(shinryouMasterMap.長期処方, "（特処長）");
+//        shinryouAliasMap.put(shinryouMasterMap.長期投薬加算処方せん料, "（特処長）");
     }
 
     private Map<Integer, String> getShinryouAliasMap(){
