@@ -18,7 +18,7 @@ if not exist "%dst%" (
     mkdir "%dst%"
 )
 set current=%MYCLINIC_REPOSITORY%\current
-echo a
+echo %dst%
 if not exist "%current%" (
     echo Cannot find current specified by env var MYCLINIC_REPOSITORY
     goto :progend
