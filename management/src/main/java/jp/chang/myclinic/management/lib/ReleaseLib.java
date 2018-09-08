@@ -41,6 +41,15 @@ public class ReleaseLib {
         return null;
     }
 
+    public static String getLabel(Path releaseDirPath) throws IOException {
+        Path labelFile = releaseDirPath.resolve("label.txt");
+        if( Files.exists(labelFile) ){
+            return String.join("", Files.readAllLines(labelFile)).trim();
+        } else {
+            return "";
+        }
+    }
+
     public static String getCurrentVersion() throws IOException {
         return getVersion(getCurrentPath());
     }
