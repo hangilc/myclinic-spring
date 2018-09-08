@@ -53,7 +53,8 @@ public class ReleaseCurrent {
     private static void doShow() throws IOException {
         Path current = ReleaseLib.getCurrentPath();
         String ver = ReleaseLib.getVersion(current);
-        System.out.println(ver);
+        String label = ReleaseLib.getLabel(current);
+        System.out.println(ver + " " + label);
     }
 
     private static void doOpen() throws IOException {
@@ -70,10 +71,13 @@ public class ReleaseCurrent {
         String currentVersion = ReleaseLib.getCurrentVersion();
         for (Path path : ReleaseLib.listReleases()) {
             String release = path.getFileName().toString();
+            String label = ReleaseLib.getLabel(path);
             if (release.equals(currentVersion)) {
                 System.out.print("* ");
+            } else {
+                System.out.print("  ");
             }
-            System.out.println(release);
+            System.out.println(release + " " + label);
         }
     }
 

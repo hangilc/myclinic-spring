@@ -38,9 +38,12 @@ public class ReleaseLabel {
                 String label = ReleaseLib.getLabel(path);
                 System.out.println(pre + " " + filePath.toString() + " " + label);
             }
-            System.out.println("リリースを番号で選択してください。");
+            System.out.println("リリースを番号で選択してください。（q：終了）");
             System.out.print("> ");
             String input = System.console().readLine().trim();
+            if( input.equals("q") ){
+                break;
+            }
             try {
                 int index;
                 if( input.equals("*") ){

@@ -72,10 +72,12 @@ public class ReleaseDelete {
 
     private void doList() throws IOException {
         for (int i = 0; i < releasePaths.size(); i++) {
-            String dir = releasePaths.get(i).getFileName().toString();
+            Path path = releasePaths.get(i);
+            String dir = path.getFileName().toString();
             boolean isCurrent = currentIndex != null && currentIndex == i;
             String pre = makePrefix(releasePaths.size(), i, isCurrent);
-            System.out.println(pre + " " + dir);
+            String label = ReleaseLib.getLabel(path);
+            System.out.println(pre + " " + dir + " " + label);
         }
     }
 
@@ -83,7 +85,8 @@ public class ReleaseDelete {
         Set<Integer> deleteSet = new LinkedHashSet<>(IntRange.toIntList(deleteList));
         deleteSet.remove(currentIndex+1);
         for (int i = 0; i < releasePaths.size(); i++) {
-            String dir = releasePaths.get(i).getFileName().toString();
+            Path path = releasePaths.get(i);
+            String dir = path.getFileName().toString();
             boolean isCurrent = currentIndex != null && currentIndex == i;
             String pre = " ";
             if( isCurrent ){
@@ -91,7 +94,8 @@ public class ReleaseDelete {
             } else if( deleteSet.contains(i+1) ){
                 pre = "D";
             }
-            System.out.println(pre + ". " + dir);
+            String label = ReleaseLib.getLabel(path);
+            System.out.println(pre + ". " + dir + " " + label);
         }
         System.out.print("D のついたリリースを削除していいですか？");
         //noinspection InfiniteLoopStatement
