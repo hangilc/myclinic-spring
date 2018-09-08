@@ -4,8 +4,12 @@ import jp.chang.myclinic.management.lib.ReleaseLib;
 import jp.chang.myclinic.util.IntRange;
 
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,6 +33,7 @@ public class ReleaseDelete {
         //noinspection InfiniteLoopStatement
         while (true) {
             doUpdate();
+            System.out.println("### DELETE RELEASES ########################");
             doList();
             doPrompt();
             String line = System.console().readLine();
@@ -38,7 +43,7 @@ public class ReleaseDelete {
             }
             try {
                 List<IntRange> ranges = IntRange.parseList(line, makeResolver(currentIndex, releasePaths.size()));
-                System.out.println(ranges);
+                doDelete(ranges);
             } catch(Exception ex){
                 System.err.println(ex);
             }
@@ -74,17 +79,65 @@ public class ReleaseDelete {
         }
     }
 
-    private void doListToBeDeleted(List<IntRange> deleteList) throws IOException {
-        Set<Integer> deleteSet = new HashSet<>(IntRange.toIntList(deleteList));
+    private void doDelete(List<IntRange> deleteList) throws IOException {
+        Set<Integer> deleteSet = new LinkedHashSet<>(IntRange.toIntList(deleteList));
+        deleteSet.remove(currentIndex+1);
         for (int i = 0; i < releasePaths.size(); i++) {
             String dir = releasePaths.get(i).getFileName().toString();
             boolean isCurrent = currentIndex != null && currentIndex == i;
-            if( (!isCurrent) && deleteSet.contains(i) ){
-
+            String pre = " ";
+            if( isCurrent ){
+                pre = "*";
+            } else if( deleteSet.contains(i+1) ){
+                pre = "D";
             }
-            String pre = makePrefix(releasePaths.size(), i, isCurrent);
-            System.out.println(pre + " " + dir);
+            System.out.println(pre + ". " + dir);
         }
+        System.out.print("D のついたリリースを削除していいですか？");
+        //noinspection InfiniteLoopStatement
+        while( true ) {
+            System.out.print("(Y/N) > ");
+            String input = System.console().readLine().trim();
+            if( input.startsWith("Y") ){
+                for(Integer index: deleteSet){
+                    Path path = releasePaths.get(index-1);
+                    removeDir(path);
+                    System.out.println(path + " を削除しました。");
+                    System.out.println();
+                }
+                break;
+            } else if( input.startsWith("N") ){
+                break;
+            } else {
+                System.out.println("Y か N を入力してください。");
+            }
+        }
+    }
+
+    private void removeDir(Path dir) throws IOException {
+        Files.walkFileTree(dir, new FileVisitor<Path>(){
+            @Override
+            public FileVisitResult preVisitDirectory(Path dirPath, BasicFileAttributes attrs) throws IOException {
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                return FileVisitResult.TERMINATE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dirPath, IOException exc) throws IOException {
+                Files.delete(dirPath);
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 
     private IntRange.Resolver makeResolver(Integer current, int size) {
