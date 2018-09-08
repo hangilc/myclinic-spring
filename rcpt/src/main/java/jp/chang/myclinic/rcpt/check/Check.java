@@ -11,6 +11,7 @@ import java.io.UncheckedIOException;
 import java.time.LocalDate;
 import java.util.List;
 
+// TODO: check ヘリコバクタ抗体、尿素呼気試験、除菌
 public class Check {
 
     private Check() {}

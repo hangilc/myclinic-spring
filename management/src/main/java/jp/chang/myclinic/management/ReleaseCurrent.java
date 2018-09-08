@@ -1,23 +1,18 @@
 package jp.chang.myclinic.management;
 
+import jp.chang.myclinic.management.lib.ReleaseLib;
+
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ReleaseCurrent {
 
     //private static Logger logger = LoggerFactory.getLogger(ReleaseCurrent.class);
-    private static Pattern releaseDirPattern = Pattern.compile("myclinic-release-\\d+-\\d+");
-    private static Pattern releaseStampFilePattern = Pattern.compile("(myclinic-release-\\d+-\\d+)\\.txt");
 
     public static void main(String[] args) throws Exception {
         String command = "show";
@@ -56,13 +51,14 @@ public class ReleaseCurrent {
     }
 
     private static void doShow() throws IOException {
-        Path current = getCurrentPath();
-        String ver = getVersion(current);
-        System.out.println(ver);
+        Path current = ReleaseLib.getCurrentPath();
+        String ver = ReleaseLib.getVersion(current);
+        String label = ReleaseLib.getLabel(current);
+        System.out.println(ver + " " + label);
     }
 
     private static void doOpen() throws IOException {
-        Path current = getCurrentPath();
+        Path current = ReleaseLib.getCurrentPath();
         Runtime.getRuntime().exec(new String[]{
                 "cmd.exe",
                 "/c",
@@ -71,57 +67,25 @@ public class ReleaseCurrent {
         });
     }
 
-    private static Path getRepositoryPath() {
-        return Paths.get(System.getenv("MYCLINIC_REPOSITORY"));
-    }
-
-    private static Path getCurrentPath() {
-        return getRepositoryPath().resolve("current");
-    }
-
-    private static String getVersion(Path releaseDirPath) throws IOException {
-        DirectoryStream<Path> paths = Files.newDirectoryStream(releaseDirPath);
-        for (Path path : paths) {
-            Path fileName = path.getFileName();
-            Matcher matcher = releaseStampFilePattern.matcher(fileName.toString());
-            if (matcher.matches()) {
-                return matcher.group(1);
-            }
-        }
-        return null;
-    }
-
-    private static String getCurrentVersion() throws IOException {
-        return getVersion(getCurrentPath());
-    }
-
-    private static List<Path> listReleases() throws IOException {
-        List<Path> result = new ArrayList<>();
-        for (Path path : Files.newDirectoryStream(getRepositoryPath())) {
-            Matcher matcher = releaseDirPattern.matcher(path.getFileName().toString());
-            if (matcher.matches()) {
-                result.add(path);
-            }
-        }
-        Collections.sort(result);
-        Collections.reverse(result);
-        return result;
-    }
-
     private static void doList() throws IOException {
-        String currentVersion = getCurrentVersion();
-        for (Path path : listReleases()) {
+        String currentVersion = ReleaseLib.getCurrentVersion();
+        for (Path path : ReleaseLib.listReleases()) {
             String release = path.getFileName().toString();
+            String label = ReleaseLib.getLabel(path);
             if (release.equals(currentVersion)) {
                 System.out.print("* ");
+            } else {
+                System.out.print("  ");
             }
-            System.out.println(release);
+            System.out.println(release + " " + label);
         }
     }
 
     private static void doRollback() throws IOException, InterruptedException {
-        String currentVersion = getCurrentVersion();
-        List<String> releases = listReleases().stream().map(p -> p.getFileName().toString()).collect(Collectors.toList());
+        String currentVersion = ReleaseLib.getCurrentVersion();
+        List<String> releases = ReleaseLib.listReleases().stream()
+                .map(p -> p.getFileName().toString())
+                .collect(Collectors.toList());
         Integer index = null;
         for (int i = 0; i < releases.size(); i++) {
             String release = releases.get(i);
@@ -137,7 +101,7 @@ public class ReleaseCurrent {
         index += 1;
         if (index < releases.size()) {
             String rollback = releases.get(index);
-            Path newCurrent = getRepositoryPath().resolve(rollback);
+            Path newCurrent = ReleaseLib.getRepositoryPath().resolve(rollback);
             changeCurrent(newCurrent.toAbsolutePath().toString());
         } else {
             System.err.println("Cannot rollback.");
@@ -146,7 +110,7 @@ public class ReleaseCurrent {
     }
 
     private static int changeCurrent(String release) throws IOException, InterruptedException {
-        Path current = getCurrentPath();
+        Path current = ReleaseLib.getCurrentPath();
         Path tmpCurrent = Paths.get(current.toAbsolutePath().toString() + "-tmp");
         int retCode = Runtime.getRuntime().exec(new String[]{
                 "cmd.exe",
