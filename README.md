@@ -34,4 +34,4 @@ JavFX で実装された、デスクトップ・プログラムです。薬袋�
 
 ## その他
 
-[Blog](https://hangilc.github.io/myclinic-spring)
+[Blog](https://myclinic.changclinic.com)
