@@ -18,6 +18,7 @@ import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.events.EventTypes;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.javafx.globalsearch.GlobalSearchDialog;
+import jp.chang.myclinic.practice.javafx.prescexample.NewPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
 import jp.chang.myclinic.practice.lib.PracticeLib;
@@ -82,23 +83,32 @@ public class MainPane extends BorderPane {
             MenuItem shohousenItem = new MenuItem("処方箋作成");
             MenuItem listPrinterSettingItem = new MenuItem("印刷設定の一覧");
             MenuItem searchTextMenuItem = new MenuItem("全文検索");
+            MenuItem newPrescExampleMenuItem = new MenuItem("処方例新規入力");
             newVisitItem.setOnAction(evt -> doNewVisit());
             newVisitOfCurrentPatientItem.setOnAction(evt -> doNewVisitOfCurrentPatient());
             referItem.setOnAction(evt -> doRefer(false));
             shohousenItem.setOnAction(evt -> doShohousen());
             listPrinterSettingItem.setOnAction(evt -> doListPrinterSetting());
             searchTextMenuItem.setOnAction(evt -> doGlobalSearchText());
+            newPrescExampleMenuItem.setOnAction(evt -> doNewPrescExample());
             menu.getItems().addAll(
                     newVisitItem,
                     newVisitOfCurrentPatientItem,
                     referItem,
                     shohousenItem,
                     listPrinterSettingItem,
-                    searchTextMenuItem
+                    searchTextMenuItem,
+                    newPrescExampleMenuItem
             );
             menuBar.getMenus().add(menu);
         }
         return menuBar;
+    }
+
+    private void doNewPrescExample(){
+        NewPrescExampleDialog dialog = new NewPrescExampleDialog();
+        dialog.initOwner(getScene().getWindow());
+        dialog.show();
     }
 
     private void onVisitDeleted(VisitDeletedEvent event){
