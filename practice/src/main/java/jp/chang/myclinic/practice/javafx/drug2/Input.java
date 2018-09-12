@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,8 +67,81 @@ public class Input extends VBox {
         });
     }
 
+    public void setData(DrugData data){
+        this.iyakuhincode = data.getIyakuhincode();
+        drugNameLabel.setText(data.getName());
+        setAmount(data.getAmount());
+        setUnit(data.getUnit());
+        if( data.getCategory() == null ) {
+            if (data.getZaikei() == Zaikei.Gaiyou) {
+                category.setValue(DrugCategory.Gaiyou);
+            } else {
+                category.setValue(DrugCategory.Naifuku);
+            }
+        } else {
+            category.setValue(data.getCategory());
+        }
+        setUsage(data.getUsage());
+        setDays(data.getDays());
+    }
+
+    public void clear(){
+        this.iyakuhincode = 0;
+        drugNameLabel.setText("");
+        amountUnitLabel.setText("");
+        usageInput.setText("");
+        daysInput.setText("");
+        daysUnit.setText("");
+        category.setValue(DrugCategory.Naifuku);
+    }
+
+    public int getIyakuhincode() {
+        return iyakuhincode;
+    }
+
+    public String getAmount(){
+        return amountInput.getText();
+    }
+
+    public String getUsage(){
+        return usageInput.getText();
+    }
+
+    public DrugCategory getCategory(){
+        return category.getValue();
+    }
+
+    public String getDays(){
+        return daysInput.getText();
+    }
+
+    private void setAmount(Double value) {
+        if( value == null ){
+            clearAmount();
+        } else {
+            amountInput.setText(amountFormatter.format(value));
+        }
+    }
+
+    private void clearAmount() {
+        amountInput.setText("");
+    }
+
+    private void setUnit(String unit){
+        amountUnitLabel.setText(unit);
+    }
+
+    private void setUsage(String usage){
+        usageInput.setText(usage == null ? "" : usage);
+    }
+
+    private void setDays(Integer days){
+        daysInput.setText(days == null ? "" : days + "");
+    }
+
     private Node addRow(Label label, Node content) {
         HBox hbox = new HBox(4);
+        label.setMinWidth(Control.USE_PREF_SIZE);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getChildren().addAll(label, content);
         getChildren().add(hbox);
@@ -165,10 +239,6 @@ public class Input extends VBox {
             contextMenu.getItems().add(item);
         });
         contextMenu.show(anchor, event.getScreenX(), event.getScreenY());
-    }
-
-    void setUsage(String usage){
-        usageInput.setText(usage);
     }
 
 }

@@ -66,6 +66,11 @@ public class IyakuhinMasterController {
         return map;
     }
 
+    @RequestMapping(value="/get-name-of-iyakuhin", method=RequestMethod.GET)
+    public Optional<String> getNameOfIyakuhin(@RequestParam(value="iyakuhincode") int iyakuhincode){
+        return dbGateway.findNameForIyakuhincode(iyakuhincode);
+    }
+
     private LocalDate convertToDate(String at){
         if( at.length() > 10 ){
             at = at.substring(0, 10);

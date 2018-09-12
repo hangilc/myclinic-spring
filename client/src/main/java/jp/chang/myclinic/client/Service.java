@@ -118,6 +118,9 @@ public class Service {
         @GET("search-presc-example-full-by-name")
         Call<List<PrescExampleFullDTO>> searchPrescExampleCall(@Query("text") String text);
 
+        @POST("enter-presc-example")
+        CompletableFuture<Boolean> enterPrescExample(@Body PrescExampleDTO prescExample);
+
         @GET("search-prev-drug")
         CompletableFuture<List<DrugFullDTO>> searchPrevDrug(@Query("text") String text, @Query("patient-id") int patientId);
 
@@ -769,6 +772,9 @@ public class Service {
 
         @GET("search-iyakuhin-master-by-name")
         CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMasterByName(@Query("text") String text, @Query("at") String at);
+
+        @GET("get-name-of-iyakuhin")
+        CompletableFuture<String> getNameOfIyakuhin(@Query("iyakuhincode") int iyakuhincode);
 
         @POST("enter-pharma-drug")
         CompletableFuture<Boolean> enterPharmaDrug(@Body PharmaDrugDTO pharmaDrugDTO);

@@ -1421,6 +1421,11 @@ public class DbGateway {
         return drugRepository.findIyakuhincodeByPatient(patientId);
     }
 
+    public Optional<String> findNameForIyakuhincode(int iyakuhincode){
+        return findNamesForIyakuhincodes(Collections.singletonList(iyakuhincode)).stream()
+                .findFirst().map(result -> result.name);
+    }
+
     private List<IyakuhincodeNameDTO> findNamesForIyakuhincodes(List<Integer> iyakuhincodes) {
         if (iyakuhincodes.size() == 0) {
             return Collections.emptyList();
@@ -1524,6 +1529,13 @@ public class DbGateway {
                     return prescExampleFullDTO;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public int enterPrescExample(PrescExampleDTO dto){
+        PrescExample example = mapper.fromPrescExampleDTO(dto);
+        example.setPrescExampleId(null);
+        example = prescExampleRepository.save(example);
+        return example.getPrescExampleId();
     }
 
     public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId) {

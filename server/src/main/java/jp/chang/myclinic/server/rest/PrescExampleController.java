@@ -1,13 +1,11 @@
 package jp.chang.myclinic.server.rest;
 
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
+import jp.chang.myclinic.dto.PrescExampleDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
+import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,4 +20,14 @@ class PrescExampleController {
     public List<PrescExampleFullDTO> searchByName(@RequestParam("text") String text){
         return dbGateway.searchPrescExampleFullByName(text);
     }
+
+    @RequestMapping(value="/enter-presc-example", method=RequestMethod.POST)
+    public int enrescExample(@RequestBody PrescExampleDTO example){
+        if( dbGateway.findNameForIyakuhincode(example.iyakuhincode).isPresent() ){
+            return dbGateway.enterPrescExample(example);
+        } else {
+            throw new RuntimeException("Invalid iyakuhincode: " + example.iyakuhincode);
+        }
+    }
+
 }

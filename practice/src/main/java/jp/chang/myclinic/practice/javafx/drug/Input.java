@@ -72,26 +72,26 @@ class Input extends VBox {
         });
     }
 
-    void setMaster(IyakuhinMasterDTO master){
+    void setMaster(IyakuhinMasterDTO master) {
         this.iyakuhincode = master.iyakuhincode;
         drugNameLabel.setText(master.name);
         amountUnitLabel.setText(master.unit);
-        if( Zaikei.fromCode(master.zaikei) == Zaikei.Gaiyou ){
+        if (Zaikei.fromCode(master.zaikei) == Zaikei.Gaiyou) {
             category.setValue(DrugCategory.Gaiyou);
         } else {
-            if( category.getValue() == DrugCategory.Gaiyou ){
+            if (category.getValue() == DrugCategory.Gaiyou) {
                 category.setValue(DrugCategory.Naifuku);
             }
         }
     }
 
-    void clearMaster(){
+    void clearMaster() {
         this.iyakuhincode = 0;
         drugNameLabel.setText("");
         amountUnitLabel.setText("");
     }
 
-    void setDrug(DrugFullDTO drug){
+    void setDrug(DrugFullDTO drug) {
         setMaster(drug.master);
         setAmount(drug.drug.amount);
         setUsage(drug.drug.usage);
@@ -112,38 +112,38 @@ class Input extends VBox {
         getChildren().add(content);
     }
 
-    void setUsage(String usage){
+    void setUsage(String usage) {
         usageInput.setText(usage);
     }
 
-    void setDays(int days){
+    void setDays(int days) {
         daysInput.setText("" + days);
     }
 
-    void clearDays(){
+    void clearDays() {
         daysInput.setText("");
     }
 
-    boolean isDaysEmpty(){
+    boolean isDaysEmpty() {
         return daysInput.getText() == null || daysInput.getText().isEmpty();
     }
 
-    void setCategory(int code){
+    void setCategory(int code) {
         DrugCategory cat = DrugCategory.fromCode(code);
-        if( cat == null ){
+        if (cat == null) {
             logger.error("Invalid category: {}", code);
         } else {
             category.setValue(cat);
         }
     }
 
-    void setAmount(double value){
+    void setAmount(double value) {
         amountInput.setText(amountFormatter.format(value));
-   }
+    }
 
-   void clearAmount(){
+    void clearAmount() {
         amountInput.setText("");
-   }
+    }
 
     private Node createAmountContent() {
         HBox hbox = new HBox(4);
@@ -182,12 +182,12 @@ class Input extends VBox {
         return hbox;
     }
 
-    private void setNodeVisible(Node row, boolean visible){
+    private void setNodeVisible(Node row, boolean visible) {
         row.setVisible(visible);
         row.setManaged(visible);
     }
 
-    private void setDaysVisible(boolean visible){
+    private void setDaysVisible(boolean visible) {
         setNodeVisible(daysRow, visible);
     }
 
@@ -234,7 +234,7 @@ class Input extends VBox {
         contextMenu.show(anchor, event.getScreenX(), event.getScreenY());
     }
 
-    private DrugCategory getCategory(){
+    private DrugCategory getCategory() {
         return category.getValue();
     }
 
@@ -244,7 +244,7 @@ class Input extends VBox {
         DrugDTO drug = new DrugDTO();
         drug.drugId = drugId;
         drug.iyakuhincode = iyakuhincode;
-        if( drug.iyakuhincode == 0 ){
+        if (drug.iyakuhincode == 0) {
             err.add("医薬品が指定されていません。");
         }
         try {
@@ -253,7 +253,7 @@ class Input extends VBox {
             err.add("用量の入力が適切でありません。");
         }
         drug.usage = usageInput.getText();
-        if( drug.usage == null || drug.usage.isEmpty() ){
+        if (drug.usage == null || drug.usage.isEmpty()) {
             err.add("用法が入力されていません。");
         }
         DrugCategory category = getCategory();
@@ -272,21 +272,21 @@ class Input extends VBox {
             err.add("日数・回数の入力が不適切です。");
         }
         drug.visitId = visitId;
-        if( drug.visitId == 0 ) {
+        if (drug.visitId == 0) {
             err.add("Invalid visitId.");
         }
         drug.prescribed = prescribed;
-        if( !(drug.prescribed == 0 || drug.prescribed == 1) ){
+        if (!(drug.prescribed == 0 || drug.prescribed == 1)) {
             err.add("Invalid prescribed value.");
         }
         cb.accept(drug, err);
     }
 
-    StringProperty tekiyouProperty(){
+    StringProperty tekiyouProperty() {
         return tekiyou;
     }
 
-    void addToDaysContent(Node node){
+    void addToDaysContent(Node node) {
         daysContent.getChildren().add(node);
     }
 
