@@ -5,7 +5,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -28,6 +30,7 @@ public class NewPrescExampleDialog extends Stage {
     private SearchModeChooser searchModeChooser = new SearchModeChooser(
             List.of(DrugSearchMode.Master, DrugSearchMode.Example)
     );
+    private TextField commentInput = new TextField();
     private LocalDate at = LocalDate.now();
 
     public NewPrescExampleDialog() {
@@ -40,6 +43,9 @@ public class NewPrescExampleDialog extends Stage {
 
     private Parent createMainPane() {
         VBox vbox = new VBox(4);
+        {
+            input.addRow(new Label("注釈："), commentInput);
+        }
         {
             HBox hbox = new HBox(4);
             searchModeChooser.setValue(DrugSearchMode.Master);
@@ -61,6 +67,8 @@ public class NewPrescExampleDialog extends Stage {
         searchResult.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
                 input.setData(newValue);
+                String comment = newValue.getComment();
+                commentInput.setText(comment == null ? "" : comment);
             }
         });
         vbox.getChildren().addAll(
@@ -108,8 +116,8 @@ public class NewPrescExampleDialog extends Stage {
                 GuiUtil.alertError("日数の入力が不敵津です。");
                 return null;
             }
-
         }
+        ex.comment = commentInput.getText();
         return ex;
     }
 
@@ -129,7 +137,11 @@ public class NewPrescExampleDialog extends Stage {
     private void doEnter() {
         PrescExampleDTO ex = createPrescExample();
         if (ex != null) {
-            Service.api.enterPrescExample(ex)
+            Service.api.resolveIyakuhinMaster(ex.iyakuhincode, at.toString())
+                    .thenCompose(master -> {
+                        ex.masterValidFrom = master.validFrom;
+                        return Service.api.enterPrescExample(ex);
+                    })
                     .thenAccept(prescExampleId -> Platform.runLater(() -> {
                         System.out.println(prescExampleId);
                     }))

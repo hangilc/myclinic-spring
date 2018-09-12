@@ -17,6 +17,7 @@ public class DrugData {
     private String usage;
     private Integer days;
     private DrugCategory category;
+    private String comment;
 
     private DrugData() {
 
@@ -39,6 +40,7 @@ public class DrugData {
             throw new RuntimeException("Invalid category: " + ex.category);
         }
         data.days = ex.days;
+        data.comment = example.prescExample.comment;
         return data;
     }
 
@@ -76,6 +78,10 @@ public class DrugData {
 
     public DrugCategory getCategory() {
         return category;
+    }
+
+    public String getComment() {
+        return comment;
     }
 
     private void setMaster(IyakuhinMasterDTO master){

@@ -1,8 +1,6 @@
 package jp.chang.myclinic.practice.javafx.drug2;
 
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -31,13 +29,10 @@ public class Input extends VBox {
     private TextField amountInput = new TextField();
     private Label amountUnitLabel = new Label("");
     private TextField usageInput = new TextField();
-    private HBox daysContent;
     private Node daysRow;
     private Label daysLabel = new Label("");
     private TextField daysInput = new TextField();
     private Label daysUnit = new Label("");
-    private Text commentText = new Text(null);
-    private StringProperty tekiyou = new SimpleStringProperty();
     private ObjectProperty<DrugCategory> category;
     private DecimalFormat amountFormatter = new DecimalFormat("###.##");
 
@@ -47,24 +42,13 @@ public class Input extends VBox {
         amountInput.getStyleClass().add("amount-input");
         daysInput.getStyleClass().add("days-input");
         Text tekiyouText = new Text(null);
-        tekiyouText.textProperty().bind(tekiyou);
         addRow(new Label("名称："), new TextFlow(drugNameLabel));
         addRow(amountLabel, createAmountContent());
         addRow(new Label("用法："), createUsageContent());
         daysRow = addRow(daysLabel, createDaysContent());
-        Node commentRow = addRow(new Label("注釈："), new TextFlow(commentText));
-        Node tekiyouRow = addRow(new Label("摘要："), new TextFlow(tekiyouText));
         addRow(createCategoryContent());
         category.setValue(null);
         category.setValue(DrugCategory.Naifuku);
-        setNodeVisible(commentRow, false);
-        commentText.textProperty().addListener((obs, oldValue, newValue) -> {
-            setNodeVisible(commentRow, newValue != null);
-        });
-        setNodeVisible(tekiyouRow, false);
-        tekiyouText.textProperty().addListener((obs, oldValue, newValue) -> {
-            setNodeVisible(tekiyouRow, newValue != null);
-        });
     }
 
     public void setData(DrugData data){
@@ -139,7 +123,7 @@ public class Input extends VBox {
         daysInput.setText(days == null ? "" : days + "");
     }
 
-    private Node addRow(Label label, Node content) {
+    public Node addRow(Label label, Node content) {
         HBox hbox = new HBox(4);
         label.setMinWidth(Control.USE_PREF_SIZE);
         hbox.setAlignment(Pos.CENTER_LEFT);
@@ -172,7 +156,6 @@ public class Input extends VBox {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getChildren().addAll(daysInput, daysUnit);
-        daysContent = hbox;
         return hbox;
     }
 
