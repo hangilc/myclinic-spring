@@ -12,8 +12,6 @@ import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -21,7 +19,11 @@ import java.util.List;
 
 public class Input extends VBox {
 
-    private static Logger logger = LoggerFactory.getLogger(Input.class);
+    //private static Logger logger = LoggerFactory.getLogger(Input.class);
+
+    public enum SetOption {
+        None, IgnoreNull
+    }
 
     private int iyakuhincode = 0;
     private Text drugNameLabel = new Text("");
@@ -41,7 +43,6 @@ public class Input extends VBox {
         getStyleClass().add("drug-input");
         amountInput.getStyleClass().add("amount-input");
         daysInput.getStyleClass().add("days-input");
-        Text tekiyouText = new Text(null);
         addRow(new Label("名称："), new TextFlow(drugNameLabel));
         addRow(amountLabel, createAmountContent());
         addRow(new Label("用法："), createUsageContent());
@@ -52,26 +53,67 @@ public class Input extends VBox {
     }
 
     public void setData(DrugData data){
+        setData(data, SetOption.None);
+    }
+
+    public void setData(DrugData data, SetOption option){
         this.iyakuhincode = data.getIyakuhincode();
         drugNameLabel.setText(data.getName());
-        setAmount(data.getAmount());
         setUnit(data.getUnit());
-        if( data.getCategory() == null ) {
-            if (data.getZaikei() == Zaikei.Gaiyou) {
-                category.setValue(DrugCategory.Gaiyou);
+        {
+            Double amount = data.getAmount();
+            if( option == SetOption.IgnoreNull ){
+                if( amount != null ){
+                    setAmount(amount);
+                }
             } else {
-                category.setValue(DrugCategory.Naifuku);
+                setAmount(amount);
             }
-        } else {
-            category.setValue(data.getCategory());
         }
-        setUsage(data.getUsage());
-        setDays(data.getDays());
+        {
+            DrugCategory cat = data.getCategory();
+            if( option == SetOption.IgnoreNull ){
+                if( cat != null ){
+                    category.setValue(cat);
+                }
+            } else {
+                if (data.getCategory() == null) {
+                    if (data.getZaikei() == Zaikei.Gaiyou) {
+                        category.setValue(DrugCategory.Gaiyou);
+                    } else {
+                        category.setValue(DrugCategory.Naifuku);
+                    }
+                } else {
+                    category.setValue(data.getCategory());
+                }
+            }
+        }
+        {
+            String usage = data.getUsage();
+            if( option == SetOption.IgnoreNull ) {
+                if( usage != null ){
+                    setUsage(usage);
+                }
+            } else {
+                setUsage(data.getUsage());
+            }
+        }
+        {
+            Integer days = data.getDays();
+            if( option == SetOption.IgnoreNull ) {
+                if (days != null) {
+                    setDays(days);
+                }
+            } else {
+                setDays(data.getDays());
+            }
+        }
     }
 
     public void clear(){
         this.iyakuhincode = 0;
         drugNameLabel.setText("");
+        amountInput.setText("");
         amountUnitLabel.setText("");
         usageInput.setText("");
         daysInput.setText("");

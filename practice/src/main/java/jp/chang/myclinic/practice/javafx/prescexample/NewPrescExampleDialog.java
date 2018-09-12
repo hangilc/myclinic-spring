@@ -4,10 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -66,9 +63,11 @@ public class NewPrescExampleDialog extends Stage {
         });
         searchResult.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
-                input.setData(newValue);
+                input.setData(newValue, Input.SetOption.IgnoreNull);
                 String comment = newValue.getComment();
-                commentInput.setText(comment == null ? "" : comment);
+                if( comment != null && !comment.isEmpty()) {
+                    commentInput.setText(comment);
+                }
             }
         });
         vbox.getChildren().addAll(
@@ -121,15 +120,23 @@ public class NewPrescExampleDialog extends Stage {
         return ex;
     }
 
+    private void doClear(){
+        input.clear();
+        commentInput.setText("");
+    }
+
     private Node createCommands() {
         HBox hbox = new HBox(4);
         Button enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
+        Hyperlink clearLink = new Hyperlink("クリア");
         enterButton.setOnAction(evt -> doEnter());
         cancelButton.setOnAction(evt -> close());
+        clearLink.setOnAction(evt -> doClear());
         hbox.getChildren().addAll(
                 enterButton,
-                cancelButton
+                cancelButton,
+                clearLink
         );
         return hbox;
     }
