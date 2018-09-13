@@ -1,6 +1,7 @@
 package jp.chang.myclinic.management.lib;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,8 +51,20 @@ public class ReleaseLib {
         }
     }
 
+    public static void createLabel(Path releaseDirPath, String label) throws IOException {
+        if( label == null ){
+            label = "";
+        }
+        Files.write(releaseDirPath.resolve("label.txt"), label.getBytes(StandardCharsets.UTF_8));
+    }
+
     public static String getCurrentVersion() throws IOException {
-        return getVersion(getCurrentPath());
+        Path curr = getCurrentPath();
+        if( Files.exists(curr) ) {
+            return getVersion(getCurrentPath());
+        } else {
+            return null;
+        }
     }
 
     public static List<Path> listReleases() throws IOException {

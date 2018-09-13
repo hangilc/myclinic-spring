@@ -52,9 +52,11 @@ public class ReleaseCurrent {
 
     private static void doShow() throws IOException {
         Path current = ReleaseLib.getCurrentPath();
-        String ver = ReleaseLib.getVersion(current);
-        String label = ReleaseLib.getLabel(current);
-        System.out.println(ver + " " + label);
+        if( Files.exists(current) ){
+            String ver = ReleaseLib.getCurrentVersion();
+            String label = ReleaseLib.getLabel(current);
+            System.out.println(ver + " " + label);
+        }
     }
 
     private static void doOpen() throws IOException {
