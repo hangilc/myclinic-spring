@@ -61,12 +61,14 @@ public class ReleaseCurrent {
 
     private static void doOpen() throws IOException {
         Path current = ReleaseLib.getCurrentPath();
-        Runtime.getRuntime().exec(new String[]{
-                "cmd.exe",
-                "/c",
-                "start",
-                current.toAbsolutePath().toString()
-        });
+        if( Files.exists(current) ) {
+            Runtime.getRuntime().exec(new String[]{
+                    "cmd.exe",
+                    "/c",
+                    "start",
+                    current.toAbsolutePath().toString()
+            });
+        }
     }
 
     private static void doList() throws IOException {

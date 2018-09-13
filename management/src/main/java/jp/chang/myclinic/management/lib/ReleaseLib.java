@@ -69,16 +69,18 @@ public class ReleaseLib {
 
     public static List<Path> listReleases() throws IOException {
         List<Path> result = new ArrayList<>();
-        for (Path path : Files.newDirectoryStream(getRepositoryPath())) {
-            Matcher matcher = releaseDirPattern.matcher(path.getFileName().toString());
-            if (matcher.matches()) {
-                result.add(path);
+        Path repositoryPath = getRepositoryPath();
+        if( Files.isDirectory(repositoryPath) ) {
+            for (Path path : Files.newDirectoryStream(getRepositoryPath())) {
+                Matcher matcher = releaseDirPattern.matcher(path.getFileName().toString());
+                if (matcher.matches()) {
+                    result.add(path);
+                }
             }
+            Collections.sort(result);
+            Collections.reverse(result);
         }
-        Collections.sort(result);
-        Collections.reverse(result);
         return result;
     }
-
 
 }
