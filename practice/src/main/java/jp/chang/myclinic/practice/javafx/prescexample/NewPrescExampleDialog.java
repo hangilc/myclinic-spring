@@ -150,7 +150,10 @@ public class NewPrescExampleDialog extends Stage {
                         return Service.api.enterPrescExample(ex);
                     })
                     .thenAccept(prescExampleId -> Platform.runLater(() -> {
-                        System.out.println(prescExampleId);
+                        input.clear();
+                        commentInput.setText("");
+                        searchInput.clear();
+                        searchResult.getItems().clear();
                     }))
                     .exceptionally(HandlerFX::exceptionally);
         }

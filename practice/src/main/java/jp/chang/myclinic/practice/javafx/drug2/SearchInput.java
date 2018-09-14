@@ -29,6 +29,10 @@ public class SearchInput extends VBox {
         return searchTextInput.getText();
     }
 
+    public void clear(){
+        searchTextInput.setText("");
+    }
+
     private Node createSearchInput() {
         HBox hbox = new HBox(4);
         Button searchButton = new Button("検索");
