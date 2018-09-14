@@ -75,6 +75,14 @@ public class Input extends VBox {
             if( option == SetOption.IgnoreNull ){
                 if( cat != null ){
                     category.setValue(cat);
+                } else {
+                    if (data.getZaikei() == Zaikei.Gaiyou) {
+                        category.setValue(DrugCategory.Gaiyou);
+                    } else {
+                        if( category.getValue() == DrugCategory.Gaiyou ){
+                            category.setValue(DrugCategory.Naifuku);
+                        }
+                    }
                 }
             } else {
                 if (data.getCategory() == null) {
