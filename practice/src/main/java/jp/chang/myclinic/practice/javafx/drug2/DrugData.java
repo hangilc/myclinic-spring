@@ -5,6 +5,7 @@ import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PrescExampleDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
+import jp.chang.myclinic.util.DrugUtil;
 
 public class DrugData {
 
@@ -45,7 +46,11 @@ public class DrugData {
     }
 
     public String rep(){
-        return name;
+        if( category == null ){
+            return name;
+        } else {
+            return DrugUtil.drugRep(category, name, amount, unit, usage, days);
+        }
     }
 
     public int getIyakuhincode() {

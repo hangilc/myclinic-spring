@@ -2,15 +2,44 @@ package jp.chang.myclinic.util;
 
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.NumberFormat;
 
-/**
- * Created by hangil on 2017/06/13.
- */
 public class DrugUtil {
+    private static Logger logger = LoggerFactory.getLogger(DrugUtil.class);
 
     private static NumberFormat numberFormat = NumberFormat.getNumberInstance();
+
+    public static String drugRep(DrugCategory category, String name, double amount, String unit,
+                                 String usage, int days){
+        switch (category) {
+            case Naifuku: {
+                return String.format("%s %s%s %s %d日分", name,
+                        numberFormat.format(amount),
+                        unit,
+                        usage,
+                        days);
+            }
+            case Tonpuku: {
+                return String.format("%s １回 %s%s %s %d回分", name,
+                        numberFormat.format(amount),
+                        unit,
+                        usage,
+                        days);
+            }
+            case Gaiyou: {
+                return String.format("%s %s%s %s", name,
+                        numberFormat.format(amount),
+                        unit,
+                        usage);
+            }
+            default:
+                logger.warn("Unknown drug category: " + category);
+                return String.format("%s %s %s %s", name, numberFormat.format(amount), unit, usage);
+        }
+    }
 
     public static String drugRep(DrugDTO drug, IyakuhinMasterDTO master, DrugAttrDTO attr) {
         if (attr != null && attr.tekiyou != null && !attr.tekiyou.isEmpty()) {
@@ -25,30 +54,31 @@ public class DrugUtil {
         if (category == null) {
             return "Unknown drug category: " + drug.category;
         }
-        switch (category) {
-            case Naifuku: {
-                return String.format("%s %s%s %s %d日分", master.name,
-                        numberFormat.format(drug.amount),
-                        master.unit,
-                        drug.usage,
-                        drug.days);
-            }
-            case Tonpuku: {
-                return String.format("%s １回 %s%s %s %d回分", master.name,
-                        numberFormat.format(drug.amount),
-                        master.unit,
-                        drug.usage,
-                        drug.days);
-            }
-            case Gaiyou: {
-                return String.format("%s %s%s %s", master.name,
-                        numberFormat.format(drug.amount),
-                        master.unit,
-                        drug.usage);
-            }
-            default:
-                return "Unknown drug category: " + drug.category;
-        }
+        return drugRep(category, master.name, drug.amount, master.unit, drug.usage, drug.days);
+//        switch (category) {
+//            case Naifuku: {
+//                return String.format("%s %s%s %s %d日分", master.name,
+//                        numberFormat.format(drug.amount),
+//                        master.unit,
+//                        drug.usage,
+//                        drug.days);
+//            }
+//            case Tonpuku: {
+//                return String.format("%s １回 %s%s %s %d回分", master.name,
+//                        numberFormat.format(drug.amount),
+//                        master.unit,
+//                        drug.usage,
+//                        drug.days);
+//            }
+//            case Gaiyou: {
+//                return String.format("%s %s%s %s", master.name,
+//                        numberFormat.format(drug.amount),
+//                        master.unit,
+//                        drug.usage);
+//            }
+//            default:
+//                return "Unknown drug category: " + drug.category;
+//        }
     }
 
     public static String drugRep(DrugFullDTO drugFull) {
