@@ -1,6 +1,6 @@
 ::
-:: Usage: install-release [RELEASE-REPOSITORY-FOLDER]
-:: Default RELEASE-REPOSITORY-FOLDER is %MYCLINIC_REPOSITORY%
+:: Usage: install-release [LABEL]
+:: installs binaries to the repository identified by %MYCLINIC_REPOSITORY%
 ::
 @echo off
 setlocal enabledelayedexpansion
@@ -9,14 +9,12 @@ for /f "tokens=* usebackq" %%t in (`timestamp`) do (
     set ts=%%t
 )
 
-set repo=%1
-if "%repo%" == "" (
-    set repo=%MYCLINIC_REPOSITORY%
-)
+set repo=%MYCLINIC_REPOSITORY%
 if "%repo%" == "" (
     echo MYCLINIC_REPOSITORY is not set.
     goto :progend
 )
+set label=%1
 
 
 set folder=%repo%\myclinic-release-%ts%
@@ -34,6 +32,10 @@ copy scanner\target\scanner-1.0.0-SNAPSHOT.jar "%folder%\scanner.jar"
 copy server\target\server-1.0.0-SNAPSHOT.jar "%folder%\server.jar"
 xcopy config "%folder%\config" /I /Y /S /E /Q
 type nul >"%folder%\myclinic-release-%ts%.txt"
+if not %label% == "" (
+	java -cp management\target\management-1.0.0-SNAPSHOT-jar-with-dependencies.jar jp.chang.myclinic.management.ReleaseLabel ^
+          create "%folder%" "%label%"
+)
 set current=%repo%\current
 if exist "%current%" (
     rmdir "%current%"

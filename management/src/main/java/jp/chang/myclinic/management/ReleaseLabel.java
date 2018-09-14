@@ -3,6 +3,7 @@ package jp.chang.myclinic.management;
 import jp.chang.myclinic.management.lib.ReleaseLib;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -11,8 +12,11 @@ public class ReleaseLabel {
 
     //private static Logger logger = LoggerFactory.getLogger(ReleaseLabel.class);
 
-    // Usage: release-label                      --> interactive
-    //        release-label create release-dir label
+    private static void usage(PrintStream out){
+        out.println("Usage: release-label           --> interactive");
+        out.println("       release-label create release-dir label");
+    }
+
     public static void main(String[] args) throws Exception {
         if( args.length == 0 ){
             new ReleaseLabel().interactive();
@@ -20,12 +24,15 @@ public class ReleaseLabel {
             String cmd = args[0];
             switch(cmd){
                 case "create": {
+                    if( args.length != 3 ){
+                        usage(System.err);
+                        System.exit(1);
+                    }
                     new ReleaseLabel().create(args[1], args[2]);
                     break;
                 }
                 default: {
-                    System.err.println("Usage: release-label           --> interactive");
-                    System.err.println("       release-label create release-dir label");
+                    usage(System.err);
                     System.exit(1);
                 }
             }
