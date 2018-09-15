@@ -119,7 +119,10 @@ public class Service {
         Call<List<PrescExampleFullDTO>> searchPrescExampleCall(@Query("text") String text);
 
         @POST("enter-presc-example")
-        CompletableFuture<Boolean> enterPrescExample(@Body PrescExampleDTO prescExample);
+        CompletableFuture<Integer> enterPrescExample(@Body PrescExampleDTO prescExample);
+
+        @POST("update-presc-example")
+        CompletableFuture<Boolean> updatePrescExample(@Body PrescExampleDTO prescExample);
 
         @GET("search-prev-drug")
         CompletableFuture<List<DrugFullDTO>> searchPrevDrug(@Query("text") String text, @Query("patient-id") int patientId);

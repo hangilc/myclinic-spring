@@ -4,18 +4,18 @@ import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 public class SearchModeChooser extends RadioButtonGroup<DrugSearchMode> {
 
     private static Logger logger = LoggerFactory.getLogger(SearchModeChooser.class);
 
-    public SearchModeChooser(List<DrugSearchMode> searchModes) {
-        searchModes.forEach(this::addModeButton);
+    public SearchModeChooser(DrugSearchMode... searchModes) {
+        for(DrugSearchMode mode : searchModes){
+            addModeButton(mode);
+        }
     }
 
     public SearchModeChooser(){
-        this(List.of(DrugSearchMode.Master, DrugSearchMode.Example, DrugSearchMode.Previous));
+        this(DrugSearchMode.Master, DrugSearchMode.Example, DrugSearchMode.Previous);
     }
 
     private void addModeButton(DrugSearchMode mode) {

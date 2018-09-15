@@ -1518,6 +1518,15 @@ public class DbGateway {
         }
     }
 
+    public PrescExampleDTO findPrescExample(int prescExampleId){
+        PrescExample example = prescExampleRepository.findById(prescExampleId).orElse(null);
+        if( example == null ){
+            return null;
+        } else {
+            return mapper.toPrescExampleDTO(example);
+        }
+    }
+
     public List<PrescExampleFullDTO> searchPrescExampleFullByName(String text) {
         return prescExampleRepository.searchByNameFull(text).stream()
                 .map(result -> {
@@ -1536,6 +1545,11 @@ public class DbGateway {
         example.setPrescExampleId(null);
         example = prescExampleRepository.save(example);
         return example.getPrescExampleId();
+    }
+
+    public void updatePrescExample(PrescExampleDTO dto){
+        PrescExample example = mapper.fromPrescExampleDTO(dto);
+        prescExampleRepository.save(example);
     }
 
     public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId) {

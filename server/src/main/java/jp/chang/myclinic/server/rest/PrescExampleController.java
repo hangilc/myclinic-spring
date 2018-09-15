@@ -22,12 +22,22 @@ class PrescExampleController {
     }
 
     @RequestMapping(value="/enter-presc-example", method=RequestMethod.POST)
-    public int enrescExample(@RequestBody PrescExampleDTO example){
+    public int enterPrescExample(@RequestBody PrescExampleDTO example){
         if( dbGateway.findNameForIyakuhincode(example.iyakuhincode).isPresent() ){
             return dbGateway.enterPrescExample(example);
         } else {
             throw new RuntimeException("Invalid iyakuhincode: " + example.iyakuhincode);
         }
+    }
+
+    @RequestMapping(value="/update-presc-example", method=RequestMethod.POST)
+    public boolean updatePrescExample(@RequestBody PrescExampleDTO example){
+        PrescExampleDTO cur = dbGateway.findPrescExample(example.prescExampleId);
+        if( cur == null ){
+            throw new RuntimeException("Cannot find presc example with id " + example.prescExampleId);
+        }
+        dbGateway.updatePrescExample(example);
+        return true;
     }
 
 }

@@ -18,6 +18,7 @@ import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.events.EventTypes;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.javafx.globalsearch.GlobalSearchDialog;
+import jp.chang.myclinic.practice.javafx.prescexample.EditPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.prescexample.NewPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
@@ -84,6 +85,7 @@ public class MainPane extends BorderPane {
             MenuItem listPrinterSettingItem = new MenuItem("印刷設定の一覧");
             MenuItem searchTextMenuItem = new MenuItem("全文検索");
             MenuItem newPrescExampleMenuItem = new MenuItem("処方例新規入力");
+            MenuItem editPrescExampleMenuItem = new MenuItem("処方例編集");
             newVisitItem.setOnAction(evt -> doNewVisit());
             newVisitOfCurrentPatientItem.setOnAction(evt -> doNewVisitOfCurrentPatient());
             referItem.setOnAction(evt -> doRefer(false));
@@ -91,6 +93,7 @@ public class MainPane extends BorderPane {
             listPrinterSettingItem.setOnAction(evt -> doListPrinterSetting());
             searchTextMenuItem.setOnAction(evt -> doGlobalSearchText());
             newPrescExampleMenuItem.setOnAction(evt -> doNewPrescExample());
+            editPrescExampleMenuItem.setOnAction(evt -> doEditPrescExample());
             menu.getItems().addAll(
                     newVisitItem,
                     newVisitOfCurrentPatientItem,
@@ -98,11 +101,18 @@ public class MainPane extends BorderPane {
                     shohousenItem,
                     listPrinterSettingItem,
                     searchTextMenuItem,
-                    newPrescExampleMenuItem
+                    newPrescExampleMenuItem,
+                    editPrescExampleMenuItem
             );
             menuBar.getMenus().add(menu);
         }
         return menuBar;
+    }
+
+    private void doEditPrescExample(){
+        EditPrescExampleDialog dialog = new EditPrescExampleDialog();
+        dialog.initOwner(getScene().getWindow());
+        dialog.show();
     }
 
     private void doNewPrescExample(){
