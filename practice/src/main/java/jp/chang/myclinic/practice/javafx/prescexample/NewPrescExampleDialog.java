@@ -7,6 +7,8 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PrescExampleDTO;
+import jp.chang.myclinic.practice.javafx.drug2.DrugSearchMode;
+import jp.chang.myclinic.practice.javafx.drug2.SearchModeChooser;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 public class NewPrescExampleDialog extends PrescExampleBaseDialog {
@@ -14,6 +16,7 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
     //private static Logger logger = LoggerFactory.getLogger(NewPrescExampleDialog.class);
 
     public NewPrescExampleDialog() {
+        super(new SearchModeChooser(DrugSearchMode.Master, DrugSearchMode.Example));
         setTitle("処方例の新規入力");
     }
 

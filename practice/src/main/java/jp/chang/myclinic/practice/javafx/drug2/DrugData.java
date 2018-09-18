@@ -11,6 +11,8 @@ public class DrugData {
 
     //private static Logger logger = LoggerFactory.getLogger(DrugData.class);
     private int iyakuhincode;
+    private int prescExampleId;
+    private int drugId;
     private String name;
     private String unit;
     private Zaikei zaikei;

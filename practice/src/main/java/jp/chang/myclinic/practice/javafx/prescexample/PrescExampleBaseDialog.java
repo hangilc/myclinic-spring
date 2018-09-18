@@ -26,11 +26,12 @@ abstract class PrescExampleBaseDialog extends Stage {
     private Input input = new Input();
     private SearchInput searchInput = new SearchInput();
     private SearchResult searchResult = new SearchResult();
-    private SearchModeChooser searchModeChooser = new SearchModeChooser(DrugSearchMode.Master, DrugSearchMode.Example);
+    private SearchModeChooser searchModeChooser;
     private TextField commentInput = new TextField();
     private LocalDate at = LocalDate.now();
 
-    PrescExampleBaseDialog() {
+    PrescExampleBaseDialog(SearchModeChooser searchModeChooser) {
+        this.searchModeChooser = searchModeChooser;
         Parent mainPane = createMainPane();
         mainPane.getStyleClass().add("presc-example-dialog");
         mainPane.getStylesheets().add("css/Practice.css");
