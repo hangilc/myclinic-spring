@@ -124,6 +124,9 @@ public class Service {
         @POST("update-presc-example")
         CompletableFuture<Boolean> updatePrescExample(@Body PrescExampleDTO prescExample);
 
+        @POST("delete-presc-example")
+        CompletableFuture<Boolean> deletePrescExample(@Query("presc-example-id") int prescExampleId);
+
         @GET("search-prev-drug")
         CompletableFuture<List<DrugFullDTO>> searchPrevDrug(@Query("text") String text, @Query("patient-id") int patientId);
 

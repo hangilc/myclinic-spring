@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.javafx.prescexample;
 
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -11,12 +12,10 @@ import jp.chang.myclinic.practice.javafx.drug2.DrugSearchMode;
 import jp.chang.myclinic.practice.javafx.drug2.SearchModeChooser;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EditPrescExampleDialog extends PrescExampleBaseDialog {
 
-    private static Logger logger = LoggerFactory.getLogger(EditPrescExampleDialog.class);
+    //private static Logger logger = LoggerFactory.getLogger(EditPrescExampleDialog.class);
 
     public EditPrescExampleDialog() {
         super(new SearchModeChooser(DrugSearchMode.Example));
@@ -27,18 +26,33 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
     @Override
     Node createCommands(){
         HBox hbox = new HBox(4);
+        hbox.setAlignment(Pos.CENTER_LEFT);
         Button enterButton = new Button("適用");
         Button closeButton = new Button("閉じる");
         Hyperlink clearLink = new Hyperlink("クリア");
+        Hyperlink deleteLink = new Hyperlink("削除");
         enterButton.setOnAction(evt -> doUpdate());
         closeButton.setOnAction(evt -> close());
         clearLink.setOnAction(evt -> doClear());
+        deleteLink.setOnAction(evt -> doDelete());
         hbox.getChildren().addAll(
                 enterButton,
                 closeButton,
-                clearLink
+                clearLink,
+                deleteLink
         );
         return hbox;
+    }
+
+    private void doDelete(){
+        int prescExampleId = getPrescExampleId();
+        if( prescExampleId == 0 ){
+            GuiUtil.alertError("削除する処方例が選択されていません。");
+            return;
+        }
+        Service.api.deletePrescExample(prescExampleId)
+                .thenAcceptAsync(result -> doClear(), Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private void doUpdate(){

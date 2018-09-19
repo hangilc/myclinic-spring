@@ -40,4 +40,10 @@ class PrescExampleController {
         return true;
     }
 
+    @RequestMapping(value="/delete-presc-example", method=RequestMethod.POST)
+    public boolean deletePrescExample(@RequestParam("presc-example-id") int prescExampleId){
+        dbGateway.deletePrescExample(prescExampleId);
+        return true;
+    }
+
 }

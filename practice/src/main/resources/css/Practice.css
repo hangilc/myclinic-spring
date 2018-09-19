@@ -1,3 +1,8 @@
+.hyperlink {
+    -fx-border-color: transparent;
+    -fx-padding: 0 0 0 0;
+}
+
 .hyperlink:visited {
     -fx-text-fill: -fx-accent;
 }

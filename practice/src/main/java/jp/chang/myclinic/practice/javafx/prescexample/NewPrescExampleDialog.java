@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.javafx.prescexample;
 
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -22,6 +23,7 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
 
     Node createCommands() {
         HBox hbox = new HBox(4);
+        hbox.setAlignment(Pos.CENTER_LEFT);
         Button enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
         Hyperlink clearLink = new Hyperlink("クリア");

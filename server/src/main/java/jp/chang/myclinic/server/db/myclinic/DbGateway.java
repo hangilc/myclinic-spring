@@ -1552,6 +1552,14 @@ public class DbGateway {
         prescExampleRepository.save(example);
     }
 
+    public void deletePrescExample(int prescExampleId){
+        PrescExample example = prescExampleRepository.findById(prescExampleId).orElse(null);
+        if( example == null ){
+            throw new RuntimeException("Cannot find presc example with id " + prescExampleId);
+        }
+        prescExampleRepository.delete(example);
+    }
+
     public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId) {
         return diseaseRepository.findCurrentWithMaster(patientId, Sort.by("diseaseId")).stream()
                 .map(this::resultToDiseaseFullDTO)

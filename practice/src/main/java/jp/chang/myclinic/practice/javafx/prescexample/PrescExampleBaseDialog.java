@@ -83,6 +83,10 @@ abstract class PrescExampleBaseDialog extends Stage {
 
     abstract Node createCommands();
 
+    int getPrescExampleId(){
+        return input.getPrescExampleId();
+    }
+
     void setSearchMode(DrugSearchMode mode){
         searchModeChooser.setValue(mode);
     }
