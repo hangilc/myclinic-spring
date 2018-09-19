@@ -65,7 +65,7 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
     }
 
     private void doDelete(){
-        int prescExampleId = getPrescExampleId();
+        int prescExampleId = getInput().getPrescExampleId();
         if( prescExampleId == 0 ){
             GuiUtil.alertError("削除する処方例が選択されていません。");
             return;

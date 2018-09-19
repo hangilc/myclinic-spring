@@ -8,9 +8,14 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PrescExampleDTO;
+import jp.chang.myclinic.practice.javafx.drug2.DrugData;
 import jp.chang.myclinic.practice.javafx.drug2.DrugSearchMode;
+import jp.chang.myclinic.practice.javafx.drug2.Input;
 import jp.chang.myclinic.practice.javafx.drug2.SearchModeChooser;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
+
+import java.time.LocalDate;
 
 public class NewPrescExampleDialog extends PrescExampleBaseDialog {
 
@@ -27,15 +32,32 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
         Button enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
         Hyperlink clearLink = new Hyperlink("クリア");
+        Hyperlink currentLink = new Hyperlink("現行");
         enterButton.setOnAction(evt -> doEnter());
         cancelButton.setOnAction(evt -> close());
         clearLink.setOnAction(evt -> doClear());
+        currentLink.setOnAction(evt -> doCurrent());
         hbox.getChildren().addAll(
                 enterButton,
                 cancelButton,
-                clearLink
+                clearLink,
+                currentLink
         );
         return hbox;
+    }
+
+    private void doCurrent(){
+        int iyakuhincode = getInput().getIyakuhincode();
+        if( iyakuhincode == 0 ){
+            GuiUtil.alertError("医薬品が選択されていません。");
+            return;
+        }
+        Service.api.resolveIyakuhinMaster(iyakuhincode, LocalDate.now().toString())
+                .thenAcceptAsync(master -> {
+                    DrugData data = DrugData.fromMaster(master);
+                    getInput().setData(data, Input.SetOption.IgnoreNull);
+                }, Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private void doEnter() {
