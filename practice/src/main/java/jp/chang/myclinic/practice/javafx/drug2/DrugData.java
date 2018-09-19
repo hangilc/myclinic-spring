@@ -34,6 +34,7 @@ public class DrugData {
 
     public static DrugData fromExample(PrescExampleFullDTO example){
         DrugData data = new DrugData();
+        data.prescExampleId = example.prescExample.prescExampleId;
         data.setMaster(example.master);
         PrescExampleDTO ex = example.prescExample;
         data.amount = Double.parseDouble(ex.amount);
@@ -53,6 +54,14 @@ public class DrugData {
         } else {
             return DrugUtil.drugRep(category, name, amount, unit, usage, days);
         }
+    }
+
+    public int getPrescExampleId() {
+        return prescExampleId;
+    }
+
+    public int getDrugId() {
+        return drugId;
     }
 
     public int getIyakuhincode() {

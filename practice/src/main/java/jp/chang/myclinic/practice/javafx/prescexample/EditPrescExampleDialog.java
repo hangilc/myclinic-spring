@@ -9,6 +9,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PrescExampleDTO;
 import jp.chang.myclinic.practice.javafx.drug2.DrugSearchMode;
 import jp.chang.myclinic.practice.javafx.drug2.SearchModeChooser;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
     public EditPrescExampleDialog() {
         super(new SearchModeChooser(DrugSearchMode.Example));
         setTitle("処方例の編集");
+        setSearchMode(DrugSearchMode.Example);
     }
 
     @Override
@@ -41,6 +43,10 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
 
     private void doUpdate(){
         PrescExampleDTO ex = createPrescExample();
+        if( ex != null && ex.prescExampleId == 0 ){
+            GuiUtil.alertError("prescExampleId is zero.");
+            return;
+        }
         if( ex != null ){
             Service.api.resolveIyakuhinMaster(ex.iyakuhincode, getLocalDate().toString())
                     .thenCompose(master -> {

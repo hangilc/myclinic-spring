@@ -83,8 +83,13 @@ abstract class PrescExampleBaseDialog extends Stage {
 
     abstract Node createCommands();
 
+    void setSearchMode(DrugSearchMode mode){
+        searchModeChooser.setValue(mode);
+    }
+
     PrescExampleDTO createPrescExample() {
         PrescExampleDTO ex = new PrescExampleDTO();
+        ex.prescExampleId = input.getPrescExampleId();
         ex.iyakuhincode = input.getIyakuhincode();
         if (ex.iyakuhincode == 0) {
             GuiUtil.alertError("医薬品が設定されていません。");

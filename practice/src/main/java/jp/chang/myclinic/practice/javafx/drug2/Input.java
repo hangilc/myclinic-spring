@@ -26,6 +26,7 @@ public class Input extends VBox {
     }
 
     private int iyakuhincode = 0;
+    private int prescExampleId = 0;
     private Text drugNameLabel = new Text("");
     private Label amountLabel = new Label("");
     private TextField amountInput = new TextField();
@@ -58,6 +59,7 @@ public class Input extends VBox {
 
     public void setData(DrugData data, SetOption option){
         this.iyakuhincode = data.getIyakuhincode();
+        this.prescExampleId = data.getPrescExampleId();
         drugNameLabel.setText(data.getName());
         setUnit(data.getUnit());
         {
@@ -127,6 +129,10 @@ public class Input extends VBox {
         daysInput.setText("");
         daysUnit.setText("");
         category.setValue(DrugCategory.Naifuku);
+    }
+
+    public int getPrescExampleId(){
+        return prescExampleId;
     }
 
     public int getIyakuhincode() {
