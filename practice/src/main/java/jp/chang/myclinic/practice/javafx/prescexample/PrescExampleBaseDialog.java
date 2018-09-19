@@ -101,43 +101,7 @@ abstract class PrescExampleBaseDialog extends Stage {
     }
 
     PrescExampleDTO createPrescExample() {
-        PrescExampleDTO ex = new PrescExampleDTO();
-        ex.prescExampleId = input.getPrescExampleId();
-        ex.iyakuhincode = input.getIyakuhincode();
-        if (ex.iyakuhincode == 0) {
-            GuiUtil.alertError("医薬品が設定されていません。");
-            return null;
-        }
-        ex.amount = input.getAmount();
-        try {
-            double value = Double.parseDouble(ex.amount);
-            if (!(value > 0)) {
-                GuiUtil.alertError("用量の値が正でありません。");
-                return null;
-            }
-        } catch (NumberFormatException e) {
-            GuiUtil.alertError("用量の入力が不適切です。");
-            return null;
-        }
-        ex.usage = input.getUsage();
-        DrugCategory category = input.getCategory();
-        ex.category = category.getCode();
-        if (category == DrugCategory.Gaiyou) {
-            ex.days = 1;
-        } else {
-            try {
-                ex.days = Integer.parseInt(input.getDays());
-                if (!(ex.days > 0)) {
-                    GuiUtil.alertError("日数の値が正の整数でありません。");
-                    return null;
-                }
-            } catch (NumberFormatException e) {
-                GuiUtil.alertError("日数の入力が不敵津です。");
-                return null;
-            }
-        }
-        ex.comment = commentInput.getText();
-        return ex;
+        return input.createPrescExample(commentInput.getText().trim());
     }
 
     void doClear(){

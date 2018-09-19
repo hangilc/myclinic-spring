@@ -100,7 +100,7 @@ public class DrugData {
         return comment;
     }
 
-    private void setMaster(IyakuhinMasterDTO master){
+    public void setMaster(IyakuhinMasterDTO master){
         this.iyakuhincode = master.iyakuhincode;
         this.name = master.name;
         this.unit = master.unit;

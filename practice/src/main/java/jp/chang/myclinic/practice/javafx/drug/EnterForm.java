@@ -15,6 +15,8 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.practice.javafx.drug2.SearchModeChooser;
+import jp.chang.myclinic.practice.javafx.drug2.DrugSearchMode;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;

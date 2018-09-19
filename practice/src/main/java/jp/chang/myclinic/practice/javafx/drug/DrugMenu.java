@@ -21,6 +21,7 @@ import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.util.DrugUtil;
+import jp.chang.myclinic.practice.javafx.drug2.EnterForm;
 
 import java.util.ArrayList;
 import java.util.List;

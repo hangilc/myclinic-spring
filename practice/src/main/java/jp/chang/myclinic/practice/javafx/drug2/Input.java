@@ -11,6 +11,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Zaikei;
+import jp.chang.myclinic.dto.DrugDTO;
+import jp.chang.myclinic.dto.PrescExampleDTO;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 
 import java.text.DecimalFormat;
@@ -27,6 +30,7 @@ public class Input extends VBox {
 
     private int iyakuhincode = 0;
     private int prescExampleId = 0;
+    private int drugId = 0;
     private Text drugNameLabel = new Text("");
     private Label amountLabel = new Label("");
     private TextField amountInput = new TextField();
@@ -60,6 +64,7 @@ public class Input extends VBox {
     public void setData(DrugData data, SetOption option){
         this.iyakuhincode = data.getIyakuhincode();
         this.prescExampleId = data.getPrescExampleId();
+        this.drugId = data.getDrugId();
         drugNameLabel.setText(data.getName());
         setUnit(data.getUnit());
         {
@@ -278,6 +283,85 @@ public class Input extends VBox {
             contextMenu.getItems().add(item);
         });
         contextMenu.show(anchor, event.getScreenX(), event.getScreenY());
+    }
+
+    public DrugDTO createDrug(){
+        DrugDTO dto = new DrugDTO();
+        dto.drugId = drugId;
+        dto.visitId = visitId;
+        dto.iyakuhincode = getIyakuhincode();
+        if (dto.iyakuhincode == 0) {
+            GuiUtil.alertError("医薬品が設定されていません。");
+            return null;
+        }
+        try {
+            dto.amount = Double.parseDouble(getAmount());
+            if (!(dto.amount > 0)) {
+                GuiUtil.alertError("用量の値が正でありません。");
+                return null;
+            }
+        } catch (NumberFormatException e) {
+            GuiUtil.alertError("用量の入力が不適切です。");
+            return null;
+        }
+        dto.usage = getUsage();
+        DrugCategory category = getCategory();
+        dto.category = category.getCode();
+        if (category == DrugCategory.Gaiyou) {
+            dto.days = 1;
+        } else {
+            try {
+                dto.days = Integer.parseInt(getDays());
+                if (!(dto.days > 0)) {
+                    GuiUtil.alertError("日数の値が正の整数でありません。");
+                    return null;
+                }
+            } catch (NumberFormatException e) {
+                GuiUtil.alertError("日数の入力が不敵津です。");
+                return null;
+            }
+        }
+        return dto;
+    }
+
+    public PrescExampleDTO createPrescExample(String comment) {
+        PrescExampleDTO ex = new PrescExampleDTO();
+        ex.prescExampleId = getPrescExampleId();
+        ex.iyakuhincode = getIyakuhincode();
+        if (ex.iyakuhincode == 0) {
+            GuiUtil.alertError("医薬品が設定されていません。");
+            return null;
+        }
+        ex.amount = getAmount();
+        try {
+            double value = Double.parseDouble(ex.amount);
+            if (!(value > 0)) {
+                GuiUtil.alertError("用量の値が正でありません。");
+                return null;
+            }
+        } catch (NumberFormatException e) {
+            GuiUtil.alertError("用量の入力が不適切です。");
+            return null;
+        }
+        ex.usage = getUsage();
+        DrugCategory category = getCategory();
+        ex.category = category.getCode();
+        if (category == DrugCategory.Gaiyou) {
+            ex.days = 1;
+        } else {
+            try {
+                ex.days = Integer.parseInt(getDays());
+                if (!(ex.days > 0)) {
+                    GuiUtil.alertError("日数の値が正の整数でありません。");
+                    return null;
+                }
+            } catch (NumberFormatException e) {
+                GuiUtil.alertError("日数の入力が不敵津です。");
+                return null;
+            }
+        }
+        ex.comment = comment;
+        return ex;
     }
 
 }

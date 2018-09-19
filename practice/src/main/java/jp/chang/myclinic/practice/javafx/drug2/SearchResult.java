@@ -5,6 +5,8 @@ import javafx.scene.control.ListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 public class SearchResult extends ListView<DrugData> {
 
     private static Logger logger = LoggerFactory.getLogger(SearchResult.class);
@@ -18,7 +20,11 @@ public class SearchResult extends ListView<DrugData> {
                 setText(empty ? "" : item.rep());
             }
         });
+    }
 
+    public void setItems(List<DrugData> items){
+        getItems().clear();
+        getItems().setAll(items);
     }
 
 }
