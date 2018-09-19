@@ -63,6 +63,7 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
     private void doEnter() {
         PrescExampleDTO ex = createPrescExample();
         if (ex != null) {
+            ex.prescExampleId = 0;
             Service.api.resolveIyakuhinMaster(ex.iyakuhincode, getLocalDate().toString())
                     .thenCompose(master -> {
                         ex.masterValidFrom = master.validFrom;

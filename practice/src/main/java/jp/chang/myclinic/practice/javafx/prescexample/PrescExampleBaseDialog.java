@@ -11,26 +11,23 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.PrescExampleDTO;
 import jp.chang.myclinic.practice.javafx.drug2.*;
-import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
 
 abstract class PrescExampleBaseDialog extends Stage {
 
-    private static Logger logger = LoggerFactory.getLogger(PrescExampleBaseDialog.class);
+    //private static Logger logger = LoggerFactory.getLogger(PrescExampleBaseDialog.class);
     private Input input = new Input();
     private SearchInput searchInput = new SearchInput();
     private SearchResult searchResult = new SearchResult();
     private SearchModeChooser searchModeChooser;
     private TextField commentInput = new TextField();
     private LocalDate at = LocalDate.now();
+    private int prescExampleId = 0;
 
     PrescExampleBaseDialog(SearchModeChooser searchModeChooser) {
         this.searchModeChooser = searchModeChooser;
@@ -62,6 +59,10 @@ abstract class PrescExampleBaseDialog extends Stage {
         });
         searchResult.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
+                int prescExampleId = newValue.getPrescExampleId();
+                if( prescExampleId != 0 ){
+                    this.prescExampleId = prescExampleId;
+                }
                 input.setData(newValue, Input.SetOption.IgnoreNull);
                 String comment = newValue.getComment();
                 if( comment != null && !comment.isEmpty()) {
@@ -92,6 +93,10 @@ abstract class PrescExampleBaseDialog extends Stage {
         return input;
     }
 
+    int getPrescExampleId() {
+        return prescExampleId;
+    }
+
     void setSearchMode(DrugSearchMode mode){
         searchModeChooser.setValue(mode);
     }
@@ -101,7 +106,7 @@ abstract class PrescExampleBaseDialog extends Stage {
     }
 
     PrescExampleDTO createPrescExample() {
-        return input.createPrescExample(commentInput.getText().trim());
+        return input.createPrescExample(prescExampleId, commentInput.getText().trim());
     }
 
     void doClear(){
@@ -109,6 +114,7 @@ abstract class PrescExampleBaseDialog extends Stage {
         commentInput.setText("");
         searchInput.clear();
         searchResult.getItems().clear();
+        this.prescExampleId = 0;
     }
 
     LocalDate getLocalDate(){

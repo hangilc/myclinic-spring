@@ -27,4 +27,7 @@ public class SearchResult extends ListView<DrugData> {
         getItems().setAll(items);
     }
 
+    public void clear(){
+        getItems().clear();
+    }
 }

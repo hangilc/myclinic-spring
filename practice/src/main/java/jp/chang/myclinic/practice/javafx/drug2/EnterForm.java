@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
@@ -91,8 +92,15 @@ public class EnterForm extends VBox {
     }
 
     private void doEnter(){
-        DrugDTO drug = input.createDrug();
+        DrugDTO drug = input.createDrug(0, visitId, 0);
         Service.api.enterDrug(drug)
+                .thenCompose(Service.api::getDrugFull)
+                .thenAccept(enteredDrug -> Platform.runLater(() -> {
+                    EnterForm.this.fireEvent(new DrugEnteredEvent(enteredDrug, null));
+                    EnterForm.this.doClearInput();
+                    searchResult.clear();
+                }))
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private void doClearInput(){

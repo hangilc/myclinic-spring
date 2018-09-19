@@ -29,8 +29,6 @@ public class Input extends VBox {
     }
 
     private int iyakuhincode = 0;
-    private int prescExampleId = 0;
-    private int drugId = 0;
     private Text drugNameLabel = new Text("");
     private Label amountLabel = new Label("");
     private TextField amountInput = new TextField();
@@ -63,8 +61,6 @@ public class Input extends VBox {
 
     public void setData(DrugData data, SetOption option){
         this.iyakuhincode = data.getIyakuhincode();
-        this.prescExampleId = data.getPrescExampleId();
-        this.drugId = data.getDrugId();
         drugNameLabel.setText(data.getName());
         setUnit(data.getUnit());
         {
@@ -136,9 +132,6 @@ public class Input extends VBox {
         category.setValue(DrugCategory.Naifuku);
     }
 
-    public int getPrescExampleId(){
-        return prescExampleId;
-    }
 
     public int getIyakuhincode() {
         return iyakuhincode;
@@ -285,7 +278,7 @@ public class Input extends VBox {
         contextMenu.show(anchor, event.getScreenX(), event.getScreenY());
     }
 
-    public DrugDTO createDrug(){
+    public DrugDTO createDrug(int drugId, int visitId, int prescribed){
         DrugDTO dto = new DrugDTO();
         dto.drugId = drugId;
         dto.visitId = visitId;
@@ -321,12 +314,13 @@ public class Input extends VBox {
                 return null;
             }
         }
+        dto.prescribed = prescribed;
         return dto;
     }
 
-    public PrescExampleDTO createPrescExample(String comment) {
+    public PrescExampleDTO createPrescExample(int prescExampleId, String comment) {
         PrescExampleDTO ex = new PrescExampleDTO();
-        ex.prescExampleId = getPrescExampleId();
+        ex.prescExampleId = prescExampleId;
         ex.iyakuhincode = getIyakuhincode();
         if (ex.iyakuhincode == 0) {
             GuiUtil.alertError("医薬品が設定されていません。");
