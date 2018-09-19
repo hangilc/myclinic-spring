@@ -91,6 +91,7 @@ public class EditForm extends VBox {
 
     private Node createEditTekiyouCommands() {
         HBox hbox = new HBox(4);
+        hbox.setAlignment(Pos.CENTER_LEFT);
         Hyperlink editTekiyouLink = new Hyperlink("摘要編集");
         Hyperlink deleteTekiyouLink = new Hyperlink("摘要削除");
         editTekiyouLink.setOnAction(evt -> doEnterTekiyou());
@@ -101,6 +102,7 @@ public class EditForm extends VBox {
 
     private Node createEnterTekiyouCommands() {
         HBox hbox = new HBox(4);
+        hbox.setAlignment(Pos.CENTER_LEFT);
         Hyperlink enterTekiyouLink = new Hyperlink("摘要入力");
         enterTekiyouLink.setOnAction(evt -> doEnterTekiyou());
         hbox.getChildren().add(enterTekiyouLink);
