@@ -10,20 +10,37 @@ import jp.chang.myclinic.util.DrugUtil;
 public class DrugData {
 
     //private static Logger logger = LoggerFactory.getLogger(DrugData.class);
+
+    // common part
     private int iyakuhincode;
-    private int prescExampleId;
-    private int drugId;
     private String name;
     private String unit;
     private Zaikei zaikei;
+
+    // presc example and drug part
     private Double amount;
     private String usage;
-    private Integer days;
     private DrugCategory category;
+    private Integer days;
+
+    // presc example specific part
+    private int prescExampleId;
     private String comment;
+
+    // drug specific part
+    private int drugId;
+    private Integer prescribed;
 
     private DrugData() {
 
+    }
+
+    public boolean isPrescExample(){
+        return prescExampleId != 0;
+    }
+
+    public boolean isDrug(){
+        return drugId != 0;
     }
 
     public static DrugData fromMaster(IyakuhinMasterDTO master){
