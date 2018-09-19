@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.consts.DrugCategory;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.List;
 
 abstract class PrescExampleBaseDialog extends Stage {
 
@@ -54,10 +56,7 @@ abstract class PrescExampleBaseDialog extends Stage {
             if (!text.isEmpty()) {
                 DrugSearchMode mode = searchModeChooser.getValue();
                 DrugSearcher.search(text, mode, at)
-                        .thenAccept(result -> Platform.runLater(() -> {
-                            searchResult.getItems().clear();
-                            searchResult.getItems().addAll(result);
-                        }))
+                        .thenAcceptAsync(this::setSearchResultList, Platform::runLater)
                         .exceptionally(HandlerFX::exceptionally);
             }
         });
@@ -70,6 +69,7 @@ abstract class PrescExampleBaseDialog extends Stage {
                 }
             }
         });
+        VBox.setVgrow(searchResult, Priority.ALWAYS);
         vbox.getChildren().addAll(
                 input,
                 new Separator(),
@@ -81,6 +81,11 @@ abstract class PrescExampleBaseDialog extends Stage {
         return vbox;
     }
 
+    void setSearchResultList(List<DrugData> list){
+        searchResult.getItems().clear();
+        searchResult.getItems().addAll(list);
+    }
+
     abstract Node createCommands();
 
     int getPrescExampleId(){
@@ -89,6 +94,10 @@ abstract class PrescExampleBaseDialog extends Stage {
 
     void setSearchMode(DrugSearchMode mode){
         searchModeChooser.setValue(mode);
+    }
+
+    void addToSearchTextInputBox(Node node){
+        searchInput.addToTextInputBox(node);
     }
 
     PrescExampleDTO createPrescExample() {

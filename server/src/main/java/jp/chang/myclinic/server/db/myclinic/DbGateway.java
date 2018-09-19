@@ -1529,14 +1529,15 @@ public class DbGateway {
 
     public List<PrescExampleFullDTO> searchPrescExampleFullByName(String text) {
         return prescExampleRepository.searchByNameFull(text).stream()
-                .map(result -> {
-                    PrescExample prescExample = (PrescExample) result[0];
-                    IyakuhinMaster iyakuhinMaster = (IyakuhinMaster) result[1];
-                    PrescExampleFullDTO prescExampleFullDTO = new PrescExampleFullDTO();
-                    prescExampleFullDTO.prescExample = mapper.toPrescExampleDTO((prescExample));
-                    prescExampleFullDTO.master = mapper.toIyakuhinMasterDTO(iyakuhinMaster);
-                    return prescExampleFullDTO;
-                })
+                .map(this::resultToPrescExampleFullDTO)
+//                .map(result -> {
+//                    PrescExample prescExample = (PrescExample) result[0];
+//                    IyakuhinMaster iyakuhinMaster = (IyakuhinMaster) result[1];
+//                    PrescExampleFullDTO prescExampleFullDTO = new PrescExampleFullDTO();
+//                    prescExampleFullDTO.prescExample = mapper.toPrescExampleDTO((prescExample));
+//                    prescExampleFullDTO.master = mapper.toIyakuhinMasterDTO(iyakuhinMaster);
+//                    return prescExampleFullDTO;
+//                })
                 .collect(Collectors.toList());
     }
 
@@ -1558,6 +1559,12 @@ public class DbGateway {
             throw new RuntimeException("Cannot find presc example with id " + prescExampleId);
         }
         prescExampleRepository.delete(example);
+    }
+
+    public List<PrescExampleFullDTO> listAllPrescExample(){
+        return prescExampleRepository.findAllFull().stream().map(this::resultToPrescExampleFullDTO)
+                .sorted(Comparator.comparing(e -> e.master.yomi))
+                .collect(Collectors.toList());
     }
 
     public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId) {
@@ -1877,6 +1884,15 @@ public class DbGateway {
         dto.text = mapper.toTextDTO((Text) result[0]);
         dto.visit = mapper.toVisitDTO((Visit) result[1]);
         return dto;
+    }
+
+    private PrescExampleFullDTO resultToPrescExampleFullDTO(Object[] result){
+        PrescExample prescExample = (PrescExample) result[0];
+        IyakuhinMaster iyakuhinMaster = (IyakuhinMaster) result[1];
+        PrescExampleFullDTO prescExampleFullDTO = new PrescExampleFullDTO();
+        prescExampleFullDTO.prescExample = mapper.toPrescExampleDTO((prescExample));
+        prescExampleFullDTO.master = mapper.toIyakuhinMasterDTO(iyakuhinMaster);
+        return prescExampleFullDTO;
     }
 
     public List<Integer> listVisitingPatientIdHavingHoken(int year, int month) {

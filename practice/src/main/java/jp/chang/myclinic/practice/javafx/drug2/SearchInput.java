@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.drug2;
 
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -12,6 +13,7 @@ public class SearchInput extends VBox {
 
     private static Logger logger = LoggerFactory.getLogger(SearchInput.class);
 
+    private HBox textInputBox = new HBox(4);
     private TextField searchTextInput = new TextField();
     private Runnable onSearchHandler = () -> {};
     //private RadioButtonGroup<DrugSearchMode> modeGroup = new RadioButtonGroup<>();
@@ -33,13 +35,17 @@ public class SearchInput extends VBox {
         searchTextInput.setText("");
     }
 
+    public void addToTextInputBox(Node node){
+        textInputBox.getChildren().add(node);
+    }
+
     private Node createSearchInput() {
-        HBox hbox = new HBox(4);
+        textInputBox.setAlignment(Pos.CENTER_LEFT);
         Button searchButton = new Button("検索");
         searchTextInput.setOnAction(event -> onSearchHandler.run());
         searchButton.setOnAction(event -> onSearchHandler.run());
-        hbox.getChildren().addAll(searchTextInput, searchButton);
-        return hbox;
+        textInputBox.getChildren().addAll(searchTextInput, searchButton);
+        return textInputBox;
     }
 
 }

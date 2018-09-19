@@ -46,4 +46,9 @@ class PrescExampleController {
         return true;
     }
 
+    @RequestMapping(value="/list-all-presc-example", method=RequestMethod.GET)
+    public List<PrescExampleFullDTO> listAllPrescExample(){
+        return dbGateway.listAllPrescExample();
+    }
+
 }

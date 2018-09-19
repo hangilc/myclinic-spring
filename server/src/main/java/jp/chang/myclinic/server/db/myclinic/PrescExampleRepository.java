@@ -12,4 +12,8 @@ public interface PrescExampleRepository extends CrudRepository<PrescExample, Int
             " m.iyakuhincode = p.iyakuhincode and m.validFrom = p.masterValidFrom " +
             " and m.name like CONCAT('%', :text, '%') ")
     List<Object[]> searchByNameFull(@Param("text") String text);
+
+    @Query("select p, m from PrescExample p, IyakuhinMaster m where " +
+            " m.iyakuhincode = p.iyakuhincode and m.validFrom = p.masterValidFrom ")
+    List<Object[]> findAllFull();
 }

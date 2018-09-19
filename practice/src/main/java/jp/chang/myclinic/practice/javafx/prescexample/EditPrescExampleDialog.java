@@ -8,10 +8,14 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PrescExampleDTO;
+import jp.chang.myclinic.practice.javafx.drug2.DrugData;
 import jp.chang.myclinic.practice.javafx.drug2.DrugSearchMode;
 import jp.chang.myclinic.practice.javafx.drug2.SearchModeChooser;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class EditPrescExampleDialog extends PrescExampleBaseDialog {
 
@@ -21,6 +25,7 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
         super(new SearchModeChooser(DrugSearchMode.Example));
         setTitle("処方例の編集");
         setSearchMode(DrugSearchMode.Example);
+        addToSearchTextInputBox(createListAllLink());
     }
 
     @Override
@@ -42,6 +47,21 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
                 deleteLink
         );
         return hbox;
+    }
+
+    private Node createListAllLink(){
+        Hyperlink listAllLink = new Hyperlink("全リスト");
+        listAllLink.setOnAction(evt -> doListAll());
+        return listAllLink;
+    }
+
+    private void doListAll(){
+        Service.api.listAllPrescExample()
+                .thenAcceptAsync(result -> {
+                    List<DrugData> drugDataList = result.stream().map(DrugData::fromExample).collect(Collectors.toList());
+                    setSearchResultList(drugDataList);
+                }, Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private void doDelete(){
