@@ -2,9 +2,7 @@ package jp.chang.myclinic.practice.javafx.drug2;
 
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Zaikei;
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.dto.PrescExampleDTO;
-import jp.chang.myclinic.dto.PrescExampleFullDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DrugUtil;
 
 public class DrugData {
@@ -51,9 +49,9 @@ public class DrugData {
 
     public static DrugData fromExample(PrescExampleFullDTO example){
         DrugData data = new DrugData();
-        data.prescExampleId = example.prescExample.prescExampleId;
         data.setMaster(example.master);
         PrescExampleDTO ex = example.prescExample;
+        data.prescExampleId = ex.prescExampleId;
         data.amount = Double.parseDouble(ex.amount);
         data.usage = ex.usage;
         data.category = DrugCategory.fromCode(ex.category);
@@ -63,6 +61,32 @@ public class DrugData {
         data.days = ex.days;
         data.comment = example.prescExample.comment;
         return data;
+    }
+
+    public static DrugData fromDDrug(DrugFullDTO drugFull){
+        DrugData data = new DrugData();
+        data.setMaster(drugFull.master);
+        DrugDTO drug = drugFull.drug;
+        data.drugId = drug.drugId;
+        data.amount = drug.amount;
+        data.usage = drug.usage;
+        data.category = DrugCategory.fromCode(drug.category);
+        if( data.category == null ){
+            throw new RuntimeException("Invalid category: " + drug.category);
+        }
+        data.days = drug.days;
+        data.prescribed = drug.prescribed;
+        return data;
+    }
+
+    public void setMaster(IyakuhinMasterDTO master){
+        this.iyakuhincode = master.iyakuhincode;
+        this.name = master.name;
+        this.unit = master.unit;
+        this.zaikei = Zaikei.fromCode(master.zaikei);
+        if( zaikei == null ){
+            throw new RuntimeException("Invalid zaikei: " + master.zaikei);
+        }
     }
 
     public String rep(){
@@ -115,16 +139,6 @@ public class DrugData {
 
     public String getComment() {
         return comment;
-    }
-
-    public void setMaster(IyakuhinMasterDTO master){
-        this.iyakuhincode = master.iyakuhincode;
-        this.name = master.name;
-        this.unit = master.unit;
-        this.zaikei = Zaikei.fromCode(master.zaikei);
-        if( zaikei == null ){
-            throw new RuntimeException("Invalid zaikei: " + master.zaikei);
-        }
     }
 
 }

@@ -18,14 +18,16 @@ import jp.chang.myclinic.utilfx.RadioButtonGroup;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class Input extends VBox {
 
     //private static Logger logger = LoggerFactory.getLogger(Input.class);
 
     public enum SetOption {
-        None, IgnoreNull
+        FixedDays, MasterOnly
     }
 
     private int iyakuhincode = 0;
@@ -56,68 +58,25 @@ public class Input extends VBox {
     }
 
     public void setData(DrugData data){
-        setData(data, SetOption.None);
+        setData(data, Collections.emptySet());
     }
 
-    public void setData(DrugData data, SetOption option){
+    public void setData(DrugData data, Set<SetOption> options){
         this.iyakuhincode = data.getIyakuhincode();
         drugNameLabel.setText(data.getName());
         setUnit(data.getUnit());
-        {
-            Double amount = data.getAmount();
-            if( option == SetOption.IgnoreNull ){
-                if( amount != null ){
-                    setAmount(amount);
-                }
-            } else {
-                setAmount(amount);
+        if( data.getZaikei() == Zaikei.Gaiyou ){
+            category.setValue(DrugCategory.Gaiyou);
+        } else {
+            if( category.getValue() == DrugCategory.Gaiyou ){
+                category.setValue(DrugCategory.Naifuku);
             }
         }
-        {
-            DrugCategory cat = data.getCategory();
-            if( option == SetOption.IgnoreNull ){
-                if( cat != null ){
-                    category.setValue(cat);
-                } else {
-                    if (data.getZaikei() == Zaikei.Gaiyou) {
-                        category.setValue(DrugCategory.Gaiyou);
-                    } else {
-                        if( category.getValue() == DrugCategory.Gaiyou ){
-                            category.setValue(DrugCategory.Naifuku);
-                        }
-                    }
-                }
-            } else {
-                if (data.getCategory() == null) {
-                    if (data.getZaikei() == Zaikei.Gaiyou) {
-                        category.setValue(DrugCategory.Gaiyou);
-                    } else {
-                        category.setValue(DrugCategory.Naifuku);
-                    }
-                } else {
-                    category.setValue(data.getCategory());
-                }
-            }
-        }
-        {
-            String usage = data.getUsage();
-            if( option == SetOption.IgnoreNull ) {
-                if( usage != null ){
-                    setUsage(usage);
-                }
-            } else {
-                setUsage(data.getUsage());
-            }
-        }
-        {
-            Integer days = data.getDays();
-            if( option == SetOption.IgnoreNull ) {
-                if (days != null) {
-                    setDays(days);
-                }
-            } else {
-                setDays(data.getDays());
-            }
+        if( data.isPrescExample() || data.isDrug() ){
+            setAmount(data.getAmount(), options);
+            setUsage(data.getUsage(), options);
+            setCategory(data.getCategory(), options);
+            setDays(data.getDays(), options);
         }
     }
 
@@ -149,14 +108,24 @@ public class Input extends VBox {
         return category.getValue();
     }
 
+    private void setCategory(DrugCategory category, Set<SetOption> options) {
+        if (!options.contains(SetOption.MasterOnly)) {
+            this.category.setValue(category);
+        }
+    }
+
     public String getDays(){
         return daysInput.getText();
     }
 
-    private void setAmount(Double value) {
-        if( value == null ){
-            clearAmount();
-        } else {
+    private void setDays(int days, Set<SetOption> options){
+        if (!options.contains(SetOption.MasterOnly) && !options.contains(SetOption.FixedDays)) {
+            daysInput.setText("" + days);
+        }
+    }
+
+    private void setAmount(Double value, Set<SetOption> options) {
+        if( !options.contains(SetOption.MasterOnly) ){
             amountInput.setText(amountFormatter.format(value));
         }
     }
@@ -169,12 +138,10 @@ public class Input extends VBox {
         amountUnitLabel.setText(unit);
     }
 
-    private void setUsage(String usage){
-        usageInput.setText(usage == null ? "" : usage);
-    }
-
-    private void setDays(Integer days){
-        daysInput.setText(days == null ? "" : days + "");
+    private void setUsage(String usage, Set<SetOption> options){
+        if( !options.contains(SetOption.MasterOnly) ) {
+            usageInput.setText(usage);
+        }
     }
 
     public Node addRow(Label label, Node content) {
@@ -272,7 +239,7 @@ public class Input extends VBox {
         );
         examples.forEach(ex -> {
             MenuItem item = new MenuItem(ex);
-            item.setOnAction(ev -> setUsage(item.getText()));
+            item.setOnAction(ev -> usageInput.setText(item.getText()));
             contextMenu.getItems().add(item);
         });
         contextMenu.show(anchor, event.getScreenX(), event.getScreenY());

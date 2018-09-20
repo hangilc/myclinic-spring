@@ -63,7 +63,7 @@ abstract class PrescExampleBaseDialog extends Stage {
                 if( prescExampleId != 0 ){
                     this.prescExampleId = prescExampleId;
                 }
-                input.setData(newValue, Input.SetOption.IgnoreNull);
+                input.setData(newValue);
                 String comment = newValue.getComment();
                 if( comment != null && !comment.isEmpty()) {
                     commentInput.setText(comment);
