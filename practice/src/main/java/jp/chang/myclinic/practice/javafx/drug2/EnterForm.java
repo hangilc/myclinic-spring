@@ -40,6 +40,7 @@ public class EnterForm extends VBox {
         getStyleClass().add("drug-form");
         getStyleClass().add("form");
         daysFixedCheck.setSelected(true);
+        input.addToDaysRow(daysFixedCheck);
         searchInput.getChildren().add(createSearchModeBox());
         getChildren().addAll(createTitle(), input, createCommands(), searchInput, searchResult);
         searchInput.setOnSearchHandler(this::doSearch);

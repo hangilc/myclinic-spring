@@ -36,7 +36,7 @@ public class Input extends VBox {
     private TextField amountInput = new TextField();
     private Label amountUnitLabel = new Label("");
     private TextField usageInput = new TextField();
-    private Node daysRow;
+    private HBox daysRow;
     private Label daysLabel = new Label("");
     private TextField daysInput = new TextField();
     private Label daysUnit = new Label("");
@@ -57,22 +57,22 @@ public class Input extends VBox {
         category.setValue(DrugCategory.Naifuku);
     }
 
-    public void setData(DrugData data){
+    public void setData(DrugData data) {
         setData(data, Collections.emptySet());
     }
 
-    public void setData(DrugData data, Set<SetOption> options){
+    public void setData(DrugData data, Set<SetOption> options) {
         this.iyakuhincode = data.getIyakuhincode();
         drugNameLabel.setText(data.getName());
         setUnit(data.getUnit());
-        if( data.getZaikei() == Zaikei.Gaiyou ){
+        if (data.getZaikei() == Zaikei.Gaiyou) {
             category.setValue(DrugCategory.Gaiyou);
         } else {
-            if( category.getValue() == DrugCategory.Gaiyou ){
+            if (category.getValue() == DrugCategory.Gaiyou) {
                 category.setValue(DrugCategory.Naifuku);
             }
         }
-        if( data.isPrescExample() || data.isDrug() ){
+        if (data.isPrescExample() || data.isDrug()) {
             setAmount(data.getAmount(), options);
             setUsage(data.getUsage(), options);
             setCategory(data.getCategory(), options);
@@ -80,7 +80,11 @@ public class Input extends VBox {
         }
     }
 
-    public void clear(){
+    public void addToDaysRow(Node node) {
+        daysRow.getChildren().add(node);
+    }
+
+    public void clear() {
         this.iyakuhincode = 0;
         drugNameLabel.setText("");
         amountInput.setText("");
@@ -96,15 +100,15 @@ public class Input extends VBox {
         return iyakuhincode;
     }
 
-    public String getAmount(){
+    public String getAmount() {
         return amountInput.getText();
     }
 
-    public String getUsage(){
+    public String getUsage() {
         return usageInput.getText();
     }
 
-    public DrugCategory getCategory(){
+    public DrugCategory getCategory() {
         return category.getValue();
     }
 
@@ -114,18 +118,24 @@ public class Input extends VBox {
         }
     }
 
-    public String getDays(){
+    public String getDays() {
         return daysInput.getText();
     }
 
-    private void setDays(int days, Set<SetOption> options){
-        if (!options.contains(SetOption.MasterOnly) && !options.contains(SetOption.FixedDays)) {
+    private void setDays(int days, Set<SetOption> options) {
+        if (options.contains(SetOption.MasterOnly)) {
+            // nop
+        } else if (options.contains(SetOption.FixedDays)) {
+            if( daysInput.getText().isEmpty() ){
+                daysInput.setText("" + days);
+            }
+        } else {
             daysInput.setText("" + days);
         }
     }
 
     private void setAmount(Double value, Set<SetOption> options) {
-        if( !options.contains(SetOption.MasterOnly) ){
+        if (!options.contains(SetOption.MasterOnly)) {
             amountInput.setText(amountFormatter.format(value));
         }
     }
@@ -134,17 +144,17 @@ public class Input extends VBox {
         amountInput.setText("");
     }
 
-    private void setUnit(String unit){
+    private void setUnit(String unit) {
         amountUnitLabel.setText(unit);
     }
 
-    private void setUsage(String usage, Set<SetOption> options){
-        if( !options.contains(SetOption.MasterOnly) ) {
+    private void setUsage(String usage, Set<SetOption> options) {
+        if (!options.contains(SetOption.MasterOnly)) {
             usageInput.setText(usage);
         }
     }
 
-    public Node addRow(Label label, Node content) {
+    public HBox addRow(Label label, Node content) {
         HBox hbox = new HBox(4);
         label.setMinWidth(Control.USE_PREF_SIZE);
         hbox.setAlignment(Pos.CENTER_LEFT);
@@ -193,12 +203,12 @@ public class Input extends VBox {
         return hbox;
     }
 
-    private void setNodeVisible(Node row, boolean visible){
+    private void setNodeVisible(Node row, boolean visible) {
         row.setVisible(visible);
         row.setManaged(visible);
     }
 
-    private void setDaysVisible(boolean visible){
+    private void setDaysVisible(boolean visible) {
         setNodeVisible(daysRow, visible);
     }
 
@@ -245,7 +255,7 @@ public class Input extends VBox {
         contextMenu.show(anchor, event.getScreenX(), event.getScreenY());
     }
 
-    public DrugDTO createDrug(int drugId, int visitId, int prescribed){
+    public DrugDTO createDrug(int drugId, int visitId, int prescribed) {
         DrugDTO dto = new DrugDTO();
         dto.drugId = drugId;
         dto.visitId = visitId;
