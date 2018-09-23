@@ -77,6 +77,10 @@ class DrugFormBase extends VBox {
         commandBox.getChildren().add(node);
     }
 
+    LocalDate getLocalDate(){
+        return at;
+    }
+
     private Node createTitle(String text) {
         Label title = new Label(text);
         title.setMaxWidth(Double.MAX_VALUE);

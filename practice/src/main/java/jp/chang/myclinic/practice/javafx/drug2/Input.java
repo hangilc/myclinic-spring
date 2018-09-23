@@ -31,6 +31,9 @@ public class Input extends VBox {
     }
 
     private int iyakuhincode = 0;
+    private String masterValidFrom;
+    private int prescExampleId = 0;
+    private int drugId = 0;
     private Text drugNameLabel = new Text("");
     private Label amountLabel = new Label("");
     private TextField amountInput = new TextField();
@@ -85,6 +88,9 @@ public class Input extends VBox {
 
     public void setData(DrugData data, Set<SetOption> options) {
         this.iyakuhincode = data.getIyakuhincode();
+        this.masterValidFrom = data.getMasterValidFrom();
+        this.prescExampleId = data.getPrescExampleId();
+        this.drugId = data.getDrugId();
         drugNameLabel.setText(data.getName());
         setUnit(data.getUnit());
         if (data.getZaikei() == Zaikei.Gaiyou) {
@@ -112,6 +118,9 @@ public class Input extends VBox {
 
     public void clear(Set<SetOption> options) {
         this.iyakuhincode = 0;
+        this.masterValidFrom = null;
+        this.drugId = 0;
+        this.prescExampleId = 0;
         drugNameLabel.setText("");
         amountInput.setText("");
         amountUnitLabel.setText("");
@@ -129,6 +138,10 @@ public class Input extends VBox {
 
     public int getIyakuhincode() {
         return iyakuhincode;
+    }
+
+    public int getPrescExampleId() {
+        return prescExampleId;
     }
 
     public String getAmount() {
@@ -300,7 +313,7 @@ public class Input extends VBox {
         contextMenu.show(anchor, event.getScreenX(), event.getScreenY());
     }
 
-    public DrugDTO createDrug(int drugId, int visitId, int prescribed) {
+    public DrugDTO createDrug(int visitId, int prescribed) {
         DrugDTO dto = new DrugDTO();
         dto.drugId = drugId;
         dto.visitId = visitId;
@@ -340,10 +353,14 @@ public class Input extends VBox {
         return dto;
     }
 
-    public PrescExampleDTO createPrescExample(int prescExampleId, String comment) {
+    public PrescExampleDTO createPrescExample(String comment) {
         PrescExampleDTO ex = new PrescExampleDTO();
         ex.prescExampleId = prescExampleId;
         ex.iyakuhincode = getIyakuhincode();
+        ex.masterValidFrom = masterValidFrom;
+        if( ex.masterValidFrom == null ){
+            throw new RuntimeException("masterValidFrom is null.");
+        }
         if (ex.iyakuhincode == 0) {
             GuiUtil.alertError("医薬品が設定されていません。");
             return null;

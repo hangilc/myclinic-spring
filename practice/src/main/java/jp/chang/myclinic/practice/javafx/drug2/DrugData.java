@@ -11,6 +11,7 @@ public class DrugData {
 
     // common part
     private int iyakuhincode;
+    private String masterValidFrom;
     private String name;
     private String unit;
     private Zaikei zaikei;
@@ -81,6 +82,7 @@ public class DrugData {
 
     public void setMaster(IyakuhinMasterDTO master){
         this.iyakuhincode = master.iyakuhincode;
+        this.masterValidFrom = master.validFrom;
         this.name = master.name;
         this.unit = master.unit;
         this.zaikei = Zaikei.fromCode(master.zaikei);
@@ -107,6 +109,10 @@ public class DrugData {
 
     public int getIyakuhincode() {
         return iyakuhincode;
+    }
+
+    public String getMasterValidFrom() {
+        return masterValidFrom;
     }
 
     public String getName() {

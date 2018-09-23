@@ -34,7 +34,10 @@ public class EnterForm extends DrugFormBase {
 
     @Override
     void doEnter() {
-        DrugDTO drug = getInput().createDrug(0, getVisitId(), 0);
+        DrugDTO drug = getInput().createDrug(getVisitId(), 0);
+        if( drug.drugId != 0 ){
+            throw new RuntimeException("drugId is not null.");
+        }
         Service.api.enterDrug(drug)
                 .thenCompose(Service.api::getDrugFull)
                 .thenAccept(enteredDrug -> Platform.runLater(() -> {

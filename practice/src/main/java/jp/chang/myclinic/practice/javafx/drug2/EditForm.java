@@ -3,10 +3,9 @@ package jp.chang.myclinic.practice.javafx.drug2;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
@@ -14,15 +13,13 @@ import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class EditForm extends DrugFormBase {
 
-    private static Logger logger = LoggerFactory.getLogger(EditForm.class);
+    //private static Logger logger = LoggerFactory.getLogger(EditForm.class);
     private int drugId;
     private CheckBox allFixedCheck = new CheckBox("用量・用法・日数をそのままに");
     private Label tekiyouLabel = new Label();
@@ -38,13 +35,39 @@ public class EditForm extends DrugFormBase {
         this.tekiyouRow = getInput().addRowBeforeCategory(new Label("摘要："), tekiyouLabel);
         updateTekiyouVisibility();
         Hyperlink deleteLink = new Hyperlink("削除");
+        Hyperlink auxLink = new Hyperlink("他");
         deleteLink.setOnAction(evt -> doDelete());
+        auxLink.setOnMousePressed(evt -> {
+            createAuxContextMenu().show(auxLink, evt.getScreenX(), evt.getScreenY());
+        });
         adaptTekiyouCommand();
         tekiyouCommandBox.setAlignment(Pos.CENTER_LEFT);
         tekiyouCommandBox.setPadding(Insets.EMPTY);
         addToCommandBox(tekiyouCommandBox);
         addToCommandBox(deleteLink);
+        addToCommandBox(auxLink);
         getInput().addRow(allFixedCheck);
+    }
+
+    private ContextMenu createAuxContextMenu(){
+        ContextMenu menu = new ContextMenu();
+        {
+            MenuItem item = new MenuItem("処方例に追加");
+            item.setOnAction(evt -> doAddToPrescExample());
+            menu.getItems().add(item);
+        }
+        return menu;
+    }
+
+    private void doAddToPrescExample(){
+        Service.api.getDrugFull(drugId)
+                .thenAcceptAsync(drugFull -> {
+                    ConvertToPrescExampleDialog dialog = new ConvertToPrescExampleDialog(drugFull);
+                    dialog.initOwner(getScene().getWindow());
+                    dialog.initModality(Modality.WINDOW_MODAL);
+                    dialog.show();
+                }, Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private void adaptTekiyouCommand(){
@@ -76,7 +99,10 @@ public class EditForm extends DrugFormBase {
 
     @Override
     void doEnter() {
-        DrugDTO drug = getInput().createDrug(drugId, getVisitId(), 0);
+        DrugDTO drug = getInput().createDrug(getVisitId(), 0);
+        if( drug.drugId == 0 ){
+            throw new RuntimeException("drugId is null.");
+        }
         Service.api.updateDrug(drug)
                 .thenCompose(ok -> Service.api.getDrugFull(drugId))
                 .thenAcceptAsync(this::onUpdated, Platform::runLater)

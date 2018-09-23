@@ -27,7 +27,6 @@ abstract class PrescExampleBaseDialog extends Stage {
     private SearchModeChooser searchModeChooser;
     private TextField commentInput = new TextField();
     private LocalDate at = LocalDate.now();
-    private int prescExampleId = 0;
 
     PrescExampleBaseDialog(SearchModeChooser searchModeChooser) {
         this.searchModeChooser = searchModeChooser;
@@ -35,6 +34,10 @@ abstract class PrescExampleBaseDialog extends Stage {
         mainPane.getStyleClass().add("presc-example-dialog");
         mainPane.getStylesheets().add("css/Practice.css");
         setScene(new Scene(mainPane));
+    }
+
+    int getPrescExampleId(){
+        return input.getPrescExampleId();
     }
 
     private Parent createMainPane() {
@@ -59,10 +62,6 @@ abstract class PrescExampleBaseDialog extends Stage {
         });
         searchResult.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue != null) {
-                int prescExampleId = newValue.getPrescExampleId();
-                if( prescExampleId != 0 ){
-                    this.prescExampleId = prescExampleId;
-                }
                 input.setData(newValue);
                 String comment = newValue.getComment();
                 if( comment != null && !comment.isEmpty()) {
@@ -93,10 +92,6 @@ abstract class PrescExampleBaseDialog extends Stage {
         return input;
     }
 
-    int getPrescExampleId() {
-        return prescExampleId;
-    }
-
     void setSearchMode(DrugSearchMode mode){
         searchModeChooser.setValue(mode);
     }
@@ -106,7 +101,7 @@ abstract class PrescExampleBaseDialog extends Stage {
     }
 
     PrescExampleDTO createPrescExample() {
-        return input.createPrescExample(prescExampleId, commentInput.getText().trim());
+        return input.createPrescExample(commentInput.getText().trim());
     }
 
     void doClear(){
@@ -114,7 +109,6 @@ abstract class PrescExampleBaseDialog extends Stage {
         commentInput.setText("");
         searchInput.clear();
         searchResult.getItems().clear();
-        this.prescExampleId = 0;
     }
 
     LocalDate getLocalDate(){
