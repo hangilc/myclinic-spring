@@ -1,6 +1,8 @@
 package jp.chang.myclinic.practice.javafx.drug2;
 
 import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -25,6 +27,7 @@ public class EditForm extends DrugFormBase {
     private CheckBox allFixedCheck = new CheckBox("用量・用法・日数をそのままに");
     private Label tekiyouLabel = new Label();
     private HBox tekiyouRow;
+    private HBox tekiyouCommandBox = new HBox(4);
 
     public EditForm(DrugFullDTO drug, String drugTekiyou, VisitDTO visit) {
         super(visit, "処方の編集");
@@ -36,20 +39,28 @@ public class EditForm extends DrugFormBase {
         updateTekiyouVisibility();
         Hyperlink deleteLink = new Hyperlink("削除");
         deleteLink.setOnAction(evt -> doDelete());
+        adaptTekiyouCommand();
+        tekiyouCommandBox.setAlignment(Pos.CENTER_LEFT);
+        tekiyouCommandBox.setPadding(Insets.EMPTY);
+        addToCommandBox(tekiyouCommandBox);
+        addToCommandBox(deleteLink);
+        getInput().addRow(allFixedCheck);
+    }
+
+    private void adaptTekiyouCommand(){
+        String drugTekiyou = getTekiyou();
         if (drugTekiyou == null || drugTekiyou.isEmpty()) {
             Hyperlink tekiyouLink = new Hyperlink("摘要入力");
             tekiyouLink.setOnAction(evt -> doEnterTekiyou());
-            addToCommandBox(tekiyouLink);
+            tekiyouCommandBox.getChildren().setAll(tekiyouLink);
         } else {
             Hyperlink editTekiyouLink = new Hyperlink("摘要編集");
             Hyperlink deleteTekiyouLink = new Hyperlink("摘要削除");
             editTekiyouLink.setOnAction(evt -> doEnterTekiyou());
             deleteTekiyouLink.setOnAction(evt -> doDeleteTekiyou());
-            addToCommandBox(editTekiyouLink);
-            addToCommandBox(deleteTekiyouLink);
+            tekiyouCommandBox.getChildren().setAll(editTekiyouLink, deleteTekiyouLink);
         }
-        addToCommandBox(deleteLink);
-        getInput().addRow(allFixedCheck);
+
     }
 
     private boolean hasTekiyou() {
@@ -110,6 +121,7 @@ public class EditForm extends DrugFormBase {
                         Platform.runLater(() -> {
                             setTekiyou(str);
                             updateTekiyouVisibility();
+                            adaptTekiyouCommand();
                             onTekiyouModified(str);
                         });
                     })
@@ -124,6 +136,7 @@ public class EditForm extends DrugFormBase {
                         Platform.runLater(() -> {
                             setTekiyou(null);
                             updateTekiyouVisibility();
+                            adaptTekiyouCommand();
                             onTekiyouModified(null);
                         });
                     })
