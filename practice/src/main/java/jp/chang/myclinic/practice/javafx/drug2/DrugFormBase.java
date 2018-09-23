@@ -30,6 +30,7 @@ class DrugFormBase extends VBox {
     );
     private SearchResult searchResult = new SearchResult();
     private LocalDate at;
+    private HBox commandBox = new HBox(4);
 
     DrugFormBase(VisitDTO visit, String title) {
         super(4);
@@ -72,6 +73,10 @@ class DrugFormBase extends VBox {
         return searchResult;
     }
 
+    void addToCommandBox(Node node){
+        commandBox.getChildren().add(node);
+    }
+
     private Node createTitle(String text) {
         Label title = new Label(text);
         title.setMaxWidth(Double.MAX_VALUE);
@@ -84,17 +89,16 @@ class DrugFormBase extends VBox {
     }
 
     private Node createCommands(){
-        HBox hbox = new HBox(4);
-        hbox.setAlignment(Pos.CENTER_LEFT);
-        hbox.getStyleClass().add("commands");
+        commandBox.setAlignment(Pos.CENTER_LEFT);
+        commandBox.getStyleClass().add("commands");
         Button enterButton = new Button("入力");
         Button closeButton = new Button("閉じる");
         Hyperlink clearLink = new Hyperlink("クリア");
         enterButton.setOnAction(event -> doEnter());
         closeButton.setOnAction(event -> onClose());
         clearLink.setOnAction(event -> doClearInput());
-        hbox.getChildren().addAll(enterButton, closeButton, clearLink);
-        return hbox;
+        commandBox.getChildren().addAll(enterButton, closeButton, clearLink);
+        return commandBox;
     }
 
     private Node createSearchModeBox(){
