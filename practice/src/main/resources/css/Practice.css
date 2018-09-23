@@ -5,6 +5,7 @@
 
 .hyperlink:visited {
     -fx-text-fill: -fx-accent;
+    -fx-underline: false;
 }
 
 .hyperlink:hover {

@@ -10,7 +10,6 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PrescExampleDTO;
 import jp.chang.myclinic.practice.javafx.drug2.DrugData;
 import jp.chang.myclinic.practice.javafx.drug2.DrugSearchMode;
-import jp.chang.myclinic.practice.javafx.drug2.Input;
 import jp.chang.myclinic.practice.javafx.drug2.SearchModeChooser;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -55,7 +54,7 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
         Service.api.resolveIyakuhinMaster(iyakuhincode, LocalDate.now().toString())
                 .thenAcceptAsync(master -> {
                     DrugData data = DrugData.fromMaster(master);
-                    getInput().setData(data, Input.SetOption.IgnoreNull);
+                    getInput().setData(data);
                 }, Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);
     }
@@ -63,11 +62,8 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
     private void doEnter() {
         PrescExampleDTO ex = createPrescExample();
         if (ex != null) {
-            Service.api.resolveIyakuhinMaster(ex.iyakuhincode, getLocalDate().toString())
-                    .thenCompose(master -> {
-                        ex.masterValidFrom = master.validFrom;
-                        return Service.api.enterPrescExample(ex);
-                    })
+            ex.prescExampleId = 0;
+            Service.api.enterPrescExample(ex)
                     .thenAccept(prescExampleId -> Platform.runLater(this::doClear))
                     .exceptionally(HandlerFX::exceptionally);
         }
