@@ -63,7 +63,7 @@ public class DrugData {
         return data;
     }
 
-    public static DrugData fromDDrug(DrugFullDTO drugFull){
+    public static DrugData fromDrug(DrugFullDTO drugFull){
         DrugData data = new DrugData();
         data.setMaster(drugFull.master);
         DrugDTO drug = drugFull.drug;
