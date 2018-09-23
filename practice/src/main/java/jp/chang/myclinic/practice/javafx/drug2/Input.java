@@ -42,6 +42,7 @@ public class Input extends VBox {
     private Label daysUnit = new Label("");
     private ObjectProperty<DrugCategory> category;
     private DecimalFormat amountFormatter = new DecimalFormat("###.##");
+    private Node categoryRow;
 
     public Input() {
         super(4);
@@ -52,7 +53,7 @@ public class Input extends VBox {
         addRow(amountLabel, createAmountContent());
         addRow(new Label("用法："), createUsageContent());
         daysRow = addRow(daysLabel, createDaysContent());
-        addRow(createCategoryContent());
+        this.categoryRow = addRow(createCategoryContent());
         category.setValue(null);
         category.setValue(DrugCategory.Naifuku);
     }
@@ -101,6 +102,9 @@ public class Input extends VBox {
         category.setValue(DrugCategory.Naifuku);
     }
 
+    public void setTekiyou(String tekiyou){
+
+    }
 
     public int getIyakuhincode() {
         return iyakuhincode;
@@ -161,16 +165,30 @@ public class Input extends VBox {
     }
 
     public HBox addRow(Label label, Node content) {
+        return addRowBefore(label, content, null);
+    }
+
+    public HBox addRowBeforeCategory(Label label, Node content){
+        return addRowBefore(label, content, categoryRow);
+    }
+
+    public Node addRow(Node content) {
+        getChildren().add(content);
+        return content;
+    }
+
+    private HBox addRowBefore(Label label, Node content, Node beforeNode){
         HBox hbox = new HBox(4);
         label.setMinWidth(Control.USE_PREF_SIZE);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getChildren().addAll(label, content);
-        getChildren().add(hbox);
+        if( beforeNode == null ){
+            getChildren().add(hbox);
+        } else {
+            int index = getChildren().indexOf(categoryRow);
+            getChildren().add(index, hbox);
+        }
         return hbox;
-    }
-
-    public void addRow(Node content) {
-        getChildren().add(content);
     }
 
     private Node createAmountContent() {
