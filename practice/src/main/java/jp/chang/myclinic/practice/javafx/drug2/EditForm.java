@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.javafx.drug2;
 
 import javafx.application.Platform;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DrugDTO;
@@ -12,10 +13,14 @@ import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class EditForm extends DrugFormBase {
 
     private static Logger logger = LoggerFactory.getLogger(EditForm.class);
     private int drugId;
+    private CheckBox allFixedCheck = new CheckBox("用量・用法・日数をそのままに");
 
     public EditForm(DrugFullDTO drug, String drugTekiyou, VisitDTO visit) {
         super(visit, "処方の編集");
@@ -25,6 +30,7 @@ public class EditForm extends DrugFormBase {
         Hyperlink deleteLink = new Hyperlink("削除");
         deleteLink.setOnAction(evt -> doDelete());
         addToCommandBox(deleteLink);
+        getInput().addRow(allFixedCheck);
     }
 
     @Override
@@ -53,6 +59,15 @@ public class EditForm extends DrugFormBase {
                     })
                     .exceptionally(HandlerFX::exceptionally);
         }
+    }
+
+    @Override
+    Set<Input.SetOption> getSetOptions() {
+        Set<Input.SetOption> opts = new HashSet<>();
+        if( allFixedCheck.isSelected() ){
+            opts.add(Input.SetOption.MasterOnly);
+        }
+        return opts;
     }
 
     protected void onUpdated(DrugFullDTO updated) {

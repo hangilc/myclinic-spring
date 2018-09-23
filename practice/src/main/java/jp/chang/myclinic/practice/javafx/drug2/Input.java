@@ -169,7 +169,7 @@ public class Input extends VBox {
         return hbox;
     }
 
-    private void addRow(Node content) {
+    public void addRow(Node content) {
         getChildren().add(content);
     }
 
