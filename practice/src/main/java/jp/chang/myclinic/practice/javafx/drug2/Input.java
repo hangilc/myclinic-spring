@@ -56,6 +56,27 @@ public class Input extends VBox {
         this.categoryRow = addRow(createCategoryContent());
         category.setValue(null);
         category.setValue(DrugCategory.Naifuku);
+        addLabelContextMenu();
+    }
+
+    private void addLabelContextMenu(){
+        drugNameLabel.setOnContextMenuRequested(event -> {
+            ContextMenu menu = createDrugNameContextMenu();
+            menu.show(drugNameLabel, event.getScreenX(), event.getScreenY());
+        });
+    }
+
+    private ContextMenu createDrugNameContextMenu(){
+        ContextMenu menu = new ContextMenu();
+        {
+            MenuItem item = new MenuItem("コピー");
+            item.setOnAction(evt -> {
+                String text = drugNameLabel.getText();
+                GuiUtil.copyToClipboard(text);
+            });
+            menu.getItems().add(item);
+        }
+        return menu;
     }
 
     public void setData(DrugData data) {
