@@ -84,13 +84,19 @@ public class Input extends VBox {
         daysRow.getChildren().add(node);
     }
 
-    public void clear() {
+    public void clear(){
+        clear(Collections.emptySet());
+    }
+
+    public void clear(Set<SetOption> options) {
         this.iyakuhincode = 0;
         drugNameLabel.setText("");
         amountInput.setText("");
         amountUnitLabel.setText("");
         usageInput.setText("");
-        daysInput.setText("");
+        if( !options.contains(SetOption.FixedDays) ) {
+            daysInput.setText("");
+        }
         daysUnit.setText("");
         category.setValue(DrugCategory.Naifuku);
     }

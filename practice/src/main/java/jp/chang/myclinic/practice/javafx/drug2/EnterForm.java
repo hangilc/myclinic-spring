@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EnterForm extends VBox {
 
@@ -53,7 +55,7 @@ public class EnterForm extends VBox {
                                 return;
                             }
                             newValue.setMaster(master);
-                            input.setData(newValue);
+                            input.setData(newValue, getSetOptions());
                         }, Platform::runLater)
                         .exceptionally(HandlerFX::exceptionally);
             }
@@ -99,13 +101,14 @@ public class EnterForm extends VBox {
                 .thenAccept(enteredDrug -> Platform.runLater(() -> {
                     EnterForm.this.fireEvent(new DrugEnteredEvent(enteredDrug, null));
                     EnterForm.this.doClearInput();
+                    searchInput.clear();
                     searchResult.clear();
                 }))
                 .exceptionally(HandlerFX::exceptionally);
     }
 
     private void doClearInput(){
-        input.clear();
+        input.clear(getSetOptions());
     }
 
     private void doSearch(){
@@ -116,6 +119,14 @@ public class EnterForm extends VBox {
         DrugSearcher.search(text, searchModeChooser.getValue(), at)
                 .thenAcceptAsync(searchResult::setItems, Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);
+    }
+
+    private Set<Input.SetOption> getSetOptions(){
+        Set<Input.SetOption> opts = new HashSet<Input.SetOption>();
+        if( daysFixedCheck.isSelected() ){
+            opts.add(Input.SetOption.FixedDays);
+        }
+        return opts;
     }
 
 }
