@@ -43,7 +43,7 @@ public class EditForm extends DrugFormBase {
         } else {
             Hyperlink editTekiyouLink = new Hyperlink("摘要編集");
             Hyperlink deleteTekiyouLink = new Hyperlink("摘要削除");
-            editTekiyouLink.setOnAction(evt -> doEditTekiyou());
+            editTekiyouLink.setOnAction(evt -> doEnterTekiyou());
             deleteTekiyouLink.setOnAction(evt -> doDeleteTekiyou());
             addToCommandBox(editTekiyouLink);
             addToCommandBox(deleteTekiyouLink);
@@ -117,12 +117,18 @@ public class EditForm extends DrugFormBase {
         });
     }
 
-    private void doEditTekiyou() {
-
-    }
-
     private void doDeleteTekiyou() {
-
+        if (GuiUtil.confirm("現在の摘要を削除しますか？")) {
+            Service.api.deleteDrugTekiyou(drugId)
+                    .thenAccept(ok -> {
+                        Platform.runLater(() -> {
+                            setTekiyou(null);
+                            updateTekiyouVisibility();
+                            onTekiyouModified(null);
+                        });
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
 
     @Override
