@@ -140,7 +140,7 @@ public class HokenUtil {
         final int len = digits.length;
         int m = 2;
         int s = 0;
-        for (int i = 0; i < (len - 1); i++) {
+        for (int i = len - 2; i >= 0; i--) {
             int d = digits[i];
             int dm = d * m;
             if (dm >= 10) {

@@ -35,19 +35,30 @@ public class CheckHokenshaBangou {
                             verify(bangou, patientId, "後期高齢");
                         } catch(NumberFormatException ex){
                             PatientDTO patient = Service.api.getPatientCall(visit.visit.patientId).execute().body();
-                            System.out.printf("(%d) %s%s 後期高齢 %s 数字でありません。", patient.patientId,
+                            System.out.printf("(%d) %s%s 後期高齢 %s 数字でありません。\n", patient.patientId,
                                     patient.lastName, patient.firstName, koukikourei.hokenshaBangou);
                         }
                     }
                     for(KouhiDTO kouhi: getKouhiList(visit.hoken)){
                         if( kouhi != null ){
-                            verify(kouhi.futansha, patientId, "公費");
+                            verify(kouhi.futansha, patientId, "公費負担者番号");
+                            verifyKouhiJukyuusha(kouhi.jukyuusha, patientId);
                         }
                     }
                 }
             }
             firstDayOfMonth = firstDayOfMonth.minus(1, ChronoUnit.MONTHS);
         }
+    }
+
+    private static void verifyKouhiJukyuusha(int jukyuusha, int patientId) throws IOException {
+        if( !(jukyuusha >= 1000000 && jukyuusha <= 9999999) ){
+            PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
+            System.out.printf("(%d) %s%s 公費受給者番号 %d ７桁でありません。\n", patient.patientId,
+                    patient.lastName, patient.firstName, jukyuusha);
+            return;
+        }
+        verify(jukyuusha, patientId, "公費受給者番号");
     }
 
     private static List<KouhiDTO> getKouhiList(HokenDTO hoken){
