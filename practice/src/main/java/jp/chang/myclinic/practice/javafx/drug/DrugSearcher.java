@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.drug2;
+package jp.chang.myclinic.practice.javafx.drug;
 
 import jp.chang.myclinic.client.Service;
 import org.slf4j.Logger;

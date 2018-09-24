@@ -5,8 +5,8 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.lib.PracticeService;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

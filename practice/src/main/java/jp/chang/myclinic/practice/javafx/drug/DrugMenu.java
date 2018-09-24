@@ -13,15 +13,14 @@ import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.utilfx.GuiUtil;
-import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.util.DrugUtil;
-import jp.chang.myclinic.practice.javafx.drug2.EnterForm;
+import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.util.ArrayList;
 import java.util.List;

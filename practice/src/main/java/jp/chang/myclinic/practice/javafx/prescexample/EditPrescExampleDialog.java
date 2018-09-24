@@ -8,9 +8,9 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PrescExampleDTO;
-import jp.chang.myclinic.practice.javafx.drug2.DrugData;
-import jp.chang.myclinic.practice.javafx.drug2.DrugSearchMode;
-import jp.chang.myclinic.practice.javafx.drug2.SearchModeChooser;
+import jp.chang.myclinic.practice.javafx.drug.DrugData;
+import jp.chang.myclinic.practice.javafx.drug.DrugSearchMode;
+import jp.chang.myclinic.practice.javafx.drug.SearchModeChooser;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 

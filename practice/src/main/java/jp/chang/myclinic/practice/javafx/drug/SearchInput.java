@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.drug2;
+package jp.chang.myclinic.practice.javafx.drug;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;

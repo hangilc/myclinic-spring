@@ -1,8 +1,6 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -14,135 +12,217 @@ import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.DrugDTO;
-import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.dto.PrescExampleDTO;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.Set;
 
-class Input extends VBox {
+public class Input extends VBox {
 
-    private static Logger logger = LoggerFactory.getLogger(Input.class);
+    //private static Logger logger = LoggerFactory.getLogger(Input.class);
+
+    public enum SetOption {
+        FixedDays, MasterOnly
+    }
 
     private int iyakuhincode = 0;
+    private String masterValidFrom;
+    private int prescExampleId = 0;
+    private int drugId = 0;
     private Text drugNameLabel = new Text("");
     private Label amountLabel = new Label("");
     private TextField amountInput = new TextField();
     private Label amountUnitLabel = new Label("");
     private TextField usageInput = new TextField();
-    private HBox daysContent;
-    private Node daysRow;
+    private HBox daysRow;
     private Label daysLabel = new Label("");
     private TextField daysInput = new TextField();
     private Label daysUnit = new Label("");
-    private Text commentText = new Text(null);
-    private StringProperty tekiyou = new SimpleStringProperty();
     private ObjectProperty<DrugCategory> category;
     private DecimalFormat amountFormatter = new DecimalFormat("###.##");
+    private Node categoryRow;
 
-    Input() {
+    public Input() {
         super(4);
         getStyleClass().add("drug-input");
         amountInput.getStyleClass().add("amount-input");
         daysInput.getStyleClass().add("days-input");
-        Text tekiyouText = new Text(null);
-        tekiyouText.textProperty().bind(tekiyou);
         addRow(new Label("名称："), new TextFlow(drugNameLabel));
         addRow(amountLabel, createAmountContent());
         addRow(new Label("用法："), createUsageContent());
         daysRow = addRow(daysLabel, createDaysContent());
-        Node commentRow = addRow(new Label("注釈："), new TextFlow(commentText));
-        Node tekiyouRow = addRow(new Label("摘要："), new TextFlow(tekiyouText));
-        addRow(createCategoryContent());
+        this.categoryRow = addRow(createCategoryContent());
         category.setValue(null);
         category.setValue(DrugCategory.Naifuku);
-        setNodeVisible(commentRow, false);
-        commentText.textProperty().addListener((obs, oldValue, newValue) -> {
-            setNodeVisible(commentRow, newValue != null);
-        });
-        setNodeVisible(tekiyouRow, false);
-        tekiyouText.textProperty().addListener((obs, oldValue, newValue) -> {
-            setNodeVisible(tekiyouRow, newValue != null);
+        addLabelContextMenu();
+    }
+
+    private void addLabelContextMenu(){
+        drugNameLabel.setOnContextMenuRequested(event -> {
+            ContextMenu menu = createDrugNameContextMenu();
+            menu.show(drugNameLabel, event.getScreenX(), event.getScreenY());
         });
     }
 
-    void setMaster(IyakuhinMasterDTO master) {
-        this.iyakuhincode = master.iyakuhincode;
-        drugNameLabel.setText(master.name);
-        amountUnitLabel.setText(master.unit);
-        if (Zaikei.fromCode(master.zaikei) == Zaikei.Gaiyou) {
+    private ContextMenu createDrugNameContextMenu(){
+        ContextMenu menu = new ContextMenu();
+        {
+            MenuItem item = new MenuItem("コピー");
+            item.setOnAction(evt -> {
+                String text = drugNameLabel.getText();
+                GuiUtil.copyToClipboard(text);
+            });
+            menu.getItems().add(item);
+        }
+        return menu;
+    }
+
+    public void setData(DrugData data) {
+        setData(data, Collections.emptySet());
+    }
+
+    public void setData(DrugData data, Set<SetOption> options) {
+        this.iyakuhincode = data.getIyakuhincode();
+        this.masterValidFrom = data.getMasterValidFrom();
+        this.prescExampleId = data.getPrescExampleId();
+        this.drugId = data.getDrugId();
+        drugNameLabel.setText(data.getName());
+        setUnit(data.getUnit());
+        if (data.getZaikei() == Zaikei.Gaiyou) {
             category.setValue(DrugCategory.Gaiyou);
         } else {
             if (category.getValue() == DrugCategory.Gaiyou) {
                 category.setValue(DrugCategory.Naifuku);
             }
         }
-    }
-
-    void clearMaster() {
-        this.iyakuhincode = 0;
-        drugNameLabel.setText("");
-        amountUnitLabel.setText("");
-    }
-
-    void setDrug(DrugFullDTO drug) {
-        setMaster(drug.master);
-        setAmount(drug.drug.amount);
-        setUsage(drug.drug.usage);
-        setDays(drug.drug.days);
-        setCategory(drug.drug.category);
-        commentText.setText(null);
-    }
-
-    Node addRow(Label label, Node content) {
-        HBox hbox = new HBox(4);
-        hbox.setAlignment(Pos.CENTER_LEFT);
-        hbox.getChildren().addAll(label, content);
-        getChildren().add(hbox);
-        return hbox;
-    }
-
-    void addRow(Node content) {
-        getChildren().add(content);
-    }
-
-    void setUsage(String usage) {
-        usageInput.setText(usage);
-    }
-
-    void setDays(int days) {
-        daysInput.setText("" + days);
-    }
-
-    void clearDays() {
-        daysInput.setText("");
-    }
-
-    boolean isDaysEmpty() {
-        return daysInput.getText() == null || daysInput.getText().isEmpty();
-    }
-
-    void setCategory(int code) {
-        DrugCategory cat = DrugCategory.fromCode(code);
-        if (cat == null) {
-            logger.error("Invalid category: {}", code);
-        } else {
-            category.setValue(cat);
+        if (data.isPrescExample() || data.isDrug()) {
+            setAmount(data.getAmount(), options);
+            setUsage(data.getUsage(), options);
+            setCategory(data.getCategory(), options);
+            setDays(data.getDays(), options);
         }
     }
 
-    void setAmount(double value) {
-        amountInput.setText(amountFormatter.format(value));
+    public void addToDaysRow(Node node) {
+        daysRow.getChildren().add(node);
     }
 
-    void clearAmount() {
+    public void clear(){
+        clear(Collections.emptySet());
+    }
+
+    public void clear(Set<SetOption> options) {
+        this.iyakuhincode = 0;
+        this.masterValidFrom = null;
+        this.drugId = 0;
+        this.prescExampleId = 0;
+        drugNameLabel.setText("");
         amountInput.setText("");
+        amountUnitLabel.setText("");
+        usageInput.setText("");
+        if( !options.contains(SetOption.FixedDays) ) {
+            daysInput.setText("");
+        }
+        daysUnit.setText("");
+        category.setValue(DrugCategory.Naifuku);
+    }
+
+    public void setTekiyou(String tekiyou){
+
+    }
+
+    public int getIyakuhincode() {
+        return iyakuhincode;
+    }
+
+    public int getPrescExampleId() {
+        return prescExampleId;
+    }
+
+    public String getAmount() {
+        return amountInput.getText();
+    }
+
+    public String getUsage() {
+        return usageInput.getText();
+    }
+
+    public DrugCategory getCategory() {
+        return category.getValue();
+    }
+
+    private void setCategory(DrugCategory category, Set<SetOption> options) {
+        if (!options.contains(SetOption.MasterOnly)) {
+            this.category.setValue(category);
+        }
+    }
+
+    public String getDays() {
+        return daysInput.getText();
+    }
+
+    private void setDays(int days, Set<SetOption> options) {
+        if (options.contains(SetOption.MasterOnly)) {
+            // nop
+        } else if (options.contains(SetOption.FixedDays)) {
+            if( daysInput.getText().isEmpty() ){
+                daysInput.setText("" + days);
+            }
+        } else {
+            daysInput.setText("" + days);
+        }
+    }
+
+    private void setAmount(Double value, Set<SetOption> options) {
+        if (!options.contains(SetOption.MasterOnly)) {
+            amountInput.setText(amountFormatter.format(value));
+        }
+    }
+
+    private void clearAmount() {
+        amountInput.setText("");
+    }
+
+    private void setUnit(String unit) {
+        amountUnitLabel.setText(unit);
+    }
+
+    private void setUsage(String usage, Set<SetOption> options) {
+        if (!options.contains(SetOption.MasterOnly)) {
+            usageInput.setText(usage);
+        }
+    }
+
+    public HBox addRow(Label label, Node content) {
+        return addRowBefore(label, content, null);
+    }
+
+    public HBox addRowBeforeCategory(Label label, Node content){
+        return addRowBefore(label, content, categoryRow);
+    }
+
+    public Node addRow(Node content) {
+        getChildren().add(content);
+        return content;
+    }
+
+    private HBox addRowBefore(Label label, Node content, Node beforeNode){
+        HBox hbox = new HBox(4);
+        label.setMinWidth(Control.USE_PREF_SIZE);
+        hbox.setAlignment(Pos.CENTER_LEFT);
+        hbox.getChildren().addAll(label, content);
+        if( beforeNode == null ){
+            getChildren().add(hbox);
+        } else {
+            int index = getChildren().indexOf(categoryRow);
+            getChildren().add(index, hbox);
+        }
+        return hbox;
     }
 
     private Node createAmountContent() {
@@ -165,7 +245,6 @@ class Input extends VBox {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getChildren().addAll(daysInput, daysUnit);
-        daysContent = hbox;
         return hbox;
     }
 
@@ -228,66 +307,94 @@ class Input extends VBox {
         );
         examples.forEach(ex -> {
             MenuItem item = new MenuItem(ex);
-            item.setOnAction(ev -> setUsage(item.getText()));
+            item.setOnAction(ev -> usageInput.setText(item.getText()));
             contextMenu.getItems().add(item);
         });
         contextMenu.show(anchor, event.getScreenX(), event.getScreenY());
     }
 
-    private DrugCategory getCategory() {
-        return category.getValue();
-    }
-
-    public void convertToDrug(int drugId, int visitId, int prescribed,
-                              BiConsumer<DrugDTO, List<String>> cb) {
-        List<String> err = new ArrayList<>();
-        DrugDTO drug = new DrugDTO();
-        drug.drugId = drugId;
-        drug.iyakuhincode = iyakuhincode;
-        if (drug.iyakuhincode == 0) {
-            err.add("医薬品が指定されていません。");
+    public DrugDTO createDrug(int visitId, int prescribed) {
+        DrugDTO dto = new DrugDTO();
+        dto.drugId = drugId;
+        dto.visitId = visitId;
+        dto.iyakuhincode = getIyakuhincode();
+        if (dto.iyakuhincode == 0) {
+            GuiUtil.alertError("医薬品が設定されていません。");
+            return null;
         }
         try {
-            drug.amount = Double.parseDouble(amountInput.getText());
-        } catch (NumberFormatException ex) {
-            err.add("用量の入力が適切でありません。");
-        }
-        drug.usage = usageInput.getText();
-        if (drug.usage == null || drug.usage.isEmpty()) {
-            err.add("用法が入力されていません。");
-        }
-        DrugCategory category = getCategory();
-        if (category != null) {
-            drug.category = category.getCode();
-        } else {
-            err.add("Drug category is not specified.");
-        }
-        try {
-            if (category == DrugCategory.Gaiyou) {
-                drug.days = 1;
-            } else {
-                drug.days = Integer.parseInt(daysInput.getText());
+            dto.amount = Double.parseDouble(getAmount());
+            if (!(dto.amount > 0)) {
+                GuiUtil.alertError("用量の値が正でありません。");
+                return null;
             }
-        } catch (NumberFormatException ex) {
-            err.add("日数・回数の入力が不適切です。");
+        } catch (NumberFormatException e) {
+            GuiUtil.alertError("用量の入力が不適切です。");
+            return null;
         }
-        drug.visitId = visitId;
-        if (drug.visitId == 0) {
-            err.add("Invalid visitId.");
+        dto.usage = getUsage();
+        DrugCategory category = getCategory();
+        dto.category = category.getCode();
+        if (category == DrugCategory.Gaiyou) {
+            dto.days = 1;
+        } else {
+            try {
+                dto.days = Integer.parseInt(getDays());
+                if (!(dto.days > 0)) {
+                    GuiUtil.alertError("日数の値が正の整数でありません。");
+                    return null;
+                }
+            } catch (NumberFormatException e) {
+                GuiUtil.alertError("日数の入力が不敵津です。");
+                return null;
+            }
         }
-        drug.prescribed = prescribed;
-        if (!(drug.prescribed == 0 || drug.prescribed == 1)) {
-            err.add("Invalid prescribed value.");
-        }
-        cb.accept(drug, err);
+        dto.prescribed = prescribed;
+        return dto;
     }
 
-    StringProperty tekiyouProperty() {
-        return tekiyou;
-    }
-
-    void addToDaysContent(Node node) {
-        daysContent.getChildren().add(node);
+    public PrescExampleDTO createPrescExample(String comment) {
+        PrescExampleDTO ex = new PrescExampleDTO();
+        ex.prescExampleId = prescExampleId;
+        ex.iyakuhincode = getIyakuhincode();
+        ex.masterValidFrom = masterValidFrom;
+        if( ex.masterValidFrom == null ){
+            throw new RuntimeException("masterValidFrom is null.");
+        }
+        if (ex.iyakuhincode == 0) {
+            GuiUtil.alertError("医薬品が設定されていません。");
+            return null;
+        }
+        ex.amount = getAmount();
+        try {
+            double value = Double.parseDouble(ex.amount);
+            if (!(value > 0)) {
+                GuiUtil.alertError("用量の値が正でありません。");
+                return null;
+            }
+        } catch (NumberFormatException e) {
+            GuiUtil.alertError("用量の入力が不適切です。");
+            return null;
+        }
+        ex.usage = getUsage();
+        DrugCategory category = getCategory();
+        ex.category = category.getCode();
+        if (category == DrugCategory.Gaiyou) {
+            ex.days = 1;
+        } else {
+            try {
+                ex.days = Integer.parseInt(getDays());
+                if (!(ex.days > 0)) {
+                    GuiUtil.alertError("日数の値が正の整数でありません。");
+                    return null;
+                }
+            } catch (NumberFormatException e) {
+                GuiUtil.alertError("日数の入力が不敵津です。");
+                return null;
+            }
+        }
+        ex.comment = comment;
+        return ex;
     }
 
 }

@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.drug2;
+package jp.chang.myclinic.practice.javafx.drug;
 
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
