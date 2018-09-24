@@ -11,7 +11,7 @@ import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.javafx.drug2.EditForm;
+import jp.chang.myclinic.practice.javafx.drug.EditForm;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.utilfx.GuiUtil;
 

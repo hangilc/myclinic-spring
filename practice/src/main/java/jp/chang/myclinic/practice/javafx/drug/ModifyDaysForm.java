@@ -7,9 +7,9 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.util.DrugUtil;
+import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.util.ArrayList;
 import java.util.List;

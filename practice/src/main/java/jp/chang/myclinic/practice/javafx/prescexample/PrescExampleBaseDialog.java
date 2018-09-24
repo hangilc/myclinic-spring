@@ -12,7 +12,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PrescExampleDTO;
-import jp.chang.myclinic.practice.javafx.drug2.*;
+import jp.chang.myclinic.practice.javafx.drug.*;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.time.LocalDate;
