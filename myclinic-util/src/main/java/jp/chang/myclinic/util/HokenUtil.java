@@ -161,9 +161,11 @@ public class HokenUtil {
         return v == digits[len - 1];
     }
 
-    public static String formatHokenshaBangou(int bangou) {
+    public static String formatShahokokuhoHokenshaBangou(int bangou) {
         if (bangou < 9999) {
             return String.format("%d", bangou);
+
+
         } else if (bangou < 999999) {
             return String.format("%06d", bangou);
         } else {
@@ -171,7 +173,7 @@ public class HokenUtil {
         }
     }
 
-    public static HokenshaBangouAnalysisResult analyzeHokenshaBangou(int bangou) {
+    public static VerifyShahokokuhoBangou verifyShahokokuhoHokenshaBangou(int bangou) {
         String fmt = formatHokenshaBangou(bangou);
         if (fmt.length() < 4) {
             return HokenshaBangouAnalysisResult.TOO_FEW_DIGITS;

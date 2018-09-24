@@ -1,6 +1,8 @@
 package jp.chang.myclinic.reception.converter;
 
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.util.HokenUtil;
+import jp.chang.myclinic.util.HokenshaBangouAnalysisResult;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,7 +17,12 @@ public class ShahokokuhoConverter {
         try {
             int value = Integer.parseInt(src);
             if( value > 0 ){
-                cb.accept(value);
+                HokenshaBangouAnalysisResult result = HokenUtil.analyzeHokenshaBangou(value);
+                if( result == HokenshaBangouAnalysisResult.OK ){
+                    cb.accept(value);
+                } else {
+                    errors.add("保険者番号：" + result.getMessage());
+                }
             } else {
                 errors.add("保険者番号が正の値でありません。");
             }

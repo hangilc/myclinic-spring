@@ -1,5 +1,8 @@
 package jp.chang.myclinic.reception.converter;
 
+import jp.chang.myclinic.util.HokenUtil;
+import jp.chang.myclinic.util.HokenshaBangouAnalysisResult;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +76,25 @@ class ConverterBase {
                 if( validFrom.compareTo(validUpto) > 0 ){
                     errors.add(String.format("%sが%sよりも前に日付になっています。", validFromName, validUptoName));
                 }
+            }
+        }
+    }
+
+    protected void convertToVerifiedBangou(String src, String kind, Consumer<Integer> cb){
+        if( src == null ){
+            addError(kind + "が入力されていません。");
+        } else {
+            src = src.trim();
+            try {
+                int bangou = Integer.parseInt(src);
+                HokenshaBangouAnalysisResult result = HokenUtil.analyzeHokenshaBangou(bangou);
+                if( result == HokenshaBangouAnalysisResult.OK ){
+                    cb.accept(bangou);
+                } else {
+                    addError(kind + "：" + result.getMessage());
+                }
+            } catch(NumberFormatException ex){
+                addError(kind + "が数字でありません。");
             }
         }
     }
