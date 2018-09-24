@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 public class ReleaseLabel {
@@ -24,11 +25,13 @@ public class ReleaseLabel {
             String cmd = args[0];
             switch(cmd){
                 case "create": {
-                    if( args.length != 3 ){
+                    if( args.length < 3 ){
                         usage(System.err);
                         System.exit(1);
                     }
-                    new ReleaseLabel().create(args[1], args[2]);
+                    String[] labelItems = Arrays.copyOfRange(args, 2, args.length);
+                    String label = String.join(" ", labelItems);
+                    new ReleaseLabel().create(args[1], label);
                     break;
                 }
                 default: {
@@ -79,6 +82,10 @@ public class ReleaseLabel {
             try {
                 int index;
                 if( input.equals("*") ){
+                    if( currentIndex == null ){
+                        System.out.println("現在のリリースがありません。");
+                        continue;
+                    }
                     index = currentIndex;
                 } else {
                     index = Integer.parseInt(input) - 1;
@@ -93,7 +100,6 @@ public class ReleaseLabel {
                 System.out.print("label> ");
                 String label = System.console().readLine().trim();
                 ReleaseLib.createLabel(selectedPath, label);
-                //Files.write(selectedPath.resolve("label.txt"), label.getBytes(StandardCharsets.UTF_8));
             } catch(NumberFormatException ex){
                 System.out.println("リリースの番号が不適切です。");
             }
