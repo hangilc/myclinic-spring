@@ -1,16 +1,14 @@
 package jp.chang.myclinic.management;
 
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.dto.KoukikoureiDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.ShahokokuhoDTO;
-import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.HokenUtil;
 import jp.chang.myclinic.util.HokenshaBangouAnalysisResult;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CheckHokenshaBangou {
@@ -41,10 +39,23 @@ public class CheckHokenshaBangou {
                                     patient.lastName, patient.firstName, koukikourei.hokenshaBangou);
                         }
                     }
+                    for(KouhiDTO kouhi: getKouhiList(visit.hoken)){
+                        if( kouhi != null ){
+                            verify(kouhi.futansha, patientId, "公費");
+                        }
+                    }
                 }
             }
             firstDayOfMonth = firstDayOfMonth.minus(1, ChronoUnit.MONTHS);
         }
+    }
+
+    private static List<KouhiDTO> getKouhiList(HokenDTO hoken){
+        List<KouhiDTO> result = new ArrayList<>();
+        result.add(hoken.kouhi1);
+        result.add(hoken.kouhi2);
+        result.add(hoken.kouhi3);
+        return result;
     }
 
     private static void verify(int bangou, int patientId, String kind) throws IOException {
