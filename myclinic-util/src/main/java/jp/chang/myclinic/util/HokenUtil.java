@@ -136,17 +136,20 @@ public class HokenUtil {
         }
     }
 
-    public static boolean checkHokenshaBangouDigits(int[] digits) {
-        final int len = digits.length;
-        int m = 2;
+    public static int calcCheckingDigit(int numberWithoutCheckingDigit){
+        if( numberWithoutCheckingDigit < 0 ){
+            throw new RuntimeException("Negative number for calcCheckingDigit.");
+        }
         int s = 0;
-        for (int i = len - 2; i >= 0; i--) {
-            int d = digits[i];
+        int m = 2;
+        while( numberWithoutCheckingDigit > 0 ){
+            int d = numberWithoutCheckingDigit % 10;
             int dm = d * m;
             if (dm >= 10) {
                 dm = (dm / 10) + (dm % 10);
             }
             s += dm;
+            numberWithoutCheckingDigit /= 10;
             if (m == 2) {
                 m = 1;
             } else {
@@ -158,8 +161,38 @@ public class HokenUtil {
         if( v == 10 ){
             v = 0;
         }
-        return v == digits[len - 1];
+        return v;
     }
+
+    public static boolean verifyHokenshaBangou(int bangou){
+        int v = calcCheckingDigit(bangou/10);
+        return v == (bangou % 10);
+    }
+
+//    public static boolean checkHokenshaBangouDigits(int[] digits) {
+//        final int len = digits.length;
+//        int m = 2;
+//        int s = 0;
+//        for (int i = len - 2; i >= 0; i--) {
+//            int d = digits[i];
+//            int dm = d * m;
+//            if (dm >= 10) {
+//                dm = (dm / 10) + (dm % 10);
+//            }
+//            s += dm;
+//            if (m == 2) {
+//                m = 1;
+//            } else {
+//                m = 2;
+//            }
+//        }
+//        s = s % 10;
+//        int v = 10 - s;
+//        if( v == 10 ){
+//            v = 0;
+//        }
+//        return v == digits[len - 1];
+//    }
 
     public static String formatShahokokuhoHokenshaBangou(int bangou) {
         if (bangou < 9999) {
