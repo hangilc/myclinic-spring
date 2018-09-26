@@ -28,7 +28,7 @@ public class EditForm extends VBox {
     private int patientId;
     private DrugEditInput input = new DrugEditInput();
     private SearchModeChooser modeChooser = new SearchModeChooser(
-        DrugSearchMode.Master, DrugSearchMode.Example, DrugSearchMode.Previous
+            DrugSearchMode.Master, DrugSearchMode.Example, DrugSearchMode.Previous
     );
     private SearchResult searchResult = new SearchResult();
     private HBox tekiyouBox = new HBox(4);
@@ -41,6 +41,9 @@ public class EditForm extends VBox {
         getStyleClass().add("form");
         input.setDrug(drug);
         input.setTekiyou(drugTekiyou);
+        tekiyouBox.setAlignment(Pos.CENTER_LEFT);
+        adaptTekiyouBox(drugTekiyou);
+        input.tekiyouProperty().addListener((obs, oldValue, newValue) -> adaptTekiyouBox(newValue));
         SearchTextInput searchTextInput = new SearchTextInput();
         searchTextInput.setHandler(this::onSearch);
         HBox modeChooserBox = new HBox(4);
@@ -75,7 +78,7 @@ public class EditForm extends VBox {
         );
     }
 
-    private Node createCommands(){
+    private Node createCommands() {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getStyleClass().add("commands");
@@ -88,15 +91,61 @@ public class EditForm extends VBox {
         hbox.getChildren().addAll(
                 enterButton,
                 closeButton,
-                deleteLink
+                deleteLink,
+                tekiyouBox
         );
         return hbox;
     }
 
-    private void resolveMaster(int iyakuhincode, Consumer<IyakuhinMasterDTO> handler){
+    private void adaptTekiyouBox(String tekiyouText) {
+        boolean exists = tekiyouText != null && !tekiyouText.isEmpty();
+        if (!exists) {
+            Hyperlink tekiyouLink = new Hyperlink("摘要入力");
+            tekiyouLink.setOnAction(evt -> doEnterTekiyou(tekiyouText));
+            tekiyouBox.getChildren().setAll(tekiyouLink);
+        } else {
+            Hyperlink editTekiyouLink = new Hyperlink("摘要編集");
+            Hyperlink deleteTekiyouLink = new Hyperlink("摘要削除");
+            editTekiyouLink.setOnAction(evt -> doEnterTekiyou(tekiyouText));
+            deleteTekiyouLink.setOnAction(evt -> doDeleteTekiyou());
+            tekiyouBox.getChildren().setAll(editTekiyouLink, deleteTekiyouLink);
+        }
+    }
+
+    private void doEnterTekiyou(String tekiyouText) {
+        String curr = tekiyouText;
+        if (curr == null) {
+            curr = "";
+        }
+        GuiUtil.askForString("摘要の内容", curr).ifPresent(str -> {
+            Service.api.setDrugTekiyou(input.getDrugId(), str)
+                    .thenAccept(ok -> {
+                        Platform.runLater(() -> {
+                            input.tekiyouProperty().setValue(str);
+                            onTekiyouModified(str);
+                        });
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        });
+    }
+
+    private void doDeleteTekiyou() {
+        if (GuiUtil.confirm("現在の摘要を削除しますか？")) {
+            Service.api.deleteDrugTekiyou(input.getDrugId())
+                    .thenAccept(ok -> {
+                        Platform.runLater(() -> {
+                            input.tekiyouProperty().setValue(null);
+                            onTekiyouModified(null);
+                        });
+                    })
+                    .exceptionally(HandlerFX::exceptionally);
+        }
+    }
+
+    private void resolveMaster(int iyakuhincode, Consumer<IyakuhinMasterDTO> handler) {
         Service.api.resolveIyakuhinMaster(iyakuhincode, at.toString())
                 .thenAcceptAsync(master -> {
-                    if( master == null ){
+                    if (master == null) {
                         GuiUtil.alertError("使用できない薬剤です。");
                     } else {
                         handler.accept(master);
@@ -105,31 +154,32 @@ public class EditForm extends VBox {
                 .exceptionally(HandlerFX::exceptionally);
     }
 
-    private void setMaster(IyakuhinMasterDTO origMaster){
+    private void setMaster(IyakuhinMasterDTO origMaster) {
         resolveMaster(origMaster.iyakuhincode, input::setMaster);
     }
 
-    private void setExample(PrescExampleFullDTO example){
+    private void setExample(PrescExampleFullDTO example) {
         resolveMaster(example.master.iyakuhincode, master -> {
             example.master = master;
             input.setExample(example);
         });
     }
 
-    private void setDrug(DrugFullDTO drug){
+    private void setDrug(DrugFullDTO drug) {
         resolveMaster(drug.master.iyakuhincode, master -> {
             drug.master = master;
             input.setDrug(drug);
-        });;
+        });
+        ;
     }
 
-    private void onSearch(String searchText){
-        if( searchText == null || searchText.isEmpty() ){
+    private void onSearch(String searchText) {
+        if (searchText == null || searchText.isEmpty()) {
             return;
         }
         DrugSearchMode mode = modeChooser.getValue();
-        if( mode != null ){
-            switch(mode){
+        if (mode != null) {
+            switch (mode) {
                 case Master: {
                     Searcher.searchMaster(searchText, at, this::setMaster)
                             .thenAcceptAsync(searchResult::setItems, Platform::runLater)
@@ -158,7 +208,7 @@ public class EditForm extends VBox {
 
     private void doEnter() {
         DrugDTO drug = input.createDrug();
-        if( drug.drugId == 0 ){
+        if (drug.drugId == 0) {
             throw new RuntimeException("drugId is null.");
         }
         drug.prescribed = 0;
