@@ -3,9 +3,7 @@ package jp.chang.myclinic.practice.javafx.drug.lib;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.dto.PrescExampleDTO;
-import jp.chang.myclinic.dto.PrescExampleFullDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +40,15 @@ public class PrescExampleInput extends InputBase {
         setCategory(DrugCategory.fromCode(example.category));
         setDays(example.days);
         setComment(exampleFull.prescExample.comment);
+    }
+
+    public void setDrug(DrugFullDTO drugFull){
+        setMaster(drugFull.master);
+        DrugDTO drug = drugFull.drug;
+        setAmount(drug.amount);
+        setUsage(drug.usage);
+        setCategory(DrugCategory.fromCode(drug.category));
+        setDays(drug.days);
     }
 
     public int getPrescExampleId() {

@@ -5,22 +5,20 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PrescExampleDTO;
+import jp.chang.myclinic.practice.javafx.drug.lib.PrescExampleInput;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 class ConvertToPrescExampleDialog extends Stage {
 
     //private static Logger logger = LoggerFactory.getLogger(ConvertToPrescExampleDialog.class);
-    private Input input = new Input();
-    private TextField commentInput = new TextField();
+    private PrescExampleInput input = new PrescExampleInput();
 
     ConvertToPrescExampleDialog(DrugFullDTO drugFull) {
         setTitle("処方例に追加");
@@ -32,9 +30,7 @@ class ConvertToPrescExampleDialog extends Stage {
 
     private Parent createMainPane(DrugFullDTO drug){
         VBox vbox = new VBox(4);
-        DrugData data = DrugData.fromDrug(drug);
-        input.setData(data);
-        input.addRow(new Label("注釈："), commentInput);
+        input.setDrug(drug);
         vbox.getChildren().addAll(input, new Separator(), createCommands());
         return vbox;
     }
@@ -50,10 +46,11 @@ class ConvertToPrescExampleDialog extends Stage {
     }
 
     private void doEnter(){
-        PrescExampleDTO example = input.createPrescExample(commentInput.getText());
+        PrescExampleDTO example = input.createPrescExample();
         if( example == null ){
             return;
         }
+        example.prescExampleId = 0;
         Service.api.enterPrescExample(example)
                 .thenAcceptAsync(result -> {
                     close();
