@@ -17,7 +17,8 @@ class SearchTextInput extends HBox {
         super(4);
         setAlignment(Pos.CENTER_LEFT);
         Button searchButton = new Button("検索");
-        searchButton.setOnAction(evt -> onSearchHandler.accept(textInput.getText()));
+        textInput.setOnAction(evt -> doEnter());
+        searchButton.setOnAction(evt -> doEnter());
         getChildren().addAll(
                 textInput,
                 searchButton
@@ -26,5 +27,9 @@ class SearchTextInput extends HBox {
 
     void setHandler(Consumer<String> handler){
         this.onSearchHandler = handler;
+    }
+
+    private void doEnter(){
+        onSearchHandler.accept(textInput.getText());
     }
 }

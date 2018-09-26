@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -70,12 +71,24 @@ class InputBase extends VBox {
         amountUnitLabel.setText("");
     }
 
+    int getIyakuhincode() {
+        return iyakuhincode;
+    }
+
+    String getAmount(){
+        return amountInput.getText();
+    }
+
     void setAmount(double value) {
         amountInput.setText(amountFormatter.format(value));
     }
 
     void clearAmount(){
         amountInput.setText("");
+    }
+
+    String getUsage(){
+        return usageInput.getText();
     }
 
     void setUsage(String usage){
@@ -92,6 +105,10 @@ class InputBase extends VBox {
 
     void setCategory(DrugCategory category){
         this.category.setValue(category);
+    }
+
+    String getDays(){
+        return daysInput.getText();
     }
 
     void setDays(int days){
