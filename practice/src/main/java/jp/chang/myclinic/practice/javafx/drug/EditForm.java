@@ -3,60 +3,41 @@ package jp.chang.myclinic.practice.javafx.drug;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugEditInput;
-import jp.chang.myclinic.practice.javafx.drug.lib.SearchResult;
-import jp.chang.myclinic.practice.javafx.drug.lib.Searcher;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugForm;
 import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-import java.util.function.Consumer;
+public class EditForm extends DrugForm {
 
-public class EditForm extends VBox {
-
-    private static Logger logger = LoggerFactory.getLogger(EditForm.class);
-    private LocalDate at;
-    private int patientId;
+    //private static Logger logger = LoggerFactory.getLogger(EditForm.class);
     private DrugEditInput input = new DrugEditInput();
-    private SearchModeChooser modeChooser = new SearchModeChooser(
-            DrugSearchMode.Master, DrugSearchMode.Example, DrugSearchMode.Previous
-    );
-    private SearchResult searchResult = new SearchResult();
     private HBox tekiyouBox = new HBox(4);
 
     public EditForm(DrugFullDTO drug, String drugTekiyou, VisitDTO visit) {
-        super(4);
-        this.at = LocalDate.parse(visit.visitedAt.substring(0, 10));
-        this.patientId = visit.patientId;
-        getStyleClass().add("drug-form");
-        getStyleClass().add("form");
+        super(visit);
         input.setDrug(drug);
         input.setTekiyou(drugTekiyou);
         tekiyouBox.setAlignment(Pos.CENTER_LEFT);
         adaptTekiyouBox(drugTekiyou);
         input.tekiyouProperty().addListener((obs, oldValue, newValue) -> adaptTekiyouBox(newValue));
-        SearchTextInput searchTextInput = new SearchTextInput();
-        searchTextInput.setHandler(this::onSearch);
-        HBox modeChooserBox = new HBox(4);
-        modeChooserBox.getChildren().addAll(modeChooser.getButtons());
-        modeChooser.setValue(DrugSearchMode.Example);
         getChildren().addAll(
                 createTitle("処方の編集"),
                 input,
                 createCommands(),
-                searchTextInput,
-                modeChooserBox,
-                searchResult
+                getSearchTextInput(),
+                getSearchModeChooserBox(),
+                getSearchResult()
         );
     }
 
@@ -153,70 +134,6 @@ public class EditForm extends VBox {
                 .exceptionally(HandlerFX::exceptionally);
     }
 
-    private void resolveMaster(int iyakuhincode, Consumer<IyakuhinMasterDTO> handler) {
-        Service.api.resolveIyakuhinMaster(iyakuhincode, at.toString())
-                .thenAcceptAsync(master -> {
-                    if (master == null) {
-                        GuiUtil.alertError("使用できない薬剤です。");
-                    } else {
-                        handler.accept(master);
-                    }
-                }, Platform::runLater)
-                .exceptionally(HandlerFX::exceptionally);
-    }
-
-    private void setMaster(IyakuhinMasterDTO origMaster) {
-        resolveMaster(origMaster.iyakuhincode, input::setMaster);
-    }
-
-    private void setExample(PrescExampleFullDTO example) {
-        resolveMaster(example.master.iyakuhincode, master -> {
-            example.master = master;
-            input.setExample(example);
-        });
-    }
-
-    private void setDrug(DrugFullDTO drug) {
-        resolveMaster(drug.master.iyakuhincode, master -> {
-            drug.master = master;
-            input.setDrug(drug);
-        });
-        ;
-    }
-
-    private void onSearch(String searchText) {
-        if (searchText == null || searchText.isEmpty()) {
-            return;
-        }
-        DrugSearchMode mode = modeChooser.getValue();
-        if (mode != null) {
-            switch (mode) {
-                case Master: {
-                    Searcher.searchMaster(searchText, at, this::setMaster)
-                            .thenAcceptAsync(searchResult::setItems, Platform::runLater)
-                            .exceptionally(HandlerFX::exceptionally);
-                    break;
-                }
-                case Example: {
-                    Searcher.searchExample(searchText, this::setExample)
-                            .thenAcceptAsync(searchResult::setItems, Platform::runLater)
-                            .exceptionally(HandlerFX::exceptionally);
-                    break;
-                }
-                case Previous: {
-                    Searcher.searchDrug(searchText, patientId, this::setDrug)
-                            .thenAcceptAsync(searchResult::setItems, Platform::runLater)
-                            .exceptionally(HandlerFX::exceptionally);
-                    break;
-                }
-                default: {
-                    logger.error("Invalid search mode: " + mode);
-                    break;
-                }
-            }
-        }
-    }
-
     private void doEnter() {
         DrugDTO drug = input.createDrug();
         if( drug == null ){
@@ -251,6 +168,21 @@ public class EditForm extends VBox {
         }
     }
 
+    @Override
+    protected void onMasterSelected(IyakuhinMasterDTO master) {
+        input.setMaster(master);
+    }
+
+    @Override
+    protected void onPrescExampleSelected(PrescExampleFullDTO example) {
+        input.setExample(example);
+    }
+
+    @Override
+    protected void onDrugSelected(DrugFullDTO drug) {
+        input.setDrug(drug);
+    }
+
     protected void onUpdated(DrugFullDTO updated) {
     }
 
@@ -258,13 +190,6 @@ public class EditForm extends VBox {
     }
 
     protected void onTekiyouModified(String newTekiyou) {
-    }
-
-    private Node createTitle(String text) {
-        Label title = new Label(text);
-        title.setMaxWidth(Double.MAX_VALUE);
-        title.getStyleClass().add("title");
-        return title;
     }
 
 }

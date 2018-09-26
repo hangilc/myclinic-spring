@@ -13,6 +13,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PrescExampleDTO;
 import jp.chang.myclinic.practice.javafx.drug.*;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchMode;
+import jp.chang.myclinic.practice.javafx.drug.lib.SearchModeChooser;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.time.LocalDate;

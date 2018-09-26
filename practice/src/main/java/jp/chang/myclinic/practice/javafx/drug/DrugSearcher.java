@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

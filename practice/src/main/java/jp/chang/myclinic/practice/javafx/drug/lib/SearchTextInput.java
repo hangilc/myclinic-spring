@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.drug;
+package jp.chang.myclinic.practice.javafx.drug.lib;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -7,13 +7,13 @@ import javafx.scene.layout.HBox;
 
 import java.util.function.Consumer;
 
-class SearchTextInput extends HBox {
+public class SearchTextInput extends HBox {
 
     //private static Logger logger = LoggerFactory.getLogger(SearchTextInput.class);
     private TextField textInput = new TextField();
     private Consumer<String> onSearchHandler = s -> {};
 
-    SearchTextInput() {
+    public SearchTextInput() {
         super(4);
         setAlignment(Pos.CENTER_LEFT);
         Button searchButton = new Button("検索");
@@ -25,7 +25,7 @@ class SearchTextInput extends HBox {
         );
     }
 
-    void setHandler(Consumer<String> handler){
+    public void setHandler(Consumer<String> handler){
         this.onSearchHandler = handler;
     }
 

@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.drug;
+package jp.chang.myclinic.practice.javafx.drug.lib;
 
 public enum DrugSearchMode {
 

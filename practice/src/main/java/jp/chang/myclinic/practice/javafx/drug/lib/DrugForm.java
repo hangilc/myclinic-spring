@@ -1,0 +1,138 @@
+package jp.chang.myclinic.practice.javafx.drug.lib;
+
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.dto.PrescExampleFullDTO;
+import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.LocalDate;
+import java.util.function.Consumer;
+
+public class DrugForm extends VBox {
+
+    private static Logger logger = LoggerFactory.getLogger(DrugForm.class);
+    private SearchModeChooser modeChooser = new SearchModeChooser(
+            DrugSearchMode.Master, DrugSearchMode.Example, DrugSearchMode.Previous
+    );
+    private HBox modeChooserBox = new HBox(4);
+    private LocalDate at;
+    private int patientId;
+    private SearchTextInput searchTextInput = new SearchTextInput();
+    private SearchResult searchResult = new SearchResult();
+
+    public DrugForm(VisitDTO visit) {
+        super(4);
+        getStyleClass().add("drug-form");
+        getStyleClass().add("form");
+        this.at = LocalDate.parse(visit.visitedAt.substring(0, 10));
+        this.patientId = visit.patientId;
+        modeChooser.setValue(DrugSearchMode.Example);
+        modeChooserBox.getChildren().addAll(modeChooser.getButtons());
+        searchTextInput.setHandler(this::onSearch);
+    }
+
+    protected Node createTitle(String text) {
+        Label title = new Label(text);
+        title.setMaxWidth(Double.MAX_VALUE);
+        title.getStyleClass().add("title");
+        return title;
+    }
+
+    protected HBox getSearchModeChooserBox(){
+        return modeChooserBox;
+    }
+
+    protected SearchTextInput getSearchTextInput(){
+        return searchTextInput;
+    }
+
+    protected SearchResult getSearchResult(){
+        return searchResult;
+    }
+
+    private void resolveMaster(int iyakuhincode, Consumer<IyakuhinMasterDTO> handler) {
+        Service.api.resolveIyakuhinMaster(iyakuhincode, at.toString())
+                .thenAcceptAsync(master -> {
+                    if (master == null) {
+                        GuiUtil.alertError("使用できない薬剤です。");
+                    } else {
+                        handler.accept(master);
+                    }
+                }, Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
+    }
+
+    protected void onMasterSelected(IyakuhinMasterDTO master){
+
+    }
+
+    protected void onPrescExampleSelected(PrescExampleFullDTO example){
+
+    }
+
+    protected void onDrugSelected(DrugFullDTO drug){
+
+    }
+
+    private void setMaster(IyakuhinMasterDTO origMaster) {
+        resolveMaster(origMaster.iyakuhincode, this::onMasterSelected);
+    }
+
+    private void setExample(PrescExampleFullDTO example) {
+        resolveMaster(example.master.iyakuhincode, master -> {
+            example.master = master;
+            onPrescExampleSelected(example);
+        });
+    }
+
+    private void setDrug(DrugFullDTO drug) {
+        resolveMaster(drug.master.iyakuhincode, master -> {
+            drug.master = master;
+            onDrugSelected(drug);
+        });
+    }
+
+    private void onSearch(String searchText) {
+        if (searchText == null || searchText.isEmpty()) {
+            return;
+        }
+        DrugSearchMode mode = modeChooser.getValue();
+        if (mode != null) {
+            switch (mode) {
+                case Master: {
+                    Searcher.searchMaster(searchText, at, this::setMaster)
+                            .thenAcceptAsync(searchResult::setItems, Platform::runLater)
+                            .exceptionally(HandlerFX::exceptionally);
+                    break;
+                }
+                case Example: {
+                    Searcher.searchExample(searchText, this::setExample)
+                            .thenAcceptAsync(searchResult::setItems, Platform::runLater)
+                            .exceptionally(HandlerFX::exceptionally);
+                    break;
+                }
+                case Previous: {
+                    Searcher.searchDrug(searchText, patientId, this::setDrug)
+                            .thenAcceptAsync(searchResult::setItems, Platform::runLater)
+                            .exceptionally(HandlerFX::exceptionally);
+                    break;
+                }
+                default: {
+                    logger.error("Invalid search mode: " + mode);
+                    break;
+                }
+            }
+        }
+    }
+
+}

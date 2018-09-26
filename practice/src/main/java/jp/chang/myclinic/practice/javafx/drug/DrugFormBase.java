@@ -10,6 +10,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchMode;
+import jp.chang.myclinic.practice.javafx.drug.lib.SearchModeChooser;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.drug;
+package jp.chang.myclinic.practice.javafx.drug.lib;
 
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import org.slf4j.Logger;
