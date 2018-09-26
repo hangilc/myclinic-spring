@@ -264,6 +264,8 @@ class InputBase extends VBox {
 
     public DrugDTO createDrug(int drugId, int visitId, int prescribed) {
         DrugDTO dto = new DrugDTO();
+        dto.drugId = drugId;
+        dto.visitId = visitId;
         dto.iyakuhincode = getIyakuhincode();
         if (dto.iyakuhincode == 0) {
             GuiUtil.alertError("医薬品が設定されていません。");
