@@ -46,44 +46,4 @@ public class DrugEditInput extends DrugInput {
         return createDrug(drugId, visitId, prescribed);
     }
 
-//    public DrugDTO createDrug() {
-//        DrugDTO dto = new DrugDTO();
-//        dto.drugId = drugId;
-//        dto.visitId = visitId;
-//        dto.iyakuhincode = getIyakuhincode();
-//        if (dto.iyakuhincode == 0) {
-//            GuiUtil.alertError("医薬品が設定されていません。");
-//            return null;
-//        }
-//        try {
-//            dto.amount = Double.parseDouble(getAmount());
-//            if (!(dto.amount > 0)) {
-//                GuiUtil.alertError("用量の値が正でありません。");
-//                return null;
-//            }
-//        } catch (NumberFormatException e) {
-//            GuiUtil.alertError("用量の入力が不適切です。");
-//            return null;
-//        }
-//        dto.usage = getUsage();
-//        DrugCategory category = getCategory();
-//        dto.category = category.getCode();
-//        if (category == DrugCategory.Gaiyou) {
-//            dto.days = 1;
-//        } else {
-//            try {
-//                dto.days = Integer.parseInt(getDays());
-//                if (!(dto.days > 0)) {
-//                    GuiUtil.alertError("日数の値が正の整数でありません。");
-//                    return null;
-//                }
-//            } catch (NumberFormatException e) {
-//                GuiUtil.alertError("日数の入力が不敵津です。");
-//                return null;
-//            }
-//        }
-//        dto.prescribed = prescribed;
-//        return dto;
-//    }
-
 }
