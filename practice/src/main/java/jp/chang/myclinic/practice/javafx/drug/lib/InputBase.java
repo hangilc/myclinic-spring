@@ -11,6 +11,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Zaikei;
+import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
@@ -116,6 +117,10 @@ class InputBase extends VBox {
 
     boolean isDaysEmpty(){
         return daysInput.getText().isEmpty();
+    }
+
+    void addToDaysRow(Node node){
+        daysRow.getChildren().add(node);
     }
 
     void clearDays(){
@@ -255,6 +260,44 @@ class InputBase extends VBox {
             menu.getItems().add(item);
         }
         return menu;
+    }
+
+    public DrugDTO createDrug(int drugId, int visitId, int prescribed) {
+        DrugDTO dto = new DrugDTO();
+        dto.iyakuhincode = getIyakuhincode();
+        if (dto.iyakuhincode == 0) {
+            GuiUtil.alertError("医薬品が設定されていません。");
+            return null;
+        }
+        try {
+            dto.amount = Double.parseDouble(getAmount());
+            if (!(dto.amount > 0)) {
+                GuiUtil.alertError("用量の値が正でありません。");
+                return null;
+            }
+        } catch (NumberFormatException e) {
+            GuiUtil.alertError("用量の入力が不適切です。");
+            return null;
+        }
+        dto.usage = getUsage();
+        DrugCategory category = getCategory();
+        dto.category = category.getCode();
+        if (category == DrugCategory.Gaiyou) {
+            dto.days = 1;
+        } else {
+            try {
+                dto.days = Integer.parseInt(getDays());
+                if (!(dto.days > 0)) {
+                    GuiUtil.alertError("日数の値が正の整数でありません。");
+                    return null;
+                }
+            } catch (NumberFormatException e) {
+                GuiUtil.alertError("日数の入力が不敵津です。");
+                return null;
+            }
+        }
+        dto.prescribed = prescribed;
+        return dto;
     }
 
 }

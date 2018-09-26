@@ -27,6 +27,7 @@ public class DrugForm extends VBox {
     private HBox modeChooserBox = new HBox(4);
     private LocalDate at;
     private int patientId;
+    private int visitId;
     private SearchTextInput searchTextInput = new SearchTextInput();
     private SearchResult searchResult = new SearchResult();
 
@@ -36,9 +37,14 @@ public class DrugForm extends VBox {
         getStyleClass().add("form");
         this.at = LocalDate.parse(visit.visitedAt.substring(0, 10));
         this.patientId = visit.patientId;
+        this.visitId = visit.visitId;
         modeChooser.setValue(DrugSearchMode.Example);
         modeChooserBox.getChildren().addAll(modeChooser.getButtons());
         searchTextInput.setHandler(this::onSearch);
+    }
+
+    protected int getVisitId() {
+        return visitId;
     }
 
     protected Node createTitle(String text) {

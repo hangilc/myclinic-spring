@@ -1,56 +1,33 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugEnterInput;
-import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchMode;
-import jp.chang.myclinic.practice.javafx.drug.lib.SearchModeChooser;
-import jp.chang.myclinic.practice.javafx.drug.lib.SearchTextInput;
-import jp.chang.myclinic.practice.javafx.drug.lib.SearchResult;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugForm;
+import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
-public class EnterForm extends VBox {
+public class EnterForm extends DrugForm {
 
     //private static Logger logger = LoggerFactory.getLogger(EnterForm.class);
     private DrugEnterInput input = new DrugEnterInput();
-    private SearchModeChooser searchModeChooser = new SearchModeChooser(
-            DrugSearchMode.Master, DrugSearchMode.Example, DrugSearchMode.Previous
-    );
 
     public EnterForm(VisitDTO visit){
-        super(4);
-        getStyleClass().add("drug-form");
-        getStyleClass().add("form");
-        SearchTextInput searchTextInput = new SearchTextInput();
-        searchTextInput.setHandler(this::doSearch);
-        searchModeChooser.setValue(DrugSearchMode.Example);
-        HBox searchModeBox = new HBox(4);
-        searchModeBox.getChildren().addAll(searchModeChooser.getButtons());
-        SearchResult searchResult = new SearchResult();
+        super(visit);
         getChildren().addAll(
                 createTitle("新規処方の入力"),
                 input,
                 createCommands(),
-                searchTextInput,
-                searchModeBox,
-                searchResult
+                getSearchTextInput(),
+                getSearchModeChooserBox(),
+                getSearchResult()
         );
-    }
-
-    private void doSearch(String text){
-
-    }
-
-    private Node createTitle(String text) {
-        Label title = new Label(text);
-        title.setMaxWidth(Double.MAX_VALUE);
-        title.getStyleClass().add("title");
-        return title;
     }
 
     protected void onClose(){
@@ -66,7 +43,7 @@ public class EnterForm extends VBox {
         Hyperlink clearLink = new Hyperlink("クリア");
         enterButton.setOnAction(evt -> doEnter());
         closeButton.setOnAction(evt -> onClose());
-        clearLink.setOnAction(evt -> doClear());
+        clearLink.setOnAction(evt -> input.clear());
         hbox.getChildren().addAll(
                 enterButton,
                 closeButton,
@@ -76,12 +53,36 @@ public class EnterForm extends VBox {
     }
 
     private void doEnter(){
-
+        DrugDTO drug = input.createDrug(0, getVisitId(), 0);
+        if( drug == null ){
+            return;
+        }
+        Service.api.enterDrug(drug)
+                .thenCompose(Service.api::getDrugFull)
+                .thenAccept(enteredDrug -> Platform.runLater(() -> {
+                    EnterForm.this.fireEvent(new DrugEnteredEvent(enteredDrug, null));
+                    input.clear();
+                    getSearchTextInput().clear();
+                    getSearchResult().clear();
+                }))
+                .exceptionally(HandlerFX::exceptionally);
     }
 
-    private void doClear(){
-
+    @Override
+    protected void onMasterSelected(IyakuhinMasterDTO master) {
+        input.setMaster(master);
     }
+
+    @Override
+    protected void onPrescExampleSelected(PrescExampleFullDTO example) {
+        input.setExample(example);
+    }
+
+    @Override
+    protected void onDrugSelected(DrugFullDTO drug) {
+        input.setDrug(drug);
+    }
+
 
 
 //    private CheckBox daysFixedCheck = new CheckBox("固定");

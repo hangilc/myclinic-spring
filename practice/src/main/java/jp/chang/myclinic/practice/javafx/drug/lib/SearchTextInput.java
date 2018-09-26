@@ -29,6 +29,10 @@ public class SearchTextInput extends HBox {
         this.onSearchHandler = handler;
     }
 
+    public void clear(){
+        textInput.setText("");
+    }
+
     private void doEnter(){
         onSearchHandler.accept(textInput.getText());
     }
