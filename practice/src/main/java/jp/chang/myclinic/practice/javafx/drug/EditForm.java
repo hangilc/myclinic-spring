@@ -3,11 +3,11 @@ package jp.chang.myclinic.practice.javafx.drug;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.javafx.drug.lib.SearchResult;
@@ -85,16 +85,24 @@ public class EditForm extends VBox {
         Button enterButton = new Button("入力");
         Button closeButton = new Button("閉じる");
         Hyperlink deleteLink = new Hyperlink("削除");
+        Hyperlink auxLink = new Hyperlink("他");
         enterButton.setOnAction(evt -> doEnter());
         closeButton.setOnAction(evt -> onClose());
         deleteLink.setOnAction(evt -> doDelete());
+        auxLink.setOnMouseClicked(evt -> doAux(evt, auxLink));
         hbox.getChildren().addAll(
                 enterButton,
                 closeButton,
                 deleteLink,
-                tekiyouBox
+                tekiyouBox,
+                auxLink
         );
         return hbox;
+    }
+
+    private void doAux(MouseEvent event, Node node){
+        ContextMenu contextMenu = createAuxContextMenu();
+        contextMenu.show(node, event.getScreenX(), event.getScreenY());
     }
 
     private void adaptTekiyouBox(String tekiyouText) {
@@ -140,6 +148,27 @@ public class EditForm extends VBox {
                     })
                     .exceptionally(HandlerFX::exceptionally);
         }
+    }
+
+    private ContextMenu createAuxContextMenu(){
+        ContextMenu menu = new ContextMenu();
+        {
+            MenuItem item = new MenuItem("処方例に追加");
+            item.setOnAction(evt -> doAddToPrescExample());
+            menu.getItems().add(item);
+        }
+        return menu;
+    }
+
+    private void doAddToPrescExample(){
+        Service.api.getDrugFull(input.getDrugId())
+                .thenAcceptAsync(drugFull -> {
+                    ConvertToPrescExampleDialog dialog = new ConvertToPrescExampleDialog(drugFull);
+                    dialog.initOwner(getScene().getWindow());
+                    dialog.initModality(Modality.WINDOW_MODAL);
+                    dialog.show();
+                }, Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private void resolveMaster(int iyakuhincode, Consumer<IyakuhinMasterDTO> handler) {
@@ -208,6 +237,9 @@ public class EditForm extends VBox {
 
     private void doEnter() {
         DrugDTO drug = input.createDrug();
+        if( drug == null ){
+            return;
+        }
         if (drug.drugId == 0) {
             throw new RuntimeException("drugId is null.");
         }
