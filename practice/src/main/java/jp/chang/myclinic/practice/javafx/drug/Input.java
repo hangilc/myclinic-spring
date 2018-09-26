@@ -82,6 +82,10 @@ public class Input extends VBox {
         return menu;
     }
 
+    public int getDrugId() {
+        return drugId;
+    }
+
     public void setData(DrugData data) {
         setData(data, Collections.emptySet());
     }
