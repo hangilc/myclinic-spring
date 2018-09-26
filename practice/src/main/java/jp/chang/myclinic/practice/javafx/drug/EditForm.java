@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugEditInput;
 import jp.chang.myclinic.practice.javafx.drug.lib.SearchResult;
 import jp.chang.myclinic.practice.javafx.drug.lib.Searcher;
 import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;

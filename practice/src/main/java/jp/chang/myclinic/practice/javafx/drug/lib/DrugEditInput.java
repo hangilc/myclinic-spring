@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.drug;
+package jp.chang.myclinic.practice.javafx.drug.lib;
 
 import javafx.scene.control.CheckBox;
 import jp.chang.myclinic.consts.DrugCategory;
@@ -7,7 +7,7 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
-class DrugEditInput extends DrugInput {
+public class DrugEditInput extends DrugInput {
 
     //private static Logger logger = LoggerFactory.getLogger(DrugEditInput.class);
     private int drugId;
@@ -15,16 +15,16 @@ class DrugEditInput extends DrugInput {
     private int prescribed;
     private CheckBox allFixedCheck = new CheckBox("用量・用法・日数をそのままに");
 
-    DrugEditInput() {
+    public DrugEditInput() {
         addRow(allFixedCheck);
     }
 
-    int getDrugId() {
+    public int getDrugId() {
         return drugId;
     }
 
     @Override
-    void setDrug(DrugFullDTO drugFull) {
+    public void setDrug(DrugFullDTO drugFull) {
         this.drugId = drugFull.drug.drugId;
         this.visitId = drugFull.drug.visitId;
         this.prescribed = drugFull.drug.prescribed;
@@ -36,7 +36,7 @@ class DrugEditInput extends DrugInput {
     }
 
     @Override
-    void setExample(PrescExampleFullDTO exampleFull) {
+    public void setExample(PrescExampleFullDTO exampleFull) {
         if( allFixedCheck.isSelected() ){
             setMaster(exampleFull.master);
         } else {
@@ -44,7 +44,7 @@ class DrugEditInput extends DrugInput {
         }
     }
 
-    DrugDTO createDrug() {
+    public DrugDTO createDrug() {
         DrugDTO dto = new DrugDTO();
         dto.drugId = drugId;
         dto.visitId = visitId;

@@ -1,7 +1,6 @@
-package jp.chang.myclinic.practice.javafx.drug;
+package jp.chang.myclinic.practice.javafx.drug.lib;
 
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -52,7 +51,7 @@ class InputBase extends VBox {
         addLabelContextMenu();
     }
 
-    void setMaster(IyakuhinMasterDTO master){
+    public void setMaster(IyakuhinMasterDTO master){
         this.iyakuhincode = master.iyakuhincode;
         drugNameLabel.setText(master.name);
         amountUnitLabel.setText(master.unit);
@@ -65,7 +64,7 @@ class InputBase extends VBox {
         }
     }
 
-    void clearMaster(){
+    public void clearMaster(){
         this.iyakuhincode = 0;
         drugNameLabel.setText("");
         amountUnitLabel.setText("");

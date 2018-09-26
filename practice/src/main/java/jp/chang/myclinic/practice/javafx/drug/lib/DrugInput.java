@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.drug;
+package jp.chang.myclinic.practice.javafx.drug.lib;
 
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
@@ -28,11 +28,11 @@ class DrugInput extends InputBase {
         tekiyouLabel.textProperty().addListener((obs, oldValue, newValue) -> adaptTekiyou());
     }
 
-    void setDrug(DrugFullDTO drugFull){
+    public void setDrug(DrugFullDTO drugFull){
         setDrug(drugFull, false);
     }
 
-    void setDrug(DrugFullDTO drugFull, boolean fixedDays){
+    public void setDrug(DrugFullDTO drugFull, boolean fixedDays){
         setMaster(drugFull.master);
         DrugDTO drug = drugFull.drug;
         setAmount(drug.amount);
@@ -45,11 +45,11 @@ class DrugInput extends InputBase {
         }
     }
 
-    void setExample(PrescExampleFullDTO exampleFull){
+    public void setExample(PrescExampleFullDTO exampleFull){
         setExample(exampleFull, false);
     }
 
-    void setExample(PrescExampleFullDTO exampleFull, boolean fixedDays){
+    public void setExample(PrescExampleFullDTO exampleFull, boolean fixedDays){
         setMaster(exampleFull.master);
         PrescExampleDTO example = exampleFull.prescExample;
         try {
@@ -68,23 +68,23 @@ class DrugInput extends InputBase {
         }
     }
 
-    void setComment(String comment){
+    public void setComment(String comment){
         commentLabel.setText(comment);
     }
 
-    void clearComment(){
+    public void clearComment(){
         commentLabel.setText("");
     }
 
-    void setTekiyou(String tekiyou){
+    public void setTekiyou(String tekiyou){
         tekiyouLabel.setText(tekiyou);
     }
 
-    void clearTekiyou(){
+    public void clearTekiyou(){
         tekiyouLabel.setText("");
     }
 
-    StringProperty tekiyouProperty(){
+    public StringProperty tekiyouProperty(){
         return tekiyouLabel.textProperty();
     }
 
