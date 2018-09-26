@@ -86,6 +86,11 @@ public class Searcher {
                 .thenApply(result -> result.stream().map(e -> new ExampleItem(e, onSelectHandler)).collect(Collectors.toList()));
     }
 
+    public static CompletableFuture<List<SearchResultItem>> listAllExamples(Consumer<PrescExampleFullDTO> onSelectHandler){
+        return Service.api.listAllPrescExample()
+                .thenApply(result -> result.stream().map(e -> new ExampleItem(e, onSelectHandler)).collect(Collectors.toList()));
+    }
+
     private static class DrugItem implements SearchResultItem {
         private DrugFullDTO drugFull;
         private Consumer<DrugFullDTO> onSelectHandler;

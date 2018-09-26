@@ -66,6 +66,7 @@ class DrugInput extends InputBase {
                 setDays(example.days);
             }
         }
+        setComment(exampleFull.prescExample.comment);
     }
 
     public void setComment(String comment){

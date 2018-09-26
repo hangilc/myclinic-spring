@@ -8,7 +8,6 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PrescExampleDTO;
-import jp.chang.myclinic.practice.javafx.drug.DrugData;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchMode;
 import jp.chang.myclinic.practice.javafx.drug.lib.SearchModeChooser;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -23,22 +22,23 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
     public NewPrescExampleDialog() {
         super(new SearchModeChooser(DrugSearchMode.Master, DrugSearchMode.Example));
         setTitle("処方例の新規入力");
+        setSearchMode(DrugSearchMode.Master);
     }
 
     Node createCommands() {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         Button enterButton = new Button("入力");
-        Button cancelButton = new Button("キャンセル");
+        Button closeButton = new Button("閉じる");
         Hyperlink clearLink = new Hyperlink("クリア");
         Hyperlink currentLink = new Hyperlink("現行");
         enterButton.setOnAction(evt -> doEnter());
-        cancelButton.setOnAction(evt -> close());
+        closeButton.setOnAction(evt -> close());
         clearLink.setOnAction(evt -> doClear());
         currentLink.setOnAction(evt -> doCurrent());
         hbox.getChildren().addAll(
                 enterButton,
-                cancelButton,
+                closeButton,
                 clearLink,
                 currentLink
         );
@@ -53,8 +53,7 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
         }
         Service.api.resolveIyakuhinMaster(iyakuhincode, LocalDate.now().toString())
                 .thenAcceptAsync(master -> {
-                    DrugData data = DrugData.fromMaster(master);
-                    getInput().setData(data);
+                    getInput().setMaster(master);
                 }, Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);
     }

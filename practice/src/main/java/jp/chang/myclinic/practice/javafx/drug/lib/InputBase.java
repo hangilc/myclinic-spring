@@ -71,7 +71,7 @@ class InputBase extends VBox {
         amountUnitLabel.setText("");
     }
 
-    int getIyakuhincode() {
+    public int getIyakuhincode() {
         return iyakuhincode;
     }
 

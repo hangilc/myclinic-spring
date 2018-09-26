@@ -11,6 +11,7 @@ import jp.chang.myclinic.dto.PrescExampleDTO;
 import jp.chang.myclinic.practice.javafx.drug.DrugData;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchMode;
 import jp.chang.myclinic.practice.javafx.drug.lib.SearchModeChooser;
+import jp.chang.myclinic.practice.javafx.drug.lib.Searcher;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
@@ -56,11 +57,8 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
     }
 
     private void doListAll(){
-        Service.api.listAllPrescExample()
-                .thenAcceptAsync(result -> {
-                    List<DrugData> drugDataList = result.stream().map(DrugData::fromExample).collect(Collectors.toList());
-                    setSearchResultList(drugDataList);
-                }, Platform::runLater)
+        Searcher.listAllExamples(ex -> getInput().setExample(ex))
+                .thenAccept(result -> getSearchResult().setItems(result))
                 .exceptionally(HandlerFX::exceptionally);
     }
 

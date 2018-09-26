@@ -35,6 +35,7 @@ public class DrugEnterInput extends DrugInput {
         if( !isDaysFixed() ){
             clearDays();
         }
+        clearComment();
     }
 
 }
