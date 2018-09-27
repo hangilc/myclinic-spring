@@ -195,11 +195,9 @@ public class HokenUtil {
 //    }
 
     public static String formatShahokokuhoHokenshaBangou(int bangou) {
-        if (bangou < 9999) {
+        if (bangou <= 9999) {
             return String.format("%d", bangou);
-
-
-        } else if (bangou < 999999) {
+        } else if (bangou <= 999999) {
             return String.format("%06d", bangou);
         } else {
             return String.format("%08d", bangou);
