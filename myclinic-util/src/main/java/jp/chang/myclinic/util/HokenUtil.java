@@ -204,19 +204,34 @@ public class HokenUtil {
         }
     }
 
-    public static VerifyShahokokuhoBangou verifyShahokokuhoHokenshaBangou(int bangou) {
-        String fmt = formatHokenshaBangou(bangou);
-        if (fmt.length() < 4) {
-            return HokenshaBangouAnalysisResult.TOO_FEW_DIGITS;
-        } else if (fmt.length() == 4) {
-            return HokenshaBangouAnalysisResult.SEIKANKENPO;
-        } else if (fmt.length() > 8) {
-            return HokenshaBangouAnalysisResult.TOO_MANY_DIGITS;
-        } else {
-            if (!checkHokenshaBangouDigits(toDigitsArray(fmt))) {
-                return HokenshaBangouAnalysisResult.VERIFY_ERROR;
-            }
-            return HokenshaBangouAnalysisResult.OK;
+    public static ShahokokuhoError verifyShahokokuhoHokenshaBangou(int bangou) {
+        if( bangou < 0 ){
+            return ShahokokuhoError.HokenshaBangouIsNotPositive;
+        }
+        if( bangou <= 999 ){
+            return ShahokokuhoError.HokenshaBangouHasTooFewDigits;
+        }
+        if( bangou <= 9999 ){
+            return ShahokokuhoError.SeikanKenpo;
+        }
+        if( bangou > 100000000 ) {
+            return ShahokokuhoError.HokenshaBangouHasTooManyDigits;
+        }
+        if( !verifyHokenshaBangou(bangou) ){
+            return ShahokokuhoError.HokenshaBangouHasInvalidVerificationDigit;
+        }
+        return null;
+    }
+
+    public static ShahokokuhoError verifyShahokokuhoHokenshaBangou(String bangouInput){
+        if( bangouInput == null || bangouInput.isEmpty() ){
+            return ShahokokuhoError.HokenshaBangouIsEmpty;
+        }
+        try {
+            int bangou = Integer.parseInt(bangouInput);
+            return verifyShahokokuhoHokenshaBangou(bangou);
+        } catch(NumberFormatException ex){
+            return ShahokokuhoError.HokenshaBangouIsNotNumber;
         }
     }
 
