@@ -205,24 +205,32 @@ public class DbGateway {
         changeWqueueState(visitId, WqueueWaitState.WaitReExam.getCode());
     }
 
+    private boolean isTodaysVisit(Visit visit){
+        return visit.getVisitedAt().substring(0, 10).equals(LocalDate.now().toString());
+    }
+
     public void endExam(int visitId, int charge) {
+        Visit visit = visitRepository.findById(visitId);
+        boolean isToday = isTodaysVisit(visit);
         setChargeOfVisit(visitId, charge);
-        Optional<Wqueue> currentWqueue = wqueueRepository.tryFindByVisitId(visitId);
-        if (currentWqueue.isPresent()) {
+        Wqueue wqueue = wqueueRepository.tryFindByVisitId(visitId).orElse(null);
+        if (wqueue != null && isToday) {
             changeWqueueState(visitId, WqueueWaitState.WaitCashier.getCode());
         } else {
-            Wqueue wqueue = new Wqueue();
-            wqueue.setVisitId(visitId);
-            wqueue.setWaitState(WqueueWaitState.WaitCashier.getCode());
-            enterWqueue(mapper.toWqueueDTO(wqueue));
+            if(wqueue != null ){ // it not today
+                deleteWqueue(mapper.toWqueueDTO(wqueue));
+            }
+            Wqueue newWqueue = new Wqueue();
+            newWqueue.setVisitId(visitId);
+            newWqueue.setWaitState(WqueueWaitState.WaitCashier.getCode());
+            enterWqueue(mapper.toWqueueDTO(newWqueue));
         }
         pharmaQueueRepository.findByVisitId(visitId).ifPresent(pharmaQueue -> {
             PharmaQueueDTO deleted = mapper.toPharmaQueueDTO(pharmaQueue);
             pharmaQueueRepository.deleteByVisitId(visitId);
             practiceLogger.logPharmaQueueDeleted(deleted);
         });
-        Visit visit = visitRepository.findById(visitId);
-        if (visit.getVisitedAt().substring(0, 10).equals(LocalDate.now().toString())) {
+        if (isToday) {
             int unprescribed = drugRepository.countByVisitIdAndPrescribed(visitId, 0);
             if (unprescribed > 0) {
                 PharmaQueue pharmaQueue = new PharmaQueue();
