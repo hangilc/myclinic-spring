@@ -235,6 +235,35 @@ public class HokenUtil {
         }
     }
 
+    public static KoukikoureiError verifyKoukikoureiHokenshaBangou(int bangou){
+        if( bangou <= 9999999 ){
+            return KoukikoureiError.HokenshaBangouHasTooFewDigits;
+        } else if( bangou > 99999999 ){
+            return KoukikoureiError.HokenshaBangouHasTooManyDigits;
+        }
+        int housei = bangou / 1000000;
+        if( housei != 39 ){
+            return KoukikoureiError.HouseiBangouIsInvalid;
+        }
+        if( !verifyHokenshaBangou(bangou) ){
+            return KoukikoureiError.HokenshaBangouHasInvalidVerificationDigit;
+        }
+        return null;
+    }
+
+    public static KoukikoureiError verifyKoukikoureiHokenshaBangouInput(String bangouInput){
+        if( bangouInput == null || bangouInput.isEmpty() ){
+            return KoukikoureiError.HokenshaBangouIsEmpty;
+        }
+        try {
+            int bangou = Integer.parseInt(bangouInput);
+            return verifyKoukikoureiHokenshaBangou(bangou);
+        } catch(NumberFormatException ex){
+            return KoukikoureiError.HokenshaBangouIsNotNumber;
+        }
+    }
+
+
     private static int[] toDigitsArray(String fmt) {
         int[] digits = new int[(fmt.length())];
         for (int i = 0; i < fmt.length(); i++) {

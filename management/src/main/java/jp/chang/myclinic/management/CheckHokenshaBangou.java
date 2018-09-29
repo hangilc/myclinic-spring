@@ -3,6 +3,7 @@ package jp.chang.myclinic.management;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.HokenUtil;
+import jp.chang.myclinic.util.KoukikoureiError;
 import jp.chang.myclinic.util.ShahokokuhoError;
 
 import java.io.IOException;
@@ -27,18 +28,10 @@ public class CheckHokenshaBangou {
                     ShahokokuhoDTO shahokokuho = visit.hoken.shahokokuho;
                     if( shahokokuho != null ){
                         verifyShahokokuho(shahokokuho.hokenshaBangou, patientId);
-                        verify(shahokokuho.hokenshaBangou, patientId, "社保国保");
                     }
                     KoukikoureiDTO koukikourei = visit.hoken.koukikourei;
                     if( koukikourei != null ){
-                        try {
-                            int bangou = Integer.parseInt(koukikourei.hokenshaBangou);
-                            verify(bangou, patientId, "後期高齢");
-                        } catch(NumberFormatException ex){
-                            PatientDTO patient = Service.api.getPatientCall(visit.visit.patientId).execute().body();
-                            System.out.printf("(%d) %s%s 後期高齢 %s 数字でありません。\n", patient.patientId,
-                                    patient.lastName, patient.firstName, koukikourei.hokenshaBangou);
-                        }
+                        verifyKoukikourei(koukikourei.hokenshaBangou, patientId);
                     }
                     for(KouhiDTO kouhi: getKouhiList(visit.hoken)){
                         if( kouhi != null ){
@@ -66,6 +59,13 @@ public class CheckHokenshaBangou {
         ShahokokuhoError err = HokenUtil.verifyShahokokuhoHokenshaBangou(bangou);
         if( err != null ){
             reportError(patientId, "社保国保", err.getMessage());
+        }
+    }
+
+    private static void verifyKoukikourei(String bangouInput, int patientId) throws IOException {
+        KoukikoureiError err = HokenUtil.verifyKoukikoureiHokenshaBangouInput(bangouInput);
+        if( err != null ){
+            reportError(patientId, "後期高齢", err.getMessage());
         }
     }
 
