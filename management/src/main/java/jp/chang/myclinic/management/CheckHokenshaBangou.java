@@ -3,6 +3,7 @@ package jp.chang.myclinic.management;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.HokenUtil;
+import jp.chang.myclinic.util.KouhiFutanshaError;
 import jp.chang.myclinic.util.KoukikoureiError;
 import jp.chang.myclinic.util.ShahokokuhoError;
 
@@ -35,7 +36,7 @@ public class CheckHokenshaBangou {
                     }
                     for(KouhiDTO kouhi: getKouhiList(visit.hoken)){
                         if( kouhi != null ){
-                            verify(kouhi.futansha, patientId, "公費負担者番号");
+                            verifyKouhiFutansha(kouhi.futansha, patientId);
                             verifyKouhiJukyuusha(kouhi.jukyuusha, patientId);
                         }
                     }
@@ -66,6 +67,13 @@ public class CheckHokenshaBangou {
         KoukikoureiError err = HokenUtil.verifyKoukikoureiHokenshaBangouInput(bangouInput);
         if( err != null ){
             reportError(patientId, "後期高齢", err.getMessage());
+        }
+    }
+
+    private static void verifyKouhiFutansha(int bangou, int patientId) throws IOException {
+        KouhiFutanshaError err = HokenUtil.verifyKouhiFutanshaBangou(bangou);
+        if( err != null ){
+            reportError(patientId, "公費負担者", err.getMessage());
         }
     }
 

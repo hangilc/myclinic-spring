@@ -169,30 +169,9 @@ public class HokenUtil {
         return v == (bangou % 10);
     }
 
-//    public static boolean checkHokenshaBangouDigits(int[] digits) {
-//        final int len = digits.length;
-//        int m = 2;
-//        int s = 0;
-//        for (int i = len - 2; i >= 0; i--) {
-//            int d = digits[i];
-//            int dm = d * m;
-//            if (dm >= 10) {
-//                dm = (dm / 10) + (dm % 10);
-//            }
-//            s += dm;
-//            if (m == 2) {
-//                m = 1;
-//            } else {
-//                m = 2;
-//            }
-//        }
-//        s = s % 10;
-//        int v = 10 - s;
-//        if( v == 10 ){
-//            v = 0;
-//        }
-//        return v == digits[len - 1];
-//    }
+    private static boolean verifyTodoufukenBangou(int bangou){
+        return bangou >= 1 && bangou <= 47;
+    }
 
     public static String formatShahokokuhoHokenshaBangou(int bangou) {
         if (bangou <= 9999) {
@@ -263,13 +242,31 @@ public class HokenUtil {
         }
     }
 
-
-    private static int[] toDigitsArray(String fmt) {
-        int[] digits = new int[(fmt.length())];
-        for (int i = 0; i < fmt.length(); i++) {
-            digits[i] = Integer.parseInt(fmt.substring(i, i + 1));
+    public static KouhiFutanshaError verifyKouhiFutanshaBangou(int bangou){
+        if( bangou <= 9999999 ){
+            return KouhiFutanshaError.HokenshaBangouHasTooFewDigits;
+        } else if( bangou > 99999999 ){
+            return KouhiFutanshaError.HokenshaBangouHasTooManyDigits;
         }
-        return digits;
+        int rem = bangou % 1000000;
+        int todoufuken = rem / 10000;
+        if( !verifyTodoufukenBangou(todoufuken) ){
+            return KouhiFutanshaError.TodoufukenBangouIsInvalid;
+        }
+        return null;
     }
+
+    public static KouhiFutanshaError verifyKouhiFutanshaBangouInput(String bangouInput){
+        if( bangouInput == null || bangouInput.isEmpty() ){
+            return KouhiFutanshaError.HokenshaBangouIsEmpty;
+        }
+        try {
+            int bangou = Integer.parseInt(bangouInput);
+            return verifyKouhiFutanshaBangou(bangou);
+        } catch(NumberFormatException ex){
+            return KouhiFutanshaError.HokenshaBangouIsNotNumber;
+        }
+    }
+
 
 }
