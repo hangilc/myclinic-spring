@@ -18,6 +18,7 @@ import java.util.List;
 
 //import jp.chang.myclinic.hotline.Service;
 
+// TODO: check for too many blank lines
 public class AppMain extends Application {
     private static Logger logger = LoggerFactory.getLogger(AppMain.class);
     private String wsUrl;

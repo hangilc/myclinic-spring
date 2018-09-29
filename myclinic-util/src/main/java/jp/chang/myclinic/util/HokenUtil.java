@@ -223,7 +223,7 @@ public class HokenUtil {
         return null;
     }
 
-    public static ShahokokuhoError verifyShahokokuhoHokenshaBangou(String bangouInput){
+    public static ShahokokuhoError verifyShahokokuhoHokenshaBangouInput(String bangouInput){
         if( bangouInput == null || bangouInput.isEmpty() ){
             return ShahokokuhoError.HokenshaBangouIsEmpty;
         }

@@ -3,7 +3,7 @@ package jp.chang.myclinic.management;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.HokenUtil;
-import jp.chang.myclinic.util.HokenshaBangouAnalysisResult;
+import jp.chang.myclinic.util.ShahokokuhoError;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -26,6 +26,7 @@ public class CheckHokenshaBangou {
                 for(VisitFull2DTO visit: visits){
                     ShahokokuhoDTO shahokokuho = visit.hoken.shahokokuho;
                     if( shahokokuho != null ){
+                        verifyShahokokuho(shahokokuho.hokenshaBangou, patientId);
                         verify(shahokokuho.hokenshaBangou, patientId, "社保国保");
                     }
                     KoukikoureiDTO koukikourei = visit.hoken.koukikourei;
@@ -51,6 +52,23 @@ public class CheckHokenshaBangou {
         }
     }
 
+    private static PatientDTO getPatient(int patientId) throws IOException {
+        return Service.api.getPatientCall(patientId).execute().body();
+    }
+
+    private static void reportError(int patientId, String kind, String message) throws IOException {
+        PatientDTO patient = getPatient(patientId);
+        System.out.printf("(%4d) %s%s %s %s\n ",patient.patientId, patient.lastName, patient.firstName,
+                kind, message);
+    }
+
+    private static void verifyShahokokuho(int bangou, int patientId) throws IOException {
+        ShahokokuhoError err = HokenUtil.verifyShahokokuhoHokenshaBangou(bangou);
+        if( err != null ){
+            reportError(patientId, "社保国保", err.getMessage());
+        }
+    }
+
     private static void verifyKouhiJukyuusha(int jukyuusha, int patientId) throws IOException {
         if( !(jukyuusha >= 1000000 && jukyuusha <= 9999999) ){
             PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
@@ -69,13 +87,15 @@ public class CheckHokenshaBangou {
         return result;
     }
 
+
+
     private static void verify(int bangou, int patientId, String kind) throws IOException {
-        HokenshaBangouAnalysisResult result = HokenUtil.analyzeHokenshaBangou(bangou);
-        if( result != HokenshaBangouAnalysisResult.OK ){
-            PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
-            System.out.printf("(%d) %s%s %s %d %s\n", patientId, patient.lastName, patient.firstName,
-                    kind, bangou, result.getMessage());
-        }
+//        HokenshaBangouAnalysisResult result = HokenUtil.analyzeHokenshaBangou(bangou);
+//        if( result != HokenshaBangouAnalysisResult.OK ){
+//            PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
+//            System.out.printf("(%d) %s%s %s %d %s\n", patientId, patient.lastName, patient.firstName,
+//                    kind, bangou, result.getMessage());
+//        }
     }
 
 }
