@@ -2,10 +2,7 @@ package jp.chang.myclinic.management;
 
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.util.HokenUtil;
-import jp.chang.myclinic.util.KouhiFutanshaError;
-import jp.chang.myclinic.util.KoukikoureiError;
-import jp.chang.myclinic.util.ShahokokuhoError;
+import jp.chang.myclinic.util.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -78,13 +75,10 @@ public class CheckHokenshaBangou {
     }
 
     private static void verifyKouhiJukyuusha(int jukyuusha, int patientId) throws IOException {
-        if( !(jukyuusha >= 1000000 && jukyuusha <= 9999999) ){
-            PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
-            System.out.printf("(%d) %s%s 公費受給者番号 %d ７桁でありません。\n", patient.patientId,
-                    patient.lastName, patient.firstName, jukyuusha);
-            return;
+        KouhiJukyuushaError err = HokenUtil.verifyKouhiJukyuushaBangou(jukyuusha);
+        if( err != null ){
+            reportError(patientId, "公費受給者", err.getMessage());
         }
-        verify(jukyuusha, patientId, "公費受給者番号");
     }
 
     private static List<KouhiDTO> getKouhiList(HokenDTO hoken){
@@ -93,17 +87,6 @@ public class CheckHokenshaBangou {
         result.add(hoken.kouhi2);
         result.add(hoken.kouhi3);
         return result;
-    }
-
-
-
-    private static void verify(int bangou, int patientId, String kind) throws IOException {
-//        HokenshaBangouAnalysisResult result = HokenUtil.analyzeHokenshaBangou(bangou);
-//        if( result != HokenshaBangouAnalysisResult.OK ){
-//            PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
-//            System.out.printf("(%d) %s%s %s %d %s\n", patientId, patient.lastName, patient.firstName,
-//                    kind, bangou, result.getMessage());
-//        }
     }
 
 }

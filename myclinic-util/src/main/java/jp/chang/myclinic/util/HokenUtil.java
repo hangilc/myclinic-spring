@@ -253,6 +253,9 @@ public class HokenUtil {
         if( !verifyTodoufukenBangou(todoufuken) ){
             return KouhiFutanshaError.TodoufukenBangouIsInvalid;
         }
+        if( !verifyHokenshaBangou(bangou) ){
+            return KouhiFutanshaError.HokenshaBangouHasInvalidVerificationDigit;
+        }
         return null;
     }
 
@@ -268,5 +271,28 @@ public class HokenUtil {
         }
     }
 
+    public static KouhiJukyuushaError verifyKouhiJukyuushaBangou(int bangou){
+        if( bangou <= 999999 ){
+            return KouhiJukyuushaError.HokenshaBangouHasTooFewDigits;
+        } else if( bangou > 9999999 ){
+            return KouhiJukyuushaError.HokenshaBangouHasTooManyDigits;
+        }
+        if( !verifyHokenshaBangou(bangou) ){
+            return KouhiJukyuushaError.HokenshaBangouHasInvalidVerificationDigit;
+        }
+        return null;
+    }
+
+    public static KouhiJukyuushaError verifyKouhiJukyuushaBangouInput(String bangouInput){
+        if( bangouInput == null || bangouInput.isEmpty() ){
+            return KouhiJukyuushaError.HokenshaBangouIsEmpty;
+        }
+        try {
+            int bangou = Integer.parseInt(bangouInput);
+            return verifyKouhiJukyuushaBangou(bangou);
+        } catch(NumberFormatException ex){
+            return KouhiJukyuushaError.HokenshaBangouIsNotNumber;
+        }
+    }
 
 }
