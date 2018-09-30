@@ -11,6 +11,7 @@ import jp.chang.myclinic.dto.KoukikoureiDTO;
 import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 import jp.chang.myclinic.util.verify.ErrorMessages;
+import jp.chang.myclinic.utilfx.dateinput.DateInput;
 
 import java.time.LocalDate;
 
@@ -20,8 +21,8 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
 
     private StringProperty hokenshaBangou = new SimpleStringProperty();
     private StringProperty hihokenshaBangou = new SimpleStringProperty();
-    private ObjectProperty<LocalDate> validFrom = new SimpleObjectProperty<LocalDate>();
-    private ObjectProperty<LocalDate> validUpto = new SimpleObjectProperty<LocalDate>();
+    private DateInput validFromInput = new DateInput(Gengou.Recent);
+    private DateInput validUptoInput = new DateInput(Gengou.Recent);
     private IntegerProperty futanWari = new SimpleIntegerProperty();
     private int koukikoureiId;
     private int patientId;
@@ -33,8 +34,8 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
         this.patientId = koukikourei.patientId;
         this.hokenshaBangou.setValue(koukikourei.hokenshaBangou + "");
         this.hihokenshaBangou.setValue(koukikourei.hihokenshaBangou + "");
-        this.validFrom.setValue(LocalDate.parse(koukikourei.validFrom));
-        this.validUpto.setValue(
+        this.validFromInput.setValue(LocalDate.parse(koukikourei.validFrom));
+        this.validUptoInput.setValue(
                 (koukikourei.validUpto == null || "0000-00-00".equals(koukikourei.validUpto) ?
                         LocalDate.MAX : LocalDate.parse(koukikourei.validUpto))
         );
@@ -59,17 +60,12 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
                 form.add("被保険者番号", hihokenshaBangouInput);
             }
             {
-                DateInput validFromInput = new DateInput();
-                validFromInput.setGengouItems(Gengou.Recent.toArray(new Gengou[]{}));
-                validFromInput.selectGengou(Gengou.Current);
-                validFrom.bindBidirectional(validFromInput.valueProperty());
+                validFromInput.setGengou(Gengou.Current);
                 form.add("交付年月日", validFromInput);
             }
             {
-                DateInput validUptoInput = new DateInput();
-                validUptoInput.setGengouItems(Gengou.Recent.toArray(new Gengou[]{}));
-                validUptoInput.selectGengou(Gengou.Current);
-                validUpto.bindBidirectional(validUptoInput.valueProperty());
+                validUptoInput.setGengou(Gengou.Current);
+                validUptoInput.setAllowNull(true);
                 form.add("有効期限", validUptoInput);
             }
             {
@@ -96,6 +92,7 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
             row.getChildren().addAll(enterButton, cancelButton);
             root.getChildren().add(row);
         }
+        root.getStylesheets().add("css/Main.css");
         root.setStyle("-fx-padding: 10;");
         Scene scene = new Scene(root);
         setScene(scene);
@@ -115,18 +112,24 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
         em.addIfError(
                 verifyHihokenshaBangouWithOutputString(hihokenshaBangou.get(), value -> {
                     data.hihokenshaBangou = value;
-                }),
-                verifyValidFrom(validFrom.getValue(), value -> {
-                    data.validFrom = value;
-                }),
-                verifyValidUpto(validUpto.getValue(), value -> {
-                    data.validUpto = value;
-                }),
+                }));
+        LocalDate validFrom = validFromInput.getValue(errList -> {
+            em.add("資格取得日が不適切です。" + String.join("", errList) + "）");
+        });
+        if (validFrom != null) {
+            em.addIfError(verifyValidFrom(validFrom, val -> data.validFrom = val));
+        }
+        LocalDate validUpto = validUptoInput.getValue(errList -> {
+            em.add("有効期限が不適切です。（" + String.join("", errList) + "）");
+        });
+        if (validUpto != null) {
+            em.addIfError(verifyValidUpto(validUpto, val -> data.validUpto = val));
+        }
+        em.addIfError(
                 verifyFutanWari(futanWari.get(), value -> {
                     data.futanWari = value;
-                })
-        );
-        if( em.hasNoError() ){
+                }));
+        if (em.hasNoError()) {
             em.addIfError(verifyValidFromAndValidUpto(data.validFrom, data.validUpto));
         }
         if (em.hasError()) {
