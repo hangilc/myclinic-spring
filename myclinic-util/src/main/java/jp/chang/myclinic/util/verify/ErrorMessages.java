@@ -16,6 +16,10 @@ public class ErrorMessages {
         }
     }
 
+    public void add(String msg){
+        errorMessages.add(msg);
+    }
+
     public boolean hasError(){
         return errorMessages.size() > 0;
     }

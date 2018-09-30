@@ -11,3 +11,8 @@
     -fx-pref-width: 400px;
     -fx-pref-height: 400px;
 }
+
+.date-input .nen, .date-input .month, .date-input .day {
+    -fx-pref-width: 3em;
+}
+

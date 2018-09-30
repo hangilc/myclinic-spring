@@ -12,6 +12,7 @@ import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 import jp.chang.myclinic.util.verify.ErrorMessages;
+import jp.chang.myclinic.utilfx.dateinput.DateInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +29,8 @@ public class EditShahokokuhoStage extends Stage {
     private StringProperty hihokenshaKigou = new SimpleStringProperty("");
     private StringProperty hihokenshaBangou = new SimpleStringProperty("");
     private IntegerProperty honnin = new SimpleIntegerProperty();
-    private Property<LocalDate> validFrom = new SimpleObjectProperty<>();
-    private Property<LocalDate> validUpto = new SimpleObjectProperty<>();
+    private DateInput validFromInput;
+    private DateInput validUptoInput;
     private IntegerProperty kourei = new SimpleIntegerProperty();
     private Consumer<ShahokokuhoDTO> dataProcessor = System.out::println;
     private int shahokokuhoId;
@@ -44,11 +45,8 @@ public class EditShahokokuhoStage extends Stage {
         this.hihokenshaKigou.setValue("" + shahokokuho.hihokenshaKigou);
         this.hihokenshaBangou.setValue("" + shahokokuho.hihokenshaBangou);
         this.honnin.setValue(shahokokuho.honnin);
-        this.validFrom.setValue(LocalDate.parse(shahokokuho.validFrom));
-        this.validUpto.setValue(
-                (shahokokuho.validUpto == null || "0000-00-00".equals(shahokokuho.validUpto) ?
-                        LocalDate.MAX : LocalDate.parse(shahokokuho.validUpto))
-        );
+        validFromInput.setValue(LocalDate.parse(shahokokuho.validFrom));
+        setValidUpto(shahokokuho.validUpto);
         this.kourei.setValue(shahokokuho.kourei);
     }
 
@@ -91,17 +89,14 @@ public class EditShahokokuhoStage extends Stage {
                 form.add("本人・家族", row);
             }
             {
-                DateInput validFromInput = new DateInput();
-                validFromInput.setGengouItems(Gengou.Recent.toArray(new Gengou[]{}));
-                validFromInput.selectGengou(Gengou.Current);
-                validFrom.bindBidirectional(validFromInput.valueProperty());
+                this.validFromInput = new DateInput(Gengou.Recent);
+                validFromInput.setGengou(Gengou.Current);
                 form.add("交付年月日", validFromInput);
             }
             {
-                DateInput validUptoInput = new DateInput();
-                validUptoInput.setGengouItems(Gengou.Recent.toArray(new Gengou[]{}));
-                validUptoInput.selectGengou(Gengou.Current);
-                validUpto.bindBidirectional(validUptoInput.valueProperty());
+                this.validUptoInput = new DateInput(Gengou.Recent);
+                validUptoInput.setGengou(Gengou.Current);
+                validUptoInput.setAllowNull(true);
                 form.add("有効期限", validUptoInput);
             }
             {
@@ -129,10 +124,19 @@ public class EditShahokokuhoStage extends Stage {
             row.getChildren().addAll(enterButton, cancelButton);
             root.getChildren().add(row);
         }
+        root.getStylesheets().add("css/Main.css");
         root.setStyle("-fx-padding: 10");
         Scene scene = new Scene(root);
         setScene(scene);
         sizeToScene();
+    }
+
+    private void setValidUpto(String value){
+        if( value == null || value.equals("0000-00-00") ){
+            validUptoInput.clear();
+        } else {
+            validUptoInput.setValue(LocalDate.parse(value));
+        }
     }
 
     public void setOnEnter(Consumer<ShahokokuhoDTO> cb) {
@@ -151,13 +155,21 @@ public class EditShahokokuhoStage extends Stage {
         }
         setHihokenshaKigou(hihokenshaKigou.get(), val -> data.hihokenshaKigou = val);
         setHihokenshaBangou(hihokenshaBangou.get(), val -> data.hihokenshaBangou = val);
-        errs.addIfError(
-                verifyHonninKazoku(honnin.getValue(), value -> data.honnin = value),
-                verifyValidFrom(validFrom.getValue(), val -> data.validFrom = val),
-                verifyValidUpto(validUpto.getValue(), val -> data.validUpto = val),
-                verifyKourei(kourei.getValue(), val -> data.kourei = val)
-        );
-        if( errs.hasNoError() ){
+        errs.addIfError(verifyHonninKazoku(honnin.getValue(), value -> data.honnin = value));
+        LocalDate validFrom = validFromInput.getValue(errList -> {
+            errs.add("資格取得日が不適切です。（" + String.join("", errList) + "）");
+        });
+        if (validFrom != null) {
+            errs.addIfError(verifyValidFrom(validFrom, val -> data.validFrom = val));
+        }
+        LocalDate validUpto = validUptoInput.getValue(errList -> {
+            errs.add("有効期限が不適切です。（" + String.join("", errList) + "）");
+        });
+        if (validUpto != null) {
+            errs.addIfError(verifyValidUpto(validUpto, val -> data.validUpto = val));
+        }
+        errs.addIfError(verifyKourei(kourei.getValue(), val -> data.kourei = val));
+        if (errs.hasNoError()) {
             errs.addIfError(
                     verifyHihokenshaKigouAndBangou(data.hihokenshaKigou, data.hihokenshaBangou),
                     verifyValidFromAndValidUpto(data.validFrom, data.validUpto)

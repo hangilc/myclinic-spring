@@ -9,10 +9,12 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.KoukikoureiDTO;
 import jp.chang.myclinic.reception.Globals;
-import jp.chang.myclinic.reception.converter.KoukikoureiConverter;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
+import jp.chang.myclinic.util.verify.ErrorMessages;
 
 import java.time.LocalDate;
+
+import static jp.chang.myclinic.util.verify.KoukikoureiVerifier.*;
 
 public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
 
@@ -24,7 +26,7 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
     private int koukikoureiId;
     private int patientId;
 
-    public EditKoukikoureiStage(KoukikoureiDTO koukikourei){
+    public EditKoukikoureiStage(KoukikoureiDTO koukikourei) {
         this();
         setTitle("後期高齢保険編集");
         this.koukikoureiId = koukikourei.koukikoureiId;
@@ -34,12 +36,12 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
         this.validFrom.setValue(LocalDate.parse(koukikourei.validFrom));
         this.validUpto.setValue(
                 (koukikourei.validUpto == null || "0000-00-00".equals(koukikourei.validUpto) ?
-                        LocalDate.MAX: LocalDate.parse(koukikourei.validUpto))
+                        LocalDate.MAX : LocalDate.parse(koukikourei.validUpto))
         );
         this.futanWari.setValue(koukikourei.futanWari);
     }
 
-    public EditKoukikoureiStage(){
+    public EditKoukikoureiStage() {
         setTitle("新規後期高齢保険入力");
         VBox root = new VBox(4);
         {
@@ -100,23 +102,35 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
         sizeToScene();
     }
 
-    private void doEnter(){
+    private void doEnter() {
         KoukikoureiDTO data = new KoukikoureiDTO();
         data.koukikoureiId = this.koukikoureiId;
         data.patientId = this.patientId;
-        KoukikoureiConverter cvt = new KoukikoureiConverter();
-        if(Globals.isCheckingHokenshaBangou()) {
-            cvt.convertToHokenshaBangou(hokenshaBangou.get(), value -> {
+        ErrorMessages em = new ErrorMessages();
+        if (Globals.isCheckingHokenshaBangou()) {
+            em.addIfError(verifyHokenshaBangouInputWithOutputString(hokenshaBangou.get(), value -> {
                 data.hokenshaBangou = value;
-            });
+            }));
         }
-        cvt.convertToHihokenshaBangou(hihokenshaBangou.get(), value -> { data.hihokenshaBangou = value; });
-        cvt.convertToValidFrom(validFrom.getValue(), value -> { data.validFrom = value; });
-        cvt.convertToValidUpto(validUpto.getValue(), value -> { data.validUpto = value; });
-        cvt.convertToFutanWari(futanWari.get(), value -> { data.futanWari = value; });
-        cvt.integralCheck(data);
-        if( cvt.hasError() ){
-            String message = String.join("\n", cvt.getErrors());
+        em.addIfError(
+                verifyHihokenshaBangouWithOutputString(hihokenshaBangou.get(), value -> {
+                    data.hihokenshaBangou = value;
+                }),
+                verifyValidFrom(validFrom.getValue(), value -> {
+                    data.validFrom = value;
+                }),
+                verifyValidUpto(validUpto.getValue(), value -> {
+                    data.validUpto = value;
+                }),
+                verifyFutanWari(futanWari.get(), value -> {
+                    data.futanWari = value;
+                })
+        );
+        if( em.hasNoError() ){
+            em.addIfError(verifyValidFromAndValidUpto(data.validFrom, data.validUpto));
+        }
+        if (em.hasError()) {
+            String message = em.getErrorMessage();
             Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
             alert.showAndWait();
         } else {
