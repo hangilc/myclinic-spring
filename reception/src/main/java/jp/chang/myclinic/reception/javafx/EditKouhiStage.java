@@ -31,10 +31,7 @@ abstract public class EditKouhiStage extends EditHokenBaseStage {
         futansha.setValue(kouhi.futansha + "");
         jukyuusha.setValue(kouhi.jukyuusha + "");
         validFromInput.setValue(LocalDate.parse(kouhi.validFrom));
-        validUptoInput.setValue(
-                (kouhi.validUpto == null || "0000-00-00".equals(kouhi.validUpto) ?
-                        LocalDate.MAX : LocalDate.parse(kouhi.validUpto))
-        );
+        setValidUpto(kouhi.validUpto);
     }
 
     public EditKouhiStage() {
@@ -67,6 +64,7 @@ abstract public class EditKouhiStage extends EditHokenBaseStage {
             row.getChildren().addAll(enterButton, cancelButton);
             root.getChildren().add(row);
         }
+        root.getStylesheets().add("css/Main.css");
         root.setStyle("-fx-padding: 10;");
         Scene scene = new Scene(root);
         setScene(scene);

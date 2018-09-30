@@ -35,10 +35,7 @@ abstract public class EditKoukikoureiStage extends EditHokenBaseStage {
         this.hokenshaBangou.setValue(koukikourei.hokenshaBangou + "");
         this.hihokenshaBangou.setValue(koukikourei.hihokenshaBangou + "");
         this.validFromInput.setValue(LocalDate.parse(koukikourei.validFrom));
-        this.validUptoInput.setValue(
-                (koukikourei.validUpto == null || "0000-00-00".equals(koukikourei.validUpto) ?
-                        LocalDate.MAX : LocalDate.parse(koukikourei.validUpto))
-        );
+        setValidUpto(koukikourei.validUpto);
         this.futanWari.setValue(koukikourei.futanWari);
     }
 

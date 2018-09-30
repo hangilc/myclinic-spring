@@ -89,7 +89,9 @@ public interface DateInputInterface {
                 }
             }
         } else {
-            if (!getAllowNull()) {
+            if (getAllowNull()) {
+                value = LocalDate.MAX;
+            } else {
                 err.add("日付が入力されていません。");
             }
         }
