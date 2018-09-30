@@ -10,15 +10,15 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.reception.Globals;
-import jp.chang.myclinic.reception.converter.ShahokokuhoConverter;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
+import jp.chang.myclinic.util.verify.ErrorMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
+
+import static jp.chang.myclinic.util.verify.ShahokokuhoVerifier.*;
 
 public class EditShahokokuhoStage extends Stage {
 
@@ -35,7 +35,7 @@ public class EditShahokokuhoStage extends Stage {
     private int shahokokuhoId;
     private int patientId;
 
-    public EditShahokokuhoStage(ShahokokuhoDTO shahokokuho){
+    public EditShahokokuhoStage(ShahokokuhoDTO shahokokuho) {
         this();
         setTitle("社保国保編集");
         this.shahokokuhoId = shahokokuho.shahokokuhoId;
@@ -47,12 +47,12 @@ public class EditShahokokuhoStage extends Stage {
         this.validFrom.setValue(LocalDate.parse(shahokokuho.validFrom));
         this.validUpto.setValue(
                 (shahokokuho.validUpto == null || "0000-00-00".equals(shahokokuho.validUpto) ?
-                        LocalDate.MAX: LocalDate.parse(shahokokuho.validUpto))
+                        LocalDate.MAX : LocalDate.parse(shahokokuho.validUpto))
         );
         this.kourei.setValue(shahokokuho.kourei);
     }
 
-    public EditShahokokuhoStage(){
+    public EditShahokokuhoStage() {
         setTitle("新規社保国保入力");
         VBox root = new VBox(4);
         {
@@ -135,28 +135,36 @@ public class EditShahokokuhoStage extends Stage {
         sizeToScene();
     }
 
-    public void setOnEnter(Consumer<ShahokokuhoDTO> cb){
+    public void setOnEnter(Consumer<ShahokokuhoDTO> cb) {
         dataProcessor = cb;
     }
 
-    private void doEnter(){
+    private void doEnter() {
         ShahokokuhoDTO data = new ShahokokuhoDTO();
         data.shahokokuhoId = this.shahokokuhoId;
         data.patientId = this.patientId;
-        ShahokokuhoConverter cvt = new ShahokokuhoConverter();
-        List<String> errs = new ArrayList<>();
-        if(Globals.isCheckingHokenshaBangou()) {
-            cvt.convertToHokenshaBangou(hokenshaBangou.get(), errs, val -> data.hokenshaBangou = val);
+        ErrorMessages errs = new ErrorMessages();
+        if (Globals.isCheckingHokenshaBangou()) {
+            errs.addIfError(
+                    verifyHokenshaBangouInput(hokenshaBangou.getValue(), val -> data.hokenshaBangou = val)
+            );
         }
-        cvt.convertToHihokenshaKigou(hihokenshaKigou.get(), errs, val -> data.hihokenshaKigou = val );
-        cvt.convertToHihokenshaBangou(hihokenshaBangou.get(), errs, val -> data.hihokenshaBangou = val);
-        cvt.convertToHonninKazoku(honnin.getValue(), errs, val -> data.honnin = val );
-        cvt.convertToValidFrom(validFrom.getValue(), errs, val -> data.validFrom = val );
-        cvt.convertToValidUpto(validUpto.getValue(), errs, val -> data.validUpto = val );
-        cvt.convertToKourei(kourei.getValue(), errs, val -> data.kourei = val );
-        cvt.integrationCheck(data, errs);
-        if( errs.size() > 0 ){
-            String message = String.join("\n", errs);
+        setHihokenshaKigou(hihokenshaKigou.get(), val -> data.hihokenshaKigou = val);
+        setHihokenshaBangou(hihokenshaBangou.get(), val -> data.hihokenshaBangou = val);
+        errs.addIfError(
+                verifyHonninKazoku(honnin.getValue(), value -> data.honnin = value),
+                verifyValidFrom(validFrom.getValue(), val -> data.validFrom = val),
+                verifyValidUpto(validUpto.getValue(), val -> data.validUpto = val),
+                verifyKourei(kourei.getValue(), val -> data.kourei = val)
+        );
+        if( errs.hasNoError() ){
+            errs.addIfError(
+                    verifyHihokenshaKigouAndBangou(data.hihokenshaKigou, data.hihokenshaBangou),
+                    verifyValidFromAndValidUpto(data.validFrom, data.validUpto)
+            );
+        }
+        if (errs.hasError()) {
+            String message = errs.getErrorMessage();
             Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
             alert.showAndWait();
         } else {

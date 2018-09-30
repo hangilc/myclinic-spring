@@ -3,6 +3,7 @@ package jp.chang.myclinic.util.verify;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.function.Consumer;
 
 public class ShahokokuhoVerifier {
@@ -33,21 +34,105 @@ public class ShahokokuhoVerifier {
     }
 
     public static String verifyHokenshaBangouInput(String bangouInput, Consumer<Integer> handler) {
-        if( bangouInput == null || bangouInput.isEmpty() ){
+        if (bangouInput == null || bangouInput.isEmpty()) {
             return "保険者番号が設定されていません。";
         }
         try {
             int bangou = Integer.parseInt(bangouInput);
             String err = verifyHokenshaBangou(bangou);
-            if( err == null ){
-                if( handler != null ) {
+            if (err == null) {
+                if (handler != null) {
                     handler.accept(bangou);
                 }
             }
             return err;
-        } catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             return "保険者番号が数値でありません。";
         }
+    }
+
+    public static void setHihokenshaKigou(String value, Consumer<String> handler) {
+        if (value == null) {
+            value = "";
+        }
+        if (handler != null) {
+            handler.accept(value);
+        }
+    }
+
+    public static void setHihokenshaBangou(String value, Consumer<String> handler) {
+        if (value == null) {
+            value = "";
+        }
+        if (handler != null) {
+            handler.accept(value);
+        }
+    }
+
+    public static String verifyHonninKazoku(int value, Consumer<Integer> handler) {
+        if (value == 0 || value == 1) {
+            if (handler != null) {
+                handler.accept(value);
+            }
+            return null;
+        } else {
+            return "本人・家族の値が不適切です。";
+        }
+    }
+
+    public static String verifyValidFrom(LocalDate value, Consumer<String> handler) {
+        if (value == null || value == LocalDate.MAX) {
+            return "資格取得日が不適切です。";
+        } else {
+            if (handler != null) {
+                handler.accept(value.toString());
+            }
+            return null;
+        }
+    }
+
+    public static String verifyValidUpto(LocalDate value, Consumer<String> handler) {
+        if (value == null) {
+            return "有効期限が不適切です。";
+        } else if (value == LocalDate.MAX) {
+            if (handler != null) {
+                handler.accept("0000-00-00");
+            }
+            return null;
+        } else {
+            if (handler != null) {
+                handler.accept(value.toString());
+            }
+            return null;
+        }
+    }
+
+    public static String verifyKourei(Integer value, Consumer<Integer> handler) {
+        if (value != null && value >= 0 && value <= 3) {
+            if (handler != null) {
+                handler.accept(value);
+            }
+            return null;
+        } else {
+            return "高齢の設定が不適切です。";
+        }
+    }
+
+    public static String verifyHihokenshaKigouAndBangou(String kigou, String bangou) {
+        if ((kigou == null || kigou.isEmpty()) && (bangou == null || bangou.isEmpty())) {
+            return "被保険者記号と被保険者番号が両方空白です。";
+        } else {
+            return null;
+        }
+    }
+
+    public static String verifyValidFromAndValidUpto(String validFrom, String validUpto) {
+        if (!validUpto.equals("0000-00-00")) {
+            if (validFrom.compareTo(validUpto) > 0) {
+                return "資格取得日が有効期限よりも前に日付になっています。";
+            }
+        }
+        return null;
     }
 
 }
