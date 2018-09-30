@@ -115,8 +115,6 @@ public class HokenUtil {
             return 3;
     }
 
-    ;
-
     public static int kouhiFutanWari(int futanshaBangou) {
         if (futanshaBangou / 1000000 == 41)
             return 1;
@@ -136,43 +134,6 @@ public class HokenUtil {
         }
     }
 
-    public static int calcCheckingDigit(int numberWithoutCheckingDigit){
-        if( numberWithoutCheckingDigit < 0 ){
-            throw new RuntimeException("Negative number for calcCheckingDigit.");
-        }
-        int s = 0;
-        int m = 2;
-        while( numberWithoutCheckingDigit > 0 ){
-            int d = numberWithoutCheckingDigit % 10;
-            int dm = d * m;
-            if (dm >= 10) {
-                dm = (dm / 10) + (dm % 10);
-            }
-            s += dm;
-            numberWithoutCheckingDigit /= 10;
-            if (m == 2) {
-                m = 1;
-            } else {
-                m = 2;
-            }
-        }
-        s = s % 10;
-        int v = 10 - s;
-        if( v == 10 ){
-            v = 0;
-        }
-        return v;
-    }
-
-    public static boolean verifyHokenshaBangou(int bangou){
-        int v = calcCheckingDigit(bangou/10);
-        return v == (bangou % 10);
-    }
-
-    private static boolean verifyTodoufukenBangou(int bangou){
-        return bangou >= 1 && bangou <= 47;
-    }
-
     public static String formatShahokokuhoHokenshaBangou(int bangou) {
         if (bangou <= 9999) {
             return String.format("%d", bangou);
@@ -183,116 +144,8 @@ public class HokenUtil {
         }
     }
 
-    public static ShahokokuhoError verifyShahokokuhoHokenshaBangou(int bangou) {
-        if( bangou < 0 ){
-            return ShahokokuhoError.HokenshaBangouIsNotPositive;
-        }
-        if( bangou <= 999 ){
-            return ShahokokuhoError.HokenshaBangouHasTooFewDigits;
-        }
-        if( bangou <= 9999 ){
-            return ShahokokuhoError.SeikanKenpo;
-        }
-        if( bangou > 100000000 ) {
-            return ShahokokuhoError.HokenshaBangouHasTooManyDigits;
-        }
-        if( !verifyHokenshaBangou(bangou) ){
-            return ShahokokuhoError.HokenshaBangouHasInvalidVerificationDigit;
-        }
-        return null;
-    }
-
-    public static ShahokokuhoError verifyShahokokuhoHokenshaBangouInput(String bangouInput){
-        if( bangouInput == null || bangouInput.isEmpty() ){
-            return ShahokokuhoError.HokenshaBangouIsEmpty;
-        }
-        try {
-            int bangou = Integer.parseInt(bangouInput);
-            return verifyShahokokuhoHokenshaBangou(bangou);
-        } catch(NumberFormatException ex){
-            return ShahokokuhoError.HokenshaBangouIsNotNumber;
-        }
-    }
-
-    public static KoukikoureiError verifyKoukikoureiHokenshaBangou(int bangou){
-        if( bangou <= 9999999 ){
-            return KoukikoureiError.HokenshaBangouHasTooFewDigits;
-        } else if( bangou > 99999999 ){
-            return KoukikoureiError.HokenshaBangouHasTooManyDigits;
-        }
-        int housei = bangou / 1000000;
-        if( housei != 39 ){
-            return KoukikoureiError.HouseiBangouIsInvalid;
-        }
-        if( !verifyHokenshaBangou(bangou) ){
-            return KoukikoureiError.HokenshaBangouHasInvalidVerificationDigit;
-        }
-        return null;
-    }
-
-    public static KoukikoureiError verifyKoukikoureiHokenshaBangouInput(String bangouInput){
-        if( bangouInput == null || bangouInput.isEmpty() ){
-            return KoukikoureiError.HokenshaBangouIsEmpty;
-        }
-        try {
-            int bangou = Integer.parseInt(bangouInput);
-            return verifyKoukikoureiHokenshaBangou(bangou);
-        } catch(NumberFormatException ex){
-            return KoukikoureiError.HokenshaBangouIsNotNumber;
-        }
-    }
-
-    public static KouhiFutanshaError verifyKouhiFutanshaBangou(int bangou){
-        if( bangou <= 9999999 ){
-            return KouhiFutanshaError.HokenshaBangouHasTooFewDigits;
-        } else if( bangou > 99999999 ){
-            return KouhiFutanshaError.HokenshaBangouHasTooManyDigits;
-        }
-        int rem = bangou % 1000000;
-        int todoufuken = rem / 10000;
-        if( !verifyTodoufukenBangou(todoufuken) ){
-            return KouhiFutanshaError.TodoufukenBangouIsInvalid;
-        }
-        if( !verifyHokenshaBangou(bangou) ){
-            return KouhiFutanshaError.HokenshaBangouHasInvalidVerificationDigit;
-        }
-        return null;
-    }
-
-    public static KouhiFutanshaError verifyKouhiFutanshaBangouInput(String bangouInput){
-        if( bangouInput == null || bangouInput.isEmpty() ){
-            return KouhiFutanshaError.HokenshaBangouIsEmpty;
-        }
-        try {
-            int bangou = Integer.parseInt(bangouInput);
-            return verifyKouhiFutanshaBangou(bangou);
-        } catch(NumberFormatException ex){
-            return KouhiFutanshaError.HokenshaBangouIsNotNumber;
-        }
-    }
-
-    public static KouhiJukyuushaError verifyKouhiJukyuushaBangou(int bangou){
-        if( bangou <= 999999 ){
-            return KouhiJukyuushaError.HokenshaBangouHasTooFewDigits;
-        } else if( bangou > 9999999 ){
-            return KouhiJukyuushaError.HokenshaBangouHasTooManyDigits;
-        }
-        if( !verifyHokenshaBangou(bangou) ){
-            return KouhiJukyuushaError.HokenshaBangouHasInvalidVerificationDigit;
-        }
-        return null;
-    }
-
-    public static KouhiJukyuushaError verifyKouhiJukyuushaBangouInput(String bangouInput){
-        if( bangouInput == null || bangouInput.isEmpty() ){
-            return KouhiJukyuushaError.HokenshaBangouIsEmpty;
-        }
-        try {
-            int bangou = Integer.parseInt(bangouInput);
-            return verifyKouhiJukyuushaBangou(bangou);
-        } catch(NumberFormatException ex){
-            return KouhiJukyuushaError.HokenshaBangouIsNotNumber;
-        }
+    public static String formatKouhiJukyuushaBangou(int bangou){
+        return String.format("%07d", bangou);
     }
 
 }

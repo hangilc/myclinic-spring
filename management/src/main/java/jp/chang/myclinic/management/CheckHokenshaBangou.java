@@ -2,7 +2,9 @@ package jp.chang.myclinic.management;
 
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.util.*;
+import jp.chang.myclinic.util.verify.KouhiVerifier;
+import jp.chang.myclinic.util.verify.KoukikoureiVerifier;
+import jp.chang.myclinic.util.verify.ShahokokuhoVerifier;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -54,30 +56,30 @@ public class CheckHokenshaBangou {
     }
 
     private static void verifyShahokokuho(int bangou, int patientId) throws IOException {
-        ShahokokuhoError err = HokenUtil.verifyShahokokuhoHokenshaBangou(bangou);
+        String err = ShahokokuhoVerifier.verifyHokenshaBangou(bangou);
         if( err != null ){
-            reportError(patientId, "社保国保", err.getMessage());
+            reportError(patientId, "社保国保", err);
         }
     }
 
     private static void verifyKoukikourei(String bangouInput, int patientId) throws IOException {
-        KoukikoureiError err = HokenUtil.verifyKoukikoureiHokenshaBangouInput(bangouInput);
+        String err = KoukikoureiVerifier.verifyHokenshaBangouInput(bangouInput, null);
         if( err != null ){
-            reportError(patientId, "後期高齢", err.getMessage());
+            reportError(patientId, "後期高齢", err);
         }
     }
 
     private static void verifyKouhiFutansha(int bangou, int patientId) throws IOException {
-        KouhiFutanshaError err = HokenUtil.verifyKouhiFutanshaBangou(bangou);
+        String err = KouhiVerifier.verifyFutanshaBangou(bangou);
         if( err != null ){
-            reportError(patientId, "公費負担者", err.getMessage());
+            reportError(patientId, "公費負担者", err);
         }
     }
 
     private static void verifyKouhiJukyuusha(int jukyuusha, int patientId) throws IOException {
-        KouhiJukyuushaError err = HokenUtil.verifyKouhiJukyuushaBangou(jukyuusha);
+        String err = KouhiVerifier.verifyJukyuushaBangou(jukyuusha);
         if( err != null ){
-            reportError(patientId, "公費受給者", err.getMessage());
+            reportError(patientId, "公費受給者", err);
         }
     }
 
