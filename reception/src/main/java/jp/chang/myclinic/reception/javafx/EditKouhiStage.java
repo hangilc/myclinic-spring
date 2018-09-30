@@ -84,6 +84,9 @@ abstract public class EditKouhiStage extends EditHokenBaseStage {
         }
         verifyValidFrom(em, KouhiVerifier::verifyValidFrom, value -> data.validFrom = value);
         verifyValidUpto(em, KouhiVerifier::verifyValidUpto, value -> data.validUpto = value);
+        if( em.hasNoError() ){
+            em.addIfError(KouhiVerifier.verifyValidFromAndValidUpto(data.validFrom, data.validUpto));
+        }
         if (em.hasError()) {
             String message = em.getErrorMessage();
             Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
