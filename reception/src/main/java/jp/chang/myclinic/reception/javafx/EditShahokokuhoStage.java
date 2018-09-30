@@ -1,17 +1,20 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.property.*;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 import jp.chang.myclinic.util.verify.ErrorMessages;
+import jp.chang.myclinic.util.verify.ShahokokuhoVerifier;
 import jp.chang.myclinic.utilfx.dateinput.DateInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +24,7 @@ import java.util.function.Consumer;
 
 import static jp.chang.myclinic.util.verify.ShahokokuhoVerifier.*;
 
-public class EditShahokokuhoStage extends Stage {
+abstract public class EditShahokokuhoStage extends EditHokenBaseStage {
 
     private static Logger logger = LoggerFactory.getLogger(EditShahokokuhoStage.class);
 
@@ -29,10 +32,7 @@ public class EditShahokokuhoStage extends Stage {
     private StringProperty hihokenshaKigou = new SimpleStringProperty("");
     private StringProperty hihokenshaBangou = new SimpleStringProperty("");
     private IntegerProperty honnin = new SimpleIntegerProperty();
-    private DateInput validFromInput;
-    private DateInput validUptoInput;
     private IntegerProperty kourei = new SimpleIntegerProperty();
-    private Consumer<ShahokokuhoDTO> dataProcessor = System.out::println;
     private int shahokokuhoId;
     private int patientId;
 
@@ -131,18 +131,6 @@ public class EditShahokokuhoStage extends Stage {
         sizeToScene();
     }
 
-    private void setValidUpto(String value){
-        if( value == null || value.equals("0000-00-00") ){
-            validUptoInput.clear();
-        } else {
-            validUptoInput.setValue(LocalDate.parse(value));
-        }
-    }
-
-    public void setOnEnter(Consumer<ShahokokuhoDTO> cb) {
-        dataProcessor = cb;
-    }
-
     private void doEnter() {
         ShahokokuhoDTO data = new ShahokokuhoDTO();
         data.shahokokuhoId = this.shahokokuhoId;
@@ -156,18 +144,8 @@ public class EditShahokokuhoStage extends Stage {
         setHihokenshaKigou(hihokenshaKigou.get(), val -> data.hihokenshaKigou = val);
         setHihokenshaBangou(hihokenshaBangou.get(), val -> data.hihokenshaBangou = val);
         errs.addIfError(verifyHonninKazoku(honnin.getValue(), value -> data.honnin = value));
-        LocalDate validFrom = validFromInput.getValue(errList -> {
-            errs.add("資格取得日が不適切です。（" + String.join("", errList) + "）");
-        });
-        if (validFrom != null) {
-            errs.addIfError(verifyValidFrom(validFrom, val -> data.validFrom = val));
-        }
-        LocalDate validUpto = validUptoInput.getValue(errList -> {
-            errs.add("有効期限が不適切です。（" + String.join("", errList) + "）");
-        });
-        if (validUpto != null) {
-            errs.addIfError(verifyValidUpto(validUpto, val -> data.validUpto = val));
-        }
+        verifyValidFrom(errs, ShahokokuhoVerifier::verifyValidFrom, value -> data.validFrom = value);
+        verifyValidUpto(errs, ShahokokuhoVerifier::verifyValidUpto, value -> data.validUpto = value);
         errs.addIfError(verifyKourei(kourei.getValue(), val -> data.kourei = val));
         if (errs.hasNoError()) {
             errs.addIfError(
@@ -180,8 +158,10 @@ public class EditShahokokuhoStage extends Stage {
             Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
             alert.showAndWait();
         } else {
-            dataProcessor.accept(data);
+            onEnter(data);
         }
     }
+
+    abstract void onEnter(ShahokokuhoDTO data);
 
 }

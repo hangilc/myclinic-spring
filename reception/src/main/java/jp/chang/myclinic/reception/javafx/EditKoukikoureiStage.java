@@ -1,28 +1,28 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.property.*;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.KoukikoureiDTO;
 import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 import jp.chang.myclinic.util.verify.ErrorMessages;
-import jp.chang.myclinic.utilfx.dateinput.DateInput;
+import jp.chang.myclinic.util.verify.KoukikoureiVerifier;
 
 import java.time.LocalDate;
 
 import static jp.chang.myclinic.util.verify.KoukikoureiVerifier.*;
 
-public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
+abstract public class EditKoukikoureiStage extends EditHokenBaseStage {
 
     private StringProperty hokenshaBangou = new SimpleStringProperty();
     private StringProperty hihokenshaBangou = new SimpleStringProperty();
-    private DateInput validFromInput = new DateInput(Gengou.Recent);
-    private DateInput validUptoInput = new DateInput(Gengou.Recent);
     private IntegerProperty futanWari = new SimpleIntegerProperty();
     private int koukikoureiId;
     private int patientId;
@@ -59,15 +59,8 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
                 hihokenshaBangou.bindBidirectional(hihokenshaBangouInput.textProperty());
                 form.add("被保険者番号", hihokenshaBangouInput);
             }
-            {
-                validFromInput.setGengou(Gengou.Current);
-                form.add("交付年月日", validFromInput);
-            }
-            {
-                validUptoInput.setGengou(Gengou.Current);
-                validUptoInput.setAllowNull(true);
-                form.add("有効期限", validUptoInput);
-            }
+            form.add("交付年月日", validFromInput);
+            form.add("有効期限", validUptoInput);
             {
                 HBox row = new HBox(4);
                 row.setAlignment(Pos.CENTER_LEFT);
@@ -113,18 +106,8 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
                 verifyHihokenshaBangouWithOutputString(hihokenshaBangou.get(), value -> {
                     data.hihokenshaBangou = value;
                 }));
-        LocalDate validFrom = validFromInput.getValue(errList -> {
-            em.add("資格取得日が不適切です。" + String.join("", errList) + "）");
-        });
-        if (validFrom != null) {
-            em.addIfError(verifyValidFrom(validFrom, val -> data.validFrom = val));
-        }
-        LocalDate validUpto = validUptoInput.getValue(errList -> {
-            em.add("有効期限が不適切です。（" + String.join("", errList) + "）");
-        });
-        if (validUpto != null) {
-            em.addIfError(verifyValidUpto(validUpto, val -> data.validUpto = val));
-        }
+        verifyValidFrom(em, KoukikoureiVerifier::verifyValidFrom, value -> data.validFrom = value);
+        verifyValidUpto(em, KoukikoureiVerifier::verifyValidUpto, value -> data.validUpto = value);
         em.addIfError(
                 verifyFutanWari(futanWari.get(), value -> {
                     data.futanWari = value;
@@ -137,8 +120,10 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
             Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
             alert.showAndWait();
         } else {
-            getEnterProcessor().accept(data);
+            onEnter(data);
         }
     }
+
+    abstract void onEnter(KoukikoureiDTO data);
 
 }

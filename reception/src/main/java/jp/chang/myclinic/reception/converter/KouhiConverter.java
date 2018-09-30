@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 public class KouhiConverter extends ConverterBase {
 
     public void convertToFutansha(String src, Consumer<Integer> cb){
-        String err = KouhiVerifier.verifyKouhiFutanshaBangouInput(src, cb);
+        String err = KouhiVerifier.verifyFutanshaBangouInput(src, cb);
         if( err != null ){
             addError(err);
         }

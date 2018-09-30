@@ -2,7 +2,7 @@ package jp.chang.myclinic.util.verify;
 
 import java.util.function.Consumer;
 
-public class KouhiVerifier {
+public class KouhiVerifier extends VerifierBase{
 
     //private static Logger logger = LoggerFactory.getLogger(KouhiVerifier.class);
 
@@ -26,7 +26,7 @@ public class KouhiVerifier {
         return null;
     }
 
-    public static String verifyKouhiFutanshaBangouInput(String bangouInput, Consumer<Integer> handler){
+    public static String verifyFutanshaBangouInput(String bangouInput, Consumer<Integer> handler){
         if( bangouInput == null || bangouInput.isEmpty() ){
             return "負担者番号が設定されていません。";
         }
