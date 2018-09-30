@@ -1,8 +1,7 @@
 package jp.chang.myclinic.reception.converter;
 
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
-import jp.chang.myclinic.util.HokenUtil;
-import jp.chang.myclinic.util.HokenshaBangouAnalysisResult;
+import jp.chang.myclinic.util.verify.ShahokokuhoVerifier;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,23 +10,9 @@ import java.util.function.Consumer;
 public class ShahokokuhoConverter {
 
     public void convertToHokenshaBangou(String src, List<String> errors, Consumer<Integer> cb){
-        if( src == null || src.isEmpty() ){
-            errors.add("保険者番号が入力されていません。");
-        }
-        try {
-            int value = Integer.parseInt(src);
-            if( value > 0 ){
-                HokenshaBangouAnalysisResult result = HokenUtil.analyzeHokenshaBangou(value);
-                if( result == HokenshaBangouAnalysisResult.OK ){
-                    cb.accept(value);
-                } else {
-                    errors.add("保険者番号：" + result.getMessage());
-                }
-            } else {
-                errors.add("保険者番号が正の値でありません。");
-            }
-        } catch(NumberFormatException ex){
-            errors.add("保険者番号の値が不適切です。");
+        String err = ShahokokuhoVerifier.verifyHokenshaBangouInput(src, cb);
+        if( err != null ){
+            errors.add(err);
         }
     }
 

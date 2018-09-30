@@ -6,7 +6,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -96,8 +98,9 @@ public class EditKouhiStage extends EditHokenBaseStage<KouhiDTO> {
         cvt.convertToValidFrom(validFrom.getValue(), value -> { data.validFrom = value; });
         cvt.convertToValidUpto(validUpto.getValue(), value -> { data.validUpto = value; });
         if( cvt.hasError() ){
-            System.out.println(cvt.getErrors());
-            System.out.println(data);
+            String message = String.join("\n", cvt.getErrors());
+            Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+            alert.showAndWait();
         } else {
             getEnterProcessor().accept(data);
         }

@@ -3,9 +3,7 @@ package jp.chang.myclinic.reception.javafx;
 import javafx.beans.property.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.Gengou;
@@ -113,8 +111,9 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
         cvt.convertToFutanWari(futanWari.get(), value -> { data.futanWari = value; });
         cvt.integralCheck(data);
         if( cvt.hasError() ){
-            System.out.println(cvt.getErrors());
-            System.out.println(data);
+            String message = String.join("\n", cvt.getErrors());
+            Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+            alert.showAndWait();
         } else {
             getEnterProcessor().accept(data);
         }

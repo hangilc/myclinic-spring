@@ -56,7 +56,7 @@ public class KouhiVerifier {
         return null;
     }
 
-    public static String verifyKouhiJukyuushaBangouInput(String bangouInput, Consumer<Integer> handler){
+    public static String verifyJukyuushaBangouInput(String bangouInput, Consumer<Integer> handler){
         if( bangouInput == null || bangouInput.isEmpty() ){
             return "受給者番号が設定されていません。";
         }

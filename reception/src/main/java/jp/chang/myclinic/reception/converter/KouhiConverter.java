@@ -1,16 +1,24 @@
 package jp.chang.myclinic.reception.converter;
 
+import jp.chang.myclinic.util.verify.KouhiVerifier;
+
 import java.time.LocalDate;
 import java.util.function.Consumer;
 
 public class KouhiConverter extends ConverterBase {
 
     public void convertToFutansha(String src, Consumer<Integer> cb){
-        convertToPositiveInt(src, "負担者番号", cb);
+        String err = KouhiVerifier.verifyKouhiFutanshaBangouInput(src, cb);
+        if( err != null ){
+            addError(err);
+        }
     }
 
     public void convertToJukyuusha(String src, Consumer<Integer> cb){
-        convertToPositiveInt(src, "受給者番号", cb);
+        String err = KouhiVerifier.verifyJukyuushaBangouInput(src, cb);
+        if( err != null ){
+            addError(err);
+        }
     }
 
     public void convertToValidFrom(LocalDate src, Consumer<String> cb){
