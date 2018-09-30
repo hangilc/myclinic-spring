@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.KouhiDTO;
+import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.converter.KouhiConverter;
 
 import java.time.LocalDate;
@@ -93,8 +94,14 @@ public class EditKouhiStage extends EditHokenBaseStage<KouhiDTO> {
         data.kouhiId = this.kouhiId;
         data.patientId = this.patientId;
         KouhiConverter cvt = new KouhiConverter();
-        cvt.convertToFutansha(futansha.get(), value -> { data.futansha = value; });
-        cvt.convertToJukyuusha(jukyuusha.get(), value -> { data.jukyuusha = value; });
+        if(Globals.isCheckingHokenshaBangou()) {
+            cvt.convertToFutansha(futansha.get(), value -> {
+                data.futansha = value;
+            });
+            cvt.convertToJukyuusha(jukyuusha.get(), value -> {
+                data.jukyuusha = value;
+            });
+        }
         cvt.convertToValidFrom(validFrom.getValue(), value -> { data.validFrom = value; });
         cvt.convertToValidUpto(validUpto.getValue(), value -> { data.validUpto = value; });
         if( cvt.hasError() ){

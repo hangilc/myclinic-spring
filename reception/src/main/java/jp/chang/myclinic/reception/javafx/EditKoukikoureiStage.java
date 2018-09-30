@@ -8,6 +8,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.KoukikoureiDTO;
+import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.converter.KoukikoureiConverter;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 
@@ -104,7 +105,11 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
         data.koukikoureiId = this.koukikoureiId;
         data.patientId = this.patientId;
         KoukikoureiConverter cvt = new KoukikoureiConverter();
-        cvt.convertToHokenshaBangou(hokenshaBangou.get(), value -> { data.hokenshaBangou = value; });
+        if(Globals.isCheckingHokenshaBangou()) {
+            cvt.convertToHokenshaBangou(hokenshaBangou.get(), value -> {
+                data.hokenshaBangou = value;
+            });
+        }
         cvt.convertToHihokenshaBangou(hihokenshaBangou.get(), value -> { data.hihokenshaBangou = value; });
         cvt.convertToValidFrom(validFrom.getValue(), value -> { data.validFrom = value; });
         cvt.convertToValidUpto(validUpto.getValue(), value -> { data.validUpto = value; });

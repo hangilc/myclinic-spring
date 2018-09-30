@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.converter.ShahokokuhoConverter;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
 import org.slf4j.Logger;
@@ -144,7 +145,9 @@ public class EditShahokokuhoStage extends Stage {
         data.patientId = this.patientId;
         ShahokokuhoConverter cvt = new ShahokokuhoConverter();
         List<String> errs = new ArrayList<>();
-        cvt.convertToHokenshaBangou(hokenshaBangou.get(), errs, val -> data.hokenshaBangou = val );
+        if(Globals.isCheckingHokenshaBangou()) {
+            cvt.convertToHokenshaBangou(hokenshaBangou.get(), errs, val -> data.hokenshaBangou = val);
+        }
         cvt.convertToHihokenshaKigou(hihokenshaKigou.get(), errs, val -> data.hihokenshaKigou = val );
         cvt.convertToHihokenshaBangou(hihokenshaBangou.get(), errs, val -> data.hihokenshaBangou = val);
         cvt.convertToHonninKazoku(honnin.getValue(), errs, val -> data.honnin = val );
