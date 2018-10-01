@@ -23,6 +23,14 @@ public class DateInputLogic {
     private StringProperty day = new SimpleStringProperty();
     private boolean nullAllowed = false;
 
+    public void bindBidirectionallyTo(ObjectProperty<Gengou> gengouProp, StringProperty nenProp,
+                                      StringProperty monthProp, StringProperty dayProp){
+        gengouProp.bindBidirectional(this.gengou);
+        nenProp.bindBidirectional(this.nen);
+        monthProp.bindBidirectional(this.month);
+        dayProp.bindBidirectional(this.day);
+    }
+
     public boolean isEmpty() {
         return nen.isEmpty().getValue() &&
                 month.isEmpty().getValue() &&
