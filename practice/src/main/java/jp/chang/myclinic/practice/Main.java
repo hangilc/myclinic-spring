@@ -18,6 +18,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
+// TODO: 湿布薬の摘要入力の既定値を「１日２枚」にする。
 @SpringBootApplication
 public class Main extends Application implements CommandLineRunner {
 
