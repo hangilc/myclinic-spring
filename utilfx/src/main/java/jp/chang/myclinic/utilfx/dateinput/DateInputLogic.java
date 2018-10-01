@@ -165,4 +165,21 @@ public class DateInputLogic {
             setDay("" + day);
         }
     }
+
+    public void setValueInput(String input, Consumer<String> errorHandler){
+        if( input == null || input.isEmpty() ){
+            if( errorHandler != null ){
+                errorHandler.accept("日付が入力されていません。");
+            }
+            return;
+        }
+        try {
+            LocalDate d = LocalDate.parse(input);
+            setValue(d);
+        } catch(NumberFormatException ex){
+            if( errorHandler != null ){
+                errorHandler.accept("日付の形式が不適切です。");
+            }
+        }
+    }
 }
