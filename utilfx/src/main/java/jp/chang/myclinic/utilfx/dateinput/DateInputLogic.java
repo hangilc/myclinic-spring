@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jp.chang.myclinic.consts.Gengou;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -16,7 +18,7 @@ import java.util.function.Consumer;
 
 public class DateInputLogic {
 
-    //private static Logger logger = LoggerFactory.getLogger(DateInputLogic.class);
+    private static Logger logger = LoggerFactory.getLogger(DateInputLogic.class);
     private ObjectProperty<Gengou> gengou = new SimpleObjectProperty<Gengou>(Gengou.Current);
     private StringProperty nen = new SimpleStringProperty();
     private StringProperty month = new SimpleStringProperty();
@@ -139,6 +141,34 @@ public class DateInputLogic {
             return null;
         } else {
             return value;
+        }
+    }
+
+    public String getStorageValue(Consumer<List<String>> errorHandler){
+        List<String> errs = new ArrayList<>();
+        LocalDate d = getValue(errs::addAll);
+        if( d != null ){
+            if( d == LocalDate.MAX ){
+                if( isNullAllowed() ){
+                    return "0000-00-00";
+                } else {
+                    errs.add("日付が設定されていません。");
+                    if( errorHandler != null ){
+                        errorHandler.accept(errs);
+                    }
+                    return null;
+                }
+            } else {
+                if( errs.size() > 0 ){
+                    logger.error("Cannot happen in getStorageValue");
+                }
+                return d.toString();
+            }
+        } else {
+            if( errorHandler != null ){
+                errorHandler.accept(errs);
+            }
+            return null;
         }
     }
 
