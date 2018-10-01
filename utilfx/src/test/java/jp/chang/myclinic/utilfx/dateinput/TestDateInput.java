@@ -175,5 +175,28 @@ public class TestDateInput {
         assertTrue(errors.size() > 0);
     }
 
+    @Test
+    public void testSetValue(){
+        DateInputLogic logic = new DateInputLogic();
+        LocalDate d = LocalDate.of(2018, 10, 1);
+        logic.setValue(d);
+        assertEquals(Gengou.Heisei, logic.getGengou());
+        assertEquals("30", logic.getNen());
+        assertEquals("10", logic.getMonth());
+        assertEquals("1", logic.getDay());
+        assertEquals(d, logic.getValue(errors::addAll));
+        assertEquals(0, errors.size());
+    }
+
+    @Test
+    public void testSetValueNull(){
+        DateInputLogic logic = new DateInputLogic();
+        logic.setNen("12");
+        logic.setMonth("2");
+        logic.setDay("6");
+        assertFalse(logic.isEmpty());
+        logic.setValue(null);
+        assertTrue(logic.isEmpty());
+    }
 
 }

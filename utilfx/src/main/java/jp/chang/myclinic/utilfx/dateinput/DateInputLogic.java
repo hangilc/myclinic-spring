@@ -9,6 +9,7 @@ import jp.chang.myclinic.consts.Gengou;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.chrono.JapaneseDate;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -16,13 +17,13 @@ import java.util.function.Consumer;
 public class DateInputLogic {
 
     //private static Logger logger = LoggerFactory.getLogger(DateInputLogic.class);
-    private ObjectProperty<Gengou> gengou = new SimpleObjectProperty<Gengou>();
+    private ObjectProperty<Gengou> gengou = new SimpleObjectProperty<Gengou>(Gengou.Current);
     private StringProperty nen = new SimpleStringProperty();
     private StringProperty month = new SimpleStringProperty();
     private StringProperty day = new SimpleStringProperty();
     private boolean nullAllowed = false;
 
-    private boolean isEmpty(){
+    public boolean isEmpty() {
         return nen.isEmpty().getValue() &&
                 month.isEmpty().getValue() &&
                 day.isEmpty().getValue();
@@ -84,7 +85,7 @@ public class DateInputLogic {
         this.nullAllowed = nullAllowed;
     }
 
-      public LocalDate getValue(Consumer<List<String>> errorHandler){
+    public LocalDate getValue(Consumer<List<String>> errorHandler) {
         List<String> err = new ArrayList<>();
         LocalDate value = null;
         if (!isEmpty()) {
@@ -124,12 +125,36 @@ public class DateInputLogic {
             }
         }
         if (err.size() > 0) {
-            if( errorHandler != null ){
+            if (errorHandler != null) {
                 errorHandler.accept(err);
             }
             return null;
         } else {
             return value;
+        }
+    }
+
+    public void clear(){
+        nen.setValue("");
+        month.setValue("");
+        day.setValue("");
+    }
+
+    public void setValue(LocalDate value){
+        if (value == null) {
+            setNen("");
+            setMonth("");
+            setDay("");
+        } else {
+            JapaneseDate jd = JapaneseDate.from(value);
+            Gengou gengou = Gengou.fromEra(jd.getEra());
+            setGengou(gengou);
+            int nen = jd.get(ChronoField.YEAR_OF_ERA);
+            int month = value.getMonthValue();
+            int day = value.getDayOfMonth();
+            setNen("" + nen);
+            setMonth("" + month);
+            setDay("" + day);
         }
     }
 }
