@@ -1,6 +1,6 @@
 package jp.chang.myclinic.reception.javafx;
 
-import jp.chang.myclinic.utilfx.dateinput.DateInputLogic;
+import jp.chang.myclinic.utilfx.dateinput.DateLogic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,18 +10,18 @@ public class EditHokenBaseLogic {
 
     //private static Logger logger = LoggerFactory.getLogger(EditHokenBaseLogic.class);
 
-    DateInputLogic validFrom = new DateInputLogic();
-    DateInputLogic validUpto = new DateInputLogic();
+    DateLogic validFrom = new DateLogic();
+    DateLogic validUpto = new DateLogic();
 
     public EditHokenBaseLogic(){
         validUpto.setNullAllowed(true);
     }
 
-    public DateInputLogic getValidFrom() {
+    public DateLogic getValidFrom() {
         return validFrom;
     }
 
-    public DateInputLogic getValidUpto() {
+    public DateLogic getValidUpto() {
         return validUpto;
     }
 

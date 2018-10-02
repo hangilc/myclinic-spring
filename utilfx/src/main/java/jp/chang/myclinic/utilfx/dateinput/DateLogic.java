@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.logic.Converter;
+import jp.chang.myclinic.util.logic.Logic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,14 +18,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class DateInputLogic {
+public class DateLogic implements Logic<LocalDate> {
 
-    private static Logger logger = LoggerFactory.getLogger(DateInputLogic.class);
+    private static Logger logger = LoggerFactory.getLogger(DateLogic.class);
     private ObjectProperty<Gengou> gengou = new SimpleObjectProperty<Gengou>(Gengou.Current);
     private StringProperty nen = new SimpleStringProperty();
     private StringProperty month = new SimpleStringProperty();
     private StringProperty day = new SimpleStringProperty();
     private boolean nullAllowed = false;
+    private String errorSeparator = "";
 
     public void bindBidirectionallyTo(ObjectProperty<Gengou> gengouProp, StringProperty nenProp,
                                       StringProperty monthProp, StringProperty dayProp){
@@ -95,7 +98,12 @@ public class DateInputLogic {
         this.nullAllowed = nullAllowed;
     }
 
-    public LocalDate getValue(Consumer<List<String>> errorHandler) {
+    public void setErrorSeparator(String errorSeparator) {
+        this.errorSeparator = errorSeparator;
+    }
+
+    @Override
+    public LocalDate getValue(Consumer<String> errorHandler) {
         List<String> err = new ArrayList<>();
         LocalDate value = null;
         if (!isEmpty()) {
@@ -136,39 +144,11 @@ public class DateInputLogic {
         }
         if (err.size() > 0) {
             if (errorHandler != null) {
-                errorHandler.accept(err);
+                errorHandler.accept(String.join(errorSeparator, err));
             }
             return null;
         } else {
             return value;
-        }
-    }
-
-    public String getStorageValue(Consumer<List<String>> errorHandler){
-        List<String> errs = new ArrayList<>();
-        LocalDate d = getValue(errs::addAll);
-        if( d != null ){
-            if( d == LocalDate.MAX ){
-                if( isNullAllowed() ){
-                    return "0000-00-00";
-                } else {
-                    errs.add("日付が設定されていません。");
-                    if( errorHandler != null ){
-                        errorHandler.accept(errs);
-                    }
-                    return null;
-                }
-            } else {
-                if( errs.size() > 0 ){
-                    logger.error("Cannot happen in getStorageValue");
-                }
-                return d.toString();
-            }
-        } else {
-            if( errorHandler != null ){
-                errorHandler.accept(errs);
-            }
-            return null;
         }
     }
 
@@ -178,38 +158,42 @@ public class DateInputLogic {
         day.setValue("");
     }
 
-    public void setValue(LocalDate value){
+    @Override
+    public String setValue(LocalDate value){
         if (value == null) {
             setNen("");
             setMonth("");
             setDay("");
+            return null;
         } else {
-            JapaneseDate jd = JapaneseDate.from(value);
-            Gengou gengou = Gengou.fromEra(jd.getEra());
-            setGengou(gengou);
-            int nen = jd.get(ChronoField.YEAR_OF_ERA);
-            int month = value.getMonthValue();
-            int day = value.getDayOfMonth();
-            setNen("" + nen);
-            setMonth("" + month);
-            setDay("" + day);
+            try {
+                JapaneseDate jd = JapaneseDate.from(value);
+                Gengou gengou = Gengou.fromEra(jd.getEra());
+                setGengou(gengou);
+                int nen = jd.get(ChronoField.YEAR_OF_ERA);
+                int month = value.getMonthValue();
+                int day = value.getDayOfMonth();
+                setNen("" + nen);
+                setMonth("" + month);
+                setDay("" + day);
+                return null;
+            } catch(DateTimeException ex){
+                return "日付の形式が適切でありません。";
+            }
         }
     }
 
-    public void setValueInput(String input, Consumer<String> errorHandler){
-        if( input == null || input.isEmpty() ){
-            if( errorHandler != null ){
-                errorHandler.accept("日付が入力されていません。");
-            }
-            return;
-        }
+    public static Converter<LocalDate, String> fromStorageConverter = (storage, handler) -> {
         try {
-            LocalDate d = LocalDate.parse(input);
-            setValue(d);
+            return LocalDate.parse(storage);
         } catch(NumberFormatException ex){
-            if( errorHandler != null ){
-                errorHandler.accept("日付の形式が不適切です。");
+            if( handler != null ){
+                handler.accept("数値の形式が不適切です。");
             }
+            return null;
         }
-    }
+    };
+
+    public static Converter<String, LocalDate> toStorageConverter = (date, handler) -> date.toString();
+
 }

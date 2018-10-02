@@ -12,12 +12,12 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class TestDateInput {
+public class TestDateLogic {
 
-    private static Logger logger = LoggerFactory.getLogger(TestDateInput.class);
+    private static Logger logger = LoggerFactory.getLogger(TestDateLogic.class);
     private List<String> errors = new ArrayList<>();
 
-    public TestDateInput() {
+    public TestDateLogic() {
 
     }
 
@@ -28,175 +28,188 @@ public class TestDateInput {
 
     @Test
     public void testEmpty(){
-        DateInputLogic logic = new DateInputLogic();
-        LocalDate value = logic.getValue(errors::addAll);
+        DateLogic logic = new DateLogic();
+        LocalDate value = logic.getValue(errors::add);
         assertNull(value);
         assertTrue(errors.size() > 0);
     }
 
     @Test
     public void testEmptyAllowed(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setNullAllowed(true);
-        LocalDate value = logic.getValue(errors::addAll);
+        LocalDate value = logic.getValue(errors::add);
         assertEquals(LocalDate.MAX, value);
         assertEquals(0, errors.size());
     }
 
     @Test
     public void testDate(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setGengou(Gengou.Shouwa);
         logic.setNen("32");
         logic.setMonth("6");
         logic.setDay("2");
-        LocalDate value = logic.getValue(errors::addAll);
+        LocalDate value = logic.getValue(errors::add);
         assertEquals(LocalDate.of(1957, 6, 2), value);
         assertEquals(0, errors.size());
     }
 
     @Test
     public void testGengouNull(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setGengou(null);
         logic.setNen("32");
         logic.setMonth("6");
         logic.setDay("2");
-        LocalDate value = logic.getValue(errors::addAll);
+        LocalDate value = logic.getValue(errors::add);
         assertNull(value);
         assertTrue(errors.size() > 0);
     }
 
     @Test
     public void testNenNull(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setGengou(Gengou.Shouwa);
         logic.setNen(null);
         logic.setMonth("6");
         logic.setDay("2");
-        LocalDate value = logic.getValue(errors::addAll);
+        LocalDate value = logic.getValue(errors::add);
         assertNull(value);
         assertTrue(errors.size() > 0);
     }
 
     @Test
     public void testNenEmpty(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setGengou(Gengou.Shouwa);
         logic.setNen("");
         logic.setMonth("6");
         logic.setDay("2");
-        LocalDate value = logic.getValue(errors::addAll);
+        LocalDate value = logic.getValue(errors::add);
         assertNull(value);
         assertTrue(errors.size() > 0);
     }
 
     @Test
     public void testNenInvalid(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setGengou(Gengou.Shouwa);
         logic.setNen("12a");
         logic.setMonth("6");
         logic.setDay("2");
-        LocalDate value = logic.getValue(errors::addAll);
+        LocalDate value = logic.getValue(errors::add);
         assertNull(value);
         assertTrue(errors.size() > 0);
     }
 
     @Test
     public void testMonthNull(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setGengou(Gengou.Shouwa);
         logic.setNen("32");
         logic.setMonth(null);
         logic.setDay("2");
-        LocalDate value = logic.getValue(errors::addAll);
+        LocalDate value = logic.getValue(errors::add);
         assertNull(value);
         assertTrue(errors.size() > 0);
     }
 
     @Test
     public void testMonthEmpty(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setGengou(Gengou.Shouwa);
         logic.setNen("32");
         logic.setMonth("");
         logic.setDay("2");
-        LocalDate value = logic.getValue(errors::addAll);
+        LocalDate value = logic.getValue(errors::add);
         assertNull(value);
         assertTrue(errors.size() > 0);
     }
 
     @Test
     public void testMonthInvalid(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setGengou(Gengou.Shouwa);
         logic.setNen("32");
         logic.setMonth("9a");
         logic.setDay("2");
-        LocalDate value = logic.getValue(errors::addAll);
+        LocalDate value = logic.getValue(errors::add);
         assertNull(value);
         assertTrue(errors.size() > 0);
     }
 
     @Test
     public void testDayNull(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setGengou(Gengou.Shouwa);
         logic.setNen("32");
         logic.setMonth("6");
         logic.setDay(null);
-        LocalDate value = logic.getValue(errors::addAll);
+        LocalDate value = logic.getValue(errors::add);
         assertNull(value);
         assertTrue(errors.size() > 0);
     }
 
     @Test
     public void testDayEmpty(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setGengou(Gengou.Shouwa);
         logic.setNen("32");
         logic.setMonth("6");
         logic.setDay("");
-        LocalDate value = logic.getValue(errors::addAll);
+        LocalDate value = logic.getValue(errors::add);
         assertNull(value);
         assertTrue(errors.size() > 0);
     }
 
     @Test
     public void testDayInvalid(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setGengou(Gengou.Shouwa);
         logic.setNen("32");
         logic.setMonth("6");
         logic.setDay("12B");
-        LocalDate value = logic.getValue(errors::addAll);
+        LocalDate value = logic.getValue(errors::add);
         assertNull(value);
         assertTrue(errors.size() > 0);
     }
 
     @Test
     public void testSetValue(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         LocalDate d = LocalDate.of(2018, 10, 1);
         logic.setValue(d);
         assertEquals(Gengou.Heisei, logic.getGengou());
         assertEquals("30", logic.getNen());
         assertEquals("10", logic.getMonth());
         assertEquals("1", logic.getDay());
-        assertEquals(d, logic.getValue(errors::addAll));
+        assertEquals(d, logic.getValue(errors::add));
         assertEquals(0, errors.size());
     }
 
     @Test
     public void testSetValueNull(){
-        DateInputLogic logic = new DateInputLogic();
+        DateLogic logic = new DateLogic();
         logic.setNen("12");
         logic.setMonth("2");
         logic.setDay("6");
         assertFalse(logic.isEmpty());
         logic.setValue(null);
         assertTrue(logic.isEmpty());
+    }
+
+    @Test
+    public void testSetStorage(){
+        DateLogic logic = new DateLogic();
+        String err = logic.setValueFromStorage("1957-06-02", DateLogic.fromStorageConverter);
+        assertNull(err);
+        LocalDate d = logic.getValue(errors::add);
+        assertEquals(0, errors.size());
+        assertEquals(LocalDate.of(1957, 6, 2), d);
+        String store = logic.getStorageValue(DateLogic.toStorageConverter, errors::add);
+        assertEquals(0, errors.size());
+        assertEquals("1957-06-02", store);
     }
 
 }
