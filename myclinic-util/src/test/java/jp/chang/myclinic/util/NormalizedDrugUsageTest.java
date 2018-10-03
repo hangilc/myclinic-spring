@@ -31,25 +31,29 @@ public class NormalizedDrugUsageTest {
         assertEquals("毎食後", nu.getUsageWithoutTimes());
     }
 
-    @Test void partsTest(){
+    @Test
+    public void partsTest(){
         NormalizedDrugUsage nu = new NormalizedDrugUsage("分３　毎食後");
         assertEquals(3, (Object)nu.getTimes());
         assertEquals(List.of("朝食後", "昼食後", "夕食後"), nu.getParts());
     }
 
-    @Test void parts2Test(){
+    @Test
+    public void parts2Test(){
         NormalizedDrugUsage nu = new NormalizedDrugUsage("分1　寝る前");
         assertEquals(1, (Object)nu.getTimes());
         assertEquals(List.of("寝る前"), nu.getParts());
     }
 
-    @Test void parts3Test(){
+    @Test
+    public void parts3Test(){
         NormalizedDrugUsage nu = new NormalizedDrugUsage("分1　眠前");
         assertEquals(1, (Object)nu.getTimes());
         assertEquals(List.of("寝る前"), nu.getParts());
     }
 
-    @Test void unevenTest(){
+    @Test
+    public void unevenTest(){
         NormalizedDrugUsage nu = new NormalizedDrugUsage("分３ (1-1-2) 毎食後");
         assertEquals(3, (Object)nu.getTimes());
         assertEquals("(1-1-2)", nu.getUnevenText());
@@ -58,7 +62,8 @@ public class NormalizedDrugUsageTest {
         assertEquals(List.of(1.0, 1.0, 2.0), nu.getWeights());
     }
 
-    @Test void uneven2Test(){
+    @Test
+    public void uneven2Test(){
         NormalizedDrugUsage nu = new NormalizedDrugUsage("分３  毎食後(1-1-2)");
         assertEquals(3, (Object)nu.getTimes());
         assertEquals("(1-1-2)", nu.getUnevenText());
@@ -68,11 +73,12 @@ public class NormalizedDrugUsageTest {
     }
 
     @Test(expected = DrugUsageFormatException.class)
-    void formatErrorTest(){
+    public void formatErrorTest(){
         new NormalizedDrugUsage("分１  毎食後");
     }
 
-    @Test void timesTest(){
+    @Test
+    public void timesTest(){
         NormalizedDrugUsage nu = new NormalizedDrugUsage("分３　朝昼食後、眠前");
         assertEquals(3, (Object)nu.getTimes());
         assertEquals(List.of("朝食後", "昼食後", "寝る前"), nu.getParts());
