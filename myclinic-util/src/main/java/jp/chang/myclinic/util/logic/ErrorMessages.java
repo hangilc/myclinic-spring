@@ -60,4 +60,8 @@ public class ErrorMessages {
         return errorMessages.size() > previousNumberOfErrors;
     }
 
+    public boolean hasNoErrorSince(int previousNumberOfErrors){
+        return !hasErrorSince(previousNumberOfErrors);
+    }
+
 }

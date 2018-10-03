@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.time.LocalDate;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class TestValidRange {
@@ -27,8 +28,30 @@ public class TestValidRange {
         LocalDate validFromValue = validFrom.getValue(em);
         LocalDate validUptoValue = validUpto.getValue(em);
         assertTrue(em.hasNoError());
-        boolean ver = ValidFromLogic.validateRange(validFromValue, validUptoValue, em);
-        assertTrue(ver);
+        ValidFromLogic.validateRange(validFrom, validUpto, em, (a, b) -> {
+            assertEquals(validFromValue, a);
+            assertEquals(validUptoValue, b);
+        });
         assertTrue(em.hasNoError());
     }
+
+    @Test
+    public void testRangeStorageValues(){
+        ValidFromLogic validFrom = new ValidFromLogic();
+        String validFromStorage = "2018-04-01";
+        validFrom.setStorageValue(validFromStorage, em);
+        ValidUptoLogic validUpto = new ValidUptoLogic();
+        String validUptoStorage = "2019-03-31";
+        validUpto.setStorageValue(validUptoStorage, em);
+        assertTrue(em.hasNoError());
+        LocalDate validFromValue = validFrom.getValue(em);
+        LocalDate validUptoValue = validUpto.getValue(em);
+        assertTrue(em.hasNoError());
+        ValidFromLogic.validateRangeToStorageValues(validFrom, validUpto, em, (a, b) -> {
+            assertEquals(validFromStorage, a);
+            assertEquals(validUptoStorage, b);
+        });
+        assertTrue(em.hasNoError());
+    }
+
 }
