@@ -3,6 +3,7 @@ package jp.chang.myclinic.utilfx.dateinput;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.logic.Converter;
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import jp.chang.myclinic.util.logic.Logic;
 
@@ -29,19 +30,19 @@ public class DateLogic implements Logic<LocalDate> {
         dayLogic.clear();
     }
 
-    public ObjectProperty<Gengou> gengouProperty(){
+    public ObjectProperty<Gengou> gengouProperty() {
         return gengouLogic.gengouProperty();
     }
 
-    public StringProperty nenProperty(){
+    public StringProperty nenProperty() {
         return nenLogic.nenProperty();
     }
 
-    public StringProperty monthProperty(){
+    public StringProperty monthProperty() {
         return monthLogic.monthProperty();
     }
 
-    public StringProperty dayProperty(){
+    public StringProperty dayProperty() {
         return dayLogic.dayProperty();
     }
 
@@ -87,7 +88,7 @@ public class DateLogic implements Logic<LocalDate> {
         return em.hasErrorSince(ne);
     }
 
-//    @Override
+    //    @Override
 //    public LocalDate getValue(ErrorMessages em) {
 //        LocalDate value = null;
 //        if (!isEmpty()) {
@@ -172,17 +173,15 @@ public class DateLogic implements Logic<LocalDate> {
 //        }
 //    }
 //
-//    public static Converter<LocalDate, String> fromStorageConverter = (storage, handler) -> {
-//        try {
-//            return LocalDate.parse(storage);
-//        } catch (NumberFormatException ex) {
-//            if (handler != null) {
-//                handler.accept("数値の形式が不適切です。");
-//            }
-//            return null;
-//        }
-//    };
-//
-//    public static Converter<String, LocalDate> toStorageConverter = (date, handler) -> date.toString();
+    public static Converter<LocalDate, String> fromStorageConverter = (storage, em) -> {
+        try {
+            return LocalDate.parse(storage);
+        } catch (NumberFormatException ex) {
+            em.add("数値の形式が不適切です。");
+            return null;
+        }
+    };
+
+    public static Converter<String, LocalDate> toStorageConverter = (date, handler) -> date.toString();
 
 }

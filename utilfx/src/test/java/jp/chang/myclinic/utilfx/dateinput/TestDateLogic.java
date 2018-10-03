@@ -180,28 +180,18 @@ public class TestDateLogic {
         assertTrue(em.hasNoError());
     }
 
-//    @Test
-//    public void testSetValueNull(){
-//        DateLogic logic = new DateLogic();
-//        logic.setNen("12");
-//        logic.setMonth("2");
-//        logic.setDay("6");
-//        assertFalse(logic.isEmpty());
-//        logic.setValue(null);
-//        assertTrue(logic.isEmpty());
-//    }
-//
-//    @Test
-//    public void testSetStorage(){
-//        DateLogic logic = new DateLogic();
-//        String err = logic.setValueFromStorage("1957-06-02", DateLogic.fromStorageConverter);
-//        assertNull(err);
-//        LocalDate d = logic.getValue(errors::add);
-//        assertEquals(0, errors.size());
-//        assertEquals(LocalDate.of(1957, 6, 2), d);
-//        String store = logic.getStorageValue(DateLogic.toStorageConverter, errors::add);
-//        assertEquals(0, errors.size());
-//        assertEquals("1957-06-02", store);
-//    }
+    @Test
+    public void testSetStorage(){
+        DateLogic logic = new DateLogic();
+        String store = "1957-06-02";
+        logic.setStorageValue(store, DateLogic.fromStorageConverter, em);
+        assertTrue(em.hasNoError());
+        LocalDate d = logic.getValue(em);
+        assertTrue(em.hasNoError());
+        assertEquals(LocalDate.of(1957, 6, 2), d);
+        String storeValue = logic.getStorageValue(DateLogic.toStorageConverter, em);
+        assertTrue(em.hasNoError());
+        assertEquals(store, storeValue);
+    }
 
 }
