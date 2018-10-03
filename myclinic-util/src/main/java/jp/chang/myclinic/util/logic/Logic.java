@@ -5,19 +5,27 @@ public interface Logic<T> {
     T getValue(ErrorMessages em);
     boolean setValue(T value, ErrorMessages em);
 
-    default String getStorageValue(Converter<String, T> converter, ErrorMessages em){
+    default T fromStorageValue(String storageValue, ErrorMessages em){
+        throw new RuntimeException("Not implemented");
+    }
+
+    default String toStorageValue(T value, ErrorMessages em){
+        throw new RuntimeException("Not implemented");
+    }
+
+    default String getStorageValue(ErrorMessages em){
         int ne = em.getNumberOfErrors();
         T value = getValue(em);
         if( em.hasErrorSince(ne) ){
             return null;
         } else {
-            return converter.convert(value, em);
+            return toStorageValue(value, em);
         }
     }
 
-    default boolean setStorageValue(String storageValue, Converter<T, String> converter, ErrorMessages em){
+    default boolean setStorageValue(String storageValue, ErrorMessages em){
         int ne = em.getNumberOfErrors();
-        T value = converter.convert(storageValue, em);
+        T value = fromStorageValue(storageValue, em);
         if( em.hasErrorSince(ne) ){
             return false;
         } else {

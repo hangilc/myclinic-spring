@@ -4,18 +4,14 @@ import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TestDateLogic {
 
-    private static Logger logger = LoggerFactory.getLogger(TestDateLogic.class);
+    //private static Logger logger = LoggerFactory.getLogger(TestDateLogic.class);
     private ErrorMessages em;
 
     public TestDateLogic() {
@@ -184,12 +180,12 @@ public class TestDateLogic {
     public void testSetStorage(){
         DateLogic logic = new DateLogic();
         String store = "1957-06-02";
-        logic.setStorageValue(store, DateLogic.fromStorageConverter, em);
+        logic.setStorageValue(store, em);
         assertTrue(em.hasNoError());
         LocalDate d = logic.getValue(em);
         assertTrue(em.hasNoError());
         assertEquals(LocalDate.of(1957, 6, 2), d);
-        String storeValue = logic.getStorageValue(DateLogic.toStorageConverter, em);
+        String storeValue = logic.getStorageValue(em);
         assertTrue(em.hasNoError());
         assertEquals(store, storeValue);
     }
