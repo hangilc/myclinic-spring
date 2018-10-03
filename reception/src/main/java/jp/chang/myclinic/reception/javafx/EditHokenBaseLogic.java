@@ -27,12 +27,12 @@ public class EditHokenBaseLogic {
 
     public String verifyValidFromAsStorageValue(Consumer<String> storageValueHandler){
         List<String> errs = new ArrayList<>();
-        String storageValue =validFrom.getStorageValue(errs::addAll);
+        String storageValue =validFrom.getStorageValue(DateLogic.toStorageConverter, errs::add);
         if( storageValue != null && errs.size() == 0 ){
             if( storageValueHandler != null ){
                 storageValueHandler.accept(storageValue);
-                return null;
             }
+            return null;
         } else {
             return "資格取得日が不適切です。（" + String.join("", errs) + "）";
         }
@@ -40,12 +40,12 @@ public class EditHokenBaseLogic {
 
     public String verifyValidUptoAsStorageValue(Consumer<String> storageValueHandler){
         List<String> errs = new ArrayList<>();
-        String storageValue =validFrom.getStorageValue(errs::addAll);
+        String storageValue =validFrom.getStorageValue(DateLogic.toStorageConverter, errs::add);
         if( storageValue != null && errs.size() == 0 ){
             if( storageValueHandler != null ){
                 storageValueHandler.accept(storageValue);
-                return null;
             }
+            return null;
         } else {
             return "有効期限が不適切です。（" + String.join("", errs) + "）";
         }
