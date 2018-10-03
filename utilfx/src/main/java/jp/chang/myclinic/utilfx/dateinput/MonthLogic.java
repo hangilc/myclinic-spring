@@ -51,13 +51,12 @@ class MonthLogic implements Logic<Integer> {
     }
 
     @Override
-    public boolean setValue(Integer value, ErrorMessages em) {
+    public void setValue(Integer value, ErrorMessages em) {
         if( value == null ){
             clear();
         } else {
             month.setValue("" + value);
         }
-        return true;
     }
 
 }

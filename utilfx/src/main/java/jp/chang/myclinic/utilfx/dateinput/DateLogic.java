@@ -65,7 +65,7 @@ public class DateLogic implements Logic<LocalDate> {
     }
 
     @Override
-    public boolean setValue(LocalDate value, ErrorMessages em) {
+    public void setValue(LocalDate value, ErrorMessages em) {
         int ne = em.getNumberOfErrors();
         if (value == null) {
             clear();
@@ -84,7 +84,6 @@ public class DateLogic implements Logic<LocalDate> {
                 em.add("日付の形式が適切でありません。");
             }
         }
-        return em.hasErrorSince(ne);
     }
 
     @Override

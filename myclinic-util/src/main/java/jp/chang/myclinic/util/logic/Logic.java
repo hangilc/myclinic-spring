@@ -3,7 +3,7 @@ package jp.chang.myclinic.util.logic;
 public interface Logic<T> {
 
     T getValue(ErrorMessages em);
-    boolean setValue(T value, ErrorMessages em);
+    void setValue(T value, ErrorMessages em);
 
     default T fromStorageValue(String storageValue, ErrorMessages em){
         throw new RuntimeException("Not implemented");
@@ -23,76 +23,12 @@ public interface Logic<T> {
         }
     }
 
-    default boolean setStorageValue(String storageValue, ErrorMessages em){
+    default void setStorageValue(String storageValue, ErrorMessages em){
         int ne = em.getNumberOfErrors();
         T value = fromStorageValue(storageValue, em);
-        if( em.hasErrorSince(ne) ){
-            return false;
-        } else {
-            return setValue(value, em);
+        if( em.hasNoErrorSince(ne) ){
+            setValue(value, em);
         }
     }
-
-
-//    T getValue(Consumer<String> errorHandler);
-//    String setValue(T value);
-//
-//    default boolean verify(Consumer<T> valueHandler, Consumer<String> errorHandler){
-//        class Local {
-//            private boolean hasError = false;
-//            private String errorMessage;
-//        }
-//        Local local = new Local();
-//        T value = getValue(e -> {
-//            local.hasError = true;
-//            local.errorMessage = e;
-//        });
-//        if( !local.hasError ){
-//            valueHandler.accept(value);
-//            return true;
-//        } else {
-//            errorHandler.accept(local.errorMessage);
-//            return false;
-//        }
-//    }
-//
-//    default boolean verify(Consumer<T> valueHandler, List<String> errorAccum){
-//        return verify(valueHandler, errorAccum::add);
-//    }
-//
-//    default String setValueFromStorage(String storageValue, Converter<T, String> converter){
-//        class Local {
-//            private boolean hasError = false;
-//            private String errorMessage;
-//        }
-//        Local local = new Local();
-//        T value = converter.convert(storageValue, e -> {
-//            local.hasError = true;
-//            local.errorMessage = e;
-//        });
-//        if( local.hasError ){
-//            return local.errorMessage;
-//        } else {
-//            return setValue(value);
-//        }
-//    }
-//
-//    default String getStorageValue(Converter<String,T> converter, Consumer<String> errorHandler){
-//        class Local {
-//            private boolean hasError = false;
-//        }
-//        Local local = new Local();
-//        T value = getValue(e -> {
-//            if( errorHandler != null ){
-//                errorHandler.accept(e);
-//                local.hasError = true;
-//            }
-//        });
-//        if( local.hasError ){
-//            return null;
-//        } else {
-//            return converter.convert(value, errorHandler);
-//        }
-//    }
 
 }

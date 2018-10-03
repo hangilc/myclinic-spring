@@ -1,10 +1,13 @@
 package jp.chang.myclinic.util;
 
-import org.junit.jupiter.api.Test;
+
+import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 
 public class NormalizedDrugUsageTest {
 
@@ -64,8 +67,9 @@ public class NormalizedDrugUsageTest {
         assertEquals(List.of(1.0, 1.0, 2.0), nu.getWeights());
     }
 
-    @Test void formatErrorTest(){
-        assertThrows(DrugUsageFormatException.class, () -> new NormalizedDrugUsage("分１  毎食後"));
+    @Test(expected = DrugUsageFormatException.class)
+    void formatErrorTest(){
+        new NormalizedDrugUsage("分１  毎食後");
     }
 
     @Test void timesTest(){

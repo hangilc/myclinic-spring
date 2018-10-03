@@ -54,4 +54,21 @@ public class TestValidRange {
         assertTrue(em.hasNoError());
     }
 
+    @Test
+    public void testInvalidRange(){
+        ValidFromLogic validFrom = new ValidFromLogic();
+        validFrom.setStorageValue("2019-03-31", em);
+        ValidUptoLogic validUpto = new ValidUptoLogic();
+        validUpto.setStorageValue("2018-04-01", em);
+        assertTrue(em.hasNoError());
+        LocalDate validFromValue = validFrom.getValue(em);
+        LocalDate validUptoValue = validUpto.getValue(em);
+        assertTrue(em.hasNoError());
+        ValidFromLogic.validateRange(validFrom, validUpto, em, (a, b) -> {
+            assertEquals(validFromValue, a);
+            assertEquals(validUptoValue, b);
+        });
+        assertTrue(em.hasError());
+    }
+
 }

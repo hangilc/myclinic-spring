@@ -51,13 +51,12 @@ class DayLogic implements Logic<Integer> {
     }
 
     @Override
-    public boolean setValue(Integer value, ErrorMessages em) {
+    public void setValue(Integer value, ErrorMessages em) {
         if( value == null ){
             clear();
         } else {
             day.setValue("" + value);
         }
-        return true;
     }
 
 }

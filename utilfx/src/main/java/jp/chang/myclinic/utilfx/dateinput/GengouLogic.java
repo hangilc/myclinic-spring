@@ -35,9 +35,8 @@ class GengouLogic implements Logic<Gengou>  {
     }
 
     @Override
-    public boolean setValue(Gengou value, ErrorMessages em) {
+    public void setValue(Gengou value, ErrorMessages em) {
         gengou.setValue(value);
-        return true;
     }
 
 }

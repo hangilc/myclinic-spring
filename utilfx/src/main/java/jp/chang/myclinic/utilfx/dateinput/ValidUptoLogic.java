@@ -18,12 +18,11 @@ public class ValidUptoLogic extends DateLogic {
     }
 
     @Override
-    public boolean setValue(LocalDate value, ErrorMessages em) {
+    public void setValue(LocalDate value, ErrorMessages em) {
         if( value == LocalDate.MAX ){
             clear();
-            return true;
         } else {
-            return super.setValue(value, em);
+            super.setValue(value, em);
         }
     }
 
