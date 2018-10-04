@@ -1,5 +1,7 @@
 package jp.chang.myclinic.util.logic;
 
+import java.util.function.Supplier;
+
 public interface Logic<T> {
 
     T getValue(ErrorMessages em);
@@ -28,6 +30,15 @@ public interface Logic<T> {
         T value = fromStorageValue(storageValue, em);
         if( em.hasNoErrorSince(ne) ){
             setValue(value, em);
+        }
+    }
+
+    default boolean validate(Supplier<Boolean> pred, ErrorMessages em, String format, Object... args){
+        if( pred.get() ){
+            return true;
+        } else {
+            em.add(String.format(format, args));
+            return false;
         }
     }
 
