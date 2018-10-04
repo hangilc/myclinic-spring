@@ -13,8 +13,17 @@ public class IntegerLogic implements Logic<Integer> {
         this.name = name;
     }
 
+    public boolean isEmpty(){
+        String text = input.getValue();
+        return text == null || text.isEmpty();
+    }
+
     public void clear(){
         input.setValue("");
+    }
+
+    public String getName(){
+        return name;
     }
 
     @Override
