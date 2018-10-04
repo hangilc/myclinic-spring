@@ -1,30 +1,36 @@
 package jp.chang.myclinic.reception.javafx.edit_hoken;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import jp.chang.myclinic.util.logic.ErrorMessages;
-import jp.chang.myclinic.util.logic.Logic;
+import jp.chang.myclinic.util.logic.PositiveIntegerLogic;
+import jp.chang.myclinic.util.verify.HokenVerifierLib;
 
-class HokenshaBangouLogic implements Logic<Integer> {
+class HokenshaBangouLogic extends PositiveIntegerLogic {
 
     //private static Logger logger = LoggerFactory.getLogger(HokenshaBangouLogic.class);
-    private StringProperty hokenshaBangou = new SimpleStringProperty();
 
-    void clear(){
-        hokenshaBangou.setValue("");
+    HokenshaBangouLogic(String name){
+        super(name);
     }
 
     @Override
     public Integer getValue(ErrorMessages em) {
-        return null;
+        int ne = em.getNumberOfErrors();
+        Integer value = super.getValue(em);
+        if( em.hasErrorSince(ne) ){
+            return null;
+        }
+        validateNumberOfDigits(value, em);
+        if( em.hasErrorSince(ne) ){
+            return null;
+        }
+        if( !HokenVerifierLib.verifyHokenshaBangou(value) ){
+            em.add(String.format("%sの検証番号が正しくありません。", getName()));
+            return null;
+        }
+        return value;
     }
 
-    @Override
-    public void setValue(Integer value, ErrorMessages em) {
-        if( value == null ){
-            clear();
-        } else {
-            hokenshaBangou.setValue("" + value);
-        }
+    void validateNumberOfDigits(int value, ErrorMessages em){
+
     }
 }
