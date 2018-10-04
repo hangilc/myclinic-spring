@@ -1,7 +1,8 @@
-package jp.chang.myclinic.utilfx.dateinput;
+package jp.chang.myclinic.util.logic.date;
 
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.util.logic.ErrorMessages;
+import jp.chang.myclinic.util.logic.date.DateLogic;
 import org.junit.Before;
 import org.junit.Test;
 

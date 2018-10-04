@@ -1,4 +1,4 @@
-package jp.chang.myclinic.utilfx.dateinput;
+package jp.chang.myclinic.util.logic.date;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -6,7 +6,7 @@ import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import jp.chang.myclinic.util.logic.Logic;
 
-class GengouLogic implements Logic<Gengou>  {
+class GengouLogic implements Logic<Gengou> {
 
     //private static Logger logger = LoggerFactory.getLogger(GengouLogic.class);
     private ObjectProperty<Gengou> gengou = new SimpleObjectProperty<>();

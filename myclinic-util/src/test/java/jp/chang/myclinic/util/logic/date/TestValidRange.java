@@ -1,6 +1,8 @@
-package jp.chang.myclinic.utilfx.dateinput;
+package jp.chang.myclinic.util.logic.date;
 
 import jp.chang.myclinic.util.logic.ErrorMessages;
+import jp.chang.myclinic.util.logic.date.ValidFromLogic;
+import jp.chang.myclinic.util.logic.date.ValidUptoLogic;
 import org.junit.Before;
 import org.junit.Test;
 

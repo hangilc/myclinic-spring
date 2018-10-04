@@ -1,51 +1,51 @@
-package jp.chang.myclinic.utilfx.dateinput;
+package jp.chang.myclinic.util.logic.date;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import jp.chang.myclinic.util.logic.Logic;
 
-class MonthLogic implements Logic<Integer> {
+class DayLogic implements Logic<Integer> {
 
     //private static Logger logger = LoggerFactory.getLogger(NenLogic.class);
-    private StringProperty month = new SimpleStringProperty();
+    private StringProperty day = new SimpleStringProperty();
 
     public boolean isEmpty(){
-        String text = month.getValue();
+        String text = day.getValue();
         return text == null || text.isEmpty();
     }
 
     public void clear(){
-        month.setValue("");
+        day.setValue("");
     }
 
-    public String getMonth() {
-        return month.get();
+    public String getDay() {
+        return day.get();
     }
 
-    public StringProperty monthProperty() {
-        return month;
+    public StringProperty dayProperty() {
+        return day;
     }
 
-    public void setMonth(String month) {
-        this.month.set(month);
+    public void setDay(String day) {
+        this.day.set(day);
     }
 
     @Override
     public Integer getValue(ErrorMessages em) {
         if( isEmpty() ){
-            em.add("月の値が設定されていません。");
+            em.add("日の値が設定されていません。");
             return null;
         }
         try {
-            int value = Integer.parseInt(month.getValue());
-            if( !(value >= 1 && value <= 12) ){
-                em.add("月の値が適切な範囲内でありません。");
+            int value = Integer.parseInt(day.getValue());
+            if( !(value >= 1 && value <= 31) ){
+                em.add("日の値が適切な範囲内でありません。");
                 return null;
             }
             return value;
         } catch(NumberFormatException ex){
-            em.add("月の値が数値でありません。");
+            em.add("日の値が数値でありません。");
             return null;
         }
     }
@@ -55,7 +55,7 @@ class MonthLogic implements Logic<Integer> {
         if( value == null ){
             clear();
         } else {
-            month.setValue("" + value);
+            day.setValue("" + value);
         }
     }
 

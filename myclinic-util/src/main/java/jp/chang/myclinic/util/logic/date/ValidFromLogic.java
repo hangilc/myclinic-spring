@@ -1,4 +1,4 @@
-package jp.chang.myclinic.utilfx.dateinput;
+package jp.chang.myclinic.util.logic.date;
 
 import jp.chang.myclinic.util.logic.ErrorMessages;
 

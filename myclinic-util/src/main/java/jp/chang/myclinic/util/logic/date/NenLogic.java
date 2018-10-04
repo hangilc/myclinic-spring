@@ -1,4 +1,4 @@
-package jp.chang.myclinic.utilfx.dateinput;
+package jp.chang.myclinic.util.logic.date;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
