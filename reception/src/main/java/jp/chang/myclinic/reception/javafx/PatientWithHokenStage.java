@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.reception.javafx.edit_hoken.EnterShahokokuhoStage;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -290,25 +291,26 @@ class PatientWithHokenStage extends Stage {
     }
 
     private void doNewShahokokuho() {
-        EditShahokokuhoStage stage = new EditShahokokuhoStage(){
-            @Override
-            void onEnter(ShahokokuhoDTO data) {
-                data.patientId = thePatient.getValue().patientId;
-                Service.api.enterShahokokuho(data)
-                        .thenAccept(shahokokuhoId -> {
-                            Platform.runLater(() -> {
-                                data.shahokokuhoId = shahokokuhoId;
-                                fetchAndUpdateHokenList();
-                                this.close();
-                            });
-                        })
-                        .exceptionally(ex -> {
-                            logger.error("Failed to enter shahokokuho.", ex);
-                            Platform.runLater(() -> GuiUtil.alertException("社保・国保の新規登録に失敗しました。", ex));
-                            return null;
-                        });
-            }
-        };
+//        EditShahokokuhoStage stage = new EditShahokokuhoStage(){
+//            @Override
+//            void onEnter(ShahokokuhoDTO data) {
+//                data.patientId = thePatient.getValue().patientId;
+//                Service.api.enterShahokokuho(data)
+//                        .thenAccept(shahokokuhoId -> {
+//                            Platform.runLater(() -> {
+//                                data.shahokokuhoId = shahokokuhoId;
+//                                fetchAndUpdateHokenList();
+//                                this.close();
+//                            });
+//                        })
+//                        .exceptionally(ex -> {
+//                            logger.error("Failed to enter shahokokuho.", ex);
+//                            Platform.runLater(() -> GuiUtil.alertException("社保・国保の新規登録に失敗しました。", ex));
+//                            return null;
+//                        });
+//            }
+//        };
+        EnterShahokokuhoStage stage = new EnterShahokokuhoStage();
         stage.showAndWait();
     }
 
