@@ -1,9 +1,6 @@
 package jp.chang.myclinic.reception.javafx.edit_hoken;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.util.logic.ErrorMessages;
@@ -17,10 +14,10 @@ class ShahokokuhoLogic implements Logic<ShahokokuhoDTO> {
     private ShahokokuhoHokenshaBangouLogic hokenshaBangou = new ShahokokuhoHokenshaBangouLogic();
     private StringProperty hihokenshaKigou = new SimpleStringProperty();
     private StringProperty hihokenshaBangou = new SimpleStringProperty();
-    private IntegerProperty honninKazoku = new SimpleIntegerProperty();
+    private ObjectProperty<Integer> honninKazoku = new SimpleObjectProperty<Integer>();
     private ValidFromLogic validFrom = new ValidFromLogic();
     private ValidUptoLogic validUpto = new ValidUptoLogic();
-    private IntegerProperty kourei = new SimpleIntegerProperty();
+    private ObjectProperty<Integer> kourei = new SimpleObjectProperty<Integer>();
 
     ShahokokuhoLogic() {
         honninKazoku.setValue(0);
@@ -41,7 +38,7 @@ class ShahokokuhoLogic implements Logic<ShahokokuhoDTO> {
         return hihokenshaBangou;
     }
 
-    public IntegerProperty honninKazokuProperty(){
+    public ObjectProperty<Integer> honninKazokuProperty(){
         return honninKazoku;
     }
 
@@ -53,7 +50,7 @@ class ShahokokuhoLogic implements Logic<ShahokokuhoDTO> {
         return validUpto;
     }
 
-    public IntegerProperty koureiProperty(){
+    public ObjectProperty<Integer> koureiProperty(){
         return kourei;
     }
 
