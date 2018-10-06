@@ -9,19 +9,18 @@ import javafx.stage.Stage;
 public class EnterShahokokuhoStage extends Stage {
 
     //private static Logger logger = LoggerFactory.getLogger(EnterShahokokuhoStage.class);
-    private TextField hokenshaBangouInput = new TextField();
 
     public EnterShahokokuhoStage() {
         setTitle("新規社保国保入力");
         Parent root = createMainPane();
         root.getStylesheets().add("css/Main.css");
-        root.getStyleClass().add("enter-shahokokuho-stage");
+        root.getStyleClass().addAll("dialog-root", "enter-shahokokuho-stage");
         setScene(new Scene(root));
     }
 
     private Parent createMainPane(){
         VBox root = new VBox(4);
-        EnterShahokokuhoForm form = new EnterShahokokuhoForm();
+        ShahokokuhoForm form = ShahokokuhoBinder.create();
         root.getChildren().addAll(form);
         return root;
     }

@@ -10,6 +10,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.chrono.JapaneseDate;
 import java.time.temporal.ChronoField;
+import java.util.List;
 
 public class DateLogic implements Logic<LocalDate> {
 
@@ -31,6 +32,10 @@ public class DateLogic implements Logic<LocalDate> {
 
     public ObjectProperty<Gengou> gengouProperty() {
         return gengouLogic.gengouProperty();
+    }
+
+    public void setGengou(Gengou gengou) {
+        gengouLogic.setGengou(gengou);
     }
 
     public StringProperty nenProperty() {

@@ -16,10 +16,6 @@
     -fx-pref-width: 3em;
 }
 
-.stage {
-    -fx-padding: 10px;
-}
-
 .shahokokuho-form .hokensha-bangou-input {
     -fx-pref-width: 140px;
     -fx-max-width: 140px;

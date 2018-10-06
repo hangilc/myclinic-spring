@@ -13,6 +13,10 @@ public class IntegerLogic implements Logic<Integer> {
         this.name = name;
     }
 
+    public StringProperty getInput(){
+        return input;
+    }
+
     public boolean isEmpty(){
         String text = input.getValue();
         return text == null || text.isEmpty();
