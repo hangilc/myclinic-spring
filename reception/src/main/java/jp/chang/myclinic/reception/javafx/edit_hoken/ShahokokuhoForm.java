@@ -1,6 +1,7 @@
 package jp.chang.myclinic.reception.javafx.edit_hoken;
 
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -71,8 +72,8 @@ class ShahokokuhoForm extends Form {
         return hihokenshaBangouInput.textProperty();
     }
 
-    public IntegerProperty honninKazokuProperty(){
-        return IntegerProperty.integerProperty(honninKazoku.valueProperty());
+    public ObjectProperty<Integer> honninKazokuProperty(){
+        return honninKazoku.valueProperty();
     }
 
     public DateForm validFromForm(){

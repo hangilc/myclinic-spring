@@ -1,5 +1,7 @@
 package jp.chang.myclinic.reception.javafx.edit_hoken;
 
+import javafx.beans.property.IntegerProperty;
+
 public class ShahokokuhoBinder {
 
     //private static Logger logger = LoggerFactory.getLogger(ShahokokuhoBinder.class);
@@ -10,7 +12,8 @@ public class ShahokokuhoBinder {
         logic.hokenshaBangouProperty().bindBidirectional(form.hokenshaBangouProperty());
         logic.hihokenshaKigouProperty().bindBidirectional(form.hihokenshaKigouProperty());
         logic.hihokenshaBangouProperty().bindBidirectional(form.hihokenshaBangouProperty());
-        logic.honninKazokuProperty().bindBidirectional(form.honninKazokuProperty());
+        //logic.honninKazokuProperty().bindBidirectional(form.honninKazokuProperty());
+        IntegerProperty.integerProperty(form.honninKazokuProperty()).setValue(0);
         return form;
     }
 
