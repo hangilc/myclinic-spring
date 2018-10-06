@@ -20,6 +20,7 @@ import java.time.chrono.JapaneseEra;
 import java.util.*;
 import java.util.stream.Collectors;
 
+// TODO: 翌月の病名を含めない
 class Data {
 
     private static Logger logger = LoggerFactory.getLogger(Data.class);
