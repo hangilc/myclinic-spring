@@ -98,7 +98,7 @@ class ShahokokuhoForm extends Form {
         hokenshaBangouProperty().bindBidirectional(logic.hokenshaBangouProperty());
         hihokenshaKigouProperty().bindBidirectional(logic.hihokenshaKigouProperty());
         hihokenshaBangouProperty().bindBidirectional(logic.hihokenshaBangouProperty());
-        honninKazokuProperty().bindBidirectional(logic.honninKazokuProperty());
+        honninKazokuProperty().bindBidirectional(logic.honninKazokuProperty().asObject());
         validFromForm().bindDateLogic(logic.validFromLogic());
         validUptoForm().bindDateLogic(logic.validUptoLogic());
         koureiProperty().bindBidirectional(logic.koureiProperty());

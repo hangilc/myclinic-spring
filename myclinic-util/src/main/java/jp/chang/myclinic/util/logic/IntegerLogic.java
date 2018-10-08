@@ -30,6 +30,11 @@ public class IntegerLogic implements Logic<Integer> {
         return name;
     }
 
+    public int asInt(ErrorMessages em){
+        Integer value = getValue(em);
+        return value == null ? 0 : value;
+    }
+
     @Override
     public Integer getValue(ErrorMessages em) {
         return fromStorageValue(input.getValue(), em);

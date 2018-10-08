@@ -26,6 +26,14 @@ public class TestInteger extends LogicBase {
     }
 
     @Test
+    public void testAsInt(){
+        IntegerLogic logic = new IntegerLogic("TEST");
+        Integer value = logic.asInt(em);
+        assertTrue(em.hasError());
+        assertEquals(0, (int)value);
+    }
+
+    @Test
     public void testInput(){
         IntegerLogic logic = new IntegerLogic("TEST");
         logic.setStorageValue("32", em);

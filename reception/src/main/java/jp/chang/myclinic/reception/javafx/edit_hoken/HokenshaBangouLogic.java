@@ -17,15 +17,15 @@ class HokenshaBangouLogic extends PositiveIntegerLogic {
         int ne = em.getNumberOfErrors();
         Integer value = super.getValue(em);
         if( em.hasErrorSince(ne) ){
-            return null;
+            return 0;
         }
         validateNumberOfDigits(value, em);
         if( em.hasErrorSince(ne) ){
-            return null;
+            return 0;
         }
         if( !HokenVerifierLib.verifyHokenshaBangou(value) ){
             em.add(String.format("%sの検証番号が正しくありません。", getName()));
-            return null;
+            return 0;
         }
         return value;
     }

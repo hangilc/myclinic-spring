@@ -15,7 +15,11 @@ class ShahokokuhoHokenshaBangouLogic extends HokenshaBangouLogic {
         String s = String.format("%d", value);
         int n = s.length();
         if( n < 5 ){
-            em.add(String.format("%sの桁数が少なすぎます。", getName()));
+            if( n == 4 ){
+                em.add(String.format("%sの桁数が少なすぎます（旧政管健保？）。", getName()));
+            } else {
+                em.add(String.format("%sの桁数が少なすぎます。", getName()));
+            }
         } else if( n > 8 ){
             em.add(String.format("%sの桁数が多すぎます。", getName()));
         }
