@@ -4,6 +4,8 @@ import javafx.scene.control.ChoiceBox;
 import javafx.util.StringConverter;
 import jp.chang.myclinic.consts.Gengou;
 
+import java.util.List;
+
 public class GengouInput extends ChoiceBox<Gengou> {
 
     public GengouInput(Gengou... gengouList){
@@ -13,6 +15,11 @@ public class GengouInput extends ChoiceBox<Gengou> {
 
     public GengouInput(){
         this(Gengou.values());
+    }
+
+    public void setGengouList(List<Gengou> gengouList){
+        getItems().clear();
+        getItems().addAll(gengouList);
     }
 
     private StringConverter<Gengou> makeConverter(){

@@ -1,10 +1,11 @@
 package jp.chang.myclinic.reception.javafx.edit_hoken;
 
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.dto.ShahokokuhoDTO;
 
 public class EnterShahokokuhoStage extends Stage {
 
@@ -20,7 +21,19 @@ public class EnterShahokokuhoStage extends Stage {
 
     private Parent createMainPane(){
         VBox root = new VBox(4);
-        ShahokokuhoForm form = ShahokokuhoBinder.create();
+        EnterShahokokuhoBinder binder = new EnterShahokokuhoBinder();
+        binder.setCallbacks(new EnterShahokokuhoBinder.Callbacks() {
+            @Override
+            public void onEnter(ShahokokuhoDTO shahokokuho) {
+
+            }
+
+            @Override
+            public void onCancel() {
+                close();
+            }
+        });
+        Node form = binder.getPane();
         root.getChildren().addAll(form);
         return root;
     }

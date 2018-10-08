@@ -1,6 +1,5 @@
 package jp.chang.myclinic.reception.javafx.edit_hoken;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
@@ -8,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.reception.javafx.Form;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import jp.chang.myclinic.utilfx.dateinput.DateForm;
@@ -20,7 +20,13 @@ class ShahokokuhoForm extends Form {
     TextField hihokenshaBangouInput = new TextField();
     RadioButtonGroup<Integer> honninKazoku = new RadioButtonGroup<>();
     DateForm validFromInput = new DateForm();
+    {
+        validFromInput.setGengouList(Gengou.Recent);
+    }
     DateForm validUptoInput = new DateForm();
+    {
+        validUptoInput.setGengouList(Gengou.Recent);
+    }
     RadioButtonGroup<Integer> kourei = new RadioButtonGroup<>();
 
     ShahokokuhoForm() {
@@ -84,8 +90,18 @@ class ShahokokuhoForm extends Form {
         return validUptoInput;
     }
 
-    public IntegerProperty koureiProperty(){
-        return IntegerProperty.integerProperty(kourei.valueProperty());
+    public ObjectProperty<Integer> koureiProperty(){
+        return kourei.valueProperty();
+    }
+
+    public void bindLogic(ShahokokuhoLogic logic){
+        hokenshaBangouProperty().bindBidirectional(logic.hokenshaBangouProperty());
+        hihokenshaKigouProperty().bindBidirectional(logic.hihokenshaKigouProperty());
+        hihokenshaBangouProperty().bindBidirectional(logic.hihokenshaBangouProperty());
+        honninKazokuProperty().bindBidirectional(logic.honninKazokuProperty());
+        validFromForm().bindDateLogic(logic.validFromLogic());
+        validUptoForm().bindDateLogic(logic.validUptoLogic());
+        koureiProperty().bindBidirectional(logic.koureiProperty());
     }
 
 }
