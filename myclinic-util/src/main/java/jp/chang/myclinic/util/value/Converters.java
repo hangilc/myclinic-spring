@@ -6,27 +6,44 @@ public class Converters {
 
     }
 
-    public static ValueConverter<String, Integer> integerFromString(String name){
-        return (s, em) -> {
-            if( s == null || s.isEmpty() ){
+    public static Converter<String, Integer> stringToIntegerConverter() {
+        return (src, name, em) -> {
+            if (src == null || src.isEmpty()) {
                 em.add(String.format("%sが設定されていません。", name));
                 return null;
             }
             try {
-                return Integer.parseInt(s);
-            } catch(NumberFormatException ex){
+                return Integer.parseInt(src);
+            } catch (NumberFormatException ex) {
                 em.add(String.format("%sが数値でありません。", name));
                 return null;
             }
         };
     }
 
-    public static ValueConverter<Integer, Integer> positiveInteger(String name){
-        return (i, em) -> {
-            if( !() ){
-
+    public static <T> Converter<T, T> nonNullConverter(){
+        return (src, name, em) -> {
+            if( src == null ){
+                em.add(String.format("%sが null です。", name));
+                return null;
             }
-        }
+            return src;
+        };
+    }
+
+    public static Converter<Integer, Integer> integerRangeConverter(int low, int hi){
+        return (src, name, em) -> {
+            if( src == null ){
+                em.add(String.format("Null source. (%s)", name));
+                return null;
+            }
+            if( src >= low && src <= hi ){
+                return src;
+            } else {
+                em.add(String.format("%sが適切な範囲内でありません。", name));
+                return null;
+            }
+        };
     }
 
 }
