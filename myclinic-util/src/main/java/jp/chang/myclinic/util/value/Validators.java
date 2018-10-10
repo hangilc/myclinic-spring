@@ -10,6 +10,22 @@ public class Validators {
 
     }
 
+    public static <T> Validator<T> isNotNull(){
+        return (value, name, em) -> {
+            if( value == null ){
+                em.add(String.format("%sが設定されていません。", name));
+            }
+        };
+    }
+
+    public static Validator<String> isNotEmpty(){
+        return (value, name, em) -> {
+            if( value == null || value.isEmpty() ){
+                em.add(String.format("%sが空白です。", name));
+            }
+        };
+    }
+
     public static Validator<Integer> isPositive(){
         return (value, name, em) -> {
             if (!(value > 0)) {

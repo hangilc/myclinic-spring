@@ -1,8 +1,14 @@
 package jp.chang.myclinic.util.value.date;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import jp.chang.myclinic.consts.Gengou;
-import jp.chang.myclinic.util.value.*;
+import jp.chang.myclinic.util.value.ErrorMessages;
+import jp.chang.myclinic.util.value.Logic;
+import jp.chang.myclinic.util.value.ObjectPropertyLogic;
+import jp.chang.myclinic.util.value.StringPropertyLogic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,49 +17,56 @@ import java.time.LocalDate;
 import java.time.chrono.JapaneseDate;
 import java.time.temporal.ChronoField;
 
-import static jp.chang.myclinic.util.value.Converters.stringToInteger;
-import static jp.chang.myclinic.util.value.Validators.inRange;
+import static jp.chang.myclinic.util.value.Converters.*;
+import static jp.chang.myclinic.util.value.Validators.*;
 
 public class DateFormLogic implements Logic<LocalDate> {
 
     private static Logger logger = LoggerFactory.getLogger(DateFormLogic.class);
 
-    private ObjectPropertyLogic<Gengou> gengouSource = new ObjectPropertyLogic<Gengou>();
-    private StringPropertyLogic nenSource = new StringPropertyLogic();
-    private StringPropertyLogic monthSource = new StringPropertyLogic();
-    private StringPropertyLogic daySource = new StringPropertyLogic();
+    private ObjectProperty<Gengou> gengouSource = new SimpleObjectProperty<>();
+    private StringProperty nenSource = new SimpleStringProperty();
+    private StringProperty monthSource = new SimpleStringProperty();
+    private StringProperty daySource = new SimpleStringProperty();
+
     private Logic<Gengou> gengouLogic;
     private Logic<Integer> nenLogic;
     private Logic<Integer> monthLogic;
     private Logic<Integer> dayLogic;
 
     public DateFormLogic() {
-        this.gengouLogic = gengouSource;
-        nenLogic = nenSource
+        this.gengouLogic = new ObjectPropertyLogic<Gengou>(gengouSource).validate(isNotNull());
+        nenLogic = new StringPropertyLogic(nenSource)
+                .validate(isNotNull())
+                .validate(isNotEmpty())
                 .convert(stringToInteger())
                 .validate(inRange(1, Integer.MAX_VALUE));
-        monthLogic = monthSource
+        monthLogic = new StringPropertyLogic(monthSource)
+                .validate(isNotNull())
+                .validate(isNotEmpty())
                 .convert(stringToInteger())
                 .validate(inRange(1, 12));
-        dayLogic = daySource
+        dayLogic = new StringPropertyLogic(daySource)
+                .validate(isNotNull())
+                .validate(isNotEmpty())
                 .convert(stringToInteger())
                 .validate(inRange(1, 31));
     }
 
-    public void setGengouSource(Logic<Gengou> src) {
-        this.gengouLogic = src;
+    public void setGengouSource(ObjectProperty<Gengou> source) {
+        source.bindBidirectional(gengouSource);
     }
 
     public void setNenSource(StringProperty src) {
-        nenSource.setProperty(src);
+        src.bindBidirectional(nenSource);
     }
 
     public void setMonthSource(StringProperty src) {
-        monthSource.setProperty(src);
+        src.bindBidirectional(monthSource);
     }
 
     public void setDaySource(StringProperty src) {
-        daySource.setProperty(src);
+        src.bindBidirectional(daySource);
     }
 
     @Override
@@ -79,14 +92,19 @@ public class DateFormLogic implements Logic<LocalDate> {
         }
     }
 
+    private boolean isEmpty(StringProperty sp){
+        String t = sp.getValue();
+        return t == null || t.isEmpty();
+    }
+
     public boolean isEmpty(){
-        return nenSource.isEmpty() && monthSource.isEmpty() && daySource.isEmpty();
+        return isEmpty(nenSource) && isEmpty(monthSource) && isEmpty(daySource);
     }
 
     public void clear(){
-        nenSource.clear();
-        monthSource.clear();
-        daySource.clear();
+        nenSource.setValue("");
+        monthSource.setValue("");
+        daySource.setValue("");
     }
 
     public void setValue(LocalDate value){
