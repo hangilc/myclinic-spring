@@ -1,15 +1,22 @@
 package jp.chang.myclinic.util.value.date;
 
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.util.value.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.chrono.JapaneseDate;
+import java.time.temporal.ChronoField;
+
+import static jp.chang.myclinic.util.value.Converters.stringToInteger;
+import static jp.chang.myclinic.util.value.Validators.inRange;
 
 public class DateFormLogic implements Logic<LocalDate> {
+
+    private static Logger logger = LoggerFactory.getLogger(DateFormLogic.class);
 
     private ObjectPropertyLogic<Gengou> gengouSource = new ObjectPropertyLogic<Gengou>();
     private StringPropertyLogic nenSource = new StringPropertyLogic();
@@ -21,20 +28,20 @@ public class DateFormLogic implements Logic<LocalDate> {
     private Logic<Integer> dayLogic;
 
     public DateFormLogic() {
-        this.gengouLogic = gengouSource.chain(Converters.nonNullConverter());
+        this.gengouLogic = gengouSource;
         nenLogic = nenSource
-                .chain(Converters.stringToIntegerConverter())
-                .chain(Converters.integerRangeConverter(1, Integer.MAX_VALUE));
+                .convert(stringToInteger())
+                .validate(inRange(1, Integer.MAX_VALUE));
         monthLogic = monthSource
-                .chain(Converters.stringToIntegerConverter())
-                .chain(Converters.integerRangeConverter(1, 12));
+                .convert(stringToInteger())
+                .validate(inRange(1, 12));
         dayLogic = daySource
-                .chain(Converters.stringToIntegerConverter())
-                .chain(Converters.integerRangeConverter(1, 31));
+                .convert(stringToInteger())
+                .validate(inRange(1, 31));
     }
 
-    public void setGengouSource(ObjectProperty<Gengou> src) {
-        gengouSource.setProperty(src);
+    public void setGengouSource(Logic<Gengou> src) {
+        this.gengouLogic = src;
     }
 
     public void setNenSource(StringProperty src) {
@@ -70,6 +77,49 @@ public class DateFormLogic implements Logic<LocalDate> {
                 return null;
             }
         }
-
     }
+
+    public boolean isEmpty(){
+        return nenSource.isEmpty() && monthSource.isEmpty() && daySource.isEmpty();
+    }
+
+    public void clear(){
+        nenSource.clear();
+        monthSource.clear();
+        daySource.clear();
+    }
+
+    public void setValue(LocalDate value){
+        if (value == null) {
+            clear();
+        } else {
+            try {
+                JapaneseDate jd = JapaneseDate.from(value);
+                Gengou gengou = Gengou.fromEra(jd.getEra());
+                gengouSource.setValue(gengou);
+                int nen = jd.get(ChronoField.YEAR_OF_ERA);
+                int month = value.getMonthValue();
+                int day = value.getDayOfMonth();
+                nenSource.setValue("" + nen);
+                monthSource.setValue("" + month);
+                daySource.setValue("" + day);
+            } catch (DateTimeException ex) {
+                logger.error("Invalid date.", ex);
+            }
+        }
+    }
+
+    public void setValueFromStorage(String store){
+        if( store == null ){
+            setValue(null);
+        } else {
+            try {
+                LocalDate date = LocalDate.parse(store);
+                setValue(date);
+            } catch(DateTimeException ex){
+                logger.error("Invalid ate.", ex);
+            }
+        }
+    }
+
 }

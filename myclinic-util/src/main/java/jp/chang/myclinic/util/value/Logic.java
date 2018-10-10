@@ -3,7 +3,7 @@ package jp.chang.myclinic.util.value;
 public interface Logic<T> {
     T getValue(String name, ErrorMessages em);
 
-    default <U> Logic<U> chain(Converter<T, U> conv){
+    default <U> Logic<U> convert(Converter<T, U> conv){
         Logic<T> self = this;
         return (name, em) -> {
             int ne = em.getNumberOfErrors();
@@ -15,16 +15,21 @@ public interface Logic<T> {
         };
     }
 
-    default int asInt(String name, ErrorMessages em){
-        int ne = em.getNumberOfErrors();
-        T t = getValue(name, em);
-        if( em.hasErrorSince(ne) ){
-            return 0;
-        }
-        if( t == null ){
-            return 0;
-        }
-        return (int)t;
+    default Logic<T> validate(Validator<T> validator){
+        Logic<T> self = this;
+        return (name, em) -> {
+            int ne = em.getNumberOfErrors();
+            T t = self.getValue(name, em);
+            if( em.hasErrorSince(ne) ){
+                return null;
+            }
+            validator.validate(t, name, em);
+            if( em.hasErrorSince(ne) ){
+                return null;
+            } else {
+                return t;
+            }
+        };
     }
 
 }

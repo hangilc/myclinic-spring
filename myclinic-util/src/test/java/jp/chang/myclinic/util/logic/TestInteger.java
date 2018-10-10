@@ -48,7 +48,7 @@ public class TestInteger extends LogicBase {
         logic.setStorageValue("32a", em);
         String store = logic.getStorageValue(em);
         assertTrue(em.hasError());
-        assertEquals(null, store);
+        assertNull(store);
     }
 
 }

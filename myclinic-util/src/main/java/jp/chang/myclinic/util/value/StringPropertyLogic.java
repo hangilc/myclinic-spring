@@ -16,13 +16,40 @@ public class StringPropertyLogic implements Logic<String> {
         }
     }
 
+    private String getCheckedValue(){
+        if( prop == null ){
+            return null;
+        } else {
+            String value = prop.getValue();
+            if( value == null ){
+                return null;
+            } else if( value.isEmpty() ){
+                return null;
+            } else {
+                return value;
+            }
+        }
+    }
+
+    public boolean isEmpty(){
+        return getCheckedValue() != null;
+    }
+
+    public void clear(){
+        if( prop != null ){
+            prop.setValue("");
+        }
+    }
+
     @Override
     public String getValue(String name, ErrorMessages em) {
-        if( prop == null ){
-            em.add(String.format("Null property. (%s)", name));
+        String value = getCheckedValue();
+        if( value == null ){
+            em.add(String.format("%sが設定されていません。", name));
             return null;
+        } else {
+            return value;
         }
-        return prop.getValue();
     }
 
 }

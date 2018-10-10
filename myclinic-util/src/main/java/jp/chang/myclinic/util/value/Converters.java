@@ -6,12 +6,8 @@ public class Converters {
 
     }
 
-    public static Converter<String, Integer> stringToIntegerConverter() {
+    public static Converter<String, Integer> stringToInteger() {
         return (src, name, em) -> {
-            if (src == null || src.isEmpty()) {
-                em.add(String.format("%sが設定されていません。", name));
-                return null;
-            }
             try {
                 return Integer.parseInt(src);
             } catch (NumberFormatException ex) {
@@ -21,37 +17,8 @@ public class Converters {
         };
     }
 
-    public static <T> Converter<T, T> nonNullConverter(){
-        return (src, name, em) -> {
-            if( src == null ){
-                em.add(String.format("%sが null です。", name));
-                return null;
-            }
-            return src;
-        };
-    }
-
-    public static Converter<Integer, Integer> integerRangeConverter(int low, int hi){
-        return (src, name, em) -> {
-            if( src == null ){
-                em.add(String.format("Null source. (%s)", name));
-                return null;
-            }
-            if( src >= low && src <= hi ){
-                return src;
-            } else {
-                em.add(String.format("%sが適切な範囲内でありません。", name));
-                return null;
-            }
-        };
-    }
-
     public static Converter<Integer, Integer> columnDigitsRangeConverter(int low, int hi){
         return (src, name, em) -> {
-            if( src == null ){
-                em.add(String.format("Null source. (%s)", name));
-                return null;
-            }
             if( src < 0 ){
                 src = -src;
             }

@@ -16,13 +16,27 @@ public class ObjectPropertyLogic<T> implements Logic<T> {
         }
     }
 
+    private T getCheckedValue(){
+        if( prop == null ){
+            return null;
+        } else {
+            return prop.getValue();
+        }
+    }
+
+    public boolean isEmpty(){
+        return getCheckedValue() != null;
+    }
+
     @Override
     public T getValue(String name, ErrorMessages em){
-        if( prop == null ){
-            em.add(String.format("Null property. (%s)", name));
+        T value = getCheckedValue();
+        if( value == null ){
+            em.add(String.format("%sが設定されていません。", name));
             return null;
+        } else {
+            return value;
         }
-        return prop.getValue();
     }
 
 }
