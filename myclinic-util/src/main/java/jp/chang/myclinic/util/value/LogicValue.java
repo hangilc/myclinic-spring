@@ -1,10 +1,10 @@
 package jp.chang.myclinic.util.value;
 
-public class ImmediateLogic<T> implements Logic<T>{
+public class LogicValue<T> implements Logic<T>{
 
     private T value;
 
-    public ImmediateLogic(T value) {
+    public LogicValue(T value) {
         this.value = value;
     }
 

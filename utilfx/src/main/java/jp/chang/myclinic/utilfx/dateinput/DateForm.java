@@ -1,13 +1,11 @@
 package jp.chang.myclinic.utilfx.dateinput;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.consts.Gengou;
-import jp.chang.myclinic.util.logic.date.DateLogic;
+import jp.chang.myclinic.util.value.date.DateFormInputs;
 
 import java.util.List;
 
@@ -45,27 +43,18 @@ public class DateForm extends HBox {
         gengouInput.setGengouList(gengouList);
     }
 
-    public ObjectProperty<Gengou> gengouProperty(){
-        return gengouInput.valueProperty();
+    public DateFormInputs toDateFormInputs(){
+        DateFormInputs inputs = new DateFormInputs(gengouInput.getValue());
+        inputs.nen = nenField.getText();
+        inputs.month = monthField.getText();
+        inputs.day = dayField.getText();
+        return inputs;
     }
 
-    public StringProperty nenProperty(){
-        return nenField.textProperty();
+    public void fromDateFormInputs(DateFormInputs inputs){
+        gengouInput.setValue(inputs.gengou);
+        nenField.setText(inputs.nen);
+        monthField.setText(inputs.month);
+        dayField.setText(inputs.day);
     }
-
-    public StringProperty monthProperty(){
-        return monthField.textProperty();
-    }
-
-    public StringProperty dayProperty(){
-        return dayField.textProperty();
-    }
-
-    public void bindDateLogic(DateLogic dateLogic){
-        gengouInput.valueProperty().bindBidirectional(dateLogic.gengouProperty());
-        nenProperty().bindBidirectional(dateLogic.nenProperty());
-        monthProperty().bindBidirectional(dateLogic.monthProperty());
-        dayProperty().bindBidirectional(dateLogic.dayProperty());
-    }
-
 }
