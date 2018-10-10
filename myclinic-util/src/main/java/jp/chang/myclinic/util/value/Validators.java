@@ -2,7 +2,9 @@ package jp.chang.myclinic.util.value;
 
 import jp.chang.myclinic.util.verify.HokenVerifierLib;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 public class Validators {
 
@@ -10,23 +12,23 @@ public class Validators {
 
     }
 
-    public static <T> Validator<T> isNotNull(){
+    public static <T> Validator<T> isNotNull() {
         return (value, name, em) -> {
-            if( value == null ){
+            if (value == null) {
                 em.add(String.format("%sが設定されていません。", name));
             }
         };
     }
 
-    public static Validator<String> isNotEmpty(){
+    public static Validator<String> isNotEmpty() {
         return (value, name, em) -> {
-            if( value == null || value.isEmpty() ){
+            if (value == null || value.isEmpty()) {
                 em.add(String.format("%sが空白です。", name));
             }
         };
     }
 
-    public static Validator<Integer> isPositive(){
+    public static Validator<Integer> isPositive() {
         return (value, name, em) -> {
             if (!(value > 0)) {
                 em.add(String.format("%sの値が正の数値でありません。", name));
@@ -34,23 +36,30 @@ public class Validators {
         };
     }
 
-    public static Validator<Integer> inRange(int lo, int hi){
+    public static Validator<Integer> inRange(int lo, int hi) {
         return (value, name, em) -> {
-            if( !(value >= lo && value <= hi) ){
+            if (!(value >= lo && value <= hi)) {
                 em.add(String.format("%sの値が適切な範囲内でありません。", name));
             }
         };
     }
 
-    public static Validator<Integer> oneOf(Collection<Integer> set){
+    public static <T> Validator<T> isOneOf(Collection<T> set) {
         return (value, name, em) -> {
-            if( !(set.contains(value)) ){
-                em.add(String.format("%sの値が適切でありません。", name));
+            for (T t : set) {
+                if (Objects.equals(t, value)) {
+                    return;
+                }
             }
+            em.add(String.format("%sの値が適切でありません。", name));
         };
     }
 
-    public static Validator<Integer> columnDigitsInRange(int lo, int hi){
+    public static <T> Validator<T> isOneOf(T... set) {
+        return isOneOf(Arrays.asList(set));
+    }
+
+    public static Validator<Integer> columnDigitsInRange(int lo, int hi) {
         return (value, name, em) -> {
             if (value < 0) {
                 value = -value;
@@ -64,9 +73,9 @@ public class Validators {
         };
     }
 
-    public static Validator<Integer> isValidHokenshaBangou(){
+    public static Validator<Integer> isValidHokenshaBangou() {
         return (value, name, em) -> {
-            if( !(HokenVerifierLib.verifyHokenshaBangou(value)) ){
+            if (!(HokenVerifierLib.verifyHokenshaBangou(value))) {
                 em.add(String.format("%sの検証番号が正しくありません。", name));
             }
         };

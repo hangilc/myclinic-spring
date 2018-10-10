@@ -1,4 +1,4 @@
-package jp.chang.myclinic.util.value.date;
+package jp.chang.myclinic.utilfx.dateinput;
 
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.util.value.ErrorMessages;
@@ -103,6 +103,10 @@ public class DateFormLogic {
             logger.error("Null date. ");
             return null;
         }
+    }
+
+    public static DateFormInputs storageValueToInputs(String storage){
+
     }
 
     public static String dateToStorageValue(LocalDate date, String name, ErrorMessages em){

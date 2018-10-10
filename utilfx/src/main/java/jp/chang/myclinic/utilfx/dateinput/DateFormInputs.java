@@ -1,4 +1,4 @@
-package jp.chang.myclinic.util.value.date;
+package jp.chang.myclinic.utilfx.dateinput;
 
 import jp.chang.myclinic.consts.Gengou;
 

@@ -5,7 +5,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.consts.Gengou;
-import jp.chang.myclinic.util.value.date.DateFormInputs;
 
 import java.util.List;
 

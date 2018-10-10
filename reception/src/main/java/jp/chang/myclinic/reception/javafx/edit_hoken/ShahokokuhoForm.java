@@ -1,7 +1,5 @@
 package jp.chang.myclinic.reception.javafx.edit_hoken;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -66,42 +64,26 @@ class ShahokokuhoForm extends Form {
         }
     }
 
-    public StringProperty hokenshaBangouProperty(){
-        return hokenshaBangouInput.textProperty();
+    public ShahokokuhoFormInputs toInputs(){
+        ShahokokuhoFormInputs inputs = new ShahokokuhoFormInputs();
+        inputs.hokenshaBangou = hokenshaBangouInput.getText();
+        inputs.hihokenshaKigou = hihokenshaKigouInput.getText();
+        inputs.hihokenshaBangou = hihokenshaBangouInput.getText();
+        inputs.honnin = honninKazoku.getValue();
+        inputs.validFromInputs = validFromInput.toDateFormInputs();
+        inputs.validUptoInputs = validUptoInput.toDateFormInputs();
+        inputs.kourei = kourei.getValue();
+        return inputs;
     }
 
-    public StringProperty hihokenshaKigouProperty(){
-        return hihokenshaKigouInput.textProperty();
-    }
-
-    public StringProperty hihokenshaBangouProperty(){
-        return hihokenshaBangouInput.textProperty();
-    }
-
-    public ObjectProperty<Integer> honninKazokuProperty(){
-        return honninKazoku.valueProperty();
-    }
-
-    public DateForm validFromForm(){
-        return validFromInput;
-    }
-
-    public DateForm validUptoForm(){
-        return validUptoInput;
-    }
-
-    public ObjectProperty<Integer> koureiProperty(){
-        return kourei.valueProperty();
-    }
-
-    public void bindLogic(ShahokokuhoLogic logic){
-        hokenshaBangouProperty().bindBidirectional(logic.hokenshaBangouProperty());
-        hihokenshaKigouProperty().bindBidirectional(logic.hihokenshaKigouProperty());
-        hihokenshaBangouProperty().bindBidirectional(logic.hihokenshaBangouProperty());
-        honninKazokuProperty().bindBidirectional(logic.honninKazokuProperty().asObject());
-        validFromForm().bindDateLogic(logic.validFromLogic());
-        validUptoForm().bindDateLogic(logic.validUptoLogic());
-        koureiProperty().bindBidirectional(logic.koureiProperty());
+    public void fromInputs(ShahokokuhoFormInputs inputs){
+        hokenshaBangouInput.setText(inputs.hokenshaBangou);
+        hihokenshaKigouInput.setText(inputs.hihokenshaKigou);
+        hihokenshaBangouInput.setText(inputs.hihokenshaBangou);
+        honninKazoku.setValue(inputs.honnin);
+        validFromInput.fromDateFormInputs(inputs.validFromInputs);
+        validUptoInput.fromDateFormInputs(inputs.validUptoInputs);
+        kourei.setValue(inputs.kourei);
     }
 
 }
