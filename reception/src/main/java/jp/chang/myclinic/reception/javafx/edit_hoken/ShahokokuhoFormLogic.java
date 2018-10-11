@@ -19,6 +19,7 @@ public class ShahokokuhoFormLogic {
                 .validate(isNotEmpty())
                 .convert(stringToInteger())
                 .validate(isPositive())
+                .validate(hasDigitsInRange(5, 8))
                 .validate(isValidHokenshaBangou())
                 .convert(nullToZero())
                 .getValueAsInt("保険者番号", em);

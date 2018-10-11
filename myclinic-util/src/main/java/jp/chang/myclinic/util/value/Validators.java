@@ -59,7 +59,7 @@ public class Validators {
         return isOneOf(Arrays.asList(set));
     }
 
-    public static Validator<Integer> columnDigitsInRange(int lo, int hi) {
+    public static Validator<Integer> hasDigitsInRange(int lo, int hi) {
         return (value, name, em) -> {
             if (value < 0) {
                 value = -value;

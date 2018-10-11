@@ -12,7 +12,6 @@ import java.time.chrono.JapaneseDate;
 import java.time.temporal.ChronoField;
 import java.util.function.BiConsumer;
 
-import static jp.chang.myclinic.util.value.Converters.nullToZero;
 import static jp.chang.myclinic.util.value.Converters.stringToInteger;
 import static jp.chang.myclinic.util.value.Validators.*;
 
@@ -37,22 +36,19 @@ public class DateFormLogic {
                 .validate(isNotEmpty())
                 .convert(stringToInteger())
                 .validate(inRange(1, Integer.MAX_VALUE))
-                .convert(nullToZero())
-                .getValue("年", emDate);
-        int month = new LogicValue<String>(inputs.nen)
+                .getValueAsInt("年", emDate);
+        int month = new LogicValue<String>(inputs.month)
                 .validate(isNotNull())
                 .validate(isNotEmpty())
                 .convert(stringToInteger())
                 .validate(inRange(1, 12))
-                .convert(nullToZero())
-                .getValue("月", emDate);
-        int day = new LogicValue<String>(inputs.nen)
+                .getValueAsInt("月", emDate);
+        int day = new LogicValue<String>(inputs.day)
                 .validate(isNotNull())
                 .validate(isNotEmpty())
                 .convert(stringToInteger())
                 .validate(inRange(1, 31))
-                .convert(nullToZero())
-                .getValue("日", emDate);
+                .getValueAsInt("日", emDate);
         if( emDate.hasError() ){
             em.add(String.format("%sの内容が不適切です。", name));
             em.indent();

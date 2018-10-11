@@ -25,10 +25,9 @@ public interface Logic<T> {
     }
 
     default Logic<T> validate(Validator<T> validator){
-        Logic<T> self = this;
         return (name, em) -> {
             int ne = em.getNumberOfErrors();
-            T t = self.getValue(name, em);
+            T t = getValue(name, em);
             if( em.hasErrorSince(ne) ){
                 return null;
             }
