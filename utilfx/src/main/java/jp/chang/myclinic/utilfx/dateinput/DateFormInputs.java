@@ -9,8 +9,19 @@ public class DateFormInputs {
     public String month;
     public String day;
 
+    public DateFormInputs(){
+
+    }
+
     public DateFormInputs(Gengou gengou){
         this.gengou = gengou;
+    }
+
+    public DateFormInputs(Gengou gengou, String nen, String month, String day){
+        this.gengou = gengou;
+        this.nen = nen;
+        this.month = month;
+        this.day = day;
     }
 
     public boolean isEmpty(){

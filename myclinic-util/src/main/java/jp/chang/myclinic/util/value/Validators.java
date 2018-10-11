@@ -63,12 +63,12 @@ public class Validators {
         return (value, name, em) -> {
             if (value < 0) {
                 value = -value;
-                int ncol = String.format("%d", value).length();
-                if (ncol < lo) {
-                    em.add(String.format("%sの桁数が少なすぎます。", name));
-                } else if (ncol > hi) {
-                    em.add(String.format("%sの桁数が多すぎます。", name));
-                }
+            }
+            int ncol = String.format("%d", value).length();
+            if (ncol < lo) {
+                em.add(String.format("%sの桁数が少なすぎます。", name));
+            } else if (ncol > hi) {
+                em.add(String.format("%sの桁数が多すぎます。", name));
             }
         };
     }
