@@ -1,12 +1,16 @@
 package jp.chang.myclinic.reception.javafx.edit_hoken;
 
+import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.util.value.ErrorMessages;
 import jp.chang.myclinic.util.value.LogicValue;
+import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
 
-import static jp.chang.myclinic.util.value.Validators.*;
+import java.util.function.Consumer;
+
 import static jp.chang.myclinic.util.value.Converters.*;
+import static jp.chang.myclinic.util.value.Validators.*;
 
 public class ShahokokuhoFormLogic {
 
@@ -64,6 +68,30 @@ public class ShahokokuhoFormLogic {
         inputs.validUptoInputs = DateFormLogic.storageValueToInputs(dto.validUpto);
         inputs.kourei = dto.kourei;
         return inputs;
+    }
+
+    @FunctionalInterface
+    public static interface EnterProc {
+        ShahokokuhoDTO enter(ShahokokuhoFormInputs inputs, ErrorMessages em);
+    }
+
+    public static EnterProc createEnterProc(int patientId, Consumer<ShahokokuhoFormInputs> formInitializer){
+        ShahokokuhoFormInputs initInputs = new ShahokokuhoFormInputs();
+        initInputs.honnin = 0;
+        initInputs.validFromInputs = new DateFormInputs(Gengou.Current);
+        initInputs.validUptoInputs = new DateFormInputs(Gengou.Current);
+        initInputs.kourei = 0;
+        formInitializer.accept(initInputs);
+        return (inputs, em) -> {
+            int ne = em.getNumberOfErrors();
+            ShahokokuhoDTO dto = inputsToDTO(inputs, em);
+            if( em.hasErrorSince(ne) ){
+                return null;
+            }
+            dto.shahokokuhoId = 0;
+            dto.patientId = patientId;
+            return dto;
+        };
     }
 
 }
