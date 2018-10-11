@@ -55,7 +55,7 @@ public class Validators {
         };
     }
 
-    public static <T> Validator<T> isOneOf(T... set) {
+    public static Validator<Integer> isOneOf(Integer... set) {
         return isOneOf(Arrays.asList(set));
     }
 

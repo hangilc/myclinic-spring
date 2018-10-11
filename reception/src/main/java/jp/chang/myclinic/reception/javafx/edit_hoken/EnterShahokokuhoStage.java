@@ -1,11 +1,16 @@
 package jp.chang.myclinic.reception.javafx.edit_hoken;
 
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.util.value.ErrorMessages;
+import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 
 public class EnterShahokokuhoStage extends Stage {
 
@@ -21,21 +26,32 @@ public class EnterShahokokuhoStage extends Stage {
 
     private Parent createMainPane(){
         VBox root = new VBox(4);
-        EnterShahokokuhoBinder binder = new EnterShahokokuhoBinder();
-        binder.setCallbacks(new EnterShahokokuhoBinder.Callbacks() {
-            @Override
-            public void onEnter(ShahokokuhoDTO shahokokuho) {
-
-            }
-
-            @Override
-            public void onCancel() {
-                close();
-            }
-        });
-        Node form = binder.getPane();
-        root.getChildren().addAll(form);
+        ShahokokuhoForm form = new ShahokokuhoForm();
+        ShahokokuhoFormInputs inputs = new ShahokokuhoFormInputs();
+        inputs.honnin = 0;
+        inputs.validFromInputs = new DateFormInputs(Gengou.Current);
+        inputs.validUptoInputs = new DateFormInputs(Gengou.Current);
+        inputs.kourei = 0;
+        form.setInputs(inputs);
+        HBox commands = new HBox(4);
+        Button enterButton = new Button("入力");
+        Button cancelButton = new Button("キャンセル");
+        enterButton.setOnAction(evt -> doEnter(form));
+        cancelButton.setOnAction(evt -> close());
+        commands.getChildren().addAll(enterButton, cancelButton);
+        root.getChildren().addAll(form, commands);
         return root;
+    }
+
+    private void doEnter(ShahokokuhoForm form){
+        ShahokokuhoFormInputs inputs = form.getInputs();
+        ErrorMessages em = new ErrorMessages();
+        ShahokokuhoDTO dto = ShahokokuhoFormLogic.inputsToDTO(inputs, em);
+        if( em.hasError() ){
+            GuiUtil.alertError(em.getMessage());
+            return;
+        }
+        System.out.println(dto);
     }
 
 }

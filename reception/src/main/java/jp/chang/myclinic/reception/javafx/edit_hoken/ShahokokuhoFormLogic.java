@@ -12,8 +12,7 @@ public class ShahokokuhoFormLogic {
 
     //private static Logger logger = LoggerFactory.getLogger(ShahokokuhoFormLogic.class);
 
-    public static ShahokokuhoDTO inputsToDTO(ShahokokuhoFormInputs inputs) {
-        ErrorMessages em = new ErrorMessages();
+    public static ShahokokuhoDTO inputsToDTO(ShahokokuhoFormInputs inputs, ErrorMessages em) {
         ShahokokuhoDTO dto = new ShahokokuhoDTO();
         dto.hokenshaBangou = new LogicValue<>(inputs.hokenshaBangou)
                 .validate(isNotNull())
@@ -21,7 +20,8 @@ public class ShahokokuhoFormLogic {
                 .convert(stringToInteger())
                 .validate(isPositive())
                 .validate(isValidHokenshaBangou())
-                .getValue("保険者番号", em);
+                .convert(nullToZero())
+                .getValueAsInt("保険者番号", em);
         int ne = em.getNumberOfErrors();
         dto.hihokenshaKigou = new LogicValue<>(inputs.hihokenshaKigou)
                 .convert(nullToEmpty())
@@ -37,7 +37,7 @@ public class ShahokokuhoFormLogic {
         dto.honnin = new LogicValue<>(inputs.honnin)
                 .validate(isNotNull())
                 .validate(isOneOf(0, 1))
-                .getValue("本人・家族", em);
+                .getValueAsInt("本人・家族", em);
         DateFormLogic.verifyValidFromAndValidUptoInputs(inputs.validFromInputs, inputs.validUptoInputs,
                 "交付年月日", "有効期限", em, (validFrom, validUpto) -> {
                     dto.validFrom = validFrom;
@@ -46,7 +46,7 @@ public class ShahokokuhoFormLogic {
         dto.kourei = new LogicValue<>(inputs.kourei)
                 .validate(isNotNull())
                 .validate(isOneOf(0, 1, 2, 3))
-                .getValue("高齢", em);
+                .getValueAsInt("高齢", em);
         if( em.hasError() ){
             return null;
         }
@@ -59,7 +59,10 @@ public class ShahokokuhoFormLogic {
         inputs.hihokenshaKigou = dto.hihokenshaKigou;
         inputs.hihokenshaBangou = dto.hihokenshaBangou;
         inputs.honnin = dto.honnin;
-        inputs.validFromInputs =
+        inputs.validFromInputs = DateFormLogic.storageValueToInputs(dto.validFrom);
+        inputs.validUptoInputs = DateFormLogic.storageValueToInputs(dto.validUpto);
+        inputs.kourei = dto.kourei;
+        return inputs;
     }
 
 }

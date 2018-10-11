@@ -64,25 +64,25 @@ class ShahokokuhoForm extends Form {
         }
     }
 
-    public ShahokokuhoFormInputs toInputs(){
+    public ShahokokuhoFormInputs getInputs(){
         ShahokokuhoFormInputs inputs = new ShahokokuhoFormInputs();
         inputs.hokenshaBangou = hokenshaBangouInput.getText();
         inputs.hihokenshaKigou = hihokenshaKigouInput.getText();
         inputs.hihokenshaBangou = hihokenshaBangouInput.getText();
         inputs.honnin = honninKazoku.getValue();
-        inputs.validFromInputs = validFromInput.toDateFormInputs();
-        inputs.validUptoInputs = validUptoInput.toDateFormInputs();
+        inputs.validFromInputs = validFromInput.getDateFormInputs();
+        inputs.validUptoInputs = validUptoInput.getDateFormInputs();
         inputs.kourei = kourei.getValue();
         return inputs;
     }
 
-    public void fromInputs(ShahokokuhoFormInputs inputs){
+    public void setInputs(ShahokokuhoFormInputs inputs){
         hokenshaBangouInput.setText(inputs.hokenshaBangou);
         hihokenshaKigouInput.setText(inputs.hihokenshaKigou);
         hihokenshaBangouInput.setText(inputs.hihokenshaBangou);
         honninKazoku.setValue(inputs.honnin);
-        validFromInput.fromDateFormInputs(inputs.validFromInputs);
-        validUptoInput.fromDateFormInputs(inputs.validUptoInputs);
+        validFromInput.setDateFormInputs(inputs.validFromInputs);
+        validUptoInput.setDateFormInputs(inputs.validUptoInputs);
         kourei.setValue(inputs.kourei);
     }
 

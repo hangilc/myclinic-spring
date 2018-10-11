@@ -42,7 +42,13 @@ public class DateForm extends HBox {
         gengouInput.setGengouList(gengouList);
     }
 
-    public DateFormInputs toDateFormInputs(){
+    public void clear(){
+        nenField.setText("");
+        monthField.setText("");
+        dayField.setText("");
+    }
+
+    public DateFormInputs getDateFormInputs(){
         DateFormInputs inputs = new DateFormInputs(gengouInput.getValue());
         inputs.nen = nenField.getText();
         inputs.month = monthField.getText();
@@ -50,10 +56,14 @@ public class DateForm extends HBox {
         return inputs;
     }
 
-    public void fromDateFormInputs(DateFormInputs inputs){
-        gengouInput.setValue(inputs.gengou);
-        nenField.setText(inputs.nen);
-        monthField.setText(inputs.month);
-        dayField.setText(inputs.day);
+    public void setDateFormInputs(DateFormInputs inputs){
+        if( inputs == null ){
+            clear();
+        } else {
+            gengouInput.setValue(inputs.gengou);
+            nenField.setText(inputs.nen);
+            monthField.setText(inputs.month);
+            dayField.setText(inputs.day);
+        }
     }
 }

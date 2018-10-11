@@ -105,8 +105,20 @@ public class DateFormLogic {
         }
     }
 
-    public static DateFormInputs storageValueToInputs(String storage){
-
+    public static DateFormInputs storageValueToInputs(String store){
+        try {
+            if( "0000-00-00".equals(store) ){
+                return null;
+            }
+            LocalDate date = LocalDate.parse(store);
+            return dateToInputs(date);
+        } catch(NumberFormatException ex){
+            logger.error("Invalid date string.", ex);
+            return null;
+        } catch(NullPointerException ex){
+            logger.error("Null pointer.", ex);
+            return null;
+        }
     }
 
     public static String dateToStorageValue(LocalDate date, String name, ErrorMessages em){
