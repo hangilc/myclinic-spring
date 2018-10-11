@@ -132,4 +132,158 @@ public class TestShahokokuhoFormLogic extends LogicTestBase {
         assertNull(dto);
     }
 
+    @Test
+    public void testEmptyHihokenshaInfo(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "123455";
+        ins.hihokenshaKigou = "";
+        ins.hihokenshaBangou = "";
+        ins.honnin = 0;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "1", "2");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = ShahokokuhoFormLogic.inputsToDTO(ins, em);
+        assertTrue(em.hasError());
+        assertNull(dto);
+    }
+
+    @Test
+    public void testValidEmptyHihokenshaKigou(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "123455";
+        ins.hihokenshaKigou = "";
+        ins.hihokenshaBangou = "1";
+        ins.honnin = 0;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "1", "2");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = ShahokokuhoFormLogic.inputsToDTO(ins, em);
+        assertTrue(em.hasNoError());
+        assertNotNull(dto);
+    }
+
+    @Test
+    public void testValidEmptyHihokenshaBangou(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "123455";
+        ins.hihokenshaKigou = "a";
+        ins.hihokenshaBangou = "";
+        ins.honnin = 0;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "1", "2");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = ShahokokuhoFormLogic.inputsToDTO(ins, em);
+        assertTrue(em.hasNoError());
+        assertNotNull(dto);
+    }
+
+    @Test
+    public void testNullHihokenshaKigou(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "123455";
+        ins.hihokenshaKigou = null;
+        ins.hihokenshaBangou = "1";
+        ins.honnin = 0;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "1", "2");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = ShahokokuhoFormLogic.inputsToDTO(ins, em);
+        assertTrue(em.hasNoError());
+        assertNotNull(dto);
+        assertEquals("", dto.hihokenshaKigou);
+    }
+
+    @Test
+    public void testNullHihokenshaBangou(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "123455";
+        ins.hihokenshaKigou = "a";
+        ins.hihokenshaBangou = null;
+        ins.honnin = 0;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "1", "2");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = ShahokokuhoFormLogic.inputsToDTO(ins, em);
+        assertTrue(em.hasNoError());
+        assertNotNull(dto);
+        assertEquals("", dto.hihokenshaBangou);
+    }
+
+    @Test
+    public void testOutOfRangeHonnin(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "123455";
+        ins.hihokenshaKigou = "a";
+        ins.hihokenshaBangou = "1";
+        ins.honnin = 3;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "1", "2");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = ShahokokuhoFormLogic.inputsToDTO(ins, em);
+        assertTrue(em.hasError());
+        assertNull(dto);
+    }
+
+    @Test
+    public void testNullValidFrom(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "123455";
+        ins.hihokenshaKigou = "a";
+        ins.hihokenshaBangou = "1";
+        ins.honnin = 3;
+        ins.validFromInputs = null;
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = ShahokokuhoFormLogic.inputsToDTO(ins, em);
+        assertTrue(em.hasError());
+        assertNull(dto);
+    }
+
+    @Test
+    public void testOutOfOrderValidFromValidUpto(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "123455";
+        ins.hihokenshaKigou = "a";
+        ins.hihokenshaBangou = "1";
+        ins.honnin = 3;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "6", "1");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei, "29", "5", "31");
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = ShahokokuhoFormLogic.inputsToDTO(ins, em);
+        assertTrue(em.hasError());
+        assertNull(dto);
+    }
+
+    @Test
+    public void testNonNullValidUpto(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "123455";
+        ins.hihokenshaKigou = "a";
+        ins.hihokenshaBangou = "1";
+        ins.honnin = 0;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "1", "2");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei, "31", "1", "1");
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = ShahokokuhoFormLogic.inputsToDTO(ins, em);
+        assertTrue(em.hasNoError());
+        assertNotNull(dto);
+    }
+
+    @Test
+    public void testOutOfRangeKourei(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "123455";
+        ins.hihokenshaKigou = "a";
+        ins.hihokenshaBangou = "1";
+        ins.honnin = 1;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "1", "2");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
+        ins.kourei = 4;
+        ShahokokuhoDTO dto = ShahokokuhoFormLogic.inputsToDTO(ins, em);
+        assertTrue(em.hasError());
+        assertNull(dto);
+    }
+
+
+
 }
