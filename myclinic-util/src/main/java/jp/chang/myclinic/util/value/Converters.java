@@ -53,6 +53,8 @@ public class Converters {
         return (str, name, em) -> {
             if( str == null ){
                 return null;
+            } else if( "0000-00-00".equals(str) ){
+                return null;
             } else {
                 try {
                     if( str.length() > 10 ){
@@ -107,8 +109,24 @@ public class Converters {
         return (str, name, em) -> str == null ? "" : str;
     }
 
-    public static Converter<Integer, Integer> nullToZero(){
-        return (value, name, em) -> value == null ? 0 : value;
+    public static Converter<String, LocalDate> sqlDateToDate() {
+        return (sqldate, name, em) -> {
+            if( "0000-00-00".equals(sqldate) ){
+                return null;
+            } else if( sqldate == null ){
+                return null;
+            } else {
+                try {
+                    if( sqldate.length() > 10 ){
+                        sqldate = sqldate.substring(0, 10);
+                    }
+                    return LocalDate.parse(sqldate);
+                } catch(DateTimeException ex){
+                    em.add(String.format("%sが日付の形式でありません。", name));
+                    return null;
+                }
+            }
+        };
     }
 
 }

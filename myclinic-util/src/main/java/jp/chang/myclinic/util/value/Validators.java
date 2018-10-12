@@ -2,9 +2,12 @@ package jp.chang.myclinic.util.value;
 
 import jp.chang.myclinic.util.verify.HokenVerifierLib;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+
+import static jp.chang.myclinic.util.value.Converters.sqlDateToDate;
 
 public class Validators {
 
@@ -22,7 +25,7 @@ public class Validators {
 
     public static Validator<String> isNotEmpty() {
         return (value, name, em) -> {
-            if (value == null || value.isEmpty()) {
+            if( value != null && value.isEmpty() ){
                 em.add(String.format("%sが空白です。", name));
             }
         };
@@ -79,6 +82,40 @@ public class Validators {
                 em.add(String.format("%sの検証番号が正しくありません。", name));
             }
         };
+    }
+
+    public static void validateValidFromAndValidUpto(LocalDate validFrom, LocalDate validUpto,
+                                                     String validFromName, String validUptoName,
+                                                     ErrorMessages em){
+        if( validFrom == null ){
+            em.add(String.format("%sが設定されていません。", name));
+            return;
+        }
+        if( validUpto == null ){
+            return;
+        }
+        if( !(validFrom.equals(validUpto) || validFrom.isBefore(validUpto)) ){
+            em.add(String.format("%sが%sより前の値です。", validUptoName, validFromName));
+        }
+    }
+
+    public static void validateValidFromAndValidUptoBySqlDates(String validFromDate, String validUptoDate,
+                                                               String validFromName, String validUptoName,
+                                                               ErrorMessages em){
+        int ne = em.getNumberOfErrors();
+        LocalDate validFrom = new LogicValue<>(validFromDate)
+                .validate(isNotNull())
+                .validate(isNotEmpty())
+                .convert(sqlDateToDate())
+                .getValue(validFromName, em);
+        LocalDate validUpto = new LogicValue<>(validUptoDate)
+                .validate(isNotEmpty())
+                .convert(sqlDateToDate())
+                .getValue(validUptoName, em);
+        if( em.hasErrorSince(ne) ){
+            return;
+        }
+        validateValidFromAndValidUpto(validFrom, validUpto, validFromName, validUptoName, em);
     }
 
 }

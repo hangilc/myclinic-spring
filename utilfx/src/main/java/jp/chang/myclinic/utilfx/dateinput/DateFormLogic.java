@@ -2,6 +2,7 @@ package jp.chang.myclinic.utilfx.dateinput;
 
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.util.value.ErrorMessages;
+import jp.chang.myclinic.util.value.Logic;
 import jp.chang.myclinic.util.value.LogicValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
