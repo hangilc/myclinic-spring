@@ -84,6 +84,22 @@ public class Validators {
         };
     }
 
+    public static void validateValidPeriod(LocalDate validFrom, LocalDate validUpto,
+                                           String validFromName, String validUptoName,
+                                           ErrorMessages em){
+        
+    }
+
+    public static void validateValidPeriodStorage(String validFromStorage, String validUptoStorage,
+                                                  String validFromName, String validUptoName,
+                                                  ErrorMessages em){
+        new BiLogic<String>(new LogicValue<>(validFromStorage), new LogicValue<>(validUptoStorage))
+                .validate(isNotNull(), null)
+                .convert(sqlDateToDate())
+
+
+    }
+
     public static void validateValidFromAndValidUpto(LocalDate validFrom, LocalDate validUpto,
                                                      String validFromName, String validUptoName,
                                                      ErrorMessages em){
