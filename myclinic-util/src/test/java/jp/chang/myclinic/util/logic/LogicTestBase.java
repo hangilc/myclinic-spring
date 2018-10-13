@@ -2,7 +2,7 @@ package jp.chang.myclinic.util.logic;
 
 import org.junit.Before;
 
-class LogicBase {
+class LogicTestBase {
 
     ErrorMessages em;
 

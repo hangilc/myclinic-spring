@@ -1,45 +1,60 @@
 package jp.chang.myclinic.util.logic;
 
-import java.util.function.Supplier;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public interface Logic<T> {
 
-    T getValue(ErrorMessages em);
-    void setValue(T value, ErrorMessages em);
+    void apply(Consumer<T> successHandler, Runnable errorCallback, String name, ErrorMessages em);
 
-    default T fromStorageValue(String storageValue, ErrorMessages em){
-        throw new RuntimeException("Not implemented");
-    }
-
-    default String toStorageValue(T value, ErrorMessages em){
-        throw new RuntimeException("Not implemented");
-    }
-
-    default String getStorageValue(ErrorMessages em){
-        int ne = em.getNumberOfErrors();
-        T value = getValue(em);
-        if( em.hasErrorSince(ne) ){
-            return null;
-        } else {
-            return toStorageValue(value, em);
+    default T getValueOrElse(T elseValue, String name, ErrorMessages em) {
+        class Local {
+            private T value = null;
         }
+        Local local = new Local();
+        apply(
+                value -> local.value = value,
+                () -> local.value = elseValue,
+                name,
+                em);
+        return local.value;
     }
 
-    default void setStorageValue(String storageValue, ErrorMessages em){
-        int ne = em.getNumberOfErrors();
-        T value = fromStorageValue(storageValue, em);
-        if( em.hasNoErrorSince(ne) ){
-            setValue(value, em);
-        }
+    default T getValue(String name, ErrorMessages em) {
+        return getValueOrElse(null, name, em);
     }
 
-    default boolean validate(Supplier<Boolean> pred, ErrorMessages em, String format, Object... args){
-        if( pred.get() ){
-            return true;
-        } else {
-            em.add(String.format(format, args));
-            return false;
-        }
+    default <U> Logic<U> convert(Converter<T, U> converter) {
+        Logic<T> self = this;
+        return (successHandler, errorHandler, name, em) -> {
+            self.apply(
+                    t -> {
+                        int ne = em.getNumberOfErrors();
+                        U u = converter.convert(t, name, em);
+                        if (em.hasErrorSince(ne)) {
+                            errorHandler.run();
+                        } else {
+                            successHandler.accept(u);
+                        }
+                    },
+                    errorHandler,
+                    name,
+                    em);
+        };
     }
 
+    default Logic<T> validate(Validator<T> validator){
+        return convert(validator.toConverter());
+    }
+
+    default <U> Logic<U> map(Function<T, U> f) {
+        Logic<T> self = this;
+        return (successHandler, errorHandler, name, em) -> {
+            self.apply(
+                    t -> successHandler.accept(f.apply(t)),
+                    errorHandler,
+                    name,
+                    em);
+        };
+    }
 }

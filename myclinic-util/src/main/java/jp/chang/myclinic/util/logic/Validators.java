@@ -1,18 +1,22 @@
-package jp.chang.myclinic.util.value;
+package jp.chang.myclinic.util.logic;
 
 import jp.chang.myclinic.util.verify.HokenVerifierLib;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
-import static jp.chang.myclinic.util.value.Converters.sqlDateToDate;
+import static jp.chang.myclinic.util.logic.BiValidators.validInterval;
+import static jp.chang.myclinic.util.logic.Converters.sqldateToLocalDate;
 
 public class Validators {
 
     private Validators() {
 
+    }
+
+    public static <T> Validator<T> valid(){
+        return (value, name, em) -> {};
     }
 
     public static <T> Validator<T> isNotNull() {
@@ -25,7 +29,7 @@ public class Validators {
 
     public static Validator<String> isNotEmpty() {
         return (value, name, em) -> {
-            if( value != null && value.isEmpty() ){
+            if( value.isEmpty() ){
                 em.add(String.format("%sが空白です。", name));
             }
         };
@@ -39,7 +43,7 @@ public class Validators {
         };
     }
 
-    public static Validator<Integer> inRange(int lo, int hi) {
+    public static Validator<Integer> isInRange(int lo, int hi) {
         return (value, name, em) -> {
             if (!(value >= lo && value <= hi)) {
                 em.add(String.format("%sの値が適切な範囲内でありません。", name));
@@ -84,38 +88,13 @@ public class Validators {
         };
     }
 
-    public static void validateValidFromAndValidUpto(LocalDate validFrom, LocalDate validUpto,
-                                                     String validFromName, String validUptoName,
-                                                     ErrorMessages em){
-        if( validFrom == null ){
-            em.add(String.format("%sが設定されていません。", validFromName));
-            return;
-        }
-        if( validUpto == null ){
-            return;
-        }
-        if( !(validFrom.equals(validUpto) || validFrom.isBefore(validUpto)) ){
-            em.add(String.format("%sが%sより前の値です。", validUptoName, validFromName));
-        }
+    public static void verifyValidInterval(String validFromStore, String validUptoStore,
+                                           String validFromName, String validUptoName,
+                                           ErrorMessages em){
+        new BiLogicValue<>(validFromStore, validUptoStore)
+                .validate(isNotNull(), valid())
+                .convert(sqldateToLocalDate())
+                .validate(validInterval())
+                .apply((a, b) -> {}, () -> {}, validFromName, validUptoName, em);
     }
-
-    public static void validateValidFromAndValidUptoBySqlDates(String validFromDate, String validUptoDate,
-                                                               String validFromName, String validUptoName,
-                                                               ErrorMessages em){
-        int ne = em.getNumberOfErrors();
-        LocalDate validFrom = new LogicValue<>(validFromDate)
-                .validate(isNotNull())
-                .validate(isNotEmpty())
-                .convert(sqlDateToDate())
-                .getValue(validFromName, em);
-        LocalDate validUpto = new LogicValue<>(validUptoDate)
-                .validate(isNotEmpty())
-                .convert(sqlDateToDate())
-                .getValue(validUptoName, em);
-        if( em.hasErrorSince(ne) ){
-            return;
-        }
-        validateValidFromAndValidUpto(validFrom, validUpto, validFromName, validUptoName, em);
-    }
-
 }
