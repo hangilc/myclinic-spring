@@ -109,10 +109,7 @@ public class ShahokokuhoFormLogic {
                     .convert(nullableLocalDateToDateFormInputs(Gengou.Current))
                     .getValue("有効期限", em);
             inputs.kourei = dto.kourei;
-            if( em.hasErrorSince(ne) ){
-                return null;
-            }
-            return inputs;
+            return inputs; // returns inputs anyway
         };
     }
 
@@ -146,8 +143,7 @@ public class ShahokokuhoFormLogic {
                 .convert(shahokokuhoDTOToShahokokuhoFormInputs())
                 .getValue("Edit shahokokuho form", emInputs);
         if( emInputs.hasError() ){
-            GuiUtil.alertError("社保国保編集ダイアログを作成できませんでした。\n" + emInputs.getMessage());
-            return null;
+            GuiUtil.alertError(emInputs.getMessage());
         }
         formInitializer.accept(initialInputs);
         return (inputs, em) -> new LogicValue<>(inputs)
