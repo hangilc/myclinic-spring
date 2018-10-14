@@ -15,7 +15,7 @@ import static jp.chang.myclinic.util.logic.Validators.*;
 
 public class DateFormLogic {
 
-    public static Converter<DateFormInputs, LocalDate> inputsToLocalDate() {
+    public static Converter<DateFormInputs, LocalDate> dateFormInputsToLocalDate() {
         return (inputs, name, em) -> {
             if (inputs == null || inputs.isEmpty()) {
                 return null;
@@ -59,7 +59,7 @@ public class DateFormLogic {
         };
     }
 
-    public static Converter<LocalDate, DateFormInputs> localDateToInputs(){
+    public static Converter<LocalDate, DateFormInputs> localDateToDateFormInputs(){
         return (date, name, em) -> {
             if( date == null ){
                 return null;

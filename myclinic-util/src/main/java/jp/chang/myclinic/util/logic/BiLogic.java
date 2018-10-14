@@ -1,8 +1,30 @@
 package jp.chang.myclinic.util.logic;
 
+import java.util.function.BiConsumer;
+
 public interface BiLogic<T> {
 
     BiValue<T> getValues(String leftName, String rightName, ErrorMessages em);
+
+    default void apply(BiConsumer<T, T> successHandler, String leftName, String rightName, ErrorMessages em){
+        int ne = em.getNumberOfErrors();
+        BiValue<T> values = getValues(leftName, rightName, em);
+        if( em.hasNoErrorSince(ne) ){
+            successHandler.accept(values.left, values.right);
+        }
+    }
+
+    static <S> BiLogic<S> combine(Logic<S> left, Logic<S> right){
+        return (leftName, rightName, em) -> {
+            int ne = em.getNumberOfErrors();
+            S leftValue = left.getValue(leftName, em);
+            S rightValue = right.getValue(rightName, em);
+            if( em.hasErrorSince(ne) ){
+                return null;
+            }
+            return new BiValue<>(leftValue, rightValue);
+        };
+    }
 
     default <U> BiLogic<U> convert(Converter<T, U> converter){
         BiLogic<T> self = this;

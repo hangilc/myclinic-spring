@@ -1,5 +1,6 @@
 package jp.chang.myclinic.util.logic;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface Logic<T> {
@@ -17,6 +18,10 @@ public interface Logic<T> {
 
     default T getValueOrElse(T elseValue, String name, ErrorMessages em) {
         return getValueOrElseGet(() -> elseValue, name, em);
+    }
+
+    default void verify(String name, ErrorMessages em){
+        getValue(name, em);
     }
 
     default <U> Logic<U> convert(Converter<T, U> converter) {
@@ -37,6 +42,10 @@ public interface Logic<T> {
 
     default Logic<T> validate(Validator<T> validator){
         return convert(validator.toConverter());
+    }
+
+    default <U> Logic<U> map(Function<T, U> fun){
+        return convert((value, name, em) -> fun.apply(value));
     }
 
 }

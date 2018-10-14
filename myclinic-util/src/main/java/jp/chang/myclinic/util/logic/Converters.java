@@ -20,6 +20,20 @@ public class Converters {
         return (value, name, em) -> String.format("%d", value);
     }
 
+    public static Converter<String, String> nullToEmpty(){
+        return (value, name, em) -> value == null ? "" : value;
+    }
+
+    public static Converter<Integer, String> zeroOrNullToEmpty(){
+        return (value, name, em) -> {
+            if( value == null || value == 0 ){
+                return "";
+            } else {
+                return String.format("%d", value);
+            }
+        };
+    }
+
     public static Converter<String, LocalDate> sqldateToLocalDate(){
         return (value, name, em) -> {
             if( value == null || "0000-00-00".equals(value) ){
