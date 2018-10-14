@@ -291,25 +291,6 @@ class PatientWithHokenStage extends Stage {
     }
 
     private void doNewShahokokuho() {
-//        EditShahokokuhoStage stage = new EditShahokokuhoStage(){
-//            @Override
-//            void onEnter(ShahokokuhoDTO data) {
-//                data.patientId = thePatient.getValue().patientId;
-//                Service.api.enterShahokokuho(data)
-//                        .thenAccept(shahokokuhoId -> {
-//                            Platform.runLater(() -> {
-//                                data.shahokokuhoId = shahokokuhoId;
-//                                fetchAndUpdateHokenList();
-//                                this.close();
-//                            });
-//                        })
-//                        .exceptionally(ex -> {
-//                            logger.error("Failed to enter shahokokuho.", ex);
-//                            Platform.runLater(() -> GuiUtil.alertException("社保・国保の新規登録に失敗しました。", ex));
-//                            return null;
-//                        });
-//            }
-//        };
         PatientDTO patient = thePatient.getValue();
         if( patient != null ) {
             EnterShahokokuhoStage stage = new EnterShahokokuhoStage(patient.patientId, this::fetchAndUpdateHokenList);
