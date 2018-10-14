@@ -18,7 +18,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
-// TODO: (urgent) 過去の処方検索で、検索文字列が空白の場合、全処方をリストする。
 // TODO: 湿布薬の摘要入力の既定値を「１日２枚」にする。
 @SpringBootApplication
 public class Main extends Application implements CommandLineRunner {

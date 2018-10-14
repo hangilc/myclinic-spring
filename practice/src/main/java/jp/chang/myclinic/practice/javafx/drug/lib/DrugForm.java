@@ -109,19 +109,25 @@ public class DrugForm extends VBox {
     }
 
     private void onSearch(String searchText) {
-        if (searchText == null || searchText.isEmpty()) {
+        if (searchText == null ) {
             return;
         }
         DrugSearchMode mode = modeChooser.getValue();
         if (mode != null) {
             switch (mode) {
                 case Master: {
+                    if( searchText.isEmpty() ){
+                        return;
+                    }
                     Searcher.searchMaster(searchText, at, this::setMaster)
                             .thenAcceptAsync(searchResult::setItems, Platform::runLater)
                             .exceptionally(HandlerFX::exceptionally);
                     break;
                 }
                 case Example: {
+                    if( searchText.isEmpty() ){
+                        return;
+                    }
                     Searcher.searchExample(searchText, this::setExample)
                             .thenAcceptAsync(searchResult::setItems, Platform::runLater)
                             .exceptionally(HandlerFX::exceptionally);
