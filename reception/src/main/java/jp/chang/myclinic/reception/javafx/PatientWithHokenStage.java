@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.reception.javafx.edit_hoken.EditShahokokuhoStage;
 import jp.chang.myclinic.reception.javafx.edit_hoken.EnterShahokokuhoStage;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.*;
@@ -213,18 +214,19 @@ class PatientWithHokenStage extends Stage {
         }
         if (model instanceof HokenTable.ShahokokuhoModel) {
             HokenTable.ShahokokuhoModel shahoModel = (HokenTable.ShahokokuhoModel) model;
-            EditShahokokuhoStage editor = new EditShahokokuhoStage(shahoModel.orig){
-                @Override
-                void onEnter(ShahokokuhoDTO data) {
-                    Service.api.updateShahokokuho(data)
-                            .thenAccept(ok -> Platform.runLater(() -> {
-                                fetchAndUpdateHokenList();
-                                this.close();
-                            }))
-                            .exceptionally(HandlerFX::exceptionally);
-
-                }
-            };
+            EditShahokokuhoStage editor = new EditShahokokuhoStage(shahoModel.orig, this::fetchAndUpdateHokenList);
+//            EditShahokokuhoStage editor = new EditShahokokuhoStage(shahoModel.orig){
+//                @Override
+//                void onEnter(ShahokokuhoDTO data) {
+//                    Service.api.updateShahokokuho(data)
+//                            .thenAccept(ok -> Platform.runLater(() -> {
+//                                fetchAndUpdateHokenList();
+//                                this.close();
+//                            }))
+//                            .exceptionally(HandlerFX::exceptionally);
+//
+//                }
+//            };
             editor.showAndWait();
         } else if (model instanceof HokenTable.KoukikoureiModel) {
             HokenTable.KoukikoureiModel koukiModel = (HokenTable.KoukikoureiModel) model;

@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 import static jp.chang.myclinic.utilfx.dateinput.DateFormLogic.dateFormInputsToLocalDate;
 import static jp.chang.myclinic.utilfx.dateinput.DateFormLogic.localDateToDateFormInputs;
+import static jp.chang.myclinic.utilfx.dateinput.DateFormLogic.nullableLocalDateToDateFormInputs;
 import static org.junit.Assert.*;
 
 public class TestDateInput extends LogicTestBase {
@@ -158,9 +159,12 @@ public class TestDateInput extends LogicTestBase {
     @Test
     public void testNullDateToInputs(){
         DateFormInputs inputs = new LogicValue<LocalDate>(null)
-                .convert(localDateToDateFormInputs())
+                .convert(nullableLocalDateToDateFormInputs(Gengou.Current))
                 .getValue("TEST", em);
         assertTrue(em.hasNoError());
-        assertNull(inputs);
+        assertEquals(Gengou.Heisei, inputs.gengou);
+        assertEquals("", inputs.nen);
+        assertEquals("", inputs.month);
+        assertEquals("", inputs.day);
     }
 }

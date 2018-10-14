@@ -60,10 +60,10 @@ public class DateFormLogic {
         };
     }
 
-    public static Converter<LocalDate, DateFormInputs> localDateToDateFormInputs(){
+    public static Converter<LocalDate, DateFormInputs> nullableLocalDateToDateFormInputs(Gengou defaultGengou){
         return (date, name, em) -> {
             if( date == null ){
-                return null;
+                return new DateFormInputs(defaultGengou, "", "", "");
             }
             try {
                 JapaneseDate jd = JapaneseDate.from(date);
@@ -81,6 +81,10 @@ public class DateFormLogic {
                 return null;
             }
         };
+    }
+
+    public static Converter<LocalDate, DateFormInputs> localDateToDateFormInputs(){
+        return nullableLocalDateToDateFormInputs(null);
     }
 
     public static Validator<DateFormInputs> isNotEmptyDateFormInputs(){
