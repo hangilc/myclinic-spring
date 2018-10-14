@@ -85,4 +85,18 @@ public class Globals {
         tracking.set(value);
     }
 
+    // Check hokensha bangou flag
+    private static BooleanProperty checkingHokenshaBangou = new SimpleBooleanProperty();
+
+    public static boolean isCheckingHokenshaBangou() {
+        return checkingHokenshaBangou.get();
+    }
+
+    public static BooleanProperty checkingHokenshaBangouProperty() {
+        return checkingHokenshaBangou;
+    }
+
+    public static void setCheckingHokenshaBangou(boolean checkingHokenshaBangou) {
+        Globals.checkingHokenshaBangou.set(checkingHokenshaBangou);
+    }
 }

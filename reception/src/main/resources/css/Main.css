@@ -11,3 +11,13 @@
     -fx-pref-width: 400px;
     -fx-pref-height: 400px;
 }
+
+.date-input .nen, .date-input .month, .date-input .day {
+    -fx-pref-width: 3em;
+}
+
+.shahokokuho-form .hokensha-bangou-input {
+    -fx-pref-width: 140px;
+    -fx-max-width: 140px;
+}
+

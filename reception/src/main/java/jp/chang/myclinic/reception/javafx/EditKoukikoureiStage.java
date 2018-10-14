@@ -1,46 +1,45 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.property.*;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.KoukikoureiDTO;
-import jp.chang.myclinic.reception.converter.KoukikoureiConverter;
+import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.lib.RadioButtonGroup;
+import jp.chang.myclinic.util.verify.ErrorMessages;
+import jp.chang.myclinic.util.verify.KoukikoureiVerifier;
 
 import java.time.LocalDate;
 
-public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
+import static jp.chang.myclinic.util.verify.KoukikoureiVerifier.*;
+
+abstract public class EditKoukikoureiStage extends EditHokenBaseStage {
 
     private StringProperty hokenshaBangou = new SimpleStringProperty();
     private StringProperty hihokenshaBangou = new SimpleStringProperty();
-    private ObjectProperty<LocalDate> validFrom = new SimpleObjectProperty<LocalDate>();
-    private ObjectProperty<LocalDate> validUpto = new SimpleObjectProperty<LocalDate>();
     private IntegerProperty futanWari = new SimpleIntegerProperty();
     private int koukikoureiId;
     private int patientId;
 
-    public EditKoukikoureiStage(KoukikoureiDTO koukikourei){
+    public EditKoukikoureiStage(KoukikoureiDTO koukikourei) {
         this();
         setTitle("後期高齢保険編集");
         this.koukikoureiId = koukikourei.koukikoureiId;
         this.patientId = koukikourei.patientId;
         this.hokenshaBangou.setValue(koukikourei.hokenshaBangou + "");
         this.hihokenshaBangou.setValue(koukikourei.hihokenshaBangou + "");
-        this.validFrom.setValue(LocalDate.parse(koukikourei.validFrom));
-        this.validUpto.setValue(
-                (koukikourei.validUpto == null || "0000-00-00".equals(koukikourei.validUpto) ?
-                        LocalDate.MAX: LocalDate.parse(koukikourei.validUpto))
-        );
+        this.validFromInput.setValue(LocalDate.parse(koukikourei.validFrom));
+        setValidUpto(koukikourei.validUpto);
         this.futanWari.setValue(koukikourei.futanWari);
     }
 
-    public EditKoukikoureiStage(){
+    public EditKoukikoureiStage() {
         setTitle("新規後期高齢保険入力");
         VBox root = new VBox(4);
         {
@@ -57,20 +56,8 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
                 hihokenshaBangou.bindBidirectional(hihokenshaBangouInput.textProperty());
                 form.add("被保険者番号", hihokenshaBangouInput);
             }
-            {
-                DateInput validFromInput = new DateInput();
-                validFromInput.setGengouItems(Gengou.Recent.toArray(new Gengou[]{}));
-                validFromInput.selectGengou(Gengou.Current);
-                validFrom.bindBidirectional(validFromInput.valueProperty());
-                form.add("交付年月日", validFromInput);
-            }
-            {
-                DateInput validUptoInput = new DateInput();
-                validUptoInput.setGengouItems(Gengou.Recent.toArray(new Gengou[]{}));
-                validUptoInput.selectGengou(Gengou.Current);
-                validUpto.bindBidirectional(validUptoInput.valueProperty());
-                form.add("有効期限", validUptoInput);
-            }
+            form.add("交付年月日", validFromInput);
+            form.add("有効期限", validUptoInput);
             {
                 HBox row = new HBox(4);
                 row.setAlignment(Pos.CENTER_LEFT);
@@ -95,29 +82,45 @@ public class EditKoukikoureiStage extends EditHokenBaseStage<KoukikoureiDTO> {
             row.getChildren().addAll(enterButton, cancelButton);
             root.getChildren().add(row);
         }
+        root.getStylesheets().add("css/Main.css");
         root.setStyle("-fx-padding: 10;");
         Scene scene = new Scene(root);
         setScene(scene);
         sizeToScene();
     }
 
-    private void doEnter(){
+    private void doEnter() {
         KoukikoureiDTO data = new KoukikoureiDTO();
         data.koukikoureiId = this.koukikoureiId;
         data.patientId = this.patientId;
-        KoukikoureiConverter cvt = new KoukikoureiConverter();
-        cvt.convertToHokenshaBangou(hokenshaBangou.get(), value -> { data.hokenshaBangou = value; });
-        cvt.convertToHihokenshaBangou(hihokenshaBangou.get(), value -> { data.hihokenshaBangou = value; });
-        cvt.convertToValidFrom(validFrom.getValue(), value -> { data.validFrom = value; });
-        cvt.convertToValidUpto(validUpto.getValue(), value -> { data.validUpto = value; });
-        cvt.convertToFutanWari(futanWari.get(), value -> { data.futanWari = value; });
-        cvt.integralCheck(data);
-        if( cvt.hasError() ){
-            System.out.println(cvt.getErrors());
-            System.out.println(data);
+        ErrorMessages em = new ErrorMessages();
+        if (Globals.isCheckingHokenshaBangou()) {
+            em.addIfError(verifyHokenshaBangouInputWithOutputString(hokenshaBangou.get(), value -> {
+                data.hokenshaBangou = value;
+            }));
+        }
+        em.addIfError(
+                verifyHihokenshaBangouWithOutputString(hihokenshaBangou.get(), value -> {
+                    data.hihokenshaBangou = value;
+                }));
+        verifyValidFrom(em, KoukikoureiVerifier::verifyValidFrom, value -> data.validFrom = value);
+        verifyValidUpto(em, KoukikoureiVerifier::verifyValidUpto, value -> data.validUpto = value);
+        em.addIfError(
+                verifyFutanWari(futanWari.get(), value -> {
+                    data.futanWari = value;
+                }));
+        if (em.hasNoError()) {
+            em.addIfError(verifyValidFromAndValidUpto(data.validFrom, data.validUpto));
+        }
+        if (em.hasError()) {
+            String message = em.getErrorMessage();
+            Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+            alert.showAndWait();
         } else {
-            getEnterProcessor().accept(data);
+            onEnter(data);
         }
     }
+
+    abstract void onEnter(KoukikoureiDTO data);
 
 }

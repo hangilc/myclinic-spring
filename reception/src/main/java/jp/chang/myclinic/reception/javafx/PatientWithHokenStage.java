@@ -16,8 +16,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.dto.HokenListDTO;
-import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.reception.javafx.edit_hoken.EditShahokokuhoStage;
+import jp.chang.myclinic.reception.javafx.edit_hoken.EnterShahokokuhoStage;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -213,39 +214,47 @@ class PatientWithHokenStage extends Stage {
         }
         if (model instanceof HokenTable.ShahokokuhoModel) {
             HokenTable.ShahokokuhoModel shahoModel = (HokenTable.ShahokokuhoModel) model;
-            EditShahokokuhoStage editor = new EditShahokokuhoStage(shahoModel.orig);
-            editor.setOnEnter(data -> {
-                Service.api.updateShahokokuho(data)
-                        .thenAccept(ok -> Platform.runLater(() -> {
-                            fetchAndUpdateHokenList();
-                            editor.close();
-                        }))
-                        .exceptionally(HandlerFX::exceptionally);
-            });
+            EditShahokokuhoStage editor = new EditShahokokuhoStage(shahoModel.orig, this::fetchAndUpdateHokenList);
+//            EditShahokokuhoStage editor = new EditShahokokuhoStage(shahoModel.orig){
+//                @Override
+//                void onEnter(ShahokokuhoDTO data) {
+//                    Service.api.updateShahokokuho(data)
+//                            .thenAccept(ok -> Platform.runLater(() -> {
+//                                fetchAndUpdateHokenList();
+//                                this.close();
+//                            }))
+//                            .exceptionally(HandlerFX::exceptionally);
+//
+//                }
+//            };
             editor.showAndWait();
         } else if (model instanceof HokenTable.KoukikoureiModel) {
             HokenTable.KoukikoureiModel koukiModel = (HokenTable.KoukikoureiModel) model;
-            EditKoukikoureiStage editor = new EditKoukikoureiStage(koukiModel.orig);
-            editor.setOnEnter(data -> {
-                Service.api.updateKoukikourei(data)
-                        .thenAccept(ok -> Platform.runLater(() -> {
-                            fetchAndUpdateHokenList();
-                            editor.close();
-                        }))
-                        .exceptionally(HandlerFX::exceptionally);
-            });
+            EditKoukikoureiStage editor = new EditKoukikoureiStage(koukiModel.orig){
+                @Override
+                void onEnter(KoukikoureiDTO data) {
+                    Service.api.updateKoukikourei(data)
+                            .thenAccept(ok -> Platform.runLater(() -> {
+                                fetchAndUpdateHokenList();
+                                this.close();
+                            }))
+                            .exceptionally(HandlerFX::exceptionally);
+                }
+            };
             editor.showAndWait();
         } else if (model instanceof HokenTable.KouhiModel) {
             HokenTable.KouhiModel koukiModel = (HokenTable.KouhiModel) model;
-            EditKouhiStage editor = new EditKouhiStage(koukiModel.orig);
-            editor.setOnEnter(data -> {
-                Service.api.updateKouhi(data)
-                        .thenAccept(ok -> Platform.runLater(() -> {
-                            fetchAndUpdateHokenList();
-                            editor.close();
-                        }))
-                        .exceptionally(HandlerFX::exceptionally);
-            });
+            EditKouhiStage editor = new EditKouhiStage(koukiModel.orig){
+                @Override
+                void onEnter(KouhiDTO data) {
+                    Service.api.updateKouhi(data)
+                            .thenAccept(ok -> Platform.runLater(() -> {
+                                fetchAndUpdateHokenList();
+                                this.close();
+                            }))
+                            .exceptionally(HandlerFX::exceptionally);
+                }
+            };
             editor.showAndWait();
         } else {
             GuiUtil.alertError("Unknown hokentable modelold.");
@@ -284,65 +293,58 @@ class PatientWithHokenStage extends Stage {
     }
 
     private void doNewShahokokuho() {
-        EditShahokokuhoStage stage = new EditShahokokuhoStage();
-        stage.setOnEnter(data -> {
-            data.patientId = thePatient.getValue().patientId;
-            Service.api.enterShahokokuho(data)
-                    .thenAccept(shahokokuhoId -> {
-                        Platform.runLater(() -> {
-                            data.shahokokuhoId = shahokokuhoId;
-                            fetchAndUpdateHokenList();
-                            stage.close();
-                        });
-                    })
-                    .exceptionally(ex -> {
-                        logger.error("Failed to enter shahokokuho.", ex);
-                        Platform.runLater(() -> GuiUtil.alertException("社保・国保の新規登録に失敗しました。", ex));
-                        return null;
-                    });
-        });
-        stage.showAndWait();
+        PatientDTO patient = thePatient.getValue();
+        if( patient != null ) {
+            EnterShahokokuhoStage stage = new EnterShahokokuhoStage(patient.patientId, this::fetchAndUpdateHokenList);
+            stage.showAndWait();
+        } else {
+            logger.error("Null patient in doNewShahokokuho().");
+        }
     }
 
     private void doNewKoukikourei() {
-        EditKoukikoureiStage stage = new EditKoukikoureiStage();
-        stage.setOnEnter(data -> {
-            data.patientId = thePatient.getValue().patientId;
-            Service.api.enterKoukikourei(data)
-                    .thenAccept(koukikoureiId -> {
-                        Platform.runLater(() -> {
-                            data.koukikoureiId = koukikoureiId;
-                            fetchAndUpdateHokenList();
-                            stage.close();
+        EditKoukikoureiStage stage = new EditKoukikoureiStage(){
+            @Override
+            void onEnter(KoukikoureiDTO data) {
+                data.patientId = thePatient.getValue().patientId;
+                Service.api.enterKoukikourei(data)
+                        .thenAccept(koukikoureiId -> {
+                            Platform.runLater(() -> {
+                                data.koukikoureiId = koukikoureiId;
+                                fetchAndUpdateHokenList();
+                                this.close();
+                            });
+                        })
+                        .exceptionally(ex -> {
+                            logger.error("Failed to enter koukikourei.", ex);
+                            Platform.runLater(() -> GuiUtil.alertException("後期高齢保険の新規登録に失敗しました。", ex));
+                            return null;
                         });
-                    })
-                    .exceptionally(ex -> {
-                        logger.error("Failed to enter koukikourei.", ex);
-                        Platform.runLater(() -> GuiUtil.alertException("後期高齢保険の新規登録に失敗しました。", ex));
-                        return null;
-                    });
-        });
+            }
+        };
         stage.showAndWait();
     }
 
     private void doNewKouhi() {
-        EditKouhiStage stage = new EditKouhiStage();
-        stage.setOnEnter(data -> {
-            data.patientId = thePatient.getValue().patientId;
-            Service.api.enterKouhi(data)
-                    .thenAccept(kouhiId -> {
-                        Platform.runLater(() -> {
-                            data.kouhiId = kouhiId;
-                            fetchAndUpdateHokenList();
-                            stage.close();
+        EditKouhiStage stage = new EditKouhiStage(){
+            @Override
+            void onEnter(KouhiDTO data) {
+                data.patientId = thePatient.getValue().patientId;
+                Service.api.enterKouhi(data)
+                        .thenAccept(kouhiId -> {
+                            Platform.runLater(() -> {
+                                data.kouhiId = kouhiId;
+                                fetchAndUpdateHokenList();
+                                this.close();
+                            });
+                        })
+                        .exceptionally(ex -> {
+                            logger.error("Failed to enter kouhi.", ex);
+                            Platform.runLater(() -> GuiUtil.alertException("公費負担の新規登録に失敗しました。", ex));
+                            return null;
                         });
-                    })
-                    .exceptionally(ex -> {
-                        logger.error("Failed to enter kouhi.", ex);
-                        Platform.runLater(() -> GuiUtil.alertException("公費負担の新規登録に失敗しました。", ex));
-                        return null;
-                    });
-        });
+            }
+        };
         stage.showAndWait();
     }
 

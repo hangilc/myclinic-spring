@@ -115,8 +115,6 @@ public class HokenUtil {
             return 3;
     }
 
-    ;
-
     public static int kouhiFutanWari(int futanshaBangou) {
         if (futanshaBangou / 1000000 == 41)
             return 1;
@@ -136,63 +134,18 @@ public class HokenUtil {
         }
     }
 
-    public static boolean checkHokenshaBangouDigits(int[] digits) {
-        final int len = digits.length;
-        int m = 2;
-        int s = 0;
-        for (int i = len - 2; i >= 0; i--) {
-            int d = digits[i];
-            int dm = d * m;
-            if (dm >= 10) {
-                dm = (dm / 10) + (dm % 10);
-            }
-            s += dm;
-            if (m == 2) {
-                m = 1;
-            } else {
-                m = 2;
-            }
-        }
-        s = s % 10;
-        int v = 10 - s;
-        if( v == 10 ){
-            v = 0;
-        }
-        return v == digits[len - 1];
-    }
-
-    public static String formatHokenshaBangou(int bangou) {
-        if (bangou < 9999) {
+    public static String formatShahokokuhoHokenshaBangou(int bangou) {
+        if (bangou <= 9999) {
             return String.format("%d", bangou);
-        } else if (bangou < 999999) {
+        } else if (bangou <= 999999) {
             return String.format("%06d", bangou);
         } else {
             return String.format("%08d", bangou);
         }
     }
 
-    public static HokenshaBangouAnalysisResult analyzeHokenshaBangou(int bangou) {
-        String fmt = formatHokenshaBangou(bangou);
-        if (fmt.length() < 4) {
-            return HokenshaBangouAnalysisResult.TOO_FEW_DIGITS;
-        } else if (fmt.length() == 4) {
-            return HokenshaBangouAnalysisResult.SEIKANKENPO;
-        } else if (fmt.length() > 8) {
-            return HokenshaBangouAnalysisResult.TOO_MANY_DIGITS;
-        } else {
-            if (!checkHokenshaBangouDigits(toDigitsArray(fmt))) {
-                return HokenshaBangouAnalysisResult.VERIFY_ERROR;
-            }
-            return HokenshaBangouAnalysisResult.OK;
-        }
-    }
-
-    private static int[] toDigitsArray(String fmt) {
-        int[] digits = new int[(fmt.length())];
-        for (int i = 0; i < fmt.length(); i++) {
-            digits[i] = Integer.parseInt(fmt.substring(i, i + 1));
-        }
-        return digits;
+    public static String formatKouhiJukyuushaBangou(int bangou){
+        return String.format("%07d", bangou);
     }
 
 }

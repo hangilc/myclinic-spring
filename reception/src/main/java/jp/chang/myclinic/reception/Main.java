@@ -4,10 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
@@ -116,6 +113,14 @@ public class Main extends Application {
             });
             syncItem.setOnAction(evt -> doRestartTracking());
             unsyncItem.setOnAction(evt -> doStopTracking());
+            mbar.getMenus().add(menu);
+        }
+        {
+            Menu menu = new Menu("設定");
+            CheckMenuItem item = new CheckMenuItem("保険者番号をチェックする");
+            item.setSelected(true);
+            Globals.checkingHokenshaBangouProperty().bindBidirectional(item.selectedProperty());
+            menu.getItems().add(item);
             mbar.getMenus().add(menu);
         }
         return mbar;

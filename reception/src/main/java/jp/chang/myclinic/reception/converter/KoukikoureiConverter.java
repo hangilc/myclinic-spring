@@ -1,6 +1,7 @@
 package jp.chang.myclinic.reception.converter;
 
 import jp.chang.myclinic.dto.KoukikoureiDTO;
+import jp.chang.myclinic.util.verify.KoukikoureiVerifier;
 
 import java.time.LocalDate;
 import java.util.function.Consumer;
@@ -11,8 +12,9 @@ public class KoukikoureiConverter extends ConverterBase {
     private static String validUptoName = "有効期限";
 
     public void convertToHokenshaBangou(String src, Consumer<String> cb){
-        if( src == null || src.isEmpty() ){
-            addError("保険者番号が入力されていません。");
+        String err = KoukikoureiVerifier.verifyHokenshaBangouInput(src, null);
+        if( err != null ){
+            addError(err);
         } else {
             cb.accept(src);
         }
