@@ -12,6 +12,7 @@ import static jp.chang.myclinic.util.logic.BiValidators.validInterval;
 import static jp.chang.myclinic.util.logic.Converters.*;
 import static jp.chang.myclinic.util.logic.Validators.*;
 import static jp.chang.myclinic.utilfx.dateinput.DateFormLogic.dateFormInputsToLocalDate;
+import static jp.chang.myclinic.utilfx.dateinput.DateFormLogic.isNotEmptyDateFormInputs;
 import static jp.chang.myclinic.utilfx.dateinput.DateFormLogic.localDateToDateFormInputs;
 
 public class ShahokokuhoFormLogic {
@@ -65,6 +66,7 @@ public class ShahokokuhoFormLogic {
             dto.honnin = validateHonnin(new LogicValue<>(inputs.honnin), em);
             new BiLogicValue<>(inputs.validFromInputs, inputs.validUptoInputs)
                     .validate(isNotNull(), valid())
+                    .validate(isNotEmptyDateFormInputs(), valid())
                     .convert(dateFormInputsToLocalDate())
                     .validate(validInterval())
                     .convert(localDateToSqldate())
@@ -74,10 +76,10 @@ public class ShahokokuhoFormLogic {
                                 dto.validUpto = validUpto;
                             },
                             "交付年月日", "有効期限", em);
-            dto.kourei = new LogicValue<Integer>(inputs.kourei)
+            dto.kourei = new LogicValue<>(inputs.kourei)
                     .validate(isNotNull())
                     .validate(isOneOf(0, 1, 2, 3))
-                    .getValue("高齢", em);
+                    .getValueOrElse(0, "高齢", em);
             if (em.hasErrorSince(ne)) {
                 return null;
             }

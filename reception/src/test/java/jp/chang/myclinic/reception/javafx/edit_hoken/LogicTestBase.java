@@ -1,6 +1,6 @@
 package jp.chang.myclinic.reception.javafx.edit_hoken;
 
-import jp.chang.myclinic.util.value.ErrorMessages;
+import jp.chang.myclinic.util.logic.ErrorMessages;
 import org.junit.Before;
 
 class LogicTestBase {

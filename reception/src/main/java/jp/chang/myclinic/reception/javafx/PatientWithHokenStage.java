@@ -310,8 +310,13 @@ class PatientWithHokenStage extends Stage {
 //                        });
 //            }
 //        };
-        EnterShahokokuhoStage stage = new EnterShahokokuhoStage();
-        stage.showAndWait();
+        PatientDTO patient = thePatient.getValue();
+        if( patient != null ) {
+            EnterShahokokuhoStage stage = new EnterShahokokuhoStage(patient.patientId, this::fetchAndUpdateHokenList);
+            stage.showAndWait();
+        } else {
+            logger.error("Null patient in doNewShahokokuho().");
+        }
     }
 
     private void doNewKoukikourei() {

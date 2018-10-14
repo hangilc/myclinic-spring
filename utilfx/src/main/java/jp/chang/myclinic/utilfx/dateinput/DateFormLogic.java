@@ -4,6 +4,7 @@ import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.util.logic.Converter;
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import jp.chang.myclinic.util.logic.LogicValue;
+import jp.chang.myclinic.util.logic.Validator;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -78,6 +79,14 @@ public class DateFormLogic {
             } catch (DateTimeException ex) {
                 em.add(String.format("%sが不適切は日付です。", name));
                 return null;
+            }
+        };
+    }
+
+    public static Validator<DateFormInputs> isNotEmptyDateFormInputs(){
+        return (inputs, name, em) -> {
+            if( inputs != null && inputs.isEmpty() ){
+                em.add(String.format("%sが空白です。", name));
             }
         };
     }
