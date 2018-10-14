@@ -21,22 +21,22 @@ public class DateFormLogic {
                 return null;
             }
             ErrorMessages emDate = new ErrorMessages();
-            Gengou gengou = new LogicValue<Gengou>(inputs.gengou)
+            Gengou gengou = new LogicValue<>(inputs.gengou)
                     .validate(isNotNull())
                     .getValue("元号", emDate);
-            int nen = new LogicValue<String>(inputs.nen)
+            int nen = new LogicValue<>(inputs.nen)
                     .validate(isNotNull())
                     .validate(isNotEmpty())
                     .convert(stringToInteger())
                     .validate(isInRange(1, Integer.MAX_VALUE))
                     .getValueOrElse(0, "年", emDate);
-            int month = new LogicValue<String>(inputs.month)
+            int month = new LogicValue<>(inputs.month)
                     .validate(isNotNull())
                     .validate(isNotEmpty())
                     .convert(stringToInteger())
                     .validate(isInRange(1, 12))
                     .getValueOrElse(0, "月", emDate);
-            int day = new LogicValue<String>(inputs.day)
+            int day = new LogicValue<>(inputs.day)
                     .validate(isNotNull())
                     .validate(isNotEmpty())
                     .convert(stringToInteger())

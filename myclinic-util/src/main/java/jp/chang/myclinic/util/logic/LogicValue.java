@@ -1,7 +1,5 @@
 package jp.chang.myclinic.util.logic;
 
-import java.util.function.Consumer;
-
 public class LogicValue<T> implements Logic<T>{
 
     private T value;
@@ -11,8 +9,7 @@ public class LogicValue<T> implements Logic<T>{
     }
 
     @Override
-    public void apply(Consumer<T> successHandler, Runnable errorCallback, String name, ErrorMessages em) {
-        successHandler.accept(value);
+    public T getValue(String name, ErrorMessages em){
+        return value;
     }
-
 }

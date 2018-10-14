@@ -95,6 +95,6 @@ public class Validators {
                 .validate(isNotNull(), valid())
                 .convert(sqldateToLocalDate())
                 .validate(validInterval())
-                .apply((a, b) -> {}, () -> {}, validFromName, validUptoName, em);
+                .getValues(validFromName, validUptoName, em);
     }
 }
