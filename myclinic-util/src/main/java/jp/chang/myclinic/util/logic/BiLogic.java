@@ -14,6 +14,10 @@ public interface BiLogic<T> {
         }
     }
 
+    default void verify(String leftName, String rightName, ErrorMessages em){
+        apply((a, b) -> {}, leftName, rightName, em);
+    }
+
     static <S> BiLogic<S> combine(Logic<S> left, Logic<S> right){
         return (leftName, rightName, em) -> {
             int ne = em.getNumberOfErrors();

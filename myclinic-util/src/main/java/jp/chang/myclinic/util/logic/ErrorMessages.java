@@ -70,4 +70,12 @@ public class ErrorMessages {
         add(compositeErrorMessages);
         unindent();
     }
+
+    public void addOptionalComposite(String name, ErrorMessages compositeErrorMessages){
+        if( name != null ){
+            addComposite(String.format("%sの内容が不適切です。", name), compositeErrorMessages);
+        } else {
+            add(compositeErrorMessages);
+        }
+    }
 }
