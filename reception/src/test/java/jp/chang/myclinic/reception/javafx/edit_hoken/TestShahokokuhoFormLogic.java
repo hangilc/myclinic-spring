@@ -15,7 +15,7 @@ public class TestShahokokuhoFormLogic extends LogicTestBase {
     private ShahokokuhoDTO inputsToDTO(ShahokokuhoFormInputs inputs, ErrorMessages em){
         return new LogicValue<>(inputs)
                 .convert(shahokokuhoFormInputsToShahokokuhoDTO())
-                .getValue("ShahokokuhoDTO", em);
+                .getValue(null, em);
     }
 
     @Test

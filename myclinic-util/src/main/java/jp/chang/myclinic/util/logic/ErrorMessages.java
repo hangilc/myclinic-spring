@@ -64,4 +64,10 @@ public class ErrorMessages {
         return !hasErrorSince(previousNumberOfErrors);
     }
 
+    public void addComposite(String title, ErrorMessages compositeErrorMessages){
+        add(title);
+        indent();
+        add(compositeErrorMessages);
+        unindent();
+    }
 }

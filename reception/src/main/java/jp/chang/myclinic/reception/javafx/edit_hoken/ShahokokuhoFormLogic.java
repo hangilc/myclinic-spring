@@ -51,18 +51,18 @@ public class ShahokokuhoFormLogic {
 
     public static Converter<ShahokokuhoFormInputs, ShahokokuhoDTO> shahokokuhoFormInputsToShahokokuhoDTO(){
         return (inputs, name, em) -> {
-            int ne = em.getNumberOfErrors();
+            ErrorMessages emLocal = new ErrorMessages();
             ShahokokuhoDTO dto = new ShahokokuhoDTO();
             dto.hokenshaBangou = validateHokenshaBangou(new LogicValue<>(inputs.hokenshaBangou)
                     .validate(isNotNull())
                     .validate(isNotEmpty())
-                    .convert(stringToInteger()), em);
+                    .convert(stringToInteger()), emLocal);
             validateHihokensha(new LogicValue<>(inputs.hihokenshaKigou), new LogicValue<>(inputs.hihokenshaBangou),
                     (kigou, bangou) -> {
                         dto.hihokenshaKigou = kigou;
                         dto.hihokenshaBangou = bangou;
-                    }, em);
-            dto.honnin = validateHonnin(new LogicValue<>(inputs.honnin), em);
+                    }, emLocal);
+            dto.honnin = validateHonnin(new LogicValue<>(inputs.honnin), emLocal);
             new BiLogicValue<>(inputs.validFromInputs, inputs.validUptoInputs)
                     .validate(isNotNull(), valid())
                     .validate(isNotEmptyDateFormInputs(), valid())
@@ -74,12 +74,17 @@ public class ShahokokuhoFormLogic {
                                 dto.validFrom = validFrom;
                                 dto.validUpto = validUpto;
                             },
-                            "交付年月日", "有効期限", em);
+                            "交付年月日", "有効期限", emLocal);
             dto.kourei = new LogicValue<>(inputs.kourei)
                     .validate(isNotNull())
                     .validate(isOneOf(0, 1, 2, 3))
-                    .getValueOrElse(0, "高齢", em);
-            if (em.hasErrorSince(ne)) {
+                    .getValueOrElse(0, "高齢", emLocal);
+            if (emLocal.hasError()) {
+                if( name != null ){
+                    em.addComposite(String.format("%sの内容が不適切です。", name), emLocal);
+                } else {
+                    em.add(emLocal);
+                }
                 return null;
             }
             return dto;
@@ -88,27 +93,34 @@ public class ShahokokuhoFormLogic {
 
     public static Converter<ShahokokuhoDTO, ShahokokuhoFormInputs> shahokokuhoDTOToShahokokuhoFormInputs() {
         return (dto, name, em) -> {
-            int ne = em.getNumberOfErrors();
+            ErrorMessages emLocal = new ErrorMessages();
             ShahokokuhoFormInputs inputs = new ShahokokuhoFormInputs();
             inputs.hokenshaBangou = new LogicValue<>(dto.hokenshaBangou)
                     .convert(zeroOrNullToEmpty())
-                    .getValue("保険者番号", em);
+                    .getValue("保険者番号", emLocal);
             inputs.hihokenshaKigou = dto.hihokenshaKigou;
             inputs.hihokenshaBangou = dto.hihokenshaBangou;
             inputs.honnin = new LogicValue<>(dto.honnin)
                     .validate(isOneOf(0, 1))
-                    .getValueOrElse(0, "本人・家族", em);
+                    .getValueOrElse(0, "本人・家族", emLocal);
             inputs.validFromInputs = new LogicValue<>(dto.validFrom)
                     .validate(isNotNull())
                     .convert(sqldateToLocalDate())
                     .validate(isNotNull())
                     .convert(localDateToDateFormInputs())
-                    .getValue("交付年月日", em);
+                    .getValue("交付年月日", emLocal);
             inputs.validUptoInputs = new LogicValue<>(dto.validUpto)
                     .convert(sqldateToLocalDate())
                     .convert(nullableLocalDateToDateFormInputs(Gengou.Current))
-                    .getValue("有効期限", em);
+                    .getValue("有効期限", emLocal);
             inputs.kourei = dto.kourei;
+            if( emLocal.hasError() ){
+                if( name != null ){
+                    em.addComposite(String.format("%sの内容が不適切です。", name), emLocal);
+                } else {
+                    em.add(emLocal);
+                }
+            }
             return inputs; // returns inputs anyway
         };
     }

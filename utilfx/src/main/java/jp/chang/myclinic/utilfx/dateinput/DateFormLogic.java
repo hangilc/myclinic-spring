@@ -44,10 +44,7 @@ public class DateFormLogic {
                     .validate(isInRange(1, 31))
                     .getValueOrElse(0, "日", emDate);
             if (emDate.hasError()) {
-                em.add(String.format("%sの内容が不適切です。", name));
-                em.indent();
-                em.add(emDate);
-                em.unindent();
+                em.addComposite(String.format("%sの内容が不適切です。", name), emDate);
                 return null;
             } else {
                 try {
