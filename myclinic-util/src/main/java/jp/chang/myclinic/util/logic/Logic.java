@@ -48,4 +48,15 @@ public interface Logic<T> {
         return convert((value, name, em) -> fun.apply(value));
     }
 
+    default <U> Logic<U> chain(Chainer<T, U> chainer){
+        Logic<T> self = this;
+        return (name, em) -> {
+            int ne = em.getNumberOfErrors();
+            Logic<U> logicU = chainer.chain(self, name, em);
+            if( em.hasErrorSince(ne) ){
+                return null;
+            }
+            return logicU.getValue(name, em);
+        };
+    }
 }
