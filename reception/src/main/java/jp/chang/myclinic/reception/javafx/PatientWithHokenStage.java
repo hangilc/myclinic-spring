@@ -18,10 +18,10 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.KouhiDTO;
-import jp.chang.myclinic.dto.KoukikoureiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.javafx.edit_hoken.EditShahokokuhoStage;
 import jp.chang.myclinic.reception.javafx.edit_hoken.EnterShahokokuhoStage;
+import jp.chang.myclinic.reception.javafx.edit_koukikourei.EditKoukikoureiStage;
 import jp.chang.myclinic.reception.javafx.edit_koukikourei.EnterKoukikoureiStage;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.*;
@@ -234,17 +234,26 @@ class PatientWithHokenStage extends Stage {
             editor.showAndWait();
         } else if (model instanceof HokenTable.KoukikoureiModel) {
             HokenTable.KoukikoureiModel koukiModel = (HokenTable.KoukikoureiModel) model;
-            EditKoukikoureiStage editor = new EditKoukikoureiStage(koukiModel.orig) {
-                @Override
-                void onEnter(KoukikoureiDTO data) {
-                    Service.api.updateKoukikourei(data)
-                            .thenAccept(ok -> Platform.runLater(() -> {
-                                fetchAndUpdateHokenList();
-                                this.close();
-                            }))
-                            .exceptionally(HandlerFX::exceptionally);
-                }
-            };
+//            EditKoukikoureiStage editor = new EditKoukikoureiStage(koukiModel.orig) {
+//                @Override
+//                void onEnter(KoukikoureiDTO data) {
+//                    Service.api.updateKoukikourei(data)
+//                            .thenAccept(ok -> Platform.runLater(() -> {
+//                                fetchAndUpdateHokenList();
+//                                this.close();
+//                            }))
+//                            .exceptionally(HandlerFX::exceptionally);
+//                }
+//            };
+            EditKoukikoureiStage editor = new EditKoukikoureiStage(koukiModel.orig);
+            editor.setEnterCallback(data -> {
+                Service.api.updateKoukikourei(data)
+                        .thenAccept(ok -> Platform.runLater(() -> {
+                            fetchAndUpdateHokenList();
+                            editor.close();
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
+            });
             editor.showAndWait();
         } else if (model instanceof HokenTable.KouhiModel) {
             HokenTable.KouhiModel koukiModel = (HokenTable.KouhiModel) model;

@@ -119,7 +119,7 @@ class KoukikoureiFormLogic extends LogicUtil {
         return inputs;
     }
 
-    public static EnterProc createUpdateProc(KoukikoureiDTO orig, Consumer<KoukikoureiFormInputs> formInitializer) {
+    public static EnterProc createEditProc(KoukikoureiDTO orig, Consumer<KoukikoureiFormInputs> formInitializer) {
         ErrorMessages emInputs = new ErrorMessages();
         KoukikoureiFormInputs initialInputs = new LogicValue<>(orig)
                 .convert(KoukikoureiFormLogic::koukikoureiDTOToKoukikoureiFormInputs)
