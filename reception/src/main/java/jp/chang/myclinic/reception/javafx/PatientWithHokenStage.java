@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 class PatientWithHokenStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(PatientWithHokenStage.class);
-    private static Pattern scannedDateTimePattern  = Pattern.compile(
+    private static Pattern scannedDateTimePattern = Pattern.compile(
             "(\\d{8}+)-(\\d{6}+)-\\d+\\.[^.]+$"
     ); // (yyyymmdd)-(hhmmss)
 
@@ -174,7 +174,7 @@ class PatientWithHokenStage extends Stage {
                     List<HokenshoListStage.Model> models = files.stream()
                             .map(file -> {
                                 String label = extractHokenshoDateTime(file);
-                                if( label == null ){
+                                if (label == null) {
                                     label = file;
                                 }
                                 return new HokenshoListStage.Model(label, file);
@@ -187,9 +187,9 @@ class PatientWithHokenStage extends Stage {
                 .exceptionally(HandlerFX::exceptionally);
     }
 
-    private String extractHokenshoDateTime(String file){
+    private String extractHokenshoDateTime(String file) {
         Matcher matcher = scannedDateTimePattern.matcher(file);
-        if( matcher.find() ){
+        if (matcher.find()) {
             String datePart = matcher.group(1);
             String timePart = matcher.group(2);
             String dt = String.format("%s-%s-%sT%s:%s:%s",
@@ -202,7 +202,7 @@ class PatientWithHokenStage extends Stage {
                         DateTimeUtil.kanjiFormatter4,
                         " "
                 );
-            } catch(DateTimeParseException ex){
+            } catch (DateTimeParseException ex) {
                 logger.error("Invalid scanner file: {}", file);
                 return null;
             }
@@ -234,7 +234,7 @@ class PatientWithHokenStage extends Stage {
             editor.showAndWait();
         } else if (model instanceof HokenTable.KoukikoureiModel) {
             HokenTable.KoukikoureiModel koukiModel = (HokenTable.KoukikoureiModel) model;
-            EditKoukikoureiStage editor = new EditKoukikoureiStage(koukiModel.orig){
+            EditKoukikoureiStage editor = new EditKoukikoureiStage(koukiModel.orig) {
                 @Override
                 void onEnter(KoukikoureiDTO data) {
                     Service.api.updateKoukikourei(data)
@@ -248,7 +248,7 @@ class PatientWithHokenStage extends Stage {
             editor.showAndWait();
         } else if (model instanceof HokenTable.KouhiModel) {
             HokenTable.KouhiModel koukiModel = (HokenTable.KouhiModel) model;
-            EditKouhiStage editor = new EditKouhiStage(koukiModel.orig){
+            EditKouhiStage editor = new EditKouhiStage(koukiModel.orig) {
                 @Override
                 void onEnter(KouhiDTO data) {
                     Service.api.updateKouhi(data)
@@ -298,7 +298,7 @@ class PatientWithHokenStage extends Stage {
 
     private void doNewShahokokuho() {
         PatientDTO patient = thePatient.getValue();
-        if( patient != null ) {
+        if (patient != null) {
             EnterShahokokuhoStage stage = new EnterShahokokuhoStage(patient.patientId, this::fetchAndUpdateHokenList);
             stage.showAndWait();
         } else {
@@ -328,13 +328,22 @@ class PatientWithHokenStage extends Stage {
 //        };
         EnterKoukikoureiStage stage = new EnterKoukikoureiStage(thePatient.getValue().patientId);
         stage.setEnterCallback(dto -> {
-            System.out.println(dto);
+            Service.api.enterKoukikourei(dto)
+                    .thenAcceptAsync(koukikoureiId -> {
+                        fetchAndUpdateHokenList();
+                        stage.close();
+                    }, Platform::runLater)
+                    .exceptionally(ex -> {
+                        logger.error("Failed to enter koukikourei.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException("後期高齢保険の新規登録に失敗しました。", ex));
+                        return null;
+                    });
         });
         stage.showAndWait();
     }
 
     private void doNewKouhi() {
-        EditKouhiStage stage = new EditKouhiStage(){
+        EditKouhiStage stage = new EditKouhiStage() {
             @Override
             void onEnter(KouhiDTO data) {
                 data.patientId = thePatient.getValue().patientId;
