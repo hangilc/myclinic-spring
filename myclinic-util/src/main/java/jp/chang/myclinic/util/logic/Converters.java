@@ -5,16 +5,33 @@ import java.time.LocalDate;
 
 public class Converters {
 
-    public static Converter<String, Integer> stringToInteger(){
-        return (value, name, em) -> {
-            try {
-                return Integer.parseInt(value);
-            } catch (NumberFormatException ex) {
-                em.add(String.format("%sが数値でありません。", name));
-                return null;
-            }
-        };
+    private static String nameWith(String name, String append){
+        if( name != null ){
+            return name + append;
+        } else {
+            return "";
+        }
     }
+
+    public static Integer stringToInteger(String value, String name, ErrorMessages em){
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException ex) {
+            em.add(String.format(nameWith(name, "が") + "数値でありません。", name));
+            return null;
+        }
+    }
+
+//    public static Converter<String, Integer> stringToInteger(){
+//        return (value, name, em) -> {
+//            try {
+//                return Integer.parseInt(value);
+//            } catch (NumberFormatException ex) {
+//                em.add(String.format("%sが数値でありません。", name));
+//                return null;
+//            }
+//        };
+//    }
 
     public static Converter<Integer, String> integerToString(){
         return (value, name, em) -> String.format("%d", value);

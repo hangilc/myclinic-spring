@@ -61,10 +61,4 @@ public class HokenValidator {
         };
     }
 
-    public static Validator<ShahokokuhoDTO> validateShahokokuhoForEnter() {
-        return (dto, name, em) -> {
-
-        }
-    }
-
 }
