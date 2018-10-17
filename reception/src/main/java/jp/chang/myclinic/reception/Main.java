@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 // TODO: check hokenshabangou etc
+// TODO: add default koukikourei hokenshabangou
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
