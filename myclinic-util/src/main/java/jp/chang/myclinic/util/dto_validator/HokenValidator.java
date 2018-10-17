@@ -1,14 +1,10 @@
 package jp.chang.myclinic.util.dto_validator;
 
-import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import jp.chang.myclinic.util.logic.Logic;
-import jp.chang.myclinic.util.logic.LogicValue;
-import jp.chang.myclinic.util.logic.Validator;
 
 import java.util.function.BiConsumer;
 
-import static jp.chang.myclinic.util.dto_validator.ValidatorLib.checkValidInterval;
 import static jp.chang.myclinic.util.logic.Converters.nullToEmpty;
 import static jp.chang.myclinic.util.logic.Validators.*;
 
@@ -45,7 +41,8 @@ public class HokenValidator {
         }
     }
 
-
+/*
+<<<<<<< HEAD
     public static Validator<ShahokokuhoDTO> validateShahokokuhoBody() {
         return (dto, name, em) -> {
             checkShahokokuhoHokenshaBangou(new LogicValue<>(dto.hokenshaBangou)).verify("保険者番号", em);
@@ -60,5 +57,28 @@ public class HokenValidator {
             checkValidInterval(dto.validFrom, dto.validUpto, "交付年月日", "有効期限", em);
         };
     }
+=======
+//    public static Validator<ShahokokuhoDTO> validateShahokokuhoBody() {
+//        return (dto, name, em) -> {
+//            checkShahokokuhoHokenshaBangou(new LogicValue<>(dto.hokenshaBangou)).verify("保険者番号", em);
+//            checkShahokokuhoHihokensha(new LogicValue<>(dto.hihokenshaKigou),
+//                    new LogicValue<>(dto.hihokenshaBangou),
+//                    (a, b) -> {
+//                    }, em);
+//            new LogicValue<>(dto.honnin)
+//                    .validate(isNotNull())
+//                    .validate(isOneOf(0, 1))
+//                    .verify("本人・家族", em);
+//            checkValidInterval(dto.validFrom, dto.validUpto, "交付年月日", "有効期限", em);
+//        };
+//    }
+//
+//    public static Validator<ShahokokuhoDTO> validateShahokokuhoForEnter() {
+//        return (dto, name, em) -> {
+//
+//        }
+//    }
+>>>>>>> origin/koukikourei-form
+*/
 
 }
