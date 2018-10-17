@@ -60,7 +60,11 @@ public interface BiLogic<T> {
         };
     }
 
-    default <U> BiLogic<U> convert(Function<T, U> fun){
+    default <U> BiLogic<U> convert(Function<BiLogic<T>, BiLogic<U>> fun){
+        return fun.apply(this);
+    }
+
+    default <U> BiLogic<U> map(Function<T, U> fun){
         BiLogic<T> self = this;
         return (leftName, rightName, em) -> {
             int ne = em.getNumberOfErrors();

@@ -9,8 +9,8 @@ import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
 
 import java.util.function.Consumer;
 
-import static jp.chang.myclinic.util.logic.Validators.*;
-import static jp.chang.myclinic.utilfx.dateinput.DateFormLogic.nullableLocalDateToDateFormInputs;
+import static jp.chang.myclinic.util.logic.Validators.hasDigitsInRange;
+import static jp.chang.myclinic.util.logic.Validators.isOneOf;
 
 public class ShahokokuhoFormLogic extends LogicUtil {
 
@@ -29,7 +29,7 @@ public class ShahokokuhoFormLogic extends LogicUtil {
                 .getValueOrElse(0, nameWith(name, "の") + "保険者番号", em);
 
         new BiLogicValue<>(inputs.hihokenshaKigou, inputs.hihokenshaBangou)
-                .convert(Mappers::nullToEmpty)
+                .map(Mappers::nullToEmpty)
                 .validate(BiValidators::notBothAreEmpty)
                 .apply(
                         (kigou, bangou) -> {
@@ -46,11 +46,7 @@ public class ShahokokuhoFormLogic extends LogicUtil {
                 .getValueOrElse(0, nameWith(name, "の") + "本人・家族", em);
 
         new BiLogicValue<>(inputs.validFromInputs, inputs.validUptoInputs)
-                .validate(Validators::isNotNull, Validators::valid)
-                .validate(DateFormLogic::isNotEmptyDateFormInputs, Validators::valid)
-                .convert(DateFormLogic::dateFormInputsToLocalDate)
-                .validate(BiValidators::isValidInterval)
-                .convert(Mappers::localDateToSqldate)
+                .convert(DateFormLogic::dateFormValidIntervalToSqldate)
                 .apply(
                         (validFrom, validUpto) -> {
                             dto.validFrom = validFrom;
@@ -83,14 +79,10 @@ public class ShahokokuhoFormLogic extends LogicUtil {
                 .validate(isOneOf(0, 1))
                 .getValueOrElse(0, nameWith(name, "の") + "本人・家族", em);
         inputs.validFromInputs = new LogicValue<>(dto.validFrom)
-                .validate(Validators::isNotNull)
-                .convert(Converters::sqldateToLocalDate)
-                .validate(Validators::isNotNull)
-                .convert(DateFormLogic::localDateToDateFormInputs)
+                .convert(DateFormLogic::validFromSqldateToDateFormInputs)
                 .getValue(nameWith(name, "の") + "資格取得日", em);
         inputs.validUptoInputs = new LogicValue<>(dto.validUpto)
-                .convert(Converters::sqldateToLocalDate)
-                .convert(nullableLocalDateToDateFormInputs(Gengou.Current))
+                .convert(DateFormLogic::validUptoSqldateToDateFormInputs)
                 .getValue(nameWith(name, "の") + "有効期限", em);
         inputs.kourei = dto.kourei;
         return inputs; // returns inputs anyway

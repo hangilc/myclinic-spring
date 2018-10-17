@@ -16,9 +16,13 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.dto.HokenListDTO;
+import jp.chang.myclinic.dto.KouhiDTO;
+import jp.chang.myclinic.dto.KoukikoureiDTO;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.javafx.edit_hoken.EditShahokokuhoStage;
 import jp.chang.myclinic.reception.javafx.edit_hoken.EnterShahokokuhoStage;
+import jp.chang.myclinic.reception.javafx.edit_koukikourei.EnterKoukikoureiStage;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -303,25 +307,29 @@ class PatientWithHokenStage extends Stage {
     }
 
     private void doNewKoukikourei() {
-        EditKoukikoureiStage stage = new EditKoukikoureiStage(){
-            @Override
-            void onEnter(KoukikoureiDTO data) {
-                data.patientId = thePatient.getValue().patientId;
-                Service.api.enterKoukikourei(data)
-                        .thenAccept(koukikoureiId -> {
-                            Platform.runLater(() -> {
-                                data.koukikoureiId = koukikoureiId;
-                                fetchAndUpdateHokenList();
-                                this.close();
-                            });
-                        })
-                        .exceptionally(ex -> {
-                            logger.error("Failed to enter koukikourei.", ex);
-                            Platform.runLater(() -> GuiUtil.alertException("後期高齢保険の新規登録に失敗しました。", ex));
-                            return null;
-                        });
-            }
-        };
+//        EditKoukikoureiStage stage = new EditKoukikoureiStage(){
+//            @Override
+//            void onEnter(KoukikoureiDTO data) {
+//                data.patientId = thePatient.getValue().patientId;
+//                Service.api.enterKoukikourei(data)
+//                        .thenAccept(koukikoureiId -> {
+//                            Platform.runLater(() -> {
+//                                data.koukikoureiId = koukikoureiId;
+//                                fetchAndUpdateHokenList();
+//                                this.close();
+//                            });
+//                        })
+//                        .exceptionally(ex -> {
+//                            logger.error("Failed to enter koukikourei.", ex);
+//                            Platform.runLater(() -> GuiUtil.alertException("後期高齢保険の新規登録に失敗しました。", ex));
+//                            return null;
+//                        });
+//            }
+//        };
+        EnterKoukikoureiStage stage = new EnterKoukikoureiStage(thePatient.getValue().patientId);
+        stage.setEnterCallback(dto -> {
+            System.out.println(dto);
+        });
         stage.showAndWait();
     }
 

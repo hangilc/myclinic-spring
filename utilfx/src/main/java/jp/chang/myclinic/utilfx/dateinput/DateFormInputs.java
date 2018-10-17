@@ -1,6 +1,10 @@
 package jp.chang.myclinic.utilfx.dateinput;
 
 import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.logic.BiLogic;
+import jp.chang.myclinic.util.logic.BiValidators;
+import jp.chang.myclinic.util.logic.Mappers;
+import jp.chang.myclinic.util.logic.Validators;
 
 public class DateFormInputs {
 
@@ -34,4 +38,5 @@ public class DateFormInputs {
         month = "";
         day = "";
     }
+
 }

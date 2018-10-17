@@ -50,7 +50,7 @@ class ShahokokuhoForm extends Form {
             row.getChildren().addAll(honninButton, kazokuButton);
             add("本人・家族", row);
         }
-        add("交付年月日", validFromInput);
+        add("資格取得日", validFromInput);
         add("有効期限", validUptoInput);
         {
             HBox row = new HBox(4);

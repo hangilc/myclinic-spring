@@ -63,8 +63,31 @@ public class DateFormLogic extends LogicUtil {
 
     public static void isNotEmptyDateFormInputs(DateFormInputs inputs, String name, ErrorMessages em) {
         if (inputs != null && inputs.isEmpty()) {
-            em.add(nameWith(name, "が") + "%sが空白です。");
+            em.add(nameWith(name, "が") + "空白です。");
         }
+    }
+
+    public static BiLogic<String> dateFormValidIntervalToSqldate(BiLogic<DateFormInputs> src){
+        return src
+                .validate(Validators::isNotNull, Validators::valid)
+                .validate(DateFormLogic::isNotEmptyDateFormInputs, Validators::valid)
+                .convert(DateFormLogic::dateFormInputsToLocalDate)
+                .validate(BiValidators::isValidInterval)
+                .map(Mappers::localDateToSqldate);
+    }
+
+    public static Logic<DateFormInputs> validFromSqldateToDateFormInputs(Logic<String> sqldateLogic){
+        return sqldateLogic
+                .validate(Validators::isNotNull)
+                .convert(Converters::sqldateToLocalDate)
+                .validate(Validators::isNotNull)
+                .convert(DateFormLogic::localDateToDateFormInputs);
+    }
+
+    public static Logic<DateFormInputs> validUptoSqldateToDateFormInputs(Logic<String> sqldateLogic){
+        return sqldateLogic
+                .convert(Converters::sqldateToLocalDate)
+                .convert(nullableLocalDateToDateFormInputs(Gengou.Current));
     }
 
 }

@@ -1,6 +1,7 @@
 package jp.chang.myclinic.reception.javafx.edit_hoken;
 
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -33,6 +34,7 @@ public class EnterShahokokuhoStage extends Stage {
         ShahokokuhoForm form = new ShahokokuhoForm();
         ShahokokuhoFormLogic.EnterProc enterProc = ShahokokuhoFormLogic.createEnterProc(patientId, form::setInputs);
         HBox commands = new HBox(4);
+        commands.setAlignment(Pos.CENTER_RIGHT);
         Button enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
         enterButton.setOnAction(evt -> {
