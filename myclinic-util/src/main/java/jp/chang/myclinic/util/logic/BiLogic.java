@@ -1,6 +1,7 @@
 package jp.chang.myclinic.util.logic;
 
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public interface BiLogic<T> {
 
@@ -16,6 +17,18 @@ public interface BiLogic<T> {
 
     default void verify(String leftName, String rightName, ErrorMessages em){
         apply((a, b) -> {}, leftName, rightName, em);
+    }
+
+    default <U> Logic<U> combine(Combiner<T, U> combiner, String leftName, String rightName){
+        BiLogic<T> self = this;
+        return (name, em) -> {
+            int ne = em.getNumberOfErrors();
+            BiValue<T> values = self.getValues(leftName, rightName, em);
+            if( em.hasErrorSince(ne) ){
+                return null;
+            }
+            return combiner.combine(values.left, values.right, leftName, rightName, em);
+        };
     }
 
     static <S> BiLogic<S> combine(Logic<S> left, Logic<S> right){
@@ -44,6 +57,18 @@ public interface BiLogic<T> {
                 return null;
             }
             return new BiValue<>(p, q);
+        };
+    }
+
+    default <U> BiLogic<U> convert(Function<T, U> fun){
+        BiLogic<T> self = this;
+        return (leftName, rightName, em) -> {
+            int ne = em.getNumberOfErrors();
+            BiValue<T> values = self.getValues(leftName, rightName, em);
+            if( em.hasErrorSince(ne) ){
+                return null;
+            }
+            return values.map(fun);
         };
     }
 

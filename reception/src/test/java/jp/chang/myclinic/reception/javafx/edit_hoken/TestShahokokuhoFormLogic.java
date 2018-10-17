@@ -7,14 +7,13 @@ import jp.chang.myclinic.util.logic.LogicValue;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 import org.junit.Test;
 
-import static jp.chang.myclinic.reception.javafx.edit_hoken.ShahokokuhoFormLogic.shahokokuhoFormInputsToShahokokuhoDTO;
 import static org.junit.Assert.*;
 
 public class TestShahokokuhoFormLogic extends LogicTestBase {
 
     private ShahokokuhoDTO inputsToDTO(ShahokokuhoFormInputs inputs, ErrorMessages em){
         return new LogicValue<>(inputs)
-                .convert(shahokokuhoFormInputsToShahokokuhoDTO())
+                .convert(ShahokokuhoFormLogic::shahokokuhoFormInputsToShahokokuhoDTO)
                 .getValue(null, em);
     }
 
