@@ -22,6 +22,7 @@ class KouhiFormLogic extends LogicUtil {
                 .convert(Converters::stringToInteger)
                 .validate(Validators::isPositive)
                 .validate(Validators.hasDigitsInRange(8, 8))
+                validate fuken bangou
                 .validate(Validators::hasValidCheckingDigit)
                 .getValueOrElse(0, nameWith(name, "の") + "負担者番号", em);
 
