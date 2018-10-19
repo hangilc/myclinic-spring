@@ -1,6 +1,7 @@
 package jp.chang.myclinic.reception.javafx.edit_kouhi;
 
 import jp.chang.myclinic.dto.KouhiDTO;
+import jp.chang.myclinic.util.dto_validator.KouhiLogic;
 import jp.chang.myclinic.util.logic.*;
 import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
 
@@ -12,7 +13,7 @@ class KouhiFormLogic extends LogicUtil {
 
     }
 
-    KouhiDTO kouhiFormInputsToKouhiDTO(KouhiFormInputs inputs, String name, ErrorMessages em) {
+    static KouhiDTO kouhiFormInputsToKouhiDTO(KouhiFormInputs inputs, String name, ErrorMessages em) {
         int ne = em.getNumberOfErrors();
         KouhiDTO dto = new KouhiDTO();
 
@@ -22,7 +23,7 @@ class KouhiFormLogic extends LogicUtil {
                 .convert(Converters::stringToInteger)
                 .validate(Validators::isPositive)
                 .validate(Validators.hasDigitsInRange(8, 8))
-                validate fuken bangou
+                .validate(KouhiLogic::todoufukenIsValidInKouhiFutansha)
                 .validate(Validators::hasValidCheckingDigit)
                 .getValueOrElse(0, nameWith(name, "の") + "負担者番号", em);
 
@@ -49,7 +50,7 @@ class KouhiFormLogic extends LogicUtil {
         return em.hasErrorSince(ne) ? null : dto;
     }
 
-    KouhiFormInputs kouhiDTOToKouhiFormInputs(KouhiDTO dto, String name, ErrorMessages em){
+    static KouhiFormInputs kouhiDTOToKouhiFormInputs(KouhiDTO dto, String name, ErrorMessages em){
         int ne = em.getNumberOfErrors();
         KouhiFormInputs inputs = new KouhiFormInputs();
 

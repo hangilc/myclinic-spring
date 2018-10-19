@@ -17,10 +17,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.HokenListDTO;
-import jp.chang.myclinic.dto.KouhiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.reception.javafx.edit_hoken.EditShahokokuhoStage;
 import jp.chang.myclinic.reception.javafx.edit_hoken.EnterShahokokuhoStage;
+import jp.chang.myclinic.reception.javafx.edit_kouhi.EditKouhiStage;
+import jp.chang.myclinic.reception.javafx.edit_kouhi.EnterKouhiStage;
 import jp.chang.myclinic.reception.javafx.edit_koukikourei.EditKoukikoureiStage;
 import jp.chang.myclinic.reception.javafx.edit_koukikourei.EnterKoukikoureiStage;
 import jp.chang.myclinic.reception.lib.ReceptionService;
@@ -256,18 +257,22 @@ class PatientWithHokenStage extends Stage {
             });
             editor.showAndWait();
         } else if (model instanceof HokenTable.KouhiModel) {
-            HokenTable.KouhiModel koukiModel = (HokenTable.KouhiModel) model;
-            EditKouhiStage editor = new EditKouhiStage(koukiModel.orig) {
-                @Override
-                void onEnter(KouhiDTO data) {
-                    Service.api.updateKouhi(data)
-                            .thenAccept(ok -> Platform.runLater(() -> {
-                                fetchAndUpdateHokenList();
-                                this.close();
-                            }))
-                            .exceptionally(HandlerFX::exceptionally);
-                }
-            };
+            HokenTable.KouhiModel kouhiModel = (HokenTable.KouhiModel) model;
+//            EditKouhiStage editor = new EditKouhiStage(kouhiModel.orig) {
+//                @Override
+//                void onEnter(KouhiDTO data) {
+//                    Service.api.updateKouhi(data)
+//                            .thenAccept(ok -> Platform.runLater(() -> {
+//                                fetchAndUpdateHokenList();
+//                                this.close();
+//                            }))
+//                            .exceptionally(HandlerFX::exceptionally);
+//                }
+//            };
+            EditKouhiStage editor = new EditKouhiStage(kouhiModel.orig);
+            editor.setCallback(dto -> {
+                System.out.println(dto);
+            });
             editor.showAndWait();
         } else {
             GuiUtil.alertError("Unknown hokentable modelold.");
@@ -352,25 +357,26 @@ class PatientWithHokenStage extends Stage {
     }
 
     private void doNewKouhi() {
-        EditKouhiStage stage = new EditKouhiStage() {
-            @Override
-            void onEnter(KouhiDTO data) {
-                data.patientId = thePatient.getValue().patientId;
-                Service.api.enterKouhi(data)
-                        .thenAccept(kouhiId -> {
-                            Platform.runLater(() -> {
-                                data.kouhiId = kouhiId;
-                                fetchAndUpdateHokenList();
-                                this.close();
-                            });
-                        })
-                        .exceptionally(ex -> {
-                            logger.error("Failed to enter kouhi.", ex);
-                            Platform.runLater(() -> GuiUtil.alertException("公費負担の新規登録に失敗しました。", ex));
-                            return null;
-                        });
-            }
-        };
+//        EditKouhiStage stage = new EditKouhiStage() {
+//            @Override
+//            void onEnter(KouhiDTO data) {
+//                data.patientId = thePatient.getValue().patientId;
+//                Service.api.enterKouhi(data)
+//                        .thenAccept(kouhiId -> {
+//                            Platform.runLater(() -> {
+//                                data.kouhiId = kouhiId;
+//                                fetchAndUpdateHokenList();
+//                                this.close();
+//                            });
+//                        })
+//                        .exceptionally(ex -> {
+//                            logger.error("Failed to enter kouhi.", ex);
+//                            Platform.runLater(() -> GuiUtil.alertException("公費負担の新規登録に失敗しました。", ex));
+//                            return null;
+//                        });
+//            }
+//        };
+        EnterKouhiStage stage = new EnterKouhiStage(thePatient.getValue().patientId);
         stage.showAndWait();
     }
 

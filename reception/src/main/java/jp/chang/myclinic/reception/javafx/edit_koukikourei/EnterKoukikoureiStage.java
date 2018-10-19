@@ -19,7 +19,7 @@ public class EnterKoukikoureiStage extends Stage {
     private Consumer<KoukikoureiDTO> enterCallback = dto -> {};
 
     public EnterKoukikoureiStage(int patientId) {
-        setTitle("後期高齢保険編集");
+        setTitle("新規後期高齢保険の入力");
         Parent root = createRoot(patientId);
         root.getStylesheets().add("css/Main.css");
         root.getStyleClass().addAll("dialog-root", "enter-koukikourei-stage");
