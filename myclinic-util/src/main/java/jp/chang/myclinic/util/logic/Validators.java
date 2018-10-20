@@ -16,23 +16,11 @@ public class Validators extends LogicUtil {
         // do nothing
     }
 
-//    public static <T> Validator<T> valid(){
-//        return (value, name, em) -> {};
-//    }
-
     public static <T> void isNotNull(T value, String name, ErrorMessages em) {
         if (value == null) {
             em.add(nameWith(name, "が") + "設定されていません。");
         }
     }
-
-//    public static <T> Validator<T> isNotNull() {
-//        return (value, name, em) -> {
-//            if (value == null) {
-//                em.add(String.format("%sが設定されていません。", name));
-//            }
-//        };
-//    }
 
     public static void isNotEmpty(String value, String name, ErrorMessages em) {
         if (value.isEmpty()) {
@@ -41,27 +29,31 @@ public class Validators extends LogicUtil {
 
     }
 
-//    public static Validator<String> isNotEmpty() {
-//        return (value, name, em) -> {
-//            if (value.isEmpty()) {
-//                em.add(String.format("%sが空白です。", name));
-//            }
-//        };
-//    }
-
     public static void isPositive(Integer value, String name, ErrorMessages em) {
         if (!(value > 0)) {
             em.add(nameWith(name, "が") + "正の数値でありません。");
         }
     }
 
-//    public static Validator<Integer> isPositive() {
-//        return (value, name, em) -> {
-//            if (!(value > 0)) {
-//                em.add(String.format("%sの値が正の数値でありません。", name));
-//            }
-//        };
-//    }
+    public static Validator<Integer> is(int expected){
+        return (value, name, em) -> {
+            if( value != expected ){
+                String msg = String.format("%s値が %d でありません。", nameWith(name, "の"),
+                        expected);
+                em.add(msg);
+            }
+        };
+    }
+
+    public static Validator<Integer> isNot(int expected){
+        return (value, name, em) -> {
+            if( value == expected ){
+                String msg = String.format("%s値が %d です。", nameWith(name, "の"),
+                        expected);
+                em.add(msg);
+            }
+        };
+    }
 
     public static Validator<Integer> isInRange(int lo, int hi) {
         return (value, name, em) -> {
@@ -113,23 +105,5 @@ public class Validators extends LogicUtil {
             em.add(nameWith(name, "の") + "検証番号が正しくありません。");
         }
     }
-
-//    public static Validator<Integer> isValidHokenshaBangou() {
-//        return (value, name, em) -> {
-//            if (!(HokenVerifierLib.verifyHokenshaBangou(value))) {
-//                em.add(String.format("%sの検証番号が正しくありません。", name));
-//            }
-//        };
-//    }
-
-//    public static void verifyValidInterval(String validFromStore, String validUptoStore,
-//                                           String validFromName, String validUptoName,
-//                                           ErrorMessages em) {
-//        new BiLogicValue<>(validFromStore, validUptoStore)
-//                .validate(isNotNull(), valid())
-//                .convert(sqldateToLocalDate())
-//                .validate(validInterval())
-//                .getValues(validFromName, validUptoName, em);
-//    }
 
 }

@@ -60,4 +60,7 @@ public interface Logic<T> {
         return convert(validator.toConverter());
     }
 
+    default Logic<T> validate(Function<Logic<T>, Logic<T>> validator){
+        return validator.apply(this);
+    }
 }
