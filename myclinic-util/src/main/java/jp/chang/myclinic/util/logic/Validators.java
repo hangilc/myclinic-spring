@@ -26,7 +26,27 @@ public class Validators extends LogicUtil {
         if (value.isEmpty()) {
             em.add(nameWith(name, "が") + "空白です。");
         }
+    }
 
+    public static Validator<String> hasLength(int len){
+        return (value, name, em) -> {
+            if (value.length() != len) {
+                String msg = String.format("%s文字数が %d でありません。",
+                        nameWith(name, "の"), len);
+                em.add(msg);
+            }
+        };
+    }
+
+    public static Validator<String> hasLengthInRange(int lo, int hi){
+        return (value, name, em) -> {
+            int n = value.length();
+            if( n < lo ){
+                em.add(nameWith(name, "の") + "文字数が少なすぎます。");
+            } else if( n > hi ){
+                em.add(nameWith(name, "の") + "文字数が多すぎます。");
+            }
+        };
     }
 
     public static void isPositive(Integer value, String name, ErrorMessages em) {

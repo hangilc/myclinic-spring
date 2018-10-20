@@ -377,6 +377,20 @@ class PatientWithHokenStage extends Stage {
 //            }
 //        };
         EnterKouhiStage stage = new EnterKouhiStage(thePatient.getValue().patientId);
+        stage.setCallback(dto -> {
+                Service.api.enterKouhi(dto)
+                        .thenAccept(kouhiId -> {
+                            Platform.runLater(() -> {
+                                fetchAndUpdateHokenList();
+                                this.close();
+                            });
+                        })
+                        .exceptionally(ex -> {
+                            logger.error("Failed to enter kouhi.", ex);
+                            Platform.runLater(() -> GuiUtil.alertException("公費負担の新規登録に失敗しました。", ex));
+                            return null;
+                        });
+        });
         stage.showAndWait();
     }
 

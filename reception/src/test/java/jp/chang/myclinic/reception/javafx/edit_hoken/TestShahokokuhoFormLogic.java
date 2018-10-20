@@ -103,7 +103,7 @@ public class TestShahokokuhoFormLogic extends LogicTestBase {
         ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
         ins.kourei = 0;
         ShahokokuhoDTO dto = inputsToDTO(ins, em);
-        assertEquals("保険者番号の桁数が少なすぎます。", em.getMessage());
+        assertEquals("保険者番号の文字数が少なすぎます。", em.getMessage());
         assertTrue(em.hasError());
         assertNull(dto);
     }
@@ -119,7 +119,7 @@ public class TestShahokokuhoFormLogic extends LogicTestBase {
         ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
         ins.kourei = 0;
         ShahokokuhoDTO dto = inputsToDTO(ins, em);
-        assertEquals("保険者番号の桁数が多すぎます。", em.getMessage());
+        assertEquals("保険者番号の文字数が多すぎます。", em.getMessage());
         assertTrue(em.hasError());
         assertNull(dto);
     }

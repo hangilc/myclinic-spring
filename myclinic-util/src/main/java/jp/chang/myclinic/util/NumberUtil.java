@@ -12,4 +12,5 @@ public class NumberUtil {
         return numberFormat.format(number);
     }
     public static String formatNumber(double number){ return numberFormat.format(number); }
+
 }

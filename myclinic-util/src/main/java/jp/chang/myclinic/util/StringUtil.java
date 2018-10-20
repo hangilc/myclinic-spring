@@ -76,4 +76,17 @@ public class StringUtil {
         return matcher.replaceAll("");
     }
 
+    public static String padLeft(char ch, String orig, int requiredLength){
+        int n = requiredLength - orig.length();
+        if( n > 0 ){
+            StringBuilder builder = new StringBuilder(n);
+            for(int i=0;i<n;i++){
+                builder.append(ch);
+            }
+            return builder.toString() + orig;
+        } else {
+            return orig;
+        }
+    }
+
 }

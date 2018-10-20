@@ -2,6 +2,7 @@ package jp.chang.myclinic.reception.javafx.edit_hoken;
 
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.util.dto_validator.ShahokokuhoLogic;
 import jp.chang.myclinic.util.logic.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
@@ -22,6 +23,7 @@ public class ShahokokuhoFormLogic extends LogicUtil {
         dto.hokenshaBangou = new LogicValue<>(inputs.hokenshaBangou)
                 .validate(Validators::isNotNull)
                 .validate(Validators::isNotEmpty)
+                .validate(Validators.hasLengthInRange(5, 8))
                 .convert(Converters::stringToInteger)
                 .validate(Validators::isPositive)
                 .validate(hasDigitsInRange(5, 8))
@@ -71,7 +73,13 @@ public class ShahokokuhoFormLogic extends LogicUtil {
                                                                               String name, ErrorMessages em) {
         ShahokokuhoFormInputs inputs = new ShahokokuhoFormInputs();
         inputs.hokenshaBangou = new LogicValue<>(dto.hokenshaBangou)
-                .map(Mappers::integerToStringWithZeroOrNullToEmpty)
+                .map(bangou -> {
+                    if( bangou == null || bangou == 0 ){
+                        return "";
+                    } else {
+                        return ShahokokuhoLogic.formatHokenshaBangou(bangou);
+                    }
+                })
                 .getValue(nameWith(name, "の") + "保険者番号", em);
         inputs.hihokenshaKigou = dto.hihokenshaKigou;
         inputs.hihokenshaBangou = dto.hihokenshaBangou;
