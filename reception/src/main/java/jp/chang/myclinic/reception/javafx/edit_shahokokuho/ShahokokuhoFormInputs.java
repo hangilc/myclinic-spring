@@ -1,8 +1,6 @@
-package jp.chang.myclinic.reception.javafx.edit_hoken;
+package jp.chang.myclinic.reception.javafx.edit_shahokokuho;
 
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ShahokokuhoFormInputs {
 

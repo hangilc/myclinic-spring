@@ -8,7 +8,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.KoukikoureiDTO;
+import jp.chang.myclinic.util.logic.Converters;
 import jp.chang.myclinic.util.logic.ErrorMessages;
+import jp.chang.myclinic.util.logic.LogicValue;
+import jp.chang.myclinic.util.logic.Validators;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.util.function.Consumer;
@@ -45,6 +48,12 @@ public class EnterKoukikoureiStage extends Stage {
                 GuiUtil.alertError(em.getMessage());
                 return;
             }
+            validateCheckingDigit(dto.hihokenshaBangou, em);
+            if( em.hasError() ){
+                if( !GuiUtil.confirm("被保険者番号の検証番号が正しくありませんが、このまま入力しますか？") ){
+                    return;
+                }
+            }
             enterCallback.accept(dto);
         });
         cancelButton.setOnAction(evt -> close());
@@ -52,6 +61,13 @@ public class EnterKoukikoureiStage extends Stage {
         commands.setAlignment(Pos.CENTER_RIGHT);
         root.getChildren().add(commands);
         return root;
+    }
+
+    private void validateCheckingDigit(String hihokenshaBangou, ErrorMessages em){
+        new LogicValue<>(hihokenshaBangou)
+                .convert(Converters::stringToInteger)
+                .validate(Validators::hasValidCheckingDigit)
+                .verify(null, em);
     }
 
 }

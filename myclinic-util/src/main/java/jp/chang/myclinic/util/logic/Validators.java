@@ -28,23 +28,40 @@ public class Validators extends LogicUtil {
         }
     }
 
-    public static Validator<String> hasLength(int len){
+    public static Validator<String> hasLength(int len) {
+        return hasLength(len, "文字数");
+    }
+
+    public static Validator<String> hasLength(int len, String kind){
         return (value, name, em) -> {
             if (value.length() != len) {
-                String msg = String.format("%s文字数が %d でありません。",
-                        nameWith(name, "の"), len);
+                String msg = String.format("%s%sが %d でありません。",
+                        nameWith(name, "の"), kind, len);
                 em.add(msg);
             }
         };
     }
 
-    public static Validator<String> hasLengthInRange(int lo, int hi){
+    public static Validator<String> hasLengthInRange(int lo, int hi) {
+        return hasLengthInRange(lo, hi, "文字数");
+    }
+
+    public static Validator<String> hasLengthInRange(int lo, int hi, String kind) {
         return (value, name, em) -> {
             int n = value.length();
-            if( n < lo ){
-                em.add(nameWith(name, "の") + "文字数が少なすぎます。");
-            } else if( n > hi ){
-                em.add(nameWith(name, "の") + "文字数が多すぎます。");
+            if (n < lo) {
+                em.add(nameWith(name, "の") + kind + "が少なすぎます。");
+            } else if (n > hi) {
+                em.add(nameWith(name, "の") + kind + "が多すぎます。");
+            }
+        };
+    }
+
+    public static Validator<String> hasLengthAtMost(int hi, String kind) {
+        return (value, name, em) -> {
+            int n = value.length();
+            if (n > hi) {
+                em.add(nameWith(name, "の") + kind + "が多すぎます。");
             }
         };
     }
@@ -55,9 +72,9 @@ public class Validators extends LogicUtil {
         }
     }
 
-    public static Validator<Integer> is(int expected){
+    public static Validator<Integer> is(int expected) {
         return (value, name, em) -> {
-            if( value != expected ){
+            if (value != expected) {
                 String msg = String.format("%s値が %d でありません。", nameWith(name, "の"),
                         expected);
                 em.add(msg);
@@ -65,9 +82,9 @@ public class Validators extends LogicUtil {
         };
     }
 
-    public static Validator<Integer> isNot(int expected){
+    public static Validator<Integer> isNot(int expected) {
         return (value, name, em) -> {
-            if( value == expected ){
+            if (value == expected) {
                 String msg = String.format("%s値が %d です。", nameWith(name, "の"),
                         expected);
                 em.add(msg);
@@ -83,9 +100,9 @@ public class Validators extends LogicUtil {
         };
     }
 
-    public static Validator<Integer> isEqualOrGreaterThan(int lo){
+    public static Validator<Integer> isEqualOrGreaterThan(int lo) {
         return (value, name, em) -> {
-            if( !(value >= lo) ){
+            if (!(value >= lo)) {
                 em.add(String.format("%s値が %d 以上でありません。", nameWith(name, "の"), lo));
             }
         };
@@ -120,7 +137,44 @@ public class Validators extends LogicUtil {
         };
     }
 
-    public static void hasValidCheckingDigit(Integer value, String name, ErrorMessages em){
+    public static void isAllDigits(String s, String name, ErrorMessages em){
+        if( s == null ){
+            return;
+        }
+        for(int i=0;i<s.length();i++){
+            char c = s.charAt(i);
+            if( !Character.isDigit(c) ){
+                em.add(nameWith(name, "に") + "数字以外の文字が含まれています。");
+                return;
+            }
+        }
+    }
+
+    public static Validator<Integer> hasDigitsAtMost(int hi) {
+        return (value, name, em) -> {
+            if (value < 0) {
+                value = -value;
+            }
+            int ncol = String.format("%d", value).length();
+            if (ncol > hi) {
+                em.add(nameWith(name, "の") + "桁数が多すぎます。");
+            }
+        };
+    }
+
+    public static Validator<Integer> hasDigitsAtLeast(int lo) {
+        return (value, name, em) -> {
+            if (value < 0) {
+                value = -value;
+            }
+            int ncol = String.format("%d", value).length();
+            if (ncol < lo) {
+                em.add(nameWith(name, "の") + "桁数が少なすぎます。");
+            }
+        };
+    }
+
+    public static void hasValidCheckingDigit(Integer value, String name, ErrorMessages em) {
         if (!(HokenVerifierLib.verifyHokenshaBangou(value))) {
             em.add(nameWith(name, "の") + "検証番号が正しくありません。");
         }

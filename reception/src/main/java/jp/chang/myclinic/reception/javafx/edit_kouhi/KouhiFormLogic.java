@@ -43,7 +43,7 @@ class KouhiFormLogic extends LogicUtil {
                             dto.validFrom = validFrom;
                             dto.validUpto = validUpto;
                         },
-                        nameWith(name, "の") + "資格所得日",
+                        nameWith(name, "の") + "資格取得日",
                         nameWith(name, "の") + "有効期限",
                         em);
 

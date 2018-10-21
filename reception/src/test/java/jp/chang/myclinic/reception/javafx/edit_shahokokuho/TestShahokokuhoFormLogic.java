@@ -1,4 +1,4 @@
-package jp.chang.myclinic.reception.javafx.edit_hoken;
+package jp.chang.myclinic.reception.javafx.edit_shahokokuho;
 
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
@@ -21,6 +21,66 @@ public class TestShahokokuhoFormLogic extends LogicTestBase {
     public void testValid(){
         ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
         ins.hokenshaBangou = "123455";
+        ins.hihokenshaKigou = "a";
+        ins.hihokenshaBangou = "1";
+        ins.honnin = 0;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "1", "2");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = inputsToDTO(ins, em);
+        assertTrue(em.hasNoError());
+        assertNotNull(dto);
+    }
+
+    @Test
+    public void testValid06Digits(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "012344";
+        ins.hihokenshaKigou = "a";
+        ins.hihokenshaBangou = "1";
+        ins.honnin = 0;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "1", "2");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = inputsToDTO(ins, em);
+        assertTrue(em.hasNoError());
+        assertNotNull(dto);
+    }
+
+    @Test
+    public void testValid5Digits(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "12344";
+        ins.hihokenshaKigou = "a";
+        ins.hihokenshaBangou = "1";
+        ins.honnin = 0;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "1", "2");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = inputsToDTO(ins, em);
+        assertTrue(em.hasNoError());
+        assertNotNull(dto);
+    }
+
+    @Test
+    public void testValid08Digits(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "01234566";
+        ins.hihokenshaKigou = "a";
+        ins.hihokenshaBangou = "1";
+        ins.honnin = 0;
+        ins.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "1", "2");
+        ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
+        ins.kourei = 0;
+        ShahokokuhoDTO dto = inputsToDTO(ins, em);
+        assertTrue(em.hasNoError());
+        assertNotNull(dto);
+    }
+
+    @Test
+    public void testValid7Digits(){
+        ShahokokuhoFormInputs ins = new ShahokokuhoFormInputs();
+        ins.hokenshaBangou = "1234566";
         ins.hihokenshaKigou = "a";
         ins.hihokenshaBangou = "1";
         ins.honnin = 0;
@@ -103,7 +163,7 @@ public class TestShahokokuhoFormLogic extends LogicTestBase {
         ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
         ins.kourei = 0;
         ShahokokuhoDTO dto = inputsToDTO(ins, em);
-        assertEquals("保険者番号の文字数が少なすぎます。", em.getMessage());
+        assertEquals("保険者番号の桁数が少なすぎます。", em.getMessage());
         assertTrue(em.hasError());
         assertNull(dto);
     }
@@ -119,7 +179,7 @@ public class TestShahokokuhoFormLogic extends LogicTestBase {
         ins.validUptoInputs = new DateFormInputs(Gengou.Heisei);
         ins.kourei = 0;
         ShahokokuhoDTO dto = inputsToDTO(ins, em);
-        assertEquals("保険者番号の文字数が多すぎます。", em.getMessage());
+        assertEquals("保険者番号の桁数が多すぎます。", em.getMessage());
         assertTrue(em.hasError());
         assertNull(dto);
     }

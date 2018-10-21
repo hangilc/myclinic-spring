@@ -17,12 +17,8 @@ class KoukikoureiFormLogic extends LogicUtil {
 
     }
 
-    private static KoukikoureiDTO koukikoureiFormInputsToKoukikoureiDTO(KoukikoureiFormInputs inputs,
-                                                                        String name, ErrorMessages em){
-        int ne = em.getNumberOfErrors();
-        KoukikoureiDTO dto = new KoukikoureiDTO();
-
-        dto.hokenshaBangou = new LogicValue<>(inputs.hokenshaBangou)
+    public static String inputToHokenshaBangou(String input, String name, ErrorMessages em) {
+        return new LogicValue<>(input)
                 .validate(Validators::isNotNull)
                 .validate(Validators::isNotEmpty)
                 .convert(Converters::stringToInteger)
@@ -30,12 +26,26 @@ class KoukikoureiFormLogic extends LogicUtil {
                 .validate(KoukikoureiFormLogic::verifyHouseiBangou)
                 .validate(Validators::hasValidCheckingDigit)
                 .map(Mappers::integerToString)
-                .getValue("保険者番号", em);
+                .getValue(nameWith(name, "の") + "保険者番号", em);
+    }
 
-        dto.hihokenshaBangou = new LogicValue<>(inputs.hihokenshaBangou)
+    public static String inputToHihokenshaBangou(String input, String name, ErrorMessages em){
+        return new LogicValue<>(input)
                 .validate(Validators::isNotNull)
                 .validate(Validators::isNotEmpty)
-                .getValue("被保険者番号", em);
+                .validate(Validators.hasLength(8, "桁数"))
+                .validate(Validators::isAllDigits)
+                .getValue(nameWith(name, "の") + "被保険者番号", em);
+    }
+
+    public static KoukikoureiDTO koukikoureiFormInputsToKoukikoureiDTO(KoukikoureiFormInputs inputs,
+                                                                       String name, ErrorMessages em) {
+        int ne = em.getNumberOfErrors();
+        KoukikoureiDTO dto = new KoukikoureiDTO();
+
+        dto.hokenshaBangou = inputToHokenshaBangou(inputs.hokenshaBangou, name, em);
+
+        dto.hihokenshaBangou = inputToHihokenshaBangou(inputs.hihokenshaBangou, name, em);
 
         new BiLogicValue<>(inputs.validFromInputs, inputs.validUptoInputs)
                 .convert(DateFormLogic::dateFormValidIntervalToSqldate)
@@ -44,7 +54,7 @@ class KoukikoureiFormLogic extends LogicUtil {
                             dto.validFrom = validFrom;
                             dto.validUpto = validUpto;
                         },
-                        nameWith(name, "の") + "資格所得日",
+                        nameWith(name, "の") + "資格取得日",
                         nameWith(name, "の") + "有効期限",
                         em);
 
@@ -57,7 +67,7 @@ class KoukikoureiFormLogic extends LogicUtil {
     }
 
     static KoukikoureiFormInputs koukikoureiDTOToKoukikoureiFormInputs(KoukikoureiDTO dto,
-                                                                String name, ErrorMessages em){
+                                                                       String name, ErrorMessages em) {
         int ne = em.getNumberOfErrors();
         KoukikoureiFormInputs inputs = new KoukikoureiFormInputs();
 
@@ -84,9 +94,9 @@ class KoukikoureiFormLogic extends LogicUtil {
         return em.hasErrorSince(ne) ? null : inputs;
     }
 
-    private static void verifyHouseiBangou(Integer value, String name, ErrorMessages em){
+    private static void verifyHouseiBangou(Integer value, String name, ErrorMessages em) {
         int housei = value / 1000000;
-        if( housei != 39 ){
+        if (housei != 39) {
             em.add(nameWith(name, "の") + "法制番号が３９でありません。");
         }
     }
@@ -109,7 +119,7 @@ class KoukikoureiFormLogic extends LogicUtil {
                 .getValue(null, em);
     }
 
-    private static KoukikoureiFormInputs createDefaultInputs(){
+    private static KoukikoureiFormInputs createDefaultInputs() {
         KoukikoureiFormInputs inputs = new KoukikoureiFormInputs();
         inputs.hokenshaBangou = "";
         inputs.hihokenshaBangou = "";

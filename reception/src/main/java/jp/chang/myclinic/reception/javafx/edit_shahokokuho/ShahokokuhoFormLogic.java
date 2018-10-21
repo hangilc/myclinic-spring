@@ -1,4 +1,4 @@
-package jp.chang.myclinic.reception.javafx.edit_hoken;
+package jp.chang.myclinic.reception.javafx.edit_shahokokuho;
 
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
@@ -23,7 +23,6 @@ public class ShahokokuhoFormLogic extends LogicUtil {
         dto.hokenshaBangou = new LogicValue<>(inputs.hokenshaBangou)
                 .validate(Validators::isNotNull)
                 .validate(Validators::isNotEmpty)
-                .validate(Validators.hasLengthInRange(5, 8))
                 .convert(Converters::stringToInteger)
                 .validate(Validators::isPositive)
                 .validate(hasDigitsInRange(5, 8))
@@ -54,7 +53,7 @@ public class ShahokokuhoFormLogic extends LogicUtil {
                             dto.validFrom = validFrom;
                             dto.validUpto = validUpto;
                         },
-                        nameWith(name, "の") + "資格所得日",
+                        nameWith(name, "の") + "資格取得日",
                         nameWith(name, "の") + "有効期限",
                         em);
 

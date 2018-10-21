@@ -1,4 +1,4 @@
-package jp.chang.myclinic.reception.javafx.edit_hoken;
+package jp.chang.myclinic.reception.javafx.edit_shahokokuho;
 
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import org.junit.Before;

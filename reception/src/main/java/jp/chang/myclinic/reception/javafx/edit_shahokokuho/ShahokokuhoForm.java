@@ -1,4 +1,4 @@
-package jp.chang.myclinic.reception.javafx.edit_hoken;
+package jp.chang.myclinic.reception.javafx.edit_shahokokuho;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
