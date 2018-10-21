@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// TODO: check hokenshabangou etc
 // TODO: add default koukikourei hokenshabangou
 public class Main extends Application {
 
