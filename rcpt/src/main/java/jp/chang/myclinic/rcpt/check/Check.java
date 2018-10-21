@@ -47,6 +47,7 @@ public class Check {
                 new CheckChoukiTouyakuKasan(scope).check();
                 new CheckHandanryou(scope).check();
                 new CheckShoshinSaishin(scope).check();
+                new CheckRyouyouDouisho(scope).check();
                 new CheckKouseishinyaku(scope).check();
                 new CheckNaifuku(scope).check();
                 new CheckGaiyou(scope).check();
