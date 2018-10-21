@@ -2,6 +2,7 @@ package jp.chang.myclinic.reception.javafx.edit_shahokokuho;
 
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.util.dto_validator.ShahokokuhoLogic;
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import jp.chang.myclinic.util.logic.LogicValue;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
