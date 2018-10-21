@@ -44,6 +44,10 @@ public class ErrorMessages {
         return String.join("\n", errorMessages);
     }
 
+    public String getMessage(String delim){
+        return String.join(delim, errorMessages);
+    }
+
     public boolean hasError(){
         return errorMessages.size() > 0;
     }

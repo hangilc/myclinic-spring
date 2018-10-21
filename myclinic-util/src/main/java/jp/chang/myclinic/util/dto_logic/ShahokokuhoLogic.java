@@ -1,6 +1,10 @@
 package jp.chang.myclinic.util.dto_logic;
 
 import jp.chang.myclinic.util.StringUtil;
+import jp.chang.myclinic.util.logic.Logic;
+import jp.chang.myclinic.util.logic.Validators;
+
+import static jp.chang.myclinic.util.logic.Validators.hasDigitsInRange;
 
 public class ShahokokuhoLogic {
 
@@ -19,6 +23,13 @@ public class ShahokokuhoLogic {
         } else {
             return s;
         }
+    }
+
+    public static Logic<Integer> isValidShahokokuhoHokenshaBangou(Logic<Integer> bangou){
+        return bangou
+                .validate(Validators::isPositive)
+                .validate(hasDigitsInRange(5, 8))
+                .validate(Validators::hasValidCheckingDigit);
     }
 
 }

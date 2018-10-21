@@ -2,9 +2,13 @@ package jp.chang.myclinic.management;
 
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.util.verify.KouhiVerifier;
-import jp.chang.myclinic.util.verify.KoukikoureiVerifier;
-import jp.chang.myclinic.util.verify.ShahokokuhoVerifier;
+import jp.chang.myclinic.util.dto_logic.KouhiLogic;
+import jp.chang.myclinic.util.dto_logic.KoukikoureiLogic;
+import jp.chang.myclinic.util.dto_logic.ShahokokuhoLogic;
+import jp.chang.myclinic.util.logic.Converters;
+import jp.chang.myclinic.util.logic.ErrorMessages;
+import jp.chang.myclinic.util.logic.LogicValue;
+import jp.chang.myclinic.util.logic.Validators;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -56,30 +60,46 @@ public class CheckHokenshaBangou {
     }
 
     private static void verifyShahokokuho(int bangou, int patientId) throws IOException {
-        String err = ShahokokuhoVerifier.verifyHokenshaBangou(bangou);
-        if( err != null ){
-            reportError(patientId, "社保国保", err);
+        ErrorMessages em = new ErrorMessages();
+        new LogicValue<>(bangou)
+                .validate(ShahokokuhoLogic::isValidShahokokuhoHokenshaBangou)
+                .verify(null, em);
+        if( em.hasError() ){
+            reportError(patientId, "社保国保", em.getMessage(""));
         }
     }
 
     private static void verifyKoukikourei(String bangouInput, int patientId) throws IOException {
-        String err = KoukikoureiVerifier.verifyHokenshaBangouInput(bangouInput, null);
-        if( err != null ){
+        ErrorMessages em = new ErrorMessages();
+        new LogicValue<>(bangouInput)
+                .validate(Validators::isNotNull)
+                .validate(Validators::isNotEmpty)
+                .convert(Converters::stringToInteger)
+                .validate(KoukikoureiLogic::isValidKoukikoureiHokenshaBangou)
+                .verify(null, em);
+        if( em.hasError() ){
+            String err = em.getMessage("");
             reportError(patientId, "後期高齢", err);
         }
     }
 
     private static void verifyKouhiFutansha(int bangou, int patientId) throws IOException {
-        String err = KouhiVerifier.verifyFutanshaBangou(bangou);
-        if( err != null ){
-            reportError(patientId, "公費負担者", err);
+        ErrorMessages em = new ErrorMessages();
+        new LogicValue<>(bangou)
+                .validate(KouhiLogic::isValidKouhiFutanshaBangou)
+                .verify(null, em);
+        if( em.hasError() ){
+            reportError(patientId, "公費負担者", em.getMessage(""));
         }
     }
 
     private static void verifyKouhiJukyuusha(int jukyuusha, int patientId) throws IOException {
-        String err = KouhiVerifier.verifyJukyuushaBangou(jukyuusha);
-        if( err != null ){
-            reportError(patientId, "公費受給者", err);
+        ErrorMessages em = new ErrorMessages();
+        new LogicValue<>(jukyuusha)
+                .validate(KouhiLogic::isValidKouhiJukyuushaBangou)
+                .verify(null, em);
+        if( em.hasError() ){
+            reportError(patientId, "公費受給者", em.getMessage(""));
         }
     }
 

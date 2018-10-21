@@ -24,9 +24,7 @@ public class ShahokokuhoFormLogic extends LogicUtil {
                 .validate(Validators::isNotNull)
                 .validate(Validators::isNotEmpty)
                 .convert(Converters::stringToInteger)
-                .validate(Validators::isPositive)
-                .validate(hasDigitsInRange(5, 8))
-                .validate(Validators::hasValidCheckingDigit)
+                .validate(ShahokokuhoLogic::isValidShahokokuhoHokenshaBangou)
                 .getValueOrElse(0, nameWith(name, "の") + "保険者番号", em);
 
         new BiLogicValue<>(inputs.hihokenshaKigou, inputs.hihokenshaBangou)

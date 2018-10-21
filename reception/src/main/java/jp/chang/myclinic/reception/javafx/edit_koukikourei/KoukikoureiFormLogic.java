@@ -2,6 +2,7 @@ package jp.chang.myclinic.reception.javafx.edit_koukikourei;
 
 import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.KoukikoureiDTO;
+import jp.chang.myclinic.util.dto_logic.KoukikoureiLogic;
 import jp.chang.myclinic.util.logic.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
@@ -22,9 +23,7 @@ class KoukikoureiFormLogic extends LogicUtil {
                 .validate(Validators::isNotNull)
                 .validate(Validators::isNotEmpty)
                 .convert(Converters::stringToInteger)
-                .validate(Validators.hasDigitsInRange(8, 8))
-                .validate(KoukikoureiFormLogic::verifyHouseiBangou)
-                .validate(Validators::hasValidCheckingDigit)
+                .validate(KoukikoureiLogic::isValidKoukikoureiHokenshaBangou)
                 .map(Mappers::integerToString)
                 .getValue(nameWith(name, "の") + "保険者番号", em);
     }
@@ -92,13 +91,6 @@ class KoukikoureiFormLogic extends LogicUtil {
                 .getValueOrElse(0, nameWith(name, "の") + "負担割", em);
 
         return em.hasErrorSince(ne) ? null : inputs;
-    }
-
-    private static void verifyHouseiBangou(Integer value, String name, ErrorMessages em) {
-        int housei = value / 1000000;
-        if (housei != 39) {
-            em.add(nameWith(name, "の") + "法制番号が３９でありません。");
-        }
     }
 
     @FunctionalInterface
