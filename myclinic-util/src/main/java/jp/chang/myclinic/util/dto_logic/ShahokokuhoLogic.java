@@ -16,9 +16,9 @@ public class ShahokokuhoLogic {
 
     public static String formatHokenshaBangou(int bangou){
         String s = String.format("%d", bangou);
-        if( s.length() < 6 ){
+        if( s.length() <= 6 ){
             return StringUtil.padLeft('0', s, 6);
-        } else if( s.length() < 8 ){
+        } else if( s.length() <= 8 ){
             return StringUtil.padLeft('0', s, 8);
         } else {
             return s;

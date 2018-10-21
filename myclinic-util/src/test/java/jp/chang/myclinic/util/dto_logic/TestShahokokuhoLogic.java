@@ -18,4 +18,10 @@ public class TestShahokokuhoLogic extends LogicTestBase {
         assertEquals("01234567", result);
     }
 
+    @Test
+    public void testFormatHokenshaBangou3(){
+        String result = ShahokokuhoLogic.formatHokenshaBangou(123456);
+        assertEquals("123456", result);
+    }
+
 }
