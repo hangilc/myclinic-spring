@@ -30,15 +30,34 @@ public class ShidouVisit extends VisitBase {
             System.out.printf("shidou.ten %d\n", ten);
             TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SHIDOU);
             items.stream().forEach(item -> {
-                if( item.getShinryoucode() == shinryouMasterMap.診療情報提供料１  ||
-                        item.getShinryoucode() == shinryouMasterMap.療養費同意書交付料 ){
+                if( item.getShinryoucode() == shinryouMasterMap.診療情報提供料１ ){
                     String dateLabel = DateTimeUtil.toKanji(item.getData().getVisitedAt(),
                             DateTimeUtil.kanjiFormatter1);
                     tekiyouList.add(item.getData().getName(),item.getTanka(), item.getCount());
-                    //tekiyouList.add("      " + dateLabel, null, null);
                     tekiyouList.add(new TekiyouAux(dateLabel));
+                    String itemTekiyou = item.getData().getTekiyou();
+                    if( itemTekiyou != null && !itemTekiyou.isEmpty() ){
+                        tekiyouList.add(new TekiyouAux(itemTekiyou));
+                    }
+                } else if ( item.getShinryoucode() == shinryouMasterMap.療養費同意書交付料 ){
+                    String dateLabel = DateTimeUtil.toKanji(item.getData().getVisitedAt(),
+                            DateTimeUtil.kanjiFormatter1);
+                    tekiyouList.add(item.getData().getName(),item.getTanka(), item.getCount());
+                    String itemTekiyou = item.getData().getTekiyou();
+                    String aux;
+                    if( itemTekiyou != null && !itemTekiyou.isEmpty() ){
+                        aux = String.format("%s。%s。", dateLabel, itemTekiyou);
+                    } else {
+                        System.err.println("療養費同意書交付料に病名がありません。");
+                        aux = dateLabel;
+                    }
+                    tekiyouList.add(new TekiyouAux(aux));
                 } else {
                     tekiyouList.add(item);
+                    String itemTekiyou = item.getData().getTekiyou();
+                    if( itemTekiyou != null && !itemTekiyou.isEmpty() ){
+                        tekiyouList.add(new TekiyouAux(itemTekiyou));
+                    }
                 }
             });
             tekiyouList.output();
