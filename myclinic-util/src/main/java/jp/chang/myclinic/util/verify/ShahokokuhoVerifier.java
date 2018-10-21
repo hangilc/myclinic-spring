@@ -1,5 +1,6 @@
 package jp.chang.myclinic.util.verify;
 
+import jp.chang.myclinic.util.dto_logic.HokenLib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ public class ShahokokuhoVerifier extends VerifierBase {
         if (bangou > 100000000) {
             return "保険者番号の桁数が多すぎます。";
         }
-        if (!HokenVerifierLib.verifyHokenshaBangou(bangou)) {
+        if (!HokenLib.hasValidCheckingDigit(bangou)) {
             return "保険者番号の検証番号が正しくありません。";
         }
         return null;

@@ -1,6 +1,6 @@
 package jp.chang.myclinic.util.logic;
 
-import jp.chang.myclinic.util.verify.HokenVerifierLib;
+import jp.chang.myclinic.util.dto_logic.HokenLib;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -175,7 +175,7 @@ public class Validators extends LogicUtil {
     }
 
     public static void hasValidCheckingDigit(Integer value, String name, ErrorMessages em) {
-        if (!(HokenVerifierLib.verifyHokenshaBangou(value))) {
+        if (!(HokenLib.hasValidCheckingDigit(value))) {
             em.add(nameWith(name, "の") + "検証番号が正しくありません。");
         }
     }

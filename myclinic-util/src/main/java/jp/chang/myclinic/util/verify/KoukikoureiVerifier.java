@@ -1,5 +1,7 @@
 package jp.chang.myclinic.util.verify;
 
+import jp.chang.myclinic.util.dto_logic.HokenLib;
+
 import java.util.function.Consumer;
 
 public class KoukikoureiVerifier extends VerifierBase {
@@ -20,7 +22,7 @@ public class KoukikoureiVerifier extends VerifierBase {
         if (housei != 39) {
             return "保険者番号の法別番号部分が不適切です。";
         }
-        if (!HokenVerifierLib.verifyHokenshaBangou(bangou)) {
+        if (!HokenLib.hasValidCheckingDigit(bangou)) {
             return "保険者番号の検証番号が正しくありません。";
         }
         return null;

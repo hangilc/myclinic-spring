@@ -1,5 +1,7 @@
 package jp.chang.myclinic.util.verify;
 
+import jp.chang.myclinic.util.dto_logic.HokenLib;
+
 import java.util.function.Consumer;
 
 public class KouhiVerifier extends VerifierBase{
@@ -17,10 +19,10 @@ public class KouhiVerifier extends VerifierBase{
         }
         int rem = bangou % 1000000;
         int todoufuken = rem / 10000;
-        if( !HokenVerifierLib.verifyTodoufukenBangou(todoufuken) ){
+        if( !HokenLib.isValidTodoufukenBangou(todoufuken) ){
             return "負担者番号の都道府県番号部分が不適切です。";
         }
-        if( !HokenVerifierLib.verifyHokenshaBangou(bangou) ){
+        if( !HokenLib.hasValidCheckingDigit(bangou) ){
             return "負担者番号の検証番号が正しくありません。";
         }
         return null;
@@ -50,7 +52,7 @@ public class KouhiVerifier extends VerifierBase{
         } else if( bangou > 9999999 ){
             return "受給者番号の桁数が多すぎます。";
         }
-        if( !HokenVerifierLib.verifyHokenshaBangou(bangou) ){
+        if( !HokenLib.hasValidCheckingDigit(bangou) ){
             return "受給者番号の検証番号が正しくありません。";
         }
         return null;
