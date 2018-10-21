@@ -1,4 +1,4 @@
-package jp.chang.myclinic.util.dto_validator;
+package jp.chang.myclinic.util.dto_logic;
 
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import org.junit.Before;

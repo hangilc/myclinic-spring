@@ -1,7 +1,7 @@
 package jp.chang.myclinic.reception.javafx.edit_kouhi;
 
 import jp.chang.myclinic.dto.KouhiDTO;
-import jp.chang.myclinic.util.dto_validator.KouhiLogic;
+import jp.chang.myclinic.util.dto_logic.KouhiLogic;
 import jp.chang.myclinic.util.logic.*;
 import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
 
@@ -31,9 +31,7 @@ class KouhiFormLogic extends LogicUtil {
                 .validate(Validators::isNotNull)
                 .validate(Validators::isNotEmpty)
                 .convert(Converters::stringToInteger)
-                .validate(Validators::isPositive)
-                .validate(Validators.hasDigitsInRange(8, 8))
-                .validate(Validators::hasValidCheckingDigit)
+                .validate(KouhiLogic::isValidKouhiJukyuushaBangou)
                 .getValueOrElse(0, nameWith(name, "の") + "受給者番号", em);
 
         new BiLogicValue<>(inputs.validFromInputs, inputs.validUptoInputs)

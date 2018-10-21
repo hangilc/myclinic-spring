@@ -1,4 +1,4 @@
-package jp.chang.myclinic.util.dto_validator;
+package jp.chang.myclinic.util.dto_logic;
 
 public class HokenLib {
 

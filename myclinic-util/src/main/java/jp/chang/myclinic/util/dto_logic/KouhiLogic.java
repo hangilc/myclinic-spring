@@ -1,4 +1,4 @@
-package jp.chang.myclinic.util.dto_validator;
+package jp.chang.myclinic.util.dto_logic;
 
 import jp.chang.myclinic.dto.KouhiDTO;
 import jp.chang.myclinic.util.logic.*;
@@ -31,7 +31,7 @@ public class KouhiLogic extends LogicUtil {
     public static Logic<Integer> isValidKouhiJukyuushaBangou(Logic<Integer> src) {
         return src
                 .validate(Validators::isPositive)
-                .validate(Validators.hasDigitsInRange(8, 8))
+                .validate(Validators.hasDigitsInRange(7, 7))
                 .validate(Validators::hasValidCheckingDigit);
     }
 
