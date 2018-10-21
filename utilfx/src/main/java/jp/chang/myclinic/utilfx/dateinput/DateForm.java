@@ -6,6 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.consts.Gengou;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class DateForm extends HBox {
@@ -40,6 +41,10 @@ public class DateForm extends HBox {
 
     public void setGengouList(List<Gengou> gengouList){
         gengouInput.setGengouList(gengouList);
+    }
+
+    public void setGengouList(Gengou... gengouList){
+        setGengouList(Arrays.asList(gengouList));
     }
 
     public void clear(){

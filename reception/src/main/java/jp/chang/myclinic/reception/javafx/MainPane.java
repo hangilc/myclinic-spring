@@ -19,6 +19,7 @@ import jp.chang.myclinic.dto.PaymentDTO;
 import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
 import jp.chang.myclinic.reception.event.RefreshEvent;
+import jp.chang.myclinic.reception.javafx.edit_patient.EnterPatientStage;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
@@ -158,28 +159,30 @@ public class MainPane extends VBox implements DispatchHook {
     }
 
     private void doNewPatient() {
-        EditPatientStage stage = new EditPatientStage(null);
-        stage.setTitle("新規患者入力");
+        EnterPatientStage stage = new EnterPatientStage();
         stage.showAndWait();
-        PatientDTO formValue = stage.getFormValue();
-        if (formValue != null) {
-            Service.api.enterPatient(formValue)
-                    .thenCompose(patientId -> {
-                        formValue.patientId = patientId;
-                        return Service.api.listHoken(patientId);
-                    })
-                    .thenAccept(hokenList -> {
-                        Platform.runLater(() -> {
-                            PatientWithHokenStage patientWithHokenStage = new PatientWithHokenStage(formValue, hokenList);
-                            patientWithHokenStage.showAndWait();
-                        });
-                    })
-                    .exceptionally(ex -> {
-                        logger.error("List hoken failed.", ex);
-                        Platform.runLater(() -> GuiUtil.alertException("保険情報が取得できませんでした。", ex));
-                        return null;
-                    });
-        }
+//        EditPatientStage stage = new EditPatientStage(null);
+//        stage.setTitle("新規患者入力");
+//        stage.showAndWait();
+//        PatientDTO formValue = stage.getFormValue();
+//        if (formValue != null) {
+//            Service.api.enterPatient(formValue)
+//                    .thenCompose(patientId -> {
+//                        formValue.patientId = patientId;
+//                        return Service.api.listHoken(patientId);
+//                    })
+//                    .thenAccept(hokenList -> {
+//                        Platform.runLater(() -> {
+//                            PatientWithHokenStage patientWithHokenStage = new PatientWithHokenStage(formValue, hokenList);
+//                            patientWithHokenStage.showAndWait();
+//                        });
+//                    })
+//                    .exceptionally(ex -> {
+//                        logger.error("List hoken failed.", ex);
+//                        Platform.runLater(() -> GuiUtil.alertException("保険情報が取得できませんでした。", ex));
+//                        return null;
+//                    });
+//        }
     }
 
     private void doSearchPatient() {
