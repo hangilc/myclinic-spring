@@ -18,12 +18,13 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.reception.javafx.edit_shahokokuho.EditShahokokuhoStage;
-import jp.chang.myclinic.reception.javafx.edit_shahokokuho.EnterShahokokuhoStage;
 import jp.chang.myclinic.reception.javafx.edit_kouhi.EditKouhiStage;
 import jp.chang.myclinic.reception.javafx.edit_kouhi.EnterKouhiStage;
 import jp.chang.myclinic.reception.javafx.edit_koukikourei.EditKoukikoureiStage;
 import jp.chang.myclinic.reception.javafx.edit_koukikourei.EnterKoukikoureiStage;
+import jp.chang.myclinic.reception.javafx.edit_shahokokuho.EditShahokokuhoStage;
+import jp.chang.myclinic.reception.javafx.edit_shahokokuho.EnterShahokokuhoStage;
+import jp.chang.myclinic.reception.javafx.edit_patient.EditPatientStage;
 import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -72,14 +73,12 @@ class PatientWithHokenStage extends Stage {
             Button editPatientButton = new Button("編集");
             editPatientButton.setOnAction(event -> {
                 EditPatientStage editStage = new EditPatientStage(thePatient.getValue());
-                editStage.showAndWait();
-                if (editStage.getFormValue() != null) {
-                    PatientDTO data = editStage.getFormValue();
-                    Service.api.updatePatient(data)
+                editStage.setOnEnterCallback(edited -> {
+                    Service.api.updatePatient(edited)
                             .thenAccept(ok -> {
                                 Platform.runLater(() -> {
                                     editStage.close();
-                                    thePatient.setValue(data);
+                                    thePatient.setValue(edited);
                                 });
                             })
                             .exceptionally(ex -> {
@@ -87,7 +86,8 @@ class PatientWithHokenStage extends Stage {
                                 Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
                                 return null;
                             });
-                }
+                });
+                editStage.showAndWait();
             });
             hbox.getChildren().add(editPatientButton);
             vbox.getChildren().addAll(patientInfo, hbox);

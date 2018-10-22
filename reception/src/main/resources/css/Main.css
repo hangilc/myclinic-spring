@@ -21,3 +21,7 @@
     -fx-max-width: 140px;
 }
 
+.patient-form .phone-input {
+    -fx-pref-width: 200px;
+}
+
