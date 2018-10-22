@@ -74,27 +74,20 @@ class PatientWithHokenStage extends Stage {
             editPatientButton.setOnAction(event -> {
                 EditPatientStage editStage = new EditPatientStage(thePatient.getValue());
                 editStage.setOnEnterCallback(edited -> {
-                    System.out.println(edited);
+                    Service.api.updatePatient(edited)
+                            .thenAccept(ok -> {
+                                Platform.runLater(() -> {
+                                    editStage.close();
+                                    thePatient.setValue(edited);
+                                });
+                            })
+                            .exceptionally(ex -> {
+                                logger.error("Failed to update patient.", ex);
+                                Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
+                                return null;
+                            });
                 });
                 editStage.showAndWait();
-
-//                EditPatientStage editStage = new EditPatientStage(thePatient.getValue());
-//                editStage.showAndWait();
-//                if (editStage.getFormValue() != null) {
-//                    PatientDTO data = editStage.getFormValue();
-//                    Service.api.updatePatient(data)
-//                            .thenAccept(ok -> {
-//                                Platform.runLater(() -> {
-//                                    editStage.close();
-//                                    thePatient.setValue(data);
-//                                });
-//                            })
-//                            .exceptionally(ex -> {
-//                                logger.error("Failed to update patient.", ex);
-//                                Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));
-//                                return null;
-//                            });
-//                }
             });
             hbox.getChildren().add(editPatientButton);
             vbox.getChildren().addAll(patientInfo, hbox);
