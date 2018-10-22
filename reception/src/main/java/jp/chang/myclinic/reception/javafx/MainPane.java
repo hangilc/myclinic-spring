@@ -160,6 +160,9 @@ public class MainPane extends VBox implements DispatchHook {
 
     private void doNewPatient() {
         EnterPatientStage stage = new EnterPatientStage();
+        stage.setOnEnterCallback(dto -> {
+            System.out.println(dto);
+        });
         stage.showAndWait();
 //        EditPatientStage stage = new EditPatientStage(null);
 //        stage.setTitle("新規患者入力");

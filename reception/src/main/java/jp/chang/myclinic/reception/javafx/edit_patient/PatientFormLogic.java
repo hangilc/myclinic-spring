@@ -64,6 +64,7 @@ class PatientFormLogic extends LogicUtil {
     static PatientFormInputs patientDTOToPatientFormInputs(PatientDTO dto, String origName, ErrorMessages em){
         String name = nameWith(origName, "の");
         PatientFormInputs inputs = new PatientFormInputs();
+        inputs.patientId = dto.patientId;
         inputs.lastNameInput = dto.lastName;
         inputs.firstNameInput = dto.firstName;
         inputs.lastNameYomiInput = dto.lastNameYomi;

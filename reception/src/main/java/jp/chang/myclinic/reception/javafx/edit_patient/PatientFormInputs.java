@@ -5,6 +5,7 @@ import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 
 class PatientFormInputs {
 
+    Integer patientId;
     String lastNameInput;
     String firstNameInput;
     String lastNameYomiInput;

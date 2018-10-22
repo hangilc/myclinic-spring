@@ -14,16 +14,16 @@ import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.util.function.Consumer;
 
-public class EnterPatientStage extends Stage {
+public class EditPatientStage extends Stage {
 
-    //private static Logger logger = LoggerFactory.getLogger(EnterPatientStage.class);
+    //private static Logger logger = LoggerFactory.getLogger(EditPatientStage.class);
     private Consumer<PatientDTO> onEnterCallback = dto -> {};
 
-    public EnterPatientStage() {
-        setTitle("新規患者入力");
-        Parent root = createRoot();
+    public EditPatientStage(PatientDTO patientDTO) {
+        setTitle("患者情報編集");
+        Parent root = createRoot(patientDTO);
         root.getStylesheets().add("css/Main.css");
-        root.getStyleClass().addAll("dialog-root", "enter-patient-stage");
+        root.getStyleClass().addAll("dialog-root", "edit-patient-stage");
         setScene(new Scene(root));
     }
 
@@ -31,22 +31,30 @@ public class EnterPatientStage extends Stage {
         this.onEnterCallback = callback;
     }
 
-    private Parent createRoot(){
+    private Parent createRoot(PatientDTO orig){
         VBox root = new VBox(4);
-        PatientForm form = new PatientForm();
+        PatientForm form = new PatientForm(true);
+        ErrorMessages em = new ErrorMessages();
+        PatientFormInputs inputs = new LogicValue<>(orig)
+                .convert(PatientFormLogic::patientDTOToPatientFormInputs)
+                .getValue(null, em);
+        if( em.hasError() ){
+            GuiUtil.alertError(em.getMessage());
+        }
+        form.setInputs(inputs);
         root.getChildren().add(form);
         HBox commands = new HBox(4);
         commands.setAlignment(Pos.CENTER_RIGHT);
         Button enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
-        enterButton.setOnAction(evt -> doEnter(form));
+        enterButton.setOnAction(evt -> doEnter(orig.patientId, form));
         cancelButton.setOnAction(evt -> close());
         commands.getChildren().addAll(enterButton, cancelButton);
         root.getChildren().add(commands);
         return root;
     }
 
-    private void doEnter(PatientForm form){
+    private void doEnter(int patientId, PatientForm form){
         PatientFormInputs inputs = form.getInputs();
         ErrorMessages em = new ErrorMessages();
         PatientDTO dto = new LogicValue<>(inputs)
@@ -56,6 +64,7 @@ public class EnterPatientStage extends Stage {
             GuiUtil.alertError(em.getMessage());
             return;
         }
+        dto.patientId = patientId;
         onEnterCallback.accept(dto);
     }
 
