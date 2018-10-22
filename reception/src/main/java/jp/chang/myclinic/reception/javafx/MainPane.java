@@ -161,7 +161,22 @@ public class MainPane extends VBox implements DispatchHook {
     private void doNewPatient() {
         EnterPatientStage stage = new EnterPatientStage();
         stage.setOnEnterCallback(dto -> {
-            System.out.println(dto);
+            Service.api.enterPatient(dto)
+                    .thenCompose(patientId -> {
+                        dto.patientId = patientId;
+                        return Service.api.listHoken(patientId);
+                    })
+                    .thenAccept(hokenList -> {
+                        Platform.runLater(() -> {
+                            PatientWithHokenStage patientWithHokenStage = new PatientWithHokenStage(dto, hokenList);
+                            patientWithHokenStage.showAndWait();
+                        });
+                    })
+                    .exceptionally(ex -> {
+                        logger.error("List hoken failed.", ex);
+                        Platform.runLater(() -> GuiUtil.alertException("保険情報が取得できませんでした。", ex));
+                        return null;
+                    });
         });
         stage.showAndWait();
 //        EditPatientStage stage = new EditPatientStage(null);
