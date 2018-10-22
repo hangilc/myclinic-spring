@@ -2,6 +2,7 @@ package jp.chang.myclinic.reception.javafx.edit_patient;
 
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.util.dto_logic.SexLogic;
 import jp.chang.myclinic.util.logic.*;
 import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
 
@@ -58,6 +59,27 @@ class PatientFormLogic extends LogicUtil {
                 .getValue(nameWith(name, "の") + "電話", em);
 
         return em.hasErrorSince(ne) ? null : dto;
+    }
+
+    static PatientFormInputs patientDTOToPatientFormInputs(PatientDTO dto, String origName, ErrorMessages em){
+        String name = nameWith(origName, "の");
+        PatientFormInputs inputs = new PatientFormInputs();
+        inputs.lastNameInput = dto.lastName;
+        inputs.firstNameInput = dto.firstName;
+        inputs.lastNameYomiInput = dto.lastNameYomi;
+        inputs.firstNameYomiInput = dto.firstNameYomi;
+        inputs.birthdayInputs = new LogicValue<>(dto.birthday)
+                .validate(Validators::isNotNull)
+                .validate(Validators::isNotEmpty)
+                .convert(Converters::sqldateToLocalDate)
+                .convert(DateFormLogic::localDateToDateFormInputs)
+                .getValue("生年月日", em);
+        inputs.sexInput = new LogicValue<>(dto.sex)
+                .convert(SexLogic::codeToSex)
+                .getValue(null, em);
+        inputs.addressInput = dto.address;
+        inputs.phoneInput = dto.phone;
+        return inputs; // return inputs anyway
     }
 
 }
