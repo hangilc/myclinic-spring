@@ -74,7 +74,7 @@ class PatientFormLogic extends LogicUtil {
                 .validate(Validators::isNotEmpty)
                 .convert(Converters::sqldateToLocalDate)
                 .convert(DateFormLogic::localDateToDateFormInputs)
-                .getValue("生年月日", em);
+                .getValue(name + "生年月日", em);
         inputs.sexInput = new LogicValue<>(dto.sex)
                 .convert(SexLogic::codeToSex)
                 .getValue(null, em);
