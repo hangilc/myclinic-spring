@@ -8,9 +8,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>jp.chang.myclinic</groupId>
     <artifactId>record-browser</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>record-browser</name>
     <dependencies>
         <dependency>

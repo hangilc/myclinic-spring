@@ -22,6 +22,7 @@
         <maven.compiler.source>1.9</maven.compiler.source>
         <jackson.version>2.9.7</jackson.version>
         <spring.boot.version>2.0.6.RELEASE</spring.boot.version>
+        <spring.boot.maven.plugin.version>${spring.boot.version}</spring.boot.maven.plugin.version>
     </properties>
 
     <dependencyManagement>

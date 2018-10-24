@@ -8,9 +8,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>jp.chang.myclinic</groupId>
     <artifactId>winutil</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>winutil</name>
     <dependencies>
         <dependency>
