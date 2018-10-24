@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>jp.chang.myclinic</groupId>
@@ -57,6 +58,18 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>2.0.6.RELEASE</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
     <modules>
         <module>master-map</module>
         <module>master-app</module>
@@ -87,11 +100,11 @@
         <module>utilfx</module>
         <module>rcpt</module>
         <module>rcpt-drawer</module>
-    <module>logdto</module>
-    <module>master-lib</module>
-    <module>tracker</module>
-    <module>winutil</module>
-    <module>management</module>
-  </modules>
+        <module>logdto</module>
+        <module>master-lib</module>
+        <module>tracker</module>
+        <module>winutil</module>
+        <module>management</module>
+    </modules>
 
 </project>
