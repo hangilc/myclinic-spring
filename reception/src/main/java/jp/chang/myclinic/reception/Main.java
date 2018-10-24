@@ -21,8 +21,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// TODO: add default koukikourei hokenshabangou
-// TODO: add CSS to patient table
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -114,14 +112,6 @@ public class Main extends Application {
             });
             syncItem.setOnAction(evt -> doRestartTracking());
             unsyncItem.setOnAction(evt -> doStopTracking());
-            mbar.getMenus().add(menu);
-        }
-        {
-            Menu menu = new Menu("設定");
-            CheckMenuItem item = new CheckMenuItem("保険者番号をチェックする");
-            item.setSelected(true);
-            Globals.checkingHokenshaBangouProperty().bindBidirectional(item.selectedProperty());
-            menu.getItems().add(item);
             mbar.getMenus().add(menu);
         }
         return mbar;
