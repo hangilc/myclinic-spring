@@ -10,7 +10,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.reception.lib.DateUtil;
+import jp.chang.myclinic.util.dto_logic.PatientLogic;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +30,7 @@ public class PatientTable extends TableView<PatientTable.Model> {
             model.patientId.set(src.patientId);
             model.name.setValue(src.lastName + " " + src.firstName);
             model.yomi.setValue(src.lastNameYomi + " " + src.firstNameYomi);
-            model.birthday.setValue(DateUtil.sqlDateToString(src.birthday));
+            model.birthday.setValue(PatientLogic.birthdaySqldateToRep(src.birthday));
             model.sex.setValue(Sex.codeToKanji(src.sex));
             model.orig = src;
             return model;

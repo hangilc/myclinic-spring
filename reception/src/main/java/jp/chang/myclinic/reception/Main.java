@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 // TODO: add default koukikourei hokenshabangou
+// TODO: add CSS to patient table
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
