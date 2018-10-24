@@ -20,7 +20,6 @@ import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.drawerpreviewfx.DrawerPreviewStage;
 import jp.chang.myclinic.reception.event.RefreshEvent;
 import jp.chang.myclinic.reception.javafx.edit_patient.EnterPatientStage;
-import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawer;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerData;
 import jp.chang.myclinic.reception.receipt.ReceiptDrawerDataCreator;

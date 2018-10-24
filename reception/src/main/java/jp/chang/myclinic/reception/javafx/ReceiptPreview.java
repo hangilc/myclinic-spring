@@ -1,4 +1,4 @@
-package jp.chang.myclinic.reception.lib;
+package jp.chang.myclinic.reception.javafx;
 
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.drawer.PaperSize;
@@ -18,9 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class ReceptionLib {
+public class ReceiptPreview {
 
-    private static Logger logger = LoggerFactory.getLogger(ReceptionLib.class);
+    private static Logger logger = LoggerFactory.getLogger(ReceiptPreview.class);
 
     public static void previewReceipt(MeisaiDTO meisai, PatientDTO patient, VisitDTO visit, Integer charge) {
         ClinicInfoDTO clinicInfo = Globals.getClinicInfo();

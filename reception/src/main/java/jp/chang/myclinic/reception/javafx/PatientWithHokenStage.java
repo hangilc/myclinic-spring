@@ -25,7 +25,6 @@ import jp.chang.myclinic.reception.javafx.edit_koukikourei.EnterKoukikoureiStage
 import jp.chang.myclinic.reception.javafx.edit_shahokokuho.EditShahokokuhoStage;
 import jp.chang.myclinic.reception.javafx.edit_shahokokuho.EnterShahokokuhoStage;
 import jp.chang.myclinic.reception.javafx.edit_patient.EditPatientStage;
-import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -449,15 +448,6 @@ class PatientWithHokenStage extends Stage {
         confirmStage.showAndWait();
         if (confirmStage.isOk()) {
             ReceptionService.startVisit(thePatient.getValue().patientId);
-//            Service.api.startVisit(thePatient.getValue().patientId)
-//                    .thenAccept(visitId -> {
-//                        logger.info("Started visit: {}.", visitId);
-//                    })
-//                    .exceptionally(ex -> {
-//                        logger.error("Failed to start visit.", ex);
-//                        Platform.runLater(() -> GuiUtil.alertException(ex));
-//                        return null;
-//                    });
         }
     }
 

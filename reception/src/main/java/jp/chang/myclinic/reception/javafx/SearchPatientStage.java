@@ -11,7 +11,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,15 +122,6 @@ public class SearchPatientStage extends Stage {
             confirm.showAndWait();
             if( confirm.isOk() ){
                 ReceptionService.startVisit(patient.patientId);
-//                Service.api.startVisit(patient.patientId)
-//                        .thenAccept(visitId -> {
-//
-//                        })
-//                        .exceptionally(ex -> {
-//                            logger.error("Failed to start visit.", ex);
-//                            Platform.runLater(() -> GuiUtil.alertException(ex));
-//                            return null;
-//                        });
             }
         }
     }

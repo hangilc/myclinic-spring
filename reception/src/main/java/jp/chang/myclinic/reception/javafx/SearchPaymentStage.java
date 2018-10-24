@@ -11,7 +11,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.MeisaiDTO;
-import jp.chang.myclinic.reception.lib.ReceptionLib;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +78,7 @@ public class SearchPaymentStage extends Stage {
                         return Service.api.getCharge(visitId);
                     })
                     .thenAccept(charge -> {
-                        Platform.runLater(() -> ReceptionLib.previewReceipt(
+                        Platform.runLater(() -> ReceiptPreview.previewReceipt(
                                 local.meisai,  model.getPatient(), model.getVisit(),
                                 charge != null ? charge.charge : null
                         ));

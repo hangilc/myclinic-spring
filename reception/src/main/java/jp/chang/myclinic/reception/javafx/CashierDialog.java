@@ -10,8 +10,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.reception.lib.ReceptionLib;
-import jp.chang.myclinic.reception.lib.ReceptionService;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDateTime;
@@ -82,9 +80,9 @@ public class CashierDialog extends Stage {
         HBox.setHgrow(spacer, Priority.SOMETIMES);
         Button finishButton = new Button("終了");
         printReceiptButton.setOnAction(event ->
-                ReceptionLib.previewReceipt(meisai, patient, visit,
+                ReceiptPreview.previewReceipt(meisai, patient, visit,
                         charge != null ? charge.charge : null));
-        printManualReceiptButton.setOnAction(event -> ReceptionLib.previewReceipt(patient, visit, null));
+        printManualReceiptButton.setOnAction(event -> ReceiptPreview.previewReceipt(patient, visit, null));
         finishButton.setOnAction(event -> doFinish());
         hbox.getChildren().addAll(printReceiptButton, printManualReceiptButton, spacer, finishButton);
         return hbox;
