@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// TODO: 後期高齢入力で「以前のものを更新」ボタンを加える。
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
