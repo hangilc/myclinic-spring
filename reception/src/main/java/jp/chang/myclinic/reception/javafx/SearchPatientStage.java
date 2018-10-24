@@ -23,7 +23,8 @@ public class SearchPatientStage extends Stage {
     private TextField searchTextInput = new TextField();
     private PatientTable tableView = new PatientTable();
 
-    public SearchPatientStage(){
+    public SearchPatientStage() {
+        setTitle("患者検索");
         VBox root = new VBox(4);
         {
             HBox hbox = new HBox(4);
@@ -48,7 +49,7 @@ public class SearchPatientStage extends Stage {
             hbox.setAlignment(Pos.TOP_LEFT);
             PatientInfo infoLabel = new PatientInfo();
             tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-                if( newValue == null ){
+                if (newValue == null) {
                     infoLabel.clear();
                 } else {
                     infoLabel.setPatient(newValue.orig);
@@ -77,7 +78,8 @@ public class SearchPatientStage extends Stage {
             HBox.setHgrow(infoLabel, Priority.ALWAYS);
             root.getChildren().add(hbox);
         }
-        root.setStyle("-fx-padding: 10");
+        root.getStylesheets().add("css/Main.css");
+        root.getStyleClass().addAll("dialog-root", "search-patient-stage);");
         setScene(new Scene(root));
         sizeToScene();
     }
@@ -94,7 +96,7 @@ public class SearchPatientStage extends Stage {
 
     private void onEdit() {
         PatientTable.Model tableModel = tableView.getSelectionModel().getSelectedItem();
-        if( tableModel != null && tableModel.orig != null ){
+        if (tableModel != null && tableModel.orig != null) {
             PatientDTO patient = tableModel.orig;
             Service.api.listHoken(patient.patientId)
                     .thenAccept(list -> {
@@ -102,7 +104,7 @@ public class SearchPatientStage extends Stage {
                             PatientWithHokenStage stage = new PatientWithHokenStage(patient, list);
                             stage.patientProperty().addListener((obs, oldValue, newValue) -> {
                                 tableView.updateData(newValue);
-                           });
+                            });
                             stage.show();
                         });
                     })
@@ -116,17 +118,17 @@ public class SearchPatientStage extends Stage {
 
     private void onRegister() {
         PatientTable.Model model = tableView.getSelectionModel().getSelectedItem();
-        if( model != null ){
+        if (model != null) {
             PatientDTO patient = model.orig;
             RegisterForPracticeDialog confirm = new RegisterForPracticeDialog(patient);
             confirm.showAndWait();
-            if( confirm.isOk() ){
+            if (confirm.isOk()) {
                 ReceptionService.startVisit(patient.patientId);
             }
         }
     }
 
-    private void setSearchResult(List<PatientDTO> list){
+    private void setSearchResult(List<PatientDTO> list) {
         tableView.setList(list);
 //        List<PatientTable.Model> models = list.stream()
 //                .map(PatientTable.Model::fromPatient)
@@ -136,7 +138,7 @@ public class SearchPatientStage extends Stage {
 
     private void doSearch() {
         String text = searchTextInput.getText();
-        if( text == null || text.isEmpty() ){
+        if (text == null || text.isEmpty()) {
             return;
         }
         Service.api.searchPatient(text)

@@ -1,7 +1,5 @@
 package jp.chang.myclinic.reception.javafx;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -18,7 +16,7 @@ import java.util.stream.Collectors;
 public class PatientTable extends TableView<PatientTable.Model> {
 
     public static class Model {
-        private IntegerProperty patientId = new SimpleIntegerProperty();
+        private StringProperty patientId = new SimpleStringProperty();
         private StringProperty name = new SimpleStringProperty();
         private StringProperty yomi = new SimpleStringProperty();
         private StringProperty birthday = new SimpleStringProperty();
@@ -27,7 +25,7 @@ public class PatientTable extends TableView<PatientTable.Model> {
 
         public static Model fromPatient(PatientDTO src){
             Model model = new Model();
-            model.patientId.set(src.patientId);
+            model.patientId.set(String.format("%04d", src.patientId));
             model.name.setValue(src.lastName + " " + src.firstName);
             model.yomi.setValue(src.lastNameYomi + " " + src.firstNameYomi);
             model.birthday.setValue(PatientLogic.birthdaySqldateToRep(src.birthday));
@@ -36,15 +34,19 @@ public class PatientTable extends TableView<PatientTable.Model> {
             return model;
         }
 
-        public int getPatientId() {
+        int getOrigPatientId(){
+            return orig.patientId;
+        }
+
+        public String getPatientId() {
             return patientId.get();
         }
 
-        public IntegerProperty patientIdProperty() {
+        public StringProperty patientIdProperty() {
             return patientId;
         }
 
-        public void setPatientId(int patientId) {
+        public void setPatientId(String patientId) {
             this.patientId.set(patientId);
         }
 
@@ -104,22 +106,28 @@ public class PatientTable extends TableView<PatientTable.Model> {
 
     public PatientTable(){
         setMaxWidth(Double.MAX_VALUE);
+        getStyleClass().add("patient-table");
 
-        TableColumn<PatientTable.Model, Integer> patientIdColumn = new TableColumn<>("患者番号");
+        TableColumn<PatientTable.Model, String> patientIdColumn = new TableColumn<>("患者番号");
         patientIdColumn.setCellValueFactory(new PropertyValueFactory<>("patientId"));
+        patientIdColumn.getStyleClass().add("patient-id");
 
         TableColumn<PatientTable.Model, String> nameColumn = new TableColumn<>("名前");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        nameColumn.getStyleClass().add("name");
 
         TableColumn<PatientTable.Model, String> yomiColumn = new TableColumn<>("よみ");
         yomiColumn.setCellValueFactory(new PropertyValueFactory<>("yomi"));
         yomiColumn.setComparator(String::compareTo);
+        yomiColumn.getStyleClass().add("yomi");
 
         TableColumn<PatientTable.Model, String> birthdayColumn = new TableColumn<>("生年月日");
         birthdayColumn.setCellValueFactory(new PropertyValueFactory<>("birthday"));
+        birthdayColumn.getStyleClass().add("birthday");
 
         TableColumn<PatientTable.Model, String> sexColumn = new TableColumn<>("性別");
         sexColumn.setCellValueFactory(new PropertyValueFactory<>("sex"));
+        sexColumn.getStyleClass().add("sex");
 
         getColumns().add(patientIdColumn);
         getColumns().add(nameColumn);
@@ -143,7 +151,7 @@ public class PatientTable extends TableView<PatientTable.Model> {
         PatientTable.Model newModel = null;
         for(;index<models.size();index++){
             PatientTable.Model m = models.get(index);
-            if( m.getPatientId() == data.patientId ){
+            if( m.getOrigPatientId() == data.patientId ){
                 origModel = m;
                 newModel = PatientTable.Model.fromPatient(data);
                 found = true;

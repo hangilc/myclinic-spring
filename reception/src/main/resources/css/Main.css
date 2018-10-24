@@ -25,3 +25,20 @@
     -fx-pref-width: 200px;
 }
 
+.patient-table .patient-id {
+    -fx-pref-width: 6em;
+    -fx-alignment: center;
+}
+
+.patient-table .yomi {
+    -fx-pref-width: 8em;
+}
+
+.patient-table .birthday {
+    -fx-pref-width: 10em;
+}
+
+.patient-table .sex {
+    -fx-pref-width: 3em;
+    -fx-alignment: center;
+}
