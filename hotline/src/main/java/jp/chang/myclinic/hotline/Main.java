@@ -18,9 +18,8 @@ import java.util.List;
 
 //import jp.chang.myclinic.hotline.Service;
 
-// TODO: check for too many blank lines
-public class AppMain extends Application {
-    private static Logger logger = LoggerFactory.getLogger(AppMain.class);
+public class Main extends Application {
+    private static Logger logger = LoggerFactory.getLogger(Main.class);
     private String wsUrl;
     private Tracker tracker;
 
@@ -111,15 +110,6 @@ public class AppMain extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-//        Set<Thread> threads = Thread.getAllStackTraces().keySet();
-//        System.out.println(threads);
-//        OkHttpClient client = Service.client;
-//        client.dispatcher().executorService().shutdown();
-//        client.connectionPool().evictAll();
-//        Cache cache = client.cache();
-//        if (cache != null) {
-//            cache.close();
-//        }
         Service.stop();
         tracker.shutdown();
         logger.info("Hotline stopped.");

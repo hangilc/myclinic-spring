@@ -11,14 +11,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.hotline.*;
 import jp.chang.myclinic.hotline.lib.HotlineUtil;
 import jp.chang.myclinic.hotline.tracker.DispatchAction;
+import jp.chang.myclinic.util.logic.ErrorMessages;
+import jp.chang.myclinic.util.logic.LogicValue;
+import jp.chang.myclinic.util.logic.Validators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import jp.chang.myclinic.client.Service;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -177,6 +180,17 @@ public class MainScene extends VBox implements DispatchAction {
     private void doSend(){
         String message = inputText.getText();
         if( message.isEmpty() ){
+            return;
+        }
+        ErrorMessages em = new ErrorMessages();
+        new LogicValue<>(message)
+                .validate(Validators::isNotNull)
+                .validate(Validators::isNotEmpty)
+                .validate(HotlineLogic::isNotTooLongToEnter)
+                .validate(HotlineLogic::hasNotTooManyLinesToEnter)
+                .verify("メッセージ", em);
+        if( em.hasError() ){
+            GuiUtil.alertError(em.getMessage());
             return;
         }
         postMessage(message);

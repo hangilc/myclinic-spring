@@ -7,12 +7,10 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class EditDialog extends Stage {
 
-    private static Logger logger = LoggerFactory.getLogger(EditDialog.class);
+    //private static Logger logger = LoggerFactory.getLogger(EditDialog.class);
     private TextArea textArea = new TextArea();
 
     EditDialog(String text) {
