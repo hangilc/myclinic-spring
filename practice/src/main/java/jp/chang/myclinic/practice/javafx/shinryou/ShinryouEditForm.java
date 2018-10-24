@@ -1,15 +1,16 @@
 package jp.chang.myclinic.practice.javafx.shinryou;
 
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
+import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
-import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 
 public class ShinryouEditForm extends WorkForm {
 
@@ -37,6 +38,7 @@ public class ShinryouEditForm extends WorkForm {
     private void setupCommandBox(ShinryouAttrDTO attr){
         HBox hbox = commandBox;
         hbox.getChildren().clear();
+        hbox.setAlignment(Pos.CENTER_LEFT);
         Button deleteButton = new Button("削除");
         Button cancelButton = new Button("閉じる");
         deleteButton.setOnAction(event -> onDelete(this));

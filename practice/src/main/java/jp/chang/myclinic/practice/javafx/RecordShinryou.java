@@ -30,7 +30,7 @@ class RecordShinryou extends StackPane {
         String label = shinryou.master.name;
         if( attr != null ){
             if( attr.tekiyou != null ){
-                label += " " + attr.tekiyou;
+                label += " [摘要：" + attr.tekiyou + "]";
             }
         }
         labelText.setText(label);
