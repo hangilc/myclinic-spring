@@ -11,6 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugEditInput;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugForm;
@@ -23,9 +24,11 @@ public class EditForm extends DrugForm {
     //private static Logger logger = LoggerFactory.getLogger(EditForm.class);
     private DrugEditInput input = new DrugEditInput();
     private HBox tekiyouBox = new HBox(4);
+    private boolean isGaiyou;
 
     public EditForm(DrugFullDTO drug, String drugTekiyou, VisitDTO visit) {
         super(visit);
+        this.isGaiyou = Zaikei.fromCode(drug.master.zaikei) == Zaikei.Gaiyou;
         input.setDrug(drug);
         input.setTekiyou(drugTekiyou);
         tekiyouBox.setAlignment(Pos.CENTER_LEFT);
@@ -86,7 +89,11 @@ public class EditForm extends DrugForm {
     private void doEnterTekiyou(String tekiyouText) {
         String curr = tekiyouText;
         if (curr == null) {
-            curr = "";
+            if( isGaiyou ){
+                curr = "１日２枚";
+            } else {
+                curr = "";
+            }
         }
         GuiUtil.askForString("摘要の内容", curr).ifPresent(str -> {
             Service.api.setDrugTekiyou(input.getDrugId(), str)
