@@ -11,7 +11,8 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Main main = new Main();
         //main.moveIyakuhinMaster(false);
-        main.moveShinryouMaster(false);
+        //main.moveShinryouMaster(false);
+        main.moveKizaiMaster(true);
     }
 
     private Main() throws Exception {
@@ -22,6 +23,43 @@ public class Main {
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
     }
 
+    private  void moveKizaiMaster(boolean printRow) throws Exception {
+        Statement stmt = mysqlConn.createStatement();
+        ResultSet rset = stmt.executeQuery("select * from tokuteikizai_master_arch");
+        PreparedStatement psqlStmt = psqlConn.prepareStatement("insert into kizai_master " +
+                "(kizaicode, name, yomi, unit, kingaku, valid_from, valid_upto) " +
+                "values (?, ?, ?, ?, ?, ?, ?)");
+        int n = 0;
+        while (rset.next()) {
+            int kizaicode = rset.getInt("kizaicode");
+            String name = rset.getString("name");
+            String yomi = rset.getString("yomi");
+            String unit = rset.getString("unit");
+            String kingaku = rset.getString("kingaku");
+            String validFrom = rset.getString("valid_from");
+            String validUpto = rset.getString("valid_upto");
+            if( printRow ) {
+                System.out.printf("%d %s %s %s %s %s %s\n", kizaicode, name, yomi,
+                        unit, kingaku, validFrom, validUpto);
+            }
+            psqlStmt.setInt(1, kizaicode);
+            psqlStmt.setString(2, name);
+            psqlStmt.setString(3, yomi);
+            psqlStmt.setString(4, unit);
+            psqlStmt.setBigDecimal(5, new BigDecimal(kingaku));
+            psqlStmt.setDate(6, Date.valueOf(validFrom));
+            psqlStmt.setDate(7, convertValidUpto(validUpto));
+            psqlStmt.executeUpdate();
+            n += 1;
+            if( n % 1000 == 0 ){
+                System.out.printf("kizai_master %d\n", n);
+            }
+        }
+        System.out.printf("kizai_master %d\n", n);
+        rset.close();
+        stmt.close();
+        psqlStmt.close();
+    }
     private  void moveShinryouMaster(boolean printRow) throws Exception {
         Statement stmt = mysqlConn.createStatement();
         ResultSet rset = stmt.executeQuery("select * from shinryoukoui_master_arch");
