@@ -2,7 +2,7 @@ create table iyakuhin_master (
 	iyakuhincode int not null check (iyakuhincode > 0),
 	name varchar(64) not null check(char_length(name) > 0),
 	yomi varchar(32) not null check(char_length(yomi) > 0),
-	unit varchar(16) not null check(char_length(unit) > 0),
+	unit varchar(16) not null,
 	yakka decimal(10, 2) not null check(yakka >= 0),
 	madoku char(1) not null check(madoku = '0' or madoku = '1' or madoku = '2' or madoku = '3' or madoku = '5'),
 	kouhatsu char(1) not null check(kouhatsu = '0' or kouhatsu = '1'),
