@@ -1,8 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
-set groupId=%~1
-set artifactId=%~2
-set version=%~3
+set groupId=jp.chang.myclinic
+set artifactId=%~1
+set version=%~2
 
 if "%groupId%" == "" (
     goto :usage
@@ -27,7 +27,7 @@ mvn archetype:generate -DarchetypeGroupId="jp.chang.myclinic" -DarchetypeArtifac
 goto :endpoint
 
 :usage
-echo Usage create-cli-project GROUP-ID ARTIFACT-ID [VERSION]
+echo Usage create-cli-project ARTIFACT-ID [VERSION]
 
 :endpoint
 exit /b
