@@ -5,17 +5,29 @@ import java.sql.*;
 
 public class Main {
 
+    private Connection mysqlConn;
+    private Connection psqlConn;
+
     public static void main(String[] args) throws Exception {
+        Main main = new Main();
+        main.moveIyakuhinMaster();
+    }
+
+    private Main() throws Exception {
         Class.forName("org.postgresql.Driver");
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/myclinic?useSSL=false&zeroDateTimeBehavior=convertToNull",
+        this.mysqlConn = DriverManager.getConnection("jdbc:mysql://localhost/myclinic?useSSL=false&zeroDateTimeBehavior=convertToNull",
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
-        Connection psqlConn = DriverManager.getConnection("jdbc:postgresql://localhost/myclinic",
+        this.psqlConn = DriverManager.getConnection("jdbc:postgresql://localhost/myclinic",
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
-        Statement stmt = conn.createStatement();
+    }
+
+    private  void moveIyakuhinMaster() throws Exception {
+        Statement stmt = mysqlConn.createStatement();
         ResultSet rset = stmt.executeQuery("select * from iyakuhin_master_arch");
         PreparedStatement psqlStmt = psqlConn.prepareStatement("insert into iyakuhin_master " +
-            "(iyakuhincode, name, yomi, unit, yakka, madoku, kouhatsu, zaikei, valid_from, valid_upto) " +
-            "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                "(iyakuhincode, name, yomi, unit, yakka, madoku, kouhatsu, zaikei, valid_from, valid_upto) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        int n = 0;
         while (rset.next()) {
             int iyakuhincode = rset.getInt("iyakuhincode");
             String name = rset.getString("name");
@@ -27,8 +39,8 @@ public class Main {
             String zaikei = rset.getString("zaikei");
             String validFrom = rset.getString("valid_from");
             String validUpto = rset.getString("valid_upto");
-            System.out.printf("%d %s %s %s %s %s %s %s %s %s\n", iyakuhincode, name, yomi, unit, yakka,
-                    madoku, kouhatsu, zaikei, validFrom, validUpto);
+//            System.out.printf("%d %s %s %s %s %s %s %s %s %s\n", iyakuhincode, name, yomi, unit, yakka,
+//                    madoku, kouhatsu, zaikei, validFrom, validUpto);
             psqlStmt.setInt(1, iyakuhincode);
             psqlStmt.setString(2, name);
             psqlStmt.setString(3, yomi);
@@ -40,12 +52,14 @@ public class Main {
             psqlStmt.setDate(9, Date.valueOf(validFrom));
             psqlStmt.setDate(10, convertValidUpto(validUpto));
             psqlStmt.executeUpdate();
+            n += 1;
+            if( n % 1000 == 0 ){
+                System.out.printf("iyakuhin_master %d\n", n);
+            }
         }
         rset.close();
         stmt.close();
-        conn.close();
         psqlStmt.close();
-        psqlConn.close();
     }
 
     private static Date convertValidUpto(String sqldate){
