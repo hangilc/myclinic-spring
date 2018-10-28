@@ -12,7 +12,7 @@ public class Main {
         Main main = new Main();
         //main.moveIyakuhinMaster(false);
         //main.moveShinryouMaster(false);
-        main.moveKizaiMaster(true);
+        //main.moveKizaiMaster(true);
     }
 
     private Main() throws Exception {
