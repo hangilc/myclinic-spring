@@ -17,14 +17,14 @@ create or replace function check_iyakuhin_master_fun() returns trigger as $$
 	declare
 		count integer;
 	begin
-		select * into count from iyakuhin_master where iyakuhincode = new.iyakuhincode 
+		select count(*) into count from iyakuhin_master where iyakuhincode = new.iyakuhincode 
 			and valid_from <> new.valid_from
 			and not (
 				(valid_upto is not null and valid_upto < new.valid_from) or
 				(new.valid_upto is not null and new.valid_upto < valid_from)
 			);
 		if count > 0 then
-			raise exception 'conflicing iyakuhin_master row exists';
+			raise exception 'conflicting iyakuhin_master row exists';
 		end if;
 		return new;
 	end;

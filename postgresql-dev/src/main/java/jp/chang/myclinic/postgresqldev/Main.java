@@ -10,7 +10,8 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         Main main = new Main();
-        main.moveIyakuhinMaster();
+        //main.moveIyakuhinMaster(false);
+        main.moveShinryouMaster(false);
     }
 
     private Main() throws Exception {
@@ -21,7 +22,46 @@ public class Main {
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
     }
 
-    private  void moveIyakuhinMaster() throws Exception {
+    private  void moveShinryouMaster(boolean printRow) throws Exception {
+        Statement stmt = mysqlConn.createStatement();
+        ResultSet rset = stmt.executeQuery("select * from shinryoukoui_master_arch");
+        PreparedStatement psqlStmt = psqlConn.prepareStatement("insert into shinryou_master " +
+                "(shinryoucode, name, tensuu, tensuu_shikibetsu, shuukeisaki, houkatsukensa, valid_from, valid_upto) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?)");
+        int n = 0;
+        while (rset.next()) {
+            int shinryoucode = rset.getInt("shinryoucode");
+            String name = rset.getString("name");
+            String tensuu = rset.getString("tensuu");
+            String tensuu_shikibetsu = rset.getString("tensuu_shikibetsu");
+            String shuukeisaki = rset.getString("shuukeisaki");
+            String houkatsukensa = rset.getString("houkatsukensa");
+            String validFrom = rset.getString("valid_from");
+            String validUpto = rset.getString("valid_upto");
+            if( printRow ) {
+                System.out.printf("%d %s %s %s %s %s %s %s\n", shinryoucode, name, tensuu,
+                        tensuu_shikibetsu, shuukeisaki, houkatsukensa, validFrom, validUpto);
+            }
+            psqlStmt.setInt(1, shinryoucode);
+            psqlStmt.setString(2, name);
+            psqlStmt.setBigDecimal(3, new BigDecimal(tensuu));
+            psqlStmt.setString(4, tensuu_shikibetsu);
+            psqlStmt.setString(5, shuukeisaki);
+            psqlStmt.setString(6, houkatsukensa);
+            psqlStmt.setDate(7, Date.valueOf(validFrom));
+            psqlStmt.setDate(8, convertValidUpto(validUpto));
+            psqlStmt.executeUpdate();
+            n += 1;
+            if( n % 1000 == 0 ){
+                System.out.printf("shinryou_master %d\n", n);
+            }
+        }
+        System.out.printf("shinryou_master %d\n", n);
+        rset.close();
+        stmt.close();
+        psqlStmt.close();
+    }
+    private  void moveIyakuhinMaster(boolean printRow) throws Exception {
         Statement stmt = mysqlConn.createStatement();
         ResultSet rset = stmt.executeQuery("select * from iyakuhin_master_arch");
         PreparedStatement psqlStmt = psqlConn.prepareStatement("insert into iyakuhin_master " +
@@ -39,8 +79,10 @@ public class Main {
             String zaikei = rset.getString("zaikei");
             String validFrom = rset.getString("valid_from");
             String validUpto = rset.getString("valid_upto");
-//            System.out.printf("%d %s %s %s %s %s %s %s %s %s\n", iyakuhincode, name, yomi, unit, yakka,
-//                    madoku, kouhatsu, zaikei, validFrom, validUpto);
+            if( printRow ) {
+                System.out.printf("%d %s %s %s %s %s %s %s %s %s\n", iyakuhincode, name, yomi, unit, yakka,
+                        madoku, kouhatsu, zaikei, validFrom, validUpto);
+            }
             psqlStmt.setInt(1, iyakuhincode);
             psqlStmt.setString(2, name);
             psqlStmt.setString(3, yomi);
@@ -57,6 +99,7 @@ public class Main {
                 System.out.printf("iyakuhin_master %d\n", n);
             }
         }
+        System.out.printf("iyakuhin_master %d\n", n);
         rset.close();
         stmt.close();
         psqlStmt.close();
