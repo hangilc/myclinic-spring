@@ -3,8 +3,6 @@ package jp.chang.myclinic.serverpostgresql.rest;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.mastermap.MasterMap;
 import jp.chang.myclinic.serverpostgresql.db.myclinic.DbGateway;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,15 +11,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/json")
 @Transactional
 public class IyakuhinMasterController {
 
-    private static Logger logger = LoggerFactory.getLogger(IyakuhinMasterController.class);
+    //private static Logger logger = LoggerFactory.getLogger(IyakuhinMasterController.class);
 
     @Autowired
     private DbGateway dbGateway;
@@ -51,26 +48,26 @@ public class IyakuhinMasterController {
         return dbGateway.findIyakuhinMaster(iyakuhincode, atDate);
     }
 
-//    @RequestMapping(value="/batch-resolve-iyakuhin-master", method=RequestMethod.GET)
-//    public Map<Integer, IyakuhinMasterDTO> batchResolveIyakuhinMaster(@RequestParam(value = "iyakuhincode", required = false) List<Integer> iyakuhincodes,
-//                                                                      @RequestParam("at") String at){
-//        if( iyakuhincodes == null ){
-//            iyakuhincodes = Collections.emptyList();
-//        }
-//        Map<Integer, IyakuhinMasterDTO> map = new HashMap<>();
-//        LocalDate atDate = LocalDate.parse(at);
-//        iyakuhincodes.forEach(iyakuhincode -> {
-//            int resolvedIyakuhincode = masterMap.resolveIyakuhinCode(iyakuhincode, atDate);
-//            Optional<IyakuhinMasterDTO> optMaster = dbGateway.findIyakuhinMaster(resolvedIyakuhincode, at);
-//            map.put(iyakuhincode, optMaster.orElse(null));
-//        });
-//        return map;
-//    }
-//
-//    @RequestMapping(value="/get-name-of-iyakuhin", method=RequestMethod.GET)
-//    public Optional<String> getNameOfIyakuhin(@RequestParam(value="iyakuhincode") int iyakuhincode){
-//        return dbGateway.findNameForIyakuhincode(iyakuhincode);
-//    }
+    @RequestMapping(value="/batch-resolve-iyakuhin-master", method=RequestMethod.GET)
+    public Map<Integer, IyakuhinMasterDTO> batchResolveIyakuhinMaster(@RequestParam(value = "iyakuhincode", required = false) List<Integer> iyakuhincodes,
+                                                                      @RequestParam("at") String at){
+        if( iyakuhincodes == null ){
+            iyakuhincodes = Collections.emptyList();
+        }
+        Map<Integer, IyakuhinMasterDTO> map = new HashMap<>();
+        LocalDate atDate = LocalDate.parse(at);
+        iyakuhincodes.forEach(iyakuhincode -> {
+            int resolvedIyakuhincode = masterMap.resolveIyakuhinCode(iyakuhincode, atDate);
+            Optional<IyakuhinMasterDTO> optMaster = dbGateway.findIyakuhinMaster(resolvedIyakuhincode, atDate);
+            map.put(iyakuhincode, optMaster.orElse(null));
+        });
+        return map;
+    }
+
+    @RequestMapping(value="/get-name-of-iyakuhin", method=RequestMethod.GET)
+    public Optional<String> getNameOfIyakuhin(@RequestParam(value="iyakuhincode") int iyakuhincode){
+        return dbGateway.findNameForIyakuhincode(iyakuhincode);
+    }
 
     private LocalDate convertToDate(String at){
         if( at.length() > 10 ){

@@ -11,10 +11,10 @@ import java.util.Optional;
 
 public interface IyakuhinMasterRepository extends CrudRepository<IyakuhinMaster, IyakuhinMasterId> {
 
-	IyakuhinMaster findTopByIyakuhincodeOrderByValidFromDesc(int iyakuhincode);
+//	IyakuhinMaster findTopByIyakuhincodeOrderByValidFromDesc(int iyakuhincode);
 
 	@Query("select m.iyakuhincode, m.name from IyakuhinMaster m where iyakuhincode in :iyakuhincodes " +
-			" group by m.iyakuhincode, m.name ")
+			" group by m.iyakuhincode, m.name, m.yomi ")
 	List<Object[]> findNameForIyakuhincode(@Param("iyakuhincodes") List<Integer> iyakuhincodes, Sort sort);
 
 	@Query("select m from IyakuhinMaster m where m.name like CONCAT('%', :text, '%') and " +
@@ -26,9 +26,10 @@ public interface IyakuhinMasterRepository extends CrudRepository<IyakuhinMaster,
 			" and (m.validUpto is null or m.validUpto >= DATE(:at)) ")
 	Optional<IyakuhinMaster> tryFind(@Param("iyakuhincode") int iyakuhincode, @Param("at") LocalDate at);
 
-	@Query("select m from IyakuhinMaster m where m.iyakuhincode = :iyakuhincode " +
-			" and m.validFrom <= DATE(:at) " +
-			" and (m.validUpto is null or m.validUpto >= DATE(:at) )")
-	Optional<IyakuhinMaster> findByIyakuhincodeAndDate(@Param("iyakuhincode") int iyakuhincode,
-                                                       @Param("at") LocalDate at);
+//	@Query("select m from IyakuhinMaster m where m.iyakuhincode = :iyakuhincode " +
+//			" and m.validFrom <= DATE(:at) " +
+//			" and (m.validUpto is null or m.validUpto >= DATE(:at) )")
+//	Optional<IyakuhinMaster> findByIyakuhincodeAndDate(@Param("iyakuhincode") int iyakuhincode,
+//                                                       @Param("at") LocalDate at);
+
 }
