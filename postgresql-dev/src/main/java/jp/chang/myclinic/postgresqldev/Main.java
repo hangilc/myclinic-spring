@@ -2,6 +2,7 @@ package jp.chang.myclinic.postgresqldev;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 
 public class Main {
 
@@ -11,8 +12,9 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Main main = new Main();
         //main.moveIyakuhinMaster(false);
-        main.moveShinryouMaster(false);
+        //main.moveShinryouMaster(false);
         //main.moveKizaiMaster(true);
+        main.movePatient();
     }
 
     private Main() throws Exception {
@@ -21,6 +23,58 @@ public class Main {
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
         this.psqlConn = DriverManager.getConnection("jdbc:postgresql://localhost/myclinic",
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
+    }
+
+    private void movePatient() throws Exception {
+        Statement stmt = mysqlConn.createStatement();
+        ResultSet rset = stmt.executeQuery("select * from patient");
+        PreparedStatement psqlStmt = psqlConn.prepareStatement("insert into patient " +
+                "(patient_id, last_name, first_name, last_name_yomi, first_name_yomi, " +
+                " sex, birthday, address, phone) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        int n = 0;
+        int maxPatientId = 0;
+        while (rset.next()) {
+            int patientId = rset.getInt("patient_id");
+            String lastName = rset.getString("last_name");
+            String firstName = rset.getString("first_name");
+            String lastNameYomi = rset.getString("last_name_yomi");
+            String firstNameYomi = rset.getString("first_name_yomi");
+            String sex = rset.getString("sex");
+            String birthday = rset.getString("birth_day");
+            String address = rset.getString("address");
+            String phone = rset.getString("phone");
+            if( patientId > maxPatientId ){
+                maxPatientId = patientId;
+            }
+            psqlStmt.setInt(1, patientId);
+            psqlStmt.setString(2, lastName);
+            psqlStmt.setString(3, firstName);
+            psqlStmt.setString(4, lastNameYomi);
+            psqlStmt.setString(5, firstNameYomi);
+            psqlStmt.setString(6, sex);
+            psqlStmt.setObject(7, LocalDate.parse(birthday));
+            psqlStmt.setString(8, address);
+            psqlStmt.setString(9, phone);
+            psqlStmt.executeUpdate();
+            n += 1;
+            if( n % 1000 == 0 ){
+                System.out.printf("patient %d\n", n);
+            }
+        }
+        System.out.printf("patient %d\n", n);
+        System.out.printf("NEXT PATIENT_ID: %d\n", maxPatientId + 1);
+        psqlStmt.close();
+        rset.close();
+        stmt.close();
+        {
+            String sql = String.format("alter table patient alter column patient_id restart with %d",
+                    maxPatientId + 1);
+            Statement seqStmt = psqlConn.createStatement();
+            seqStmt.executeUpdate(sql);
+            seqStmt.close();
+            System.out.println("PATIENT_ID SEQUENCE RESTARTS WITH " + (maxPatientId + 1));
+        }
     }
 
     private  void moveKizaiMaster(boolean printRow) throws Exception {
