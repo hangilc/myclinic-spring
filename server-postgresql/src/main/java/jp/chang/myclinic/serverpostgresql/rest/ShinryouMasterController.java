@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -73,6 +74,12 @@ public class ShinryouMasterController {
                                                                 @RequestParam("at") String at){
         LocalDate atDate = convertToDate(at);
         return dbGateway.findShinryouMasterByName(name, atDate);
+    }
+
+    @RequestMapping(value="/search-shinryou-master", method=RequestMethod.GET)
+    public List<ShinryouMasterDTO> searchShinryouMaster(@RequestParam("text") String text, @RequestParam("at") String at){
+        LocalDate date = LocalDate.parse(at);
+        return dbGateway.searchShinryouMaster(text, date);
     }
 
     private LocalDate convertToDate(String at){

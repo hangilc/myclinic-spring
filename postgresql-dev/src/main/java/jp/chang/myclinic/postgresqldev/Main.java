@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Main main = new Main();
         //main.moveIyakuhinMaster(false);
-        //main.moveShinryouMaster(false);
+        main.moveShinryouMaster(false);
         //main.moveKizaiMaster(true);
     }
 
@@ -64,8 +64,9 @@ public class Main {
         Statement stmt = mysqlConn.createStatement();
         ResultSet rset = stmt.executeQuery("select * from shinryoukoui_master_arch");
         PreparedStatement psqlStmt = psqlConn.prepareStatement("insert into shinryou_master " +
-                "(shinryoucode, name, tensuu, tensuu_shikibetsu, shuukeisaki, houkatsukensa, valid_from, valid_upto) " +
-                "values (?, ?, ?, ?, ?, ?, ?, ?)");
+                "(shinryoucode, name, tensuu, tensuu_shikibetsu, shuukeisaki, houkatsukensa, " +
+                "kensagroup, valid_from, valid_upto) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         int n = 0;
         while (rset.next()) {
             int shinryoucode = rset.getInt("shinryoucode");
@@ -74,11 +75,12 @@ public class Main {
             String tensuu_shikibetsu = rset.getString("tensuu_shikibetsu");
             String shuukeisaki = rset.getString("shuukeisaki");
             String houkatsukensa = rset.getString("houkatsukensa");
+            String kensagroup = rset.getString("kensagroup");
             String validFrom = rset.getString("valid_from");
             String validUpto = rset.getString("valid_upto");
             if( printRow ) {
-                System.out.printf("%d %s %s %s %s %s %s %s\n", shinryoucode, name, tensuu,
-                        tensuu_shikibetsu, shuukeisaki, houkatsukensa, validFrom, validUpto);
+                System.out.printf("%d %s %s %s %s %s %s %s %s\n", shinryoucode, name, tensuu,
+                        tensuu_shikibetsu, shuukeisaki, houkatsukensa, kensagroup, validFrom, validUpto);
             }
             psqlStmt.setInt(1, shinryoucode);
             psqlStmt.setString(2, name);
@@ -86,8 +88,9 @@ public class Main {
             psqlStmt.setString(4, tensuu_shikibetsu);
             psqlStmt.setString(5, shuukeisaki);
             psqlStmt.setString(6, houkatsukensa);
-            psqlStmt.setDate(7, Date.valueOf(validFrom));
-            psqlStmt.setDate(8, convertValidUpto(validUpto));
+            psqlStmt.setString(7, kensagroup);
+            psqlStmt.setDate(8, Date.valueOf(validFrom));
+            psqlStmt.setDate(9, convertValidUpto(validUpto));
             psqlStmt.executeUpdate();
             n += 1;
             if( n % 1000 == 0 ){

@@ -2,7 +2,6 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.time.LocalDate;
 
 @Entity
@@ -23,13 +22,13 @@ public class ShinryouMaster {
 
 	@Id
 	@Column(name="valid_from")
-	private Date validFrom;
+	private LocalDate validFrom;
 
-	public Date getValidFrom(){
+	public LocalDate getValidFrom(){
 		return validFrom;
 	}
 
-	public void setValidFrom(Date validFrom){
+	public void setValidFrom(LocalDate validFrom){
 		this.validFrom = validFrom;
 	}
 
@@ -84,16 +83,6 @@ public class ShinryouMaster {
 		this.houkatsukensa = houkatsukensa;
 	}
 
-	private Character oushinkubun;
-
-	public Character getOushinkubun(){
-		return oushinkubun;
-	}
-
-	public void setOushinkubun(Character oushinkubun){
-		this.oushinkubun = oushinkubun;
-	}
-
 	private String kensagroup;
 
 	public String getKensagroup(){
@@ -125,7 +114,6 @@ public class ShinryouMaster {
 			"tensuuShikibetsu=" + tensuuShikibetsu + ", " +
 			"shuukeisaki=" + shuukeisaki + ", " +
 			"houkatsukensa=" + houkatsukensa + ", " +
-			"oushinkubun=" + oushinkubun + ", " +
 			"kensagroup=" + kensagroup + ", " +
 			"validUpto=" + validUpto +
 		"]";

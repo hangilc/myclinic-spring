@@ -1,6 +1,7 @@
 package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -229,46 +230,35 @@ public class DTOMapper {
 //		return shinryou;
 //	}
 //
-//	public ShinryouMasterDTO toShinryouMasterDTO(ShinryouMaster master){
-//		ShinryouMasterDTO masterDTO = new ShinryouMasterDTO();
-//		masterDTO.shinryoucode = master.getShinryoucode();
-//		masterDTO.validFrom = master.getValidFrom().toString();
-//		masterDTO.name = master.getName();
-//		masterDTO.tensuu = master.getTensuu();
-//		masterDTO.tensuuShikibetsu = master.getTensuuShikibetsu();
-//		masterDTO.shuukeisaki = master.getShuukeisaki();
-//		masterDTO.houkatsukensa = master.getHoukatsukensa();
-//		masterDTO.oushinkubun = master.getOushinkubun();
-//		masterDTO.kensaGroup = master.getKensagroup();
-//		//masterDTO.roujinTekiyou = master.getRoujintekiyou();
-////		masterDTO.codeShou = master.getCodeShou();
-////		masterDTO.codeBu = master.getCodeBu();
-////		masterDTO.codeAlpha = master.getCodeAlpha();
-////		masterDTO.codeKubun = master.getCodeKubun();
-//		masterDTO.validUpto = master.getValidUpto();
-//		return masterDTO;
-//	}
-//
-//	public ShinryouMaster fromShinryouMasterDTO(ShinryouMasterDTO masterDTO){
-//		ShinryouMaster master = new ShinryouMaster();
-//		master.setShinryoucode(masterDTO.shinryoucode);
-//		master.setValidFrom(stringToDate(masterDTO.validFrom));
-//		master.setName(masterDTO.name);
-//		master.setTensuu(masterDTO.tensuu);
-//		master.setTensuuShikibetsu(masterDTO.tensuuShikibetsu);
-//		master.setShuukeisaki(masterDTO.shuukeisaki);
-//		master.setHoukatsukensa(masterDTO.houkatsukensa);
-//		master.setOushinkubun(masterDTO.oushinkubun);
-//		master.setKensagroup(masterDTO.kensaGroup);
-//		//master.setRoujintekiyou(masterDTO.roujinTekiyou);
-////		master.setCodeShou(masterDTO.codeShou);
-////		master.setCodeBu(masterDTO.codeBu);
-////		master.setCodeAlpha(masterDTO.codeAlpha);
-////		master.setCodeKubun(masterDTO.codeKubun);
-//		master.setValidUpto(masterDTO.validUpto);
-//		return master;
-//	}
-//
+	public ShinryouMasterDTO toShinryouMasterDTO(ShinryouMaster master){
+		ShinryouMasterDTO masterDTO = new ShinryouMasterDTO();
+		masterDTO.shinryoucode = master.getShinryoucode();
+		masterDTO.validFrom = master.getValidFrom().toString();
+		masterDTO.name = master.getName();
+		masterDTO.tensuu = master.getTensuu().intValue();
+		masterDTO.tensuuShikibetsu = master.getTensuuShikibetsu();
+		masterDTO.shuukeisaki = master.getShuukeisaki();
+		masterDTO.houkatsukensa = master.getHoukatsukensa();
+		masterDTO.oushinkubun = '0';
+		masterDTO.kensaGroup = master.getKensagroup();
+		masterDTO.validUpto = localDateToOldSqldate(master.getValidUpto());
+		return masterDTO;
+	}
+
+	public ShinryouMaster fromShinryouMasterDTO(ShinryouMasterDTO masterDTO){
+		ShinryouMaster master = new ShinryouMaster();
+		master.setShinryoucode(masterDTO.shinryoucode);
+		master.setValidFrom(LocalDate.parse(masterDTO.validFrom));
+		master.setName(masterDTO.name);
+		master.setTensuu(new BigDecimal(masterDTO.tensuu));
+		master.setTensuuShikibetsu(masterDTO.tensuuShikibetsu);
+		master.setShuukeisaki(masterDTO.shuukeisaki);
+		master.setHoukatsukensa(masterDTO.houkatsukensa);
+		master.setKensagroup(masterDTO.kensaGroup);
+		master.setValidUpto(oldSqldateToLocalDate(masterDTO.validUpto));
+		return master;
+	}
+
 //	public DrugDTO toDrugDTO(Drug drug){
 //		DrugDTO drugDTO = new DrugDTO();
 //		drugDTO.drugId = drug.getDrugId();

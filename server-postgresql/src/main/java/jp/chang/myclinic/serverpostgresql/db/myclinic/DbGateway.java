@@ -2,6 +2,7 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.IyakuhincodeNameDTO;
+import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,8 @@ public class DbGateway {
     //private static Logger logger = LoggerFactory.getLogger(DbGateway.class);
     @Autowired
     private IyakuhinMasterRepository iyakuhinMasterRepository;
+    @Autowired
+    private ShinryouMasterRepository shinryouMasterRepository;
 
     private DTOMapper mapper = new DTOMapper();
 
@@ -54,5 +57,19 @@ public class DbGateway {
                 })
                 .collect(Collectors.toList());
     }
+
+    public ShinryouMasterDTO getShinryouMaster(int shinryoucode, LocalDate at) {
+        return mapper.toShinryouMasterDTO(shinryouMasterRepository.findOneByShinryoucodeAndDate(shinryoucode, at));
+    }
+
+    public Optional<ShinryouMasterDTO> findShinryouMasterByName(String name, LocalDate at) {
+        return shinryouMasterRepository.findByNameAndDate(name, at).map(mapper::toShinryouMasterDTO);
+    }
+
+    public List<ShinryouMasterDTO> searchShinryouMaster(String text, LocalDate at) {
+        return shinryouMasterRepository.search(text, at, Sort.by("shinryoucode")).stream()
+                .map(mapper::toShinryouMasterDTO).collect(Collectors.toList());
+    }
+
 
 }
