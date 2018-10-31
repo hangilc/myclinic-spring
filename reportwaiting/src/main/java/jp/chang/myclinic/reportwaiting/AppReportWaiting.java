@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.web.client.RestTemplate;
@@ -30,7 +31,7 @@ public class AppReportWaiting implements CommandLineRunner {
 
     public static void main( String[] args )
     {
-        new SpringApplicationBuilder(AppReportWaiting.class).web(false).run(args);
+        new SpringApplicationBuilder(AppReportWaiting.class).web(WebApplicationType.NONE).run(args);
     }
 
     @Value("${homepage.dynamodb.table}")
