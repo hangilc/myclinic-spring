@@ -1,6 +1,7 @@
 package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.dto.KizaiMasterDTO;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import org.springframework.stereotype.Component;
 
@@ -316,30 +317,30 @@ public class DTOMapper {
 		return master;
 	}
 
-//	public KizaiMasterDTO toKizaiMasterDTO(KizaiMaster master){
-//		KizaiMasterDTO masterDTO = new KizaiMasterDTO();
-//		masterDTO.kizaicode = master.getKizaicode();
-//		masterDTO.validFrom = master.getValidFrom().toString();
-//		masterDTO.name = master.getName();
-//		masterDTO.yomi = master.getYomi();
-//		masterDTO.unit = master.getUnit();
-//		masterDTO.kingaku = master.getKingaku().doubleValue();
-//		masterDTO.validUpto = master.getValidUpto();
-//		return masterDTO;
-//	}
-//
-//	public KizaiMaster fromKizaiMasterDTO(KizaiMasterDTO masterDTO){
-//		KizaiMaster master = new KizaiMaster();
-//		master.setKizaicode(masterDTO.kizaicode);
-//		master.setValidFrom(stringToDate(masterDTO.validFrom));
-//		master.setName(masterDTO.name);
-//		master.setYomi(masterDTO.yomi);
-//		master.setUnit(masterDTO.unit);
-//		master.setKingaku(BigDecimal.valueOf(masterDTO.kingaku));
-//		master.setValidUpto(masterDTO.validUpto);
-//		return master;
-//	}
-//
+	public KizaiMasterDTO toKizaiMasterDTO(KizaiMaster master){
+		KizaiMasterDTO masterDTO = new KizaiMasterDTO();
+		masterDTO.kizaicode = master.getKizaicode();
+		masterDTO.validFrom = master.getValidFrom().toString();
+		masterDTO.name = master.getName();
+		masterDTO.yomi = master.getYomi();
+		masterDTO.unit = master.getUnit();
+		masterDTO.kingaku = master.getKingaku().doubleValue();
+		masterDTO.validUpto = localDateToOldSqldate(master.getValidUpto());
+		return masterDTO;
+	}
+
+	public KizaiMaster fromKizaiMasterDTO(KizaiMasterDTO masterDTO){
+		KizaiMaster master = new KizaiMaster();
+		master.setKizaicode(masterDTO.kizaicode);
+		master.setValidFrom(LocalDate.parse(masterDTO.validFrom));
+		master.setName(masterDTO.name);
+		master.setYomi(masterDTO.yomi);
+		master.setUnit(masterDTO.unit);
+		master.setKingaku(BigDecimal.valueOf(masterDTO.kingaku));
+		master.setValidUpto(oldSqldateToLocalDate(masterDTO.validUpto));
+		return master;
+	}
+
 //	public ConductDTO toConductDTO(Conduct conduct){
 //		ConductDTO conductDTO = new ConductDTO();
 //		conductDTO.conductId = conduct.getConductId();

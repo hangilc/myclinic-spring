@@ -2,6 +2,7 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.IyakuhincodeNameDTO;
+import jp.chang.myclinic.dto.KizaiMasterDTO;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -21,6 +22,8 @@ public class DbGateway {
     private IyakuhinMasterRepository iyakuhinMasterRepository;
     @Autowired
     private ShinryouMasterRepository shinryouMasterRepository;
+    @Autowired
+    private KizaiMasterRepository kizaiMasterRepository;
 
     private DTOMapper mapper = new DTOMapper();
 
@@ -69,6 +72,15 @@ public class DbGateway {
     public List<ShinryouMasterDTO> searchShinryouMaster(String text, LocalDate at) {
         return shinryouMasterRepository.search(text, at, Sort.by("shinryoucode")).stream()
                 .map(mapper::toShinryouMasterDTO).collect(Collectors.toList());
+    }
+
+    public List<KizaiMasterDTO> searchKizaiMasterByName(String text, LocalDate at) {
+        return kizaiMasterRepository.searchByName(text, at, Sort.by("yomi")).stream()
+                .map(mapper::toKizaiMasterDTO).collect(Collectors.toList());
+    }
+
+    public Optional<KizaiMasterDTO> findKizaiMasterByKizaicode(int kizaicode, LocalDate at) {
+        return kizaiMasterRepository.findByKizaicodeAndDate(kizaicode, at).map(mapper::toKizaiMasterDTO);
     }
 
 

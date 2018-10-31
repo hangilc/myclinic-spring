@@ -8,13 +8,8 @@ public class ShinryouMasterDTO {
 	public char tensuuShikibetsu;
 	public String shuukeisaki;
 	public String houkatsukensa;
-	public char oushinkubun;
+	public char oushinkubun; // not used (2018-10-31)
 	public String kensaGroup;
-	//public char roujinTekiyou;
-//	public char codeShou;
-//	public String codeBu;
-//	public char codeAlpha;
-//	public String codeKubun;
 	public String validUpto;
 
 	@Override
