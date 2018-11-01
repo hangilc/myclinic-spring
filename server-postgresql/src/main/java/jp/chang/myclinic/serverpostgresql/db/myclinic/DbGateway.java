@@ -1,9 +1,6 @@
 package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.dto.IyakuhincodeNameDTO;
-import jp.chang.myclinic.dto.KizaiMasterDTO;
-import jp.chang.myclinic.dto.ShinryouMasterDTO;
+import jp.chang.myclinic.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -24,6 +21,8 @@ public class DbGateway {
     private ShinryouMasterRepository shinryouMasterRepository;
     @Autowired
     private KizaiMasterRepository kizaiMasterRepository;
+    @Autowired
+    private PatientRepository patientRepository;
 
     private DTOMapper mapper = new DTOMapper();
 
@@ -83,5 +82,23 @@ public class DbGateway {
         return kizaiMasterRepository.findByKizaicodeAndDate(kizaicode, at).map(mapper::toKizaiMasterDTO);
     }
 
+    public PatientDTO getPatient(int patientId) {
+        Patient patient = patientRepository.findById(patientId);
+        if (patient == null) {
+            throw new RuntimeException("患者情報の取得に失敗しました。");
+        }
+        return mapper.toPatientDTO(patient);
+    }
+
+    public Optional<PatientDTO> findPatient(int patientId) {
+        return patientRepository.tryFind(patientId).map(mapper::toPatientDTO);
+    }
+
+    public int enterPatient(PatientDTO patientDTO) {
+        Patient patient = mapper.fromPatientDTO(patientDTO);
+        patient = patientRepository.save(patient);
+        practiceLogger.logPatientCreated(mapper.toPatientDTO(patient));
+        return patient.getPatientId();
+    }
 
 }

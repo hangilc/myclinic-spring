@@ -2,6 +2,7 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.KizaiMasterDTO;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import org.springframework.stereotype.Component;
 
@@ -17,34 +18,34 @@ public class DTOMapper {
 	private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 	private NumberFormat simpleNumberFormatter = NumberFormat.getNumberInstance();
 
-//	public PatientDTO toPatientDTO(Patient patient){
-//		PatientDTO patientDTO = new PatientDTO();
-//		patientDTO.patientId = patient.getPatientId();
-//		patientDTO.lastName = patient.getLastName();
-//		patientDTO.firstName = patient.getFirstName();
-//		patientDTO.lastNameYomi = patient.getLastNameYomi();
-//		patientDTO.firstNameYomi = patient.getFirstNameYomi();
-//		patientDTO.birthday = patient.getBirthday();
-//		patientDTO.sex = patient.getSex();
-//		patientDTO.address = patient.getAddress();
-//		patientDTO.phone = patient.getPhone();
-//		return patientDTO;
-//	}
-//
-//	public Patient fromPatientDTO(PatientDTO patientDTO){
-//		Patient patient = new Patient();
-//		patient.setPatientId(patientDTO.patientId);
-//		patient.setLastName(patientDTO.lastName);
-//		patient.setFirstName(patientDTO.firstName);
-//		patient.setLastNameYomi(patientDTO.lastNameYomi);
-//		patient.setFirstNameYomi(patientDTO.firstNameYomi);
-//		patient.setBirthday(patientDTO.birthday);
-//		patient.setSex(patientDTO.sex);
-//		patient.setAddress(patientDTO.address);
-//		patient.setPhone(patientDTO.phone);
-//		return patient;
-//	}
-//
+	public PatientDTO toPatientDTO(Patient patient){
+		PatientDTO patientDTO = new PatientDTO();
+		patientDTO.patientId = patient.getPatientId();
+		patientDTO.lastName = patient.getLastName();
+		patientDTO.firstName = patient.getFirstName();
+		patientDTO.lastNameYomi = patient.getLastNameYomi();
+		patientDTO.firstNameYomi = patient.getFirstNameYomi();
+		patientDTO.birthday = patient.getBirthday().toString();
+		patientDTO.sex = patient.getSex();
+		patientDTO.address = patient.getAddress();
+		patientDTO.phone = patient.getPhone();
+		return patientDTO;
+	}
+
+	public Patient fromPatientDTO(PatientDTO patientDTO){
+		Patient patient = new Patient();
+		patient.setPatientId(patientDTO.patientId);
+		patient.setLastName(patientDTO.lastName);
+		patient.setFirstName(patientDTO.firstName);
+		patient.setLastNameYomi(patientDTO.lastNameYomi);
+		patient.setFirstNameYomi(patientDTO.firstNameYomi);
+		patient.setBirthday(LocalDate.parse(patientDTO.birthday));
+		patient.setSex(patientDTO.sex);
+		patient.setAddress(patientDTO.address);
+		patient.setPhone(patientDTO.phone);
+		return patient;
+	}
+
 //	public WqueueDTO toWqueueDTO(Wqueue wqueue){
 //		WqueueDTO wqueueDTO = new WqueueDTO();
 //		wqueueDTO.visitId = wqueue.getVisitId();
