@@ -94,11 +94,11 @@ public class DbGateway {
         return patientRepository.tryFind(patientId).map(mapper::toPatientDTO);
     }
 
-    public int enterPatient(PatientDTO patientDTO) {
-        Patient patient = mapper.fromPatientDTO(patientDTO);
-        patient = patientRepository.save(patient);
-        practiceLogger.logPatientCreated(mapper.toPatientDTO(patient));
-        return patient.getPatientId();
-    }
+//    public int enterPatient(PatientDTO patientDTO) {
+//        Patient patient = mapper.fromPatientDTO(patientDTO);
+//        patient = patientRepository.save(patient);
+//        practiceLogger.logPatientCreated(mapper.toPatientDTO(patient));
+//        return patient.getPatientId();
+//    }
 
 }
