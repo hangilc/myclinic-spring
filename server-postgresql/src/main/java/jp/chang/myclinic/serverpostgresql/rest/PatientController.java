@@ -1,34 +1,97 @@
 package jp.chang.myclinic.serverpostgresql.rest;
 
+import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.serverpostgresql.db.myclinic.DbGateway;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/json")
 @Transactional
 public class PatientController {
 
-//	@Autowired
-//	private DbGateway dbGateway;
-//
-//	private static Pattern allDigitsPattern = Pattern.compile("^\\d+$");
-//
-//	@RequestMapping(value="/get-patient", method=RequestMethod.GET)
-//	public PatientDTO getPatient(@RequestParam("patient-id") int patientId) throws Exception {
-//		return dbGateway.getPatient(patientId);
-//	}
-//
-//	@RequestMapping(value="/find-patient", method=RequestMethod.GET)
-//	public Optional<PatientDTO> findPatient(@RequestParam("patient-id") int patientId){
-//		return dbGateway.findPatient(patientId);
-//	}
-//
+	@Autowired
+	private DbGateway dbGateway;
+
+	private static Pattern allDigitsPattern = Pattern.compile("^\\d+$");
+
+	@RequestMapping(value="/get-patient", method=RequestMethod.GET)
+	public PatientDTO getPatient(@RequestParam("patient-id") int patientId) throws Exception {
+		return dbGateway.getPatient(patientId);
+	}
+
+	@RequestMapping(value="/find-patient", method=RequestMethod.GET)
+	public Optional<PatientDTO> findPatient(@RequestParam("patient-id") int patientId){
+		return dbGateway.findPatient(patientId);
+	}
+
+ 	@RequestMapping(value="/search-patient-by-name", method=RequestMethod.GET)
+	public List<PatientDTO> searchPatientByName(@RequestParam(name="last-name", defaultValue="") String lastName,
+                                                @RequestParam(name="first-name", defaultValue="") String firstName){
+		if( !lastName.isEmpty() && !firstName.isEmpty() ){
+			return dbGateway.searchPatientByName(lastName, firstName);
+		} else if( !lastName.isEmpty() ){
+			return dbGateway.searchPatientByLastName(lastName);
+		} else if( !firstName.isEmpty() ){
+			return dbGateway.searchPatientByFirstName(firstName);
+		} else {
+			return Collections.emptyList();
+		}
+	}
+
+	@RequestMapping(value="/search-patient-by-yomi", method=RequestMethod.GET)
+	public List<PatientDTO> searchPatientByYomi(@RequestParam(name="last-name-yomi", defaultValue="") String lastNameYomi,
+			@RequestParam(name="first-name-yomi", defaultValue="") String firstNameYomi){
+		if( !lastNameYomi.isEmpty() && !firstNameYomi.isEmpty() ){
+			return dbGateway.searchPatientByYomi(lastNameYomi, firstNameYomi);
+		} else if( !lastNameYomi.isEmpty() ){
+			return dbGateway.searchPatientByLastNameYomi(lastNameYomi);
+		} else if( !firstNameYomi.isEmpty() ){
+			return dbGateway.searchPatientByFirstNameYomi(firstNameYomi);
+		} else {
+			return Collections.emptyList();
+		}
+	}
+
+	@RequestMapping(value="/search-patient", method=RequestMethod.GET)
+	public List<PatientDTO> searchPatient(@RequestParam("text") String text){
+		if( text.isEmpty() ){
+			return Collections.emptyList();
+		}
+		Matcher m = allDigitsPattern.matcher(text);
+		if( m.matches() ){
+			int patientId = Integer.parseInt(text);
+			return Collections.singletonList(dbGateway.getPatient(patientId));
+		}
+		String[] parts = text.split("\\p{Z}", 2);
+		if( parts.length == 1 ){
+			return dbGateway.searchPatient(parts[0]);
+		} else {
+			return dbGateway.searchPatient(parts[0], parts[1]);
+		}
+	}
+
+	@RequestMapping(value="/list-recently-registered-patients", method=RequestMethod.GET)
+	public List<PatientDTO> listRecentlyRegisteredPatients(@RequestParam(name="n", defaultValue="20") int n){
+		return dbGateway.listRecentlyRegisteredPatients(n);
+	}
+
+
 //	@RequestMapping(value="/enter-patient", method=RequestMethod.POST)
 //	public int enterPatient(@RequestBody PatientDTO patient){
 //		return dbGateway.enterPatient(patient);
 //	}
-//
+
 //	@RequestMapping(value="/update-patient", method=RequestMethod.POST)
 //	public boolean updatePatient(@RequestBody PatientDTO patient){
 //		dbGateway.updatePatient(patient);
@@ -57,57 +120,6 @@ public class PatientController {
 //			kouhiDTO.kouhiId = dbGateway.enterKouhi(kouhiDTO);
 //		});
 //		return patientHokenList;
-//	}
-//
-//	@RequestMapping(value="/search-patient-by-name", method=RequestMethod.GET)
-//	public List<PatientDTO> searchPatientByName(@RequestParam(name="last-name", defaultValue="") String lastName,
-//			@RequestParam(name="first-name", defaultValue="") String firstName){
-//		if( !lastName.isEmpty() && !firstName.isEmpty() ){
-//			return dbGateway.searchPatientByName(lastName, firstName);
-//		} else if( !lastName.isEmpty() ){
-//			return dbGateway.searchPatientByLastName(lastName);
-//		} else if( !firstName.isEmpty() ){
-//			return dbGateway.searchPatientByFirstName(firstName);
-//		} else {
-//			return Collections.emptyList();
-//		}
-//	}
-//
-//	@RequestMapping(value="/search-patient-by-yomi", method=RequestMethod.GET)
-//	public List<PatientDTO> searchPatientByYomi(@RequestParam(name="last-name-yomi", defaultValue="") String lastNameYomi,
-//			@RequestParam(name="first-name-yomi", defaultValue="") String firstNameYomi){
-//		if( !lastNameYomi.isEmpty() && !firstNameYomi.isEmpty() ){
-//			return dbGateway.searchPatientByYomi(lastNameYomi, firstNameYomi);
-//		} else if( !lastNameYomi.isEmpty() ){
-//			return dbGateway.searchPatientByLastNameYomi(lastNameYomi);
-//		} else if( !firstNameYomi.isEmpty() ){
-//			return dbGateway.searchPatientByFirstNameYomi(firstNameYomi);
-//		} else {
-//			return Collections.emptyList();
-//		}
-//	}
-//
-//	@RequestMapping(value="/search-patient", method=RequestMethod.GET)
-//	public List<PatientDTO> searchPatient(@RequestParam("text") String text){
-//		if( text.isEmpty() ){
-//			return Collections.emptyList();
-//		}
-//		Matcher m = allDigitsPattern.matcher(text);
-//		if( m.matches() ){
-//			int patientId = Integer.parseInt(text);
-//			return Collections.singletonList(dbGateway.getPatient(patientId));
-//		}
-//		String[] parts = text.split("\\p{Z}", 2);
-//		if( parts.length == 1 ){
-//			return dbGateway.searchPatient(parts[0]);
-//		} else {
-//			return dbGateway.searchPatient(parts[0], parts[1]);
-//		}
-//	}
-//
-//	@RequestMapping(value="/list-recently-registered-patients", method=RequestMethod.GET)
-//	public List<PatientDTO> listRecentlyRegisteredPatients(@RequestParam(name="n", defaultValue="20") int n){
-//		return dbGateway.listRecentlyRegisteredPatients(n);
 //	}
 //
 //	@RequestMapping(value="/list-hoken", method=RequestMethod.GET)
