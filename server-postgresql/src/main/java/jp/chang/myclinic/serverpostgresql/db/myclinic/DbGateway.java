@@ -3,6 +3,7 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class DbGateway {
@@ -132,6 +134,67 @@ public class DbGateway {
     public Optional<PatientDTO> findPatient(int patientId) {
         return patientRepository.tryFind(patientId).map(mapper::toPatientDTO);
     }
+
+    public List<PatientDTO> searchPatientByLastName(String text) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
+        try (Stream<Patient> stream = patientRepository.findByLastNameContaining(text, sort)) {
+            return stream.map(mapper::toPatientDTO).collect(Collectors.toList());
+        }
+    }
+
+    public List<PatientDTO> searchPatientByFirstName(String text) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
+        try (Stream<Patient> stream = patientRepository.findByFirstNameContaining(text, sort)) {
+            return stream.map(mapper::toPatientDTO).collect(Collectors.toList());
+        }
+    }
+
+    public List<PatientDTO> searchPatientByLastNameYomi(String text) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
+        try (Stream<Patient> stream = patientRepository.findByLastNameYomiContaining(text, sort)) {
+            return stream.map(mapper::toPatientDTO).collect(Collectors.toList());
+        }
+    }
+
+    public List<PatientDTO> searchPatientByFirstNameYomi(String text) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
+        try (Stream<Patient> stream = patientRepository.findByFirstNameYomiContaining(text, sort)) {
+            return stream.map(mapper::toPatientDTO).collect(Collectors.toList());
+        }
+    }
+
+    public List<PatientDTO> searchPatientByName(String lastName, String firstName) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
+        try (Stream<Patient> stream = patientRepository.searchPatientByName(lastName, firstName, sort)) {
+            return stream.map(mapper::toPatientDTO).collect(Collectors.toList());
+        }
+    }
+
+    public List<PatientDTO> searchPatientByYomi(String lastNameYomi, String firstNameYomi) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
+        try (Stream<Patient> stream = patientRepository.searchPatientByYomi(lastNameYomi, firstNameYomi, sort)) {
+            return stream.map(mapper::toPatientDTO).collect(Collectors.toList());
+        }
+    }
+
+    public List<PatientDTO> searchPatient(String text) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
+        return patientRepository.searchPatient(text, sort).stream()
+                .map(mapper::toPatientDTO).collect(Collectors.toList());
+    }
+
+    public List<PatientDTO> searchPatient(String textLastName, String textFirstName) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "lastNameYomi", "firstNameYomi");
+        return patientRepository.searchPatient(textLastName, textFirstName, sort).stream()
+                .map(mapper::toPatientDTO).collect(Collectors.toList());
+    }
+
+    public List<PatientDTO> listRecentlyRegisteredPatients(int n) {
+        PageRequest pageRequest = PageRequest.of(0, n, Sort.Direction.DESC, "patientId");
+        return patientRepository.findAll(pageRequest).map(mapper::toPatientDTO).getContent();
+    }
+
+
 
 //    public int enterPatient(PatientDTO patientDTO) {
 //        Patient patient = mapper.fromPatientDTO(patientDTO);
