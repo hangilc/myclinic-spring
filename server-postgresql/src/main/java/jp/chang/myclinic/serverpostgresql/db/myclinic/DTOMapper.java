@@ -4,6 +4,8 @@ import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.KizaiMasterDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
+import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.util.DateTimeUtil;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -586,15 +588,15 @@ public class DTOMapper {
 //		return master;
 //	}
 //
-//	public PracticeLogDTO toPracticeLogDTO(PracticeLog practiceLog){
-//		PracticeLogDTO dto = new PracticeLogDTO();
-//		dto.serialId = practiceLog.getPracticeLogId();
-//		dto.createdAt = DateTimeUtil.toSqlDateTime(practiceLog.getCreatedAt());
-//		dto.kind = practiceLog.getKind();
-//		dto.body = practiceLog.getBody();
-//		return dto;
-//	}
-//
+	public PracticeLogDTO toPracticeLogDTO(PracticeLog practiceLog){
+		PracticeLogDTO dto = new PracticeLogDTO();
+		dto.serialId = practiceLog.getPracticeLogId();
+		dto.createdAt = DateTimeUtil.toSqlDateTime(practiceLog.getCreatedAt());
+		dto.kind = practiceLog.getKind();
+		dto.body = practiceLog.getBody();
+		return dto;
+	}
+
 //	public ShinryouAttrDTO toShinryouAttrDTO(ShinryouAttr row){
 //		ShinryouAttrDTO dto = new ShinryouAttrDTO();
 //		dto.shinryouId = row.getShinryouId();

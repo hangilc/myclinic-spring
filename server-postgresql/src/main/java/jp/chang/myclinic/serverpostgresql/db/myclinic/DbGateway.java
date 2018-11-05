@@ -1,11 +1,13 @@
 package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,8 @@ public class DbGateway {
     private ShinryouMasterRepository shinryouMasterRepository;
     @Autowired
     private KizaiMasterRepository kizaiMasterRepository;
+    @Autowired
+    private PracticeLogRepository practiceLogRepository;
     @Autowired
     private PatientRepository patientRepository;
 
@@ -82,6 +86,41 @@ public class DbGateway {
         return kizaiMasterRepository.findByKizaicodeAndDate(kizaicode, at).map(mapper::toKizaiMasterDTO);
     }
 
+    public List<PracticeLogDTO> listPracticeLogByDate(LocalDate at) {
+        return practiceLogRepository.findByDate(at, Sort.by("practiceLogId"))
+                .stream()
+                .map(mapper::toPracticeLogDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<PracticeLogDTO> listRecentPracticeLog(LocalDate at, int lastId) {
+        return practiceLogRepository.findRecent(at, lastId, Sort.by("practiceLogId"))
+                .stream()
+                .map(mapper::toPracticeLogDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<PracticeLogDTO> listPracticeLogInRange(LocalDate at, int afterId, int beforeId) {
+        return practiceLogRepository.findInRange(at, afterId, beforeId, Sort.by("practiceLogId"))
+                .stream()
+                .map(mapper::toPracticeLogDTO)
+                .collect(Collectors.toList());
+    }
+
+    public PracticeLog insertPracticeLog(LocalDateTime createdAt, String kind, String body) {
+        PracticeLog data = new PracticeLog();
+        data.setCreatedAt(createdAt);
+        data.setKind(kind);
+        data.setBody(body);
+        return practiceLogRepository.save(data);
+    }
+
+    public PracticeLogDTO findLastPracticeLog() {
+        return practiceLogRepository.findFirstByOrderByPracticeLogIdDesc()
+                .map(mapper::toPracticeLogDTO)
+                .orElse(null);
+    }
+
     public PatientDTO getPatient(int patientId) {
         Patient patient = patientRepository.findById(patientId);
         if (patient == null) {
@@ -100,5 +139,6 @@ public class DbGateway {
 //        practiceLogger.logPatientCreated(mapper.toPatientDTO(patient));
 //        return patient.getPatientId();
 //    }
+
 
 }
