@@ -214,5 +214,11 @@ public class DbGateway {
         return patient.getPatientId();
     }
 
+    public void updatePatient(PatientDTO patientDTO) {
+        PatientDTO prev = getPatient(patientDTO.patientId);
+        Patient patient = mapper.fromPatientDTO(patientDTO);
+        patient = patientRepository.save(patient);
+        practiceLogger.logPatientUpdated(prev, mapper.toPatientDTO(patient));
+    }
 
 }

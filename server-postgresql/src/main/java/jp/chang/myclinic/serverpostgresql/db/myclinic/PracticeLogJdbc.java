@@ -15,7 +15,7 @@ class PracticeLogJdbc {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public int insert(LocalDateTime createdAt, String kind, String body) {
+    int insert(LocalDateTime createdAt, String kind, String body) {
         String sql = "insert into practice_log (created_at, kind, body) values (?, ?, ?::json) " +
                 " returning practice_log_id";
         SqlRowSet rs = jdbcTemplate.queryForRowSet(sql, createdAt, kind, body);

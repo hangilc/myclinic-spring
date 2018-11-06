@@ -89,12 +89,12 @@ public class PatientController {
 		return dbGateway.enterPatient(patient);
 	}
 
-//	@RequestMapping(value="/update-patient", method=RequestMethod.POST)
-//	public boolean updatePatient(@RequestBody PatientDTO patient){
-//		dbGateway.updatePatient(patient);
-//		return true;
-//	}
-//
+	@RequestMapping(value="/update-patient", method=RequestMethod.POST)
+	public boolean updatePatient(@RequestBody PatientDTO patient){
+		dbGateway.updatePatient(patient);
+		return true;
+	}
+
 //	@RequestMapping(value="/enter-patient-with-hoken", method=RequestMethod.POST)
 //	public PatientHokenListDTO enterPatientWithHoken(@RequestBody PatientHokenListDTO patientHokenList){
 //		int patientId = dbGateway.enterPatient(patientHokenList.patientDTO);
