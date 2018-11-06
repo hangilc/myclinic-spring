@@ -14,7 +14,8 @@ public class Main {
         //main.moveIyakuhinMaster(false);
         //main.moveShinryouMaster(false);
         //main.moveKizaiMaster(false);
-        main.movePatient();
+        //main.movePatient();
+        main.movePracticeLog();
     }
 
     private Main() throws Exception {
@@ -23,6 +24,44 @@ public class Main {
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
         this.psqlConn = DriverManager.getConnection("jdbc:postgresql://localhost/myclinic",
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
+    }
+
+    private void movePracticeLog() throws Exception {
+        Statement stmt = mysqlConn.createStatement();
+        ResultSet rset = stmt.executeQuery("select * from practice_log");
+        PreparedStatement psqlStmt = psqlConn.prepareStatement("insert into practice_log " +
+                "(practice_log_id, created_at, kind, body) " +
+                        "values (?, ?, ?, ?::json)");
+        int n = 0;
+        int maxId = 0;
+        while (rset.next()) {
+            int id = rset.getInt("practice_log_id");
+            if( maxId < id ){
+                maxId = id;
+            }
+            psqlStmt.setInt(1, id);
+            psqlStmt.setTimestamp(2, rset.getTimestamp("created_at"));
+            psqlStmt.setString(3, rset.getString("kind"));
+            psqlStmt.setString(4, rset.getString("body"));
+            psqlStmt.executeUpdate();
+            n += 1;
+            if( n % 1000 == 0 ){
+                System.out.printf("practice_log %d\n", n);
+            }
+        }
+        System.out.printf("practice_log %d\n", n);
+        System.out.printf("NEXT PRACTICE_LOG_ID: %d\n", maxId + 1);
+        psqlStmt.close();
+        rset.close();
+        stmt.close();
+        {
+            String sql = String.format("alter table practice_log alter column practice_log_id restart with %d",
+                    maxId + 1);
+            Statement seqStmt = psqlConn.createStatement();
+            seqStmt.executeUpdate(sql);
+            seqStmt.close();
+            System.out.println("PRACTICE_LOG_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
+        }
     }
 
     private void movePatient() throws Exception {
