@@ -4,10 +4,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.serverpostgresql.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -87,10 +84,10 @@ public class PatientController {
 	}
 
 
-//	@RequestMapping(value="/enter-patient", method=RequestMethod.POST)
-//	public int enterPatient(@RequestBody PatientDTO patient){
-//		return dbGateway.enterPatient(patient);
-//	}
+	@RequestMapping(value="/enter-patient", method=RequestMethod.POST)
+	public int enterPatient(@RequestBody PatientDTO patient){
+		return dbGateway.enterPatient(patient);
+	}
 
 //	@RequestMapping(value="/update-patient", method=RequestMethod.POST)
 //	public boolean updatePatient(@RequestBody PatientDTO patient){

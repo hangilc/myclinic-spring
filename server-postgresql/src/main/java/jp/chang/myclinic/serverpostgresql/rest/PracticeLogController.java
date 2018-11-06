@@ -23,17 +23,17 @@ public class PracticeLogController {
         return dbGateway.listPracticeLogByDate(LocalDate.parse(date));
     }
 
-//    @RequestMapping(value = "/list-practice-log-after", method = RequestMethod.GET)
-//    public List<PracticeLogDTO> listLogAfter(@RequestParam("date") String date,
-//                                             @RequestParam("last-id") int lastId) {
-//        return dbGateway.listRecentPracticeLog(LocalDate.parse(date), lastId);
-//    }
-//
-//    @RequestMapping(value = "/list-practice-log-in-range", method = RequestMethod.GET)
-//    public List<PracticeLogDTO> listLogInRange(@RequestParam("date") String date,
-//                                               @RequestParam("after-id") int afterId,
-//                                               @RequestParam("before-id") int beforeId) {
-//        return dbGateway.listPracticeLogInRange(LocalDate.parse(date), afterId, beforeId);
-//    }
-//
+    @RequestMapping(value = "/list-practice-log-after", method = RequestMethod.GET)
+    public List<PracticeLogDTO> listLogAfter(@RequestParam("date") String date,
+                                             @RequestParam("last-id") int lastId) {
+        return dbGateway.listRecentPracticeLog(LocalDate.parse(date), lastId);
+    }
+
+    @RequestMapping(value = "/list-practice-log-in-range", method = RequestMethod.GET)
+    public List<PracticeLogDTO> listLogInRange(@RequestParam("date") String date,
+                                               @RequestParam("after-id") int afterId,
+                                               @RequestParam("before-id") int beforeId) {
+        return dbGateway.listPracticeLogInRange(LocalDate.parse(date), afterId, beforeId);
+    }
+
 }

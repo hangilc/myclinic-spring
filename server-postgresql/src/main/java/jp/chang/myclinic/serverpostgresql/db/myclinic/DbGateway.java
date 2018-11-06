@@ -2,6 +2,7 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.serverpostgresql.PracticeLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -29,6 +30,10 @@ public class DbGateway {
     private PracticeLogRepository practiceLogRepository;
     @Autowired
     private PatientRepository patientRepository;
+    @Autowired
+    private PracticeLogger practiceLogger;
+    @Autowired
+    private PracticeLogJdbc practiceLogJdbc;
 
     private DTOMapper mapper = new DTOMapper();
 
@@ -110,11 +115,19 @@ public class DbGateway {
     }
 
     public PracticeLog insertPracticeLog(LocalDateTime createdAt, String kind, String body) {
+        int id = practiceLogJdbc.insert(createdAt, kind, body);
         PracticeLog data = new PracticeLog();
+        data.setPracticeLogId(id);
         data.setCreatedAt(createdAt);
         data.setKind(kind);
         data.setBody(body);
-        return practiceLogRepository.save(data);
+        return data;
+
+//        PracticeLog data = new PracticeLog();
+//        data.setCreatedAt(createdAt);
+//        data.setKind(kind);
+//        data.setBody(body);
+//        return practiceLogRepository.save(data);
     }
 
     public PracticeLogDTO findLastPracticeLog() {
@@ -194,14 +207,12 @@ public class DbGateway {
         return patientRepository.findAll(pageRequest).map(mapper::toPatientDTO).getContent();
     }
 
-
-
-//    public int enterPatient(PatientDTO patientDTO) {
-//        Patient patient = mapper.fromPatientDTO(patientDTO);
-//        patient = patientRepository.save(patient);
-//        practiceLogger.logPatientCreated(mapper.toPatientDTO(patient));
-//        return patient.getPatientId();
-//    }
+    public int enterPatient(PatientDTO patientDTO) {
+        Patient patient = mapper.fromPatientDTO(patientDTO);
+        patient = patientRepository.save(patient);
+        practiceLogger.logPatientCreated(mapper.toPatientDTO(patient));
+        return patient.getPatientId();
+    }
 
 
 }
