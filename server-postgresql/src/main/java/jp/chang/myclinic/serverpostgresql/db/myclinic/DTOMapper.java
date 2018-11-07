@@ -73,6 +73,30 @@ public class DTOMapper {
 		return shahokokuho;
 	}
 
+	public RoujinDTO toRoujinDTO(Roujin roujin){
+		RoujinDTO roujinDTO = new RoujinDTO();
+		roujinDTO.roujinId = roujin.getRoujinId();
+		roujinDTO.patientId = roujin.getPatientId();
+		roujinDTO.shichouson = roujin.getShichouson();
+		roujinDTO.jukyuusha = roujin.getJukyuusha();
+		roujinDTO.futanWari = roujin.getFutanWari();
+		roujinDTO.validFrom = roujin.getValidFrom().toString();
+		roujinDTO.validUpto = localDateToOldSqldate(roujin.getValidUpto());
+		return roujinDTO;
+	}
+
+	public Roujin fromRoujinDTO(RoujinDTO roujinDTO){
+		Roujin roujin = new Roujin();
+		roujin.setRoujinId(roujinDTO.roujinId);
+		roujin.setPatientId(roujinDTO.patientId);
+		roujin.setShichouson(roujinDTO.shichouson);
+		roujin.setJukyuusha(roujinDTO.jukyuusha);
+		roujin.setFutanWari(roujinDTO.futanWari);
+		roujin.setValidFrom(LocalDate.parse(roujinDTO.validFrom));
+		roujin.setValidUpto(oldSqldateToLocalDate(roujinDTO.validUpto));
+		return roujin;
+	}
+
 // 	public WqueueDTO toWqueueDTO(Wqueue wqueue){
 //		WqueueDTO wqueueDTO = new WqueueDTO();
 //		wqueueDTO.visitId = wqueue.getVisitId();
@@ -137,30 +161,6 @@ public class DTOMapper {
 //		koukikourei.setValidFrom(koukikoureiDTO.validFrom);
 //		koukikourei.setValidUpto(koukikoureiDTO.validUpto);
 //		return koukikourei;
-//	}
-//
-//	public RoujinDTO toRoujinDTO(Roujin roujin){
-//		RoujinDTO roujinDTO = new RoujinDTO();
-//		roujinDTO.roujinId = roujin.getRoujinId();
-//		roujinDTO.patientId = roujin.getPatientId();
-//		roujinDTO.shichouson = roujin.getShichouson();
-//		roujinDTO.jukyuusha = roujin.getJukyuusha();
-//		roujinDTO.futanWari = roujin.getFutanWari();
-//		roujinDTO.validFrom = roujin.getValidFrom();
-//		roujinDTO.validUpto = roujin.getValidUpto();
-//		return roujinDTO;
-//	}
-//
-//	public Roujin fromRoujinDTO(RoujinDTO roujinDTO){
-//		Roujin roujin = new Roujin();
-//		roujin.setRoujinId(roujinDTO.roujinId);
-//		roujin.setPatientId(roujinDTO.patientId);
-//		roujin.setShichouson(roujinDTO.shichouson);
-//		roujin.setJukyuusha(roujinDTO.jukyuusha);
-//		roujin.setFutanWari(roujinDTO.futanWari);
-//		roujin.setValidFrom(roujinDTO.validFrom);
-//		roujin.setValidUpto(roujinDTO.validUpto);
-//		return roujin;
 //	}
 //
 //	public KouhiDTO toKouhiDTO(Kouhi kouhi){

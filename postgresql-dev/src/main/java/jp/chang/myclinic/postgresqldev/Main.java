@@ -17,7 +17,8 @@ public class Main {
         //main.moveKizaiMaster(false);
         //main.movePatient();
         //main.movePracticeLog();
-        main.moveShahokokuho();
+        //main.moveShahokokuho();
+        main.moveRoujin();
     }
 
     private Main() throws Exception {
@@ -26,6 +27,64 @@ public class Main {
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
         this.psqlConn = DriverManager.getConnection("jdbc:postgresql://localhost/myclinic",
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
+    }
+
+    private void moveRoujin() throws Exception {
+        Statement stmt = mysqlConn.createStatement();
+        ResultSet rset = stmt.executeQuery("select * from hoken_roujin");
+        PreparedStatement psqlStmt = psqlConn.prepareStatement("insert into roujin " +
+                "(roujin_id, patient_id, shichouson, jukyuusha, futan_wari, " +
+                " valid_from, valid_upto) " +
+                        "values (?, ?, ?, ?, ?, ?, ?)");
+        int n = 0;
+        int maxId = 0;
+        while (rset.next()) {
+            int id = rset.getInt("roujin_id");
+            if( maxId < id ){
+                maxId = id;
+            }
+            psqlStmt.setInt(1, id);
+            psqlStmt.setInt(2, rset.getInt("patient_id"));
+            psqlStmt.setInt(3, rset.getInt("shichouson"));
+            psqlStmt.setInt(4, rset.getInt("jukyuusha"));
+            psqlStmt.setInt(5, rset.getInt("futan_wari"));
+            {
+                LocalDate validFrom = LocalDate.parse(rset.getString("valid_from"));
+                LocalDate validFromOrig = validFrom;
+                LocalDate validUpto;
+                String validUptoSqldate = rset.getString("valid_upto");
+                if( validUptoSqldate != null && !"0000-00-00".equals(validUptoSqldate) ){
+                    validUpto = LocalDate.parse(validUptoSqldate);
+                    if( validUpto.isBefore(validFrom) ){
+                        validFrom = validUpto.minus(1, ChronoUnit.YEARS);
+                        System.err.printf("roujin fix: %d valid_from %s -> %s\n",
+                                id, validFromOrig.toString(), validFrom.toString());
+                    }
+                } else {
+                    validUpto = null;
+                }
+                psqlStmt.setObject(6, validFrom);
+                psqlStmt.setObject(7, validUpto);
+            }
+            psqlStmt.executeUpdate();
+            n += 1;
+            if( n % 1000 == 0 ){
+                System.out.printf("roujin %d\n", n);
+            }
+        }
+        System.out.printf("roujin %d\n", n);
+        System.out.printf("NEXT ROUJIN_ID: %d\n", maxId + 1);
+        psqlStmt.close();
+        rset.close();
+        stmt.close();
+        {
+            String sql = String.format("alter table roujin alter column roujin_id restart with %d",
+                    maxId + 1);
+            Statement seqStmt = psqlConn.createStatement();
+            seqStmt.executeUpdate(sql);
+            seqStmt.close();
+            System.out.println("ROUJIN_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
+        }
     }
 
     private void moveShahokokuho() throws Exception {

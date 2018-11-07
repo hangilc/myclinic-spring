@@ -8,17 +8,17 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
-public interface ShahokokuhoRepository extends CrudRepository<Shahokokuho, Integer> {
+public interface RoujinRepository extends CrudRepository<Roujin, Integer> {
 
-    @Query("select h from Shahokokuho h where h.patientId = ?1 and " +
+    @Query("select h from Roujin h where h.patientId = ?1 and " +
             " h.validFrom <= ?2 and " +
             " (h.validUpto is null or h.validUpto >= ?2) "
     )
-    Stream<Shahokokuho> findAvailable(int patientId, LocalDate at, Sort sort);
+    Stream<Roujin> findAvailable(int patientId, LocalDate at, Sort sort);
 
-    List<Shahokokuho> findByPatientId(int patientId, Sort sort);
+    List<Roujin> findByPatientId(int patientId, Sort sort);
 
-    void deleteById(int shahokokuhoId);
+    void deleteById(int roujinId);
 
-    Shahokokuho findById(int shahokokuhoId);
+    Roujin findById(int roujinId);
 }

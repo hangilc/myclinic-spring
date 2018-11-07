@@ -37,6 +37,8 @@ public class DbGateway {
     private PracticeLogJdbc practiceLogJdbc;
     @Autowired
     private ShahokokuhoRepository shahokokuhoRepository;
+    @Autowired
+    private RoujinRepository roujinRepository;
 
     private DTOMapper mapper = new DTOMapper();
 
@@ -262,6 +264,44 @@ public class DbGateway {
 
     public ShahokokuhoDTO getShahokokuho(int shahokokuhoId) {
         return mapper.toShahokokuhoDTO(shahokokuhoRepository.findById(shahokokuhoId));
+    }
+
+    public int enterRoujin(RoujinDTO roujinDTO) {
+        Roujin roujin = mapper.fromRoujinDTO(roujinDTO);
+        roujin = roujinRepository.save(roujin);
+        practiceLogger.logRoujinCreated(mapper.toRoujinDTO(roujin));
+        return roujin.getRoujinId();
+    }
+
+    private int countUsageOfRoujin(int roujinId){
+        throw new NotYetImplementedException();
+        // return visitRepository.countByRoujinId(roujinId)
+    }
+
+    public void deleteRoujin(int roujinId) {
+        if (countUsageOfRoujin(roujinId) > 0) {
+            throw new RuntimeException("この老人保険はすでに使用されているので、削除できません。");
+        }
+        RoujinDTO deleted = mapper.toRoujinDTO(roujinRepository.findById(roujinId));
+        roujinRepository.deleteById(roujinId);
+        practiceLogger.logRoujinDeleted(deleted);
+    }
+
+    public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "roujinId");
+        try (Stream<Roujin> stream = roujinRepository.findAvailable(patientId, at, sort)) {
+            return stream.map(mapper::toRoujinDTO).collect(Collectors.toList());
+        }
+    }
+
+    private List<RoujinDTO> findRoujinByPatient(int patientId) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "roujinId");
+        return roujinRepository.findByPatientId(patientId, sort).stream()
+                .map(mapper::toRoujinDTO).collect(Collectors.toList());
+    }
+
+    public RoujinDTO getRoujin(int roujinId) {
+        return mapper.toRoujinDTO(roujinRepository.findById(roujinId));
     }
 
 
