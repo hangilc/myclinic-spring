@@ -3,7 +3,6 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.serverpostgresql.PracticeLogger;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -41,6 +40,8 @@ public class DbGateway {
     private RoujinRepository roujinRepository;
     @Autowired
     private KoukikoureiRepository koukikoureiRepository;
+    @Autowired
+    private KouhiRepository kouhiRepository;
 
     private DTOMapper mapper = new DTOMapper();
 
@@ -236,16 +237,7 @@ public class DbGateway {
         practiceLogger.logShahokokuhoUpdated(prev, shahokokuhoDTO);
     }
 
-    private int countUsageOfShahokokuho(int shahokokuhoId){
-        throw new NotYetImplementedException();
-        //return visitRepository.countByShahokokuhoId(shahokokuhoId);
-    }
-
     public void deleteShahokokuho(int shahokokuhoId) {
-        int usage = countUsageOfShahokokuho(shahokokuhoId);
-        if (usage != 0) {
-            throw new RuntimeException("この社保・国保はすでに使用されているので、削除できません。");
-        }
         ShahokokuhoDTO deleted = mapper.toShahokokuhoDTO(shahokokuhoRepository.findById(shahokokuhoId));
         shahokokuhoRepository.deleteById(shahokokuhoId);
         practiceLogger.logShahokokuhoDeleted(deleted);
@@ -275,15 +267,7 @@ public class DbGateway {
         return roujin.getRoujinId();
     }
 
-    private int countUsageOfRoujin(int roujinId){
-        throw new NotYetImplementedException();
-        // return visitRepository.countByRoujinId(roujinId)
-    }
-
     public void deleteRoujin(int roujinId) {
-        if (countUsageOfRoujin(roujinId) > 0) {
-            throw new RuntimeException("この老人保険はすでに使用されているので、削除できません。");
-        }
         RoujinDTO deleted = mapper.toRoujinDTO(roujinRepository.findById(roujinId));
         roujinRepository.deleteById(roujinId);
         practiceLogger.logRoujinDeleted(deleted);
@@ -324,14 +308,7 @@ public class DbGateway {
         practiceLogger.logKoukikoureiUpdated(prev, koukikoureiDTO);
     }
 
-    private int countUsageOfKoukikourei(int koukikoureiId){
-        throw new NotYetImplementedException();
-    }
-
     public void deleteKoukikourei(int koukikoureiId) {
-        if (countUsageOfKoukikourei(koukikoureiId) > 0) {
-            throw new RuntimeException("この後期高齢保険はすでに使用されているので、削除できません。");
-        }
         KoukikoureiDTO deleted = mapper.toKoukikoureiDTO(koukikoureiRepository.findById(koukikoureiId));
         koukikoureiRepository.deleteById(koukikoureiId);
         practiceLogger.logKoukikoureiDeleted(deleted);
@@ -349,6 +326,47 @@ public class DbGateway {
         return koukikoureiRepository.findByPatientId(patientId, sort).stream()
                 .map(mapper::toKoukikoureiDTO).collect(Collectors.toList());
     }
+
+    public int enterKouhi(KouhiDTO kouhiDTO) {
+        Kouhi kouhi = mapper.fromKouhiDTO(kouhiDTO);
+        kouhi = kouhiRepository.save(kouhi);
+        practiceLogger.logKouhiCreated(mapper.toKouhiDTO(kouhi));
+        return kouhi.getKouhiId();
+    }
+
+    public void updateKouhi(KouhiDTO kouhiDTO){
+        KouhiDTO prev = getKouhi(kouhiDTO.kouhiId);
+        Kouhi kouhi = mapper.fromKouhiDTO(kouhiDTO);
+        kouhiRepository.save(kouhi);
+        practiceLogger.logKouhiUpdated(prev, kouhiDTO);
+    }
+
+    public void deleteKouhi(int kouhiId) {
+        KouhiDTO deleted = mapper.toKouhiDTO(kouhiRepository.findById(kouhiId));
+        kouhiRepository.deleteById(kouhiId);
+        practiceLogger.logKouhiDeleted(deleted);
+    }
+
+    public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "kouhiId");
+        try (Stream<Kouhi> stream = kouhiRepository.findAvailable(patientId, at, sort)) {
+            return stream.map(mapper::toKouhiDTO).collect(Collectors.toList());
+        }
+    }
+
+    private List<KouhiDTO> findKouhiByPatient(int patientId) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "kouhiId");
+        return kouhiRepository.findByPatientId(patientId, sort).stream()
+                .map(mapper::toKouhiDTO).collect(Collectors.toList());
+    }
+
+    public KouhiDTO getKouhi(int kouhiId) {
+        return mapper.toKouhiDTO(kouhiRepository.findById(kouhiId));
+    }
+
+
+
+
 
 
 }

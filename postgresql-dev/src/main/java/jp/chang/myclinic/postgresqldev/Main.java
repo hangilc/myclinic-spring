@@ -19,7 +19,8 @@ public class Main {
         //main.movePracticeLog();
         //main.moveShahokokuho();
         //main.moveRoujin();
-        main.moveKoukikourei();
+        //main.moveKoukikourei();
+        main.moveKouhi();
     }
 
     private Main() throws Exception {
@@ -28,6 +29,63 @@ public class Main {
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
         this.psqlConn = DriverManager.getConnection("jdbc:postgresql://localhost/myclinic",
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
+    }
+
+    private void moveKouhi() throws Exception {
+        Statement stmt = mysqlConn.createStatement();
+        ResultSet rset = stmt.executeQuery("select * from kouhi");
+        PreparedStatement psqlStmt = psqlConn.prepareStatement("insert into kouhi " +
+                "(kouhi_id, patient_id, futansha, jukyuusha, " +
+                " valid_from, valid_upto) " +
+                        "values (?, ?, ?, ?, ?, ?)");
+        int n = 0;
+        int maxId = 0;
+        while (rset.next()) {
+            int id = rset.getInt("kouhi_id");
+            if( maxId < id ){
+                maxId = id;
+            }
+            psqlStmt.setInt(1, id);
+            psqlStmt.setInt(2, rset.getInt("patient_id"));
+            psqlStmt.setInt(3, rset.getInt("futansha"));
+            psqlStmt.setInt(4, rset.getInt("jukyuusha"));
+            {
+                LocalDate validFrom = LocalDate.parse(rset.getString("valid_from"));
+                LocalDate validFromOrig = validFrom;
+                LocalDate validUpto;
+                String validUptoSqldate = rset.getString("valid_upto");
+                if( validUptoSqldate != null && !"0000-00-00".equals(validUptoSqldate) ){
+                    validUpto = LocalDate.parse(validUptoSqldate);
+                    if( validUpto.isBefore(validFrom) ){
+                        validFrom = validUpto.minus(1, ChronoUnit.YEARS);
+                        System.err.printf("kouhi fix: %d valid_from %s -> %s\n",
+                                id, validFromOrig.toString(), validFrom.toString());
+                    }
+                } else {
+                    validUpto = null;
+                }
+                psqlStmt.setObject(5, validFrom);
+                psqlStmt.setObject(6, validUpto);
+            }
+            psqlStmt.executeUpdate();
+            n += 1;
+            if( n % 1000 == 0 ){
+                System.out.printf("kouhi %d\n", n);
+            }
+        }
+        System.out.printf("kouhi %d\n", n);
+        System.out.printf("NEXT KOUHI_ID: %d\n", maxId + 1);
+        psqlStmt.close();
+        rset.close();
+        stmt.close();
+        {
+            String sql = String.format("alter table kouhi alter column kouhi_id restart with %d",
+                    maxId + 1);
+            Statement seqStmt = psqlConn.createStatement();
+            seqStmt.executeUpdate(sql);
+            seqStmt.close();
+            System.out.println("KOUHI_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
+        }
     }
 
     private void moveKoukikourei() throws Exception {

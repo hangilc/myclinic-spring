@@ -121,6 +121,28 @@ public class DTOMapper {
         return koukikourei;
     }
 
+	public KouhiDTO toKouhiDTO(Kouhi kouhi){
+		KouhiDTO kouhiDTO = new KouhiDTO();
+		kouhiDTO.kouhiId = kouhi.getKouhiId();
+		kouhiDTO.patientId = kouhi.getPatientId();
+		kouhiDTO.futansha = kouhi.getFutansha();
+		kouhiDTO.jukyuusha = kouhi.getJukyuusha();
+		kouhiDTO.validFrom = kouhi.getValidFrom().toString();
+		kouhiDTO.validUpto = localDateToOldSqldate(kouhi.getValidUpto());
+		return kouhiDTO;
+	}
+
+	public Kouhi fromKouhiDTO(KouhiDTO kouhiDTO){
+		Kouhi kouhi = new Kouhi();
+		kouhi.setKouhiId(kouhiDTO.kouhiId);
+		kouhi.setPatientId(kouhiDTO.patientId);
+		kouhi.setFutansha(kouhiDTO.futansha);
+		kouhi.setJukyuusha(kouhiDTO.jukyuusha);
+		kouhi.setValidFrom(LocalDate.parse(kouhiDTO.validFrom));
+		kouhi.setValidUpto(oldSqldateToLocalDate(kouhiDTO.validUpto));
+		return kouhi;
+	}
+
 
 
 
@@ -164,28 +186,6 @@ public class DTOMapper {
 //		visit.setKouhi2Id(visitDTO.kouhi2Id);
 //		visit.setKouhi3Id(visitDTO.kouhi3Id);
 //		return visit;
-//	}
-//
-//	public KouhiDTO toKouhiDTO(Kouhi kouhi){
-//		KouhiDTO kouhiDTO = new KouhiDTO();
-//		kouhiDTO.kouhiId = kouhi.getKouhiId();
-//		kouhiDTO.patientId = kouhi.getPatientId();
-//		kouhiDTO.futansha = kouhi.getFutansha();
-//		kouhiDTO.jukyuusha = kouhi.getJukyuusha();
-//		kouhiDTO.validFrom = kouhi.getValidFrom();
-//		kouhiDTO.validUpto = kouhi.getValidUpto();
-//		return kouhiDTO;
-//	}
-//
-//	public Kouhi fromKouhiDTO(KouhiDTO kouhiDTO){
-//		Kouhi kouhi = new Kouhi();
-//		kouhi.setKouhiId(kouhiDTO.kouhiId);
-//		kouhi.setPatientId(kouhiDTO.patientId);
-//		kouhi.setFutansha(kouhiDTO.futansha);
-//		kouhi.setJukyuusha(kouhiDTO.jukyuusha);
-//		kouhi.setValidFrom(kouhiDTO.validFrom);
-//		kouhi.setValidUpto(kouhiDTO.validUpto);
-//		return kouhi;
 //	}
 //
 //	public ChargeDTO toChargeDTO(Charge charge){
