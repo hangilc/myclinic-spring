@@ -42,6 +42,8 @@ public class DbGateway {
     private KoukikoureiRepository koukikoureiRepository;
     @Autowired
     private KouhiRepository kouhiRepository;
+    @Autowired
+    private VisitRepository visitRepository;
 
     private DTOMapper mapper = new DTOMapper();
 
@@ -362,6 +364,42 @@ public class DbGateway {
 
     public KouhiDTO getKouhi(int kouhiId) {
         return mapper.toKouhiDTO(kouhiRepository.findById(kouhiId));
+    }
+
+    public HokenListDTO findHokenByPatient(int patientId) {
+        HokenListDTO hokenListDTO = new HokenListDTO();
+        hokenListDTO.shahokokuhoListDTO = findShahokokuhoByPatient(patientId);
+        hokenListDTO.koukikoureiListDTO = findKoukikoureiByPatient(patientId);
+        hokenListDTO.roujinListDTO = findRoujinByPatient(patientId);
+        hokenListDTO.kouhiListDTO = findKouhiByPatient(patientId);
+        return hokenListDTO;
+    }
+
+    public HokenDTO listAvailableHoken(int patientId, String at) {
+        if (at.length() > 10) {
+            at = at.substring(0, 10);
+        }
+        LocalDate date = LocalDate.parse(at);
+        HokenDTO hokenDTO = new HokenDTO();
+        hokenDTO.shahokokuho = findAvailableShahokokuho(patientId, date).stream().findFirst().orElse(null);
+        hokenDTO.koukikourei = findAvailableKoukikourei(patientId, date).stream().findFirst().orElse(null);
+        hokenDTO.roujin = findAvailableRoujin(patientId, date).stream().findFirst().orElse(null);
+        List<KouhiDTO> kouhiList = findAvailableKouhi(patientId, date);
+        if (kouhiList.size() > 0) {
+            hokenDTO.kouhi1 = kouhiList.get(0);
+            if (kouhiList.size() > 1) {
+                hokenDTO.kouhi2 = kouhiList.get(1);
+                if (kouhiList.size() > 2) {
+                    hokenDTO.kouhi3 = kouhiList.get(2);
+                }
+            }
+        }
+        return hokenDTO;
+    }
+
+    public VisitDTO getVisit(int visitId) {
+        Visit visit = visitRepository.findById(visitId);
+        return mapper.toVisitDTO(visit);
     }
 
 

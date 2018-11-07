@@ -20,7 +20,8 @@ public class Main {
         //main.moveShahokokuho();
         //main.moveRoujin();
         //main.moveKoukikourei();
-        main.moveKouhi();
+        //main.moveKouhi();
+        main.moveVisit();
     }
 
     private Main() throws Exception {
@@ -29,6 +30,50 @@ public class Main {
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
         this.psqlConn = DriverManager.getConnection("jdbc:postgresql://localhost/myclinic",
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
+    }
+
+    private void moveVisit() throws Exception {
+        Statement stmt = mysqlConn.createStatement();
+        ResultSet rset = stmt.executeQuery("select * from visit");
+        PreparedStatement psqlStmt = psqlConn.prepareStatement("insert into visit " +
+                "(visit_id, patient_id, visited_at, shahokokuho_id, roujin_id, koukikourei_id, " +
+                " kouhi_1_id, kouhi_2_id, kouhi_3_id) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        int n = 0;
+        int maxId = 0;
+        while (rset.next()) {
+            int id = rset.getInt("visit_id");
+            if( maxId < id ){
+                maxId = id;
+            }
+            psqlStmt.setInt(1, id);
+            psqlStmt.setInt(2, rset.getInt("patient_id"));
+            psqlStmt.setTimestamp(3, rset.getTimestamp("v_datetime"));
+            psqlStmt.setObject(4, zeroToNull(rset.getInt("shahokokuho_id")));
+            psqlStmt.setObject(5, zeroToNull(rset.getInt("roujin_id")));
+            psqlStmt.setObject(6, zeroToNull(rset.getInt("koukikourei_id")));
+            psqlStmt.setObject(7, zeroToNull(rset.getInt("kouhi_1_id")));
+            psqlStmt.setObject(8, zeroToNull(rset.getInt("kouhi_2_id")));
+            psqlStmt.setObject(9, zeroToNull(rset.getInt("kouhi_3_id")));
+            psqlStmt.executeUpdate();
+            n += 1;
+            if( n % 1000 == 0 ){
+                System.out.printf("visit %d\n", n);
+            }
+        }
+        System.out.printf("visit %d\n", n);
+        System.out.printf("NEXT VISIT_ID: %d\n", maxId + 1);
+        psqlStmt.close();
+        rset.close();
+        stmt.close();
+        {
+            String sql = String.format("alter table visit alter column visit_id restart with %d",
+                    maxId + 1);
+            Statement seqStmt = psqlConn.createStatement();
+            seqStmt.executeUpdate(sql);
+            seqStmt.close();
+            System.out.println("VISIT_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
+        }
     }
 
     private void moveKouhi() throws Exception {
@@ -484,6 +529,14 @@ public class Main {
             return null;
         } else {
             return Date.valueOf(sqldate);
+        }
+    }
+
+    private static Integer zeroToNull(Integer value){
+        if( value == null || value == 0 ){
+            return null;
+        } else {
+            return value;
         }
     }
 

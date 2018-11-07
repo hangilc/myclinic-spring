@@ -1,4 +1,4 @@
-package jp.chang.myclinic.server.rcpt;
+package jp.chang.myclinic.serverpostgresql.rcpt;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,6 +15,10 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
+
+//import javax.xml.bind.JAXB;
+
+//import javax.xml.bind.JAXB;
 
 public class HoukatsuKensa {
 

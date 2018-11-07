@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Component
@@ -143,6 +144,36 @@ public class DTOMapper {
 		return kouhi;
 	}
 
+	public VisitDTO toVisitDTO(Visit visit){
+		VisitDTO visitDTO = new VisitDTO();
+		visitDTO.visitId = visit.getVisitId();
+		visitDTO.patientId = visit.getPatientId();
+		visitDTO.visitedAt = localDateTimeToSqldatetime(visit.getVisitedAt());
+		visitDTO.shahokokuhoId = nullToZero(visit.getShahokokuhoId());
+		visitDTO.koukikoureiId = nullToZero(visit.getKoukikoureiId());
+		visitDTO.roujinId = nullToZero(visit.getRoujinId());
+		visitDTO.kouhi1Id = nullToZero(visit.getKouhi1Id());
+		visitDTO.kouhi2Id = nullToZero(visit.getKouhi2Id());
+		visitDTO.kouhi3Id = nullToZero(visit.getKouhi3Id());
+		return visitDTO;
+	}
+
+	public Visit fromVisitDTO(VisitDTO visitDTO){
+		Visit visit = new Visit();
+		visit.setVisitId(visitDTO.visitId);
+		visit.setPatientId(visitDTO.patientId);
+		visit.setVisitedAt(LocalDateTime.parse(visitDTO.visitedAt));
+		visit.setShahokokuhoId(zeroToNull(visitDTO.shahokokuhoId));
+		visit.setKoukikoureiId(zeroToNull(visitDTO.koukikoureiId));
+		visit.setRoujinId(zeroToNull(visitDTO.roujinId));
+		visit.setKouhi1Id(zeroToNull(visitDTO.kouhi1Id));
+		visit.setKouhi2Id(zeroToNull(visitDTO.kouhi2Id));
+		visit.setKouhi3Id(zeroToNull(visitDTO.kouhi3Id));
+		return visit;
+	}
+
+
+
 
 
 
@@ -158,34 +189,6 @@ public class DTOMapper {
 //		wqueue.setVisitId(wqueueDTO.visitId);
 //		wqueue.setWaitState(wqueueDTO.waitState);
 //		return wqueue;
-//	}
-//
-//	public VisitDTO toVisitDTO(Visit visit){
-//		VisitDTO visitDTO = new VisitDTO();
-//		visitDTO.visitId = visit.getVisitId();
-//		visitDTO.patientId = visit.getPatientId();
-//		visitDTO.visitedAt = visit.getVisitedAt();
-//		visitDTO.shahokokuhoId = visit.getShahokokuhoId();
-//		visitDTO.koukikoureiId = visit.getKoukikoureiId();
-//		visitDTO.roujinId = visit.getRoujinId();
-//		visitDTO.kouhi1Id = visit.getKouhi1Id();
-//		visitDTO.kouhi2Id = visit.getKouhi2Id();
-//		visitDTO.kouhi3Id = visit.getKouhi3Id();
-//		return visitDTO;
-//	}
-//
-//	public Visit fromVisitDTO(VisitDTO visitDTO){
-//		Visit visit = new Visit();
-//		visit.setVisitId(visitDTO.visitId);
-//		visit.setPatientId(visitDTO.patientId);
-//		visit.setVisitedAt(visitDTO.visitedAt);
-//		visit.setShahokokuhoId(visitDTO.shahokokuhoId);
-//		visit.setKoukikoureiId(visitDTO.koukikoureiId);
-//		visit.setRoujinId(visitDTO.roujinId);
-//		visit.setKouhi1Id(visitDTO.kouhi1Id);
-//		visit.setKouhi2Id(visitDTO.kouhi2Id);
-//		visit.setKouhi3Id(visitDTO.kouhi3Id);
-//		return visit;
 //	}
 //
 //	public ChargeDTO toChargeDTO(Charge charge){
@@ -678,6 +681,24 @@ public class DTOMapper {
             return null;
         } else {
             return LocalDate.parse(sqldate);
+        }
+    }
+
+    private static DateTimeFormatter sqlDateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
+
+    private String localDateTimeToSqldatetime(LocalDateTime dt){
+        return dt.format(sqlDateTimeFormatter);
+    }
+
+    private Integer nullToZero(Integer value){
+        return value == null ? 0 : value;
+    }
+
+    private Integer zeroToNull(Integer value){
+        if( value == null || value == 0 ){
+            return null;
+        } else {
+            return value;
         }
     }
 }

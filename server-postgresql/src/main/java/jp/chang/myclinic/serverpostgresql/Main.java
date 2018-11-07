@@ -1,6 +1,7 @@
 package jp.chang.myclinic.serverpostgresql;
 
 import jp.chang.myclinic.mastermap.MasterMap;
+import jp.chang.myclinic.serverpostgresql.rcpt.HoukatsuKensa;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -42,6 +43,11 @@ public class Main {
     public MasterMap getMasterMap(@Value("${myclinic.master-map-file}") String masterMapLocation,
                                   @Value("${myclinic.name-map-file}") String nameMapLocation) throws IOException {
         return MasterMap.loadMap(nameMapLocation, masterMapLocation);
+    }
+
+    @Bean
+    public HoukatsuKensa makeHoukatsuKensa() throws IOException {
+        return HoukatsuKensa.load();
     }
 
 
