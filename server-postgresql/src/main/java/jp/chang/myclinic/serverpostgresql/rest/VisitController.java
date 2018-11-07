@@ -1,5 +1,6 @@
 package jp.chang.myclinic.serverpostgresql.rest;
 
+import jp.chang.myclinic.dto.HokenDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.serverpostgresql.db.myclinic.DbGateway;
 import jp.chang.myclinic.serverpostgresql.rcpt.HoukatsuKensa;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/json")
@@ -25,11 +28,16 @@ public class VisitController {
         return dbGateway.getVisit(visitId);
     }
 
-//    @RequestMapping(value="/get-hoken", method=RequestMethod.GET)
-//    public HokenDTO getHoken(@RequestParam("visit-id") int visitId){
-//        VisitDTO visit = dbGateway.getVisit(visitId);
-//        return dbGateway.getHokenForVisit(visit);
-//    }
+    @RequestMapping(value = "/list-visit-ids", method = RequestMethod.GET)
+    public List<Integer> listVisitIds() {
+        return dbGateway.listVisitIds();
+    }
+
+    @RequestMapping(value="/get-hoken", method=RequestMethod.GET)
+    public HokenDTO getHoken(@RequestParam("visit-id") int visitId){
+        VisitDTO visit = dbGateway.getVisit(visitId);
+        return dbGateway.getHokenForVisit(visit);
+    }
 
 //    @RequestMapping(value = "/start-visit", method = RequestMethod.POST)
 //    public int startVisit(@RequestParam("patient-id") int patientId) {
@@ -151,11 +159,6 @@ public class VisitController {
 //        }
 //        meisaiDTO.charge = RcptUtil.calcCharge(meisaiDTO.totalTen, meisaiDTO.futanWari);
 //        return meisaiDTO;
-//    }
-//
-//    @RequestMapping(value = "/list-visit-ids", method = RequestMethod.GET)
-//    public List<Integer> listVisitIds() {
-//        return dbGateway.listVisitIds();
 //    }
 //
 //    @RequestMapping(value = "list-visit-id-for-patient", method = RequestMethod.GET)

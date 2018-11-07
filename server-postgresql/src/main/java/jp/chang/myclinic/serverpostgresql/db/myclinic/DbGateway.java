@@ -402,6 +402,33 @@ public class DbGateway {
         return mapper.toVisitDTO(visit);
     }
 
+    public List<Integer> listVisitIds() {
+        Sort sort = Sort.by(Sort.Direction.DESC, "visitId");
+        return visitRepository.findAllVisitIds(sort);
+    }
+
+    public HokenDTO getHokenForVisit(VisitDTO visitDTO) {
+        HokenDTO hokenDTO = new HokenDTO();
+        if (visitDTO.shahokokuhoId > 0) {
+            hokenDTO.shahokokuho = mapper.toShahokokuhoDTO(shahokokuhoRepository.findById(visitDTO.shahokokuhoId));
+        }
+        if (visitDTO.koukikoureiId > 0) {
+            hokenDTO.koukikourei = mapper.toKoukikoureiDTO(koukikoureiRepository.findById(visitDTO.koukikoureiId));
+        }
+        if (visitDTO.roujinId > 0) {
+            hokenDTO.roujin = mapper.toRoujinDTO(roujinRepository.findById(visitDTO.roujinId));
+        }
+        if (visitDTO.kouhi1Id > 0) {
+            hokenDTO.kouhi1 = mapper.toKouhiDTO(kouhiRepository.findById(visitDTO.kouhi1Id));
+        }
+        if (visitDTO.kouhi2Id > 0) {
+            hokenDTO.kouhi2 = mapper.toKouhiDTO(kouhiRepository.findById(visitDTO.kouhi2Id));
+        }
+        if (visitDTO.kouhi3Id > 0) {
+            hokenDTO.kouhi3 = mapper.toKouhiDTO(kouhiRepository.findById(visitDTO.kouhi3Id));
+        }
+        return hokenDTO;
+    }
 
 
 
