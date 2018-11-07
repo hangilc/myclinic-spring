@@ -39,6 +39,8 @@ public class DbGateway {
     private ShahokokuhoRepository shahokokuhoRepository;
     @Autowired
     private RoujinRepository roujinRepository;
+    @Autowired
+    private KoukikoureiRepository koukikoureiRepository;
 
     private DTOMapper mapper = new DTOMapper();
 
@@ -302,6 +304,50 @@ public class DbGateway {
 
     public RoujinDTO getRoujin(int roujinId) {
         return mapper.toRoujinDTO(roujinRepository.findById(roujinId));
+    }
+
+    public KoukikoureiDTO getKoukikourei(int koukikoureiId) {
+        return mapper.toKoukikoureiDTO(koukikoureiRepository.findById(koukikoureiId));
+    }
+
+    public int enterKoukikourei(KoukikoureiDTO koukikoureiDTO) {
+        Koukikourei koukikourei = mapper.fromKoukikoureiDTO(koukikoureiDTO);
+        koukikourei = koukikoureiRepository.save(koukikourei);
+        practiceLogger.logKoukikoureiCreated(mapper.toKoukikoureiDTO(koukikourei));
+        return koukikourei.getKoukikoureiId();
+    }
+
+    public void updateKoukikourei(KoukikoureiDTO koukikoureiDTO){
+        KoukikoureiDTO prev = getKoukikourei(koukikoureiDTO.koukikoureiId);
+        Koukikourei koukikourei = mapper.fromKoukikoureiDTO(koukikoureiDTO);
+        koukikoureiRepository.save(koukikourei);
+        practiceLogger.logKoukikoureiUpdated(prev, koukikoureiDTO);
+    }
+
+    private int countUsageOfKoukikourei(int koukikoureiId){
+        throw new NotYetImplementedException();
+    }
+
+    public void deleteKoukikourei(int koukikoureiId) {
+        if (countUsageOfKoukikourei(koukikoureiId) > 0) {
+            throw new RuntimeException("この後期高齢保険はすでに使用されているので、削除できません。");
+        }
+        KoukikoureiDTO deleted = mapper.toKoukikoureiDTO(koukikoureiRepository.findById(koukikoureiId));
+        koukikoureiRepository.deleteById(koukikoureiId);
+        practiceLogger.logKoukikoureiDeleted(deleted);
+    }
+
+    public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "koukikoureiId");
+        try (Stream<Koukikourei> stream = koukikoureiRepository.findAvailable(patientId, at, sort)) {
+            return stream.map(mapper::toKoukikoureiDTO).collect(Collectors.toList());
+        }
+    }
+
+    private List<KoukikoureiDTO> findKoukikoureiByPatient(int patientId) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "koukikoureiId");
+        return koukikoureiRepository.findByPatientId(patientId, sort).stream()
+                .map(mapper::toKoukikoureiDTO).collect(Collectors.toList());
     }
 
 
