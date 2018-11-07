@@ -3,6 +3,7 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.serverpostgresql.PracticeLogger;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -34,6 +35,8 @@ public class DbGateway {
     private PracticeLogger practiceLogger;
     @Autowired
     private PracticeLogJdbc practiceLogJdbc;
+    @Autowired
+    private ShahokokuhoRepository shahokokuhoRepository;
 
     private DTOMapper mapper = new DTOMapper();
 
@@ -122,12 +125,6 @@ public class DbGateway {
         data.setKind(kind);
         data.setBody(body);
         return data;
-
-//        PracticeLog data = new PracticeLog();
-//        data.setCreatedAt(createdAt);
-//        data.setKind(kind);
-//        data.setBody(body);
-//        return practiceLogRepository.save(data);
     }
 
     public PracticeLogDTO findLastPracticeLog() {
@@ -220,5 +217,52 @@ public class DbGateway {
         patient = patientRepository.save(patient);
         practiceLogger.logPatientUpdated(prev, mapper.toPatientDTO(patient));
     }
+
+    public int enterShahokokuho(ShahokokuhoDTO shahokokuhoDTO) {
+        Shahokokuho shahokokuho = mapper.fromShahokokuhoDTO(shahokokuhoDTO);
+        shahokokuho = shahokokuhoRepository.save(shahokokuho);
+        practiceLogger.logShahokokuhoCreated(mapper.toShahokokuhoDTO(shahokokuho));
+        return shahokokuho.getShahokokuhoId();
+    }
+
+    public void updateShahokokuho(ShahokokuhoDTO shahokokuhoDTO){
+        ShahokokuhoDTO prev = getShahokokuho(shahokokuhoDTO.shahokokuhoId);
+        Shahokokuho shahokokuho = mapper.fromShahokokuhoDTO(shahokokuhoDTO);
+        shahokokuhoRepository.save(shahokokuho);
+        practiceLogger.logShahokokuhoUpdated(prev, shahokokuhoDTO);
+    }
+
+    private int countUsageOfShahokokuho(int shahokokuhoId){
+        throw new NotYetImplementedException();
+        //return visitRepository.countByShahokokuhoId(shahokokuhoId);
+    }
+
+    public void deleteShahokokuho(int shahokokuhoId) {
+        int usage = countUsageOfShahokokuho(shahokokuhoId);
+        if (usage != 0) {
+            throw new RuntimeException("この社保・国保はすでに使用されているので、削除できません。");
+        }
+        ShahokokuhoDTO deleted = mapper.toShahokokuhoDTO(shahokokuhoRepository.findById(shahokokuhoId));
+        shahokokuhoRepository.deleteById(shahokokuhoId);
+        practiceLogger.logShahokokuhoDeleted(deleted);
+    }
+
+    public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "shahokokuhoId");
+        try (Stream<Shahokokuho> stream = shahokokuhoRepository.findAvailable(patientId, at, sort)) {
+            return stream.map(mapper::toShahokokuhoDTO).collect(Collectors.toList());
+        }
+    }
+
+    private List<ShahokokuhoDTO> findShahokokuhoByPatient(int patientId) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "shahokokuhoId");
+        return shahokokuhoRepository.findByPatientId(patientId, sort).stream()
+                .map(mapper::toShahokokuhoDTO).collect(Collectors.toList());
+    }
+
+    public ShahokokuhoDTO getShahokokuho(int shahokokuhoId) {
+        return mapper.toShahokokuhoDTO(shahokokuhoRepository.findById(shahokokuhoId));
+    }
+
 
 }

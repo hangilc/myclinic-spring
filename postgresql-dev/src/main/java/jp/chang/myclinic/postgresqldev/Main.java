@@ -3,6 +3,7 @@ package jp.chang.myclinic.postgresqldev;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 public class Main {
 
@@ -15,7 +16,8 @@ public class Main {
         //main.moveShinryouMaster(false);
         //main.moveKizaiMaster(false);
         //main.movePatient();
-        main.movePracticeLog();
+        //main.movePracticeLog();
+        main.moveShahokokuho();
     }
 
     private Main() throws Exception {
@@ -24,6 +26,66 @@ public class Main {
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
         this.psqlConn = DriverManager.getConnection("jdbc:postgresql://localhost/myclinic",
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
+    }
+
+    private void moveShahokokuho() throws Exception {
+        Statement stmt = mysqlConn.createStatement();
+        ResultSet rset = stmt.executeQuery("select * from hoken_shahokokuho");
+        PreparedStatement psqlStmt = psqlConn.prepareStatement("insert into shahokokuho " +
+                "(shahokokuho_id, patient_id, hokensha_bangou, hihokensha_kigou, hihokensha_bangou, honnin, " +
+                " valid_from, valid_upto, kourei) " +
+                        "values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        int n = 0;
+        int maxId = 0;
+        while (rset.next()) {
+            int id = rset.getInt("shahokokuho_id");
+            if( maxId < id ){
+                maxId = id;
+            }
+            psqlStmt.setInt(1, id);
+            psqlStmt.setInt(2, rset.getInt("patient_id"));
+            psqlStmt.setInt(3, rset.getInt("hokensha_bangou"));
+            psqlStmt.setString(4, rset.getString("hihokensha_kigou"));
+            psqlStmt.setString(5, rset.getString("hihokensha_bangou"));
+            psqlStmt.setInt(6, rset.getInt("honnin"));
+            {
+                LocalDate validFrom = LocalDate.parse(rset.getString("valid_from"));
+                LocalDate validFromOrig = validFrom;
+                LocalDate validUpto;
+                String validUptoSqldate = rset.getString("valid_upto");
+                if( validUptoSqldate != null && !"0000-00-00".equals(validUptoSqldate) ){
+                    validUpto = LocalDate.parse(validUptoSqldate);
+                    if( validUpto.isBefore(validFrom) ){
+                        validFrom = validUpto.minus(1, ChronoUnit.YEARS);
+                        System.err.printf("shahokokuho fix: %d valid_from %s -> %s\n",
+                                id, validFromOrig.toString(), validFrom.toString());
+                    }
+                } else {
+                    validUpto = null;
+                }
+                psqlStmt.setObject(7, validFrom);
+                psqlStmt.setObject(8, validUpto);
+            }
+            psqlStmt.setInt(9, rset.getInt("kourei"));
+            psqlStmt.executeUpdate();
+            n += 1;
+            if( n % 1000 == 0 ){
+                System.out.printf("shahokokuho %d\n", n);
+            }
+        }
+        System.out.printf("shahokokuho %d\n", n);
+        System.out.printf("NEXT SHAHOKOKUHO_ID: %d\n", maxId + 1);
+        psqlStmt.close();
+        rset.close();
+        stmt.close();
+        {
+            String sql = String.format("alter table shahokokuho alter column shahokokuho_id restart with %d",
+                    maxId + 1);
+            Statement seqStmt = psqlConn.createStatement();
+            seqStmt.executeUpdate(sql);
+            seqStmt.close();
+            System.out.println("SHAHOKOKUHO_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
+        }
     }
 
     private void movePracticeLog() throws Exception {

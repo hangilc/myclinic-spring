@@ -1,9 +1,6 @@
 package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.dto.KizaiMasterDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.ShinryouMasterDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.springframework.stereotype.Component;
@@ -48,7 +45,35 @@ public class DTOMapper {
 		return patient;
 	}
 
-//	public WqueueDTO toWqueueDTO(Wqueue wqueue){
+	public ShahokokuhoDTO toShahokokuhoDTO(Shahokokuho shahokokuho){
+		ShahokokuhoDTO shahokokuhoDTO = new ShahokokuhoDTO();
+		shahokokuhoDTO.shahokokuhoId = shahokokuho.getShahokokuhoId();
+		shahokokuhoDTO.patientId = shahokokuho.getPatientId();
+		shahokokuhoDTO.hokenshaBangou = shahokokuho.getHokenshaBangou();
+		shahokokuhoDTO.hihokenshaBangou = shahokokuho.getHihokenshaBangou();
+		shahokokuhoDTO.hihokenshaKigou= shahokokuho.getHihokenshaKigou();
+		shahokokuhoDTO.honnin = shahokokuho.getHonnin();
+		shahokokuhoDTO.kourei = shahokokuho.getKourei();
+		shahokokuhoDTO.validFrom = shahokokuho.getValidFrom().toString();
+		shahokokuhoDTO.validUpto = localDateToOldSqldate(shahokokuho.getValidUpto());
+		return shahokokuhoDTO;
+	}
+
+	public Shahokokuho fromShahokokuhoDTO(ShahokokuhoDTO shahokokuhoDTO){
+		Shahokokuho shahokokuho = new Shahokokuho();
+		shahokokuho.setShahokokuhoId(shahokokuhoDTO.shahokokuhoId);
+		shahokokuho.setPatientId(shahokokuhoDTO.patientId);
+		shahokokuho.setHokenshaBangou(shahokokuhoDTO.hokenshaBangou);
+		shahokokuho.setHihokenshaBangou(shahokokuhoDTO.hihokenshaBangou);
+		shahokokuho.setHihokenshaKigou(shahokokuhoDTO.hihokenshaKigou);
+		shahokokuho.setHonnin(shahokokuhoDTO.honnin);
+		shahokokuho.setKourei(shahokokuhoDTO.kourei);
+		shahokokuho.setValidFrom(LocalDate.parse(shahokokuhoDTO.validFrom));
+		shahokokuho.setValidUpto(oldSqldateToLocalDate(shahokokuhoDTO.validUpto));
+		return shahokokuho;
+	}
+
+// 	public WqueueDTO toWqueueDTO(Wqueue wqueue){
 //		WqueueDTO wqueueDTO = new WqueueDTO();
 //		wqueueDTO.visitId = wqueue.getVisitId();
 //		wqueueDTO.waitState = wqueue.getWaitState();
@@ -88,34 +113,6 @@ public class DTOMapper {
 //		visit.setKouhi2Id(visitDTO.kouhi2Id);
 //		visit.setKouhi3Id(visitDTO.kouhi3Id);
 //		return visit;
-//	}
-//
-//	public ShahokokuhoDTO toShahokokuhoDTO(Shahokokuho shahokokuho){
-//		ShahokokuhoDTO shahokokuhoDTO = new ShahokokuhoDTO();
-//		shahokokuhoDTO.shahokokuhoId = shahokokuho.getShahokokuhoId();
-//		shahokokuhoDTO.patientId = shahokokuho.getPatientId();
-//		shahokokuhoDTO.hokenshaBangou = shahokokuho.getHokenshaBangou();
-//		shahokokuhoDTO.hihokenshaBangou = shahokokuho.getHihokenshaBangou();
-//		shahokokuhoDTO.hihokenshaKigou= shahokokuho.getHihokenshaKigou();
-//		shahokokuhoDTO.honnin = shahokokuho.getHonnin();
-//		shahokokuhoDTO.kourei = shahokokuho.getKourei();
-//		shahokokuhoDTO.validFrom = shahokokuho.getValidFrom();
-//		shahokokuhoDTO.validUpto = shahokokuho.getValidUpto();
-//		return shahokokuhoDTO;
-//	}
-//
-//	public Shahokokuho fromShahokokuhoDTO(ShahokokuhoDTO shahokokuhoDTO){
-//		Shahokokuho shahokokuho = new Shahokokuho();
-//		shahokokuho.setShahokokuhoId(shahokokuhoDTO.shahokokuhoId);
-//		shahokokuho.setPatientId(shahokokuhoDTO.patientId);
-//		shahokokuho.setHokenshaBangou(shahokokuhoDTO.hokenshaBangou);
-//		shahokokuho.setHihokenshaBangou(shahokokuhoDTO.hihokenshaBangou);
-//		shahokokuho.setHihokenshaKigou(shahokokuhoDTO.hihokenshaKigou);
-//		shahokokuho.setHonnin(shahokokuhoDTO.honnin);
-//		shahokokuho.setKourei(shahokokuhoDTO.kourei);
-//		shahokokuho.setValidFrom(shahokokuhoDTO.validFrom);
-//		shahokokuho.setValidUpto(shahokokuhoDTO.validUpto);
-//		return shahokokuho;
 //	}
 //
 //	public KoukikoureiDTO toKoukikoureiDTO(Koukikourei koukikourei){
