@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -402,6 +403,13 @@ public class DbGateway {
         return mapper.toVisitDTO(visit);
     }
 
+    public void updateVisit(VisitDTO visitDTO) {
+        VisitDTO prev = getVisit(visitDTO.visitId);
+        Visit visit = mapper.fromVisitDTO(visitDTO);
+        visit = visitRepository.save(visit);
+        practiceLogger.logVisitUpdated(prev, mapper.toVisitDTO(visit));
+    }
+
     public List<Integer> listVisitIds() {
         Sort sort = Sort.by(Sort.Direction.DESC, "visitId");
         return visitRepository.findAllVisitIds(sort);
@@ -430,8 +438,51 @@ public class DbGateway {
         return hokenDTO;
     }
 
+    public List<Integer> listVisitIdsForPatient(int patientId) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "visitId");
+        return visitRepository.findVisitIdsByPatient(patientId, sort);
+    }
+
+    public List<VisitIdVisitedAtDTO> listVisitIdVisitedAtForPatient(int patientId) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "visitId");
+        return visitRepository.findVisitIdVisitedAtByPatient(patientId, sort).stream()
+                .map(result -> {
+                    Integer visitId = (Integer) result[0];
+                    LocalDateTime visitedAt = (LocalDateTime) result[1];
+                    VisitIdVisitedAtDTO visitIdVisitedAtDTO = new VisitIdVisitedAtDTO();
+                    visitIdVisitedAtDTO.visitId = visitId;
+                    visitIdVisitedAtDTO.visitedAt = localDateTimeToSqldatetime(visitedAt);
+                    return visitIdVisitedAtDTO;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<VisitPatientDTO> listVisitWithPatient(int page, int itemsPerPage) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "visitId");
+        PageRequest pageRequest = PageRequest.of(page, itemsPerPage, sort);
+        return visitRepository.findAllWithPatient(pageRequest).stream()
+                .map(this::resultToVisitPatientDTO)
+                .collect(Collectors.toList());
+    }
 
 
+
+
+
+    private static DateTimeFormatter sqlDateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
+
+    private String localDateTimeToSqldatetime(LocalDateTime dt){
+        return dt.format(sqlDateTimeFormatter);
+    }
+
+    private VisitPatientDTO resultToVisitPatientDTO(Object[] result) {
+        VisitDTO visitDTO = mapper.toVisitDTO((Visit) result[0]);
+        PatientDTO patientDTO = mapper.toPatientDTO((Patient) result[1]);
+        VisitPatientDTO visitPatientDTO = new VisitPatientDTO();
+        visitPatientDTO.visit = visitDTO;
+        visitPatientDTO.patient = patientDTO;
+        return visitPatientDTO;
+    }
 
 
 }

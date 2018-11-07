@@ -162,7 +162,7 @@ public class DTOMapper {
 		Visit visit = new Visit();
 		visit.setVisitId(visitDTO.visitId);
 		visit.setPatientId(visitDTO.patientId);
-		visit.setVisitedAt(LocalDateTime.parse(visitDTO.visitedAt));
+		visit.setVisitedAt(sqldatetimeToLocalDateTime(visitDTO.visitedAt));
 		visit.setShahokokuhoId(zeroToNull(visitDTO.shahokokuhoId));
 		visit.setKoukikoureiId(zeroToNull(visitDTO.koukikoureiId));
 		visit.setRoujinId(zeroToNull(visitDTO.roujinId));
@@ -684,10 +684,12 @@ public class DTOMapper {
         }
     }
 
-    private static DateTimeFormatter sqlDateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
-
     private String localDateTimeToSqldatetime(LocalDateTime dt){
-        return dt.format(sqlDateTimeFormatter);
+        return dt.format(dateTimeFormatter);
+    }
+
+    private LocalDateTime sqldatetimeToLocalDateTime(String sqldatetime){
+        return LocalDateTime.parse(sqldatetime, dateTimeFormatter);
     }
 
     private Integer nullToZero(Integer value){

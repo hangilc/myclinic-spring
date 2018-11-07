@@ -2,14 +2,13 @@ package jp.chang.myclinic.serverpostgresql.rest;
 
 import jp.chang.myclinic.dto.HokenDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.dto.VisitIdVisitedAtDTO;
+import jp.chang.myclinic.dto.VisitPatientDTO;
 import jp.chang.myclinic.serverpostgresql.db.myclinic.DbGateway;
 import jp.chang.myclinic.serverpostgresql.rcpt.HoukatsuKensa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,6 +37,39 @@ public class VisitController {
         VisitDTO visit = dbGateway.getVisit(visitId);
         return dbGateway.getHokenForVisit(visit);
     }
+
+    @RequestMapping(value = "list-visit-id-for-patient", method = RequestMethod.GET)
+    public List<Integer> listVisitIdsForPatient(@RequestParam("patient-id") int patientId) {
+        return dbGateway.listVisitIdsForPatient(patientId);
+    }
+
+    @RequestMapping(value = "list-visit-id-visited-at-for-patient", method = RequestMethod.GET)
+    public List<VisitIdVisitedAtDTO> listVisitIdVisitedAtForPatient(@RequestParam("patient-id") int patientId) {
+        return dbGateway.listVisitIdVisitedAtForPatient(patientId);
+    }
+
+    @RequestMapping(value = "/list-visit-with-patient", method = RequestMethod.GET)
+    public List<VisitPatientDTO> listVisitWithPatient(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "items-per-page", defaultValue = "30") int itemsPerPage) {
+        return dbGateway.listVisitWithPatient(page, itemsPerPage);
+    }
+
+    @RequestMapping(value = "/update-hoken", method = RequestMethod.POST)
+    public boolean updateHoken(@RequestBody VisitDTO visitDTO) {
+        VisitDTO origVisit = dbGateway.getVisit(visitDTO.visitId);
+        origVisit.shahokokuhoId = visitDTO.shahokokuhoId;
+        origVisit.koukikoureiId = visitDTO.koukikoureiId;
+        origVisit.roujinId = visitDTO.roujinId;
+        origVisit.kouhi1Id = visitDTO.kouhi1Id;
+        origVisit.kouhi2Id = visitDTO.kouhi2Id;
+        origVisit.kouhi3Id = visitDTO.kouhi3Id;
+        dbGateway.updateVisit(origVisit);
+        return true;
+    }
+
+
+
 
 //    @RequestMapping(value = "/start-visit", method = RequestMethod.POST)
 //    public int startVisit(@RequestParam("patient-id") int patientId) {
@@ -161,23 +193,6 @@ public class VisitController {
 //        return meisaiDTO;
 //    }
 //
-//    @RequestMapping(value = "list-visit-id-for-patient", method = RequestMethod.GET)
-//    public List<Integer> listVisitIdsForPatient(@RequestParam("patient-id") int patientId) {
-//        return dbGateway.listVisitIdsForPatient(patientId);
-//    }
-//
-//    @RequestMapping(value = "list-visit-id-visited-at-for-patient", method = RequestMethod.GET)
-//    public List<VisitIdVisitedAtDTO> listVisitIdVisitedAtForPatient(@RequestParam("patient-id") int patientId) {
-//        return dbGateway.listVisitIdVisitedAtForPatient(patientId);
-//    }
-//
-//    @RequestMapping(value = "/list-visit-with-patient", method = RequestMethod.GET)
-//    public List<VisitPatientDTO> listVisitWithPatient(
-//            @RequestParam(value = "page", defaultValue = "0") int page,
-//            @RequestParam(value = "items-per-page", defaultValue = "30") int itemsPerPage) {
-//        return dbGateway.listVisitWithPatient(page, itemsPerPage);
-//    }
-//
 //    @RequestMapping(value = "/delete-visit-from-reception", method = RequestMethod.POST)
 //    public boolean deleteVisitFromReception(@RequestParam("visit-id") int visitId) {
 //        dbGateway.deleteVisitFromReception(visitId);
@@ -201,19 +216,6 @@ public class VisitController {
 //    public VisitTextDrugPageDTO listVisitTextDrugForPatient(@RequestParam("patient-id") int patientId,
 //                                                            @RequestParam("page") int page) {
 //        return dbGateway.listVisitTextDrugForPatient(patientId, page);
-//    }
-//
-//    @RequestMapping(value = "/update-hoken", method = RequestMethod.POST)
-//    public boolean updateHoken(@RequestBody VisitDTO visitDTO) {
-//        VisitDTO origVisit = dbGateway.getVisit(visitDTO.visitId);
-//        origVisit.shahokokuhoId = visitDTO.shahokokuhoId;
-//        origVisit.koukikoureiId = visitDTO.koukikoureiId;
-//        origVisit.roujinId = visitDTO.roujinId;
-//        origVisit.kouhi1Id = visitDTO.kouhi1Id;
-//        origVisit.kouhi2Id = visitDTO.kouhi2Id;
-//        origVisit.kouhi3Id = visitDTO.kouhi3Id;
-//        dbGateway.updateVisit(origVisit);
-//        return true;
 //    }
 //
 //    @RequestMapping(value = "/list-todays-visits", method = RequestMethod.GET)
