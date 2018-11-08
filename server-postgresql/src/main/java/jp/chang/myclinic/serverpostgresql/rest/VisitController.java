@@ -68,6 +68,11 @@ public class VisitController {
         return true;
     }
 
+    @RequestMapping(value = "/list-todays-visits", method = RequestMethod.GET)
+    public List<VisitPatientDTO> listTodaysVisits() {
+        return dbGateway.listTodaysVisits();
+    }
+
 
 
 
@@ -216,11 +221,6 @@ public class VisitController {
 //    public VisitTextDrugPageDTO listVisitTextDrugForPatient(@RequestParam("patient-id") int patientId,
 //                                                            @RequestParam("page") int page) {
 //        return dbGateway.listVisitTextDrugForPatient(patientId, page);
-//    }
-//
-//    @RequestMapping(value = "/list-todays-visits", method = RequestMethod.GET)
-//    public List<VisitPatientDTO> listTodaysVisits() {
-//        return dbGateway.listTodaysVisits();
 //    }
 //
 //    @RequestMapping(value = "/list-visit-charge-patient-at", method = RequestMethod.GET)

@@ -465,6 +465,15 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
+    public List<VisitPatientDTO> listTodaysVisits() {
+        List<Integer> visitIds = visitRepository.findVisitIdForToday(Sort.by("visitId"));
+        if (visitIds.size() == 0) {
+            return Collections.emptyList();
+        }
+        return visitRepository.findWithPatient(visitIds, Sort.by("visitId")).stream()
+                .map(this::resultToVisitPatientDTO).collect(Collectors.toList());
+    }
+
 
 
 

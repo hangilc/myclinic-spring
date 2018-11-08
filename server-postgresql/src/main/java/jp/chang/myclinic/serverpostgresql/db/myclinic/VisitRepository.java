@@ -13,7 +13,7 @@ public interface VisitRepository extends JpaRepository<Visit, Integer> {
 
 	Visit findById(int visitId);
 
-	@Query("select visit.visitId from Visit visit where date(visit.visitedAt) = date(now()) ")
+	@Query("select visit.visitId from Visit visit where date(visit.visitedAt) = current_date() ")
 	List<Integer> findVisitIdForToday(Sort sort);
 
 	@Query("select visit.visitId from Visit visit where date(visit.visitedAt) = date(:date) ")

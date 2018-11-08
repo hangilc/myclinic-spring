@@ -21,7 +21,7 @@ public class Main {
         //main.moveRoujin();
         //main.moveKoukikourei();
         //main.moveKouhi();
-        main.moveVisit();
+        //main.moveVisit();
     }
 
     private Main() throws Exception {
