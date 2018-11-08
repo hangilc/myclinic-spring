@@ -22,6 +22,7 @@ public class Main {
 
         Properties properties = new Properties();
         properties.put("spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation", true);
+        properties.put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         properties.put("spring.jpa.properties.hibernate.show_sql", true);
         properties.put("spring.jpa.properties.hibernate.format_sql", true);
         application.setDefaultProperties(properties);
