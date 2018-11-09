@@ -15,13 +15,14 @@ public class Main {
         //main.moveIyakuhinMaster(false);
         //main.moveShinryouMaster(false);
         //main.moveKizaiMaster(false);
-        //main.movePatient();
-        //main.movePracticeLog();
-        //main.moveShahokokuho();
-        //main.moveRoujin();
-        //main.moveKoukikourei();
-        //main.moveKouhi();
-        //main.moveVisit();
+        main.movePatient();
+        main.movePracticeLog();
+        main.moveShahokokuho();
+        main.moveRoujin();
+        main.moveKoukikourei();
+        main.moveKouhi();
+        main.moveVisit();
+        main.moveWqueue();
     }
 
     private Main() throws Exception {
@@ -30,6 +31,21 @@ public class Main {
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
         this.psqlConn = DriverManager.getConnection("jdbc:postgresql://localhost/myclinic",
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
+    }
+
+    private Mover createMover(String sourceTable, String targetTable){
+        return new Mover(mysqlConn, psqlConn, sourceTable, targetTable);
+    }
+
+    private Mover createMover(String table){
+        return createMover(table, table);
+    }
+
+    private void moveWqueue() throws Exception {
+        Mover mover = createMover("wqueue");
+        mover.addIntColumn("visit_id");
+        mover.addIntColumn("wait_state");
+        mover.move();
     }
 
     private void moveVisit() throws Exception {
