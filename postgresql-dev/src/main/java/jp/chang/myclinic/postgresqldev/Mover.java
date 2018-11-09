@@ -57,7 +57,7 @@ class Mover {
                 System.out.printf("%s sequence restarts with %d.\n", pgsqlColumnName, local.maxIndex + 1);
             } catch(SQLException ex){
                 ex.printStackTrace();
-                System.err.println("Failed to reset sequence.");
+                throw new RuntimeException("Failed to reset sequence.");
             }
         });
         addColumn(new Column(name){
