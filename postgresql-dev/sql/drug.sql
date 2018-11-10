@@ -16,9 +16,9 @@ create or replace function check_drug_fun() returns trigger as $$
 		select count(*) into count from iyakuhin_master m, visit v where m.iyakuhincode = new.iyakuhincode
 			and v.visit_id = new.visit_id 
 			and m.valid_from <= date(v.visited_at)
-			and (m.valid_upto is null or m.valid_upto >= date(v.visted_at));
+			and (m.valid_upto is null or m.valid_upto >= date(v.visited_at));
 		if count < 1 then
-			raise exception "cannot find iyakuhin master for drug";
+			raise exception 'cannot find iyakuhin master for drug';
 		end if;
 		if count > 1 then
 			raise exception 'found multiple iyakuhin masters for drug';

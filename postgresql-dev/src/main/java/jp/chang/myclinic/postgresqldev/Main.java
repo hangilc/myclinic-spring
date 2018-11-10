@@ -15,14 +15,18 @@ public class Main {
         //main.moveIyakuhinMaster(false);
         //main.moveShinryouMaster(false);
         //main.moveKizaiMaster(false);
-        main.movePatient();
-        main.movePracticeLog();
-        main.moveShahokokuho();
-        main.moveRoujin();
-        main.moveKoukikourei();
-        main.moveKouhi();
-        main.moveVisit();
-        main.moveWqueue();
+        //main.movePatient();
+        //main.movePracticeLog();
+        //main.moveShahokokuho();
+        //main.moveRoujin();
+        //main.moveKoukikourei();
+        //main.moveKouhi();
+        //main.moveVisit();
+        //main.moveWqueue();
+        //main.movePharmaQueue();
+        //main.moveText();
+        //main.moveDrug();
+        main.moveShinryou();
     }
 
     private Main() throws Exception {
@@ -39,6 +43,42 @@ public class Main {
 
     private Mover createMover(String table){
         return createMover(table, table);
+    }
+
+    private void moveShinryou() throws Exception {
+        Mover mover = createMover("visit_shinryou", "shinryou");
+        mover.addSerialColumn("shinryou_id");
+        mover.addIntColumn("visit_id");
+        mover.addIntColumn("shinryoucode");
+        mover.move();
+    }
+
+    private void moveDrug() throws Exception {
+        Mover mover = createMover("visit_drug", "drug");
+        mover.addSerialColumn("drug_id");
+        mover.addIntColumn("visit_id");
+        mover.addIntColumn("d_iyakuhincode", "iyakuhincode");
+        mover.addDecimalColumn("d_amount", "amount");
+        mover.addStringColumn("d_usage", "usage");
+        mover.addIntColumn("d_days", "days");
+        mover.addIntColumn("d_category", "category");
+        mover.addIntColumn("d_prescribed", "prescribed");
+        mover.move();
+    }
+
+    private void moveText() throws Exception {
+        Mover mover = createMover("visit_text", "text");
+        mover.addSerialColumn("text_id");
+        mover.addIntColumn("visit_id");
+        mover.addStringColumn("content");
+        mover.move();
+    }
+
+    private void movePharmaQueue() throws Exception {
+        Mover mover = createMover("pharma_queue");
+        mover.addIntColumn("visit_id");
+        mover.addIntColumn("pharma_state");
+        mover.move();
     }
 
     private void moveWqueue() throws Exception {

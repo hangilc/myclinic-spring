@@ -27,21 +27,55 @@ class Mover {
         columns.add(col);
     }
 
-    void addIntColumn(String name){
-        addColumn(new Column(name){
+    void addDecimalColumn(String name) {
+        addDecimalColumn(name, name);
+    }
+
+    void addDecimalColumn(String mysqlName, String pgsqlName) {
+        addColumn(new Column(pgsqlName) {
             @Override
             void setParam(PreparedStatement stmt, int index, ResultSet rs) throws SQLException {
-                stmt.setInt(index, rs.getInt(name));
+                stmt.setBigDecimal(index, rs.getBigDecimal(mysqlName));
             }
         });
     }
 
-    void addSerialColumn(String name, String pgsqlColumnName){
+    void addStringColumn(String name) {
+        addStringColumn(name, name);
+    }
+
+    void addStringColumn(String mysqlName, String pgsqlName) {
+        addColumn(new Column(pgsqlName) {
+            @Override
+            void setParam(PreparedStatement stmt, int index, ResultSet rs) throws SQLException {
+                stmt.setString(index, rs.getString(mysqlName));
+            }
+        });
+    }
+
+    void addIntColumn(String name) {
+        addIntColumn(name, name);
+    }
+
+    void addIntColumn(String mysqlName, String pgsqlName) {
+        addColumn(new Column(pgsqlName) {
+            @Override
+            void setParam(PreparedStatement stmt, int index, ResultSet rs) throws SQLException {
+                stmt.setInt(index, rs.getInt(mysqlName));
+            }
+        });
+    }
+
+    void addSerialColumn(String name) {
+        addSerialColumn(name, name);
+    }
+
+    void addSerialColumn(String name, String pgsqlColumnName) {
         class Local {
             private int maxIndex = 0;
 
-            private void handleIndex(int idx){
-                if( idx > maxIndex ){
+            private void handleIndex(int idx) {
+                if (idx > maxIndex) {
                     maxIndex = idx;
                 }
             }
@@ -55,12 +89,12 @@ class Mover {
                 seqStmt.executeUpdate(sql);
                 seqStmt.close();
                 System.out.printf("%s sequence restarts with %d.\n", pgsqlColumnName, local.maxIndex + 1);
-            } catch(SQLException ex){
+            } catch (SQLException ex) {
                 ex.printStackTrace();
                 throw new RuntimeException("Failed to reset sequence.");
             }
         });
-        addColumn(new Column(name){
+        addColumn(new Column(name) {
             @Override
             void setParam(PreparedStatement stmt, int index, ResultSet rs) throws SQLException {
                 int idx = rs.getInt(name);
@@ -75,14 +109,14 @@ class Mover {
         ResultSet rset = stmt.executeQuery("select * from " + mysqlSourceTable);
         PreparedStatement pgsqlStmt = pgsqlConnection.prepareStatement(createSql());
         int n = 0;
-        while( rset.next() ){
-            for(int i=0;i<columns.size();i++){
+        while (rset.next()) {
+            for (int i = 0; i < columns.size(); i++) {
                 Column c = columns.get(i);
-                c.setParam(pgsqlStmt, i+1, rset);
+                c.setParam(pgsqlStmt, i + 1, rset);
             }
             pgsqlStmt.executeUpdate();
             n += 1;
-            if( n % 1000 == 0 ){
+            if (n % 1000 == 0) {
                 System.out.printf("%s %d\n", mysqlSourceTable, n);
             }
         }
