@@ -26,7 +26,8 @@ public class Main {
         //main.movePharmaQueue();
         //main.moveText();
         //main.moveDrug();
-        main.moveShinryou();
+        //main.moveShinryou();
+        main.moveConduct();
     }
 
     private Main() throws Exception {
@@ -43,6 +44,14 @@ public class Main {
 
     private Mover createMover(String table){
         return createMover(table, table);
+    }
+
+    private void moveConduct() throws Exception {
+        Mover mover = createMover("visit_conduct", "conduct");
+        mover.addSerialColumn("id", "conduct_id");
+        mover.addIntColumn("visit_id");
+        mover.addIntColumn("kind");
+        mover.move();
     }
 
     private void moveShinryou() throws Exception {

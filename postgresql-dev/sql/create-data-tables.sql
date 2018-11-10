@@ -1,3 +1,4 @@
+drop table if exists conduct cascade;
 drop table if exists shinryou cascade;
 drop table if exists drug cascade;
 drop table if exists text cascade;
@@ -23,3 +24,5 @@ drop table if exists practice_log cascade;
 \i text.sql
 \i drug.sql
 \i shinryou.sql
+\i conduct.sql
+

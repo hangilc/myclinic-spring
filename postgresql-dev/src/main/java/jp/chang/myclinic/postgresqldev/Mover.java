@@ -70,7 +70,7 @@ class Mover {
         addSerialColumn(name, name);
     }
 
-    void addSerialColumn(String name, String pgsqlColumnName) {
+    void addSerialColumn(String mysqlName, String pgsqlColumnName) {
         class Local {
             private int maxIndex = 0;
 
@@ -94,10 +94,10 @@ class Mover {
                 throw new RuntimeException("Failed to reset sequence.");
             }
         });
-        addColumn(new Column(name) {
+        addColumn(new Column(pgsqlColumnName) {
             @Override
             void setParam(PreparedStatement stmt, int index, ResultSet rs) throws SQLException {
-                int idx = rs.getInt(name);
+                int idx = rs.getInt(mysqlName);
                 local.handleIndex(idx);
                 stmt.setInt(index, idx);
             }
