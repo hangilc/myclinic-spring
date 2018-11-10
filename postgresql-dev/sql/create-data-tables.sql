@@ -1,3 +1,5 @@
+drop table if exists conduct_drug cascade;
+drop table if exists gazou_label cascade;
 drop table if exists conduct cascade;
 drop table if exists shinryou cascade;
 drop table if exists drug cascade;
@@ -25,4 +27,7 @@ drop table if exists practice_log cascade;
 \i drug.sql
 \i shinryou.sql
 \i conduct.sql
+\i gazou_label.sql
+\i conduct_drug.sql
+
 
