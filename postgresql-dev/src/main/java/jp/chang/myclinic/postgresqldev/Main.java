@@ -36,7 +36,8 @@ public class Main {
         //main.moveConductKizai();
         //main.moveCharge();
         //main.movePayment();
-        main.moveDisease();
+        //main.moveDisease();
+        main.moveDiseaseAdj();
     }
 
     private Main() throws Exception {
@@ -55,9 +56,17 @@ public class Main {
         return createMover(table, table);
     }
 
+    private void moveDiseaseAdj() throws Exception {
+        Mover mover = createMover("disease_adj");
+        mover.addSerialColumn("disease_adj_id");
+        mover.addIntColumn("disease_id");
+        mover.addIntColumn("shuushokugocode");
+        mover.move();
+    }
+
     private void moveDisease() throws Exception {
         Mover mover = createMover("disease");
-        mover.addIntColumn("disease_id");
+        mover.addSerialColumn("disease_id");
         mover.addIntColumn("patient_id");
         mover.addIntColumn("shoubyoumeicode");
         mover.addDateColumn("start_date");
