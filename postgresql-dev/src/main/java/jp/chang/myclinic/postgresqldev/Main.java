@@ -40,7 +40,10 @@ public class Main {
         //main.moveDiseaseAdj();
         //main.moveDrugAttr();
         //main.moveHotline();
-        main.movePharmaDrug();
+        //main.movePharmaDrug();
+        //main.movePrescExample();
+        //main.moveShinryouAttr();
+        main.moveShouki();
     }
 
     private Main() throws Exception {
@@ -57,6 +60,33 @@ public class Main {
 
     private Mover createMover(String table){
         return createMover(table, table);
+    }
+
+    private void moveShouki() throws Exception {
+        Mover mover = createMover("shouki");
+        mover.addIntColumn("visit_id");
+        mover.addStringColumn("shouki");
+        mover.move();
+    }
+
+    private void moveShinryouAttr() throws Exception {
+        Mover mover = createMover("shinryou_attr");
+        mover.addIntColumn("shinryou_id");
+        mover.addStringColumn("tekiyou");
+        mover.move();
+    }
+
+    private void movePrescExample() throws Exception {
+        Mover mover = createMover("presc_example");
+        mover.addSerialColumn("presc_example_id");
+        mover.addIntColumn("m_iyakuhincode", "iyakuhincode");
+        mover.addDateColumn("m_master_valid_from", "master_valid_from");
+        mover.addDecimalColumn("m_amount", "amount");
+        mover.addStringColumn("m_usage", "usage");
+        mover.addIntColumn("m_days", "days");
+        mover.addIntColumn("m_category", "category");
+        mover.addStringColumn("m_comment", "comment");
+        mover.move();
     }
 
     private void movePharmaDrug() throws Exception {
