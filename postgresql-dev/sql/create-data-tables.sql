@@ -1,3 +1,6 @@
+drop table if exists payment cascade;
+drop table if exists charge cascade;
+drop table if exists conduct_kizai cascade;
 drop table if exists conduct_shinryou cascade;
 drop table if exists conduct_drug cascade;
 drop table if exists gazou_label cascade;
@@ -31,5 +34,8 @@ drop table if exists practice_log cascade;
 \i gazou_label.sql
 \i conduct_drug.sql
 \i conduct_shinryou.sql
+\i conduct_kizai.sql
+\i charge.sql
+\i payment.sql
 
 

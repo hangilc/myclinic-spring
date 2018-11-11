@@ -31,7 +31,9 @@ public class Main {
         //main.moveGazouLabel();
         //main.moveConductDrug();
         //main.moveConductShinryou();
-        main.moveConductKizai();
+        //main.moveConductKizai();
+        //main.moveCharge();
+        main.movePayment();
     }
 
     private Main() throws Exception {
@@ -48,6 +50,22 @@ public class Main {
 
     private Mover createMover(String table){
         return createMover(table, table);
+    }
+
+    private void movePayment() throws Exception {
+        Mover mover = createMover("visit_payment", "payment");
+        mover.setMySqlQuerySupplier(() -> "select * from visit_payment group by visit_id, amount, paytime");
+        mover.addIntColumn("visit_id");
+        mover.addIntColumn("amount");
+        mover.addTimestamp("paytime");
+        mover.move();
+    }
+
+    private void moveCharge() throws Exception {
+        Mover mover = createMover("visit_charge", "charge");
+        mover.addIntColumn("visit_id");
+        mover.addIntColumn("charge");
+        mover.move();
     }
 
     private void moveConductKizai() throws Exception {

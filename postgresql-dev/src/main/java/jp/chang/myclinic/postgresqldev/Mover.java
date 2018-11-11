@@ -3,6 +3,7 @@ package jp.chang.myclinic.postgresqldev;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 class Mover {
@@ -14,6 +15,7 @@ class Mover {
     private String pgsqlTargetTable;
     private List<Column> columns = new ArrayList<>();
     private List<Runnable> postMoveProcs = new ArrayList<>();
+    private Supplier<String> mysqlQuerySupplier = null;
 
     Mover(Connection mysqlConnection, Connection pgsqlConnection, String mysqlSourceTable,
           String pgsqlTargetTable) {
@@ -25,6 +27,19 @@ class Mover {
 
     void addColumn(Column col) {
         columns.add(col);
+    }
+
+    void addTimestamp(String name){
+        addTimestamp(name, name);
+    }
+
+    void addTimestamp(String mysqlName, String pgsqlName){
+        addColumn(new Column(pgsqlName) {
+            @Override
+            void setParam(PreparedStatement stmt, int index, ResultSet rs) throws SQLException {
+                stmt.setTimestamp(index, rs.getTimestamp(mysqlName));
+            }
+        });
     }
 
     void addDecimalColumn(String name) {
@@ -104,9 +119,21 @@ class Mover {
         });
     }
 
+    void setMySqlQuerySupplier(Supplier<String> querySupplier){
+        this.mysqlQuerySupplier = querySupplier;
+    }
+
+    private String createMySqlQuery(){
+        if( mysqlQuerySupplier != null ){
+            return mysqlQuerySupplier.get();
+        } else {
+            return "select * from " + mysqlSourceTable;
+        }
+    }
+
     void move() throws SQLException {
         Statement stmt = mysqlConnection.createStatement();
-        ResultSet rset = stmt.executeQuery("select * from " + mysqlSourceTable);
+        ResultSet rset = stmt.executeQuery(createMySqlQuery());
         PreparedStatement pgsqlStmt = pgsqlConnection.prepareStatement(createSql());
         int n = 0;
         while (rset.next()) {
