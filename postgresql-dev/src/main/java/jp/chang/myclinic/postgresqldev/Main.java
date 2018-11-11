@@ -29,7 +29,9 @@ public class Main {
         //main.moveShinryou();
         //main.moveConduct();
         //main.moveGazouLabel();
-        main.moveConductDrug();
+        //main.moveConductDrug();
+        //main.moveConductShinryou();
+        main.moveConductKizai();
     }
 
     private Main() throws Exception {
@@ -46,6 +48,23 @@ public class Main {
 
     private Mover createMover(String table){
         return createMover(table, table);
+    }
+
+    private void moveConductKizai() throws Exception {
+        Mover mover = createMover("visit_conduct_kizai", "conduct_kizai");
+        mover.addSerialColumn("id", "conduct_kizai_id");
+        mover.addIntColumn("visit_conduct_id", "conduct_id");
+        mover.addIntColumn("kizaicode");
+        mover.addDecimalColumn("amount");
+        mover.move();
+    }
+
+    private void moveConductShinryou() throws Exception {
+        Mover mover = createMover("visit_conduct_shinryou", "conduct_shinryou");
+        mover.addSerialColumn("id", "conduct_shinryou_id");
+        mover.addIntColumn("visit_conduct_id", "conduct_id");
+        mover.addIntColumn("shinryoucode");
+        mover.move();
     }
 
     private void moveConductDrug() throws Exception {
