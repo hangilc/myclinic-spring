@@ -1,4 +1,6 @@
 drop table if exists hotline cascade;
+
+drop table if exists pharma_drug cascade;
 drop table if exists drug_attr cascade;
 drop table if exists disease_adj cascade;
 drop table if exists disease cascade;
@@ -44,6 +46,8 @@ drop table if exists practice_log cascade;
 \i disease.sql
 \i disease_adj.sql
 \i drug_attr.sql
+\i pharma_drug.sql
+
 \i hotline.sql
 
 

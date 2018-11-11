@@ -39,7 +39,8 @@ public class Main {
         //main.moveDisease();
         //main.moveDiseaseAdj();
         //main.moveDrugAttr();
-        main.moveHotline();
+        //main.moveHotline();
+        main.movePharmaDrug();
     }
 
     private Main() throws Exception {
@@ -56,6 +57,14 @@ public class Main {
 
     private Mover createMover(String table){
         return createMover(table, table);
+    }
+
+    private void movePharmaDrug() throws Exception {
+        Mover mover = createMover("pharma_drug");
+        mover.addIntColumn("iyakuhincode");
+        mover.addStringColumn("description");
+        mover.addStringColumn("sideeffect", "side_effect");
+        mover.move();
     }
 
     private void moveHotline() throws Exception {
