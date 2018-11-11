@@ -29,6 +29,32 @@ class Mover {
         columns.add(col);
     }
 
+    void addDateColumn(String name){
+        addDateColumn(name, name);
+    }
+
+    void addDateColumn(String mysqlName, String pgsqlName){
+        addColumn(new Column(pgsqlName) {
+            @Override
+            void setParam(PreparedStatement stmt, int index, ResultSet rs) throws SQLException {
+                stmt.setDate(index, rs.getDate(mysqlName));
+            }
+        });
+    }
+
+    void addNullableDateColumn(String name){
+        addNullableDateColumn(name, name);
+    }
+
+    void addNullableDateColumn(String mysqlName, String pgsqlName){
+        addColumn(new Column(pgsqlName) {
+            @Override
+            void setParam(PreparedStatement stmt, int index, ResultSet rs) throws SQLException {
+                stmt.setDate(index, convertValidUpto(rs.getString(mysqlName)));
+            }
+        });
+    }
+
     void addValidFromColumn(){
         addColumn(new Column("valid_from") {
             @Override
@@ -39,12 +65,7 @@ class Mover {
     }
 
     void addValidUptoColumn(){
-        addColumn(new Column("valid_upto") {
-            @Override
-            void setParam(PreparedStatement stmt, int index, ResultSet rs) throws SQLException {
-                stmt.setDate(index, convertValidUpto(rs.getString("valid_upto")));
-            }
-        });
+        addNullableDateColumn("valid_upto");
     }
 
     void addTimestamp(String name){

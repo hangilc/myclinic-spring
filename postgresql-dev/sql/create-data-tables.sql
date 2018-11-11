@@ -1,3 +1,4 @@
+drop table if exists disease cascade;
 drop table if exists payment cascade;
 drop table if exists charge cascade;
 drop table if exists conduct_kizai cascade;
@@ -37,5 +38,6 @@ drop table if exists practice_log cascade;
 \i conduct_kizai.sql
 \i charge.sql
 \i payment.sql
+\i disease.sql
 
 

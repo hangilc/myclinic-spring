@@ -16,7 +16,7 @@ public class Main {
         //main.moveShinryouMaster(false);
         //main.moveKizaiMaster(false);
         //main.moveShoubyoumeiMaster();
-        main.moveShuushokugoMaster();
+        //main.moveShuushokugoMaster();
         //main.movePatient();
         //main.movePracticeLog();
         //main.moveShahokokuho();
@@ -36,6 +36,7 @@ public class Main {
         //main.moveConductKizai();
         //main.moveCharge();
         //main.movePayment();
+        main.moveDisease();
     }
 
     private Main() throws Exception {
@@ -52,6 +53,17 @@ public class Main {
 
     private Mover createMover(String table){
         return createMover(table, table);
+    }
+
+    private void moveDisease() throws Exception {
+        Mover mover = createMover("disease");
+        mover.addIntColumn("disease_id");
+        mover.addIntColumn("patient_id");
+        mover.addIntColumn("shoubyoumeicode");
+        mover.addDateColumn("start_date");
+        mover.addNullableDateColumn("end_date");
+        mover.addStringColumn("end_reason");
+        mover.move();
     }
 
     private void movePayment() throws Exception {
