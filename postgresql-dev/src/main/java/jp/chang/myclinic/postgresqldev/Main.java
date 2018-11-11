@@ -37,7 +37,9 @@ public class Main {
         //main.moveCharge();
         //main.movePayment();
         //main.moveDisease();
-        main.moveDiseaseAdj();
+        //main.moveDiseaseAdj();
+        //main.moveDrugAttr();
+        main.moveHotline();
     }
 
     private Main() throws Exception {
@@ -54,6 +56,23 @@ public class Main {
 
     private Mover createMover(String table){
         return createMover(table, table);
+    }
+
+    private void moveHotline() throws Exception {
+        Mover mover = createMover("hotline");
+        mover.addSerialColumn("hotline_id");
+        mover.addStringColumn("message");
+        mover.addStringColumn("sender");
+        mover.addStringColumn("recipient");
+        mover.addTimestamp("m_datetime", "posted_at");
+        mover.move();
+    }
+
+    private void moveDrugAttr() throws Exception {
+        Mover mover = createMover("drug_attr");
+        mover.addIntColumn("drug_id");
+        mover.addStringColumn("tekiyou");
+        mover.move();
     }
 
     private void moveDiseaseAdj() throws Exception {
