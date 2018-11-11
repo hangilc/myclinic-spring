@@ -29,6 +29,24 @@ class Mover {
         columns.add(col);
     }
 
+    void addValidFromColumn(){
+        addColumn(new Column("valid_from") {
+            @Override
+            void setParam(PreparedStatement stmt, int index, ResultSet rs) throws SQLException {
+                stmt.setDate(index, Date.valueOf(rs.getString("valid_from")));
+            }
+        });
+    }
+
+    void addValidUptoColumn(){
+        addColumn(new Column("valid_upto") {
+            @Override
+            void setParam(PreparedStatement stmt, int index, ResultSet rs) throws SQLException {
+                stmt.setDate(index, convertValidUpto(rs.getString("valid_upto")));
+            }
+        });
+    }
+
     void addTimestamp(String name){
         addTimestamp(name, name);
     }
@@ -159,6 +177,16 @@ class Mover {
                 columns.stream().map(Column::getName).collect(Collectors.joining(",")),
                 columns.stream().map(c -> "?").collect(Collectors.joining(","))
         );
+    }
+
+    private static Date convertValidUpto(String sqldate){
+        if( sqldate == null ){
+            return null;
+        } else if( "0000-00-00".equals(sqldate) ){
+            return null;
+        } else {
+            return Date.valueOf(sqldate);
+        }
     }
 
 }

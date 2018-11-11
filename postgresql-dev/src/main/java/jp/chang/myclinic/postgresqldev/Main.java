@@ -15,6 +15,8 @@ public class Main {
         //main.moveIyakuhinMaster(false);
         //main.moveShinryouMaster(false);
         //main.moveKizaiMaster(false);
+        //main.moveShoubyoumeiMaster();
+        main.moveShuushokugoMaster();
         //main.movePatient();
         //main.movePracticeLog();
         //main.moveShahokokuho();
@@ -33,7 +35,7 @@ public class Main {
         //main.moveConductShinryou();
         //main.moveConductKizai();
         //main.moveCharge();
-        main.movePayment();
+        //main.movePayment();
     }
 
     private Main() throws Exception {
@@ -149,6 +151,22 @@ public class Main {
         Mover mover = createMover("wqueue");
         mover.addIntColumn("visit_id");
         mover.addIntColumn("wait_state");
+        mover.move();
+    }
+
+    private void moveShuushokugoMaster() throws Exception {
+        Mover mover = createMover("shuushokugo_master");
+        mover.addIntColumn("shuushokugocode");
+        mover.addStringColumn("name");
+        mover.move();
+    }
+
+    private void moveShoubyoumeiMaster() throws Exception {
+        Mover mover = createMover("shoubyoumei_master_arch", "shoubyoumei_master");
+        mover.addIntColumn("shoubyoumeicode");
+        mover.addStringColumn("name");
+        mover.addValidFromColumn();
+        mover.addValidUptoColumn();
         mover.move();
     }
 
