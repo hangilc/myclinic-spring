@@ -43,7 +43,9 @@ public class Main {
         //main.movePharmaDrug();
         //main.movePrescExample();
         //main.moveShinryouAttr();
-        main.moveShouki();
+        //main.moveShouki();
+        //main.moveIntraclinicPost();
+        main.moveIntraclinicComment();
     }
 
     private Main() throws Exception {
@@ -60,6 +62,24 @@ public class Main {
 
     private Mover createMover(String table){
         return createMover(table, table);
+    }
+
+    private void moveIntraclinicComment() throws Exception {
+        Mover mover = createMover("intraclinic_comment");
+        mover.addSerialColumn("id", "comment_id");
+        mover.addStringColumn("name");
+        mover.addStringColumn("content");
+        mover.addIntColumn("post_id");
+        mover.addDateColumn("created_at");
+        mover.move();
+    }
+
+    private void moveIntraclinicPost() throws Exception {
+        Mover mover = createMover("intraclinic_post");
+        mover.addSerialColumn("id", "post_id");
+        mover.addStringColumn("content");
+        mover.addDateColumn("created_at");
+        mover.move();
     }
 
     private void moveShouki() throws Exception {

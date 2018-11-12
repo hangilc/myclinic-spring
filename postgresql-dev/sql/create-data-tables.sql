@@ -1,3 +1,6 @@
+drop table if exists intraclinic_comment;
+drop table if exists intraclinic_post;
+
 drop table if exists hotline cascade;
 
 drop table if exists shouki cascade;
@@ -55,5 +58,9 @@ drop table if exists practice_log cascade;
 \i shouki.sql
 
 \i hotline.sql
+
+\i intraclinic_post.sql
+\i intraclinic_comment.sql
+
 
 
