@@ -45,7 +45,9 @@ public class Main {
         //main.moveShinryouAttr();
         //main.moveShouki();
         //main.moveIntraclinicPost();
-        main.moveIntraclinicComment();
+        //main.moveIntraclinicComment();
+        //main.moveIntraclinicTag();
+        main.moveIntraclinicTagPost();
     }
 
     private Main() throws Exception {
@@ -62,6 +64,20 @@ public class Main {
 
     private Mover createMover(String table){
         return createMover(table, table);
+    }
+
+    private void moveIntraclinicTagPost() throws Exception {
+        Mover mover = createMover("intraclinic_tag_post");
+        mover.addIntColumn("tag_id");
+        mover.addIntColumn("post_id");
+        mover.move();
+    }
+
+    private void moveIntraclinicTag() throws Exception {
+        Mover mover = createMover("intraclinic_tag");
+        mover.addSerialColumn("id", "tag_id");
+        mover.addStringColumn("name");
+        mover.move();
     }
 
     private void moveIntraclinicComment() throws Exception {

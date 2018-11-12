@@ -186,7 +186,7 @@ class Mover {
                 System.out.printf("%s %d\n", mysqlSourceTable, n);
             }
         }
-        System.out.printf("visit %d\n", n);
+        System.out.printf("%s %d\n", pgsqlTargetTable, n);
         pgsqlStmt.close();
         rset.close();
         stmt.close();

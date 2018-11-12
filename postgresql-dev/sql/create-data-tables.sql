@@ -1,3 +1,5 @@
+drop table if exists intraclinic_tag_post;
+drop table if exists intraclinic_tag;
 drop table if exists intraclinic_comment;
 drop table if exists intraclinic_post;
 
@@ -61,6 +63,8 @@ drop table if exists practice_log cascade;
 
 \i intraclinic_post.sql
 \i intraclinic_comment.sql
+\i intraclinic_tag.sql
+\i intraclinic_tag_post.sql
 
 
 
