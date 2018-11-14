@@ -46,6 +46,8 @@ public class DbGateway {
     private VisitRepository visitRepository;
     @Autowired
     private HotlineRepository hotlineRepository;
+    @Autowired
+    private WqueueRepository wqueueRepository;
 
     @Autowired
     private PracticeLogger practiceLogger;
@@ -409,6 +411,13 @@ public class DbGateway {
         return mapper.toVisitDTO(visit);
     }
 
+    public int enterVisit(VisitDTO visitDTO) {
+        Visit visit = mapper.fromVisitDTO(visitDTO);
+        visit = visitRepository.save(visit);
+        practiceLogger.logVisitCreated(mapper.toVisitDTO(visit));
+        return visit.getVisitId();
+    }
+
     public void updateVisit(VisitDTO visitDTO) {
         VisitDTO prev = getVisit(visitDTO.visitId);
         Visit visit = mapper.fromVisitDTO(visitDTO);
@@ -525,6 +534,13 @@ public class DbGateway {
             return Optional.of(mapper.toHotlineDTO(result.get(0)));
         }
     }
+
+    public void enterWqueue(WqueueDTO wqueueDTO) {
+        Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
+        wqueueRepository.save(wqueue);
+        practiceLogger.logWqueueCreated(wqueueDTO);
+    }
+
 
 
 

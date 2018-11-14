@@ -15,7 +15,7 @@ public class Main {
         //main.moveIyakuhinMaster(false);
         //main.moveShinryouMaster(false);
         //main.moveKizaiMaster(false);
-        //main.moveShoubyoumeiMaster();
+        main.moveByoumeiMaster();
         //main.moveShuushokugoMaster();
         //main.movePatient();
         //main.movePracticeLog();
@@ -44,10 +44,10 @@ public class Main {
         //main.movePrescExample();
         //main.moveShinryouAttr();
         //main.moveShouki();
-        main.moveIntraclinicPost();
-        main.moveIntraclinicComment();
-        main.moveIntraclinicTag();
-        main.moveIntraclinicTagPost();
+        //main.moveIntraclinicPost();
+        //main.moveIntraclinicComment();
+        //main.moveIntraclinicTag();
+        //main.moveIntraclinicTagPost();
     }
 
     private Main() throws Exception {
@@ -276,8 +276,8 @@ public class Main {
         mover.move();
     }
 
-    private void moveShoubyoumeiMaster() throws Exception {
-        Mover mover = createMover("shoubyoumei_master_arch", "shoubyoumei_master");
+    private void moveByoumeiMaster() throws Exception {
+        Mover mover = createMover("shoubyoumei_master_arch", "byoumei_master");
         mover.addIntColumn("shoubyoumeicode");
         mover.addStringColumn("name");
         mover.addValidFromColumn();

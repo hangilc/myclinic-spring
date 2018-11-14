@@ -1,6 +1,8 @@
 package jp.chang.myclinic.serverpostgresql.rest;
 
+import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.dto.PatientHokenListDTO;
 import jp.chang.myclinic.serverpostgresql.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,28 +97,28 @@ public class PatientController {
 		return true;
 	}
 
-//	@RequestMapping(value="/enter-patient-with-hoken", method=RequestMethod.POST)
-//	public PatientHokenListDTO enterPatientWithHoken(@RequestBody PatientHokenListDTO patientHokenList){
-//		int patientId = dbGateway.enterPatient(patientHokenList.patientDTO);
-//		patientHokenList.patientDTO.patientId = patientId;
-//		HokenListDTO hokenListDTO = patientHokenList.hokenListDTO;
-//		hokenListDTO.shahokokuhoListDTO.forEach(shahokokuhoDTO -> {
-//			shahokokuhoDTO.patientId = patientId;
-//			shahokokuhoDTO.shahokokuhoId = dbGateway.enterShahokokuho(shahokokuhoDTO);
-//		});
-//		hokenListDTO.koukikoureiListDTO.forEach(koukikoureiDTO -> {
-//			koukikoureiDTO.patientId = patientId;
-//			koukikoureiDTO.koukikoureiId = dbGateway.enterKoukikourei(koukikoureiDTO);
-//		});
-//		hokenListDTO.roujinListDTO.forEach(roujinDTO -> {
-//			roujinDTO.patientId = patientId;
-//			roujinDTO.roujinId = dbGateway.enterRoujin(roujinDTO);
-//		});
-//		hokenListDTO.kouhiListDTO.forEach(kouhiDTO -> {
-//			kouhiDTO.patientId = patientId;
-//			kouhiDTO.kouhiId = dbGateway.enterKouhi(kouhiDTO);
-//		});
-//		return patientHokenList;
-//	}
-//
+	@RequestMapping(value="/enter-patient-with-hoken", method=RequestMethod.POST)
+	public PatientHokenListDTO enterPatientWithHoken(@RequestBody PatientHokenListDTO patientHokenList){
+		int patientId = dbGateway.enterPatient(patientHokenList.patientDTO);
+		patientHokenList.patientDTO.patientId = patientId;
+		HokenListDTO hokenListDTO = patientHokenList.hokenListDTO;
+		hokenListDTO.shahokokuhoListDTO.forEach(shahokokuhoDTO -> {
+			shahokokuhoDTO.patientId = patientId;
+			shahokokuhoDTO.shahokokuhoId = dbGateway.enterShahokokuho(shahokokuhoDTO);
+		});
+		hokenListDTO.koukikoureiListDTO.forEach(koukikoureiDTO -> {
+			koukikoureiDTO.patientId = patientId;
+			koukikoureiDTO.koukikoureiId = dbGateway.enterKoukikourei(koukikoureiDTO);
+		});
+		hokenListDTO.roujinListDTO.forEach(roujinDTO -> {
+			roujinDTO.patientId = patientId;
+			roujinDTO.roujinId = dbGateway.enterRoujin(roujinDTO);
+		});
+		hokenListDTO.kouhiListDTO.forEach(kouhiDTO -> {
+			kouhiDTO.patientId = patientId;
+			kouhiDTO.kouhiId = dbGateway.enterKouhi(kouhiDTO);
+		});
+		return patientHokenList;
+	}
+
 }

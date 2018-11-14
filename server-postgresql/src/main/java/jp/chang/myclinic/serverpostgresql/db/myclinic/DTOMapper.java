@@ -172,25 +172,20 @@ public class DTOMapper {
 		return visit;
 	}
 
+ 	public WqueueDTO toWqueueDTO(Wqueue wqueue){
+		WqueueDTO wqueueDTO = new WqueueDTO();
+		wqueueDTO.visitId = wqueue.getVisitId();
+		wqueueDTO.waitState = wqueue.getWaitState();
+		return wqueueDTO;
+	}
 
+	public Wqueue fromWqueueDTO(WqueueDTO wqueueDTO){
+		Wqueue wqueue = new Wqueue();
+		wqueue.setVisitId(wqueueDTO.visitId);
+		wqueue.setWaitState(wqueueDTO.waitState);
+		return wqueue;
+	}
 
-
-
-
-// 	public WqueueDTO toWqueueDTO(Wqueue wqueue){
-//		WqueueDTO wqueueDTO = new WqueueDTO();
-//		wqueueDTO.visitId = wqueue.getVisitId();
-//		wqueueDTO.waitState = wqueue.getWaitState();
-//		return wqueueDTO;
-//	}
-//
-//	public Wqueue fromWqueueDTO(WqueueDTO wqueueDTO){
-//		Wqueue wqueue = new Wqueue();
-//		wqueue.setVisitId(wqueueDTO.visitId);
-//		wqueue.setWaitState(wqueueDTO.waitState);
-//		return wqueue;
-//	}
-//
 //	public ChargeDTO toChargeDTO(Charge charge){
 //		ChargeDTO chargeDTO = new ChargeDTO();
 //		chargeDTO.visitId = charge.getVisitId();
