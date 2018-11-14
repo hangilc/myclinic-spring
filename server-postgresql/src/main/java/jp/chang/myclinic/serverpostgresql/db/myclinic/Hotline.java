@@ -1,6 +1,7 @@
 package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="hotline")
@@ -18,8 +19,8 @@ public class Hotline {
 
     private String recipient;
 
-    @Column(name="m_datetime")
-    private String postedAt;
+    @Column(name="postedAt")
+    private LocalDateTime postedAt;
 
     public Integer getHotlineId() {
         return hotlineId;
@@ -53,11 +54,11 @@ public class Hotline {
         this.recipient = recipient;
     }
 
-    public String getPostedAt() {
+    public LocalDateTime getPostedAt() {
         return postedAt;
     }
 
-    public void setPostedAt(String postedAt) {
+    public void setPostedAt(LocalDateTime postedAt) {
         this.postedAt = postedAt;
     }
 }

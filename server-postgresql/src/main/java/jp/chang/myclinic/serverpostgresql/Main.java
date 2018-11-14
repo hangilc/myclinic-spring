@@ -52,6 +52,16 @@ public class Main {
         return HoukatsuKensa.load();
     }
 
+    @Bean(name="practice-logger")
+    public PublishingWebSocketHandler getPracticeLogHandler(){
+        return new PublishingWebSocketHandler();
+    }
+
+    @Bean(name="hotline-logger")
+    public PublishingWebSocketHandler getHotlineLogHandler(){
+        return new PublishingWebSocketHandler();
+    }
+
 
 }
 

@@ -3,6 +3,7 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.serverpostgresql.PracticeLogger;
+import jp.chang.myclinic.serverpostgresql.HotlineLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -32,8 +33,6 @@ public class DbGateway {
     @Autowired
     private PatientRepository patientRepository;
     @Autowired
-    private PracticeLogger practiceLogger;
-    @Autowired
     private PracticeLogJdbc practiceLogJdbc;
     @Autowired
     private ShahokokuhoRepository shahokokuhoRepository;
@@ -45,6 +44,13 @@ public class DbGateway {
     private KouhiRepository kouhiRepository;
     @Autowired
     private VisitRepository visitRepository;
+    @Autowired
+    private HotlineRepository hotlineRepository;
+
+    @Autowired
+    private PracticeLogger practiceLogger;
+    @Autowired
+    private HotlineLogger hotlineLogger;
 
     private DTOMapper mapper = new DTOMapper();
 
@@ -472,6 +478,52 @@ public class DbGateway {
         }
         return visitRepository.findWithPatient(visitIds, Sort.by("visitId")).stream()
                 .map(this::resultToVisitPatientDTO).collect(Collectors.toList());
+    }
+
+    public Integer getLastHotlineId() {
+        Optional<Hotline> hotline = hotlineRepository.findTopByOrderByHotlineIdDesc();
+        return hotline.map(Hotline::getHotlineId).orElse(0);
+    }
+
+    public List<HotlineDTO> listHotlineInRange(int lowerHotlineId, int upperHotlineId) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "hotlineId");
+        return hotlineRepository.findInRange(lowerHotlineId, upperHotlineId, sort).stream()
+                .map(mapper::toHotlineDTO).collect(Collectors.toList());
+    }
+
+    public List<HotlineDTO> listTodaysHotlineInRange(int afterId, int beforeId){
+        return hotlineRepository.findTodaysHotlineInRange(afterId, beforeId, Sort.by("hotlineId"))
+                .stream()
+                .map(mapper::toHotlineDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<HotlineDTO> listRecentHotline(int thresholdHotlineId) {
+        return hotlineRepository.findRecent(thresholdHotlineId).stream()
+                .map(mapper::toHotlineDTO).collect(Collectors.toList());
+    }
+
+    public int enterHotline(HotlineDTO hotlineDTO) {
+        Hotline hotline = mapper.fromHotlineDTO(hotlineDTO);
+        hotline = hotlineRepository.save(hotline);
+        hotlineLogger.logHotlineCreated(mapper.toHotlineDTO(hotline));
+        return  hotline.getHotlineId();
+    }
+
+    public List<HotlineDTO> listTodaysHotline() {
+        return hotlineRepository.findTodaysHotline(Sort.by("hotlineId")).stream()
+                .map(mapper::toHotlineDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<HotlineDTO> getTodaysLastHotline(){
+        List<Hotline> result = hotlineRepository.findTodaysHotline(
+                PageRequest.of(0, 1, Sort.by("hotlineId").descending()));
+        if( result.size() == 0 ){
+            return Optional.empty();
+        } else {
+            return Optional.of(mapper.toHotlineDTO(result.get(0)));
+        }
     }
 
 

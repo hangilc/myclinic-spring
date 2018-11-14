@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Qualifier("practice-logger")
 public class PublishingWebSocketHandler extends TextWebSocketHandler {
 
     private static Logger logger = LoggerFactory.getLogger(PublishingWebSocketHandler.class);
