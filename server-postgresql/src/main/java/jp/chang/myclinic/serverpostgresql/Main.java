@@ -15,27 +15,8 @@ public class Main {
     public static void main( String[] args )
     {
         SpringApplication application = new SpringApplication(Main.class);
-
-//        Properties properties = new Properties();
-//        properties.put("spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation", true);
-//        properties.put("spring.jpa.database-platform", "org.hibernate.dialect.PostgreSQLDialect");
-//        properties.put("spring.jpa.properties.hibernate.show_sql", true);
-//        properties.put("spring.jpa.properties.hibernate.format_sql", true);
-//        application.setDefaultProperties(properties);
-
         application.run(args);
     }
-
-//    @Bean
-//    @Primary
-//    public DataSource getDataSource(){
-//        return DataSourceBuilder.create()
-//                .url("jdbc:postgresql://localhost:5432/myclinic")
-//                .username(System.getenv("MYCLINIC_DB_USER"))
-//                .password(System.getenv("MYCLINIC_DB_PASS"))
-//                .driverClassName("org.postgresql.Driver")
-//                .build();
-//    }
 
     @Bean
     public MasterMap getMasterMap(@Value("${myclinic.master-map-file}") String masterMapLocation,
