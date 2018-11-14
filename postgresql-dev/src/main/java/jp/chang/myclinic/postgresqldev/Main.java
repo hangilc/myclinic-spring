@@ -44,9 +44,9 @@ public class Main {
         //main.movePrescExample();
         //main.moveShinryouAttr();
         //main.moveShouki();
-        //main.moveIntraclinicPost();
-        //main.moveIntraclinicComment();
-        //main.moveIntraclinicTag();
+        main.moveIntraclinicPost();
+        main.moveIntraclinicComment();
+        main.moveIntraclinicTag();
         main.moveIntraclinicTagPost();
     }
 
