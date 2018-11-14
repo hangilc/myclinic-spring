@@ -15,6 +15,7 @@ public class Main {
     public static void main( String[] args )
     {
         SpringApplication application = new SpringApplication(Main.class);
+        application.setAdditionalProfiles("postgresql");
         application.run(args);
     }
 
