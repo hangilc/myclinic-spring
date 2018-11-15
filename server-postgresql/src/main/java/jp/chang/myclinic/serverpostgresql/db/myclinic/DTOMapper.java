@@ -186,52 +186,52 @@ public class DTOMapper {
 		return wqueue;
 	}
 
-//	public ChargeDTO toChargeDTO(Charge charge){
-//		ChargeDTO chargeDTO = new ChargeDTO();
-//		chargeDTO.visitId = charge.getVisitId();
-//		chargeDTO.charge = charge.getCharge();
-//		return chargeDTO;
-//	}
-//
-//	public Charge fromChargeDTO(ChargeDTO chargeDTO){
-//		Charge charge = new Charge();
-//		charge.setVisitId(chargeDTO.visitId);
-//		charge.setCharge(chargeDTO.charge);
-//		return charge;
-//	}
-//
-//	public PaymentDTO toPaymentDTO(Payment payment){
-//		PaymentDTO paymentDTO = new PaymentDTO();
-//		paymentDTO.visitId = payment.getVisitId();
-//		paymentDTO.amount = payment.getAmount();
-//		paymentDTO.paytime = timestampToString(payment.getPaytime());
-//		return paymentDTO;
-//	}
-//
-//	public Payment fromPaymentDTO(PaymentDTO paymentDTO){
-//		Payment payment = new Payment();
-//		payment.setVisitId(paymentDTO.visitId);
-//		payment.setAmount(paymentDTO.amount);
-//		payment.setPaytime(stringToTimestamp(paymentDTO.paytime));
-//		return payment;
-//	}
-//
-//	public ShinryouDTO toShinryouDTO(Shinryou shinryou){
-//		ShinryouDTO shinryouDTO = new ShinryouDTO();
-//		shinryouDTO.shinryouId = shinryou.getShinryouId();
-//		shinryouDTO.visitId = shinryou.getVisitId();
-//		shinryouDTO.shinryoucode = shinryou.getShinryoucode();
-//		return shinryouDTO;
-//	}
-//
-//	public Shinryou fromShinryouDTO(ShinryouDTO shinryouDTO){
-//		Shinryou shinryou = new Shinryou();
-//		shinryou.setShinryouId(shinryouDTO.shinryouId);
-//		shinryou.setVisitId(shinryouDTO.visitId);
-//		shinryou.setShinryoucode(shinryouDTO.shinryoucode);
-//		return shinryou;
-//	}
-//
+	public ChargeDTO toChargeDTO(Charge charge){
+		ChargeDTO chargeDTO = new ChargeDTO();
+		chargeDTO.visitId = charge.getVisitId();
+		chargeDTO.charge = charge.getCharge();
+		return chargeDTO;
+	}
+
+	public Charge fromChargeDTO(ChargeDTO chargeDTO){
+		Charge charge = new Charge();
+		charge.setVisitId(chargeDTO.visitId);
+		charge.setCharge(chargeDTO.charge);
+		return charge;
+	}
+
+	public PaymentDTO toPaymentDTO(Payment payment){
+		PaymentDTO paymentDTO = new PaymentDTO();
+		paymentDTO.visitId = payment.getVisitId();
+		paymentDTO.amount = payment.getAmount();
+		paymentDTO.paytime = localDateTimeToSqldatetime(payment.getPaytime());
+		return paymentDTO;
+	}
+
+	public Payment fromPaymentDTO(PaymentDTO paymentDTO){
+		Payment payment = new Payment();
+		payment.setVisitId(paymentDTO.visitId);
+		payment.setAmount(paymentDTO.amount);
+		payment.setPaytime(sqldatetimeToLocalDateTime(paymentDTO.paytime));
+		return payment;
+	}
+
+	public ShinryouDTO toShinryouDTO(Shinryou shinryou){
+		ShinryouDTO shinryouDTO = new ShinryouDTO();
+		shinryouDTO.shinryouId = shinryou.getShinryouId();
+		shinryouDTO.visitId = shinryou.getVisitId();
+		shinryouDTO.shinryoucode = shinryou.getShinryoucode();
+		return shinryouDTO;
+	}
+
+	public Shinryou fromShinryouDTO(ShinryouDTO shinryouDTO){
+		Shinryou shinryou = new Shinryou();
+		shinryou.setShinryouId(shinryouDTO.shinryouId);
+		shinryou.setVisitId(shinryouDTO.visitId);
+		shinryou.setShinryoucode(shinryouDTO.shinryoucode);
+		return shinryou;
+	}
+
     public ShinryouMasterDTO toShinryouMasterDTO(ShinryouMaster master) {
         ShinryouMasterDTO masterDTO = new ShinryouMasterDTO();
         masterDTO.shinryoucode = master.getShinryoucode();
@@ -261,32 +261,31 @@ public class DTOMapper {
         return master;
     }
 
-//	public DrugDTO toDrugDTO(Drug drug){
-//		DrugDTO drugDTO = new DrugDTO();
-//		drugDTO.drugId = drug.getDrugId();
-//		drugDTO.visitId = drug.getVisitId();
-//		drugDTO.iyakuhincode = drug.getIyakuhincode();
-//		drugDTO.amount = Double.parseDouble(drug.getAmount());
-//		drugDTO.usage = drug.getUsage();
-//		drugDTO.days = drug.getDays();
-//		drugDTO.category = drug.getCategory();
-//		drugDTO.prescribed = drug.getPrescribed();
-//		return drugDTO;
-//	}
-//
-//	public Drug fromDrugDTO(DrugDTO drugDTO){
-//		Drug drug = new Drug();
-//		drug.setDrugId(drugDTO.drugId);
-//		drug.setVisitId(drugDTO.visitId);
-//		drug.setIyakuhincode(drugDTO.iyakuhincode);
-//		//drug.setAmount(BigDecimal.valueOf(drugDTO.amount));
-//		drug.setAmount(simpleNumberFormatter.format(drugDTO.amount));
-//		drug.setUsage(drugDTO.usage);
-//		drug.setDays(drugDTO.days);
-//		drug.setCategory(drugDTO.category);
-//		drug.setPrescribed(drugDTO.prescribed);
-//		return drug;
-//	}
+	public DrugDTO toDrugDTO(Drug drug){
+		DrugDTO drugDTO = new DrugDTO();
+		drugDTO.drugId = drug.getDrugId();
+		drugDTO.visitId = drug.getVisitId();
+		drugDTO.iyakuhincode = drug.getIyakuhincode();
+		drugDTO.amount = drug.getAmount().doubleValue();
+		drugDTO.usage = drug.getUsage();
+		drugDTO.days = drug.getDays();
+		drugDTO.category = drug.getCategory();
+		drugDTO.prescribed = drug.getPrescribed();
+		return drugDTO;
+	}
+
+	public Drug fromDrugDTO(DrugDTO drugDTO){
+		Drug drug = new Drug();
+		drug.setDrugId(drugDTO.drugId);
+		drug.setVisitId(drugDTO.visitId);
+		drug.setIyakuhincode(drugDTO.iyakuhincode);
+		drug.setAmount(new BigDecimal(drugDTO.amount));
+		drug.setUsage(drugDTO.usage);
+		drug.setDays(drugDTO.days);
+		drug.setCategory(drugDTO.category);
+		drug.setPrescribed(drugDTO.prescribed);
+		return drug;
+	}
 
     public IyakuhinMasterDTO toIyakuhinMasterDTO(IyakuhinMaster master) {
         IyakuhinMasterDTO masterDTO = new IyakuhinMasterDTO();
@@ -342,133 +341,133 @@ public class DTOMapper {
         return master;
     }
 
-    //	public ConductDTO toConductDTO(Conduct conduct){
-//		ConductDTO conductDTO = new ConductDTO();
-//		conductDTO.conductId = conduct.getConductId();
-//		conductDTO.visitId = conduct.getVisitId();
-//		conductDTO.kind = conduct.getKind();
-//		return conductDTO;
-//	}
-//
-//	public Conduct fromConductDTO(ConductDTO conductDTO){
-//		Conduct conduct = new Conduct();
-//		conduct.setConductId(conductDTO.conductId);
-//		conduct.setVisitId(conductDTO.visitId);
-//		conduct.setKind(conductDTO.kind);
-//		return conduct;
-//	}
-//
-//	public ConductDrugDTO toConductDrugDTO(ConductDrug drug){
-//		ConductDrugDTO drugDTO = new ConductDrugDTO();
-//		drugDTO.conductDrugId = drug.getConductDrugId();
-//		drugDTO.conductId = drug.getConductId();
-//		drugDTO.iyakuhincode = drug.getIyakuhincode();
-//		drugDTO.amount = drug.getAmount().doubleValue();
-//		return drugDTO;
-//	}
-//
-//	public ConductDrug fromConductDrugDTO(ConductDrugDTO drugDTO){
-//		ConductDrug drug = new ConductDrug();
-//		drug.setConductDrugId(drugDTO.conductDrugId);
-//		drug.setConductId(drugDTO.conductId);
-//		drug.setIyakuhincode(drugDTO.iyakuhincode);
-//		drug.setAmount(BigDecimal.valueOf(drugDTO.amount));
-//		return drug;
-//	}
-//
-//	public ConductKizaiDTO toConductKizaiDTO(ConductKizai kizai){
-//		ConductKizaiDTO kizaiDTO = new ConductKizaiDTO();
-//		kizaiDTO.conductKizaiId = kizai.getConductKizaiId();
-//		kizaiDTO.conductId = kizai.getConductId();
-//		kizaiDTO.kizaicode = kizai.getKizaicode();
-//		kizaiDTO.amount = kizai.getAmount().doubleValue();
-//		return kizaiDTO;
-//	}
-//
-//	public ConductKizai fromConductKizaiDTO(ConductKizaiDTO kizaiDTO){
-//		ConductKizai kizai = new ConductKizai();
-//		kizai.setConductKizaiId(kizaiDTO.conductKizaiId);
-//		kizai.setConductId(kizaiDTO.conductId);
-//		kizai.setKizaicode(kizaiDTO.kizaicode);
-//		kizai.setAmount(BigDecimal.valueOf(kizaiDTO.amount));
-//		return kizai;
-//	}
-//
-//	public ConductShinryouDTO toConductShinryouDTO(ConductShinryou shinryou){
-//		ConductShinryouDTO shinryouDTO = new ConductShinryouDTO();
-//		shinryouDTO.conductShinryouId = shinryou.getConductShinryouId();
-//		shinryouDTO.conductId = shinryou.getConductId();
-//		shinryouDTO.shinryoucode = shinryou.getShinryoucode();
-//		return shinryouDTO;
-//	}
-//
-//	public ConductShinryou fromConductShinryouDTO(ConductShinryouDTO shinryouDTO){
-//		ConductShinryou shinryou = new ConductShinryou();
-//		shinryou.setConductShinryouId(shinryouDTO.conductShinryouId);
-//		shinryou.setConductId(shinryouDTO.conductId);
-//		shinryou.setShinryoucode(shinryouDTO.shinryoucode);
-//		return shinryou;
-//	}
-//
-//	public GazouLabelDTO toGazouLabelDTO(GazouLabel gazouLabel){
-//		GazouLabelDTO gazouLabelDTO = new GazouLabelDTO();
-//		gazouLabelDTO.conductId = gazouLabel.getConductId();
-//		gazouLabelDTO.label = gazouLabel.getLabel();
-//		return gazouLabelDTO;
-//	}
-//
-//	public GazouLabel fromGazouLabelDTO(GazouLabelDTO gazouLabelDTO){
-//		GazouLabel gazouLabel = new GazouLabel();
-//		gazouLabel.setConductId(gazouLabelDTO.conductId);
-//		gazouLabel.setLabel(gazouLabelDTO.label);
-//		return gazouLabel;
-//	}
-//
-//	public Text fromTextDTO(TextDTO textDTO){
-//		Text text = new Text();
-//		text.setTextId(textDTO.textId);
-//		text.setVisitId(textDTO.visitId);
-//		text.setContent(textDTO.content);
-//		return text;
-//	}
-//
-//	public TextDTO toTextDTO(Text text){
-//		TextDTO textDTO = new TextDTO();
-//		textDTO.textId = text.getTextId();
-//		textDTO.visitId = text.getVisitId();
-//		textDTO.content = text.getContent();
-//		return textDTO;
-//	}
-//
-//	public PharmaQueueDTO toPharmaQueueDTO(PharmaQueue pharmaQueue){
-//		PharmaQueueDTO pharmaQueueDTO = new PharmaQueueDTO();
-//		pharmaQueueDTO.visitId = pharmaQueue.getVisitId();
-//		pharmaQueueDTO.pharmaState = pharmaQueue.getPharmaState();
-//		return pharmaQueueDTO;
-//	}
-//
-//	public PharmaQueue fromPharmaQueueDTO(PharmaQueueDTO pharmaQueueDTO){
-//		PharmaQueue pharmaQueue = new PharmaQueue();
-//		pharmaQueue.setVisitId(pharmaQueueDTO.visitId);
-//		pharmaQueue.setPharmaState(pharmaQueueDTO.pharmaState);
-//		return pharmaQueue;
-//	}
-//
-//	public PharmaDrugDTO toPharmaDrugDTO(PharmaDrug pharmaDrug){
-//		PharmaDrugDTO pharmaDrugDTO = new PharmaDrugDTO();
-//		pharmaDrugDTO.iyakuhincode = pharmaDrug.getIyakuhincode();
-//		pharmaDrugDTO.description = pharmaDrug.getDescription();
-//		pharmaDrugDTO.sideeffect = pharmaDrug.getSideeffect();
-//		return pharmaDrugDTO;
-//	}
-//
-//	public PharmaDrug fromPharmaDrugDTO(PharmaDrugDTO pharmaDrugDTO){
-//		PharmaDrug pharmaDrug = new PharmaDrug();
-//		pharmaDrug.setIyakuhincode(pharmaDrugDTO.iyakuhincode);
-//		pharmaDrug.setDescription(pharmaDrugDTO.description);
-//		pharmaDrug.setSideeffect(pharmaDrugDTO.sideeffect);
-//		return pharmaDrug;
-//	}
+    public ConductDTO toConductDTO(Conduct conduct){
+		ConductDTO conductDTO = new ConductDTO();
+		conductDTO.conductId = conduct.getConductId();
+		conductDTO.visitId = conduct.getVisitId();
+		conductDTO.kind = conduct.getKind();
+		return conductDTO;
+	}
+
+	public Conduct fromConductDTO(ConductDTO conductDTO){
+		Conduct conduct = new Conduct();
+		conduct.setConductId(conductDTO.conductId);
+		conduct.setVisitId(conductDTO.visitId);
+		conduct.setKind(conductDTO.kind);
+		return conduct;
+	}
+
+	public ConductDrugDTO toConductDrugDTO(ConductDrug drug){
+		ConductDrugDTO drugDTO = new ConductDrugDTO();
+		drugDTO.conductDrugId = drug.getConductDrugId();
+		drugDTO.conductId = drug.getConductId();
+		drugDTO.iyakuhincode = drug.getIyakuhincode();
+		drugDTO.amount = drug.getAmount().doubleValue();
+		return drugDTO;
+	}
+
+	public ConductDrug fromConductDrugDTO(ConductDrugDTO drugDTO){
+		ConductDrug drug = new ConductDrug();
+		drug.setConductDrugId(drugDTO.conductDrugId);
+		drug.setConductId(drugDTO.conductId);
+		drug.setIyakuhincode(drugDTO.iyakuhincode);
+		drug.setAmount(BigDecimal.valueOf(drugDTO.amount));
+		return drug;
+	}
+
+	public ConductKizaiDTO toConductKizaiDTO(ConductKizai kizai){
+		ConductKizaiDTO kizaiDTO = new ConductKizaiDTO();
+		kizaiDTO.conductKizaiId = kizai.getConductKizaiId();
+		kizaiDTO.conductId = kizai.getConductId();
+		kizaiDTO.kizaicode = kizai.getKizaicode();
+		kizaiDTO.amount = kizai.getAmount().doubleValue();
+		return kizaiDTO;
+	}
+
+	public ConductKizai fromConductKizaiDTO(ConductKizaiDTO kizaiDTO){
+		ConductKizai kizai = new ConductKizai();
+		kizai.setConductKizaiId(kizaiDTO.conductKizaiId);
+		kizai.setConductId(kizaiDTO.conductId);
+		kizai.setKizaicode(kizaiDTO.kizaicode);
+		kizai.setAmount(BigDecimal.valueOf(kizaiDTO.amount));
+		return kizai;
+	}
+
+	public ConductShinryouDTO toConductShinryouDTO(ConductShinryou shinryou){
+		ConductShinryouDTO shinryouDTO = new ConductShinryouDTO();
+		shinryouDTO.conductShinryouId = shinryou.getConductShinryouId();
+		shinryouDTO.conductId = shinryou.getConductId();
+		shinryouDTO.shinryoucode = shinryou.getShinryoucode();
+		return shinryouDTO;
+	}
+
+	public ConductShinryou fromConductShinryouDTO(ConductShinryouDTO shinryouDTO){
+		ConductShinryou shinryou = new ConductShinryou();
+		shinryou.setConductShinryouId(shinryouDTO.conductShinryouId);
+		shinryou.setConductId(shinryouDTO.conductId);
+		shinryou.setShinryoucode(shinryouDTO.shinryoucode);
+		return shinryou;
+	}
+
+	public GazouLabelDTO toGazouLabelDTO(GazouLabel gazouLabel){
+		GazouLabelDTO gazouLabelDTO = new GazouLabelDTO();
+		gazouLabelDTO.conductId = gazouLabel.getConductId();
+		gazouLabelDTO.label = gazouLabel.getLabel();
+		return gazouLabelDTO;
+	}
+
+	public GazouLabel fromGazouLabelDTO(GazouLabelDTO gazouLabelDTO){
+		GazouLabel gazouLabel = new GazouLabel();
+		gazouLabel.setConductId(gazouLabelDTO.conductId);
+		gazouLabel.setLabel(gazouLabelDTO.label);
+		return gazouLabel;
+	}
+
+	public Text fromTextDTO(TextDTO textDTO){
+		Text text = new Text();
+		text.setTextId(textDTO.textId);
+		text.setVisitId(textDTO.visitId);
+		text.setContent(textDTO.content);
+		return text;
+	}
+
+	public TextDTO toTextDTO(Text text){
+		TextDTO textDTO = new TextDTO();
+		textDTO.textId = text.getTextId();
+		textDTO.visitId = text.getVisitId();
+		textDTO.content = text.getContent();
+		return textDTO;
+	}
+
+	public PharmaQueueDTO toPharmaQueueDTO(PharmaQueue pharmaQueue){
+		PharmaQueueDTO pharmaQueueDTO = new PharmaQueueDTO();
+		pharmaQueueDTO.visitId = pharmaQueue.getVisitId();
+		pharmaQueueDTO.pharmaState = pharmaQueue.getPharmaState();
+		return pharmaQueueDTO;
+	}
+
+	public PharmaQueue fromPharmaQueueDTO(PharmaQueueDTO pharmaQueueDTO){
+		PharmaQueue pharmaQueue = new PharmaQueue();
+		pharmaQueue.setVisitId(pharmaQueueDTO.visitId);
+		pharmaQueue.setPharmaState(pharmaQueueDTO.pharmaState);
+		return pharmaQueue;
+	}
+
+	public PharmaDrugDTO toPharmaDrugDTO(PharmaDrug pharmaDrug){
+		PharmaDrugDTO pharmaDrugDTO = new PharmaDrugDTO();
+		pharmaDrugDTO.iyakuhincode = pharmaDrug.getIyakuhincode();
+		pharmaDrugDTO.description = pharmaDrug.getDescription();
+		pharmaDrugDTO.sideeffect = pharmaDrug.getSideeffect();
+		return pharmaDrugDTO;
+	}
+
+	public PharmaDrug fromPharmaDrugDTO(PharmaDrugDTO pharmaDrugDTO){
+		PharmaDrug pharmaDrug = new PharmaDrug();
+		pharmaDrug.setIyakuhincode(pharmaDrugDTO.iyakuhincode);
+		pharmaDrug.setDescription(pharmaDrugDTO.description);
+		pharmaDrug.setSideeffect(pharmaDrugDTO.sideeffect);
+		return pharmaDrug;
+	}
 
 	public HotlineDTO toHotlineDTO(Hotline hotline){
 		HotlineDTO hotlineDTO = new HotlineDTO();
