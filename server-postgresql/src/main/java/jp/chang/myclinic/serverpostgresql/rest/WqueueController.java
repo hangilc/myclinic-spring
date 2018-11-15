@@ -82,6 +82,7 @@ public class WqueueController {
 		return true;
 	}
 
+// TODO: implement end-exam
 //	@RequestMapping(value="/end-exam", method=RequestMethod.POST)
 //	public boolean endExam(@RequestParam("visit-id") int visitId, @RequestParam("charge") int charge){
 //		dbGateway.endExam(visitId, charge);
