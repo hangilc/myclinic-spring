@@ -2,8 +2,8 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
-import jp.chang.myclinic.serverpostgresql.PracticeLogger;
 import jp.chang.myclinic.serverpostgresql.HotlineLogger;
+import jp.chang.myclinic.serverpostgresql.PracticeLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,6 +28,8 @@ public class DbGateway {
     private ShinryouMasterRepository shinryouMasterRepository;
     @Autowired
     private KizaiMasterRepository kizaiMasterRepository;
+    @Autowired
+    private ByoumeiMasterRepository byoumeiMasterRepository;
     @Autowired
     private PracticeLogRepository practiceLogRepository;
     @Autowired
@@ -539,6 +541,15 @@ public class DbGateway {
         Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
         wqueueRepository.save(wqueue);
         practiceLogger.logWqueueCreated(wqueueDTO);
+    }
+
+    public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at) {
+        return byoumeiMasterRepository.searchByName(text, at).stream()
+                .map(mapper::toByoumeiMasterDTO).collect(Collectors.toList());
+    }
+
+    public Optional<ByoumeiMasterDTO> findByoumeiMasterByName(String name, LocalDate at) {
+        return byoumeiMasterRepository.findByName(name, at).map(mapper::toByoumeiMasterDTO);
     }
 
 
