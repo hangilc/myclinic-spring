@@ -489,102 +489,102 @@ public class DTOMapper {
 		return hotline;
 	}
 
-//	public PrescExampleDTO toPrescExampleDTO(PrescExample prescExample){
-//		PrescExampleDTO prescExampleDTO = new PrescExampleDTO();
-//		prescExampleDTO.prescExampleId = prescExample.getPrescExampleId();
-//		prescExampleDTO.iyakuhincode = prescExample.getIyakuhincode();
-//		prescExampleDTO.masterValidFrom = prescExample.getMasterValidFrom();
-//		prescExampleDTO.amount = prescExample.getAmount();
-//		prescExampleDTO.usage = prescExample.getUsage();
-//		prescExampleDTO.days = prescExample.getDays();
-//		prescExampleDTO.category = prescExample.getCategory();
-//		prescExampleDTO.comment = prescExample.getComment();
-//		return prescExampleDTO;
-//	}
-//
-//	public PrescExample fromPrescExampleDTO(PrescExampleDTO prescExampleDTO){
-//		PrescExample prescExample = new PrescExample();
-//		prescExample.setPrescExampleId(prescExampleDTO.prescExampleId);
-//		prescExample.setIyakuhincode(prescExampleDTO.iyakuhincode);
-//		prescExample.setMasterValidFrom(prescExampleDTO.masterValidFrom);
-//		prescExample.setAmount(prescExampleDTO.amount);
-//		prescExample.setUsage(prescExampleDTO.usage);
-//		prescExample.setDays(prescExampleDTO.days);
-//		prescExample.setCategory(prescExampleDTO.category);
-//		prescExample.setComment(prescExampleDTO.comment);
-//		return prescExample;
-//	}
-//
-//	public DiseaseDTO toDiseaseDTO(Disease disease){
-//		DiseaseDTO diseaseDTO = new DiseaseDTO();
-//		diseaseDTO.diseaseId = disease.getDiseaseId();
-//		diseaseDTO.patientId = disease.getPatientId();
-//		diseaseDTO.shoubyoumeicode = disease.getShoubyoumeicode();
-//		diseaseDTO.startDate = disease.getStartDate();
-//		diseaseDTO.endDate = disease.getEndDate();
-//		diseaseDTO.endReason = disease.getEndReason();
-//		return diseaseDTO;
-//	}
-//
-//	public Disease fromDiseaseDTO(DiseaseDTO diseaseDTO){
-//		Disease disease = new Disease();
-//		disease.setDiseaseId(diseaseDTO.diseaseId);
-//		disease.setPatientId(diseaseDTO.patientId);
-//		disease.setShoubyoumeicode(diseaseDTO.shoubyoumeicode);
-//		disease.setStartDate(diseaseDTO.startDate);
-//		disease.setEndDate(diseaseDTO.endDate);
-//		disease.setEndReason(diseaseDTO.endReason);
-//		return disease;
-//	}
-//
-//	public DiseaseAdjDTO toDiseaseAdjDTO(DiseaseAdj adj){
-//		DiseaseAdjDTO adjDTO = new DiseaseAdjDTO();
-//		adjDTO.diseaseAdjId = adj.getDiseaseAdjId();
-//		adjDTO.diseaseId = adj.getDiseaseId();
-//		adjDTO.shuushokugocode = adj.getShuushokugocode();
-//		return adjDTO;
-//	}
-//
-//	public DiseaseAdj fromDiseaseAdjDTO(DiseaseAdjDTO adjDTO){
-//		DiseaseAdj adj = new DiseaseAdj();
-//		adj.setDiseaseAdjId(adjDTO.diseaseAdjId);
-//		adj.setDiseaseId(adjDTO.diseaseId);
-//		adj.setShuushokugocode(adjDTO.shuushokugocode);
-//		return adj;
-//	}
-//
-//	public ByoumeiMasterDTO toByoumeiMasterDTO(ByoumeiMaster master){
-//		ByoumeiMasterDTO dto = new ByoumeiMasterDTO();
-//		dto.shoubyoumeicode = master.getShoubyoumeicode();
-//		dto.name = master.getName();
-//		dto.validFrom = master.getValidFrom();
-//		dto.validUpto = master.getValidUpto();
-//		return dto;
-//	}
-//
-//	public ByoumeiMaster fromByoumeiMasterDTO(ByoumeiMasterDTO dto){
-//		ByoumeiMaster master = new ByoumeiMaster();
-//		master.setShoubyoumeicode(dto.shoubyoumeicode);
-//		master.setName(dto.name);
-//		master.setValidFrom(dto.validFrom);
-//		master.setValidUpto(dto.validUpto);
-//		return master;
-//	}
-//
-//	public ShuushokugoMasterDTO toShuushokugoMasterDTO(ShuushokugoMaster master){
-//		ShuushokugoMasterDTO dto = new ShuushokugoMasterDTO();
-//		dto.shuushokugocode = master.getShuushokugocode();
-//		dto.name = master.getName();
-//		return dto;
-//	}
-//
-//	public ShuushokugoMaster fromShuushokugoMasterDTO(ShuushokugoMasterDTO dto){
-//		ShuushokugoMaster master = new ShuushokugoMaster();
-//		master.setShuushokugocode(dto.shuushokugocode);
-//		master.setName(dto.name);
-//		return master;
-//	}
-//
+	public PrescExampleDTO toPrescExampleDTO(PrescExample prescExample){
+		PrescExampleDTO prescExampleDTO = new PrescExampleDTO();
+		prescExampleDTO.prescExampleId = prescExample.getPrescExampleId();
+		prescExampleDTO.iyakuhincode = prescExample.getIyakuhincode();
+		prescExampleDTO.masterValidFrom = prescExample.getMasterValidFrom().toString();
+		prescExampleDTO.amount = prescExample.getAmount().toString();
+		prescExampleDTO.usage = prescExample.getUsage();
+		prescExampleDTO.days = prescExample.getDays();
+		prescExampleDTO.category = prescExample.getCategory();
+		prescExampleDTO.comment = prescExample.getComment();
+		return prescExampleDTO;
+	}
+
+	public PrescExample fromPrescExampleDTO(PrescExampleDTO prescExampleDTO){
+		PrescExample prescExample = new PrescExample();
+		prescExample.setPrescExampleId(prescExampleDTO.prescExampleId);
+		prescExample.setIyakuhincode(prescExampleDTO.iyakuhincode);
+		prescExample.setMasterValidFrom(LocalDate.parse(prescExampleDTO.masterValidFrom));
+		prescExample.setAmount(new BigDecimal(prescExampleDTO.amount));
+		prescExample.setUsage(prescExampleDTO.usage);
+		prescExample.setDays(prescExampleDTO.days);
+		prescExample.setCategory(prescExampleDTO.category);
+		prescExample.setComment(prescExampleDTO.comment);
+		return prescExample;
+	}
+
+	public DiseaseDTO toDiseaseDTO(Disease disease){
+		DiseaseDTO diseaseDTO = new DiseaseDTO();
+		diseaseDTO.diseaseId = disease.getDiseaseId();
+		diseaseDTO.patientId = disease.getPatientId();
+		diseaseDTO.shoubyoumeicode = disease.getShoubyoumeicode();
+		diseaseDTO.startDate = disease.getStartDate().toString();
+		diseaseDTO.endDate = localDateToOldSqldate(disease.getEndDate());
+		diseaseDTO.endReason = disease.getEndReason();
+		return diseaseDTO;
+	}
+
+	public Disease fromDiseaseDTO(DiseaseDTO diseaseDTO){
+		Disease disease = new Disease();
+		disease.setDiseaseId(diseaseDTO.diseaseId);
+		disease.setPatientId(diseaseDTO.patientId);
+		disease.setShoubyoumeicode(diseaseDTO.shoubyoumeicode);
+		disease.setStartDate(LocalDate.parse(diseaseDTO.startDate));
+		disease.setEndDate(oldSqldateToLocalDate(diseaseDTO.endDate));
+		disease.setEndReason(diseaseDTO.endReason);
+		return disease;
+	}
+
+	public DiseaseAdjDTO toDiseaseAdjDTO(DiseaseAdj adj){
+		DiseaseAdjDTO adjDTO = new DiseaseAdjDTO();
+		adjDTO.diseaseAdjId = adj.getDiseaseAdjId();
+		adjDTO.diseaseId = adj.getDiseaseId();
+		adjDTO.shuushokugocode = adj.getShuushokugocode();
+		return adjDTO;
+	}
+
+	public DiseaseAdj fromDiseaseAdjDTO(DiseaseAdjDTO adjDTO){
+		DiseaseAdj adj = new DiseaseAdj();
+		adj.setDiseaseAdjId(adjDTO.diseaseAdjId);
+		adj.setDiseaseId(adjDTO.diseaseId);
+		adj.setShuushokugocode(adjDTO.shuushokugocode);
+		return adj;
+	}
+
+	public ByoumeiMasterDTO toByoumeiMasterDTO(ByoumeiMaster master){
+		ByoumeiMasterDTO dto = new ByoumeiMasterDTO();
+		dto.shoubyoumeicode = master.getShoubyoumeicode();
+		dto.name = master.getName();
+		dto.validFrom = master.getValidFrom().toString();
+		dto.validUpto = localDateToOldSqldate(master.getValidUpto());
+		return dto;
+	}
+
+	public ByoumeiMaster fromByoumeiMasterDTO(ByoumeiMasterDTO dto){
+		ByoumeiMaster master = new ByoumeiMaster();
+		master.setShoubyoumeicode(dto.shoubyoumeicode);
+		master.setName(dto.name);
+		master.setValidFrom(LocalDate.parse(dto.validFrom));
+		master.setValidUpto(oldSqldateToLocalDate(dto.validUpto));
+		return master;
+	}
+
+	public ShuushokugoMasterDTO toShuushokugoMasterDTO(ShuushokugoMaster master){
+		ShuushokugoMasterDTO dto = new ShuushokugoMasterDTO();
+		dto.shuushokugocode = master.getShuushokugocode();
+		dto.name = master.getName();
+		return dto;
+	}
+
+	public ShuushokugoMaster fromShuushokugoMasterDTO(ShuushokugoMasterDTO dto){
+		ShuushokugoMaster master = new ShuushokugoMaster();
+		master.setShuushokugocode(dto.shuushokugocode);
+		master.setName(dto.name);
+		return master;
+	}
+
     public PracticeLogDTO toPracticeLogDTO(PracticeLog practiceLog) {
         PracticeLogDTO dto = new PracticeLogDTO();
         dto.serialId = practiceLog.getPracticeLogId();
@@ -594,73 +594,44 @@ public class DTOMapper {
         return dto;
     }
 
-//	public ShinryouAttrDTO toShinryouAttrDTO(ShinryouAttr row){
-//		ShinryouAttrDTO dto = new ShinryouAttrDTO();
-//		dto.shinryouId = row.getShinryouId();
-//		dto.tekiyou = row.getTekiyou();
-//		return dto;
-//	}
-//
-//	public ShinryouAttr fromShinryouAttrDTO(ShinryouAttrDTO dto){
-//		ShinryouAttr row = new ShinryouAttr();
-//		row.setShinryouId(dto.shinryouId);
-//		row.setTekiyou(dto.tekiyou);
-//		return row;
-//	}
-//
-//	public DrugAttrDTO toDrugAttrDTO(DrugAttr row){
-//		DrugAttrDTO dto = new DrugAttrDTO();
-//		dto.drugId = row.getDrugId();
-//		dto.tekiyou = row.getTekiyou();
-//		return dto;
-//	}
-//
-//	public DrugAttr fromDrugAttrDTO(DrugAttrDTO dto){
-//		DrugAttr row = new DrugAttr();
-//		row.setDrugId(dto.drugId);
-//		row.setTekiyou(dto.tekiyou);
-//		return row;
-//	}
-//
-//	public ShoukiDTO toShoukiDTO(Shouki shouki){
-//		ShoukiDTO dto = new ShoukiDTO();
-//		dto.visitId = shouki.getVisitId();
-//		dto.shouki = shouki.getShouki();
-//		return dto;
-//	}
-//
-//	public Shouki fromShoukiDTO(ShoukiDTO dto){
-//		return new Shouki(dto.visitId, dto.shouki);
-//	}
-//
-//	private String nullableDateToString(Date date){
-//		if( date == null ){
-//			return null;
-//		} else {
-//			return date.toString();
-//		}
-//	}
-//
-//	private Date stringToDate(String str){
-//		if( str == null ){
-//			return null;
-//		} else if( "0000-00-00".equals(str) ){
-//			return null;
-//		} else {
-//			LocalDate d = LocalDate.parse(str, dateFormatter);
-//			return Date.valueOf(d);
-//		}
-//	}
-//
-//	private String timestampToString(Timestamp ts){
-//		LocalDateTime dt = ts.toLocalDateTime();
-//		return dt.format(dateTimeFormatter);
-//	}
-//
-//	private Timestamp stringToTimestamp(String str){
-//		LocalDateTime dt = LocalDateTime.parse(str, dateTimeFormatter);
-//		return Timestamp.valueOf(dt);
-//	}
+	public ShinryouAttrDTO toShinryouAttrDTO(ShinryouAttr row){
+		ShinryouAttrDTO dto = new ShinryouAttrDTO();
+		dto.shinryouId = row.getShinryouId();
+		dto.tekiyou = row.getTekiyou();
+		return dto;
+	}
+
+	public ShinryouAttr fromShinryouAttrDTO(ShinryouAttrDTO dto){
+		ShinryouAttr row = new ShinryouAttr();
+		row.setShinryouId(dto.shinryouId);
+		row.setTekiyou(dto.tekiyou);
+		return row;
+	}
+
+	public DrugAttrDTO toDrugAttrDTO(DrugAttr row){
+		DrugAttrDTO dto = new DrugAttrDTO();
+		dto.drugId = row.getDrugId();
+		dto.tekiyou = row.getTekiyou();
+		return dto;
+	}
+
+	public DrugAttr fromDrugAttrDTO(DrugAttrDTO dto){
+		DrugAttr row = new DrugAttr();
+		row.setDrugId(dto.drugId);
+		row.setTekiyou(dto.tekiyou);
+		return row;
+	}
+
+	public ShoukiDTO toShoukiDTO(Shouki shouki){
+		ShoukiDTO dto = new ShoukiDTO();
+		dto.visitId = shouki.getVisitId();
+		dto.shouki = shouki.getShouki();
+		return dto;
+	}
+
+	public Shouki fromShoukiDTO(ShoukiDTO dto){
+		return new Shouki(dto.visitId, dto.shouki);
+	}
 
     private String localDateToOldSqldate(LocalDate date) {
         if (date == null) {

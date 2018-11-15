@@ -2,6 +2,7 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name="presc_example")
@@ -16,7 +17,7 @@ public class PrescExample {
     private Integer iyakuhincode;
 
     @Column(name="master_valid_from")
-    private String masterValidFrom;
+    private LocalDate masterValidFrom;
 
     @Column(name="amount")
     private BigDecimal amount;
@@ -49,11 +50,11 @@ public class PrescExample {
         this.iyakuhincode = iyakuhincode;
     }
 
-    public String getMasterValidFrom() {
+    public LocalDate getMasterValidFrom() {
         return masterValidFrom;
     }
 
-    public void setMasterValidFrom(String masterValidFrom) {
+    public void setMasterValidFrom(LocalDate masterValidFrom) {
         this.masterValidFrom = masterValidFrom;
     }
 
