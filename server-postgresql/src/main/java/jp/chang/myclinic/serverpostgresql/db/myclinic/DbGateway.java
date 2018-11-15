@@ -1,5 +1,6 @@
 package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
+import jp.chang.myclinic.consts.PharmaQueueState;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
@@ -54,6 +55,14 @@ public class DbGateway {
     private HotlineRepository hotlineRepository;
     @Autowired
     private WqueueRepository wqueueRepository;
+    @Autowired
+    private ChargeRepository chargeRepository;
+    @Autowired
+    private PaymentRepository paymentRepository;
+    @Autowired
+    private PharmaQueueRepository pharmaQueueRepository;
+    @Autowired
+    private DrugRepository drugRepository;
 
     @Autowired
     private PracticeLogger practiceLogger;
@@ -618,47 +627,114 @@ public class DbGateway {
         changeWqueueState(visitId, WqueueWaitState.WaitReExam.getCode());
     }
 
+    public void enterCharge(ChargeDTO chargeDTO) {
+        Charge charge = mapper.fromChargeDTO(chargeDTO);
+        charge = chargeRepository.save(charge);
+        practiceLogger.logChargeCreated(mapper.toChargeDTO(charge));
+    }
 
+    public ChargeDTO getCharge(int visitId) {
+        Charge charge = chargeRepository.findById(visitId);
+        return mapper.toChargeDTO(charge);
+    }
 
-//    public void endExam(int visitId, int charge) {
-//        Visit visit = visitRepository.findById(visitId);
-//        boolean isToday = isTodaysVisit(visit);
-//        setChargeOfVisit(visitId, charge);
-//        Wqueue wqueue = wqueueRepository.tryFindByVisitId(visitId).orElse(null);
-//        if (wqueue != null && isToday) {
-//            changeWqueueState(visitId, WqueueWaitState.WaitCashier.getCode());
-//        } else {
-//            if(wqueue != null ){ // it not today
-//                deleteWqueue(mapper.toWqueueDTO(wqueue));
-//            }
-//            Wqueue newWqueue = new Wqueue();
-//            newWqueue.setVisitId(visitId);
-//            newWqueue.setWaitState(WqueueWaitState.WaitCashier.getCode());
-//            enterWqueue(mapper.toWqueueDTO(newWqueue));
-//        }
-//        pharmaQueueRepository.findByVisitId(visitId).ifPresent(pharmaQueue -> {
-//            PharmaQueueDTO deleted = mapper.toPharmaQueueDTO(pharmaQueue);
-//            pharmaQueueRepository.deleteByVisitId(visitId);
-//            practiceLogger.logPharmaQueueDeleted(deleted);
-//        });
-//        if (isToday) {
-//            int unprescribed = drugRepository.countByVisitIdAndPrescribed(visitId, 0);
-//            if (unprescribed > 0) {
-//                PharmaQueue pharmaQueue = new PharmaQueue();
-//                pharmaQueue.setVisitId(visitId);
-//                pharmaQueue.setPharmaState(PharmaQueueState.WaitPack.getCode());
-//                pharmaQueueRepository.save(pharmaQueue);
-//                practiceLogger.logPharmaQueueCreated(mapper.toPharmaQueueDTO(pharmaQueue));
-//            }
-//        }
-//    }
+    public Optional<ChargeDTO> findCharge(int visitId) {
+        return chargeRepository.findByVisitId(visitId)
+                .map(mapper::toChargeDTO);
+    }
 
+    public void setChargeOfVisit(int visitId, int charge) {
+        Optional<Charge> optCharge = chargeRepository.findByVisitId(visitId);
+        if (optCharge.isPresent()) {
+            Charge currentCharge = optCharge.get();
+            ChargeDTO prev = mapper.toChargeDTO(currentCharge);
+            currentCharge.setCharge(charge);
+            currentCharge = chargeRepository.save(currentCharge);
+            practiceLogger.logChargeUpdated(prev, mapper.toChargeDTO(currentCharge));
+        } else {
+            ChargeDTO newCharge = new ChargeDTO();
+            newCharge.visitId = visitId;
+            newCharge.charge = charge;
+            enterCharge(newCharge);
+        }
+    }
 
+    public void enterPayment(PaymentDTO paymentDTO) {
+        Payment payment = mapper.fromPaymentDTO(paymentDTO);
+        payment = paymentRepository.save(payment);
+        practiceLogger.logPaymentCreated(mapper.toPaymentDTO(payment));
+    }
+
+    public List<PaymentDTO> listPayment(int visitId) {
+        return paymentRepository.findByVisitIdOrderByPaytimeDesc(visitId).stream()
+                .map(mapper::toPaymentDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<PaymentVisitPatientDTO> listRecentPayment(int n) {
+        PageRequest pageRequest = PageRequest.of(0, n, Sort.Direction.DESC, "visitId");
+        List<Integer> visitIds = paymentRepository.findFinalPayment(pageRequest).stream()
+                .map(Payment::getVisitId).collect(Collectors.toList());
+        if (visitIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return paymentRepository.findFullFinalPayment(visitIds, pageRequest).stream()
+                .map(this::resultToPaymentVisitPatient).collect(Collectors.toList());
+    }
+
+    public List<PaymentVisitPatientDTO> listPaymentByPatient(int patientId, int n) {
+        PageRequest pageRequest = PageRequest.of(0, n, Sort.Direction.DESC, "visitId");
+        return paymentRepository.findFullByPatient(patientId, pageRequest).getContent().stream()
+                .map(this::resultToPaymentVisitPatient).collect(Collectors.toList());
+    }
+
+    public List<PaymentDTO> listFinalPayment(int n) {
+        PageRequest pageRequest = PageRequest.of(0, n, Sort.Direction.DESC, "visitId");
+        return paymentRepository.findFinalPayment(pageRequest).stream()
+                .map(mapper::toPaymentDTO).collect(Collectors.toList());
+    }
+
+    public void endExam(int visitId, int charge) {
+        Visit visit = visitRepository.findById(visitId);
+        boolean isToday = isTodaysVisit(visit);
+        setChargeOfVisit(visitId, charge);
+        Wqueue wqueue = wqueueRepository.tryFindByVisitId(visitId).orElse(null);
+        if (wqueue != null && isToday) {
+            changeWqueueState(visitId, WqueueWaitState.WaitCashier.getCode());
+        } else {
+            if(wqueue != null ){ // it not today
+                deleteWqueue(mapper.toWqueueDTO(wqueue));
+            }
+            Wqueue newWqueue = new Wqueue();
+            newWqueue.setVisitId(visitId);
+            newWqueue.setWaitState(WqueueWaitState.WaitCashier.getCode());
+            enterWqueue(mapper.toWqueueDTO(newWqueue));
+        }
+        pharmaQueueRepository.findByVisitId(visitId).ifPresent(pharmaQueue -> {
+            PharmaQueueDTO deleted = mapper.toPharmaQueueDTO(pharmaQueue);
+            pharmaQueueRepository.deleteByVisitId(visitId);
+            practiceLogger.logPharmaQueueDeleted(deleted);
+        });
+        if (isToday) {
+            int unprescribed = drugRepository.countByVisitIdAndPrescribed(visitId, 0);
+            if (unprescribed > 0) {
+                PharmaQueue pharmaQueue = new PharmaQueue();
+                pharmaQueue.setVisitId(visitId);
+                pharmaQueue.setPharmaState(PharmaQueueState.WaitPack.getCode());
+                pharmaQueueRepository.save(pharmaQueue);
+                practiceLogger.logPharmaQueueCreated(mapper.toPharmaQueueDTO(pharmaQueue));
+            }
+        }
+    }
 
     private static DateTimeFormatter sqlDateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 
     private String localDateTimeToSqldatetime(LocalDateTime dt){
         return dt.format(sqlDateTimeFormatter);
+    }
+
+    private boolean isTodaysVisit(Visit visit){
+        return visit.getVisitedAt().toLocalDate().equals(LocalDate.now());
     }
 
     private VisitPatientDTO resultToVisitPatientDTO(Object[] result) {
@@ -684,6 +760,17 @@ public class DbGateway {
         wqueueFullDTO.patient = mapper.toPatientDTO((Patient) result[1]);
         wqueueFullDTO.visit = mapper.toVisitDTO((Visit) result[2]);
         return wqueueFullDTO;
+    }
+
+    private PaymentVisitPatientDTO resultToPaymentVisitPatient(Object[] result) {
+        PaymentDTO paymentDTO = mapper.toPaymentDTO((Payment) result[0]);
+        VisitDTO visitDTO = mapper.toVisitDTO((Visit) result[1]);
+        PatientDTO patientDTO = mapper.toPatientDTO((Patient) result[2]);
+        PaymentVisitPatientDTO paymentVisitPatientDTO = new PaymentVisitPatientDTO();
+        paymentVisitPatientDTO.payment = paymentDTO;
+        paymentVisitPatientDTO.visit = visitDTO;
+        paymentVisitPatientDTO.patient = patientDTO;
+        return paymentVisitPatientDTO;
     }
 
 
