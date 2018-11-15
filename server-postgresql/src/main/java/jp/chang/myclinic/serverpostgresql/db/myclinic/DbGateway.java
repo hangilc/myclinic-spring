@@ -1,5 +1,6 @@
 package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.serverpostgresql.HotlineLogger;
@@ -15,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +32,8 @@ public class DbGateway {
     private KizaiMasterRepository kizaiMasterRepository;
     @Autowired
     private ByoumeiMasterRepository byoumeiMasterRepository;
+    @Autowired
+    private ShuushokugoMasterRepository shuushokugoMasterRepository;
     @Autowired
     private PracticeLogRepository practiceLogRepository;
     @Autowired
@@ -552,8 +556,102 @@ public class DbGateway {
         return byoumeiMasterRepository.findByName(name, at).map(mapper::toByoumeiMasterDTO);
     }
 
+    public List<ShuushokugoMasterDTO> searchShuushokugoMaster(String text) {
+        return shuushokugoMasterRepository.searchByName(text).stream()
+                .map(mapper::toShuushokugoMasterDTO).collect(Collectors.toList());
+    }
+
+    public Optional<ShuushokugoMasterDTO> findShuushokugoMasterByName(String name) {
+        return shuushokugoMasterRepository.findByName(name).map(mapper::toShuushokugoMasterDTO);
+    }
+
+    public List<WqueueFullDTO> listWqueueFull() {
+        try (Stream<Wqueue> stream = wqueueRepository.findAllAsStream()) {
+            return stream.map(this::composeWqueueFullDTO).collect(Collectors.toList());
+        }
+    }
+
+    public WqueueFullDTO getWqueueFull(int visitId) {
+        Wqueue wqueue = wqueueRepository.findOneByVisitId(visitId);
+        return composeWqueueFullDTO(wqueue);
+    }
+
+    public List<WqueueFullDTO> listWqueueFullByStates(Set<WqueueWaitState> states) {
+        if (states.size() == 0) {
+            return Collections.emptyList();
+        }
+        Set<Integer> waitSets = states.stream().mapToInt(WqueueWaitState::getCode).boxed().collect(Collectors.toSet());
+        return wqueueRepository.findFullByStateSet(waitSets, Sort.by(Sort.Direction.ASC, "visitId")).stream()
+                .map(this::resultToWqueueFull).collect(Collectors.toList());
+    }
+
+    public List<WqueueDTO> listWqueueByStates(Set<WqueueWaitState> states, Sort sort) {
+        Set<Integer> waitSets = states.stream().mapToInt(WqueueWaitState::getCode).boxed().collect(Collectors.toSet());
+        return wqueueRepository.findByStateSet(waitSets, sort).stream()
+                .map(mapper::toWqueueDTO).collect(Collectors.toList());
+    }
+
+    public Optional<WqueueDTO> findWqueue(int visitId) {
+        return wqueueRepository.tryFindByVisitId(visitId).map(mapper::toWqueueDTO);
+    }
+
+    public void deleteWqueue(WqueueDTO wqueueDTO) {
+        Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
+        wqueueRepository.delete(wqueue);
+        practiceLogger.logWqueueDeleted(wqueueDTO);
+    }
+
+    private void changeWqueueState(int visitId, int state) {
+        Wqueue wqueue = wqueueRepository.findOneByVisitId(visitId);
+        WqueueDTO prev = mapper.toWqueueDTO(wqueue);
+        wqueue.setWaitState(state);
+        wqueue = wqueueRepository.save(wqueue);
+        WqueueDTO updated = mapper.toWqueueDTO(wqueue);
+        practiceLogger.logWqueueUpdated(prev, updated);
+    }
+
+    public void startExam(int visitId) {
+        changeWqueueState(visitId, WqueueWaitState.InExam.getCode());
+    }
+
+    public void suspendExam(int visitId) {
+        changeWqueueState(visitId, WqueueWaitState.WaitReExam.getCode());
+    }
 
 
+
+//    public void endExam(int visitId, int charge) {
+//        Visit visit = visitRepository.findById(visitId);
+//        boolean isToday = isTodaysVisit(visit);
+//        setChargeOfVisit(visitId, charge);
+//        Wqueue wqueue = wqueueRepository.tryFindByVisitId(visitId).orElse(null);
+//        if (wqueue != null && isToday) {
+//            changeWqueueState(visitId, WqueueWaitState.WaitCashier.getCode());
+//        } else {
+//            if(wqueue != null ){ // it not today
+//                deleteWqueue(mapper.toWqueueDTO(wqueue));
+//            }
+//            Wqueue newWqueue = new Wqueue();
+//            newWqueue.setVisitId(visitId);
+//            newWqueue.setWaitState(WqueueWaitState.WaitCashier.getCode());
+//            enterWqueue(mapper.toWqueueDTO(newWqueue));
+//        }
+//        pharmaQueueRepository.findByVisitId(visitId).ifPresent(pharmaQueue -> {
+//            PharmaQueueDTO deleted = mapper.toPharmaQueueDTO(pharmaQueue);
+//            pharmaQueueRepository.deleteByVisitId(visitId);
+//            practiceLogger.logPharmaQueueDeleted(deleted);
+//        });
+//        if (isToday) {
+//            int unprescribed = drugRepository.countByVisitIdAndPrescribed(visitId, 0);
+//            if (unprescribed > 0) {
+//                PharmaQueue pharmaQueue = new PharmaQueue();
+//                pharmaQueue.setVisitId(visitId);
+//                pharmaQueue.setPharmaState(PharmaQueueState.WaitPack.getCode());
+//                pharmaQueueRepository.save(pharmaQueue);
+//                practiceLogger.logPharmaQueueCreated(mapper.toPharmaQueueDTO(pharmaQueue));
+//            }
+//        }
+//    }
 
 
 
@@ -571,6 +669,23 @@ public class DbGateway {
         visitPatientDTO.patient = patientDTO;
         return visitPatientDTO;
     }
+
+    private WqueueFullDTO composeWqueueFullDTO(Wqueue wqueue){
+        WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
+        wqueueFullDTO.wqueue = mapper.toWqueueDTO(wqueue);
+        wqueueFullDTO.visit = getVisit(wqueue.getVisitId());
+        wqueueFullDTO.patient = getPatient(wqueueFullDTO.visit.patientId);
+        return wqueueFullDTO;
+    }
+
+    private WqueueFullDTO resultToWqueueFull(Object[] result) {
+        WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
+        wqueueFullDTO.wqueue = mapper.toWqueueDTO((Wqueue) result[0]);
+        wqueueFullDTO.patient = mapper.toPatientDTO((Patient) result[1]);
+        wqueueFullDTO.visit = mapper.toVisitDTO((Visit) result[2]);
+        return wqueueFullDTO;
+    }
+
 
 
 }
