@@ -83,6 +83,8 @@ public class DbGateway {
     private DiseaseRepository diseaseRepository;
     @Autowired
     private DiseaseAdjRepository diseaseAdjRepository;
+    @Autowired
+    private DrugAttrRepository drugAttrRepository;
 
     @Autowired
     private PracticeLogger practiceLogger;
@@ -1477,6 +1479,46 @@ public class DbGateway {
                 .collect(Collectors.toList());
     }
 
+    public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds){
+        if( drugIds.size() == 0 ){
+            return Collections.emptyList();
+        } else {
+            return drugAttrRepository.batchGetDrugAttr(drugIds).stream()
+                    .map(mapper::toDrugAttrDTO).collect(Collectors.toList());
+        }
+    }
+
+    public Optional<DrugAttrDTO> findDrugAttr(int drugId){
+        return drugAttrRepository.findOneByDrugId(drugId)
+                .map(mapper::toDrugAttrDTO);
+    }
+
+    public DrugAttrDTO setDrugTekiyou(int drugId, String tekiyou){
+        DrugAttr attr = drugAttrRepository.findOneByDrugId(drugId)
+                .orElseGet(() -> new DrugAttr(drugId, tekiyou));
+        attr.setTekiyou(tekiyou);
+        attr = drugAttrRepository.save(attr);
+        return mapper.toDrugAttrDTO(attr);
+    }
+
+    public Optional<DrugAttrDTO> deleteDrugTekiyou(int drugId){
+        return drugAttrRepository.findOneByDrugId(drugId)
+                .flatMap(drugAttr -> {
+                    drugAttr.setTekiyou(null);
+                    if( drugAttr.isEmpty() ){
+                        drugAttrRepository.delete(drugAttr);
+                        return Optional.empty();
+                    } else {
+                        drugAttrRepository.save(drugAttr);
+                        return Optional.of(mapper.toDrugAttrDTO(drugAttr));
+                    }
+                });
+    }
+
+    public void enterDrugAttr(DrugAttrDTO dto){
+        DrugAttr attr = mapper.fromDrugAttrDTO(dto);
+        drugAttrRepository.save(attr);
+    }
 
 
 
