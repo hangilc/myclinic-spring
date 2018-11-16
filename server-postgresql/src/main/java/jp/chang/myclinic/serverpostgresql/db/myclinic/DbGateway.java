@@ -7,17 +7,16 @@ import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.serverpostgresql.HotlineLogger;
 import jp.chang.myclinic.serverpostgresql.PracticeLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,6 +62,22 @@ public class DbGateway {
     private PharmaQueueRepository pharmaQueueRepository;
     @Autowired
     private DrugRepository drugRepository;
+    @Autowired
+    private TextRepository textRepository;
+    @Autowired
+    private PharmaDrugRepository pharmaDrugRepository;
+    @Autowired
+    private ShinryouRepository shinryouRepository;
+    @Autowired
+    private ConductRepository conductRepository;
+    @Autowired
+    private GazouLabelRepository gazouLabelRepository;
+    @Autowired
+    private ConductDrugRepository conductDrugRepository;
+    @Autowired
+    private ConductShinryouRepository conductShinryouRepository;
+    @Autowired
+    private ConductKizaiRepository conductKizaiRepository;
 
     @Autowired
     private PracticeLogger practiceLogger;
@@ -113,6 +128,10 @@ public class DbGateway {
         return shinryouMasterRepository.findByNameAndDate(name, at).map(mapper::toShinryouMasterDTO);
     }
 
+    public Optional<ShinryouMasterDTO> findShinryouMasterByShinryoucode(int shinryoucode, LocalDate at) {
+        return shinryouMasterRepository.findByShinryoucodeAndDate(shinryoucode, at).map(mapper::toShinryouMasterDTO);
+    }
+
     public List<ShinryouMasterDTO> searchShinryouMaster(String text, LocalDate at) {
         return shinryouMasterRepository.search(text, at, Sort.by("shinryoucode")).stream()
                 .map(mapper::toShinryouMasterDTO).collect(Collectors.toList());
@@ -127,6 +146,9 @@ public class DbGateway {
         return kizaiMasterRepository.findByKizaicodeAndDate(kizaicode, at).map(mapper::toKizaiMasterDTO);
     }
 
+    public Optional<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at) {
+        return kizaiMasterRepository.findByNameAndDate(name, at).map(mapper::toKizaiMasterDTO);
+    }
     public List<PracticeLogDTO> listPracticeLogByDate(LocalDate at) {
         return practiceLogRepository.findByDate(at, Sort.by("practiceLogId"))
                 .stream()
@@ -727,6 +749,553 @@ public class DbGateway {
         }
     }
 
+    private List<TextDTO> listText(int visitId) {
+        List<Text> texts = textRepository.findByVisitId(visitId);
+        return texts.stream().map(mapper::toTextDTO).collect(Collectors.toList());
+    }
+
+    public TextDTO getText(int textId) {
+        Text text = textRepository.findById(textId);
+        return mapper.toTextDTO(text);
+    }
+
+    public int enterText(TextDTO textDTO) {
+        Text text = mapper.fromTextDTO(textDTO);
+        text.setTextId(null);
+        text = textRepository.save(text);
+        int textId = text.getTextId();
+        textDTO.textId = textId;
+        practiceLogger.logTextCreated(textDTO);
+        return textId;
+    }
+
+    public void updateText(TextDTO textDTO) {
+        TextDTO prev = getText(textDTO.textId);
+        Text text = mapper.fromTextDTO(textDTO);
+        textRepository.save(text);
+        practiceLogger.logTextUpdated(prev, textDTO);
+    }
+
+    public void deleteText(int textId) {
+        TextDTO textDTO = getText(textId);
+        textRepository.deleteById(textId);
+        practiceLogger.logTextDeleted(textDTO);
+    }
+
+    public TextVisitPageDTO searchText(int patientId, String text, int page) {
+        PageRequest pageRequest = PageRequest.of(page, 20, Sort.Direction.ASC, "textId");
+        Page<Object[]> pageResult = textRepository.searchText(patientId, text, pageRequest);
+        TextVisitPageDTO result = new TextVisitPageDTO();
+        result.totalPages = pageResult.getTotalPages();
+        result.page = page;
+        result.textVisits = pageResult.getContent().stream()
+                .map(this::resultToTextVisitDTO).collect(Collectors.toList());
+        return result;
+    }
+
+    public TextVisitPatientPageDTO searchTextGlobally(String text, int page, int itemsPerPage) {
+        Pageable pageable = PageRequest.of(page, itemsPerPage, Sort.Direction.DESC, "textId");
+        Page<Object[]> result = textRepository.searchTextGlobally(text, pageable);
+        TextVisitPatientPageDTO retval = new TextVisitPatientPageDTO();
+        retval.page = page;
+        retval.totalPages = result.getTotalPages();
+        retval.textVisitPatients = result.getContent().stream()
+                .map(cols -> {
+                    TextVisitPatientDTO value = new TextVisitPatientDTO();
+                    value.text = mapper.toTextDTO((Text) cols[0]);
+                    value.visit = mapper.toVisitDTO((Visit) cols[1]);
+                    value.patient = mapper.toPatientDTO((Patient) cols[2]);
+                    return value;
+                })
+                .collect(Collectors.toList());
+        return retval;
+    }
+
+    public DrugFullDTO getDrugFull(int drugId) {
+        Object[] result = drugRepository.findOneWithMaster(drugId).get(0);
+        return resultToDrugFullDTO(result);
+    }
+
+    private DrugFullDTO findDrugFull(int drugId) {
+        List<Object[]> list = drugRepository.findOneWithMaster(drugId);
+        if (list.size() == 0) {
+            return null;
+        } else {
+            return resultToDrugFullDTO(list.get(0));
+        }
+    }
+
+    public List<DrugDTO> listDrug(int visitId) {
+        return drugRepository.findByVisitId(visitId, Sort.by("drugId"))
+                .stream()
+                .map(mapper::toDrugDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<DrugFullDTO> listDrugFull(int visitId) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "drugId");
+        return drugRepository.findByVisitIdWithMaster(visitId, sort).stream()
+                .map(this::resultToDrugFullDTO)
+                .collect(Collectors.toList());
+    }
+
+    public int enterDrug(DrugDTO drugDTO) {
+        Drug drug = mapper.fromDrugDTO(drugDTO);
+        drug.setDrugId(null);
+        drug = drugRepository.save(drug);
+        practiceLogger.logDrugCreated(mapper.toDrugDTO(drug));
+        return drug.getDrugId();
+    }
+
+    public DrugDTO getDrug(int drugId) {
+        return mapper.toDrugDTO(drugRepository.findById(drugId));
+    }
+
+    public void deleteDrug(int drugId) {
+        DrugDTO deleted = getDrug(drugId);
+        drugRepository.deleteById(drugId);
+        practiceLogger.logDrugDeleted(deleted);
+    }
+
+    public void updateDrug(DrugDTO drugDTO) {
+        DrugDTO prev = getDrug(drugDTO.drugId);
+        Drug drug = mapper.fromDrugDTO(drugDTO);
+        drug = drugRepository.save(drug);
+        practiceLogger.logDrugUpdated(prev, mapper.toDrugDTO(drug));
+    }
+
+    public void markDrugsAsPrescribedForVisit(int visitId) {
+        List<DrugDTO> prevDrugs = listDrug(visitId);
+        drugRepository.markAsPrescribedForVisit(visitId);
+        List<DrugDTO> updatedDrugs = listDrug(visitId);
+        for (int i = 0; i < prevDrugs.size(); i++) {
+            DrugDTO prev = prevDrugs.get(i);
+            if (prev.prescribed == 0) {
+                practiceLogger.logDrugUpdated(prev, updatedDrugs.get(i));
+            }
+        }
+    }
+
+    public List<DrugFullDTO> searchPrevDrug(int patientId) {
+        List<Integer> drugIds = drugRepository.findNaifukuAndTonpukuPatternByPatient(patientId);
+        drugIds.addAll(drugRepository.findGaiyouPatternByPatient(patientId));
+        drugIds.sort(Comparator.<Integer>naturalOrder().reversed());
+        return drugIds.stream().map(this::findDrugFull).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    public List<DrugFullDTO> searchPrevDrug(int patientId, String text) {
+        List<Integer> drugIds = drugRepository.findNaifukuAndTonpukuPatternByPatient(patientId, text);
+        drugIds.addAll(drugRepository.findGaiyouPatternByPatient(patientId, text));
+        drugIds.sort(Comparator.<Integer>naturalOrder().reversed());
+        return drugIds.stream().map(this::findDrugFull).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    public void batchUpdateDrugDays(List<Integer> drugIds, int days) {
+        List<DrugDTO> prevDrugs = drugIds.stream()
+                .map(this::getDrug).collect(Collectors.toList());
+        drugRepository.batchUpdateDays(drugIds, days);
+        List<DrugDTO> updatedDrugs = drugIds.stream()
+                .map(this::getDrug).collect(Collectors.toList());
+        for (int i = 0; i < prevDrugs.size(); i++) {
+            DrugDTO prev = prevDrugs.get(i);
+            if (prev.days != days) {
+                practiceLogger.logDrugUpdated(prev, updatedDrugs.get(i));
+            }
+        }
+    }
+
+    private List<Integer> listIyakuhincodeForPatient(int patientId) {
+        return drugRepository.findIyakuhincodeByPatient(patientId);
+    }
+
+    public List<IyakuhincodeNameDTO> listIyakuhinForPatient(int patientId) {
+        List<Integer> iyakuhincodes = listIyakuhincodeForPatient(patientId);
+        return findNamesForIyakuhincodes(iyakuhincodes);
+    }
+
+    public List<VisitIdVisitedAtDTO> listVisitIdVisitedAtByIyakuhincodeAndPatientId(int patientId, int iyakuhincode) {
+        return drugRepository.findVisitIdVisitedAtByPatientAndIyakuhincode(patientId, iyakuhincode).stream()
+                .map(result -> {
+                    VisitIdVisitedAtDTO visitIdVisitedAtDTO = new VisitIdVisitedAtDTO();
+                    visitIdVisitedAtDTO.visitId = (Integer) result[0];
+                    visitIdVisitedAtDTO.visitedAt = (String) result[1];
+                    return visitIdVisitedAtDTO;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public VisitTextDrugPageDTO listVisitTextDrugByPatientAndIyakuhincode(int patientId, int iyakuhincode, int page) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "visitId");
+        PageRequest pageRequest = PageRequest.of(page, 10, sort);
+        Page<Integer> visitIdPage = drugRepository.pageVisitIdsByPatientAndIyakuhincode(patientId, iyakuhincode, pageRequest);
+        List<Integer> visitIds = visitIdPage.getContent();
+        List<VisitTextDrugDTO> visits = visitRepository.findByVisitIds(visitIds, sort)
+                .stream()
+                .map(visit -> {
+                    VisitTextDrugDTO visitTextDrugDTO = new VisitTextDrugDTO();
+                    visitTextDrugDTO.visit = mapper.toVisitDTO(visit);
+                    visitTextDrugDTO.texts = listText(visit.getVisitId());
+                    visitTextDrugDTO.drugs = listDrugFull(visit.getVisitId());
+                    return visitTextDrugDTO;
+                })
+                .collect(Collectors.toList());
+        VisitTextDrugPageDTO result = new VisitTextDrugPageDTO();
+        result.totalPages = visitIdPage.getTotalPages();
+        result.page = page;
+        result.visitTextDrugs = visits;
+        return result;
+    }
+
+    public Optional<PharmaQueueDTO> findPharmaQueue(int visitId) {
+        return pharmaQueueRepository.findByVisitId(visitId).map(mapper::toPharmaQueueDTO);
+    }
+
+    public List<PharmaQueueFullDTO> listPharmaQueueFullForPrescription() {
+        return pharmaQueueRepository.findFull().stream()
+                .map(result -> {
+                    PharmaQueueFullDTO pharmaQueueFullDTO = new PharmaQueueFullDTO();
+                    pharmaQueueFullDTO.pharmaQueue = mapper.toPharmaQueueDTO((PharmaQueue) result[0]);
+                    pharmaQueueFullDTO.patient = mapper.toPatientDTO((Patient) result[1]);
+                    Optional<Wqueue> optWqueue = wqueueRepository.tryFindByVisitId(pharmaQueueFullDTO.pharmaQueue.visitId);
+                    pharmaQueueFullDTO.wqueue = optWqueue.map(mapper::toWqueueDTO).orElse(null);
+                    pharmaQueueFullDTO.visitId = pharmaQueueFullDTO.pharmaQueue.visitId;
+                    return pharmaQueueFullDTO;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<PharmaQueueFullDTO> listPharmaQueueFullForToday() {
+        List<Integer> visitIds = visitRepository.findVisitIdForToday(Sort.by("visitId"));
+        if (visitIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Map<Integer, WqueueDTO> wqueueMap = new HashMap<>();
+        Map<Integer, PharmaQueueDTO> pharmaQueueMap = new HashMap<>();
+        wqueueRepository.findAll().forEach(wq -> wqueueMap.put(wq.getVisitId(), mapper.toWqueueDTO(wq)));
+        pharmaQueueRepository.findAll().forEach(pq -> pharmaQueueMap.put(pq.getVisitId(), mapper.toPharmaQueueDTO(pq)));
+        return visitRepository.findByVisitIdsWithPatient(visitIds).stream()
+                .map(result -> {
+                    Visit visit = (Visit) result[0];
+                    int visitId = visit.getVisitId();
+                    Patient patient = (Patient) result[1];
+                    PharmaQueueFullDTO pharmaQueueFullDTO = new PharmaQueueFullDTO();
+                    pharmaQueueFullDTO.visitId = visitId;
+                    pharmaQueueFullDTO.patient = mapper.toPatientDTO(patient);
+                    pharmaQueueFullDTO.pharmaQueue = pharmaQueueMap.get(visitId);
+                    pharmaQueueFullDTO.wqueue = wqueueMap.get(visitId);
+                    return pharmaQueueFullDTO;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public PharmaQueueFullDTO getPharmaQueueFull(int visitId) {
+        VisitDTO visitDTO = getVisit(visitId);
+        PharmaQueueFullDTO result = new PharmaQueueFullDTO();
+        result.visitId = visitId;
+        result.patient = getPatient(visitDTO.patientId);
+        result.pharmaQueue = pharmaQueueRepository.findByVisitId(visitId)
+                .map(mapper::toPharmaQueueDTO).orElse(null);
+        result.wqueue = wqueueRepository.tryFindByVisitId(visitId)
+                .map(mapper::toWqueueDTO).orElse(null);
+        return result;
+    }
+
+    public void deletePharmaQueue(PharmaQueueDTO pharmaQueueDTO) {
+        PharmaQueue pharmaQueue = mapper.fromPharmaQueueDTO(pharmaQueueDTO);
+        pharmaQueueRepository.delete(pharmaQueue);
+        practiceLogger.logPharmaQueueDeleted(pharmaQueueDTO);
+    }
+
+    public PharmaDrugDTO getPharmaDrugByIyakuhincode(int iyakuhincode) {
+        return mapper.toPharmaDrugDTO(pharmaDrugRepository.findByIyakuhincode(iyakuhincode));
+    }
+
+    public Optional<PharmaDrugDTO> findPharmaDrugByIyakuhincode(int iyakuhincode) {
+        return pharmaDrugRepository.tryFindByIyakuhincode(iyakuhincode)
+                .map(mapper::toPharmaDrugDTO);
+    }
+
+    public List<PharmaDrugDTO> collectPharmaDrugByIyakuhincodes(List<Integer> iyakuhincodes) {
+        if (iyakuhincodes.size() == 0) {
+            return Collections.emptyList();
+        } else {
+            return pharmaDrugRepository.collectByIyakuhincodes(iyakuhincodes).stream()
+                    .map(mapper::toPharmaDrugDTO).collect(Collectors.toList());
+        }
+    }
+
+    public ShinryouFullDTO getShinryouFull(int shinryouId) {
+        Object[] result = shinryouRepository.findOneWithMaster(shinryouId).get(0);
+        return resultToShinryouFullDTO(result);
+    }
+
+    public ShinryouDTO getShinryou(int shinryouId) {
+        return mapper.toShinryouDTO(shinryouRepository.findById(shinryouId));
+    }
+
+    public void batchDeleteShinryou(List<Integer> shinryouIds) {
+        List<ShinryouDTO> deletedList = shinryouIds.stream()
+                .map(this::getShinryou).collect(Collectors.toList());
+        if (deletedList.size() > 0) {
+            shinryouRepository.batchDelete(shinryouIds);
+            deletedList.forEach(practiceLogger::logShinryouDeleted);
+        }
+    }
+
+    public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds) {
+        if (shinryouIds.size() == 0) {
+            return Collections.emptyList();
+        }
+        return shinryouRepository.findFullByIds(shinryouIds).stream()
+                .map(this::resultToShinryouFullDTO).collect(Collectors.toList());
+    }
+
+    public List<ShinryouFullDTO> listShinryouFull(int visitId) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "shinryoucode");
+        return shinryouRepository.findByVisitIdWithMaster(visitId, sort).stream()
+                .map(this::resultToShinryouFullDTO)
+                .collect(Collectors.toList());
+    }
+
+    public ShinryouDTO enterShinryou(ShinryouDTO shinryouDTO) {
+        Shinryou shinryou = mapper.fromShinryouDTO(shinryouDTO);
+        ShinryouDTO created = mapper.toShinryouDTO(shinryouRepository.save(shinryou));
+        practiceLogger.logShinryouCreated(created);
+        return created;
+    }
+
+    public void updateShinryou(ShinryouDTO shinryouDTO) {
+        ShinryouDTO prev = getShinryou(shinryouDTO.shinryouId);
+        Shinryou updated = shinryouRepository.save(mapper.fromShinryouDTO(shinryouDTO));
+        practiceLogger.logShinryouUpdated(prev, mapper.toShinryouDTO(updated));
+    }
+
+    public void deleteShinryou(int shinryouId) {
+        ShinryouDTO deleted = getShinryou(shinryouId);
+        shinryouRepository.deleteById(shinryouId);
+        practiceLogger.logShinryouDeleted(deleted);
+    }
+
+    public List<Integer> deleteDuplicateShinryou(int visitId) {
+        List<Integer> shinryouIds = new ArrayList<>();
+        Set<Integer> shinryoucodes = new HashSet<>();
+        shinryouRepository.findByVisitId(visitId).forEach(shinryou -> {
+            if (shinryoucodes.contains(shinryou.getShinryoucode())) {
+                shinryouIds.add(shinryou.getShinryouId());
+            } else {
+                shinryoucodes.add(shinryou.getShinryoucode());
+            }
+        });
+        batchDeleteShinryou(shinryouIds);
+        return shinryouIds;
+    }
+
+    private ConductFullDTO extendConduct(ConductDTO conductDTO) {
+        int conductId = conductDTO.conductId;
+        ConductFullDTO conductFullDTO = new ConductFullDTO();
+        conductFullDTO.conduct = conductDTO;
+        conductFullDTO.gazouLabel = findGazouLabel(conductId);
+        conductFullDTO.conductShinryouList = listConductShinryouFull(conductId);
+        conductFullDTO.conductDrugs = listConductDrugFull(conductId);
+        conductFullDTO.conductKizaiList = listConductKizaiFull(conductId);
+        return conductFullDTO;
+    }
+
+    public GazouLabelDTO findGazouLabel(int conductId) {
+        Optional<GazouLabel> gazouLabel = gazouLabelRepository.findOneByConductId(conductId);
+        return gazouLabel.map(gazouLabel1 -> mapper.toGazouLabelDTO(gazouLabel1)).orElse(null);
+    }
+
+    public String findGazouLabelString(int conductId) {
+        GazouLabelDTO gazouLabelDTO = findGazouLabel(conductId);
+        return gazouLabelDTO == null ? null : gazouLabelDTO.label;
+    }
+
+    public void enterGazouLabel(GazouLabelDTO gazoulabelDTO) {
+        GazouLabel gazouLabel = mapper.fromGazouLabelDTO(gazoulabelDTO);
+        gazouLabel = gazouLabelRepository.save(gazouLabel);
+        practiceLogger.logGazouLabelCreated(mapper.toGazouLabelDTO(gazouLabel));
+    }
+
+    public void deleteConduct(int conductId) {
+        Optional<GazouLabel> optGazouLabel = gazouLabelRepository.findOneByConductId(conductId);
+        optGazouLabel.ifPresent(gazouLabel -> {
+            GazouLabelDTO deleted = mapper.toGazouLabelDTO(gazouLabel);
+            gazouLabelRepository.delete(gazouLabel);
+            practiceLogger.logGazouLabelDeleted(deleted);
+        });
+        conductShinryouRepository.findByConductId(conductId).forEach(conductShinryou -> {
+            ConductShinryouDTO deleted = mapper.toConductShinryouDTO(conductShinryou);
+            conductShinryouRepository.delete(conductShinryou);
+            practiceLogger.logConductShinryouDeleted(deleted);
+        });
+        conductDrugRepository.findByConductId(conductId).forEach(conductDrug -> {
+            ConductDrugDTO deleted = mapper.toConductDrugDTO(conductDrug);
+            conductDrugRepository.delete(conductDrug);
+            practiceLogger.logConductDrugDeleted(deleted);
+        });
+        conductKizaiRepository.findByConductId(conductId).forEach(conductKizai -> {
+            ConductKizaiDTO deleted = mapper.toConductKizaiDTO(conductKizai);
+            conductKizaiRepository.delete(conductKizai);
+            practiceLogger.logConductKizaiDeleted(deleted);
+        });
+        ConductDTO deletedConduct = mapper.toConductDTO(conductRepository.findById(conductId));
+        conductRepository.deleteById(conductId);
+        practiceLogger.logConductDeleted(deletedConduct);
+    }
+
+    public void modifyGazouLabel(int conductId, String label) {
+        Optional<GazouLabel> optGazouLabel = gazouLabelRepository.findOneByConductId(conductId);
+        if (optGazouLabel.isPresent()) {
+            GazouLabel gazouLabel = optGazouLabel.get();
+            GazouLabelDTO prev = mapper.toGazouLabelDTO(gazouLabel);
+            gazouLabel.setLabel(label);
+            gazouLabel = gazouLabelRepository.save(gazouLabel);
+            practiceLogger.logGazouLabelUpdated(prev, mapper.toGazouLabelDTO(gazouLabel));
+        } else {
+            GazouLabelDTO gazouLabel = new GazouLabelDTO();
+            gazouLabel.conductId = conductId;
+            gazouLabel.label = label;
+            enterGazouLabel(gazouLabel);
+        }
+    }
+
+    public void deleteGazouLabel(int conductId){
+        gazouLabelRepository.findOneByConductId(conductId)
+                .ifPresent(gazouLabel -> gazouLabelRepository.delete(gazouLabel));
+    }
+
+    public int enterConduct(ConductDTO conductDTO) {
+        Conduct conduct = mapper.fromConductDTO(conductDTO);
+        conduct = conductRepository.save(conduct);
+        practiceLogger.logConductCreated(mapper.toConductDTO(conduct));
+        return conduct.getConductId();
+    }
+
+    public List<ConductDTO> listConducts(int visitId) {
+        return conductRepository.findByVisitId(visitId, Sort.by("conductId")).stream()
+                .map(mapper::toConductDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<ConductFullDTO> listConductFull(int visitId) {
+        return listConducts(visitId).stream()
+                .map(this::extendConduct)
+                .collect(Collectors.toList());
+    }
+
+    public List<ConductShinryouDTO> listConductShinryou(int conductId) {
+        return conductShinryouRepository.findByConductId(conductId, Sort.by("conductShinryouId")).stream()
+                .map(mapper::toConductShinryouDTO).collect(Collectors.toList());
+    }
+
+    private List<ConductShinryouFullDTO> listConductShinryouFull(int conductId) {
+        return conductShinryouRepository.findByConductIdWithMaster(conductId).stream()
+                .map(this::resultToConductShinryouFullDTO)
+                .collect(Collectors.toList());
+    }
+
+    public ConductShinryouFullDTO getConductShinryouFull(int conductShinryouId) {
+        List<Object[]> results = conductShinryouRepository.findFull(conductShinryouId);
+        if (results.size() == 0) {
+            throw new RuntimeException("canoot find conduct shinryou: " + conductShinryouId);
+        } else if (results.size() != 1) {
+            throw new RuntimeException("cannot happen in getConductShinryouFull");
+        }
+        return resultToConductShinryouFullDTO(results.get(0));
+    }
+
+    public ConductDrugFullDTO getConductDrugFull(int conductDrugId) {
+        List<Object[]> results = conductDrugRepository.findFull(conductDrugId);
+        if (results.size() == 0) {
+            throw new RuntimeException("canoot find conduct drug: " + conductDrugId);
+        } else if (results.size() != 1) {
+            throw new RuntimeException("cannot happen in getConductDrugFull");
+        }
+        return resultToConductDrugFullDTO(results.get(0));
+    }
+
+    public ConductKizaiFullDTO getConductKizaiFull(int conductKizaiId) {
+        List<Object[]> results = conductKizaiRepository.findFull(conductKizaiId);
+        if (results.size() == 0) {
+            throw new RuntimeException("canoot find conduct kizai: " + conductKizaiId);
+        } else if (results.size() != 1) {
+            throw new RuntimeException("cannot happen in getConductKizaiFull");
+        }
+        return resultToConductKizaiFullDTO(results.get(0));
+    }
+
+    public int enterConductShinryou(ConductShinryouDTO conductShinryouDTO) {
+        ConductShinryou conductShinryou = mapper.fromConductShinryouDTO(conductShinryouDTO);
+        conductShinryou = conductShinryouRepository.save(conductShinryou);
+        practiceLogger.logConductShinryouCreated(mapper.toConductShinryouDTO(conductShinryou));
+        return conductShinryou.getConductShinryouId();
+    }
+
+    public void deleteConductShinryou(int conductShinryouId) {
+        ConductShinryouDTO deleted = mapper.toConductShinryouDTO(conductShinryouRepository.findById(conductShinryouId));
+        conductShinryouRepository.deleteById(conductShinryouId);
+        practiceLogger.logConductShinryouDeleted(deleted);
+    }
+
+    public List<ConductDrugDTO> listConductDrug(int conductId) {
+        return conductDrugRepository.findByConductId(conductId, Sort.by("conductDrugId")).stream()
+                .map(mapper::toConductDrugDTO).collect(Collectors.toList());
+    }
+
+    private List<ConductDrugFullDTO> listConductDrugFull(int conductId) {
+        return conductDrugRepository.findByConductIdWithMaster(conductId).stream()
+                .map(this::resultToConductDrugFullDTO)
+                .collect(Collectors.toList());
+    }
+
+    public int enterConductDrug(ConductDrugDTO conductDrugDTO) {
+        ConductDrug conductDrug = mapper.fromConductDrugDTO(conductDrugDTO);
+        conductDrug = conductDrugRepository.save(conductDrug);
+        practiceLogger.logConductDrugCreated(mapper.toConductDrugDTO(conductDrug));
+        return conductDrug.getConductDrugId();
+    }
+
+    public void deleteConductDrug(int conductDrugId) {
+        ConductDrugDTO deleted = mapper.toConductDrugDTO(conductDrugRepository.findById(conductDrugId));
+        conductDrugRepository.deleteById(conductDrugId);
+        practiceLogger.logConductDrugDeleted(deleted);
+    }
+
+    public List<ConductKizaiDTO> listConductKizai(int conductId) {
+        return conductKizaiRepository.findByConductId(conductId, Sort.by("conductKizaiId")).stream()
+                .map(mapper::toConductKizaiDTO).collect(Collectors.toList());
+    }
+
+    private List<ConductKizaiFullDTO> listConductKizaiFull(int conductId) {
+        return conductKizaiRepository.findByConductIdWithMaster(conductId).stream()
+                .map(this::resultToConductKizaiFullDTO)
+                .collect(Collectors.toList());
+    }
+
+    public int enterConductKizai(ConductKizaiDTO conductKizaiDTO) {
+        ConductKizai conductKizai = mapper.fromConductKizaiDTO(conductKizaiDTO);
+        conductKizai = conductKizaiRepository.save(conductKizai);
+        practiceLogger.logConductKizaiCreated(mapper.toConductKizaiDTO(conductKizai));
+        return conductKizai.getConductKizaiId();
+    }
+
+    public void deleteConductKizai(int conductKizaiId) {
+        ConductKizaiDTO deleted = mapper.toConductKizaiDTO(conductKizaiRepository.findById(conductKizaiId));
+        conductKizaiRepository.deleteById(conductKizaiId);
+        practiceLogger.logConductKizaiDeleted(deleted);
+    }
+
+
+
+
+
+
+
+
+
+
+
     private static DateTimeFormatter sqlDateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 
     private String localDateTimeToSqldatetime(LocalDateTime dt){
@@ -771,6 +1340,58 @@ public class DbGateway {
         paymentVisitPatientDTO.visit = visitDTO;
         paymentVisitPatientDTO.patient = patientDTO;
         return paymentVisitPatientDTO;
+    }
+
+    private TextVisitDTO resultToTextVisitDTO(Object[] result) {
+        TextVisitDTO dto = new TextVisitDTO();
+        dto.text = mapper.toTextDTO((Text) result[0]);
+        dto.visit = mapper.toVisitDTO((Visit) result[1]);
+        return dto;
+    }
+
+    private DrugFullDTO resultToDrugFullDTO(Object[] result) {
+        Drug drug = (Drug) result[0];
+        IyakuhinMaster master = (IyakuhinMaster) result[1];
+        DrugFullDTO drugFullDTO = new DrugFullDTO();
+        drugFullDTO.drug = mapper.toDrugDTO(drug);
+        drugFullDTO.master = mapper.toIyakuhinMasterDTO(master);
+        return drugFullDTO;
+    }
+
+    private ShinryouFullDTO resultToShinryouFullDTO(Object[] result) {
+        Shinryou shinryou = (Shinryou) result[0];
+        ShinryouMaster master = (ShinryouMaster) result[1];
+        ShinryouFullDTO shinryouFullDTO = new ShinryouFullDTO();
+        shinryouFullDTO.shinryou = mapper.toShinryouDTO(shinryou);
+        shinryouFullDTO.master = mapper.toShinryouMasterDTO(master);
+        return shinryouFullDTO;
+    }
+
+    private ConductShinryouFullDTO resultToConductShinryouFullDTO(Object[] result) {
+        ConductShinryou conductShinryou = (ConductShinryou) result[0];
+        ShinryouMaster master = (ShinryouMaster) result[1];
+        ConductShinryouFullDTO conductShinryouFull = new ConductShinryouFullDTO();
+        conductShinryouFull.conductShinryou = mapper.toConductShinryouDTO(conductShinryou);
+        conductShinryouFull.master = mapper.toShinryouMasterDTO(master);
+        return conductShinryouFull;
+    }
+
+    private ConductDrugFullDTO resultToConductDrugFullDTO(Object[] result) {
+        ConductDrug conductDrug = (ConductDrug) result[0];
+        IyakuhinMaster master = (IyakuhinMaster) result[1];
+        ConductDrugFullDTO conductDrugFull = new ConductDrugFullDTO();
+        conductDrugFull.conductDrug = mapper.toConductDrugDTO(conductDrug);
+        conductDrugFull.master = mapper.toIyakuhinMasterDTO(master);
+        return conductDrugFull;
+    }
+
+    private ConductKizaiFullDTO resultToConductKizaiFullDTO(Object[] result) {
+        ConductKizai conductKizai = (ConductKizai) result[0];
+        KizaiMaster master = (KizaiMaster) result[1];
+        ConductKizaiFullDTO conductKizaiFull = new ConductKizaiFullDTO();
+        conductKizaiFull.conductKizai = mapper.toConductKizaiDTO(conductKizai);
+        conductKizaiFull.master = mapper.toKizaiMasterDTO(master);
+        return conductKizaiFull;
     }
 
 
