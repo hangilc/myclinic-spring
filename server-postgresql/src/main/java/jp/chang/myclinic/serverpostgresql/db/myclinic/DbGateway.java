@@ -78,6 +78,10 @@ public class DbGateway {
     private ConductShinryouRepository conductShinryouRepository;
     @Autowired
     private ConductKizaiRepository conductKizaiRepository;
+    @Autowired
+    private DiseaseRepository diseaseRepository;
+    @Autowired
+    private DiseaseAdjRepository diseaseAdjRepository;
 
     @Autowired
     private PracticeLogger practiceLogger;
@@ -1286,6 +1290,151 @@ public class DbGateway {
         practiceLogger.logConductKizaiDeleted(deleted);
     }
 
+    public void finishCashier(PaymentDTO paymentDTO) {
+        Payment payment = mapper.fromPaymentDTO(paymentDTO);
+        payment = paymentRepository.save(payment);
+        practiceLogger.logPaymentCreated(mapper.toPaymentDTO(payment));
+        Optional<PharmaQueue> optPharmaQueue = pharmaQueueRepository.findByVisitId(paymentDTO.visitId);
+        Optional<Wqueue> optWqueue = wqueueRepository.tryFindByVisitId(paymentDTO.visitId);
+        if (optPharmaQueue.isPresent()) {
+            if (optWqueue.isPresent()) {
+                changeWqueueState(paymentDTO.visitId, WqueueWaitState.WaitDrug.getCode());
+            }
+        } else {
+            if (optWqueue.isPresent()) {
+                Wqueue wqueue = optWqueue.get();
+                deleteWqueue(mapper.toWqueueDTO(wqueue));
+            }
+        }
+    }
+
+    public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId) {
+        return diseaseRepository.findCurrentWithMaster(patientId, Sort.by("diseaseId")).stream()
+                .map(this::resultToDiseaseFullDTO)
+                .peek(diseaseFullDTO -> diseaseFullDTO.adjList =
+                        diseaseAdjRepository.findByDiseaseIdWithMaster(diseaseFullDTO.disease.diseaseId, Sort.by("diseaseAdjId"))
+                                .stream()
+                                .map(this::resultToDiseaseAdjFullDTO)
+                                .collect(Collectors.toList()))
+                .collect(Collectors.toList());
+    }
+
+    public List<DiseaseFullDTO> listDiseaseFull(int patientId) {
+        return diseaseRepository.findAllWithMaster(patientId, Sort.by("diseaseId")).stream()
+                .map(this::resultToDiseaseFullDTO)
+                .peek(diseaseFullDTO -> diseaseFullDTO.adjList =
+                        diseaseAdjRepository.findByDiseaseIdWithMaster(diseaseFullDTO.disease.diseaseId, Sort.by("diseaseAdjId"))
+                                .stream()
+                                .map(this::resultToDiseaseAdjFullDTO)
+                                .collect(Collectors.toList()))
+                .collect(Collectors.toList());
+    }
+
+    public long countDiseaseByPatient(int patientId) {
+        return diseaseRepository.countByPatientId(patientId);
+    }
+
+    public List<DiseaseFullDTO> pageDiseaseFull(int patientId, int page, int itemsPerPage) {
+        PageRequest pageRequest = PageRequest.of(page, itemsPerPage, Sort.Direction.DESC, "diseaseId");
+        return diseaseRepository.findAllWithMaster(patientId, pageRequest).stream()
+                .map(this::resultToDiseaseFullDTO)
+                .peek(diseaseFullDTO -> diseaseFullDTO.adjList =
+                        diseaseAdjRepository.findByDiseaseIdWithMaster(diseaseFullDTO.disease.diseaseId, Sort.by("diseaseAdjId"))
+                                .stream()
+                                .map(this::resultToDiseaseAdjFullDTO)
+                                .collect(Collectors.toList()))
+                .collect(Collectors.toList());
+    }
+
+    public DiseaseFullDTO getDiseaseFull(int diseaseId) {
+        List<Object[]> resultList = diseaseRepository.findFull(diseaseId);
+        if (resultList.size() == 0) {
+            throw new RuntimeException("Cannot find full disease. " + diseaseId);
+        }
+        Object[] result = resultList.get(0);
+        DiseaseFullDTO diseaseFullDTO = new DiseaseFullDTO();
+        diseaseFullDTO.disease = mapper.toDiseaseDTO((Disease) result[0]);
+        diseaseFullDTO.master = mapper.toByoumeiMasterDTO(((ByoumeiMaster) result[1]));
+        diseaseFullDTO.adjList =
+                diseaseAdjRepository.findByDiseaseIdWithMaster(diseaseFullDTO.disease.diseaseId, Sort.by("diseaseAdjId"))
+                        .stream()
+                        .map(this::resultToDiseaseAdjFullDTO)
+                        .collect(Collectors.toList());
+        return diseaseFullDTO;
+    }
+
+    public int enterDisease(DiseaseDTO diseaseDTO, List<DiseaseAdjDTO> adjDTOList) {
+        Disease disease = mapper.fromDiseaseDTO(diseaseDTO);
+        disease.setDiseaseId(null);
+        disease = diseaseRepository.save(disease);
+        practiceLogger.logDiseaseCreated(mapper.toDiseaseDTO(disease));
+        int diseaseId = disease.getDiseaseId();
+        adjDTOList.forEach(adjDTO -> {
+            DiseaseAdj adj = mapper.fromDiseaseAdjDTO(adjDTO);
+            adj.setDiseaseAdjId(null);
+            adj.setDiseaseId(diseaseId);
+            adj = diseaseAdjRepository.save(adj);
+            practiceLogger.logDiseaseAdjCreated(mapper.toDiseaseAdjDTO(adj));
+        });
+        return diseaseId;
+    }
+
+    public void modifyDiseaseEndReason(int diseaseId, LocalDate endDate, char reason) {
+        Disease d = diseaseRepository.findById(diseaseId);
+        DiseaseDTO prev = mapper.toDiseaseDTO(d);
+        d.setEndReason(reason);
+        d.setEndDate(endDate);
+        d = diseaseRepository.save(d);
+        practiceLogger.logDiseaseUpdated(prev, mapper.toDiseaseDTO(d));
+    }
+
+    public void modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
+        DiseaseDTO diseaseDTO = diseaseModifyDTO.disease;
+        Disease d = diseaseRepository.findById(diseaseDTO.diseaseId);
+        DiseaseDTO prevDisease = mapper.toDiseaseDTO(d);
+        if (!diseaseDTO.equals(prevDisease)) {
+            d.setShoubyoumeicode(diseaseDTO.shoubyoumeicode);
+            d.setStartDate(LocalDate.parse(diseaseDTO.startDate));
+            d.setEndDate(oldSqldateToLocalDate(diseaseDTO.endDate));
+            d.setEndReason(diseaseDTO.endReason);
+            d = diseaseRepository.save(d);
+            practiceLogger.logDiseaseUpdated(prevDisease, mapper.toDiseaseDTO(d));
+        }
+        List<DiseaseAdj> adjList = diseaseAdjRepository.findByDiseaseId(diseaseDTO.diseaseId, Sort.by("diseaseAdjId"));
+        List<Integer> prevAdjCodes = adjList.stream().map(DiseaseAdj::getShuushokugocode).collect(Collectors.toList());
+        if (!prevAdjCodes.equals(diseaseModifyDTO.shuushokugocodes)) {
+            if (adjList.size() > 0) {
+                adjList.forEach(adj -> {
+                    DiseaseAdjDTO deleted = mapper.toDiseaseAdjDTO(adj);
+                    diseaseAdjRepository.delete(adj);
+                    practiceLogger.logDiseaseAdjDeleted(deleted);
+                });
+            }
+            if (diseaseModifyDTO.shuushokugocodes != null) {
+                diseaseModifyDTO.shuushokugocodes.forEach(shuushokugocode -> {
+                    DiseaseAdj adj = new DiseaseAdj();
+                    adj.setDiseaseId(diseaseDTO.diseaseId);
+                    adj.setShuushokugocode(shuushokugocode);
+                    adj = diseaseAdjRepository.save(adj);
+                    practiceLogger.logDiseaseAdjCreated(mapper.toDiseaseAdjDTO(adj));
+                });
+            }
+        }
+    }
+
+    public void deleteDisease(int diseaseId) {
+        List<DiseaseAdj> adjList = diseaseAdjRepository.findByDiseaseId(diseaseId, Sort.by("diseaseAdjId"));
+        adjList.forEach(adj -> {
+            DiseaseAdjDTO prev = mapper.toDiseaseAdjDTO(adj);
+            diseaseAdjRepository.delete(adj);
+            practiceLogger.logDiseaseAdjDeleted(prev);
+        });
+        Disease d = diseaseRepository.findById(diseaseId);
+        DiseaseDTO prevDisease = mapper.toDiseaseDTO(d);
+        diseaseRepository.delete(d);
+        practiceLogger.logDiseaseDeleted(prevDisease);
+    }
+
 
 
 
@@ -1304,6 +1453,22 @@ public class DbGateway {
 
     private boolean isTodaysVisit(Visit visit){
         return visit.getVisitedAt().toLocalDate().equals(LocalDate.now());
+    }
+
+    private String localDateToOldSqldate(LocalDate date) {
+        if (date == null) {
+            return "0000-00-00";
+        } else {
+            return date.toString();
+        }
+    }
+
+    private LocalDate oldSqldateToLocalDate(String sqldate) {
+        if ("0000-00-00".equals(sqldate) || sqldate == null) {
+            return null;
+        } else {
+            return LocalDate.parse(sqldate);
+        }
     }
 
     private VisitPatientDTO resultToVisitPatientDTO(Object[] result) {
@@ -1392,6 +1557,23 @@ public class DbGateway {
         conductKizaiFull.conductKizai = mapper.toConductKizaiDTO(conductKizai);
         conductKizaiFull.master = mapper.toKizaiMasterDTO(master);
         return conductKizaiFull;
+    }
+
+    private DiseaseFullDTO resultToDiseaseFullDTO(Object[] result) {
+        DiseaseDTO disease = mapper.toDiseaseDTO(((Disease) result[0]));
+        ByoumeiMasterDTO master = mapper.toByoumeiMasterDTO((ByoumeiMaster) result[1]);
+        DiseaseFullDTO diseaseFull = new DiseaseFullDTO();
+        diseaseFull.disease = disease;
+        diseaseFull.master = master;
+        diseaseFull.adjList = new ArrayList<>();
+        return diseaseFull;
+    }
+
+    private DiseaseAdjFullDTO resultToDiseaseAdjFullDTO(Object[] result) {
+        DiseaseAdjFullDTO dto = new DiseaseAdjFullDTO();
+        dto.diseaseAdj = mapper.toDiseaseAdjDTO((DiseaseAdj) result[0]);
+        dto.master = mapper.toShuushokugoMasterDTO((ShuushokugoMaster) result[1]);
+        return dto;
     }
 
 
