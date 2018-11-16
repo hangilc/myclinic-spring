@@ -139,14 +139,6 @@ public class ShinryouController {
 		}
 	}
 
-	@RequestMapping(value="/search-shinryou-master", method=RequestMethod.GET)
-	public List<ShinryouMasterDTO> searchShinryouMaster(@RequestParam("text") String text, @RequestParam("at") String at){
-		if( at != null && at.length() > 10 ){
-			at = at.substring(0, 10);
-		}
-		return dbGateway.searchShinryouMaster(text, LocalDate.parse(at));
-	}
-
 	@RequestMapping(value="/enter-shinryou", method=RequestMethod.POST)
 	public Integer enterShinryou(@RequestBody ShinryouDTO shinryou){
 		return dbGateway.enterShinryou(shinryou).shinryouId;

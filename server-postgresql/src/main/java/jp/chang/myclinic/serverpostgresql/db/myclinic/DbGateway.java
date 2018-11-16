@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -122,6 +123,10 @@ public class DbGateway {
                     return iyakuhincodeNameDTO;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public Optional<IyakuhinMasterDTO> findIyakuhinMasterByIyakuhincode(int iyakuhincode, LocalDate at) {
+        return iyakuhinMasterRepository.findByIyakuhincodeAndDate(iyakuhincode, at).map(mapper::toIyakuhinMasterDTO);
     }
 
     public ShinryouMasterDTO getShinryouMaster(int shinryoucode, LocalDate at) {
@@ -1094,6 +1099,16 @@ public class DbGateway {
         return shinryouIds;
     }
 
+    public ConductDTO getConduct(int conductId) {
+        Conduct conduct = conductRepository.findById(conductId);
+        return mapper.toConductDTO(conduct);
+    }
+
+    public ConductFullDTO getConductFull(int conductId) {
+        ConductDTO conductDTO = getConduct(conductId);
+        return extendConduct(conductDTO);
+    }
+
     private ConductFullDTO extendConduct(ConductDTO conductDTO) {
         int conductId = conductDTO.conductId;
         ConductFullDTO conductFullDTO = new ConductFullDTO();
@@ -1103,6 +1118,24 @@ public class DbGateway {
         conductFullDTO.conductDrugs = listConductDrugFull(conductId);
         conductFullDTO.conductKizaiList = listConductKizaiFull(conductId);
         return conductFullDTO;
+    }
+
+    public List<ConductFullDTO> listConductFullByIds(List<Integer> conductIds) {
+        if (conductIds.size() == 0) {
+            return Collections.emptyList();
+        }
+        return conductRepository.listConductByIds(conductIds, Sort.by("conductId")).stream()
+                .map(mapper::toConductDTO)
+                .map(this::extendConduct)
+                .collect(Collectors.toList());
+    }
+
+    public void modifyConductKind(int conductId, int kind) {
+        Conduct c = conductRepository.findById(conductId);
+        ConductDTO prev = mapper.toConductDTO(c);
+        c.setKind(kind);
+        c = conductRepository.save(c);
+        practiceLogger.logConductUpdated(prev, mapper.toConductDTO(c));
     }
 
     public GazouLabelDTO findGazouLabel(int conductId) {
@@ -1433,6 +1466,15 @@ public class DbGateway {
         DiseaseDTO prevDisease = mapper.toDiseaseDTO(d);
         diseaseRepository.delete(d);
         practiceLogger.logDiseaseDeleted(prevDisease);
+    }
+
+    public List<DiseaseFullDTO> listDiseaseByPatientAt(int patientId, int year, int month) {
+        LocalDate validFrom = LocalDate.of(year, month, 1);
+        LocalDate validUpto = validFrom.plus(1, ChronoUnit.MONTHS).minus(1, ChronoUnit.DAYS);
+        return diseaseRepository.listDiseaseIdByPatientAt(patientId, validFrom.toString(), validUpto.toString())
+                .stream()
+                .map(this::getDiseaseFull)
+                .collect(Collectors.toList());
     }
 
 

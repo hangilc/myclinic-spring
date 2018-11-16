@@ -26,10 +26,10 @@ public interface IyakuhinMasterRepository extends CrudRepository<IyakuhinMaster,
 			" and (m.validUpto is null or m.validUpto >= DATE(:at)) ")
 	Optional<IyakuhinMaster> tryFind(@Param("iyakuhincode") int iyakuhincode, @Param("at") LocalDate at);
 
-//	@Query("select m from IyakuhinMaster m where m.iyakuhincode = :iyakuhincode " +
-//			" and m.validFrom <= DATE(:at) " +
-//			" and (m.validUpto is null or m.validUpto >= DATE(:at) )")
-//	Optional<IyakuhinMaster> findByIyakuhincodeAndDate(@Param("iyakuhincode") int iyakuhincode,
-//                                                       @Param("at") LocalDate at);
+	@Query("select m from IyakuhinMaster m where m.iyakuhincode = :iyakuhincode " +
+			" and m.validFrom <= DATE(:at) " +
+			" and (m.validUpto is null or m.validUpto >= DATE(:at) )")
+	Optional<IyakuhinMaster> findByIyakuhincodeAndDate(@Param("iyakuhincode") int iyakuhincode,
+                                                       @Param("at") LocalDate at);
 
 }
