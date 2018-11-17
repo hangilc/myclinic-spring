@@ -85,6 +85,12 @@ public class DbGateway {
     private DiseaseAdjRepository diseaseAdjRepository;
     @Autowired
     private DrugAttrRepository drugAttrRepository;
+    @Autowired
+    private PrescExampleRepository prescExampleRepository;
+    @Autowired
+    private ShinryouAttrRepository shinryouAttrRepository;
+    @Autowired
+    private ShoukiRepository shoukiRepository;
 
     @Autowired
     private PracticeLogger practiceLogger;
@@ -1035,6 +1041,51 @@ public class DbGateway {
         }
     }
 
+    public void enterPharmaDrug(PharmaDrugDTO pharmaDrugDTO) {
+        PharmaDrug pharmaDrug = mapper.fromPharmaDrugDTO(pharmaDrugDTO);
+        pharmaDrug = pharmaDrugRepository.save(pharmaDrug);
+        practiceLogger.logPharmaDrugCreated(mapper.toPharmaDrugDTO(pharmaDrug));
+    }
+
+    public void updatePharmaDrug(PharmaDrugDTO pharmaDrugDTO) {
+        PharmaDrugDTO prev = mapper.toPharmaDrugDTO(pharmaDrugRepository.findById(pharmaDrugDTO.iyakuhincode));
+        PharmaDrug pharmaDrug = mapper.fromPharmaDrugDTO(pharmaDrugDTO);
+        pharmaDrug = pharmaDrugRepository.save(pharmaDrug);
+        practiceLogger.logPharmaDrugUpdated(prev, mapper.toPharmaDrugDTO(pharmaDrug));
+    }
+
+    public void deletePharmaDrug(int iyakuhincode) {
+        PharmaDrugDTO deleted = mapper.toPharmaDrugDTO(pharmaDrugRepository.findById(iyakuhincode));
+        pharmaDrugRepository.deleteById(iyakuhincode);
+        practiceLogger.logPharmaDrugDeleted(deleted);
+    }
+
+    public List<PharmaDrugNameDTO> searchPharmaDrugNames(String text) {
+        return pharmaDrugRepository.searchNames(text).stream()
+                .map(result -> {
+                    PharmaDrugNameDTO pharmaDrugNameDTO = new PharmaDrugNameDTO();
+                    pharmaDrugNameDTO.iyakuhincode = (Integer) result[0];
+                    pharmaDrugNameDTO.name = (String) result[1];
+                    pharmaDrugNameDTO.yomi = (String) result[2];
+                    return pharmaDrugNameDTO;
+                })
+                .sorted(Comparator.comparing(a -> a.yomi))
+                .collect(Collectors.toList());
+    }
+
+    public List<PharmaDrugNameDTO> listAllPharmaDrugNames() {
+        return pharmaDrugRepository.findAllPharmaDrugNames().stream()
+                .map(result -> {
+                    PharmaDrugNameDTO pharmaDrugNameDTO = new PharmaDrugNameDTO();
+                    pharmaDrugNameDTO.iyakuhincode = (Integer) result[0];
+                    pharmaDrugNameDTO.name = (String) result[1];
+                    pharmaDrugNameDTO.yomi = (String) result[2];
+                    return pharmaDrugNameDTO;
+                })
+                .sorted(Comparator.comparing(a -> a.yomi))
+                .collect(Collectors.toList());
+    }
+
     public ShinryouFullDTO getShinryouFull(int shinryouId) {
         Object[] result = shinryouRepository.findOneWithMaster(shinryouId).get(0);
         return resultToShinryouFullDTO(result);
@@ -1520,6 +1571,112 @@ public class DbGateway {
         drugAttrRepository.save(attr);
     }
 
+    public PrescExampleDTO findPrescExample(int prescExampleId){
+        PrescExample example = prescExampleRepository.findById(prescExampleId).orElse(null);
+        if( example == null ){
+            return null;
+        } else {
+            return mapper.toPrescExampleDTO(example);
+        }
+    }
+
+    public List<PrescExampleFullDTO> searchPrescExampleFullByName(String text) {
+        return prescExampleRepository.searchByNameFull(text).stream()
+                .map(this::resultToPrescExampleFullDTO)
+                .collect(Collectors.toList());
+    }
+
+    public int enterPrescExample(PrescExampleDTO dto){
+        PrescExample example = mapper.fromPrescExampleDTO(dto);
+        example.setPrescExampleId(null);
+        example = prescExampleRepository.save(example);
+        return example.getPrescExampleId();
+    }
+
+    public void updatePrescExample(PrescExampleDTO dto){
+        PrescExample example = mapper.fromPrescExampleDTO(dto);
+        prescExampleRepository.save(example);
+    }
+
+    public void deletePrescExample(int prescExampleId){
+        PrescExample example = prescExampleRepository.findById(prescExampleId).orElse(null);
+        if( example == null ){
+            throw new RuntimeException("Cannot find presc example with id " + prescExampleId);
+        }
+        prescExampleRepository.delete(example);
+    }
+
+    public List<PrescExampleFullDTO> listAllPrescExample(){
+        return prescExampleRepository.findAllFull().stream().map(this::resultToPrescExampleFullDTO)
+                .sorted(Comparator.comparing(e -> e.master.yomi))
+                .collect(Collectors.toList());
+    }
+
+    public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds){
+        if( shinryouIds.size() == 0 ){
+            return Collections.emptyList();
+        } else {
+            return shinryouAttrRepository.batchGetShinryouAttr(shinryouIds).stream()
+                    .map(mapper::toShinryouAttrDTO).collect(Collectors.toList());
+        }
+    }
+
+    public Optional<ShinryouAttrDTO> findShinryouAttr(int shinryouId){
+        return shinryouAttrRepository.findOneByShinryouId(shinryouId)
+                .map(mapper::toShinryouAttrDTO);
+    }
+
+    public ShinryouAttrDTO setShinryouTekiyou(int shinryouId, String tekiyou){
+        ShinryouAttr attr = shinryouAttrRepository.findOneByShinryouId(shinryouId)
+                .orElseGet(() -> new ShinryouAttr(shinryouId, tekiyou));
+        attr.setTekiyou(tekiyou);
+        attr = shinryouAttrRepository.save(attr);
+        return mapper.toShinryouAttrDTO(attr);
+    }
+
+    public Optional<ShinryouAttrDTO> deleteShinryouTekiyou(int shinryouId){
+        return shinryouAttrRepository.findOneByShinryouId(shinryouId)
+                .flatMap(shinryouAttr -> {
+                    shinryouAttr.setTekiyou(null);
+                    if( shinryouAttr.isEmpty() ){
+                        shinryouAttrRepository.delete(shinryouAttr);
+                        return Optional.empty();
+                    } else {
+                        shinryouAttrRepository.save(shinryouAttr);
+                        return Optional.of(mapper.toShinryouAttrDTO(shinryouAttr));
+                    }
+                });
+    }
+
+    public void enterShinryouAttr(ShinryouAttrDTO dto){
+        ShinryouAttr attr = mapper.fromShinryouAttrDTO(dto);
+        shinryouAttrRepository.save(attr);
+    }
+
+    public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds){
+        return shoukiRepository.batchGetShouki(visitIds).stream()
+                .map(mapper::toShoukiDTO).collect(Collectors.toList());
+    }
+
+    public Optional<ShoukiDTO> findShouki(int visitId){
+        return shoukiRepository.findOneByVisitId(visitId).map(mapper::toShoukiDTO);
+    }
+
+    public void enterShouki(ShoukiDTO shoukiDTO){
+        Shouki shouki = mapper.fromShoukiDTO(shoukiDTO);
+        shoukiRepository.save(shouki);
+    }
+
+    public void updateShouki(ShoukiDTO shoukiDTO){
+        Shouki shouki = mapper.fromShoukiDTO(shoukiDTO);
+        shoukiRepository.save(shouki);
+    }
+
+    public void deleteShouki(int visitId){
+        shoukiRepository.findOneByVisitId(visitId)
+                .ifPresent(shouki -> shoukiRepository.delete(shouki));
+    }
+
 
 
 
@@ -1658,6 +1815,15 @@ public class DbGateway {
         dto.diseaseAdj = mapper.toDiseaseAdjDTO((DiseaseAdj) result[0]);
         dto.master = mapper.toShuushokugoMasterDTO((ShuushokugoMaster) result[1]);
         return dto;
+    }
+
+    private PrescExampleFullDTO resultToPrescExampleFullDTO(Object[] result){
+        PrescExample prescExample = (PrescExample) result[0];
+        IyakuhinMaster iyakuhinMaster = (IyakuhinMaster) result[1];
+        PrescExampleFullDTO prescExampleFullDTO = new PrescExampleFullDTO();
+        prescExampleFullDTO.prescExample = mapper.toPrescExampleDTO((prescExample));
+        prescExampleFullDTO.master = mapper.toIyakuhinMasterDTO(iyakuhinMaster);
+        return prescExampleFullDTO;
     }
 
 
