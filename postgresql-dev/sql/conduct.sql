@@ -3,3 +3,6 @@ create table conduct (
 	visit_id integer not null references visit (visit_id),
 	kind smallint not null check (kind in (0, 1, 2, 3))
 );
+
+create index on conduct (visit_id);
+	

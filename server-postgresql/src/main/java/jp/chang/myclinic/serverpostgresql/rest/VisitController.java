@@ -1,17 +1,25 @@
 package jp.chang.myclinic.serverpostgresql.rest;
 
+import jp.chang.myclinic.consts.MeisaiSection;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.serverpostgresql.db.myclinic.DbGateway;
 import jp.chang.myclinic.serverpostgresql.rcpt.HoukatsuKensa;
+import jp.chang.myclinic.serverpostgresql.rcpt.Meisai;
+import jp.chang.myclinic.serverpostgresql.rcpt.RcptVisit;
+import jp.chang.myclinic.serverpostgresql.rcpt.SectionItem;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.HokenUtil;
+import jp.chang.myclinic.util.RcptUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/json")
@@ -130,130 +138,123 @@ public class VisitController {
         return visitId;
     }
 
-//    @RequestMapping(value = "/get-visit-full", method = RequestMethod.GET)
-//    public VisitFullDTO getVisitFull(@RequestParam("visit-id") int visitId) {
-//        return dbGateway.getVisitFull(visitId);
-//    }
-//
-//    @RequestMapping(value = "/list-visit-full", method = RequestMethod.GET)
-//    public VisitFullPageDTO listVisitFull(@RequestParam("patient-id") int patientId, @RequestParam("page") int page) {
-//        return dbGateway.listVisitFull(patientId, page);
-//    }
-//
-//    @RequestMapping(value = "/list-visit-full2", method = RequestMethod.GET)
-//    public VisitFull2PageDTO listVisitFull2(@RequestParam("patient-id") int patientId, @RequestParam("page") int page) {
-//        return dbGateway.listVisitFull2(patientId, page);
-//    }
-//
-//    @RequestMapping(value = "/page-visit-full2-with-patient-at", method = RequestMethod.GET)
-//    public VisitFull2PatientPageDTO pageVisitFull2PatientAt(@RequestParam("at") String at,
-//                                                            @RequestParam("page") int page) {
-//        LocalDate date = LocalDate.parse(at);
-//        return dbGateway.pageVisitsWithPatientAt(date, page);
-//    }
-//
-//    @RequestMapping(value = "/get-visit-meisai", method = RequestMethod.GET)
-//    public MeisaiDTO getVisitMeisai(@RequestParam("visit-id") int visitId) {
-//        RcptVisit rcptVisit = new RcptVisit();
-//        VisitDTO visit = dbGateway.getVisit(visitId);
-//        List<ShinryouFullDTO> shinryouList = dbGateway.listShinryouFull(visitId);
-//        List<DrugFullDTO> drugs = dbGateway.listDrugFull(visitId);
-//        List<ConductFullDTO> conducts = dbGateway.listConductFull(visitId);
-//        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
-//        HoukatsuKensa.Revision revision = houkatsuKensa.findRevision(at);
-//        rcptVisit.addShinryouList(shinryouList, revision);
-//        rcptVisit.addDrugs(drugs);
-//        rcptVisit.addConducts(conducts);
-//        Meisai meisai = rcptVisit.getMeisai();
-//        MeisaiDTO meisaiDTO = new MeisaiDTO();
-//        meisaiDTO.sections = new ArrayList<>();
-//        for (MeisaiSection section : MeisaiSection.values()) {
-//            List<SectionItem> items = meisai.getItems(section);
-//            if (items != null) {
-//                MeisaiSectionDTO meisaiSectionDTO = new MeisaiSectionDTO();
-//                meisaiSectionDTO.name = section.toString();
-//                meisaiSectionDTO.label = section.getLabel();
-//                meisaiSectionDTO.items = items.stream()
-//                        .map(this::toSectionItemDTO)
-//                        .collect(Collectors.toList());
-//                meisaiSectionDTO.sectionTotalTen = SectionItem.sum(items);
-//                meisaiDTO.sections.add(meisaiSectionDTO);
-//            }
-//        }
-//        meisaiDTO.totalTen = meisai.totalTen();
-//        PatientDTO patientDTO = dbGateway.getPatient(visit.patientId);
-//        if (patientDTO.birthday != null) {
-//            HokenDTO hokenDTO = dbGateway.getHokenForVisit(visit);
-//            meisaiDTO.hoken = hokenDTO;
-//            LocalDate birthdayDate = DateTimeUtil.parseSqlDate(patientDTO.birthday);
-//            int rcptAge = HokenUtil.calcRcptAge(birthdayDate.getYear(), birthdayDate.getMonth().getValue(),
-//                    birthdayDate.getDayOfMonth(), at.getYear(), at.getMonth().getValue());
-//            meisaiDTO.futanWari = HokenUtil.calcFutanWari(hokenDTO, rcptAge);
-//        } else {
-//            meisaiDTO.futanWari = 10;
-//        }
-//        meisaiDTO.charge = RcptUtil.calcCharge(meisaiDTO.totalTen, meisaiDTO.futanWari);
-//        return meisaiDTO;
-//    }
-//
-//    @RequestMapping(value = "/delete-visit-from-reception", method = RequestMethod.POST)
-//    public boolean deleteVisitFromReception(@RequestParam("visit-id") int visitId) {
-//        dbGateway.deleteVisitFromReception(visitId);
-//        return true;
-//    }
-//
-//    @RequestMapping(value = "/delete-visit", method = RequestMethod.POST)
-//    public boolean deleteVisit(@RequestParam("visit-id") int visitId) {
-//        VisitDTO visit = dbGateway.getVisit(visitId);
-//        dbGateway.deleteVisitSafely(visitId);
-//        return true;
-//    }
-//
-//    @Deprecated
-//    @RequestMapping(value = "/list-visit-text-drug", method = RequestMethod.GET)
-//    public List<VisitTextDrugDTO> listVisitTextDrug(@RequestParam("visit-id[]") List<Integer> visitIds) {
-//        return dbGateway.listVisitTextDrug(visitIds);
-//    }
-//
-//    @RequestMapping(value = "/list-visit-text-drug-for-patient", method = RequestMethod.GET)
-//    public VisitTextDrugPageDTO listVisitTextDrugForPatient(@RequestParam("patient-id") int patientId,
-//                                                            @RequestParam("page") int page) {
-//        return dbGateway.listVisitTextDrugForPatient(patientId, page);
-//    }
-//
-//    @RequestMapping(value = "/list-visit-charge-patient-at", method = RequestMethod.GET)
-//    public List<VisitChargePatientDTO> listVisitChargePatientAt(
-//            @RequestParam("at") String at) {
-//        LocalDate date = LocalDate.parse(at);
-//        return dbGateway.listVisitChargePatientAt(date);
-//    }
-//
-//    private SectionItemDTO toSectionItemDTO(SectionItem sectionItem) {
-//        SectionItemDTO sectionItemDTO = new SectionItemDTO();
-//        sectionItemDTO.label = sectionItem.getLabel();
-//        sectionItemDTO.tanka = sectionItem.getTanka();
-//        sectionItemDTO.count = sectionItem.getCount();
-//        return sectionItemDTO;
-//    }
-//
-//    @RequestMapping(value = "/page-visit-drug", method = RequestMethod.GET)
-//    public VisitDrugPageDTO pageVisitDrug(@RequestParam("patient-id") int patientId,
-//                                          @RequestParam("page") int page) {
-//        return dbGateway.pageVisitIdHavingDrug(patientId, page);
-//    }
-//
-//    @RequestMapping(value = "list-visiting-patient-id-having-hoken", method = RequestMethod.GET)
-//    public List<Integer> listVisitingPatientId(@RequestParam("year") int year,
-//                                               @RequestParam("month") int month) {
-//        return dbGateway.listVisitingPatientIdHavingHoken(year, month);
-//    }
-//
-//    @RequestMapping(value = "list-visit-by-patient-having-hoken", method = RequestMethod.GET)
-//    public List<VisitFull2DTO> listVisitByPatientHavingHoken(
-//            @RequestParam("patient-id") int patientId,
-//            @RequestParam("year") int year,
-//            @RequestParam("month") int month) {
-//        return dbGateway.listVisitByPatientHavingHoken(patientId, year, month);
-//    }
+    @RequestMapping(value = "/get-visit-full", method = RequestMethod.GET)
+    public VisitFullDTO getVisitFull(@RequestParam("visit-id") int visitId) {
+        return dbGateway.getVisitFull(visitId);
+    }
+
+    @RequestMapping(value = "/list-visit-full", method = RequestMethod.GET)
+    public VisitFullPageDTO listVisitFull(@RequestParam("patient-id") int patientId, @RequestParam("page") int page) {
+        return dbGateway.listVisitFull(patientId, page);
+    }
+
+    @RequestMapping(value = "/list-visit-full2", method = RequestMethod.GET)
+    public VisitFull2PageDTO listVisitFull2(@RequestParam("patient-id") int patientId, @RequestParam("page") int page) {
+        return dbGateway.listVisitFull2(patientId, page);
+    }
+
+    @RequestMapping(value = "/page-visit-full2-with-patient-at", method = RequestMethod.GET)
+    public VisitFull2PatientPageDTO pageVisitFull2PatientAt(@RequestParam("at") String at,
+                                                            @RequestParam("page") int page) {
+        LocalDate date = LocalDate.parse(at);
+        return dbGateway.pageVisitsWithPatientAt(date, page);
+    }
+
+    @RequestMapping(value = "/get-visit-meisai", method = RequestMethod.GET)
+    public MeisaiDTO getVisitMeisai(@RequestParam("visit-id") int visitId) {
+        RcptVisit rcptVisit = new RcptVisit();
+        VisitDTO visit = dbGateway.getVisit(visitId);
+        List<ShinryouFullDTO> shinryouList = dbGateway.listShinryouFull(visitId);
+        List<DrugFullDTO> drugs = dbGateway.listDrugFull(visitId);
+        List<ConductFullDTO> conducts = dbGateway.listConductFull(visitId);
+        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
+        HoukatsuKensa.Revision revision = houkatsuKensa.findRevision(at);
+        rcptVisit.addShinryouList(shinryouList, revision);
+        rcptVisit.addDrugs(drugs);
+        rcptVisit.addConducts(conducts);
+        Meisai meisai = rcptVisit.getMeisai();
+        MeisaiDTO meisaiDTO = new MeisaiDTO();
+        meisaiDTO.sections = new ArrayList<>();
+        for (MeisaiSection section : MeisaiSection.values()) {
+            List<SectionItem> items = meisai.getItems(section);
+            if (items != null) {
+                MeisaiSectionDTO meisaiSectionDTO = new MeisaiSectionDTO();
+                meisaiSectionDTO.name = section.toString();
+                meisaiSectionDTO.label = section.getLabel();
+                meisaiSectionDTO.items = items.stream()
+                        .map(this::toSectionItemDTO)
+                        .collect(Collectors.toList());
+                meisaiSectionDTO.sectionTotalTen = SectionItem.sum(items);
+                meisaiDTO.sections.add(meisaiSectionDTO);
+            }
+        }
+        meisaiDTO.totalTen = meisai.totalTen();
+        PatientDTO patientDTO = dbGateway.getPatient(visit.patientId);
+        if (patientDTO.birthday != null) {
+            HokenDTO hokenDTO = dbGateway.getHokenForVisit(visit);
+            meisaiDTO.hoken = hokenDTO;
+            LocalDate birthdayDate = DateTimeUtil.parseSqlDate(patientDTO.birthday);
+            int rcptAge = HokenUtil.calcRcptAge(birthdayDate.getYear(), birthdayDate.getMonth().getValue(),
+                    birthdayDate.getDayOfMonth(), at.getYear(), at.getMonth().getValue());
+            meisaiDTO.futanWari = HokenUtil.calcFutanWari(hokenDTO, rcptAge);
+        } else {
+            meisaiDTO.futanWari = 10;
+        }
+        meisaiDTO.charge = RcptUtil.calcCharge(meisaiDTO.totalTen, meisaiDTO.futanWari);
+        return meisaiDTO;
+    }
+
+    @RequestMapping(value = "/delete-visit-from-reception", method = RequestMethod.POST)
+    public boolean deleteVisitFromReception(@RequestParam("visit-id") int visitId) {
+        dbGateway.deleteVisitFromReception(visitId);
+        return true;
+    }
+
+    @RequestMapping(value = "/delete-visit", method = RequestMethod.POST)
+    public boolean deleteVisit(@RequestParam("visit-id") int visitId) {
+        dbGateway.deleteVisitSafely(visitId);
+        return true;
+    }
+
+    @RequestMapping(value = "/list-visit-text-drug-for-patient", method = RequestMethod.GET)
+    public VisitTextDrugPageDTO listVisitTextDrugForPatient(@RequestParam("patient-id") int patientId,
+                                                            @RequestParam("page") int page) {
+        return dbGateway.listVisitTextDrugForPatient(patientId, page);
+    }
+
+    @RequestMapping(value = "/list-visit-charge-patient-at", method = RequestMethod.GET)
+    public List<VisitChargePatientDTO> listVisitChargePatientAt(
+            @RequestParam("at") String at) {
+        LocalDate date = LocalDate.parse(at);
+        return dbGateway.listVisitChargePatientAt(date);
+    }
+
+    private SectionItemDTO toSectionItemDTO(SectionItem sectionItem) {
+        SectionItemDTO sectionItemDTO = new SectionItemDTO();
+        sectionItemDTO.label = sectionItem.getLabel();
+        sectionItemDTO.tanka = sectionItem.getTanka();
+        sectionItemDTO.count = sectionItem.getCount();
+        return sectionItemDTO;
+    }
+
+    @RequestMapping(value = "/page-visit-drug", method = RequestMethod.GET)
+    public VisitDrugPageDTO pageVisitDrug(@RequestParam("patient-id") int patientId,
+                                          @RequestParam("page") int page) {
+        return dbGateway.pageVisitIdHavingDrug(patientId, page);
+    }
+
+    @RequestMapping(value = "list-visiting-patient-id-having-hoken", method = RequestMethod.GET)
+    public List<Integer> listVisitingPatientId(@RequestParam("year") int year,
+                                               @RequestParam("month") int month) {
+        return dbGateway.listVisitingPatientIdHavingHoken(year, month);
+    }
+
+    @RequestMapping(value = "list-visit-by-patient-having-hoken", method = RequestMethod.GET)
+    public List<VisitFull2DTO> listVisitByPatientHavingHoken(
+            @RequestParam("patient-id") int patientId,
+            @RequestParam("year") int year,
+            @RequestParam("month") int month) {
+        return dbGateway.listVisitByPatientHavingHoken(patientId, year, month);
+    }
 
 }

@@ -3,7 +3,7 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 import javax.persistence.*;
 
 @Entity
-@Table(name="visit_conduct")
+@Table(name="conduct")
 public class Conduct {
 
 	@Id

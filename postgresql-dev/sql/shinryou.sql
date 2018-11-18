@@ -24,3 +24,5 @@ $$ language plpgsql;
 
 create trigger check_shinryou before insert or update on shinryou
 	for each row execute procedure check_shinryou_fun();
+
+create index on shinryou (visit_id)+

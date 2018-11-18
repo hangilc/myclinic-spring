@@ -29,3 +29,6 @@ $$ language plpgsql;
 
 create trigger check_drug before insert or update on drug
 	for each row execute procedure check_drug_fun();
+
+create index on drug (visit_id);
+	

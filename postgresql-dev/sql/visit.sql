@@ -9,3 +9,6 @@ create table visit (
 	kouhi_2_id integer references kouhi (kouhi_id),
 	kouhi_3_id integer references kouhi (kouhi_id)
 );
+
+create index on visit (patient_id);
+create index on visit (visited_at);

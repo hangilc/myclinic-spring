@@ -543,6 +543,123 @@ public class DbGateway {
                 .map(this::resultToVisitPatientDTO).collect(Collectors.toList());
     }
 
+    public VisitFullDTO getVisitFull(int visitId) {
+        VisitDTO visitDTO = getVisit(visitId);
+        return getVisitFull(visitDTO);
+    }
+
+    private VisitFullDTO getVisitFull(Visit visit) {
+        return getVisitFull(mapper.toVisitDTO(visit));
+    }
+
+    private VisitFullDTO getVisitFull(VisitDTO visitDTO) {
+        int visitId = visitDTO.visitId;
+        VisitFullDTO visitFullDTO = new VisitFullDTO();
+        visitFullDTO.visit = visitDTO;
+        visitFullDTO.texts = listText(visitId);
+        visitFullDTO.shinryouList = listShinryouFull(visitId);
+        visitFullDTO.drugs = listDrugFull(visitId);
+        visitFullDTO.conducts = listConducts(visitId).stream()
+                .map(this::extendConduct).collect(Collectors.toList());
+        return visitFullDTO;
+    }
+
+    private VisitFull2DTO getVisitFull2(Visit visit) {
+        int visitId = visit.getVisitId();
+        VisitDTO visitDTO = mapper.toVisitDTO(visit);
+        VisitFull2DTO visitFull2DTO = new VisitFull2DTO();
+        visitFull2DTO.visit = visitDTO;
+        visitFull2DTO.texts = listText(visitId);
+        visitFull2DTO.shinryouList = listShinryouFull(visitId);
+        visitFull2DTO.drugs = listDrugFull(visitId);
+        visitFull2DTO.conducts = listConducts(visitId).stream()
+                .map(this::extendConduct).collect(Collectors.toList());
+        visitFull2DTO.hoken = getHokenForVisit(visitDTO);
+        visitFull2DTO.charge = findCharge(visitId).orElse(null);
+        return visitFull2DTO;
+    }
+
+    public VisitFullPageDTO listVisitFull(int patientId, int page) {
+        int itemsPerPage = 10;
+        Pageable pageable = PageRequest.of(page, itemsPerPage, Sort.Direction.DESC, "visitId");
+        Page<Visit> pageVisit = visitRepository.findByPatientId(patientId, pageable);
+        VisitFullPageDTO visitFullPageDTO = new VisitFullPageDTO();
+        visitFullPageDTO.totalPages = pageVisit.getTotalPages();
+        visitFullPageDTO.page = page;
+        visitFullPageDTO.visits = pageVisit.getContent().stream().map(this::getVisitFull).collect(Collectors.toList());
+        return visitFullPageDTO;
+    }
+
+    public VisitFull2PageDTO listVisitFull2(int patientId, int page) {
+        int itemsPerPage = 10;
+        Pageable pageable = PageRequest.of(page, itemsPerPage, Sort.Direction.DESC, "visitId");
+        Page<Visit> pageVisit = visitRepository.findByPatientId(patientId, pageable);
+        VisitFull2PageDTO visitFull2PageDTO = new VisitFull2PageDTO();
+        visitFull2PageDTO.totalPages = pageVisit.getTotalPages();
+        visitFull2PageDTO.page = page;
+        visitFull2PageDTO.visits = pageVisit.getContent().stream().map(this::getVisitFull2).collect(Collectors.toList());
+        return visitFull2PageDTO;
+    }
+
+    public VisitFull2PatientPageDTO pageVisitsWithPatientAt(LocalDate date, int page) {
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.Direction.DESC, "visitId");
+        Page<Integer> pageVisitIds = visitRepository.pageVisitIdAt(date.toString(), pageRequest);
+        List<VisitFull2PatientDTO> visitFullPatients = convertToVisitFull2Patients(pageVisitIds.getContent());
+        VisitFull2PatientPageDTO resultPage = new VisitFull2PatientPageDTO();
+        resultPage.page = page;
+        resultPage.totalPages = pageVisitIds.getTotalPages();
+        resultPage.visitPatients = visitFullPatients;
+        return resultPage;
+    }
+
+    public void deleteVisitFromReception(int visitId) {
+        Optional<Wqueue> wqueueOpt = wqueueRepository.tryFindByVisitId(visitId);
+        if (wqueueOpt.isPresent()) {
+            Wqueue wqueue = wqueueOpt.get();
+            if (wqueue.getWaitState() != WqueueWaitState.WaitExam.getCode()) {
+                throw new RuntimeException("診察の状態が診察待ちでないため、削除できません。");
+            }
+        }
+        VisitDTO visitDTO = getVisit(visitId);
+        deleteVisitSafely(visitId);
+    }
+
+    public void deleteVisitSafely(int visitId) {
+        VisitFullDTO visit = getVisitFull(visitId);
+        if (visit.texts.size() > 0) {
+            throw new RuntimeException("文章があるので、診察を削除できません。");
+        }
+        if (visit.drugs.size() > 0) {
+            throw new RuntimeException("投薬があるので、診察を削除できません。");
+        }
+        if (visit.shinryouList.size() > 0) {
+            throw new RuntimeException("診療行為があるので、診察を削除できません。");
+        }
+        if (visit.conducts.size() > 0) {
+            throw new RuntimeException("処置があるので、診察を削除できません。");
+        }
+        Optional<Charge> optCharge = chargeRepository.findByVisitId(visitId);
+        if (optCharge.isPresent()) {
+            throw new RuntimeException("請求があるので、診察を削除できません。");
+        }
+        List<Payment> payments = paymentRepository.findByVisitId(visitId);
+        if (payments.size() > 0) {
+            throw new RuntimeException("支払い記録があるので、診察を削除できません。");
+        }
+        Optional<Wqueue> optWqueue = wqueueRepository.tryFindByVisitId(visitId);
+        optWqueue.ifPresent(wqueue -> {
+            wqueueRepository.delete(wqueue);
+            practiceLogger.logWqueueDeleted(mapper.toWqueueDTO(wqueue));
+        });
+        Optional<PharmaQueue> optPharmaQueue = pharmaQueueRepository.findByVisitId(visitId);
+        optPharmaQueue.ifPresent(pharmaQueue -> {
+            pharmaQueueRepository.delete(pharmaQueue);
+            practiceLogger.logPharmaQueueDeleted(mapper.toPharmaQueueDTO(pharmaQueue));
+        });
+        visitRepository.deleteById(visitId);
+        practiceLogger.logVisitDeleted(visit.visit);
+    }
+
     public Integer getLastHotlineId() {
         Optional<Hotline> hotline = hotlineRepository.findTopByOrderByHotlineIdDesc();
         return hotline.map(Hotline::getHotlineId).orElse(0);
@@ -939,6 +1056,28 @@ public class DbGateway {
                     return visitIdVisitedAtDTO;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public VisitTextDrugPageDTO listVisitTextDrugForPatient(int patientId, int page) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "visitId");
+        PageRequest pageRequest = PageRequest.of(page, 10, sort);
+        Page<Integer> visitIdPage = visitRepository.pageVisitIdsByPatient(patientId, pageRequest);
+        List<Integer> visitIds = visitIdPage.getContent();
+        List<VisitTextDrugDTO> visits = visitRepository.findByVisitIds(visitIds, sort)
+                .stream()
+                .map(visit -> {
+                    VisitTextDrugDTO visitTextDrugDTO = new VisitTextDrugDTO();
+                    visitTextDrugDTO.visit = mapper.toVisitDTO(visit);
+                    visitTextDrugDTO.texts = listText(visit.getVisitId());
+                    visitTextDrugDTO.drugs = listDrugFull(visit.getVisitId());
+                    return visitTextDrugDTO;
+                })
+                .collect(Collectors.toList());
+        VisitTextDrugPageDTO result = new VisitTextDrugPageDTO();
+        result.totalPages = visitIdPage.getTotalPages();
+        result.page = page;
+        result.visitTextDrugs = visits;
+        return result;
     }
 
     public VisitTextDrugPageDTO listVisitTextDrugByPatientAndIyakuhincode(int patientId, int iyakuhincode, int page) {
@@ -1677,6 +1816,55 @@ public class DbGateway {
                 .ifPresent(shouki -> shoukiRepository.delete(shouki));
     }
 
+    public List<VisitChargePatientDTO> listVisitChargePatientAt(LocalDate at) {
+        return visitRepository.listVisitChargePatientAt(at.toString(), Sort.by("visitId"))
+                .stream()
+                .map(obs -> {
+                    VisitDTO visit = mapper.toVisitDTO((Visit) obs[0]);
+                    ChargeDTO charge = mapper.toChargeDTO((Charge) obs[1]);
+                    PatientDTO patient = mapper.toPatientDTO((Patient) obs[2]);
+                    VisitChargePatientDTO dto = new VisitChargePatientDTO();
+                    dto.visit = visit;
+                    dto.charge = charge;
+                    dto.patient = patient;
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public VisitDrugPageDTO pageVisitIdHavingDrug(int patientId, int page) {
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "visitId"));
+        Page<Integer> visitIdPage = visitRepository.pageVisitIdHavingDrug(patientId, pageable);
+        VisitDrugPageDTO resultPage = new VisitDrugPageDTO();
+        resultPage.page = page;
+        resultPage.totalPages = visitIdPage.getTotalPages();
+        resultPage.visitDrugs = visitIdPage.getContent().stream()
+                .map(visitId -> {
+                    VisitDrugDTO visitDrug = new VisitDrugDTO();
+                    visitDrug.visit = getVisit(visitId);
+                    visitDrug.drugs = listDrugFull(visitId);
+                    return visitDrug;
+                })
+                .collect(Collectors.toList());
+        return resultPage;
+    }
+
+    public List<Integer> listVisitingPatientIdHavingHoken(int year, int month) {
+        return visitRepository.listVisitingPatientIdHavingHoken(year, month);
+    }
+
+    public List<VisitFull2DTO> listVisitByPatientHavingHoken(int patientId, int year, int month) {
+        return visitRepository.listVisitIdByPatientHavingHoken(patientId, year, month)
+                .stream()
+                .map(visitId -> {
+                    Visit visit = visitRepository.getOne(visitId);
+                    return getVisitFull2(visit);
+                })
+                .filter(v -> v.shinryouList.size() > 0 || v.drugs.size() > 0 ||
+                        v.conducts.size() > 0)
+                .collect(Collectors.toList());
+    }
+
 
 
 
@@ -1827,5 +2015,23 @@ public class DbGateway {
     }
 
 
+    private List<VisitFull2PatientDTO> convertToVisitFull2Patients(List<Integer> visitIds) {
+        if (visitIds.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            List<VisitPatientDTO> visitPatients = visitRepository
+                    .findByVisitIdsWithPatient(visitIds, Sort.by(Sort.Direction.DESC, "visitId"))
+                    .stream()
+                    .map(this::resultToVisitPatientDTO).collect(Collectors.toList());
+            return visitPatients.stream()
+                    .map(visitPatient -> {
+                        VisitFull2DTO visitFull = getVisitFull2(mapper.fromVisitDTO(visitPatient.visit));
+                        VisitFull2PatientDTO result = new VisitFull2PatientDTO();
+                        result.patient = visitPatient.patient;
+                        result.visitFull = visitFull;
+                        return result;
+                    }).collect(Collectors.toList());
+        }
+    }
 
 }
