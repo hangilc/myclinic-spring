@@ -10,52 +10,99 @@ public class Main {
     private Connection mysqlConn;
     private Connection psqlConn;
 
-    public static void main(String[] args) throws Exception {
-        Main main = new Main();
-        //main.moveIyakuhinMaster(false);
-        //main.moveShinryouMaster(false);
-        //main.moveKizaiMaster(false);
-        main.moveByoumeiMaster();
-        //main.moveShuushokugoMaster();
-        //main.movePatient();
-        //main.movePracticeLog();
-        //main.moveShahokokuho();
-        //main.moveRoujin();
-        //main.moveKoukikourei();
-        //main.moveKouhi();
-        //main.moveVisit();
-        //main.moveWqueue();
-        //main.movePharmaQueue();
-        //main.moveText();
-        //main.moveDrug();
-        //main.moveShinryou();
-        //main.moveConduct();
-        //main.moveGazouLabel();
-        //main.moveConductDrug();
-        //main.moveConductShinryou();
-        //main.moveConductKizai();
-        //main.moveCharge();
-        //main.movePayment();
-        //main.moveDisease();
-        //main.moveDiseaseAdj();
-        //main.moveDrugAttr();
-        //main.moveHotline();
-        //main.movePharmaDrug();
-        //main.movePrescExample();
-        //main.moveShinryouAttr();
-        //main.moveShouki();
-        //main.moveIntraclinicPost();
-        //main.moveIntraclinicComment();
-        //main.moveIntraclinicTag();
-        //main.moveIntraclinicTagPost();
+    private static void usage(){
+        System.err.println("Usage: move-to-pg PG-DATABASE WHAT");
+        System.err.println("  WHAT is one of MASTER, DATA, ALL");
     }
 
-    private Main() throws Exception {
+    public static void main(String[] args) throws Exception {
+        String pgsqlDatabase = null;
+        String what = null;
+        for(int i=0;i<args.length;i++){
+            String arg = args[i];
+            if( "-h".equals(arg) ){
+                usage();
+                System.exit(0);
+            }
+            if( pgsqlDatabase == null ){
+                pgsqlDatabase = arg;
+            } else if( what == null ){
+                what = arg;
+            } else {
+                System.err.println("ERROR: too many args");
+                usage();
+                System.exit(1);
+            }
+        }
+        if( pgsqlDatabase == null || what == null ){
+            System.err.println("Invalid arguments");
+            usage();
+            System.exit(1);
+        }
+        Main main = new Main(pgsqlDatabase);
+        what = what.toLowerCase();
+        if( what.equals("master") ){
+            main.moveMasters();
+        } else if( what.equals("data") ){
+            main.moveData();
+        } else if( what.equals("all") ){
+            main.moveMasters();
+            main.moveData();
+        } else {
+            System.err.println("Invaid WHAT: " + what);
+            usage();
+            System.exit(1);
+        }
+    }
+
+    private Main(String pgsqlDatabase) throws Exception {
         Class.forName("org.postgresql.Driver");
         this.mysqlConn = DriverManager.getConnection("jdbc:mysql://localhost/myclinic?useSSL=false&zeroDateTimeBehavior=convertToNull",
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
-        this.psqlConn = DriverManager.getConnection("jdbc:postgresql://localhost/myclinic",
+        this.psqlConn = DriverManager.getConnection("jdbc:postgresql://localhost/" + pgsqlDatabase,
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
+    }
+
+    private void moveMasters() throws Exception {
+        moveIyakuhinMaster(false);
+        moveShinryouMaster(false);
+        moveKizaiMaster(false);
+        moveByoumeiMaster();
+        moveShuushokugoMaster();
+    }
+
+    private void moveData() throws Exception {
+        movePatient();
+        movePracticeLog();
+        moveShahokokuho();
+        moveRoujin();
+        moveKoukikourei();
+        moveKouhi();
+        moveVisit();
+        moveWqueue();
+        movePharmaQueue();
+        moveText();
+        moveDrug();
+        moveShinryou();
+        moveConduct();
+        moveGazouLabel();
+        moveConductDrug();
+        moveConductShinryou();
+        moveConductKizai();
+        moveCharge();
+        movePayment();
+        moveDisease();
+        moveDiseaseAdj();
+        moveDrugAttr();
+        moveHotline();
+        movePharmaDrug();
+        movePrescExample();
+        moveShinryouAttr();
+        moveShouki();
+        moveIntraclinicPost();
+        moveIntraclinicComment();
+        moveIntraclinicTag();
+        moveIntraclinicTagPost();
     }
 
     private Mover createMover(String sourceTable, String targetTable){

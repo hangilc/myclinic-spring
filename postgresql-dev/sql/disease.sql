@@ -14,7 +14,7 @@ create or replace function check_disease_fun() returns trigger as $$
 	declare
 		count integer;
 	begin
-		select count(*) into count from shoubyoumei_master m where m.shoubyoumeicode = new.shoubyoumeicode
+		select count(*) into count from byoumei_master m where m.shoubyoumeicode = new.shoubyoumeicode
 			and m.valid_from <= new.start_date
 			and (m.valid_upto is null or m.valid_upto >= new.start_date);
 		if count < 1 then
