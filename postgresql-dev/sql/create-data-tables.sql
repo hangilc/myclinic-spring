@@ -1,7 +1,7 @@
-drop table if exists intraclinic_tag_post;
-drop table if exists intraclinic_tag;
-drop table if exists intraclinic_comment;
-drop table if exists intraclinic_post;
+drop table if exists intraclinic_tag_post cascade;
+drop table if exists intraclinic_tag cascade;
+drop table if exists intraclinic_comment cascade;
+drop table if exists intraclinic_post cascade;
 
 drop table if exists hotline cascade;
 
