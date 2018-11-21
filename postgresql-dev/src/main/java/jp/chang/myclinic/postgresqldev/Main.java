@@ -5,6 +5,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+// TODO: add foreign key cascade to drug_attr, shinryou_attr, gazou_label, shouki
 public class Main {
 
     private Connection mysqlConn;
