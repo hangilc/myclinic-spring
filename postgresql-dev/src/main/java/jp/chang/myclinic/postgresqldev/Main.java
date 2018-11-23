@@ -12,35 +12,22 @@ public class Main {
     private Connection psqlConn;
 
     private static void usage(){
-        System.err.println("Usage: move-to-pg PG-DATABASE WHAT");
+        System.err.println("Usage: move-to-pg PG-HOST PG-DATABASE WHAT");
         System.err.println("  WHAT is one of MASTER, DATA, ALL");
     }
 
     public static void main(String[] args) throws Exception {
+        String pgsqlHost = null;
         String pgsqlDatabase = null;
         String what = null;
-        for(int i=0;i<args.length;i++){
-            String arg = args[i];
-            if( "-h".equals(arg) ){
-                usage();
-                System.exit(0);
-            }
-            if( pgsqlDatabase == null ){
-                pgsqlDatabase = arg;
-            } else if( what == null ){
-                what = arg;
-            } else {
-                System.err.println("ERROR: too many args");
-                usage();
-                System.exit(1);
-            }
-        }
-        if( pgsqlDatabase == null || what == null ){
-            System.err.println("Invalid arguments");
+        if( args.length != 3 ){
             usage();
             System.exit(1);
         }
-        Main main = new Main(pgsqlDatabase);
+        pgsqlHost = args[0];
+        pgsqlDatabase = args[1];
+        what = args[2];
+        Main main = new Main(pgsqlHost, 5432, pgsqlDatabase);
         what = what.toLowerCase();
         if( what.equals("master") ){
             main.moveMasters();
@@ -56,11 +43,12 @@ public class Main {
         }
     }
 
-    private Main(String pgsqlDatabase) throws Exception {
+    private Main(String pgsqlHost, int port, String pgsqlDatabase) throws Exception {
         Class.forName("org.postgresql.Driver");
         this.mysqlConn = DriverManager.getConnection("jdbc:mysql://localhost/myclinic?useSSL=false&zeroDateTimeBehavior=convertToNull",
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
-        this.psqlConn = DriverManager.getConnection("jdbc:postgresql://localhost/" + pgsqlDatabase,
+        this.psqlConn = DriverManager.getConnection(
+                String.format("jdbc:postgresql://%s:%d/%s", pgsqlHost, port, pgsqlDatabase),
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
     }
 

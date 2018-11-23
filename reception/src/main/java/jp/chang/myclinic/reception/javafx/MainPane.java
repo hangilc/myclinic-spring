@@ -145,16 +145,24 @@ public class MainPane extends VBox implements DispatchHook {
     }
 
     private void doDelete() {
-        wqueueTable.getSelectedWqueueFullDTO()
-                .thenAccept(wq -> Platform.runLater(() -> {
-                    if (wq != null) {
-                        String message = String.format("この診察受付（%s%s）を削除していいですか？", wq.patient.lastName, wq.patient.firstName);
-                        if (GuiUtil.confirm(message)) {
-                            ReceptionService.deleteFromWqueue(wq.visit.visitId);
-                        }
-                    }
-                }))
-                .exceptionally(HandlerFX::exceptionally);
+        int visitId = wqueueTable.getVisitIdOfSelectedWqueue();
+        if( visitId > 0 ){
+            String message = "この診察受付を削除していいですか？";
+            if (GuiUtil.confirm(message)) {
+                ReceptionService.deleteFromWqueue(visitId);
+            }
+
+        }
+//        wqueueTable.getSelectedWqueueFullDTO()
+//                .thenAccept(wq -> Platform.runLater(() -> {
+//                    if (wq != null) {
+//                        String message = String.format("この診察受付（%s%s）を削除していいですか？", wq.patient.lastName, wq.patient.firstName);
+//                        if (GuiUtil.confirm(message)) {
+//                            ReceptionService.deleteFromWqueue(wq.visit.visitId);
+//                        }
+//                    }
+//                }))
+//                .exceptionally(HandlerFX::exceptionally);
     }
 
     private void doNewPatient() {

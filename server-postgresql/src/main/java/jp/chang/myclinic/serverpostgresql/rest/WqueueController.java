@@ -61,8 +61,8 @@ public class WqueueController {
 	}
 
 	@RequestMapping(value="/get-wqueue-full", method=RequestMethod.GET)
-	public WqueueFullDTO getWqueueFull(@RequestParam("visit-id") int visitId){
-		return dbGateway.getWqueueFull(visitId);
+	public Optional<WqueueFullDTO> getWqueueFull(@RequestParam("visit-id") int visitId){
+		return Optional.ofNullable(dbGateway.getWqueueFull(visitId));
 	}
 
 	@RequestMapping(value="/list-wqueue-for-exam", method=RequestMethod.GET)

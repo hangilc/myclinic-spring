@@ -621,7 +621,9 @@ public class DbGateway {
             }
         }
         VisitDTO visitDTO = getVisit(visitId);
-        deleteVisitSafely(visitId);
+        if( visitDTO != null ) {
+            deleteVisitSafely(visitDTO.visitId);
+        }
     }
 
     public void deleteVisitSafely(int visitId) {
@@ -1871,9 +1873,6 @@ public class DbGateway {
 
 
 
-
-
-
     private static DateTimeFormatter sqlDateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 
     private String localDateTimeToSqldatetime(LocalDateTime dt){
@@ -1910,6 +1909,9 @@ public class DbGateway {
     }
 
     private WqueueFullDTO composeWqueueFullDTO(Wqueue wqueue){
+        if( wqueue == null ){
+            return null;
+        }
         WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
         wqueueFullDTO.wqueue = mapper.toWqueueDTO(wqueue);
         wqueueFullDTO.visit = getVisit(wqueue.getVisitId());

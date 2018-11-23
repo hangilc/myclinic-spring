@@ -14,8 +14,8 @@ Vagrant.configure("2") do |config|
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "ubuntu/xenial64"
   config.vm.network "private_network", ip: "192.168.33.10"
-  ENV["db_user"] = "DBUSER"
-  ENV["db_pass"] = "DBPASS"
+  ENV["db_user"] = ENV["MYCLINIC_POSTGRES_USER"]
+  ENV["db_pass"] = ENV["MYCLINIC_POSTGRES_PASS"]
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
@@ -67,6 +67,14 @@ Vagrant.configure("2") do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", env: {DB_USER: ENV["db_user"], DB_PASS: ENV["db_pass"]}, inline: <<-SHELL
+	if [ -z "$DB_USER" ]; then
+		echo "DB_USER is not specified" >&2
+		exit
+	fi
+	if [ -z "$DB_PASS" ]; then
+		echo "DB_PASS is not specified" >&2
+		exit
+	fi
 	apt-get install wget ca-certificates    
 	wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 	sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'

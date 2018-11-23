@@ -1,12 +1,11 @@
 package jp.chang.myclinic.serverpostgresql.rest;
 
+import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.serverpostgresql.PracticeLogger;
 import jp.chang.myclinic.serverpostgresql.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,6 +16,8 @@ public class PracticeLogController {
 
     @Autowired
     private DbGateway dbGateway;
+    @Autowired
+    private PracticeLogger practiceLogger;
 
     @RequestMapping(value = "/list-all-practice-log", method = RequestMethod.GET)
     public List<PracticeLogDTO> listAll(@RequestParam("date") String date) {
@@ -34,6 +35,12 @@ public class PracticeLogController {
                                                @RequestParam("after-id") int afterId,
                                                @RequestParam("before-id") int beforeId) {
         return dbGateway.listPracticeLogInRange(LocalDate.parse(date), afterId, beforeId);
+    }
+
+    @RequestMapping(value = "/emit-wqueue-deleted-practice-log", method = RequestMethod.POST)
+    public boolean emitWqueueDeleted(@RequestBody WqueueDTO dto){
+        practiceLogger.logWqueueDeleted(dto);
+        return true;
     }
 
 }
