@@ -1,3 +1,4 @@
+\set ON_ERROR_STOP true
 drop table if exists intraclinic_tag_post cascade;
 drop table if exists intraclinic_tag cascade;
 drop table if exists intraclinic_comment cascade;

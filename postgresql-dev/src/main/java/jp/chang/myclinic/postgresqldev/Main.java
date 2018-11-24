@@ -49,7 +49,7 @@ public class Main {
                 System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
         this.psqlConn = DriverManager.getConnection(
                 String.format("jdbc:postgresql://%s:%d/%s", pgsqlHost, port, pgsqlDatabase),
-                System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
+                System.getenv("MYCLINIC_POSTGRES_USER"), System.getenv("MYCLINIC_POSTGRES_PASS"));
     }
 
     private void moveMasters() throws Exception {

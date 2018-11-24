@@ -1,3 +1,4 @@
+\set ON_ERROR_STOP true
 drop table if exists iyakuhin_master cascade;
 \i iyakuhin_master.sql
 drop table if exists shinryou_master cascade;
