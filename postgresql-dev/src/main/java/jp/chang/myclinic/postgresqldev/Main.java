@@ -46,7 +46,8 @@ public class Main {
     private Main(String pgsqlHost, int port, String pgsqlDatabase) throws Exception {
         Class.forName("org.postgresql.Driver");
         this.mysqlConn = DriverManager.getConnection("jdbc:mysql://localhost/myclinic?useSSL=false&zeroDateTimeBehavior=convertToNull",
-                System.getenv("MYCLINIC_DB_USER"), System.getenv("MYCLINIC_DB_PASS"));
+                System.getenv("MYCLINIC_DB_USER"),
+                System.getenv("MYCLINIC_DB_PASS"));
         this.psqlConn = DriverManager.getConnection(
                 String.format("jdbc:postgresql://%s:%d/%s", pgsqlHost, port, pgsqlDatabase),
                 System.getenv("MYCLINIC_POSTGRES_USER"), System.getenv("MYCLINIC_POSTGRES_PASS"));

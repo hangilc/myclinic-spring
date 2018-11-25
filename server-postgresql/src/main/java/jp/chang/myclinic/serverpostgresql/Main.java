@@ -12,8 +12,18 @@ public class Main {
 
     public static void main( String[] args )
     {
+        boolean isTest = false;
+        for(String arg: args){
+            if( "--test".equals(arg) ){
+                isTest = true;
+            }
+        }
         SpringApplication application = new SpringApplication(AppConfig.class);
-        application.setAdditionalProfiles("postgresql");
+        if( isTest ){
+            application.setAdditionalProfiles("postgresqltest");
+        } else {
+            application.setAdditionalProfiles("postgresql");
+        }
         application.run(args);
     }
 

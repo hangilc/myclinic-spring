@@ -1,0 +1,7 @@
+-- Create schema dump
+
+> pg_dump --schema-only --no-owner --clean --if-exists -f myclinic-postgres-schema.sql myclinic
+
+-- Dump master data
+
+> pg_dump --data-only --no-owner -t "*master*" -f myclinci-postgres-master-data.sql myclinic
