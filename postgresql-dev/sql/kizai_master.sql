@@ -14,7 +14,8 @@ create or replace function check_kizai_master_fun() returns trigger as $$
 	declare
 		count integer;
 	begin
-		select count(*) into count from kizai_master where kizaicode = new.kizaicode 
+		select count(*) into count from public.kizai_master 
+			where kizaicode = new.kizaicode 
 			and valid_from <> new.valid_from
 			and not (
 				(valid_upto is not null and valid_upto < new.valid_from) or

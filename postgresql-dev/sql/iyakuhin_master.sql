@@ -17,7 +17,8 @@ create or replace function check_iyakuhin_master_fun() returns trigger as $$
 	declare
 		count integer;
 	begin
-		select count(*) into count from iyakuhin_master where iyakuhincode = new.iyakuhincode 
+		select count(*) into count from public.iyakuhin_master 
+			where iyakuhincode = new.iyakuhincode 
 			and valid_from <> new.valid_from
 			and not (
 				(valid_upto is not null and valid_upto < new.valid_from) or

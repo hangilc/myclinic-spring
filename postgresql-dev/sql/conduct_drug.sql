@@ -9,7 +9,7 @@ create or replace function check_conduct_drug_fun() returns trigger as $$
 	declare
 		count integer;
 	begin
-		select count(*) into count from iyakuhin_master m, conduct c, visit v 
+		select count(*) into count from public.iyakuhin_master m, public.conduct c, public.visit v 
 			where m.iyakuhincode = new.iyakuhincode
 			and new.conduct_id = c.conduct_id
 			and v.visit_id = c.visit_id 

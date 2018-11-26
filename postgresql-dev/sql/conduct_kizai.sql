@@ -9,7 +9,7 @@ create or replace function check_conduct_kizai_fun() returns trigger as $$
 	declare
 		count integer;
 	begin
-		select count(*) into count from kizai_master m, conduct c, visit v 
+		select count(*) into count from public.kizai_master m, public.conduct c, public.visit v 
 			where m.kizaicode = new.kizaicode
 			and new.conduct_id = c.conduct_id
 			and v.visit_id = c.visit_id 

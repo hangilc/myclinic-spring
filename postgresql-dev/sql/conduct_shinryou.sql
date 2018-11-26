@@ -8,7 +8,7 @@ create or replace function check_conduct_shinryou_fun() returns trigger as $$
 	declare
 		count integer;
 	begin
-		select count(*) into count from shinryou_master m, conduct c, visit v 
+		select count(*) into count from public.shinryou_master m, public.conduct c, public.visit v 
 			where m.shinryoucode = new.shinryoucode
 			and new.conduct_id = c.conduct_id
 			and v.visit_id = c.visit_id 

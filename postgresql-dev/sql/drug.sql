@@ -13,7 +13,8 @@ create or replace function check_drug_fun() returns trigger as $$
 	declare
 		count integer;
 	begin
-		select count(*) into count from iyakuhin_master m, visit v where m.iyakuhincode = new.iyakuhincode
+		select count(*) into count from public.iyakuhin_master m, public.visit v 
+			where m.iyakuhincode = new.iyakuhincode
 			and v.visit_id = new.visit_id 
 			and m.valid_from <= date(v.visited_at)
 			and (m.valid_upto is null or m.valid_upto >= date(v.visited_at));

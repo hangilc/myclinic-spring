@@ -8,7 +8,8 @@ create or replace function check_shinryou_fun() returns trigger as $$
 	declare
 		count integer;
 	begin
-		select count(*) into count from shinryou_master m, visit v where m.shinryoucode = new.shinryoucode
+		select count(*) into count from public.shinryou_master m, public.visit v 
+			where m.shinryoucode = new.shinryoucode
 			and v.visit_id = new.visit_id 
 			and m.valid_from <= date(v.visited_at)
 			and (m.valid_upto is null or m.valid_upto >= date(v.visited_at));
