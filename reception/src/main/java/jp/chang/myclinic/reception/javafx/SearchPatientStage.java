@@ -86,7 +86,7 @@ public class SearchPatientStage extends Stage {
 
     private void doRecent() {
         Service.api.listRecentlyRegisteredPatients()
-                .thenAccept(this::setSearchResult)
+                .thenAcceptAsync(this::setSearchResult, Platform::runLater)
                 .exceptionally(ex -> {
                     logger.error("Listing recently registered patient failed.", ex);
                     Platform.runLater(() -> GuiUtil.alertException("Internal error.", ex));

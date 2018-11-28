@@ -2,6 +2,7 @@ package jp.chang.myclinic.serverpostgresql.db.myclinic;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public interface TextRepository extends CrudRepository<Text, Integer> {
 
-    List<Text> findByVisitId(int visitId);
+    List<Text> findByVisitId(int visitId, Sort sort);
 
     @Query("select text, visit from Text text, Visit visit " +
             " where visit.patientId = :patientId and text.visitId = visit.visitId " + "" +

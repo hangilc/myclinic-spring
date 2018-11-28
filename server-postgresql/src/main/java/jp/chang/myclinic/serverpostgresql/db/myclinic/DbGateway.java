@@ -886,7 +886,7 @@ public class DbGateway {
     }
 
     private List<TextDTO> listText(int visitId) {
-        List<Text> texts = textRepository.findByVisitId(visitId);
+        List<Text> texts = textRepository.findByVisitId(visitId, Sort.by("textId"));
         return texts.stream().map(mapper::toTextDTO).collect(Collectors.toList());
     }
 
@@ -1665,7 +1665,7 @@ public class DbGateway {
     public List<DiseaseFullDTO> listDiseaseByPatientAt(int patientId, int year, int month) {
         LocalDate validFrom = LocalDate.of(year, month, 1);
         LocalDate validUpto = validFrom.plus(1, ChronoUnit.MONTHS).minus(1, ChronoUnit.DAYS);
-        return diseaseRepository.listDiseaseIdByPatientAt(patientId, validFrom.toString(), validUpto.toString())
+        return diseaseRepository.listDiseaseIdByPatientAt(patientId, validFrom, validUpto)
                 .stream()
                 .map(this::getDiseaseFull)
                 .collect(Collectors.toList());

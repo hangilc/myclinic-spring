@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface DiseaseRepository extends CrudRepository<Disease, Integer> {
@@ -46,6 +47,6 @@ public interface DiseaseRepository extends CrudRepository<Disease, Integer> {
             "   ( d.startDate <= :validUpto and " +
             "     ( d.endDate is null or d.endDate >= :validFrom ) ) ) ")
     List<Integer> listDiseaseIdByPatientAt(@Param("patientId") int patientId,
-                                           @Param("validFrom") String validFrom,
-                                           @Param("validUpto") String validupto);
+                                           @Param("validFrom") LocalDate validFrom,
+                                           @Param("validUpto") LocalDate validupto);
 }
