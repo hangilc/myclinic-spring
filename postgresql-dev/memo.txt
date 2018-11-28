@@ -1,7 +1,13 @@
 -- Create schema dump
 
-> pg_dump --schema-only --no-owner --clean --if-exists -f myclinic-postgres-schema.sql myclinic
+> pg_dump --schema-only --no-owner -Fc --no-publications --no-subscriptions -f schema.dump myclinic
 
 -- Dump master data
 
-> pg_dump --data-only --no-owner -t "*master*" -f myclinci-postgres-master-data.sql myclinic
+> pg_dump --data-only --no-owner -t "*master*" -Fc -f master-data.dump myclinic
+
+-- Setup test database
+> psql -c "drop database myclinic_test" -U postgres
+> psql -c "create database myclinic_test owner tester" -U postgres
+> pg_restore -d myclinic_test --no-owner -U tester schema.dump
+> pg_restore -d myclinic_test -U tester master-data.dump

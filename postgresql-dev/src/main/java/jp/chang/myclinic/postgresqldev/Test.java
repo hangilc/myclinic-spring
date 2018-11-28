@@ -21,14 +21,20 @@ public class Test {
     }
 
     private void prepareDb() throws Exception {
-        String dataFile = System.getenv("MYCLINIC_POSTGRES_TEST_DATA");
-        if( dataFile == null ){
-            System.err.println("Env MYCLINIC_POSTGRES_TEST_DATA cannot be found.");
+        String schemaDumpPath = System.getenv("MYCLINIC_POSTGRES_SCHEMA_DUMP");
+        String masterDumpPath = System.getenv("MYCLINIC_POSTGRES_MASTER_DUMP");
+        if( schemaDumpPath == null ){
+            System.err.println("Env MYCLINIC_POSTGRES_SCHEMA_DUMP cannot be found.");
             System.exit(1);
         }
-        command("psql", "--quiet", "-f", "postgresql-dev/sql/myclinic-postgres-schema.sql",
-                "myclinic_test", "tester");
-        command("psql", "--quiet", "-f", dataFile, "myclinic_test", "tester");
+        if( masterDumpPath == null ){
+            System.err.println("Env MYCLINIC_POSTGRES_MASTER_DUMP cannot be found.");
+            System.exit(1);
+        }
+        command("psql", "-c", "drop database myclinic_test", "-U", "postgres");
+        command("psql", "-c", "create database myclinic_test owner tester", "-U", "postgres");
+        command("pg_restore", "-d", "myclinic_test", "--no-owner", "-U", "tester", schemaDumpPath);
+        command("pg_restore", "-d", "myclinic_test", "-U", "tester", masterDumpPath);
     }
 
     private void command(String... args) throws Exception {
