@@ -63,7 +63,7 @@ class PrescPane extends VBox {
         );
     }
 
-    void setItem(PharmaQueueFullDTO item, List<DrugFullDTO> drugs){
+    void setItem(PharmaQueueFullDTO item, List<DrugFullDTO> drugs) {
         PatientDTO patient = item.patient;
         nameText.setText(String.format("%s %s", patient.lastName, patient.firstName));
         yomiText.setText(String.format("%s %s", patient.lastNameYomi, patient.firstNameYomi));
@@ -74,7 +74,7 @@ class PrescPane extends VBox {
         this.visitId = item.visitId;
     }
 
-    void reset(){
+    void reset() {
         nameText.setText("");
         yomiText.setText("");
         infoText.setText("");
@@ -84,14 +84,14 @@ class PrescPane extends VBox {
         this.visitId = 0;
     }
 
-    private String infoText(PatientDTO patient){
+    private String infoText(PatientDTO patient) {
         String birthdayPart = "";
         try {
             LocalDate birthday = DateTimeUtil.parseSqlDate(patient.birthday);
             birthdayPart = String.format("%s生 %d才",
                     DateTimeUtil.toKanji(birthday),
                     DateTimeUtil.calcAge(birthday));
-        } catch(Exception ex){
+        } catch (Exception ex) {
             logger.error("Failed to get birthday.");
         }
         return String.format("患者番号 %d %s %s性",
@@ -100,7 +100,7 @@ class PrescPane extends VBox {
                 "M".equals(patient.sex) ? "男" : "女");
     }
 
-    private Node createCommands1(){
+    private Node createCommands1() {
         HBox hbox = new HBox(4);
         Button printPrescButton = new Button("処方内容印刷");
         Button printDrugBagButton = new Button("薬袋印刷");
@@ -116,7 +116,7 @@ class PrescPane extends VBox {
         return hbox;
     }
 
-    private Node createCommands2(){
+    private Node createCommands2() {
         HBox hbox = new HBox(4);
         Button printAllButton = new Button("*全部印刷*");
         Button printAllExceptTechouButton = new Button("*全部印刷(薬手帳なし)*");
@@ -129,7 +129,7 @@ class PrescPane extends VBox {
         return hbox;
     }
 
-    private Node createCommands3(){
+    private Node createCommands3() {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_RIGHT);
         Button cancelButton = new Button("キャンセル");
@@ -143,45 +143,55 @@ class PrescPane extends VBox {
         return hbox;
     }
 
-    private void doCancel(){
+    private void doCancel() {
         onCancel();
     }
 
-    private WqueueWaitState getWqueueStateOfCurrentPatient(){
-        for(PatientList.Model model: Globals.getTrackingVisitList()){
-            if( model.getVisitId() == visitId ){
-                return model.waitStateProperty().getValue();
+    private CompletableFuture<WqueueWaitState> getWqueueStateOfCurrentPatient() {
+        if (Globals.isTracking()) {
+            for (PatientList.Model model : Globals.getTrackingVisitList()) {
+                if (model.getVisitId() == visitId) {
+                    return CompletableFuture.completedFuture(model.waitStateProperty().getValue());
+                }
             }
+            return CompletableFuture.failedFuture(new RuntimeException("Failed to get patient wqueue."));
+        } else {
+            return Service.api.getWqueueFull(visitId)
+                    .thenApply(wq -> WqueueWaitState.fromCode(wq.wqueue.waitState));
         }
-        return null;
     }
 
-    private void doPrescDone(){
-        WqueueWaitState wqueueState = getWqueueStateOfCurrentPatient();
-        if( wqueueState != WqueueWaitState.WaitDrug ){
-            GuiUtil.alertError("まだ会計が終了していないので、薬渡しは終了できません。");
-            return;
-        }
-        Service.api.prescDone(visitId)
-                .thenAccept(result -> Platform.runLater(this::onPrescDone))
+    private void doPrescDone() {
+        getWqueueStateOfCurrentPatient()
+                .thenAcceptAsync(wqueueState -> {
+                    if (wqueueState == WqueueWaitState.WaitCashier) {
+                        GuiUtil.alertError("まだ会計が終了していないので、薬渡しは終了できません。");
+                        return;
+                    }
+                    if( wqueueState == WqueueWaitState.WaitDrug){
+                        Service.api.prescDone(visitId)
+                                .thenAccept(result -> Platform.runLater(this::onPrescDone))
+                                .exceptionally(HandlerFX::exceptionally);
+                    }
+                }, Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);
     }
 
-    protected void onCancel(){
+    protected void onCancel() {
 
     }
 
-    protected void onPrescDone(){
+    protected void onPrescDone() {
 
     }
 
-    private void doPrintPresc(){
-        if( patient != null ){
+    private void doPrintPresc() {
+        if (patient != null) {
             PrescContentDataCreator creator = new PrescContentDataCreator(patient, LocalDate.now(), drugs);
             PrescContentDrawerData drawerData = creator.createData();
             List<Op> ops = new PrescContentDrawer(drawerData).getOps();
             DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.getPrinterEnv(),
-                    148, 210, 0.55){
+                    148, 210, 0.55) {
                 @Override
                 protected String getDefaultPrinterSettingName() {
                     return Globals.getPrescContentPrinterSetting();
@@ -209,7 +219,7 @@ class PrescPane extends VBox {
         private PharmaDrugDTO pharmaDrug;
     }
 
-    private CompletableFuture<List<DrugWithPharmaDrug>> collectPharmaDrugs(List<DrugFullDTO> drugs){
+    private CompletableFuture<List<DrugWithPharmaDrug>> collectPharmaDrugs(List<DrugFullDTO> drugs) {
         return CFUtil.map(drugs, drug -> Service.api.findPharmaDrug(drug.drug.iyakuhincode)
                 .thenApply(pharmaDrug -> {
                     DrugWithPharmaDrug result = new DrugWithPharmaDrug();
@@ -219,16 +229,17 @@ class PrescPane extends VBox {
                 }));
     }
 
-    private void doPrintDrugBag(){
+    private void doPrintDrugBag() {
         class TaggedPage {
             private boolean prescribed;
             private List<Op> ops;
-            private TaggedPage(boolean prescribed, List<Op> ops){
+
+            private TaggedPage(boolean prescribed, List<Op> ops) {
                 this.prescribed = prescribed;
                 this.ops = ops;
             }
         }
-        if( drugs.size() > 0 ){
+        if (drugs.size() > 0) {
             ClinicInfoDTO clinicInfo = Globals.getClinicInfo();
             collectPharmaDrugs(drugs)
                     .thenAccept(dps -> Platform.runLater(() -> {
@@ -245,7 +256,7 @@ class PrescPane extends VBox {
                         List<List<Op>> unprescribedPages = pages.stream()
                                 .filter(p -> !p.prescribed).map(p -> p.ops).collect(Collectors.toList());
                         DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(
-                                Globals.getPrinterEnv(), 128, 182, 0.6){
+                                Globals.getPrinterEnv(), 128, 182, 0.6) {
                             @Override
                             protected String getDefaultPrinterSettingName() {
                                 return Globals.getDrugBagPrinterSetting();
@@ -268,7 +279,7 @@ class PrescPane extends VBox {
                         includePrescribedCheck.setSelected(false);
                         previewDialog.setPages(unprescribedPages);
                         includePrescribedCheck.selectedProperty().addListener((obs, oldValue, newValue) -> {
-                            previewDialog.setPages(newValue ? allPages: unprescribedPages);
+                            previewDialog.setPages(newValue ? allPages : unprescribedPages);
                         });
                         previewDialog.addToCommands(includePrescribedCheck);
                         previewDialog.show();
@@ -277,12 +288,12 @@ class PrescPane extends VBox {
         }
     }
 
-    private void doPrintTechou(){
-        if( patient != null ){
+    private void doPrintTechou() {
+        if (patient != null) {
             TechouDataCreator creator = new TechouDataCreator(patient, LocalDate.now(), drugs, Globals.getClinicInfo());
             TechouDrawerData drawerData = creator.createData();
             List<Op> ops = new TechouDrawer(drawerData).getOps();
-            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.getPrinterEnv(), 99, 120, 0.9){
+            DrawerPreviewDialog previewDialog = new DrawerPreviewDialog(Globals.getPrinterEnv(), 99, 120, 0.9) {
                 @Override
                 protected String getDefaultPrinterSettingName() {
                     return Globals.getTechouPrinterSetting();
@@ -305,11 +316,11 @@ class PrescPane extends VBox {
         }
     }
 
-    private void doPrintAll(){
+    private void doPrintAll() {
         Printing.printAll(drugs, patient);
     }
 
-    private void doPrintAllExcepTechou(){
+    private void doPrintAllExcepTechou() {
         Printing.printAllExceptTechou(drugs, patient);
     }
 

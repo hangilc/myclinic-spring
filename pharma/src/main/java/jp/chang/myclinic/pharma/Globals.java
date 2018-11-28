@@ -29,7 +29,6 @@ public class Globals {
             model.waitStateProperty()
     };
 
-    //@Bean(name="tracking-visit-list")
     private static ObservableList<PatientList.Model> trackingVisitList = FXCollections.observableArrayList(modelExtractor);
 
     public static ObservableList<PatientList.Model> getTrackingVisitList() {
@@ -40,7 +39,6 @@ public class Globals {
         Globals.trackingVisitList = trackingVisitList;
     }
 
-    //@Bean(name="tracking-pharma-list")
     private static ObservableList<PatientList.Model> trackingPharmaList = FXCollections.observableArrayList(modelExtractor);
 
     public static ObservableList<PatientList.Model> getTrackingPharmaList() {
@@ -51,7 +49,6 @@ public class Globals {
         Globals.trackingPharmaList = trackingPharmaList;
     }
 
-    //@Bean(name="tracking-flag")
     private static SimpleBooleanProperty tracking = new SimpleBooleanProperty(true);
 
     public static boolean isTracking() {
