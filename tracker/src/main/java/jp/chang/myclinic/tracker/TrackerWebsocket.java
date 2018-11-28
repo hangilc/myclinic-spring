@@ -57,7 +57,10 @@ public class TrackerWebsocket {
                 public void onFailure(WebSocket webSocket, Throwable t, Response response) {
                     if (!(timerExecutor.isShutdown() || timerExecutor.isTerminated())) {
                         logger.error("Reconnecting websocket 5 seconds later.");
-                        timerExecutor.schedule(() -> TrackerWebsocket.this.start(cb), 5, TimeUnit.SECONDS);
+                        TrackerWebsocket.this.websocket = null;
+                        timerExecutor.schedule(() -> {
+                            TrackerWebsocket.this.start(cb);
+                        }, 5, TimeUnit.SECONDS);
                     }
                 }
 
