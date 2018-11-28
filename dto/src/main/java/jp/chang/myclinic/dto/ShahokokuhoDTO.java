@@ -11,30 +11,18 @@ public class ShahokokuhoDTO {
 	public String validFrom;
 	public String validUpto;
 
-	public ShahokokuhoDTO copy(){
+	public static ShahokokuhoDTO copy(ShahokokuhoDTO src){
 		ShahokokuhoDTO dst = new ShahokokuhoDTO();
-		dst.shahokokuhoId = shahokokuhoId;
-		dst.patientId = patientId;
-		dst.hokenshaBangou = hokenshaBangou;
-		dst.hihokenshaKigou = hihokenshaKigou;
-		dst.hihokenshaBangou = hihokenshaBangou;
-		dst.honnin = honnin;
-		dst.kourei = kourei;
-		dst.validFrom = validFrom;
-		dst.validUpto = validUpto;
+		dst.shahokokuhoId = src.shahokokuhoId;
+		dst.patientId = src.patientId;
+		dst.hokenshaBangou = src.hokenshaBangou;
+		dst.hihokenshaKigou = src.hihokenshaKigou;
+		dst.hihokenshaBangou = src.hihokenshaBangou;
+		dst.honnin = src.honnin;
+		dst.kourei = src.kourei;
+		dst.validFrom = src.validFrom;
+		dst.validUpto = src.validUpto;
 		return dst;
-	}
-
-	public void assign(ShahokokuhoDTO src){
-		shahokokuhoId = src.shahokokuhoId;
-		patientId = src.patientId;
-		hokenshaBangou = src.hokenshaBangou;
-		hihokenshaKigou = src.hihokenshaKigou;
-		hihokenshaBangou = src.hihokenshaBangou;
-		honnin = src.honnin;
-		kourei = src.kourei;
-		validFrom = src.validFrom;
-		validUpto = src.validUpto;
 	}
 
 	@Override

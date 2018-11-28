@@ -49,4 +49,18 @@ public class PatientDTO {
 
 		return Objects.hash(patientId, lastName, firstName, lastNameYomi, firstNameYomi, birthday, sex, address, phone);
 	}
+
+	public static PatientDTO copy(PatientDTO src){
+		PatientDTO dst = new PatientDTO();
+		dst.patientId = src.patientId;
+		dst.lastName = src.lastName;
+		dst.firstName = src.firstName;
+		dst.lastNameYomi = src.lastNameYomi;
+		dst.firstNameYomi = src.firstNameYomi;
+		dst.birthday = src.birthday;
+		dst.sex = src.sex;
+		dst.address = src.address;
+		dst.phone = src.phone;
+		return dst;
+	}
 }
