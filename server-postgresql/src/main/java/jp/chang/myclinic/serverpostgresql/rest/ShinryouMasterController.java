@@ -78,7 +78,7 @@ public class ShinryouMasterController {
 
     @RequestMapping(value="/search-shinryou-master", method=RequestMethod.GET)
     public List<ShinryouMasterDTO> searchShinryouMaster(@RequestParam("text") String text, @RequestParam("at") String at){
-        LocalDate date = LocalDate.parse(at);
+        LocalDate date = convertToDate(at);
         return dbGateway.searchShinryouMaster(text, date);
     }
 

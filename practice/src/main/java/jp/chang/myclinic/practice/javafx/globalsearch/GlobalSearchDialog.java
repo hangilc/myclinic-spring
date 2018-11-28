@@ -22,6 +22,7 @@ public class GlobalSearchDialog extends Stage {
     private Result resultBox = new Result();
 
     public GlobalSearchDialog() {
+        setTitle("全文検索");
         VBox vbox = new VBox(4);
         vbox.getStyleClass().add("global-text-search-dialog");
         vbox.getStylesheets().add("css/Practice.css");
