@@ -175,6 +175,7 @@ public class RcptDrawer {
     private List<Runnable> identityProcs = new ArrayList<>();
     private String[] drugBegin;
     private List<String> tekiyouDrugs = new ArrayList<>();
+    private int tenkiCount = 0;
 
     private static class DataValues {
         Integer patientId;
@@ -272,6 +273,7 @@ public class RcptDrawer {
         pages = new ArrayList<>();
         identityProcs = new ArrayList<>();
         dataValues = new DataValues();
+        tenkiCount = 0;
     }
 
     public void putPatientId(int patientId) {
@@ -1178,8 +1180,6 @@ public class RcptDrawer {
             throw new RuntimeException("Invalid chiyu: " + s);
         }
     }
-
-    private int tenkiCount = 0;
 
     public void putChiyu(String[] parts) {
         markCircle(tenkiChiyuMidashi);
