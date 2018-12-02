@@ -125,34 +125,37 @@ class Mover {
     }
 
     void addSerialColumn(String mysqlName, String pgsqlColumnName) {
-        class Local {
-            private int maxIndex = 0;
-
-            private void handleIndex(int idx) {
-                if (idx > maxIndex) {
-                    maxIndex = idx;
-                }
-            }
-        }
-        Local local = new Local();
+//        class Local {
+//            private int maxIndex = 0;
+//
+//            private void handleIndex(int idx) {
+//                if (idx > maxIndex) {
+//                    maxIndex = idx;
+//                }
+//            }
+//        }
+//        Local local = new Local();
+//        postMoveProcs.add(() -> {
+//            String sql = String.format("alter table %s alter column %s restart with %d",
+//                    pgsqlTargetTable, pgsqlColumnName, local.maxIndex + 1);
+//            try {
+//                Statement seqStmt = pgsqlConnection.createStatement();
+//                seqStmt.executeUpdate(sql);
+//                seqStmt.close();
+//                System.out.printf("%s sequence restarts with %d.\n", pgsqlColumnName, local.maxIndex + 1);
+//            } catch (SQLException ex) {
+//                ex.printStackTrace();
+//                throw new RuntimeException("Failed to reset sequence.");
+//            }
+//        });
         postMoveProcs.add(() -> {
-            String sql = String.format("alter table %s alter column %s restart with %d",
-                    pgsqlTargetTable, pgsqlColumnName, local.maxIndex + 1);
-            try {
-                Statement seqStmt = pgsqlConnection.createStatement();
-                seqStmt.executeUpdate(sql);
-                seqStmt.close();
-                System.out.printf("%s sequence restarts with %d.\n", pgsqlColumnName, local.maxIndex + 1);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                throw new RuntimeException("Failed to reset sequence.");
-            }
+            syncSequence(mysqlSourceTable, pgsqlTargetTable, pgsqlColumnName);
         });
+
         addColumn(new Column(pgsqlColumnName) {
             @Override
             void setParam(PreparedStatement stmt, int index, ResultSet rs) throws SQLException {
                 int idx = rs.getInt(mysqlName);
-                local.handleIndex(idx);
                 stmt.setInt(index, idx);
             }
         });
@@ -191,6 +194,50 @@ class Mover {
         rset.close();
         stmt.close();
         postMoveProcs.forEach(Runnable::run);
+    }
+
+    private void syncSequence(String mysqlTable, String pgsqlTable, String pgsqlColumn){
+        try {
+            int nextValue = getMysqlNextAutoIncrement(mysqlTable);
+            setPostgresqlNextAutoIncrement(pgsqlTable, pgsqlColumn, nextValue);
+            System.out.printf("Postgresql: next value of %s.%s set to %d\n", pgsqlTable, pgsqlColumn, nextValue);
+        } catch(SQLException ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private int getMysqlNextAutoIncrement(String table) throws SQLException {
+        String sql = "show table status like ?";
+        PreparedStatement stmt = mysqlConnection.prepareStatement(sql);
+        stmt.setString(1, table);
+        ResultSet rs = stmt.executeQuery();
+        if( !rs.next() ){
+            throw new RuntimeException("show table status failed");
+        }
+        int value = rs.getInt("Auto_increment");
+        rs.close();
+        stmt.close();
+        return value;
+    }
+
+    private void setPostgresqlNextAutoIncrement(String table, String column, int nextValue) throws SQLException {
+        String sql = "select pg_get_serial_sequence(?, ?)";
+        PreparedStatement stmt = pgsqlConnection.prepareStatement(sql);
+        stmt.setString(1, table);
+        stmt.setString(2, column);
+        ResultSet rs = stmt.executeQuery();
+        if( !rs.next() ){
+            throw new RuntimeException("pg_get_serial_sequence failed");
+        }
+        String sequence = rs.getString(1);
+        rs.close();
+        stmt.close();
+        sql = "select setval(?,?, false)";
+        stmt = pgsqlConnection.prepareStatement(sql);
+        stmt.setString(1, sequence);
+        stmt.setInt(2, nextValue);
+        stmt.executeQuery();
+        stmt.close();
     }
 
     private String createSql() {

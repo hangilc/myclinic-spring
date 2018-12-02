@@ -5,7 +5,6 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-// TODO: add foreign key cascade to drug_attr, shinryou_attr, gazou_label, shouki
 public class Main {
 
     private Connection mysqlConn;
@@ -33,7 +32,7 @@ public class Main {
             main.moveMasters();
         } else if( what.equals("data") ){
             main.moveData();
-        } else if( what.equals("all") ){
+        } else if( what.equals("all") ) {
             main.moveMasters();
             main.moveData();
         } else {
@@ -356,14 +355,15 @@ public class Main {
         psqlStmt.close();
         rset.close();
         stmt.close();
-        {
-            String sql = String.format("alter table visit alter column visit_id restart with %d",
-                    maxId + 1);
-            Statement seqStmt = psqlConn.createStatement();
-            seqStmt.executeUpdate(sql);
-            seqStmt.close();
-            System.out.println("VISIT_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
-        }
+        syncSequence("visit", "visit", "visit_id");
+//        {
+//            String sql = String.format("alter table visit alter column visit_id restart with %d",
+//                    maxId + 1);
+//            Statement seqStmt = psqlConn.createStatement();
+//            seqStmt.executeUpdate(sql);
+//            seqStmt.close();
+//            System.out.println("VISIT_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
+//        }
     }
 
     private void moveKouhi() throws Exception {
@@ -413,14 +413,15 @@ public class Main {
         psqlStmt.close();
         rset.close();
         stmt.close();
-        {
-            String sql = String.format("alter table kouhi alter column kouhi_id restart with %d",
-                    maxId + 1);
-            Statement seqStmt = psqlConn.createStatement();
-            seqStmt.executeUpdate(sql);
-            seqStmt.close();
-            System.out.println("KOUHI_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
-        }
+        syncSequence("kouhi", "kouhi", "kouhi_id");
+//        {
+//            String sql = String.format("alter table kouhi alter column kouhi_id restart with %d",
+//                    maxId + 1);
+//            Statement seqStmt = psqlConn.createStatement();
+//            seqStmt.executeUpdate(sql);
+//            seqStmt.close();
+//            System.out.println("KOUHI_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
+//        }
     }
 
     private void moveKoukikourei() throws Exception {
@@ -471,14 +472,15 @@ public class Main {
         psqlStmt.close();
         rset.close();
         stmt.close();
-        {
-            String sql = String.format("alter table koukikourei alter column koukikourei_id restart with %d",
-                    maxId + 1);
-            Statement seqStmt = psqlConn.createStatement();
-            seqStmt.executeUpdate(sql);
-            seqStmt.close();
-            System.out.println("KOUKIKOUREI_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
-        }
+        syncSequence("hoken_koukikourei", "koukikourei", "koukikourei_id");
+//        {
+//            String sql = String.format("alter table koukikourei alter column koukikourei_id restart with %d",
+//                    maxId + 1);
+//            Statement seqStmt = psqlConn.createStatement();
+//            seqStmt.executeUpdate(sql);
+//            seqStmt.close();
+//            System.out.println("KOUKIKOUREI_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
+//        }
     }
 
     private void moveRoujin() throws Exception {
@@ -529,14 +531,15 @@ public class Main {
         psqlStmt.close();
         rset.close();
         stmt.close();
-        {
-            String sql = String.format("alter table roujin alter column roujin_id restart with %d",
-                    maxId + 1);
-            Statement seqStmt = psqlConn.createStatement();
-            seqStmt.executeUpdate(sql);
-            seqStmt.close();
-            System.out.println("ROUJIN_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
-        }
+        syncSequence("hoken_roujin", "roujin", "roujin_id");
+//        {
+//            String sql = String.format("alter table roujin alter column roujin_id restart with %d",
+//                    maxId + 1);
+//            Statement seqStmt = psqlConn.createStatement();
+//            seqStmt.executeUpdate(sql);
+//            seqStmt.close();
+//            System.out.println("ROUJIN_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
+//        }
     }
 
     private void moveShahokokuho() throws Exception {
@@ -589,14 +592,15 @@ public class Main {
         psqlStmt.close();
         rset.close();
         stmt.close();
-        {
-            String sql = String.format("alter table shahokokuho alter column shahokokuho_id restart with %d",
-                    maxId + 1);
-            Statement seqStmt = psqlConn.createStatement();
-            seqStmt.executeUpdate(sql);
-            seqStmt.close();
-            System.out.println("SHAHOKOKUHO_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
-        }
+        syncSequence("hoken_shahokokuho", "shahokokuho", "shahokokuho_id");
+//        {
+//            String sql = String.format("alter table shahokokuho alter column shahokokuho_id restart with %d",
+//                    maxId + 1);
+//            Statement seqStmt = psqlConn.createStatement();
+//            seqStmt.executeUpdate(sql);
+//            seqStmt.close();
+//            System.out.println("SHAHOKOKUHO_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
+//        }
     }
 
     private void movePracticeLog() throws Exception {
@@ -604,7 +608,7 @@ public class Main {
         ResultSet rset = stmt.executeQuery("select * from practice_log");
         PreparedStatement psqlStmt = psqlConn.prepareStatement("insert into practice_log " +
                 "(practice_log_id, created_at, kind, body) " +
-                        "values (?, ?, ?, ?::json)");
+                        "values (?, ?, ?, ?::jsonb)");
         int n = 0;
         int maxId = 0;
         while (rset.next()) {
@@ -627,14 +631,15 @@ public class Main {
         psqlStmt.close();
         rset.close();
         stmt.close();
-        {
-            String sql = String.format("alter table practice_log alter column practice_log_id restart with %d",
-                    maxId + 1);
-            Statement seqStmt = psqlConn.createStatement();
-            seqStmt.executeUpdate(sql);
-            seqStmt.close();
-            System.out.println("PRACTICE_LOG_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
-        }
+        syncSequence("practice_log", "practice_log", "practice_log_id");
+//        {
+//            String sql = String.format("alter table practice_log alter column practice_log_id restart with %d",
+//                    maxId + 1);
+//            Statement seqStmt = psqlConn.createStatement();
+//            seqStmt.executeUpdate(sql);
+//            seqStmt.close();
+//            System.out.println("PRACTICE_LOG_ID SEQUENCE RESTARTS WITH " + (maxId + 1));
+//        }
     }
 
     private void movePatient() throws Exception {
@@ -679,14 +684,15 @@ public class Main {
         psqlStmt.close();
         rset.close();
         stmt.close();
-        {
-            String sql = String.format("alter table patient alter column patient_id restart with %d",
-                    maxPatientId + 1);
-            Statement seqStmt = psqlConn.createStatement();
-            seqStmt.executeUpdate(sql);
-            seqStmt.close();
-            System.out.println("PATIENT_ID SEQUENCE RESTARTS WITH " + (maxPatientId + 1));
-        }
+        syncSequence("patient", "patient", "patient_id");
+//        {
+//            String sql = String.format("alter table patient alter column patient_id restart with %d",
+//                    maxPatientId + 1);
+//            Statement seqStmt = psqlConn.createStatement();
+//            seqStmt.executeUpdate(sql);
+//            seqStmt.close();
+//            System.out.println("PATIENT_ID SEQUENCE RESTARTS WITH " + (maxPatientId + 1));
+//        }
     }
 
     private  void moveKizaiMaster(boolean printRow) throws Exception {
@@ -810,6 +816,46 @@ public class Main {
         rset.close();
         stmt.close();
         psqlStmt.close();
+    }
+
+    private void syncSequence(String mysqlTable, String pgsqlTable, String pgsqlColumn) throws SQLException {
+        int nextValue = getMysqlNextAutoIncrement(mysqlTable);
+        setPostgresqlNextAutoIncrement(pgsqlTable, pgsqlColumn, nextValue);
+        System.out.printf("Postgresql: next value of %s.%s set to %d\n", pgsqlTable, pgsqlColumn, nextValue);
+    }
+
+    private int getMysqlNextAutoIncrement(String table) throws SQLException {
+        String sql = "show table status like ?";
+        PreparedStatement stmt = mysqlConn.prepareStatement(sql);
+        stmt.setString(1, table);
+        ResultSet rs = stmt.executeQuery();
+        if( !rs.next() ){
+            throw new RuntimeException("show table status failed");
+        }
+        int value = rs.getInt("Auto_increment");
+        rs.close();
+        stmt.close();
+        return value;
+    }
+
+    private void setPostgresqlNextAutoIncrement(String table, String column, int nextValue) throws SQLException {
+        String sql = "select pg_get_serial_sequence(?, ?)";
+        PreparedStatement stmt = psqlConn.prepareStatement(sql);
+        stmt.setString(1, table);
+        stmt.setString(2, column);
+        ResultSet rs = stmt.executeQuery();
+        if( !rs.next() ){
+            throw new RuntimeException("pg_get_serial_sequence failed");
+        }
+        String sequence = rs.getString(1);
+        rs.close();
+        stmt.close();
+        sql = "select setval(?,?, false)";
+        stmt = psqlConn.prepareStatement(sql);
+        stmt.setString(1, sequence);
+        stmt.setInt(2, nextValue);
+        stmt.executeQuery();
+        stmt.close();
     }
 
     private static Date convertValidUpto(String sqldate){

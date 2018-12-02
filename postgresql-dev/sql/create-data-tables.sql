@@ -1,37 +1,4 @@
 \set ON_ERROR_STOP true
-drop table if exists intraclinic_tag_post cascade;
-drop table if exists intraclinic_tag cascade;
-drop table if exists intraclinic_comment cascade;
-drop table if exists intraclinic_post cascade;
-
-drop table if exists hotline cascade;
-
-drop table if exists shouki cascade;
-drop table if exists shinryou_attr cascade;
-drop table if exists presc_example cascade;
-drop table if exists pharma_drug cascade;
-drop table if exists drug_attr cascade;
-drop table if exists disease_adj cascade;
-drop table if exists disease cascade;
-drop table if exists payment cascade;
-drop table if exists charge cascade;
-drop table if exists conduct_kizai cascade;
-drop table if exists conduct_shinryou cascade;
-drop table if exists conduct_drug cascade;
-drop table if exists gazou_label cascade;
-drop table if exists conduct cascade;
-drop table if exists shinryou cascade;
-drop table if exists drug cascade;
-drop table if exists text cascade;
-drop table if exists pharma_queue cascade;
-drop table if exists wqueue cascade;
-drop table if exists visit cascade;
-drop table if exists kouhi cascade;
-drop table if exists koukikourei cascade;
-drop table if exists roujin cascade;
-drop table if exists shahokokuho cascade;
-drop table if exists patient cascade;
-drop table if exists practice_log cascade;
 
 \i practice_log.sql
 \i patient.sql
