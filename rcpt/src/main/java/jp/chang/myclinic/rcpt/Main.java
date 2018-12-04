@@ -30,10 +30,11 @@ public class Main {
                 BatchData.run(args);
                 break;
             }
-            case "create": {
+            case "oldcreate": {
                 BatchCreate.run(args);
                 break;
             }
+            case "create": // fall through
             case "newcreate": {
                 if( args.length != 2 ){
                     System.err.println("Usage: newcreate DATA-XML-FILE");

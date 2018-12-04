@@ -627,7 +627,7 @@ class PatientBill {
         List<Item> items = new ArrayList<>();
         for(Visit visit: seikyuu.visits){
             for(Gaiyou gaiyou : visit.drug.gaiyouList){
-                Item item = Item.fromGaiyou(gaiyou);
+                Item item = Item.fromGaiyou(gaiyou, seikyuu.patientId);
                 Item.add(items, item);
             }
         }

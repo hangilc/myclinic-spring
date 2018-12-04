@@ -118,7 +118,11 @@ public class Item {
         );
     }
 
-    public static Item fromGaiyou(Gaiyou drug) {
+    private static Pattern gaiyouSheetsPerDayPattern = Pattern.compile(
+            "[1１一]日\\s*([0-9０-９]+)枚"
+    );
+
+    public static Item fromGaiyou(Gaiyou drug, int patientId) {
         if (drug.unit.equals("枚")) {
             final String tekiyouText;
             if( drug.tekiyou == null ) {
@@ -129,6 +133,10 @@ public class Item {
                 tekiyouText = String.format("１日%s枚", kanjiDigits);
             } else {
                 tekiyouText = drug.tekiyou;
+            }
+            Matcher matcher = gaiyouSheetsPerDayPattern.matcher(tekiyouText);
+            if( !matcher.find() ){
+                System.err.printf("１日何枚の記載がありません。patient_id: %d\n", patientId);
             }
             return new Item(
                     new GaiyouRep(drug),
@@ -184,7 +192,7 @@ public class Item {
     );
 
     private static Integer parseGaiyouSheetsPerTimes(String usage, Integer defaultValue) {
-        Matcher matcher = gaiyouTaimesPerDayPattern.matcher(usage);
+        Matcher matcher = gaiyouSheetsPerTimesPattern.matcher(usage);
         if (matcher.find()) {
             String src = StringUtil.transliterate(matcher.group(1), StringUtil::kanjiToDigit);
             try {
