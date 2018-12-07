@@ -21,6 +21,7 @@ set package=%groupArtifact:-=%
 
 @echo on
 mvn archetype:generate -DarchetypeGroupId="jp.chang.myclinic" -DarchetypeArtifactId="archetype-cli" ^
+    -DarchetypeVersion=1.0.0-SNAPSHOT ^
     -DgroupId="%groupId%" -DartifactId="%artifactId%" -Dversion="%version%" ^
     -Dpackage="%package%" -DinteractiveMode=false -DarchetypeCatalog=local
 @echo off
