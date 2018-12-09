@@ -33,9 +33,8 @@ public class TableXferer {
         try {
             Statement stmt = srcConn.createStatement();
             ResultSet rs = stmt.executeQuery("select * from " + src.getTableName());
-            List<Column> srcColumns = src.getColumns();
             List<Column> dstColumns = dst.getColumns();
-            String names = srcColumns.stream().map(Column::getColumnName).collect(Collectors.joining(","));
+            String names = dstColumns.stream().map(Column::getColumnName).collect(Collectors.joining(","));
             String vars = dstColumns.stream().map(n -> "?").collect(Collectors.joining(","));
             PreparedStatement prep = dstConn.prepareStatement("insert into " + dst.getTableName() +
                     "(" + names + ") values (" + vars + ")");
@@ -49,6 +48,7 @@ public class TableXferer {
             }
             int nb = 0;
             int count = 0;
+            int serialMax = 0;
             while (rs.next()) {
                 int index = 1;
                 for(ColRel r: rels){
@@ -65,6 +65,12 @@ public class TableXferer {
                         dstJdbcObj = dc.convertJavaObjectToJdbcObject(dstJavaObj);
                     }
                     dc.setParam(prep, index++, dstJdbcObj);
+                    if( dc instanceof SerialColumn ){
+                        int serialVal = (Integer)dstJdbcObj;
+                        if( serialVal > serialMax ){
+                            serialMax = serialVal;
+                        }
+                    }
                 }
                 prep.addBatch();
                 nb += 1;
@@ -83,6 +89,7 @@ public class TableXferer {
             System.out.printf("total xfer (%s): %d\n", src.getTableName(), count);
             rs.close();
             stmt.close();
+            System.out.println(serialMax);
         } catch(SQLException ex){
             throw new RuntimeException(ex);
         }

@@ -29,4 +29,9 @@ public class MyclinicDb {
         return shuushokugoMaster;
     }
 
+    Table<PatientEnum> patient = new Patient();
+    public Table<PatientEnum> getPatient(){
+        return patient;
+    }
+
 }

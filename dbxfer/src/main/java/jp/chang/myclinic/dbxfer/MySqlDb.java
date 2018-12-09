@@ -9,6 +9,7 @@ class MySqlDb extends MyclinicDb {
         this.shinryouMaster = new ShinryouMaster();
         this.kizaiMaster = new KizaiMaster();
         this.byoumeiMaster = new ByoumeiMaster();
+        this.patient = new Patient();
     }
 
 }

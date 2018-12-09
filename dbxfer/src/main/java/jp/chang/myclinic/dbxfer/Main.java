@@ -3,8 +3,7 @@ package jp.chang.myclinic.dbxfer;
 import jp.chang.myclinic.dbxfer.db.TableXferer;
 import jp.chang.myclinic.dbxfer.mysql.ConverterMapMySql;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.*;
 
 public class Main {
 
@@ -76,7 +75,49 @@ public class Main {
         //tableXferer.xfer(srcDb.getShinryouMaster(), dstDb.getShinryouMaster());
         //tableXferer.xfer(srcDb.getKizaiMaster(), dstDb.getKizaiMaster());
         //tableXferer.xfer(srcDb.getByoumeiMaster(), dstDb.getByoumeiMaster());
-        tableXferer.xfer(srcDb.getShuushokugoMaster(), dstDb.getShuushokugoMaster());
+        //tableXferer.xfer(srcDb.getShuushokugoMaster(), dstDb.getShuushokugoMaster());
+        //tableXferer.xfer(srcDb.getPatient(), dstDb.getPatient());
+        //pgsqlSetNextSerial(dst.getConn(), "patient", "patient_id", 26);
+        //mysqlSetNextSerial(src.getConn(), "patient", 7086);
+    }
+
+    String getSequenceName(Connection conn, String table, String column) {
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select pg_get_serial_sequence(?, ?)");
+            stmt.setString(1, table);
+            stmt.setString(2, column);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+            String seq = rs.getString(1);
+            rs.close();
+            stmt.close();
+            return seq;
+        } catch(SQLException ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
+    void pgsqlSetNextSerial(Connection conn, String table, String column, int nextValue){
+        String seq = getSequenceName(conn, table, column);
+        try {
+            PreparedStatement stmt = conn.prepareStatement("select setval(?, ?, false)");
+            stmt.setString(1, seq);
+            stmt.setInt(2, nextValue);
+            stmt.executeQuery();
+        } catch(SQLException ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
+    void mysqlSetNextSerial(Connection conn, String table, int nextValue){
+        try {
+            PreparedStatement stmt = conn.prepareStatement(
+                    "alter table " + table + " auto_increment = ?");
+            stmt.setInt(1, nextValue);
+            stmt.executeUpdate();
+        } catch(SQLException ex){
+            throw new RuntimeException(ex);
+        }
     }
 
 }
