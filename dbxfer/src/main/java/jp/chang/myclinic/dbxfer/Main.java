@@ -74,7 +74,9 @@ public class Main {
         MyclinicDb dstDb = dst.getDb();
         //tableXferer.xfer(srcDb.getIyakuhinMaster(), dstDb.getIyakuhinMaster());
         //tableXferer.xfer(srcDb.getShinryouMaster(), dstDb.getShinryouMaster());
-        tableXferer.xfer(srcDb.getKizaiMaster(), dstDb.getKizaiMaster());
+        //tableXferer.xfer(srcDb.getKizaiMaster(), dstDb.getKizaiMaster());
+        //tableXferer.xfer(srcDb.getByoumeiMaster(), dstDb.getByoumeiMaster());
+        tableXferer.xfer(srcDb.getShuushokugoMaster(), dstDb.getShuushokugoMaster());
     }
 
 }
