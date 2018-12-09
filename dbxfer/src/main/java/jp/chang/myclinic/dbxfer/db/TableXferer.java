@@ -80,7 +80,7 @@ public class TableXferer {
             if( nb > 0 ){
                 prep.executeBatch();
             }
-            System.out.printf("total xfer: %d\n", count);
+            System.out.printf("total xfer (%s): %d\n", src.getTableName(), count);
             rs.close();
             stmt.close();
         } catch(SQLException ex){

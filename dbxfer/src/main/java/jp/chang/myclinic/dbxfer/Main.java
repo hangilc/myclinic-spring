@@ -70,7 +70,11 @@ public class Main {
     }
 
     void xferAll() {
-        tableXferer.xfer(src.getDb().getIyakuhinMaster(), dst.getDb().getIyakuhinMaster());
+        MyclinicDb srcDb = src.getDb();
+        MyclinicDb dstDb = dst.getDb();
+        //tableXferer.xfer(srcDb.getIyakuhinMaster(), dstDb.getIyakuhinMaster());
+        //tableXferer.xfer(srcDb.getShinryouMaster(), dstDb.getShinryouMaster());
+        tableXferer.xfer(srcDb.getKizaiMaster(), dstDb.getKizaiMaster());
     }
 
 }
