@@ -1,9 +1,13 @@
 package jp.chang.myclinic.dbxfer;
 
+import jp.chang.myclinic.dbxfer.db.Table;
 import jp.chang.myclinic.dbxfer.table.IyakuhinMaster;
 
-class PostgreSqlDb {
+class PostgreSqlDb implements MyclinicDb {
 
-    public IyakuhinMaster iyakuhinMaster = new IyakuhinMaster();
-
+    private IyakuhinMaster iyakuhinMaster = new IyakuhinMaster();
+    @Override
+    public Table getIyakuhinMaster(){
+        return iyakuhinMaster;
+    }
 }

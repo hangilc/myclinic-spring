@@ -14,10 +14,14 @@ public class ConverterMapMySql extends ConverterMapBase {
     }
 
     private LocalDate oldSqldateToLocalDate(OldSqldate oldSqldate){
-        if( oldSqldate == null || "0000-00-00".equals(oldSqldate.getRep()) ){
+        if( oldSqldate == null ){
+            return null;
+        }
+        String rep = oldSqldate.getRep();
+        if( rep == null || "0000-00-00".equals(rep) ){
             return null;
         } else {
-            return LocalDate.parse(oldSqldate.getRep());
+            return LocalDate.parse(rep);
         }
     }
 

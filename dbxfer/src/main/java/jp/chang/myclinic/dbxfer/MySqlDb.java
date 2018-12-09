@@ -1,11 +1,16 @@
 package jp.chang.myclinic.dbxfer;
 
+import jp.chang.myclinic.dbxfer.db.Table;
 import jp.chang.myclinic.dbxfer.mysql.IyakuhinMaster;
 
-class MySqlDb {
+class MySqlDb implements MyclinicDb {
 
     //private static Logger logger = LoggerFactory.getLogger(MySqlDb.class);
 
-    public IyakuhinMaster iyakuhinMaster = new IyakuhinMaster();
+    private IyakuhinMaster iyakuhinMaster = new IyakuhinMaster();
+    @Override
+    public Table getIyakuhinMaster(){
+        return iyakuhinMaster;
+    }
 
 }

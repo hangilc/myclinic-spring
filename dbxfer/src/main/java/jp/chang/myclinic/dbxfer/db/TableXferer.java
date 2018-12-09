@@ -29,6 +29,7 @@ public class TableXferer {
     }
 
     public <E extends Enum<E>> void xfer(Table<E> src, Table<E> dst) {
+        System.out.printf("Xfer %s to %s\n", src.getTableName(), dst.getTableName());
         try {
             Statement stmt = srcConn.createStatement();
             ResultSet rs = stmt.executeQuery("select * from " + src.getTableName());
@@ -47,6 +48,7 @@ public class TableXferer {
                 }
             }
             int nb = 0;
+            int count = 0;
             while (rs.next()) {
                 int index = 1;
                 for(ColRel r: rels){
@@ -66,13 +68,19 @@ public class TableXferer {
                 }
                 prep.addBatch();
                 nb += 1;
-                if( nb >= 100 ){
+                if( nb >= 200 ){
                     prep.executeBatch();
+                    nb = 0;
+                }
+                count += 1;
+                if( count % 1000 == 0 ){
+                    System.out.printf("%d\n", count);
                 }
             }
             if( nb > 0 ){
                 prep.executeBatch();
             }
+            System.out.printf("total xfer: %d\n", count);
             rs.close();
             stmt.close();
         } catch(SQLException ex){
