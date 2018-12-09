@@ -1,6 +1,6 @@
 package jp.chang.myclinic.dbxfer;
 
-import jp.chang.myclinic.dbxfer.postgresql.IyakuhinMaster;
+import jp.chang.myclinic.dbxfer.table.IyakuhinMaster;
 
 class PostgreSqlDb {
 

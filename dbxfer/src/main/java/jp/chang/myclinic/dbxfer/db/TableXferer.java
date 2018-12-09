@@ -8,54 +8,70 @@ import java.util.stream.Collectors;
 
 public class TableXferer {
 
-    //private static Logger logger = LoggerFactory.getLogger(TableXferer.class);
+    private Connection srcConn;
+    private Connection dstConn;
+    private ConverterMap converterMap;
 
-    private Connection connSrc;
-    private Table src;
-    private Connection connDst;
-    private Table dst;
-    private List<String> colNames = new ArrayList<>();
-
-    @FunctionalInterface
-    private interface Proc {
-        void exec(ResultSet rs, PreparedStatement stmt, int index);
+    public TableXferer(Connection srcConn, Connection dstConn, ConverterMap converterMap) {
+        this.srcConn = srcConn;
+        this.dstConn = dstConn;
+        this.converterMap = converterMap;
     }
 
-    private List<Proc> procs = new ArrayList<>();
+    private class ColRel {
+        Column srcCol;
+        Column dstCol;
 
-    public TableXferer(Connection connSrc, Table src, Connection connDst, Table dst) {
-        this.connSrc = connSrc;
-        this.src = src;
-        this.connDst = connDst;
-        this.dst = dst;
+        ColRel(Column srcCol, Column dstCol){
+            this.srcCol = srcCol;
+            this.dstCol = dstCol;
+        }
     }
 
-    public <T, U> void addColumn(Column<T> srcColumn, Column<U> dstColumn, Function<T, U> conv){
-        colNames.add(dstColumn.getColumnName());
-        procs.add((rs, stmt, index) -> {
-            T value = srcColumn.getValueFromResultSet(rs);
-            dstColumn.setParameter(stmt, index, conv.apply(value));
-        });
-    }
-
-    public <T> void addColumn(Column<T> srcColumn, Column<T> dstColumn){
-        addColumn(srcColumn, dstColumn, Function.identity());
-    }
-
-    public void xfer() {
+    public <E extends Enum<E>> void xfer(Table<E> src, Table<E> dst) {
         try {
-            Statement stmt = connSrc.createStatement();
-            ResultSet rs = stmt.executeQuery("select * from " + src.getName());
-            String names = String.join(",", colNames);
-            String vars = colNames.stream().map(n -> "?").collect(Collectors.joining(","));
-            PreparedStatement prep = connDst.prepareStatement("insert into " + dst.getName() +
+            Statement stmt = srcConn.createStatement();
+            ResultSet rs = stmt.executeQuery("select * from " + src.getTableName());
+            List<Column> srcColumns = src.getColumns();
+            List<Column> dstColumns = dst.getColumns();
+            String names = srcColumns.stream().map(Column::getColumnName).collect(Collectors.joining(","));
+            String vars = dstColumns.stream().map(n -> "?").collect(Collectors.joining(","));
+            PreparedStatement prep = dstConn.prepareStatement("insert into " + dst.getTableName() +
                     "(" + names + ") values (" + vars + ")");
-            while (rs.next()) {
-                for (int i = 0; i < procs.size(); i++) {
-                    Proc proc = procs.get(i);
-                    proc.exec(rs, prep, i + 1);
+            List<ColRel> rels = new ArrayList<>();
+            for(E e: src.listColumnEnums()){
+                Column sc = src.getColumn(e);
+                Column dc = dst.getColumn(e);
+                if( sc != null && dc != null ){
+                    rels.add(new ColRel(sc, dc));
                 }
-                prep.executeUpdate();
+            }
+            int nb = 0;
+            while (rs.next()) {
+                int index = 1;
+                for(ColRel r: rels){
+                    Column sc = r.srcCol;
+                    Column dc = r.dstCol;
+                    Object jdbcObj = sc.getResultSetObject(rs);
+                    Object dstJdbcObj;
+                    if( sc.getJdbcType() == dc.getJdbcType() ){
+                        dstJdbcObj = jdbcObj;
+                    } else {
+                        Object javaObj = sc.convertJdbcObjectToJavaObject(jdbcObj);
+                        Function<Object, Object> conv = converterMap.getConverter(sc.getJavaType(), dc.getJavaType());
+                        Object dstJavaObj = conv.apply(javaObj);
+                        dstJdbcObj = dc.convertJavaObjectToJdbcObject(dstJavaObj);
+                    }
+                    dc.setParam(prep, index++, dstJdbcObj);
+                }
+                prep.addBatch();
+                nb += 1;
+                if( nb >= 100 ){
+                    prep.executeBatch();
+                }
+            }
+            if( nb > 0 ){
+                prep.executeBatch();
             }
             rs.close();
             stmt.close();

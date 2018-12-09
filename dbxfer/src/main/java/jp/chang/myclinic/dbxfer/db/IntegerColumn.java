@@ -1,23 +1,11 @@
 package jp.chang.myclinic.dbxfer.db;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
-public class IntegerColumn extends Column<Integer> {
+public class IntegerColumn extends Column {
 
     //private static Logger logger = LoggerFactory.getLogger(IntegerColumn.class);
 
     public IntegerColumn(String name) {
-        super(name);
+        super(name, Integer.class, Integer.class);
     }
 
-    @Override
-    Integer getValueFromResultSet(ResultSet rs) {
-        return rsValue(rs::getInt);
-    }
-
-    @Override
-    void setParameter(PreparedStatement stmt, int index, Integer value){
-        stmtPrep(() -> stmt.setInt(index, value));
-    }
 }
