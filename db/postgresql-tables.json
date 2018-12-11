@@ -1,0 +1,1009 @@
+{
+    "tables": [
+        {
+            "tablename": "intraclinic_post",
+            "columns": [
+                [
+                    "post_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "content",
+                    "text",
+                    false
+                ],
+                [
+                    "created_at",
+                    "date",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "iyakuhin_master",
+            "columns": [
+                [
+                    "iyakuhincode",
+                    "integer",
+                    false
+                ],
+                [
+                    "name",
+                    "character varying",
+                    false
+                ],
+                [
+                    "yomi",
+                    "character varying",
+                    false
+                ],
+                [
+                    "unit",
+                    "character varying",
+                    false
+                ],
+                [
+                    "yakka",
+                    "numeric",
+                    false
+                ],
+                [
+                    "madoku",
+                    "character",
+                    false
+                ],
+                [
+                    "kouhatsu",
+                    "character",
+                    false
+                ],
+                [
+                    "zaikei",
+                    "character",
+                    false
+                ],
+                [
+                    "valid_from",
+                    "date",
+                    false
+                ],
+                [
+                    "valid_upto",
+                    "date",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "intraclinic_comment",
+            "columns": [
+                [
+                    "comment_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "name",
+                    "character varying",
+                    false
+                ],
+                [
+                    "content",
+                    "character varying",
+                    false
+                ],
+                [
+                    "post_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "created_at",
+                    "date",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "shinryou_master",
+            "columns": [
+                [
+                    "shinryoucode",
+                    "integer",
+                    false
+                ],
+                [
+                    "name",
+                    "character varying",
+                    false
+                ],
+                [
+                    "tensuu",
+                    "numeric",
+                    false
+                ],
+                [
+                    "tensuu_shikibetsu",
+                    "character",
+                    false
+                ],
+                [
+                    "shuukeisaki",
+                    "character varying",
+                    false
+                ],
+                [
+                    "houkatsukensa",
+                    "character",
+                    false
+                ],
+                [
+                    "kensagroup",
+                    "character",
+                    false
+                ],
+                [
+                    "valid_from",
+                    "date",
+                    false
+                ],
+                [
+                    "valid_upto",
+                    "date",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "kizai_master",
+            "columns": [
+                [
+                    "kizaicode",
+                    "integer",
+                    false
+                ],
+                [
+                    "name",
+                    "character varying",
+                    false
+                ],
+                [
+                    "yomi",
+                    "character varying",
+                    false
+                ],
+                [
+                    "unit",
+                    "character varying",
+                    false
+                ],
+                [
+                    "kingaku",
+                    "numeric",
+                    false
+                ],
+                [
+                    "valid_from",
+                    "date",
+                    false
+                ],
+                [
+                    "valid_upto",
+                    "date",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "byoumei_master",
+            "columns": [
+                [
+                    "shoubyoumeicode",
+                    "integer",
+                    false
+                ],
+                [
+                    "name",
+                    "character varying",
+                    false
+                ],
+                [
+                    "valid_from",
+                    "date",
+                    false
+                ],
+                [
+                    "valid_upto",
+                    "date",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "shuushokugo_master",
+            "columns": [
+                [
+                    "shuushokugocode",
+                    "integer",
+                    false
+                ],
+                [
+                    "name",
+                    "character varying",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "shouki",
+            "columns": [
+                [
+                    "visit_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "shouki",
+                    "text",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "hotline",
+            "columns": [
+                [
+                    "hotline_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "message",
+                    "text",
+                    false
+                ],
+                [
+                    "sender",
+                    "character varying",
+                    false
+                ],
+                [
+                    "recipient",
+                    "character varying",
+                    false
+                ],
+                [
+                    "posted_at",
+                    "timestamp without time zone",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "intraclinic_tag",
+            "columns": [
+                [
+                    "tag_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "name",
+                    "character varying",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "intraclinic_tag_post",
+            "columns": [
+                [
+                    "tag_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "post_id",
+                    "integer",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "practice_log",
+            "columns": [
+                [
+                    "practice_log_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "created_at",
+                    "timestamp without time zone",
+                    false
+                ],
+                [
+                    "kind",
+                    "character varying",
+                    false
+                ],
+                [
+                    "body",
+                    "jsonb",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "patient",
+            "columns": [
+                [
+                    "patient_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "last_name",
+                    "character varying",
+                    false
+                ],
+                [
+                    "first_name",
+                    "character varying",
+                    false
+                ],
+                [
+                    "last_name_yomi",
+                    "character varying",
+                    false
+                ],
+                [
+                    "first_name_yomi",
+                    "character varying",
+                    false
+                ],
+                [
+                    "sex",
+                    "character",
+                    false
+                ],
+                [
+                    "birthday",
+                    "date",
+                    false
+                ],
+                [
+                    "address",
+                    "character varying",
+                    false
+                ],
+                [
+                    "phone",
+                    "character varying",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "shahokokuho",
+            "columns": [
+                [
+                    "shahokokuho_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "patient_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "hokensha_bangou",
+                    "integer",
+                    false
+                ],
+                [
+                    "hihokensha_kigou",
+                    "character varying",
+                    false
+                ],
+                [
+                    "hihokensha_bangou",
+                    "character varying",
+                    false
+                ],
+                [
+                    "honnin",
+                    "smallint",
+                    false
+                ],
+                [
+                    "valid_from",
+                    "date",
+                    false
+                ],
+                [
+                    "valid_upto",
+                    "date",
+                    false
+                ],
+                [
+                    "kourei",
+                    "smallint",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "kouhi",
+            "columns": [
+                [
+                    "kouhi_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "patient_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "futansha",
+                    "integer",
+                    false
+                ],
+                [
+                    "jukyuusha",
+                    "integer",
+                    false
+                ],
+                [
+                    "valid_from",
+                    "date",
+                    false
+                ],
+                [
+                    "valid_upto",
+                    "date",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "roujin",
+            "columns": [
+                [
+                    "roujin_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "patient_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "shichouson",
+                    "integer",
+                    false
+                ],
+                [
+                    "jukyuusha",
+                    "integer",
+                    false
+                ],
+                [
+                    "futan_wari",
+                    "smallint",
+                    false
+                ],
+                [
+                    "valid_from",
+                    "date",
+                    false
+                ],
+                [
+                    "valid_upto",
+                    "date",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "koukikourei",
+            "columns": [
+                [
+                    "koukikourei_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "patient_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "hokensha_bangou",
+                    "integer",
+                    false
+                ],
+                [
+                    "hihokensha_bangou",
+                    "integer",
+                    false
+                ],
+                [
+                    "futan_wari",
+                    "smallint",
+                    false
+                ],
+                [
+                    "valid_from",
+                    "date",
+                    false
+                ],
+                [
+                    "valid_upto",
+                    "date",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "visit",
+            "columns": [
+                [
+                    "visit_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "patient_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "visited_at",
+                    "timestamp without time zone",
+                    false
+                ],
+                [
+                    "shahokokuho_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "roujin_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "koukikourei_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "kouhi_1_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "kouhi_2_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "kouhi_3_id",
+                    "integer",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "wqueue",
+            "columns": [
+                [
+                    "visit_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "wait_state",
+                    "smallint",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "pharma_queue",
+            "columns": [
+                [
+                    "visit_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "pharma_state",
+                    "smallint",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "gazou_label",
+            "columns": [
+                [
+                    "conduct_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "label",
+                    "character varying",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "text",
+            "columns": [
+                [
+                    "text_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "visit_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "content",
+                    "text",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "drug",
+            "columns": [
+                [
+                    "drug_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "visit_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "iyakuhincode",
+                    "integer",
+                    false
+                ],
+                [
+                    "amount",
+                    "numeric",
+                    false
+                ],
+                [
+                    "usage",
+                    "character varying",
+                    false
+                ],
+                [
+                    "days",
+                    "smallint",
+                    false
+                ],
+                [
+                    "category",
+                    "smallint",
+                    false
+                ],
+                [
+                    "prescribed",
+                    "smallint",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "shinryou",
+            "columns": [
+                [
+                    "shinryou_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "visit_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "shinryoucode",
+                    "integer",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "conduct",
+            "columns": [
+                [
+                    "conduct_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "visit_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "kind",
+                    "smallint",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "conduct_drug",
+            "columns": [
+                [
+                    "conduct_drug_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "conduct_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "iyakuhincode",
+                    "integer",
+                    false
+                ],
+                [
+                    "amount",
+                    "numeric",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "conduct_shinryou",
+            "columns": [
+                [
+                    "conduct_shinryou_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "conduct_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "shinryoucode",
+                    "integer",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "conduct_kizai",
+            "columns": [
+                [
+                    "conduct_kizai_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "conduct_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "kizaicode",
+                    "integer",
+                    false
+                ],
+                [
+                    "amount",
+                    "numeric",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "charge",
+            "columns": [
+                [
+                    "visit_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "charge",
+                    "smallint",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "payment",
+            "columns": [
+                [
+                    "visit_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "amount",
+                    "smallint",
+                    false
+                ],
+                [
+                    "paytime",
+                    "timestamp without time zone",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "disease",
+            "columns": [
+                [
+                    "disease_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "patient_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "shoubyoumeicode",
+                    "integer",
+                    false
+                ],
+                [
+                    "start_date",
+                    "date",
+                    false
+                ],
+                [
+                    "end_date",
+                    "date",
+                    false
+                ],
+                [
+                    "end_reason",
+                    "character",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "disease_adj",
+            "columns": [
+                [
+                    "disease_adj_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "disease_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "shuushokugocode",
+                    "integer",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "presc_example",
+            "columns": [
+                [
+                    "presc_example_id",
+                    "integer",
+                    true
+                ],
+                [
+                    "iyakuhincode",
+                    "integer",
+                    false
+                ],
+                [
+                    "master_valid_from",
+                    "date",
+                    false
+                ],
+                [
+                    "amount",
+                    "numeric",
+                    false
+                ],
+                [
+                    "usage",
+                    "character varying",
+                    false
+                ],
+                [
+                    "days",
+                    "smallint",
+                    false
+                ],
+                [
+                    "category",
+                    "smallint",
+                    false
+                ],
+                [
+                    "comment",
+                    "character varying",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "drug_attr",
+            "columns": [
+                [
+                    "drug_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "tekiyou",
+                    "text",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "pharma_drug",
+            "columns": [
+                [
+                    "iyakuhincode",
+                    "integer",
+                    false
+                ],
+                [
+                    "description",
+                    "text",
+                    false
+                ],
+                [
+                    "side_effect",
+                    "text",
+                    false
+                ]
+            ]
+        },
+        {
+            "tablename": "shinryou_attr",
+            "columns": [
+                [
+                    "shinryou_id",
+                    "integer",
+                    false
+                ],
+                [
+                    "tekiyou",
+                    "text",
+                    false
+                ]
+            ]
+        }
+    ]
+}

@@ -4,8 +4,8 @@ import json
 
 def connect():
     return psycopg2.connect("host=localhost dbname=myclinic " + 
-        f"user={os.environ['MYCLINIC_POSTGRES_USER']} " + 
-        f"password={os.environ['MYCLINIC_POSTGRES_PASS']}")
+        f"user={os.environ['MYCLINIC_DB_ADMIN_USER']} " + 
+        f"password={os.environ['MYCLINIC_DB_ADMIN_PASS']}")
 
 def get_table_names(cur):
     cur.execute("select tablename from pg_catalog.pg_tables where schemaname = 'public'")
