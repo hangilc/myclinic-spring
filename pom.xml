@@ -97,6 +97,7 @@
         <module>postgresql-dev</module>
     <module>server-postgresql</module>
     <module>dbxfer</module>
+    <module>db</module>
   </modules>
 
 </project>
