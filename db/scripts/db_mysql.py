@@ -36,4 +36,17 @@ def get_column_specs(table):
 	get_cur().execute("show columns in " + table)
 	return [ (row[0], row[1], has_auto_increment(row[5])) for row in cur ]
 
+def get_db_info():
+	result = []
+	for table in get_table_names():
+		result.append({
+			"table_name": table,
+			"columns": get_column_specs(table)
+			})
+	return result
+
 open()
+
+if __name__ == "__main__":
+	import json
+	print(json.dumps(get_db_info(), indent=4))
