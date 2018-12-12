@@ -122,17 +122,18 @@ def order_tables(db_info):
     return result
 
 def match_columns(src_cols, dst_cols, hint):
-    result = []
-    print(sorted(src_cols.keys()), sorted(dst_cols.keys()))
-    col_map = create_matches(sorted(src_cols.keys()), sorted(dst_cols.keys()), hint)
-    print(col_map)
-    return result
+    return create_matches(sorted(src_cols.keys()), sorted(dst_cols.keys()), hint)
 
 def xfer_table(src_table, src_cur, dst_table, dst_cur, hint):
     src_cols = src_table["columns"]
     dst_cols = dst_table["columns"]
-    print(src_table["table_name"])
-    matched_cols = match_columns(src_cols, dst_cols, hint)
+    print("==", "xfer", src_table["table_name"], "==")
+    col_map = match_columns(src_cols, dst_cols, hint)
+    src_cols = ", ".join(col_map.keys())
+    select_sql = "select %s from %s" % (src_cols, src_table["table_name"])
+    dst_cols = ", ".join(col_map.values())
+    dst_para = ", ".join(["?" for c in col_map.values()])
+    insert_sql = "insert into %s (%s) values (%s)" % (dst_table["table_name"], dst_cols, dst_para)
 
 def xfer_tables(table_pair_list, src_cur, dst_cur, hint):
     for src_table, dst_table in table_pair_list:
