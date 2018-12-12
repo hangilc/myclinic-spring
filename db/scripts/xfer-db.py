@@ -1,6 +1,12 @@
 import db_postgresql
 import db_mysql
 
+def zero_to_null(i):
+    if i == 0:
+        return None
+    else:
+        return i
+
 hints = {
     "table_maps": {
         "mysql_to_postgresql": {
@@ -47,6 +53,18 @@ hints = {
         },
         "postgresql_to_mysql": {
 
+        }
+    },
+    "convert_maps": {
+        "mysql_to_postgresql": {
+            "visit": {
+                "shahokokuho_id": zero_to_null,
+                "roujin_id": zero_to_null,
+                "koukikourei_id": zero_to_null,
+                "kouhi_1_id": zero_to_null,
+                "kouhi_2_id": zero_to_null,
+                "kouhi_3_id": zero_to_null
+            }
         }
     }
 }
@@ -124,22 +142,40 @@ def order_tables(db_info):
 def match_columns(src_cols, dst_cols, hint):
     return create_matches(sorted(src_cols.keys()), sorted(dst_cols.keys()), hint)
 
-def xfer_table(src_table, src_cur, dst_table, dst_cur, hint):
+def xfer_table(src_table, src_cur, dst_table, dst_cur, hint, converts):
     src_cols = src_table["columns"]
     dst_cols = dst_table["columns"]
     print("==", "xfer", src_table["table_name"], "==")
     col_map = match_columns(src_cols, dst_cols, hint)
-    src_cols = ", ".join(col_map.keys())
+    src_colnames = list(col_map.keys())
+    src_cols = ", ".join(src_colnames)
     select_sql = "select %s from %s" % (src_cols, src_table["table_name"])
     dst_cols = ", ".join(col_map.values())
-    dst_para = ", ".join(["?" for c in col_map.values()])
+    dst_para = ", ".join(["%s" for c in col_map.values()])
     insert_sql = "insert into %s (%s) values (%s)" % (dst_table["table_name"], dst_cols, dst_para)
+    src_cur.execute(select_sql)
+    cvt_procs = [ (src_colnames.index(c), f) for c, f in converts.items() ]
+    count = 0
+    for r in src_cur:
+        if len(cvt_procs) > 0:
+            tmp = list(r)
+            for i, f in cvt_procs:
+                tmp[i] = f(tmp[i])
+            r = tuple(tmp)
+        dst_cur.execute(insert_sql, r)
+        count += 1
+        if count % 1000 == 0:
+            print(count)
+    
 
-def xfer_tables(table_pair_list, src_cur, dst_cur, hint):
+def xfer_tables(table_pair_list, src_cur, dst_cur, hint, converts):
     for src_table, dst_table in table_pair_list:
-        xfer_table(src_table, src_cur, dst_table, dst_cur, hint.get(src_table["table_name"], dict()))
+        xfer_table(src_table, src_cur, dst_table, dst_cur, 
+            hint.get(src_table["table_name"], dict()),
+            converts.get(src_table["table_name"], dict()))
 
 if __name__ == "__main__":
+    import sys
     mysql_info = db_mysql.get_db_info()
     postgresql_info = db_postgresql.get_db_info()
     mysql_table_names = [ a["table_name"] for a in mysql_info.values() ]
@@ -160,8 +196,14 @@ if __name__ == "__main__":
     print("== %d of %d tables ordered ==" % (len(ordered_tables), len(postgresql_table_names)))
     if len(postgresql_table_names) != len(ordered_tables):
         raise RuntimeError("Cannot order tables")
+    if len(sys.argv) >= 2 and sys.argv[1] == "table-order":
+        exit(0)
+    ordered_tables = ["drug_attr", "shinryou_attr"]
     table_pair_list = [ 
         (mysql_info[postgresql_to_mysql_table_map[table]], postgresql_info[table])
         for table in ordered_tables ]
+    db_postgresql.get_cur().connection.autocommit = True
     xfer_tables(table_pair_list, db_mysql.get_cur(), db_postgresql.get_cur(),
-        hints["column_maps"]["mysql_to_postgresql"])
+        hints["column_maps"]["mysql_to_postgresql"],
+        hints["convert_maps"]["mysql_to_postgresql"])
+    db_postgresql.get_cur().connection.commit()

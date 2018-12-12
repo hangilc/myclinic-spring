@@ -13,6 +13,7 @@ def open():
         "database": "myclinic"
     }
     connection = mysql.connector.connect(**config)
+    connection.autocommit = True
     cur = connection.cursor()
 
 def close():

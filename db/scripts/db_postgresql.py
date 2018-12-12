@@ -14,11 +14,15 @@ def open():
         "password": os.environ['MYCLINIC_DB_ADMIN_PASS']
     }
     connection = psycopg2.connect(**config)
+    connection.autocommit = True
     cur = connection.cursor()
 
 def close():
     cur.close()
     connection.close()
+
+def get_connection():
+    return connection
 
 def get_cur():
     return cur
