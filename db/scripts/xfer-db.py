@@ -167,14 +167,30 @@ def xfer_table(src_table, src_cur, dst_table, dst_cur, hint, converts):
         if count % 1000 == 0:
             print(count)
     
-
 def xfer_tables(table_pair_list, src_cur, dst_cur, hint, converts):
     for src_table, dst_table in table_pair_list:
         xfer_table(src_table, src_cur, dst_table, dst_cur, 
             hint.get(src_table["table_name"], dict()),
             converts.get(src_table["table_name"], dict()))
 
+def parse_arg(arg):
+    parts = arg.split(":")
+    kind = parts.pop(0)
+    database = parts.pop() if parts else "myclinic"
+    return { "kind": kind, "database": database }
+
 if __name__ == "__main__":
+    import sys
+    if len(sys.argv) != 3:
+        print("Usage: xfer-db srckind[:database] dstkind[:database]")
+        exit(1)
+    (src_input, dst_input) = sys.argv[1:3]
+    src_arg = parse_arg(src_input)
+    dst_arg = parse_arg(dst_input)
+    print(src_arg)
+    print(dst_arg)
+
+if __name__ == "__main__save":
     import sys
     mysql_info = db_mysql.get_db_info()
     postgresql_info = db_postgresql.get_db_info()
