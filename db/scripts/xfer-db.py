@@ -143,7 +143,7 @@ def order_tables(db_info):
 def match_columns(src_cols, dst_cols, hint):
     return create_matches(sorted(src_cols.keys()), sorted(dst_cols.keys()), hint)
 
-def xfer_table(src_table, src_cur, dst_table, dst_cur, hint, converts):
+def xfer_table(src_table, src_db, dst_table, dst_db, hint, converts):
     src_cols = src_table["columns"]
     dst_cols = dst_table["columns"]
     print("==", "xfer", src_table["table_name"], "==")
@@ -154,23 +154,23 @@ def xfer_table(src_table, src_cur, dst_table, dst_cur, hint, converts):
     dst_cols = ", ".join(col_map.values())
     dst_para = ", ".join(["%s" for c in col_map.values()])
     insert_sql = "insert into %s (%s) values (%s)" % (dst_table["table_name"], dst_cols, dst_para)
-    src_cur.execute(select_sql)
     cvt_procs = [ (src_colnames.index(c), f) for c, f in converts.items() ]
     count = 0
-    for r in src_cur:
+    def proc(r):
         if len(cvt_procs) > 0:
             tmp = list(r)
             for i, f in cvt_procs:
                 tmp[i] = f(tmp[i])
             r = tuple(tmp)
-        dst_cur.execute(insert_sql, r)
+        dst_db.execute(insert_sql, r)
         count += 1
         if count % 1000 == 0:
             print(count)
+    src_db.execute_proc(select_sql, proc)
     
-def xfer_tables(table_pair_list, src_cur, dst_cur, hint, converts):
+def xfer_tables(table_pair_list, src_db, dst_db, hint, converts):
     for src_table, dst_table in table_pair_list:
-        xfer_table(src_table, src_cur, dst_table, dst_cur, 
+        xfer_table(src_table, src_db, dst_table, dst_db, 
             hint.get(src_table["table_name"], dict()),
             converts.get(src_table["table_name"], dict()))
 
@@ -186,7 +186,9 @@ def xfer(src_arg, dst_arg):
     table_pair_list = [ 
         (src_db_info[dst_to_src_table_map[table]], dst_db_info[table])
         for table in ordered_tables ]
-    print(table_pair_list)
+    xfer_tables(table_pair_list, src_arg["db"], dst_arg["db"],
+        hints["column_maps"]["%s_to_%s" % (src_arg["kind"], dst_arg["kind"])],
+        hints["convert_maps"]["%s_to_%s" % (src_arg["kind"], dst_arg["kind"])])
 
 
 def parse_arg(arg):
@@ -244,4 +246,3 @@ if __name__ == "__main__save":
     xfer_tables(table_pair_list, db_mysql.get_cur(), db_postgresql.get_cur(),
         hints["column_maps"]["mysql_to_postgresql"],
         hints["convert_maps"]["mysql_to_postgresql"])
-    db_postgresql.get_cur().connection.commit()
