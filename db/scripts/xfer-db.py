@@ -89,7 +89,8 @@ def create_matches(src_names, dst_names, hint_map={}):
     map = {}
     for k, v in hint_map.items():
         if v == None:
-            src_names.remove(k)
+            if( k in src_names ):
+                src_names.remove(k)
         else:
             map[k] = v
             src_names.remove(k)
@@ -173,6 +174,21 @@ def xfer_tables(table_pair_list, src_cur, dst_cur, hint, converts):
             hint.get(src_table["table_name"], dict()),
             converts.get(src_table["table_name"], dict()))
 
+def xfer(src_arg, dst_arg):
+    src_db_info = src_arg["db"].get_db_info()
+    dst_db_info = dst_arg["db"].get_db_info()
+    ordered_tables = order_tables(dst_db_info)
+    dst_to_src_table_map = create_matches(
+        sorted(dst_arg["db"].get_table_names()),
+        sorted(src_arg["db"].get_table_names()),
+        hints["table_maps"]["%s_to_%s" % (dst_arg["kind"], src_arg["kind"])]
+        )
+    table_pair_list = [ 
+        (src_db_info[dst_to_src_table_map[table]], dst_db_info[table])
+        for table in ordered_tables ]
+    print(table_pair_list)
+
+
 def parse_arg(arg):
     parts = arg.split(":")
     kind = parts.pop(0)
@@ -187,8 +203,14 @@ if __name__ == "__main__":
     (src_input, dst_input) = sys.argv[1:3]
     src_arg = parse_arg(src_input)
     dst_arg = parse_arg(dst_input)
-    print(src_arg)
-    print(dst_arg)
+    for arg in (src_arg, dst_arg):
+        if arg["kind"] == "mysql":
+            arg["db"] = db_mysql.DbMySQL(arg["database"])
+        elif arg["kind"] == "postgresql":
+            arg["db"] = db_postgresql.DbPostgreSQL(arg["database"])
+        else:
+            raise RuntimeError("Unknown kind: %s" % (arg["kind"],))
+    xfer(src_arg, dst_arg)
 
 if __name__ == "__main__save":
     import sys

@@ -4,7 +4,7 @@ import os
 
 class DbPostgreSQL(db_base.DbBase):
 
-    def __init__(self):
+    def __init__(self, database_name='myclinic'):
         config = {
             "host": "localhost",
             "database": "myclinic",
@@ -12,7 +12,7 @@ class DbPostgreSQL(db_base.DbBase):
             "password": os.environ['MYCLINIC_DB_ADMIN_PASS']
         }
         connection = psycopg2.connect(**config)
-        db_base.DbBase.__init__(self, connection)
+        db_base.DbBase.__init__(self, connection, database_name)
 
     def get_table_names(self):
         sql = """
@@ -59,24 +59,4 @@ class DbPostgreSQL(db_base.DbBase):
                 "referred_column": r[4]
             }
         return self.execute_cvt(sql, cvt)
-
-    def get_db_info(self):
-        map = {}
-        for table in self.get_table_names():
-            cols = self.get_column_specs(table)
-            map[table] = {
-                "table_name": table,
-                "columns": cols,
-                "referring": set([]),
-                "referred_by": set([])
-            }
-        for c in self.get_foreign_key_constraints():
-            referred = c["referred_table"]
-            referring = c["referring_table"]
-            map[referred]["referred_by"].add(referring)
-            map[referring]["referring"].add(referred)
-        for v in map.values():
-            v["referred_by"] = list(v["referred_by"])
-            v["referring"] = list(v["referring"])
-        return map
 
