@@ -56,6 +56,11 @@
                 <artifactId>jackson-dataformat-yaml</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-controls</artifactId>
+                <version>11-ea+19</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

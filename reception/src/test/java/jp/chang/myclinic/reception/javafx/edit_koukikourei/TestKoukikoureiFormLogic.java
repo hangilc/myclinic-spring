@@ -17,12 +17,15 @@ public class TestKoukikoureiFormLogic extends LogicTestBase {
         KoukikoureiFormInputs inputs = new KoukikoureiFormInputs();
         inputs.hokenshaBangou = "39131156";
         inputs.hihokenshaBangou = "87654323";
-        inputs.validFromInputs = new DateFormInputs(Gengou.Heisei, "30", "8", "1");
-        inputs.validUptoInputs = new DateFormInputs(Gengou.Heisei, "32", "7", "31");
+        inputs.validFromInputs = new DateFormInputs(Gengou.Heisei, "29", "8", "1");
+        inputs.validUptoInputs = new DateFormInputs(Gengou.Heisei, "30", "7", "31");
         inputs.futanwari = 1;
         KoukikoureiDTO dto = new LogicValue<>(inputs)
                 .convert(KoukikoureiFormLogic::koukikoureiFormInputsToKoukikoureiDTO)
                 .getValue(null, em);
+        if( em.hasError() ){
+            System.out.println(em.getMessage());
+        }
         assertTrue(em.hasNoError());
         assertNotNull(dto);
     }
