@@ -214,35 +214,35 @@ if __name__ == "__main__":
             raise RuntimeError("Unknown kind: %s" % (arg["kind"],))
     xfer(src_arg, dst_arg)
 
-if __name__ == "__main__save":
-    import sys
-    mysql_info = db_mysql.get_db_info()
-    postgresql_info = db_postgresql.get_db_info()
-    mysql_table_names = [ a["table_name"] for a in mysql_info.values() ]
-    postgresql_table_names = [ a["table_name"] for a in postgresql_info.values() ]
-    mysql_to_postgresql_table_map = create_matches(
-        sorted(mysql_table_names), sorted(postgresql_table_names), 
-        hints["table_maps"]["mysql_to_postgresql"])
-    postgresql_to_mysql_table_map = {
-        v: k for k, v in mysql_to_postgresql_table_map.items() if v != None
-    }
-    print("== table map ==")
-    for k, v in mysql_to_postgresql_table_map.items():
-        print(k, "->", v)
-    ordered_tables = order_tables(postgresql_info)
-    print("== table order ==")
-    for table in ordered_tables:
-        print(table)
-    print("== %d of %d tables ordered ==" % (len(ordered_tables), len(postgresql_table_names)))
-    if len(postgresql_table_names) != len(ordered_tables):
-        raise RuntimeError("Cannot order tables")
-    if len(sys.argv) >= 2 and sys.argv[1] == "table-order":
-        exit(0)
-    ordered_tables = ["drug_attr", "shinryou_attr"]
-    table_pair_list = [ 
-        (mysql_info[postgresql_to_mysql_table_map[table]], postgresql_info[table])
-        for table in ordered_tables ]
-    db_postgresql.get_cur().connection.autocommit = True
-    xfer_tables(table_pair_list, db_mysql.get_cur(), db_postgresql.get_cur(),
-        hints["column_maps"]["mysql_to_postgresql"],
-        hints["convert_maps"]["mysql_to_postgresql"])
+# if __name__ == "__main__save":
+#     import sys
+#     mysql_info = db_mysql.get_db_info()
+#     postgresql_info = db_postgresql.get_db_info()
+#     mysql_table_names = [ a["table_name"] for a in mysql_info.values() ]
+#     postgresql_table_names = [ a["table_name"] for a in postgresql_info.values() ]
+#     mysql_to_postgresql_table_map = create_matches(
+#         sorted(mysql_table_names), sorted(postgresql_table_names), 
+#         hints["table_maps"]["mysql_to_postgresql"])
+#     postgresql_to_mysql_table_map = {
+#         v: k for k, v in mysql_to_postgresql_table_map.items() if v != None
+#     }
+#     print("== table map ==")
+#     for k, v in mysql_to_postgresql_table_map.items():
+#         print(k, "->", v)
+#     ordered_tables = order_tables(postgresql_info)
+#     print("== table order ==")
+#     for table in ordered_tables:
+#         print(table)
+#     print("== %d of %d tables ordered ==" % (len(ordered_tables), len(postgresql_table_names)))
+#     if len(postgresql_table_names) != len(ordered_tables):
+#         raise RuntimeError("Cannot order tables")
+#     if len(sys.argv) >= 2 and sys.argv[1] == "table-order":
+#         exit(0)
+#     ordered_tables = ["drug_attr", "shinryou_attr"]
+#     table_pair_list = [ 
+#         (mysql_info[postgresql_to_mysql_table_map[table]], postgresql_info[table])
+#         for table in ordered_tables ]
+#     db_postgresql.get_cur().connection.autocommit = True
+#     xfer_tables(table_pair_list, db_mysql.get_cur(), db_postgresql.get_cur(),
+#         hints["column_maps"]["mysql_to_postgresql"],
+#         hints["convert_maps"]["mysql_to_postgresql"])
