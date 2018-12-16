@@ -56,3 +56,20 @@ class DbMySQL(db_base.DbBase):
     def set_next_serial_value(self, table, column, value):
         sql = "alter table %s auto_increment = %d" % (table, value)
         self.execute_no_result(sql)
+
+    def batch_insert(self, table, columns, values_list):
+        sql = "insert into {0} ({1}) values ({2})".format(
+                table,
+                ",".join(columns),
+                ",".join(["%s"] * len(columns))
+        )
+        cursor = self.conn.cursor()
+        try:
+            cursor.executemany(sql, values_list)
+        except Exception as e:
+            self.conn.rollback()
+            raise e
+        else:
+            self.conn.commit()
+        finally:
+            cursor.close()

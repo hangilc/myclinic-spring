@@ -7,8 +7,8 @@ class DbBase:
 
     def execute_proc(self, sql, proc=None, params =()):
         cursor = self.conn.cursor()
-        cursor.execute(sql, params)
         try:
+            cursor.execute(sql, params)
             if proc:
                 for r in cursor:
                     proc(r)

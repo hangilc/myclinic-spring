@@ -255,9 +255,12 @@ def xfer_table(src_table, src_db, dst_table, dst_db, hint, converts):
             values_list.append(r)
         if identity_column_index >= 0:
             max_id = r[identity_column_index]
-        count += 1
-    dst_db.batch_insert(dst_table["table_name"], dst_colnames, values_list)
-    print(count, "rows inserted")
+    for i in range(0, len(values_list), 100):
+        values = values_list[i:(i+100)]
+        dst_db.batch_insert(dst_table["table_name"], dst_colnames, values)
+        count += len(values)
+        if count % 1000 == 0:
+            print(count)
     if max_id > 0:
         dst_db.set_next_serial_value(dst_table["table_name"], dst_identity_column_name, max_id + 1)
 
