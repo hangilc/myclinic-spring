@@ -143,30 +143,48 @@ def order_tables(db_info):
 def match_columns(src_cols, dst_cols, hint):
     return create_matches(sorted(src_cols.keys()), sorted(dst_cols.keys()), hint)
 
+def find_identity_column_name(colspec_list):
+    for i, c in enumerate(colspec_list):
+        if c["is_identity"]:
+            return c["column_name"]
+    return None
+
 def xfer_table(src_table, src_db, dst_table, dst_db, hint, converts):
     src_cols = src_table["columns"]
     dst_cols = dst_table["columns"]
     print("==", "xfer", src_table["table_name"], "==")
     col_map = match_columns(src_cols, dst_cols, hint)
     src_colnames = list(col_map.keys())
-    src_cols = ", ".join(src_colnames)
-    select_sql = "select %s from %s" % (src_cols, src_table["table_name"])
-    dst_cols = ", ".join(col_map.values())
-    dst_para = ", ".join(["%s" for c in col_map.values()])
-    insert_sql = "insert into %s (%s) values (%s)" % (dst_table["table_name"], dst_cols, dst_para)
+    select_sql = "select %s from %s" % (", ".join(src_colnames), src_table["table_name"])
+    dst_colnames = list(col_map.values())
+    insert_sql = "insert into %s (%s) values (%s)" % ( \
+        dst_table["table_name"], \
+        ", ".join(dst_colnames), \
+        ", ".join(["%s" for c in dst_colnames]) )
     cvt_procs = [ (src_colnames.index(c), f) for c, f in converts.items() ]
+    identity_column_index = -1
+    dst_identity_column_name = find_identity_column_name(dst_cols.values())
+    if dst_identity_column_name in dst_colnames:
+        identity_column_index = dst_colnames.index(dst_identity_column_name)
     count = 0
+    max_id = 0
     def proc(r):
+        nonlocal count
+        nonlocal max_id
         if len(cvt_procs) > 0:
             tmp = list(r)
             for i, f in cvt_procs:
                 tmp[i] = f(tmp[i])
             r = tuple(tmp)
-        dst_db.execute(insert_sql, r)
+        dst_db.execute_no_result(insert_sql, r)
+        if identity_column_index >= 0:
+            max_id = r[identity_column_index]
         count += 1
         if count % 1000 == 0:
             print(count)
     src_db.execute_proc(select_sql, proc)
+    if max_id > 0:
+        dst_db.set_next_serial_value(dst_table["table_name"], dst_identity_column_name, max_id + 1)
     
 def xfer_tables(table_pair_list, src_db, dst_db, hint, converts):
     for src_table, dst_table in table_pair_list:
@@ -214,35 +232,4 @@ if __name__ == "__main__":
             raise RuntimeError("Unknown kind: %s" % (arg["kind"],))
     xfer(src_arg, dst_arg)
 
-# if __name__ == "__main__save":
-#     import sys
-#     mysql_info = db_mysql.get_db_info()
-#     postgresql_info = db_postgresql.get_db_info()
-#     mysql_table_names = [ a["table_name"] for a in mysql_info.values() ]
-#     postgresql_table_names = [ a["table_name"] for a in postgresql_info.values() ]
-#     mysql_to_postgresql_table_map = create_matches(
-#         sorted(mysql_table_names), sorted(postgresql_table_names), 
-#         hints["table_maps"]["mysql_to_postgresql"])
-#     postgresql_to_mysql_table_map = {
-#         v: k for k, v in mysql_to_postgresql_table_map.items() if v != None
-#     }
-#     print("== table map ==")
-#     for k, v in mysql_to_postgresql_table_map.items():
-#         print(k, "->", v)
-#     ordered_tables = order_tables(postgresql_info)
-#     print("== table order ==")
-#     for table in ordered_tables:
-#         print(table)
-#     print("== %d of %d tables ordered ==" % (len(ordered_tables), len(postgresql_table_names)))
-#     if len(postgresql_table_names) != len(ordered_tables):
-#         raise RuntimeError("Cannot order tables")
-#     if len(sys.argv) >= 2 and sys.argv[1] == "table-order":
-#         exit(0)
-#     ordered_tables = ["drug_attr", "shinryou_attr"]
-#     table_pair_list = [ 
-#         (mysql_info[postgresql_to_mysql_table_map[table]], postgresql_info[table])
-#         for table in ordered_tables ]
-#     db_postgresql.get_cur().connection.autocommit = True
-#     xfer_tables(table_pair_list, db_mysql.get_cur(), db_postgresql.get_cur(),
-#         hints["column_maps"]["mysql_to_postgresql"],
-#         hints["convert_maps"]["mysql_to_postgresql"])
+

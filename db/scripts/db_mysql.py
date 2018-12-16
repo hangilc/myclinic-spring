@@ -8,7 +8,7 @@ class DbMySQL(db_base.DbBase):
         config = {
         "user": os.environ["MYCLINIC_DB_ADMIN_USER"],
         "password": os.environ["MYCLINIC_DB_ADMIN_PASS"],
-        "database": "myclinic"
+        "database": database_name
         }
         connection = mysql.connector.connect(**config)
         db_base.DbBase.__init__(self, connection, database_name)
@@ -53,3 +53,6 @@ class DbMySQL(db_base.DbBase):
             }
         return self.execute_cvt(sql, cvt, (self.database_name,))
 
+    def set_next_serial_value(self, table, column, value):
+        sql = "alter table %s auto_increment = %d" % (table, value)
+        self.execute_no_result(sql)

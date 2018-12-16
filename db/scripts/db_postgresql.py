@@ -7,7 +7,7 @@ class DbPostgreSQL(db_base.DbBase):
     def __init__(self, database_name='myclinic'):
         config = {
             "host": "localhost",
-            "database": "myclinic",
+            "database": database_name,
             "user": os.environ['MYCLINIC_DB_ADMIN_USER'],
             "password": os.environ['MYCLINIC_DB_ADMIN_PASS']
         }
@@ -59,4 +59,9 @@ class DbPostgreSQL(db_base.DbBase):
                 "referred_column": r[4]
             }
         return self.execute_cvt(sql, cvt)
+
+    def set_next_serial_value(self, table, column, value):
+        sql = "select setval(pg_get_serial_sequence(%s, %s), %s, false)"
+        self.execute_no_result(sql, (table, column, value))
+
 

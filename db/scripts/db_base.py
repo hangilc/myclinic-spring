@@ -5,12 +5,13 @@ class DbBase:
         self.conn = conn
         self.database_name = database_name
 
-    def execute_proc(self, sql, proc, params =()):
+    def execute_proc(self, sql, proc=None, params =()):
         cursor = self.conn.cursor()
         cursor.execute(sql, params)
         try:
-            for r in cursor:
-                proc(r)
+            if proc:
+                for r in cursor:
+                    proc(r)
         except Exception as e:
             self.conn.rollback()
             raise e
@@ -31,6 +32,9 @@ class DbBase:
 
     def execute_values(self, sql, params=()):
         return self.execute_cvt(sql, lambda x: x[0], params)
+
+    def execute_no_result(self, sql, params=()):
+        self.execute_proc(sql, None, params)
 
     def get_db_info(self):
         map = {}
