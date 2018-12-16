@@ -1,5 +1,6 @@
 import db_base
 import psycopg2
+from psycopg2.extras import execute_values
 import os
 
 class DbPostgreSQL(db_base.DbBase):
@@ -64,4 +65,16 @@ class DbPostgreSQL(db_base.DbBase):
         sql = "select setval(pg_get_serial_sequence(%s, %s), %s, false)"
         self.execute_no_result(sql, (table, column, value))
 
+    def batch_insert(self, table, columns, values_list):
+        sql = "insert into {0} ({1}) values %s".format(table, ",".join(columns))
+        cursor = self.conn.cursor()
+        try:
+            execute_values(cursor, sql, values_list)
+        except Exception as e:
+            self.conn.rollback()
+            raise e
+        else:
+            self.conn.commit()
+        finally:
+            cursor.close()
 

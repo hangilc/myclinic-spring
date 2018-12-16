@@ -236,37 +236,70 @@ def xfer_table(src_table, src_db, dst_table, dst_db, hint, converts):
     src_colnames = list(col_map.keys())
     select_sql = "select %s from %s" % (", ".join(src_colnames), src_table["table_name"])
     dst_colnames = list(col_map.values())
-    insert_sql = "insert into %s (%s) values (%s)" % (
-        dst_table["table_name"],
-        ", ".join(dst_colnames),
-        ", ".join(["%s"] * len(dst_colnames))
-    )
     cvt_procs = [(src_colnames.index(c), f) for c, f in converts.items()]
     identity_column_index = -1
     dst_identity_column_name = find_identity_column_name(dst_cols.values())
     if dst_identity_column_name in dst_colnames:
         identity_column_index = dst_colnames.index(dst_identity_column_name)
+    rows = src_db.execute(select_sql)
+    values_list = []
     count = 0
     max_id = 0
-
-    def proc(r):
-        nonlocal count
-        nonlocal max_id
+    for r in rows:
         if len(cvt_procs) > 0:
             tmp = list(r)
             for i, f in cvt_procs:
                 tmp[i] = f(tmp[i])
-            r = tuple(tmp)
-        dst_db.execute_no_result(insert_sql, r)
+            values_list.append(tmp)
+        else:
+            values_list.append(r)
         if identity_column_index >= 0:
             max_id = r[identity_column_index]
         count += 1
-        if count % 1000 == 0:
-            print(count)
-
-    src_db.execute_proc(select_sql, proc)
+    dst_db.batch_insert(dst_table["table_name"], dst_colnames, values_list)
+    print(count, "rows inserted")
     if max_id > 0:
         dst_db.set_next_serial_value(dst_table["table_name"], dst_identity_column_name, max_id + 1)
+
+# def xfer_table(src_table, src_db, dst_table, dst_db, hint, converts):
+#     src_cols = src_table["columns"]
+#     dst_cols = dst_table["columns"]
+#     print("==", "xfer", src_table["table_name"], "==")
+#     col_map = match_columns(src_cols, dst_cols, hint)
+#     src_colnames = list(col_map.keys())
+#     select_sql = "select %s from %s" % (", ".join(src_colnames), src_table["table_name"])
+#     dst_colnames = list(col_map.values())
+#     insert_sql = "insert into %s (%s) values (%s)" % (
+#         dst_table["table_name"],
+#         ", ".join(dst_colnames),
+#         ", ".join(["%s"] * len(dst_colnames))
+#     )
+#     cvt_procs = [(src_colnames.index(c), f) for c, f in converts.items()]
+#     identity_column_index = -1
+#     dst_identity_column_name = find_identity_column_name(dst_cols.values())
+#     if dst_identity_column_name in dst_colnames:
+#         identity_column_index = dst_colnames.index(dst_identity_column_name)
+#     count = 0
+#     max_id = 0
+
+#     def proc(r):
+#         nonlocal count
+#         nonlocal max_id
+#         if len(cvt_procs) > 0:
+#             tmp = list(r)
+#             for i, f in cvt_procs:
+#                 tmp[i] = f(tmp[i])
+#             r = tuple(tmp)
+#         dst_db.execute_no_result(insert_sql, r)
+#         if identity_column_index >= 0:
+#             max_id = r[identity_column_index]
+#         count += 1
+#         if count % 1000 == 0:
+#             print(count)
+
+#     src_db.execute_proc(select_sql, proc)
+#     if max_id > 0:
+#         dst_db.set_next_serial_value(dst_table["table_name"], dst_identity_column_name, max_id + 1)
 
 
 def xfer_tables(table_pair_list, src_db, dst_db, hint, converts):
@@ -290,7 +323,7 @@ def xfer(src_arg, dst_arg):
     # start_idx = ordered_tables.index("visit_conduct_kizai")
     # ordered_tables = ordered_tables[start_idx:]
 
-    ordered_tables = ["shinryoukoui_master_arch", "iyakuhin_master_arch"]
+    # ordered_tables = ["iyakuhin_master"]
 
     xfer_key = "%s_to_%s" % (src_arg["kind"], dst_arg["kind"])
     for sql in hints["destination_setups"].get(xfer_key, []):
