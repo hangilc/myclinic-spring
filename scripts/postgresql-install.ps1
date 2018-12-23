@@ -56,3 +56,16 @@ if( $out -eq $null ){
         "-Action", "Allow", "-LocalAddress", "Any", "-LocalPort", "5432", "-Protocol", "TCP" 
 }
 
+$installedDir = (Get-ChildItem -Path "C:\Program Files\PostgreSQL" `
+    | Sort-Object LastWriteTime -Descending | Select-Object -first 1 `
+    | Resolve-Path | Convert-Path)
+if( $installedDir -ne $null ){
+    $postgresqlPath = "$installedDir\bin"
+    $found = $env:PATH.split(";") | where {$_ -eq $postgresqlPath}
+    if( $found -eq $null ){
+        Write-Host "adding $postgresqlPath to PATH"
+        $env:PATH += ";$postgresqlPath"
+        [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "USER")
+    }
+}
+
