@@ -6,50 +6,50 @@ Param(
 $repobase = "C:\pgdata"
 $repomain = "$repobase\main"
 
-# Write-Host "Setting up repository (C:\pgdata)"
-# if( Test-Path -Path $repobase ){
-#     $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
-#     $repobase_save = "$repobase-$timestamp"
-#     Rename-Item -Path $repobase -NewName $repobase_save
-# }
-# New-Item -ItemType directory -Path $repomain
-# New-Item -ItemType directory -Path "$repomain\cluster"
-# New-Item -ItemType directory -Path "$repomain\walarchive"
+Write-Host "Setting up repository (C:\pgdata)"
+if( Test-Path -Path $repobase ){
+    $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
+    $repobase_save = "$repobase-$timestamp"
+    Rename-Item -Path $repobase -NewName $repobase_save
+}
+New-Item -ItemType directory -Path $repomain
+New-Item -ItemType directory -Path "$repomain\cluster"
+New-Item -ItemType directory -Path "$repomain\walarchive"
 
-# Write-Host "Invoking postgresql installer. $installer"
-# $proc = Start-Process -FilePath $installer -ArgumentList "--datadir", "$repomain\cluster", `
-#     "--enable-components", "server,commandlinetools", `
-#     "--locale", "C", "--mode", "unattended", "--servicename", "postgresql", `
-#     "--debugtrace", "$repomain\installer.log" `
-#     -Wait -PassThru
+Write-Host "Invoking postgresql installer. $installer"
+$proc = Start-Process -FilePath $installer -ArgumentList "--datadir", "$repomain\cluster", `
+    "--enable-components", "server,commandlinetools", `
+    "--locale", "C", "--mode", "unattended", "--servicename", "postgresql", `
+    "--debugtrace", "$repomain\installer.log" `
+    -Wait -PassThru
 
-# if( $proc.ExitCode -ne 0 ){
-#     Write-Host "Installer failed."
-#     exit 1
-# }
+if( $proc.ExitCode -ne 0 ){
+    Write-Host "Installer failed."
+    exit 1
+}
 
-# $out = Get-NetFirewallRule | Where-Object {$_.DisplayName -eq 'PostgreSQL'}
-# if( $out -eq $null ){
-#     Write-Host "Opening firewall port 5432."
-#     Start-Process -FilePath "powershell" -Verb runAs -Wait -PassThru -WindowStyle Hidden `
-#         -ArgumentList "New-NetFirewallRule", `
-#         "-Name", "PostgreSQL", "-DisplayName", "PostgreSQL", `
-#         "-Enabled", "True", "-Profile", "private", "-Direction", "Inbound", `
-#         "-Action", "Allow", "-LocalAddress", "Any", "-LocalPort", "5432", "-Protocol", "TCP" 
-# }
+$out = Get-NetFirewallRule | Where-Object {$_.DisplayName -eq 'PostgreSQL'}
+if( $out -eq $null ){
+    Write-Host "Opening firewall port 5432."
+    Start-Process -FilePath "powershell" -Verb runAs -Wait -PassThru -WindowStyle Hidden `
+        -ArgumentList "New-NetFirewallRule", `
+        "-Name", "PostgreSQL", "-DisplayName", "PostgreSQL", `
+        "-Enabled", "True", "-Profile", "private", "-Direction", "Inbound", `
+        "-Action", "Allow", "-LocalAddress", "Any", "-LocalPort", "5432", "-Protocol", "TCP" 
+}
 
-# $installedDir = (Get-ChildItem -Path "C:\Program Files\PostgreSQL" `
-#     | Sort-Object LastWriteTime -Descending | Select-Object -first 1 `
-#     | Resolve-Path | Convert-Path)
-# if( $installedDir -ne $null ){
-#     $postgresqlPath = "$installedDir\bin"
-#     $found = $env:PATH.split(";") | where {$_ -eq $postgresqlPath}
-#     if( $found -eq $null ){
-#         Write-Host "adding $postgresqlPath to PATH"
-#         $env:PATH += ";$postgresqlPath"
-#         [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "USER")
-#     }
-# }
+$installedDir = (Get-ChildItem -Path "C:\Program Files\PostgreSQL" `
+    | Sort-Object LastWriteTime -Descending | Select-Object -first 1 `
+    | Resolve-Path | Convert-Path)
+if( $installedDir -ne $null ){
+    $postgresqlPath = "$installedDir\bin"
+    $found = $env:PATH.split(";") | where {$_ -eq $postgresqlPath}
+    if( $found -eq $null ){
+        Write-Host "adding $postgresqlPath to PATH"
+        $env:PATH += ";$postgresqlPath"
+        [Environment]::SetEnvironmentVariable("PATH", $env:PATH, "USER")
+    }
+}
 
 $userObj = New-Object System.Security.Principal.NTAccount($env:UserName)
 $userSID = $userObj.Translate([System.Security.Principal.SecurityIdentifier]).Value
