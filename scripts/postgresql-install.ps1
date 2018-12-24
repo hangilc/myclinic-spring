@@ -4,6 +4,7 @@ Param(
 )
 
 $repobase = "C:\pgdata"
+$repomain = "$repobase\main"
 
 # Write-Host "Setting up repository (C:\pgdata)"
 # if( Test-Path -Path $repobase ){
@@ -11,7 +12,6 @@ $repobase = "C:\pgdata"
 #     $repobase_save = "$repobase-$timestamp"
 #     Rename-Item -Path $repobase -NewName $repobase_save
 # }
-# $repomain = "$repobase\main"
 # New-Item -ItemType directory -Path $repomain
 # New-Item -ItemType directory -Path "$repomain\cluster"
 # New-Item -ItemType directory -Path "$repomain\walarchive"
@@ -51,6 +51,9 @@ $repobase = "C:\pgdata"
 #     }
 # }
 
+$userObj = New-Object System.Security.Principal.NTAccount($env:UserName)
+$userSID = $userObj.Translate([System.Security.Principal.SecurityIdentifier]).Value
+Write-Host "userSID", $userSID
 $acl = sc.exe sdshow PostgreSQL | Select-Object -Index 1
 $dacl = ""
 $sacl = ""
@@ -68,15 +71,31 @@ if( $daclIndex -ge 0 ){
     }
     Write-Host "dacl", $dacl
     Write-Host "sacl", $scal
-    $userObj = New-Object System.Security.Principal.NTAccount($env:UserName)
-    $userSID = $userObj.Translate([System.Security.Principal.SecurityIdentifier]).Value
-    Write-Host "userSID", $userSID
-    $ace = "(A;;RPWP;;;$userSID)"
-    $newAcl = "$dacl$ace$sacl"
-    Write-Host $newAcl
-    Write-Host "Allowing current user to start/stop PostgreSQL Service"
-    Start-Process "cmd.exe" -ArgumentList "/c", "sc.exe", "sdset", "PostgreSQL", $newAcl -Verb runAs -Wait
+    if( !$dacl.Contains($userSID) ){
+        $ace = "(A;;RPWP;;;$userSID)"
+        $newAcl = "$dacl$ace$sacl"
+        Write-Host $newAcl
+        Write-Host "Allowing current user to start/stop PostgreSQL Service"
+        Start-Process "cmd.exe" -ArgumentList "/c", "sc.exe", "sdset", "PostgreSQL", $newAcl -Verb runAs -Wait
+    }
 } else {
     Write-Host "Could not find DACL for PostgreSQL Service."
 }
 
+$isRunning = (Get-Service -Name "PostgreSQL" | Select-Object -ExpandProperty Status -first 1) -eq "Running"
+if( $isRunning ){
+    Stop-Service -Name 'PostgreSQL'
+}
+
+Copy-Item -Path 'config\postgresql\postgresql.conf' -Destination "$repomain\cluster"
+Copy-Item -Path 'config\postgresql\pg_hba.conf' -Destination "$repomain\cluster"
+
+Restart-Service -Name 'PostgreSQL'
+
+psql -f 'config\postgresql\initial-setup.sql' -U postgres
+
+$pgpassPath = [io.path]::Combine($env:AppData, 'postgresql', 'pgpass.conf')
+if( ! (Test-Path -Path $pgpassPath) ){
+    Write-Host "Copy pgpass.conf to $pgpassPath"
+    Copy-Item -Path 'config\postgresql\pgpass.conf' -Destination $pgpassPath
+}
