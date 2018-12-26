@@ -1,3 +1,7 @@
+Param (
+    [string]$label = ''
+)
+
 $repo = 'C:\pgdata\main'
 $backup = "$repo\backup"
 if( Test-Path -Path $backup ){
@@ -6,4 +10,4 @@ if( Test-Path -Path $backup ){
     Rename-Item -Path $backup -NewName $backupSave
 }
 New-Item -ItemType directory -Path $backup
-pg_basebackup -D $backup -U postgres --verbose
+pg_basebackup -D $backup -U postgres --verbose --label $label
