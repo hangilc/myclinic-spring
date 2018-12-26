@@ -94,6 +94,9 @@ Restart-Service -Name 'PostgreSQL'
 
 psql -f 'config\postgresql\initial-setup.sql' -U postgres
 
+if( -not (Test-Path -Path "$env:AppData\postgresql") ){
+	New-Item -ItemType directory "$env:AppData\postgresql"
+}
 $pgpassPath = [io.path]::Combine($env:AppData, 'postgresql', 'pgpass.conf')
 if( ! (Test-Path -Path $pgpassPath) ){
     Write-Host "Copy pgpass.conf to $pgpassPath"
