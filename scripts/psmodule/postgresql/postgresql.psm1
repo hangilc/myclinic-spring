@@ -1,30 +1,17 @@
-function Get-RepoBase(){
-    "C:\pgdata"
+function Get-PostgreSQLRepo(){
+    "C:\pgdata\main"
 }
-
-Export-ModuleMember -Function Get-RepoBase
-
-function Get-Repo(){
-    $base = Get-RepoBase
-    "$base\main"
-}
-
-Export-ModuleMember -Function Get-Repo
 
 function Ask-YesOrNo($prompt){
     (Read-Host "$prompt [y/n]") -match "[yY]"
 }
 
-Export-ModuleMember -Function Ask-YesOrNo
-
 function Get-TimeStamp(){
     Get-Date -Format "yyyy-MM-dd-HHmmss"
 }
 
-Export-ModuleMember -Function Get-TimeStamp
-
 function BackupAndCreate-Directory($dir){
-    if( -not (Test-Path $dir) ){
+    if( Test-Path $dir ){
         $timestamp = Get-TimeStamp
         $save = "$dir-$timestamp"
         Rename-Item -Path $dir -NewName $save
@@ -32,13 +19,34 @@ function BackupAndCreate-Directory($dir){
     New-Item -ItemType directory $dir
 }
 
-Export-ModuleMember -Function BackupAndCreate-Directory
-
 function Get-PostgreSQLServiceName(){
     "PostgreSQL"
 }
 
-Export-ModuleMember -Function Get-PostgreSQLServiceName
+function PostgreSQLService-Is-Running($dbHost = "localhost"){
+    $name = Get-PostgreSQLServiceName
+    if( $dbHost -eq "localhost") {
+        "Running" -eq (Get-Service -Name $serviceName `
+            | Select-Object -ExpandProperty Status -first 1)
+    } else {
+        "Running" -eq (Invoke-Command -ComputerName $dbHost -ScriptBlock {`
+                Param($name) `
+                Get-Service -Name $name | Select-Object -ExpandProperty Status -first 1 `
+            } -ArgumentList $name)
+    }
+}
+
+function Start-PostgreSQLService($dbHost = "localhost"){
+    $name = Get-PostgreSQLServiceName
+    if( $dbHost -eq "localhost" ){
+        Start-Service $name
+    } else {
+        Invoke-Command -ComputerName $dbHost -ScriptBlock { `
+            Param($name) `
+            Start-Service $name `
+        } -ArgumentList $name
+    }
+}
 
 function Stop-PostgreSQLService($dbHost = "localhost"){
     $name = Get-PostgreSQLServiceName
@@ -52,4 +60,3 @@ function Stop-PostgreSQLService($dbHost = "localhost"){
     }
 }
 
-Export-ModuleMember -Function Stop-PostgreSQLService

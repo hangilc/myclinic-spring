@@ -1,39 +1,43 @@
-
 Param(
     [parameter(mandatory)][string]$installer,
-    [string]$configTemplate = ".\config\postgresql"
+    [string]$configTemplate = ".\config\postgresql",
+    [switch]$skipInstaller = $false,
+    [switch]$skipConfiguration = $false
 )
 
 $ErrorActionPreference = "Stop"
 
-$repobase = "C:\pgdata"
-$repomain = "$repobase\main"
-$reply = Read-Host "Is config ($configTemplate) uptodate? [y/n]"
-if( -not ($reply -match "[yY]") ){
+if( "postgresql" -notin (get-module | select-object -expandProperty name) ){
+    $env:PSModulePath = "$env:PSModulePath;.\scripts\psmodule"
+}
+
+if( (-not $skipConfiguration) -and (-not (Test-Path -Path $configTemplate)) ){
+    Write-Host "Configuration template ($configTemplate) does not exits."
     exit 1
 }
 
-Write-Host "Setting up repository (C:\pgdata)"
-if( Test-Path -Path $repobase ){
-    $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
-    $repobase_save = "$repobase-$timestamp"
-    Rename-Item -Path $repobase -NewName $repobase_save
-}
-New-Item -ItemType directory -Path $repomain
-New-Item -ItemType directory -Path "$repomain\cluster"
-New-Item -ItemType directory -Path "$repomain\walarchive"
+$repomain = Get-PostgreSQLRepo
+$serviceName = Get-PostgreSQLServiceName
 
-Write-Host "Invoking postgresql installer. $installer"
-$proc = Start-Process -FilePath $installer -ArgumentList "--datadir", "$repomain\cluster", `
-    "--enable-components", "server,commandlinetools", `
-    "--locale", "C", "--mode", "unattended", "--servicename", "postgresql", `
-    "--debugtrace", "$repomain\installer.log" `
-    -Wait -PassThru
+if( -not $skipInstaller ){
+    Write-Host "Setting up repository (C:\pgdata)"
+    BackupAndCreate-Directory $repomain
+    New-Item -ItemType directory -Path "$repomain\cluster"
+    New-Item -ItemType directory -Path "$repomain\walarchive"
 
-if( $proc.ExitCode -ne 0 ){
-    Write-Host "Installer failed."
-    exit 1
+    Write-Host "Invoking postgresql installer. $installer"
+    $proc = Start-Process -FilePath $installer -ArgumentList "--datadir", "$repomain\cluster", `
+        "--enable-components", "server,commandlinetools", `
+        "--locale", "C", "--mode", "unattended", "--servicename", $serviceName, `
+        "--debugtrace", "$repomain\installer.log" `
+        -Wait -PassThru
+
+    if( $proc.ExitCode -ne 0 ){
+        Write-Host "Installer failed."
+        exit 1
+    }
 }
+
 
 $out = Get-NetFirewallRule | Where-Object {$_.DisplayName -eq 'PostgreSQL'}
 if( $out -eq $null ){
@@ -61,7 +65,7 @@ if( $installedDir -ne $null ){
 $userObj = New-Object System.Security.Principal.NTAccount($env:UserName)
 $userSID = $userObj.Translate([System.Security.Principal.SecurityIdentifier]).Value
 Write-Host "userSID", $userSID
-$acl = sc.exe sdshow PostgreSQL | Select-Object -Index 1
+$acl = sc.exe sdshow $serviceName | Select-Object -Index 1
 $dacl = ""
 $sacl = ""
 $daclIndex = $acl.indexOf("D:")
@@ -83,23 +87,28 @@ if( $daclIndex -ge 0 ){
         $newAcl = "$dacl$ace$sacl"
         Write-Host $newAcl
         Write-Host "Allowing current user to start/stop PostgreSQL Service"
-        Start-Process "cmd.exe" -ArgumentList "/c", "sc.exe", "sdset", "PostgreSQL", $newAcl -Verb runAs -Wait
+        Start-Process "cmd.exe" -ArgumentList "/c", "sc.exe", "sdset", $serviceName, `
+            $newAcl -Verb runAs -Wait
     }
 } else {
-    Write-Host "Could not find DACL for PostgreSQL Service."
+    Write-Host "Could not find DACL for $serviceName Service."
 }
 
-$isRunning = (Get-Service -Name "PostgreSQL" | Select-Object -ExpandProperty Status -first 1) -eq "Running"
+$isRunning = PostgreSQLService-Is-Running
 if( $isRunning ){
-    Stop-Service -Name 'PostgreSQL'
+    Stop-PostgreSQLService
 }
 
 Copy-Item -Path "$configTemplate\postgresql.conf" -Destination "$repomain\cluster"
 Copy-Item -Path "$configTemplate\pg_hba.conf" -Destination "$repomain\cluster"
 
-Restart-Service -Name 'PostgreSQL'
+Start-PostgreSQLService
 
 psql -f "$configTemplate\initial-setup.sql" -U postgres
+
+if( -not $isRunning ){
+    Stop-PostgreSQLService
+}
 
 if( -not (Test-Path -Path "$env:AppData\postgresql") ){
 	New-Item -ItemType directory "$env:AppData\postgresql"
