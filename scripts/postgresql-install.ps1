@@ -1,6 +1,6 @@
 
 Param(
-    $installer,
+    [parameter(mandatory)][string]$installer,
     [string]$configTemplate = ".\config\postgresql"
 )
 
