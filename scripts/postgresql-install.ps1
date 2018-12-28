@@ -4,6 +4,8 @@ Param(
     [string]$configTemplate = ".\config\postgresql"
 )
 
+$ErrorActionPreference = "Stop"
+
 $repobase = "C:\pgdata"
 $repomain = "$repobase\main"
 $reply = Read-Host "Is config ($configTemplate) uptodate? [y/n]"
