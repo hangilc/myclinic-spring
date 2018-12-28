@@ -2,6 +2,7 @@ Param(
     [parameter(mandatory)]
     [string]$subHost,
     [parameter(mandatory)]
+    [ValidateScript({$_ -notin @("localhost", "127.0.0.1")})]
     [string]$pubHost
 )
 
