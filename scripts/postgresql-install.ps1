@@ -1,10 +1,15 @@
 
 Param(
-    $installer
+    $installer,
+    [string]$configTemplate = ".\config\postgresql"
 )
 
 $repobase = "C:\pgdata"
 $repomain = "$repobase\main"
+$reply = Read-Host "Is config ($configTemplate) uptodate? [y/n]"
+if( -not ($reply -match "[yY]") ){
+    exit 1
+}
 
 Write-Host "Setting up repository (C:\pgdata)"
 if( Test-Path -Path $repobase ){
@@ -87,12 +92,12 @@ if( $isRunning ){
     Stop-Service -Name 'PostgreSQL'
 }
 
-Copy-Item -Path 'config\postgresql\postgresql.conf' -Destination "$repomain\cluster"
-Copy-Item -Path 'config\postgresql\pg_hba.conf' -Destination "$repomain\cluster"
+Copy-Item -Path "$configTemplate\postgresql.conf" -Destination "$repomain\cluster"
+Copy-Item -Path "$configTemplate\pg_hba.conf" -Destination "$repomain\cluster"
 
 Restart-Service -Name 'PostgreSQL'
 
-psql -f 'config\postgresql\initial-setup.sql' -U postgres
+psql -f "$configTemplate\initial-setup.sql" -U postgres
 
 if( -not (Test-Path -Path "$env:AppData\postgresql") ){
 	New-Item -ItemType directory "$env:AppData\postgresql"
@@ -100,5 +105,5 @@ if( -not (Test-Path -Path "$env:AppData\postgresql") ){
 $pgpassPath = [io.path]::Combine($env:AppData, 'postgresql', 'pgpass.conf')
 if( ! (Test-Path -Path $pgpassPath) ){
     Write-Host "Copy pgpass.conf to $pgpassPath"
-    Copy-Item -Path 'config\postgresql\pgpass.conf' -Destination $pgpassPath
+    Copy-Item -Path "$configTemplate\pgpass.conf" -Destination $pgpassPath
 }
