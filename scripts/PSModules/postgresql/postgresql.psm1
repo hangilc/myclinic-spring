@@ -2,15 +2,15 @@ function Get-PostgreSQLRepo(){
     "C:\pgdata\main"
 }
 
-function Ask-YesOrNo($prompt){
-    (Read-Host "$prompt [y/n]") -match "[yY]"
+function Get-PostgreSQLServiceName(){
+    "PostgreSQL"
 }
 
 function Get-TimeStamp(){
     Get-Date -Format "yyyy-MM-dd-HHmmss"
 }
 
-function BackupAndCreate-Directory($dir){
+function New-PostgreSQLDirectoryWithBackup($dir){
     if( Test-Path $dir ){
         $timestamp = Get-TimeStamp
         $save = "$dir-$timestamp"
@@ -19,11 +19,7 @@ function BackupAndCreate-Directory($dir){
     New-Item -ItemType directory $dir
 }
 
-function Get-PostgreSQLServiceName(){
-    "PostgreSQL"
-}
-
-function PostgreSQLService-Is-Running($dbHost = "localhost"){
+function Test-PostgreSQLServiceIsRunning($dbHost = "localhost"){
     $name = Get-PostgreSQLServiceName
     if( $dbHost -eq "localhost") {
         "Running" -eq (Get-Service -Name $serviceName `
@@ -60,3 +56,4 @@ function Stop-PostgreSQLService($dbHost = "localhost"){
     }
 }
 
+Export-ModuleMember -Function *-PostgreSQL*

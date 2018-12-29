@@ -1,15 +1,12 @@
 Param(
     [parameter(mandatory)][string]$installer,
-    [string]$configTemplate = ".\config\postgresql",
-    [switch]$skipInstaller = $false,
-    [switch]$skipConfiguration = $false
+    [string]$ConfigTemplate = ".\config\postgresql",
+    [switch]$SkipInstaller = $false,
+    [switch]$SkipConfiguration = $false
 )
 
 $ErrorActionPreference = "Stop"
-
-if( "postgresql" -notin (get-module | select-object -expandProperty name) ){
-    $env:PSModulePath = "$env:PSModulePath;.\scripts\psmodule"
-}
+Invoke-Expression $PSScriptRoot\use-local-psmodules
 
 if( (-not $skipConfiguration) -and (-not (Test-Path -Path $configTemplate)) ){
     Write-Host "Configuration template ($configTemplate) does not exits."
@@ -21,7 +18,7 @@ $serviceName = Get-PostgreSQLServiceName
 
 if( -not $skipInstaller ){
     Write-Host "Setting up repository (C:\pgdata)"
-    BackupAndCreate-Directory $repomain
+    New-PostgreSQLDirectoryWithBackup $repomain
     New-Item -ItemType directory -Path "$repomain\cluster"
     New-Item -ItemType directory -Path "$repomain\walarchive"
 
@@ -94,7 +91,7 @@ if( -not $skipConfiguration ){
         Write-Host "Could not find DACL for $serviceName Service."
     }
 
-    $isRunning = PostgreSQLService-Is-Running
+    $isRunning = Test-PostgreSQLServiceIsRunning
     if( $isRunning ){
         Stop-PostgreSQLService
     }
