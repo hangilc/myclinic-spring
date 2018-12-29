@@ -13,7 +13,7 @@ if( (-not $skipConfiguration) -and (-not (Test-Path -Path $configTemplate)) ){
     exit 1
 }
 
-$repomain = Get-PostgreSQLRepo
+$repomain = Get-PostgreSQLRepository
 $serviceName = Get-PostgreSQLServiceName
 
 if( -not $skipInstaller ){
@@ -59,37 +59,7 @@ if( -not $skipConfiguration ){
         }
     }
 
-    $userObj = New-Object System.Security.Principal.NTAccount($env:UserName)
-    $userSID = $userObj.Translate([System.Security.Principal.SecurityIdentifier]).Value
-    Write-Host "userSID", $userSID
-    $acl = sc.exe sdshow $serviceName | Select-Object -Index 1
-    $dacl = ""
-    $sacl = ""
-    $daclIndex = $acl.indexOf("D:")
-    $saclIndex = $acl.indexOf("S:")
-    if( $daclIndex -ge 0 ){
-        if( $saclIndex -lt 0 ){
-            $dacl = $acl
-        } elseif ( $saclIndex -gt $daclIndex ){
-            $dacl = $acl.substring($daclIndex, $saclIndex - $daclIndex)
-            $sacl = $acl.substring($saclIndex)
-        } else {
-            $dacl = $acl.substring($daclIndex)
-            $sacl = $acl.substring($saclIndex, $daclIndex - $saclIndex)
-        }
-        Write-Host "dacl", $dacl
-        Write-Host "sacl", $scal
-        if( !$dacl.Contains($userSID) ){
-            $ace = "(A;;RPWP;;;$userSID)"
-            $newAcl = "$dacl$ace$sacl"
-            Write-Host $newAcl
-            Write-Host "Allowing current user to start/stop PostgreSQL Service"
-            Start-Process "cmd.exe" -ArgumentList "/c", "sc.exe", "sdset", $serviceName, `
-                $newAcl -Verb runAs -Wait
-        }
-    } else {
-        Write-Host "Could not find DACL for $serviceName Service."
-    }
+    Enable-PostgreSQLServiceCommand
 
     $isRunning = Test-PostgreSQLServiceIsRunning
     if( $isRunning ){
