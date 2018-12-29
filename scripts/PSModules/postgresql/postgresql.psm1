@@ -92,16 +92,23 @@ function Stop-PostgreSQLService($dbHost = "localhost"){
     }
 }
 
-function Initialize-PostgreSQLMyClinicSchema(){
+function New-PostgreSQLMyClinicDatabase(){
     Param (
-        [alias('host')][string] $dbHost = 'localhost',
-        [string]$admin = $env:MYCLINIC_DB_ADMIN_USER,
-        [string]$staff = $env:MYCLINIC_DB_USER
+        [alias('host')][string] $DbHost = 'localhost',
+        [string]$Admin = $env:MYCLINIC_DB_ADMIN_USER,
+        [string]$Staff = $env:MYCLINIC_DB_USER
     )
-
     psql -h $dbHost -c "create database myclinic owner $admin" -U postgres
     psql -h $dbHost -c "grant all on database myclinic to $admin" -U postgres
     psql -h $dbHost -c "grant all on database myclinic to $staff" -U postgres
+}
+
+function Initialize-PostgreSQLMyClinicSchema(){
+    Param (
+        [alias('host')][string] $DbHost = 'localhost',
+        [string]$admin = $env:MYCLINIC_DB_ADMIN_USER
+    )
+
     Push-Location -Path 'postgresql-dev\sql'
     psql -h $dbHost -f 'create-master-tables.sql' myclinic $admin
     psql -h $dbHost -f 'create-data-tables.sql' myclinic $admin
@@ -135,9 +142,18 @@ function New-PostgreSQLRepository(){
     Copy-Item -ToSession $session -Path "$ConfigTemplate\postgresql.conf" -Destination "$repo\cluster"
     Copy-Item -ToSession $session -Path "$ConfigTemplate\pg_hba.conf" -Destination "$repo\cluster"
     Remove-PSSession $session
-    if( $isRunning ){
-        Start-PostgreSQLService $DbHost
+    Start-PostgreSQLService $DbHost
+    psql -f "$ConfigTemplate\initial-setup.sql" -U postgres
+    if( -not $isRunning ){
+        Stop-PostgreSQLService $DbHost
     }
+}
+
+function Get-PostgreSQLPublication(){
+    Param(
+        [string][alias('Host')]$DbHost = "localhost"
+    )
+    psql -c "select pubname from pg_publication" -t myclinic postgres
 }
 
 Export-ModuleMember -Function *-PostgreSQL*
