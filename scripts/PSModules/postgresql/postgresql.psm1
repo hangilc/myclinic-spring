@@ -149,11 +149,27 @@ function New-PostgreSQLRepository(){
     }
 }
 
+function Query(){
+    Param(
+        [string][parameter(mandatory)]$Sql
+    )
+    $user = $env:MYCLINIC_DB_USER
+    $env:PGCLIENTENCODING="SJIS"
+    psql -c "select row_to_json(t) from ($sql) t" -t myclinic $user | ConvertFrom-Json
+}
+
 function Get-PostgreSQLPublication(){
     Param(
         [string][alias('Host')]$DbHost = "localhost"
     )
-    psql -c "select pubname from pg_publication" -t myclinic postgres
+    Query "select * from pg_publication" 
+}
+
+function New-PostgreSQLPublication(){
+    Param(
+        [string][alias('Host')]$DbHost = "localhost"
+    )
+    psql -h $dbHost -c "create publication myclinic_pub for all tables" myclinic postgres
 }
 
 Export-ModuleMember -Function *-PostgreSQL*
