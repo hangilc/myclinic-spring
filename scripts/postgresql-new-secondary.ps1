@@ -7,11 +7,14 @@ Param(
 $ErrorActionPreference = "Stop"
 Invoke-Expression "$PSScriptRoot\use-local-psmodules"
 
-$isRunning
-
-$user = $env:MYCLINIC_DB_ADMIN_USER
-$pass = $env:MYCLINIC_DB_ADMIN_PASS
-$conn = "'host=$pubHost dbname=myclinic user=$user password=$pass'"
-psql -h $subHost `
-    -c "create subscription myclinic_sub connection $conn publication myclinic_pub" `
-    myclinic postgres
+$isRunning = Test-PostgreSQLServiceIsRunning $SecondaryHost
+New-PostgreSQLRepository $SecondaryHost
+if( -not $isRunning ){
+    Start-PostgreSQLService $SecondaryHost
+}
+New-PostgreSQLMyClinicDatabase $SecondaryHost
+Initialize-PostgreSQLMyClinicSchema $SecondaryHost
+New-PostgreSQLSubscription -SecondaryHost $SecondaryHost -PrimaryHost $PrimaryHost
+if( -not $isRunning ){
+    Stop-PostgreSQLService $SecondaryHost
+}

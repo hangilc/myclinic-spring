@@ -149,10 +149,6 @@ function New-PostgreSQLRepository(){
         psql -c "alter role postgres password '$SuperPass'" -U postgres
         } -ArgumentList $SuperPass
     psql -h $DbHost -f "$ConfigTemplate\initial-setup.sql" -U postgres
-    # Invoke-Command -ComputerName $DbHost -ScriptBlock {
-    #     Param($ConfigTemplate)
-    #     psql -f "$ConfigTemplate\initial-setup.sql" -U postgres
-    # } -ArgumentList $ConfigTemplate
     if( -not $isRunning ){
         Stop-PostgreSQLService $DbHost
     }
@@ -161,9 +157,9 @@ function New-PostgreSQLRepository(){
 function Query(){
     Param(
         [string][parameter(mandatory)]$Sql,
-        [string][alias('Host')]$DbHost = "localhost"
+        [string][alias('Host')]$DbHost = "localhost",
+        [string]$User = $env:MYCLINIC_DB_ADMIN_USER
     )
-    $user = $env:MYCLINIC_DB_USER
     $env:PGCLIENTENCODING="SJIS"
     psql -h $DbHost -c "select row_to_json(t) from ($sql) t" -t myclinic $user | 
         ConvertFrom-Json
@@ -173,7 +169,7 @@ function Get-PostgreSQLPublication(){
     Param(
         [string][alias('Host')]$DbHost = "localhost"
     )
-    Query "select * from pg_publication" 
+    Query "select * from pg_publication" myclinic postgres
 }
 
 function New-PostgreSQLPublication(){
@@ -203,7 +199,6 @@ function New-PostgreSQLSubscription(){
     psql -h $SecondaryHost `
         -c "create subscription myclinic_sub connection $conn publication myclinic_pub" `
         myclinic postgres
-
 }
 
 Export-ModuleMember -Function *-PostgreSQL*
