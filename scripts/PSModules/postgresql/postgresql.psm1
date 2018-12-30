@@ -19,18 +19,13 @@ function New-PostgreSQLDirectoryWithBackup($dir){
     New-Item -ItemType directory $dir
 }
 
-function Test-PostgreSQLServiceIsRunning($dbHost = "localhost"){
+function Test-PostgreSQLServiceIsRunning(){
+    Param (
+        [string]$DbHost = "localhost"
+    )
     $name = Get-PostgreSQLServiceName
-    if( $dbHost -eq "localhost") {
-        "Running" -eq (Get-Service -Name $serviceName `
-            | Select-Object -ExpandProperty Status -first 1)
-    } else {
-        Invoke-Command -ComputerName $dbHost -ScriptBlock {
-                Param($name) 
-                "Running" -eq (Get-Service -Name $name | `
-                    Select-Object -ExpandProperty Status -first 1)
-            } -ArgumentList $name
-    }
+    "Running" -eq (Get-Service -ComputerName $DbHost -Name $name | 
+        Select-Object -ExpandProperty Status -first 1)
 }
 
 function Enable-PostgreSQLServiceCommand(){
@@ -76,7 +71,7 @@ function Start-PostgreSQLService($dbHost = "localhost"){
         Invoke-Command -ComputerName $dbHost -ScriptBlock { `
             Param($name) `
             Start-Service $name `
-        } -ArgumentList $name
+        } -ArgumentList $name -EnableNetworkAccess
     }
 }
 
@@ -88,7 +83,7 @@ function Stop-PostgreSQLService($dbHost = "localhost"){
         Invoke-Command -ComputerName $dbHost -ScriptBlock { 
             Param($name) 
             Stop-Service $name 
-        } -ArgumentList $name
+        } -ArgumentList $name -EnableNetworkAccess
     }
 }
 
@@ -136,10 +131,11 @@ function New-PostgreSQLRepository(){
         New-Item -ItemType directory -Path $repo
         New-Item -ItemType directory -Path "$repo\cluster"
         New-Item -ItemType directory -Path "$repo\walarchive"
-
-        initdb -D "$repo\cluster" -E UTF8 --no-locale -U postgres --auth=ident
-    } -ArgumentList $repo
-    $session = New-PSSession -ComputerName $DbHost
+        Start-Process initdb -WindowStyle hidden -Wait -PassThru `
+            -ArgumentList "-D", "$repo\cluster", "-E", "UTF8", "--no-locale", `
+            "-U", "postgres", "--auth=ident"
+    } -ArgumentList $repo -EnableNetworkAccess
+    $session = New-PSSession -ComputerName $DbHost -EnableNetworkAccess
     Copy-Item -ToSession $session -Path "$ConfigTemplate\postgresql.conf" -Destination "$repo\cluster"
     Copy-Item -ToSession $session -Path "$ConfigTemplate\pg_hba.conf" -Destination "$repo\cluster"
     Remove-PSSession $session
@@ -147,7 +143,7 @@ function New-PostgreSQLRepository(){
     Invoke-Command -ComputerName $DbHost -ScriptBlock {
         Param($SuperPass)
         psql -c "alter role postgres password '$SuperPass'" -U postgres
-        } -ArgumentList $SuperPass
+        } -ArgumentList $SuperPass -EnableNetworkAccess
     psql -h $DbHost -f "$ConfigTemplate\initial-setup.sql" -U postgres
     if( -not $isRunning ){
         Stop-PostgreSQLService $DbHost
@@ -161,15 +157,16 @@ function Query(){
         [string]$User = $env:MYCLINIC_DB_ADMIN_USER
     )
     $env:PGCLIENTENCODING="SJIS"
-    psql -h $DbHost -c "select row_to_json(t) from ($sql) t" -t myclinic $user | 
-        ConvertFrom-Json
+    @(psql -h $DbHost -c "select row_to_json(t) from ($sql) t" -t myclinic $user | 
+        Where-Object { -not [string]::IsNullOrWhitespace($_) } |
+        ConvertFrom-Json)
 }
 
 function Get-PostgreSQLPublication(){
     Param(
         [string][alias('Host')]$DbHost = "localhost"
     )
-    Query "select * from pg_publication" myclinic postgres
+    Query "select * from pg_publication" $DbHost postgres
 }
 
 function New-PostgreSQLPublication(){
@@ -183,7 +180,7 @@ function Get-PostgreSQLReplicationState(){
     Param(
         [string][alias('Host')]$DbHost = "localhost"
     )
-    Query "select * from pg_stat_replication" -Host $DbHost
+    Query "select * from pg_stat_replication" -Host $DbHost -User postgres
 }
 
 function New-PostgreSQLSubscription(){
@@ -199,6 +196,28 @@ function New-PostgreSQLSubscription(){
     psql -h $SecondaryHost `
         -c "create subscription myclinic_sub connection $conn publication myclinic_pub" `
         myclinic postgres
+}
+
+function Get-PostgreSQLConnectingSecondary(){
+    Param(
+        [string][alias('Host')]$DbHost = "localhost"
+    )
+    $res = Query "select client_addr, client_hostname from pg_stat_replication" -Host $DbHost `
+        -User postgres
+    $d = @{}
+    $res | foreach {
+        if( $_.client_hostname ){
+            $d[$_.client_hostname] = $true
+        } elseif( $_.client_addr ){
+            $host = [Net.DNS]::GetHostEntry($_.client_addr).HostName
+            if( $host ){
+                $d[$host] = $true
+            }
+        } else {
+            $null
+        }
+    }
+    @($d.PSBase.keys)
 }
 
 Export-ModuleMember -Function *-PostgreSQL*

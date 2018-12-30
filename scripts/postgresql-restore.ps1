@@ -1,24 +1,22 @@
 Param (
     [string][parameter(mandatory, position=0)]$BackupFile,
     [string][alias('Host')]$DbHost = "localhost",
-    [boolean]$skipCreateRepository = $false
+    [switch]$skipCreateRepository = $false
 )
 
 $ErrorActionPreference = "Stop"
 Invoke-Expression "$PSScriptRoot\use-local-psmodules"
 
+$isRunning = Test-PostgreSQLServiceIsRunning $DbHost
 if( -not $skipCreateRepository ){
     New-PostgreSQLRepository $DbHost
 }
-
-$isRunning = Test-PostgreSQLServiceIsRunning $DbHost
-if( -not $isRunning ){
-    Start-PostgreSQLService $DbHost
-}
+Start-PostgreSQLService $DbHost
 New-PostgreSQLMyClinicDatabase $DbHost
-$admin = $env:MYCLINIC_DB_ADMIN_USER
-pg_restore -h $DbHost -d myclinic -U $admin $BackupFile
+pg_restore -h $DbHost -d myclinic -U postgres $BackupFile
 New-PostgreSQLPublication $DbHost
-if( -not $isRunning ){
+if( $isRunning ){
+    Start-PostgreSQLService $DbHost
+} else {
     Stop-PostgreSQLService $DbHost
 }
