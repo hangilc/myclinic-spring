@@ -118,7 +118,8 @@ function Initialize-PostgreSQLMyClinicSchema(){
 function New-PostgreSQLRepository(){
     Param(
         [string][alias('Host')][parameter(position=0)]$DbHost = "localhost",
-        [string]$ConfigTemplate = ".\config\postgresql"
+        [string]$ConfigTemplate = ".\config\postgresql",
+        [string]$SuperPass = $env:MYCLINIC_POSTGRES_SUPER_PASS
     )
     $repo = Get-PostgreSQLRepository
     $isRunning = Test-PostgreSQLServiceIsRunning $DbHost
@@ -143,7 +144,15 @@ function New-PostgreSQLRepository(){
     Copy-Item -ToSession $session -Path "$ConfigTemplate\pg_hba.conf" -Destination "$repo\cluster"
     Remove-PSSession $session
     Start-PostgreSQLService $DbHost
-    psql -f "$ConfigTemplate\initial-setup.sql" -U postgres
+    Invoke-Command -ComputerName $DbHost -ScriptBlock {
+        Param($SuperPass)
+        psql -c "alter role postgres password '$SuperPass'" -U postgres
+        } -ArgumentList $SuperPass
+    psql -h $DbHost -f "$ConfigTemplate\initial-setup.sql" -U postgres
+    # Invoke-Command -ComputerName $DbHost -ScriptBlock {
+    #     Param($ConfigTemplate)
+    #     psql -f "$ConfigTemplate\initial-setup.sql" -U postgres
+    # } -ArgumentList $ConfigTemplate
     if( -not $isRunning ){
         Stop-PostgreSQLService $DbHost
     }
@@ -151,11 +160,13 @@ function New-PostgreSQLRepository(){
 
 function Query(){
     Param(
-        [string][parameter(mandatory)]$Sql
+        [string][parameter(mandatory)]$Sql,
+        [string][alias('Host')]$DbHost = "localhost"
     )
     $user = $env:MYCLINIC_DB_USER
     $env:PGCLIENTENCODING="SJIS"
-    psql -c "select row_to_json(t) from ($sql) t" -t myclinic $user | ConvertFrom-Json
+    psql -h $DbHost -c "select row_to_json(t) from ($sql) t" -t myclinic $user | 
+        ConvertFrom-Json
 }
 
 function Get-PostgreSQLPublication(){
@@ -170,6 +181,29 @@ function New-PostgreSQLPublication(){
         [string][alias('Host')]$DbHost = "localhost"
     )
     psql -h $dbHost -c "create publication myclinic_pub for all tables" myclinic postgres
+}
+
+function Get-PostgreSQLReplicationState(){
+    Param(
+        [string][alias('Host')]$DbHost = "localhost"
+    )
+    Query "select * from pg_stat_replication" -Host $DbHost
+}
+
+function New-PostgreSQLSubscription(){
+    [CmdletBinding(PositionalBinding=$false)]
+    Param(
+        [string][parameter(mandatory)] $SecondaryHost,
+        [ValidateScript({$_ -notin @("localhost", "127.0.0.1")})]
+        [string][parameter(mandatory)]$PrimaryHost,
+        [string]$User = $env:MYCLINIC_DB_ADMIN_USER,
+        [string]$Pass = $env:MYCLINIC_DB_ADMIN_PASS
+    )
+    $conn = "'host=$PrimaryHost dbname=myclinic user=$user password=$pass'"
+    psql -h $SecondaryHost `
+        -c "create subscription myclinic_sub connection $conn publication myclinic_pub" `
+        myclinic postgres
+
 }
 
 Export-ModuleMember -Function *-PostgreSQL*

@@ -18,6 +18,7 @@ if( -not $isRunning ){
 New-PostgreSQLMyClinicDatabase $DbHost
 $admin = $env:MYCLINIC_DB_ADMIN_USER
 pg_restore -h $DbHost -d myclinic -U $admin $BackupFile
+New-PostgreSQLPublication $DbHost
 if( -not $isRunning ){
     Stop-PostgreSQLService $DbHost
 }
