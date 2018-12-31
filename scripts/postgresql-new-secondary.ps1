@@ -8,11 +8,18 @@ $ErrorActionPreference = "Stop"
 Invoke-Expression "$PSScriptRoot\use-local-psmodules"
 
 $isRunning = Test-PostgreSQLServiceIsRunning $SecondaryHost
+if( $isRunning ){
+    Get-PostgreSQLSubscription -Host $SecondaryHost |
+        ForEach { 
+            Write-Host "Removing current subscription:", $_.subname
+            Remove-PostgreSQLSubscription -Host $SecondaryHost -Subscription $_.subname 
+        } 
+}
 New-PostgreSQLRepository $SecondaryHost
 Start-PostgreSQLService $SecondaryHost
 New-PostgreSQLMyClinicDatabase $SecondaryHost
 Initialize-PostgreSQLMyClinicSchema $SecondaryHost
-New-PostgreSQLSubscription -SecondaryHost $SecondaryHost -PrimaryHost $PrimaryHost
+New-PostgreSQLSecondary -SecondaryHost $SecondaryHost -PrimaryHost $PrimaryHost
 if( -not $isRunning ){
     Stop-PostgreSQLService $SecondaryHost
 }
