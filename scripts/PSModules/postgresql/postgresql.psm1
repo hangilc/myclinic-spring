@@ -131,9 +131,8 @@ function New-PostgreSQLRepository(){
         New-Item -ItemType directory -Path $repo
         New-Item -ItemType directory -Path "$repo\cluster"
         New-Item -ItemType directory -Path "$repo\walarchive"
-        Start-Process initdb -WindowStyle hidden -Wait -PassThru `
-            -ArgumentList "-D", "$repo\cluster", "-E", "UTF8", "--no-locale", `
-            "-U", "postgres", "--auth=ident"
+        Start-Process -FilePath initdb -ArgumentList "-D", "$repo\cluster", "-E", "UTF8", `
+            "--no-locale", "-U", "postgres", "--auth=ident" -Wait -WindowStyle Hidden -PassThru
     } -ArgumentList $repo -EnableNetworkAccess
     $session = New-PSSession -ComputerName $DbHost -EnableNetworkAccess
     Copy-Item -ToSession $session -Path "$ConfigTemplate\postgresql.conf" -Destination "$repo\cluster"
@@ -169,6 +168,13 @@ function Get-PostgreSQLPublication(){
     Query "select * from pg_publication" $DbHost postgres
 }
 
+function Get-PostgreSQLSubscription(){
+    Param(
+        [string][alias('Host')]$DbHost = "localhost"
+    )
+    Query "select * from pg_subscription" $DbHost postgres
+}
+
 function New-PostgreSQLPublication(){
     Param(
         [string][alias('Host')]$DbHost = "localhost"
@@ -176,11 +182,18 @@ function New-PostgreSQLPublication(){
     psql -h $dbHost -c "create publication myclinic_pub for all tables" myclinic postgres
 }
 
-function Get-PostgreSQLReplicationState(){
+function Get-PostgreSQLReplicationStatus(){
     Param(
         [string][alias('Host')]$DbHost = "localhost"
     )
     Query "select * from pg_stat_replication" -Host $DbHost -User postgres
+}
+
+function Get-PostgreSQLSlot(){
+    Param(
+        [string][alias('Host')]$DbHost = "localhost"
+    )
+    Query "select * from pg_replication_slots" -Host $DbHost -User postgres    
 }
 
 function New-PostgreSQLSubscription(){
@@ -190,13 +203,49 @@ function New-PostgreSQLSubscription(){
         [ValidateScript({$_ -notin @("localhost", "127.0.0.1")})]
         [string][parameter(mandatory)]$PrimaryHost,
         [string]$User = $env:MYCLINIC_DB_ADMIN_USER,
-        [string]$Pass = $env:MYCLINIC_DB_ADMIN_PASS
+        [string]$Pass = $env:MYCLINIC_DB_ADMIN_PASS,
+        [string]$Slot = $null
     )
     $conn = "'host=$PrimaryHost dbname=myclinic user=$user password=$pass'"
-    psql -h $SecondaryHost `
-        -c "create subscription myclinic_sub connection $conn publication myclinic_pub" `
-        myclinic postgres
+    $sql = "create subscription myclinic_sub connection $conn publication myclinic_pub"
+    if( $Slot ){
+        $sql += " with (slot_name = '$Slot')"
+    }
+    psql -h $SecondaryHost -c $sql myclinic postgres
 }
+
+function Remove-PostgreSQLSubscription(){
+    Param(
+        [string][alias('Host')][parameter(mandatory)]$DbHost,
+        [string]$Subscription = "myclinic_sub"
+    )
+    psql -h $DbHost -c "drop subscription $Subscription" myclinic postgres
+}
+
+function New-PostgreSQLSecondary(){
+    [CmdletBinding(PositionalBinding=$false)]
+    Param(
+        [string][parameter(mandatory)] $SecondaryHost,
+        [ValidateScript({$_ -notin @("localhost", "127.0.0.1")})]
+        [string][parameter(mandatory)]$PrimaryHost,
+        [string]$User = $env:MYCLINIC_DB_ADMIN_USER,
+        [string]$Pass = $env:MYCLINIC_DB_ADMIN_PASS,
+        [string]$Slot = $null,
+        [string]$RegularUser = $env:MYCLINIC_DB_USER
+    )
+    New-PostgreSQLSubscription -SecondaryHost $SecondaryHost -PrimaryHost $PrimaryHost `
+        -User $User -Pass $Pass -Slot $Slot
+    psql -h $SecondaryHost -c "revoke all on database myclinic from $regularUser" myclinic postgres
+}
+
+function Remove-PostgreSQLSlot(){
+    Param(
+        [string][alias('Host')]$DbHost = "localhost",
+        [string][parameter(mandatory)]$Slot
+    )
+    psql -h $DbHost -c "select pg_drop_replication_slot('$Slot')" myclinic postgres
+}
+
 
 function Get-PostgreSQLConnectingSecondary(){
     Param(

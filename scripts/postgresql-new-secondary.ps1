@@ -9,9 +9,7 @@ Invoke-Expression "$PSScriptRoot\use-local-psmodules"
 
 $isRunning = Test-PostgreSQLServiceIsRunning $SecondaryHost
 New-PostgreSQLRepository $SecondaryHost
-if( -not $isRunning ){
-    Start-PostgreSQLService $SecondaryHost
-}
+Start-PostgreSQLService $SecondaryHost
 New-PostgreSQLMyClinicDatabase $SecondaryHost
 Initialize-PostgreSQLMyClinicSchema $SecondaryHost
 New-PostgreSQLSubscription -SecondaryHost $SecondaryHost -PrimaryHost $PrimaryHost
