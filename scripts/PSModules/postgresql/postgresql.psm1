@@ -204,22 +204,39 @@ function New-PostgreSQLSubscription(){
         [string][parameter(mandatory)]$PrimaryHost,
         [string]$User = $env:MYCLINIC_DB_ADMIN_USER,
         [string]$Pass = $env:MYCLINIC_DB_ADMIN_PASS,
-        [string]$Slot = $null
+        [string]$Slot = ""
     )
-    $conn = "'host=$PrimaryHost dbname=myclinic user=$user password=$pass'"
-    $sql = "create subscription myclinic_sub connection $conn publication myclinic_pub"
-    if( $Slot ){
-        $sql += " with (slot_name = '$Slot')"
+    if( $Slot -eq "" ){
+        $pre = $SecondaryHost -replace "[^a-gA-Z0-9_]", "_"
+        $ts = Get-Date -Format "yyyyMMdd_HHmmss"
+        $Slot = "myclinic_sub_$($pre)_$ts"
     }
+    $conn = "'host=$PrimaryHost dbname=myclinic user=$user password=$pass'"
+    $sql = "create subscription myclinic_sub connection $conn publication myclinic_pub " + `
+        " with (slot_name = '$Slot')"
     psql -h $SecondaryHost -c $sql myclinic postgres
 }
 
 function Remove-PostgreSQLSubscription(){
     Param(
         [string][alias('Host')][parameter(mandatory)]$DbHost,
-        [string]$Subscription = "myclinic_sub"
+        [string]$Subscription = "myclinic_sub",
+        [switch]$SkipDroppingSlot = $false
     )
+    if( $SkipDroppingSlot ){
+        psql -h $DbHost -c "alter subscription $Subscription disable" myclinic postgres
+        psql -h $DbHost -c "alter subscription $Subscription set (slot_name = NONE)" myclinic postgres
+    }
     psql -h $DbHost -c "drop subscription $Subscription" myclinic postgres
+}
+
+function Remove-PostgreSQLSubscriptionSlot(){
+    [CmdletBinding(PositionalBinding=$false)]
+    Param(
+        [string][alias('Host')][parameter(mandatory)]$DbHost,
+        [string][parameter(mandatory)]$Subscription
+    )
+    psql -h $DbHost -c "alter subscription $Subscription set (slot_name = NONE)" myclinic postgres
 }
 
 function New-PostgreSQLSecondary(){

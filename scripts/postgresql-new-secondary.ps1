@@ -13,7 +13,7 @@ if( $isRunning ){
         ForEach { 
             Write-Host "Removing current subscription:", $_.subname
             Remove-PostgreSQLSubscription -Host $SecondaryHost -Subscription $_.subname 
-        } 
+        }
 }
 New-PostgreSQLRepository $SecondaryHost
 Start-PostgreSQLService $SecondaryHost
