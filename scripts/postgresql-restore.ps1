@@ -14,6 +14,7 @@ if( -not $skipCreateRepository ){
 Start-PostgreSQLService $DbHost
 New-PostgreSQLMyClinicDatabase $DbHost
 pg_restore -h $DbHost -d myclinic -U postgres $BackupFile
+Grant-PostgreSQLUserPrivilege -Host $DbHost -User $env:MYCLINIC_DB_USER
 New-PostgreSQLPublication $DbHost
 if( $isRunning ){
     Start-PostgreSQLService $DbHost

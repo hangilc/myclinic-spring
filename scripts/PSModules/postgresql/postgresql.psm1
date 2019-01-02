@@ -90,16 +90,9 @@ function Stop-PostgreSQLService($dbHost = "localhost"){
 function New-PostgreSQLMyClinicDatabase(){
     Param (
         [alias('host')][string] $DbHost = 'localhost',
-        [string]$Admin = $env:MYCLINIC_DB_ADMIN_USER,
-        [string]$Staff = $env:MYCLINIC_DB_USER
+        [string]$Admin = $env:MYCLINIC_DB_ADMIN_USER
     )
     psql -h $dbHost -c "create database myclinic owner $admin" -U postgres
-    psql -h $dbHost -c "grant select, insert, update, delete " + 
-        " on all tables in schema public to $staff" myclinic -U postgres
-    psql -h $dbHost -c "usage, update " + 
-        " on all sequences in schema public to $staff" myclinic -U postgres
-    psql -h $dbHost -c "execute " + 
-        " on all routines in schema public to $staff" myclinic -U postgres
 }
 
 function Initialize-PostgreSQLMyClinicSchema(){
@@ -112,6 +105,26 @@ function Initialize-PostgreSQLMyClinicSchema(){
     psql -h $dbHost -f 'create-master-tables.sql' myclinic $admin
     psql -h $dbHost -f 'create-data-tables.sql' myclinic $admin
     Pop-Location
+}
+
+function Grant-PostgreSQLUserPrivilege(){
+    Param (
+        [alias('host')][string] $DbHost = 'localhost',
+        [string]$Admin = $env:MYCLINIC_DB_ADMIN_USER,
+        [string]$User = $env:MYCLINIC_DB_USER
+    )
+    psql -h $dbHost -c ("alter default privileges in schema public " + `
+         " grant select, insert, update, delete on tables to $User") myclinic $Admin
+    psql -h $dbHost -c ("alter default privileges in schema public " + `
+         " grant usage, update on sequences to $User") myclinic $Admin
+    psql -h $dbHost -c ("alter default privileges in schema public " + `
+         " grant execute on routines to $User") myclinic $Admin
+    psql -h $dbHost -c ("grant select, insert, update, delete " + `
+        " on all tables in schema public to $User") myclinic $Admin
+    psql -h $dbHost -c ("grant usage, update " + `
+        " on all sequences in schema public to $User") myclinic $Admin
+    psql -h $dbHost -c ("grant execute " + `
+        " on all routines in schema public to $User") myclinic $Admin
 }
 
 function New-PostgreSQLRepository(){

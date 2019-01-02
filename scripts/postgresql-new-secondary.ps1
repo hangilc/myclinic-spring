@@ -19,6 +19,7 @@ New-PostgreSQLRepository $SecondaryHost
 Start-PostgreSQLService $SecondaryHost
 New-PostgreSQLMyClinicDatabase $SecondaryHost
 Initialize-PostgreSQLMyClinicSchema $SecondaryHost
+Grant-PostgreSQLUserPrivilege -Host $SecondaryHost -User $env:MYCLINIC_DB_USER
 New-PostgreSQLSecondary -SecondaryHost $SecondaryHost -PrimaryHost $PrimaryHost
 if( -not $isRunning ){
     Stop-PostgreSQLService $SecondaryHost
