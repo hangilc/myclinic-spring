@@ -94,8 +94,12 @@ function New-PostgreSQLMyClinicDatabase(){
         [string]$Staff = $env:MYCLINIC_DB_USER
     )
     psql -h $dbHost -c "create database myclinic owner $admin" -U postgres
-    psql -h $dbHost -c "grant all on database myclinic to $admin" -U postgres
-    psql -h $dbHost -c "grant all on database myclinic to $staff" -U postgres
+    psql -h $dbHost -c "grant select, insert, update, delete " + 
+        " on all tables in schema public to $staff" myclinic -U postgres
+    psql -h $dbHost -c "usage, update " + 
+        " on all sequences in schema public to $staff" myclinic -U postgres
+    psql -h $dbHost -c "execute " + 
+        " on all routines in schema public to $staff" myclinic -U postgres
 }
 
 function Initialize-PostgreSQLMyClinicSchema(){
@@ -239,6 +243,24 @@ function Remove-PostgreSQLSubscriptionSlot(){
     psql -h $DbHost -c "alter subscription $Subscription set (slot_name = NONE)" myclinic postgres
 }
 
+function Revoke-PostgreSQLUserAccess(){
+    [CmdletBinding(PositionalBinding=$false)]
+    Param(
+        [string][parameter(mandatory)][alias('Host')]$DbHost,
+        [string]$User = $env:MYCLINIC_DB_USER
+    )
+    psql -h $DbHost -c "revoke all on database myclinic from $User" myclinic postgres
+}
+
+function Grant-PostgreSQLUserAccess(){
+    [CmdletBinding(PositionalBinding=$false)]
+    Param(
+        [string][parameter(mandatory)][alias('Host')]$DbHost,
+        [string]$User = $env:MYCLINIC_DB_USER
+    )
+    psql -h $DbHost -c "grant all on database myclinic to $User" myclinic postgres
+}
+
 function New-PostgreSQLSecondary(){
     [CmdletBinding(PositionalBinding=$false)]
     Param(
@@ -252,7 +274,7 @@ function New-PostgreSQLSecondary(){
     )
     New-PostgreSQLSubscription -SecondaryHost $SecondaryHost -PrimaryHost $PrimaryHost `
         -User $User -Pass $Pass -Slot $Slot
-    psql -h $SecondaryHost -c "revoke all on database myclinic from $regularUser" myclinic postgres
+    Block-PostgreSQLUserAccess -h $SecondaryHost -User $RegularUser
 }
 
 function Remove-PostgreSQLSlot(){
