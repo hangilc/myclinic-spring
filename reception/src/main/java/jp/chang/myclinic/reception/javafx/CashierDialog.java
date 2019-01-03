@@ -55,7 +55,8 @@ public class CashierDialog extends Stage {
         VBox vbox = new VBox(4);
         Label totalTenLabel = new Label(String.format("総点：%,d", meisai.totalTen));
         Label futanWariLabel = new Label("負担割：" + meisai.futanWari);
-        Label futanLabel = new Label(String.format("自己負担金額：%,d円", meisai.charge));
+        //Label futanLabel = new Label(String.format("自己負担金額：%,d円", meisai.charge));
+        Label futanLabel = new Label(String.format("自己負担金額：%,d円", charge.charge));
         vbox.getChildren().addAll(totalTenLabel, futanWariLabel, futanLabel);
         PaymentDTO lastPayment = null;
         if( payments.size() > 0 ){

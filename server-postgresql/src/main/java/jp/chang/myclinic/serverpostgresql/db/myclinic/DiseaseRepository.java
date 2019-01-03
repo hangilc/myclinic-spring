@@ -1,0 +1,52 @@
+package jp.chang.myclinic.serverpostgresql.db.myclinic;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public interface DiseaseRepository extends CrudRepository<Disease, Integer> {
+
+    @Query("select d, m from Disease d, ByoumeiMaster m where d.patientId = :patientId " +
+            " and d.endReason = 'N' " +
+            " and m.shoubyoumeicode = d.shoubyoumeicode " +
+            " and m.validFrom <= d.startDate " +
+            " and (m.validUpto is null or m.validUpto >= d.startDate) ")
+    List<Object[]> findCurrentWithMaster(@Param("patientId") int patientId, Sort sort);
+
+    @Query("select d, m from Disease d, ByoumeiMaster m where d.patientId = :patientId " +
+            " and m.shoubyoumeicode = d.shoubyoumeicode " +
+            " and m.validFrom <= d.startDate " +
+            " and (m.validUpto is null or m.validUpto >= d.startDate) ")
+    List<Object[]> findAllWithMaster(@Param("patientId") int patientId, Sort sort);
+
+    @Query("select d, m from Disease d, ByoumeiMaster m where d.patientId = :patientId " +
+            " and m.shoubyoumeicode = d.shoubyoumeicode " +
+            " and m.validFrom <= d.startDate " +
+            " and (m.validUpto is null or m.validUpto >= d.startDate) ")
+    List<Object[]> findAllWithMaster(@Param("patientId") int patientId, Pageable pageable);
+
+    long countByPatientId(int patientId);
+
+    @Query("select d, m from Disease d, ByoumeiMaster m " +
+            " where d.diseaseId = :diseaseId and m.shoubyoumeicode = d.shoubyoumeicode " +
+            " and m.validFrom <= d.startDate " +
+            " and (m.validUpto is null or m.validUpto >= d.startDate) ")
+    List<Object[]> findFull(@Param("diseaseId") int diseaseId);
+
+    Disease findById(int diseaseId);
+
+    void deleteById(int diseaseId);
+
+    @Query("select d.diseaseId from Disease d where d.patientId = :patientId and " +
+            " ( ( d.endReason = 'N' ) or " +
+            "   ( d.startDate <= :validUpto and " +
+            "     ( d.endDate is null or d.endDate >= :validFrom ) ) ) ")
+    List<Integer> listDiseaseIdByPatientAt(@Param("patientId") int patientId,
+                                           @Param("validFrom") LocalDate validFrom,
+                                           @Param("validUpto") LocalDate validupto);
+}

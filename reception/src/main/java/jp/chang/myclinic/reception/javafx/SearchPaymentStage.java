@@ -22,6 +22,7 @@ public class SearchPaymentStage extends Stage {
     private PaymentTable paymentTable = new PaymentTable();
 
     public SearchPaymentStage(){
+        setTitle("会計検索");
         VBox root = new VBox(4);
         {
             Button recentPaymentButton = new Button("最近の会計");

@@ -16,6 +16,9 @@ target/
 __pycache__
 docs-src/output
 *.class
+.vagrant/
+.log
+
 
 
 

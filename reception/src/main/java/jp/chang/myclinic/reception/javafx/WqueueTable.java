@@ -157,6 +157,11 @@ public class WqueueTable extends TableView<WqueueTable.Model> {
         getColumns().add(ageColumn);
     }
 
+    public int getVisitIdOfSelectedWqueue(){
+        Model wqueue = getSelectionModel().getSelectedItem();
+        return wqueue == null ? 0 : wqueue.getVisitId();
+    }
+
     public CompletableFuture<WqueueFullDTO> getSelectedWqueueFullDTO() {
         Model wqueue = getSelectionModel().getSelectedItem();
         if (wqueue == null) {

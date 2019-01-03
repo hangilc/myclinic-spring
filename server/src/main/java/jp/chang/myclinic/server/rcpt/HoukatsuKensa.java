@@ -16,10 +16,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 
-//import javax.xml.bind.JAXB;
-
-//import javax.xml.bind.JAXB;
-
 public class HoukatsuKensa {
 
 	public Revision[] revisions;

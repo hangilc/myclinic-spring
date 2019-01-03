@@ -17,6 +17,7 @@ public class RcptDetailDialog extends Stage {
     private static Logger logger = LoggerFactory.getLogger(RcptDetailDialog.class);
 
     public RcptDetailDialog(MeisaiDTO meisai) {
+        setTitle("診療明細");
         VBox root = new VBox(4);
         root.setStyle("-fx-padding: 10px");
         root.getChildren().addAll(

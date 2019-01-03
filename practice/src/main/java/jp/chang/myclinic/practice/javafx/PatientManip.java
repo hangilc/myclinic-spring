@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
@@ -8,6 +9,7 @@ public class PatientManip extends HBox {
 
     public PatientManip(){
         super(4);
+        setAlignment(Pos.CENTER_LEFT);
         Button cashierButton = new Button("会計");
         Button endButton = new Button("患者終了");
         Hyperlink searchTextLink = new Hyperlink("文章検索");
