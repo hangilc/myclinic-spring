@@ -21,11 +21,14 @@ function New-PostgreSQLDirectoryWithBackup($dir){
 
 function Test-PostgreSQLServiceIsRunning(){
     Param (
-        [string]$DbHost = "localhost"
+        [string][alias('Host')]$DbHost = "localhost"
     )
     $name = Get-PostgreSQLServiceName
-    "Running" -eq (Get-Service -ComputerName $DbHost -Name $name | 
-        Select-Object -ExpandProperty Status -first 1)
+    $srv = Get-Service -ComputerName $DbHost -Name $name | Select-Object -ExpandProperty Status
+    if( !$srv ){
+        throw "Service postgresql does not exit in $DbHost"
+    }
+    "Running" -eq $srv
 }
 
 function Enable-PostgreSQLServiceCommand(){
@@ -93,6 +96,7 @@ function New-PostgreSQLMyClinicDatabase(){
         [string]$Admin = $env:MYCLINIC_DB_ADMIN_USER
     )
     psql -h $dbHost -c "create database myclinic owner $admin" -U postgres
+    psql -h $dbHost -c "revoke connect on database myclinic from public" -U postgres
 }
 
 function Initialize-PostgreSQLMyClinicSchema(){
@@ -110,21 +114,22 @@ function Initialize-PostgreSQLMyClinicSchema(){
 function Grant-PostgreSQLUserPrivilege(){
     Param (
         [alias('host')][string] $DbHost = 'localhost',
-        [string]$Admin = $env:MYCLINIC_DB_ADMIN_USER,
+        [string]$Owner = $env:MYCLINIC_DB_ADMIN_USER,
         [string]$User = $env:MYCLINIC_DB_USER
     )
     psql -h $dbHost -c ("alter default privileges in schema public " + `
-         " grant select, insert, update, delete on tables to $User") myclinic $Admin
+         " grant select, insert, update, delete on tables to $User") myclinic $Owner
     psql -h $dbHost -c ("alter default privileges in schema public " + `
-         " grant usage, update on sequences to $User") myclinic $Admin
+         " grant usage, update on sequences to $User") myclinic $Owner
     psql -h $dbHost -c ("alter default privileges in schema public " + `
-         " grant execute on routines to $User") myclinic $Admin
+         " grant execute on routines to $User") myclinic $Owner
+    psql -h $dbHost -c "grant connect on database myclinic to $User" myclinic $Owner
     psql -h $dbHost -c ("grant select, insert, update, delete " + `
-        " on all tables in schema public to $User") myclinic $Admin
+        " on all tables in schema public to $User") myclinic $Owner
     psql -h $dbHost -c ("grant usage, update " + `
-        " on all sequences in schema public to $User") myclinic $Admin
+        " on all sequences in schema public to $User") myclinic $Owner
     psql -h $dbHost -c ("grant execute " + `
-        " on all routines in schema public to $User") myclinic $Admin
+        " on all routines in schema public to $User") myclinic $Owner
 }
 
 function New-PostgreSQLRepository(){
@@ -262,7 +267,7 @@ function Revoke-PostgreSQLUserAccess(){
         [string][parameter(mandatory)][alias('Host')]$DbHost,
         [string]$User = $env:MYCLINIC_DB_USER
     )
-    psql -h $DbHost -c "revoke all on database myclinic from $User" myclinic postgres
+    psql -h $DbHost -c "revoke connect on database myclinic from $User" myclinic postgres
 }
 
 function Grant-PostgreSQLUserAccess(){
@@ -271,7 +276,7 @@ function Grant-PostgreSQLUserAccess(){
         [string][parameter(mandatory)][alias('Host')]$DbHost,
         [string]$User = $env:MYCLINIC_DB_USER
     )
-    psql -h $DbHost -c "grant all on database myclinic to $User" myclinic postgres
+    psql -h $DbHost -c "grant connect on database myclinic to $User" myclinic postgres
 }
 
 function New-PostgreSQLSecondary(){
@@ -287,7 +292,7 @@ function New-PostgreSQLSecondary(){
     )
     New-PostgreSQLSubscription -SecondaryHost $SecondaryHost -PrimaryHost $PrimaryHost `
         -User $User -Pass $Pass -Slot $Slot
-    Block-PostgreSQLUserAccess -h $SecondaryHost -User $RegularUser
+    Revoke-PostgreSQLUserAccess -h $SecondaryHost -User $RegularUser
 }
 
 function Remove-PostgreSQLSlot(){
