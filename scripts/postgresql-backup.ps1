@@ -1,6 +1,6 @@
 Param (
-    [string]$SaveDir = "$env:userprofile\db-backup",
-    [string][alias('Host')]$DbHost = "localhost"
+    [string][alias('Host')]$DbHost = "localhost",
+    [string]$SaveDir = ""
 )
 
 $block = {
@@ -11,8 +11,11 @@ $block = {
     cmd.exe /c "pg_dump -U postgres -f `"$backup`" -E UTF8 -Fc --verbose myclinic 2>&1"
 }
 
+if( $SaveDir -eq "" ){
+    $SaveDir = Get-PostgreSQLDefaultBackupDir -Host $DbHost
+}
 $timestamp = Get-Date -Format "yyyy-MM-dd-HHmmss"
-$backup = "$saveDir\myclinic-postgresql-backup-$timestamp.dump"
+$backup = "$SaveDir\myclinic-postgresql-backup-$timestamp.dump"
 
 if( $DbHost -in ".", "localhost", "127.0.0.1" ){
     Invoke-Command -ScriptBlock $block -ArgumentList $SaveDir, $backup

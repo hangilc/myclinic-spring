@@ -326,4 +326,15 @@ function Get-PostgreSQLConnectingSecondary(){
     @($d.PSBase.keys)
 }
 
+function Get-PostgreSQLDefaultBackupDir(){
+    Param(
+        [string][alias('Host')]$DbHost = "localhost"
+    )
+    if( $DbHost -in ".", "localhost", "127.0.0.1" ){
+        return "$env:userprofile\db-backup"
+    } else {
+        Invoke-Command -ComputerName $DbHost -ScriptBlock { "$env:userprofile\db-backup" }
+    }
+}
+
 Export-ModuleMember -Function *-PostgreSQL*
