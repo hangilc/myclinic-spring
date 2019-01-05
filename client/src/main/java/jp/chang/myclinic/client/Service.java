@@ -10,7 +10,6 @@ import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
-import retrofit2.adapter.java8.Java8CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.http.*;
 
@@ -1039,7 +1038,7 @@ public class Service {
         Retrofit server = new Retrofit.Builder()
                 .baseUrl(serverUrl)
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
-                .addCallAdapterFactory(Java8CallAdapterFactory.create())
+                //.addCallAdapterFactory(Java8CallAdapterFactory.create())
                 .client(client)
                 .build();
         api = server.create(ServerAPI.class);
