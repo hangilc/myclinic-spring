@@ -33,3 +33,11 @@ function Link(){
 
 Link "サーバー" "server.jar" -cli
 Link "ホットライン（受付）" "hotline.jar" -ExtraArgs "practice", "reception"
+Link "ホットライン（薬局）" "hotline.jar" -ExtraArgs "practice", "pharmacy"
+Link "受付" "reception.jar"
+Link "院内ミーティング" "intraclinic.jar"
+Link "診療録" "record-browser.jar"
+Link "診察" "practice.jar"
+Link "薬局" "pharma.jar"
+Link "スキャナー" "scanner.jar"
+Link "レセプト印刷" "rcpt-drawer.jar"
