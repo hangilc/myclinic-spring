@@ -1,1 +1,1 @@
-@start powershell -noexit
+@start powershell -noexit -file .\scripts\use-local-psmodules.ps1
