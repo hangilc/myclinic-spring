@@ -59,6 +59,8 @@ class PatientWithHokenStage extends Stage {
         this.hokenList = hokenList;
         HokenTable hokenTable = new HokenTable();
         VBox root = new VBox(4);
+        root.getStylesheets().add("/css/Main.css");
+        root.getStyleClass().add("dialog-root");
         root.setFillWidth(true);
         {
             VBox vbox = new VBox(4);
@@ -132,6 +134,7 @@ class PatientWithHokenStage extends Stage {
             }
             {
                 HBox row = new HBox(4);
+                row.setAlignment(Pos.CENTER_LEFT);
                 Button newShahokokuhoButton = new Button("新規社保国保");
                 Button newKoukikoureiButton = new Button("新規後期高齢");
                 Button newKouhiButton = new Button("新規公費負担");
@@ -161,7 +164,6 @@ class PatientWithHokenStage extends Stage {
             row.getChildren().addAll(registerButton, closeButton);
             root.getChildren().add(row);
         }
-        root.setStyle("-fx-padding: 10");
         Scene scene = new Scene(root, 500, 660);
         setScene(scene);
         sizeToScene();

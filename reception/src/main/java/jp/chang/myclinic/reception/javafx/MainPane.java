@@ -146,26 +146,16 @@ public class MainPane extends VBox implements DispatchHook {
 
     private void doDelete() {
         int visitId = wqueueTable.getVisitIdOfSelectedWqueue();
-        if( visitId > 0 ){
+        if (visitId > 0) {
             String message = "この診察受付を削除していいですか？";
             if (GuiUtil.confirm(message)) {
                 ReceptionService.deleteFromWqueue(visitId);
             }
-
         }
-//        wqueueTable.getSelectedWqueueFullDTO()
-//                .thenAccept(wq -> Platform.runLater(() -> {
-//                    if (wq != null) {
-//                        String message = String.format("この診察受付（%s%s）を削除していいですか？", wq.patient.lastName, wq.patient.firstName);
-//                        if (GuiUtil.confirm(message)) {
-//                            ReceptionService.deleteFromWqueue(wq.visit.visitId);
-//                        }
-//                    }
-//                }))
-//                .exceptionally(HandlerFX::exceptionally);
     }
 
     private void doNewPatient() {
+        MainPane mainPane = this;
         EnterPatientStage stage = new EnterPatientStage();
         stage.setOnEnterCallback(dto -> {
             Service.api.enterPatient(dto)
@@ -173,41 +163,19 @@ public class MainPane extends VBox implements DispatchHook {
                         dto.patientId = patientId;
                         return Service.api.listHoken(patientId);
                     })
-                    .thenAccept(hokenList -> {
-                        Platform.runLater(() -> {
-                            PatientWithHokenStage patientWithHokenStage = new PatientWithHokenStage(dto, hokenList);
-                            patientWithHokenStage.showAndWait();
-                        });
-                    })
+                    .thenAcceptAsync(hokenList -> {
+                        PatientWithHokenStage patientWithHokenStage = new PatientWithHokenStage(dto, hokenList);
+                        patientWithHokenStage.initOwner(mainPane.getScene().getWindow());
+                        stage.close();
+                        patientWithHokenStage.showAndWait();
+                    }, Platform::runLater)
                     .exceptionally(ex -> {
                         logger.error("List hoken failed.", ex);
                         Platform.runLater(() -> GuiUtil.alertException("保険情報が取得できませんでした。", ex));
                         return null;
                     });
         });
-        stage.showAndWait();
-//        EditPatientStage stage = new EditPatientStage(null);
-//        stage.setTitle("新規患者入力");
-//        stage.showAndWait();
-//        PatientDTO formValue = stage.getFormValue();
-//        if (formValue != null) {
-//            Service.api.enterPatient(formValue)
-//                    .thenCompose(patientId -> {
-//                        formValue.patientId = patientId;
-//                        return Service.api.listHoken(patientId);
-//                    })
-//                    .thenAccept(hokenList -> {
-//                        Platform.runLater(() -> {
-//                            PatientWithHokenStage patientWithHokenStage = new PatientWithHokenStage(formValue, hokenList);
-//                            patientWithHokenStage.showAndWait();
-//                        });
-//                    })
-//                    .exceptionally(ex -> {
-//                        logger.error("List hoken failed.", ex);
-//                        Platform.runLater(() -> GuiUtil.alertException("保険情報が取得できませんでした。", ex));
-//                        return null;
-//                    });
-//        }
+        stage.show();
     }
 
     private void doSearchPatient() {
