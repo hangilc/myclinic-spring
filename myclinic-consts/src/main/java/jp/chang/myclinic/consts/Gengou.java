@@ -8,7 +8,8 @@ public enum Gengou {
 	Meiji(JapaneseEra.MEIJI, "明治", "meiji"),
 	Taishou(JapaneseEra.TAISHO, "大正", "taishou"),
 	Shouwa(JapaneseEra.SHOWA, "昭和", "shouwa"),
-	Heisei(JapaneseEra.HEISEI, "平成", "heisei");
+	Heisei(JapaneseEra.HEISEI, "平成", "heisei"),
+	NewEra(JapaneseEra.of(3), "元号", "gengou");
 
 	private JapaneseEra era;
 	private String kanji;
@@ -55,6 +56,7 @@ public enum Gengou {
 	public static List<Gengou> Recent = new ArrayList<Gengou>();
 	static {
 		Recent.add(Heisei);
+		Recent.add(NewEra);
 	}
 
 	public static Gengou MostRecent = Heisei;
