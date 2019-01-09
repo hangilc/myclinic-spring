@@ -9,6 +9,7 @@ import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.myclinicenv.MyclinicEnv;
 
 import java.nio.file.Path;
+import java.util.Properties;
 
 public class Globals {
 
@@ -32,27 +33,35 @@ public class Globals {
     }
 
     // Printer setting
-    private static String receiptPrintSettingKey = "receipt-printer-setting";
 
-    private static StringProperty receiptPrinterSetting = new SimpleStringProperty();
+    private static AppProperties appProps = loadAppProperties();
 
-    static {
-        receiptPrinterSetting.setValue(myclinicEnv.getAppProperty(receiptPrintSettingKey));
-        receiptPrinterSetting.addListener((obs, oldValue, newValue) ->
-                myclinicEnv.saveAppProperty(receiptPrintSettingKey, newValue)
-        );
+    private static AppProperties loadAppProperties(){
+        Properties props = myclinicEnv.getAppProperties();
+        AppProperties appProps = new AppProperties();
+        appProps.load(props);
+        return appProps;
+    }
+
+    private static void saveAppProperties(AppProperties appProps){
+        Properties props = appProps.toProperties();
+        myclinicEnv.saveAppProperties(props);
     }
 
     public static String getReceiptPrinterSetting() {
-        return receiptPrinterSetting.get();
-    }
-
-    public static StringProperty receiptPrinterSettingProperty() {
-        return receiptPrinterSetting;
+        if( appProps == null ){
+            return null;
+        } else {
+            return appProps.receiptPrinterSetting;
+        }
     }
 
     public static void setReceiptPrinterSetting(String receiptPrinterSetting) {
-        Globals.receiptPrinterSetting.set(receiptPrinterSetting);
+        if( appProps == null ){
+            appProps = new AppProperties();
+        }
+        appProps.receiptPrinterSetting = receiptPrinterSetting;
+        saveAppProperties(appProps);
     }
 
     public static PrinterEnv getPrinterEnv(){
