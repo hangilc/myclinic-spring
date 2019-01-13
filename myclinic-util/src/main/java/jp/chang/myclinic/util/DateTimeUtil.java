@@ -1,5 +1,7 @@
 package jp.chang.myclinic.util;
 
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.chrono.JapaneseDate;
@@ -7,14 +9,23 @@ import java.time.chrono.JapaneseEra;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
+import java.util.function.Function;
 
 import static java.time.temporal.ChronoField.YEAR_OF_ERA;
 
 public class DateTimeUtil {
 
-	public static DateTimeFormatter sqlDateFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");
-	public static DateTimeFormatter sqlDateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
-//	public static DateTimeFormatter kanjiFormatter1 = DateTimeFormatter.ofPattern("Gy年M月d日", Locale.JAPAN);
+    private static DateTimeFormatter sqlDateFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");
+    private static DateTimeFormatter sqlDateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
+    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat1 = KanjiDateRepBuilder::format1;
+    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat2 = KanjiDateRepBuilder::format2;
+    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat3 = KanjiDateRepBuilder::format3;
+    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat4 = KanjiDateRepBuilder::format4;
+    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat5 = KanjiDateRepBuilder::format5;
+    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat6 = KanjiDateRepBuilder::format6;
+    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat7 = KanjiDateRepBuilder::format7;
+
+    //	public static DateTimeFormatter kanjiFormatter1 = DateTimeFormatter.ofPattern("Gy年M月d日", Locale.JAPAN);
 //	public static DateTimeFormatter kanjiFormatter2 = DateTimeFormatter.ofPattern("Gyy年MM月dd日", Locale.JAPAN);
 //	public static DateTimeFormatter kanjiFormatter3 = DateTimeFormatter.ofPattern("Gyy年MM月dd日（E）", Locale.JAPAN);
 //	public static DateTimeFormatter kanjiFormatter4 = DateTimeFormatter.ofPattern("HH時mm分", Locale.JAPAN);
@@ -48,13 +59,13 @@ public class DateTimeUtil {
 //				at.compareTo(LocalDate.parse(validUpto, sqlDateFormatter)) <= 0);
 //	}
 //
-	public static LocalDateTime parseSqlDateTime(String sqlDateTime){
-		return LocalDateTime.parse(sqlDateTime, sqlDateTimeFormatter);
-	}
+    public static LocalDateTime parseSqlDateTime(String sqlDateTime) {
+        return LocalDateTime.parse(sqlDateTime, sqlDateTimeFormatter);
+    }
 
-	public static LocalDate parseSqlDate(String sqlDate){
-		return LocalDate.parse(sqlDate, sqlDateFormatter);
-	}
+    public static LocalDate parseSqlDate(String sqlDate) {
+        return LocalDate.parse(sqlDate, sqlDateFormatter);
+    }
 
 //	public static String sqlDateToKanji(String sqlDate){
 //		return sqlDateToKanji(sqlDate, kanjiFormatter1);
@@ -77,6 +88,14 @@ public class DateTimeUtil {
 //		}
 //		return datePart + timePart;
 //	}
+
+    public static String sqlDateTimeToKanji(
+            String sqlDateTime,
+            Function<KanjiDateRepBuilder, KanjiDateRepBuilder> dateFormatter,
+            Function<KanjiDateRepBuilder, KanjiDateRepBuilder> timeFormatter,
+            String separator) {
+        
+    }
 //
 //	public static String sqlDateTimeToKanji(String sqlDateTime, DateTimeFormatter dateFormatter) {
 //		return sqlDateTimeToKanji(sqlDateTime, dateFormatter, null);
@@ -108,11 +127,11 @@ public class DateTimeUtil {
 //		return sqldate == null || "0000-00-00".equals(sqldate);
 //	}
 
-	public static int calcAge(LocalDate birthday, LocalDate at){
-		return (int)birthday.until(at, ChronoUnit.YEARS);
-	}
+    public static int calcAge(LocalDate birthday, LocalDate at) {
+        return (int) birthday.until(at, ChronoUnit.YEARS);
+    }
 
-	public static int calcAge(LocalDate birthday){
-		return calcAge(birthday, LocalDate.now());
-	}
+    public static int calcAge(LocalDate birthday) {
+        return calcAge(birthday, LocalDate.now());
+    }
 }
