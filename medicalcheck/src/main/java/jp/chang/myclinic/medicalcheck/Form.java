@@ -233,13 +233,14 @@ class Form extends HBox {
 
     private String getChestXpDate(){
         return getDate(chestXpDateInput, date -> {
-            String dateRep = DateTimeUtil.toKanji(date, DateTimeUtil.kanjiFormatter1);
+            String dateRep = new KanjiDateRepBuilder(date).format1().build();
             return String.format("撮影日 %s （直接）", dateRep);
         }, "Ｘ線撮影日の入力が不適切です。");
     }
 
     private String getIssueDate(){
-        return getDate(issueDateInput, date -> DateTimeUtil.toKanji(date, DateTimeUtil.kanjiFormatter1),
+        return getDate(issueDateInput,
+                date -> new KanjiDateRepBuilder(date).format1().build(),
                 "発行日の入力が不適切です。");
     }
 

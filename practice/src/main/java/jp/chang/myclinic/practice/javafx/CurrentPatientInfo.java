@@ -16,6 +16,7 @@ import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.time.LocalDate;
@@ -124,7 +125,8 @@ public class CurrentPatientInfo extends VBox {
         if( patient.birthday != null && !patient.birthday.equals("0000-00-00") ){
             try {
                 LocalDate d = LocalDate.parse(patient.birthday);
-                birthday = DateTimeUtil.toKanji(d, DateTimeUtil.kanjiFormatter1) + "生";
+                birthday = new KanjiDateRepBuilder(d).format1().build() + "生";
+                //birthday = DateTimeUtil.toKanji(d, DateTimeUtil.kanjiFormatter1) + "生";
                 int age = DateTimeUtil.calcAge(d);
                 birthday += String.format(" (%d才)", age);
             } catch(Exception ex){

@@ -3,6 +3,7 @@ package jp.chang.myclinic.hotline.lib;
 import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
@@ -18,7 +19,7 @@ public class HotlineUtil {
         hotline.sender = sender;
         hotline.recipient = recipient;
         hotline.message = message;
-        hotline.postedAt = DateTimeUtil.toSqlDateTime(LocalDateTime.now());
+        hotline.postedAt = new KanjiDateRepBuilder(LocalDateTime.now()).build();
         return Service.api.enterHotline(hotline);
     }
 

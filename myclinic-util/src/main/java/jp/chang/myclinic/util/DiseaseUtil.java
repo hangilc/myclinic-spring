@@ -4,10 +4,13 @@ import jp.chang.myclinic.consts.Shuushokugo;
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DiseaseUtil {
@@ -37,16 +40,18 @@ public class DiseaseUtil {
                 diseaseFull.adjList.stream().map(adj -> adj.master).collect(Collectors.toList()));
     }
 
-    public static String formatDate(String sqldate, String unspecified, DateTimeFormatter formatter){
-        if( DateTimeUtil.isSqlDateUnspecified(sqldate) ){
+    private static String formatDate(String sqldate, String unspecified, Function<LocalDate, String> formatter){
+        if( sqldate == null || "0000-00-00".equals(sqldate) ){
             return unspecified;
         } else {
-            return DateTimeUtil.sqlDateToKanji(sqldate, formatter);
+            LocalDate date = LocalDate.parse(sqldate);
+            return formatter.apply(date);
         }
     }
 
     public static String formatDateAsKanji(String sqldate){
-        return formatDate(sqldate, "未定", DateTimeUtil.kanjiFormatter1);
+        return formatDate(sqldate, "未定",
+                date -> new KanjiDateRepBuilder(date).format1().build());
     }
 
     public static String formatDate(String sqldate){
@@ -54,6 +59,7 @@ public class DiseaseUtil {
     }
 
     public static String formatDate(String sqldate, String unspecified){
-        return formatDate(sqldate, unspecified, DateTimeUtil.kanjiFormatter5);
+        return formatDate(sqldate, unspecified,
+                date -> new KanjiDateRepBuilder(date).format5().build());
     }
 }

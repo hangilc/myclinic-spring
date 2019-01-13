@@ -6,6 +6,7 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DrugUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class TechouDataCreator {
 
     public TechouDataCreator(PatientDTO patient, LocalDate at, List<DrugFullDTO> drugs, ClinicInfoDTO clinicInfo){
         patientName = patient.lastName + " " + patient.firstName;
-        prescDate = DateTimeUtil.toKanji(at);
+        prescDate = KanjiDate.toKanji(at);
         int index = 1;
         for(DrugFullDTO drug: drugs){
             this.drugs.add(index + ") " + DrugUtil.drugRep(drug));

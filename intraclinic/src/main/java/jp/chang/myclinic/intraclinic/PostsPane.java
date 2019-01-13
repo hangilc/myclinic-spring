@@ -4,6 +4,7 @@ import jp.chang.myclinic.dto.IntraclinicCommentDTO;
 import jp.chang.myclinic.dto.IntraclinicPostDTO;
 import jp.chang.myclinic.dto.IntraclinicPostFullDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -56,7 +57,7 @@ class PostsPane extends JPanel {
 
     private JComponent makeUnitContent(IntraclinicPostFullDTO fullPost, Container wrapper) {
         JPanel panel = new JPanel(new MigLayout("insets 0, fill", "", ""));
-        JLabel title = new JLabel(DateTimeUtil.sqlDateToKanjiWithYoubi(fullPost.post.createdAt));
+        JLabel title = new JLabel(new KanjiDateRepBuilder(LocalDate.parse(fullPost.post.createdAt)).format3().build());
         title.setFont(title.getFont().deriveFont(Font.BOLD));
         title.setBackground(new Color(0xdd, 0xdd, 0xdd));
         title.setOpaque(true);

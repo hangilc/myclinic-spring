@@ -26,6 +26,7 @@ import jp.chang.myclinic.pharma.drawercreator.TechouDataCreator;
 import jp.chang.myclinic.pharma.javafx.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.pharma.javafx.printing.Printing;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
@@ -89,7 +90,7 @@ class PrescPane extends VBox {
         try {
             LocalDate birthday = DateTimeUtil.parseSqlDate(patient.birthday);
             birthdayPart = String.format("%s生 %d才",
-                    DateTimeUtil.toKanji(birthday),
+                    KanjiDate.toKanji(birthday),
                     DateTimeUtil.calcAge(birthday));
         } catch (Exception ex) {
             logger.error("Failed to get birthday.");

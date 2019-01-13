@@ -5,6 +5,7 @@ import jp.chang.myclinic.drawer.DrawerColor;
 import jp.chang.myclinic.drawer.drugbag.DrugBagDrawerData;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -270,7 +271,7 @@ public class DrugBagDataCreator {
     }
 
     private String composePrescribedAt(){
-        return DateTimeUtil.toKanji(LocalDate.now());
+        return new KanjiDateRepBuilder(LocalDate.now()).format1().build();
     }
 
     private List<String> composeClinicAddr(){

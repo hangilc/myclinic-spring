@@ -5,6 +5,8 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DrugUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ public class PrescContentDataCreator {
 
     public PrescContentDataCreator(PatientDTO patient, LocalDate at, List<DrugFullDTO> drugs){
         patientName = patient.lastName + " " + patient.firstName;
-        prescDate = DateTimeUtil.toKanji(at);
+        prescDate = new KanjiDateRepBuilder(at).format1().build();
         int index = 1;
         for(DrugFullDTO drug: drugs){
             this.drugs.add(index + ") " + DrugUtil.drugRep(drug));

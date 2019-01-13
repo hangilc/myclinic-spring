@@ -26,4 +26,8 @@ public class KanjiDate {
         return yearToGengou(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
     }
 
+    public static String toKanji(LocalDate date){
+        return new KanjiDateRepBuilder(date).format1().build();
+    }
+
 }
