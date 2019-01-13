@@ -25,7 +25,7 @@ public class TestDateInput extends LogicTestBase {
     public void testNull(){
         DateFormInputs inputs = new DateFormInputs(Gengou.Heisei, null, null, null);
         LocalDate date = new LogicValue<>(inputs)
-                .convert(DateFormLogic::dateFormInputsToLocalDate)
+                .convert(DateFormLogic::dateFormInputsToNullableLocalDate)
                 .getValue("TEST", em);
         assertTrue(em.hasNoError());
         assertNull(date);
@@ -35,7 +35,7 @@ public class TestDateInput extends LogicTestBase {
     public void testEmpty(){
         DateFormInputs inputs = new DateFormInputs(Gengou.Heisei, "", "", "");
         LocalDate date = new LogicValue<>(inputs)
-                .convert(DateFormLogic::dateFormInputsToLocalDate)
+                .convert(DateFormLogic::dateFormInputsToNullableLocalDate)
                 .getValue("TEST", em);
         assertTrue(em.hasNoError());
         assertNull(date);
@@ -145,7 +145,7 @@ public class TestDateInput extends LogicTestBase {
     public void testDateToInputs(){
         LocalDate date = LocalDate.of(2018, 10, 13);
         DateFormInputs inputs = new LogicValue<>(date)
-                .convert(DateFormLogic::localDateToDateFormInputs)
+                .map(DateFormLogic::localDateToDateFormInputs)
                 .getValue("TEST", em);
         assertTrue(em.hasNoError());
         assertEquals(Gengou.Heisei, inputs.gengou);

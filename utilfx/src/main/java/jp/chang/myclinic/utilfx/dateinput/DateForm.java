@@ -3,11 +3,13 @@ package jp.chang.myclinic.utilfx.dateinput;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.util.kanjidate.Gengou;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class DateForm extends HBox {
 
@@ -20,10 +22,21 @@ public class DateForm extends HBox {
     private Label dayLabel = new Label("日");
 
     public DateForm() {
+        this(Gengou.values(), null);
+    }
+
+    public DateForm(List<Gengou> gengouList, Gengou initialGengou){
+        this(gengouList.toArray(new Gengou[]{}), initialGengou);
+    }
+
+    public DateForm(Gengou[] gengouArray, Gengou initialGengou){
         super(4);
         setAlignment(Pos.CENTER_LEFT);
         getStyleClass().add("date-input");
-        this.gengouInput = new GengouInput(Gengou.values());
+        this.gengouInput = new GengouInput(gengouArray);
+        if( initialGengou != null ){
+            gengouInput.setValue(initialGengou);
+        }
         nenField.getStyleClass().add("nen");
         monthField.getStyleClass().add("month");
         dayField.getStyleClass().add("day");
@@ -46,10 +59,20 @@ public class DateForm extends HBox {
         setGengouList(Arrays.asList(gengouList));
     }
 
+    public boolean isEmpty(){
+        return nenField.getText().isEmpty() && monthField.getText().isEmpty() &&
+                dayField.getText().isEmpty();
+    }
+
     public void clear(){
         nenField.setText("");
         monthField.setText("");
         dayField.setText("");
+    }
+
+    public void clear(Gengou gengou){
+        gengouInput.setValue(gengou);
+        clear();
     }
 
     public DateFormInputs getDateFormInputs(){
@@ -70,4 +93,17 @@ public class DateForm extends HBox {
             dayField.setText(inputs.day);
         }
     }
+
+    public void setNenLabelClickHandler(Consumer<MouseEvent> handler){
+        nenLabel.setOnMouseClicked(handler::accept);
+    }
+
+    public void setMonthLabelClickHandler(Consumer<MouseEvent> handler){
+        monthLabel.setOnMouseClicked(handler::accept);
+    }
+
+    public void setDayLabelClickHandler(Consumer<MouseEvent> handler){
+        dayLabel.setOnMouseClicked(handler::accept);
+    }
+
 }

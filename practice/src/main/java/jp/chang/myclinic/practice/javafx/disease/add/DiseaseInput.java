@@ -5,12 +5,14 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
-import jp.chang.myclinic.practice.javafx.parts.dateinput.DateInput;
 import jp.chang.myclinic.practice.lib.Result;
 import jp.chang.myclinic.util.DiseaseUtil;
+import jp.chang.myclinic.util.logic.ErrorMessages;
+import jp.chang.myclinic.utilfx.dateinput.DateForm;
+import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
+import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,21 +21,17 @@ import java.util.List;
 public class DiseaseInput extends VBox {
 
     private Text nameText = new Text("");
-    private DateInput dateInput = new DateInput();
+    private DateForm dateForm = new DateForm();
     private ByoumeiMasterDTO byoumeiMaster;
     private List<ShuushokugoMasterDTO> adjList = new ArrayList<>();
 
     public DiseaseInput() {
         super(4);
-        dateInput.setValue(LocalDate.now());
+        dateForm.setDateFormInputs(DateFormLogic.localDateToDateFormInputs(LocalDate.now()));
         getChildren().addAll(
                 createName(),
-                dateInput
+                dateForm
         );
-    }
-
-    public void setGengou(Gengou gengou){
-        dateInput.setGengou(gengou);
     }
 
     public void setByoumei(ByoumeiMasterDTO byoumeiMaster){
@@ -66,7 +64,14 @@ public class DiseaseInput extends VBox {
     }
 
     public Result<LocalDate, List<String>> getStartDate(){
-        return dateInput.getValue();
+        DateFormInputs inputs = dateForm.getDateFormInputs();
+        ErrorMessages em = new ErrorMessages();
+        LocalDate date = DateFormLogic.dateFormInputsToLocalDate(inputs, "", em);
+        if( em.hasError() ){
+            return Result.createError(em.getMessages());
+        } else {
+            return Result.createValue(date);
+        }
     }
 
     private Node createName() {

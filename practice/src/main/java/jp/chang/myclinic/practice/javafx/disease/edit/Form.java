@@ -8,14 +8,18 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.StringConverter;
 import jp.chang.myclinic.consts.DiseaseEndReason;
-import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
-import jp.chang.myclinic.practice.javafx.parts.dateinput.DateInput;
 import jp.chang.myclinic.practice.lib.Result;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DiseaseUtil;
+import jp.chang.myclinic.util.logic.ErrorMessages;
+import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.dateinput.DateForm;
+import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
+import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +32,8 @@ public class Form extends VBox {
 
     private static Logger logger = LoggerFactory.getLogger(Form.class);
     private Text nameText;
-    private DateInput startDateInput;
-    private DateInput endDateInput;
+    private DateForm startDateForm;
+    private DateForm endDateForm;
     private ChoiceBox<DiseaseEndReason> reasonChoice;
     private ByoumeiMasterDTO byoumeiMaster;
     private List<ShuushokugoMasterDTO> adjList;
@@ -38,14 +42,13 @@ public class Form extends VBox {
     public Form(DiseaseFullDTO disease) {
         super(4);
         nameText = new Text("");
-        startDateInput = new DateInput();
-        endDateInput = new DateInput();
-        endDateInput.setAllowNull(true);
+        startDateForm = new DateForm(Gengou.Recent, Gengou.Current);
+        endDateForm = new DateForm(Gengou.Recent, Gengou.Current);
         getChildren().addAll(
                 new TextFlow(new Label("名称："), nameText),
-                startDateInput,
+                startDateForm,
                 new Label("から"),
-                endDateInput,
+                endDateForm,
                 createReasonChoice()
         );
         setDisease(disease);
@@ -53,8 +56,8 @@ public class Form extends VBox {
     }
 
     private Node createReasonChoice(){
-        reasonChoice = new ChoiceBox<DiseaseEndReason>();
-        reasonChoice.setConverter(new StringConverter<DiseaseEndReason>(){
+        reasonChoice = new ChoiceBox<>();
+        reasonChoice.setConverter(new StringConverter<>(){
             @Override
             public String toString(DiseaseEndReason reason) {
                 return reason.getKanjiRep();
@@ -78,11 +81,17 @@ public class Form extends VBox {
     }
 
     public Result<LocalDate, List<String>> getStartDate(){
-        return startDateInput.getValue();
+        ErrorMessages em = new ErrorMessages();
+        DateFormInputs inputs = startDateForm.getDateFormInputs();
+        LocalDate date = DateFormLogic.dateFormInputsToLocalDate(inputs, "", em);
+        return em.hasError() ? Result.createError(em.getMessages()) : Result.createValue(date);
     }
 
     public Result<LocalDate, List<String>> getEndDate(){
-        return endDateInput.getValue();
+        ErrorMessages em = new ErrorMessages();
+        DateFormInputs inputs = endDateForm.getDateFormInputs();
+        LocalDate date = DateFormLogic.dateFormInputsToNullableLocalDate(inputs, "", em);
+        return em.hasError() ? Result.createError(em.getMessages()) : Result.createValue(date);
     }
 
     public DiseaseEndReason getEndReason(){
@@ -93,12 +102,15 @@ public class Form extends VBox {
         byoumeiMaster = disease.master;
         adjList = new ArrayList<>();
         adjList.addAll(disease.adjList.stream().map(adj -> adj.master).collect(Collectors.toList()));
-        startDateInput.setValue(DateTimeUtil.parseSqlDate(disease.disease.startDate));
+        startDateForm.setDateFormInputs(
+                DateFormLogic.localDateToDateFormInputs(DateTimeUtil.parseSqlDate(disease.disease.startDate))
+        );
         if( disease.disease.endDate == null || disease.disease.endDate.equals("0000-00-00") ){
-            endDateInput.clear();
-            endDateInput.setGengou(Gengou.Current);
+            endDateForm.clear(Gengou.Current);
         } else {
-            endDateInput.setValue(DateTimeUtil.parseSqlDate(disease.disease.endDate));
+            endDateForm.setDateFormInputs(
+                    DateFormLogic.localDateToDateFormInputs(DateTimeUtil.parseSqlDate(disease.disease.endDate))
+            );
         }
         reasonChoice.setValue(DiseaseEndReason.fromCode(disease.disease.endReason));
         updateName();
@@ -125,14 +137,18 @@ public class Form extends VBox {
 
     private void onReasonChange(DiseaseEndReason newReason){
         if( newReason == DiseaseEndReason.NotEnded ){
-            endDateInput.getValue()
-                    .ifPresent(currentDate -> {
-                        endDateSave = currentDate;
-                        endDateInput.clear();
-                    });
+            DateFormInputs inputs = endDateForm.getDateFormInputs();
+            ErrorMessages em = new ErrorMessages();
+            LocalDate currentDate = DateFormLogic.dateFormInputsToNullableLocalDate(inputs, "終了日", em);
+            if( em.hasError() ){
+                GuiUtil.alertError(em.getMessage());
+            } else {
+                endDateSave = currentDate;
+                endDateForm.clear();
+            }
         } else {
-            if( endDateInput.isEmpty() && endDateSave != null ){
-                endDateInput.setValue(endDateSave);
+            if( endDateForm.isEmpty() && endDateSave != null ){
+                endDateForm.setDateFormInputs(DateFormLogic.localDateToDateFormInputs(endDateSave));
             }
         }
     }

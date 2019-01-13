@@ -6,24 +6,25 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.drawer.PaperSize;
-import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import jp.chang.myclinic.practice.javafx.parts.SexInput;
-import jp.chang.myclinic.practice.javafx.parts.dateinput.DateInput;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
+import jp.chang.myclinic.util.kanjidate.Gengou;
+import jp.chang.myclinic.util.logic.ErrorMessages;
+import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
-import jp.chang.myclinic.practice.lib.Result;
+import jp.chang.myclinic.utilfx.dateinput.DateForm;
+import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
+import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class ShohousenDialog extends Stage {
 
@@ -36,11 +37,11 @@ public class ShohousenDialog extends Stage {
 
     private PrinterEnv printerEnv;
     private TextField patientNameInput = new TextField();
-    private DateInput birthdayInput = new DateInput();
+    private DateForm birthdayForm = new DateForm(Gengou.values(), Gengou.Shouwa);
     private SexInput sexInput = new SexInput(Sex.Female);
     private RadioButtonGroup<HokenKubun> hokenKubunInput = new RadioButtonGroup<>();
     private TextField futanWariInput = new TextField();
-    private DateInput issueDateInput = new DateInput();
+    private DateForm issueDateForm = new DateForm(Gengou.Recent, Gengou.Current);
     private TextField hokenshaInput = new TextField();
     private TextField kigouBangouInput = new TextField();
     private TextField kouhiFutansha1 = new TextField();
@@ -130,8 +131,8 @@ public class ShohousenDialog extends Stage {
     }
 
     private void addIssueDateInput(DispGrid grid){
-        issueDateInput.setValue(LocalDate.now());
-        grid.addRow("発行日",issueDateInput);
+        issueDateForm.setDateFormInputs(DateFormLogic.localDateToDateFormInputs(LocalDate.now()));
+        grid.addRow("発行日", issueDateForm);
     }
 
     private void addHokenKubunInput(DispGrid grid){
@@ -144,8 +145,7 @@ public class ShohousenDialog extends Stage {
     }
 
     private void addBirthdayInput(DispGrid grid){
-        birthdayInput.setGengou(Gengou.Shouwa);
-        grid.addRow("生年月日", birthdayInput);
+        grid.addRow("生年月日", birthdayForm);
     }
 
     private void addHakkouKikan(DispGrid grid){
@@ -354,32 +354,33 @@ public class ShohousenDialog extends Stage {
     }
 
     private boolean setDrawerBirthday(ShohousenDrawer drawer){
-        if( birthdayInput.isEmpty() ){
+        if( birthdayForm.isEmpty() ){
             return true;
         }
-        Result<LocalDate, List<String>> result = birthdayInput.getValue();
-        if( result.hasValue() ){
-            LocalDate birthday = result.getValue();
-            drawer.setBirthday(birthday.getYear(), birthday.getMonthValue(), birthday.getDayOfMonth());
+        ErrorMessages em = new ErrorMessages();
+        DateFormInputs inputs = birthdayForm.getDateFormInputs();
+        LocalDate birthday = DateFormLogic.dateFormInputsToLocalDate(inputs, "生年月日", em);
+        if( em.hasNoError() && birthday != null ){
+            drawer.setKoufuDate(birthday.getYear(), birthday.getMonthValue(), birthday.getDayOfMonth());
             return true;
         } else {
-            GuiUtil.alertError("生年月日の入力が不適切です。");
+            GuiUtil.alertError(em.getMessage());
             return false;
         }
     }
 
     private boolean setDrawerIssueDate(ShohousenDrawer drawer){
-        DateInput dateInput = issueDateInput;
-        if( dateInput.isEmpty() ){
+        if( issueDateForm.isEmpty() ){
             return true;
         }
-        Result<LocalDate, List<String>> result = dateInput.getValue();
-        if( result.hasValue() ){
-            LocalDate date = result.getValue();
-            drawer.setKoufuDate(date.getYear(), date.getMonthValue(), date.getDayOfMonth());
+        ErrorMessages em = new ErrorMessages();
+        DateFormInputs inputs = issueDateForm.getDateFormInputs();
+        LocalDate issueDate = DateFormLogic.dateFormInputsToLocalDate(inputs, "発行日", em);
+        if( em.hasNoError() && issueDate != null ){
+            drawer.setKoufuDate(issueDate.getYear(), issueDate.getMonthValue(), issueDate.getDayOfMonth());
             return true;
         } else {
-            GuiUtil.alertError("発行日の入力が不適切です。");
+            GuiUtil.alertError(em.getMessage());
             return false;
         }
     }

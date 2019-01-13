@@ -37,7 +37,6 @@ public class DateLogic extends LogicUtil {
             try {
                 int year = KanjiDate.gengouToYear(gengou, nen);
                 return LocalDate.of(year, month, day);
-                //return LocalDate.ofEpochDay(JapaneseDate.of(gengou.getEra(), nen, month, day).toEpochDay());
             } catch (DateTimeException ex) {
                 em.add(name + "日付が不適切です。");
                 return null;
