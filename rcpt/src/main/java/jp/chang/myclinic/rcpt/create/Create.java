@@ -90,7 +90,7 @@ class Create {
             System.out.printf("seibetsu %s\n", seibetsuSlug(seikyuu.seibetsu));
             LocalDate birthday = LocalDate.parse(seikyuu.birthday);
             System.out.printf("seinengappi.gengou %s\n", getGengouSlug(birthday));
-            System.out.printf("seinengappi.nen %d\n", DateTimeUtil.getNen(birthday));
+            System.out.printf("seinengappi.nen %d\n", getNen(birthday));
             System.out.printf("seinengappi.tsuki %d\n", birthday.getMonthValue());
             System.out.printf("seinengappi.hi %d\n", birthday.getDayOfMonth());
             outputByoumei(seikyuu);
@@ -138,17 +138,17 @@ class Create {
             LocalDate startDate = LocalDate.parse(byoumei.startDate);
             if (index <= 4) {
                 System.out.printf("shoubyoumei.%d %s\n", index, byoumei.name);
-                System.out.printf("shinryoukaishi.nen.%d %d\n", index, DateTimeUtil.getNen(startDate));
+                System.out.printf("shinryoukaishi.nen.%d %d\n", index, getNen(startDate));
                 System.out.printf("shinryoukaishi.tsuki.%d %d\n", index, startDate.getMonthValue());
                 System.out.printf("shinryoukaishi.hi.%d %d\n", index, startDate.getDayOfMonth());
             } else {
                 System.out.printf("shoubyoumei_extra %d:%s:%d:%d:%d\n", index, byoumei.name,
-                        DateTimeUtil.getNen(startDate), startDate.getMonthValue(), startDate.getDayOfMonth());
+                        getNen(startDate), startDate.getMonthValue(), startDate.getDayOfMonth());
             }
             final int currentIndex = index;
             ifNotNull(byoumei.endDate, s -> {
                 LocalDate d = LocalDate.parse(s);
-                String tenkiDate = String.format("%c%d.%02d.%02d", getGengou(d).charAt(0), DateTimeUtil.getNen(d),
+                String tenkiDate = String.format("%c%d.%02d.%02d", getGengou(d).charAt(0), getNen(d),
                         d.getMonthValue(), d.getDayOfMonth());
                 String tenkiStr = String.format("%d(%s)", currentIndex, tenkiDate);
                 switch (byoumei.tenki) {
@@ -307,6 +307,10 @@ class Create {
     private String getGengouSlug(LocalDate date) {
         return KanjiDate.yearToGengou(date).gengou.getAlphaRep().toLowerCase();
         //return Gengou.fromEra(DateTimeUtil.getEra(date)).getRomaji();
+    }
+
+    private int getNen(LocalDate date){
+        return KanjiDate.yearToGengou(date).nen;
     }
 
     private String getGengou(LocalDate date) {

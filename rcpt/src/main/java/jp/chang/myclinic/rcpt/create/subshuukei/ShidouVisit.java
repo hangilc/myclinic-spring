@@ -5,6 +5,7 @@ import jp.chang.myclinic.rcpt.create.Shinryou;
 import jp.chang.myclinic.rcpt.create.lib.ShinryouItem;
 import jp.chang.myclinic.rcpt.create.lib.ShinryouItemList;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
 
 import java.time.LocalDate;
 
@@ -31,8 +32,7 @@ public class ShidouVisit extends VisitBase {
             TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_SHIDOU);
             items.stream().forEach(item -> {
                 if( item.getShinryoucode() == shinryouMasterMap.診療情報提供料１ ){
-                    String dateLabel = DateTimeUtil.toKanji(item.getData().getVisitedAt(),
-                            DateTimeUtil.kanjiFormatter1);
+                    String dateLabel = KanjiDate.toKanji(item.getData().getVisitedAt());
                     tekiyouList.add(item.getData().getName(),item.getTanka(), item.getCount());
                     tekiyouList.add(new TekiyouAux(dateLabel));
                     String itemTekiyou = item.getData().getTekiyou();
@@ -40,8 +40,7 @@ public class ShidouVisit extends VisitBase {
                         tekiyouList.add(new TekiyouAux(itemTekiyou));
                     }
                 } else if ( item.getShinryoucode() == shinryouMasterMap.療養費同意書交付料 ){
-                    String dateLabel = DateTimeUtil.toKanji(item.getData().getVisitedAt(),
-                            DateTimeUtil.kanjiFormatter1);
+                    String dateLabel = KanjiDate.toKanji(item.getData().getVisitedAt());
                     tekiyouList.add(item.getData().getName(),item.getTanka(), item.getCount());
                     String itemTekiyou = item.getData().getTekiyou();
                     String aux;

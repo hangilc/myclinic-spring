@@ -14,8 +14,13 @@ import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class RecordTitle extends TextFlow {
 
@@ -43,8 +48,10 @@ public class RecordTitle extends TextFlow {
     }
 
     private String createText(String at) {
-        return DateTimeUtil.sqlDateTimeToKanji(at,
-                DateTimeUtil.kanjiFormatter3, DateTimeUtil.kanjiFormatter4);
+        LocalDateTime dateTime = DateTimeUtil.parseSqlDateTime(at);
+        return new KanjiDateRepBuilder(dateTime).format3().str(" ").format4().build();
+//        return DateTimeUtil.sqlDateTimeToKanji(at,
+//                DateTimeUtil.kanjiFormatter3, DateTimeUtil.kanjiFormatter4);
     }
 
     private void addContextMenu() {

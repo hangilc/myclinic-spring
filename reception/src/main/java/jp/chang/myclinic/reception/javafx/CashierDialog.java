@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -93,7 +94,7 @@ public class CashierDialog extends Stage {
         PaymentDTO payment = new PaymentDTO();
         payment.visitId = visit.visitId;
         payment.amount = charge.charge;
-        payment.paytime = DateTimeUtil.toSqlDateTime(LocalDateTime.now());
+        payment.paytime = new KanjiDateRepBuilder(LocalDateTime.now()).sqldatetime().build();
         ReceptionService.finishCashier(payment, this::close);
     }
 

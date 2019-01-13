@@ -16,6 +16,7 @@ import jp.chang.myclinic.practice.javafx.parts.PageNav;
 import jp.chang.myclinic.practice.javafx.parts.SimplePageNav;
 import jp.chang.myclinic.practice.javafx.parts.searchbox.BasicSearchTextInput;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,8 +87,10 @@ public class SearchTextDialog extends Stage {
         result.forEach(item -> {
             VBox box = new VBox(4);
             box.setStyle("-fx-padding: 4px");
-            String titleText = DateTimeUtil.sqlDateTimeToKanji(item.visit.visitedAt,
-                    DateTimeUtil.kanjiFormatter1, DateTimeUtil.kanjiFormatter6);
+            String titleText = new KanjiDateRepBuilder(DateTimeUtil.parseSqlDateTime(item.visit.visitedAt))
+                    .format1().str(" ").format6().build();
+//            String titleText = DateTimeUtil.sqlDateTimeToKanji(item.visit.visitedAt,
+//                    DateTimeUtil.kanjiFormatter1, DateTimeUtil.kanjiFormatter6);
             Label title = new Label(titleText);
             title.setMaxWidth(Double.MAX_VALUE);
             title.getStyleClass().add("title");

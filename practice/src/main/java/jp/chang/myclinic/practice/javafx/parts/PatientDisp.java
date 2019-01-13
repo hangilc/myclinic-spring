@@ -5,6 +5,8 @@ import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +83,8 @@ public class PatientDisp extends DispGrid {
             if( "0000-00-00".equals(sqldate) ){
                 return "不明";
             }
-            return DateTimeUtil.sqlDateToKanji(sqldate, DateTimeUtil.kanjiFormatter1);
+            return new KanjiDateRepBuilder(DateTimeUtil.parseSqlDate(sqldate)).format1().build();
+//            return DateTimeUtil.sqlDateToKanji(sqldate, DateTimeUtil.kanjiFormatter1);
         } catch(Exception ex){
             return "不明";
         }

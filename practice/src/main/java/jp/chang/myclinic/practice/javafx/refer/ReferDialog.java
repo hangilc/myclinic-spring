@@ -18,6 +18,8 @@ import jp.chang.myclinic.practice.javafx.parts.DispGrid;
 import jp.chang.myclinic.practice.javafx.parts.SexInput;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +66,7 @@ public class ReferDialog extends Stage {
     }
 
     public void setIssueDate(LocalDate date){
-        String s = DateTimeUtil.toKanji(date);
+        String s = KanjiDate.toKanji(date);
         issueDateInput.setText(s);
     }
 
@@ -80,7 +82,8 @@ public class ReferDialog extends Stage {
         if( sqldate == null || sqldate.isEmpty() ){
             return "";
         } else {
-            return DateTimeUtil.sqlDateToKanji(sqldate, DateTimeUtil.kanjiFormatter1);
+            return new KanjiDateRepBuilder(DateTimeUtil.parseSqlDate(sqldate)).format1().build();
+//            return DateTimeUtil.sqlDateToKanji(sqldate, DateTimeUtil.kanjiFormatter1);
         }
     }
 

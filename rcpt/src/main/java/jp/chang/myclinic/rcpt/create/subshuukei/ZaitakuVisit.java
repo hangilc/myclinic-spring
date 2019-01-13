@@ -5,6 +5,7 @@ import jp.chang.myclinic.rcpt.create.Shinryou;
 import jp.chang.myclinic.rcpt.create.lib.ShinryouItem;
 import jp.chang.myclinic.rcpt.create.lib.ShinryouItemList;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
 
 import java.time.LocalDate;
 
@@ -39,8 +40,7 @@ public class ZaitakuVisit extends VisitBase {
             TekiyouList tekiyouList = new TekiyouList(SubShuukei.SUB_ZAITAKU);
             sonotaItems.stream().forEach(item -> {
                 if( item.getShinryoucode() == shinryouMasterMap.訪問看護指示料 ){
-                    String dateLabel = DateTimeUtil.toKanji(item.getData().getVisitedAt(),
-                            DateTimeUtil.kanjiFormatter1);
+                    String dateLabel = KanjiDate.toKanji(item.getData().getVisitedAt());
                     tekiyouList.add(item.getData().getName(),item.getTanka(), item.getCount());
                     tekiyouList.add(new TekiyouAux(dateLabel));
                 } else {

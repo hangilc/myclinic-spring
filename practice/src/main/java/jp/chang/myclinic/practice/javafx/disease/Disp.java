@@ -6,6 +6,9 @@ import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DiseaseUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
+
+import java.time.LocalDate;
 
 class Disp extends TextFlow {
 
@@ -34,7 +37,9 @@ class Disp extends TextFlow {
     }
 
     private String makeStartAtText(DiseaseFullDTO diseaseFull){
-        return DateTimeUtil.sqlDateToKanji(diseaseFull.disease.startDate, DateTimeUtil.kanjiFormatter5);
+        LocalDate date = DateTimeUtil.parseSqlDate(diseaseFull.disease.startDate);
+        return new KanjiDateRepBuilder(date).format5().build();
+        //return DateTimeUtil.sqlDateToKanji(diseaseFull.disease.startDate, DateTimeUtil.kanjiFormatter5);
     }
 
     protected void onMouseClick(DiseaseFullDTO disease){

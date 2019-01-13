@@ -10,8 +10,11 @@ import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.TextVisitPatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.LocalDateTime;
 
 class ResultItem extends VBox {
 
@@ -37,8 +40,10 @@ class ResultItem extends VBox {
     }
 
     private Node createVisitedAtRow(VisitDTO visit){
-        String text = DateTimeUtil.sqlDateTimeToKanji(visit.visitedAt,
-                DateTimeUtil.kanjiFormatter3, DateTimeUtil.kanjiFormatter4);
+        LocalDateTime dt = DateTimeUtil.parseSqlDateTime(visit.visitedAt);
+        String text = new KanjiDateRepBuilder(dt).format3().str(" ").format4().build();
+//        String text = DateTimeUtil.sqlDateTimeToKanji(visit.visitedAt,
+//                DateTimeUtil.kanjiFormatter3, DateTimeUtil.kanjiFormatter4);
         Label label = new Label(text);
         label.setMaxWidth(Double.MAX_VALUE);
         label.getStyleClass().add("result-item-visited-at");

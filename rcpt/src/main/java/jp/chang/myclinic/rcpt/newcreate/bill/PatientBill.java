@@ -107,7 +107,7 @@ class PatientBill {
         out.printStr("seibetsu", seibetsuSlug(seikyuu.seibetsu));
         LocalDate birthday = LocalDate.parse(seikyuu.birthday);
         out.printStr("seinengappi.gengou", getGengouSlug(birthday));
-        out.printInt("seinengappi.nen", DateTimeUtil.getNen(birthday));
+        out.printInt("seinengappi.nen", getNen(birthday));
         out.printInt("seinengappi.tsuki", birthday.getMonthValue());
         out.printInt("seinengappi.hi", birthday.getDayOfMonth());
         runByoumei(seikyuu);
@@ -179,6 +179,10 @@ class PatientBill {
         int totalTen = calcTotalTen();
         out.printInt("kyuufu.hoken.seikyuuten", totalTen);
         outputKouhiJikofutan(totalTen);
+    }
+
+    private int getNen(LocalDate date){
+        return KanjiDate.yearToGengou(date).nen;
     }
 
     private String hokenShubetsuSlug(String hokenShubetsu) {
@@ -306,7 +310,7 @@ class PatientBill {
             LocalDate startDate = LocalDate.parse(byoumei.startDate);
             if (index <= 4) {
                 out.printStr(String.format("shoubyoumei.%d", index), byoumei.name);
-                out.printInt(String.format("shinryoukaishi.nen.%d", index), DateTimeUtil.getNen(startDate));
+                out.printInt(String.format("shinryoukaishi.nen.%d", index), getNen(startDate));
                 out.printInt(String.format("shinryoukaishi.tsuki.%d", index), startDate.getMonthValue());
                 out.printInt(String.format("shinryoukaishi.hi.%d", index), startDate.getDayOfMonth());
             } else {
@@ -314,14 +318,14 @@ class PatientBill {
                         String.format("%d:%s:%d:%d:%d",
                                 index,
                                 byoumei.name,
-                                DateTimeUtil.getNen(startDate),
+                                getNen(startDate),
                                 startDate.getMonthValue(),
                                 startDate.getDayOfMonth()));
             }
             final int currentIndex = index;
             ifNotNull(byoumei.endDate, s -> {
                 LocalDate d = LocalDate.parse(s);
-                String tenkiDate = String.format("%c%d.%02d.%02d", getGengou(d).charAt(0), DateTimeUtil.getNen(d),
+                String tenkiDate = String.format("%c%d.%02d.%02d", getGengou(d).charAt(0), getNen(d),
                         d.getMonthValue(), d.getDayOfMonth());
                 String tenkiStr = String.format("%d(%s)", currentIndex, tenkiDate);
                 switch (byoumei.tenki) {
@@ -438,7 +442,7 @@ class PatientBill {
                 shidouShuukei.add(shinryou.tensuu);
                 if (shinryou.shinryoucode == resolvedShinryouMap.診療情報提供料１ ||
                         shinryou.shinryoucode == resolvedShinryouMap.療養費同意書交付料) {
-                    String dateLabel = DateTimeUtil.toKanji(visitedAt, DateTimeUtil.kanjiFormatter1);
+                    String dateLabel = KanjiDate.toKanji(visitedAt);
                     addItem(SubShuukei.SUB_SHIDOU, Item.fromShinryou(shinryou, (output, shuukei, tanka, count) -> {
                         output.printTekiyou(shuukei, shinryou.name, tanka, count);
                         output.printTekiyouAux(dateLabel);
@@ -455,7 +459,7 @@ class PatientBill {
                 } else {
                     zaitakuSonotaShuukei.add(shinryou.tensuu);
                     if( shinryou.shinryoucode == resolvedShinryouMap.訪問看護指示料 ){
-                        String dateLabel = DateTimeUtil.toKanji(visitedAt, DateTimeUtil.kanjiFormatter1);
+                        String dateLabel = KanjiDate.toKanji(visitedAt);
                         addItem(SubShuukei.SUB_ZAITAKU, Item.fromShinryou(shinryou, (output, shuukei, tanka, count) -> {
                             output.printTekiyou(shuukei, shinryou.name, tanka, count);
                             output.printTekiyouAux(dateLabel);

@@ -9,7 +9,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.*;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +29,9 @@ public class HokenTable extends TableView<HokenTable.Model> {
             if( sqlDate == null || sqlDate.equals("0000-00-00") ){
                 return "";
             } else {
-                return DateTimeUtil.sqlDateToKanji(sqlDate, DateTimeUtil.kanjiFormatter2);
+                LocalDate d = DateTimeUtil.parseSqlDate(sqlDate);
+                return new KanjiDateRepBuilder(d).format2().build();
+                //return DateTimeUtil.sqlDateToKanji(sqlDate, DateTimeUtil.kanjiFormatter2);
             }
         }
 
