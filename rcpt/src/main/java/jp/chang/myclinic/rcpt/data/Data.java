@@ -4,12 +4,14 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DiseaseUtil;
 import jp.chang.myclinic.util.NumberUtil;
 import jp.chang.myclinic.util.RcptUtil;
+import jp.chang.myclinic.util.kanjidate.GengouNenPair;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,12 +68,10 @@ class Data {
 
     private void outProlog() {
         LocalDate d = LocalDate.of(year, month, 1);
-        JapaneseEra era = DateTimeUtil.getEra(d);
+        GengouNenPair gn = KanjiDate.yearToGengou(d);
         ClinicInfoDTO info = getClinicInfo();
-        xml.element("元号", Optional.ofNullable(Gengou.fromEra(era))
-                .map(Gengou::getKanji)
-                .orElseThrow(() -> new RuntimeException("invalid gangoue")));
-        xml.element("年", DateTimeUtil.getNen(d));
+        xml.element("元号", gn.gengou.getKanjiRep());
+        xml.element("年", gn.nen);
         xml.element("月", month);
         xml.element("都道府県番号", info.todoufukencode);
         xml.element("医療機関コード",

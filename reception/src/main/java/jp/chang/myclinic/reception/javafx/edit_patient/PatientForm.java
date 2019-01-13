@@ -3,7 +3,7 @@ package jp.chang.myclinic.reception.javafx.edit_patient;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.reception.javafx.Form;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;

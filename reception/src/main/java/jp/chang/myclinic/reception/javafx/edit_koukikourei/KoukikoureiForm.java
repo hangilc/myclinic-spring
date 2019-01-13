@@ -2,8 +2,8 @@ package jp.chang.myclinic.reception.javafx.edit_koukikourei;
 
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.reception.javafx.Form;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import jp.chang.myclinic.utilfx.dateinput.DateForm;
 
@@ -13,14 +13,8 @@ class KoukikoureiForm extends Form {
 
     private TextField hokenshaBangouInput = new TextField();
     private TextField hihokenshaBangouInput = new TextField();
-    private DateForm validFromInput = new DateForm();
-    {
-        validFromInput.setGengouList(Gengou.Recent);
-    }
-    private DateForm validUptoInput = new DateForm();
-    {
-        validUptoInput.setGengouList(Gengou.Recent);
-    }
+    private DateForm validFromInput = new DateForm(Gengou.Recent, Gengou.Current);
+    private DateForm validUptoInput = new DateForm(Gengou.Recent, Gengou.Current);
     private RadioButtonGroup<Integer> futanwari = new RadioButtonGroup<>();
     {
         futanwari.createRadioButton("１割", 1);

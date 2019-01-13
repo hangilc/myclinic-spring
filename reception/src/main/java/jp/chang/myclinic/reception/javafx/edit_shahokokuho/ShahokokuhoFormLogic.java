@@ -1,8 +1,8 @@
 package jp.chang.myclinic.reception.javafx.edit_shahokokuho;
 
-import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.util.dto_logic.ShahokokuhoLogic;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.util.logic.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
@@ -10,7 +10,6 @@ import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
 
 import java.util.function.Consumer;
 
-import static jp.chang.myclinic.util.logic.Validators.hasDigitsInRange;
 import static jp.chang.myclinic.util.logic.Validators.isOneOf;
 
 public class ShahokokuhoFormLogic extends LogicUtil {

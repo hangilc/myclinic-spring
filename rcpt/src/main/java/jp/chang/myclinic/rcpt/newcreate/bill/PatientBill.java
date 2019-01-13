@@ -1,13 +1,14 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.consts.ConductKind;
-import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.consts.HoukatsuKensaKind;
 import jp.chang.myclinic.rcpt.newcreate.input.*;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
 import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.HokenUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -287,11 +288,13 @@ class PatientBill {
     }
 
     private String getGengouSlug(LocalDate date) {
-        return Gengou.fromEra(DateTimeUtil.getEra(date)).getRomaji();
+        return KanjiDate.yearToGengou(date).gengou.getAlphaRep().toLowerCase();
+        //return Gengou.fromEra(DateTimeUtil.getEra(date)).getRomaji();
     }
 
     private String getGengou(LocalDate date) {
-        return Gengou.fromEra(DateTimeUtil.getEra(date)).getKanji();
+        return KanjiDate.yearToGengou(date).gengou.getKanjiRep();
+        //return Gengou.fromEra(DateTimeUtil.getEra(date)).getKanji();
     }
 
     private void runByoumei(Seikyuu seikyuu) {

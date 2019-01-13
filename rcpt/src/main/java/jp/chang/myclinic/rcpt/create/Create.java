@@ -2,11 +2,12 @@ package jp.chang.myclinic.rcpt.create;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jp.chang.myclinic.consts.ConductKind;
-import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.rcpt.Common;
 import jp.chang.myclinic.rcpt.create.subshuukei.ShuukeiMap;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.HokenUtil;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -304,11 +305,13 @@ class Create {
     }
 
     private String getGengouSlug(LocalDate date) {
-        return Gengou.fromEra(DateTimeUtil.getEra(date)).getRomaji();
+        return KanjiDate.yearToGengou(date).gengou.getAlphaRep().toLowerCase();
+        //return Gengou.fromEra(DateTimeUtil.getEra(date)).getRomaji();
     }
 
     private String getGengou(LocalDate date) {
-        return Gengou.fromEra(DateTimeUtil.getEra(date)).getKanji();
+        return KanjiDate.yearToGengou(date).gengou.getKanjiRep();
+        //return Gengou.fromEra(DateTimeUtil.getEra(date)).getKanji();
     }
 
     private int calcShinryouNissuuHoken(List<Visit> visits) {

@@ -1,26 +1,16 @@
 package jp.chang.myclinic.reception.javafx.edit_kouhi;
 
 import javafx.scene.control.TextField;
-import jp.chang.myclinic.consts.Gengou;
 import jp.chang.myclinic.reception.javafx.Form;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.utilfx.dateinput.DateForm;
 
 class KouhiForm extends Form {
 
-    //private static Logger logger = LoggerFactory.getLogger(KouhiForm.class);
     private TextField futanshaBangouInput = new TextField();
     private TextField jukyuushaBangouInput = new TextField();
-    private DateForm validFromInput = new DateForm();
-
-    {
-        validFromInput.setGengouList(Gengou.Recent);
-    }
-
-    private DateForm validUptoInput = new DateForm();
-
-    {
-        validUptoInput.setGengouList(Gengou.Recent);
-    }
+    private DateForm validFromInput = new DateForm(Gengou.Recent, Gengou.Current);
+    private DateForm validUptoInput = new DateForm(Gengou.Recent, Gengou.Current);
 
     KouhiForm() {
         getStyleClass().add("kouhi-form");

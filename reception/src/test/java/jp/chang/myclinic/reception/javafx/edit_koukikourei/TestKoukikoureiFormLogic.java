@@ -1,6 +1,6 @@
 package jp.chang.myclinic.reception.javafx.edit_koukikourei;
 
-import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.dto.KoukikoureiDTO;
 import jp.chang.myclinic.util.logic.LogicValue;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
