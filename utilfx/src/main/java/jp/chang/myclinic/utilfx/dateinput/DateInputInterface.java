@@ -1,6 +1,8 @@
 package jp.chang.myclinic.utilfx.dateinput;
 
-import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.kanjidate.Gengou;
+import jp.chang.myclinic.util.kanjidate.GengouNenPair;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -44,10 +46,10 @@ public interface DateInputInterface {
             setMonth("");
             setDay("");
         } else {
-            JapaneseDate jd = JapaneseDate.from(value);
-            Gengou gengou = Gengou.fromEra(jd.getEra());
+            GengouNenPair gn = KanjiDate.yearToGengou(value);
+            Gengou gengou = gn.gengou;
             setGengou(gengou);
-            int nen = jd.get(ChronoField.YEAR_OF_ERA);
+            int nen = gn.nen;
             int month = value.getMonthValue();
             int day = value.getDayOfMonth();
             setNen("" + nen);
@@ -82,7 +84,9 @@ public interface DateInputInterface {
                     err.add("元号が設定されていません。");
                 } else {
                     try {
-                        value = LocalDate.ofEpochDay(JapaneseDate.of(gengou.getEra(), nen, month, day).toEpochDay());
+                        int year = KanjiDate.gengouToYear(gengou, nen);
+                        value = LocalDate.of(year, month, day);
+                        //value = LocalDate.ofEpochDay(JapaneseDate.of(gengou.getEra(), nen, month, day).toEpochDay());
                     } catch (DateTimeException ex) {
                         err.add("日付の入力が不適切です。");
                     }
@@ -103,97 +107,6 @@ public interface DateInputInterface {
         } else {
             return value;
         }
-    }
-
-//    default void adjust() {
-//        if (!isEmpty()) {
-//            Result<LocalDate, List<String>> result = getValue();
-//            if (!result.hasValue()) {
-//                int nen = 1, month = 1, day = 1;
-//                try {
-//                    nen = Integer.parseInt(getNen());
-//                    if (nen <= 0) {
-//                        nen = 1;
-//                    }
-//                } catch (NumberFormatException ex) {
-//                    nen = 1;
-//                }
-//                try {
-//                    month = Integer.parseInt(getMonth());
-//                    if (month < 1) {
-//                        month = 1;
-//                    } else if (month > 12) {
-//                        month = 12;
-//                    }
-//                } catch (NumberFormatException ex) {
-//                    month = 1;
-//                }
-//                try {
-//                    day = Integer.parseInt(getDay());
-//                    if (day < 1) {
-//                        day = 1;
-//                    }
-//                    try {
-//                        LocalDate probe = DateTimeUtil.warekiToLocalDate(getGengou().getEra(), nen, month, 1)
-//                                .plus(1, ChronoUnit.MONTHS).minus(1, ChronoUnit.DAYS);
-//                        day = probe.getDayOfMonth();
-//                    } catch (DateTimeException ex) {
-//                        day = 1;
-//                    }
-//                } catch (NumberFormatException ex) {
-//                    day = 1;
-//                }
-//                setNen("" + nen);
-//                setMonth("" + month);
-//                setDay("" + day);
-//            }
-//        }
-//    }
-
-    default void advanceWeek(int n){
-        advance(n, ChronoUnit.WEEKS);
-    }
-
-    default void advanceDay(int n){
-        advance(n, ChronoUnit.DAYS);
-    }
-
-    default void advanceMonth(int n){
-        advance(n, ChronoUnit.MONTHS);
-    }
-
-    default void advanceYear(int n){
-        advance(n, ChronoUnit.YEARS);
-    }
-
-    default void moveToEndOfMonth(){
-//        adjust();
-//        getValue()
-//                .ifPresent(date -> {
-//                    LocalDate newDate = date.with(ChronoField.DAY_OF_MONTH, 1).plus(1, ChronoUnit.MONTHS)
-//                            .minus(1, ChronoUnit.DAYS);
-//                    setValue(newDate);
-//                });
-    }
-
-    default void moveToEndOfLastMonth(){
-//        adjust();
-//        getValue()
-//                .ifPresent(date -> {
-//                    LocalDate newDate = LocalDate.now()
-//                            .with(ChronoField.DAY_OF_MONTH, 1)
-//                            .minus(1, ChronoUnit.DAYS);
-//                    setValue(newDate);
-//                });
-    }
-
-    default void advance(int n, TemporalUnit unit){
-//        adjust();
-//        getValue()
-//                .ifPresent(date -> {
-//                    LocalDate probe = date.plus(n, unit);
-//                    setValue(probe);
-//                });
     }
 
 }

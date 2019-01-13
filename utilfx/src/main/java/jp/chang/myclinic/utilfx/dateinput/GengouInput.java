@@ -2,7 +2,7 @@ package jp.chang.myclinic.utilfx.dateinput;
 
 import javafx.scene.control.ChoiceBox;
 import javafx.util.StringConverter;
-import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 
 import java.util.List;
 
@@ -26,12 +26,12 @@ public class GengouInput extends ChoiceBox<Gengou> {
         return new StringConverter<Gengou>() {
             @Override
             public String toString(Gengou gengou) {
-                return gengou.getKanji();
+                return gengou.getKanjiRep();
             }
 
             @Override
             public Gengou fromString(String string) {
-                return Gengou.fromKanji(string);
+                return Gengou.fromKanjiRep(string);
             }
         };
     }

@@ -1,23 +1,15 @@
 package jp.chang.myclinic.util.logic;
 
-import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.kanjidate.Gengou;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.chrono.JapaneseChronology;
-import java.time.chrono.JapaneseDate;
-import java.time.format.ResolverStyle;
-import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalField;
-import java.util.HashMap;
-import java.util.Map;
 
 import static jp.chang.myclinic.util.logic.Validators.isEqualOrGreaterThan;
 import static jp.chang.myclinic.util.logic.Validators.isInRange;
 
 public class DateLogic extends LogicUtil {
-
-    //private static Logger logger = LoggerFactory.getLogger(DateLogic.class);
 
     public static LocalDate toLocalDate(String name, Logic<Gengou> gengouLogic, Logic<Integer> nenLogic,
                                      Logic<Integer> monthLogic, Logic<Integer> dayLogic,
@@ -43,7 +35,9 @@ public class DateLogic extends LogicUtil {
             return null;
         } else {
             try {
-                return LocalDate.ofEpochDay(JapaneseDate.of(gengou.getEra(), nen, month, day).toEpochDay());
+                int year = KanjiDate.gengouToYear(gengou, nen);
+                return LocalDate.of(year, month, day);
+                //return LocalDate.ofEpochDay(JapaneseDate.of(gengou.getEra(), nen, month, day).toEpochDay());
             } catch (DateTimeException ex) {
                 em.add(name + "日付が不適切です。");
                 return null;

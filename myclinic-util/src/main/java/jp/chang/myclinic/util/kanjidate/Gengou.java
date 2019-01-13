@@ -4,13 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public enum Gengou {
 
-    Heisei(LocalDate.of(1989, 1, 8), "平成", "Heisei"),
-    Shouwa(LocalDate.of(1926, 12, 25), "昭和", "Shouwa"),
+    Meiji(LocalDate.of(1873, 1, 1), "明治", "Meiji"),
     Taishou(LocalDate.of(1912, 7, 30), "大正", "Taishou"),
-    Meiji(LocalDate.of(1873, 1, 1), "明治", "Meiji");
+    Shouwa(LocalDate.of(1926, 12, 25), "昭和", "Shouwa"),
+    Heisei(LocalDate.of(1989, 1, 8), "平成", "Heisei");
 
     private LocalDate startDate;
     private String kanjiRep;
@@ -33,4 +36,34 @@ public enum Gengou {
     public String getAlphaRep() {
         return alphaRep;
     }
+
+    public static Gengou[] valuesRecentFirst(){
+        Gengou[] values = values();
+        int n = values.length / 2;
+        for(int i=0;i<n;i++){
+            Gengou tmp = values[i];
+            values[i] = values[values.length - 1 - i];
+            values[values.length - 1 - i] = tmp;
+        }
+        return values;
+    }
+
+    public static Gengou fromKanjiRep(String rep){
+        for(Gengou g: values()){
+            if( g.getKanjiRep().equals(rep) ){
+                return g;
+            }
+        }
+        return null;
+    }
+
+    public static Gengou Current = Heisei;
+
+    public static List<Gengou> Recent = new ArrayList<Gengou>();
+    static {
+        Recent.add(Heisei);
+    }
+
+    public static Gengou MostRecent = Heisei;
+
 }

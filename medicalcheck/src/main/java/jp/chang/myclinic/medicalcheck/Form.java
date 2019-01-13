@@ -7,15 +7,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.consts.Sex;
-import jp.chang.myclinic.medicalcheck.dateinput.DateInput;
-import jp.chang.myclinic.medicalcheck.dateinput.Result;
 import jp.chang.myclinic.medicalcheck.lib.GuiUtil;
 import jp.chang.myclinic.medicalcheck.lib.SexRadioInput;
-import jp.chang.myclinic.util.DateTimeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
+import jp.chang.myclinic.utilfx.dateinput.DateInput;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -24,7 +22,6 @@ import java.util.function.Function;
 
 class Form extends HBox {
 
-    private static Logger logger = LoggerFactory.getLogger(Form.class);
     private TextField nameField = new TextField();
     private DateInput birthdayInput = new DateInput();
     private SexRadioInput sexInput = new SexRadioInput(Sex.Female);
@@ -164,7 +161,8 @@ class Form extends HBox {
 
     private String getBirthdayValue(){
         return getDate(birthdayInput, date -> {
-            return DateTimeUtil.toKanji(date, DateTimeUtil.kanjiFormatter1);
+            return new KanjiDateRepBuilder(date).format1().build();
+            //return DateTimeUtil.toKanji(date, DateTimeUtil.kanjiFormatter1);
         }, "生年月日の入力が不適切です。");
     }
 
@@ -249,13 +247,13 @@ class Form extends HBox {
         if( input.isEmpty() ){
             return "";
         }
-        Result<LocalDate, List<String>> result =  input.getValue();
-        if( result.hasValue() ){
-            LocalDate date = result.getValue();
-            return formatter.apply(date);
-        } else {
-            GuiUtil.alertError(errorMessage + "\n" + String.join("\n", result.getError()));
+        LocalDate date = input.getValue(errs -> {
+            GuiUtil.alertError(errorMessage + "\n" + String.join("\n", errs));
+        });
+        if( date == null ){
             return "";
+        } else {
+            return formatter.apply(date);
         }
     }
 

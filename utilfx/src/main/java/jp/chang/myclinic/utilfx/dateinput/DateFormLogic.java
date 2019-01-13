@@ -1,6 +1,8 @@
 package jp.chang.myclinic.utilfx.dateinput;
 
-import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.kanjidate.Gengou;
+import jp.chang.myclinic.util.kanjidate.GengouNenPair;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import jp.chang.myclinic.util.logic.*;
 
 import java.time.DateTimeException;
@@ -37,10 +39,10 @@ public class DateFormLogic extends LogicUtil {
             return new DateFormInputs(defaultGengou, "", "", "");
         }
         try {
-            JapaneseDate jd = JapaneseDate.from(date);
-            Gengou gengou = Gengou.fromEra(jd.getEra());
+            GengouNenPair gn = KanjiDate.yearToGengou(date);
+            Gengou gengou = gn.gengou;
             DateFormInputs inputs = new DateFormInputs(gengou);
-            int nen = jd.get(ChronoField.YEAR_OF_ERA);
+            int nen = gn.nen;
             int month = date.getMonthValue();
             int day = date.getDayOfMonth();
             inputs.nen = "" + nen;

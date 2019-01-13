@@ -13,7 +13,7 @@ public class KanjiDate {
 
     public static GengouNenPair yearToGengou(int year, int month, int day){
         LocalDate d = LocalDate.of(year, month, day);
-        for(Gengou g: Gengou.values()){
+        for(Gengou g: Gengou.valuesRecentFirst()){
             if( !d.isBefore(g.getStartDate()) ){
                 int nen = year - g.getStartDate().getYear() + 1;
                 return new GengouNenPair(g, nen);

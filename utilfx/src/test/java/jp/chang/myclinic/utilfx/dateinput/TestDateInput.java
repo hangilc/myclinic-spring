@@ -1,6 +1,6 @@
 package jp.chang.myclinic.utilfx.dateinput;
 
-import jp.chang.myclinic.consts.Gengou;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.util.logic.LogicValue;
 import org.junit.Test;
 
