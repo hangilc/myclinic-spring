@@ -13,7 +13,9 @@ import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.medicalcheck.lib.GuiUtil;
 import jp.chang.myclinic.medicalcheck.lib.SexRadioInput;
 import jp.chang.myclinic.util.kanjidate.KanjiDateRepBuilder;
-import jp.chang.myclinic.utilfx.dateinput.DateInput;
+import jp.chang.myclinic.util.logic.ErrorMessages;
+import jp.chang.myclinic.utilfx.dateinput.DateForm;
+import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -23,7 +25,7 @@ import java.util.function.Function;
 class Form extends HBox {
 
     private TextField nameField = new TextField();
-    private DateInput birthdayInput = new DateInput();
+    private DateForm birthdayInput = new DateForm(Gengou.values(), Gengou.Shouwa);
     private SexRadioInput sexInput = new SexRadioInput(Sex.Female);
     private TextField addressField = new TextField();
     private TextField heightField = new TextField();
@@ -41,11 +43,11 @@ class Form extends HBox {
     private TextField ekgField = new TextField("");
     private TextField historyField = new TextField("特記事項なし");
     private TextField chestXpResultField = new TextField("");
-    private DateInput chestXpDateInput = new DateInput();
+    private DateForm chestXpDateInput = new DateForm(Gengou.Recent, Gengou.Current);
     private TextField urinaryProteinField = new TextField("");
     private TextField urinaryBloodField = new TextField("");
     private TextField urinarySugarField = new TextField("");
-    private DateInput issueDateInput = new DateInput();
+    private DateForm issueDateInput = new DateForm(Gengou.Recent, Gengou.Current);
     private TextArea examResultArea = new TextArea();
 
     Form(){
@@ -67,7 +69,6 @@ class Form extends HBox {
     }
 
     private Node leftColumn() {
-        birthdayInput.setGengou(Gengou.Heisei);
         heightField.getStyleClass().add("height-input");
         weightField.getStyleClass().add("weight-input");
         visualAcuityBareRightField.getStyleClass().add("visual-acuity-input");
@@ -77,10 +78,9 @@ class Form extends HBox {
         List.of(hearing1000RightField, hearing4000RightField, hearing1000LeftField, hearing4000LeftField)
                 .forEach(f -> f.getStyleClass().add("hearing-ability-input"));
         bloodPressureField.getStyleClass().add("blood-pressure-input");
-        chestXpDateInput.setGengou(Gengou.MostRecent);
         List.of(urinaryProteinField, urinaryBloodField, urinarySugarField)
                 .forEach(f -> f.getStyleClass().add("urinary-input"));
-        issueDateInput.setValue(LocalDate.now());
+        issueDateInput.setDateFormInputs(DateFormLogic.localDateToDateFormInputs(LocalDate.now()));
         DispGrid column = new DispGrid();
         column.addRow("氏名", nameField);
         column.addRow("生年月日", birthdayInput);
@@ -243,14 +243,14 @@ class Form extends HBox {
                 "発行日の入力が不適切です。");
     }
 
-    private String getDate(DateInput input, Function<LocalDate, String> formatter, String errorMessage){
-        if( input.isEmpty() ){
+    private String getDate(DateForm form, Function<LocalDate, String> formatter, String errorMessage){
+        if( form.isEmpty() ){
             return "";
         }
-        LocalDate date = input.getValue(errs -> {
-            GuiUtil.alertError(errorMessage + "\n" + String.join("\n", errs));
-        });
-        if( date == null ){
+        ErrorMessages em = new ErrorMessages();
+        LocalDate date = DateFormLogic.dateFormInputsToLocalDate(form.getDateFormInputs(), "", em);
+        if( em.hasError() ){
+            GuiUtil.alertError(errorMessage + "\n" + em.getMessage());
             return "";
         } else {
             return formatter.apply(date);
