@@ -16,7 +16,9 @@ public class ShahokokuhoLogic {
 
     public static String formatHokenshaBangou(int bangou){
         String s = String.format("%d", bangou);
-        if( s.length() <= 6 ){
+        if( s.length() <= 4 ){
+            return StringUtil.padLeft('0', s, 4);
+        } else if( s.length() <= 6 ){
             return StringUtil.padLeft('0', s, 6);
         } else if( s.length() <= 8 ){
             return StringUtil.padLeft('0', s, 8);
@@ -29,6 +31,13 @@ public class ShahokokuhoLogic {
         return bangou
                 .validate(Validators::isPositive)
                 .validate(hasDigitsInRange(5, 8))
+                .validate(Validators::hasValidCheckingDigit);
+    }
+
+    public static Logic<Integer> isValidShahokokuhoHokenshaBangouBefore20080931(Logic<Integer> bangou){
+        return bangou
+                .validate(Validators::isPositive)
+                .validate(hasDigitsInRange(3, 8))
                 .validate(Validators::hasValidCheckingDigit);
     }
 

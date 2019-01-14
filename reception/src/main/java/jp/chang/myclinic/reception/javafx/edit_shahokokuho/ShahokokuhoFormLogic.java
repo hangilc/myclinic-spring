@@ -12,9 +12,63 @@ import java.util.function.Consumer;
 
 import static jp.chang.myclinic.util.logic.Validators.isOneOf;
 
-public class ShahokokuhoFormLogic extends LogicUtil {
+class ShahokokuhoFormLogic extends LogicUtil {
 
-    public static ShahokokuhoDTO shahokokuhoFormInputsToShahokokuhoDTO(ShahokokuhoFormInputs inputs,
+    static Converter<ShahokokuhoFormInputs, ShahokokuhoDTO> inputsToDTOConv(boolean isOld){
+        return (inputs, name, em) -> {
+            int ne = em.getNumberOfErrors();
+            ShahokokuhoDTO dto = new ShahokokuhoDTO();
+
+            dto.hokenshaBangou = new LogicValue<>(inputs.hokenshaBangou)
+                    .validate(Validators::isNotNull)
+                    .validate(Validators::isNotEmpty)
+                    .convert(Converters::stringToInteger)
+                    .validate(isOld ?
+                            ShahokokuhoLogic::isValidShahokokuhoHokenshaBangouBefore20080931 :
+                            ShahokokuhoLogic::isValidShahokokuhoHokenshaBangou)
+                    .getValueOrElse(0, nameWith(name, "の") + "保険者番号", em);
+
+            new BiLogicValue<>(inputs.hihokenshaKigou, inputs.hihokenshaBangou)
+                    .map(Mappers::nullToEmpty)
+                    .validate(BiValidators::notBothAreEmpty)
+                    .apply(
+                            (kigou, bangou) -> {
+                                dto.hihokenshaKigou = kigou;
+                                dto.hihokenshaBangou = bangou;
+                            },
+                            nameWith(name, "の") + "被保険者記号",
+                            nameWith(name, "の") + "被保険者番号",
+                            em
+                    );
+
+            dto.honnin = new LogicValue<>(inputs.honnin)
+                    .validate(Validators.isOneOf(0, 1))
+                    .getValueOrElse(0, nameWith(name, "の") + "本人・家族", em);
+
+            new BiLogicValue<>(inputs.validFromInputs, inputs.validUptoInputs)
+                    .convert(DateFormLogic::dateFormValidIntervalToSqldate)
+                    .apply(
+                            (validFrom, validUpto) -> {
+                                dto.validFrom = validFrom;
+                                dto.validUpto = validUpto;
+                            },
+                            nameWith(name, "の") + "資格取得日",
+                            nameWith(name, "の") + "有効期限",
+                            em);
+
+            dto.kourei = new LogicValue<>(inputs.kourei)
+                    .validate(Validators::isNotNull)
+                    .validate(isOneOf(0, 1, 2, 3))
+                    .getValueOrElse(0, nameWith(name, "の") + "高齢", em);
+
+            if (em.hasErrorSince(ne)) {
+                return null;
+            }
+            return dto;
+        };
+    }
+
+    static ShahokokuhoDTO shahokokuhoFormInputsToShahokokuhoDTO(ShahokokuhoFormInputs inputs,
                                                                        String name, ErrorMessages em) {
         int ne = em.getNumberOfErrors();
         ShahokokuhoDTO dto = new ShahokokuhoDTO();
@@ -65,8 +119,8 @@ public class ShahokokuhoFormLogic extends LogicUtil {
         return dto;
     }
 
-    public static ShahokokuhoFormInputs shahokokuhoDTOToShahokokuhoFormInputs(ShahokokuhoDTO dto,
-                                                                              String name, ErrorMessages em) {
+    public static ShahokokuhoFormInputs shahokokuhoDTOToShahokokuhoFormInputs(
+            ShahokokuhoDTO dto, String name, ErrorMessages em) {
         ShahokokuhoFormInputs inputs = new ShahokokuhoFormInputs();
         inputs.hokenshaBangou = new LogicValue<>(dto.hokenshaBangou)
                 .map(bangou -> {
@@ -123,8 +177,9 @@ public class ShahokokuhoFormLogic extends LogicUtil {
             GuiUtil.alertError(emInputs.getMessage());
         }
         formInitializer.accept(initialInputs);
+        boolean isOld = "2008-09-31".compareTo(orig.validFrom) >= 0;
         return (inputs, em) -> new LogicValue<>(inputs)
-                .convert(ShahokokuhoFormLogic::shahokokuhoFormInputsToShahokokuhoDTO)
+                .convert(inputsToDTOConv(isOld))
                 .map(dto -> {
                     dto.shahokokuhoId = orig.shahokokuhoId;
                     dto.patientId = orig.patientId;
