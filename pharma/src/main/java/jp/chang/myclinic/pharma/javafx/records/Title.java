@@ -14,9 +14,7 @@ class Title extends Label {
         getStyleClass().add("record-title");
         setMaxWidth(Double.MAX_VALUE);
         setText(new KanjiDateRepBuilder(DateTimeUtil.parseSqlDateTime(visitedAt))
-            .format1().str(" ").format6().build());
-//        setText(DateTimeUtil.sqlDateTimeToKanji(visitedAt,
-//                DateTimeUtil.kanjiFormatter1, DateTimeUtil.kanjiFormatter6));
+            .format7().str(" ").format6().build());
     }
 
 }

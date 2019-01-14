@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.javafx.disease;
 
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -51,6 +52,7 @@ public class Edit extends VBox {
 
     private Node createCommands(){
         HBox hbox = new HBox(4);
+        hbox.setAlignment(Pos.CENTER_LEFT);
         Button enterButton = new Button("入力");
         Hyperlink deleteAdjLink = new Hyperlink("修飾語削除");
         Hyperlink deleteLink = new Hyperlink("削除");

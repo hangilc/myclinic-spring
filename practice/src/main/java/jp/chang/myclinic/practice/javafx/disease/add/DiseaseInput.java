@@ -9,6 +9,7 @@ import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
 import jp.chang.myclinic.practice.lib.Result;
 import jp.chang.myclinic.util.DiseaseUtil;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.util.logic.ErrorMessages;
 import jp.chang.myclinic.utilfx.dateinput.DateForm;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
@@ -21,7 +22,7 @@ import java.util.List;
 public class DiseaseInput extends VBox {
 
     private Text nameText = new Text("");
-    private DateForm dateForm = new DateForm();
+    private DateForm dateForm = new DateForm(Gengou.Recent, Gengou.Current);
     private ByoumeiMasterDTO byoumeiMaster;
     private List<ShuushokugoMasterDTO> adjList = new ArrayList<>();
 

@@ -237,6 +237,7 @@ public class MainPane extends VBox implements DispatchHook {
                     return prop;
                 })
         );
+        stage.setTitle("領収書用紙印刷");
         stage.show();
     }
 
