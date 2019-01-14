@@ -37,7 +37,7 @@ public class RecordModel {
 
     public RecordModel(VisitDTO visitDTO, PatientModel patient, HokenModel hokenModel) {
         this.visitId = visitDTO.visitId;
-        this.visitedAt = LocalDateTime.parse(visitDTO.visitedAt, DateTimeUtil.sqlDateTimeFormatter);
+        this.visitedAt = DateTimeUtil.parseSqlDateTime(visitDTO.visitedAt);
         this.patient = patient;
         bindHoken(hokenModel);
         updateHokenRep();

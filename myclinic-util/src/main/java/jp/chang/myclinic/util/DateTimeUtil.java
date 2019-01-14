@@ -17,13 +17,13 @@ public class DateTimeUtil {
 
     private static DateTimeFormatter sqlDateFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");
     private static DateTimeFormatter sqlDateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
-    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat1 = KanjiDateRepBuilder::format1;
-    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat2 = KanjiDateRepBuilder::format2;
-    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat3 = KanjiDateRepBuilder::format3;
-    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat4 = KanjiDateRepBuilder::format4;
-    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat5 = KanjiDateRepBuilder::format5;
-    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat6 = KanjiDateRepBuilder::format6;
-    private static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormat7 = KanjiDateRepBuilder::format7;
+    public static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormatter1 = KanjiDateRepBuilder::format1;
+    public static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormatter2 = KanjiDateRepBuilder::format2;
+    public static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormatter3 = KanjiDateRepBuilder::format3;
+    public static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormatter4 = KanjiDateRepBuilder::format4;
+    public static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormatter5 = KanjiDateRepBuilder::format5;
+    public static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormatter6 = KanjiDateRepBuilder::format6;
+    public static Function<KanjiDateRepBuilder, KanjiDateRepBuilder> kanjiFormatter7 = KanjiDateRepBuilder::format7;
 
     //	public static DateTimeFormatter kanjiFormatter1 = DateTimeFormatter.ofPattern("Gy年M月d日", Locale.JAPAN);
 //	public static DateTimeFormatter kanjiFormatter2 = DateTimeFormatter.ofPattern("Gyy年MM月dd日", Locale.JAPAN);
@@ -33,25 +33,30 @@ public class DateTimeUtil {
 //	public static DateTimeFormatter kanjiFormatter6 = DateTimeFormatter.ofPattern("H時m分", Locale.JAPAN);
 //	public static DateTimeFormatter kanjiFormatter7 = DateTimeFormatter.ofPattern("Gy年M月d日（E）", Locale.JAPAN);
 //
-//	public static String toKanji(LocalDate date, DateTimeFormatter formatter){
-//			JapaneseDate jd = JapaneseDate.from(date);
-//			return jd.format(formatter);
-//	}
-//
-//	public static String toKanji(LocalDate date){
-//		return toKanji(date, kanjiFormatter1);
-//	}
-//
-//	public static String toKanji(LocalDateTime dateTime, DateTimeFormatter dateFormatter){
-//			JapaneseDate jd = JapaneseDate.from(dateTime);
-//			return jd.format(dateFormatter);
-//	}
-//
-//	public static String toKanji(LocalDateTime datetime, DateTimeFormatter dateFormatter,
-//								 DateTimeFormatter timeFormatter, String sep){
-//		return toKanji(datetime, dateFormatter) + sep + datetime.format(timeFormatter);
-//	}
-//
+
+    public static String toKanji(LocalDate date,
+                                 Function<KanjiDateRepBuilder, KanjiDateRepBuilder> formatter) {
+        KanjiDateRepBuilder b = new KanjiDateRepBuilder(date);
+        formatter.apply(b);
+        return b.build();
+    }
+
+
+	public static String toKanji(LocalDate date){
+		return toKanji(date, kanjiFormatter1);
+	}
+
+	public static String toKanji(LocalDateTime datetime,
+                                 Function<KanjiDateRepBuilder, KanjiDateRepBuilder> dateFormatter,
+                                 Function<KanjiDateRepBuilder, KanjiDateRepBuilder> timeFormatter,
+                                 String separator){
+        KanjiDateRepBuilder b = new KanjiDateRepBuilder(datetime);
+        dateFormatter.apply(b);
+        b.str(separator);
+        timeFormatter.apply(b);
+        return b.build();
+	}
+
 //	public static boolean isValidAt(LocalDate at, String validFrom, String validUpto){
 //		LocalDate validFromDate = LocalDate.parse(validFrom, sqlDateFormatter);
 //		return validFromDate.compareTo(at) <= 0 &&
@@ -64,19 +69,25 @@ public class DateTimeUtil {
     }
 
     public static LocalDate parseSqlDate(String sqlDate) {
+        if (sqlDate.length() > 10) {
+            sqlDate = sqlDate.substring(0, 10);
+        }
         return LocalDate.parse(sqlDate, sqlDateFormatter);
     }
 
+	public static String sqlDateToKanji(String sqlDate,
+                                        Function<KanjiDateRepBuilder, KanjiDateRepBuilder> formatter){
+        LocalDate date = parseSqlDate(sqlDate);
+        return toKanji(date, formatter);
+	}
+
 //	public static String sqlDateToKanji(String sqlDate){
-//		return sqlDateToKanji(sqlDate, kanjiFormatter1);
+//        LocalDate date = parseSqlDate(sqlDate);
+//        return toKanji(date);
 //	}
-//
+
 //	public static String sqlDateToKanjiWithYoubi(String sqlDate) {
 //		return sqlDateToKanji(sqlDate, kanjiFormatter3);
-//	}
-//
-//	public static String sqlDateToKanji(String sqlDate, DateTimeFormatter formatter){
-//		return toKanji(parseSqlDate(sqlDate), formatter);
 //	}
 //
 //	public static String sqlDateTimeToKanji(String sqlDateTime, DateTimeFormatter dateFormatter, DateTimeFormatter timeFormatter, String separator){
@@ -94,8 +105,18 @@ public class DateTimeUtil {
             Function<KanjiDateRepBuilder, KanjiDateRepBuilder> dateFormatter,
             Function<KanjiDateRepBuilder, KanjiDateRepBuilder> timeFormatter,
             String separator) {
-        
+        LocalDateTime dt = parseSqlDateTime(sqlDateTime);
+        return toKanji(dt, dateFormatter, timeFormatter, separator);
     }
+
+    public static String sqlDateTimeToKanji(
+            String sqlDateTime,
+            Function<KanjiDateRepBuilder, KanjiDateRepBuilder> dateFormatter,
+            Function<KanjiDateRepBuilder, KanjiDateRepBuilder> timeFormatter) {
+        return sqlDateTimeToKanji(sqlDateTime, dateFormatter, timeFormatter, " ");
+    }
+
+
 //
 //	public static String sqlDateTimeToKanji(String sqlDateTime, DateTimeFormatter dateFormatter) {
 //		return sqlDateTimeToKanji(sqlDateTime, dateFormatter, null);
@@ -105,10 +126,10 @@ public class DateTimeUtil {
 //		return sqlDateTimeToKanji(sqlDateTime, dateFormatter, timeFormatter, " ");
 //	}
 //
-//	public static String toSqlDateTime(LocalDateTime at){
-//		return at.format(sqlDateTimeFormatter);
-//	}
-//
+	public static String toSqlDateTime(LocalDateTime at){
+		return at.format(sqlDateTimeFormatter);
+	}
+
 //	public static JapaneseEra getEra(LocalDate localDate){
 //		JapaneseDate jd = JapaneseDate.from(localDate);
 //		return jd.getEra();
