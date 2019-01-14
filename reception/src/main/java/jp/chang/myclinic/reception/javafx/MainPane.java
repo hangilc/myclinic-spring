@@ -95,12 +95,12 @@ public class MainPane extends VBox implements DispatchHook {
             deselectButton.setOnAction(event -> doDeselect());
             deleteButton.setOnAction(event -> doDelete());
             Runnable noSyncNoticeUpdater = () -> {
-                boolean visible = !Globals.isTracking();
+                boolean visible = !Globals.getAppVars().isTracking();
                 noSyncNotice.setVisible(visible);
                 noSyncNotice.setManaged(visible);
             };
             noSyncNoticeUpdater.run();
-            Globals.trackingProperty().addListener((obs, oldValue, newValue) -> noSyncNoticeUpdater.run());
+            Globals.getAppVars().trackingProperty().addListener((obs, oldValue, newValue) -> noSyncNoticeUpdater.run());
             hbox.getChildren().addAll(refreshButton, cashierButton, deselectButton, deleteButton,
                     noSyncNotice);
             getChildren().add(hbox);
@@ -218,21 +218,25 @@ public class MainPane extends VBox implements DispatchHook {
 
     private void doBlankReceipt() {
         ReceiptDrawerDataCreator creator = new ReceiptDrawerDataCreator();
-        creator.setClinicInfo(Globals.getClinicInfo());
+        creator.setClinicInfo(Globals.getAppVars().getClinicInfo());
         ReceiptDrawerData data = creator.getData();
         ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
         final List<Op> ops = receiptDrawer.getOps();
         PrinterEnv printerEnv = null;
         try {
-            printerEnv = Globals.getPrinterEnv();
+            printerEnv = Globals.getAppVars().getPrinterEnv();
         } catch (Exception ex) {
             logger.error("Failed to get PrinterEnv", ex);
             GuiUtil.alertError("Failed to get PrinterEnv");
         }
         DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
                 printerEnv,
-                Globals::getReceiptPrinterSetting,
-                Globals::setReceiptPrinterSetting);
+                () -> Globals.getAppVars().getReceiptPrinterSetting(),
+                setting -> Globals.getAppVars().modifyAppProperties(prop -> {
+                    prop.receiptPrinterSetting = setting;
+                    return prop;
+                })
+        );
         stage.show();
     }
 

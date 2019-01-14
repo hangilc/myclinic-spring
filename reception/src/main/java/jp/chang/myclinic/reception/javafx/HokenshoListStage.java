@@ -61,7 +61,7 @@ class HokenshoListStage extends Stage {
     }
 
     private void downloadImage(int patientId, String file, Consumer<Path> cb) {
-        Path saveDir = Globals.getImageSaveDir();
+        Path saveDir = Globals.getAppVars().getImageSaveDir();
         Path savePath = Paths.get(saveDir.toString(), file);
         if (!Files.exists(savePath)) {
             Service.api.getHokensho(patientId, file)

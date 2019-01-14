@@ -23,18 +23,21 @@ public class ReceiptPreview {
     private static Logger logger = LoggerFactory.getLogger(ReceiptPreview.class);
 
     public static void previewReceipt(MeisaiDTO meisai, PatientDTO patient, VisitDTO visit, Integer charge) {
-        ClinicInfoDTO clinicInfo = Globals.getClinicInfo();
+        ClinicInfoDTO clinicInfo = Globals.getAppVars().getClinicInfo();
         ReceiptDrawerData data = ReceiptDrawerDataCreator.create(meisai, patient, visit, charge, clinicInfo);
         ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
         List<Op> ops = receiptDrawer.getOps();
         try {
-            PrinterEnv printerEnv = Globals.getPrinterEnv();
-//            DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
-//                    printerEnv, "reception-receipt");
+            PrinterEnv printerEnv = Globals.getAppVars().getPrinterEnv();
             DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
                     printerEnv,
-                    Globals::getReceiptPrinterSetting, //() -> ReceptionEnv.INSTANCE.getMyclinicEnv().getAppProperty("reception-receipt"),
-                    Globals::setReceiptPrinterSetting // name -> ReceptionEnv.INSTANCE.getMyclinicEnv().saveAppProperty("reception-receipt", name)
+                    () -> Globals.getAppVars().getReceiptPrinterSetting(),
+                    setting -> {
+                        Globals.getAppVars().modifyAppProperties(props -> {
+                            props.receiptPrinterSetting = setting;
+                            return props;
+                        });
+                    }
             );
             stage.show();
         } catch (Exception e) {
@@ -44,18 +47,21 @@ public class ReceiptPreview {
     }
 
     public static void previewReceipt(PatientDTO patient, VisitDTO visit, Integer charge) {
-        ClinicInfoDTO clinicInfo = Globals.getClinicInfo();
+        ClinicInfoDTO clinicInfo = Globals.getAppVars().getClinicInfo();
         ReceiptDrawerData data = ReceiptDrawerDataCreator.create(null, patient, visit, charge, clinicInfo);
         ReceiptDrawer receiptDrawer = new ReceiptDrawer(data);
         List<Op> ops = receiptDrawer.getOps();
         try {
-            PrinterEnv printerEnv = Globals.getPrinterEnv();
-//            DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
-//                    printerEnv, "reception-receipt");
+            PrinterEnv printerEnv = Globals.getAppVars().getPrinterEnv();
             DrawerPreviewStage stage = new DrawerPreviewStage(ops, PaperSize.A6_Landscape,
                     printerEnv,
-                    Globals::getReceiptPrinterSetting, //  () -> ReceptionEnv.INSTANCE.getMyclinicEnv().getAppProperty("reception-receipt"),
-                    Globals::setReceiptPrinterSetting // name -> ReceptionEnv.INSTANCE.getMyclinicEnv().saveAppProperty("reception-receipt", name)
+                    () -> Globals.getAppVars().getReceiptPrinterSetting(),
+                    setting -> {
+                        Globals.getAppVars().modifyAppProperties(props -> {
+                            props.receiptPrinterSetting = setting;
+                            return props;
+                        });
+                    }
             );
             stage.show();
         } catch (Exception e) {

@@ -19,11 +19,11 @@ public class AppProperties {
 
     public String receiptPrinterSetting;
 
-    public void load(Properties props){
+    void load(Properties props){
         this.receiptPrinterSetting = props.getProperty(receiptPrinterSettingKey);
     }
 
-    public Properties toProperties(){
+    Properties toProperties(){
         Properties props = new Properties();
         if( receiptPrinterSetting != null ){
             props.setProperty(receiptPrinterSettingKey, receiptPrinterSetting);

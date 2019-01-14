@@ -72,7 +72,7 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         tracker = new Tracker(wsUrl, mainPane, Service.api);
-        tracker.start(() -> Platform.runLater(() -> Globals.setTracking(true)));
+        tracker.start(() -> Platform.runLater(() -> Globals.getAppVars().setTracking(true)));
         mainPane.addEventHandler(RefreshEvent.eventType, evt -> {
             if (tracker.isRunning()) {
                 tracker.reload();
@@ -99,13 +99,13 @@ public class Main extends Application {
             RadioMenuItem unsyncItem = new RadioMenuItem("同期しない");
             menu.getItems().add(unsyncItem);
             toggleGroup.getToggles().addAll(syncItem, unsyncItem);
-            if( Globals.isTracking() ){
+            if( Globals.getAppVars().isTracking() ){
                 syncItem.setSelected(true);
             } else {
                 unsyncItem.setSelected(true);
             }
-            Globals.trackingProperty().addListener((obs, oldValue, newValue) -> {
-                if( Globals.isTracking() ){
+            Globals.getAppVars().trackingProperty().addListener((obs, oldValue, newValue) -> {
+                if( Globals.getAppVars().isTracking() ){
                     syncItem.setSelected(true);
                 } else {
                     unsyncItem.setSelected(true);
@@ -123,13 +123,13 @@ public class Main extends Application {
             List<WqueueTable.Model> models = tracker.getWqueueList().stream()
                     .map(WqueueModel::new).collect(Collectors.toList());
             mainPane.setWqueueModels(models);
-            tracker.restart(() -> Platform.runLater(() -> Globals.setTracking(true)));
+            tracker.restart(() -> Platform.runLater(() -> Globals.getAppVars().setTracking(true)));
         }
     }
 
     private void doStopTracking() {
         tracker.shutdown();
-        Globals.setTracking(false);
+        Globals.getAppVars().setTracking(false);
     }
 
     private void doManualUpdate(){

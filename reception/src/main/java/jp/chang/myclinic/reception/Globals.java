@@ -10,45 +10,62 @@ import jp.chang.myclinic.myclinicenv.MyclinicEnv;
 
 import java.nio.file.Path;
 import java.util.Properties;
+import java.util.function.Function;
 
-public class Globals {
+public class Globals implements AppVars {
 
-    //private static Logger logger = LoggerFactory.getLogger(Globals.class);
+    private static Globals INSTANCE = new Globals();
 
-    private Globals() {
-
+    public static AppVars getAppVars(){
+        return INSTANCE;
     }
 
-    private static MyclinicEnv myclinicEnv = new MyclinicEnv("reception");
+    private Globals() {
+        this.myclinicEnv = new MyclinicEnv("reception");
+        this.appProps = loadAppProperties();
+    }
+
+    private MyclinicEnv myclinicEnv;
 
     // Clinic Info
-    private static ClinicInfoDTO clinicInfo;
+    private ClinicInfoDTO clinicInfo;
 
-    public static ClinicInfoDTO getClinicInfo() {
+    @Override
+    public ClinicInfoDTO getClinicInfo() {
         return clinicInfo;
     }
 
-    public static void setClinicInfo(ClinicInfoDTO clinicInfo) {
-        Globals.clinicInfo = clinicInfo;
+    static void setClinicInfo(ClinicInfoDTO clinicInfo) {
+        Globals.INSTANCE.clinicInfo = clinicInfo;
     }
 
     // Printer setting
 
-    private static AppProperties appProps = loadAppProperties();
+    private AppProperties appProps;
 
-    private static AppProperties loadAppProperties(){
+    private AppProperties loadAppProperties(){
         Properties props = myclinicEnv.getAppProperties();
         AppProperties appProps = new AppProperties();
         appProps.load(props);
         return appProps;
     }
 
-    private static void saveAppProperties(AppProperties appProps){
+    private void saveAppProperties(AppProperties appProps){
         Properties props = appProps.toProperties();
         myclinicEnv.saveAppProperties(props);
     }
 
-    public static String getReceiptPrinterSetting() {
+    @Override
+    public void modifyAppProperties(Function<AppProperties, AppProperties> modifier){
+        AppProperties newProps = modifier.apply(appProps);
+        if( newProps != null ){
+            Properties props = newProps.toProperties();
+            myclinicEnv.saveAppProperties(props);
+        }
+    }
+
+    @Override
+    public String getReceiptPrinterSetting() {
         if( appProps == null ){
             return null;
         } else {
@@ -56,22 +73,16 @@ public class Globals {
         }
     }
 
-    public static void setReceiptPrinterSetting(String receiptPrinterSetting) {
-        if( appProps == null ){
-            appProps = new AppProperties();
-        }
-        appProps.receiptPrinterSetting = receiptPrinterSetting;
-        saveAppProperties(appProps);
-    }
-
-    public static PrinterEnv getPrinterEnv(){
+    @Override
+    public PrinterEnv getPrinterEnv(){
         return myclinicEnv.getPrinterEnv();
     }
 
     // Scanner image save path
-    private static Path imageSaveDir;
+    private Path imageSaveDir;
 
-    public static Path getImageSaveDir() {
+    @Override
+    public Path getImageSaveDir() {
         if( imageSaveDir == null ) {
             imageSaveDir = myclinicEnv.createTempDir("image-save-dir");
             imageSaveDir.toFile().deleteOnExit();
@@ -80,17 +91,20 @@ public class Globals {
     }
 
     // Tracking property
-    private static BooleanProperty tracking = new SimpleBooleanProperty();
+    private BooleanProperty tracking = new SimpleBooleanProperty();
 
-    public static boolean isTracking() {
+    @Override
+    public boolean isTracking() {
         return tracking.get();
     }
 
-    public static BooleanProperty trackingProperty() {
+    @Override
+    public BooleanProperty trackingProperty() {
         return tracking;
     }
 
-    public static void setTracking(boolean value) {
+    @Override
+    public void setTracking(boolean value) {
         tracking.set(value);
     }
 
