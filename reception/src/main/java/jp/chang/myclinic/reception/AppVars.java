@@ -11,6 +11,9 @@ public interface AppVars {
 
     public ClinicInfoDTO getClinicInfo();
     public String getReceiptPrinterSetting();
+    public Integer getDefaultKoukikoureiHokenshaBangou();
+    public String getDefaultKoukikoureiValidFrom();
+    public String getDefaultKoukikoureiValidUpto();
     public PrinterEnv getPrinterEnv();
     public Path getImageSaveDir();
     public boolean isTracking();

@@ -50,15 +50,11 @@ public class Globals implements AppVars {
         return appProps;
     }
 
-    private void saveAppProperties(AppProperties appProps){
-        Properties props = appProps.toProperties();
-        myclinicEnv.saveAppProperties(props);
-    }
-
     @Override
     public void modifyAppProperties(Function<AppProperties, AppProperties> modifier){
         AppProperties newProps = modifier.apply(appProps);
         if( newProps != null ){
+            this.appProps = newProps;
             Properties props = newProps.toProperties();
             myclinicEnv.saveAppProperties(props);
         }
@@ -70,6 +66,33 @@ public class Globals implements AppVars {
             return null;
         } else {
             return appProps.receiptPrinterSetting;
+        }
+    }
+
+    @Override
+    public Integer getDefaultKoukikoureiHokenshaBangou() {
+        if( appProps == null ){
+            return null;
+        } else {
+            return appProps.defaultKoukikoureiHokenshaBangou;
+        }
+    }
+
+    @Override
+    public String getDefaultKoukikoureiValidFrom() {
+        if( appProps == null ){
+            return null;
+        } else {
+            return appProps.defaultKoukikoureiValidFrom;
+        }
+    }
+
+    @Override
+    public String getDefaultKoukikoureiValidUpto() {
+        if( appProps == null ){
+            return null;
+        } else {
+            return appProps.defaultKoukikoureiValidUpto;
         }
     }
 

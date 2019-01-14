@@ -1,18 +1,26 @@
 package jp.chang.myclinic.reception.javafx.edit_koukikourei;
 
 import jp.chang.myclinic.dto.KoukikoureiDTO;
+import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.util.dto_logic.KoukikoureiLogic;
 import jp.chang.myclinic.util.kanjidate.Gengou;
+import jp.chang.myclinic.util.kanjidate.GengouNenPair;
+import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import jp.chang.myclinic.util.logic.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.function.Consumer;
+import java.util.zip.DataFormatException;
 
 class KoukikoureiFormLogic extends LogicUtil {
 
-    //private static Logger logger = LoggerFactory.getLogger(KoukikoureiFormLogic.class);
+   private static Logger logger = LoggerFactory.getLogger(KoukikoureiFormLogic.class);
 
     private KoukikoureiFormLogic() {
 
@@ -65,7 +73,40 @@ class KoukikoureiFormLogic extends LogicUtil {
         return em.hasErrorSince(ne) ? null : dto;
     }
 
-    static KoukikoureiFormInputs koukikoureiDTOToKoukikoureiFormInputs(KoukikoureiDTO dto,
+    private static KoukikoureiFormInputs newKoukikoureiFormInputs(){
+        KoukikoureiFormInputs inputs = createDefaultInputs();
+        Integer hokenshaBangou = Globals.getAppVars().getDefaultKoukikoureiHokenshaBangou();
+        if( hokenshaBangou != null ){
+            inputs.hokenshaBangou = hokenshaBangou.toString();
+        }
+        String validFrom = Globals.getAppVars().getDefaultKoukikoureiValidFrom();
+        if( validFrom != null ){
+            try {
+                LocalDate date = LocalDate.parse(validFrom);
+                GengouNenPair gn = KanjiDate.yearToGengou(date);
+                inputs.validFromInputs = new DateFormInputs(
+                        gn.gengou, gn.nen, date.getMonthValue(), date.getDayOfMonth()
+                );
+            } catch(DateTimeParseException ex){
+                logger.warn("Failed to parse koukikourei valid from. {}", validFrom, ex);
+            }
+        }
+        String validUpto = Globals.getAppVars().getDefaultKoukikoureiValidUpto();
+        if( validUpto != null ){
+            try {
+                LocalDate date = LocalDate.parse(validUpto);
+                GengouNenPair gn = KanjiDate.yearToGengou(date);
+                inputs.validUptoInputs = new DateFormInputs(
+                        gn.gengou, gn.nen, date.getMonthValue(), date.getDayOfMonth()
+                );
+            } catch(DateTimeParseException ex){
+                logger.warn("Failed to parse koukikourei valid upto. {}", validUpto, ex);
+            }
+        }
+        return inputs;
+    }
+
+    private static KoukikoureiFormInputs koukikoureiDTOToKoukikoureiFormInputs(KoukikoureiDTO dto,
                                                                        String name, ErrorMessages em) {
         int ne = em.getNumberOfErrors();
         KoukikoureiFormInputs inputs = new KoukikoureiFormInputs();
@@ -99,7 +140,7 @@ class KoukikoureiFormLogic extends LogicUtil {
     }
 
     public static EnterProc createEnterProc(int patientId, Consumer<KoukikoureiFormInputs> formInitializer) {
-        KoukikoureiFormInputs initInputs = createDefaultInputs();
+        KoukikoureiFormInputs initInputs = newKoukikoureiFormInputs();
         formInitializer.accept(initInputs);
         return (inputs, em) -> new LogicValue<>(inputs)
                 .convert(KoukikoureiFormLogic::koukikoureiFormInputsToKoukikoureiDTO)

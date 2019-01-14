@@ -24,6 +24,10 @@ public class DateFormInputs {
         this.day = day;
     }
 
+    public DateFormInputs(Gengou gengou, int nen, int month, int day){
+        this(gengou, "" + nen, "" + month, "" + day);
+    }
+
     public boolean isEmpty(){
         return (nen == null || nen.isEmpty()) && (month == null || month.isEmpty()) &&
                 (day == null || day.isEmpty());
