@@ -4,6 +4,6 @@ if( $modulepath -notin $current ){
     if( $env:PSModulePath ){
         $env:PSModulePath += ";$modulepath"
         } else {
-            $env:PSMOdulePath = "$modulepath"
+            $env:PSModulePath = "$modulepath"
         }
 }

@@ -7,21 +7,19 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.DiseaseEndReason;
-import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.DiseaseModifyEndReasonDTO;
-import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.util.logic.ErrorMessages;
-import jp.chang.myclinic.utilfx.GuiUtil;
-import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.disease.end.DateControl;
 import jp.chang.myclinic.practice.javafx.disease.end.DiseaseList;
 import jp.chang.myclinic.practice.javafx.parts.CheckBoxWithData;
-//import jp.chang.myclinic.practice.javafx.parts.dateinput.DateInput;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
+import jp.chang.myclinic.util.kanjidate.Gengou;
+import jp.chang.myclinic.util.logic.ErrorMessages;
+import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
-import jp.chang.myclinic.practice.lib.Result;
 import jp.chang.myclinic.utilfx.dateinput.DateForm;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 import jp.chang.myclinic.utilfx.dateinput.DateFormLogic;
@@ -34,6 +32,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+//import jp.chang.myclinic.practice.javafx.parts.dateinput.DateInput;
 
 public class End extends VBox {
 
@@ -127,6 +127,10 @@ public class End extends VBox {
                 .minus(1, ChronoUnit.DAYS);
     }
 
+    private LocalDate endOfLastMonth(){
+        return LocalDate.now().withDayOfMonth(1).minus(1, ChronoUnit.DAYS);
+    }
+
     private Node createDateControl() {
         DateControl dateControl = new DateControl();
         dateControl.setOnWeekCallback(event -> {
@@ -144,7 +148,7 @@ public class End extends VBox {
             modifyDate(this::endOfMonth);
         });
         dateControl.setOnLastMonthEndCallback(event -> {
-            modifyDate(date -> endOfMonth(LocalDate.now()));
+            modifyDate(date -> endOfLastMonth());
         });
         return dateControl;
     }
