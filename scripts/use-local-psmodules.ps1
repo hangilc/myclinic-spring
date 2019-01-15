@@ -1,5 +1,9 @@
 $modulepath = resolve-path $PSScriptRoot\PSModules
 $current = $env:PSModulePath.split(";")
 if( $modulepath -notin $current ){
-    $env:PSModulePath += ";$modulepath"
+    if( $env:PSModulePath ){
+        $env:PSModulePath += ";$modulepath"
+        } else {
+            $env:PSMOdulePath = "$modulepath"
+        }
 }
