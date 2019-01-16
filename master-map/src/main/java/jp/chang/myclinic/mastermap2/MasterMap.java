@@ -17,6 +17,18 @@ import java.util.stream.Stream;
 
 public class MasterMap {
 
+    public Map<MapKind, Map<String, Integer>> loadNameMaps() {
+        String srcFile = System.getenv("MYCLINIC_NAME_MAP_FILE");
+        if( srcFile == null ){
+            srcFile = "./config/master-name.txt";
+            if( !Files.exists(Paths.get(srcFile)) ){
+                throw new RuntimeException("Cannot find master name file. " +
+                        "Can be specified by env var MYCLINIC_NAME_MAP_FILE");
+            }
+        }
+        return loadNameMaps(srcFile);
+    }
+
     public Map<MapKind, Map<String, Integer>> loadNameMaps(String srcFile) {
         Map<MapKind, Map<String, Integer>> result = new EnumMap<>(MapKind.class);
         for (MapKind mk : MapKind.values()) {
@@ -55,6 +67,18 @@ public class MasterMap {
             throw new UncheckedIOException(e);
         }
         return result;
+    }
+
+    public Map<MapKind, List<CodeMapEntry>> loadCodeMaps() {
+        String srcFile = System.getenv("MYCLINIC_CODE_MAP_FILE");
+        if( srcFile == null ){
+            srcFile = "./config/master-map.txt";
+            if( !Files.exists(Paths.get(srcFile)) ){
+                throw new RuntimeException("Cannot find master code file. " +
+                        "Can be specified by env var MYCLINIC_CODE_MAP_FILE");
+            }
+        }
+        return loadCodeMaps(srcFile);
     }
 
     private static Pattern patternCodeMapLine = Pattern.compile("^(.),(\\d{9}),(\\d{4}-\\d{2}-\\d{2}),(\\d{9})(\\s+(.*))?");
