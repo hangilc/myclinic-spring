@@ -2,6 +2,8 @@ package jp.chang.myclinic.mastermap2;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -93,6 +95,24 @@ public class MasterMap {
             entries.sort(CodeMapEntry::compareTo);
         }
         return result;
+    }
+
+    public void resolveClassMembersWithNameMap(Class<?> cls, MapKind mapKind, String srcFile){
+        Map<String, Integer> origNameMap = loadNameMaps(srcFile).get(mapKind);
+        Map<String, Integer> nameMap = new HashMap<>();
+        for(String key: origNameMap.keySet()){
+            Integer value = origNameMap.get(key);
+            key = key.replaceAll("[（）()－-]", "");
+            nameMap.put(key, value);
+        }
+        for(Field field: cls.getDeclaredFields()){
+            if( (field.getModifiers() & Modifier.PUBLIC) != 0 &&
+                    (field.getType() == Integer.class || field.getType() == Integer.TYPE )){
+                String name = field.getName();
+                int code = nameMap.get(name);
+                System.out.printf("public int %s = %s;\n", name, code);
+            }
+        }
     }
 
 }
