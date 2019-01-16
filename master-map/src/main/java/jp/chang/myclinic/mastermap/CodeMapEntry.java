@@ -79,4 +79,13 @@ class CodeMapEntry implements Comparable<CodeMapEntry> {
         return LocalDate.parse(src, formatter);
     }
 
+    @Override
+    public String toString() {
+        return "CodeMapEntry{" +
+                "oldCode=" + oldCode +
+                ", newCode=" + newCode +
+                ", validFrom=" + validFrom +
+                ", comment='" + comment + '\'' +
+                '}';
+    }
 }
