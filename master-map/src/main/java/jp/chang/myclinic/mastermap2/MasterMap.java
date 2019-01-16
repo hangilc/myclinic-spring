@@ -1,7 +1,9 @@
 package jp.chang.myclinic.mastermap2;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import jp.chang.myclinic.mastermap.next.ByoumeiByName;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
@@ -10,6 +12,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MasterMap {
@@ -95,6 +98,34 @@ public class MasterMap {
             entries.sort(CodeMapEntry::compareTo);
         }
         return result;
+    }
+
+    public Map<String, List<List<String>>> loadShinryouByoumeiMap(String srcFile){
+        Map<String, List<List<String>>> result = new HashMap<>();
+        try (InputStream ins = new FileInputStream(Paths.get(srcFile).toFile())) {
+            Yaml yaml = new Yaml();
+            Map<String, Object> top = yaml.load(ins);
+            for (Map.Entry<String, Object> entry : top.entrySet()) {
+                String shinryou = entry.getKey();
+                @SuppressWarnings("unchecked")
+                List<Object> values = (List<Object>) entry.getValue();
+                @SuppressWarnings("unchecked")
+                List<List<String>> byoumeiList = values.stream()
+                        .map(value -> {
+                            if( value instanceof String ){
+                                return List.of((String)value);
+                            } else {
+                                return (List<String>)value;
+                            }
+                        })
+                        .collect(Collectors.toList());
+                result.put(shinryou, byoumeiList);
+            }
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new UncheckedIOException(e);
+        }
     }
 
     public void resolveClassMembersWithNameMap(Class<?> cls, MapKind mapKind, String srcFile){
