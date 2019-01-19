@@ -1,9 +1,6 @@
 package jp.chang.myclinic.rcpt.resolvedmap2;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-class ResolvedDiseaseMap {
+public class ResolvedDiseaseMap {
 
     public int 急性上気道炎 = 3041;
     public int アレルギー性鼻炎 = 2517;

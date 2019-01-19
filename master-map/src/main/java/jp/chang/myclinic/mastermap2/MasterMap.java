@@ -1,9 +1,11 @@
 package jp.chang.myclinic.mastermap2;
 
-import jp.chang.myclinic.mastermap.next.ByoumeiByName;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.file.Files;
@@ -19,9 +21,9 @@ public class MasterMap {
 
     public Map<MapKind, Map<String, Integer>> loadNameMaps() {
         String srcFile = System.getenv("MYCLINIC_NAME_MAP_FILE");
-        if( srcFile == null ){
+        if (srcFile == null) {
             srcFile = "./config/master-name.txt";
-            if( !Files.exists(Paths.get(srcFile)) ){
+            if (!Files.exists(Paths.get(srcFile))) {
                 throw new RuntimeException("Cannot find master name file. " +
                         "Can be specified by env var MYCLINIC_NAME_MAP_FILE");
             }
@@ -71,9 +73,9 @@ public class MasterMap {
 
     public Map<MapKind, List<CodeMapEntry>> loadCodeMaps() {
         String srcFile = System.getenv("MYCLINIC_CODE_MAP_FILE");
-        if( srcFile == null ){
+        if (srcFile == null) {
             srcFile = "./config/master-map.txt";
-            if( !Files.exists(Paths.get(srcFile)) ){
+            if (!Files.exists(Paths.get(srcFile))) {
                 throw new RuntimeException("Cannot find master code file. " +
                         "Can be specified by env var MYCLINIC_CODE_MAP_FILE");
             }
@@ -92,11 +94,11 @@ public class MasterMap {
             lines.forEach(line -> {
                 String origLine = line;
                 line = line.trim();
-                if( line.isEmpty() || line.startsWith(";") ){
+                if (line.isEmpty() || line.startsWith(";")) {
                     return;
                 }
                 Matcher matcher = patternCodeMapLine.matcher(line);
-                if( !matcher.matches() ){
+                if (!matcher.matches()) {
                     throw new RuntimeException("Invalid master map entry: " + origLine);
                 }
                 char kindChar = matcher.group(1).charAt(0);
@@ -105,26 +107,39 @@ public class MasterMap {
                 String newCode = matcher.group(4);
                 String comment = matcher.group(6);
                 MapKind kind = MapKind.fromCodeKey(kindChar);
-                if( kind == null ){
+                if (kind == null) {
                     throw new RuntimeException("Invalid map kind: " + origLine);
                 }
                 int oldCodeValue = Integer.parseInt(oldCode);
                 int newCodeValue = Integer.parseInt(newCode);
                 LocalDate validFromValue = LocalDate.parse(validFrom);
-                CodeMapEntry entry =  new CodeMapEntry(oldCodeValue, newCodeValue, validFromValue, comment);
+                CodeMapEntry entry = new CodeMapEntry(oldCodeValue, newCodeValue, validFromValue, comment);
                 result.get(kind).add(entry);
             });
         } catch (IOException e) {
             e.printStackTrace();
             throw new UncheckedIOException(e);
         }
-        for(List<CodeMapEntry> entries: result.values()){
+        for (List<CodeMapEntry> entries : result.values()) {
             entries.sort(CodeMapEntry::compareTo);
         }
         return result;
     }
 
-    public Map<String, List<List<String>>> loadShinryouByoumeiMap(String srcFile){
+    public  Map<String, List<List<String>>> loadShinryouByoumeiMap() {
+        String srcFile = System.getenv("MYCLINIC_SHINRYOU_BYOUMEI_MAP_FILE");
+        if (srcFile == null) {
+            srcFile = "./config/shinryou-byoumei.yml";
+            if (!Files.exists(Paths.get(srcFile))) {
+                throw new RuntimeException("Cannot find shinryou byoumei map file. " +
+                        "Can be specified by env var MYCLINIC_SHINRYOU_BYOUMEI_MAP_FILE");
+            }
+        }
+        return loadShinryouByoumeiMap(srcFile);
+
+    }
+
+    public Map<String, List<List<String>>> loadShinryouByoumeiMap(String srcFile) {
         Map<String, List<List<String>>> result = new HashMap<>();
         try (InputStream ins = new FileInputStream(Paths.get(srcFile).toFile())) {
             Yaml yaml = new Yaml();
@@ -136,10 +151,10 @@ public class MasterMap {
                 @SuppressWarnings("unchecked")
                 List<List<String>> byoumeiList = values.stream()
                         .map(value -> {
-                            if( value instanceof String ){
-                                return List.of((String)value);
+                            if (value instanceof String) {
+                                return List.of((String) value);
                             } else {
-                                return (List<String>)value;
+                                return (List<String>) value;
                             }
                         })
                         .collect(Collectors.toList());
@@ -152,21 +167,47 @@ public class MasterMap {
         }
     }
 
-    public void resolveClassMembersWithNameMap(Class<?> cls, MapKind mapKind, String srcFile){
+    public void resolveClassMembersWithNameMap(Class<?> cls, MapKind mapKind, String srcFile) {
         Map<String, Integer> origNameMap = loadNameMaps(srcFile).get(mapKind);
         Map<String, Integer> nameMap = new HashMap<>();
-        for(String key: origNameMap.keySet()){
+        for (String key : origNameMap.keySet()) {
             Integer value = origNameMap.get(key);
             key = key.replaceAll("[（）()－-]", "");
             nameMap.put(key, value);
         }
-        for(Field field: cls.getDeclaredFields()){
-            if( (field.getModifiers() & Modifier.PUBLIC) != 0 &&
-                    (field.getType() == Integer.class || field.getType() == Integer.TYPE )){
+        for (Field field : cls.getDeclaredFields()) {
+            if ((field.getModifiers() & Modifier.PUBLIC) != 0 &&
+                    (field.getType() == Integer.class || field.getType() == Integer.TYPE)) {
                 String name = field.getName();
                 int code = nameMap.get(name);
                 System.out.printf("public int %s = %s;\n", name, code);
             }
+        }
+    }
+
+    public int adaptCodeToDate(int code, List<CodeMapEntry> entries, LocalDate at){
+        for(CodeMapEntry e: entries){
+            if( e.getOldCode() == code ){
+                code = e.apply(code, at);
+            }
+        }
+        return code;
+    }
+
+    public <T> void adaptMembersToDate(T instance, List<CodeMapEntry> entries, LocalDate at) {
+        Class<?> cls = instance.getClass();
+        try {
+            for (Field field : cls.getDeclaredFields()) {
+                if ((field.getModifiers() & Modifier.PUBLIC) != 0 &&
+                        field.getType() == Integer.TYPE) {
+                    int code = field.getInt(instance);
+                    code = adaptCodeToDate(code, entries, at);
+                    field.setInt(instance, code);
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

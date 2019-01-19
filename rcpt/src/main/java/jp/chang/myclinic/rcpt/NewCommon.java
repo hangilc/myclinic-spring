@@ -1,7 +1,6 @@
 package jp.chang.myclinic.rcpt;
 
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.mastermap.next.ByoumeiByName;
 import jp.chang.myclinic.mastermap.next.MapKind;
 import jp.chang.myclinic.mastermap.next.MasterMapManager;
 import jp.chang.myclinic.mastermap.next.ShinryouByoumeiMap;
@@ -12,10 +11,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class NewCommon {
 
@@ -25,7 +20,7 @@ public class NewCommon {
 
     public static class MasterMaps {
         public ResolvedMap resolvedMap;
-        public Map<Integer, List<ResolvedByoumei>> shinryouByoumeiMap;
+        //public Map<Integer, List<ResolvedByoumei>> shinryouByoumeiMap;
     }
 
     public static MasterMaps getMasterMaps(LocalDate at) throws IOException {
@@ -46,14 +41,15 @@ public class NewCommon {
         ShinryouByoumeiMap shinryouByoumeiMap = ShinryouByoumeiMap.loadFromYaml(Paths.get(shinryouByoumeiConfigFile));
         MasterMaps result = new MasterMaps();
         result.resolvedMap = resolvedMap;
-        result.shinryouByoumeiMap = new HashMap<>();
-        for(String shinryouName: shinryouByoumeiMap.keySet()){
-            List<ByoumeiByName> shuushokugoByNames = shinryouByoumeiMap.get(shinryouName);
-            List<ResolvedByoumei> shuushokugoList = shuushokugoByNames.stream()
-                    .map(s -> ResolvedByoumei.fromByoumeiByName(s, shoubyoumeiResolver, shuushokugoResolver, at))
-                    .collect(Collectors.toList());
-            result.shinryouByoumeiMap.put(shinryouResolver.resolve(shinryouName, at), shuushokugoList);
-        }
+//        result.shinryouByoumeiMap = new HashMap<>();
+//        for(String shinryouName: shinryouByoumeiMap.keySet()){
+//            List<ByoumeiByName> shuushokugoByNames = shinryouByoumeiMap.get(shinryouName);
+//            List<ResolvedByoumei> shuushokugoList = shuushokugoByNames.stream()
+//                    .map(s -> ResolvedByoumei.fromByoumeiByName(s, shoubyoumeiResolver, shuushokugoResolver, at))
+//                    .collect(Collectors.toList());
+//            result.shinryouByoumeiMap.put(shinryouResolver.resolve(shinryouName, at), shuushokugoList);
+//        }
         return result;
     }
+
 }
