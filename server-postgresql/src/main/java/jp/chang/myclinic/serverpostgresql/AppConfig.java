@@ -40,12 +40,6 @@ class AppConfig {
     }
 
     @Bean
-    public jp.chang.myclinic.mastermap.MasterMap getMasterMap(@Value("${myclinic.master-map-file}") String masterMapLocation,
-                                  @Value("${myclinic.name-map-file}") String nameMapLocation) throws IOException {
-        return jp.chang.myclinic.mastermap.MasterMap.loadMap(nameMapLocation, masterMapLocation);
-    }
-
-    @Bean
     public HoukatsuKensa makeHoukatsuKensa() throws IOException {
         return HoukatsuKensa.load();
     }
