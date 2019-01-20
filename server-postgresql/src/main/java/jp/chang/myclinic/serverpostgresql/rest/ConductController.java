@@ -131,7 +131,9 @@ public class ConductController {
 						newShinryou.conductId = 0;
 						newShinryou.conductShinryouId = 0;
 						newShinryou.shinryoucode =
-								masterMapUtil.resolveShinryouMaster(shinryou.shinryoucode, at).shinryoucode;
+								dbGateway.findShinryouMasterByShinryoucode(shinryou.shinryoucode, at)
+									.map(m -> m.shinryoucode)
+									.orElseThrow(() -> new RuntimeException("コピー先で資料できません。[" + shinryou.shinryoucode + "]"));
 						return newShinryou;
 					})
 					.collect(Collectors.toList());
@@ -178,7 +180,9 @@ public class ConductController {
 
 	private ConductShinryouDTO createConductShinryou(String name, LocalDate at){
 		ConductShinryouDTO shinryou = new ConductShinryouDTO();
-		shinryou.shinryoucode = masterMapUtil.resolveShinryouMaster(name, at).shinryoucode;
+		shinryou.shinryoucode = masterMapUtil.resolveShinryouMaster(name, at)
+			.map(m -> m.shinryoucode).orElseThrow(() ->
+						new RuntimeException("診療行為を使用できません。[" + name + "]"));
 		return shinryou;
 	}
 
@@ -191,7 +195,9 @@ public class ConductController {
 
 	private ConductKizaiDTO createConductKizai(String name, LocalDate at, double amount){
 		ConductKizaiDTO kizai = new ConductKizaiDTO();
-		kizai.kizaicode = masterMapUtil.resolveKizaiMaster(name, at).kizaicode;
+		kizai.kizaicode = masterMapUtil.resolveKizaiMaster(name, at)
+			.map(m -> m.kizaicode).orElseThrow(() ->
+						new RuntimeException("特定器材を使用できません。[" + name + "]"));
 		kizai.amount = amount;
 		return kizai;
 	}

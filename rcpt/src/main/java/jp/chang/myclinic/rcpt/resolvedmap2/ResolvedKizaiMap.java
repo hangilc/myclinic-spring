@@ -1,6 +1,6 @@
 package jp.chang.myclinic.rcpt.resolvedmap2;
 
-class ResolvedKizaiMap {
+public class ResolvedKizaiMap {
 
     public int 半切 = 700010000;
     public int 大角 = 700030000;

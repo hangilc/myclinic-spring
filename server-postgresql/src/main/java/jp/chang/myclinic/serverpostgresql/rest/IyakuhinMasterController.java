@@ -2,6 +2,7 @@ package jp.chang.myclinic.serverpostgresql.rest;
 
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.mastermap.MasterMap;
+import jp.chang.myclinic.serverpostgresql.MasterMapUtil;
 import jp.chang.myclinic.serverpostgresql.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,7 @@ public class IyakuhinMasterController {
     @Autowired
     private DbGateway dbGateway;
     @Autowired
-    private MasterMap masterMap;
+    private MasterMapUtil masterMapUtil;
 
     @RequestMapping(value="/search-iyakuhin-master-by-name", method= RequestMethod.GET)
     public List<IyakuhinMasterDTO> searchIyakuhinMasterByName(@RequestParam("text") String text,
@@ -44,7 +45,7 @@ public class IyakuhinMasterController {
     public Optional<IyakuhinMasterDTO> resolveIyakuhinMaster(@RequestParam("iyakuhincode") int iyakuhincode,
                                                              @RequestParam("at") String at){
         LocalDate atDate = convertToDate(at);
-        iyakuhincode = masterMap.resolveIyakuhinCode(iyakuhincode, atDate);
+        iyakuhincode = masterMapUtil.adaptIyakuhincode(iyakuhincode, atDate);
         return dbGateway.findIyakuhinMaster(iyakuhincode, atDate);
     }
 
@@ -57,7 +58,7 @@ public class IyakuhinMasterController {
         Map<Integer, IyakuhinMasterDTO> map = new HashMap<>();
         LocalDate atDate = LocalDate.parse(at);
         iyakuhincodes.forEach(iyakuhincode -> {
-            int resolvedIyakuhincode = masterMap.resolveIyakuhinCode(iyakuhincode, atDate);
+            int resolvedIyakuhincode = masterMapUtil.adaptIyakuhincode(iyakuhincode, atDate);
             Optional<IyakuhinMasterDTO> optMaster = dbGateway.findIyakuhinMaster(resolvedIyakuhincode, atDate);
             map.put(iyakuhincode, optMaster.orElse(null));
         });

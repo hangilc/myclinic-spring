@@ -3,6 +3,7 @@ package jp.chang.myclinic.serverpostgresql.rest;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.mastermap.MasterMap;
+import jp.chang.myclinic.serverpostgresql.MasterMapUtil;
 import jp.chang.myclinic.serverpostgresql.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ public class ShinryouController {
 	@Autowired
 	private DbGateway dbGateway;
 	@Autowired
-	private MasterMap masterMap;
+	private MasterMapUtil masterMapUtil;
 
 	@RequestMapping(value="/get-shinryou-full", method=RequestMethod.GET)
 	public ShinryouFullDTO getShinryouFull(@RequestParam("shinryou-id") int shinryouId){
@@ -105,7 +106,7 @@ public class ShinryouController {
 		conductShinryou.conductId = conductId;
 		conductShinryou.shinryoucode = shinryouMaster.shinryoucode;
 		dbGateway.enterConductShinryou(conductShinryou);
-		Optional<KizaiMasterDTO> optKizaiMaster = resolveKizaiMaster("四ツ切", at);
+		Optional<KizaiMasterDTO> optKizaiMaster = masterMapUtil.resolveKizaiMaster("四ツ切", at);
 		if( !optKizaiMaster.isPresent() ){
 			accum.errorMessages.add("四ツ切が適用できません。");
 			return;
@@ -120,23 +121,7 @@ public class ShinryouController {
 	}
 
 	private Optional<ShinryouMasterDTO> resolveShinryouMaster(String name, LocalDate at){
-		Optional<Integer> optShinryoucode = masterMap.getShinryoucodeByName(name);
-		if( optShinryoucode.isPresent() ){
-			int shinryoucode = masterMap.resolveShinryouCode(optShinryoucode.get(), at);
-			return dbGateway.findShinryouMasterByShinryoucode(shinryoucode, at);
-		} else {
-			return dbGateway.findShinryouMasterByName(name, at);
-		}
-	}
-
-	private Optional<KizaiMasterDTO> resolveKizaiMaster(String name, LocalDate at){
-		Optional<Integer> optKizaicode = masterMap.getKizaicodeByName(name);
-		if( optKizaicode.isPresent() ){
-			int kizaicode = masterMap.resolveKizaiCode(optKizaicode.get(), at);
-			return dbGateway.findKizaiMasterByKizaicode(kizaicode, at);
-		} else {
-			return dbGateway.findKizaiMasterByName(name, at);
-		}
+		return masterMapUtil.resolveShinryouMaster(name, at);
 	}
 
 	@RequestMapping(value="/enter-shinryou", method=RequestMethod.POST)
@@ -169,7 +154,7 @@ public class ShinryouController {
 		LocalDate atDate = LocalDate.parse(visit.visitedAt.substring(0, 10));
 		List<Integer> shinryouIds = new ArrayList<>();
 		for(ShinryouDTO src: srcList){
-			int shinryoucode = masterMap.resolveShinryouCode(src.shinryoucode, atDate);
+			int shinryoucode = masterMapUtil.adaptShinryoucode(src.shinryoucode, atDate);
 			ShinryouMasterDTO master = dbGateway.getShinryouMaster(shinryoucode, atDate);
 			ShinryouDTO newShinryou = new ShinryouDTO();
 			newShinryou.visitId = visitId;
