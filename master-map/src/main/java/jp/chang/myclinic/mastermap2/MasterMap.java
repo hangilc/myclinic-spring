@@ -124,6 +124,16 @@ public class MasterMap {
         return result;
     }
 
+    public int resolveCode(int code, LocalDate at, List<CodeMapEntry> entries){
+        for(CodeMapEntry entry: entries){
+            if( entry.getOldCode() == code ){
+                code = entry.apply(code, at);
+            }
+        }
+        return code;
+    }
+
+
     public Map<String, List<List<String>>> loadShinryouByoumeiMap(String srcFile){
         Map<String, List<List<String>>> result = new HashMap<>();
         try (InputStream ins = new FileInputStream(Paths.get(srcFile).toFile())) {
