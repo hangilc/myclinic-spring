@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+// TODO: 「糖尿病の疑い」を入力して、もう一度選択すると「糖尿病」となる
 public class Add extends VBox {
 
     private DiseaseInput diseaseInput;
