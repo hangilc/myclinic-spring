@@ -14,6 +14,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.http.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -1013,6 +1014,21 @@ public class Service {
         @GET("get-name-map-config-file-path")
         Call<StringResultDTO> getNameMapConfigFilePathCall();
 
+        @POST("batch-resolve-shinryou-names")
+        CompletableFuture<Map<String, Integer>> batchResolveShinryouNames(
+                @Query("at") LocalDate at, @Body List<List<String>> args);
+
+        @POST("batch-resolve-kizai-names")
+        CompletableFuture<Map<String, Integer>> batchResolveKizaiNames(
+                @Query("at") LocalDate at, @Body List<List<String>> args);
+
+        @POST("batch-resolve-byoumei-names")
+        CompletableFuture<Map<String, Integer>> batchResolveByoumeiNames(
+                @Query("at") LocalDate at, @Body List<List<String>> args);
+
+        @POST("batch-resolve-shuushokugo-names")
+        CompletableFuture<Map<String, Integer>> batchResolveShuushokugoNames(
+                @Query("at") LocalDate at, @Body List<List<String>> args);
     }
 
     public static ServerAPI api;

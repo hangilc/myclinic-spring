@@ -1,75 +1,240 @@
 package jp.chang.myclinic.rcpt.resolvedmap2;
 
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.mastermap2.MasterNameMap;
+
+import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
 public class ResolvedShinryouMap {
 
-    public int 単純撮影 = 170001910;
-    public int 単純撮影診断 = 170000410;
-    public int 皮下筋注 = 130000510;
-    public int 静注 = 130003510;
-    public int 初診 = 111000110;
-    public int 初診時間外加算 = 111000570;
-    public int 初診休日加算 = 111000670;
-    public int 初診深夜加算 = 111000770;
-    public int 初診乳幼児時間外加算 = 111011970;
-    public int 初診乳幼児休日加算 = 111012070;
-    public int 初診乳幼児深夜加算 = 111012170;
-    public int 再診 = 112009210;
-    public int 同日再診 = 112008350;
-    public int 外来管理加算 = 112011010;
-    public int 往診 = 114000110;
-    public int 尿一般 = 160000310;
-    public int 便潜血 = 160005210;
-    public int 尿便検査判断料 = 160061710;
-    public int 血液検査判断料 = 160061810;
-    public int 生化Ⅰ判断料 = 160061910;
-    public int 生化Ⅱ判断料 = 160062010;
-    public int 免疫検査判断料 = 160062110;
-    public int 微生物検査判断料 = 160062210;
-    public int 病理判断料 = 160062310;
-    public int 静脈採血 = 160095710;
-    public int 内服調剤 = 120000710;
-    public int 外用調剤 = 120001010;
-    public int 心電図 = 160068410;
-    public int 処方料 = 120001210;
-    public int 処方料７ = 120002610;
-    public int 処方せん料 = 120002910;
-    public int 処方せん料７ = 120002710;
-    public int 調基 = 120001810;
-    public int 特定疾患処方 = 120002270;
-    public int 特定疾患処方管理加算処方せん料 = 120002570;
-    public int 長期処方 = 120003170;
-    public int 長期投薬加算処方せん料 = 120003270;
-    public int 特定疾患管理 = 113001810;
-    public int 薬剤情報提供 = 120002370;
-    public int 手帳記載加算 = 113701310;
-    public int 診療情報提供料１ = 180016110;
-    public int 訪問看護指示料 = 114008010;
-    public int 療養費同意書交付料 = 113004310;
-    public int 向精神薬 = 120002030;
-    public int 外来後発加算１ = 120004070;
-    public int 骨塩定量ＭＤ法 = 160147310;
-    public int 血算 = 160008010;
-    public int 末梢血液像 = 160191510;
-    public int ＨｂＡ１ｃ = 160010010;
-    public int ＰＴ = 160012010;
-    public int ＧＯＴ = 160022510;
-    public int ＧＰＴ = 160022610;
-    public int γＧＴＰ = 160020410;
-    public int ＣＰＫ = 160020610;
-    public int クレアチニン = 160019210;
-    public int 尿酸 = 160019310;
-    public int ＬＤＬコレステロール = 160167250;
-    public int ＨＤＬコレステロール = 160023410;
-    public int ＴＧ = 160020910;
-    public int グルコース = 160019410;
-    public int カリウム = 160021410;
-    public int ＴＳＨ = 160031710;
-    public int ＦＴ４ = 160033310;
-    public int ＦＴ３ = 160033210;
-    public int ＰＳＡ = 160037510;
-    public int 蛋白定量尿 = 160000410;
-    public int クレアチニン尿 = 160132150;
-    public int ＣＲＰ = 160054710;
-    public int 非特異的ＩｇＥ = 160056110;
+    @MasterNameMap(candidates = {"単純撮影（アナログ撮影）", "単純撮影（撮影）"})
+    public int 単純撮影;
+    @MasterNameMap(candidates = "単純撮影（イ）の写真診断")
+    public int 単純撮影診断;
+    @MasterNameMap(candidates = {"皮下、筋肉内注射", "皮内、皮下及び筋肉内注射"})
+    public int 皮下筋注;
+    @MasterNameMap(candidates = {"静脈内注射"})
+    public int 静注;
+    @MasterNameMap(candidates = {"初診", "初診料"})
+    public int 初診;
+    @MasterNameMap(candidates = {"再診（診療所）", "再診", "再診料"})
+    public int 再診;
+    @MasterNameMap(candidates = {"同日再診", "同日再診料"})
+    public int 同日再診;
+    public int 外来管理加算;
+    public int 往診;
+    public int 尿一般;
+    @MasterNameMap(candidates = {"潜血（便）"})
+    public int 便潜血;
+    @MasterNameMap(candidates = {"尿・糞便等検査判断料"})
+    public int 尿便検査判断料;
+    @MasterNameMap(candidates = {"血液学的検査判断料"})
+    public int 血液検査判断料;
+    @MasterNameMap(candidates = {"生化学的検査（１）判断料"})
+    public int 生化Ⅰ判断料;
+    @MasterNameMap(candidates = {"生化学的検査（２）判断料"})
+    public int 生化Ⅱ判断料;
+    @MasterNameMap(candidates = {"免疫学的検査判断料"})
+    public int 免疫検査判断料;
+    @MasterNameMap(candidates = {""})
+    public int 微生物検査判断料;
+    @MasterNameMap(candidates = {""})
+    public int 病理判断料;
+    @MasterNameMap(candidates = {""})
+    public int 静脈採血;
+    @MasterNameMap(candidates = {""})
+    public int 内服調剤;
+    @MasterNameMap(candidates = {""})
+    public int 外用調剤;
+    @MasterNameMap(candidates = {""})
+    public int 心電図;
+    @MasterNameMap(candidates = {""})
+    public int 処方料;
+    @MasterNameMap(candidates = {""})
+    public int 処方料７;
+    @MasterNameMap(candidates = {""})
+    public int 処方せん料;
+    @MasterNameMap(candidates = {""})
+    public int 処方せん料７;
+    @MasterNameMap(candidates = {""})
+    public int 調基;
+    @MasterNameMap(candidates = {""})
+    public int 特定疾患処方;
+    @MasterNameMap(candidates = {""})
+    public int 特定疾患処方管理加算処方せん料;
+    @MasterNameMap(candidates = {""})
+    public int 長期処方;
+    @MasterNameMap(candidates = {""})
+    public int 長期投薬加算処方せん料;
+    @MasterNameMap(candidates = {""})
+    public int 特定疾患管理;
+    @MasterNameMap(candidates = {""})
+    public int 薬剤情報提供;
+    @MasterNameMap(candidates = {""})
+    public int 手帳記載加算;
+    @MasterNameMap(candidates = {""})
+    public int 診療情報提供料１;
+    @MasterNameMap(candidates = {""})
+    public int 訪問看護指示料;
+    @MasterNameMap(candidates = {""})
+    public int 療養費同意書交付料;
+    @MasterNameMap(candidates = {""})
+    public int 向精神薬;
+    @MasterNameMap(candidates = {""})
+    public int 外来後発加算１;
+    @MasterNameMap(candidates = {""})
+    public int 骨塩定量ＭＤ法;
+    @MasterNameMap(candidates = {""})
+    public int 血算;
+    @MasterNameMap(candidates = {""})
+    public int 末梢血液像;
+    @MasterNameMap(candidates = {""})
+    public int ＨｂＡ１ｃ;
+    @MasterNameMap(candidates = {""})
+    public int ＰＴ;
+    @MasterNameMap(candidates = {""})
+    public int ＧＯＴ;
+    @MasterNameMap(candidates = {""})
+    public int ＧＰＴ;
+    @MasterNameMap(candidates = {""})
+    public int γＧＴＰ;
+    @MasterNameMap(candidates = {""})
+    public int ＣＰＫ;
+    @MasterNameMap(candidates = {""})
+    public int クレアチニン;
+    @MasterNameMap(candidates = {""})
+    public int 尿酸;
+    @MasterNameMap(candidates = {""})
+    public int ＬＤＬコレステロール;
+    @MasterNameMap(candidates = {""})
+    public int ＨＤＬコレステロール;
+    @MasterNameMap(candidates = {""})
+    public int ＴＧ;
+    @MasterNameMap(candidates = {""})
+    public int グルコース;
+    @MasterNameMap(candidates = {""})
+    public int カリウム;
+    @MasterNameMap(candidates = {""})
+    public int ＴＳＨ;
+    @MasterNameMap(candidates = {""})
+    public int ＦＴ４;
+    @MasterNameMap(candidates = {""})
+    public int ＦＴ３;
+    @MasterNameMap(candidates = {""})
+    public int ＰＳＡ;
+    @MasterNameMap(candidates = {""})
+    public int 蛋白定量尿;
+    @MasterNameMap(candidates = {""})
+    public int クレアチニン尿;
+    @MasterNameMap(candidates = {""})
+    public int ＣＲＰ;
+    @MasterNameMap(candidates = {""})
+    public int 非特異的ＩｇＥ;
+    public Map<String, Integer> nameMap;
 
+    public CompletableFuture<Void> resolveAt(LocalDate at) {
+        List<List<String>> args = new ArrayList<>();
+        for (Field fld : this.getClass().getFields()) {
+            if (fld.getType() == Integer.TYPE) {
+                List<String> arg = new ArrayList<>();
+                arg.add(fld.getName());
+                if (fld.isAnnotationPresent(MasterNameMap.class)) {
+                    MasterNameMap annot = fld.getAnnotation(MasterNameMap.class);
+                    arg.addAll(Arrays.asList(annot.candidates()));
+                }
+                args.add(arg);
+            }
+        }
+        return Service.api.batchResolveShinryouNames(at, args)
+                .thenAccept(map -> {
+                    this.nameMap = map;
+                    try {
+                        for (Field fld : this.getClass().getFields()) {
+                            if (fld.getType() == Integer.TYPE) {
+                                String name = fld.getName();
+                                if (map.containsKey(name)) {
+                                    fld.setInt(this, map.get(name));
+                                }
+                            }
+                        }
+                    } catch (IllegalAccessException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+    }
+
+    @Override
+    public String toString() {
+        return "ResolvedShinryouMap{" +
+                "単純撮影=" + 単純撮影 +
+                ", 単純撮影診断=" + 単純撮影診断 +
+                ", 皮下筋注=" + 皮下筋注 +
+                ", 静注=" + 静注 +
+                ", 初診=" + 初診 +
+                ", 再診=" + 再診 +
+                ", 同日再診=" + 同日再診 +
+                ", 外来管理加算=" + 外来管理加算 +
+                ", 往診=" + 往診 +
+                ", 尿一般=" + 尿一般 +
+                ", 便潜血=" + 便潜血 +
+                ", 尿便検査判断料=" + 尿便検査判断料 +
+                ", 血液検査判断料=" + 血液検査判断料 +
+                ", 生化Ⅰ判断料=" + 生化Ⅰ判断料 +
+                ", 生化Ⅱ判断料=" + 生化Ⅱ判断料 +
+                ", 免疫検査判断料=" + 免疫検査判断料 +
+                ", 微生物検査判断料=" + 微生物検査判断料 +
+                ", 病理判断料=" + 病理判断料 +
+                ", 静脈採血=" + 静脈採血 +
+                ", 内服調剤=" + 内服調剤 +
+                ", 外用調剤=" + 外用調剤 +
+                ", 心電図=" + 心電図 +
+                ", 処方料=" + 処方料 +
+                ", 処方料７=" + 処方料７ +
+                ", 処方せん料=" + 処方せん料 +
+                ", 処方せん料７=" + 処方せん料７ +
+                ", 調基=" + 調基 +
+                ", 特定疾患処方=" + 特定疾患処方 +
+                ", 特定疾患処方管理加算処方せん料=" + 特定疾患処方管理加算処方せん料 +
+                ", 長期処方=" + 長期処方 +
+                ", 長期投薬加算処方せん料=" + 長期投薬加算処方せん料 +
+                ", 特定疾患管理=" + 特定疾患管理 +
+                ", 薬剤情報提供=" + 薬剤情報提供 +
+                ", 手帳記載加算=" + 手帳記載加算 +
+                ", 診療情報提供料１=" + 診療情報提供料１ +
+                ", 訪問看護指示料=" + 訪問看護指示料 +
+                ", 療養費同意書交付料=" + 療養費同意書交付料 +
+                ", 向精神薬=" + 向精神薬 +
+                ", 外来後発加算１=" + 外来後発加算１ +
+                ", 骨塩定量ＭＤ法=" + 骨塩定量ＭＤ法 +
+                ", 血算=" + 血算 +
+                ", 末梢血液像=" + 末梢血液像 +
+                ", ＨｂＡ１ｃ=" + ＨｂＡ１ｃ +
+                ", ＰＴ=" + ＰＴ +
+                ", ＧＯＴ=" + ＧＯＴ +
+                ", ＧＰＴ=" + ＧＰＴ +
+                ", γＧＴＰ=" + γＧＴＰ +
+                ", ＣＰＫ=" + ＣＰＫ +
+                ", クレアチニン=" + クレアチニン +
+                ", 尿酸=" + 尿酸 +
+                ", ＬＤＬコレステロール=" + ＬＤＬコレステロール +
+                ", ＨＤＬコレステロール=" + ＨＤＬコレステロール +
+                ", ＴＧ=" + ＴＧ +
+                ", グルコース=" + グルコース +
+                ", カリウム=" + カリウム +
+                ", ＴＳＨ=" + ＴＳＨ +
+                ", ＦＴ４=" + ＦＴ４ +
+                ", ＦＴ３=" + ＦＴ３ +
+                ", ＰＳＡ=" + ＰＳＡ +
+                ", 蛋白定量尿=" + 蛋白定量尿 +
+                ", クレアチニン尿=" + クレアチニン尿 +
+                ", ＣＲＰ=" + ＣＲＰ +
+                ", 非特異的ＩｇＥ=" + 非特異的ＩｇＥ +
+                '}';
+    }
 }

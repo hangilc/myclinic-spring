@@ -4,6 +4,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.rcpt.check.BatchCheck;
 import jp.chang.myclinic.rcpt.create.BatchCreate;
 import jp.chang.myclinic.rcpt.data.BatchData;
+import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedShinryouMap;
 
 import java.time.LocalDate;
 
@@ -41,6 +42,14 @@ public class Main {
                     System.exit(1);
                 }
                 jp.chang.myclinic.rcpt.newcreate.Create.run(args[1], System.out);
+                break;
+            }
+            case "test-resolve": {
+                ResolvedShinryouMap m = new ResolvedShinryouMap();
+                m.resolveAt(LocalDate.parse("2019-01-23"))
+                        .thenAccept(v -> {
+                            System.out.println(m);
+                        });
                 break;
             }
             default: {
