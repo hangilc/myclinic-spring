@@ -45,10 +45,12 @@ public class Main {
                 break;
             }
             case "test-resolve": {
-                ResolvedShinryouMap m = new ResolvedShinryouMap();
-                m.resolveAt(LocalDate.parse("2019-01-23"))
+                LocalDate at = LocalDate.parse(args[1]);
+                ResolvedShinryouMap s = new ResolvedShinryouMap();
+                s.resolveAt(at)
                         .thenAccept(v -> {
-                            System.out.println(m);
+                            System.out.println(s);
+                            System.out.printf("Unresolved shinryou: %s\n", s.getUnresolved().toString());
                         });
                 break;
             }

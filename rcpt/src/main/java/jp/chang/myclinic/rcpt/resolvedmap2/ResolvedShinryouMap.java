@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class ResolvedShinryouMap {
+public class ResolvedShinryouMap extends ResolvedMapBase {
 
     @MasterNameMap(candidates = {"単純撮影（アナログ撮影）", "単純撮影（撮影）"})
     public int 単純撮影;
@@ -30,7 +30,7 @@ public class ResolvedShinryouMap {
     public int 外来管理加算;
     public int 往診;
     public int 尿一般;
-    @MasterNameMap(candidates = {"潜血（便）"})
+    @MasterNameMap(candidates = {"潜血（便）", "糞便中ヘモグロビン定性", "Ｈｂ定性（便）", "Ｈｂ（便）"})
     public int 便潜血;
     @MasterNameMap(candidates = {"尿・糞便等検査判断料"})
     public int 尿便検査判断料;
@@ -42,131 +42,96 @@ public class ResolvedShinryouMap {
     public int 生化Ⅱ判断料;
     @MasterNameMap(candidates = {"免疫学的検査判断料"})
     public int 免疫検査判断料;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"微生物学的検査判断料"})
     public int 微生物検査判断料;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"病理判断料","病理学的検査判断料"})
     public int 病理判断料;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＢーＶ","Ｂ－Ｖ"})
     public int 静脈採血;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"調剤料（内服薬・浸煎薬・屯服薬）"})
     public int 内服調剤;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"調剤料（外用薬）"})
     public int 外用調剤;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＥＣＧ１２"})
     public int 心電図;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"処方料（その他）"})
     public int 処方料;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"処方料（７種類以上内服薬又は向精神薬長期処方）","処方料（７種類以上）"})
     public int 処方料７;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"処方せん料（その他）","処方せん料（その他）（後発医薬品を含む）","処方箋料（その他）"})
     public int 処方せん料;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"処方せん料（７種類以上）","処方せん料（７種類以上）（後発医薬品を含む）","処方箋料（７種類以上内服薬又は向精神薬長期処方）"})
     public int 処方せん料７;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"調基（その他）"})
     public int 調基;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"特定疾患処方管理加算（処方料）","特定疾患処方管理加算１（処方料）"})
     public int 特定疾患処方;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"特定疾患処方管理加算（処方せん料）","特定疾患処方管理加算１（処方箋料）"})
     public int 特定疾患処方管理加算処方せん料;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"特定疾患処方管理加算２（処方料）","長期投薬加算（処方料）"})
     public int 長期処方;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"特定疾患処方管理加算２（処方箋料）","長期投薬加算（処方せん料）"})
     public int 長期投薬加算処方せん料;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"特定疾患療養指導料（診療所）","特定疾患療養管理料（診療所）"})
     public int 特定疾患管理;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"薬剤情報提供料"})
     public int 薬剤情報提供;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"後期高齢者薬剤情報提供料（手帳に記載する場合）","手帳記載加算（薬剤情報提供料）","老人薬剤情報提供料（健康手帳に記載する場合）"})
     public int 手帳記載加算;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"診療情報提供料（１）","診療情報提供料（Ａ）"})
     public int 診療情報提供料１;
-    @MasterNameMap(candidates = {""})
     public int 訪問看護指示料;
-    @MasterNameMap(candidates = {""})
     public int 療養費同意書交付料;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"調剤・処方料（麻・向・覚・毒）","調剤・処方料（麻薬等）"})
     public int 向精神薬;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"外来後発医薬品使用体制加算１","外来後発医薬品使用体制加算２"})
     public int 外来後発加算１;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"骨塩定量検査（ＭＤ法、ＳＥＸＡ法等）"})
     public int 骨塩定量ＭＤ法;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"末梢血液一般"})
     public int 血算;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"末梢血液像（自動機械法）"})
     public int 末梢血液像;
-    @MasterNameMap(candidates = {""})
     public int ＨｂＡ１ｃ;
-    @MasterNameMap(candidates = {""})
     public int ＰＴ;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＡＳＴ","ＧＯＴ"})
     public int ＧＯＴ;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＡＬＴ","ＧＰＴ"})
     public int ＧＰＴ;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"γーＧＴＰ","γ－ＧＴ","γ－ＧＴＰ"})
     public int γＧＴＰ;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＣＫ","ＣＰＫ"})
     public int ＣＰＫ;
-    @MasterNameMap(candidates = {""})
     public int クレアチニン;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＵＡ"})
     public int 尿酸;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＬＤＬーコレステロール","ＬＤＬ－コレステロール"})
     public int ＬＤＬコレステロール;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＨＤＬーＣｈ","ＨＤＬ－コレステロール","ＨＤＬ－Ｃｈ"})
     public int ＨＤＬコレステロール;
-    @MasterNameMap(candidates = {""})
     public int ＴＧ;
-    @MasterNameMap(candidates = {""})
     public int グルコース;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"カリウム","Ｋ"})
     public int カリウム;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＴＳＨ","ＴＳＨ精密"})
     public int ＴＳＨ;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＦＴ４","ＦＴ４精密"})
     public int ＦＴ４;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＦＴ３","ＦＴ３精密"})
     public int ＦＴ３;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＰＳＡ","ＰＳＡ精密"})
     public int ＰＳＡ;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"尿蛋白","蛋白定量（尿）"})
     public int 蛋白定量尿;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"クレアチニン（尿）"})
     public int クレアチニン尿;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"ＣＲＰ","ＣＲＰ（定量）"})
     public int ＣＲＰ;
-    @MasterNameMap(candidates = {""})
+    @MasterNameMap(candidates={"特異的ＩｇＥ","特異的ＩｇＥ半定量・定量"})
     public int 非特異的ＩｇＥ;
-    public Map<String, Integer> nameMap;
 
-    public CompletableFuture<Void> resolveAt(LocalDate at) {
-        List<List<String>> args = new ArrayList<>();
-        for (Field fld : this.getClass().getFields()) {
-            if (fld.getType() == Integer.TYPE) {
-                List<String> arg = new ArrayList<>();
-                arg.add(fld.getName());
-                if (fld.isAnnotationPresent(MasterNameMap.class)) {
-                    MasterNameMap annot = fld.getAnnotation(MasterNameMap.class);
-                    arg.addAll(Arrays.asList(annot.candidates()));
-                }
-                args.add(arg);
-            }
-        }
-        return Service.api.batchResolveShinryouNames(at, args)
-                .thenAccept(map -> {
-                    this.nameMap = map;
-                    try {
-                        for (Field fld : this.getClass().getFields()) {
-                            if (fld.getType() == Integer.TYPE) {
-                                String name = fld.getName();
-                                if (map.containsKey(name)) {
-                                    fld.setInt(this, map.get(name));
-                                }
-                            }
-                        }
-                    } catch (IllegalAccessException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
+    public CompletableFuture<Void> resolveAt(LocalDate at){
+        return resolveAt(at, Service.api::batchResolveShinryouNames);
     }
 
     @Override
