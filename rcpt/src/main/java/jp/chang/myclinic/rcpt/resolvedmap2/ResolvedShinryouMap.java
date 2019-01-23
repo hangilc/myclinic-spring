@@ -25,7 +25,7 @@ public class ResolvedShinryouMap extends ResolvedMapBase {
     public int 初診;
     @MasterNameMap(candidates = {"再診（診療所）", "再診", "再診料"})
     public int 再診;
-    @MasterNameMap(candidates = {"同日再診", "同日再診料"})
+    @MasterNameMap(candidates = {"同日再診（診療所）", "同日再診", "同日再診料"})
     public int 同日再診;
     public int 外来管理加算;
     public int 往診;
@@ -90,7 +90,7 @@ public class ResolvedShinryouMap extends ResolvedMapBase {
     public int 骨塩定量ＭＤ法;
     @MasterNameMap(candidates={"末梢血液一般"})
     public int 血算;
-    @MasterNameMap(candidates={"末梢血液像（自動機械法）"})
+    @MasterNameMap(candidates={"末梢血液像（自動機械法）", "像"})
     public int 末梢血液像;
     public int ＨｂＡ１ｃ;
     public int ＰＴ;

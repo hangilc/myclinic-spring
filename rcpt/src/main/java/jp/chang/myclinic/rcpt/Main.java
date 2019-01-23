@@ -4,6 +4,9 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.rcpt.check.BatchCheck;
 import jp.chang.myclinic.rcpt.create.BatchCreate;
 import jp.chang.myclinic.rcpt.data.BatchData;
+import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedDiseaseAdjMap;
+import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedDiseaseMap;
+import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedKizaiMap;
 import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedShinryouMap;
 
 import java.time.LocalDate;
@@ -47,10 +50,29 @@ public class Main {
             case "test-resolve": {
                 LocalDate at = LocalDate.parse(args[1]);
                 ResolvedShinryouMap s = new ResolvedShinryouMap();
+                ResolvedKizaiMap k = new ResolvedKizaiMap();
+                ResolvedDiseaseMap b = new ResolvedDiseaseMap();
+                ResolvedDiseaseAdjMap a = new ResolvedDiseaseAdjMap();
                 s.resolveAt(at)
-                        .thenAccept(v -> {
+                        .thenCompose(v -> {
                             System.out.println(s);
                             System.out.printf("Unresolved shinryou: %s\n", s.getUnresolved().toString());
+                            return k.resolveAt(at);
+                        })
+                        .thenCompose(v -> {
+                            System.out.println(k);
+                            System.out.printf("Unresolved kizai: %s\n", k.getUnresolved().toString());
+                            return b.resolveAt(at);
+                        })
+                        .thenCompose(v -> {
+                            System.out.println(b);
+                            System.out.printf("Unresolved byoumei: %s\n", b.getUnresolved().toString());
+                            return a.resolveAt(at);
+                        })
+                        .thenAccept(v -> {
+                            System.out.println(a);
+                            System.out.printf("Unresolved shuushokugo: %s\n", a.getUnresolved().toString());
+                            System.exit(0);
                         });
                 break;
             }
