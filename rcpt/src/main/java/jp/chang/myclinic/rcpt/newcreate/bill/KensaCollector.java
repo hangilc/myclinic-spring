@@ -2,7 +2,7 @@ package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.consts.HoukatsuKensaKind;
 import jp.chang.myclinic.rcpt.newcreate.input.Shinryou;
-import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
+import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedShinryouMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -3,9 +3,7 @@ package jp.chang.myclinic.rcpt.newcreate.bill;
 import jp.chang.myclinic.rcpt.newcreate.input.Rcpt;
 import jp.chang.myclinic.rcpt.newcreate.input.Seikyuu;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
-import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedShinryouMap;
 
 import java.util.Map;
 

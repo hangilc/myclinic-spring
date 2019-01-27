@@ -1,12 +1,10 @@
 package jp.chang.myclinic.rcpt.newcreate.bill;
 
 import jp.chang.myclinic.consts.ConductKind;
-import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.consts.HoukatsuKensaKind;
 import jp.chang.myclinic.rcpt.newcreate.input.*;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
-import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
-import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedShinryouMap;
 import jp.chang.myclinic.util.HokenUtil;
 import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import org.slf4j.Logger;
@@ -379,18 +377,18 @@ class PatientBill {
     }
 
     private void runShoshinKasan(int shinryoucode) {
-        if (shinryoucode == resolvedShinryouMap.初診時間外加算 ||
-                shinryoucode == resolvedShinryouMap.初診乳幼児時間外加算) {
-            shoshinKasan.add("jikangai");
-        }
-        if (shinryoucode == resolvedShinryouMap.初診休日加算 ||
-                shinryoucode == resolvedShinryouMap.初診乳幼児休日加算) {
-            shoshinKasan.add("kyuujitsu");
-        }
-        if (shinryoucode == resolvedShinryouMap.初診深夜加算 ||
-                shinryoucode == resolvedShinryouMap.初診乳幼児深夜加算) {
-            shoshinKasan.add("shinya");
-        }
+//        if (shinryoucode == resolvedShinryouMap.初診時間外加算 ||
+//                shinryoucode == resolvedShinryouMap.初診乳幼児時間外加算) {
+//            shoshinKasan.add("jikangai");
+//        }
+//        if (shinryoucode == resolvedShinryouMap.初診休日加算 ||
+//                shinryoucode == resolvedShinryouMap.初診乳幼児休日加算) {
+//            shoshinKasan.add("kyuujitsu");
+//        }
+//        if (shinryoucode == resolvedShinryouMap.初診深夜加算 ||
+//                shinryoucode == resolvedShinryouMap.初診乳幼児深夜加算) {
+//            shoshinKasan.add("shinya");
+//        }
 
     }
 

@@ -2,7 +2,6 @@ package jp.chang.myclinic.rcpt;
 
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.rcpt.check.BatchCheck;
-import jp.chang.myclinic.rcpt.create.BatchCreate;
 import jp.chang.myclinic.rcpt.data.BatchData;
 import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedDiseaseAdjMap;
 import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedDiseaseMap;
@@ -15,17 +14,14 @@ public class Main {
 
     //private static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public static void main( String[] args ) throws Exception {
-        {
-            Service.setServerUrl(System.getenv("MYCLINIC_SERVICE"));
-            NewCommon.getMasterMaps(LocalDate.now());
-        }
-        if( args.length < 1 ){
+    public static void main(String[] args) throws Exception {
+        Service.setServerUrl(System.getenv("MYCLINIC_SERVICE"));
+        if (args.length < 1) {
             System.err.println("usage: rcpt command ...");
             System.exit(1);
         }
         String command = args[0];
-        switch(command){
+        switch (command) {
             case "check": {
                 BatchCheck.run(args);
                 break;
@@ -34,13 +30,8 @@ public class Main {
                 BatchData.run(args);
                 break;
             }
-            case "oldcreate": {
-                BatchCreate.run(args);
-                break;
-            }
-            case "create": // fall through
-            case "newcreate": {
-                if( args.length != 2 ){
+            case "create": {
+                if (args.length != 2) {
                     System.err.println("Usage: newcreate DATA-XML-FILE");
                     System.exit(1);
                 }

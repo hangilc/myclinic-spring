@@ -5,8 +5,6 @@ import jp.chang.myclinic.mastermap.next.MapKind;
 import jp.chang.myclinic.mastermap.next.MasterMapManager;
 import jp.chang.myclinic.mastermap.next.ShinryouByoumeiMap;
 import jp.chang.myclinic.rcpt.resolvedmap.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -14,7 +12,7 @@ import java.time.LocalDate;
 
 public class NewCommon {
 
-    private static Logger logger = LoggerFactory.getLogger(Common.class);
+    //private static Logger logger = LoggerFactory.getLogger(NewCommon.class);
 
     private NewCommon() { }
 

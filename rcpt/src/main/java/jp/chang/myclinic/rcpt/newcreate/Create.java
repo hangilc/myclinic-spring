@@ -2,12 +2,14 @@ package jp.chang.myclinic.rcpt.newcreate;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import jp.chang.myclinic.rcpt.NewCommon;
+import jp.chang.myclinic.rcpt.NewCommon2;
 import jp.chang.myclinic.rcpt.newcreate.bill.Bill;
 import jp.chang.myclinic.rcpt.newcreate.bill.HoukatsuKensaRevision;
 import jp.chang.myclinic.rcpt.newcreate.input.Rcpt;
 import jp.chang.myclinic.rcpt.newcreate.input.Seikyuu;
 import jp.chang.myclinic.rcpt.newcreate.output.Output;
-import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
+import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedMap;
+import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedShinryouMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +28,8 @@ public class Create {
             Rcpt rcpt = mapper.readValue(ins, Rcpt.class);
             rcpt.seikyuuList.sort(seikyuuComparator());
             LocalDate at = rcpt.getDate(1);
-            NewCommon.MasterMaps masterMaps = NewCommon.getMasterMaps(at);
-            ResolvedShinryouMap shinryouMasterMap = masterMaps.resolvedMap.shinryouMap;
+            ResolvedMap resolvedMap = NewCommon2.getMasterMaps(at).join();
+            ResolvedShinryouMap shinryouMasterMap = resolvedMap.shinryouMap;
             HoukatsuKensaRevision houkatsuKensaRevision = HoukatsuKensaRevision.load();
             HoukatsuKensaRevision.Revision revision = houkatsuKensaRevision.findRevision(at);
             Output output = new Output(printStream);
