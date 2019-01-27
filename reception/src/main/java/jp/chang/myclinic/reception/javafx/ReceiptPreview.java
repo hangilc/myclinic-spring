@@ -39,6 +39,7 @@ public class ReceiptPreview {
                         });
                     }
             );
+            stage.setTitle("領収書印刷");
             stage.show();
         } catch (Exception e) {
             logger.error("Failed to get printer env.", e);
