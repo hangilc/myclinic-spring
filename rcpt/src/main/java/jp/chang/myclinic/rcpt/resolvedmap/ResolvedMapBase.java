@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-class ResolvedMapBase {
+public class ResolvedMapBase {
 
     //private static Logger logger = LoggerFactory.getLogger(ResolvedMapBase.class);
 
-    interface Resolver {
+    public interface Resolver {
         CompletableFuture<Map<String, Integer>> resolve(LocalDate at, List<List<String>> args);
     }
 
