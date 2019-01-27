@@ -1,6 +1,6 @@
 package jp.chang.myclinic.rcpt.check;
 
-import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
+import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedShinryouMap;
 
 class CheckChoukiTouyakuKasan extends CheckBase {
 

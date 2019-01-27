@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class BatchCheck {
 
-    private static Logger logger = LoggerFactory.getLogger(BatchCheck.class);
+    //private static Logger logger = LoggerFactory.getLogger(BatchCheck.class);
 
     private BatchCheck() { }
 
