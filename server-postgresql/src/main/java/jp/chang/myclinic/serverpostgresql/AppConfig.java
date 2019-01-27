@@ -3,7 +3,9 @@ package jp.chang.myclinic.serverpostgresql;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import jp.chang.myclinic.mastermap.MasterMap;
+import jp.chang.myclinic.mastermap2.CodeMapEntry;
+import jp.chang.myclinic.mastermap2.MapKind;
+import jp.chang.myclinic.mastermap2.MasterMap;
 import jp.chang.myclinic.serverpostgresql.rcpt.HoukatsuKensa;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @Configuration
 @ComponentScan
@@ -22,10 +25,18 @@ class AppConfig {
 
     private static Logger logger = LoggerFactory.getLogger(AppConfig.class);
 
-    @Bean
-    public MasterMap getMasterMap(@Value("${myclinic.master-map-file}") String masterMapLocation,
-                                  @Value("${myclinic.name-map-file}") String nameMapLocation) throws IOException {
-        return MasterMap.loadMap(nameMapLocation, masterMapLocation);
+    @Bean(name="master-name-maps")
+    public Map<MapKind, Map<String, Integer>> getMasterNameMaps(
+            @Value("${myclinic.name-map-file}") String nameMapLocation){
+        MasterMap mm = new MasterMap();
+        return mm.loadNameMaps(nameMapLocation);
+    }
+
+    @Bean(name="master-code-maps")
+    public Map<MapKind, List<CodeMapEntry>> getMasterCodeMaps(
+            @Value("${myclinic.master-map-file}") String codeMapLocation){
+        MasterMap mm = new MasterMap();
+        return mm.loadCodeMaps(codeMapLocation);
     }
 
     @Bean

@@ -1,10 +1,6 @@
 package jp.chang.myclinic.rcpt.resolvedmap;
 
-import jp.chang.myclinic.mastermap.next.ByoumeiByName;
-
-import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ResolvedByoumei {
 
@@ -28,18 +24,6 @@ public class ResolvedByoumei {
 
     private NameCodePair shoubyoumei;
     private List<NameCodePair> shuushokugoList;
-
-    public static ResolvedByoumei fromByoumeiByName(ByoumeiByName byoumeiByName,
-                                                    Resolver shoubyoumeiResolver,
-                                                    Resolver shuushokugoResolver,
-                                                    LocalDate at){
-        String shoubyoumeiName = byoumeiByName.getShoubyoumei();
-        NameCodePair shoubyoumei = new NameCodePair(shoubyoumeiName, shoubyoumeiResolver.resolve(shoubyoumeiName, at));
-        List<NameCodePair> shuushokugoList = byoumeiByName.getShuushokugoList().stream()
-                .map(s -> new NameCodePair(s, shuushokugoResolver.resolve(s, at)))
-                .collect(Collectors.toList());
-        return new ResolvedByoumei(shoubyoumei, shuushokugoList);
-    }
 
     private ResolvedByoumei(NameCodePair shoubyoumei, List<NameCodePair> shuushokugoList) {
         this.shoubyoumei = shoubyoumei;

@@ -2,6 +2,7 @@ package jp.chang.myclinic.serverpostgresql.rest;
 
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import jp.chang.myclinic.mastermap.MasterMap;
+import jp.chang.myclinic.serverpostgresql.MasterMapUtil;
 import jp.chang.myclinic.serverpostgresql.db.myclinic.DbGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,40 +27,30 @@ public class ShinryouMasterController {
     @Autowired
     private DbGateway dbGateway;
     @Autowired
-    private MasterMap masterMap;
+    private MasterMapUtil masterMapUtil;
 
     @RequestMapping(value="/resolve-shinryoucode", method=RequestMethod.GET)
     public int resolveShinryoucode(@RequestParam("shinryoucode") int shinryoucode,
                                    @RequestParam("at") String at){
         LocalDate atDate = convertToDate(at);
-        return masterMap.resolveShinryouCode(shinryoucode, atDate);
+        return masterMapUtil.adaptShinryoucode(shinryoucode, atDate);
     }
 
     @RequestMapping(value="/resolve-shinryou-master-by-name", method=RequestMethod.GET)
     public ShinryouMasterDTO resolveShinryouMasterByName(@RequestParam("name") String name,
                                                          @RequestParam("at") String at){
         LocalDate atDate = convertToDate(at);
-        try {
-            int shinryoucode = masterMap.getShinryoucodeByName(name).orElseThrow(() -> new RuntimeException("cannot find name"));
-            shinryoucode = masterMap.resolveShinryouCode(shinryoucode, atDate);
-            return dbGateway.getShinryouMaster(shinryoucode, atDate);
-        } catch(Exception ex){
-            logger.error("Failed to resolve shinryou master by name. {}", name, ex);
-            throw new RuntimeException("診療行為マスターを見つけられませんでした。[" + name + "]: " + ex);
-        }
+        return masterMapUtil.resolveShinryouMaster(name, atDate).orElseThrow(() ->
+                new RuntimeException("診療行為マスターを見つけられませんでした。[" + name + "]"));
     }
 
     @RequestMapping(value="resolve-shinryou-master", method=RequestMethod.GET)
     public ShinryouMasterDTO resolveShinryouMaster(@RequestParam("shinryoucode") int shinryoucode,
                                                    @RequestParam("at") String at){
         LocalDate atDate = convertToDate(at);
-        try {
-            shinryoucode = masterMap.resolveShinryouCode(shinryoucode, atDate);
-            return dbGateway.getShinryouMaster(shinryoucode, atDate);
-        } catch(Exception ex){
-            logger.error("Failed to resolve shinryou master. {}", ex);
-            throw new RuntimeException("診療行為マスターを見つけられませんでした。[" + shinryoucode + "]: " + ex);
-        }
+        int newCode = masterMapUtil.adaptShinryoucode(shinryoucode, atDate);
+        return dbGateway.findShinryouMasterByShinryoucode(newCode, atDate).orElseThrow(() ->
+                new RuntimeException("診療行為マスターを見つけられませんでした。[" + shinryoucode + "]"));
     }
 
     @RequestMapping(value="/get-shinryou-master", method=RequestMethod.GET)

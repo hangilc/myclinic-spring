@@ -5,24 +5,20 @@ import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Madoku;
 import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.mastermap.ResolvedMap;
 import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
-import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class CheckBase {
 
-    private static Logger logger = LoggerFactory.getLogger(CheckBase.class);
+    //private static Logger logger = LoggerFactory.getLogger(CheckBase.class);
     private List<VisitFull2DTO> visits;
     private ResolvedMap resolvedMasterMap;
-    private Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumeiMap;
     private List<DiseaseFullDTO> diseases;
     private Fixer api;
     private Scope scope;
@@ -30,7 +26,6 @@ class CheckBase {
     CheckBase(Scope scope) {
         this.visits = scope.visits;
         this.resolvedMasterMap = scope.resolvedMasterMap;
-        this.shinryouByoumeiMap = scope.shinryouByoumeiMap;
         this.diseases = scope.diseases;
         this.api = scope.api;
         this.scope = scope;
@@ -51,10 +46,6 @@ class CheckBase {
 
     ResolvedShinryouMap getShinryouMaster() {
         return resolvedMasterMap.shinryouMap;
-    }
-
-    Map<Integer, List<ResolvedShinryouByoumei>> getShinryouByoumeiMap() {
-        return shinryouByoumeiMap;
     }
 
     VisitFull2DTO findVisit(Predicate<VisitFull2DTO> pred) {
@@ -248,10 +239,6 @@ class CheckBase {
 
     int countChoukiNaifukuDrug(VisitFull2DTO visit) {
         return countDrug(visit, this::isChoukiNaifukuDrug);
-    }
-
-    List<ResolvedShinryouByoumei> getShinryouByoumeiList(int shinryoucode) {
-        return shinryouByoumeiMap.get(shinryoucode);
     }
 
     String messageForRemoveExtra(String name, int total, int remain) {

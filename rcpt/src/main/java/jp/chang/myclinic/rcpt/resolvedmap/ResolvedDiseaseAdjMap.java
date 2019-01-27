@@ -1,14 +1,24 @@
 package jp.chang.myclinic.rcpt.resolvedmap;
 
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.mastermap2.MasterNameMap;
+
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
 
-public class ResolvedDiseaseAdjMap {
-	
-	public int 疑い;
+public class ResolvedDiseaseAdjMap extends ResolvedMapBase {
 
-	public ResolvedDiseaseAdjMap(){}
+    @MasterNameMap(candidates="の疑い")
+    public int 疑い; // 8002;
 
-	public ResolvedDiseaseAdjMap(Resolver resolver, LocalDate at){
-		this.疑い = resolver.resolve("疑い", at);
-	}
+    public CompletableFuture<Void> resolveAt(LocalDate at){
+        return resolveAt(at, Service.api::batchResolveShuushokugoNames);
+    }
+
+    @Override
+    public String toString() {
+        return "ResolvedDiseaseAdjMap{" +
+                "疑い=" + 疑い +
+                '}';
+    }
 }

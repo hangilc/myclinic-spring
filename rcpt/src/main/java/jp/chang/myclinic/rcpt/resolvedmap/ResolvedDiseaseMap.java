@@ -1,22 +1,30 @@
 package jp.chang.myclinic.rcpt.resolvedmap;
 
+import jp.chang.myclinic.client.Service;
+
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
 
-public class ResolvedDiseaseMap {
-	
-	public int 急性上気道炎;
-	public int アレルギー性鼻炎;
-	public int 糖尿病;
-	public int 低血糖発作;
-	public int 前立腺癌;
+public class ResolvedDiseaseMap extends ResolvedMapBase {
 
-	public ResolvedDiseaseMap(){}
+    public int 急性上気道炎; // 3041;
+    public int アレルギー性鼻炎; // 2517;
+    public int 糖尿病; // 2500013;
+    public int 低血糖発作; // 2512004;
+    public int 前立腺癌; // 1859003;
 
-	public ResolvedDiseaseMap(Resolver resolver, LocalDate at){
-		this.急性上気道炎 = resolver.resolve("急性上気道炎", at);
-		this.アレルギー性鼻炎 = resolver.resolve("アレルギー性鼻炎", at);
-		this.糖尿病 = resolver.resolve("糖尿病", at);
-		this.低血糖発作 = resolver.resolve("低血糖発作", at);
-		this.前立腺癌 = resolver.resolve("前立腺癌", at);
-	}
+    public CompletableFuture<Void> resolveAt(LocalDate at){
+        return resolveAt(at, Service.api::batchResolveByoumeiNames);
+    }
+
+    @Override
+    public String toString() {
+        return "ResolvedDiseaseMap{" +
+                "急性上気道炎=" + 急性上気道炎 +
+                ", アレルギー性鼻炎=" + アレルギー性鼻炎 +
+                ", 糖尿病=" + 糖尿病 +
+                ", 低血糖発作=" + 低血糖発作 +
+                ", 前立腺癌=" + 前立腺癌 +
+                '}';
+    }
 }

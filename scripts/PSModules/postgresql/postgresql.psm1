@@ -183,6 +183,18 @@ function Query(){
         ConvertFrom-Json)
 }
 
+function Invoke-PostgreSQLQuery(){
+    Param(
+        [string][parameter(mandatory)]$Sql,
+        [string][alias('Host')]$DbHost = "localhost",
+        [string]$User = $env:MYCLINIC_DB_ADMIN_USER
+    )
+    $env:PGCLIENTENCODING="SJIS"
+    psql -h $DbHost -c "select row_to_json(t) from ($sql) t" -t myclinic $user |
+            Where-Object { -not [string]::IsNullOrWhitespace($_) } |
+            ConvertFrom-Json
+}
+
 function Get-PostgreSQLPublication(){
     Param(
         [string][alias('Host')]$DbHost = "localhost"

@@ -109,6 +109,10 @@ public class Clinic {
         return visitFull.visit.visitId;
     }
 
+    public VisitFull2DTO getCurrentVisit(){
+        return currentVisit;
+    }
+
     public int getVisitId(){
         return currentVisit.visit.visitId;
     }

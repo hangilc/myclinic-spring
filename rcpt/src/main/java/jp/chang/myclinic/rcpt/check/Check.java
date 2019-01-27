@@ -5,6 +5,7 @@ import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.rcpt.Common;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedMap;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -14,24 +15,33 @@ import java.util.List;
 // TODO: check ヘリコバクタ抗体、尿素呼気試験、除菌
 public class Check {
 
-    private Check() {}
+    private Check() {
+    }
 
     public static void run(RunEnv runEnv) {
         int year = runEnv.year;
         int month = runEnv.month;
-        Common.MasterMaps masterMaps = Common.getMasterMaps(LocalDate.of(year, month, 1));
-        List<Integer> patientIds = runEnv.patientIds;
+        Common.getMasterMaps(LocalDate.of(year, month, 1))
+                .thenAccept(map -> {
+                    doCheck(runEnv, map);
+                })
+                .exceptionally(ex -> {
+                    ex.printStackTrace();
+                    return null;
+                });
+    }
+
+    private static void doCheck(RunEnv runEnv, ResolvedMap resolvedMap) {
+        int year = runEnv.year;
+        int month = runEnv.month;
         try {
-            if (patientIds == null) {
-                patientIds = Service.api.listVisitingPatientIdHavingHokenCall(year, month).execute().body();
-            }
-            for (int patientId : patientIds) {
-                PatientDTO patient = Service.api.getPatientCall(patientId).execute().body();
+            for (int patientId : runEnv.patientIds) {
+                PatientDTO patient = Service.api.getPatient(patientId).join();
                 if (runEnv.verbose) {
                     System.out.printf("%04d %s%s%n", patient.patientId, patient.lastName, patient.firstName);
                 }
-                List<VisitFull2DTO> visits = Service.api.listVisitByPatientHavingHokenCall(patientId, year, month)
-                        .execute().body();
+                List<VisitFull2DTO> visits = Service.api.listVisitByPatientHavingHoken(patientId, year, month)
+                        .join();
                 assert visits.size() > 0;
                 List<DiseaseFullDTO> diseases = Service.api.listDiseaseByPatientAtCall(patientId, year, month)
                         .execute().body();
@@ -39,8 +49,7 @@ public class Check {
                     System.err.println("Failed to get disease list (some checks skipped). PatientID " + patientId);
                     continue;
                 }
-                Scope scope = new Scope(patient, visits, masterMaps.resolvedMap, masterMaps.shinryouByoumeiMap,
-                        diseases, runEnv.errorHandler, runEnv.api);
+                Scope scope = new Scope(patient, visits, resolvedMap, diseases, runEnv.errorHandler, runEnv.api);
                 new CheckChouzai(scope).check();
                 new CheckDuplicates(scope).check();
                 new CheckTokuteiShikkanKanri(scope).check();
@@ -56,7 +65,7 @@ public class Check {
                 new CheckSaishinByoumei(scope).check();
                 new CheckByoumei(scope).check();
             }
-        } catch(IOException ex){
+        } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }
     }

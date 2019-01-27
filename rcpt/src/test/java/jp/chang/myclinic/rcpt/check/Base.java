@@ -2,22 +2,23 @@ package jp.chang.myclinic.rcpt.check;
 
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShinryouDTO;
-import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
-import jp.chang.myclinic.mastermap.generated.ResolvedShinryouMap;
-import jp.chang.myclinic.rcpt.Common;
 import jp.chang.myclinic.rcpt.builder.Clinic;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
 import org.junit.Before;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
 class Base {
 
     //private static Logger logger = LoggerFactory.getLogger(Base.class);
+    ResolvedMap resolvedMap;
     ResolvedShinryouMap shinryouMap;
-    Map<Integer, List<ResolvedShinryouByoumei>> shinryouByoumei;
-    private Common.MasterMaps masterMaps;
     int nerror;
     FixerLog log;
     Scope scope;
@@ -30,17 +31,15 @@ class Base {
     }
 
     Base() {
-        masterMaps = Listener.masterMaps;
-        shinryouMap = Listener.shinryouMap;
-        shinryouByoumei = Listener.masterMaps.shinryouByoumeiMap;
+        this.resolvedMap = Listener.resolvedMap;
+        this.shinryouMap = resolvedMap.shinryouMap;
     }
 
     private Scope createScope(FixerLog log) {
         Scope scope = new Scope();
         scope.visits = new ArrayList<>();
         scope.patient = new PatientDTO();
-        scope.resolvedMasterMap = masterMaps.resolvedMap;
-        scope.shinryouByoumeiMap = masterMaps.shinryouByoumeiMap;
+        scope.resolvedMasterMap = resolvedMap;
         scope.diseases = new ArrayList<>();
         scope.api = new FixerMock(log);
         scope.errorHandler = err -> {

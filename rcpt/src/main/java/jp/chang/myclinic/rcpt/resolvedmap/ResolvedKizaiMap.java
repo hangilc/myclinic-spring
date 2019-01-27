@@ -1,18 +1,26 @@
 package jp.chang.myclinic.rcpt.resolvedmap;
 
+import jp.chang.myclinic.client.Service;
+
 import java.time.LocalDate;
+import java.util.concurrent.CompletableFuture;
 
-public class ResolvedKizaiMap {
-	
-	public int 半切;
-	public int 大角;
-	public int 四ツ切;
+public class ResolvedKizaiMap extends ResolvedMapBase {
 
-	public ResolvedKizaiMap(){}
+    public int 半切; //700010000;
+    public int 大角; //700030000;
+    public int 四ツ切; //700080000;
 
-	public ResolvedKizaiMap(Resolver resolver, LocalDate at){
-		this.半切 = resolver.resolve("半切", at);
-		this.大角 = resolver.resolve("大角", at);
-		this.四ツ切 = resolver.resolve("四ツ切", at);
-	}
+    public CompletableFuture<Void> resolveAt(LocalDate at){
+        return resolveAt(at, Service.api::batchResolveKizaiNames);
+    }
+
+    @Override
+    public String toString() {
+        return "ResolvedKizaiMap{" +
+                "半切=" + 半切 +
+                ", 大角=" + 大角 +
+                ", 四ツ切=" + 四ツ切 +
+                '}';
+    }
 }
