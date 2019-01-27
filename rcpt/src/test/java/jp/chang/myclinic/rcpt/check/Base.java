@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 class Base {
 
     //private static Logger logger = LoggerFactory.getLogger(Base.class);
-    private ResolvedMap resolvedMap;
+    ResolvedMap resolvedMap;
     ResolvedShinryouMap shinryouMap;
     int nerror;
     FixerLog log;

@@ -4,10 +4,12 @@ import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.dto.DiseaseAdjDTO;
 import jp.chang.myclinic.dto.DiseaseDTO;
 import jp.chang.myclinic.dto.DiseaseNewDTO;
+import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
 import jp.chang.myclinic.rcpt.builder.Clinic;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,12 +19,35 @@ import static org.junit.Assert.assertEquals;
 public class TestCheckByoumei extends Base {
 
     @Test
-    public void checkByoumei() {
-//        Set<Integer> shinryoucodes = shinryouByoumei.keySet();
-//        for (int shinryoucode : shinryoucodes) {
-//            doBaseBefore();
-//            testOne(shinryoucode);
-//        }
+    public void checkHbA1c() {
+        Clinic clinic = new Clinic();
+        int patientId = clinic.createPatient();
+        clinic.startVisit(patientId);
+        clinic.addShinryou(resolvedMap.shinryouMap.ＨｂＡ１ｃ);
+        VisitFull2DTO currentVisit = clinic.getCurrentVisit();
+        scope.visits = clinic.getVisits();
+        new CheckByoumei(scope).check();
+        DiseaseNewDTO expected = scope.createNewDisease(currentVisit,
+                scope.resolvedMasterMap.diseaseMap.糖尿病,
+                Collections.singletonList(scope.resolvedMasterMap.diseaseAdjMap.疑い));
+        assertEquals(1, nerror);
+        assertEquals(List.of(expected), log.getEnteredDisseases());
+    }
+
+    @Test
+    public void checkPSA() {
+        Clinic clinic = new Clinic();
+        int patientId = clinic.createPatient();
+        clinic.startVisit(patientId);
+        clinic.addShinryou(resolvedMap.shinryouMap.ＰＳＡ);
+        VisitFull2DTO currentVisit = clinic.getCurrentVisit();
+        scope.visits = clinic.getVisits();
+        new CheckByoumei(scope).check();
+        DiseaseNewDTO expected = scope.createNewDisease(currentVisit,
+                scope.resolvedMasterMap.diseaseMap.前立腺癌,
+                Collections.singletonList(scope.resolvedMasterMap.diseaseAdjMap.疑い));
+        assertEquals(1, nerror);
+        assertEquals(List.of(expected), log.getEnteredDisseases());
     }
 
 //    private void testOne(int shinryoucode) {

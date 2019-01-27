@@ -60,15 +60,7 @@ class Scope {
         errorHandler.accept(error);
     }
 
-    void enterDisease(VisitFull2DTO visit, int byoumeicode) {
-        enterDisease(visit, byoumeicode, Collections.emptyList());
-    }
-
-    void enterDisease(VisitFull2DTO visit, int byoumeicode, int shuushokugocode) {
-        enterDisease(visit, byoumeicode, Collections.singletonList(shuushokugocode));
-    }
-
-    void enterDisease(VisitFull2DTO visit, int byoumeicode, List<Integer> shuushokugocodes) {
+    DiseaseNewDTO createNewDisease(VisitFull2DTO visit, int byoumeicode, List<Integer> shuushokugocodes){
         DiseaseNewDTO dto = new DiseaseNewDTO();
         DiseaseDTO disease = new DiseaseDTO();
         disease.patientId = visit.visit.patientId;
@@ -86,6 +78,19 @@ class Scope {
             });
         }
         dto.adjList = adjList;
+        return dto;
+    }
+
+    void enterDisease(VisitFull2DTO visit, int byoumeicode) {
+        enterDisease(visit, byoumeicode, Collections.emptyList());
+    }
+
+    void enterDisease(VisitFull2DTO visit, int byoumeicode, int shuushokugocode) {
+        enterDisease(visit, byoumeicode, Collections.singletonList(shuushokugocode));
+    }
+
+    void enterDisease(VisitFull2DTO visit, int byoumeicode, List<Integer> shuushokugocodes) {
+        DiseaseNewDTO dto = createNewDisease(visit, byoumeicode, shuushokugocodes);
         api.enterDisease(dto);
     }
 
