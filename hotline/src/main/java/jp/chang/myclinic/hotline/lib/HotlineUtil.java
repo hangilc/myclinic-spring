@@ -14,12 +14,17 @@ public class HotlineUtil {
         return String.format("%s(%03d)> ", sender, hotlineId % 1000);
     }
 
-    public static CompletableFuture<Integer>  postMessge(String sender, String recipient, String message){
+    public static HotlineDTO createHotlineDTO(String sender, String recipient, String message){
         HotlineDTO hotline = new HotlineDTO();
         hotline.sender = sender;
         hotline.recipient = recipient;
         hotline.message = message;
-        hotline.postedAt = new KanjiDateRepBuilder(LocalDateTime.now()).build();
+        hotline.postedAt = new KanjiDateRepBuilder(LocalDateTime.now()).sqldate().build();
+        return hotline;
+    }
+
+    public static CompletableFuture<Integer>  postMessge(String sender, String recipient, String message){
+        HotlineDTO hotline = createHotlineDTO(sender, recipient, message);
         return Service.api.enterHotline(hotline);
     }
 
