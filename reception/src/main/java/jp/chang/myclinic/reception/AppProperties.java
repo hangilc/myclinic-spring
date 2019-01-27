@@ -24,6 +24,9 @@ public class AppProperties {
     String defaultKoukikoureiValidUpto;
 
     private Prop[] props = new Prop[]{
+            new Prop("receipt-printer-setting", // for compatibility with old format
+                    (app, val) -> app.receiptPrinterSetting = val,
+                    app -> app.receiptPrinterSetting),
             new Prop("printer.setting.receipt",
                     (app, val) -> app.receiptPrinterSetting = val,
                     app -> app.receiptPrinterSetting),
@@ -39,10 +42,6 @@ public class AppProperties {
     };
 
     void load(Properties properties) {
-        String oldPrinterSetting = properties.getProperty("receipt-printer-setting");
-        if( oldPrinterSetting != null ){
-            this.receiptPrinterSetting = oldPrinterSetting;
-        }
         for (Prop prop : props) {
             String value = properties.getProperty(prop.key);
             if (value != null) {
