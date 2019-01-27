@@ -3,8 +3,8 @@ package jp.chang.myclinic.rcpt.check;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.rcpt.builder.Clinic;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedMap;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedShinryouMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
 import org.junit.Before;
 
 import java.util.ArrayList;

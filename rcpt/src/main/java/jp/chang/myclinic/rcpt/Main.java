@@ -3,10 +3,10 @@ package jp.chang.myclinic.rcpt;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.rcpt.check.BatchCheck;
 import jp.chang.myclinic.rcpt.data.BatchData;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedDiseaseAdjMap;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedDiseaseMap;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedKizaiMap;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedShinryouMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedDiseaseAdjMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedDiseaseMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedKizaiMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
 
 import java.time.LocalDate;
 
@@ -35,7 +35,7 @@ public class Main {
                     System.err.println("Usage: newcreate DATA-XML-FILE");
                     System.exit(1);
                 }
-                jp.chang.myclinic.rcpt.newcreate.Create.run(args[1], System.out);
+                jp.chang.myclinic.rcpt.create.Create.run(args[1], System.out);
                 break;
             }
             case "test-resolve": {

@@ -4,8 +4,8 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.DiseaseFullDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
-import jp.chang.myclinic.rcpt.NewCommon2;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedMap;
+import jp.chang.myclinic.rcpt.Common;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedMap;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -21,7 +21,7 @@ public class Check {
     public static void run(RunEnv runEnv) {
         int year = runEnv.year;
         int month = runEnv.month;
-        NewCommon2.getMasterMaps(LocalDate.of(year, month, 1))
+        Common.getMasterMaps(LocalDate.of(year, month, 1))
                 .thenAccept(map -> {
                     doCheck(runEnv, map);
                 })

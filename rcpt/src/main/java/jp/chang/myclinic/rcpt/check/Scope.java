@@ -2,8 +2,7 @@ package jp.chang.myclinic.rcpt.check;
 
 import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.rcpt.newcreate.input.Visit;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedMap;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

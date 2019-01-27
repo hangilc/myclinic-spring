@@ -6,13 +6,10 @@ import jp.chang.myclinic.consts.Madoku;
 import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedMap;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedShinryouMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;

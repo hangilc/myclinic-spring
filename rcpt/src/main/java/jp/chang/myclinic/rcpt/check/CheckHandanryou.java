@@ -1,6 +1,6 @@
 package jp.chang.myclinic.rcpt.check;
 
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedShinryouMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
 
 import java.util.*;
 

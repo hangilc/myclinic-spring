@@ -1,22 +1,10 @@
 package jp.chang.myclinic.rcpt.check;
 
-import jp.chang.myclinic.consts.DiseaseEndReason;
-import jp.chang.myclinic.consts.Shuushokugo;
-import jp.chang.myclinic.dto.DiseaseAdjDTO;
-import jp.chang.myclinic.dto.DiseaseDTO;
-import jp.chang.myclinic.dto.DiseaseNewDTO;
-import jp.chang.myclinic.mastermap.ResolvedShinryouByoumei;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedDiseaseAdjMap;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedDiseaseMap;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedMap;
-import jp.chang.myclinic.rcpt.resolvedmap2.ResolvedShinryouMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedDiseaseAdjMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedDiseaseMap;
+import jp.chang.myclinic.rcpt.resolvedmap.ResolvedShinryouMap;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 class CheckByoumei {
 
