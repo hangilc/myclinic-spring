@@ -238,16 +238,18 @@ class PatientWithHokenStage extends Stage {
             HokenTable.KouhiModel kouhiModel = (HokenTable.KouhiModel) model;
             EditKouhiStage editor = new EditKouhiStage(kouhiModel.orig);
             editor.setCallback(dto -> {
-                    Service.api.updateKouhi(dto)
-                            .thenAccept(ok -> Platform.runLater(() -> {
-                                fetchAndUpdateHokenList();
-                                editor.close();
-                            }))
-                            .exceptionally(HandlerFX::exceptionally);
+                Service.api.updateKouhi(dto)
+                        .thenAccept(ok -> Platform.runLater(() -> {
+                            fetchAndUpdateHokenList();
+                            editor.close();
+                        }))
+                        .exceptionally(HandlerFX::exceptionally);
             });
             editor.showAndWait();
+        } else if (model instanceof HokenTable.RoujinModel ){
+            GuiUtil.alertError("老人保険は編集できません。");
         } else {
-            GuiUtil.alertError("Unknown hokentable modelold.");
+            GuiUtil.alertError("Unknown hokentable model.");
         }
     }
 

@@ -39,6 +39,10 @@ public class AppProperties {
     };
 
     void load(Properties properties) {
+        String oldPrinterSetting = properties.getProperty("receipt-printer-setting");
+        if( oldPrinterSetting != null ){
+            this.receiptPrinterSetting = oldPrinterSetting;
+        }
         for (Prop prop : props) {
             String value = properties.getProperty(prop.key);
             if (value != null) {
