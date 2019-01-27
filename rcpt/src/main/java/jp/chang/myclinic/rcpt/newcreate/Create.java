@@ -1,7 +1,6 @@
 package jp.chang.myclinic.rcpt.newcreate;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import jp.chang.myclinic.rcpt.NewCommon;
 import jp.chang.myclinic.rcpt.NewCommon2;
 import jp.chang.myclinic.rcpt.newcreate.bill.Bill;
 import jp.chang.myclinic.rcpt.newcreate.bill.HoukatsuKensaRevision;
