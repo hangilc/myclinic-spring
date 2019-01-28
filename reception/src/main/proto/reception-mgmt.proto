@@ -1,0 +1,14 @@
+syntax = "proto3";
+package jp.chang.myclinic.reception.grpc.generated;
+
+message IsRunningRequest {
+	
+}
+
+message IsRunningReply {
+	bool ok = 1;
+}
+
+service ReceptionMgmt {
+	rpc IsRunning(IsRunningRequest) returns (IsRunningReply) {}
+}
