@@ -30,12 +30,14 @@ public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private static String wsUrl;
+    private static CmdOpts cmdOpts;
     private Tracker tracker;
-    private int mgmtPort = 18084;
     private MgmtServer mgmtServer;
     private MainPane mainPane;
 
-    public static void main(String[] args) {
+    public static void main(String[] cmdArgs) {
+        cmdOpts = CmdOpts.parse(cmdArgs);
+        final String[] args = cmdOpts.getRemainingArgs();
         String serviceUrl;
         if( args.length == 0 ){
             serviceUrl = System.getenv("MYCLINIC_SERVICE");
@@ -79,8 +81,10 @@ public class Main extends Application {
         primaryStage.show();
         tracker = new Tracker(wsUrl, mainPane, Service.api);
         tracker.start(() -> Platform.runLater(() -> Globals.getAppVars().setTracking(true)));
-        mgmtServer = new MgmtServer(mgmtPort);
-        mgmtServer.start();
+        if( cmdOpts.hasMgmtPort() ) {
+            mgmtServer = new MgmtServer(cmdOpts.getMgmtPort());
+            mgmtServer.start();
+        }
         mainPane.addEventHandler(RefreshEvent.eventType, evt -> {
             if (tracker.isRunning()) {
                 tracker.reload();
@@ -95,7 +99,9 @@ public class Main extends Application {
         super.stop();
         Service.stop();
         tracker.shutdown();
-        mgmtServer.stop();
+        if( mgmtServer != null ) {
+            mgmtServer.stop();
+        }
     }
 
     private MenuBar createMenuBar() {
