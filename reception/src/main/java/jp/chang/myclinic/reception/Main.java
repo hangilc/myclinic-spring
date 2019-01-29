@@ -80,6 +80,7 @@ public class Main extends Application {
         tracker = new Tracker(wsUrl, mainPane, Service.api);
         tracker.start(() -> Platform.runLater(() -> Globals.getAppVars().setTracking(true)));
         mgmtServer = new MgmtServer(mgmtPort);
+        mgmtServer.start();
         mainPane.addEventHandler(RefreshEvent.eventType, evt -> {
             if (tracker.isRunning()) {
                 tracker.reload();
