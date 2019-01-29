@@ -4,11 +4,15 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.reception.event.RefreshEvent;
+import jp.chang.myclinic.reception.grpc.MgmtServer;
 import jp.chang.myclinic.reception.javafx.MainPane;
 import jp.chang.myclinic.reception.javafx.WqueueDTOModel;
 import jp.chang.myclinic.reception.javafx.WqueueModel;
@@ -27,6 +31,8 @@ public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private static String wsUrl;
     private Tracker tracker;
+    private int mgmtPort = 18084;
+    private MgmtServer mgmtServer;
     private MainPane mainPane;
 
     public static void main(String[] args) {
@@ -73,6 +79,7 @@ public class Main extends Application {
         primaryStage.show();
         tracker = new Tracker(wsUrl, mainPane, Service.api);
         tracker.start(() -> Platform.runLater(() -> Globals.getAppVars().setTracking(true)));
+        mgmtServer = new MgmtServer(mgmtPort);
         mainPane.addEventHandler(RefreshEvent.eventType, evt -> {
             if (tracker.isRunning()) {
                 tracker.reload();
@@ -87,6 +94,7 @@ public class Main extends Application {
         super.stop();
         Service.stop();
         tracker.shutdown();
+        mgmtServer.stop();
     }
 
     private MenuBar createMenuBar() {
