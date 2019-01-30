@@ -19,6 +19,7 @@ public class EnterPatientStage extends Stage {
     //private static Logger logger = LoggerFactory.getLogger(EnterPatientStage.class);
     private Consumer<PatientDTO> onEnterCallback = dto -> {};
     private PatientForm form;
+    private Button enterButton;
 
     public EnterPatientStage() {
         setTitle("新規患者入力");
@@ -38,7 +39,7 @@ public class EnterPatientStage extends Stage {
         root.getChildren().add(form);
         HBox commands = new HBox(4);
         commands.setAlignment(Pos.CENTER_RIGHT);
-        Button enterButton = new Button("入力");
+        this.enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
         enterButton.setOnAction(evt -> doEnter(form));
         cancelButton.setOnAction(evt -> close());
@@ -62,5 +63,9 @@ public class EnterPatientStage extends Stage {
 
     public void setInputs(PatientFormInputs inputs){
         form.setInputs(inputs);
+    }
+
+    public void simulateEnterButtonClick(){
+        enterButton.fire();
     }
 }

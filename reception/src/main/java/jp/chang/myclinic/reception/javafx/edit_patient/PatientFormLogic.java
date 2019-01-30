@@ -48,7 +48,7 @@ class PatientFormLogic extends LogicUtil {
         dto.sex = new LogicValue<>(inputs.sexInput)
                 .validate(Validators::isNotNull)
                 .map(Sex::getCode)
-                .getValue(nameWith(name, "の") + "姓", em);
+                .getValue(nameWith(name, "の") + "性別", em);
 
         dto.address = new LogicValue<>(inputs.addressInput)
                 .map(Mappers::nullToEmpty)

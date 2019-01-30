@@ -54,7 +54,7 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
             inputs.lastNameInput = request.getInputs().getLastName();
             inputs.firstNameInput = request.getInputs().getFirstName();
             inputs.lastNameYomiInput = request.getInputs().getLastNameYomi();
-            inputs.firstNameInput = request.getInputs().getFirstNameYomi();
+            inputs.firstNameYomiInput = request.getInputs().getFirstNameYomi();
             Gengou birthdayGengou = Gengou.fromKanjiRep(request.getInputs().getBirthdayGengou());
             if( birthdayGengou == null ){
                 System.err.println("Invalid birthday gengou: " + request.getInputs().getBirthdayGengou());
@@ -69,13 +69,27 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
             if( sex == null ){
                 System.err.println("Invalid sex: " + request.getInputs().getSex());
             }
+            inputs.sexInput = sex;
             inputs.addressInput = request.getInputs().getAddress();
             inputs.phoneInput = request.getInputs().getPhone();
-            stage.setInputs(inputs);
+            Platform.runLater(() -> stage.setInputs(inputs));
             responseObserver.onNext(BooleanType.newBuilder().setValue(true).build());
         } else {
             responseObserver.onNext(BooleanType.newBuilder().setValue(false).build());
         }
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void clickNewPatientWindowEnterButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
+        Window win = Globals.getInstance().findWindow(request.getWindowId());
+        boolean result = false;
+        if( win instanceof EnterPatientStage ){
+            EnterPatientStage stage = (EnterPatientStage)win;
+            Platform.runLater(stage::simulateEnterButtonClick);
+            result = true;
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(result).build());
         responseObserver.onCompleted();
     }
 }

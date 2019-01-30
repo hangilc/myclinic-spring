@@ -37,4 +37,5 @@ service ReceptionMgmt {
 	rpc ClickMainPaneNewPatientButton(VoidType) returns (BooleanType) {}
 	rpc FindCreatedNewPatientWindow(VoidType) returns (WindowType) {}
 	rpc SetNewPatientWindowInputs(SetNewPatientWindowInputsRequest) returns (BooleanType) {}
+	rpc ClickNewPatientWindowEnterButton(WindowType) returns (BooleanType) {}
 }
