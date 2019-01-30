@@ -18,6 +18,7 @@ public class EnterPatientStage extends Stage {
 
     //private static Logger logger = LoggerFactory.getLogger(EnterPatientStage.class);
     private Consumer<PatientDTO> onEnterCallback = dto -> {};
+    private PatientForm form;
 
     public EnterPatientStage() {
         setTitle("新規患者入力");
@@ -33,7 +34,7 @@ public class EnterPatientStage extends Stage {
 
     private Parent createRoot(){
         VBox root = new VBox(4);
-        PatientForm form = new PatientForm();
+        this.form = new PatientForm();
         root.getChildren().add(form);
         HBox commands = new HBox(4);
         commands.setAlignment(Pos.CENTER_RIGHT);
@@ -59,4 +60,7 @@ public class EnterPatientStage extends Stage {
         onEnterCallback.accept(dto);
     }
 
+    public void setInputs(PatientFormInputs inputs){
+        form.setInputs(inputs);
+    }
 }

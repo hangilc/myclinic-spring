@@ -46,13 +46,14 @@ public class MainPane extends VBox implements DispatchHook {
             wq.sexProperty(),
             wq.birthdayProperty()
     });
+    private Button newPatientButton;
 
     public MainPane() {
         setSpacing(4);
         {
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.CENTER_LEFT);
-            Button newPatientButton = new Button("新規患者");
+            this.newPatientButton = new Button("新規患者");
             Button blankReceiptButton = new Button("領収書用紙");
             newPatientButton.setOnAction(event -> doNewPatient());
             Button searchPatientButton = new Button("患者検索");
@@ -317,5 +318,9 @@ public class MainPane extends VBox implements DispatchHook {
         wqueueList.removeIf(wq -> wq.getVisitId() == visitId);
         wqueueTable.getSelectionModel().clearSelection();
         toNext.run();
+    }
+
+    public void simulateNewPatientButtonClick(){
+        newPatientButton.fire();
     }
 }

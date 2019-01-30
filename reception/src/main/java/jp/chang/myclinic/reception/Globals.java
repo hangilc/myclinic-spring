@@ -4,9 +4,11 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.stage.Window;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.myclinicenv.MyclinicEnv;
+import jp.chang.myclinic.reception.javafx.MainPane;
 
 import java.nio.file.Path;
 import java.util.Properties;
@@ -23,6 +25,10 @@ public class Globals implements AppVars {
     private Globals() {
         this.myclinicEnv = new MyclinicEnv("reception");
         this.appProps = loadAppProperties();
+    }
+
+    public static Globals getInstance(){
+        return Globals.INSTANCE;
     }
 
     private MyclinicEnv myclinicEnv;
@@ -129,6 +135,43 @@ public class Globals implements AppVars {
     @Override
     public void setTracking(boolean value) {
         tracking.set(value);
+    }
+
+    // MainPane
+    private MainPane mainPane;
+
+    static void setMainPane(MainPane mainPane){
+        Globals.INSTANCE.mainPane = mainPane;
+    }
+
+    public static MainPane getMainPane(){
+        return Globals.INSTANCE.mainPane;
+    }
+
+    // Window
+    private Integer nextWindowId = 1;
+
+    public Window findNewWindow(Class<? extends Window> target){
+        for(Window win: Window.getWindows()){
+            if( target.isInstance(win) && win.getUserData() == null ){
+                win.setUserData(nextWindowId++);
+                return win;
+            }
+        }
+        return null;
+    }
+
+    public Window findWindow(int id){
+        for(Window win: Window.getWindows()){
+            Object data = win.getUserData();
+            if( data instanceof Integer ){
+                Integer winId = (Integer)data;
+                if( winId.equals(id) ){
+                    return win;
+                }
+            }
+        }
+        return null;
     }
 
 }

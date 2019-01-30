@@ -3,16 +3,16 @@ package jp.chang.myclinic.reception.javafx.edit_patient;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 
-class PatientFormInputs {
+public class PatientFormInputs {
 
-    Integer patientId;
-    String lastNameInput;
-    String firstNameInput;
-    String lastNameYomiInput;
-    String firstNameYomiInput;
-    DateFormInputs birthdayInputs;
-    Sex sexInput;
-    String addressInput;
-    String phoneInput;
+    public Integer patientId;
+    public String lastNameInput;
+    public String firstNameInput;
+    public String lastNameYomiInput;
+    public String firstNameYomiInput;
+    public DateFormInputs birthdayInputs;
+    public Sex sexInput;
+    public String addressInput;
+    public String phoneInput;
 
 }

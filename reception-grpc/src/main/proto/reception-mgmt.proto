@@ -1,14 +1,40 @@
 syntax = "proto3";
 package jp.chang.myclinic.reception.grpc.generated;
 
-message IsRunningRequest {
+message VoidType {
 	
 }
 
-message IsRunningReply {
-	bool ok = 1;
+message BooleanType {
+	bool value = 1;
+}
+
+message WindowType {
+    int32 windowId = 1;
+}
+
+message PatientInputs {
+    string lastName = 1;
+    string firstName = 2;
+    string lastNameYomi = 3;
+    string firstNameYomi = 4;
+    string birthdayGengou = 5;
+    string birthdayNen = 6;
+    string birthdayMonth = 7;
+    string birthdayDay = 8;
+    string sex = 9;
+    string address = 10;
+    string phone = 11;
+}
+
+message SetNewPatientWindowInputsRequest {
+    WindowType window = 1;
+    PatientInputs inputs = 2;
 }
 
 service ReceptionMgmt {
-	rpc IsRunning(IsRunningRequest) returns (IsRunningReply) {}
+	rpc IsRunning(VoidType) returns (BooleanType) {}
+	rpc ClickMainPaneNewPatientButton(VoidType) returns (BooleanType) {}
+	rpc FindCreatedNewPatientWindow(VoidType) returns (WindowType) {}
+	rpc SetNewPatientWindowInputs(SetNewPatientWindowInputsRequest) returns (BooleanType) {}
 }

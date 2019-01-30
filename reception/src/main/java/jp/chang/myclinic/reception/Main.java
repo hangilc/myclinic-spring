@@ -71,6 +71,7 @@ public class Main extends Application {
         BorderPane root = new BorderPane();
         mainPane = new MainPane();
         mainPane.setPadding(new Insets(10, 10, 10, 10));
+        Globals.setMainPane(mainPane);
         root.setCenter(mainPane);
         root.setTop(createMenuBar());
         Scene scene = new Scene(root, 600, 400);
