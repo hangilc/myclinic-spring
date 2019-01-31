@@ -1,6 +1,5 @@
 package jp.chang.myclinic.rcpt;
 
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.rcpt.check.BatchCheck;
 import jp.chang.myclinic.rcpt.data.BatchData;
 import jp.chang.myclinic.rcpt.resolvedmap.ResolvedDiseaseAdjMap;
@@ -15,7 +14,6 @@ public class Main {
     //private static Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws Exception {
-        Service.setServerUrl(System.getenv("MYCLINIC_SERVICE"));
         if (args.length < 1) {
             System.err.println("usage: rcpt command ...");
             System.exit(1);
