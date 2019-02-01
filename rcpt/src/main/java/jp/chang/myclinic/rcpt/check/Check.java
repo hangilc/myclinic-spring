@@ -21,14 +21,8 @@ public class Check {
     public static void run(RunEnv runEnv) {
         int year = runEnv.year;
         int month = runEnv.month;
-        Common.getMasterMaps(LocalDate.of(year, month, 1))
-                .thenAccept(map -> {
-                    doCheck(runEnv, map);
-                })
-                .exceptionally(ex -> {
-                    ex.printStackTrace();
-                    return null;
-                });
+        ResolvedMap resolvedMap = Common.getMasterMaps(LocalDate.of(year, month, 1));
+        doCheck(runEnv, resolvedMap);
     }
 
     private static void doCheck(RunEnv runEnv, ResolvedMap resolvedMap) {

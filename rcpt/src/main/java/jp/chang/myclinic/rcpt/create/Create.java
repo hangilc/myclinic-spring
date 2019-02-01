@@ -27,7 +27,7 @@ public class Create {
             Rcpt rcpt = mapper.readValue(ins, Rcpt.class);
             rcpt.seikyuuList.sort(seikyuuComparator());
             LocalDate at = rcpt.getDate(1);
-            ResolvedMap resolvedMap = Common.getMasterMaps(at).join();
+            ResolvedMap resolvedMap = Common.getMasterMaps(at);
             ResolvedShinryouMap shinryouMasterMap = resolvedMap.shinryouMap;
             HoukatsuKensaRevision houkatsuKensaRevision = HoukatsuKensaRevision.load();
             HoukatsuKensaRevision.Revision revision = houkatsuKensaRevision.findRevision(at);
