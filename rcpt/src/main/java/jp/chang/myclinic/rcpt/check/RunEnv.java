@@ -12,5 +12,6 @@ public class RunEnv {
     public boolean fixit;
     public Consumer<Error> errorHandler;
     public boolean verbose;
+    public boolean debugHttp;
 
 }

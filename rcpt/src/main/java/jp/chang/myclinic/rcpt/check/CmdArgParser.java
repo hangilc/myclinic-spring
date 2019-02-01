@@ -16,6 +16,7 @@ class CmdArgParser {
         System.err.println("    -f                 : fix problems");
         System.err.println("    -p=1234,3211,...   : handle only specified patientIds");
         System.err.println("    -v                 : verbose");
+        System.err.println("    --debug-http       : outputs HTTP interactions");
         System.err.println("    -h                 : help");
     }
 
@@ -28,7 +29,9 @@ class CmdArgParser {
         int i = 1;
         while (i < args.length) {
             String s = args[i];
-            if (s.startsWith("-")) {
+            if( s.equals("--debug-http") ){
+                env.debugHttp = true;
+            } else if (s.startsWith("-")) {
                 if (s.length() < 2) {
                     usage();
                     System.exit(1);
@@ -52,10 +55,10 @@ class CmdArgParser {
                         System.exit(1);
                         break;
                 }
-                i += 1;
             } else {
                 break;
             }
+            i += 1;
         }
         if (args.length - i != 3) {
             usage();
@@ -71,6 +74,9 @@ class CmdArgParser {
         }
         String serverUrl = args[i];
         Service.setServerUrl(serverUrl);
+        if( env.debugHttp ){
+            Service.setLogBody();
+        }
         env.api = new FixerService(Service.api);
         if( env.patientIds == null ){
             env.patientIds = Service.api.listVisitingPatientIdHavingHokenCall(env.year, env.month).execute().body();
