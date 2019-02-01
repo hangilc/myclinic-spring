@@ -33,15 +33,14 @@ class Scope {
 
     boolean hasByoumeiAt(int byoumeicode, LocalDate at) {
         for (DiseaseFullDTO disease : diseases) {
-            if (disease.disease.shoubyoumeicode == byoumeicode &&
-                    DiseaseEndReason.fromCode(disease.disease.endReason) == DiseaseEndReason.NotEnded) {
+            if( disease.disease.shoubyoumeicode == byoumeicode ){
                 LocalDate startDate = LocalDate.parse(disease.disease.startDate);
-                if (startDate.isEqual(at) || startDate.isBefore(at)) {
-                    if (disease.disease.endDate == null || "0000-00-00".equals(disease.disease.endDate)) {
+                if( startDate.isEqual(at) || startDate.isBefore(at) ){
+                    if( disease.disease.endDate == null || disease.disease.endDate.equals("0000-00-00") ){
                         return true;
                     }
                     LocalDate endDate = LocalDate.parse(disease.disease.endDate);
-                    if (endDate.isEqual(at) || endDate.isAfter(at)) {
+                    if( endDate.isEqual(at) || endDate.isAfter(at) ){
                         return true;
                     }
                 }
