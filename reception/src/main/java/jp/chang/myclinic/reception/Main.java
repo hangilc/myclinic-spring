@@ -83,6 +83,10 @@ public class Main extends Application {
         tracker = new Tracker(wsUrl, mainPane, Service.api);
         tracker.start(() -> Platform.runLater(() -> Globals.getAppVars().setTracking(true)));
         if( cmdOpts.hasMgmtPort() ) {
+            {
+                ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger("io.grpc");
+                log.setLevel(ch.qos.logback.classic.Level.ERROR);
+            }
             mgmtServer = new MgmtServer(cmdOpts.getMgmtPort());
             mgmtServer.start();
         }

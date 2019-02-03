@@ -858,6 +858,9 @@ public class Service {
         @GET("list-recently-registered-patients")
         CompletableFuture<List<PatientDTO>> listRecentlyRegisteredPatients();
 
+        @GET("list-recently-registered-patients")
+        CompletableFuture<List<PatientDTO>> listRecentlyRegisteredPatients(@Query("n") int n);
+
         @GET("list-hokensho")
         CompletableFuture<List<String>> listHokensho(@Query("patient-id") int patientId);
 

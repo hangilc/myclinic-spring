@@ -40,7 +40,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-class PatientWithHokenStage extends Stage {
+public class PatientWithHokenStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(PatientWithHokenStage.class);
     private static Pattern scannedDateTimePattern = Pattern.compile(
             "(\\d{8}+)-(\\d{6}+)-\\d+\\.[^.]+$"
@@ -52,6 +52,9 @@ class PatientWithHokenStage extends Stage {
     private ObjectProperty<ObservableList<HokenTable.Model>> tableModels =
             new SimpleObjectProperty<>(FXCollections.emptyObservableList());
     private ObjectProperty<HokenTable.Model> tableSelection = new SimpleObjectProperty<>();
+    private Button newShahokokuhoButton;
+    private Button newKoukikoureiButton;
+    private Button newKouhiButton;
 
     PatientWithHokenStage(PatientDTO patient, HokenListDTO hokenList) {
         setTitle("患者情報編集（" + patient.patientId + ")");
@@ -135,9 +138,9 @@ class PatientWithHokenStage extends Stage {
             {
                 HBox row = new HBox(4);
                 row.setAlignment(Pos.CENTER_LEFT);
-                Button newShahokokuhoButton = new Button("新規社保国保");
-                Button newKoukikoureiButton = new Button("新規後期高齢");
-                Button newKouhiButton = new Button("新規公費負担");
+                this.newShahokokuhoButton = new Button("新規社保国保");
+                this.newKoukikoureiButton = new Button("新規後期高齢");
+                this.newKouhiButton = new Button("新規公費負担");
                 Hyperlink hokenshoLink = new Hyperlink("保険証画像");
                 newShahokokuhoButton.setOnAction(event -> doNewShahokokuho());
                 newKoukikoureiButton.setOnAction(event -> doNewKoukikourei());
@@ -167,6 +170,18 @@ class PatientWithHokenStage extends Stage {
         Scene scene = new Scene(root, 500, 660);
         setScene(scene);
         sizeToScene();
+    }
+
+    public void simulateNewShahokokuhoButtonClick(){
+        newShahokokuhoButton.fire();
+    }
+
+    public void simulateNewKoukikoureiButtonClick(){
+        newKoukikoureiButton.fire();
+    }
+
+    public void simulateNewKouhiButtonClick(){
+        newKouhiButton.fire();
     }
 
     private void doHokenshoImage() {

@@ -36,6 +36,13 @@ service ReceptionMgmt {
 	rpc IsRunning(VoidType) returns (BooleanType) {}
 	rpc ClickMainPaneNewPatientButton(VoidType) returns (BooleanType) {}
 	rpc FindCreatedNewPatientWindow(VoidType) returns (WindowType) {}
+	rpc FindCreatedPatientWithHokenWindow(VoidType) returns (WindowType) {}
+	rpc FindCreatedNewShahokokuhoWindow(VoidType) returns (WindowType) {}
+	rpc FindCreatedNewKoukikoureiWindow(VoidType) returns (WindowType) {}
+	rpc FindCreatedNewKouhiWindow(VoidType) returns (WindowType) {}
 	rpc SetNewPatientWindowInputs(SetNewPatientWindowInputsRequest) returns (BooleanType) {}
 	rpc ClickNewPatientWindowEnterButton(WindowType) returns (BooleanType) {}
+	rpc ClickEditPatientNewShahokokuhoButton(WindowType) returns (BooleanType) {}
+	rpc ClickEditPatientNewKoukikoureiButton(WindowType) returns (BooleanType) {}
+	rpc ClickEditPatientNewKouhiButton(WindowType) returns (BooleanType) {}
 }

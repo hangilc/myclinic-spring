@@ -9,16 +9,13 @@ import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import org.slf4j.LoggerFactory;
 
-import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc.*;
-
-import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtOuterClass.*;
-
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+
+import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc.ReceptionMgmtBlockingStub;
+import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtOuterClass.*;
 
 public class Main {
 
@@ -35,36 +32,75 @@ public class Main {
     private SampleData sampleData = new SampleData();
     private ReceptionMgmtBlockingStub receptionStub;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void run(String[] args){
         if( args.length != 1 ){
             usage();
             System.exit(1);
         }
         try {
+            {
+                ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("io.grpc");
+                log.setLevel(ch.qos.logback.classic.Level.ERROR);
+            }
             String serverUrl = args[0];
             Service.setServerUrl(serverUrl);
             confirmMockPatient();
             this.receptionStub = newReceptionStub("localhost", 9000);
-            receptionStub.clickMainPaneNewPatientButton(null);
-            WindowType win = receptionStub.findCreatedNewPatientWindow(null);
-            PatientInputs patientInputs = sampleData.pickPatientInputs();
-            SetNewPatientWindowInputsRequest req = SetNewPatientWindowInputsRequest.newBuilder()
-                    .setWindow(win)
-                    .setInputs(patientInputs)
-                    .build();
-            receptionStub.setNewPatientWindowInputs(req);
-            receptionStub.clickNewPatientWindowEnterButton(win);
-            List<PatientDTO> recentPatients = Service.api.listRecentlyRegisteredPatients().join();
-            PatientDTO lastPatient = recentPatients.get(0);
-            if (!isEqualPatient(lastPatient, patientInputs)) {
-                System.out.println(patientInputs);
-                System.out.println(lastPatient);
-                throw new RuntimeException("Enter patient failed.");
-            }
+            testNewPatient();
         } finally {
             Service.stop();
         }
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void testNewPatient(){
+        int prevLastPatientId = Service.api.listRecentlyRegisteredPatients(1).join().get(0).patientId;
+        receptionStub.clickMainPaneNewPatientButton(null);
+        WindowType win = findCreatedWindow(receptionStub::findCreatedNewPatientWindow);
+        PatientInputs patientInputs = sampleData.pickPatientInputs();
+        SetNewPatientWindowInputsRequest req = SetNewPatientWindowInputsRequest.newBuilder()
+                .setWindow(win)
+                .setInputs(patientInputs)
+                .build();
+        if(!receptionStub.setNewPatientWindowInputs(req).getValue()){
+            throw new RuntimeException("setNewPatientWindowInputs failed.");
+        }
+        receptionStub.clickNewPatientWindowEnterButton(win);
+        PatientDTO lastPatient = enteredPatient(prevLastPatientId);
+        if (!isEqualPatient(lastPatient, patientInputs)) {
+            System.out.println(patientInputs);
+            System.out.println(lastPatient);
+            throw new RuntimeException("Enter patient failed.");
+        }
+        WindowType patientWithHokenWindow = findCreatedWindow(receptionStub::findCreatedPatientWithHokenWindow);
+        testNewPatientNewShahokokuho(patientWithHokenWindow);
+        //receptionStub.clickEditPatientNewKoukikoureiButton(patientWithHokenWindow);
+        //receptionStub.clickEditPatientNewKouhiButton(patientWithHokenWindow);
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void testNewPatientNewShahokokuho(WindowType patientWithHokenWindow){
+        receptionStub.clickEditPatientNewShahokokuhoButton(patientWithHokenWindow);
+        WindowType enterWindow = receptionStub.findCreatedNewShahokokuhoWindow(null);
+        System.out.println(enterWindow);
+    }
+
+    private WindowType findCreatedWindow(Function<VoidType, WindowType> f){
+        return rpc(5, () -> {
+            WindowType w = f.apply(null);
+            return (w != null && w.getWindowId() > 0) ? Optional.of(w) : Optional.empty();
+        });
+    }
+
+    private PatientDTO enteredPatient(int prevLastPatientId){
+        return rpc(10, () -> {
+            PatientDTO p = Service.api.listRecentlyRegisteredPatients(1).join().get(0);
+            if( p.patientId > prevLastPatientId ){
+                return Optional.of(p);
+            } else {
+                return Optional.empty();
+            }
+        });
     }
 
     private void confirmMockPatient(){
