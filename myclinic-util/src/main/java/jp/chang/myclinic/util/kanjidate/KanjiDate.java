@@ -30,4 +30,8 @@ public class KanjiDate {
         return new KanjiDateRepBuilder(date).format1().build();
     }
 
+    public static LocalDate toLocalDate(Gengou gengou, int nen, int month, int day){
+        int year = gengouToYear(gengou, nen);
+        return LocalDate.of(year, month, day);
+    }
 }
