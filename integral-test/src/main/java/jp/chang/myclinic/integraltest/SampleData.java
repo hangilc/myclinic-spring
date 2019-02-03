@@ -18,9 +18,9 @@ public class SampleData {
 
     //private static Logger logger = LoggerFactory.getLogger(SampleData.class);
     private static class NameEntry {
-        public String kanji;
-        public String yomi;
-        public int freq;
+        String kanji;
+        String yomi;
+        int freq;
 
         private NameEntry(String kanji, String yomi, int freq){
             this.kanji = kanji;
@@ -69,12 +69,12 @@ public class SampleData {
         }
     }
 
-    public NameEntry pickLastName(){
+    private NameEntry pickLastName(){
         int i = random.nextInt(lastNames.size());
         return lastNames.get(i);
     }
 
-    public String pickSex(){
+    private String pickSex(){
         if( random.nextDouble() < 0.5 ){
             return "M";
         } else {
@@ -82,7 +82,7 @@ public class SampleData {
         }
     }
 
-    public NameEntry pickFirstName(String sex){
+    private NameEntry pickFirstName(String sex){
         List<NameEntry> entries;
         if( sex.equals("M") ){
             entries = maleFirstNames;
@@ -98,7 +98,7 @@ public class SampleData {
         return LocalDate.now().getYear() - 1 - age;
     }
 
-    public LocalDate pickBirthday(){
+    private LocalDate pickBirthday(){
         int year = pickBirthdayYear();
         int month = 1 + random.nextInt(12);
         int lastDay = LocalDate.of(year, month, 1).plus(1, ChronoUnit.MONTHS).minus(1, ChronoUnit.DAYS)
@@ -107,14 +107,14 @@ public class SampleData {
         return LocalDate.of(year, month, day);
     }
 
-    public String pickAddress(){
+    private String pickAddress(){
         int choume = 1 + random.nextInt(9);
         int ban = 1 + random.nextInt(18);
         int chi = 1 + random.nextInt(28);
         return String.format("杉並区参考地%d-%d-%d", choume, ban, chi);
     }
 
-    public String pickPhone(){
+    private String pickPhone(){
         List<String> ds = List.of("03", "070", "080", "090");
         String d = ds.get(random.nextInt(ds.size()));
         return String.format("%s-%04d-%04d", d, random.nextInt(10000), random.nextInt(10000));

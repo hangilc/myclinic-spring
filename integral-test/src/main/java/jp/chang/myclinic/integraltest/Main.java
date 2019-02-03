@@ -1,6 +1,19 @@
 package jp.chang.myclinic.integraltest;
 
+import io.grpc.Channel;
+import io.grpc.ManagedChannelBuilder;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc;
+import org.slf4j.LoggerFactory;
+
+import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc.*;
+
+import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtOuterClass.*;
+
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class Main {
 
@@ -14,6 +27,10 @@ public class Main {
         System.out.println("Usage: integral-test SERVER-URL");
     }
 
+    private SampleData sampleData = new SampleData();
+    private ReceptionMgmtBlockingStub receptionStub;
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void run(String[] args){
         if( args.length != 1 ){
             usage();
@@ -22,6 +39,15 @@ public class Main {
         String serverUrl = args[0];
         Service.setServerUrl(serverUrl);
         confirmMockPatient();
+        this.receptionStub = newReceptionStub("localhost", 9000);
+        receptionStub.clickMainPaneNewPatientButton(null);
+        WindowType win = receptionStub.findCreatedNewPatientWindow(null);
+        PatientInputs patientInputs = sampleData.pickPatientInputs();
+        SetNewPatientWindowInputsRequest req = SetNewPatientWindowInputsRequest.newBuilder()
+                .setWindow(win)
+                .setInputs(patientInputs)
+                .build();
+        receptionStub.setNewPatientWindowInputs(req);
         Service.stop();
     }
 
@@ -39,6 +65,27 @@ public class Main {
                     System.exit(2);
                     return null;
                 });
+    }
+
+    private <T> T rpc(int maxTry, Supplier<Optional<T>> fun){
+        try {
+            while (maxTry-- > 0) {
+                Optional<T> opt = fun.get();
+                if (opt.isPresent()) {
+                    return opt.get();
+                }
+                Thread.sleep(500);
+            }
+            throw new RuntimeException("rpc failed");
+        } catch(Exception ex){
+            ex.printStackTrace();
+            throw new RuntimeException("rpc filed");
+        }
+    }
+
+    private ReceptionMgmtBlockingStub newReceptionStub(String host, int port){
+        Channel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+        return ReceptionMgmtGrpc.newBlockingStub(channel);
     }
 
 }
