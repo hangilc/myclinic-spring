@@ -32,6 +32,28 @@ message SetNewPatientWindowInputsRequest {
     PatientInputs inputs = 2;
 }
 
+message DateInputs {
+    string gengou = 1;
+    string nen = 2;
+    string month = 3;
+    string day = 4;
+}
+
+message ShahokokuhoInputs {
+    string hokenshaBangou = 1;
+    string hihokenshaKigou = 2;
+    string hihokenshaBangou = 3;
+    int32 honnin = 4;
+    DateInputs validFromInputs = 5;
+    DateInputs validUptoInputs = 6;
+    int32 kourei = 7;
+}
+
+message SetNewShahokokuhoWindowInputsRequest {
+    WindowType window = 1;
+    ShahokokuhoInputs inputs = 2;
+}
+
 service ReceptionMgmt {
 	rpc IsRunning(VoidType) returns (BooleanType) {}
 	rpc ClickMainPaneNewPatientButton(VoidType) returns (BooleanType) {}
@@ -41,6 +63,7 @@ service ReceptionMgmt {
 	rpc FindCreatedNewKoukikoureiWindow(VoidType) returns (WindowType) {}
 	rpc FindCreatedNewKouhiWindow(VoidType) returns (WindowType) {}
 	rpc SetNewPatientWindowInputs(SetNewPatientWindowInputsRequest) returns (BooleanType) {}
+	rpc SetNewShahokokuhoWindowInputs(SetNewShahokokuhoWindowInputsRequest) returns (BooleanType) {}
 	rpc ClickNewPatientWindowEnterButton(WindowType) returns (BooleanType) {}
 	rpc ClickEditPatientNewShahokokuhoButton(WindowType) returns (BooleanType) {}
 	rpc ClickEditPatientNewKoukikoureiButton(WindowType) returns (BooleanType) {}

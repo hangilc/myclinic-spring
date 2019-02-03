@@ -12,6 +12,7 @@ import jp.chang.myclinic.reception.javafx.edit_koukikourei.EnterKoukikoureiStage
 import jp.chang.myclinic.reception.javafx.edit_patient.EnterPatientStage;
 import jp.chang.myclinic.reception.javafx.edit_patient.PatientFormInputs;
 import jp.chang.myclinic.reception.javafx.edit_shahokokuho.EnterShahokokuhoStage;
+import jp.chang.myclinic.reception.javafx.edit_shahokokuho.ShahokokuhoFormInputs;
 import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 
@@ -39,7 +40,7 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
     private void findCreatedWindow(Class<? extends Window> windowClass, StreamObserver<WindowType> responseObserver){
         Window win = Globals.getInstance().findNewWindow(windowClass);
         if( win != null ){
-            System.out.println("Foudn created window. " + windowClass.toString());
+            System.out.println("Found created window. " + windowClass.toString());
             WindowType winType = WindowType.newBuilder().setWindowId((Integer)win.getUserData()).build();
             responseObserver.onNext(winType);
         } else {
@@ -107,6 +108,43 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
             System.err.println("Cannot find window (setNewPatientWindowInputs.)");
             responseObserver.onNext(BooleanType.newBuilder().setValue(false).build());
         }
+        responseObserver.onCompleted();
+    }
+
+    private DateFormInputs toDateFormInputs(DateInputs src){
+        DateFormInputs dst = new DateFormInputs();
+        dst.gengou = Gengou.fromKanjiRep(src.getGengou());
+        dst.nen = src.getNen();
+        dst.month = src.getMonth();
+        dst.day = src.getDay();
+        return dst;
+    }
+
+    private ShahokokuhoFormInputs convertToShahokokuhoFormInputs(ShahokokuhoInputs src){
+        ShahokokuhoFormInputs dst = new ShahokokuhoFormInputs();
+        dst.hokenshaBangou = src.getHokenshaBangou();
+        dst.hihokenshaKigou = src.getHihokenshaKigou();
+        dst.hihokenshaBangou = src.getHihokenshaBangou();
+        dst.honnin = src.getHonnin();
+        dst.validFromInputs = toDateFormInputs(src.getValidFromInputs());
+        dst.validUptoInputs = toDateFormInputs(src.getValidUptoInputs());
+        dst.kourei = src.getKourei();
+        return dst;
+    }
+
+    @Override
+    public void setNewShahokokuhoWindowInputs(SetNewShahokokuhoWindowInputsRequest request, StreamObserver<BooleanType> responseObserver) {
+        Window win = Globals.getInstance().findWindow(request.getWindow().getWindowId());
+        boolean ok = false;
+        if( win instanceof EnterShahokokuhoStage ){
+            EnterShahokokuhoStage stage = (EnterShahokokuhoStage)win;
+            ShahokokuhoFormInputs inputs = convertToShahokokuhoFormInputs(request.getInputs());
+            Platform.runLater(() -> stage.setInputs(inputs));
+            ok = true;
+        } else {
+            System.err.println("Cannot find window (setNewShahokokuhoWindowInputs.)");
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(ok).build());
         responseObserver.onCompleted();
     }
 

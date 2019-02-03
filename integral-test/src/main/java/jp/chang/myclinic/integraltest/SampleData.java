@@ -1,6 +1,10 @@
 package jp.chang.myclinic.integraltest;
 
 import jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtOuterClass;
+import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtOuterClass.*;
+
+import jp.chang.myclinic.util.dto_logic.HokenLib;
+import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.util.kanjidate.GengouNenPair;
 import jp.chang.myclinic.util.kanjidate.KanjiDate;
 
@@ -120,13 +124,13 @@ public class SampleData {
         return String.format("%s-%04d-%04d", d, random.nextInt(10000), random.nextInt(10000));
     }
 
-    public ReceptionMgmtOuterClass.PatientInputs pickPatientInputs(){
+    public PatientInputs pickPatientInputs(){
         NameEntry lastName = pickLastName();
         String sex = pickSex();
         NameEntry firstName = pickFirstName(sex);
         LocalDate birthday = pickBirthday();
         GengouNenPair gn = KanjiDate.yearToGengou(birthday);
-        return ReceptionMgmtOuterClass.PatientInputs.newBuilder()
+        return PatientInputs.newBuilder()
                 .setLastName(lastName.kanji)
                 .setFirstName(firstName.kanji)
                 .setLastNameYomi(lastName.yomi)
@@ -138,6 +142,69 @@ public class SampleData {
                 .setSex(sex)
                 .setAddress(pickAddress())
                 .setPhone(pickPhone())
+                .build();
+    }
+
+    int pickDigits(int nDigit){
+        if( nDigit <= 0 ){
+            return 0;
+        }
+        int ival = random.nextInt(9) + 1;
+        while( --nDigit > 0 ){
+            int d = random.nextInt(10);
+            ival = ival * 10 + d;
+        }
+        return ival;
+    }
+
+    private int pickShahokokuhoHokenshaBangou(){
+        int ival = pickDigits(7);
+        return ival * 10 + HokenLib.calcCheckingDigit(ival);
+    }
+
+    private LocalDate pickLocalDate(int year){
+        int month = 1 + random.nextInt(12);
+        int lastDay = LocalDate.of(year, month, 1).plus(1, ChronoUnit.MONTHS).minus(1, ChronoUnit.DAYS).getDayOfMonth();
+        int day = 1 + random.nextInt(lastDay);
+        return LocalDate.of(year, month, day);
+    }
+
+    private DateInputs toDateInputs(LocalDate src){
+        GengouNenPair gn = KanjiDate.yearToGengou(src);
+        return DateInputs.newBuilder()
+                .setGengou(gn.gengou.getKanjiRep())
+                .setNen("" + gn.nen)
+                .setMonth("" + src.getMonthValue())
+                .setDay("" + src.getDayOfMonth())
+                .build();
+    }
+
+    private DateInputs emptyDateInputs(Gengou gengou){
+        return DateInputs.newBuilder()
+                .setGengou(gengou.getKanjiRep())
+                .setNen("")
+                .setMonth("")
+                .setDay("")
+                .build();
+    }
+
+    public ShahokokuhoInputs pickShahokokuhoInputs(){
+        LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
+        int span = random.nextInt(3);
+        DateInputs validUptoInputs;
+        if( span == 0 ){
+            validUptoInputs = emptyDateInputs(KanjiDate.yearToGengou(validFrom).gengou);
+        } else {
+            validUptoInputs = toDateInputs(validFrom.plus(1, ChronoUnit.YEARS));
+        }
+        return ShahokokuhoInputs.newBuilder()
+                .setHokenshaBangou("" + pickShahokokuhoHokenshaBangou())
+                .setHihokenshaKigou(pickDigits(2) + "-" + pickDigits(2))
+                .setHihokenshaBangou("" + pickDigits(4))
+                .setHonnin(random.nextInt(2))
+                .setValidFromInputs(toDateInputs(validFrom))
+                .setValidUptoInputs(validUptoInputs)
+                .setKourei(1 + random.nextInt(3))
                 .build();
     }
 

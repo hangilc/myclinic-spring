@@ -81,8 +81,16 @@ public class Main {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void testNewPatientNewShahokokuho(WindowType patientWithHokenWindow){
         receptionStub.clickEditPatientNewShahokokuhoButton(patientWithHokenWindow);
-        WindowType enterWindow = receptionStub.findCreatedNewShahokokuhoWindow(null);
-        System.out.println(enterWindow);
+        WindowType enterWindow = findCreatedWindow(receptionStub::findCreatedNewShahokokuhoWindow);
+        ShahokokuhoInputs inputs = sampleData.pickShahokokuhoInputs();
+        SetNewShahokokuhoWindowInputsRequest req = SetNewShahokokuhoWindowInputsRequest.newBuilder()
+                .setWindow(enterWindow)
+                .setInputs(inputs)
+                .build();
+        boolean ok = receptionStub.setNewShahokokuhoWindowInputs(req).getValue();
+        if( !ok ){
+            throw new RuntimeException("set shahokokuho inputs failed");
+        }
     }
 
     private WindowType findCreatedWindow(Function<VoidType, WindowType> f){
