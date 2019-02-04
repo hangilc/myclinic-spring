@@ -39,6 +39,31 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void clickNewShahokokuhoWindowEnterButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
+        Window win = Globals.getInstance().findWindow(request.getWindowId());
+        boolean ok = false;
+        if( win instanceof EnterShahokokuhoStage ){
+            EnterShahokokuhoStage stage = (EnterShahokokuhoStage)win;
+            stage.simulateEnterButtonClick();
+            ok = true;
+        } else {
+            System.err.println("Cannot get EnterShahokokuhoStage.");
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(ok).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void clickNewKoukikoureiWindowEnterButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
+        super.clickNewKoukikoureiWindowEnterButton(request, responseObserver);
+    }
+
+    @Override
+    public void clickNewKouhiWindowEnterButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
+        super.clickNewKouhiWindowEnterButton(request, responseObserver);
+    }
+
     private void findCreatedWindow(Class<? extends Window> windowClass, StreamObserver<WindowType> responseObserver){
         Window win = Globals.getInstance().findNewWindow(windowClass);
         if( win != null ){

@@ -91,6 +91,10 @@ public class Main {
         if( !ok ){
             throw new RuntimeException("set shahokokuho inputs failed");
         }
+        ok = receptionStub.clickNewShahokokuhoWindowEnterButton(enterWindow).getValue();
+        if( !ok ){
+            throw new RuntimeException("clickNewShahokokuhoWindowEnterButton failed.");
+        }
     }
 
     private WindowType findCreatedWindow(Function<VoidType, WindowType> f){

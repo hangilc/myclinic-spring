@@ -20,6 +20,7 @@ public class EnterShahokokuhoStage extends Stage {
     private static Logger logger = LoggerFactory.getLogger(EnterShahokokuhoStage.class);
     private Runnable onEnterCallback;
     private ShahokokuhoForm form;
+    private Button enterButton;
 
     public EnterShahokokuhoStage(int patientId, Runnable onEnterCallback) {
         this.onEnterCallback = onEnterCallback;
@@ -34,13 +35,17 @@ public class EnterShahokokuhoStage extends Stage {
         this.form.setInputs(inputs);
     }
 
+    public void simulateEnterButtonClick(){
+        enterButton.fire();
+    }
+
     private Parent createMainPane(int patientId) {
         VBox root = new VBox(4);
         this.form = new ShahokokuhoForm();
         ShahokokuhoFormLogic.EnterProc enterProc = ShahokokuhoFormLogic.createEnterProc(patientId, form::setInputs);
         HBox commands = new HBox(4);
         commands.setAlignment(Pos.CENTER_RIGHT);
-        Button enterButton = new Button("入力");
+        this.enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
         enterButton.setOnAction(evt -> {
             ErrorMessages em = new ErrorMessages();
