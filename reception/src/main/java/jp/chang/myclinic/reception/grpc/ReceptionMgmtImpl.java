@@ -8,7 +8,9 @@ import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc;
 import jp.chang.myclinic.reception.javafx.PatientWithHokenStage;
 import jp.chang.myclinic.reception.javafx.edit_kouhi.EnterKouhiStage;
+import jp.chang.myclinic.reception.javafx.edit_kouhi.KouhiFormInputs;
 import jp.chang.myclinic.reception.javafx.edit_koukikourei.EnterKoukikoureiStage;
+import jp.chang.myclinic.reception.javafx.edit_koukikourei.KoukikoureiFormInputs;
 import jp.chang.myclinic.reception.javafx.edit_patient.EnterPatientStage;
 import jp.chang.myclinic.reception.javafx.edit_patient.PatientFormInputs;
 import jp.chang.myclinic.reception.javafx.edit_shahokokuho.EnterShahokokuhoStage;
@@ -143,6 +145,56 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
             ok = true;
         } else {
             System.err.println("Cannot find window (setNewShahokokuhoWindowInputs.)");
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(ok).build());
+        responseObserver.onCompleted();
+    }
+
+    private KoukikoureiFormInputs toKoukikoureiFormInputs(KoukikoureiInputs src){
+        KoukikoureiFormInputs inputs = new KoukikoureiFormInputs();
+        inputs.hokenshaBangou = src.getHokenshaBangou();
+        inputs.hihokenshaBangou = src.getHihokenshaBangou();
+        inputs.validFromInputs = toDateFormInputs(src.getValidFromInputs());
+        inputs.validUptoInputs = toDateFormInputs(src.getValidUptoInputs());
+        return inputs;
+    }
+
+    @Override
+    public void setNewKoukikoureiWindowInputs(SetNewKoukikoureiWindowInputsRequest request, StreamObserver<BooleanType> responseObserver) {
+        Window win = Globals.getInstance().findWindow(request.getWindow().getWindowId());
+        boolean ok = false;
+        if( win instanceof EnterKoukikoureiStage ){
+            EnterKoukikoureiStage stage = (EnterKoukikoureiStage)win;
+            KoukikoureiFormInputs inputs = toKoukikoureiFormInputs(request.getInputs());
+            Platform.runLater(() -> stage.setInputs(inputs));
+            ok = true;
+        } else {
+            System.err.println("Cannot find window (setNewKoukikoureiWindowInputs.)");
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(ok).build());
+        responseObserver.onCompleted();
+    }
+
+    private KouhiFormInputs toKouhiFormInputs(KouhiInputs src){
+        KouhiFormInputs inputs = new KouhiFormInputs();
+        inputs.futanshaBangou = src.getFutanshaBangou();
+        inputs.jukyuushaBangou = src.getJukyuushaBangou();
+        inputs.validFromInputs = toDateFormInputs(src.getValidFromInputs());
+        inputs.validUptoInputs = toDateFormInputs(src.getValidUptoInputs());
+        return inputs;
+    }
+
+    @Override
+    public void setNewKouhiWindowInputs(SetNewKouhiWindowInputsRequest request, StreamObserver<BooleanType> responseObserver) {
+        Window win = Globals.getInstance().findWindow(request.getWindow().getWindowId());
+        boolean ok = false;
+        if( win instanceof EnterKouhiStage ){
+            EnterKouhiStage stage = (EnterKouhiStage)win;
+            KouhiFormInputs inputs = toKouhiFormInputs(request.getInputs());
+            Platform.runLater(() -> stage.setInputs(inputs));
+            ok = true;
+        } else {
+            System.err.println("Cannot find window (setNewKouhiWindowInputs.)");
         }
         responseObserver.onNext(BooleanType.newBuilder().setValue(ok).build());
         responseObserver.onCompleted();

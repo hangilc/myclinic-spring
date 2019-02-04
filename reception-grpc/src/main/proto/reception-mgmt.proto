@@ -54,9 +54,41 @@ message SetNewShahokokuhoWindowInputsRequest {
     ShahokokuhoInputs inputs = 2;
 }
 
+message KoukikoureiInputs {
+    string hokenshaBangou = 1;
+    string hihokenshaBangou = 2;
+    DateInputs validFromInputs = 3;
+    DateInputs validUptoInputs = 4;
+    int32 futanwari = 5;
+}
+
+message SetNewKoukikoureiWindowInputsRequest {
+    WindowType window = 1;
+    KoukikoureiInputs inputs = 2;
+}
+
+message KouhiInputs {
+    string futanshaBangou = 1;
+    string jukyuushaBangou = 2;
+    DateInputs validFromInputs = 3;
+    DateInputs validUptoInputs = 4;
+}
+
+message SetNewKouhiWindowInputsRequest {
+    WindowType window = 1;
+    KouhiInputs inputs = 2;
+}
+
 service ReceptionMgmt {
 	rpc IsRunning(VoidType) returns (BooleanType) {}
 	rpc ClickMainPaneNewPatientButton(VoidType) returns (BooleanType) {}
+    rpc ClickNewPatientWindowEnterButton(WindowType) returns (BooleanType) {}
+    rpc ClickEditPatientNewShahokokuhoButton(WindowType) returns (BooleanType) {}
+    rpc ClickEditPatientNewKoukikoureiButton(WindowType) returns (BooleanType) {}
+    rpc ClickEditPatientNewKouhiButton(WindowType) returns (BooleanType) {}
+    rpc ClickNewShahokokuhoWindowEnterButton(WindowType) returns (BooleanType) {}
+    rpc ClickNewKoukikoureiWindowEnterButton(WindowType) returns (BooleanType) {}
+    rpc ClickNewKouhiWindowEnterButton(WindowType) returns (BooleanType) {}
 	rpc FindCreatedNewPatientWindow(VoidType) returns (WindowType) {}
 	rpc FindCreatedPatientWithHokenWindow(VoidType) returns (WindowType) {}
 	rpc FindCreatedNewShahokokuhoWindow(VoidType) returns (WindowType) {}
@@ -64,8 +96,6 @@ service ReceptionMgmt {
 	rpc FindCreatedNewKouhiWindow(VoidType) returns (WindowType) {}
 	rpc SetNewPatientWindowInputs(SetNewPatientWindowInputsRequest) returns (BooleanType) {}
 	rpc SetNewShahokokuhoWindowInputs(SetNewShahokokuhoWindowInputsRequest) returns (BooleanType) {}
-	rpc ClickNewPatientWindowEnterButton(WindowType) returns (BooleanType) {}
-	rpc ClickEditPatientNewShahokokuhoButton(WindowType) returns (BooleanType) {}
-	rpc ClickEditPatientNewKoukikoureiButton(WindowType) returns (BooleanType) {}
-	rpc ClickEditPatientNewKouhiButton(WindowType) returns (BooleanType) {}
+	rpc SetNewKoukikoureiWindowInputs(SetNewKoukikoureiWindowInputsRequest) returns (BooleanType) {}
+	rpc SetNewKouhiWindowInputs(SetNewKouhiWindowInputsRequest) returns (BooleanType) {}
 }

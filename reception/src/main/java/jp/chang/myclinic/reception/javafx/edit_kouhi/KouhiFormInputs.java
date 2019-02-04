@@ -3,12 +3,12 @@ package jp.chang.myclinic.reception.javafx.edit_kouhi;
 import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 
-class KouhiFormInputs {
+public class KouhiFormInputs {
 
-    String futanshaBangou;
-    String jukyuushaBangou;
-    DateFormInputs validFromInputs;
-    DateFormInputs validUptoInputs;
+    public String futanshaBangou;
+    public String jukyuushaBangou;
+    public DateFormInputs validFromInputs;
+    public DateFormInputs validUptoInputs;
 
     static KouhiFormInputs createForEnter(){
         KouhiFormInputs inputs = new KouhiFormInputs();
