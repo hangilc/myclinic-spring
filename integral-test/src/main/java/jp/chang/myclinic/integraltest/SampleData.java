@@ -1,14 +1,14 @@
 package jp.chang.myclinic.integraltest;
 
-import jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtOuterClass;
-import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtOuterClass.*;
-
 import jp.chang.myclinic.util.dto_logic.HokenLib;
 import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.util.kanjidate.GengouNenPair;
 import jp.chang.myclinic.util.kanjidate.KanjiDate;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,6 +17,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtOuterClass.*;
 
 public class SampleData {
 
@@ -145,6 +147,17 @@ public class SampleData {
                 .build();
     }
 
+    int pickNonZeroDigit(){
+        return 1 + random.nextInt(9);
+    }
+
+    int pickNonLeadingZeroDigits(int nDigits){
+        int d = pickNonZeroDigit();
+        while( --nDigits > 0 ){
+
+        }
+    }
+
     int pickDigits(int nDigit){
         if( nDigit <= 0 ){
             return 0;
@@ -157,9 +170,13 @@ public class SampleData {
         return ival;
     }
 
-    private int pickShahokokuhoHokenshaBangou(){
-        int ival = pickDigits(7);
+    int pickHokenshaBangou(int nDigits){
+        int ival = pickDigits(nDigits - 1);
         return ival * 10 + HokenLib.calcCheckingDigit(ival);
+    }
+
+    private int pickShahokokuhoHokenshaBangou(){
+        return pickHokenshaBangou(8);
     }
 
     private LocalDate pickLocalDate(int year){
@@ -205,6 +222,17 @@ public class SampleData {
                 .setValidFromInputs(toDateInputs(validFrom))
                 .setValidUptoInputs(validUptoInputs)
                 .setKourei(1 + random.nextInt(3))
+                .build();
+    }
+
+    public KouhiInputs pickKouhiInputs(){
+        LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
+        LocalDate validUpto = validFrom.plus(1, ChronoUnit.YEARS);
+        return KouhiInputs.newBuilder()
+                .setFutanshaBangou("" + pickHokenshaBangou(8))
+                .setJukyuushaBangou("" + pickHokenshaBangou(7))
+                .setValidFromInputs(toDateInputs(validFrom))
+                .setValidUptoInputs(toDateInputs(validUpto))
                 .build();
     }
 

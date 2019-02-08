@@ -3,6 +3,7 @@ package jp.chang.myclinic.integraltest;
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.KouhiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc;
@@ -77,13 +78,13 @@ public class Main {
             throw new RuntimeException("Enter patient failed.");
         }
         WindowType patientWithHokenWindow = findCreatedWindow(receptionStub::findCreatedPatientWithHokenWindow);
-        testNewPatientNewShahokokuho(patientWithHokenWindow, enteredPatient.patientId);
+        testNewPatientNewShahokokuhoAndKouhi(patientWithHokenWindow, enteredPatient.patientId);
         //receptionStub.clickEditPatientNewKoukikoureiButton(patientWithHokenWindow);
         //receptionStub.clickEditPatientNewKouhiButton(patientWithHokenWindow);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void testNewPatientNewShahokokuho(WindowType patientWithHokenWindow, int patientId) {
+    private void testNewPatientNewShahokokuhoAndKouhi(WindowType patientWithHokenWindow, int patientId) {
         int lastShahokokuhoId = getLastShahokokuhoId(patientId);
         receptionStub.clickEditPatientNewShahokokuhoButton(patientWithHokenWindow);
         WindowType enterWindow = findCreatedWindow(receptionStub::findCreatedNewShahokokuhoWindow);
@@ -101,8 +102,26 @@ public class Main {
             throw new RuntimeException("clickNewShahokokuhoWindowEnterButton failed.");
         }
         ShahokokuhoDTO createdShahokokuho = getCreatedShahokokuho(patientId, lastShahokokuhoId);
-        if( !isEqualShahokokuho(createdShahokokuho, inputs) ){
+        if( !(createdShahokokuho.patientId == patientId &&
+                isEqualShahokokuho(createdShahokokuho, inputs)) ){
             throw new RuntimeException("Created shahokokuho does not match inputs.");
+        }
+        int lastKouhiId = getLastKouhiId(patientId);
+        receptionStub.clickEditPatientNewKouhiButton(patientWithHokenWindow);
+        WindowType enterKouhiWin = findCreatedWindow(receptionStub::findCreatedNewKouhiWindow);
+        KouhiInputs kouhiInputs = sampleData.pickKouhiInputs();
+        SetNewKouhiWindowInputsRequest kouhiReq = SetNewKouhiWindowInputsRequest.newBuilder()
+                .setWindow(enterKouhiWin)
+                .setInputs(kouhiInputs)
+                .build();
+        ok = receptionStub.setNewKouhiWindowInputs(kouhiReq).getValue();
+        if( !ok ){
+            throw new RuntimeException("set kouhi inputs failed");
+        }
+        KouhiDTO createdKouhi = getCreatedKouhi(patientId, lastKouhiId);
+        if( !(createdKouhi.patientId == patientId &&
+                isEqualKouhi(createdKouhi, kouhiInputs)) ){
+            throw new RuntimeException("Created kouhi does not match inputs.");
         }
     }
 
@@ -113,6 +132,14 @@ public class Main {
                 .orElse(0);
     }
 
+    private int getLastKouhiId(int patientId){
+        List<KouhiDTO> hokenList = Service.api.listHoken(patientId).join().kouhiListDTO;
+        return hokenList.stream().map(h -> h.kouhiId)
+                .max(Comparator.reverseOrder())
+                .orElse(0);
+    }
+
+
     private ShahokokuhoDTO getCreatedShahokokuho(int patientId, int lastShahokokuhoId){
         return rpc(5, () -> {
             List<ShahokokuhoDTO> list = Service.api.listHoken(patientId).join().shahokokuhoListDTO
@@ -120,6 +147,21 @@ public class Main {
                     .collect(toList());
             if( list.size() > 1 ){
                 throw new RuntimeException("Too many shahokokuho created.");
+            } else if( list.size() == 1 ){
+                return Optional.of(list.get(0));
+            } else {
+                return Optional.empty();
+            }
+        });
+    }
+
+    private KouhiDTO getCreatedKouhi(int patientId, int lastKouhiId){
+        return rpc(5, () -> {
+            List<KouhiDTO> list = Service.api.listHoken(patientId).join().kouhiListDTO
+                    .stream().filter(dto -> dto.kouhiId > lastKouhiId)
+                    .collect(toList());
+            if( list.size() > 1 ){
+                throw new RuntimeException("Too many kouhi created.");
             } else if( list.size() == 1 ){
                 return Optional.of(list.get(0));
             } else {
@@ -219,6 +261,15 @@ public class Main {
                 .and(dto.hihokenshaBangou, inputs.getHihokenshaBangou())
                 .and(dto.honnin, inputs.getHonnin())
                 .and(dto.kourei, inputs.getKourei())
+                .and(dto.validFrom, toSqldate(inputs.getValidFromInputs()))
+                .and(dto.validUpto, toSqldate(inputs.getValidUptoInputs()))
+                .isEqual();
+    }
+
+    private boolean isEqualKouhi(KouhiDTO dto, KouhiInputs inputs){
+        return new CompositeEquals()
+                .and(dto.futansha, Integer.parseInt(inputs.getFutanshaBangou()))
+                .and(dto.jukyuusha, Integer.parseInt(inputs.getJukyuushaBangou()))
                 .and(dto.validFrom, toSqldate(inputs.getValidFromInputs()))
                 .and(dto.validUpto, toSqldate(inputs.getValidUptoInputs()))
                 .isEqual();
