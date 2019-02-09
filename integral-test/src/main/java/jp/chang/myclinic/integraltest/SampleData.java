@@ -154,17 +154,6 @@ public class SampleData {
         return low + random.nextInt(high + 1 - low);
     }
 
-    int pickNonZeroDigit(){
-        return 1 + random.nextInt(9);
-    }
-
-    int pickNonLeadingZeroDigits(int nDigits){
-        int d = pickNonZeroDigit();
-        while( --nDigits > 0 ){
-
-        }
-    }
-
     int pickDigits(int nDigit){
         if( nDigit <= 0 ){
             return 0;
@@ -195,9 +184,13 @@ public class SampleData {
     }
 
     private int pickKouhiFutanshaBangou(){
-        int houbetsu =
+        int houbetsu = pickInt(10, 99);
         TodoufukenCode todoufukenCode = pickTodofukenCode();
-
+        int hokensha = pickDigits(3);
+        int bangou = houbetsu;
+        bangou = bangou * 100 + todoufukenCode.getCode();
+        bangou = bangou * 1000 + hokensha;
+        return addCheckingDigit(bangou);
     }
 
     private LocalDate pickLocalDate(int year){
@@ -233,7 +226,7 @@ public class SampleData {
         if( span == 0 ){
             validUptoInputs = emptyDateInputs(KanjiDate.yearToGengou(validFrom).gengou);
         } else {
-            validUptoInputs = toDateInputs(validFrom.plus(1, ChronoUnit.YEARS));
+            validUptoInputs = toDateInputs(validFrom.plus(1, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS));
         }
         return ShahokokuhoInputs.newBuilder()
                 .setHokenshaBangou("" + pickShahokokuhoHokenshaBangou())
@@ -248,9 +241,9 @@ public class SampleData {
 
     public KouhiInputs pickKouhiInputs(){
         LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
-        LocalDate validUpto = validFrom.plus(1, ChronoUnit.YEARS);
+        LocalDate validUpto = validFrom.plus(1, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS);
         return KouhiInputs.newBuilder()
-                .setFutanshaBangou("" + pickHokenshaBangou(8))
+                .setFutanshaBangou("" + pickKouhiFutanshaBangou())
                 .setJukyuushaBangou("" + pickHokenshaBangou(7))
                 .setValidFromInputs(toDateInputs(validFrom))
                 .setValidUptoInputs(toDateInputs(validUpto))

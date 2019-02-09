@@ -40,12 +40,77 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
     }
 
     @Override
+    public void clickNewPatientWindowEnterButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
+        Window win = Globals.getInstance().findWindow(request.getWindowId());
+        boolean result = false;
+        if( win instanceof EnterPatientStage ){
+            EnterPatientStage stage = (EnterPatientStage)win;
+            Platform.runLater(stage::simulateEnterButtonClick);
+            result = true;
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(result).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void clickEditPatientNewShahokokuhoButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
+        Window win = Globals.getInstance().findWindow(request.getWindowId());
+        boolean result = false;
+        if( win instanceof PatientWithHokenStage){
+            PatientWithHokenStage stage = (PatientWithHokenStage)win;
+            Platform.runLater(stage::simulateNewShahokokuhoButtonClick);
+            result = true;
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(result).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void clickEditPatientNewKoukikoureiButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
+        Window win = Globals.getInstance().findWindow(request.getWindowId());
+        boolean result = false;
+        if( win instanceof PatientWithHokenStage){
+            PatientWithHokenStage stage = (PatientWithHokenStage)win;
+            Platform.runLater(stage::simulateNewKoukikoureiButtonClick);
+            result = true;
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(result).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void clickEditPatientNewKouhiButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
+        Window win = Globals.getInstance().findWindow(request.getWindowId());
+        boolean result = false;
+        if( win instanceof PatientWithHokenStage){
+            PatientWithHokenStage stage = (PatientWithHokenStage)win;
+            Platform.runLater(stage::simulateNewKouhiButtonClick);
+            result = true;
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(result).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void clickEditPatientCloseButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
+        Window win = Globals.getInstance().findWindow(request.getWindowId());
+        boolean result = false;
+        if( win instanceof PatientWithHokenStage){
+            PatientWithHokenStage stage = (PatientWithHokenStage)win;
+            Platform.runLater(stage::simulateCloseButtonClick);
+            result = true;
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(result).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
     public void clickNewShahokokuhoWindowEnterButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
         Window win = Globals.getInstance().findWindow(request.getWindowId());
         boolean ok = false;
         if( win instanceof EnterShahokokuhoStage ){
             EnterShahokokuhoStage stage = (EnterShahokokuhoStage)win;
-            stage.simulateEnterButtonClick();
+            Platform.runLater(stage::simulateEnterButtonClick);
             ok = true;
         } else {
             System.err.println("Cannot get EnterShahokokuhoStage.");
@@ -56,12 +121,32 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
 
     @Override
     public void clickNewKoukikoureiWindowEnterButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
-        super.clickNewKoukikoureiWindowEnterButton(request, responseObserver);
+        Window win = Globals.getInstance().findWindow(request.getWindowId());
+        boolean ok = false;
+        if( win instanceof EnterKoukikoureiStage ){
+            EnterKoukikoureiStage stage = (EnterKoukikoureiStage)win;
+            Platform.runLater(stage::simulateEnterButtonClick);
+            ok = true;
+        } else {
+            System.err.println("Cannot get EnterShahokokuhoStage.");
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(ok).build());
+        responseObserver.onCompleted();
     }
 
     @Override
     public void clickNewKouhiWindowEnterButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
-        super.clickNewKouhiWindowEnterButton(request, responseObserver);
+        Window win = Globals.getInstance().findWindow(request.getWindowId());
+        boolean ok = false;
+        if( win instanceof EnterKouhiStage ){
+            EnterKouhiStage stage = (EnterKouhiStage)win;
+            Platform.runLater(stage::simulateEnterButtonClick);
+            ok = true;
+        } else {
+            System.err.println("Cannot get EnterShahokokuhoStage.");
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(ok).build());
+        responseObserver.onCompleted();
     }
 
     private void findCreatedWindow(Class<? extends Window> windowClass, StreamObserver<WindowType> responseObserver){
@@ -225,55 +310,5 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
         responseObserver.onCompleted();
     }
 
-    @Override
-    public void clickNewPatientWindowEnterButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
-        Window win = Globals.getInstance().findWindow(request.getWindowId());
-        boolean result = false;
-        if( win instanceof EnterPatientStage ){
-            EnterPatientStage stage = (EnterPatientStage)win;
-            Platform.runLater(stage::simulateEnterButtonClick);
-            result = true;
-        }
-        responseObserver.onNext(BooleanType.newBuilder().setValue(result).build());
-        responseObserver.onCompleted();
-    }
 
-    @Override
-    public void clickEditPatientNewShahokokuhoButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
-        Window win = Globals.getInstance().findWindow(request.getWindowId());
-        boolean result = false;
-        if( win instanceof PatientWithHokenStage){
-            PatientWithHokenStage stage = (PatientWithHokenStage)win;
-            Platform.runLater(stage::simulateNewShahokokuhoButtonClick);
-            result = true;
-        }
-        responseObserver.onNext(BooleanType.newBuilder().setValue(result).build());
-        responseObserver.onCompleted();
-    }
-
-    @Override
-    public void clickEditPatientNewKoukikoureiButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
-        Window win = Globals.getInstance().findWindow(request.getWindowId());
-        boolean result = false;
-        if( win instanceof PatientWithHokenStage){
-            PatientWithHokenStage stage = (PatientWithHokenStage)win;
-            Platform.runLater(stage::simulateNewKoukikoureiButtonClick);
-            result = true;
-        }
-        responseObserver.onNext(BooleanType.newBuilder().setValue(result).build());
-        responseObserver.onCompleted();
-    }
-
-    @Override
-    public void clickEditPatientNewKouhiButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
-        Window win = Globals.getInstance().findWindow(request.getWindowId());
-        boolean result = false;
-        if( win instanceof PatientWithHokenStage){
-            PatientWithHokenStage stage = (PatientWithHokenStage)win;
-            Platform.runLater(stage::simulateNewKouhiButtonClick);
-            result = true;
-        }
-        responseObserver.onNext(BooleanType.newBuilder().setValue(result).build());
-        responseObserver.onCompleted();
-    }
 }

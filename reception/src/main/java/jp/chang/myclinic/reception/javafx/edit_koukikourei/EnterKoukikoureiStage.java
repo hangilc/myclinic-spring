@@ -21,6 +21,7 @@ public class EnterKoukikoureiStage extends Stage {
     //private static Logger logger = LoggerFactory.getLogger(EnterKoukikoureiStage.class);
     private Consumer<KoukikoureiDTO> enterCallback = dto -> {};
     private KoukikoureiForm form;
+    private Button enterButton;
 
     public EnterKoukikoureiStage(int patientId) {
         setTitle("新規後期高齢保険の入力");
@@ -38,13 +39,17 @@ public class EnterKoukikoureiStage extends Stage {
         form.setInputs(inputs);
     }
 
+    public void simulateEnterButtonClick(){
+        enterButton.fire();
+    }
+
     private Parent createRoot(int patientId){
         VBox root = new VBox(4);
         this.form = new KoukikoureiForm();
         KoukikoureiFormLogic.EnterProc proc = KoukikoureiFormLogic.createEnterProc(patientId, form::setInputs);
         root.getChildren().add(form);
         HBox commands = new HBox(4);
-        Button enterButton = new Button("入力");
+        this.enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
         enterButton.setOnAction(evt -> {
             ErrorMessages em = new ErrorMessages();

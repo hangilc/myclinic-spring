@@ -86,6 +86,7 @@ service ReceptionMgmt {
     rpc ClickEditPatientNewShahokokuhoButton(WindowType) returns (BooleanType) {}
     rpc ClickEditPatientNewKoukikoureiButton(WindowType) returns (BooleanType) {}
     rpc ClickEditPatientNewKouhiButton(WindowType) returns (BooleanType) {}
+    rpc ClickEditPatientCloseButton(WindowType) returns (BooleanType) {}
     rpc ClickNewShahokokuhoWindowEnterButton(WindowType) returns (BooleanType) {}
     rpc ClickNewKoukikoureiWindowEnterButton(WindowType) returns (BooleanType) {}
     rpc ClickNewKouhiWindowEnterButton(WindowType) returns (BooleanType) {}

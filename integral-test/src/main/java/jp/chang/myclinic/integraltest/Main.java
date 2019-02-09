@@ -4,6 +4,7 @@ import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.KouhiDTO;
+import jp.chang.myclinic.dto.KoukikoureiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc;
@@ -118,24 +119,36 @@ public class Main {
         if( !ok ){
             throw new RuntimeException("set kouhi inputs failed");
         }
+        ok = receptionStub.clickNewKouhiWindowEnterButton(enterKouhiWin).getValue();
+        if( !ok ){
+            throw new RuntimeException("Click enter failed in new kouhi window.");
+        }
         KouhiDTO createdKouhi = getCreatedKouhi(patientId, lastKouhiId);
         if( !(createdKouhi.patientId == patientId &&
                 isEqualKouhi(createdKouhi, kouhiInputs)) ){
             throw new RuntimeException("Created kouhi does not match inputs.");
         }
+        ok = receptionStub.clickEditPatientCloseButton(patientWithHokenWindow).getValue();
+        if( !ok ){
+            throw new RuntimeException("Clicking close button in edit patient window failed.");
+        }
     }
 
     private int getLastShahokokuhoId(int patientId){
         List<ShahokokuhoDTO> hokenList = Service.api.listHoken(patientId).join().shahokokuhoListDTO;
-        return hokenList.stream().map(h -> h.shahokokuhoId)
-                .max(Comparator.reverseOrder())
+        return hokenList.stream().map(h -> h.shahokokuhoId).max(Comparator.naturalOrder())
+                .orElse(0);
+    }
+
+    private int getLastKoukikoureiId(int patientId){
+        List<KoukikoureiDTO> hokenList = Service.api.listHoken(patientId).join().koukikoureiListDTO;
+        return hokenList.stream().map(h -> h.koukikoureiId).max(Comparator.naturalOrder())
                 .orElse(0);
     }
 
     private int getLastKouhiId(int patientId){
         List<KouhiDTO> hokenList = Service.api.listHoken(patientId).join().kouhiListDTO;
-        return hokenList.stream().map(h -> h.kouhiId)
-                .max(Comparator.reverseOrder())
+        return hokenList.stream().map(h -> h.kouhiId).max(Comparator.naturalOrder())
                 .orElse(0);
     }
 

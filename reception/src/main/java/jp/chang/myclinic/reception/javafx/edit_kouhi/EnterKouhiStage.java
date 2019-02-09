@@ -19,6 +19,7 @@ public class EnterKouhiStage extends Stage {
     //private static Logger logger = LoggerFactory.getLogger(EnterKouhiStage.class);
     private Consumer<KouhiDTO> callback = dto -> {};
     private KouhiForm form;
+    private Button enterButton;
 
     public EnterKouhiStage(int patientId) {
         setTitle("新規公費負担の入力");
@@ -36,6 +37,10 @@ public class EnterKouhiStage extends Stage {
         form.setInputs(inputs);
     }
 
+    public void simulateEnterButtonClick(){
+        enterButton.fire();
+    }
+
     private Parent createRoot(int patientId){
         VBox root = new VBox(4);
         this.form = new KouhiForm();
@@ -43,7 +48,7 @@ public class EnterKouhiStage extends Stage {
         root.getChildren().add(form);
         HBox commands = new HBox(4);
         commands.setAlignment(Pos.CENTER_RIGHT);
-        Button enterButton = new Button("入力");
+        this.enterButton = new Button("入力");
         enterButton.setOnAction(evt -> doEnter(patientId, form));
         Button cancelButton = new Button("キャンセル");
         cancelButton.setOnAction(evt -> close());
