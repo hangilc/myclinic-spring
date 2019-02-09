@@ -1,5 +1,6 @@
 package jp.chang.myclinic.integraltest;
 
+import jp.chang.myclinic.consts.TodoufukenCode;
 import jp.chang.myclinic.util.dto_logic.HokenLib;
 import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.util.kanjidate.GengouNenPair;
@@ -15,6 +16,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -48,6 +50,7 @@ public class SampleData {
     private List<NameEntry> maleFirstNames;
     private List<NameEntry> femaleFirstNames;
     private Random random = new Random();
+    private List<TodoufukenCode> todoufukenCodes = Arrays.asList(TodoufukenCode.values());
 
     public SampleData(){
         this.lastNames = loadNames("/last-names.txt");
@@ -147,6 +150,10 @@ public class SampleData {
                 .build();
     }
 
+    int pickInt(int low, int high){
+        return low + random.nextInt(high + 1 - low);
+    }
+
     int pickNonZeroDigit(){
         return 1 + random.nextInt(9);
     }
@@ -170,13 +177,27 @@ public class SampleData {
         return ival;
     }
 
-    int pickHokenshaBangou(int nDigits){
-        int ival = pickDigits(nDigits - 1);
+    private int addCheckingDigit(int ival){
         return ival * 10 + HokenLib.calcCheckingDigit(ival);
+    }
+
+    int pickHokenshaBangou(int nDigits){
+        return addCheckingDigit(pickDigits(nDigits-1));
     }
 
     private int pickShahokokuhoHokenshaBangou(){
         return pickHokenshaBangou(8);
+    }
+
+    private TodoufukenCode pickTodofukenCode(){
+        int i = random.nextInt(todoufukenCodes.size());
+        return todoufukenCodes.get(i);
+    }
+
+    private int pickKouhiFutanshaBangou(){
+        int houbetsu =
+        TodoufukenCode todoufukenCode = pickTodofukenCode();
+
     }
 
     private LocalDate pickLocalDate(int year){
