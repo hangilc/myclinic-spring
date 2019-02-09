@@ -7,6 +7,8 @@ import jp.chang.myclinic.dto.KouhiDTO;
 import jp.chang.myclinic.dto.KoukikoureiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.integraltest.reception.ReceptionMainWindow;
+import jp.chang.myclinic.integraltest.reception.ReceptionNewPatientWindow;
 import jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc;
 import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.util.kanjidate.KanjiDate;
@@ -36,6 +38,7 @@ public class Main {
     }
 
     private SampleData sampleData = new SampleData();
+    private ReceptionMainWindow receptionMainWindow;
     private ReceptionMgmtBlockingStub receptionStub;
 
     private void run(String[] args) {
@@ -51,11 +54,18 @@ public class Main {
             String serverUrl = args[0];
             Service.setServerUrl(serverUrl);
             confirmMockPatient();
-            this.receptionStub = newReceptionStub("localhost", 9000);
-            testNewPatient();
+            ReceptionMgmtBlockingStub receptionStub = newReceptionStub("localhost", 9000);
+            receptionMainWindow = new ReceptionMainWindow(receptionStub);
+            testNewPatientWithShahokokuhoAndKouhi();
         } finally {
             Service.stop();
         }
+    }
+
+    private void testNewPatientWithShahokokuhoAndKouhi(){
+        ReceptionNewPatientWindow newPatientWindow = receptionMainWindow.clickNewPatientButton();
+        PatientInputs patientInputs = sampleData.pickPatientInputs();
+        newPatientWindow.setInputs(patientInputs);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
