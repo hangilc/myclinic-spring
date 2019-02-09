@@ -10,7 +10,7 @@ public class GrpcBase {
 
     //private static Logger logger = LoggerFactory.getLogger(GrpcBase.class);
 
-    public <T> T rpc(int maxTry, Supplier<Optional<T>> fun) {
+    public static <T> T rpc(int maxTry, Supplier<Optional<T>> fun) {
         try {
             while (maxTry-- > 0) {
                 Optional<T> opt = fun.get();
@@ -26,7 +26,7 @@ public class GrpcBase {
         }
     }
 
-    public WindowType findCreatedWindow(Function<VoidType, WindowType> f) {
+    public static WindowType findCreatedWindow(Function<VoidType, WindowType> f) {
         return rpc(5, () -> {
             WindowType w = f.apply(null);
             return (w != null && w.getWindowId() > 0) ? Optional.of(w) : Optional.empty();

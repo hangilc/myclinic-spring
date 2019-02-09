@@ -9,6 +9,8 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.integraltest.reception.ReceptionMainWindow;
 import jp.chang.myclinic.integraltest.reception.ReceptionNewPatientWindow;
+import jp.chang.myclinic.integraltest.reception.ReceptionNewShahokokuhoWindow;
+import jp.chang.myclinic.integraltest.reception.ReceptionPatientWithHokenWindow;
 import jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc;
 import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.util.kanjidate.KanjiDate;
@@ -56,16 +58,28 @@ public class Main {
             confirmMockPatient();
             ReceptionMgmtBlockingStub receptionStub = newReceptionStub("localhost", 9000);
             receptionMainWindow = new ReceptionMainWindow(receptionStub);
-            testNewPatientWithShahokokuhoAndKouhi();
+            testNewPatientWithShahokokuhoAndKouhi(receptionStub);
         } finally {
             Service.stop();
         }
     }
 
-    private void testNewPatientWithShahokokuhoAndKouhi(){
+    private void testNewPatientWithShahokokuhoAndKouhi(ReceptionMgmtBlockingStub receptionStub){
         ReceptionNewPatientWindow newPatientWindow = receptionMainWindow.clickNewPatientButton();
         PatientInputs patientInputs = sampleData.pickPatientInputs();
         newPatientWindow.setInputs(patientInputs);
+        PatientDTO enteredPatient = newPatientWindow.clickEnterButton();
+        if( !isEqualPatient(enteredPatient, patientInputs) ){
+            System.out.println(patientInputs);
+            System.out.println(enteredPatient);
+            throw new RuntimeException("Enter patient failed.");
+        }
+        ReceptionPatientWithHokenWindow patientWithHokenWindow =
+                ReceptionPatientWithHokenWindow.findCreated(receptionStub);
+        ReceptionNewShahokokuhoWindow newShahokokuhoWindow =
+                patientWithHokenWindow.clickNewShahokokuhoButton();
+        ShahokokuhoInputs shahokokuhoInputs = sampleData.pickShahokokuhoInputs();
+        newShahokokuhoWindow.setInputs(shahokokuhoInputs);
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
