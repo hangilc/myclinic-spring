@@ -68,6 +68,11 @@
         </dependency>
         <dependency>
             <groupId>jp.chang.myclinic</groupId>
+            <artifactId>mock-data</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>jp.chang.myclinic</groupId>
             <artifactId>utilfx</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>

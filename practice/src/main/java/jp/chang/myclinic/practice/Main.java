@@ -34,6 +34,7 @@ public class Main extends Application {
         Service.setServerUrl(cmdArgs.getServerUrl());
         if( cmdArgs.isSelfTest() ){
             new PracticeSelfTest().run();
+            Service.stop();
             return;
         }
         Application.launch(Main.class, args);
