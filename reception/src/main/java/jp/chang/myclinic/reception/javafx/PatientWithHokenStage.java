@@ -55,6 +55,7 @@ public class PatientWithHokenStage extends Stage {
     private Button newShahokokuhoButton;
     private Button newKoukikoureiButton;
     private Button newKouhiButton;
+    private Button registerButton;
     private Button closeButton;
 
     PatientWithHokenStage(PatientDTO patient, HokenListDTO hokenList) {
@@ -161,7 +162,7 @@ public class PatientWithHokenStage extends Stage {
         {
             HBox row = new HBox(4);
             row.setAlignment(Pos.CENTER_RIGHT);
-            Button registerButton = new Button("診療受付");
+            this.registerButton = new Button("診療受付");
             this.closeButton = new Button("閉じる");
             registerButton.setOnAction(event -> doRegister());
             closeButton.setOnAction(event -> close());
@@ -183,6 +184,10 @@ public class PatientWithHokenStage extends Stage {
 
     public void simulateNewKouhiButtonClick(){
         newKouhiButton.fire();
+    }
+
+    public void simulateRegisterForExamButtonClick(){
+        registerButton.fire();
     }
 
     public void simulateCloseButtonClick(){

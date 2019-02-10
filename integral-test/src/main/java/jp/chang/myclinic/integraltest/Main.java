@@ -3,10 +3,8 @@ package jp.chang.myclinic.integraltest;
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.dto.KouhiDTO;
-import jp.chang.myclinic.dto.KoukikoureiDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.consts.WqueueWaitState;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.integraltest.reception.*;
 import jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc;
 import jp.chang.myclinic.util.kanjidate.Gengou;
@@ -14,13 +12,8 @@ import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
-import static java.util.stream.Collectors.toList;
 import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc.ReceptionMgmtBlockingStub;
 import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtOuterClass.*;
 
@@ -55,7 +48,8 @@ public class Main {
             ReceptionMgmtBlockingStub receptionStub = newReceptionStub("localhost", 9000);
             receptionMainWindow = new ReceptionMainWindow(receptionStub);
             //testNewPatientWithShahokokuhoAndKouhi();
-            testNewPatientWithKoukikourei();
+            //testNewPatientWithKoukikourei();
+            testNewPatientExam();
         } finally {
             Service.stop();
         }
@@ -117,11 +111,38 @@ public class Main {
         patientWithHokenWindow.clickCloseButton();
     }
 
-
-    private int getLastKoukikoureiId(int patientId){
-        List<KoukikoureiDTO> hokenList = Service.api.listHoken(patientId).join().koukikoureiListDTO;
-        return hokenList.stream().map(h -> h.koukikoureiId).max(Comparator.naturalOrder())
-                .orElse(0);
+    private void testNewPatientExam(){
+        ReceptionNewPatientWindow newPatientWindow = receptionMainWindow.clickNewPatientButton();
+        PatientInputs patientInputs = sampleData.pickPatientInputs();
+        newPatientWindow.setInputs(patientInputs);
+        PatientDTO enteredPatient = newPatientWindow.clickEnterButton();
+        if( !isEqualPatient(enteredPatient, patientInputs) ){
+            System.out.println(patientInputs);
+            System.out.println(enteredPatient);
+            throw new RuntimeException("Enter patient failed.");
+        }
+        ReceptionPatientWithHokenWindow patientWithHokenWindow =
+                ReceptionPatientWithHokenWindow.findCreated(receptionMainWindow.getReceptionStub());
+        ReceptionNewShahokokuhoWindow newShahokokuhoWindow =
+                patientWithHokenWindow.clickNewShahokokuhoButton();
+        ShahokokuhoInputs shahokokuhoInputs = sampleData.pickShahokokuhoInputs();
+        newShahokokuhoWindow.setInputs(shahokokuhoInputs);
+        ShahokokuhoDTO enteredShahokokuho = newShahokokuhoWindow.clickEnterButton();
+        if( !(enteredShahokokuho.patientId == enteredPatient.patientId &&
+                isEqualShahokokuho(enteredShahokokuho, shahokokuhoInputs)) ){
+            throw new RuntimeException("Created shahokokuho does not match inputs.");
+        }
+        ReceptionRegisterForPracticeWindow registerWindow = patientWithHokenWindow.clickRegisterButton();
+        VisitDTO visit = registerWindow.clickOkButton();
+        if( !(visit.patientId == enteredPatient.patientId
+                && visit.shahokokuhoId == enteredShahokokuho.shahokokuhoId ) ){
+            throw new RuntimeException("Invalid visit.");
+        }
+        patientWithHokenWindow.clickCloseButton();
+        WqueueModel wqueue = receptionMainWindow.findInWqueue(visit.visitId);
+        if( wqueue.getWaitState() != WqueueWaitState.WaitExam.getCode() ){
+            throw new RuntimeException("Invalid wqueue.");
+        }
     }
 
     private void confirmMockPatient() {
@@ -139,8 +160,6 @@ public class Main {
                     return null;
                 });
     }
-
-
 
     private ReceptionMgmtBlockingStub newReceptionStub(String host, int port) {
         Channel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();

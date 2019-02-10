@@ -12,6 +12,8 @@ import jp.chang.myclinic.dto.PatientDTO;
 public class RegisterForPracticeDialog extends Stage {
 
     private boolean ok;
+    private Button okButton;
+    private Button noButton;
 
     public RegisterForPracticeDialog(PatientDTO patient){
         setTitle("診療受付の確認");
@@ -24,8 +26,8 @@ public class RegisterForPracticeDialog extends Stage {
         {
             HBox hbox = new HBox(4);
             hbox.setAlignment(Pos.CENTER_RIGHT);
-            Button okButton = new Button("はい");
-            Button noButton = new Button("いいえ");
+            this.okButton = new Button("はい");
+            this.noButton = new Button("いいえ");
             okButton.setOnAction(event -> {
                 ok = true;
                 close();
@@ -41,6 +43,10 @@ public class RegisterForPracticeDialog extends Stage {
 
     public boolean isOk() {
         return ok;
+    }
+
+    public void simulateOkButtonClick(){
+        okButton.fire();
     }
 
 }

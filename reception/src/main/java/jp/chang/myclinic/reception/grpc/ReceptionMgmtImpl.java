@@ -6,7 +6,10 @@ import javafx.stage.Window;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.reception.Globals;
 import jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc;
+import jp.chang.myclinic.reception.javafx.MainPane;
 import jp.chang.myclinic.reception.javafx.PatientWithHokenStage;
+import jp.chang.myclinic.reception.javafx.RegisterForPracticeDialog;
+import jp.chang.myclinic.reception.javafx.WqueueTable;
 import jp.chang.myclinic.reception.javafx.edit_kouhi.EnterKouhiStage;
 import jp.chang.myclinic.reception.javafx.edit_kouhi.KouhiFormInputs;
 import jp.chang.myclinic.reception.javafx.edit_koukikourei.EnterKoukikoureiStage;
@@ -18,6 +21,10 @@ import jp.chang.myclinic.reception.javafx.edit_shahokokuho.ShahokokuhoFormInputs
 import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.utilfx.dateinput.DateFormInputs;
 
+import java.util.List;
+import java.util.function.Consumer;
+
+import static java.util.stream.Collectors.toList;
 import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtOuterClass.*;
 
 public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
@@ -92,6 +99,19 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
     }
 
     @Override
+    public void clickEditPatientRegisterForPracticeButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
+        Window win = Globals.getInstance().findWindow(request.getWindowId());
+        boolean result = false;
+        if( win instanceof PatientWithHokenStage){
+            PatientWithHokenStage stage = (PatientWithHokenStage)win;
+            Platform.runLater(stage::simulateRegisterForExamButtonClick);
+            result = true;
+        }
+        responseObserver.onNext(BooleanType.newBuilder().setValue(result).build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
     public void clickEditPatientCloseButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
         Window win = Globals.getInstance().findWindow(request.getWindowId());
         boolean result = false;
@@ -149,6 +169,29 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void clickRegisterForPracticeWindowOkButton(WindowType request, StreamObserver<BooleanType> responseObserver) {
+        click(request, responseObserver, RegisterForPracticeDialog.class,
+                RegisterForPracticeDialog::simulateOkButtonClick);
+    }
+
+    private <T> void click(WindowType windowType, StreamObserver<BooleanType> responseObserver,
+                           Class<T> windowClass, Consumer<T> clicker){
+        Window win = Globals.getInstance().findWindow(windowType.getWindowId());
+        if( windowClass.isInstance(win) ){
+            T stage = windowClass.cast(win);
+            Platform.runLater(() -> {
+                clicker.accept(stage);
+            });
+            responseObserver.onNext(BooleanType.newBuilder().setValue(true).build());
+            responseObserver.onCompleted();
+        } else {
+            System.err.println("Cannot get " + windowClass.toString() + ".");
+            responseObserver.onNext(BooleanType.newBuilder().setValue(true).build());
+            responseObserver.onCompleted();
+        }
+    }
+
     private void findCreatedWindow(Class<? extends Window> windowClass, StreamObserver<WindowType> responseObserver){
         Window win = Globals.getInstance().findNewWindow(windowClass);
         if( win != null ){
@@ -185,6 +228,11 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
     @Override
     public void findCreatedNewKouhiWindow(VoidType request, StreamObserver<WindowType> responseObserver) {
         findCreatedWindow(EnterKouhiStage.class, responseObserver);
+    }
+
+    @Override
+    public void findCreatedRegisterForPracticeWindow(VoidType request, StreamObserver<WindowType> responseObserver) {
+        findCreatedWindow(RegisterForPracticeDialog.class, responseObserver);
     }
 
     @Override
@@ -327,4 +375,30 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
         responseObserver.onCompleted();
     }
 
+    private WqueueModel toWqueueModel(WqueueTable.Model src){
+        return WqueueModel.newBuilder()
+                .setWaitState(src.waitStateProperty().getValue())
+                .setPatientId(src.patientIdProperty().getValue())
+                .setLastName(src.lastNameProperty().getValue())
+                .setFirstName(src.firstNameProperty().getValue())
+                .setLastNameYomi(src.lastNameYomiProperty().getValue())
+                .setFirstNameYomi(src.firstNameYomiProperty().getValue())
+                .setSex(src.sexProperty().getValue().getKanji())
+                .setBirthday(src.birthdayProperty().getValue().toString())
+                .setVisitId(src.getVisitId())
+                .build();
+    }
+
+    @Override
+    public void listWqueueModel(VoidType request, StreamObserver<WqueueModelList> responseObserver) {
+        MainPane mainPane = Globals.getMainPane();
+        List<WqueueModel> models = mainPane.listWqueueModel().stream()
+                .map(this::toWqueueModel)
+                .collect(toList());
+        WqueueModelList reply = WqueueModelList.newBuilder()
+                .addAllList(models)
+                .build();
+        responseObserver.onNext(reply);
+        responseObserver.onCompleted();
+    }
 }

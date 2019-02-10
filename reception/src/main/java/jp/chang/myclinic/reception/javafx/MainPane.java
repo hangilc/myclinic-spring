@@ -108,6 +108,10 @@ public class MainPane extends VBox implements DispatchHook {
         }
     }
 
+    public List<WqueueTable.Model> listWqueueModel(){
+        return wqueueTable.getItems();
+    }
+
     private void doCashier() {
         wqueueTable.getSelectedWqueueFullDTO()
                 .thenAccept(wq -> {

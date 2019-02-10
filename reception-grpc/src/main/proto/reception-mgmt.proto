@@ -83,6 +83,22 @@ message PatientWithHokenWindowInfo {
     int32 patientId = 1;
 }
 
+message WqueueModel {
+    int32 waitState = 1;
+    int32 patientId = 2;
+    string lastName = 3;
+    string firstName = 4;
+    string lastNameYomi = 5;
+    string firstNameYomi = 6;
+    string sex = 7;
+    string birthday = 8;
+    int32 visitId = 9;
+}
+
+message WqueueModelList {
+    repeated WqueueModel list = 1;
+}
+
 service ReceptionMgmt {
 	rpc IsRunning(VoidType) returns (BooleanType) {}
 	rpc ClickMainPaneNewPatientButton(VoidType) returns (BooleanType) {}
@@ -91,17 +107,21 @@ service ReceptionMgmt {
     rpc ClickEditPatientNewKoukikoureiButton(WindowType) returns (BooleanType) {}
     rpc ClickEditPatientNewKouhiButton(WindowType) returns (BooleanType) {}
     rpc ClickEditPatientCloseButton(WindowType) returns (BooleanType) {}
+    rpc ClickEditPatientRegisterForPracticeButton(WindowType) returns (BooleanType) {}
     rpc ClickNewShahokokuhoWindowEnterButton(WindowType) returns (BooleanType) {}
     rpc ClickNewKoukikoureiWindowEnterButton(WindowType) returns (BooleanType) {}
     rpc ClickNewKouhiWindowEnterButton(WindowType) returns (BooleanType) {}
+    rpc ClickRegisterForPracticeWindowOkButton(WindowType) returns (BooleanType) {}
 	rpc FindCreatedNewPatientWindow(VoidType) returns (WindowType) {}
 	rpc FindCreatedPatientWithHokenWindow(VoidType) returns (WindowType) {}
 	rpc FindCreatedNewShahokokuhoWindow(VoidType) returns (WindowType) {}
 	rpc FindCreatedNewKoukikoureiWindow(VoidType) returns (WindowType) {}
 	rpc FindCreatedNewKouhiWindow(VoidType) returns (WindowType) {}
+	rpc FindCreatedRegisterForPracticeWindow(VoidType) returns (WindowType) {}
 	rpc SetNewPatientWindowInputs(SetNewPatientWindowInputsRequest) returns (BooleanType) {}
 	rpc SetNewShahokokuhoWindowInputs(SetNewShahokokuhoWindowInputsRequest) returns (BooleanType) {}
 	rpc SetNewKoukikoureiWindowInputs(SetNewKoukikoureiWindowInputsRequest) returns (BooleanType) {}
 	rpc SetNewKouhiWindowInputs(SetNewKouhiWindowInputsRequest) returns (BooleanType) {}
 	rpc GetPatientWithHokenWindowPatientId(WindowType) returns (PatientWithHokenWindowInfo) {}
+	rpc ListWqueueModel(VoidType) returns (WqueueModelList);
 }

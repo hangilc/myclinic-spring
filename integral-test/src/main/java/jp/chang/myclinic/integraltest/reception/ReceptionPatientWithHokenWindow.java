@@ -47,6 +47,15 @@ public class ReceptionPatientWithHokenWindow extends ReceptionWindow {
         return new ReceptionNewKouhiWindow(receptionStub, newWindowType, getPatientId());
     }
 
+    public ReceptionRegisterForPracticeWindow clickRegisterButton(){
+        boolean ok = receptionStub.clickEditPatientRegisterForPracticeButton(windowType).getValue();
+        if( !ok ){
+            throw new RuntimeException("Clicking register button failed (patient with hoken window).");
+        }
+        WindowType registerWindow = findCreatedWindow(receptionStub::findCreatedRegisterForPracticeWindow);
+        return new ReceptionRegisterForPracticeWindow(receptionStub, registerWindow);
+    }
+
     public void clickCloseButton(){
         boolean ok = receptionStub.clickEditPatientCloseButton(windowType).getValue();
         if( !ok ){

@@ -190,6 +190,10 @@ public class Service {
         CompletableFuture<List<VisitPatientDTO>> listRecentVisits();
 
         @GET("list-visit-with-patient")
+        CompletableFuture<List<VisitPatientDTO>> listRecentVisits(@Query("page") int page,
+                                                                  @Query("items-per-page") int itemsPerPage);
+
+        @GET("list-visit-with-patient")
         Call<List<VisitPatientDTO>> listRecentVisitsCall();
 
         @GET("list-todays-visits")
