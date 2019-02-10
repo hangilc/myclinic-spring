@@ -6,15 +6,17 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.integraltest.reception.*;
+import static jp.chang.myclinic.practice.grpc.generated.PracticeMgmtGrpc.*;
+import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc.*;
+
+import jp.chang.myclinic.practice.grpc.generated.PracticeMgmtGrpc;
 import jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc;
 import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.util.List;
 
-import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc.ReceptionMgmtBlockingStub;
 import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtOuterClass.*;
 
 public class Main {
@@ -47,9 +49,11 @@ public class Main {
             confirmMockPatient();
             ReceptionMgmtBlockingStub receptionStub = newReceptionStub("localhost", 9000);
             receptionMainWindow = new ReceptionMainWindow(receptionStub);
+            PracticeMgmtBlockingStub practiceStub = newPracticeStub("localhost", 9001);
+            System.out.println(practiceStub.isRunning(null).getValue());
             //testNewPatientWithShahokokuhoAndKouhi();
             //testNewPatientWithKoukikourei();
-            testNewPatientExam();
+            //testNewPatientExam();
         } finally {
             Service.stop();
         }
@@ -164,6 +168,11 @@ public class Main {
     private ReceptionMgmtBlockingStub newReceptionStub(String host, int port) {
         Channel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
         return ReceptionMgmtGrpc.newBlockingStub(channel);
+    }
+
+    private PracticeMgmtBlockingStub newPracticeStub(String host, int port) {
+        Channel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+        return PracticeMgmtGrpc.newBlockingStub(channel);
     }
 
     private String toSqldate(DateInputs inputs) {

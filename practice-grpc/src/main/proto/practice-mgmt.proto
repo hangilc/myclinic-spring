@@ -1,0 +1,18 @@
+syntax = "proto3";
+package jp.chang.myclinic.practice.grpc.generated;
+
+message VoidType {
+
+}
+
+message BooleanType {
+	bool value = 1;
+}
+
+message WindowType {
+    int32 windowId = 1;
+}
+
+service PracticeMgmt {
+    rpc IsRunning(VoidType) returns (BooleanType) {}
+}

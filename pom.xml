@@ -110,6 +110,7 @@
         <module>dbxfer</module>
         <module>db</module>
     <module>integral-test</module>
+    <module>practice-grpc</module>
   </modules>
 
 </project>

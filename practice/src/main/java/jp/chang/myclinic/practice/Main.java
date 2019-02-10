@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.practice.grpc.MgmtServer;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -16,20 +17,26 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 @SpringBootApplication
-public class Main extends Application implements CommandLineRunner {
+public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private static ConfigurableApplicationContext ctx;
+    private MgmtServer mgmtServer;
 
     public static void main(String[] args) throws IOException {
         Application.launch(Main.class, args);
     }
 
+    private Integer managementPort;
+
     @Override
     public void start(Stage stage) {
+        Application.Parameters params = getParameters();
+        parseArgs(params.getRaw().toArray(new String[]{}));
         ctx = SpringApplication.run(Main.class, getParameters().getRaw().toArray(new String[]{}));
         MainScope mainScope = ctx.getBean(MainScope.class);
         if( mainScope.debugHttp ){
@@ -49,22 +56,22 @@ public class Main extends Application implements CommandLineRunner {
                 PracticeEnv.INSTANCE.closeRemainingWindows();
             }
         });
+        if( managementPort != null && managementPort > 0 ){
+            {
+                ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger("io.grpc");
+                log.setLevel(ch.qos.logback.classic.Level.ERROR);
+            }
+            mgmtServer = new MgmtServer(managementPort);
+            mgmtServer.start();
+            System.out.printf("Listening to management port :%d\n", managementPort);
+        }
         stage.show();
     }
 
-    @Override
-    public void run(String... args){
-        String serverUrl = null;
-        if( args.length == 0 ){
-            serverUrl = System.getenv("MYCLINIC_SERVICE");
-        } else {
-            serverUrl = args[0];
-        }
-        if( serverUrl == null ){
-            logger.error("Cannot find server url.");
-            System.exit(1);
-        }
-        Service.setServerUrl(serverUrl);
+    private void parseArgs(String... args){
+        CmdArgs cmdArgs = new CmdArgs(args);
+        this.managementPort = cmdArgs.getManagementPort();
+        Service.setServerUrl(cmdArgs.getServerUrl());
     }
 
     @Override
@@ -78,6 +85,9 @@ public class Main extends Application implements CommandLineRunner {
             cache.close();
         }
         ctx.close();
+        if( mgmtServer !=  null ){
+            mgmtServer.stop();
+        }
     }
 
     private static void setupPracticeEnv() {

@@ -1,4 +1,4 @@
-package jp.chang.myclinic.reception.grpc;
+package jp.chang.myclinic.practice.grpc;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -19,7 +19,7 @@ public class MgmtServer {
     public MgmtServer(int port) {
         this.server = ServerBuilder.forPort(port)
                 .executor(executor)
-                .addService(new ReceptionMgmtImpl())
+                .addService(new PracticeMgmtImpl())
                 .build();
     }
 
