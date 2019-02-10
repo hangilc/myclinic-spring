@@ -9,6 +9,7 @@ class CmdArgs {
 
     private String serverUrl;
     private Integer managementPort;
+    private boolean selfTest;
 
     CmdArgs(String[] args) {
         int i = 0;
@@ -22,6 +23,10 @@ class CmdArgs {
                         System.exit(1);
                     }
                     this.managementPort = Integer.parseInt(args[i]);
+                    break;
+                }
+                case "--self-test": {
+                    this.selfTest = true;
                     break;
                 }
                 default:
@@ -38,11 +43,15 @@ class CmdArgs {
         }
     }
 
-    public String getServerUrl() {
+    String getServerUrl() {
         return serverUrl;
     }
 
-    public Integer getManagementPort() {
+    Integer getManagementPort() {
         return managementPort;
+    }
+
+    boolean isSelfTest() {
+        return selfTest;
     }
 }

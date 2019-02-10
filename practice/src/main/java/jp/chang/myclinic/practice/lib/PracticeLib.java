@@ -216,15 +216,15 @@ public class PracticeLib {
                 });
     }
 
-    public static void listWqueue(Consumer<List<WqueueFullDTO>> cb) {
-        Service.api.listWqueueFullForExam()
-                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
-                .exceptionally(ex -> {
-                    logger.error("Failed list wqueue for exam.", ex);
-                    Platform.runLater(() -> GuiUtil.alertException("受付患者リストの取得に失敗しました。", ex));
-                    return null;
-                });
-    }
+//    public static void listWqueue(Consumer<List<WqueueFullDTO>> cb) {
+//        Service.api.listWqueueFullForExam()
+//                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
+//                .exceptionally(ex -> {
+//                    logger.error("Failed list wqueue for exam.", ex);
+//                    Platform.runLater(() -> GuiUtil.alertException("受付患者リストの取得に失敗しました。", ex));
+//                    return null;
+//                });
+//    }
 
     public static void listAvailableHoken(int patientId, String visitedAt, Consumer<HokenDTO> cb) {
         Service.api.listAvailableHoken(patientId, visitedAt)
@@ -261,60 +261,6 @@ public class PracticeLib {
                     }
                 });
     }
-
-//    public static void searchIyakuhinMaster(String text, String at, Consumer<List<IyakuhinMasterDTO>> cb) {
-//        Service.api.searchIyakuhinMaster(text, at)
-//                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
-//                .exceptionally(ex -> {
-//                    logger.error("Failed search iyakuhin master.", ex);
-//                    Platform.runLater(() -> GuiUtil.alertException("医薬品マスターの検索に失敗しました。", ex));
-//                    return null;
-//                });
-//    }
-//
-//    public static void searchPrescExample(String text, Consumer<List<PrescExampleFullDTO>> cb) {
-//        Service.api.searchPrescExample(text)
-//                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
-//                .exceptionally(ex -> {
-//                    logger.error("Failed search presc example.", ex);
-//                    Platform.runLater(() -> GuiUtil.alertException("約束処方の検索に失敗しました。", ex));
-//                    return null;
-//                });
-//    }
-//
-//    public static void searchPreviousPresc(String text, int patientId, Consumer<List<DrugFullDTO>> cb) {
-//        Service.api.searchPrevDrug(text, patientId)
-//                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
-//                .exceptionally(ex -> {
-//                    logger.error("Failed search previous prescription.", ex);
-//                    Platform.runLater(() -> GuiUtil.alertException("過去の処方の検索に失敗しました。", ex));
-//                    return null;
-//                });
-//    }
-//
-//    public static void updateDrug(DrugDTO drug, Consumer<DrugFullDTO> cb){
-//        PracticeService.updateDrug(drug)
-//                .thenCompose(result -> PracticeService.getDrugFull(drug.drugId))
-//                .thenAccept(updatedDrug -> Platform.runLater(() -> cb.accept(updatedDrug)));
-//    }
-//
-//    public static void deleteDrug(DrugDTO drug, Runnable cb){
-//        PracticeService.deleteDrug(drug)
-//                .thenAccept(result -> Platform.runLater(cb));
-//    }
-//
-//    public static void resolveIyakuhinMaster(int iyakuhincode, String at, Consumer<IyakuhinMasterDTO> cb) {
-//        if (at.length() > 10) {
-//            at = at.substring(0, 10);
-//        }
-//        Service.api.resolveIyakuhinMaster(iyakuhincode, at)
-//                .thenAccept(master -> Platform.runLater(() -> cb.accept(master)))
-//                .exceptionally(ex -> {
-//                    logger.error("Failed resolve iyakuhin master.", ex);
-//                    Platform.runLater(() -> GuiUtil.alertException("医薬品マスターの特定に失敗しました。", ex));
-//                    return null;
-//                });
-//    }
 
     public static Optional<ListSettingDialog> openPrinterSettingList(){
         try {

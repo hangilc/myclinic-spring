@@ -15,6 +15,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.PracticeFun;
 import jp.chang.myclinic.practice.javafx.events.EventTypes;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.javafx.globalsearch.GlobalSearchDialog;
@@ -109,30 +110,30 @@ public class MainPane extends BorderPane {
         return menuBar;
     }
 
-    private void doEditPrescExample(){
+    private void doEditPrescExample() {
         EditPrescExampleDialog dialog = new EditPrescExampleDialog();
         dialog.initOwner(getScene().getWindow());
         dialog.show();
     }
 
-    private void doNewPrescExample(){
+    private void doNewPrescExample() {
         NewPrescExampleDialog dialog = new NewPrescExampleDialog();
         dialog.initOwner(getScene().getWindow());
         dialog.show();
     }
 
-    private void onVisitDeleted(VisitDeletedEvent event){
+    private void onVisitDeleted(VisitDeletedEvent event) {
         int visitId = event.getVisitId();
         PracticeEnv env = PracticeEnv.INSTANCE;
-        if( env.getCurrentVisitId() == visitId ){
+        if (env.getCurrentVisitId() == visitId) {
             env.setCurrentVisitId(0);
         }
-        if( env.getTempVisitId() == visitId ){
+        if (env.getTempVisitId() == visitId) {
             env.setTempVisitId(0);
         }
     }
 
-    private void doTodaysVisits(){
+    private void doTodaysVisits() {
         Service.api.listTodaysVisits()
                 .thenAccept(list -> Platform.runLater(() -> {
                     TodaysVisitsDialog dialog = new TodaysVisitsDialog(list);
@@ -146,12 +147,12 @@ public class MainPane extends BorderPane {
         dialog.showAndWait();
     }
 
-    private void doNewVisitOfCurrentPatient(){
+    private void doNewVisitOfCurrentPatient() {
         PatientDTO patient = PracticeEnv.INSTANCE.getCurrentPatient();
-        if( patient != null ){
+        if (patient != null) {
             String confirmText = String.format("(%d) %s%s様を再受付しますか？", patient.patientId,
                     patient.lastName, patient.firstName);
-            if( GuiUtil.confirm(confirmText) ){
+            if (GuiUtil.confirm(confirmText)) {
                 Service.api.startVisit(patient.patientId)
                         .exceptionally(HandlerFX::exceptionally);
             }
@@ -162,7 +163,7 @@ public class MainPane extends BorderPane {
         PracticeLib.openPrinterSettingList().ifPresent(Stage::show);
     }
 
-    private void doGlobalSearchText(){
+    private void doGlobalSearchText() {
         GlobalSearchDialog dialog = new GlobalSearchDialog();
         dialog.show();
     }
@@ -243,7 +244,7 @@ public class MainPane extends BorderPane {
     }
 
     private void doCashier() {
-        if( !PracticeEnv.INSTANCE.confirmClosingPatient() ){
+        if (!PracticeEnv.INSTANCE.confirmClosingPatient()) {
             return;
         }
         int visitId = PracticeEnv.INSTANCE.getCurrentVisitId();
@@ -258,7 +259,7 @@ public class MainPane extends BorderPane {
     }
 
     private void doEndPatient() {
-        if( !PracticeEnv.INSTANCE.confirmClosingPatient() ){
+        if (!PracticeEnv.INSTANCE.confirmClosingPatient()) {
             return;
         }
         PracticeLib.endPatient();
@@ -285,7 +286,7 @@ public class MainPane extends BorderPane {
             }
             dialog.setIssueDate(LocalDate.now());
             dialog.show();
-        } catch(IOException ex){
+        } catch (IOException ex) {
             logger.error("Failed to open refer dialog.", ex);
             GuiUtil.alertException("紹介状ダイアログの表示に失敗しました。", ex);
         }
@@ -300,7 +301,7 @@ public class MainPane extends BorderPane {
             dialog.setClinicInfo(clinicInfo);
             dialog.setDoctorName(clinicInfo.doctorName);
             dialog.show();
-        } catch(Exception ex){
+        } catch (Exception ex) {
             logger.error("Failed to do shohousen.", ex);
             GuiUtil.alertException("処方箋ダイアログの表示に失敗しました。", ex);
         }
@@ -352,10 +353,17 @@ public class MainPane extends BorderPane {
     }
 
     private void doSelectVisit() {
-        PracticeLib.listWqueue(list -> {
-            SelectFromWqueueDialog dialog = new SelectFromWqueueDialog(list);
-            dialog.show();
-        });
+        PracticeFun.listWqueue()
+                .thenAcceptAsync(list -> {
+                    SelectFromWqueueDialog dialog = new SelectFromWqueueDialog(list);
+                    dialog.show();
+                }, Platform::runLater)
+                .exceptionally(ex -> {
+                    logger.error("Failed list wqueue for exam.", ex);
+                    Platform.runLater(() ->
+                            GuiUtil.alertException("受付患者リストの取得に失敗しました。", ex));
+                    return null;
+                });
     }
 
     private void doSearchPatient() {

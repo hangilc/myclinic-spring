@@ -7,6 +7,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.grpc.MgmtServer;
 import jp.chang.myclinic.practice.javafx.MainPane;
+import jp.chang.myclinic.practice.selftest.PracticeSelfTest;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -25,18 +26,21 @@ public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private static ConfigurableApplicationContext ctx;
+    private static CmdArgs cmdArgs;
     private MgmtServer mgmtServer;
 
     public static void main(String[] args) throws IOException {
+        cmdArgs = new CmdArgs(args);
+        Service.setServerUrl(cmdArgs.getServerUrl());
+        if( cmdArgs.isSelfTest() ){
+            new PracticeSelfTest().run();
+            return;
+        }
         Application.launch(Main.class, args);
     }
 
-    private Integer managementPort;
-
     @Override
     public void start(Stage stage) {
-        Application.Parameters params = getParameters();
-        parseArgs(params.getRaw().toArray(new String[]{}));
         ctx = SpringApplication.run(Main.class, getParameters().getRaw().toArray(new String[]{}));
         MainScope mainScope = ctx.getBean(MainScope.class);
         if( mainScope.debugHttp ){
@@ -56,6 +60,7 @@ public class Main extends Application {
                 PracticeEnv.INSTANCE.closeRemainingWindows();
             }
         });
+        Integer managementPort = cmdArgs.getManagementPort();
         if( managementPort != null && managementPort > 0 ){
             {
                 ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger("io.grpc");
@@ -66,12 +71,6 @@ public class Main extends Application {
             System.out.printf("Listening to management port :%d\n", managementPort);
         }
         stage.show();
-    }
-
-    private void parseArgs(String... args){
-        CmdArgs cmdArgs = new CmdArgs(args);
-        this.managementPort = cmdArgs.getManagementPort();
-        Service.setServerUrl(cmdArgs.getServerUrl());
     }
 
     @Override
