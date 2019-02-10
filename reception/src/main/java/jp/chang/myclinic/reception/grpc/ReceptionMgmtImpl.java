@@ -266,6 +266,7 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
         inputs.hihokenshaBangou = src.getHihokenshaBangou();
         inputs.validFromInputs = toDateFormInputs(src.getValidFromInputs());
         inputs.validUptoInputs = toDateFormInputs(src.getValidUptoInputs());
+        inputs.futanwari = src.getFutanwari();
         return inputs;
     }
 

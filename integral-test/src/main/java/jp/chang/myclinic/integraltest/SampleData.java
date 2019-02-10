@@ -239,6 +239,25 @@ public class SampleData {
                 .build();
     }
 
+    public int pickKoukikoureiHokenshaBangou(){
+        int housei = 39;
+        return addCheckingDigit(39 * 100000 + pickDigits(5));
+    }
+
+    public KoukikoureiInputs pickKoukikoureiInputs(){
+        LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
+        LocalDate validUpto = validFrom.plus(2, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS);
+        int hokenshaBangou = pickKoukikoureiHokenshaBangou();
+        int hihokenshaBangou = pickHokenshaBangou(8);
+        return KoukikoureiInputs.newBuilder()
+                .setHokenshaBangou("" + hokenshaBangou)
+                .setHihokenshaBangou("" + hihokenshaBangou)
+                .setValidFromInputs(toDateInputs(validFrom))
+                .setValidUptoInputs(toDateInputs(validUpto))
+                .setFutanwari(pickInt(1,3))
+                .build();
+    }
+
     public KouhiInputs pickKouhiInputs(){
         LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
         LocalDate validUpto = validFrom.plus(1, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS);

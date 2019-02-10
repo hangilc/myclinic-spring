@@ -54,7 +54,8 @@ public class Main {
             confirmMockPatient();
             ReceptionMgmtBlockingStub receptionStub = newReceptionStub("localhost", 9000);
             receptionMainWindow = new ReceptionMainWindow(receptionStub);
-            testNewPatientWithShahokokuhoAndKouhi();
+            //testNewPatientWithShahokokuhoAndKouhi();
+            testNewPatientWithKoukikourei();
         } finally {
             Service.stop();
         }
@@ -88,6 +89,30 @@ public class Main {
         if( !(enteredKouhi.patientId == enteredPatient.patientId &&
                 isEqualKouhi(enteredKouhi, kouhiInputs)) ){
             throw new RuntimeException("Created kouhi does not match inputs.");
+        }
+        patientWithHokenWindow.clickCloseButton();
+    }
+
+    private void testNewPatientWithKoukikourei(){
+        ReceptionNewPatientWindow newPatientWindow = receptionMainWindow.clickNewPatientButton();
+        PatientInputs patientInputs = sampleData.pickPatientInputs();
+        newPatientWindow.setInputs(patientInputs);
+        PatientDTO enteredPatient = newPatientWindow.clickEnterButton();
+        if( !isEqualPatient(enteredPatient, patientInputs) ){
+            System.out.println(patientInputs);
+            System.out.println(enteredPatient);
+            throw new RuntimeException("Enter patient failed.");
+        }
+        ReceptionPatientWithHokenWindow patientWithHokenWindow =
+                ReceptionPatientWithHokenWindow.findCreated(receptionMainWindow.getReceptionStub());
+        ReceptionNewKoukikoureiWindow newKoukikoureiWindow =
+                patientWithHokenWindow.clickNewKoukikoureiButton();
+        KoukikoureiInputs koukikoureiInputs = sampleData.pickKoukikoureiInputs();
+        newKoukikoureiWindow.setInputs(koukikoureiInputs);
+        KoukikoureiDTO enteredKoukikourei = newKoukikoureiWindow.clickEnterButton();
+        if( !(enteredKoukikourei.patientId == enteredPatient.patientId &&
+                isEqualKoukikourei(enteredKoukikourei, koukikoureiInputs)) ){
+            throw new RuntimeException("Created koukikourei does not match inputs.");
         }
         patientWithHokenWindow.clickCloseButton();
     }
@@ -160,6 +185,16 @@ public class Main {
                 .and(dto.kourei, inputs.getKourei())
                 .and(dto.validFrom, toSqldate(inputs.getValidFromInputs()))
                 .and(dto.validUpto, toSqldate(inputs.getValidUptoInputs()))
+                .isEqual();
+    }
+
+    private boolean isEqualKoukikourei(KoukikoureiDTO dto, KoukikoureiInputs inputs){
+        return new CompositeEquals()
+                .and(dto.hokenshaBangou, inputs.getHokenshaBangou())
+                .and(dto.hihokenshaBangou, inputs.getHihokenshaBangou())
+                .and(dto.validFrom, toSqldate(inputs.getValidFromInputs()))
+                .and(dto.validUpto, toSqldate(inputs.getValidUptoInputs()))
+                .and(dto.futanWari, inputs.getFutanwari())
                 .isEqual();
     }
 

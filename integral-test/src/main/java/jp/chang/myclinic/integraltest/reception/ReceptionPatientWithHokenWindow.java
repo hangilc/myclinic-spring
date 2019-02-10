@@ -29,6 +29,15 @@ public class ReceptionPatientWithHokenWindow extends ReceptionWindow {
         return new ReceptionNewShahokokuhoWindow(receptionStub, newWindowType, getPatientId());
     }
 
+    public ReceptionNewKoukikoureiWindow clickNewKoukikoureiButton(){
+        boolean ok = receptionStub.clickEditPatientNewKoukikoureiButton(windowType).getValue();
+        if( !ok ){
+            throw new RuntimeException("Clicking new koukikourei buton failed.");
+        }
+        WindowType newWindowType = findCreatedWindow(receptionStub::findCreatedNewKoukikoureiWindow);
+        return new ReceptionNewKoukikoureiWindow(receptionStub, newWindowType, getPatientId());
+    }
+
     public ReceptionNewKouhiWindow clickNewKouhiButton(){
         boolean ok = receptionStub.clickEditPatientNewKouhiButton(windowType).getValue();
         if( !ok ){
