@@ -22,7 +22,7 @@ public class GrpcBase {
             throw new RuntimeException("rpc failed");
         } catch (Exception ex) {
             ex.printStackTrace();
-            throw new RuntimeException("rpc filed");
+            throw new RuntimeException("rpc failed");
         }
     }
 

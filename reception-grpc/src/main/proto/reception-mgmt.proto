@@ -79,6 +79,10 @@ message SetNewKouhiWindowInputsRequest {
     KouhiInputs inputs = 2;
 }
 
+message PatientWithHokenWindowInfo {
+    int32 patientId = 1;
+}
+
 service ReceptionMgmt {
 	rpc IsRunning(VoidType) returns (BooleanType) {}
 	rpc ClickMainPaneNewPatientButton(VoidType) returns (BooleanType) {}
@@ -99,4 +103,5 @@ service ReceptionMgmt {
 	rpc SetNewShahokokuhoWindowInputs(SetNewShahokokuhoWindowInputsRequest) returns (BooleanType) {}
 	rpc SetNewKoukikoureiWindowInputs(SetNewKoukikoureiWindowInputsRequest) returns (BooleanType) {}
 	rpc SetNewKouhiWindowInputs(SetNewKouhiWindowInputsRequest) returns (BooleanType) {}
+	rpc GetPatientWithHokenWindowPatientId(WindowType) returns (PatientWithHokenWindowInfo) {}
 }

@@ -189,6 +189,10 @@ public class PatientWithHokenStage extends Stage {
         closeButton.fire();
     }
 
+    public int getPatientId(){
+        return thePatient.getValue().patientId;
+    }
+
     private void doHokenshoImage() {
         final int patientId = thePatient.getValue().patientId;
         Service.api.listHokensho(patientId)

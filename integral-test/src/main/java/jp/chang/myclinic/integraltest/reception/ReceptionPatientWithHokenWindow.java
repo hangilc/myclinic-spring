@@ -26,7 +26,27 @@ public class ReceptionPatientWithHokenWindow extends ReceptionWindow {
             throw new RuntimeException("Clicking new shahokokuho buton failed.");
         }
         WindowType newWindowType = findCreatedWindow(receptionStub::findCreatedNewShahokokuhoWindow);
-        return new ReceptionNewShahokokuhoWindow(receptionStub, newWindowType);
+        return new ReceptionNewShahokokuhoWindow(receptionStub, newWindowType, getPatientId());
+    }
+
+    public ReceptionNewKouhiWindow clickNewKouhiButton(){
+        boolean ok = receptionStub.clickEditPatientNewKouhiButton(windowType).getValue();
+        if( !ok ){
+            throw new RuntimeException("Clicking new kouhi buton failed.");
+        }
+        WindowType newWindowType = findCreatedWindow(receptionStub::findCreatedNewKouhiWindow);
+        return new ReceptionNewKouhiWindow(receptionStub, newWindowType, getPatientId());
+    }
+
+    public void clickCloseButton(){
+        boolean ok = receptionStub.clickEditPatientCloseButton(windowType).getValue();
+        if( !ok ){
+            throw new RuntimeException("Clicking close button failed (patient with hoken).");
+        }
+    }
+
+    private int getPatientId(){
+        return receptionStub.getPatientWithHokenWindowPatientId(windowType).getPatientId();
     }
 
 }

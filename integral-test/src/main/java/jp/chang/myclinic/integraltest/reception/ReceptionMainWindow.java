@@ -24,4 +24,8 @@ public class ReceptionMainWindow extends GrpcBase {
          return new ReceptionNewPatientWindow(receptionStub, windowType);
     }
 
+    public ReceptionMgmtBlockingStub getReceptionStub(){
+        return receptionStub;
+    }
+
 }

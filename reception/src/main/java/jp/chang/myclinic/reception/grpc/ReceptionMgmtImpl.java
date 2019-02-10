@@ -310,5 +310,20 @@ public class ReceptionMgmtImpl extends ReceptionMgmtGrpc.ReceptionMgmtImplBase {
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void getPatientWithHokenWindowPatientId(WindowType request, StreamObserver<PatientWithHokenWindowInfo> responseObserver) {
+        Window win = Globals.getInstance().findWindow(request.getWindowId());
+        PatientWithHokenWindowInfo info = null;
+        if( win instanceof PatientWithHokenStage ){
+            PatientWithHokenStage stage = (PatientWithHokenStage)win;
+            info = PatientWithHokenWindowInfo.newBuilder()
+                    .setPatientId(stage.getPatientId())
+                    .build();
+        } else {
+            System.err.println("Cannot find window (getPatientWithHokenWindowPatientId.)");
+        }
+        responseObserver.onNext(info);
+        responseObserver.onCompleted();
+    }
 
 }
