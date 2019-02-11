@@ -3,6 +3,7 @@ package jp.chang.myclinic.integraltest.reception;
 import jp.chang.myclinic.integraltest.GrpcBase;
 
 import java.util.List;
+import java.util.Optional;
 
 import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc.*;
 

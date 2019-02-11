@@ -16,4 +16,8 @@ service PracticeMgmt {
     rpc ChooseVisitInSelectVisitWindow(ChooseVisitInSelectWindowMessage) returns (google.protobuf.BoolValue);
     rpc FindSelectVisitWindow(google.protobuf.Empty) returns (jp.chang.myclinic.WindowType);
     rpc ListWqueue(jp.chang.myclinic.WindowType) returns (jp.chang.myclinic.WqueueListType);
+    rpc GetCurrentPatientId(google.protobuf.Empty) returns (google.protobuf.Int32Value);
+    rpc GetCurrentVisitId(google.protobuf.Empty) returns (google.protobuf.Int32Value);
+    rpc ClickNewTextButton(google.protobuf.Int32Value) returns (google.protobuf.BoolValue);
+    rpc IsRecordVisible(google.protobuf.Int32Value) returns (google.protobuf.BoolValue);
 }

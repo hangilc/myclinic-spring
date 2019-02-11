@@ -33,6 +33,10 @@ public class Record extends VBox {
         return visitId;
     }
 
+    public void simulateNewTextButtonClick(){
+        textPane.simulateNewTextButtonClick();
+    }
+
     private Node createBody(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
                             Map<Integer, DrugAttrDTO> drugAttrMap) {
         HBox hbox = new HBox();

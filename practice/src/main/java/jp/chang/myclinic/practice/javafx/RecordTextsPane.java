@@ -12,12 +12,18 @@ public class RecordTextsPane extends VBox {
 
     private int visitId;
     private VBox textsArea = new VBox(4);
+    private Hyperlink newTextLink;
 
     public RecordTextsPane(List<TextDTO> texts, int visitId){
         super(4);
         this.visitId = visitId;
         texts.forEach(this::addText);
-        getChildren().addAll(textsArea, createNewTextLink());
+        this.newTextLink = createNewTextLink();
+        getChildren().addAll(textsArea, newTextLink);
+    }
+
+    public void simulateNewTextButtonClick(){
+        newTextLink.fire();
     }
 
     private void addText(TextDTO text){
@@ -31,7 +37,7 @@ public class RecordTextsPane extends VBox {
         textsArea.getChildren().add(recordText);
     }
 
-    private Node createNewTextLink(){
+    private Hyperlink createNewTextLink(){
         Hyperlink link = new Hyperlink("[文章追加]");
         link.setOnAction(event -> {
             TextEnterForm textEnterForm = new TextEnterForm();

@@ -43,6 +43,7 @@ public class MainPane extends BorderPane {
 
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
     private MenuItem selectVisitMenu;
+    private RecordsPane recordsPane;
 
     public MainPane() {
         setTop(createMenu());
@@ -52,6 +53,19 @@ public class MainPane extends BorderPane {
 
     public void simulateSelectVisitMenuChoice(){
         selectVisitMenu.fire();
+    }
+
+    public boolean simulateNewTextButtonClick(int visitId){
+        Record record = findRecord(visitId);
+        if( record == null ){
+            return false;
+        }
+        record.simulateNewTextButtonClick();
+        return true;
+    }
+
+    public Record findRecord(int visitId){
+        return recordsPane.findRecord(visitId);
     }
 
     private Node createMenu() {
@@ -316,7 +330,7 @@ public class MainPane extends BorderPane {
         ScrollPane sp = new ScrollPane();
         sp.setFitToWidth(true);
         VBox.setVgrow(sp, Priority.ALWAYS);
-        RecordsPane recordsPane = new RecordsPane();
+        this.recordsPane = new RecordsPane();
         PracticeEnv.INSTANCE.pageVisitsProperty().addListener((obs, oldValue, newValue) -> {
             recordsPane.getChildren().clear();
             if (newValue != null) {

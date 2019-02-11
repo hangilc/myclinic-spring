@@ -41,7 +41,7 @@ public class RecordsPane extends VBox {
         }
     }
 
-    private Record findRecord(int visitId){
+    public Record findRecord(int visitId){
         for(Node node :getChildren()){
             if( node instanceof Record ){
                 Record r = (Record)node;

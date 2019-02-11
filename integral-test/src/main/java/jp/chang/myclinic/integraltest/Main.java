@@ -8,6 +8,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.integraltest.practice.PracticeMainWindow;
+import jp.chang.myclinic.integraltest.practice.Record;
 import jp.chang.myclinic.integraltest.practice.SelectVisitWindow;
 import jp.chang.myclinic.integraltest.reception.*;
 import static jp.chang.myclinic.practice.grpc.generated.PracticeMgmtGrpc.*;
@@ -167,6 +168,11 @@ public class Main {
         {
             SelectVisitWindow selectVisitWindow =practiceMainWindow.chooseSelectVisitMenu();
             selectVisitWindow.chooseVisit(visit.visitId);
+            practiceMainWindow.waitForCurrentPatientId(enteredPatient.patientId);
+            practiceMainWindow.confirmCurrentVisitId(visit.visitId);
+            practiceMainWindow.waitForRecordVisible(visit.visitId);
+            Record record = practiceMainWindow.getRecord(visit.visitId);
+            record.clickNewTextButton();
         }
     }
 
