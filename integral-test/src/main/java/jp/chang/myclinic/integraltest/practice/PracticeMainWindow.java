@@ -17,12 +17,13 @@ public class PracticeMainWindow {
         this.practiceStub = practiceStub;
     }
 
-    public void chooseSelectVisitMenu(){
+    public SelectVisitWindow chooseSelectVisitMenu(){
         boolean ok = practiceStub.chooseSelectVisitMenuInMainPane(Empty.getDefaultInstance())
                 .getValue();
         if( !ok ){
             throw new RuntimeException("Choosing select visit menu failed (practice main).");
         }
+        return findSelectVisitWindow();
     }
 
     public SelectVisitWindow findSelectVisitWindow(){

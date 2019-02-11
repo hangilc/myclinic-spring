@@ -5,9 +5,15 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 import "jp/chang/myclinic/common.proto";
 
+message ChooseVisitInSelectWindowMessage {
+    jp.chang.myclinic.WindowType window = 1;
+    int32 visitId = 2;
+}
+
 service PracticeMgmt {
     rpc IsRunning(google.protobuf.Empty) returns (google.protobuf.BoolValue);
     rpc ChooseSelectVisitMenuInMainPane(google.protobuf.Empty) returns (google.protobuf.BoolValue);
+    rpc ChooseVisitInSelectVisitWindow(ChooseVisitInSelectWindowMessage) returns (google.protobuf.BoolValue);
     rpc FindSelectVisitWindow(google.protobuf.Empty) returns (jp.chang.myclinic.WindowType);
     rpc ListWqueue(jp.chang.myclinic.WindowType) returns (jp.chang.myclinic.WqueueListType);
 }

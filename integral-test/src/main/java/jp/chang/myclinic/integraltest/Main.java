@@ -165,13 +165,8 @@ public class Main {
             throw new RuntimeException("Invalid wqueue.");
         }
         {
-            practiceMainWindow.chooseSelectVisitMenu();
-            SelectVisitWindow selectVisitWindow = practiceMainWindow.findSelectVisitWindow();
-            List<Common.WqueueType> wqueueList = selectVisitWindow.getWqueueList();
-            boolean found = false;
-            for(Common.WqueueType wq: wqueueList){
-
-            }
+            SelectVisitWindow selectVisitWindow =practiceMainWindow.chooseSelectVisitMenu();
+            selectVisitWindow.chooseVisit(visit.visitId);
         }
     }
 

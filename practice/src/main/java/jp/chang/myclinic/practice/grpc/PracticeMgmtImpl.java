@@ -81,4 +81,15 @@ public class PracticeMgmtImpl extends PracticeMgmtGrpc.PracticeMgmtImplBase{
         responseObserver.onNext(reply);
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void chooseVisitInSelectVisitWindow(ChooseVisitInSelectWindowMessage request, StreamObserver<BoolValue> responseObserver) {
+        WindowType windowType = request.getWindow();
+        SelectFromWqueueDialog dialog = Globals.getInstance().findWindowById(windowType.getWindowId(),
+                SelectFromWqueueDialog.class);
+        int visitId = request.getVisitId();
+        boolean ok = dialog.simulateSelectVisit(visitId);
+        responseObserver.onNext(BoolValue.of(ok));
+        responseObserver.onCompleted();
+    }
 }
