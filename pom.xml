@@ -112,6 +112,7 @@
     <module>integral-test</module>
     <module>practice-grpc</module>
     <module>mock-data</module>
+    <module>grpc-common</module>
   </modules>
 
 </project>

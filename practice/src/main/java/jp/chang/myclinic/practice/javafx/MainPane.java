@@ -42,11 +42,16 @@ import java.util.stream.Collectors;
 public class MainPane extends BorderPane {
 
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
+    private MenuItem selectVisitMenu;
 
     public MainPane() {
         setTop(createMenu());
         setCenter(createCenter());
         addEventHandler(EventTypes.visitDeletedEventType, this::onVisitDeleted);
+    }
+
+    public void simulateSelectVisitMenuChoice(){
+        selectVisitMenu.fire();
     }
 
     private Node createMenu() {
@@ -60,7 +65,7 @@ public class MainPane extends BorderPane {
         }
         {
             Menu selectMenu = new Menu("患者選択");
-            MenuItem selectVisitMenu = new MenuItem("受付患者選択");
+            this.selectVisitMenu = new MenuItem("受付患者選択");
             MenuItem searchMenuItem = new MenuItem("患者検索");
             MenuItem recentVisitsItem = new MenuItem("最近の診察");
             MenuItem todaysVisitsItem = new MenuItem("本日の診察");

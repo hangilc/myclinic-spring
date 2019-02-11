@@ -35,6 +35,10 @@ public class SelectFromWqueueDialog extends Stage {
         setScene(new Scene(root));
     }
 
+    public List<WqueueFullDTO> getList(){
+        return wqueueTable.getItems();
+    }
+
     private WqueueTable createWqueueTable(List<WqueueFullDTO> list){
         return new WqueueTable(list);
     }

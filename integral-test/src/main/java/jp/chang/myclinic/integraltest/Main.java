@@ -1,10 +1,14 @@
 package jp.chang.myclinic.integraltest;
 
+import com.google.protobuf.Empty;
 import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
+import jp.chang.myclinic.Common;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.integraltest.practice.PracticeMainWindow;
+import jp.chang.myclinic.integraltest.practice.SelectVisitWindow;
 import jp.chang.myclinic.integraltest.reception.*;
 import static jp.chang.myclinic.practice.grpc.generated.PracticeMgmtGrpc.*;
 import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtGrpc.*;
@@ -16,6 +20,7 @@ import jp.chang.myclinic.util.kanjidate.KanjiDate;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static jp.chang.myclinic.reception.grpc.generated.ReceptionMgmtOuterClass.*;
 
@@ -31,35 +36,47 @@ public class Main {
         System.out.println("Usage: integral-test SERVER-URL");
     }
 
-    private SampleData sampleData = new SampleData();
     private ReceptionMainWindow receptionMainWindow;
+    private PracticeMainWindow practiceMainWindow;
+    private SampleData sampleData = new SampleData();
 
     private void run(String[] args) {
-        if (args.length != 1) {
-            usage();
-            System.exit(1);
-        }
+        CmdArgs cmdArgs = new CmdArgs(args);
         try {
             {
                 ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("io.grpc");
                 log.setLevel(ch.qos.logback.classic.Level.ERROR);
             }
-            String serverUrl = args[0];
-            Service.setServerUrl(serverUrl);
+            Service.setServerUrl(cmdArgs.getServerUrl());
             confirmMockPatient();
-            ReceptionMgmtBlockingStub receptionStub = newReceptionStub("localhost", 9000);
-            receptionMainWindow = new ReceptionMainWindow(receptionStub);
-            PracticeMgmtBlockingStub practiceStub = newPracticeStub("localhost", 9001);
-            System.out.println(practiceStub.isRunning(null).getValue());
-            //testNewPatientWithShahokokuhoAndKouhi();
-            //testNewPatientWithKoukikourei();
-            //testNewPatientExam();
+            if( cmdArgs.getReceptionHost() != null ){
+                ReceptionMgmtBlockingStub receptionStub =
+                        newReceptionStub(cmdArgs.getReceptionHost(), 9000);
+                this.receptionMainWindow = new ReceptionMainWindow(receptionStub);
+            }
+            if( cmdArgs.getPracticeHost() != null ){
+                PracticeMgmtBlockingStub practiceStub =
+                        newPracticeStub(cmdArgs.getPracticeHost(), 9001);
+                this.practiceMainWindow = new PracticeMainWindow(practiceStub);
+            }
+            for(String test: cmdArgs.getTests()){
+                switch(test){
+                    case "new-patient-exam-presc": {
+                        testNewPatientExamPresc();
+                        break;
+                    }
+                    default: {
+                        System.err.printf("Cannot find test: %s\n", test);
+                        System.exit(1);
+                    }
+                }
+            }
         } finally {
             Service.stop();
         }
     }
 
-    private void testNewPatientWithShahokokuhoAndKouhi(){
+    private void testNewPatientWithShahokokuhoAndKouhi(ReceptionMainWindow receptionMainWindow){
         ReceptionNewPatientWindow newPatientWindow = receptionMainWindow.clickNewPatientButton();
         PatientInputs patientInputs = sampleData.pickPatientInputs();
         newPatientWindow.setInputs(patientInputs);
@@ -115,7 +132,7 @@ public class Main {
         patientWithHokenWindow.clickCloseButton();
     }
 
-    private void testNewPatientExam(){
+    private void testNewPatientExamPresc(){
         ReceptionNewPatientWindow newPatientWindow = receptionMainWindow.clickNewPatientButton();
         PatientInputs patientInputs = sampleData.pickPatientInputs();
         newPatientWindow.setInputs(patientInputs);
@@ -146,6 +163,15 @@ public class Main {
         WqueueModel wqueue = receptionMainWindow.findInWqueue(visit.visitId);
         if( wqueue.getWaitState() != WqueueWaitState.WaitExam.getCode() ){
             throw new RuntimeException("Invalid wqueue.");
+        }
+        {
+            practiceMainWindow.chooseSelectVisitMenu();
+            SelectVisitWindow selectVisitWindow = practiceMainWindow.findSelectVisitWindow();
+            List<Common.WqueueType> wqueueList = selectVisitWindow.getWqueueList();
+            boolean found = false;
+            for(Common.WqueueType wq: wqueueList){
+
+            }
         }
     }
 

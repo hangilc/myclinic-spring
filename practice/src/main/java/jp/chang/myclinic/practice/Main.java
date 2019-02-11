@@ -52,6 +52,7 @@ public class Main extends Application {
         PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
                 updateTitle(stage, newValue));
         MainPane root = ctx.getBean(MainPane.class);
+        Globals.getInstance().setMainPane(root);
         root.getStylesheets().addAll(
                 "css/Practice.css"
         );
@@ -67,7 +68,7 @@ public class Main extends Application {
                 ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger("io.grpc");
                 log.setLevel(ch.qos.logback.classic.Level.ERROR);
             }
-            mgmtServer = new MgmtServer(managementPort);
+            this.mgmtServer = new MgmtServer(managementPort);
             mgmtServer.start();
             System.out.printf("Listening to management port :%d\n", managementPort);
         }
