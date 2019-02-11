@@ -8,13 +8,13 @@ import jp.chang.myclinic.practice.lib.PracticeLib;
 
 import java.util.List;
 
-public class RecordTextsPane extends VBox {
+class RecordTextsPane extends VBox {
 
     private int visitId;
     private VBox textsArea = new VBox(4);
     private Hyperlink newTextLink;
 
-    public RecordTextsPane(List<TextDTO> texts, int visitId){
+    RecordTextsPane(List<TextDTO> texts, int visitId){
         super(4);
         this.visitId = visitId;
         texts.forEach(this::addText);
@@ -22,18 +22,34 @@ public class RecordTextsPane extends VBox {
         getChildren().addAll(textsArea, newTextLink);
     }
 
-    public void simulateNewTextButtonClick(){
+    void simulateNewTextButtonClick(){
         newTextLink.fire();
+    }
+
+    TextEnterForm findTextEnterForm(){
+        for(Node node: getChildren()){
+            if( node instanceof TextEnterForm ){
+                return (TextEnterForm)node;
+            }
+        }
+        return null;
+    }
+
+    RecordText findRecordText(int textId){
+        for(Node node: getChildren()){
+            if( node instanceof  RecordText ){
+                RecordText t = (RecordText)node;
+                if( t.getTextId() == textId ){
+                    return t;
+                }
+            }
+        }
+        return null;
     }
 
     private void addText(TextDTO text){
         RecordText recordText = new RecordText(text);
-        recordText.setCallback(new RecordText.Callback() {
-            @Override
-            public void onDelete() {
-                textsArea.getChildren().remove(recordText);
-            }
-        });
+        recordText.setCallback(() -> textsArea.getChildren().remove(recordText));
         textsArea.getChildren().add(recordText);
     }
 
@@ -59,12 +75,11 @@ public class RecordTextsPane extends VBox {
             });
             getChildren().remove(link);
             getChildren().add(textEnterForm);
-            //Platform.runLater(textEnterForm::acquireFocus);
         });
         return link;
     }
 
-    public void appendText(TextDTO enteredText) {
+    void appendText(TextDTO enteredText) {
         addText(enteredText);
     }
 }

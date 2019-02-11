@@ -10,6 +10,16 @@ message ChooseVisitInSelectWindowMessage {
     int32 visitId = 2;
 }
 
+message NewTextInputs {
+    int32 visitId = 1;
+    string content = 2;
+}
+
+message TextType {
+    int32 visitId = 1;
+    int32 textId = 2;
+}
+
 service PracticeMgmt {
     rpc IsRunning(google.protobuf.Empty) returns (google.protobuf.BoolValue);
     rpc ChooseSelectVisitMenuInMainPane(google.protobuf.Empty) returns (google.protobuf.BoolValue);
@@ -18,6 +28,10 @@ service PracticeMgmt {
     rpc ListWqueue(jp.chang.myclinic.WindowType) returns (jp.chang.myclinic.WqueueListType);
     rpc GetCurrentPatientId(google.protobuf.Empty) returns (google.protobuf.Int32Value);
     rpc GetCurrentVisitId(google.protobuf.Empty) returns (google.protobuf.Int32Value);
-    rpc ClickNewTextButton(google.protobuf.Int32Value) returns (google.protobuf.BoolValue);
-    rpc IsRecordVisible(google.protobuf.Int32Value) returns (google.protobuf.BoolValue);
+    rpc IsRecordVisible(jp.chang.myclinic.VisitType) returns (google.protobuf.BoolValue);
+    rpc ClickNewTextButton(jp.chang.myclinic.VisitType) returns (google.protobuf.BoolValue);
+    rpc IsNewTextFormVisible(jp.chang.myclinic.VisitType) returns (google.protobuf.BoolValue);
+    rpc SetNewTextInputs(NewTextInputs) returns (google.protobuf.BoolValue);
+    rpc ClickEnterButtonInNextTextForm(jp.chang.myclinic.VisitType) returns (google.protobuf.BoolValue);
+    rpc IsTextVisible(TextType) returns (google.protobuf.BoolValue);
 }

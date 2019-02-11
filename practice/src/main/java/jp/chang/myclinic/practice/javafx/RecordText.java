@@ -25,8 +25,15 @@ public class RecordText extends StackPane {
         }
     };
 
-    public RecordText(TextDTO text) {
+    private int textId;
+
+    RecordText(TextDTO text) {
+        this.textId = text.textId;
         getChildren().add(createDisp(text));
+    }
+
+    int getTextId(){
+        return textId;
     }
 
     public void setCallback(Callback callback) {

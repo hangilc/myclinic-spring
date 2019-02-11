@@ -33,8 +33,16 @@ public class Record extends VBox {
         return visitId;
     }
 
-    public void simulateNewTextButtonClick(){
+    void simulateNewTextButtonClick(){
         textPane.simulateNewTextButtonClick();
+    }
+
+    public TextEnterForm findTextEnterForm(){
+        return textPane.findTextEnterForm();
+    }
+
+    public RecordText findRecordText(int textId){
+        return textPane.findRecordText(textId);
     }
 
     private Node createBody(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,

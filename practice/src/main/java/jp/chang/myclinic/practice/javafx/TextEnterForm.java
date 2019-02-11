@@ -14,6 +14,7 @@ public class TextEnterForm extends VBox {
     }
 
     private TextArea textArea = new TextArea();
+    private Hyperlink enterLink;
     private Callback callback;
 
     public TextEnterForm(){
@@ -31,13 +32,17 @@ public class TextEnterForm extends VBox {
         this.callback = callback;
     }
 
-    public void acquireFocus(){
-        textArea.requestFocus();
+    public void setContent(String content){
+        textArea.setText(content);
+    }
+
+    public void simulateClickEnterButton(){
+        enterLink.fire();
     }
 
     private Node createButtons(){
         HBox hbox = new HBox(4);
-        Hyperlink enterLink = new Hyperlink("入力");
+        this.enterLink = new Hyperlink("入力");
         Hyperlink cancelLink = new Hyperlink("キャンセル ");
         enterLink.setOnAction(event -> {
             if( callback != null ){

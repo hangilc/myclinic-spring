@@ -13,3 +13,7 @@ message WqueueType {
 message WqueueListType {
     repeated WqueueType wqueue = 1;
 }
+
+message VisitType {
+    int32 visitId = 1;
+}

@@ -16,16 +16,14 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.practice.Globals;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.javafx.MainPane;
-import jp.chang.myclinic.practice.javafx.Record;
-import jp.chang.myclinic.practice.javafx.SelectFromWqueueDialog;
+import jp.chang.myclinic.practice.javafx.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jp.chang.myclinic.practice.grpc.generated.PracticeMgmtGrpc;
 
 import java.util.List;
 
-public class PracticeMgmtImpl extends PracticeMgmtGrpc.PracticeMgmtImplBase{
+public class PracticeMgmtImpl extends PracticeMgmtGrpc.PracticeMgmtImplBase {
 
     //private static Logger logger = LoggerFactory.getLogger(PracticeMtmtImpl.class);
 
@@ -53,11 +51,11 @@ public class PracticeMgmtImpl extends PracticeMgmtGrpc.PracticeMgmtImplBase{
     }
 
     private <T extends Window> void findCreatedWindow(Class<T> windowClass,
-                                                      StreamObserver<WindowType> responseObserver){
+                                                      StreamObserver<WindowType> responseObserver) {
         T w = Globals.getInstance().findNewWindow(windowClass);
-        if( w != null ){
+        if (w != null) {
             Common.WindowType reply = Common.WindowType.newBuilder()
-                    .setWindowId((Integer)w.getUserData())
+                    .setWindowId((Integer) w.getUserData())
                     .build();
             responseObserver.onNext(reply);
         } else {
@@ -66,7 +64,7 @@ public class PracticeMgmtImpl extends PracticeMgmtGrpc.PracticeMgmtImplBase{
         responseObserver.onCompleted();
     }
 
-    private Common.WqueueType toWqueueType(WqueueFullDTO dto){
+    private Common.WqueueType toWqueueType(WqueueFullDTO dto) {
         return WqueueType.newBuilder()
                 .setVisitId(dto.visit.visitId)
                 .setWaitState(dto.wqueue.waitState)
@@ -77,7 +75,7 @@ public class PracticeMgmtImpl extends PracticeMgmtGrpc.PracticeMgmtImplBase{
     public void listWqueue(WindowType request, StreamObserver<Common.WqueueListType> responseObserver) {
         SelectFromWqueueDialog dialog = Globals.getInstance().findWindowById(request.getWindowId(),
                 SelectFromWqueueDialog.class);
-        List<WqueueType> wqueueList =  dialog.getList().stream()
+        List<WqueueType> wqueueList = dialog.getList().stream()
                 .map(this::toWqueueType)
                 .collect(toList());
         WqueueListType reply = WqueueListType.newBuilder()
@@ -116,20 +114,73 @@ public class PracticeMgmtImpl extends PracticeMgmtGrpc.PracticeMgmtImplBase{
     }
 
     @Override
-    public void isRecordVisible(Int32Value request, StreamObserver<BoolValue> responseObserver) {
+    public void isRecordVisible(VisitType request, StreamObserver<BoolValue> responseObserver) {
         MainPane mainPane = Globals.getInstance().getMainPane();
-        Record record = mainPane.findRecord(request.getValue());
+        Record record = mainPane.findRecord(request.getVisitId());
         responseObserver.onNext(BoolValue.of(record != null));
         responseObserver.onCompleted();
     }
 
     @Override
-    public void clickNewTextButton(Int32Value request, StreamObserver<BoolValue> responseObserver) {
+    public void clickNewTextButton(VisitType request, StreamObserver<BoolValue> responseObserver) {
         MainPane mainPane = Globals.getInstance().getMainPane();
         Platform.runLater(() -> {
-            boolean ok = mainPane.simulateNewTextButtonClick(request.getValue());
+            boolean ok = mainPane.simulateNewTextButtonClick(request.getVisitId());
             responseObserver.onNext(BoolValue.of(ok));
             responseObserver.onCompleted();
         });
+    }
+
+    private void completeWithBool(boolean value, StreamObserver<BoolValue> responseObserver){
+        responseObserver.onNext(BoolValue.of(value));
+        responseObserver.onCompleted();
+    }
+
+    private Record findRecord(int visitId){
+        MainPane mainPane = Globals.getInstance().getMainPane();
+        return mainPane.findRecord(visitId);
+    }
+
+    private TextEnterForm findTextEnterForm(int visitId){
+        Record record = findRecord(visitId);
+        if (record == null) {
+            return null;
+        } else {
+            return record.findTextEnterForm();
+        }
+    }
+
+    @Override
+    public void isNewTextFormVisible(VisitType request, StreamObserver<BoolValue> responseObserver) {
+        completeWithBool(findTextEnterForm(request.getVisitId())!= null, responseObserver);
+    }
+
+    @Override
+    public void setNewTextInputs(NewTextInputs request, StreamObserver<BoolValue> responseObserver) {
+        TextEnterForm form = findTextEnterForm(request.getVisitId());
+        if( form == null ) {
+            completeWithBool(false, responseObserver);
+            return;
+        }
+        form.setContent(request.getContent());
+        completeWithBool(true, responseObserver);
+    }
+
+    @Override
+    public void clickEnterButtonInNextTextForm(VisitType request, StreamObserver<BoolValue> responseObserver) {
+        TextEnterForm form = findTextEnterForm(request.getVisitId());
+        if( form == null ) {
+            completeWithBool(false, responseObserver);
+            return;
+        }
+        form.simulateClickEnterButton();
+        completeWithBool(true, responseObserver);
+    }
+
+    @Override
+    public void isTextVisible(TextType request, StreamObserver<BoolValue> responseObserver) {
+        Record record = findRecord(request.getVisitId());
+        RecordText recordText = record.findRecordText(request.getTextId());
+        completeWithBool(recordText != null, responseObserver);
     }
 }
