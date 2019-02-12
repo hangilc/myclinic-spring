@@ -3,10 +3,9 @@ package jp.chang.myclinic.mockdata;
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.consts.TodoufukenCode;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.util.kanjidate.GengouNenPair;
+import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.util.dto_logic.HokenLib;
 import jp.chang.myclinic.util.kanjidate.KanjiDate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -39,7 +38,7 @@ public class MockData {
         this.femaleFirstNames = loadNames("/female-first-names.txt");
     }
 
-    public PatientDTO mockPatient() {
+    public PatientDTO pickPatient() {
         NameEntry lastName = pickLastName();
         Sex sex = pickSex();
         NameEntry firstName = pickFirstName(sex);
@@ -127,4 +126,97 @@ public class MockData {
         return String.format("%s-%04d-%04d", d, random.nextInt(10000), random.nextInt(10000));
     }
 
+    int pickInt(int low, int high){
+        return low + random.nextInt(high + 1 - low);
+    }
+
+    int pickDigits(int nDigit){
+        if( nDigit <= 0 ){
+            return 0;
+        }
+        int ival = random.nextInt(9) + 1;
+        while( --nDigit > 0 ){
+            int d = random.nextInt(10);
+            ival = ival * 10 + d;
+        }
+        return ival;
+    }
+
+    private int addCheckingDigit(int ival){
+        return ival * 10 + HokenLib.calcCheckingDigit(ival);
+    }
+
+    int pickHokenshaBangou(int nDigits){
+        return addCheckingDigit(pickDigits(nDigits-1));
+    }
+
+    private int pickShahokokuhoHokenshaBangou(){
+        return pickHokenshaBangou(8);
+    }
+
+    private TodoufukenCode pickTodofukenCode(){
+        int i = random.nextInt(todoufukenCodes.size());
+        return todoufukenCodes.get(i);
+    }
+
+    private int pickKouhiFutanshaBangou(){
+        int houbetsu = pickInt(10, 99);
+        TodoufukenCode todoufukenCode = pickTodofukenCode();
+        int hokensha = pickDigits(3);
+        int bangou = houbetsu;
+        bangou = bangou * 100 + todoufukenCode.getCode();
+        bangou = bangou * 1000 + hokensha;
+        return addCheckingDigit(bangou);
+    }
+
+    public ShahokokuhoDTO pickShahokokuho(int patientId){
+        LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
+        String validUptoRep;
+        int span = random.nextInt(3);
+        if( span == 0 ){
+            validUptoRep = "0000-00-00";
+        } else {
+            validUptoRep = validFrom.plus(1, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS).toString();
+        }
+        ShahokokuhoDTO dto = new ShahokokuhoDTO();
+        dto.patientId = patientId;
+        dto.hokenshaBangou = pickShahokokuhoHokenshaBangou();
+        dto.hihokenshaKigou = pickDigits(2) + "-" + pickDigits(2);
+        dto.hihokenshaBangou = "" + pickDigits(4);
+        dto.honnin = random.nextInt(2);
+        dto.validFrom = validFrom.toString();
+        dto.validUpto = validUptoRep;
+        dto.kourei = pickInt(0, 3);
+        return dto;
+    }
+
+    public int pickKoukikoureiHokenshaBangou(){
+        int housei = 39;
+        return addCheckingDigit(39 * 100000 + pickDigits(5));
+    }
+
+    public KoukikoureiInputs pickKoukikoureiInputs(){
+        LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
+        LocalDate validUpto = validFrom.plus(2, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS);
+        int hokenshaBangou = pickKoukikoureiHokenshaBangou();
+        int hihokenshaBangou = pickHokenshaBangou(8);
+        return KoukikoureiInputs.newBuilder()
+                .setHokenshaBangou("" + hokenshaBangou)
+                .setHihokenshaBangou("" + hihokenshaBangou)
+                .setValidFromInputs(toDateInputs(validFrom))
+                .setValidUptoInputs(toDateInputs(validUpto))
+                .setFutanwari(pickInt(1,3))
+                .build();
+    }
+
+    public KouhiInputs pickKouhiInputs(){
+        LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
+        LocalDate validUpto = validFrom.plus(1, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS);
+        return KouhiInputs.newBuilder()
+                .setFutanshaBangou("" + pickKouhiFutanshaBangou())
+                .setJukyuushaBangou("" + pickHokenshaBangou(7))
+                .setValidFromInputs(toDateInputs(validFrom))
+                .setValidUptoInputs(toDateInputs(validUpto))
+                .build();
+    }
 }

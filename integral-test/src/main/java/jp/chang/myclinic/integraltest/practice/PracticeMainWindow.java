@@ -1,10 +1,10 @@
 package jp.chang.myclinic.integraltest.practice;
 
 import com.google.protobuf.Empty;
-import com.google.protobuf.Int32Value;
-import jp.chang.myclinic.Common.*;
+import jp.chang.myclinic.Common.VisitType;
+import jp.chang.myclinic.Common.WindowType;
 import jp.chang.myclinic.integraltest.GrpcHelper;
-import jp.chang.myclinic.practice.grpc.generated.PracticeMgmtGrpc.*;
+import jp.chang.myclinic.practice.grpc.generated.PracticeMgmtGrpc.PracticeMgmtBlockingStub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +54,9 @@ public class PracticeMainWindow {
     }
 
     public void waitForRecordVisible(int visitId){
+        VisitType visitType = VisitType.newBuilder().setVisitId(visitId).build();
         helper.rpc(10, () -> {
-            boolean ok = practiceStub.isRecordVisible(Int32Value.of(visitId)).getValue();
+            boolean ok = practiceStub.isRecordVisible(visitType).getValue();
             return ok ? Optional.of(true) : Optional.empty();
         });
     }

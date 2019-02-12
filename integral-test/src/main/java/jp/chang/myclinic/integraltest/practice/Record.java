@@ -1,11 +1,8 @@
 package jp.chang.myclinic.integraltest.practice;
 
-import com.google.protobuf.Int32Value;
+import jp.chang.myclinic.Common.VisitType;
 import jp.chang.myclinic.integraltest.GrpcHelper;
-import jp.chang.myclinic.practice.grpc.generated.PracticeMgmtGrpc;
-import jp.chang.myclinic.practice.grpc.generated.PracticeMgmtGrpc.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.practice.grpc.generated.PracticeMgmtGrpc.PracticeMgmtBlockingStub;
 
 public class Record {
 
@@ -19,7 +16,8 @@ public class Record {
     }
 
     public void clickNewTextButton(){
-        boolean ok = practiceStub.clickNewTextButton(Int32Value.of(visitId)).getValue();
+        VisitType visitType = VisitType.newBuilder().setVisitId(visitId).build();
+        boolean ok = practiceStub.clickNewTextButton(visitType).getValue();
         if( !ok ){
             throw new RuntimeException("Clicking new text button failed.");
         }

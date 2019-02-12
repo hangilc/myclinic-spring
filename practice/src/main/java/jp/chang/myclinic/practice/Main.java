@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
@@ -12,13 +13,11 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 @SpringBootApplication
@@ -32,11 +31,6 @@ public class Main extends Application {
     public static void main(String[] args) throws IOException {
         cmdArgs = new CmdArgs(args);
         Service.setServerUrl(cmdArgs.getServerUrl());
-        if( cmdArgs.isSelfTest() ){
-            new PracticeSelfTest().run();
-            Service.stop();
-            return;
-        }
         Application.launch(Main.class, args);
     }
 
@@ -71,6 +65,18 @@ public class Main extends Application {
             this.mgmtServer = new MgmtServer(managementPort);
             mgmtServer.start();
             System.out.printf("Listening to management port :%d\n", managementPort);
+        }
+        if( cmdArgs.isSelfTest() ){
+            Thread selfTestExecutor = new Thread(() -> {
+                try {
+                    new PracticeSelfTest().run();
+                    Platform.exit();
+                } catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            });
+            selfTestExecutor.setDaemon(true);
+            selfTestExecutor.start();
         }
         stage.show();
     }

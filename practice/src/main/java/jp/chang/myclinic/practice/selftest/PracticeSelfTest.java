@@ -2,25 +2,40 @@ package jp.chang.myclinic.practice.selftest;
 
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.dto.VisitPatientDTO;
-import jp.chang.myclinic.dto.WqueueFullDTO;
+import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.mockdata.MockData;
-import jp.chang.myclinic.practice.PracticeFun;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.practice.Globals;
+import jp.chang.myclinic.practice.javafx.MainPane;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class PracticeSelfTest {
+public class PracticeSelfTest implements Runnable {
 
     //private static Logger logger = LoggerFactory.getLogger(PracticeSelfTest.class);
     private MockData mocker = new MockData();
+    private MainPane mainPane;
 
+    @Override
     public void run(){
+        System.out.println("Self-test started");
         confirmMockPatient();
-        testListWqueue();
+        System.out.println("Confirmed that mock database is connected.");
+        this.mainPane = Globals.getInstance().getMainPane();
+        testExam();
+        System.out.println("Self-test completed without error.");
+    }
+
+    private void testExam(){
+        PatientDTO patient = createNewPatient();
+    }
+
+    private PatientDTO createNewPatient(){
+        PatientDTO mockPatient = mocker.pickPatient();
+        int patientId = Service.api.enterPatient(mockPatient).join();
+        mockPatient.patientId = patientId;
+        return mockPatient;
+    }
+
+    private ShahokokuhoDTO createShahokokuho(int patientId){
+        ShahokokuhoDTO hoken =
     }
 
     private void confirmMockPatient() {
@@ -39,29 +54,5 @@ public class PracticeSelfTest {
                 });
     }
 
-    private void testListWqueue(){
-        PatientDTO patient = enterMockPatient();
-        VisitDTO visit = startVisit(patient.patientId);
-        List<WqueueFullDTO> list = PracticeFun.listWqueue().join();
-        WqueueFullDTO wqueue = list.get(list.size()-1);
-        assertTrue(wqueue.visit.visitId == visit.visitId);
-    }
-
-    private void assertTrue(boolean value){
-        if( !value ){
-            throw new RuntimeException("assertion failed");
-        }
-    }
-
-    private PatientDTO enterMockPatient(){
-        PatientDTO patient = mocker.mockPatient();
-        patient.patientId = Service.api.enterPatient(patient).join();
-        return patient;
-    }
-
-    private VisitDTO startVisit(int patientId){
-        int visitId = Service.api.startVisit(patientId).join();
-        return Service.api.getVisit(visitId).join();
-    }
 
 }
