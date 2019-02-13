@@ -8,7 +8,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.grpc.MgmtServer;
 import jp.chang.myclinic.practice.javafx.MainPane;
-import jp.chang.myclinic.practice.selftest.PracticeSelfTest;
+import jp.chang.myclinic.practice.testgui.PracticeTestGui;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -66,11 +66,11 @@ public class Main extends Application {
             mgmtServer.start();
             System.out.printf("Listening to management port :%d\n", managementPort);
         }
-        if( cmdArgs.isSelfTest() ){
+        if( cmdArgs.isTestGui() ){
             Thread selfTestExecutor = new Thread(() -> {
                 try {
-                    new PracticeSelfTest().run();
-                    Platform.exit();
+                    new PracticeTestGui().run();
+                    //Platform.exit();
                 } catch(Exception ex){
                     ex.printStackTrace();
                 }

@@ -55,15 +55,6 @@ public class MainPane extends BorderPane {
         selectVisitMenu.fire();
     }
 
-    public boolean simulateNewTextButtonClick(int visitId){
-        Record record = findRecord(visitId);
-        if( record == null ){
-            return false;
-        }
-        record.simulateNewTextButtonClick();
-        return true;
-    }
-
     public Record findRecord(int visitId){
         return recordsPane.findRecord(visitId);
     }

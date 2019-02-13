@@ -33,7 +33,7 @@ public class Record extends VBox {
         return visitId;
     }
 
-    void simulateNewTextButtonClick(){
+    public void simulateNewTextButtonClick(){
         textPane.simulateNewTextButtonClick();
     }
 

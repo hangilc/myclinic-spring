@@ -2,10 +2,11 @@ package jp.chang.myclinic.mockdata;
 
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.consts.TodoufukenCode;
+import jp.chang.myclinic.dto.KouhiDTO;
+import jp.chang.myclinic.dto.KoukikoureiDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.util.dto_logic.HokenLib;
-import jp.chang.myclinic.util.kanjidate.KanjiDate;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -195,28 +196,30 @@ public class MockData {
         return addCheckingDigit(39 * 100000 + pickDigits(5));
     }
 
-    public KoukikoureiInputs pickKoukikoureiInputs(){
+    public KoukikoureiDTO pickKoukikourei(int patientId){
         LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
         LocalDate validUpto = validFrom.plus(2, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS);
         int hokenshaBangou = pickKoukikoureiHokenshaBangou();
         int hihokenshaBangou = pickHokenshaBangou(8);
-        return KoukikoureiInputs.newBuilder()
-                .setHokenshaBangou("" + hokenshaBangou)
-                .setHihokenshaBangou("" + hihokenshaBangou)
-                .setValidFromInputs(toDateInputs(validFrom))
-                .setValidUptoInputs(toDateInputs(validUpto))
-                .setFutanwari(pickInt(1,3))
-                .build();
+        KoukikoureiDTO dto = new KoukikoureiDTO();
+        dto.patientId = patientId;
+        dto.hokenshaBangou = "" + hokenshaBangou;
+        dto.hihokenshaBangou = "" + hihokenshaBangou;
+        dto.validFrom = validFrom.toString();
+        dto.validUpto = validUpto.toString();
+        dto.futanWari = pickInt(1, 3);
+        return dto;
     }
 
-    public KouhiInputs pickKouhiInputs(){
+    public KouhiDTO pickKouhi(int patientId){
         LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
         LocalDate validUpto = validFrom.plus(1, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS);
-        return KouhiInputs.newBuilder()
-                .setFutanshaBangou("" + pickKouhiFutanshaBangou())
-                .setJukyuushaBangou("" + pickHokenshaBangou(7))
-                .setValidFromInputs(toDateInputs(validFrom))
-                .setValidUptoInputs(toDateInputs(validUpto))
-                .build();
+        KouhiDTO dto = new KouhiDTO();
+        dto.patientId = patientId;
+        dto.futansha = pickKouhiFutanshaBangou();
+        dto.jukyuusha = pickHokenshaBangou(7);
+        dto.validFrom = validFrom.toString();
+        dto.validUpto = validUpto.toString();
+        return dto;
     }
 }

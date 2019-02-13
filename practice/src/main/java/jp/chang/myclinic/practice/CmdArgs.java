@@ -1,15 +1,12 @@
 package jp.chang.myclinic.practice;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 class CmdArgs {
 
     //private static Logger logger = LoggerFactory.getLogger(CmdArgs.class);
 
     private String serverUrl;
     private Integer managementPort;
-    private boolean selfTest;
+    private boolean testGui;
 
     CmdArgs(String[] args) {
         int i = 0;
@@ -25,8 +22,8 @@ class CmdArgs {
                     this.managementPort = Integer.parseInt(args[i]);
                     break;
                 }
-                case "--self-test": {
-                    this.selfTest = true;
+                case "--test-gui": {
+                    this.testGui = true;
                     break;
                 }
                 default:
@@ -51,7 +48,7 @@ class CmdArgs {
         return managementPort;
     }
 
-    boolean isSelfTest() {
-        return selfTest;
+    boolean isTestGui() {
+        return testGui;
     }
 }

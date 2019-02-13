@@ -52,9 +52,12 @@ public class SelectFromWqueueDialog extends Stage {
             return false;
         } else {
             wqueueTable.getSelectionModel().select(wq);
-            selectButton.fire();
             return true;
         }
+    }
+
+    public void simulateSelectButtonClick(){
+        selectButton.fire();
     }
 
     private WqueueTable createWqueueTable(List<WqueueFullDTO> list){
