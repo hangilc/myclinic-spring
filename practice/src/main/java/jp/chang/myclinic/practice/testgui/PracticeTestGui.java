@@ -3,12 +3,14 @@ package jp.chang.myclinic.practice.testgui;
 import javafx.application.Platform;
 import javafx.stage.Window;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.HokenDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Globals;
 import jp.chang.myclinic.practice.javafx.*;
 import jp.chang.myclinic.practice.javafx.disease.Select;
+import jp.chang.myclinic.util.HokenUtil;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +27,7 @@ public class PracticeTestGui implements Runnable {
         confirmMockPatient();
         System.out.println("Confirmed that mock database is connected.");
         testExam();
-        System.out.println("Self-test completed without error.");
+        System.out.println("Self-test completed successfully.");
     }
 
     private void testExam(){
@@ -60,14 +62,25 @@ public class PracticeTestGui implements Runnable {
             return Optional.empty();
         });
         RecordText newRecordText = record.findRecordText(newTextId).orElseThrow(() ->
-                new RuntimeException("find record text failed."));
+                new RuntimeException("find record text failed.")
+        );
+        if( !newRecordText.getContentRep().equals(text) ){
+            throw new RuntimeException("Incorrect text content.");
+        }
+        HokenDTO hoken = Service.api.getHoken(visitId).join();
+        RecordHoken recordHoken = record.findRecordHoken().orElseThrow(
+                () -> new RuntimeException("Failed to find record hoken.")
+        );
+        if( !recordHoken.getDispText().equals(HokenUtil.hokenRep(hoken)) ){
+            throw new RuntimeException("Hoken disp is not correct.");
+        }
     }
 
     private void gui(Runnable runnable){
         Platform.runLater(runnable);
     }
 
-    Record waitForRecord(int visitId){
+    private Record waitForRecord(int visitId){
         MainPane mainPane = getMainPane();
         return waitFor(10, () -> {
             Record r = mainPane.findRecord(visitId);
@@ -75,18 +88,18 @@ public class PracticeTestGui implements Runnable {
         });
     }
 
-    <T extends Window> T waitForCreatedWindow(Class<T> windowClass){
+    private <T extends Window> T waitForCreatedWindow(Class<T> windowClass){
         return waitFor(10, () -> {
             T t = Globals.getInstance().findNewWindow(windowClass);
             return Optional.ofNullable(t);
         });
     }
 
-    <T> T waitFor(Supplier<Optional<T>> f){
+    private <T> T waitFor(Supplier<Optional<T>> f){
         return waitFor(5, f);
     }
 
-    <T> T waitFor(int n, Supplier<Optional<T>> f){
+    private <T> T waitFor(int n, Supplier<Optional<T>> f){
         for(int i=0;i<n;i++){
             Optional<T> t = f.get();
             if( t.isPresent() ){

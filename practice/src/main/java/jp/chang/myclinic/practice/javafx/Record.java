@@ -1,16 +1,22 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.lib.PracticeLib;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static jp.chang.myclinic.utilfx.GuiUtil.alertExceptionGui;
 
 public class Record extends VBox {
 
@@ -19,9 +25,10 @@ public class Record extends VBox {
     private RecordDrugsPane drugsPane;
     private RecordShinryouPane shinryouPane;
     private RecordConductsPane conductsPane;
+    private StackPane hokenArea = new StackPane();
     private ObjectProperty<ShoukiDTO> shouki;
 
-    public Record(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
+    Record(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
                   Map<Integer, DrugAttrDTO> drugAttrMap, ShoukiDTO shouki) {
         this.visitId = visit.visit.visitId;
         this.shouki = new SimpleObjectProperty<>(shouki);
@@ -36,24 +43,33 @@ public class Record extends VBox {
         return visitId;
     }
 
-    public void simulateNewTextButtonClick(){
+    public void simulateNewTextButtonClick() {
         textPane.simulateNewTextButtonClick();
     }
 
-    public Optional<TextEnterForm> findTextEnterForm(){
+    public Optional<TextEnterForm> findTextEnterForm() {
         return textPane.findTextEnterForm();
     }
 
-    public Optional<RecordText> findRecordText(int textId){
+    public Optional<RecordText> findRecordText(int textId) {
         return textPane.findRecordText(textId);
     }
 
-    public int getLastTextId(){
+    public int getLastTextId() {
         return textPane.listTextId().stream().max(Comparator.naturalOrder()).orElse(0);
     }
 
-    public List<Integer> listTextId(){
+    public List<Integer> listTextId() {
         return textPane.listTextId();
+    }
+
+    public Optional<RecordHoken> findRecordHoken(){
+        for(Node node: hokenArea.getChildren()){
+            if( node instanceof RecordHoken ){
+                return Optional.of((RecordHoken)node);
+            }
+        }
+        return Optional.empty();
     }
 
     private Node createBody(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
@@ -71,8 +87,9 @@ public class Record extends VBox {
         drugsPane = new RecordDrugsPane(visit.drugs, visit.visit, drugAttrMap);
         shinryouPane = new RecordShinryouPane(visit.shinryouList, visit.visit, shinryouAttrMap);
         conductsPane = new RecordConductsPane(visit.conducts, visit.visit.visitId, visit.visit.visitedAt);
+        hokenArea.getChildren().add(createRecordHoken(visit.hoken, visit.visit));
         right.getChildren().addAll(
-                new RecordHoken(visit.hoken, visit.visit),
+                hokenArea,
                 drugsPane,
                 shinryouPane,
                 conductsPane,
@@ -82,39 +99,73 @@ public class Record extends VBox {
         return hbox;
     }
 
-    public void addDrug(DrugFullDTO drug, DrugAttrDTO attr) {
+    void addDrug(DrugFullDTO drug, DrugAttrDTO attr) {
         drugsPane.addDrug(drug, attr);
     }
 
-    public void modifyDrugDays(int drugId, int days) {
+    void modifyDrugDays(int drugId, int days) {
         drugsPane.modifyDrugDays(drugId, days);
     }
 
-    public void deleteDrug(int drugId) {
+    void deleteDrug(int drugId) {
         drugsPane.deleteDrug(drugId);
     }
 
-    public void insertShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
+    void insertShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
         shinryouPane.insertShinryou(shinryou, attr);
     }
 
-    public void deleteShinryou(int shinryouId) {
+    void deleteShinryou(int shinryouId) {
         shinryouPane.deleteShinryou(shinryouId);
     }
 
-    public void addConduct(ConductFullDTO conduct) {
+    void addConduct(ConductFullDTO conduct) {
         conductsPane.addConduct(conduct);
     }
 
-    public void deleteConduct(int conductId) {
+    void deleteConduct(int conductId) {
         conductsPane.deleteConduct(conductId);
     }
 
-    public void appendText(TextDTO enteredText) {
+    void appendText(TextDTO enteredText) {
         textPane.appendText(enteredText);
     }
 
-    public void setShouki(ShoukiDTO shoukiDTO){
+    void setShouki(ShoukiDTO shoukiDTO) {
         this.shouki.setValue(shoukiDTO);
+    }
+
+    private RecordHoken createRecordHoken(HokenDTO hoken, VisitDTO visit) {
+        RecordHoken recordHoken = new RecordHoken(hoken);
+        recordHoken.setOnMouseClicked(event -> {
+            Service.api.listAvailableHoken(visit.patientId, visit.visitedAt.substring(0, 10))
+                    .thenAcceptAsync(availHoken -> {
+                        HokenSelectForm form = new HokenSelectForm(availHoken, hoken);
+                        form.setCallback(new HokenSelectForm.Callback() {
+                            private void replaceWith(Node node) {
+                                hokenArea.getChildren().setAll(node);
+                            }
+
+                            @Override
+                            public void onEnter(VisitDTO newVisit) {
+                                newVisit.visitId = visitId;
+                                Service.api.updateHoken(newVisit)
+                                        .thenCompose(ok -> Service.api.getHoken(visitId))
+                                        .thenAcceptAsync(newHoken -> {
+                                            replaceWith(createRecordHoken(newHoken, visit));
+                                        }, Platform::runLater)
+                                        .exceptionally(alertExceptionGui("保険の選択変更に失敗しました。"));
+                            }
+
+                            @Override
+                            public void onCancel() {
+                                replaceWith(recordHoken);
+                            }
+                        });
+                        hokenArea.getChildren().setAll(form);
+                    }, Platform::runLater)
+                    .exceptionally(alertExceptionGui("保険情報の取得に失敗しました。"));
+            });
+        return recordHoken;
     }
 }
