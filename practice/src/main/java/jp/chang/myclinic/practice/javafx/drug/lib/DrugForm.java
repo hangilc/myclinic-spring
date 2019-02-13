@@ -119,7 +119,7 @@ public class DrugForm extends VBox {
                     if( searchText.isEmpty() ){
                         return;
                     }
-                    Searcher.searchMaster(searchText, at, this::setMaster)
+                    DrugSearcher.searchMaster(searchText, at, this::setMaster)
                             .thenAcceptAsync(searchResult::setItems, Platform::runLater)
                             .exceptionally(HandlerFX::exceptionally);
                     break;
@@ -128,13 +128,13 @@ public class DrugForm extends VBox {
                     if( searchText.isEmpty() ){
                         return;
                     }
-                    Searcher.searchExample(searchText, this::setExample)
+                    DrugSearcher.searchExample(searchText, this::setExample)
                             .thenAcceptAsync(searchResult::setItems, Platform::runLater)
                             .exceptionally(HandlerFX::exceptionally);
                     break;
                 }
                 case Previous: {
-                    Searcher.searchDrug(searchText, patientId, this::setDrug)
+                    DrugSearcher.searchDrug(searchText, patientId, this::setDrug)
                             .thenAcceptAsync(searchResult::setItems, Platform::runLater)
                             .exceptionally(HandlerFX::exceptionally);
                     break;

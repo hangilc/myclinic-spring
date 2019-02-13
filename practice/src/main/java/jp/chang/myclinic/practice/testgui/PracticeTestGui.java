@@ -3,14 +3,14 @@ package jp.chang.myclinic.practice.testgui;
 import javafx.application.Platform;
 import javafx.stage.Window;
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.dto.HokenDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Globals;
 import jp.chang.myclinic.practice.javafx.*;
-import jp.chang.myclinic.practice.javafx.disease.Select;
 import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchResultItem;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearcher;
 import jp.chang.myclinic.util.HokenUtil;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class PracticeTestGui implements Runnable {
     private MockData mocker = new MockData();
 
     @Override
-    public void run(){
+    public void run() {
         System.out.println("Self-test started");
         confirmMockPatient();
         System.out.println("Confirmed that mock database is connected.");
@@ -31,15 +31,16 @@ public class PracticeTestGui implements Runnable {
         System.out.println("Self-test completed successfully.");
     }
 
-    private void testExam(){
+    private void testExam() {
         PatientDTO patient = apiCreatePatient();
         apiCreateShahokokuho(patient.patientId);
         int visitId = apiStartVisit(patient.patientId);
+        VisitDTO visit = Service.api.getVisit(visitId).join();
         guiOpenSelectVisitWindow();
         SelectFromWqueueDialog selectVisitDialog = waitForCreatedWindow(SelectFromWqueueDialog.class);
         gui(() -> {
             boolean ok = selectVisitDialog.simulateSelectVisit(visitId);
-            if( !ok ){
+            if (!ok) {
                 throw new RuntimeException("Selecting from wqueue failed.");
             }
             selectVisitDialog.simulateSelectButtonClick();
@@ -55,8 +56,8 @@ public class PracticeTestGui implements Runnable {
         });
         int newTextId = waitFor(10, () -> {
             List<Integer> textIds = record.listTextId();
-            for(Integer id: textIds){
-                if( id > lastTextId ){
+            for (Integer id : textIds) {
+                if (id > lastTextId) {
                     return Optional.of(id);
                 }
             }
@@ -65,29 +66,64 @@ public class PracticeTestGui implements Runnable {
         RecordText newRecordText = record.findRecordText(newTextId).orElseThrow(() ->
                 new RuntimeException("find record text failed.")
         );
-        if( !newRecordText.getContentRep().equals(text) ){
+        if (!newRecordText.getContentRep().equals(text)) {
             throw new RuntimeException("Incorrect text content.");
         }
         HokenDTO hoken = Service.api.getHoken(visitId).join();
         RecordHoken recordHoken = record.findRecordHoken().orElseThrow(
                 () -> new RuntimeException("Failed to find record hoken.")
         );
-        if( !recordHoken.getDispText().equals(HokenUtil.hokenRep(hoken)) ){
+        if (!recordHoken.getDispText().equals(HokenUtil.hokenRep(hoken))) {
             throw new RuntimeException("Hoken disp is not correct.");
         }
         gui(record::simulateNewDrugButtonClick);
         DrugEnterForm drugEnterForm = waitFor(record::findDrugEnterForm);
+        int drugSearchResultSerialId = drugEnterForm.getSearchResultSerialId();
         gui(() -> {
             drugEnterForm.simulateSetSearchText("カロナール");
             drugEnterForm.simulateClickSearchButton();
         });
+        waitFor(10, () -> {
+            int id = drugEnterForm.getSearchResultSerialId();
+            if (id > drugSearchResultSerialId) {
+                return Optional.of(true);
+            } else {
+                return Optional.empty();
+            }
+        });
+        List<DrugSearchResultItem> drugSearchResults = drugEnterForm.getSearchResultItems();
+        drugSearchResults.forEach(item -> System.out.println(item.getRep()));
+        int caronalIyakuhincode = 620000033;
+        caronalIyakuhincode = Service.api.resolveIyakuhinMaster(caronalIyakuhincode,
+                visit.visitedAt.substring(0, 10)).join().iyakuhincode;
+        DrugSearchResultItem drugItem1 = null;
+        for (DrugSearchResultItem item : drugSearchResults) {
+            if (item instanceof DrugSearcher.ExampleItem) {
+                DrugSearcher.ExampleItem exampleItem = (DrugSearcher.ExampleItem) item;
+                PrescExampleFullDTO example = exampleItem.getExample();
+                if (example.master.iyakuhincode == caronalIyakuhincode &&
+                        example.prescExample.category == DrugCategory.Naifuku.getCode() &&
+                        example.prescExample.days < 10) {
+                    drugItem1 = item;
+                    break;
+                }
+            }
+        }
+        if( drugItem1 == null ){
+            throw new RuntimeException("Cannot find caronal.");
+        }
+        final DrugSearchResultItem finalDrugItem1 = drugItem1;
+        gui(() -> {
+            drugEnterForm.simulateSelectSearchResultItem(finalDrugItem1);
+            drugEnterForm.simulateClickEnterButton();
+        });
     }
 
-    private void gui(Runnable runnable){
+    private void gui(Runnable runnable) {
         Platform.runLater(runnable);
     }
 
-    private Record waitForRecord(int visitId){
+    private Record waitForRecord(int visitId) {
         MainPane mainPane = getMainPane();
         return waitFor(10, () -> {
             Record r = mainPane.findRecord(visitId);
@@ -95,21 +131,21 @@ public class PracticeTestGui implements Runnable {
         });
     }
 
-    private <T extends Window> T waitForCreatedWindow(Class<T> windowClass){
+    private <T extends Window> T waitForCreatedWindow(Class<T> windowClass) {
         return waitFor(10, () -> {
             T t = Globals.getInstance().findNewWindow(windowClass);
             return Optional.ofNullable(t);
         });
     }
 
-    private <T> T waitFor(Supplier<Optional<T>> f){
+    private <T> T waitFor(Supplier<Optional<T>> f) {
         return waitFor(5, f);
     }
 
-    private <T> T waitFor(int n, Supplier<Optional<T>> f){
-        for(int i=0;i<n;i++){
+    private <T> T waitFor(int n, Supplier<Optional<T>> f) {
+        for (int i = 0; i < n; i++) {
             Optional<T> t = f.get();
-            if( t.isPresent() ){
+            if (t.isPresent()) {
                 return t.get();
             }
             try {
@@ -122,27 +158,27 @@ public class PracticeTestGui implements Runnable {
         throw new RuntimeException("waitFor failed");
     }
 
-    private MainPane getMainPane(){
+    private MainPane getMainPane() {
         return Globals.getInstance().getMainPane();
     }
 
-    private void guiOpenSelectVisitWindow(){
+    private void guiOpenSelectVisitWindow() {
         getMainPane().simulateSelectVisitMenuChoice();
     }
 
-    private PatientDTO apiCreatePatient(){
+    private PatientDTO apiCreatePatient() {
         PatientDTO patient = mocker.pickPatient();
         patient.patientId = Service.api.enterPatient(patient).join();
         return patient;
     }
 
-    private ShahokokuhoDTO apiCreateShahokokuho(int patientId){
+    private ShahokokuhoDTO apiCreateShahokokuho(int patientId) {
         ShahokokuhoDTO hoken = mocker.pickShahokokuho(patientId);
         hoken.shahokokuhoId = Service.api.enterShahokokuho(hoken).join();
         return hoken;
     }
 
-    private int apiStartVisit(int patientId){
+    private int apiStartVisit(int patientId) {
         return Service.api.startVisit(patientId).join();
     }
 

@@ -1,6 +1,6 @@
 package jp.chang.myclinic.practice.javafx.drug.lib;
 
-public interface SearchResultItem {
+public interface DrugSearchResultItem {
 
     String getRep();
     void onSelect();

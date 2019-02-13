@@ -10,7 +10,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PrescExampleDTO;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchMode;
 import jp.chang.myclinic.practice.javafx.drug.lib.SearchModeChooser;
-import jp.chang.myclinic.practice.javafx.drug.lib.Searcher;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearcher;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
@@ -53,7 +53,7 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
     }
 
     private void doListAll(){
-        Searcher.listAllExamples(ex -> getInput().setExample(ex))
+        DrugSearcher.listAllExamples(ex -> getInput().setExample(ex))
                 .thenAcceptAsync(result -> getSearchResult().setItems(result), Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);
     }

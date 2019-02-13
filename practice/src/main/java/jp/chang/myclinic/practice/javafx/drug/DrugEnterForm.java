@@ -8,27 +8,31 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.practice.javafx.drug.lib.DrugEnterInput;
-import jp.chang.myclinic.practice.javafx.drug.lib.DrugForm;
-import jp.chang.myclinic.practice.javafx.drug.lib.SearchTextInput;
+import jp.chang.myclinic.practice.javafx.drug.lib.*;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.utilfx.HandlerFX;
+
+import java.util.List;
 
 public class DrugEnterForm extends DrugForm {
 
     //private static Logger logger = LoggerFactory.getLogger(EnterForm.class);
     private DrugEnterInput input = new DrugEnterInput();
     private SearchTextInput searchTextInput;
+    private SearchResult searchResult;
+    private Button enterButton;
+
     DrugEnterForm(VisitDTO visit){
         super(visit);
         this.searchTextInput = getSearchTextInput();
+        this.searchResult = getSearchResult();
         getChildren().addAll(
                 createTitle("新規処方の入力"),
                 input,
                 createCommands(),
                 searchTextInput,
                 getSearchModeChooserBox(),
-                getSearchResult()
+                searchResult
         );
     }
 
@@ -40,6 +44,22 @@ public class DrugEnterForm extends DrugForm {
         searchTextInput.simulateClickSearchButton();
     }
 
+    public int getSearchResultSerialId(){
+        return searchResult.getSerialId();
+    }
+
+    public List<DrugSearchResultItem> getSearchResultItems(){
+        return searchResult.getItems();
+    }
+
+    public void simulateSelectSearchResultItem(DrugSearchResultItem item){
+        searchResult.getSelectionModel().select(item);
+    }
+
+    public void simulateClickEnterButton(){
+        enterButton.fire();
+    }
+
     protected void onClose(){
 
     }
@@ -48,7 +68,7 @@ public class DrugEnterForm extends DrugForm {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getStyleClass().add("commands");
-        Button enterButton = new Button("入力");
+        this.enterButton = new Button("入力");
         Button closeButton = new Button("閉じる");
         Hyperlink clearLink = new Hyperlink("クリア");
         enterButton.setOnAction(evt -> doEnter());

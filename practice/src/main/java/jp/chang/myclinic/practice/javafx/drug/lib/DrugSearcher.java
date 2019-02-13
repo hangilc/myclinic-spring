@@ -13,14 +13,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class Searcher {
+public class DrugSearcher {
 
-    private static Logger logger = LoggerFactory.getLogger(Searcher.class);
+    private static Logger logger = LoggerFactory.getLogger(DrugSearcher.class);
 
-    private Searcher() {
+    private DrugSearcher() {
     }
 
-    private static class MasterItem implements SearchResultItem {
+    public static class MasterItem implements DrugSearchResultItem {
         private IyakuhinMasterDTO master;
         private Consumer<IyakuhinMasterDTO> onSelectHandler;
 
@@ -40,19 +40,23 @@ public class Searcher {
         }
     }
 
-    public static CompletableFuture<List<SearchResultItem>> searchMaster(String text, LocalDate at,
-                                                                         Consumer<IyakuhinMasterDTO> onSelectHandler) {
+    public static CompletableFuture<List<DrugSearchResultItem>> searchMaster(String text, LocalDate at,
+                                                                             Consumer<IyakuhinMasterDTO> onSelectHandler) {
         return Service.api.searchIyakuhinMaster(text, at.toString())
                 .thenApply(result -> result.stream().map(m -> new MasterItem(m, onSelectHandler)).collect(Collectors.toList()));
     }
 
-    private static class ExampleItem implements SearchResultItem {
+    public static class ExampleItem implements DrugSearchResultItem {
         private PrescExampleFullDTO exampleFull;
         private Consumer<PrescExampleFullDTO> onSelectHandler;
 
         ExampleItem(PrescExampleFullDTO exampleFull, Consumer<PrescExampleFullDTO> onSelectHandler) {
             this.exampleFull = exampleFull;
             this.onSelectHandler = onSelectHandler;
+        }
+
+        public PrescExampleFullDTO getExample(){
+            return exampleFull;
         }
 
         @Override
@@ -80,18 +84,18 @@ public class Searcher {
         }
     }
 
-    public static CompletableFuture<List<SearchResultItem>> searchExample(String text,
-                                                                          Consumer<PrescExampleFullDTO> onSelectHandler){
+    public static CompletableFuture<List<DrugSearchResultItem>> searchExample(String text,
+                                                                              Consumer<PrescExampleFullDTO> onSelectHandler){
         return Service.api.searchPrescExample(text)
                 .thenApply(result -> result.stream().map(e -> new ExampleItem(e, onSelectHandler)).collect(Collectors.toList()));
     }
 
-    public static CompletableFuture<List<SearchResultItem>> listAllExamples(Consumer<PrescExampleFullDTO> onSelectHandler){
+    public static CompletableFuture<List<DrugSearchResultItem>> listAllExamples(Consumer<PrescExampleFullDTO> onSelectHandler){
         return Service.api.listAllPrescExample()
                 .thenApply(result -> result.stream().map(e -> new ExampleItem(e, onSelectHandler)).collect(Collectors.toList()));
     }
 
-    private static class DrugItem implements SearchResultItem {
+    public static class DrugItem implements DrugSearchResultItem {
         private DrugFullDTO drugFull;
         private Consumer<DrugFullDTO> onSelectHandler;
 
@@ -118,8 +122,8 @@ public class Searcher {
         }
     }
 
-    public static CompletableFuture<List<SearchResultItem>> searchDrug(String text, int patientId,
-                                                                       Consumer<DrugFullDTO> onSelectHandler){
+    public static CompletableFuture<List<DrugSearchResultItem>> searchDrug(String text, int patientId,
+                                                                           Consumer<DrugFullDTO> onSelectHandler){
         return Service.api.searchPrevDrug(text, patientId)
                 .thenApply(result -> result.stream().map(d -> new DrugItem(d, onSelectHandler)).collect(Collectors.toList()));
     }
