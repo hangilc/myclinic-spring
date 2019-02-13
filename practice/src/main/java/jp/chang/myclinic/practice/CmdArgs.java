@@ -5,7 +5,6 @@ class CmdArgs {
     //private static Logger logger = LoggerFactory.getLogger(CmdArgs.class);
 
     private String serverUrl;
-    private Integer managementPort;
     private boolean testGui;
 
     CmdArgs(String[] args) {
@@ -13,15 +12,6 @@ class CmdArgs {
         loop: for(;i<args.length;i++){
             String arg = args[i];
             switch(arg){
-                case "--management": {
-                    i += 1;
-                    if( i >= args.length ){
-                        System.err.println("Cannot find value for --management option");
-                        System.exit(1);
-                    }
-                    this.managementPort = Integer.parseInt(args[i]);
-                    break;
-                }
                 case "--test-gui": {
                     this.testGui = true;
                     break;
@@ -42,10 +32,6 @@ class CmdArgs {
 
     String getServerUrl() {
         return serverUrl;
-    }
-
-    Integer getManagementPort() {
-        return managementPort;
     }
 
     boolean isTestGui() {

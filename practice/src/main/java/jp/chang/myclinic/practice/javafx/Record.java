@@ -7,7 +7,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.*;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Record extends VBox {
 
@@ -37,12 +40,20 @@ public class Record extends VBox {
         textPane.simulateNewTextButtonClick();
     }
 
-    public TextEnterForm findTextEnterForm(){
+    public Optional<TextEnterForm> findTextEnterForm(){
         return textPane.findTextEnterForm();
     }
 
-    public RecordText findRecordText(int textId){
+    public Optional<RecordText> findRecordText(int textId){
         return textPane.findRecordText(textId);
+    }
+
+    public int getLastTextId(){
+        return textPane.listTextId().stream().max(Comparator.naturalOrder()).orElse(0);
+    }
+
+    public List<Integer> listTextId(){
+        return textPane.listTextId();
     }
 
     private Node createBody(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,

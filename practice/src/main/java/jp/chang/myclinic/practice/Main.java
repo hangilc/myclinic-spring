@@ -1,12 +1,10 @@
 package jp.chang.myclinic.practice;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.practice.grpc.MgmtServer;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.practice.testgui.PracticeTestGui;
 import okhttp3.Cache;
@@ -17,7 +15,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 @SpringBootApplication
@@ -26,9 +23,8 @@ public class Main extends Application {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private static ConfigurableApplicationContext ctx;
     private static CmdArgs cmdArgs;
-    private MgmtServer mgmtServer;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         cmdArgs = new CmdArgs(args);
         Service.setServerUrl(cmdArgs.getServerUrl());
         Application.launch(Main.class, args);
@@ -56,16 +52,6 @@ public class Main extends Application {
                 PracticeEnv.INSTANCE.closeRemainingWindows();
             }
         });
-        Integer managementPort = cmdArgs.getManagementPort();
-        if( managementPort != null && managementPort > 0 ){
-            {
-                ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger("io.grpc");
-                log.setLevel(ch.qos.logback.classic.Level.ERROR);
-            }
-            this.mgmtServer = new MgmtServer(managementPort);
-            mgmtServer.start();
-            System.out.printf("Listening to management port :%d\n", managementPort);
-        }
         if( cmdArgs.isTestGui() ){
             Thread selfTestExecutor = new Thread(() -> {
                 try {
@@ -92,9 +78,6 @@ public class Main extends Application {
             cache.close();
         }
         ctx.close();
-        if( mgmtServer !=  null ){
-            mgmtServer.stop();
-        }
     }
 
     private static void setupPracticeEnv() {

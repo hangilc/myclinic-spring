@@ -1,5 +1,6 @@
 package jp.chang.myclinic.utilfx;
 
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
@@ -12,20 +13,35 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionException;
+import java.util.function.Function;
 
 public class GuiUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(GuiUtil.class);
+    //private static Logger logger = LoggerFactory.getLogger(GuiUtil.class);
 
     public static void alertError(String message){
         Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
         alert.showAndWait();
     }
 
+    public static Function<Throwable, Void> alertErrorGui(String message){
+        return ex -> {
+            Platform.runLater(() -> alertError(message));
+            return null;
+        };
+    }
+
     public static void alertInfo(String message){
         Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
         alert.setHeaderText(null);
         alert.showAndWait();
+    }
+
+    public static Function<Throwable, Void> alertInfoGui(String message){
+        return ex -> {
+            Platform.runLater(() -> alertInfo(message));
+            return null;
+        };
     }
 
     public static void alertException(String prefix, Throwable ex){
@@ -39,6 +55,13 @@ public class GuiUtil {
             ex = ex.getCause();
         }
         alertError(prefix + ex);
+    }
+
+    public static Function<Throwable, Void> alertExceptionGui(String message){
+        return ex -> {
+            Platform.runLater(() -> alertException(message, ex));
+            return null;
+        };
     }
 
     public static boolean confirm(String message){
