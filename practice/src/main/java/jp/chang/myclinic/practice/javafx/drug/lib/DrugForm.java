@@ -30,6 +30,7 @@ public class DrugForm extends VBox {
     private int visitId;
     private SearchTextInput searchTextInput = new SearchTextInput();
     private SearchResult searchResult = new SearchResult();
+    private DrugSearchResultItem currentInputItem;
 
     public DrugForm(VisitDTO visit) {
         super(4);
@@ -41,6 +42,35 @@ public class DrugForm extends VBox {
         modeChooser.setValue(DrugSearchMode.Example);
         modeChooserBox.getChildren().addAll(modeChooser.getButtons());
         searchTextInput.setHandler(this::onSearch);
+        searchResult.getSelectionModel().selectedItemProperty()
+                .addListener((obs, oldValue, newValue) -> {
+                    if (newValue != null) {
+                       onSearchResultSelected(newValue);
+                    }
+                });
+    }
+
+    public DrugSearchResultItem getCurrentInputItem(){
+        return currentInputItem;
+    }
+
+    private void onSearchResultSelected(DrugSearchResultItem item){
+        if( item != null ){
+            if( item instanceof DrugSearcher.MasterItem ){
+                DrugSearcher.MasterItem masterItem = (DrugSearcher.MasterItem)item;
+                onMasterSelected(masterItem.getMaster());
+            } else if( item instanceof DrugSearcher.ExampleItem ){
+                DrugSearcher.ExampleItem exampleItem = (DrugSearcher.ExampleItem)item;
+                onPrescExampleSelected(exampleItem.getExample());
+            } else if( item instanceof DrugSearcher.DrugItem ){
+                DrugSearcher.DrugItem drugItem = (DrugSearcher.DrugItem)item;
+                onDrugSelected(drugItem.getDrug());
+            } else {
+                logger.error("Unknown drug search item. {}", item);
+                return;
+            }
+            this.currentInputItem = item;
+        }
     }
 
     protected int getVisitId() {
@@ -54,15 +84,15 @@ public class DrugForm extends VBox {
         return title;
     }
 
-    protected HBox getSearchModeChooserBox(){
+    protected HBox getSearchModeChooserBox() {
         return modeChooserBox;
     }
 
-    protected SearchTextInput getSearchTextInput(){
+    protected SearchTextInput getSearchTextInput() {
         return searchTextInput;
     }
 
-    protected SearchResult getSearchResult(){
+    protected SearchResult getSearchResult() {
         return searchResult;
     }
 
@@ -78,15 +108,15 @@ public class DrugForm extends VBox {
                 .exceptionally(HandlerFX::exceptionally);
     }
 
-    protected void onMasterSelected(IyakuhinMasterDTO master){
+    protected void onMasterSelected(IyakuhinMasterDTO master) {
 
     }
 
-    protected void onPrescExampleSelected(PrescExampleFullDTO example){
+    protected void onPrescExampleSelected(PrescExampleFullDTO example) {
 
     }
 
-    protected void onDrugSelected(DrugFullDTO drug){
+    protected void onDrugSelected(DrugFullDTO drug) {
 
     }
 
@@ -109,14 +139,14 @@ public class DrugForm extends VBox {
     }
 
     private void onSearch(String searchText) {
-        if (searchText == null ) {
+        if (searchText == null) {
             return;
         }
         DrugSearchMode mode = modeChooser.getValue();
         if (mode != null) {
             switch (mode) {
                 case Master: {
-                    if( searchText.isEmpty() ){
+                    if (searchText.isEmpty()) {
                         return;
                     }
                     DrugSearcher.searchMaster(searchText, at, this::setMaster)
@@ -125,7 +155,7 @@ public class DrugForm extends VBox {
                     break;
                 }
                 case Example: {
-                    if( searchText.isEmpty() ){
+                    if (searchText.isEmpty()) {
                         return;
                     }
                     DrugSearcher.searchExample(searchText, this::setExample)

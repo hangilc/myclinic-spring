@@ -19,11 +19,6 @@ public class SearchResult extends ListView<DrugSearchResultItem> {
                 setText(empty ? "" : item.getRep());
             }
         });
-        getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if( newValue != null ){
-                newValue.onSelect();
-            }
-        });
     }
 
     public void setItems(List<DrugSearchResultItem> items){

@@ -115,8 +115,16 @@ public class PracticeTestGui implements Runnable {
         final DrugSearchResultItem finalDrugItem1 = drugItem1;
         gui(() -> {
             drugEnterForm.simulateSelectSearchResultItem(finalDrugItem1);
-            drugEnterForm.simulateClickEnterButton();
         });
+        waitFor(() -> {
+            DrugSearchResultItem currentItem = drugEnterForm.getCurrentInputItem();
+            if( currentItem == finalDrugItem1 ){
+                return Optional.of(true);
+            } else {
+                return Optional.empty();
+            }
+        });
+        gui(drugEnterForm::simulateClickEnterButton);
     }
 
     private void gui(Runnable runnable) {

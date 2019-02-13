@@ -29,15 +29,15 @@ public class DrugSearcher {
             this.onSelectHandler = onSelectHandler;
         }
 
+        IyakuhinMasterDTO getMaster(){
+            return master;
+        }
+
         @Override
         public String getRep() {
             return master.name;
         }
 
-        @Override
-        public void onSelect() {
-            onSelectHandler.accept(master);
-        }
     }
 
     public static CompletableFuture<List<DrugSearchResultItem>> searchMaster(String text, LocalDate at,
@@ -78,10 +78,6 @@ public class DrugSearcher {
             return DrugUtil.drugRep(category, master.name, amount, master.unit, example.usage, example.days);
         }
 
-        @Override
-        public void onSelect() {
-            onSelectHandler.accept(exampleFull);
-        }
     }
 
     public static CompletableFuture<List<DrugSearchResultItem>> searchExample(String text,
@@ -99,9 +95,13 @@ public class DrugSearcher {
         private DrugFullDTO drugFull;
         private Consumer<DrugFullDTO> onSelectHandler;
 
-        public DrugItem(DrugFullDTO drugFull, Consumer<DrugFullDTO> onSelectHandler) {
+        DrugItem(DrugFullDTO drugFull, Consumer<DrugFullDTO> onSelectHandler) {
             this.drugFull = drugFull;
             this.onSelectHandler = onSelectHandler;
+        }
+
+        DrugFullDTO getDrug(){
+            return drugFull;
         }
 
         @Override
@@ -116,13 +116,9 @@ public class DrugSearcher {
             return DrugUtil.drugRep(category, master.name, drug.amount, master.unit, drug.usage, drug.days);
         }
 
-        @Override
-        public void onSelect() {
-            onSelectHandler.accept(drugFull);
-        }
     }
 
-    public static CompletableFuture<List<DrugSearchResultItem>> searchDrug(String text, int patientId,
+    static CompletableFuture<List<DrugSearchResultItem>> searchDrug(String text, int patientId,
                                                                            Consumer<DrugFullDTO> onSelectHandler){
         return Service.api.searchPrevDrug(text, patientId)
                 .thenApply(result -> result.stream().map(d -> new DrugItem(d, onSelectHandler)).collect(Collectors.toList()));
