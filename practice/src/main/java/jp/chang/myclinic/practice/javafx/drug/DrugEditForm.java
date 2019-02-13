@@ -19,14 +19,14 @@ import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
-public class EditForm extends DrugForm {
+public class DrugEditForm extends DrugForm {
 
     //private static Logger logger = LoggerFactory.getLogger(EditForm.class);
     private DrugEditInput input = new DrugEditInput();
     private HBox tekiyouBox = new HBox(4);
     private boolean isGaiyou;
 
-    public EditForm(DrugFullDTO drug, String drugTekiyou, VisitDTO visit) {
+    public DrugEditForm(DrugFullDTO drug, String drugTekiyou, VisitDTO visit) {
         super(visit);
         this.isGaiyou = Zaikei.fromCode(drug.master.zaikei) == Zaikei.Gaiyou;
         input.setDrug(drug);
@@ -169,7 +169,7 @@ public class EditForm extends DrugForm {
                     })
                     .thenAccept(ok -> {
                         DrugDeletedEvent event = new DrugDeletedEvent(local.drug);
-                        Platform.runLater(() -> EditForm.this.fireEvent(event));
+                        Platform.runLater(() -> DrugEditForm.this.fireEvent(event));
                     })
                     .exceptionally(HandlerFX::exceptionally);
         }

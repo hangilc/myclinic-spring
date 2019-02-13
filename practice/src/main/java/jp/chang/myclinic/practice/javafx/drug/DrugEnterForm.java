@@ -10,24 +10,34 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugEnterInput;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugForm;
+import jp.chang.myclinic.practice.javafx.drug.lib.SearchTextInput;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
-public class EnterForm extends DrugForm {
+public class DrugEnterForm extends DrugForm {
 
     //private static Logger logger = LoggerFactory.getLogger(EnterForm.class);
     private DrugEnterInput input = new DrugEnterInput();
-
-    public EnterForm(VisitDTO visit){
+    private SearchTextInput searchTextInput;
+    DrugEnterForm(VisitDTO visit){
         super(visit);
+        this.searchTextInput = getSearchTextInput();
         getChildren().addAll(
                 createTitle("新規処方の入力"),
                 input,
                 createCommands(),
-                getSearchTextInput(),
+                searchTextInput,
                 getSearchModeChooserBox(),
                 getSearchResult()
         );
+    }
+
+    public void simulateSetSearchText(String text){
+        searchTextInput.simulateSetSearchText(text);
+    }
+
+    public void simulateClickSearchButton(){
+        searchTextInput.simulateClickSearchButton();
     }
 
     protected void onClose(){
@@ -60,7 +70,7 @@ public class EnterForm extends DrugForm {
         Service.api.enterDrug(drug)
                 .thenCompose(Service.api::getDrugFull)
                 .thenAccept(enteredDrug -> Platform.runLater(() -> {
-                    EnterForm.this.fireEvent(new DrugEnteredEvent(enteredDrug, null));
+                    DrugEnterForm.this.fireEvent(new DrugEnteredEvent(enteredDrug, null));
                     input.clear();
                     getSearchTextInput().clear();
                     getSearchResult().clear();
@@ -82,41 +92,5 @@ public class EnterForm extends DrugForm {
     protected void onDrugSelected(DrugFullDTO drug) {
         input.setDrug(drug);
     }
-
-
-
-//    private CheckBox daysFixedCheck = new CheckBox("固定");
-//
-//    public EnterForm(VisitDTO visit) {
-//        super(visit, "新規処方の入力");
-//        daysFixedCheck.setSelected(true);
-//        getInput().addToDaysRow(daysFixedCheck);
-//    }
-//
-//    @Override
-//    Set<Input.SetOption> getSetOptions() {
-//        Set<Input.SetOption> opts = new HashSet<Input.SetOption>();
-//        if (daysFixedCheck.isSelected()) {
-//            opts.add(Input.SetOption.FixedDays);
-//        }
-//        return opts;
-//    }
-//
-//    @Override
-//    void doEnter() {
-//        DrugDTO drug = getInput().createDrug(getVisitId(), 0);
-//        if( drug.drugId != 0 ){
-//            throw new RuntimeException("drugId is not null.");
-//        }
-//        Service.api.enterDrug(drug)
-//                .thenCompose(Service.api::getDrugFull)
-//                .thenAccept(enteredDrug -> Platform.runLater(() -> {
-//                    EnterForm.this.fireEvent(new DrugEnteredEvent(enteredDrug, null));
-//                    doClearInput();
-//                    getSearchInput().clear();
-//                    getSearchResult().clear();
-//                }))
-//                .exceptionally(HandlerFX::exceptionally);
-//    }
 
 }

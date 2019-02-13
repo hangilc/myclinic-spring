@@ -11,7 +11,7 @@ import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.javafx.drug.EditForm;
+import jp.chang.myclinic.practice.javafx.drug.DrugEditForm;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
@@ -72,7 +72,7 @@ class RecordDrug extends StackPane {
                     return;
                 }
             }
-            EditForm form = new EditForm(drug, tekiyou, visit){
+            DrugEditForm form = new DrugEditForm(drug, tekiyou, visit){
                 @Override
                 protected void onUpdated(DrugFullDTO updated) {
                     RecordDrug.this.drug = updated;

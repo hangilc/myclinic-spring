@@ -10,6 +10,7 @@ import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Globals;
 import jp.chang.myclinic.practice.javafx.*;
 import jp.chang.myclinic.practice.javafx.disease.Select;
+import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
 import jp.chang.myclinic.util.HokenUtil;
 
 import java.util.List;
@@ -74,6 +75,12 @@ public class PracticeTestGui implements Runnable {
         if( !recordHoken.getDispText().equals(HokenUtil.hokenRep(hoken)) ){
             throw new RuntimeException("Hoken disp is not correct.");
         }
+        gui(record::simulateNewDrugButtonClick);
+        DrugEnterForm drugEnterForm = waitFor(record::findDrugEnterForm);
+        gui(() -> {
+            drugEnterForm.simulateSetSearchText("カロナール");
+            drugEnterForm.simulateClickSearchButton();
+        });
     }
 
     private void gui(Runnable runnable){

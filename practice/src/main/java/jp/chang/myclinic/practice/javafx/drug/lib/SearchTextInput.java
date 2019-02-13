@@ -11,12 +11,13 @@ public class SearchTextInput extends HBox {
 
     //private static Logger logger = LoggerFactory.getLogger(SearchTextInput.class);
     private TextField textInput = new TextField();
+    private Button searchButton;
     private Consumer<String> onSearchHandler = s -> {};
 
     public SearchTextInput() {
         super(4);
         setAlignment(Pos.CENTER_LEFT);
-        Button searchButton = new Button("検索");
+        this.searchButton = new Button("検索");
         textInput.setOnAction(evt -> doEnter());
         searchButton.setOnAction(evt -> doEnter());
         getChildren().addAll(
@@ -35,5 +36,13 @@ public class SearchTextInput extends HBox {
 
     private void doEnter(){
         onSearchHandler.accept(textInput.getText());
+    }
+
+    public void simulateSetSearchText(String text) {
+        textInput.setText(text);
+    }
+
+    public void simulateClickSearchButton() {
+        searchButton.fire();
     }
 }

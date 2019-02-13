@@ -25,11 +25,13 @@ import jp.chang.myclinic.utilfx.HandlerFX;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class DrugMenu extends VBox {
 
     private StackPane workarea = new StackPane();
+    private Hyperlink mainMenu;
 
     public DrugMenu(VisitDTO visit) {
         super(4);
@@ -41,16 +43,20 @@ public class DrugMenu extends VBox {
         );
     }
 
+    public void simulateNewDrugButtonClick(){
+        mainMenu.fire();
+    }
+
     private Node createMenu(VisitDTO visit) {
         HBox hbox = new HBox(4);
-        Hyperlink mainMenu = new Hyperlink("[処方]");
+        this.mainMenu = new Hyperlink("[処方]");
         Hyperlink auxMenuLink = new Hyperlink("[+]");
         mainMenu.setOnAction(event -> {
             if (isWorkareaEmpty()) {
                 if (!PracticeUtil.confirmCurrentVisitAction(visit.visitId, "処方を追加しますか？")) {
                     return;
                 }
-                EnterForm form = new EnterForm(visit) {
+                DrugEnterForm form = new DrugEnterForm(visit) {
                     @Override
                     protected void onClose() {
                         hideWorkarea();
@@ -150,34 +156,6 @@ public class DrugMenu extends VBox {
                         Platform.runLater(() -> showWorkarea(form));
                     })
                     .exceptionally(HandlerFX::exceptionally);
-//            PracticeService.listDrugFull(visitId)
-//                    .thenAccept(drugs -> {
-//                        CopySelectedForm form = new CopySelectedForm(drugs) {
-//                            @Override
-//                            protected void onEnter(List<DrugFullDTO> selected, boolean keepOpen) {
-//                                new DrugsCopier(targetVisitId, selected,
-//                                        (enteredDrug, attr) ->
-//                                                fireEvent(new DrugEnteredEvent(enteredDrug, attr)),
-//                                        () -> {
-//                                            if (keepOpen) {
-//                                                int remain = cleanUpForKeepOpen();
-//                                                if( remain == 0 ){
-//                                                    hideWorkarea();
-//                                                }
-//                                            } else {
-//                                                hideWorkarea();
-//                                            }
-//                                        }
-//                                );
-//                            }
-//
-//                            @Override
-//                            protected void onClose() {
-//                                hideWorkarea();
-//                            }
-//                        };
-//                        Platform.runLater(() -> showWorkarea(form));
-//                    });
         });
         return item;
     }
@@ -285,4 +263,12 @@ public class DrugMenu extends VBox {
         workarea.setManaged(false);
     }
 
+    public Optional<DrugEnterForm> findDrugEnterForm() {
+        for(Node node: workarea.getChildren()){
+            if( node instanceof DrugEnterForm ){
+                return Optional.of((DrugEnterForm)node);
+            }
+        }
+        return Optional.empty();
+    }
 }
