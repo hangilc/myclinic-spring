@@ -10,7 +10,6 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
-import jp.chang.myclinic.practice.lib.PracticeLib;
 
 import java.util.Comparator;
 import java.util.List;
@@ -79,6 +78,10 @@ public class Record extends VBox {
 
     public Optional<DrugEnterForm> findDrugEnterForm(){
         return drugsPane.findDrugEnterForm();
+    }
+
+    public List<Integer> listDrugId(){
+        return drugsPane.listDrugId();
     }
 
     private Node createBody(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,

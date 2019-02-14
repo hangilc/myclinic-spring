@@ -9,6 +9,7 @@ import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
 import jp.chang.myclinic.practice.javafx.drug.DrugMenu;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +34,17 @@ class RecordDrugsPane extends VBox {
 
     Optional<DrugEnterForm> findDrugEnterForm() {
         return menu.findDrugEnterForm();
+    }
+
+    List<Integer> listDrugId(){
+        List<Integer> ids = new ArrayList<>();
+        for(Node node: getChildren()){
+            if( node instanceof RecordDrug ){
+                RecordDrug recordDrug = (RecordDrug)node;
+                ids.add(recordDrug.getDrugId());
+            }
+        }
+        return ids;
     }
 
     void addDrug(DrugFullDTO drug, DrugAttrDTO attr){

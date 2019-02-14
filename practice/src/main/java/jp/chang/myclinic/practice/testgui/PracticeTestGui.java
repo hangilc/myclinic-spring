@@ -3,7 +3,6 @@ package jp.chang.myclinic.practice.testgui;
 import javafx.application.Platform;
 import javafx.stage.Window;
 import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Globals;
@@ -92,18 +91,13 @@ public class PracticeTestGui implements Runnable {
             }
         });
         List<DrugSearchResultItem> drugSearchResults = drugEnterForm.getSearchResultItems();
-        drugSearchResults.forEach(item -> System.out.println(item.getRep()));
-        int caronalIyakuhincode = 620000033;
-        caronalIyakuhincode = Service.api.resolveIyakuhinMaster(caronalIyakuhincode,
-                visit.visitedAt.substring(0, 10)).join().iyakuhincode;
+        int calonalIyakuhincode = 620000033;
         DrugSearchResultItem drugItem1 = null;
         for (DrugSearchResultItem item : drugSearchResults) {
             if (item instanceof DrugSearcher.ExampleItem) {
                 DrugSearcher.ExampleItem exampleItem = (DrugSearcher.ExampleItem) item;
                 PrescExampleFullDTO example = exampleItem.getExample();
-                if (example.master.iyakuhincode == caronalIyakuhincode &&
-                        example.prescExample.category == DrugCategory.Naifuku.getCode() &&
-                        example.prescExample.days < 10) {
+                if (example.prescExample.prescExampleId == 553) {
                     drugItem1 = item;
                     break;
                 }
