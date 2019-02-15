@@ -52,6 +52,20 @@ class InputBase extends VBox {
         addLabelContextMenu();
     }
 
+    public void setState(DrugInputBaseState state){
+        this.iyakuhincode = state.getIyakuhincode();
+        drugNameLabel.setText(state.getDrugName());
+        amountLabel.setText(state.getAmountLabel());
+        amountInput.setText(state.getAmount());
+        amountUnitLabel.setText(state.getAmountUnit());
+        usageInput.setText(state.getUsage());
+        daysLabel.setText(state.getDaysLabel());
+        daysInput.setText(state.getDays());
+        daysUnit.setText(state.getDaysUnit());
+        category.setValue(state.getCategory());
+        setDaysVisible(state.isDaysVisible());
+    }
+
     public void setMaster(IyakuhinMasterDTO master){
         this.iyakuhincode = master.iyakuhincode;
         drugNameLabel.setText(master.name);
@@ -186,7 +200,7 @@ class InputBase extends VBox {
         hbox.getChildren().addAll(categoryButtons.getButtons());
         categoryButtons.setValue(DrugCategory.Naifuku);
         category = categoryButtons.valueProperty();
-        category.addListener((obs, oldValue, newValue) -> adaptToCategory());
+        //category.addListener((obs, oldValue, newValue) -> adaptToCategory());
         return hbox;
     }
 

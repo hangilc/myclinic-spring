@@ -4,6 +4,7 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PrescExampleDTO;
