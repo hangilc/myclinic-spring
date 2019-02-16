@@ -6,7 +6,8 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.javafx.MainPane;
-import jp.chang.myclinic.practice.testgui.PracticeTestGui;
+import jp.chang.myclinic.practice.testgui.TestGui;
+import jp.chang.myclinic.practice.testintegration.PracticeTestGui;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -26,58 +27,64 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         cmdArgs = new CmdArgs(args);
-        Service.setServerUrl(cmdArgs.getServerUrl());
         Application.launch(Main.class, args);
     }
 
     @Override
     public void start(Stage stage) {
-        ctx = SpringApplication.run(Main.class, getParameters().getRaw().toArray(new String[]{}));
-        MainScope mainScope = ctx.getBean(MainScope.class);
-        if( mainScope.debugHttp ){
-            Service.setLogBody();
-        }
-        setupPracticeEnv();
-        stage.setTitle("診療");
-        PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
-                updateTitle(stage, newValue));
-        MainPane root = ctx.getBean(MainPane.class);
-        Globals.getInstance().setMainPane(root);
-        root.getStylesheets().addAll(
-                "css/Practice.css"
-        );
-        stage.setScene(new Scene(root));
-        stage.showingProperty().addListener((obs, oldVaue, newValue) -> {
-            if( !newValue ){
-                PracticeEnv.INSTANCE.closeRemainingWindows();
+        if (cmdArgs.isTestGui()) {
+            new TestGui(stage).run(cmdArgs.getTestGui());
+        } else {
+            Service.setServerUrl(cmdArgs.getServerUrl());
+            ctx = SpringApplication.run(Main.class, getParameters().getRaw().toArray(new String[]{}));
+            MainScope mainScope = ctx.getBean(MainScope.class);
+            if (mainScope.debugHttp) {
+                Service.setLogBody();
             }
-        });
-        if( cmdArgs.isTestGui() ){
-            Thread selfTestExecutor = new Thread(() -> {
-                try {
-                    new PracticeTestGui().run();
-                    //Platform.exit();
-                } catch(Exception ex){
-                    ex.printStackTrace();
+            setupPracticeEnv();
+            stage.setTitle("診療");
+            PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
+                    updateTitle(stage, newValue));
+            MainPane root = ctx.getBean(MainPane.class);
+            Globals.getInstance().setMainPane(root);
+            root.getStylesheets().addAll(
+                    "css/Practice.css"
+            );
+            stage.setScene(new Scene(root));
+            stage.showingProperty().addListener((obs, oldVaue, newValue) -> {
+                if (!newValue) {
+                    PracticeEnv.INSTANCE.closeRemainingWindows();
                 }
             });
-            selfTestExecutor.setDaemon(true);
-            selfTestExecutor.start();
+            stage.show();
+            if (cmdArgs.isTestGui()) {
+                Thread selfTestExecutor = new Thread(() -> {
+                    try {
+                        new PracticeTestGui().run();
+                        //Platform.exit();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+                selfTestExecutor.setDaemon(true);
+                selfTestExecutor.start();
+            }
         }
-        stage.show();
     }
 
     @Override
     public void stop() throws Exception {
         super.stop();
         OkHttpClient client = Service.client;
-        client.dispatcher().executorService().shutdown();
-        client.connectionPool().evictAll();
-        Cache cache = client.cache();
-        if (cache != null) {
-            cache.close();
+        if( client != null ) {
+            client.dispatcher().executorService().shutdown();
+            client.connectionPool().evictAll();
+            Cache cache = client.cache();
+            if (cache != null) {
+                cache.close();
+            }
+            ctx.close();
         }
-        ctx.close();
     }
 
     private static void setupPracticeEnv() {

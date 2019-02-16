@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.testgui;
+package jp.chang.myclinic.practice.testintegration;
 
 import javafx.application.Platform;
 import javafx.stage.Window;

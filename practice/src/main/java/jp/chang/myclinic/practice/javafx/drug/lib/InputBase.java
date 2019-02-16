@@ -66,6 +66,24 @@ class InputBase extends VBox {
         setDaysVisible(state.isDaysVisible());
     }
 
+    public void getState(DrugInputBaseState state){
+        state.setIyakuhincode(iyakuhincode);
+        state.setDrugName(drugNameLabel.getText());
+        state.setAmountLabel(amountLabel.getText());
+        state.setAmount(amountInput.getText());
+        state.setAmountUnit(amountUnitLabel.getText());
+        state.setUsage(usageInput.getText());
+        state.setDaysLabel(daysLabel.getText());
+        state.setDays(daysInput.getText());
+        state.setDaysUnit(daysUnit.getText());
+        state.setCategory(category.getValue());
+        state.setDaysVisible(isDaysVisible());
+    }
+
+    private boolean isDaysVisible(){
+        return daysRow.isVisible();
+    }
+
     public void setMaster(IyakuhinMasterDTO master){
         this.iyakuhincode = master.iyakuhincode;
         drugNameLabel.setText(master.name);
@@ -213,32 +231,32 @@ class InputBase extends VBox {
         setNodeVisible(daysRow, visible);
     }
 
-    private void adaptToCategory() {
-        DrugCategory cat = category.getValue();
-        if (cat != null) {
-            switch (cat) {
-                case Naifuku: {
-                    amountLabel.setText("用量：");
-                    daysLabel.setText("日数：");
-                    daysUnit.setText("日分");
-                    setDaysVisible(true);
-                    break;
-                }
-                case Tonpuku: {
-                    amountLabel.setText("一回：");
-                    daysLabel.setText("回数：");
-                    daysUnit.setText("回分");
-                    setDaysVisible(true);
-                    break;
-                }
-                case Gaiyou: {
-                    amountLabel.setText("用量：");
-                    setDaysVisible(false);
-                    break;
-                }
-            }
-        }
-    }
+//    private void adaptToCategory() {
+//        DrugCategory cat = category.getValue();
+//        if (cat != null) {
+//            switch (cat) {
+//                case Naifuku: {
+//                    amountLabel.setText("用量：");
+//                    daysLabel.setText("日数：");
+//                    daysUnit.setText("日分");
+//                    setDaysVisible(true);
+//                    break;
+//                }
+//                case Tonpuku: {
+//                    amountLabel.setText("一回：");
+//                    daysLabel.setText("回数：");
+//                    daysUnit.setText("回分");
+//                    setDaysVisible(true);
+//                    break;
+//                }
+//                case Gaiyou: {
+//                    amountLabel.setText("用量：");
+//                    setDaysVisible(false);
+//                    break;
+//                }
+//            }
+//        }
+//    }
 
     private void doExample(MouseEvent event, Node anchor) {
         ContextMenu contextMenu = new ContextMenu();
