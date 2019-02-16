@@ -36,6 +36,8 @@ class InputBase extends VBox {
     private ObjectProperty<DrugCategory> category;
     private DecimalFormat amountFormatter = new DecimalFormat("###.##");
     private Node categoryRow;
+    private DrugInputBaseStateController controller = new DrugInputBaseStateController();
+    private Hyperlink exampleLink = new Hyperlink("例");
 
     InputBase() {
         super(4);
@@ -49,6 +51,12 @@ class InputBase extends VBox {
         this.categoryRow = addRow(createCategoryContent());
         category.setValue(null);
         category.setValue(DrugCategory.Naifuku);
+        category.addListener((obs, oldValue, newValue) -> {
+            DrugInputBaseState state = new DrugInputBaseState();
+            getState(state);
+            controller.adaptToCategory(state);
+            setState(state);
+        });
         addLabelContextMenu();
     }
 
@@ -78,6 +86,14 @@ class InputBase extends VBox {
         state.setDaysUnit(daysUnit.getText());
         state.setCategory(category.getValue());
         state.setDaysVisible(isDaysVisible());
+    }
+
+    public void simulateSelectCategory(DrugCategory newCategory){
+        category.setValue(newCategory);
+    }
+
+    public void simulateClickExample(){
+        exampleLink.fire();
     }
 
     private boolean isDaysVisible(){
@@ -196,7 +212,6 @@ class InputBase extends VBox {
     private Node createUsageContent() {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
-        Hyperlink exampleLink = new Hyperlink("例");
         exampleLink.setOnMousePressed(event -> doExample(event, exampleLink));
         hbox.getChildren().addAll(usageInput, exampleLink);
         return hbox;
@@ -230,33 +245,6 @@ class InputBase extends VBox {
     private void setDaysVisible(boolean visible) {
         setNodeVisible(daysRow, visible);
     }
-
-//    private void adaptToCategory() {
-//        DrugCategory cat = category.getValue();
-//        if (cat != null) {
-//            switch (cat) {
-//                case Naifuku: {
-//                    amountLabel.setText("用量：");
-//                    daysLabel.setText("日数：");
-//                    daysUnit.setText("日分");
-//                    setDaysVisible(true);
-//                    break;
-//                }
-//                case Tonpuku: {
-//                    amountLabel.setText("一回：");
-//                    daysLabel.setText("回数：");
-//                    daysUnit.setText("回分");
-//                    setDaysVisible(true);
-//                    break;
-//                }
-//                case Gaiyou: {
-//                    amountLabel.setText("用量：");
-//                    setDaysVisible(false);
-//                    break;
-//                }
-//            }
-//        }
-//    }
 
     private void doExample(MouseEvent event, Node anchor) {
         ContextMenu contextMenu = new ContextMenu();

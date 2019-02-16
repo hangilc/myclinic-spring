@@ -110,6 +110,20 @@ public class DrugInputBaseState {
         this.daysVisible = daysVisible;
     }
 
+    public void copy(DrugInputBaseState state){
+        state.setIyakuhincode(getIyakuhincode());
+        state.setDrugName(getDrugName());
+        state.setAmountLabel(getAmountLabel());
+        state.setAmount(getAmount());
+        state.setAmountUnit(getAmountUnit());
+        state.setUsage(getUsage());
+        state.setDaysLabel(getDaysLabel());
+        state.setDays(getDays());
+        state.setDaysUnit(getDaysUnit());
+        state.setCategory(getCategory());
+        state.setDaysVisible(isDaysVisible());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
