@@ -29,7 +29,7 @@ public class DrugInput extends InputBase {
     }
 
     public void setStateFrom(DrugInputState state){
-        super.setStateFrom(state.getBaseState());
+        super.setStateFrom(state);
         commentLabel.setText(state.getComment());
         showComment(state.isCommentVisible());
         tekiyouLabel.setText(state.getTekiyou());
@@ -37,7 +37,7 @@ public class DrugInput extends InputBase {
     }
 
     public void getStateTo(DrugInputState state){
-        super.getStateTo(state.getBaseState());
+        super.getStateTo(state);
         state.setComment(commentLabel.getText());
         state.setCommentVisible(commentRow.isVisible());
         state.setTekiyou(tekiyouLabel.getText());

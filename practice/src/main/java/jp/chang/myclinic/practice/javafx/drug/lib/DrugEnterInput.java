@@ -14,6 +14,16 @@ public class DrugEnterInput extends DrugInput {
         addToDaysRow(daysFixedCheck);
     }
 
+    public void setStateFrom(DrugEnterInputState state){
+        super.setStateFrom(state);
+        daysFixedCheck.setSelected(state.isDaysFixed());
+    }
+
+    public void getStateTo(DrugEnterInputState state){
+        super.getStateTo(state);
+        state.setDaysFixed(daysFixedCheck.isSelected());
+    }
+
     private boolean isDaysFixed(){
         return daysFixedCheck.isSelected();
     }

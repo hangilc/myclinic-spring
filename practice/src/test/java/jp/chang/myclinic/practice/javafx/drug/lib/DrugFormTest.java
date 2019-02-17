@@ -18,13 +18,14 @@ public class DrugFormTest {
         sampleBaseState.setUsage("分３　毎食後");
         sampleBaseState.setDays("5");
         sampleBaseState.setCategory(DrugCategory.Naifuku);
-        controller.adaptToCategory(sampleBaseState);
+        sampleBaseState.adaptToCategory();
     }
 
     @Test
     public void testDrugInputStateCreation(){
         DrugInputState state = new DrugInputState(sampleBaseState);
-        assertEquals(state.getBaseState(), sampleBaseState);
+        boolean ok = sampleBaseState.equals(state);
+        assertTrue(ok);
     }
 
 }

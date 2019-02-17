@@ -5,9 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-public class DrugInputState {
+public class DrugInputState extends DrugInputBaseState {
 
-    private DrugInputBaseState baseState;
     private String comment = "";
     private boolean commentVisible = false;
     private String tekiyou = "";
@@ -18,11 +17,21 @@ public class DrugInputState {
     }
 
     public DrugInputState(DrugInputBaseState baseState){
-        this.baseState = baseState;
+        baseState.assignTo(this);
     }
 
-    public DrugInputBaseState getBaseState(){
-        return baseState;
+    void assignTo(DrugInputState dst){
+        super.assignTo(dst);
+        dst.comment = comment;
+        dst.commentVisible = commentVisible;
+        dst.tekiyou = tekiyou;
+        dst.tekiyouVisible = tekiyouVisible;
+    }
+
+    public DrugInputState copy(){
+        DrugInputState dst = new DrugInputState();
+        assignTo(dst);
+        return dst;
     }
 
     public String getComment() {
@@ -60,28 +69,27 @@ public class DrugInputState {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof DrugInputState)) return false;
+        if (!super.equals(o)) return false;
         DrugInputState that = (DrugInputState) o;
         return commentVisible == that.commentVisible &&
                 tekiyouVisible == that.tekiyouVisible &&
-                Objects.equals(baseState, that.baseState) &&
                 Objects.equals(comment, that.comment) &&
                 Objects.equals(tekiyou, that.tekiyou);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(baseState, comment, commentVisible, tekiyou, tekiyouVisible);
+        return Objects.hash(super.hashCode(), comment, commentVisible, tekiyou, tekiyouVisible);
     }
 
     @Override
     public String toString() {
         return "DrugInputState{" +
-                "baseState=" + baseState +
-                ", comment='" + comment + '\'' +
+                "comment='" + comment + '\'' +
                 ", commentVisible=" + commentVisible +
                 ", tekiyou='" + tekiyou + '\'' +
                 ", tekiyouVisible=" + tekiyouVisible +
-                '}';
+                "} " + super.toString();
     }
 }

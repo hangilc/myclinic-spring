@@ -1,6 +1,8 @@
 package jp.chang.myclinic.practice.javafx.drug.lib;
 
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.consts.Zaikei;
+import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 
 import java.util.Objects;
 
@@ -106,26 +108,71 @@ public class DrugInputBaseState {
         this.daysVisible = daysVisible;
     }
 
+    public void assignTo(DrugInputBaseState dst){
+        dst.setIyakuhincode(getIyakuhincode());
+        dst.setDrugName(getDrugName());
+        dst.setAmountLabel(getAmountLabel());
+        dst.setAmount(getAmount());
+        dst.setAmountUnit(getAmountUnit());
+        dst.setUsage(getUsage());
+        dst.setDaysLabel(getDaysLabel());
+        dst.setDays(getDays());
+        dst.setDaysUnit(getDaysUnit());
+        dst.setCategory(getCategory());
+        dst.setDaysVisible(isDaysVisible());
+    }
+
     public DrugInputBaseState copy(){
         DrugInputBaseState state = new DrugInputBaseState();
-        state.setIyakuhincode(getIyakuhincode());
-        state.setDrugName(getDrugName());
-        state.setAmountLabel(getAmountLabel());
-        state.setAmount(getAmount());
-        state.setAmountUnit(getAmountUnit());
-        state.setUsage(getUsage());
-        state.setDaysLabel(getDaysLabel());
-        state.setDays(getDays());
-        state.setDaysUnit(getDaysUnit());
-        state.setCategory(getCategory());
-        state.setDaysVisible(isDaysVisible());
+        assignTo(state);
         return state;
+    }
+
+    public void adaptToCategory(){
+        if (category != null) {
+            switch (category) {
+                case Naifuku: {
+                    setAmountLabel("用量：");
+                    setDaysLabel("日数：");
+                    setDaysUnit("日分");
+                    setDaysVisible(true);
+                    break;
+                }
+                case Tonpuku: {
+                    setAmountLabel("一回：");
+                    setDaysLabel("回数：");
+                    setDaysUnit("回分");
+                    setDaysVisible(true);
+                    break;
+                }
+                case Gaiyou: {
+                    setAmountLabel("用量：");
+                    setDaysVisible(false);
+                    break;
+                }
+            }
+        }
+    }
+
+    void setMaster(IyakuhinMasterDTO master){
+        DrugCategory category = DrugCategory.Naifuku;
+        if( Zaikei.fromCode(master.zaikei) == Zaikei.Gaiyou ){
+            category = DrugCategory.Gaiyou;
+        }
+        setIyakuhincode(master.iyakuhincode);
+        setDrugName(master.name);
+        setAmount("");
+        setAmountUnit(master.unit);
+        setUsage("");
+        setDays("");
+        setCategory(category);
+        adaptToCategory();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof DrugInputBaseState)) return false;
         DrugInputBaseState that = (DrugInputBaseState) o;
         return iyakuhincode == that.iyakuhincode &&
                 daysVisible == that.daysVisible &&
@@ -142,7 +189,6 @@ public class DrugInputBaseState {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(iyakuhincode, drugName, amountLabel, amount, amountUnit, usage, daysLabel, days, daysUnit, category, daysVisible);
     }
 

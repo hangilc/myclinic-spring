@@ -36,7 +36,6 @@ class InputBase extends VBox {
     private ObjectProperty<DrugCategory> category;
     private DecimalFormat amountFormatter = new DecimalFormat("###.##");
     private Node categoryRow;
-    private DrugInputBaseStateController controller = new DrugInputBaseStateController();
     private Hyperlink exampleLink = new Hyperlink("例");
     private String[] exampleTexts = new String[] {
             "分１　朝食後",
@@ -61,7 +60,7 @@ class InputBase extends VBox {
         category.addListener((obs, oldValue, newValue) -> {
             DrugInputBaseState state = new DrugInputBaseState();
             getStateTo(state);
-            controller.adaptToCategory(state);
+            state.adaptToCategory();
             setStateFrom(state);
         });
         addLabelContextMenu();

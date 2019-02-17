@@ -27,7 +27,7 @@ public class TestDrugInput extends TestBase {
         sampleBaseState.setUsage("分３　毎食後");
         sampleBaseState.setDays("5");
         sampleBaseState.setCategory(DrugCategory.Naifuku);
-        controller.adaptToCategory(sampleBaseState);
+        sampleBaseState.adaptToCategory();
     }
 
     public TestDrugInput(Stage stage, Pane mainPane) {
@@ -50,6 +50,13 @@ public class TestDrugInput extends TestBase {
             mainPane.getChildren().setAll(drugInput);
             stage.sizeToScene();
             testDrugInput(drugInput);
+        }
+        {
+            DrugEnterInput drugInput = new DrugEnterInput();
+            drugInput.setPrefWidth(323);
+            mainPane.getChildren().setAll(drugInput);
+            stage.sizeToScene();
+            testDrugEnterInput(drugInput);
         }
     }
 
@@ -112,7 +119,6 @@ public class TestDrugInput extends TestBase {
         confirm(Arrays.equals(foundItems, inputBase.getExampleTexts()),
                 "inconsistent example context menu");
         cmenu.hide();
-        DrugInputBaseState state = new DrugInputBaseState();
         for (int i = 0; i < foundItems.length; i++) {
             inputBase.simulateClickExample();
             cmenu = null;
@@ -124,7 +130,7 @@ public class TestDrugInput extends TestBase {
             }
             confirm(cmenu != null, "Failed to invoke drug example.");
             cmenu.getItems().get(i).fire();
-            state = getInputBaseState(inputBase);
+            DrugInputBaseState state = getInputBaseState(inputBase);
             confirm(state.getUsage().equals(foundItems[i]), "example context menu failed");
             cmenu.hide();
         }
@@ -178,5 +184,36 @@ public class TestDrugInput extends TestBase {
                     "visible comment and tekiyou failed");
         }
     }
+
+    private void testDrugEnterInput(DrugEnterInput input){
+        testDrugEnterInputState(input);
+        testDrugEnterInputFixedDays(input);
+    }
+
+    private void testDrugEnterInputState(DrugEnterInput input){
+        DrugEnterInputState state = new DrugEnterInputState(sampleBaseState);
+        input.setStateFrom(state);
+        stage.sizeToScene();
+        DrugEnterInputState outState = new DrugEnterInputState();
+        input.getStateTo(outState);
+        confirm(outState.equals(state), "set state failed");
+    }
+
+    private void testDrugEnterInputFixedDays(DrugEnterInput input) {
+        DrugEnterInputState state = new DrugEnterInputState(sampleBaseState.copy());
+        state.setDaysFixed(true);
+        input.setStateFrom(state);
+        stage.sizeToScene();
+        DrugEnterInputState outState = new DrugEnterInputState();
+        input.getStateTo(outState);
+        confirm(outState.isDaysFixed(), "days fixed failed");
+        state.setDaysFixed(false);
+        input.setStateFrom(state);
+        outState = new DrugEnterInputState();
+        input.getStateTo(outState);
+        confirm(!outState.isDaysFixed(), "clearing days fixed failed");
+    }
+
+
 
 }
