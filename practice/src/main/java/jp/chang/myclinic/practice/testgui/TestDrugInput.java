@@ -1,5 +1,8 @@
 package jp.chang.myclinic.practice.testgui;
 
+import javafx.collections.ObservableList;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -7,6 +10,10 @@ import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugEnterInput;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugInputBaseState;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugInputBaseStateController;
+
+import java.util.Arrays;
+
+import static java.util.stream.Collectors.toList;
 
 class TestDrugInput extends TestBase {
 
@@ -79,9 +86,37 @@ class TestDrugInput extends TestBase {
     }
 
     private void testExample(){
-        stage.toFront();
         input.simulateClickExample();
-        Window.getWindows().forEach(w -> System.out.println(w.getClass()));
+        ContextMenu cmenu = null;
+        for(Window window: Window.getWindows()){
+            if( window instanceof  ContextMenu ){
+                cmenu = (ContextMenu)window;
+                break;
+            }
+        }
+        confirm( cmenu != null, "Failed to invoke drug example.");
+        String[] foundItems = cmenu.getItems().stream()
+                .map(MenuItem::getText).collect(toList()).toArray(new String[]{});
+        confirm(Arrays.equals(foundItems, input.getExampleTexts()),
+                "inconsistent example context menu");
+        cmenu.hide();
+        DrugInputBaseState state = new DrugInputBaseState();
+        for(int i=0;i<foundItems.length;i++){
+            input.simulateClickExample();
+            cmenu = null;
+            for(Window window: Window.getWindows()){
+                if( window instanceof  ContextMenu ){
+                    cmenu = (ContextMenu)window;
+                    break;
+                }
+            }
+            confirm( cmenu != null, "Failed to invoke drug example.");
+            cmenu.getItems().get(i).fire();
+            input.getState(state);
+            confirm(state.getUsage().equals(foundItems[i]), "example context menu failed");
+            cmenu.hide();
+        }
+
     }
 
 }

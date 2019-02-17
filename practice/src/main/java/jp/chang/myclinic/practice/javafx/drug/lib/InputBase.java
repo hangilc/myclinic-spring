@@ -1,9 +1,11 @@
 package jp.chang.myclinic.practice.javafx.drug.lib;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -38,6 +40,13 @@ class InputBase extends VBox {
     private Node categoryRow;
     private DrugInputBaseStateController controller = new DrugInputBaseStateController();
     private Hyperlink exampleLink = new Hyperlink("例");
+    private String[] exampleTexts = new String[] {
+            "分１　朝食後",
+            "分２　朝夕食後",
+            "分３　毎食後",
+            "分１　寝る前"
+    };
+    private ContextMenu exampleContextMenu;
 
     InputBase() {
         super(4);
@@ -93,11 +102,24 @@ class InputBase extends VBox {
     }
 
     public void simulateClickExample(){
-        exampleLink.fire();
+        exampleLink.fireEvent(createExampleClickEvent());
+    }
+
+    public String[] getExampleTexts(){
+        return exampleTexts;
     }
 
     private boolean isDaysVisible(){
         return daysRow.isVisible();
+    }
+
+    private MouseEvent createExampleClickEvent(){
+        Point2D local = new Point2D(4, 4);
+        Point2D scene = exampleLink.localToScene(local);
+        Point2D screen = exampleLink.localToScreen(local);
+        return new MouseEvent(MouseEvent.MOUSE_PRESSED, scene.getX(), scene.getY(),
+                screen.getX(), screen.getY(), MouseButton.PRIMARY, 1, false, false,
+                false, false, true, false, false, true, false, false, null);
     }
 
     public void setMaster(IyakuhinMasterDTO master){
@@ -212,6 +234,13 @@ class InputBase extends VBox {
     private Node createUsageContent() {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
+        this.exampleContextMenu = new ContextMenu();
+        for(String text: exampleTexts){
+            MenuItem item = new MenuItem(text);
+            item.setOnAction(ev -> usageInput.setText(item.getText()));
+            exampleContextMenu.getItems().add(item);
+        }
+        exampleLink.getStyleClass().add("example-link");
         exampleLink.setOnMousePressed(event -> doExample(event, exampleLink));
         hbox.getChildren().addAll(usageInput, exampleLink);
         return hbox;
@@ -247,19 +276,7 @@ class InputBase extends VBox {
     }
 
     private void doExample(MouseEvent event, Node anchor) {
-        ContextMenu contextMenu = new ContextMenu();
-        List<String> examples = Arrays.asList(
-                "分１　朝食後",
-                "分２　朝夕食後",
-                "分３　毎食後",
-                "分１　寝る前"
-        );
-        examples.forEach(ex -> {
-            MenuItem item = new MenuItem(ex);
-            item.setOnAction(ev -> usageInput.setText(item.getText()));
-            contextMenu.getItems().add(item);
-        });
-        contextMenu.show(anchor, event.getScreenX(), event.getScreenY());
+        exampleContextMenu.show(anchor, event.getScreenX(), event.getScreenY());
     }
 
     private void addLabelContextMenu(){
