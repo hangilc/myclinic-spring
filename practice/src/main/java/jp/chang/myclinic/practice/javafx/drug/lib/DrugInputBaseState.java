@@ -18,10 +18,6 @@ public class DrugInputBaseState {
     private DrugCategory category = DrugCategory.Naifuku;
     private boolean daysVisible = true;
 
-    public DrugInputBaseState() {
-
-    }
-
     public int getIyakuhincode() {
         return iyakuhincode;
     }
@@ -110,7 +106,8 @@ public class DrugInputBaseState {
         this.daysVisible = daysVisible;
     }
 
-    public void copy(DrugInputBaseState state){
+    public DrugInputBaseState copy(){
+        DrugInputBaseState state = new DrugInputBaseState();
         state.setIyakuhincode(getIyakuhincode());
         state.setDrugName(getDrugName());
         state.setAmountLabel(getAmountLabel());
@@ -122,6 +119,7 @@ public class DrugInputBaseState {
         state.setDaysUnit(getDaysUnit());
         state.setCategory(getCategory());
         state.setDaysVisible(isDaysVisible());
+        return state;
     }
 
     @Override

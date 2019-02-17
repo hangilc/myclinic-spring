@@ -4,7 +4,6 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.PrescExampleDTO;
@@ -12,7 +11,7 @@ import jp.chang.myclinic.dto.PrescExampleFullDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DrugInput extends InputBase {
+public class DrugInput extends InputBase {
 
     private static Logger logger = LoggerFactory.getLogger(DrugInput.class);
     private Label commentLabel = new Label();
@@ -27,6 +26,22 @@ class DrugInput extends InputBase {
         this.tekiyouRow = addRowBeforeCategory(new Label("摘要："), tekiyouLabel);
         adaptTekiyou();
         tekiyouLabel.textProperty().addListener((obs, oldValue, newValue) -> adaptTekiyou());
+    }
+
+    public void setStateFrom(DrugInputState state){
+        super.setStateFrom(state.getBaseState());
+        commentLabel.setText(state.getComment());
+        showComment(state.isCommentVisible());
+        tekiyouLabel.setText(state.getTekiyou());
+        showTekiyou(state.isTekiyouVisible());
+    }
+
+    public void getStateTo(DrugInputState state){
+        super.getStateTo(state.getBaseState());
+        state.setComment(commentLabel.getText());
+        state.setCommentVisible(commentRow.isVisible());
+        state.setTekiyou(tekiyouLabel.getText());
+        state.setTekiyouVisible(tekiyouRow.isVisible());
     }
 
     public void setDrug(DrugFullDTO drugFull){
@@ -92,6 +107,16 @@ class DrugInput extends InputBase {
 
     private boolean isNotEmptyString(String s){
         return s != null && !s.isEmpty();
+    }
+
+    private void showComment(boolean show){
+        commentRow.setManaged(show);
+        commentRow.setVisible(show);
+    }
+
+    private void showTekiyou(boolean show){
+        tekiyouRow.setManaged(show);
+        tekiyouRow.setVisible(show);
     }
 
     private void adaptComment(){

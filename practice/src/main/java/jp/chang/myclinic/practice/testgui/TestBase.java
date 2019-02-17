@@ -2,11 +2,19 @@ package jp.chang.myclinic.practice.testgui;
 
 import org.jetbrains.annotations.Contract;
 
-class TestBase {
+public class TestBase {
 
     @Contract("false, _ -> fail")
-    void confirm(boolean bool, String errorMessage){
+    public void confirm(boolean bool, String errorMessage){
+        confirm(bool, errorMessage, null);
+    }
+
+    @Contract("false, _, _ -> fail")
+    public void confirm(boolean bool, String errorMessage, Runnable auxProc){
         if( !bool ){
+            if( auxProc != null ){
+                auxProc.run();
+            }
             throw new RuntimeException(errorMessage + " in (" + getClass() + ")");
         }
     }

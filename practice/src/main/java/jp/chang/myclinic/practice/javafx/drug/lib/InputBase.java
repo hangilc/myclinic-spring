@@ -19,8 +19,6 @@ import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
-import java.util.List;
 
 class InputBase extends VBox {
 
@@ -62,14 +60,14 @@ class InputBase extends VBox {
         category.setValue(DrugCategory.Naifuku);
         category.addListener((obs, oldValue, newValue) -> {
             DrugInputBaseState state = new DrugInputBaseState();
-            getState(state);
+            getStateTo(state);
             controller.adaptToCategory(state);
-            setState(state);
+            setStateFrom(state);
         });
         addLabelContextMenu();
     }
 
-    public void setState(DrugInputBaseState state){
+    public void setStateFrom(DrugInputBaseState state){
         this.iyakuhincode = state.getIyakuhincode();
         drugNameLabel.setText(state.getDrugName());
         amountLabel.setText(state.getAmountLabel());
@@ -83,7 +81,7 @@ class InputBase extends VBox {
         setDaysVisible(state.isDaysVisible());
     }
 
-    public void getState(DrugInputBaseState state){
+    public void getStateTo(DrugInputBaseState state){
         state.setIyakuhincode(iyakuhincode);
         state.setDrugName(drugNameLabel.getText());
         state.setAmountLabel(amountLabel.getText());
@@ -97,15 +95,15 @@ class InputBase extends VBox {
         state.setDaysVisible(isDaysVisible());
     }
 
-    public void simulateSelectCategory(DrugCategory newCategory){
+    void simulateSelectCategory(DrugCategory newCategory){
         category.setValue(newCategory);
     }
 
-    public void simulateClickExample(){
+    void simulateClickExample(){
         exampleLink.fireEvent(createExampleClickEvent());
     }
 
-    public String[] getExampleTexts(){
+    String[] getExampleTexts(){
         return exampleTexts;
     }
 
