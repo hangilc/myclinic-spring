@@ -166,7 +166,11 @@ public class DrugInputBaseState {
         setAmount("");
         setAmountUnit(master.unit);
         setUsage("");
-        setDays("");
+        if( category == DrugCategory.Gaiyou ) {
+            setDays("1");
+        } else {
+            setDays("");
+        }
         setCategory(category);
         adaptToCategory();
     }

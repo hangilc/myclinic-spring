@@ -49,7 +49,8 @@ public class DrugInputState extends DrugInputBaseState {
 
     void setPrescExample(PrescExampleFullDTO example){
         super.setPrescExample(example);
-        setComment(example.prescExample.comment);
+        String comment = example.prescExample.comment;
+        setComment(comment == null ? "" : comment);
         setTekiyou("");
         adapt();
     }

@@ -4,6 +4,8 @@ import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class DrugInputBaseStateTest {
@@ -147,17 +149,15 @@ public class DrugInputBaseStateTest {
         DrugInputBaseState state = new DrugInputBaseState();
         IyakuhinMasterDTO m = sampleGaiyouMaster;
         state.setMaster(m);
-        assertTrue(
-                state.getIyakuhincode() == m.iyakuhincode &&
-                        state.getDrugName().equals(m.name) &&
-                        state.getAmount().equals("") &&
-                        state.getAmountUnit().equals(m.unit) &&
-                        state.getUsage().equals("") &&
-                        state.getDays().equals("") &&
-                        state.getCategory() == DrugCategory.Gaiyou &&
-                        state.getAmountLabel().equals("用量：") &&
-                        !state.isDaysVisible()
-        );
+        assertEquals(state.getIyakuhincode(), m.iyakuhincode);
+        assertEquals(state.getDrugName(), m.name);
+        assertEquals(state.getAmount(), "");
+        assertEquals(state.getAmountUnit(), m.unit);
+        assertEquals(state.getUsage(), "");
+        assertEquals(state.getDays(), "1");
+        assertEquals(state.getCategory(), DrugCategory.Gaiyou);
+        assertEquals(state.getAmountLabel(), "用量：");
+        assertFalse(state.isDaysVisible());
     }
 
 }
