@@ -87,6 +87,22 @@ public class DrugEnterInputStateTest {
         exampleTonpuku.prescExample = e;
     }
 
+    private PrescExampleFullDTO exampleGaiyou = new PrescExampleFullDTO();
+
+    {
+        exampleGaiyou.master = sampleTonpukuMaster;
+        PrescExampleDTO e = new PrescExampleDTO();
+        e.amount = "28";
+        e.category = DrugCategory.Gaiyou.getCode();
+        e.days = 1;
+        e.iyakuhincode = exampleGaiyou.master.iyakuhincode;
+        e.masterValidFrom = exampleGaiyou.master.validFrom;
+        e.prescExampleId = 3;
+        e.usage = "１回１枚、１日１回、患部に貼付";
+        e.comment = "";
+        exampleGaiyou.prescExample = e;
+    }
+
     @Test
     public void testSetMasterNaifuku() {
         DrugEnterInputState state = new DrugEnterInputState();
@@ -176,6 +192,30 @@ public class DrugEnterInputStateTest {
         assertEquals("回数：", state.getDaysLabel());
         assertEquals("" + e.days, state.getDays());
         assertEquals("回分", state.getDaysUnit());
+        assertEquals(DrugCategory.fromCode(e.category), state.getCategory());
+        assertEquals("", state.getComment());
+        assertFalse(state.isCommentVisible());
+        assertEquals("", state.getTekiyou());
+        assertFalse(state.isTekiyouVisible());
+        assertTrue(state.isDaysFixed());
+        assertTrue(state.isDaysFixedDisabled());
+        assertEquals("", state.getDaysBackup());
+    }
+
+    @Test
+    public void testSetPrescExampleGaiyou(){
+        DrugEnterInputState state = new DrugEnterInputState();
+        PrescExampleFullDTO full = exampleGaiyou;
+        state.setPrescExample(full);
+        IyakuhinMasterDTO m = full.master;
+        PrescExampleDTO e = full.prescExample;
+        assertEquals(m.iyakuhincode, state.getIyakuhincode());
+        assertEquals(m.name, state.getDrugName());
+        assertEquals("用量：", state.getAmountLabel());
+        assertEquals(e.amount, state.getAmount());
+        assertEquals(m.unit, state.getAmountUnit());
+        assertEquals(e.usage, state.getUsage());
+        assertEquals("1", state.getDays());
         assertEquals(DrugCategory.fromCode(e.category), state.getCategory());
         assertEquals("", state.getComment());
         assertFalse(state.isCommentVisible());
