@@ -6,22 +6,32 @@ import jp.chang.myclinic.dto.PrescExampleFullDTO;
 
 public class DrugEnterInput extends DrugInput {
 
-    //private static Logger logger = LoggerFactory.getLogger(DrugEnterInput.class);
     private CheckBox daysFixedCheck = new CheckBox("固定");
+    private String daysBackup = "";
 
     public DrugEnterInput() {
         daysFixedCheck.setSelected(true);
         addToDaysRow(daysFixedCheck);
+        daysFixedCheck.selectedProperty().addListener((obs, oldValue, newValue) -> {
+            DrugEnterInputState state = new DrugEnterInputState();
+            getStateTo(state);
+            state.adaptToDaysFixedChange();
+            setStateFrom(state);
+        });
     }
 
-    public void setStateFrom(DrugEnterInputState state){
+    void setStateFrom(DrugEnterInputState state){
         super.setStateFrom(state);
         daysFixedCheck.setSelected(state.isDaysFixed());
+        this.daysBackup = state.getDaysBackup();
+        daysFixedCheck.setDisable(state.isDaysFixedDisabled());
     }
 
-    public void getStateTo(DrugEnterInputState state){
+    void getStateTo(DrugEnterInputState state){
         super.getStateTo(state);
         state.setDaysFixed(daysFixedCheck.isSelected());
+        state.setDaysFixedDisabled(daysFixedCheck.isDisabled());
+        state.setDaysBackup(daysBackup);
     }
 
     private boolean isDaysFixed(){
