@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.drug.lib;
 
+import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
 
@@ -52,6 +53,15 @@ public class DrugInputState extends DrugInputBaseState {
         String comment = example.prescExample.comment;
         setComment(comment == null ? "" : comment);
         setTekiyou("");
+        adapt();
+    }
+
+    void setDrugAttr(DrugAttrDTO attr){
+        String tekiyou = null;
+        if( attr != null ){
+            tekiyou = attr.tekiyou;
+        }
+        setTekiyou(tekiyou == null ? "" : tekiyou);
         adapt();
     }
 

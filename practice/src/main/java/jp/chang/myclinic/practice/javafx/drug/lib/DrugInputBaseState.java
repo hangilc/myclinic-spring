@@ -2,10 +2,9 @@ package jp.chang.myclinic.practice.javafx.drug.lib;
 
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Zaikei;
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.dto.PrescExampleDTO;
-import jp.chang.myclinic.dto.PrescExampleFullDTO;
+import jp.chang.myclinic.dto.*;
 
+import java.text.DecimalFormat;
 import java.util.Objects;
 
 public class DrugInputBaseState {
@@ -21,6 +20,8 @@ public class DrugInputBaseState {
     private String daysUnit = "";
     private DrugCategory category = DrugCategory.Naifuku;
     private boolean daysVisible = true;
+
+    private DecimalFormat amountFormatter = new DecimalFormat("###.##");
 
     public int getIyakuhincode() {
         return iyakuhincode;
@@ -187,6 +188,21 @@ public class DrugInputBaseState {
             setDays(example.days + "");
         }
         setCategory(exampleCategory);
+        adaptToCategory();
+    }
+
+    void setDrug(DrugFullDTO drugFull){
+        DrugDTO drug = drugFull.drug;
+        DrugCategory drugCategory = DrugCategory.fromCode(drug.category);
+        setMaster(drugFull.master);
+        setAmount(amountFormatter.format(drug.amount));
+        setUsage(drug.usage);
+        if( drugCategory == DrugCategory.Gaiyou ){
+            setDays("1");
+        } else {
+            setDays(drug.days + "");
+        }
+        setCategory(drugCategory);
         adaptToCategory();
     }
 

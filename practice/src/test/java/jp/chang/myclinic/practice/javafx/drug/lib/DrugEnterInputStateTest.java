@@ -1,9 +1,7 @@
 package jp.chang.myclinic.practice.javafx.drug.lib;
 
 import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.dto.PrescExampleDTO;
-import jp.chang.myclinic.dto.PrescExampleFullDTO;
+import jp.chang.myclinic.dto.*;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -101,6 +99,22 @@ public class DrugEnterInputStateTest {
         e.usage = "１回１枚、１日１回、患部に貼付";
         e.comment = "";
         exampleGaiyou.prescExample = e;
+    }
+
+    private DrugFullDTO drugNaifuku = new DrugFullDTO();
+
+    {
+        drugNaifuku.master = sampleNaifukuMaster;
+        DrugDTO d = new DrugDTO();
+        drugNaifuku.drug = d;
+        d.drugId = 1;
+        d.visitId = 1;
+        d.amount = 3;
+        d.category = DrugCategory.Naifuku.getCode();
+        d.days = 7;
+        d.iyakuhincode = exampleNaifuku.master.iyakuhincode;
+        d.usage = "分３　毎食後";
+        d.prescribed = 0;
     }
 
     @Test
