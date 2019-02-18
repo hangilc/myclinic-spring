@@ -6,6 +6,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.practice.testgui.TestBase;
 
 import java.util.Arrays;
@@ -19,7 +20,6 @@ public class TestDrugInput extends TestBase {
     private DrugInputBaseState sampleBaseState = new DrugInputBaseState();
 
     {
-        DrugInputBaseStateController controller = new DrugInputBaseStateController();
         sampleBaseState.setIyakuhincode(620000033);
         sampleBaseState.setDrugName("カロナール錠３００　３００ｍｇ");
         sampleBaseState.setAmount("3");
@@ -28,6 +28,51 @@ public class TestDrugInput extends TestBase {
         sampleBaseState.setDays("5");
         sampleBaseState.setCategory(DrugCategory.Naifuku);
         sampleBaseState.adaptToCategory();
+    }
+
+    private IyakuhinMasterDTO sampleNaifukuMaster = new IyakuhinMasterDTO();
+
+    {
+        sampleNaifukuMaster.iyakuhincode = 620000033;
+        sampleNaifukuMaster.name = "カロナール錠３００　３００ｍｇ";
+        sampleNaifukuMaster.yomi = "ｶﾛﾅｰﾙｼﾞｮｳ300";
+        sampleNaifukuMaster.unit = "錠";
+        sampleNaifukuMaster.yakka = 7.90;
+        sampleNaifukuMaster.madoku = '0';
+        sampleNaifukuMaster.kouhatsu = '1';
+        sampleNaifukuMaster.zaikei = '1';
+        sampleNaifukuMaster.validFrom = "2018-04-01";
+        sampleNaifukuMaster.validUpto = "0000-00-00";
+    }
+
+    private IyakuhinMasterDTO sampleTonpukuMaster = new IyakuhinMasterDTO();
+
+    {
+        sampleTonpukuMaster.iyakuhincode = 620004587;
+        sampleTonpukuMaster.name = "ペロリック錠１０ｍｇ";
+        sampleTonpukuMaster.yomi = "ﾍﾟﾛﾘｯｸｼﾞｮｳ10MG";
+        sampleTonpukuMaster.unit = "錠";
+        sampleTonpukuMaster.yakka = 5.60;
+        sampleTonpukuMaster.madoku = '0';
+        sampleTonpukuMaster.kouhatsu = '1';
+        sampleTonpukuMaster.zaikei = '1';
+        sampleTonpukuMaster.validFrom = "2018-04-01";
+        sampleTonpukuMaster.validUpto = "0000-00-00";
+    }
+
+    private IyakuhinMasterDTO sampleGaiyouMaster = new IyakuhinMasterDTO();
+
+    {
+        sampleGaiyouMaster.iyakuhincode = 620003477;
+        sampleGaiyouMaster.name = "ロキソニンパップ１００ｍｇ　１０ｃｍ×１４ｃｍ";
+        sampleGaiyouMaster.yomi = "ﾛｷｿﾆﾝﾊﾟｯﾌﾟ100MG";
+        sampleGaiyouMaster.unit = "枚";
+        sampleGaiyouMaster.yakka = 34.60;
+        sampleGaiyouMaster.madoku = '0';
+        sampleGaiyouMaster.kouhatsu = '0';
+        sampleGaiyouMaster.zaikei = '6';
+        sampleGaiyouMaster.validFrom = "2018-04-01";
+        sampleGaiyouMaster.validUpto = "0000-00-00";
     }
 
     public TestDrugInput(Stage stage, Pane mainPane) {
@@ -188,10 +233,11 @@ public class TestDrugInput extends TestBase {
     private void testDrugEnterInput(DrugEnterInput input){
         testDrugEnterInputState(input);
         testDrugEnterInputFixedDays(input);
+        testDrugEnterInputSetNaifukuMaster(input);
     }
 
     private void testDrugEnterInputState(DrugEnterInput input){
-        DrugEnterInputState state = new DrugEnterInputState(sampleBaseState);
+        DrugEnterInputState state = new DrugEnterInputState(sampleBaseState.copy());
         input.setStateFrom(state);
         stage.sizeToScene();
         DrugEnterInputState outState = new DrugEnterInputState();
@@ -212,6 +258,13 @@ public class TestDrugInput extends TestBase {
         outState = new DrugEnterInputState();
         input.getStateTo(outState);
         confirm(!outState.isDaysFixed(), "clearing days fixed failed");
+    }
+
+    private void testDrugEnterInputSetNaifukuMaster(DrugEnterInput input) {
+        DrugEnterInputState state = new DrugEnterInputState();
+        state.setMaster(sampleNaifukuMaster);
+        input.setStateFrom(state);
+        stage.sizeToScene();
     }
 
 

@@ -3,6 +3,8 @@ package jp.chang.myclinic.practice.javafx.drug.lib;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.dto.PrescExampleDTO;
+import jp.chang.myclinic.dto.PrescExampleFullDTO;
 
 import java.util.Objects;
 
@@ -166,6 +168,21 @@ public class DrugInputBaseState {
         setUsage("");
         setDays("");
         setCategory(category);
+        adaptToCategory();
+    }
+
+    void setPrescExample(PrescExampleFullDTO exampleFull){
+        PrescExampleDTO example = exampleFull.prescExample;
+        DrugCategory exampleCategory = DrugCategory.fromCode(example.category);
+        setMaster(exampleFull.master);
+        setAmount(example.amount);
+        setUsage(example.usage);
+        if( exampleCategory == DrugCategory.Gaiyou ){
+            setDays("1");
+        } else {
+            setDays(example.days + "");
+        }
+        setCategory(exampleCategory);
         adaptToCategory();
     }
 

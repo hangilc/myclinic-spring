@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice.javafx.drug.lib;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.dto.PrescExampleFullDTO;
 
 import java.util.Objects;
 
@@ -12,11 +12,11 @@ public class DrugInputState extends DrugInputBaseState {
     private String tekiyou = "";
     private boolean tekiyouVisible = false;
 
-    public DrugInputState(){
+    DrugInputState(){
         this(new DrugInputBaseState());
     }
 
-    public DrugInputState(DrugInputBaseState baseState){
+    DrugInputState(DrugInputBaseState baseState){
         baseState.assignTo(this);
     }
 
@@ -34,35 +34,55 @@ public class DrugInputState extends DrugInputBaseState {
         return dst;
     }
 
-    public String getComment() {
+    private void adapt(){
+        setCommentVisible(comment != null && !comment.isEmpty());
+        setTekiyouVisible(tekiyou != null && !tekiyou.isEmpty());
+    }
+
+    @Override
+    void setMaster(IyakuhinMasterDTO master){
+        super.setMaster(master);
+        setComment("");
+        setTekiyou("");
+        adapt();
+    }
+
+    void setPrescExample(PrescExampleFullDTO example){
+        super.setPrescExample(example);
+        setComment(example.prescExample.comment);
+        setTekiyou("");
+        adapt();
+    }
+
+    String getComment() {
         return comment;
     }
 
-    public void setComment(String comment) {
+    void setComment(String comment) {
         this.comment = comment;
     }
 
-    public boolean isCommentVisible() {
+    boolean isCommentVisible() {
         return commentVisible;
     }
 
-    public void setCommentVisible(boolean commentVisible) {
+    void setCommentVisible(boolean commentVisible) {
         this.commentVisible = commentVisible;
     }
 
-    public String getTekiyou() {
+    String getTekiyou() {
         return tekiyou;
     }
 
-    public void setTekiyou(String tekiyou) {
+    void setTekiyou(String tekiyou) {
         this.tekiyou = tekiyou;
     }
 
-    public boolean isTekiyouVisible() {
+    boolean isTekiyouVisible() {
         return tekiyouVisible;
     }
 
-    public void setTekiyouVisible(boolean tekiyouVisible) {
+    void setTekiyouVisible(boolean tekiyouVisible) {
         this.tekiyouVisible = tekiyouVisible;
     }
 
