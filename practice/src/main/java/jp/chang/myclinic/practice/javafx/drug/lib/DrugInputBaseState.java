@@ -128,7 +128,7 @@ public class DrugInputBaseState {
         return state;
     }
 
-    public void adaptToCategory(){
+    void adaptToCategory(){
         if (category != null) {
             switch (category) {
                 case Naifuku: {

@@ -41,7 +41,9 @@ class DrugEnterInputState extends DrugInputState {
         }
     }
 
-    void adaptToCategoryChange(){
+    @Override
+    void adaptToCategory(){
+        super.adaptToCategory();
         DrugCategory category = getCategory();
         this.daysFixedDisabled = category != DrugCategory.Naifuku;
     }

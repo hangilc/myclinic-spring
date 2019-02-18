@@ -18,12 +18,14 @@ public class DrugEnterInput extends DrugInput {
             state.adaptToDaysFixedChange();
             setStateFrom(state);
         });
-        categoryProperty().addListener((obs, oldValue, newValue) -> {
-            DrugEnterInputState state = new DrugEnterInputState();
-            getStateTo(state);
-            state.adaptToCategoryChange();
-            setStateFrom(state);
-        });
+    }
+
+    @Override
+    void onCategoryChange() {
+        DrugEnterInputState state = new DrugEnterInputState();
+        getStateTo(state);
+        state.adaptToCategory();
+        setStateFrom(state);
     }
 
     void setStateFrom(DrugEnterInputState state){

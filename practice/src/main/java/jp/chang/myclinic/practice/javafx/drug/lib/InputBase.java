@@ -37,7 +37,7 @@ class InputBase extends VBox {
     private DecimalFormat amountFormatter = new DecimalFormat("###.##");
     private Node categoryRow;
     private Hyperlink exampleLink = new Hyperlink("例");
-    private String[] exampleTexts = new String[] {
+    private String[] exampleTexts = new String[]{
             "分１　朝食後",
             "分２　朝夕食後",
             "分３　毎食後",
@@ -57,16 +57,18 @@ class InputBase extends VBox {
         this.categoryRow = addRow(createCategoryContent());
         category.setValue(null);
         category.setValue(DrugCategory.Naifuku);
-        category.addListener((obs, oldValue, newValue) -> {
-            DrugInputBaseState state = new DrugInputBaseState();
-            getStateTo(state);
-            state.adaptToCategory();
-            setStateFrom(state);
-        });
+        category.addListener((obs, oldValue, newValue) -> onCategoryChange());
         addLabelContextMenu();
     }
 
-    void setStateFrom(DrugInputBaseState state){
+    void onCategoryChange() {
+        DrugInputBaseState state = new DrugInputBaseState();
+        getStateTo(state);
+        state.adaptToCategory();
+        setStateFrom(state);
+    }
+
+    void setStateFrom(DrugInputBaseState state) {
         this.iyakuhincode = state.getIyakuhincode();
         drugNameLabel.setText(state.getDrugName());
         amountLabel.setText(state.getAmountLabel());
@@ -80,7 +82,7 @@ class InputBase extends VBox {
         setDaysVisible(state.isDaysVisible());
     }
 
-    void getStateTo(DrugInputBaseState state){
+    void getStateTo(DrugInputBaseState state) {
         state.setIyakuhincode(iyakuhincode);
         state.setDrugName(drugNameLabel.getText());
         state.setAmountLabel(amountLabel.getText());
@@ -94,23 +96,23 @@ class InputBase extends VBox {
         state.setDaysVisible(isDaysVisible());
     }
 
-    void simulateSelectCategory(DrugCategory newCategory){
+    void simulateSelectCategory(DrugCategory newCategory) {
         category.setValue(newCategory);
     }
 
-    void simulateClickExample(){
+    void simulateClickExample() {
         exampleLink.fireEvent(createExampleClickEvent());
     }
 
-    String[] getExampleTexts(){
+    String[] getExampleTexts() {
         return exampleTexts;
     }
 
-    private boolean isDaysVisible(){
+    private boolean isDaysVisible() {
         return daysRow.isVisible();
     }
 
-    private MouseEvent createExampleClickEvent(){
+    private MouseEvent createExampleClickEvent() {
         Point2D local = new Point2D(4, 4);
         Point2D scene = exampleLink.localToScene(local);
         Point2D screen = exampleLink.localToScreen(local);
@@ -119,7 +121,7 @@ class InputBase extends VBox {
                 false, false, true, false, false, true, false, false, null);
     }
 
-    public void setMaster(IyakuhinMasterDTO master){
+    public void setMaster(IyakuhinMasterDTO master) {
         this.iyakuhincode = master.iyakuhincode;
         drugNameLabel.setText(master.name);
         amountUnitLabel.setText(master.unit);
@@ -132,7 +134,7 @@ class InputBase extends VBox {
         }
     }
 
-    void clearMaster(){
+    void clearMaster() {
         this.iyakuhincode = 0;
         drugNameLabel.setText("");
         amountUnitLabel.setText("");
@@ -142,7 +144,7 @@ class InputBase extends VBox {
         return iyakuhincode;
     }
 
-    String getAmount(){
+    String getAmount() {
         return amountInput.getText();
     }
 
@@ -150,51 +152,47 @@ class InputBase extends VBox {
         amountInput.setText(amountFormatter.format(value));
     }
 
-    void clearAmount(){
+    void clearAmount() {
         amountInput.setText("");
     }
 
-    String getUsage(){
+    String getUsage() {
         return usageInput.getText();
     }
 
-    void setUsage(String usage){
+    void setUsage(String usage) {
         usageInput.setText(usage);
     }
 
-    void clearUsage(){
+    void clearUsage() {
         usageInput.setText("");
     }
 
-    DrugCategory getCategory(){
+    DrugCategory getCategory() {
         return category.getValue();
     }
 
-    void setCategory(DrugCategory category){
+    void setCategory(DrugCategory category) {
         this.category.setValue(category);
     }
 
-    ObjectProperty<DrugCategory> categoryProperty(){
-        return category;
-    }
-
-    String getDays(){
+    String getDays() {
         return daysInput.getText();
     }
 
-    void setDays(int days){
+    void setDays(int days) {
         daysInput.setText("" + days);
     }
 
-    boolean isDaysEmpty(){
+    boolean isDaysEmpty() {
         return daysInput.getText().isEmpty();
     }
 
-    void addToDaysRow(Node node){
+    void addToDaysRow(Node node) {
         daysRow.getChildren().add(node);
     }
 
-    void clearDays(){
+    void clearDays() {
         daysInput.setText("");
     }
 
@@ -202,7 +200,7 @@ class InputBase extends VBox {
         return addRowBefore(label, content, null);
     }
 
-    HBox addRowBeforeCategory(Label label, Node content){
+    HBox addRowBeforeCategory(Label label, Node content) {
         return addRowBefore(label, content, categoryRow);
     }
 
@@ -211,12 +209,12 @@ class InputBase extends VBox {
         return content;
     }
 
-    private HBox addRowBefore(Label label, Node content, Node beforeNode){
+    private HBox addRowBefore(Label label, Node content, Node beforeNode) {
         HBox hbox = new HBox(4);
         label.setMinWidth(Control.USE_PREF_SIZE);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getChildren().addAll(label, content);
-        if( beforeNode == null ){
+        if (beforeNode == null) {
             getChildren().add(hbox);
         } else {
             int index = getChildren().indexOf(categoryRow);
@@ -236,7 +234,7 @@ class InputBase extends VBox {
         HBox hbox = new HBox(4);
         hbox.setAlignment(Pos.CENTER_LEFT);
         this.exampleContextMenu = new ContextMenu();
-        for(String text: exampleTexts){
+        for (String text : exampleTexts) {
             MenuItem item = new MenuItem(text);
             item.setOnAction(ev -> usageInput.setText(item.getText()));
             exampleContextMenu.getItems().add(item);
@@ -280,14 +278,14 @@ class InputBase extends VBox {
         exampleContextMenu.show(anchor, event.getScreenX(), event.getScreenY());
     }
 
-    private void addLabelContextMenu(){
+    private void addLabelContextMenu() {
         drugNameLabel.setOnContextMenuRequested(event -> {
             ContextMenu menu = createDrugNameContextMenu();
             menu.show(drugNameLabel, event.getScreenX(), event.getScreenY());
         });
     }
 
-    private ContextMenu createDrugNameContextMenu(){
+    private ContextMenu createDrugNameContextMenu() {
         ContextMenu menu = new ContextMenu();
         {
             MenuItem item = new MenuItem("コピー");
