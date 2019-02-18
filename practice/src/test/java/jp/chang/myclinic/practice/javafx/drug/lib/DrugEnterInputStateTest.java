@@ -240,4 +240,30 @@ public class DrugEnterInputStateTest {
         assertEquals("", state.getDaysBackup());
     }
 
+    @Test
+    public void testSetDrugNaifuku(){
+        DrugEnterInputState state = new DrugEnterInputState();
+        DrugFullDTO full = drugNaifuku;
+        state.setDrug(full);
+        IyakuhinMasterDTO m = full.master;
+        DrugDTO d = full.drug;
+        assertEquals(m.iyakuhincode, state.getIyakuhincode());
+        assertEquals(m.name, state.getDrugName());
+        assertEquals("用量：", state.getAmountLabel());
+        assertEquals("3", state.getAmount());
+        assertEquals(m.unit, state.getAmountUnit());
+        assertEquals(d.usage, state.getUsage());
+        assertEquals("日数：", state.getDaysLabel());
+        assertEquals("" + d.days, state.getDays());
+        assertEquals("日分", state.getDaysUnit());
+        assertEquals(DrugCategory.fromCode(d.category), state.getCategory());
+        assertEquals("", state.getComment());
+        assertFalse(state.isCommentVisible());
+        assertEquals("", state.getTekiyou());
+        assertFalse(state.isTekiyouVisible());
+        assertTrue(state.isDaysFixed());
+        assertFalse(state.isDaysFixedDisabled());
+        assertEquals("", state.getDaysBackup());
+    }
+
 }
