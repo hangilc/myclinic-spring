@@ -66,7 +66,7 @@ class InputBase extends VBox {
         addLabelContextMenu();
     }
 
-    public void setStateFrom(DrugInputBaseState state){
+    void setStateFrom(DrugInputBaseState state){
         this.iyakuhincode = state.getIyakuhincode();
         drugNameLabel.setText(state.getDrugName());
         amountLabel.setText(state.getAmountLabel());
@@ -80,7 +80,7 @@ class InputBase extends VBox {
         setDaysVisible(state.isDaysVisible());
     }
 
-    public void getStateTo(DrugInputBaseState state){
+    void getStateTo(DrugInputBaseState state){
         state.setIyakuhincode(iyakuhincode);
         state.setDrugName(drugNameLabel.getText());
         state.setAmountLabel(amountLabel.getText());
@@ -132,7 +132,7 @@ class InputBase extends VBox {
         }
     }
 
-    public void clearMaster(){
+    void clearMaster(){
         this.iyakuhincode = 0;
         drugNameLabel.setText("");
         amountUnitLabel.setText("");
@@ -174,6 +174,10 @@ class InputBase extends VBox {
         this.category.setValue(category);
     }
 
+    ObjectProperty<DrugCategory> categoryProperty(){
+        return category;
+    }
+
     String getDays(){
         return daysInput.getText();
     }
@@ -194,7 +198,7 @@ class InputBase extends VBox {
         daysInput.setText("");
     }
 
-    HBox addRow(Label label, Node content) {
+    private HBox addRow(Label label, Node content) {
         return addRowBefore(label, content, null);
     }
 
