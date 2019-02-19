@@ -25,6 +25,12 @@ class DrugEnterInputState extends DrugInputState {
         dst.daysBackup = daysBackup;
     }
 
+    void clear(){
+        if( !isDaysFixed ){
+
+        }
+    }
+
     public DrugEnterInputState copy(){
         DrugEnterInputState dst = new DrugEnterInputState();
         assignTo(dst);

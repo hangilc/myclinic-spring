@@ -125,6 +125,12 @@ public class DrugInputBaseState {
         dst.setDaysVisible(isDaysVisible());
     }
 
+    void clear(){
+        DrugInputBaseState src = new DrugInputBaseState();
+        src.setCategory(category);
+        src.assignTo(this);
+    }
+
     public DrugInputBaseState copy(){
         DrugInputBaseState state = new DrugInputBaseState();
         assignTo(state);

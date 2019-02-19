@@ -29,6 +29,11 @@ public class DrugInputState extends DrugInputBaseState {
         dst.tekiyouVisible = tekiyouVisible;
     }
 
+    void clear(){
+        DrugInputState src = new DrugInputState();
+        src.assignTo(this);
+    }
+
     public DrugInputState copy(){
         DrugInputState dst = new DrugInputState();
         assignTo(dst);
