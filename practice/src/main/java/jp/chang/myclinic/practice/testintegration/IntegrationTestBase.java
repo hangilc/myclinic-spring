@@ -34,6 +34,17 @@ class IntegrationTestBase {
         return waitFor(10, () -> mainPane.findRecord(visitId));
     }
 
+    int waitForNewSerialId(Supplier<Integer> gen, int lastId){
+        return waitFor(10, () -> {
+            int id = gen.get();
+            if( id > lastId ){
+                return Optional.of(id);
+            } else {
+                return Optional.empty();
+            }
+        });
+    }
+
     <T extends Window> T waitForWindow(Class<T> windowClass){
         return waitForWindow(5, windowClass);
     }
@@ -49,11 +60,11 @@ class IntegrationTestBase {
         });
     }
 
-    private <T> T waitFor(Supplier<Optional<T>> f) {
+    <T> T waitFor(Supplier<Optional<T>> f) {
         return waitFor(5, f);
     }
 
-    private <T> T waitFor(int n, Supplier<Optional<T>> f) {
+    <T> T waitFor(int n, Supplier<Optional<T>> f) {
         for (int i = 0; i < n; i++) {
             Optional<T> t = f.get();
             if (t.isPresent()) {

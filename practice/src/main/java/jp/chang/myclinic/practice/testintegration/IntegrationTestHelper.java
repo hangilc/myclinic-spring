@@ -5,8 +5,11 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.mockdata.MockData;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchResultItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Optional;
 
 class IntegrationTestHelper {
 

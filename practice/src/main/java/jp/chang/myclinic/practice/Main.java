@@ -64,7 +64,7 @@ public class Main extends Application {
                     try {
                         if( cmdArgs.isTestIntegration() ){
                             new TestIntegration().runAll();
-                            Platform.exit();
+                            //Platform.exit();
                         } else {
                             new TestIntegration().runTests(cmdArgs.getTestIntegrationOnes());
                         }

@@ -10,29 +10,23 @@ import java.util.Map;
 
 public class TestIntegration {
 
-    private Map<String, Runnable> testMap = new LinkedHashMap<>();
-    {
-        testMap.put("cleanup-wqueue", () -> new TestCleanupWqueue().run());
-        testMap.put("select-for-exam", () -> new TestSelectForExam().run());
-    }
-
     public void runAll(){
         confirmMockPatient();
-        runTests(testMap.keySet());
+        new TestCleanupWqueue().run();
+        testSimpleExam();
+        System.out.println("Test finished.");
     }
 
     public void runTests(Iterable<String> tests){
         confirmMockPatient();
-        for(String test: tests){
-            Runnable r = testMap.getOrDefault(test, null);
-            if( r == null ){
-                System.err.printf("Cannot find test: %s\n", test);
-                System.exit(1);
-            }
-            System.out.printf("Started test: %s\n", test);
-            r.run();
-            System.out.printf("Ended test: %s\n", test);
-        }
+        throw new RuntimeException("Not implemented");
+    }
+
+    private void testSimpleExam(){
+        Exam exam = new TestSelectForExam().selectWithNewPatientWithHoken();
+        new TestText(exam).runAll();
+        new TestHoken(exam).confirmHokenShahokokuho(exam.shahokokuho);
+        new TestDrug(exam).enterNaifuku();
     }
 
     private void confirmMockPatient() {

@@ -106,10 +106,19 @@ public class TestDrugInput extends TestBase {
     }
 
     private void testInputBase(InputBase inputBase) {
+        testInputBaseBlank(inputBase);
         testInputBaseState(inputBase);
         testInputBaseCategory(inputBase);
         testInputBaseCategory(inputBase);
         testInputBaseExample(inputBase);
+    }
+
+    private void testInputBaseBlank(InputBase inputBase){
+        DrugInputBaseState state = new DrugInputBaseState();
+        inputBase.getStateTo(state);
+        confirm(state.getAmountLabel().equals("用量："), "invalid amount label");
+        confirm(state.getDaysLabel().equals("日数："), "invalid days label");
+        confirm(state.getDaysUnit().equals("日分："), "invalid days unit");
     }
 
     private DrugInputBaseState getInputBaseState(InputBase inputBase){
