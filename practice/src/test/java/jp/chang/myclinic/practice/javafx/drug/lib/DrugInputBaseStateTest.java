@@ -154,10 +154,21 @@ public class DrugInputBaseStateTest {
         assertEquals(state.getAmount(), "");
         assertEquals(state.getAmountUnit(), m.unit);
         assertEquals(state.getUsage(), "");
-        assertEquals(state.getDays(), "1");
+        assertEquals(state.getDays(), "");
         assertEquals(state.getCategory(), DrugCategory.Gaiyou);
         assertEquals(state.getAmountLabel(), "用量：");
         assertFalse(state.isDaysVisible());
+    }
+
+    @Test
+    public void testDaysPreservedAfterCategoryAdapt(){
+        DrugInputBaseState state = new DrugInputBaseState();
+        IyakuhinMasterDTO m = sampleNaifukuMaster;
+        state.setMaster(m);
+        String days = state.getDays();
+        state.setCategory(DrugCategory.Gaiyou);
+        state.adaptToCategory();
+        assertEquals(days, state.getDays());
     }
 
 }

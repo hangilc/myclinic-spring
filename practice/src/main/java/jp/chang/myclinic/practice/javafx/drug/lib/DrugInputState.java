@@ -23,15 +23,21 @@ public class DrugInputState extends DrugInputBaseState {
 
     void assignTo(DrugInputState dst){
         super.assignTo(dst);
+        assignProperTo(dst);
+    }
+
+    private void assignProperTo(DrugInputState dst){
         dst.comment = comment;
         dst.commentVisible = commentVisible;
         dst.tekiyou = tekiyou;
         dst.tekiyouVisible = tekiyouVisible;
     }
 
+    @Override
     void clear(){
+        super.clear();
         DrugInputState src = new DrugInputState();
-        src.assignTo(this);
+        src.assignProperTo(this);
     }
 
     public DrugInputState copy(){
@@ -40,7 +46,7 @@ public class DrugInputState extends DrugInputBaseState {
         return dst;
     }
 
-    private void adapt(){
+    void adapt(){
         setCommentVisible(comment != null && !comment.isEmpty());
         setTekiyouVisible(tekiyou != null && !tekiyou.isEmpty());
     }

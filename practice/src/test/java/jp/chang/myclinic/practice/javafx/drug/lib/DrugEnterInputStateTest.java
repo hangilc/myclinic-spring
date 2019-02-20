@@ -188,7 +188,7 @@ public class DrugEnterInputStateTest {
         assertEquals("", state.getAmount());
         assertEquals(m.unit, state.getAmountUnit());
         assertEquals("", state.getUsage());
-        assertEquals("1", state.getDays());
+        assertEquals("", state.getDays());
         assertEquals(DrugCategory.Gaiyou, state.getCategory());
         assertEquals("", state.getComment());
         assertFalse(state.isCommentVisible());
@@ -264,7 +264,7 @@ public class DrugEnterInputStateTest {
         assertEquals(e.amount, state.getAmount());
         assertEquals(m.unit, state.getAmountUnit());
         assertEquals(e.usage, state.getUsage());
-        assertEquals("1", state.getDays());
+        assertEquals("" + e.days, state.getDays());
         assertEquals(DrugCategory.fromCode(e.category), state.getCategory());
         assertEquals("", state.getComment());
         assertFalse(state.isCommentVisible());
@@ -340,7 +340,7 @@ public class DrugEnterInputStateTest {
         assertEquals("28", state.getAmount());
         assertEquals(m.unit, state.getAmountUnit());
         assertEquals(d.usage, state.getUsage());
-        assertEquals("1", state.getDays());
+        assertEquals("" + d.days, state.getDays());
         assertEquals(DrugCategory.Gaiyou, state.getCategory());
         assertEquals("", state.getComment());
         assertFalse(state.isCommentVisible());
@@ -349,6 +349,166 @@ public class DrugEnterInputStateTest {
         assertTrue(state.isDaysFixed());
         assertTrue(state.isDaysFixedDisabled());
         assertEquals("", state.getDaysBackup());
+    }
+
+    @Test
+    public void testClearNaifuku(){
+        DrugEnterInputState state = new DrugEnterInputState();
+        DrugFullDTO full = drugNaifuku;
+        state.setDrug(full);
+        state.setDaysFixed(false);
+        state.clear();
+        assertEquals(0, state.getIyakuhincode());
+        assertEquals("", state.getDrugName());
+        assertEquals("用量：", state.getAmountLabel());
+        assertEquals("", state.getAmount());
+        assertEquals("", state.getAmountUnit());
+        assertEquals("", state.getUsage());
+        assertEquals("日数：", state.getDaysLabel());
+        assertEquals("", state.getDays());
+        assertEquals("日分", state.getDaysUnit());
+        assertEquals(DrugCategory.Naifuku, state.getCategory());
+        assertEquals("", state.getComment());
+        assertFalse(state.isCommentVisible());
+        assertEquals("", state.getTekiyou());
+        assertFalse(state.isTekiyouVisible());
+        assertFalse(state.isDaysFixed());
+        assertFalse(state.isDaysFixedDisabled());
+        assertEquals("", state.getDaysBackup());
+    }
+
+    @Test
+    public void testClearTonpuku(){
+        DrugEnterInputState state = new DrugEnterInputState();
+        DrugFullDTO full = drugTonpuku;
+        state.setDrug(full);
+        state.setDaysFixed(false);
+        state.clear();
+        assertEquals(0, state.getIyakuhincode());
+        assertEquals("", state.getDrugName());
+        assertEquals("一回：", state.getAmountLabel());
+        assertEquals("", state.getAmount());
+        assertEquals("", state.getAmountUnit());
+        assertEquals("", state.getUsage());
+        assertEquals("回数：", state.getDaysLabel());
+        assertEquals("", state.getDays());
+        assertEquals("回分", state.getDaysUnit());
+        assertEquals(DrugCategory.Tonpuku, state.getCategory());
+        assertEquals("", state.getComment());
+        assertFalse(state.isCommentVisible());
+        assertEquals("", state.getTekiyou());
+        assertFalse(state.isTekiyouVisible());
+        assertFalse(state.isDaysFixed());
+        assertTrue(state.isDaysFixedDisabled());
+        assertEquals("", state.getDaysBackup());
+    }
+
+    @Test
+    public void testClearGaiyou(){
+        DrugEnterInputState state = new DrugEnterInputState();
+        DrugFullDTO full = drugGaiyou;
+        state.setDrug(full);
+        state.setDaysFixed(false);
+        state.clear();
+        assertEquals(0, state.getIyakuhincode());
+        assertEquals("", state.getDrugName());
+        assertEquals("用量：", state.getAmountLabel());
+        assertEquals("", state.getAmount());
+        assertEquals("", state.getAmountUnit());
+        assertEquals("", state.getUsage());
+        assertEquals("", state.getDays());
+        assertEquals(DrugCategory.Gaiyou, state.getCategory());
+        assertEquals("", state.getComment());
+        assertFalse(state.isCommentVisible());
+        assertEquals("", state.getTekiyou());
+        assertFalse(state.isTekiyouVisible());
+        assertFalse(state.isDaysFixed());
+        assertTrue(state.isDaysFixedDisabled());
+        assertEquals("", state.getDaysBackup());
+    }
+
+    @Test
+    public void testClearAfterEnterNaifukuFixedDays(){
+        DrugEnterInputState state = new DrugEnterInputState();
+        state.setPrescExample(exampleNaifuku);
+        state.setDaysFixed(true);
+        state.adapt();
+        String days = state.getDays();
+        state.clearAfterEnter();
+        assertEquals(days, state.getDays());
+        assertEquals(days, state.getDaysBackup());
+        assertTrue(state.isDaysFixed());
+    }
+
+    @Test
+    public void testClearAfterEnterNaifukuNotFixedDays(){
+        DrugEnterInputState state = new DrugEnterInputState();
+        state.setPrescExample(exampleNaifuku);
+        state.setDaysFixed(false);
+        state.adapt();
+        String daysBackup = state.getDaysBackup();
+        state.clearAfterEnter();
+        assertEquals("", state.getDays());
+        assertEquals(daysBackup, state.getDaysBackup());
+        assertFalse(state.isDaysFixed());
+    }
+
+    @Test
+    public void testClearAfterEnterTonpukuFixedDays(){
+        DrugEnterInputState state = new DrugEnterInputState();
+        state.setPrescExample(exampleTonpuku);
+        state.setDaysFixed(true);
+        state.adapt();
+        String daysBackup = state.getDaysBackup();
+        state.clearAfterEnter();
+        assertEquals("", state.getDays());
+        assertEquals(daysBackup, state.getDaysBackup());
+        assertTrue(state.isDaysFixed());
+    }
+
+    @Test
+    public void testClearAfterEnterTonpukuNotFixedDays(){
+        DrugEnterInputState state = new DrugEnterInputState();
+        state.setPrescExample(exampleTonpuku);
+        state.setDaysFixed(false);
+        state.adapt();
+        String daysBackup = state.getDaysBackup();
+        state.clearAfterEnter();
+        assertEquals("", state.getDays());
+        assertEquals(daysBackup, state.getDaysBackup());
+        assertFalse(state.isDaysFixed());
+    }
+
+    @Test
+    public void testClearAfterEnterGaiyouFixedDays(){
+        DrugEnterInputState state = new DrugEnterInputState();
+        state.setPrescExample(exampleGaiyou);
+        state.setDaysFixed(true);
+        state.adapt();
+        String daysBackup = state.getDaysBackup();
+        state.clearAfterEnter();
+        assertEquals("", state.getDays());
+        assertEquals(daysBackup, state.getDaysBackup());
+        assertTrue(state.isDaysFixed());
+    }
+
+    @Test
+    public void testClearAfterEnterGaiyouNotFixedDays(){
+        DrugEnterInputState state = new DrugEnterInputState();
+        state.setPrescExample(exampleGaiyou);
+        state.setDaysFixed(false);
+        state.adapt();
+        String daysBackup = state.getDaysBackup();
+        state.clearAfterEnter();
+        assertEquals("", state.getDays());
+        assertEquals(daysBackup, state.getDaysBackup());
+        assertFalse(state.isDaysFixed());
+    }
+
+    @Test
+    public void testFixedDaysEnterNaifukuEnterNaifuku(){
+        DrugEnterInputState state = new DrugEnterInputState();
+
     }
 
 }

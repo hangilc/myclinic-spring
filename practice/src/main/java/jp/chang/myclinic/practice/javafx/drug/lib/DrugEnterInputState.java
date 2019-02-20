@@ -20,14 +20,22 @@ class DrugEnterInputState extends DrugInputState {
 
     private void assignTo(DrugEnterInputState dst){
         super.assignTo(dst);
+        assignProperTo(dst);
+    }
+
+    private void assignProperTo(DrugEnterInputState dst){
         dst.isDaysFixed = isDaysFixed;
         dst.daysFixedDisabled = dst.isDaysFixedDisabled();
         dst.daysBackup = daysBackup;
     }
 
-    void clear(){
-        if( !isDaysFixed ){
-
+    void clearAfterEnter(){
+        if( getCategory() == DrugCategory.Naifuku && isDaysFixed() ){
+            setDaysBackup(getDays());
+            clear();
+            setDays(getDaysBackup());
+        } else {
+            clear();
         }
     }
 
@@ -60,6 +68,10 @@ class DrugEnterInputState extends DrugInputState {
 
     void setDaysFixed(boolean daysFixed) {
         isDaysFixed = daysFixed;
+    }
+
+    private boolean isDaysFixedEnabled(){
+        return !isDaysFixedDisabled();
     }
 
     boolean isDaysFixedDisabled() {

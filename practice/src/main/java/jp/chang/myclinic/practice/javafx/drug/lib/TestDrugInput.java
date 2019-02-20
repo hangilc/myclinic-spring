@@ -196,8 +196,7 @@ public class TestDrugInput extends TestBase {
         {
             DrugInputState state = new DrugInputState(sampleBaseState);
             state.setComment("コメント");
-            DrugInputStateController controller = new DrugInputStateController();
-            controller.adapt(state);
+            state.adapt();
             drugInput.setStateFrom(state);
             stage.sizeToScene();
             DrugInputState outState = new DrugInputState();
@@ -207,8 +206,7 @@ public class TestDrugInput extends TestBase {
         {
             DrugInputState state = new DrugInputState(sampleBaseState);
             state.setTekiyou("２８日分");
-            DrugInputStateController controller = new DrugInputStateController();
-            controller.adapt(state);
+            state.adapt();
             drugInput.setStateFrom(state);
             stage.sizeToScene();
             DrugInputState outState = new DrugInputState();
@@ -219,8 +217,7 @@ public class TestDrugInput extends TestBase {
             DrugInputState state = new DrugInputState(sampleBaseState);
             state.setComment("コメント");
             state.setTekiyou("２８日分");
-            DrugInputStateController controller = new DrugInputStateController();
-            controller.adapt(state);
+            state.adapt();
             drugInput.setStateFrom(state);
             stage.sizeToScene();
             DrugInputState outState = new DrugInputState();

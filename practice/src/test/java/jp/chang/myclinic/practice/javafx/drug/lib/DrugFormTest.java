@@ -3,14 +3,13 @@ package jp.chang.myclinic.practice.javafx.drug.lib;
 import jp.chang.myclinic.consts.DrugCategory;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class DrugFormTest {
 
     private DrugInputBaseState sampleBaseState = new DrugInputBaseState();
 
     {
-        DrugInputBaseStateController controller = new DrugInputBaseStateController();
         sampleBaseState.setIyakuhincode(620000033);
         sampleBaseState.setDrugName("カロナール錠３００　３００ｍｇ");
         sampleBaseState.setAmount("3");

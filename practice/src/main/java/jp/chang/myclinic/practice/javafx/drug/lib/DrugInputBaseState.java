@@ -23,6 +23,10 @@ public class DrugInputBaseState {
 
     private DecimalFormat amountFormatter = new DecimalFormat("###.##");
 
+    public DrugInputBaseState() {
+        //adaptToCategory();
+    }
+
     public int getIyakuhincode() {
         return iyakuhincode;
     }
@@ -128,6 +132,7 @@ public class DrugInputBaseState {
     void clear(){
         DrugInputBaseState src = new DrugInputBaseState();
         src.setCategory(category);
+        src.adaptToCategory();
         src.assignTo(this);
     }
 
@@ -173,11 +178,7 @@ public class DrugInputBaseState {
         setAmount("");
         setAmountUnit(master.unit);
         setUsage("");
-        if( category == DrugCategory.Gaiyou ) {
-            setDays("1");
-        } else {
-            setDays("");
-        }
+        setDays("");
         setCategory(category);
         adaptToCategory();
     }
@@ -188,11 +189,7 @@ public class DrugInputBaseState {
         setMaster(exampleFull.master);
         setAmount(example.amount);
         setUsage(example.usage);
-        if( exampleCategory == DrugCategory.Gaiyou ){
-            setDays("1");
-        } else {
-            setDays(example.days + "");
-        }
+        setDays(example.days + "");
         setCategory(exampleCategory);
         adaptToCategory();
     }
@@ -203,11 +200,7 @@ public class DrugInputBaseState {
         setMaster(drugFull.master);
         setAmount(amountFormatter.format(drug.amount));
         setUsage(drug.usage);
-        if( drugCategory == DrugCategory.Gaiyou ){
-            setDays("1");
-        } else {
-            setDays(drug.days + "");
-        }
+        setDays(drug.days + "");
         setCategory(drugCategory);
         adaptToCategory();
     }
