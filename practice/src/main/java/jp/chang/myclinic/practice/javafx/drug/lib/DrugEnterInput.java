@@ -15,7 +15,6 @@ public class DrugEnterInput extends DrugInput {
         daysFixedCheck.selectedProperty().addListener((obs, oldValue, newValue) -> {
             DrugEnterInputState state = new DrugEnterInputState();
             getStateTo(state);
-            state.adaptToDaysFixedChange();
             setStateFrom(state);
         });
     }

@@ -9,4 +9,17 @@ public class PrescExampleDTO {
     public int days;
     public int category;
     public String comment;
+
+    public PrescExampleDTO copy(){
+        PrescExampleDTO dst = new PrescExampleDTO();
+        dst.prescExampleId = prescExampleId;
+        dst.iyakuhincode = iyakuhincode;
+        dst.masterValidFrom = masterValidFrom;
+        dst.amount = amount;
+        dst.usage = usage;
+        dst.days = days;
+        dst.category = category;
+        dst.comment = comment;
+        return dst;
+    }
 }

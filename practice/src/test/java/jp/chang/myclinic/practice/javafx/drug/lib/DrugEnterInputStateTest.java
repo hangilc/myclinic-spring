@@ -432,7 +432,6 @@ public class DrugEnterInputStateTest {
         DrugEnterInputState state = new DrugEnterInputState();
         state.setPrescExample(exampleNaifuku);
         state.setDaysFixed(true);
-        state.adapt();
         String days = state.getDays();
         state.clearAfterEnter();
         assertEquals(days, state.getDays());
@@ -445,7 +444,6 @@ public class DrugEnterInputStateTest {
         DrugEnterInputState state = new DrugEnterInputState();
         state.setPrescExample(exampleNaifuku);
         state.setDaysFixed(false);
-        state.adapt();
         String daysBackup = state.getDaysBackup();
         state.clearAfterEnter();
         assertEquals("", state.getDays());
@@ -458,7 +456,6 @@ public class DrugEnterInputStateTest {
         DrugEnterInputState state = new DrugEnterInputState();
         state.setPrescExample(exampleTonpuku);
         state.setDaysFixed(true);
-        state.adapt();
         String daysBackup = state.getDaysBackup();
         state.clearAfterEnter();
         assertEquals("", state.getDays());
@@ -471,7 +468,6 @@ public class DrugEnterInputStateTest {
         DrugEnterInputState state = new DrugEnterInputState();
         state.setPrescExample(exampleTonpuku);
         state.setDaysFixed(false);
-        state.adapt();
         String daysBackup = state.getDaysBackup();
         state.clearAfterEnter();
         assertEquals("", state.getDays());
@@ -484,7 +480,6 @@ public class DrugEnterInputStateTest {
         DrugEnterInputState state = new DrugEnterInputState();
         state.setPrescExample(exampleGaiyou);
         state.setDaysFixed(true);
-        state.adapt();
         String daysBackup = state.getDaysBackup();
         state.clearAfterEnter();
         assertEquals("", state.getDays());
@@ -497,7 +492,6 @@ public class DrugEnterInputStateTest {
         DrugEnterInputState state = new DrugEnterInputState();
         state.setPrescExample(exampleGaiyou);
         state.setDaysFixed(false);
-        state.adapt();
         String daysBackup = state.getDaysBackup();
         state.clearAfterEnter();
         assertEquals("", state.getDays());
@@ -508,7 +502,29 @@ public class DrugEnterInputStateTest {
     @Test
     public void testFixedDaysEnterNaifukuEnterNaifuku(){
         DrugEnterInputState state = new DrugEnterInputState();
+        state.setPrescExample(exampleNaifuku);
+        state.setDaysFixed(true);
+        state.clearAfterEnter();
+        PrescExampleFullDTO newExample = new PrescExampleFullDTO();
+        newExample.master = exampleNaifuku.master;
+        newExample.prescExample = exampleNaifuku.prescExample.copy();
+        newExample.prescExample.days += 10;
+        state.setPrescExample(newExample);
+        assertEquals(exampleNaifuku.prescExample.days + "", state.getDays());
+    }
 
+    @Test
+    public void testNotFixedDaysEnterNaifukuEnterNaifuku(){
+        DrugEnterInputState state = new DrugEnterInputState();
+        state.setPrescExample(exampleNaifuku);
+        state.setDaysFixed(false);
+        state.clearAfterEnter();
+        PrescExampleFullDTO newExample = new PrescExampleFullDTO();
+        newExample.master = exampleNaifuku.master;
+        newExample.prescExample = exampleNaifuku.prescExample.copy();
+        newExample.prescExample.days += 10;
+        state.setPrescExample(newExample);
+        assertEquals(newExample.prescExample.days + "", state.getDays());
     }
 
 }

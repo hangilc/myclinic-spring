@@ -1,6 +1,10 @@
 package jp.chang.myclinic.practice.javafx.drug.lib;
 
 import jp.chang.myclinic.consts.DrugCategory;
+import jp.chang.myclinic.consts.Zaikei;
+import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.dto.PrescExampleFullDTO;
 
 import java.util.Objects;
 
@@ -45,14 +49,28 @@ class DrugEnterInputState extends DrugInputState {
         return dst;
     }
 
-    void adaptToDaysFixedChange(){
-        if( getCategory() == DrugCategory.Naifuku ){
-            if( isDaysFixed() ){
-                setDays(getDaysBackup());
-            } else {
-                setDays("");
-            }
+    private void adjustDays(){
+        if( getCategory() == DrugCategory.Naifuku && isDaysFixed() && !getDaysBackup().isEmpty() ){
+            setDays(getDaysBackup());
         }
+    }
+
+    @Override
+    void setMaster(IyakuhinMasterDTO master){
+        super.setMaster(master);
+        adjustDays();
+    }
+
+    @Override
+    void setPrescExample(PrescExampleFullDTO example) {
+        super.setPrescExample(example);
+        adjustDays();
+    }
+
+    @Override
+    void setDrug(DrugFullDTO drugFull) {
+        super.setDrug(drugFull);
+        adjustDays();
     }
 
     @Override
