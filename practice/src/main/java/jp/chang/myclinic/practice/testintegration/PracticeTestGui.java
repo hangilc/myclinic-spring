@@ -127,10 +127,7 @@ public class PracticeTestGui implements Runnable {
 
     private Record waitForRecord(int visitId) {
         MainPane mainPane = getMainPane();
-        return waitFor(10, () -> {
-            Record r = mainPane.findRecord(visitId);
-            return Optional.ofNullable(r);
-        });
+        return waitFor(10, () -> mainPane.findRecord(visitId));
     }
 
     private <T extends Window> T waitForCreatedWindow(Class<T> windowClass) {
