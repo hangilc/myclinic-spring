@@ -21,8 +21,6 @@ public class DrugInputBaseState {
     private DrugCategory category = DrugCategory.Naifuku;
     private boolean daysVisible = true;
 
-    private DecimalFormat amountFormatter = new DecimalFormat("###.##");
-
     public DrugInputBaseState() {
         //adaptToCategory();
     }
@@ -195,10 +193,11 @@ public class DrugInputBaseState {
     }
 
     void setDrug(DrugFullDTO drugFull){
+        DrugHelper helper = new DrugHelper();
         DrugDTO drug = drugFull.drug;
         DrugCategory drugCategory = DrugCategory.fromCode(drug.category);
         setMaster(drugFull.master);
-        setAmount(amountFormatter.format(drug.amount));
+        setAmount(helper.formatAmount(drug.amount));
         setUsage(drug.usage);
         setDays(drug.days + "");
         setCategory(drugCategory);

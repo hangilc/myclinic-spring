@@ -13,13 +13,14 @@ class CmdArgs {
         System.out.println("  Options: ");
         System.out.println("    --test-gui test,... ");
         System.out.println("               server-url is not required (or ignored)");
-        System.out.println("    --test-integration test,...");
+        System.out.println("    --test-integration");
+        System.out.println("    --test-integration-one test (can be applied multiple times)");
     }
 
     private String serverUrl;
     private List<String> testGui;
-    private List<String> testIntegration;
-    private List<String> regularArgs = new ArrayList<>();
+    private boolean testIntegration;
+    private List<String> testIntegrationOnes = new ArrayList<>();
 
     private static class Context {
         int i;
@@ -31,16 +32,16 @@ class CmdArgs {
             this.args = args;
         }
 
-        boolean isEndOfArgs(){
-            return i >= args.length;
+        boolean hasNext(){
+            return i < args.length;
         }
 
         boolean hasNextOption(){
-            return !isEndOfArgs() && args[i].startsWith("-");
+            return hasNext() && args[i].startsWith("-");
         }
 
         boolean hasNextRegularArg(){
-            return !isEndOfArgs() && !args[i].startsWith("-");
+            return hasNext() && !args[i].startsWith("-");
         }
 
         String getNextOption(){
@@ -67,7 +68,8 @@ class CmdArgs {
 
     CmdArgs(String[] args) {
         Context ctx = new Context(args);
-        while( !ctx.isEndOfArgs() ){
+        List<String> regularArgs = new ArrayList<>();
+        while( ctx.hasNext() ){
             if( ctx.hasNextOption() ){
                 String opt = ctx.getNextOption();
                 switch(opt){
@@ -76,7 +78,11 @@ class CmdArgs {
                         break;
                     }
                     case "--test-integration": {
-                        this.testIntegration = List.of(ctx.getOptionArg().split(","));
+                        this.testIntegration = true;
+                        break;
+                    }
+                    case "--test-integration-one": {
+                        testIntegrationOnes.add(ctx.getOptionArg());
                         break;
                     }
                     default: {
@@ -118,12 +124,11 @@ class CmdArgs {
         return testGui;
     }
 
-    boolean isTestIntegration(){
-        return testIntegration != null;
-    }
-
-    List<String> getTestIntegration(){
+    public boolean isTestIntegration() {
         return testIntegration;
     }
 
+    public List<String> getTestIntegrationOnes() {
+        return testIntegrationOnes;
+    }
 }

@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
@@ -8,6 +9,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.practice.testgui.TestGui;
 import jp.chang.myclinic.practice.testintegration.PracticeTestGui;
+import jp.chang.myclinic.practice.testintegration.TestIntegration;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -57,11 +59,15 @@ public class Main extends Application {
                 }
             });
             stage.show();
-            if (cmdArgs.isTestGui()) {
+            if (cmdArgs.isTestIntegration() || cmdArgs.getTestIntegrationOnes().size() > 0) {
                 Thread selfTestExecutor = new Thread(() -> {
                     try {
-                        new PracticeTestGui().run();
-                        //Platform.exit();
+                        if( cmdArgs.isTestIntegration() ){
+                            new TestIntegration().runAll();
+                            Platform.exit();
+                        } else {
+                            new TestIntegration().runTests(cmdArgs.getTestIntegrationOnes());
+                        }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }

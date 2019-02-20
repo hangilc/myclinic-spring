@@ -22,14 +22,15 @@ import jp.chang.myclinic.utilfx.HandlerFX;
 public class DrugEditForm extends DrugForm {
 
     //private static Logger logger = LoggerFactory.getLogger(EditForm.class);
-    private DrugEditInput input = new DrugEditInput();
+    private DrugEditInput input;
     private HBox tekiyouBox = new HBox(4);
     private boolean isGaiyou;
 
     public DrugEditForm(DrugFullDTO drug, String drugTekiyou, VisitDTO visit) {
         super(visit);
         this.isGaiyou = Zaikei.fromCode(drug.master.zaikei) == Zaikei.Gaiyou;
-        input.setDrug(drug);
+        this.input = new DrugEditInput(drug);
+        //input.setDrug(drug);
         input.setTekiyou(drugTekiyou);
         tekiyouBox.setAlignment(Pos.CENTER_LEFT);
         adaptTekiyouBox(drugTekiyou);

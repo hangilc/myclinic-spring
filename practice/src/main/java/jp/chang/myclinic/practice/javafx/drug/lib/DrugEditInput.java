@@ -11,9 +11,14 @@ public class DrugEditInput extends DrugInput {
     private int drugId;
     private int visitId;
     private int prescribed;
+    private DrugDTO origDrug;
     private CheckBox allFixedCheck = new CheckBox("用量・用法・日数をそのままに");
 
-    public DrugEditInput() {
+    public DrugEditInput(DrugFullDTO drugFull) {
+        this.drugId = drugFull.drug.drugId;
+        this.visitId = drugFull.drug.visitId;
+        this.prescribed = drugFull.drug.prescribed;
+        this.origDrug = drugFull.drug;
         addRow(allFixedCheck);
     }
 
