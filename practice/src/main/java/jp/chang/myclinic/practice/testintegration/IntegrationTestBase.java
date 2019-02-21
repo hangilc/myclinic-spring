@@ -7,6 +7,7 @@ import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.practice.javafx.Record;
 import org.jetbrains.annotations.Contract;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -30,17 +31,6 @@ class IntegrationTestBase {
     Record waitForRecord(int visitId) {
         MainPane mainPane = getMainPane();
         return waitFor(10, () -> mainPane.findRecord(visitId));
-    }
-
-    int waitForIncrement(Supplier<Integer> gen, int lastId){
-        return waitFor(10, () -> {
-            int id = gen.get();
-            if( id > lastId ){
-                return Optional.of(id);
-            } else {
-                return Optional.empty();
-            }
-        });
     }
 
     <T extends Window> T waitForWindow(Class<T> windowClass){
@@ -76,6 +66,10 @@ class IntegrationTestBase {
             }
         }
         throw new RuntimeException("waitFor failed");
+    }
+
+    <T> T getLast(List<T> list){
+        return list.get(list.size() - 1);
     }
 
 }

@@ -1,9 +1,13 @@
 package jp.chang.myclinic.practice.testintegration;
 
+import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.practice.javafx.Record;
+import jp.chang.myclinic.practice.javafx.RecordDrug;
 import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchResultItem;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearcher;
+import jp.chang.myclinic.util.DrugUtil;
 
 import java.util.Optional;
 
@@ -38,6 +42,10 @@ class TestDrug extends IntegrationTestBase {
             record.listDrug().size());
         gui(drugEnterForm::simulateClickEnterButton);
         recordDrugWaiter.waitForIncrement(10);
+        RecordDrug enteredRecordDrug = getLast(record.listDrug());
+        DrugFullDTO enteredDrug = Service.api.getDrugFull(enteredRecordDrug.getDrugId()).join();
+        String rep = DrugUtil.drugRep(enteredDrug);
+        confirm(enteredRecordDrug.isDisplaying() && enteredRecordDrug.getDisplayingText().contains(rep));
     }
 
     private boolean filterPrescExampleById(DrugSearchResultItem result, int prescExampleId){

@@ -14,7 +14,7 @@ class IncrementWaiter extends IntegrationTestBase {
     }
 
     int waitForIncrement(int nTry){
-        waitFor(nTry, () -> {
+        return waitFor(nTry, () -> {
             int i = counter.get();
             if( i > lastValue ){
                 return Optional.of(i);

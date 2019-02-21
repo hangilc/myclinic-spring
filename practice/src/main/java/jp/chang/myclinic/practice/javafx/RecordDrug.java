@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx;
 
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
@@ -15,7 +16,7 @@ import jp.chang.myclinic.practice.javafx.drug.DrugEditForm;
 import jp.chang.myclinic.util.DrugUtil;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
-class RecordDrug extends StackPane {
+public class RecordDrug extends StackPane {
 
     private DrugFullDTO drug;
     private String tekiyou;
@@ -36,6 +37,30 @@ class RecordDrug extends StackPane {
         getChildren().add(disp);
     }
 
+    public int getDrugId() {
+        return drug.drug.drugId;
+    }
+
+    public boolean isDisplaying(){
+        for(Node node: getChildren()){
+            if( node == disp ){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getDisplayingText(){
+        StringBuilder sb = new StringBuilder();
+        for(Node node: disp.getChildren()){
+            if( node instanceof Text ){
+                Text t = (Text)node;
+                sb.append(t.getText());
+            }
+        }
+        return sb.toString();
+    }
+
     private void updateDisp(){
         String text = String.format("%d)%s", index, DrugUtil.drugRep(drug));
         if( tekiyou != null ){
@@ -45,11 +70,7 @@ class RecordDrug extends StackPane {
         disp.getChildren().add(new Text(text));
     }
 
-    public int getDrugId() {
-        return drug.drug.drugId;
-    }
-
-    void modifyDays(int days){
+   void modifyDays(int days){
         DrugFullDTO newDrugFull = DrugFullDTO.copy(drug);
         DrugDTO newDrug = DrugDTO.copy(drug.drug);
         newDrug.days = days;
