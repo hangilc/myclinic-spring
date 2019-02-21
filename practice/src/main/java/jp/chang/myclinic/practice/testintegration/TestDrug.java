@@ -4,10 +4,7 @@ import jp.chang.myclinic.practice.javafx.Record;
 import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchResultItem;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.Optional;
 
 class TestDrug extends IntegrationTestBase {
@@ -22,12 +19,12 @@ class TestDrug extends IntegrationTestBase {
         Record record = exam.record;
         gui(record::simulateNewDrugButtonClick);
         DrugEnterForm drugEnterForm = waitFor(record::findDrugEnterForm);
-        int drugSearchResultSerialId = drugEnterForm.getSearchResultSerialId();
+        IncrementWaiter searchResultWaiter = new IncrementWaiter(drugEnterForm::getSearchResultSerialId);
         gui(() -> {
             drugEnterForm.simulateSetSearchText("カロナール");
             drugEnterForm.simulateClickSearchButton();
         });
-        waitForNewSerialId(drugEnterForm::getSearchResultSerialId, drugSearchResultSerialId);
+        searchResultWaiter.waitForIncrement(10);
         int calonalNaifuku = 553;
         DrugSearchResultItem item = drugEnterForm.getSearchResultItems().stream()
                 .filter(result -> filterPrescExampleById(result, calonalNaifuku))
@@ -37,7 +34,10 @@ class TestDrug extends IntegrationTestBase {
             DrugSearchResultItem currentItem = drugEnterForm.getCurrentInputItem();
             return Optional.ofNullable(currentItem == item ? true : null);
         });
+        IncrementWaiter recordDrugWaiter = new IncrementWaiter(() ->
+            record.listDrug().size());
         gui(drugEnterForm::simulateClickEnterButton);
+        recordDrugWaiter.waitForIncrement(10);
     }
 
     private boolean filterPrescExampleById(DrugSearchResultItem result, int prescExampleId){

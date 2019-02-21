@@ -6,8 +6,6 @@ import jp.chang.myclinic.practice.Globals;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.practice.javafx.Record;
 import org.jetbrains.annotations.Contract;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -34,7 +32,7 @@ class IntegrationTestBase {
         return waitFor(10, () -> mainPane.findRecord(visitId));
     }
 
-    int waitForNewSerialId(Supplier<Integer> gen, int lastId){
+    int waitForIncrement(Supplier<Integer> gen, int lastId){
         return waitFor(10, () -> {
             int id = gen.get();
             if( id > lastId ){

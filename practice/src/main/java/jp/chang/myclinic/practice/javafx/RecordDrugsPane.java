@@ -20,7 +20,7 @@ class RecordDrugsPane extends VBox {
     private VisitDTO visit;
     private DrugMenu menu;
 
-    RecordDrugsPane(List<DrugFullDTO> drugs, VisitDTO visit, Map<Integer, DrugAttrDTO> drugAttrMap){
+    RecordDrugsPane(List<DrugFullDTO> drugs, VisitDTO visit, Map<Integer, DrugAttrDTO> drugAttrMap) {
         this.visit = visit;
         setAlignment(Pos.TOP_LEFT);
         this.menu = new DrugMenu(visit);
@@ -28,7 +28,7 @@ class RecordDrugsPane extends VBox {
         drugs.forEach(drug -> addDrug(drug, drugAttrMap.get(drug.drug.drugId)));
     }
 
-    void simulateNewDrugButtonClick(){
+    void simulateNewDrugButtonClick() {
         menu.simulateNewDrugButtonClick();
     }
 
@@ -36,19 +36,19 @@ class RecordDrugsPane extends VBox {
         return menu.findDrugEnterForm();
     }
 
-    List<Integer> listDrugId(){
-        List<Integer> ids = new ArrayList<>();
-        for(Node node: getChildren()){
-            if( node instanceof RecordDrug ){
-                RecordDrug recordDrug = (RecordDrug)node;
-                ids.add(recordDrug.getDrugId());
+    List<RecordDrug> listDrug() {
+        List<RecordDrug> drugs = new ArrayList<>();
+        for (Node node : getChildren()) {
+            if (node instanceof RecordDrug) {
+                RecordDrug recordDrug = (RecordDrug) node;
+                drugs.add(recordDrug);
             }
         }
-        return ids;
+        return drugs;
     }
 
-    void addDrug(DrugFullDTO drug, DrugAttrDTO attr){
-        if( drug.drug.visitId != visit.visitId ){
+    void addDrug(DrugFullDTO drug, DrugAttrDTO attr) {
+        if (drug.drug.visitId != visit.visitId) {
             throw new RuntimeException("Inconsisitent visitId in drug.");
         }
         RecordDrug recordDrug = new RecordDrug(drug, visit, index++, attr);
@@ -57,24 +57,24 @@ class RecordDrugsPane extends VBox {
 
     void modifyDrugDays(int drugId, int days) {
         RecordDrug recordDrug = findRecordDrug(drugId);
-        if( recordDrug != null ){
+        if (recordDrug != null) {
             recordDrug.modifyDays(days);
         }
     }
 
     void deleteDrug(int drugId) {
         RecordDrug recordDrug = findRecordDrug(drugId);
-        if( recordDrug != null ){
+        if (recordDrug != null) {
             getChildren().remove(recordDrug);
             reIndex();
         }
     }
 
-    private RecordDrug findRecordDrug(int drugId){
-        for(Node node: getChildren()){
-            if( node instanceof RecordDrug ){
-                RecordDrug recordDrug = (RecordDrug)node;
-                if( recordDrug.getDrugId() == drugId ){
+    private RecordDrug findRecordDrug(int drugId) {
+        for (Node node : getChildren()) {
+            if (node instanceof RecordDrug) {
+                RecordDrug recordDrug = (RecordDrug) node;
+                if (recordDrug.getDrugId() == drugId) {
                     return recordDrug;
                 }
             }
@@ -82,11 +82,11 @@ class RecordDrugsPane extends VBox {
         return null;
     }
 
-    private void reIndex(){
+    private void reIndex() {
         this.index = 1;
-        for(Node node: getChildren()){
-            if( node instanceof RecordDrug ){
-                RecordDrug recordDrug = (RecordDrug)node;
+        for (Node node : getChildren()) {
+            if (node instanceof RecordDrug) {
+                RecordDrug recordDrug = (RecordDrug) node;
                 recordDrug.setIndex(this.index++);
             }
         }

@@ -80,8 +80,8 @@ public class Record extends VBox {
         return drugsPane.findDrugEnterForm();
     }
 
-    public List<Integer> listDrugId(){
-        return drugsPane.listDrugId();
+    public List<RecordDrug> listDrug(){
+        return drugsPane.listDrug();
     }
 
     private Node createBody(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
