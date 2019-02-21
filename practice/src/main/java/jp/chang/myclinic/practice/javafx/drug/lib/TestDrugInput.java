@@ -118,7 +118,7 @@ public class TestDrugInput extends TestBase {
         inputBase.getStateTo(state);
         confirm(state.getAmountLabel().equals("用量："), "invalid amount label");
         confirm(state.getDaysLabel().equals("日数："), "invalid days label");
-        confirm(state.getDaysUnit().equals("日分："), "invalid days unit");
+        confirm(state.getDaysUnit().equals("日分"), "invalid days unit");
     }
 
     private DrugInputBaseState getInputBaseState(InputBase inputBase){

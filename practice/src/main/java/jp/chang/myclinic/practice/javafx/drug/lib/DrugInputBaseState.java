@@ -4,7 +4,6 @@ import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.*;
 
-import java.text.DecimalFormat;
 import java.util.Objects;
 
 public class DrugInputBaseState {
@@ -22,7 +21,7 @@ public class DrugInputBaseState {
     private boolean daysVisible = true;
 
     public DrugInputBaseState() {
-        //adaptToCategory();
+        adaptToCategory();
     }
 
     public int getIyakuhincode() {

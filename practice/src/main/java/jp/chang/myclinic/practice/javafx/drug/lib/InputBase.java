@@ -59,6 +59,7 @@ class InputBase extends VBox {
         category.setValue(DrugCategory.Naifuku);
         category.addListener((obs, oldValue, newValue) -> onCategoryChange());
         addLabelContextMenu();
+        setStateFrom(new DrugInputBaseState());
     }
 
     void onCategoryChange() {

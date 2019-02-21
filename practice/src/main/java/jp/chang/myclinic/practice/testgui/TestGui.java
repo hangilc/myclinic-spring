@@ -26,9 +26,13 @@ public class TestGui {
         main.getStylesheets().add("css/Practice.css");
         stage.setScene(new Scene(main));
         stage.show();
-        new TestDrugInput(stage, main).run();
-        System.out.println("Gui test done.");
-        //stage.close();
+        try {
+            new TestDrugInput(stage, main).run();
+            System.out.println("Gui test done.");
+            //stage.close();
+        } catch(Exception ex){
+            ex.printStackTrace();
+        }
     }
 
 }
