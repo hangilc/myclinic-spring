@@ -5,14 +5,18 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.practice.javafx.shinryou.AddRegularForm;
 import jp.chang.myclinic.practice.javafx.shinryou.ShinryouMenu;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 class RecordShinryouPane extends VBox {
 
     private VBox shinryouList;
+    private ShinryouMenu menu;
 
     RecordShinryouPane(List<ShinryouFullDTO> shinryouList, VisitDTO visit,
                        Map<Integer, ShinryouAttrDTO> shinryouAttrMap){
@@ -23,11 +27,15 @@ class RecordShinryouPane extends VBox {
         shinryouList.forEach(s -> addShinryou(s, shinryouAttrMap.get(s.shinryou.shinryouId)));
     }
 
+    void simulateEnterRegularShinryouClick() {
+        menu.simulateEnterRegularChoice();
+    }
+
     private void addShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
         shinryouList.getChildren().add(new RecordShinryou(shinryou, attr));
     }
 
-    public void insertShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
+    void insertShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
         int i = 0;
         int shinryoucode = shinryou.shinryou.shinryoucode;
         RecordShinryou newRecordShinryou = new RecordShinryou(shinryou, attr);
@@ -45,7 +53,8 @@ class RecordShinryouPane extends VBox {
     }
 
     private Node createMenu(VisitDTO visit){
-        return new ShinryouMenu(visit);
+        this.menu = new ShinryouMenu(visit);
+        return menu;
     }
 
     private Node createShinryouList(){
@@ -65,10 +74,22 @@ class RecordShinryouPane extends VBox {
         return null;
     }
 
-    public void deleteShinryou(int shinryouId) {
+    void deleteShinryou(int shinryouId) {
         RecordShinryou recordShinryou = findRecordShinryou(shinryouId);
         if( recordShinryou != null ){
             shinryouList.getChildren().remove(recordShinryou);
         }
     }
+
+    Optional<AddRegularForm> findAddRegularForm() {
+        return menu.findAddRegularForm();
+    }
+
+    List<RecordShinryou> listShinryou() {
+        return shinryouList.getChildren().stream()
+                .filter(n -> n instanceof RecordShinryou)
+                .map(n -> (RecordShinryou)n)
+                .collect(Collectors.toList());
+    }
+
 }

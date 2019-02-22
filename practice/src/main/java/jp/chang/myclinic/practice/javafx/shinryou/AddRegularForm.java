@@ -25,12 +25,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class AddRegularForm extends VBox {
+public class AddRegularForm extends VBox {
 
     private int visitId;
     private List<CheckBox> checks = new ArrayList<>();
     private CheckBox shohouryouCheckBox;
     private CheckBox kouhatsuKasanCheckBox;
+    private Button enterButton;
 
     AddRegularForm(int visitId) {
         super(4);
@@ -48,6 +49,21 @@ class AddRegularForm extends VBox {
                 });
             }
         }
+    }
+
+    public void simulateSelectItem(String itemLabel){
+        for(CheckBox c: checks){
+            String label = c.getText();
+            if( label.equals(itemLabel) ){
+                c.setSelected(true);
+                return;
+            }
+        }
+        throw new RuntimeException("cannot find item: " + itemLabel);
+    }
+
+    public void simulateClickEnterButton(){
+        enterButton.fire();
     }
 
     private String getKouhatsuKasan() {
@@ -116,7 +132,7 @@ class AddRegularForm extends VBox {
 
     private Node createCommands() {
         HBox hbox = new HBox(4);
-        Button enterButton = new Button("入力");
+        this.enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
         enterButton.setOnAction(event -> doEnter());
         cancelButton.setOnAction(event -> onCancel());

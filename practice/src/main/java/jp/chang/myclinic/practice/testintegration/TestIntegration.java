@@ -1,12 +1,6 @@
 package jp.chang.myclinic.practice.testintegration;
 
 import jp.chang.myclinic.client.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 public class TestIntegration {
 
@@ -27,6 +21,7 @@ public class TestIntegration {
         new TestText(exam).runAll();
         new TestHoken(exam).confirmHokenShahokokuho(exam.shahokokuho);
         new TestDrug(exam).enterNaifuku();
+        new TestShinryou(exam).enterForSimpleExam();
     }
 
     private void confirmMockPatient() {
