@@ -68,6 +68,17 @@ class IntegrationTestBase {
         throw new RuntimeException("waitFor failed");
     }
 
+    void waitForNot(Supplier<Optional<?>> f){
+        waitFor(() -> {
+            Optional<?> opt = f.get();
+            if( opt.isEmpty() ){
+                return Optional.of(true);
+            } else {
+                return Optional.empty();
+            }
+        });
+    }
+
     <T> T getLast(List<T> list){
         return list.get(list.size() - 1);
     }

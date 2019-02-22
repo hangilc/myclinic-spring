@@ -46,6 +46,8 @@ class TestDrug extends IntegrationTestBase {
         DrugFullDTO enteredDrug = Service.api.getDrugFull(enteredRecordDrug.getDrugId()).join();
         String rep = DrugUtil.drugRep(enteredDrug);
         confirm(enteredRecordDrug.isDisplaying() && enteredRecordDrug.getDisplayingText().contains(rep));
+        gui(drugEnterForm::simulateClickCloseButton);
+        waitForNot(record::findDrugEnterForm);
     }
 
     private boolean filterPrescExampleById(DrugSearchResultItem result, int prescExampleId){

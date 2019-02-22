@@ -21,6 +21,7 @@ public class DrugEnterForm extends DrugForm {
     private SearchTextInput searchTextInput;
     private SearchResult searchResult;
     private Button enterButton;
+    private Button closeButton;
 
     DrugEnterForm(VisitDTO visit){
         super(visit);
@@ -60,6 +61,10 @@ public class DrugEnterForm extends DrugForm {
         enterButton.fire();
     }
 
+    public void simulateClickCloseButton() {
+        closeButton.fire();
+    }
+
     protected void onClose(){
 
     }
@@ -69,7 +74,7 @@ public class DrugEnterForm extends DrugForm {
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getStyleClass().add("commands");
         this.enterButton = new Button("入力");
-        Button closeButton = new Button("閉じる");
+        this.closeButton = new Button("閉じる");
         Hyperlink clearLink = new Hyperlink("クリア");
         enterButton.setOnAction(evt -> doEnter());
         closeButton.setOnAction(evt -> onClose());
