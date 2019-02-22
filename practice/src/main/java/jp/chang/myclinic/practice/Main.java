@@ -8,7 +8,6 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.practice.testgui.TestGui;
-import jp.chang.myclinic.practice.testintegration.PracticeTestGui;
 import jp.chang.myclinic.practice.testintegration.TestIntegration;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -59,14 +58,14 @@ public class Main extends Application {
                 }
             });
             stage.show();
-            if (cmdArgs.isTestIntegration() || cmdArgs.getTestIntegrationOnes().size() > 0) {
+            if (cmdArgs.isTestIntegration() || cmdArgs.getTestIntegrationOne() != null) {
                 Thread selfTestExecutor = new Thread(() -> {
                     try {
                         if( cmdArgs.isTestIntegration() ){
                             new TestIntegration().runAll();
-                            //Platform.exit();
+                            Platform.exit();
                         } else {
-                            new TestIntegration().runTests(cmdArgs.getTestIntegrationOnes());
+                            new TestIntegration().runTest(cmdArgs.getTestIntegrationOne());
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();

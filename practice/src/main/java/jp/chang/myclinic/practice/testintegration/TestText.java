@@ -3,50 +3,43 @@ package jp.chang.myclinic.practice.testintegration;
 import jp.chang.myclinic.practice.javafx.Record;
 import jp.chang.myclinic.practice.javafx.RecordText;
 import jp.chang.myclinic.practice.javafx.TextEnterForm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Optional;
+import jp.chang.myclinic.practice.javafx.text.TextDisp;
 
 class TestText extends IntegrationTestBase {
 
-    private Exam exam;
-
-    TestText(Exam exam) {
-        this.exam = exam;
+    void runAll() {
+        Exam exam = new TestSelectForExam().selectWithNewPatientWithHoken();
+        RecordText recordText = enterText(exam.record);
+        modifyText(recordText);
     }
 
-    void runAll(){
-        testEnter();
+    void modifyText(RecordText recordText) {
+
     }
 
-    private void testEnter(){
-        Record record = exam.record;
+    RecordText enterText(Record record) {
+        return enterText(record, "昨日から、のどの痛みと鼻水がある。");
+    }
+
+    RecordText enterText(Record record, String content) {
         gui(record::simulateNewTextButtonClick);
         TextEnterForm textEnterForm = waitFor(record::findTextEnterForm);
         int lastTextId = record.getLastTextId();
-        String text = "昨日から、のどの痛みと鼻水がある。";
+        IncrementWaiter textRecordWaiter = new IncrementWaiter(record::getLastTextId);
         gui(() -> {
-            textEnterForm.setContent(text);
+            textEnterForm.setContent(content);
             textEnterForm.simulateClickEnterButton();
         });
-        int newTextId = waitFor(10, () -> {
-            List<Integer> textIds = record.listTextId();
-            for (Integer id : textIds) {
-                if (id > lastTextId) {
-                    return Optional.of(id);
-                }
-            }
-            return Optional.empty();
-        });
+        int newTextId = textRecordWaiter.waitForIncrement();
         RecordText newRecordText = record.findRecordText(newTextId).orElseThrow(() ->
                 new RuntimeException("find record text failed.")
         );
-        if (!newRecordText.getContentRep().equals(text)) {
+        TextDisp textDisp = newRecordText.findTextDisp().orElseThrow(() ->
+                new RuntimeException("cannot find record disp"));
+        if (!textDisp.getRep().equals(content)) {
             throw new RuntimeException("Incorrect text content.");
         }
-
+        return newRecordText;
     }
 
 }

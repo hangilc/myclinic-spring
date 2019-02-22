@@ -2,27 +2,46 @@ package jp.chang.myclinic.practice.testintegration;
 
 import jp.chang.myclinic.client.Service;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class TestIntegration extends IntegrationTestBase{
 
-    public void runAll(){
+    public TestIntegration(){
         confirmMockPatient();
         new TestCleanupWqueue().run();
-        testSimpleExam();
+    }
+
+    private Map<String, Runnable> tests = new LinkedHashMap<>();
+    {
+        tests.put("exam", this::testSimpleExam);
+        tests.put("text", () -> new TestText().runAll());
+    }
+
+    public void runAll(){
+        for(String test: tests.keySet()){
+            tests.get(test).run();
+        }
         System.out.println("Test finished.");
     }
 
-    public void runTests(Iterable<String> tests){
-        confirmMockPatient();
-        throw new RuntimeException("Not implemented");
+    public void runTest(String test){
+        Runnable runnable = tests.getOrDefault(test, null);
+        if( runnable == null ){
+            System.err.printf("Cannot find test: %s\n", test);
+            System.exit(1);
+        }
+        runnable.run();
+        System.out.printf("Test (%s) finished.\n", test);
     }
 
     private void testSimpleExam(){
         Exam exam = new TestSelectForExam().selectWithNewPatientWithHoken();
-        new TestText(exam).runAll();
-        new TestHoken(exam).confirmHokenShahokokuho(exam.shahokokuho);
-        new TestDrug(exam).enterNaifuku();
-        new TestShinryou(exam).enterForSimpleExam();
-        new TestCashier(exam).finishCashier();
+        new TestText().enterText(exam.record);
+        new TestHoken().confirmHokenShahokokuho(exam.record, exam.shahokokuho);
+        new TestDrug().enterNaifuku(exam.record);
+        new TestShinryou().enterForSimpleExam(exam.record);
+        new TestCashier().finishCashier();
         waitForRecordDisappear(exam.record);
     }
 

@@ -19,6 +19,10 @@ class IncrementWaiter extends IntegrationTestBase {
         return this;
     }
 
+    int waitForIncrement(){
+        return waitForIncrement(5);
+    }
+
     int waitForIncrement(int nTry){
         return waitFor(nTry, () -> {
             int i = counter.get();

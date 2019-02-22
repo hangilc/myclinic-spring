@@ -14,13 +14,13 @@ class CmdArgs {
         System.out.println("    --test-gui test,... ");
         System.out.println("               server-url is not required (or ignored)");
         System.out.println("    --test-integration");
-        System.out.println("    --test-integration-one test (can be applied multiple times)");
+        System.out.println("    --test-integration-one test");
     }
 
     private String serverUrl;
     private List<String> testGui;
     private boolean testIntegration;
-    private List<String> testIntegrationOnes = new ArrayList<>();
+    private String testIntegrationOne;
 
     private static class Context {
         int i;
@@ -82,7 +82,7 @@ class CmdArgs {
                         break;
                     }
                     case "--test-integration-one": {
-                        testIntegrationOnes.add(ctx.getOptionArg());
+                        this.testIntegrationOne = ctx.getOptionArg();
                         break;
                     }
                     default: {
@@ -97,6 +97,9 @@ class CmdArgs {
                 usage();
                 throw new RuntimeException("Cannot happen.");
             }
+        }
+        if( testIntegration ){
+            this.testIntegrationOne = null;
         }
         int remArgs = regularArgs.size();
         if( remArgs == 0 ){
@@ -124,11 +127,11 @@ class CmdArgs {
         return testGui;
     }
 
-    public boolean isTestIntegration() {
+    boolean isTestIntegration() {
         return testIntegration;
     }
 
-    public List<String> getTestIntegrationOnes() {
-        return testIntegrationOnes;
+    String getTestIntegrationOne() {
+        return testIntegrationOne;
     }
 }

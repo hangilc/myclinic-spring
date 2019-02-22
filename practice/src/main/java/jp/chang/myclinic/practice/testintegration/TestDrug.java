@@ -13,14 +13,7 @@ import java.util.Optional;
 
 class TestDrug extends IntegrationTestBase {
 
-    private Exam exam;
-
-    TestDrug(Exam exam) {
-        this.exam = exam;
-    }
-
-    void enterNaifuku(){
-        Record record = exam.record;
+    void enterNaifuku(Record record){
         gui(record::simulateNewDrugButtonClick);
         DrugEnterForm drugEnterForm = waitFor(record::findDrugEnterForm);
         IncrementWaiter searchResultWaiter = new IncrementWaiter(drugEnterForm::getSearchResultSerialId);

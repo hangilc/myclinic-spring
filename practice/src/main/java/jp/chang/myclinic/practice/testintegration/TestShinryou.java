@@ -5,14 +5,7 @@ import jp.chang.myclinic.practice.javafx.shinryou.AddRegularForm;
 
 class TestShinryou extends IntegrationTestBase {
 
-    private Exam exam;
-
-    TestShinryou(Exam exam) {
-        this.exam = exam;
-    }
-
-    void enterForSimpleExam(){
-        Record record = exam.record;
+    void enterForSimpleExam(Record record){
         gui(record::simulateAddRegularShinryouClick);
         AddRegularForm form = waitFor(record::findAddRegularForm);
         String[] items = new String[]{
