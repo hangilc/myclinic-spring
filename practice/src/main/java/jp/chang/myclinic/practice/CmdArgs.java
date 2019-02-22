@@ -7,18 +7,20 @@ class CmdArgs {
 
     //private static Logger logger = LoggerFactory.getLogger(CmdArgs.class);
 
-    static void usage(){
+    static void usage() {
         System.out.println("Usage: practice [options] [server-url]");
         System.out.println("If server-url is missing, env var MYCLINIC_SERVICE is used.");
         System.out.println("  Options: ");
-        System.out.println("    --test-gui test,... ");
-        System.out.println("               server-url is not required (or ignored)");
+        System.out.println("    --test-gui");
+        System.out.println("    --test-gui-one test");
         System.out.println("    --test-integration");
         System.out.println("    --test-integration-one test");
+        System.out.println("  for --test-* options, server-url should not be supplied");
     }
 
     private String serverUrl;
-    private List<String> testGui;
+    private boolean testGui;
+    private String testGuiOne;
     private boolean testIntegration;
     private String testIntegrationOne;
 
@@ -27,30 +29,30 @@ class CmdArgs {
         String[] args;
         String currentOption;
 
-        private Context( String[] args){
+        private Context(String[] args) {
             this.i = 0;
             this.args = args;
         }
 
-        boolean hasNext(){
+        boolean hasNext() {
             return i < args.length;
         }
 
-        boolean hasNextOption(){
+        boolean hasNextOption() {
             return hasNext() && args[i].startsWith("-");
         }
 
-        boolean hasNextRegularArg(){
+        boolean hasNextRegularArg() {
             return hasNext() && !args[i].startsWith("-");
         }
 
-        String getNextOption(){
+        String getNextOption() {
             this.currentOption = args[i++];
             return currentOption;
         }
 
-        String getOptionArg(){
-            if( !hasNextRegularArg() ){
+        String getOptionArg() {
+            if (!hasNextRegularArg()) {
                 System.err.printf("Cannot find argument for %s.", currentOption);
                 usage();
                 System.exit(1);
@@ -59,7 +61,7 @@ class CmdArgs {
             return args[i++];
         }
 
-        String getNextRegularArg(){
+        String getNextRegularArg() {
             this.currentOption = null;
             return args[i++];
         }
@@ -69,12 +71,16 @@ class CmdArgs {
     CmdArgs(String[] args) {
         Context ctx = new Context(args);
         List<String> regularArgs = new ArrayList<>();
-        while( ctx.hasNext() ){
-            if( ctx.hasNextOption() ){
+        while (ctx.hasNext()) {
+            if (ctx.hasNextOption()) {
                 String opt = ctx.getNextOption();
-                switch(opt){
+                switch (opt) {
                     case "--test-gui": {
-                        this.testGui = List.of(ctx.getOptionArg().split(","));
+                        this.testGui = true;
+                        break;
+                    }
+                    case "--test-gui-one": {
+                        this.testGuiOne = ctx.getOptionArg();
                         break;
                     }
                     case "--test-integration": {
@@ -91,22 +97,23 @@ class CmdArgs {
                         System.exit(1);
                     }
                 }
-            } else if( ctx.hasNextRegularArg() ){
+            } else if (ctx.hasNextRegularArg()) {
                 regularArgs.add(ctx.getNextRegularArg());
             } else {
                 usage();
                 throw new RuntimeException("Cannot happen.");
             }
         }
-        if( testIntegration ){
+        if (testGui) {
+            this.testGuiOne = null;
+        }
+        if (testIntegration) {
             this.testIntegrationOne = null;
         }
         int remArgs = regularArgs.size();
-        if( remArgs == 0 ){
-            if( testGui == null ){
-                this.serverUrl = System.getenv("MYCLINIC_SERVICE");
-            }
-        } else if( remArgs == 1 ){
+        if (remArgs == 0) {
+            this.serverUrl = System.getenv("MYCLINIC_SERVICE");
+        } else if (remArgs == 1) {
             this.serverUrl = regularArgs.get(0);
         } else {
             System.err.println("Too many arguments");
@@ -119,12 +126,12 @@ class CmdArgs {
         return serverUrl;
     }
 
-    boolean isTestGui(){
-        return testGui != null;
+    boolean isTestGui() {
+        return testGui;
     }
 
-    List<String> getTestGui(){
-        return testGui;
+    String getTestGuiOne(){
+        return testGuiOne;
     }
 
     boolean isTestIntegration() {

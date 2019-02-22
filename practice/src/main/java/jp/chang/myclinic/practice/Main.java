@@ -33,8 +33,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        if (cmdArgs.isTestGui()) {
-            new TestGui(stage).run(cmdArgs.getTestGui());
+        if (cmdArgs.isTestGui() || cmdArgs.getTestGuiOne() != null) {
+            if( cmdArgs.isTestGui() ){
+                new TestGui(stage).runAll();
+            } else {
+                new TestGui(stage).runTest(cmdArgs.getTestGuiOne());
+            }
         } else {
             Service.setServerUrl(cmdArgs.getServerUrl());
             ctx = SpringApplication.run(Main.class, getParameters().getRaw().toArray(new String[]{}));
