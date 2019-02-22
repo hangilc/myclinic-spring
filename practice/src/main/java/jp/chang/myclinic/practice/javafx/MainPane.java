@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Component
@@ -45,6 +46,7 @@ public class MainPane extends BorderPane {
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
     private MenuItem selectVisitMenu;
     private RecordsPane recordsPane;
+    private Supplier<Optional<PatientManip>> findPatientManipFun;
 
     public MainPane() {
         setTop(createMenu());
@@ -58,6 +60,15 @@ public class MainPane extends BorderPane {
 
     public Optional<Record> findRecord(int visitId){
         return recordsPane.findRecord(visitId);
+    }
+
+    public List<Record> listRecord(){
+        return recordsPane.listRecord();
+    }
+
+    public void simulateClickCashierButton() {
+        findPatientManipFun.get().orElseThrow(() -> new RuntimeException("cannot find patient manip"))
+                .simulateClickCashierButton();
     }
 
     private Node createMenu() {
@@ -251,6 +262,14 @@ public class MainPane extends BorderPane {
                 wrapper.getChildren().clear();
             }
         });
+        this.findPatientManipFun = () -> {
+            for(Node node: wrapper.getChildren()){
+                if( node instanceof PatientManip ){
+                    return Optional.of((PatientManip)node);
+                }
+            }
+            return Optional.empty();
+        };
         return wrapper;
     }
 
@@ -392,4 +411,5 @@ public class MainPane extends BorderPane {
             dialog.show();
         });
     }
+
 }

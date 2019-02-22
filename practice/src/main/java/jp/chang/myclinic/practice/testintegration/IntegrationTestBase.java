@@ -22,8 +22,8 @@ class IntegrationTestBase {
     }
 
     @Contract("false -> fail")
-    void confirm(boolean ok){
-        if( !ok ){
+    void confirm(boolean ok) {
+        if (!ok) {
             throw new RuntimeException("confirmation failed");
         }
     }
@@ -33,18 +33,44 @@ class IntegrationTestBase {
         return waitFor(10, () -> mainPane.findRecord(visitId));
     }
 
-    <T extends Window> T waitForWindow(Class<T> windowClass){
+    void waitForRecordDisappear(Record record){
+        waitFor(() -> {
+            List<Record> list = getMainPane().listRecord();
+            if( list.contains(record) ){
+                return Optional.empty();
+            } else {
+                return Optional.of(true);
+            }
+        });
+    }
+
+    <T extends Window> T waitForWindow(Class<T> windowClass) {
         return waitForWindow(5, windowClass);
     }
 
-    <T extends Window> T waitForWindow(int n, Class<T> windowClass){
+    <T extends Window> T waitForWindow(int n, Class<T> windowClass) {
         return waitFor(n, () -> {
-            for(Window w: Window.getWindows()){
-                if( windowClass.isInstance(w) ){
+            for (Window w : Window.getWindows()) {
+                if (windowClass.isInstance(w)) {
                     return Optional.of(windowClass.cast(w));
                 }
             }
             return Optional.empty();
+        });
+    }
+
+    void waitForWindowDisappear(Window window) {
+        waitForWindowDisappear(5, window);
+    }
+
+    void waitForWindowDisappear(int n, Window window) {
+        waitFor(n, () -> {
+            for (Window w : Window.getWindows()) {
+                if (w == window) {
+                    return Optional.empty();
+                }
+            }
+            return Optional.of(true);
         });
     }
 
@@ -68,10 +94,10 @@ class IntegrationTestBase {
         throw new RuntimeException("waitFor failed");
     }
 
-    void waitForNot(Supplier<Optional<?>> f){
+    void waitForNot(Supplier<Optional<?>> f) {
         waitFor(() -> {
             Optional<?> opt = f.get();
-            if( opt.isEmpty() ){
+            if (opt.isEmpty()) {
                 return Optional.of(true);
             } else {
                 return Optional.empty();
@@ -79,7 +105,7 @@ class IntegrationTestBase {
         });
     }
 
-    <T> T getLast(List<T> list){
+    <T> T getLast(List<T> list) {
         return list.get(list.size() - 1);
     }
 

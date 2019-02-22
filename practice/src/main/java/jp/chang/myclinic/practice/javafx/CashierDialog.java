@@ -16,12 +16,13 @@ import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.util.function.Consumer;
 
-class CashierDialog extends Stage {
+public class CashierDialog extends Stage {
 
     //private static Logger logger = LoggerFactory.getLogger(CashierDialog.class);
     private int visitId;
     private int chargeValue;
     private MeisaiDTO meisai;
+    private Button enterButton;
 
     CashierDialog(MeisaiDTO meisai, int visitId) {
         this.meisai = meisai;
@@ -39,6 +40,10 @@ class CashierDialog extends Stage {
                 createCommands()
         );
         setScene(new Scene(root));
+    }
+
+    public void simulateClickEnterButton() {
+        enterButton.fire();
     }
 
     private Node createDisp(){
@@ -139,7 +144,7 @@ class CashierDialog extends Stage {
 
     private Node createCommands(){
         HBox hbox = new HBox(4);
-        Button enterButton = new Button("入力");
+        this.enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
         enterButton.setOnAction(evt -> doEnter());
         cancelButton.setOnAction(evt -> CashierDialog.this.close());

@@ -6,8 +6,10 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.events.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 class RecordsPane extends VBox {
 
@@ -45,6 +47,11 @@ class RecordsPane extends VBox {
             }
         }
         return Optional.empty();
+    }
+
+    List<Record> listRecord() {
+        return getChildren().stream().filter(n -> n instanceof Record)
+                .map(n -> (Record)n).collect(Collectors.toList());
     }
 
     private void addDrug(DrugFullDTO drug, DrugAttrDTO attr){

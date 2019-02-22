@@ -2,7 +2,7 @@ package jp.chang.myclinic.practice.testintegration;
 
 import jp.chang.myclinic.client.Service;
 
-public class TestIntegration {
+public class TestIntegration extends IntegrationTestBase{
 
     public void runAll(){
         confirmMockPatient();
@@ -22,6 +22,8 @@ public class TestIntegration {
         new TestHoken(exam).confirmHokenShahokokuho(exam.shahokokuho);
         new TestDrug(exam).enterNaifuku();
         new TestShinryou(exam).enterForSimpleExam();
+        new TestCashier(exam).finishCashier();
+        waitForRecordDisappear(exam.record);
     }
 
     private void confirmMockPatient() {
