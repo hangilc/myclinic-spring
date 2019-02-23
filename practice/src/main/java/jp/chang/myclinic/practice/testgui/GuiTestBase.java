@@ -2,7 +2,7 @@ package jp.chang.myclinic.practice.testgui;
 
 import org.jetbrains.annotations.Contract;
 
-public class TestBase {
+public class GuiTestBase extends TestGroup {
 
     @Contract("false, _ -> fail")
     public void confirm(boolean bool, String errorMessage){

@@ -7,13 +7,13 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.practice.testgui.TestBase;
+import jp.chang.myclinic.practice.testgui.GuiTestBase;
 
 import java.util.Arrays;
 
 import static java.util.stream.Collectors.toList;
 
-public class TestDrugInput extends TestBase {
+public class TestDrugInput extends GuiTestBase {
 
     private Stage stage;
     private Pane mainPane;

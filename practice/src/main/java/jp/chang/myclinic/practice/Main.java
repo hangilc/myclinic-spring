@@ -35,7 +35,7 @@ public class Main extends Application {
     public void start(Stage stage) {
         if (cmdArgs.isTestGui() || cmdArgs.getTestGuiOne() != null) {
             if( cmdArgs.isTestGui() ){
-                new TestGui(stage).runAll();
+                new TestGui(stage).runTest(null);
             } else {
                 new TestGui(stage).runTest(cmdArgs.getTestGuiOne());
             }
