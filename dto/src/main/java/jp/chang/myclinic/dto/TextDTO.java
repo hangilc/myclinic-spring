@@ -15,4 +15,13 @@ public class TextDTO {
         textDTO.content = content;
         return textDTO;
     }
+
+    @Override
+    public String toString() {
+        return "TextDTO{" +
+                "textId=" + textId +
+                ", visitId=" + visitId +
+                ", content='" + content + '\'' +
+                '}';
+    }
 }

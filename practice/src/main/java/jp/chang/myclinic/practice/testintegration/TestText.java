@@ -24,7 +24,6 @@ class TestText extends IntegrationTestBase {
     RecordText enterText(Record record, String content) {
         gui(record::simulateNewTextButtonClick);
         TextEnterForm textEnterForm = waitFor(record::findTextEnterForm);
-        int lastTextId = record.getLastTextId();
         IncrementWaiter textRecordWaiter = new IncrementWaiter(record::getLastTextId);
         gui(() -> {
             textEnterForm.setContent(content);

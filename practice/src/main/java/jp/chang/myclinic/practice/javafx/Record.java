@@ -44,6 +44,10 @@ public class Record extends VBox {
         return visitId;
     }
 
+    public double getTextsPaneWidth(){
+        return textPane.getWidth();
+    }
+
     public void simulateNewTextButtonClick() {
         textPane.simulateNewTextButtonClick();
     }

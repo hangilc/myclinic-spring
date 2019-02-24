@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.testgui;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.practice.javafx.TestText;
 import jp.chang.myclinic.practice.javafx.drug.lib.TestDrugInput;
 
 public class TestGui extends GuiTestBase {
@@ -10,8 +11,9 @@ public class TestGui extends GuiTestBase {
     private Stage stage;
     private StackPane main = new StackPane();
 
-    {
-        addTestProc("drug", () -> () -> new TestDrugInput(stage, main).run());
+    private void setupTests(){
+        addTestGroup("text", new TestText(stage, main));
+        //addTestProc("drug", () -> new TestDrugInput(stage, main).run());
     }
 
     public TestGui(Stage stage) {
@@ -20,12 +22,13 @@ public class TestGui extends GuiTestBase {
         main.getStylesheets().add("css/Practice.css");
         stage.setScene(new Scene(main));
         stage.show();
+        setupTests();
     }
 
     @Override
     public void runTest(String test){
         try {
-            super.runTest(test);
+            new Thread(() -> TestGui.super.runTest(test)).start();
         } catch(Exception ex){
             ex.printStackTrace();
         }

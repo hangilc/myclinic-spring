@@ -97,7 +97,7 @@ class IntegrationTestBase {
     void waitForNot(Supplier<Optional<?>> f) {
         waitFor(() -> {
             Optional<?> opt = f.get();
-            if (opt.isEmpty()) {
+            if (!opt.isPresent()) {
                 return Optional.of(true);
             } else {
                 return Optional.empty();

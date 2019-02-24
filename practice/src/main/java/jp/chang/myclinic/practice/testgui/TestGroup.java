@@ -6,19 +6,19 @@ import java.util.function.Supplier;
 
 public class TestGroup implements TestRunnerInterface {
 
-    private Map<String, Supplier<? extends TestRunnerInterface>> tests = new LinkedHashMap<>();
+    private Map<String, TestRunnerInterface> tests = new LinkedHashMap<>();
 
-    public void addTestProc(String name, Supplier<TestProc> supplier){
-        tests.put(name, supplier);
+    public void addTestProc(String name, TestProc proc){
+        tests.put(name, proc);
     }
 
-    public void addTestGroup(String name, Supplier<? extends TestGroup> supplier){
-        tests.put(name, supplier);
+    public void addTestGroup(String name, TestGroup group){
+        tests.put(name, group);
     }
 
     private void runAll() {
         for(String name: tests.keySet()){
-            tests.get(name).get().runTest(null);
+            tests.get(name).runTest(null);
         }
     }
 
@@ -30,15 +30,15 @@ public class TestGroup implements TestRunnerInterface {
         }
         String[] parts = test.split(":", 2);
         String key = parts[0];
-        Supplier<? extends TestRunnerInterface> supplier = tests.getOrDefault(key, null);
-        if( supplier == null ){
+        TestRunnerInterface runner = tests.getOrDefault(key, null);
+        if( runner == null ){
             System.err.printf("cannot find test: %s\n", key);
             System.exit(1);
         }
         if( parts.length <= 1 ){
-            supplier.get().runTest(null);
+            runner.runTest(null);
         } else {
-            supplier.get().runTest(parts[1]);
+            runner.runTest(parts[1]);
         }
     }
 

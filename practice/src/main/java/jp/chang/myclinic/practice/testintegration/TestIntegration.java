@@ -38,6 +38,9 @@ public class TestIntegration extends IntegrationTestBase{
     private void testSimpleExam(){
         Exam exam = new TestSelectForExam().selectWithNewPatientWithHoken();
         new TestText().enterText(exam.record);
+        {
+            System.out.printf("texts pane width %f\n", exam.record.getTextsPaneWidth());
+        }
         new TestHoken().confirmHokenShahokokuho(exam.record, exam.shahokokuho);
         new TestDrug().enterNaifuku(exam.record);
         new TestShinryou().enterForSimpleExam(exam.record);
