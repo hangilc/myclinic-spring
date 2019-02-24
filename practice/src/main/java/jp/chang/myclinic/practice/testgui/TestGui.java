@@ -28,7 +28,10 @@ public class TestGui extends GuiTestBase {
     @Override
     public void runTest(String test){
         try {
-            new Thread(() -> TestGui.super.runTest(test)).start();
+            new Thread(() -> {
+                TestGui.super.runTest(test);
+                System.out.println("test done");
+            }).start();
         } catch(Exception ex){
             ex.printStackTrace();
         }

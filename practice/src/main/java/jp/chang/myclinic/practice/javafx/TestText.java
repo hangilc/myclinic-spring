@@ -2,16 +2,16 @@ package jp.chang.myclinic.practice.javafx;
 
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.javafx.text.TextDisp;
-import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
 import jp.chang.myclinic.practice.javafx.text.TextEditForm;
+import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
 import jp.chang.myclinic.practice.javafx.text.TextLib;
 import jp.chang.myclinic.practice.testgui.ExtensionWaiter;
 import jp.chang.myclinic.practice.testgui.TestGroup;
 import jp.chang.myclinic.practice.testgui.TestHelper;
+import jp.chang.myclinic.utilfx.ConfirmDialog;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -30,6 +30,9 @@ public class TestText extends TestGroup implements TestHelper {
         addTestProc("texts-pane-enter", this::testTextsPaneEnter);
         addTestProc("record-text-disp", this::testRecordTextDisp);
         addTestProc("record-text-update", this::testRecordTextUpdate);
+        addTestProc("record-text-cancel", this::testRecordTextCancel);
+        addTestProc("record-text-delete", this::testRecordTextDelete);
+        addTestProc("record-text-delete-cancel", this::testRecordTextDeleteCancel);
     }
 
     public TestText(Stage stage, Pane main) {
@@ -62,7 +65,6 @@ public class TestText extends TestGroup implements TestHelper {
         State state = new State();
         form.setOnCancel(() -> {
             confirm(Platform.isFxApplicationThread());
-            System.out.println("CANCEL");
             state.canceled = true;
         });
         gui(() -> {
@@ -174,7 +176,9 @@ public class TestText extends TestGroup implements TestHelper {
         textDTO.content = "昨日から、頭痛がある。";
         TextLib textLib = new TextLib() {
             @Override
-            public CompletableFuture<Boolean> updateText(TextDTO textDTO) {
+            public CompletableFuture<Boolean> updateText(TextDTO update) {
+                confirm(update.visitId == textDTO.visitId);
+                confirm(update.textId == textDTO.textId);
                 return CompletableFuture.completedFuture(true);
             }
         };
@@ -215,6 +219,92 @@ public class TestText extends TestGroup implements TestHelper {
         gui(editForm::simulateClickEnterButton);
         TextDisp disp2 = waitFor(3, recordText::findTextDisp);
         confirm(disp2.getRep().equals(editedText.trim()));
+    }
+
+    private void testRecordTextCancel() {
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = 1;
+        textDTO.textId = 10;
+        textDTO.content = "昨日から、頭痛がある。";
+        RecordText recordText = new RecordText(textDTO);
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
+        TextDisp disp = waitFor(3, recordText::findTextDisp);
+        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+        TextEditForm editForm = waitFor(3, recordText::findTextEditForm);
+        gui(() -> editForm.simulateSetText("edited"));
+        gui(editForm::simulateClickCancelButton);
+        waitForFail(3, recordText::findTextEditForm);
+        TextDisp disp2 = waitFor(3, recordText::findTextDisp);
+        confirm(disp2.getContent().equals(disp.getContent()));
+        confirm(disp2.getRep().equals(disp.getRep()));
+    }
+
+    private void testRecordTextDelete() {
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = 1;
+        textDTO.textId = 10;
+        textDTO.content = "昨日から、頭痛がある。";
+        RecordText recordText = new RecordText(textDTO);
+        recordText.setTextLib(new TextLib(){
+            @Override
+            public CompletableFuture<Boolean> deleteText(int textId) {
+                confirm(textId == textDTO.textId);
+                return CompletableFuture.completedFuture(true);
+            }
+        });
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
+        TextDisp disp = waitFor(3, recordText::findTextDisp);
+        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+        TextEditForm editForm = waitFor(3, recordText::findTextEditForm);
+        class State {
+            private boolean deleted;
+        }
+        State state = new State();
+        editForm.setOnDeleted(() -> state.deleted = true);
+        gui(editForm::simulateClickDeleteButton);
+        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
+        gui(confirmDialog::simulateClickOkButton);
+        waitForWindowDisappear(confirmDialog);
+        waitForTrue(() -> state.deleted);
+    }
+
+    private void testRecordTextDeleteCancel() {
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = 1;
+        textDTO.textId = 10;
+        textDTO.content = "昨日から、頭痛がある。";
+        RecordText recordText = new RecordText(textDTO);
+        recordText.setTextLib(new TextLib(){
+            @Override
+            public CompletableFuture<Boolean> deleteText(int textId) {
+                throw new RuntimeException("delete callback invoked.");
+            }
+        });
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
+        TextDisp disp = waitFor(recordText::findTextDisp);
+        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+        TextEditForm editForm = waitFor(3, recordText::findTextEditForm);
+        gui(editForm::simulateClickDeleteButton);
+        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
+        gui(confirmDialog::simulateClickNoButton);
+        waitForWindowDisappear(confirmDialog);
+        TextEditForm editForm2 = waitFor(recordText::findTextEditForm);
+        confirm(editForm == editForm2);
     }
 
 }

@@ -8,6 +8,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.Globals;
+import jp.chang.myclinic.utilfx.ConfirmDialog;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
@@ -35,7 +36,7 @@ public class TextEditForm extends VBox {
         textArea.setWrapText(true);
         textArea.setText(text.content);
         deleteLink.setOnAction(event -> {
-            if (GuiUtil.confirm("この文章を削除しますか？")) {
+            if (ConfirmDialog.confirm("この文章を削除しますか？", this)) {
                 getTextLib().deleteText(textId)
                         .thenAcceptAsync(ok -> {
                             if( onDeletedCallback != null ){
