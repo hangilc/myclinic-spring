@@ -14,6 +14,7 @@ public class RecordText extends StackPane {
 
     private int textId;
     private int visitId;
+    private TextLib textLib;
 
     RecordText(TextDTO text){
         this.textId = text.textId;
@@ -40,12 +41,17 @@ public class RecordText extends StackPane {
         return Optional.empty();
     }
 
+    public void setTextLib(TextLib textLib){
+        this.textLib = textLib;
+    }
+
     private TextLib getTextLib(){
-        return Globals.getInstance().getTextLib();
+        return textLib != null ? textLib : Globals.getInstance().getTextLib();
     }
 
     private void onDispClicked(TextDisp disp){
         TextEnterForm form = new TextEnterForm(visitId, getTextLib());
+        getChildren().setAll(form);
     }
 
 }

@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.javafx;
 
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
@@ -21,6 +22,7 @@ public class TestText extends TestGroup implements TestHelper {
         addTestProc("enter-form-disp", this::testEnterFormDisp);
         addTestProc("enter-form-cancel", this::testEnterFormCancel);
         addTestProc("enter-form-enter", this::testEnterFormEnter);
+        addTestProc("record-text-disp", this::testRecordTextDisp);
     }
 
     public TestText(Stage stage, Pane main) {
@@ -29,6 +31,7 @@ public class TestText extends TestGroup implements TestHelper {
     }
 
     private void testEnterFormDisp() {
+        confirm(!Platform.isFxApplicationThread());
         TextEnterForm form = new TextEnterForm(1, new TextLib() {
             @Override
             public CompletableFuture<Integer> enterText(TextDTO text) {
@@ -65,7 +68,6 @@ public class TestText extends TestGroup implements TestHelper {
     }
 
     private void testEnterFormEnter() {
-        confirm(!Platform.isFxApplicationThread());
         TextEnterForm form = new TextEnterForm(1, new TextLib() {
             @Override
             public CompletableFuture<Integer> enterText(TextDTO text) {
@@ -92,6 +94,31 @@ public class TestText extends TestGroup implements TestHelper {
         confirm(state.entered.visitId == 1);
         confirm(state.entered.textId == 10);
         confirm(state.entered.content.equals(content));
+    }
+
+    private void testRecordTextDisp(){
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = 1;
+        textDTO.textId = 10;
+        textDTO.content = "昨日から、頭痛がある。";
+        class State {
+            private TextDTO updated;
+        }
+        State state = new State();
+        TextLib textLib = new TextLib(){
+            @Override
+            public CompletableFuture<Boolean> updateText(TextDTO textDTO) {
+                return CompletableFuture.completedFuture(true);
+            }
+        };
+        RecordText recordText = new RecordText(textDTO);
+        recordText.setTextLib(textLib);
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
     }
 
 }
