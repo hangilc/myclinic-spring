@@ -1,6 +1,10 @@
 package jp.chang.myclinic.practice.testgui;
 
 import javafx.application.Platform;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,4 +60,30 @@ public interface TestHelper {
         return list.get(list.size() - 1);
     }
 
+    default MouseEvent createMouseClickedEvent(Node node){
+        Point2D local = new Point2D(2, 2);
+        Point2D scene = node.localToScene(local);
+        Point2D screen = node.localToScreen(local);
+        return new MouseEvent(
+                MouseEvent.MOUSE_CLICKED,
+                scene.getX(),
+                scene.getY(),
+                screen.getX(),
+                screen.getY(),
+                MouseButton.PRIMARY,
+                1, // clickCount
+                false, // shiftDown
+                false, // controlDown
+                false, // altDown
+                false, // metaDown
+                true,  // pi\rimaryButtonDown
+                false, // middleButtonDown
+                false, // secondaryButtonDown
+                true,  // synthesized
+                false, // popupTrigger
+                false, // stillSincePress
+                null   // PickResult
+        );
+
+    }
 }

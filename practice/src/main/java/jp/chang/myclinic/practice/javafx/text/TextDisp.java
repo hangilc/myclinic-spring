@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.text;
 
+import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
@@ -20,6 +21,10 @@ public class TextDisp extends TextFlow {
 
     public String getRep(){
         return rep;
+    }
+
+    public void simulateMouseEvent(MouseEvent event){
+        this.fireEvent(event);
     }
 
     private String contentToRep(String content){

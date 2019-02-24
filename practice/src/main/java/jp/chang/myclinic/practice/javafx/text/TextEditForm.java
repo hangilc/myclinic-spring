@@ -51,6 +51,30 @@ public class TextEditForm extends VBox {
         );
     }
 
+    public void simulateClickEnterButton(){
+        enterLink.fire();
+    }
+
+    public void simulateClickCancelButton(){
+        cancelLink.fire();
+    }
+
+    public void simulateClickDeleteButton(){
+        deleteLink.fire();
+    }
+
+    public void simulateClickShohousenButton(){
+        shohousenLink.fire();
+    }
+
+    public void simulateClickCopyButton(){
+        copyLink.fire();
+    }
+
+    public void simulateSetText(String text){
+        textArea.setText(text);
+    }
+
     int getTextId() {
         return textId;
     }
@@ -85,6 +109,10 @@ public class TextEditForm extends VBox {
 
     private TextLib getTextLib(){
         return textLib != null ? textLib : Globals.getInstance().getTextLib();
+    }
+
+    public void setTextLib(TextLib textLib){
+        this.textLib = textLib;
     }
 
     private Node createButtons() {

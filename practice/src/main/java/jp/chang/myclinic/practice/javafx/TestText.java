@@ -7,9 +7,9 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.javafx.text.TextDisp;
 import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
+import jp.chang.myclinic.practice.javafx.text.TextEditForm;
 import jp.chang.myclinic.practice.javafx.text.TextLib;
 import jp.chang.myclinic.practice.testgui.ExtensionWaiter;
-import jp.chang.myclinic.practice.testgui.IncrementWaiter;
 import jp.chang.myclinic.practice.testgui.TestGroup;
 import jp.chang.myclinic.practice.testgui.TestHelper;
 
@@ -29,6 +29,7 @@ public class TestText extends TestGroup implements TestHelper {
         addTestProc("texts-pane-cancel", this::testTextsPaneCancel);
         addTestProc("texts-pane-enter", this::testTextsPaneEnter);
         addTestProc("record-text-disp", this::testRecordTextDisp);
+        addTestProc("record-text-update", this::testRecordTextUpdate);
     }
 
     public TestText(Stage stage, Pane main) {
@@ -171,10 +172,6 @@ public class TestText extends TestGroup implements TestHelper {
         textDTO.visitId = 1;
         textDTO.textId = 10;
         textDTO.content = "昨日から、頭痛がある。";
-        class State {
-            private TextDTO updated;
-        }
-        State state = new State();
         TextLib textLib = new TextLib() {
             @Override
             public CompletableFuture<Boolean> updateText(TextDTO textDTO) {
@@ -189,6 +186,35 @@ public class TestText extends TestGroup implements TestHelper {
             main.getChildren().setAll(recordText);
             stage.sizeToScene();
         });
+    }
+
+    private void testRecordTextUpdate() {
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = 1;
+        textDTO.textId = 10;
+        textDTO.content = "昨日から、頭痛がある。";
+        TextLib textLib = new TextLib() {
+            @Override
+            public CompletableFuture<Boolean> updateText(TextDTO textDTO) {
+                return CompletableFuture.completedFuture(true);
+            }
+        };
+        RecordText recordText = new RecordText(textDTO);
+        recordText.setTextLib(textLib);
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
+        TextDisp disp = waitFor(3, recordText::findTextDisp);
+        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+        TextEditForm editForm = waitFor(3, recordText::findTextEditForm);
+        String editedText = textDTO.content + " edited\n\n";
+        gui(() -> editForm.simulateSetText(editedText));
+        gui(editForm::simulateClickEnterButton);
+        TextDisp disp2 = waitFor(3, recordText::findTextDisp);
+        confirm(disp2.getRep().equals(editedText.trim()));
     }
 
 }
