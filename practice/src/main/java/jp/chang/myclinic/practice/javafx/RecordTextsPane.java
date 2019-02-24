@@ -7,8 +7,11 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.TextDTO;
+import jp.chang.myclinic.practice.Globals;
+import jp.chang.myclinic.practice.javafx.text.TextLib;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.utilfx.GuiUtil;
+import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,7 @@ class RecordTextsPane extends VBox {
     private int visitId;
     private VBox textsArea = new VBox(4);
     private Hyperlink newTextLink;
+    private TextLib textLib;
 
     RecordTextsPane(List<TextDTO> texts, int visitId){
         super(4);
@@ -111,25 +115,27 @@ class RecordTextsPane extends VBox {
         textsArea.getChildren().add(recordText);
     }
 
+    private TextLib getTextLib(){
+        return textLib != null ? textLib : Globals.getInstance().getTextLib();
+    }
+
+    public void setTextLib(TextLib textLib){
+        this.textLib = textLib;
+    }
+
     private Hyperlink createNewTextLink(){
         Hyperlink link = new Hyperlink("[文章追加]");
         link.setOnAction(event -> {
-            TextEnterForm textEnterForm = new TextEnterForm();
-            textEnterForm.setCallback(new TextEnterForm.Callback() {
-                @Override
-                public void onEnter(String content) {
-                    PracticeLib.enterText(visitId, content, newText ->{
-                        getChildren().remove(textEnterForm);
-                        addText(newText);
-                        getChildren().add(link);
-                    });
-                }
+            TextEnterForm textEnterForm = new TextEnterForm(visitId, getTextLib());
+            textEnterForm.setOnEntered(entered -> {
+                getChildren().remove(textEnterForm);
+                addText(entered);
+                getChildren().add(link);
+            });
+            textEnterForm.setOnCancel(() -> {
+                getChildren().remove(textEnterForm);
+                getChildren().add(link);
 
-                @Override
-                public void onCancel() {
-                    getChildren().remove(textEnterForm);
-                    getChildren().add(link);
-                }
             });
             getChildren().remove(link);
             getChildren().add(textEnterForm);

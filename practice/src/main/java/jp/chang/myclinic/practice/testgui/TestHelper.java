@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -39,6 +40,20 @@ public interface TestHelper {
 
     default void waitForTrue(int n, Supplier<Boolean> f){
         waitFor(n, () -> Optional.ofNullable(f.get() ? true : null));
+    }
+
+    default void waitForFail(int n, Supplier<Optional<?>> f){
+        waitFor(n, () -> {
+            if( f.get().isPresent() ){
+                return Optional.empty();
+            } else {
+                return Optional.of(true);
+            }
+        });
+    }
+
+    default <T> T lastElementOf(List<T> list){
+        return list.get(list.size() - 1);
     }
 
 }

@@ -5,8 +5,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.TextDTO;
+import jp.chang.myclinic.practice.javafx.text.TextDisp;
 import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
 import jp.chang.myclinic.practice.javafx.text.TextLib;
+import jp.chang.myclinic.practice.testgui.ExtensionWaiter;
+import jp.chang.myclinic.practice.testgui.IncrementWaiter;
 import jp.chang.myclinic.practice.testgui.TestGroup;
 import jp.chang.myclinic.practice.testgui.TestHelper;
 
@@ -22,6 +25,9 @@ public class TestText extends TestGroup implements TestHelper {
         addTestProc("enter-form-disp", this::testEnterFormDisp);
         addTestProc("enter-form-cancel", this::testEnterFormCancel);
         addTestProc("enter-form-enter", this::testEnterFormEnter);
+        addTestProc("texts-pane-disp", this::testTextsPaneDisp);
+        addTestProc("texts-pane-cancel", this::testTextsPaneCancel);
+        addTestProc("texts-pane-enter", this::testTextsPaneEnter);
         addTestProc("record-text-disp", this::testRecordTextDisp);
     }
 
@@ -96,7 +102,71 @@ public class TestText extends TestGroup implements TestHelper {
         confirm(state.entered.content.equals(content));
     }
 
-    private void testRecordTextDisp(){
+    private void testTextsPaneDisp() {
+        RecordTextsPane textsPane = new RecordTextsPane(Collections.emptyList(), 1);
+        TextLib textLib = new TextLib() {
+            @Override
+            public CompletableFuture<Integer> enterText(TextDTO text) {
+                return CompletableFuture.completedFuture(10);
+            }
+        };
+        textsPane.setTextLib(textLib);
+        gui(() -> {
+            textsPane.setPrefWidth(329);
+            textsPane.setPrefHeight(400);
+            main.getChildren().setAll(textsPane);
+            stage.sizeToScene();
+        });
+    }
+
+    private void testTextsPaneCancel() {
+        RecordTextsPane textsPane = new RecordTextsPane(Collections.emptyList(), 1);
+        gui(() -> {
+            textsPane.setPrefWidth(329);
+            textsPane.setPrefHeight(400);
+            main.getChildren().setAll(textsPane);
+            stage.sizeToScene();
+            textsPane.simulateNewTextButtonClick();
+        });
+        TextEnterForm enterForm = waitFor(3, textsPane::findTextEnterForm);
+        gui(enterForm::simulateClickCancelButton);
+        waitForFail(2, textsPane::findTextEnterForm);
+    }
+
+    private void testTextsPaneEnter() {
+        RecordTextsPane textsPane = new RecordTextsPane(Collections.emptyList(), 1);
+        TextLib textLib = new TextLib() {
+            @Override
+            public CompletableFuture<Integer> enterText(TextDTO text) {
+                return CompletableFuture.completedFuture(10);
+            }
+        };
+        textsPane.setTextLib(textLib);
+        gui(() -> {
+            textsPane.setPrefWidth(329);
+            textsPane.setPrefHeight(400);
+            main.getChildren().setAll(textsPane);
+            stage.sizeToScene();
+            textsPane.simulateNewTextButtonClick();
+        });
+        TextEnterForm enterForm = waitFor(3, textsPane::findTextEnterForm);
+        String content = "鼻水がでるようになった。";
+        ExtensionWaiter<Integer> textEnteredWaiter = new ExtensionWaiter<>(textsPane::listTextId);
+        gui(() -> enterForm.simulateSetText(content));
+        gui(enterForm::simulateClickEnterButton);
+        waitForFail(3, textsPane::findTextEnterForm);
+        int enteredTextId = textEnteredWaiter.waitForExtension(2);
+        RecordText recordText = textsPane.findRecordText(enteredTextId).orElseThrow(
+                () -> new RuntimeException("cannot find record text")
+        );
+        confirm(recordText.isDisplaying());
+        TextDisp textDisp = recordText.findTextDisp().orElseThrow(
+                () -> new RuntimeException("cannot find text disp")
+        );
+        confirm(textDisp.getContent().equals(content));
+    }
+
+    private void testRecordTextDisp() {
         TextDTO textDTO = new TextDTO();
         textDTO.visitId = 1;
         textDTO.textId = 10;
@@ -105,7 +175,7 @@ public class TestText extends TestGroup implements TestHelper {
             private TextDTO updated;
         }
         State state = new State();
-        TextLib textLib = new TextLib(){
+        TextLib textLib = new TextLib() {
             @Override
             public CompletableFuture<Boolean> updateText(TextDTO textDTO) {
                 return CompletableFuture.completedFuture(true);

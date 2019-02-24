@@ -37,7 +37,7 @@ public class TextEnterForm extends VBox {
     private TextDTO getFormTextDTO(){
         TextDTO textDTO = new TextDTO();
         textDTO.visitId = visitId;
-        textDTO.content = textArea.getText();
+        textDTO.content = textArea.getText().trim();
         return textDTO;
     }
 

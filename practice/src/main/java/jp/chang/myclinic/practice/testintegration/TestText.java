@@ -2,7 +2,8 @@ package jp.chang.myclinic.practice.testintegration;
 
 import jp.chang.myclinic.practice.javafx.Record;
 import jp.chang.myclinic.practice.javafx.RecordText;
-import jp.chang.myclinic.practice.javafx.TextEnterForm;
+import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
+import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
 import jp.chang.myclinic.practice.javafx.text.TextDisp;
 
 class TestText extends IntegrationTestBase {
@@ -26,7 +27,7 @@ class TestText extends IntegrationTestBase {
         TextEnterForm textEnterForm = waitFor(record::findTextEnterForm);
         IncrementWaiter textRecordWaiter = new IncrementWaiter(record::getLastTextId);
         gui(() -> {
-            textEnterForm.setContent(content);
+            textEnterForm.simulateSetText(content);
             textEnterForm.simulateClickEnterButton();
         });
         int newTextId = textRecordWaiter.waitForIncrement();
