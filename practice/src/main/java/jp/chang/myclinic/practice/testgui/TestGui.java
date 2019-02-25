@@ -4,16 +4,16 @@ import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.practice.javafx.TestText;
-import jp.chang.myclinic.practice.javafx.drug.lib.TestDrugInput;
+import jp.chang.myclinic.practice.javafx.shohousen.TestShohousen;
 
 public class TestGui extends GuiTestBase {
 
     private Stage stage;
     private StackPane main = new StackPane();
 
-    private void setupTests(){
-        addTestGroup("text", new TestText(stage, main));
-        //addTestProc("drug", () -> new TestDrugInput(stage, main).run());
+    {
+        addTestGroup("text", () -> new TestText(stage, main));
+        addTestGroup("shohousen", () -> new TestShohousen(stage, main));
     }
 
     public TestGui(Stage stage) {
@@ -22,7 +22,6 @@ public class TestGui extends GuiTestBase {
         main.getStylesheets().add("css/Practice.css");
         stage.setScene(new Scene(main));
         stage.show();
-        setupTests();
     }
 
     @Override

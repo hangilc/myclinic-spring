@@ -6,19 +6,36 @@ import java.util.function.Supplier;
 
 public class TestGroup implements TestRunnerInterface {
 
-    private Map<String, TestRunnerInterface> tests = new LinkedHashMap<>();
+    private Map<String, Supplier<TestRunnerInterface>> tests = new LinkedHashMap<>();
 
-    public void addTestProc(String name, TestProc proc){
-        tests.put(name, proc);
+    protected void addTestProc(String name, Runnable proc){
+        tests.put(name, () -> (TestProc) proc::run);
     }
 
-    public void addTestGroup(String name, TestGroup group){
-        tests.put(name, group);
+    protected void addTestProcSingleOnly(String name, Runnable proc){
+        tests.put(name, () -> new TestProc(){
+            @Override
+            public void runProc() {
+                proc.run();
+            }
+
+            @Override
+            public boolean skipInBatch() {
+                return true;
+            }
+        });
+    }
+
+    void addTestGroup(String name, Supplier<TestGroup> supplier){
+        tests.put(name, supplier::get);
     }
 
     private void runAll() {
         for(String name: tests.keySet()){
-            tests.get(name).runTest(null);
+            TestRunnerInterface runner = tests.get(name).get();
+            if( !runner.skipInBatch() ){
+                runner.runTest(null);
+            }
         }
     }
 
@@ -30,15 +47,15 @@ public class TestGroup implements TestRunnerInterface {
         }
         String[] parts = test.split(":", 2);
         String key = parts[0];
-        TestRunnerInterface runner = tests.getOrDefault(key, null);
+        Supplier<TestRunnerInterface> runner = tests.getOrDefault(key, null);
         if( runner == null ){
             System.err.printf("cannot find test: %s\n", key);
             System.exit(1);
         }
         if( parts.length <= 1 ){
-            runner.runTest(null);
+            runner.get().runTest(null);
         } else {
-            runner.runTest(parts[1]);
+            runner.get().runTest(parts[1]);
         }
     }
 

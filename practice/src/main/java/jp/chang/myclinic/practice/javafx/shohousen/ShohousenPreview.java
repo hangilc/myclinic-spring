@@ -2,7 +2,7 @@ package jp.chang.myclinic.practice.javafx.shohousen;
 
 import javafx.application.Platform;
 import jp.chang.myclinic.drawer.PaperSize;
-import jp.chang.myclinic.dto.HokenDTO;
+import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
@@ -12,14 +12,14 @@ import java.util.concurrent.CompletableFuture;
 
 public class ShohousenPreview {
 
-    static DrawerPreviewDialog create(ShohousenLib lib, int visitId, String text) {
+    static CompletableFuture<DrawerPreviewDialog> create(ShohousenLib lib, int visitId, String text) {
         return new ShohousenPreview(lib).makePreview(visitId, text);
     }
 
     private ShohousenLib lib;
     private VisitDTO visit;
     private PatientDTO patient;
-    private HokenDTO hoken;
+    private ShohousenData data = new ShohousenData();
 
     private ShohousenPreview(ShohousenLib lib) {
         this.lib = lib;
@@ -33,12 +33,15 @@ public class ShohousenPreview {
                 })
                 .thenCompose(patient -> {
                     this.patient = patient;
+                    data.setPatient(patient);
+                    return lib.getClinicInfo();
+                })
+                .thenCompose(clinicInfo -> {
+                    data.setClinicInfo(clinicInfo);
                     return lib.getHoken(visitId);
                 })
                 .thenApply(hoken -> {
-                    this.hoken = hoken;
                     ShohousenDrawer drawer = new ShohousenDrawer();
-                    ShohousenData data = new ShohousenData();
                     data.setHoken(hoken);
                     LocalDate visitedAt = LocalDate.parse(visit.visitedAt.substring(0, 10));
                     data.setFutanWari(hoken, patient, visitedAt);
