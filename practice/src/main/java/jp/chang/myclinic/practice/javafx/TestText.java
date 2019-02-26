@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.TextDTO;
+import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenLib;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenLibMock;
 import jp.chang.myclinic.practice.javafx.text.TextDisp;
@@ -318,6 +319,16 @@ public class TestText extends TestGroup implements TestHelper {
         RecordText recordText = new RecordText(textDTO);
         recordText.setTextLib(new TextLib(){
             @Override
+            public int getCurrentVisitId() {
+                return 1;
+            }
+
+            @Override
+            public int getTempVisitId() {
+                return 0;
+            }
+
+            @Override
             public ShohousenLib getShohousenLib() {
                 return ShohousenLibMock.create();
             }
@@ -331,13 +342,17 @@ public class TestText extends TestGroup implements TestHelper {
         TextDisp disp = waitFor(recordText::findTextDisp);
         gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
         TextEditForm editForm = waitFor(recordText::findTextEditForm);
+        class State {
+            private boolean done;
+        }
+        State state = new State();
+        editForm.setOnDone(() -> {
+            state.done = true;
+        });
         gui(editForm::simulateClickShohousenButton);
-
-        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
-        gui(confirmDialog::simulateClickNoButton);
-        waitForWindowDisappear(confirmDialog);
-        TextEditForm editForm2 = waitFor(recordText::findTextEditForm);
-        confirm(editForm == editForm2);
+        DrawerPreviewDialog preview = waitForWindow(DrawerPreviewDialog.class);
+        gui(preview::close);
+        waitForTrue(() -> state.done);
     }
 
 }

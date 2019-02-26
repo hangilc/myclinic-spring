@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.Globals;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenPreview;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
@@ -78,10 +79,6 @@ public class TextEditForm extends VBox {
         textArea.setText(text);
     }
 
-    int getTextId() {
-        return textId;
-    }
-
     public void setOnUpdated(Consumer<TextDTO> callback){
         enterLink.setOnAction(event -> {
             TextDTO textDTO = new TextDTO();
@@ -106,14 +103,6 @@ public class TextEditForm extends VBox {
         this.onDeletedCallback = callback;
     }
 
-    public void setOnShohousen(Runnable callback){
-        shohousenLink.setOnAction(event -> callback.run());
-    }
-
-    public void setOnCopy(Runnable callback){
-        copyLink.setOnAction(event -> callback.run());
-    }
-
     private TextLib getTextLib(){
         return textLib != null ? textLib : Globals.getInstance().getTextLib();
     }
@@ -135,12 +124,21 @@ public class TextEditForm extends VBox {
     }
 
     private void doShohousen(TextDTO textDTO){
-        check if content changed
+        if( !textArea.getText().trim().equals(textDTO.content.trim()) ){
+            AlertDialog.alert("内容が変更されているので、処方箋を発行できません。\n"
+                    +"変更保存するか、変更をキャンセルしてから、処方箋を発行してください。", this);
+            return;
+        }
+        if( textLib.getCurrentOrTempVisitId() != visitId ){
+            if( !ConfirmDialog.confirm("現在診察中ではないですか、この処方箋を発行しますか？", this) ){
+                return;
+            }
+        }
         ShohousenPreview.create(textLib.getShohousenLib(), visitId, textDTO.content)
                 .thenAcceptAsync(preview -> {
                     preview.showAndWait();
                     done();
-                })
+                }, Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);
     }
 }
