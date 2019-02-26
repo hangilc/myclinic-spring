@@ -4,6 +4,8 @@ import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.TextDTO;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenLib;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenLibMock;
 import jp.chang.myclinic.practice.javafx.text.TextDisp;
 import jp.chang.myclinic.practice.javafx.text.TextEditForm;
 import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
@@ -33,6 +35,7 @@ public class TestText extends TestGroup implements TestHelper {
         addTestProc("record-text-cancel", this::testRecordTextCancel);
         addTestProc("record-text-delete", this::testRecordTextDelete);
         addTestProc("record-text-delete-cancel", this::testRecordTextDeleteCancel);
+        addTestProc("record-text-shohousen", this::testRecordTextShohousen);
     }
 
     public TestText(Stage stage, Pane main) {
@@ -300,6 +303,36 @@ public class TestText extends TestGroup implements TestHelper {
         gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
         TextEditForm editForm = waitFor(3, recordText::findTextEditForm);
         gui(editForm::simulateClickDeleteButton);
+        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
+        gui(confirmDialog::simulateClickNoButton);
+        waitForWindowDisappear(confirmDialog);
+        TextEditForm editForm2 = waitFor(recordText::findTextEditForm);
+        confirm(editForm == editForm2);
+    }
+
+    private void testRecordTextShohousen() {
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = 1;
+        textDTO.textId = 10;
+        textDTO.content = "昨日から、頭痛がある。";
+        RecordText recordText = new RecordText(textDTO);
+        recordText.setTextLib(new TextLib(){
+            @Override
+            public ShohousenLib getShohousenLib() {
+                return ShohousenLibMock.create();
+            }
+        });
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
+        TextDisp disp = waitFor(recordText::findTextDisp);
+        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+        TextEditForm editForm = waitFor(recordText::findTextEditForm);
+        gui(editForm::simulateClickShohousenButton);
+
         ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
         gui(confirmDialog::simulateClickNoButton);
         waitForWindowDisappear(confirmDialog);

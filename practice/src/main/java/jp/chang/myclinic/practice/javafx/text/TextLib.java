@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.javafx.text;
 
 import jp.chang.myclinic.dto.TextDTO;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenLib;
 import retrofit2.http.Body;
 
 import java.util.concurrent.CompletableFuture;
@@ -20,4 +21,5 @@ public interface TextLib {
             return getTempVisitId();
         }
     }
+    default ShohousenLib getShohousenLib(){ throw new RuntimeException("not implemented"); }
 }

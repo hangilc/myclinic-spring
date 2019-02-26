@@ -2,7 +2,6 @@ package jp.chang.myclinic.practice.javafx.shohousen;
 
 import javafx.application.Platform;
 import jp.chang.myclinic.drawer.PaperSize;
-import jp.chang.myclinic.dto.ClinicInfoDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
@@ -12,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class ShohousenPreview {
 
-    static CompletableFuture<DrawerPreviewDialog> create(ShohousenLib lib, int visitId, String text) {
+    public static CompletableFuture<DrawerPreviewDialog> create(ShohousenLib lib, int visitId, String text) {
         return new ShohousenPreview(lib).makePreview(visitId, text);
     }
 

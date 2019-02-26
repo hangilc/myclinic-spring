@@ -8,8 +8,8 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.Globals;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenPreview;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
-import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.util.function.Consumer;
@@ -26,6 +26,7 @@ public class TextEditForm extends VBox {
     private Hyperlink copyLink = new Hyperlink("コピー");
     private TextLib textLib;
     private Runnable onDeletedCallback;
+    private Runnable onDoneCallback;
 
     public TextEditForm(TextDTO text) {
         super(4);
@@ -46,6 +47,7 @@ public class TextEditForm extends VBox {
                         .exceptionally(HandlerFX::exceptionally);
             }
         });
+        shohousenLink.setOnAction(event -> doShohousen(text));
         getChildren().addAll(
                 textArea,
                 createButtons()
@@ -96,6 +98,10 @@ public class TextEditForm extends VBox {
         cancelLink.setOnAction(event -> handler.run());
     }
 
+    public void setOnDone(Runnable handler){
+        this.onDoneCallback = handler;
+    }
+
     public void setOnDeleted(Runnable callback){
         this.onDeletedCallback = callback;
     }
@@ -122,4 +128,19 @@ public class TextEditForm extends VBox {
         return wrapper;
     }
 
+    private void done(){
+       if( onDoneCallback != null ){
+           onDoneCallback.run();
+       }
+    }
+
+    private void doShohousen(TextDTO textDTO){
+        check if content changed
+        ShohousenPreview.create(textLib.getShohousenLib(), visitId, textDTO.content)
+                .thenAcceptAsync(preview -> {
+                    preview.showAndWait();
+                    done();
+                })
+                .exceptionally(HandlerFX::exceptionally);
+    }
 }

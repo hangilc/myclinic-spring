@@ -13,7 +13,7 @@ public class TestGui extends GuiTestBase {
 
     {
         addTestGroup("text", () -> new TestText(stage, main));
-        addTestGroup("shohousen", () -> new TestShohousen(stage, main));
+        addTestGroup("shohousen", TestShohousen::new);
     }
 
     public TestGui(Stage stage) {
