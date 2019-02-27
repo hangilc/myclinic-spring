@@ -230,11 +230,16 @@ public class MockData {
         return dto;
     }
 
-    public VisitDTO pickVisitWithVisitId(int patientId, LocalDateTime at){
+    public VisitDTO pickVisit(int patientId, LocalDateTime at){
         VisitDTO visit = new VisitDTO();
-        visit.visitId = serialVisitId++;
         visit.patientId = patientId;
         visit.visitedAt = DateTimeUtil.toSqlDateTime(at);
+        return visit;
+    }
+
+    public VisitDTO pickVisitWithVisitId(int patientId, LocalDateTime at){
+        VisitDTO visit = pickVisit(patientId, at);
+        visit.visitId = serialVisitId++;
         return visit;
     }
 

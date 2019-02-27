@@ -5,7 +5,7 @@ import javafx.scene.layout.StackPane;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.javafx.text.TextDisp;
 import jp.chang.myclinic.practice.javafx.text.TextEditForm;
-import jp.chang.myclinic.practice.javafx.text.TextLib;
+import jp.chang.myclinic.practice.javafx.text.TextRequirement;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -14,7 +14,7 @@ public class RecordText extends StackPane {
 
     private int textId;
     private int visitId;
-    private TextLib textLib;
+    private TextRequirement textReq;
     private Runnable onDeletedCallback;
     private Consumer<TextDTO> onCopiedCallback;
 
@@ -64,12 +64,12 @@ public class RecordText extends StackPane {
         return findInChildren(TextEditForm.class);
     }
 
-    void setTextLib(TextLib textLib) {
-        this.textLib = textLib;
+    void setTextReq(TextRequirement textReq) {
+        this.textReq = textReq;
     }
 
-    private TextLib getTextLib() {
-        return textLib;
+    private TextRequirement getTextReq() {
+        return textReq;
     }
 
     private void onDispClicked(TextDisp disp) {
@@ -77,8 +77,7 @@ public class RecordText extends StackPane {
         text.textId = textId;
         text.visitId = visitId;
         text.content = disp.getContent();
-        TextEditForm form = new TextEditForm(text);
-        form.setTextLib(getTextLib());
+        TextEditForm form = new TextEditForm(text, getTextReq());
         form.setOnUpdated(updatedText -> getChildren().setAll(createDisp(updatedText.content)));
         form.setOnCancel(() -> getChildren().setAll(disp));
         form.setOnDeleted(() -> {

@@ -26,7 +26,8 @@ public class TestShohousen extends TestGroup {
         PatientDTO patient = mock.pickPatientWithPatientId();
         VisitDTO visit = mock.pickVisitWithVisitId(patient.patientId, LocalDateTime.now());
         HokenDTO hoken = new HokenDTO();
-        ShohousenRestRequirement restService = new ShohousenRestRequirement() {
+        ShohousenRequirement requirement = new ShohousenRequirement();
+        requirement.restService = new ShohousenRequirement.ShohousenRestService() {
             @Override
             public CompletableFuture<PatientDTO> getPatient(int patientId) {
                 return CompletableFuture.completedFuture(patient);
@@ -42,7 +43,7 @@ public class TestShohousen extends TestGroup {
                 return CompletableFuture.completedFuture(hoken);
             }
         };
-        ShohousenConfigRequirement configService = new ShohousenConfigRequirement() {
+        requirement.configService = new ShohousenRequirement.ShohousenConfigService() {
             @Override
             public String getShohousenPrinterSetting() {
                 return null;
@@ -63,7 +64,7 @@ public class TestShohousen extends TestGroup {
                 return SampleData.sampleClinicInfo;
             }
         };
-        ShohousenPreview.create(restService, configService, visit.visitId, "Ｒｐ）")
+        ShohousenPreview.create(requirement, visit.visitId, "Ｒｐ）")
                 .thenAcceptAsync(Stage::show, Platform::runLater).join();
     }
 

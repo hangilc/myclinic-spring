@@ -23,14 +23,13 @@ import jp.chang.myclinic.practice.javafx.prescexample.EditPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.prescexample.NewPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
-import jp.chang.myclinic.practice.javafx.text.TextLib;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenRequirement;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -46,7 +45,7 @@ public class MainPane extends BorderPane implements CurrentExamLib {
 
     private static MainPane INSTANCE = new MainPane();
 
-    public static MainPane getInstance(){
+    public static MainPane getInstance() {
         return INSTANCE;
     }
 
@@ -54,10 +53,36 @@ public class MainPane extends BorderPane implements CurrentExamLib {
     private MenuItem selectVisitMenu;
     private RecordsPane recordsPane;
     private Supplier<Optional<PatientManip>> findPatientManipFun;
-    private MainPaneLib mainPaneLib;
+    private MainPaneRequirement mainPaneRequirement;
+    private ShohousenRequirement shohousenRequirement;
     private PatientDTO currentPatient;
     private int currentVisitId;
     private int tempVisitId;
+
+
+    private MainPaneService mainPaneService = new MainPaneService() {
+
+        @Override
+        public PatientDTO getCurrentPatient() {
+            return currentPatient;
+        }
+
+        @Override
+        public int getCurrentVisitId() {
+            return currentVisitId;
+        }
+
+        @Override
+        public int getTempVisitId() {
+            return tempVisitId;
+        }
+
+        @Override
+        public void broadcastNewText(TextDTO newText) {
+            throw new RuntimeException("not implemented yet");
+        }
+
+    };
 
     private MainPane() {
         setTop(createMenu());
@@ -65,26 +90,24 @@ public class MainPane extends BorderPane implements CurrentExamLib {
         addEventHandler(EventTypes.visitDeletedEventType, this::onVisitDeleted);
     }
 
-    public void setMainPaneLib(MainPaneLib lib) {
-        this.mainPaneLib = lib;
-        recordsPane.setRecordLib(new RecordLib(){
-            @Override
-            public CurrentExamLib getCurrentExamLib() {
-                return MainPane.this;
-            }
-
-            @Override
-            public TextLib getTextLib() {
-                return lib.getTextLib();
-            }
-        });
+    public void setMainPaneRequirement(MainPaneRequirement mainPaneRequirement) {
+        this.mainPaneRequirement = mainPaneRequirement;
+        this.shohousenRequirement = new ShohousenRequirement(
+                mainPaneRequirement.restService,
+                mainPaneRequirement.configService
+        );
+        recordsPane.setRecordRequirement(new RecordRequirement(
+                mainPaneRequirement.restService,
+                mainPaneService,
+                shohousenRequirement
+        ));
     }
 
-    public void setCurrent(PatientDTO patient, int currentVisitId){
+    public void setCurrent(PatientDTO patient, int currentVisitId) {
         this.currentPatient = patient;
         this.currentVisitId = currentVisitId;
         this.tempVisitId = 0;
-        mainPaneLib.updateTitle(patient);
+        mainPaneRequirement.mainStageService.updateTitle(patient);
     }
 
     @Override
@@ -391,7 +414,7 @@ public class MainPane extends BorderPane implements CurrentExamLib {
 
     public CompletableFuture<Void> setVisits(List<VisitFull2DTO> visits) {
         recordsPane.getChildren().clear();
-        if( visits == null ){
+        if (visits == null) {
             return CompletableFuture.completedFuture(null);
         }
         List<Integer> shinryouIds = visits.stream().flatMap(v -> v.shinryouList.stream())
@@ -404,18 +427,18 @@ public class MainPane extends BorderPane implements CurrentExamLib {
             private Map<Integer, DrugAttrDTO> drugAttrMap;
         }
         Local local = new Local();
-        return mainPaneLib.batchGetShinryouAttr(shinryouIds)
+        return mainPaneRequirement.restService.batchGetShinryouAttr(shinryouIds)
                 .thenCompose(attrList -> {
                     Map<Integer, ShinryouAttrDTO> shinryouAttrMap = new HashMap<>();
                     attrList.forEach(attr -> shinryouAttrMap.put(attr.shinryouId, attr));
                     local.shinryouAttrMap = shinryouAttrMap;
-                    return mainPaneLib.batchGetDrugAttr(drugIds);
+                    return mainPaneRequirement.restService.batchGetDrugAttr(drugIds);
                 })
                 .thenCompose(attrList -> {
                     Map<Integer, DrugAttrDTO> drugAttrMap = new HashMap<>();
                     attrList.forEach(attr -> drugAttrMap.put(attr.drugId, attr));
                     local.drugAttrMap = drugAttrMap;
-                    return mainPaneLib.batchGetShouki(visitIds);
+                    return mainPaneRequirement.restService.batchGetShouki(visitIds);
                 })
                 .thenAccept(shoukiList -> {
                     Map<Integer, ShoukiDTO> shoukiMap = new HashMap<>();

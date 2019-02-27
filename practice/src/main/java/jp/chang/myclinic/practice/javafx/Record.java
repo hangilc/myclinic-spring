@@ -12,6 +12,7 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
 import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
 import jp.chang.myclinic.practice.javafx.shinryou.AddRegularForm;
+import jp.chang.myclinic.practice.javafx.text.TextRequirement;
 
 import java.util.Comparator;
 import java.util.List;
@@ -30,13 +31,17 @@ public class Record extends VBox {
     private RecordConductsPane conductsPane;
     private StackPane hokenArea = new StackPane();
     private ObjectProperty<ShoukiDTO> shouki;
-    private RecordLib recordLib;
+    private RecordRequirement recordRequirement;
+    private TextRequirement textRequirement;
 
     Record(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
-                  Map<Integer, DrugAttrDTO> drugAttrMap, ShoukiDTO shouki, RecordLib recordLib) {
+                  Map<Integer, DrugAttrDTO> drugAttrMap, ShoukiDTO shouki, RecordRequirement recordRequirement) {
         this.visitId = visit.visit.visitId;
         this.shouki = new SimpleObjectProperty<>(shouki);
-        this.recordLib = recordLib;
+        this.recordRequirement = recordRequirement;
+        this.textRequirement = new TextRequirement(
+                recordRequirement.restService, recordRequirement.mainPaneService,
+                recordRequirement.shohousenRequirement);
         this.recordTitle = new RecordTitle(visit.visit, this.shouki);
         getChildren().addAll(
                 recordTitle,
@@ -129,7 +134,7 @@ public class Record extends VBox {
         right.setStyle("-fx-padding: 5");
         hbox.getChildren().addAll(left, right);
         textPane = new RecordTextsPane(visit.texts, visit.visit.visitId);
-        textPane.setTextLib(recordLib.getTextLib());
+        textPane.setTextRequirement(textRequirement);
         left.getChildren().add(textPane);
         drugsPane = new RecordDrugsPane(visit.drugs, visit.visit, drugAttrMap);
         shinryouPane = new RecordShinryouPane(visit.shinryouList, visit.visit, shinryouAttrMap);

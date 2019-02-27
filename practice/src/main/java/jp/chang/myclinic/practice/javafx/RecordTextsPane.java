@@ -4,10 +4,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.practice.Globals;
-import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
 import jp.chang.myclinic.practice.javafx.text.TextEditForm;
-import jp.chang.myclinic.practice.javafx.text.TextLib;
+import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
+import jp.chang.myclinic.practice.javafx.text.TextRequirement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,7 @@ class RecordTextsPane extends VBox {
     private int visitId;
     private VBox textsArea = new VBox(4);
     private Hyperlink newTextLink;
-    private TextLib textLib;
+    private TextRequirement textRequirement;
 
     RecordTextsPane(List<TextDTO> texts, int visitId){
         super(4);
@@ -67,7 +66,7 @@ class RecordTextsPane extends VBox {
 
     private RecordText createRecordText(TextDTO text){
         RecordText recordText = new RecordText(text);
-        recordText.setTextLib(textLib);
+        recordText.setTextReq(textRequirement);
         return recordText;
     }
 
@@ -77,18 +76,18 @@ class RecordTextsPane extends VBox {
         textsArea.getChildren().add(recordText);
     }
 
-    private TextLib getTextLib(){
-        return textLib;
+    private TextRequirement getTextRequirement(){
+        return textRequirement;
     }
 
-    void setTextLib(TextLib textLib){
-        this.textLib = textLib;
+    void setTextRequirement(TextRequirement textRequirement){
+        this.textRequirement = textRequirement;
     }
 
     private Hyperlink createNewTextLink(){
         Hyperlink link = new Hyperlink("[文章追加]");
         link.setOnAction(event -> {
-            TextEnterForm textEnterForm = new TextEnterForm(visitId, getTextLib());
+            TextEnterForm textEnterForm = new TextEnterForm(visitId, getTextRequirement());
             textEnterForm.setOnEntered(entered -> {
                 getChildren().remove(textEnterForm);
                 addText(entered);

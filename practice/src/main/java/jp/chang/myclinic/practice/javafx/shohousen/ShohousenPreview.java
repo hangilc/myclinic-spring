@@ -12,20 +12,19 @@ import java.util.concurrent.CompletableFuture;
 public class ShohousenPreview {
 
     public static CompletableFuture<DrawerPreviewDialog> create(
-            ShohousenRestRequirement restService, ShohousenConfigRequirement configService,
-            int visitId, String text) {
-        return new ShohousenPreview(restService, configService).makePreview(visitId, text);
+            ShohousenRequirement requirement, int visitId, String text) {
+        return new ShohousenPreview(requirement).makePreview(visitId, text);
     }
 
-    private ShohousenRestRequirement restService;
-    private ShohousenConfigRequirement configService;
+    private ShohousenRequirement.ShohousenRestService restService;
+    private ShohousenRequirement.ShohousenConfigService configService;
     private VisitDTO visit;
     private PatientDTO patient;
     private ShohousenData data = new ShohousenData();
 
-    private ShohousenPreview(ShohousenRestRequirement restService, ShohousenConfigRequirement configService) {
-        this.restService = restService;
-        this.configService = configService;
+    private ShohousenPreview(ShohousenRequirement requirement) {
+        this.restService = requirement.restService;
+        this.configService = requirement.configService;
     }
 
     private CompletableFuture<DrawerPreviewDialog> makePreview(int visitId, String text) {

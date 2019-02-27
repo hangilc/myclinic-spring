@@ -55,7 +55,7 @@ public class MainPaneTest extends TestGroup implements TestHelper {
                 setUpdateMainStageTitle(stage, patient);
             }
         };
-        mainPane.setMainPaneLib(lib);
+        mainPane.setMainPaneRequirement(lib);
         gui(() -> {
             mainPane.getStylesheets().addAll("css/Practice.css");
             main.getChildren().setAll(mainPane);
@@ -163,7 +163,7 @@ public class MainPaneTest extends TestGroup implements TestHelper {
                 return textLib;
             }
         };
-        mainPane.setMainPaneLib(lib);
+        mainPane.setMainPaneRequirement(lib);
         gui(() -> {
             mainPane.getStylesheets().addAll("css/Practice.css");
             main.getChildren().setAll(mainPane);

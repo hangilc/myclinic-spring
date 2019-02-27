@@ -2,11 +2,9 @@ package jp.chang.myclinic.practice;
 
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
-import jp.chang.myclinic.practice.javafx.shohousen.ShohousenConfigRequirement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenRequirement;
 
-public interface PracticeConfigService extends ShohousenConfigRequirement {
+public interface PracticeConfigService extends ShohousenRequirement.ShohousenConfigService {
 
     String getShohousenPrinterSetting();
     void setShohousenPrinterSetting(String settingName);
