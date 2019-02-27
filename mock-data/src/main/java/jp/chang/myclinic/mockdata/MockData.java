@@ -2,10 +2,8 @@ package jp.chang.myclinic.mockdata;
 
 import jp.chang.myclinic.consts.Sex;
 import jp.chang.myclinic.consts.TodoufukenCode;
-import jp.chang.myclinic.dto.KouhiDTO;
-import jp.chang.myclinic.dto.KoukikoureiDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.dto_logic.HokenLib;
 
 import java.io.BufferedReader;
@@ -16,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +31,8 @@ public class MockData {
     private List<NameEntry> femaleFirstNames;
     private List<Sex> sexList = Arrays.asList(Sex.values());
     private List<TodoufukenCode> todoufukenCodes = Arrays.asList(TodoufukenCode.values());
+    private int serialPatientId = 1;
+    private int serialVisitId = 1;
 
     public MockData() {
         this.lastNames = loadNames("/last-names.txt");
@@ -54,6 +55,12 @@ public class MockData {
         dto.address = pickAddress();
         dto.phone = pickPhone();
         return dto;
+    }
+
+    public PatientDTO pickPatientWithPatientId(){
+        PatientDTO patient = pickPatient();
+        patient.patientId = serialPatientId++;
+        return patient;
     }
 
     private List<NameEntry> loadNames(String name) {
@@ -222,4 +229,14 @@ public class MockData {
         dto.validUpto = validUpto.toString();
         return dto;
     }
+
+    public VisitDTO pickVisitWithVisitId(int patientId, LocalDateTime at){
+        VisitDTO visit = new VisitDTO();
+        visit.visitId = serialVisitId++;
+        visit.patientId = patientId;
+        visit.visitedAt = DateTimeUtil.toSqlDateTime(at);
+        return visit;
+    }
+
+
 }

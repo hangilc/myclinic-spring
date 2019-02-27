@@ -11,33 +11,37 @@ import java.util.concurrent.CompletableFuture;
 
 public class ShohousenPreview {
 
-    public static CompletableFuture<DrawerPreviewDialog> create(ShohousenLib lib, int visitId, String text) {
-        return new ShohousenPreview(lib).makePreview(visitId, text);
+    public static CompletableFuture<DrawerPreviewDialog> create(
+            ShohousenRestRequirement restService, ShohousenConfigRequirement configService,
+            int visitId, String text) {
+        return new ShohousenPreview(restService, configService).makePreview(visitId, text);
     }
 
-    private ShohousenLib lib;
+    private ShohousenRestRequirement restService;
+    private ShohousenConfigRequirement configService;
     private VisitDTO visit;
     private PatientDTO patient;
     private ShohousenData data = new ShohousenData();
 
-    private ShohousenPreview(ShohousenLib lib) {
-        this.lib = lib;
+    private ShohousenPreview(ShohousenRestRequirement restService, ShohousenConfigRequirement configService) {
+        this.restService = restService;
+        this.configService = configService;
     }
 
     private CompletableFuture<DrawerPreviewDialog> makePreview(int visitId, String text) {
-        return lib.getVisit(visitId)
+        return restService.getVisit(visitId)
                 .thenCompose(visit -> {
                     this.visit = visit;
-                    return lib.getPatient(visit.patientId);
+                    return restService.getPatient(visit.patientId);
                 })
-                .thenCompose(patient -> {
+                .thenApply(patient -> {
                     this.patient = patient;
                     data.setPatient(patient);
-                    return lib.getClinicInfo();
+                    return configService.getClinicInfo();
                 })
                 .thenCompose(clinicInfo -> {
                     data.setClinicInfo(clinicInfo);
-                    return lib.getHoken(visitId);
+                    return restService.getHoken(visitId);
                 })
                 .thenApply(hoken -> {
                     ShohousenDrawer drawer = new ShohousenDrawer();
@@ -48,16 +52,16 @@ public class ShohousenPreview {
                     data.setDrugs(text);
                     data.applyTo(drawer);
                     return drawer;
-                 })
+                })
                 .thenApplyAsync(drawer -> {
                     DrawerPreviewDialog previewDialog = new DrawerPreviewDialog() {
                         @Override
                         protected void onDefaultSettingChange(String newSettingName) {
-                            lib.setPrinterSetting(newSettingName);
+                            configService.setShohousenPrinterSetting(newSettingName);
                         }
                     };
-                    previewDialog.setPrinterEnv(lib.getPrinterEnv());
-                    previewDialog.setDefaultPrinterSetting(lib.getPrinterSetting());
+                    previewDialog.setPrinterEnv(configService.getPrinterEnv());
+                    previewDialog.setDefaultPrinterSetting(configService.getShohousenPrinterSetting());
                     previewDialog.setScaleFactor(0.8);
                     previewDialog.setContentSize(PaperSize.A5);
                     previewDialog.setOps(drawer.getOps());

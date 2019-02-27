@@ -1,17 +1,13 @@
 package jp.chang.myclinic.practice.javafx;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.Globals;
-import jp.chang.myclinic.practice.javafx.text.TextLib;
-import jp.chang.myclinic.practice.lib.PracticeLib;
-import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
+import jp.chang.myclinic.practice.javafx.text.TextEditForm;
+import jp.chang.myclinic.practice.javafx.text.TextLib;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,55 +67,21 @@ class RecordTextsPane extends VBox {
 
     private RecordText createRecordText(TextDTO text){
         RecordText recordText = new RecordText(text);
-        recordText.setOnMouseClicked(event -> {
-            TextEditForm editForm = new TextEditForm(text);
-            editForm.setCallback(new TextEditForm.Callback(){
-                private void replace(Node oldNode, Node newNode){
-                    int i = textsArea.getChildren().indexOf(oldNode);
-                    if( i >= 0 ){
-                        textsArea.getChildren().set(i, newNode);
-                    }
-                }
-
-                @Override
-                public void onUpdate(TextDTO updated) {
-                    RecordText newRecordText = createRecordText(updated);
-                    replace(editForm, newRecordText);
-                }
-
-                @Override
-                public void onCancel() {
-                    replace(editForm, recordText);
-                }
-
-                @Override
-                public void onDelete() {
-                    textsArea.getChildren().remove(editForm);
-                }
-
-                @Override
-                public void onDone() {
-                    replace(editForm, recordText);
-                }
-            });
-            int index = textsArea.getChildren().indexOf(recordText);
-            if( index >= 0 ){
-                textsArea.getChildren().set(index, editForm);
-            }
-        });
+        recordText.setTextLib(textLib);
         return recordText;
     }
 
     private void addText(TextDTO text){
         RecordText recordText = createRecordText(text);
+        recordText.setOnDeletedCallback(() -> textsArea.getChildren().remove(recordText));
         textsArea.getChildren().add(recordText);
     }
 
     private TextLib getTextLib(){
-        return textLib != null ? textLib : Globals.getInstance().getTextLib();
+        return textLib;
     }
 
-    public void setTextLib(TextLib textLib){
+    void setTextLib(TextLib textLib){
         this.textLib = textLib;
     }
 

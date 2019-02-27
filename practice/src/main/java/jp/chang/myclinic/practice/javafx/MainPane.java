@@ -23,6 +23,7 @@ import jp.chang.myclinic.practice.javafx.prescexample.EditPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.prescexample.NewPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
+import jp.chang.myclinic.practice.javafx.text.TextLib;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -37,32 +38,79 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-@Component
-public class MainPane extends BorderPane {
+public class MainPane extends BorderPane implements CurrentExamLib {
+
+    private static MainPane INSTANCE = new MainPane();
+
+    public static MainPane getInstance(){
+        return INSTANCE;
+    }
 
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
     private MenuItem selectVisitMenu;
     private RecordsPane recordsPane;
     private Supplier<Optional<PatientManip>> findPatientManipFun;
+    private MainPaneLib mainPaneLib;
+    private PatientDTO currentPatient;
+    private int currentVisitId;
+    private int tempVisitId;
 
-    public MainPane() {
+    private MainPane() {
         setTop(createMenu());
         setCenter(createCenter());
         addEventHandler(EventTypes.visitDeletedEventType, this::onVisitDeleted);
     }
 
-    public void simulateSelectVisitMenuChoice(){
+    public void setMainPaneLib(MainPaneLib lib) {
+        this.mainPaneLib = lib;
+        recordsPane.setRecordLib(new RecordLib(){
+            @Override
+            public CurrentExamLib getCurrentExamLib() {
+                return MainPane.this;
+            }
+
+            @Override
+            public TextLib getTextLib() {
+                return lib.getTextLib();
+            }
+        });
+    }
+
+    public void setCurrent(PatientDTO patient, int currentVisitId){
+        this.currentPatient = patient;
+        this.currentVisitId = currentVisitId;
+        this.tempVisitId = 0;
+        mainPaneLib.updateTitle(patient);
+    }
+
+    @Override
+    public PatientDTO getCurrentPatient() {
+        return currentPatient;
+    }
+
+    @Override
+    public int getCurrentVisitId() {
+        return currentVisitId;
+    }
+
+    @Override
+    public int getTempVisitId() {
+        return tempVisitId;
+    }
+
+    public void simulateSelectVisitMenuChoice() {
         selectVisitMenu.fire();
     }
 
-    public Optional<Record> findRecord(int visitId){
+    public Optional<Record> findRecord(int visitId) {
         return recordsPane.findRecord(visitId);
     }
 
-    public List<Record> listRecord(){
+    public List<Record> listRecord() {
         return recordsPane.listRecord();
     }
 
@@ -213,6 +261,10 @@ public class MainPane extends BorderPane {
                 createRecords(),
                 createRecordNav()
         );
+        PracticeEnv.INSTANCE.pageVisitsProperty().addListener((obs, oldValue, newValue) -> {
+            recordsPane.getChildren().clear();
+            setVisits(newValue);
+        });
         return root;
     }
 
@@ -263,9 +315,9 @@ public class MainPane extends BorderPane {
             }
         });
         this.findPatientManipFun = () -> {
-            for(Node node: wrapper.getChildren()){
-                if( node instanceof PatientManip ){
-                    return Optional.of((PatientManip)node);
+            for (Node node : wrapper.getChildren()) {
+                if (node instanceof PatientManip) {
+                    return Optional.of((PatientManip) node);
                 }
             }
             return Optional.empty();
@@ -337,47 +389,48 @@ public class MainPane extends BorderPane {
         }
     }
 
+    public CompletableFuture<Void> setVisits(List<VisitFull2DTO> visits) {
+        recordsPane.getChildren().clear();
+        if( visits == null ){
+            return CompletableFuture.completedFuture(null);
+        }
+        List<Integer> shinryouIds = visits.stream().flatMap(v -> v.shinryouList.stream())
+                .map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
+        List<Integer> drugIds = visits.stream().flatMap(v -> v.drugs.stream())
+                .map(d -> d.drug.drugId).collect(Collectors.toList());
+        List<Integer> visitIds = visits.stream().map(vf -> vf.visit.visitId).collect(Collectors.toList());
+        class Local {
+            private Map<Integer, ShinryouAttrDTO> shinryouAttrMap;
+            private Map<Integer, DrugAttrDTO> drugAttrMap;
+        }
+        Local local = new Local();
+        return mainPaneLib.batchGetShinryouAttr(shinryouIds)
+                .thenCompose(attrList -> {
+                    Map<Integer, ShinryouAttrDTO> shinryouAttrMap = new HashMap<>();
+                    attrList.forEach(attr -> shinryouAttrMap.put(attr.shinryouId, attr));
+                    local.shinryouAttrMap = shinryouAttrMap;
+                    return mainPaneLib.batchGetDrugAttr(drugIds);
+                })
+                .thenCompose(attrList -> {
+                    Map<Integer, DrugAttrDTO> drugAttrMap = new HashMap<>();
+                    attrList.forEach(attr -> drugAttrMap.put(attr.drugId, attr));
+                    local.drugAttrMap = drugAttrMap;
+                    return mainPaneLib.batchGetShouki(visitIds);
+                })
+                .thenAccept(shoukiList -> {
+                    Map<Integer, ShoukiDTO> shoukiMap = new HashMap<>();
+                    shoukiList.forEach(s -> shoukiMap.put(s.visitId, s));
+                    Platform.runLater(() ->
+                            visits.forEach(v -> recordsPane.addRecord(v, local.shinryouAttrMap,
+                                    local.drugAttrMap, shoukiMap)));
+                });
+    }
+
     private Node createRecords() {
         ScrollPane sp = new ScrollPane();
         sp.setFitToWidth(true);
         VBox.setVgrow(sp, Priority.ALWAYS);
         this.recordsPane = new RecordsPane();
-        PracticeEnv.INSTANCE.pageVisitsProperty().addListener((obs, oldValue, newValue) -> {
-            recordsPane.getChildren().clear();
-            if (newValue != null) {
-                List<Integer> shinryouIds = newValue.stream().flatMap(v -> v.shinryouList.stream())
-                        .map(s -> s.shinryou.shinryouId).collect(Collectors.toList());
-                List<Integer> drugIds = newValue.stream().flatMap(v -> v.drugs.stream())
-                        .map(d -> d.drug.drugId).collect(Collectors.toList());
-                List<Integer> visitIds = newValue.stream().map(vf -> vf.visit.visitId).collect(Collectors.toList());
-                class Local {
-                    private Map<Integer, ShinryouAttrDTO> shinryouAttrMap;
-                    private Map<Integer, DrugAttrDTO> drugAttrMap;
-                }
-                Local local = new Local();
-                Service.api.batchGetShinryouAttr(shinryouIds)
-                        .thenCompose(attrList -> {
-                            Map<Integer, ShinryouAttrDTO> shinryouAttrMap = new HashMap<>();
-                            attrList.forEach(attr -> shinryouAttrMap.put(attr.shinryouId, attr));
-                            local.shinryouAttrMap = shinryouAttrMap;
-                            return Service.api.batchGetDrugAttr(drugIds);
-                        })
-                        .thenCompose(attrList -> {
-                            Map<Integer, DrugAttrDTO> drugAttrMap = new HashMap<>();
-                            attrList.forEach(attr -> drugAttrMap.put(attr.drugId, attr));
-                            local.drugAttrMap = drugAttrMap;
-                            return Service.api.batchGetShouki(visitIds);
-                        })
-                        .thenAccept(shoukiList -> {
-                            Map<Integer, ShoukiDTO> shoukiMap = new HashMap<>();
-                            shoukiList.forEach(s -> shoukiMap.put(s.visitId, s));
-                            Platform.runLater(() ->
-                                    newValue.forEach(v -> recordsPane.addRecord(v, local.shinryouAttrMap,
-                                            local.drugAttrMap, shoukiMap)));
-                        })
-                        .exceptionally(HandlerFX::exceptionally);
-            }
-        });
         sp.setContent(recordsPane);
         return sp;
     }

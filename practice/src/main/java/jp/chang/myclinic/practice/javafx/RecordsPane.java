@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 class RecordsPane extends VBox {
 
+    private RecordLib recordLib;
+
     RecordsPane(){
         setFillWidth(true);
         addEventHandler(EventTypes.visitDeletedEventType, event -> deleteRecord(event.getVisitId()));
@@ -27,9 +29,19 @@ class RecordsPane extends VBox {
         PracticeEnv.INSTANCE.addShoukiFormChangeListener(this::onShoukiChanged);
     }
 
+    void setRecordLib(RecordLib lib){
+        this.recordLib = lib;
+    }
+
     void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
                           Map<Integer, DrugAttrDTO> drugAttrMap, Map<Integer, ShoukiDTO> shoukiMap){
-        Record record = new Record(visit, shinryouAttrMap, drugAttrMap, shoukiMap.get(visit.visit.visitId));
+        Record record = new Record(visit, shinryouAttrMap, drugAttrMap, shoukiMap.get(visit.visit.visitId),
+                recordLib);
+        if( recordLib.getCurrentExamLib().getCurrentVisitId() == visit.visit.visitId ){
+            record.styleAsCurrentVisit();
+        } else if( recordLib.getCurrentExamLib().getTempVisitId() == visit.visit.visitId ){
+            record.styleAsTempVisit();
+        }
         getChildren().add(record);
     }
 

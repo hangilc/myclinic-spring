@@ -3,18 +3,20 @@ package jp.chang.myclinic.practice.javafx;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.practice.Globals;
 import jp.chang.myclinic.practice.javafx.text.TextDisp;
 import jp.chang.myclinic.practice.javafx.text.TextEditForm;
 import jp.chang.myclinic.practice.javafx.text.TextLib;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class RecordText extends StackPane {
 
     private int textId;
     private int visitId;
     private TextLib textLib;
+    private Runnable onDeletedCallback;
+    private Consumer<TextDTO> onCopiedCallback;
 
     RecordText(TextDTO text) {
         this.textId = text.textId;
@@ -33,8 +35,16 @@ public class RecordText extends StackPane {
         return textId;
     }
 
-    public boolean isDisplaying() {
+    boolean isDisplaying() {
         return findTextDisp().isPresent();
+    }
+
+    void setOnDeletedCallback(Runnable callback){
+        this.onDeletedCallback = callback;
+    }
+
+    void setOnCopiedCallback(Consumer<TextDTO> callback){
+        this.onCopiedCallback = callback;
     }
 
     private <T> Optional<T> findInChildren(Class<T> childClass){
@@ -50,16 +60,16 @@ public class RecordText extends StackPane {
         return findInChildren(TextDisp.class);
     }
 
-    public Optional<TextEditForm> findTextEditForm(){
+    Optional<TextEditForm> findTextEditForm(){
         return findInChildren(TextEditForm.class);
     }
 
-    public void setTextLib(TextLib textLib) {
+    void setTextLib(TextLib textLib) {
         this.textLib = textLib;
     }
 
     private TextLib getTextLib() {
-        return textLib != null ? textLib : Globals.getInstance().getTextLib();
+        return textLib;
     }
 
     private void onDispClicked(TextDisp disp) {
@@ -71,6 +81,17 @@ public class RecordText extends StackPane {
         form.setTextLib(getTextLib());
         form.setOnUpdated(updatedText -> getChildren().setAll(createDisp(updatedText.content)));
         form.setOnCancel(() -> getChildren().setAll(disp));
+        form.setOnDeleted(() -> {
+            if( onDeletedCallback != null ){
+                onDeletedCallback.run();
+            }
+        });
+        form.setOnCopied(newText -> {
+            if( onCopiedCallback != null ){
+                onCopiedCallback.accept(newText);
+            }
+            getChildren().setAll(disp);
+        });
         getChildren().setAll(form);
     }
 

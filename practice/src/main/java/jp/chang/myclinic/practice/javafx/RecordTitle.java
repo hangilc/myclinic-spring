@@ -34,8 +34,26 @@ public class RecordTitle extends TextFlow {
         getChildren().addAll(new Text(createText(visit.visitedAt)));
         addContextMenu();
         adaptToEnv();
-        PracticeEnv.INSTANCE.currentVisitIdProperty().addListener((obs, oldValue, newValue) -> adaptToEnv());
-        PracticeEnv.INSTANCE.tempVisitIdProperty().addListener((obs, oldValue, newValue) -> adaptToEnv());
+//        PracticeEnv.INSTANCE.currentVisitIdProperty().addListener((obs, oldValue, newValue) -> adaptToEnv());
+//        PracticeEnv.INSTANCE.tempVisitIdProperty().addListener((obs, oldValue, newValue) -> adaptToEnv());
+    }
+
+    void styleAsCurrentVisit(){
+        removeStyles();
+        getStyleClass().add("current-visit");
+    }
+
+    void styleAsTempVisit(){
+        removeStyles();
+        getStyleClass().add("temp-visit");
+    }
+
+    void styleAsRegular(){
+        removeStyles();
+    }
+
+    private void removeStyles(){
+        getStyleClass().removeAll("current-visit", "temp-visit");
     }
 
     private void adaptToEnv() {

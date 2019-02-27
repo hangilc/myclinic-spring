@@ -40,7 +40,7 @@ public class TextEditForm extends VBox {
         textArea.setText(text.content);
         deleteLink.setOnAction(event -> {
             if (ConfirmDialog.confirm("この文章を削除しますか？", this)) {
-                getTextLib().deleteText(textId)
+                getTextLib().getRestService().deleteText(textId)
                         .thenAcceptAsync(ok -> {
                             if( onDeletedCallback != null ){
                                 onDeletedCallback.run();
@@ -87,7 +87,7 @@ public class TextEditForm extends VBox {
             textDTO.visitId = visitId;
             textDTO.textId = textId;
             textDTO.content = textArea.getText().trim();
-            getTextLib().updateText(textDTO)
+            getTextLib().getRestService().updateText(textDTO)
                     .thenAcceptAsync(ok -> callback.accept(textDTO), Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
         });
@@ -105,12 +105,16 @@ public class TextEditForm extends VBox {
         this.onDeletedCallback = callback;
     }
 
-    public void setOnCopiedCallback(Consumer<TextDTO> callback){
+    public void setOnCopied(Consumer<TextDTO> callback){
         this.onCopiedCallback = callback;
     }
 
+    public int getTextId(){
+        return textId;
+    }
+
     private TextLib getTextLib(){
-        return textLib != null ? textLib : Globals.getInstance().getTextLib();
+        return textLib;
     }
 
     public void setTextLib(TextLib textLib){
@@ -135,7 +139,7 @@ public class TextEditForm extends VBox {
                     +"変更保存するか、変更をキャンセルしてから、処方箋を発行してください。", this);
             return;
         }
-        if( textLib.getCurrentOrTempVisitId() != visitId ){
+        if( textLib.getMainPaneService().getCurrentOrTempVisitId() != visitId ){
             if( !ConfirmDialog.confirm("現在診察中ではないですか、この処方箋を発行しますか？", this) ){
                 return;
             }
@@ -149,7 +153,7 @@ public class TextEditForm extends VBox {
     }
 
     private void doCopy(){
-        int targetVisitId = textLib.getCurrentOrTempVisitId();
+        int targetVisitId = textLib.getMainPaneService().getCurrentOrTempVisitId();
         if( targetVisitId == 0 ){
             AlertDialog.alert("文章のコピー先をみつけられません。", this);
             return;
@@ -161,12 +165,13 @@ public class TextEditForm extends VBox {
         TextDTO newText = new TextDTO();
         newText.visitId = targetVisitId;
         newText.content = textArea.getText();
-        textLib.enterText(newText)
+        textLib.getRestService().enterText(newText)
                 .thenAcceptAsync(newTextId -> {
                     newText.textId = newTextId;
                     if( onCopiedCallback != null ){
                         onCopiedCallback.accept(newText);
                     }
+                    textLib.getMainPaneService().broadcastNewText(newText);
                     done();
                 }, Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);

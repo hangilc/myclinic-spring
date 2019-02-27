@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.testgui;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.practice.javafx.MainPaneTest;
 import jp.chang.myclinic.practice.javafx.TestText;
 import jp.chang.myclinic.practice.javafx.shohousen.TestShohousen;
 
@@ -14,6 +15,7 @@ public class TestGui extends GuiTestBase {
     {
         addTestGroup("text", () -> new TestText(stage, main));
         addTestGroup("shohousen", TestShohousen::new);
+        addTestGroup("main", () -> new MainPaneTest(stage, main));
     }
 
     public TestGui(Stage stage) {

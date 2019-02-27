@@ -3,14 +3,12 @@ package jp.chang.myclinic.practice.javafx;
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
-import jp.chang.myclinic.practice.javafx.shohousen.ShohousenLib;
-import jp.chang.myclinic.practice.javafx.shohousen.ShohousenLibMock;
-import jp.chang.myclinic.practice.javafx.text.TextDisp;
-import jp.chang.myclinic.practice.javafx.text.TextEditForm;
-import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
-import jp.chang.myclinic.practice.javafx.text.TextLib;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenService;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenServiceMock;
+import jp.chang.myclinic.practice.javafx.text.*;
 import jp.chang.myclinic.practice.testgui.ExtensionWaiter;
 import jp.chang.myclinic.practice.testgui.TestGroup;
 import jp.chang.myclinic.practice.testgui.TestHelper;
@@ -18,6 +16,7 @@ import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class TestText extends TestGroup implements TestHelper {
@@ -42,6 +41,7 @@ public class TestText extends TestGroup implements TestHelper {
         addTestProc("record-text-shohousen-confirm-current-ok", this::testRecordTextShohousenConfirmCurrentOk);
         addTestProc("record-text-shohousen-confirm-current-no", this::testRecordTextShohousenConfirmCurrentNo);
         addTestProc("edit-form-copy", this::testEditFormCopy);
+        addTestProc("pane-disp", this::testPaneDisp);
     }
 
     public TestText(Stage stage, Pane main) {
@@ -51,7 +51,7 @@ public class TestText extends TestGroup implements TestHelper {
 
     private void testEnterFormDisp() {
         confirm(!Platform.isFxApplicationThread());
-        TextEnterForm form = new TextEnterForm(1, new TextLib() {
+        TextEnterForm form = new TextEnterForm(1, new TextLibAdapter() {
             @Override
             public CompletableFuture<Integer> enterText(TextDTO text) {
                 return CompletableFuture.completedFuture(1);
@@ -86,7 +86,7 @@ public class TestText extends TestGroup implements TestHelper {
     }
 
     private void testEnterFormEnter() {
-        TextEnterForm form = new TextEnterForm(1, new TextLib() {
+        TextEnterForm form = new TextEnterForm(1, new TextLibAdapter() {
             @Override
             public CompletableFuture<Integer> enterText(TextDTO text) {
                 return CompletableFuture.completedFuture(10);
@@ -116,7 +116,7 @@ public class TestText extends TestGroup implements TestHelper {
 
     private void testTextsPaneDisp() {
         RecordTextsPane textsPane = new RecordTextsPane(Collections.emptyList(), 1);
-        TextLib textLib = new TextLib() {
+        TextLib textLib = new TextLibAdapter() {
             @Override
             public CompletableFuture<Integer> enterText(TextDTO text) {
                 return CompletableFuture.completedFuture(10);
@@ -147,7 +147,7 @@ public class TestText extends TestGroup implements TestHelper {
 
     private void testTextsPaneEnter() {
         RecordTextsPane textsPane = new RecordTextsPane(Collections.emptyList(), 1);
-        TextLib textLib = new TextLib() {
+        TextLib textLib = new TextLibAdapter() {
             @Override
             public CompletableFuture<Integer> enterText(TextDTO text) {
                 return CompletableFuture.completedFuture(10);
@@ -183,7 +183,7 @@ public class TestText extends TestGroup implements TestHelper {
         textDTO.visitId = 1;
         textDTO.textId = 10;
         textDTO.content = "昨日から、頭痛がある。";
-        TextLib textLib = new TextLib() {
+        TextLib textLib = new TextLibAdapter() {
             @Override
             public CompletableFuture<Boolean> updateText(TextDTO update) {
                 confirm(update.visitId == textDTO.visitId);
@@ -206,7 +206,7 @@ public class TestText extends TestGroup implements TestHelper {
         textDTO.visitId = 1;
         textDTO.textId = 10;
         textDTO.content = "昨日から、頭痛がある。";
-        TextLib textLib = new TextLib() {
+        TextLib textLib = new TextLibAdapter() {
             @Override
             public CompletableFuture<Boolean> updateText(TextDTO textDTO) {
                 return CompletableFuture.completedFuture(true);
@@ -259,7 +259,7 @@ public class TestText extends TestGroup implements TestHelper {
         textDTO.textId = 10;
         textDTO.content = "昨日から、頭痛がある。";
         RecordText recordText = new RecordText(textDTO);
-        recordText.setTextLib(new TextLib(){
+        recordText.setTextLib(new TextLibAdapter(){
             @Override
             public CompletableFuture<Boolean> deleteText(int textId) {
                 confirm(textId == textDTO.textId);
@@ -293,7 +293,7 @@ public class TestText extends TestGroup implements TestHelper {
         textDTO.textId = 10;
         textDTO.content = "昨日から、頭痛がある。";
         RecordText recordText = new RecordText(textDTO);
-        recordText.setTextLib(new TextLib(){
+        recordText.setTextLib(new TextLibAdapter(){
             @Override
             public CompletableFuture<Boolean> deleteText(int textId) {
                 throw new RuntimeException("delete callback invoked.");
@@ -322,7 +322,12 @@ public class TestText extends TestGroup implements TestHelper {
         textDTO.textId = 10;
         textDTO.content = "昨日から、頭痛がある。";
         RecordText recordText = new RecordText(textDTO);
-        recordText.setTextLib(new TextLib(){
+        CurrentExamLib currentExamLib = new CurrentExamLib(){
+            @Override
+            public PatientDTO getCurrentPatient() {
+                return null;
+            }
+
             @Override
             public int getCurrentVisitId() {
                 return 1;
@@ -332,10 +337,16 @@ public class TestText extends TestGroup implements TestHelper {
             public int getTempVisitId() {
                 return 0;
             }
+        };
+        recordText.setTextLib(new TextLibAdapter(){
+            @Override
+            public CurrentExamLib getCurrentExamLib() {
+                return currentExamLib;
+            }
 
             @Override
-            public ShohousenLib getShohousenLib() {
-                return ShohousenLibMock.create();
+            public ShohousenService getShohousenLib() {
+                return ShohousenServiceMock.create();
             }
         });
         gui(() -> {
@@ -351,9 +362,7 @@ public class TestText extends TestGroup implements TestHelper {
             private boolean done;
         }
         State state = new State();
-        editForm.setOnDone(() -> {
-            state.done = true;
-        });
+        editForm.setOnDone(() -> state.done = true);
         gui(editForm::simulateClickShohousenButton);
         DrawerPreviewDialog preview = waitForWindow(DrawerPreviewDialog.class);
         gui(preview::close);
@@ -366,7 +375,12 @@ public class TestText extends TestGroup implements TestHelper {
         textDTO.textId = 10;
         textDTO.content = "昨日から、頭痛がある。";
         RecordText recordText = new RecordText(textDTO);
-        recordText.setTextLib(new TextLib(){
+        CurrentExamLib currentExamLib = new CurrentExamLib(){
+            @Override
+            public PatientDTO getCurrentPatient() {
+                return null;
+            }
+
             @Override
             public int getCurrentVisitId() {
                 return 1;
@@ -377,9 +391,16 @@ public class TestText extends TestGroup implements TestHelper {
                 return 0;
             }
 
+        };
+        recordText.setTextLib(new TextLibAdapter(){
             @Override
-            public ShohousenLib getShohousenLib() {
-                return ShohousenLibMock.create();
+            public CurrentExamLib getCurrentExamLib() {
+                return currentExamLib;
+            }
+
+            @Override
+            public ShohousenService getShohousenLib() {
+                return ShohousenServiceMock.create();
             }
         });
         gui(() -> {
@@ -404,7 +425,12 @@ public class TestText extends TestGroup implements TestHelper {
         textDTO.textId = 10;
         textDTO.content = "昨日から、頭痛がある。";
         RecordText recordText = new RecordText(textDTO);
-        recordText.setTextLib(new TextLib(){
+        CurrentExamLib currentExamLib = new CurrentExamLib(){
+            @Override
+            public PatientDTO getCurrentPatient() {
+                return null;
+            }
+
             @Override
             public int getCurrentVisitId() {
                 return 1;
@@ -415,9 +441,16 @@ public class TestText extends TestGroup implements TestHelper {
                 return 0;
             }
 
+        };
+        recordText.setTextLib(new TextLibAdapter(){
             @Override
-            public ShohousenLib getShohousenLib() {
-                return ShohousenLibMock.create();
+            public CurrentExamLib getCurrentExamLib() {
+                return currentExamLib;
+            }
+
+            @Override
+            public ShohousenService getShohousenLib() {
+                return ShohousenServiceMock.create();
             }
         });
         gui(() -> {
@@ -444,7 +477,12 @@ public class TestText extends TestGroup implements TestHelper {
         textDTO.textId = 10;
         textDTO.content = "昨日から、頭痛がある。";
         RecordText recordText = new RecordText(textDTO);
-        recordText.setTextLib(new TextLib(){
+        CurrentExamLib currentExamLib = new CurrentExamLib(){
+            @Override
+            public PatientDTO getCurrentPatient() {
+                return null;
+            }
+
             @Override
             public int getCurrentVisitId() {
                 return 1;
@@ -455,8 +493,15 @@ public class TestText extends TestGroup implements TestHelper {
                 return 0;
             }
 
+        };
+        recordText.setTextLib(new TextLibAdapter(){
             @Override
-            public ShohousenLib getShohousenLib() {
+            public CurrentExamLib getCurrentExamLib() {
+                return currentExamLib;
+            }
+
+            @Override
+            public ShohousenService getShohousenLib() {
                 throw new RuntimeException("should not be invoked");
             }
         });
@@ -483,10 +528,17 @@ public class TestText extends TestGroup implements TestHelper {
         TextEditForm editForm = new TextEditForm(textDTO);
         class State {
             private boolean done;
+            private boolean enterTextInvoked;
+            private boolean broadcastNewTextInvoked;
         }
         State state = new State();
         editForm.setOnDone(() -> state.done = true);
-        editForm.setTextLib(new TextLib(){
+        CurrentExamLib currentExamLib = new CurrentExamLib(){
+            @Override
+            public PatientDTO getCurrentPatient() {
+                return null;
+            }
+
             @Override
             public int getCurrentVisitId() {
                 return 1;
@@ -497,11 +549,26 @@ public class TestText extends TestGroup implements TestHelper {
                 return 0;
             }
 
+        };
+        editForm.setTextLib(new TextLibAdapter(){
+            @Override
+            public CurrentExamLib getCurrentExamLib() {
+                return currentExamLib;
+            }
+
             @Override
             public CompletableFuture<Integer> enterText(TextDTO text) {
                 confirm(text.visitId == 1);
                 confirm(text.content.equals(textDTO.content));
+                state.enterTextInvoked = true;
                 return CompletableFuture.completedFuture(11);
+            }
+
+            @Override
+            public void broadcastNewText(TextDTO newText) {
+                confirm(newText.visitId == 1);
+                confirm(newText.content.equals(textDTO.content));
+                state.broadcastNewTextInvoked = true;
             }
         });
         gui(() -> {
@@ -512,6 +579,22 @@ public class TestText extends TestGroup implements TestHelper {
         });
         gui(editForm::simulateClickCopyButton);
         waitForTrue(() -> state.done);
+        waitForTrue(() -> state.enterTextInvoked);
+        waitForTrue(() -> state.broadcastNewTextInvoked);
+    }
+
+    private void testPaneDisp(){
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = 3;
+        textDTO.textId = 10;
+        textDTO.content = "昨日から、頭痛がある。";
+        RecordTextsPane textsPane = new RecordTextsPane(List.of(textDTO), 1);
+        gui(() -> {
+            textsPane.setPrefWidth(329);
+            textsPane.setPrefHeight(400);
+            main.getChildren().setAll(textsPane);
+            stage.sizeToScene();
+        });
     }
 
 }

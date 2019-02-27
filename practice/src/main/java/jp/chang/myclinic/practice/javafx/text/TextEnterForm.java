@@ -44,7 +44,7 @@ public class TextEnterForm extends VBox {
     public void setOnEntered(Consumer<TextDTO> handler){
         enterLink.setOnAction(event -> {
             TextDTO textDTO = getFormTextDTO();
-            lib.enterText(getFormTextDTO())
+            lib.getRestService().enterText(getFormTextDTO())
                     .thenAcceptAsync(textId -> {
                         textDTO.textId = textId;
                         handler.accept(textDTO);

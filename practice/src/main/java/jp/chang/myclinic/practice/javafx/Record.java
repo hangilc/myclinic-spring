@@ -23,22 +23,38 @@ import static jp.chang.myclinic.utilfx.GuiUtil.alertExceptionGui;
 public class Record extends VBox {
 
     private int visitId;
+    private RecordTitle recordTitle;
     private RecordTextsPane textPane;
     private RecordDrugsPane drugsPane;
     private RecordShinryouPane shinryouPane;
     private RecordConductsPane conductsPane;
     private StackPane hokenArea = new StackPane();
     private ObjectProperty<ShoukiDTO> shouki;
+    private RecordLib recordLib;
 
     Record(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
-                  Map<Integer, DrugAttrDTO> drugAttrMap, ShoukiDTO shouki) {
+                  Map<Integer, DrugAttrDTO> drugAttrMap, ShoukiDTO shouki, RecordLib recordLib) {
         this.visitId = visit.visit.visitId;
         this.shouki = new SimpleObjectProperty<>(shouki);
+        this.recordLib = recordLib;
+        this.recordTitle = new RecordTitle(visit.visit, this.shouki);
         getChildren().addAll(
-                new RecordTitle(visit.visit, this.shouki),
+                recordTitle,
                 createBody(visit, shinryouAttrMap, drugAttrMap)
         );
         setPrefWidth(400);
+    }
+
+    void styleAsCurrentVisit(){
+        recordTitle.styleAsCurrentVisit();
+    }
+
+    void styleAsTempVisit(){
+        recordTitle.styleAsTempVisit();
+    }
+
+    void styleAsRegulstVisit(){
+        recordTitle.styleAsCurrentVisit();
     }
 
     public int getVisitId() {
@@ -113,6 +129,7 @@ public class Record extends VBox {
         right.setStyle("-fx-padding: 5");
         hbox.getChildren().addAll(left, right);
         textPane = new RecordTextsPane(visit.texts, visit.visit.visitId);
+        textPane.setTextLib(recordLib.getTextLib());
         left.getChildren().add(textPane);
         drugsPane = new RecordDrugsPane(visit.drugs, visit.visit, drugAttrMap);
         shinryouPane = new RecordShinryouPane(visit.shinryouList, visit.visit, shinryouAttrMap);
