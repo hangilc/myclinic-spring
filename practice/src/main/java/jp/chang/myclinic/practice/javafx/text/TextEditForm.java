@@ -28,6 +28,7 @@ public class TextEditForm extends VBox {
     private TextLib textLib;
     private Runnable onDeletedCallback;
     private Runnable onDoneCallback;
+    private Consumer<TextDTO> onCopiedCallback;
 
     public TextEditForm(TextDTO text) {
         super(4);
@@ -49,6 +50,7 @@ public class TextEditForm extends VBox {
             }
         });
         shohousenLink.setOnAction(event -> doShohousen(text));
+        copyLink.setOnAction(event -> doCopy());
         getChildren().addAll(
                 textArea,
                 createButtons()
@@ -103,6 +105,10 @@ public class TextEditForm extends VBox {
         this.onDeletedCallback = callback;
     }
 
+    public void setOnCopiedCallback(Consumer<TextDTO> callback){
+        this.onCopiedCallback = callback;
+    }
+
     private TextLib getTextLib(){
         return textLib != null ? textLib : Globals.getInstance().getTextLib();
     }
@@ -141,4 +147,29 @@ public class TextEditForm extends VBox {
                 }, Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);
     }
+
+    private void doCopy(){
+        int targetVisitId = textLib.getCurrentOrTempVisitId();
+        if( targetVisitId == 0 ){
+            AlertDialog.alert("文章のコピー先をみつけられません。", this);
+            return;
+        }
+        if( targetVisitId == visitId ){
+            AlertDialog.alert("自分自身にコピーはできません。", this);
+            return;
+        }
+        TextDTO newText = new TextDTO();
+        newText.visitId = targetVisitId;
+        newText.content = textArea.getText();
+        textLib.enterText(newText)
+                .thenAcceptAsync(newTextId -> {
+                    newText.textId = newTextId;
+                    if( onCopiedCallback != null ){
+                        onCopiedCallback.accept(newText);
+                    }
+                    done();
+                }, Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
+    }
+
 }

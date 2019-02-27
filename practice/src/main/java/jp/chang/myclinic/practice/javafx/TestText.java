@@ -14,6 +14,7 @@ import jp.chang.myclinic.practice.javafx.text.TextLib;
 import jp.chang.myclinic.practice.testgui.ExtensionWaiter;
 import jp.chang.myclinic.practice.testgui.TestGroup;
 import jp.chang.myclinic.practice.testgui.TestHelper;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
 
 import java.util.Collections;
@@ -37,6 +38,10 @@ public class TestText extends TestGroup implements TestHelper {
         addTestProc("record-text-delete", this::testRecordTextDelete);
         addTestProc("record-text-delete-cancel", this::testRecordTextDeleteCancel);
         addTestProc("record-text-shohousen", this::testRecordTextShohousen);
+        addTestProc("record-text-shohousen-check-modified", this::testRecordTextShohousenCheckModified);
+        addTestProc("record-text-shohousen-confirm-current-ok", this::testRecordTextShohousenConfirmCurrentOk);
+        addTestProc("record-text-shohousen-confirm-current-no", this::testRecordTextShohousenConfirmCurrentNo);
+        addTestProc("edit-form-copy", this::testEditFormCopy);
     }
 
     public TestText(Stage stage, Pane main) {
@@ -352,6 +357,160 @@ public class TestText extends TestGroup implements TestHelper {
         gui(editForm::simulateClickShohousenButton);
         DrawerPreviewDialog preview = waitForWindow(DrawerPreviewDialog.class);
         gui(preview::close);
+        waitForTrue(() -> state.done);
+    }
+
+    private void testRecordTextShohousenCheckModified() {
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = 1;
+        textDTO.textId = 10;
+        textDTO.content = "昨日から、頭痛がある。";
+        RecordText recordText = new RecordText(textDTO);
+        recordText.setTextLib(new TextLib(){
+            @Override
+            public int getCurrentVisitId() {
+                return 1;
+            }
+
+            @Override
+            public int getTempVisitId() {
+                return 0;
+            }
+
+            @Override
+            public ShohousenLib getShohousenLib() {
+                return ShohousenLibMock.create();
+            }
+        });
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
+        TextDisp disp = waitFor(recordText::findTextDisp);
+        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+        TextEditForm editForm = waitFor(recordText::findTextEditForm);
+        gui(() -> editForm.simulateSetText(textDTO.content + " modified"));
+        gui(editForm::simulateClickShohousenButton);
+        AlertDialog alertDialog = waitForWindow(AlertDialog.class);
+        gui(alertDialog::simulateClickOkButton);
+        waitForWindowDisappear(alertDialog);
+    }
+
+    private void testRecordTextShohousenConfirmCurrentOk() {
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = 2;
+        textDTO.textId = 10;
+        textDTO.content = "昨日から、頭痛がある。";
+        RecordText recordText = new RecordText(textDTO);
+        recordText.setTextLib(new TextLib(){
+            @Override
+            public int getCurrentVisitId() {
+                return 1;
+            }
+
+            @Override
+            public int getTempVisitId() {
+                return 0;
+            }
+
+            @Override
+            public ShohousenLib getShohousenLib() {
+                return ShohousenLibMock.create();
+            }
+        });
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
+        TextDisp disp = waitFor(recordText::findTextDisp);
+        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+        TextEditForm editForm = waitFor(recordText::findTextEditForm);
+        gui(editForm::simulateClickShohousenButton);
+        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
+        gui(confirmDialog::simulateClickOkButton);
+        waitForWindowDisappear(confirmDialog);
+        DrawerPreviewDialog preview = waitForWindow(DrawerPreviewDialog.class);
+        gui(preview::close);
+        waitForWindowDisappear(preview);
+    }
+
+    private void testRecordTextShohousenConfirmCurrentNo() {
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = 2;
+        textDTO.textId = 10;
+        textDTO.content = "昨日から、頭痛がある。";
+        RecordText recordText = new RecordText(textDTO);
+        recordText.setTextLib(new TextLib(){
+            @Override
+            public int getCurrentVisitId() {
+                return 1;
+            }
+
+            @Override
+            public int getTempVisitId() {
+                return 0;
+            }
+
+            @Override
+            public ShohousenLib getShohousenLib() {
+                throw new RuntimeException("should not be invoked");
+            }
+        });
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
+        TextDisp disp = waitFor(recordText::findTextDisp);
+        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+        TextEditForm editForm = waitFor(recordText::findTextEditForm);
+        gui(editForm::simulateClickShohousenButton);
+        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
+        gui(confirmDialog::simulateClickNoButton);
+        waitForWindowDisappear(confirmDialog);
+    }
+
+    private void testEditFormCopy(){
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = 3;
+        textDTO.textId = 10;
+        textDTO.content = "昨日から、頭痛がある。";
+        TextEditForm editForm = new TextEditForm(textDTO);
+        class State {
+            private boolean done;
+        }
+        State state = new State();
+        editForm.setOnDone(() -> state.done = true);
+        editForm.setTextLib(new TextLib(){
+            @Override
+            public int getCurrentVisitId() {
+                return 1;
+            }
+
+            @Override
+            public int getTempVisitId() {
+                return 0;
+            }
+
+            @Override
+            public CompletableFuture<Integer> enterText(TextDTO text) {
+                confirm(text.visitId == 1);
+                confirm(text.content.equals(textDTO.content));
+                return CompletableFuture.completedFuture(11);
+            }
+        });
+        gui(() -> {
+            editForm.setPrefWidth(329);
+            editForm.setPrefHeight(400);
+            main.getChildren().setAll(editForm);
+            stage.sizeToScene();
+        });
+        gui(editForm::simulateClickCopyButton);
         waitForTrue(() -> state.done);
     }
 
