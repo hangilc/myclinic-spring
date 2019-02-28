@@ -61,4 +61,22 @@ public class TextRequirement {
         }
     }
 
+    public static class MainPaneServiceDelegate implements TextMainPaneService {
+        private TextMainPaneService base;
+
+        public MainPaneServiceDelegate(TextMainPaneService base) {
+            this.base = base;
+        }
+
+        @Override
+        public int getCurrentOrTempVisitId() {
+            return base.getCurrentOrTempVisitId();
+        }
+
+        @Override
+        public void broadcastNewText(TextDTO newText) {
+            base.broadcastNewText(newText);
+        }
+    }
+
 }

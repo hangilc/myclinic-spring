@@ -55,7 +55,7 @@ public class TestText extends TestGroup implements TestHelper {
             restService, mainPaneService, shohousenRequiremetn
     );
 
-    private VisitDTO newVisit(){
+    private VisitDTO newVisit() {
         VisitDTO newVisit = mock.pickVisit(patient.patientId, LocalDateTime.now());
         newVisit.visitId = restService.enterVisit(newVisit).join();
         return newVisit;
@@ -262,7 +262,7 @@ public class TestText extends TestGroup implements TestHelper {
         textDTO.content = "昨日から、頭痛がある。";
         RecordText recordText = new RecordText(textDTO);
         TextRequirement tr = req.copy();
-        tr.restService = new TextRequirement.RestServiceDelegate(tr.restService){
+        tr.restService = new TextRequirement.RestServiceDelegate(tr.restService) {
             @Override
             public CompletableFuture<Boolean> deleteText(int textId) {
                 confirm(textId == textDTO.textId);
@@ -421,7 +421,6 @@ public class TestText extends TestGroup implements TestHelper {
         textDTO.visitId = 3;
         textDTO.textId = 10;
         textDTO.content = "昨日から、頭痛がある。";
-        mainPaneService.setCurrent(patient, 1);
         class State {
             private boolean done;
             private boolean enterTextInvoked;
@@ -429,7 +428,7 @@ public class TestText extends TestGroup implements TestHelper {
         }
         State state = new State();
         TextRequirement tr = req.copy();
-        tr.restService = new TextRequirement.RestServiceDelegate(req.restService){
+        tr.restService = new TextRequirement.RestServiceDelegate(req.restService) {
             @Override
             public CompletableFuture<Integer> enterText(TextDTO text) {
                 confirm(text.visitId == 1);
@@ -438,13 +437,19 @@ public class TestText extends TestGroup implements TestHelper {
                 return CompletableFuture.completedFuture(11);
             }
 
+
+        };
+        MainPaneServiceMock mainPaneService = new MainPaneServiceMock();
+        mainPaneService.setCurrent(patient, 1);
+        tr.mainPaneService = new TextRequirement.MainPaneServiceDelegate(
+                mainPaneService
+        ) {
             @Override
             public void broadcastNewText(TextDTO newText) {
                 confirm(newText.visitId == 1);
                 confirm(newText.content.equals(textDTO.content));
                 state.broadcastNewTextInvoked = true;
             }
-
         };
         TextEditForm editForm = new TextEditForm(textDTO, tr);
         editForm.setOnDone(() -> state.done = true);
