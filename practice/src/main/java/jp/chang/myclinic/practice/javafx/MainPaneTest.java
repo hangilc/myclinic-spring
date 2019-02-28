@@ -4,13 +4,16 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.mockdata.MockData;
+import jp.chang.myclinic.practice.PracticeConfigService;
+import jp.chang.myclinic.practice.PracticeConfigServiceMock;
+import jp.chang.myclinic.practice.RestServiceMock;
 import jp.chang.myclinic.practice.testgui.TestGroup;
 import jp.chang.myclinic.practice.testgui.TestHelper;
 
 public class MainPaneTest extends TestGroup implements TestHelper {
 
     {
-//        addTestProc("disp", this::testDisp);
+        addTestProc("disp", this::testDisp);
 //        addTestProc("disp-exam", this::testDispExam);
     }
 
@@ -35,23 +38,24 @@ public class MainPaneTest extends TestGroup implements TestHelper {
         }
     }
 
-//    private void testDisp(){
-//        MainPane mainPane = MainPane.getInstance();
-//        MainPaneLib lib = new MainPaneLibAdapter(){
-//            @Override
-//            public void updateTitle(PatientDTO patient) {
-//                setUpdateMainStageTitle(stage, patient);
-//            }
-//        };
-//        mainPane.setMainPaneRequirement(lib);
-//        gui(() -> {
-//            mainPane.getStylesheets().addAll("css/Practice.css");
-//            main.getChildren().setAll(mainPane);
-//            mainPane.setCurrent(null, 0);
-//            stage.sizeToScene();
-//        });
-//    }
-//
+    private MainPaneRequirement prepMainPaneRequirement(){
+        RestServiceMock restService = new RestServiceMock();
+        PracticeConfigService configService = new PracticeConfigServiceMock();
+        MainStageService stageService = new MainStageServiceMock();
+        return new MainPaneRequirement(restService, configService, stageService);
+    }
+
+    private void testDisp(){
+        MainPane mainPane = MainPane.getInstance();
+        mainPane.setMainPaneRequirement(prepMainPaneRequirement());
+        gui(() -> {
+            mainPane.getStylesheets().addAll("css/Practice.css");
+            main.getChildren().setAll(mainPane);
+            mainPane.setCurrent(null, 0);
+            stage.sizeToScene();
+        });
+    }
+
 //    private void testDispExam(){
 //        PatientDTO patient = mock.pickPatientWithPatientId();
 //        VisitDTO visit = new VisitDTO();

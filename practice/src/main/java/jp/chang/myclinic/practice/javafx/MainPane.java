@@ -107,7 +107,7 @@ public class MainPane extends BorderPane implements CurrentExamLib {
         this.currentPatient = patient;
         this.currentVisitId = currentVisitId;
         this.tempVisitId = 0;
-        mainPaneRequirement.mainStageService.updateTitle(patient);
+        mainPaneRequirement.mainStageService.setTitle(createTitle(patient));
     }
 
     @Override
@@ -487,5 +487,18 @@ public class MainPane extends BorderPane implements CurrentExamLib {
             dialog.show();
         });
     }
+
+    private String createTitle(PatientDTO patient) {
+        if (patient == null) {
+            return "診察";
+        } else {
+            String title = String.format("診察 (%d) %s%s",
+                    patient.patientId,
+                    patient.lastName,
+                    patient.firstName);
+            return title;
+        }
+    }
+
 
 }
