@@ -64,7 +64,7 @@ public class RecordText extends StackPane {
         return findInChildren(TextEditForm.class);
     }
 
-    void setTextReq(TextRequirement textReq) {
+    void setTextRequirement(TextRequirement textReq) {
         this.textReq = textReq;
     }
 

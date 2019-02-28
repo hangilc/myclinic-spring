@@ -66,7 +66,7 @@ class RecordTextsPane extends VBox {
 
     private RecordText createRecordText(TextDTO text){
         RecordText recordText = new RecordText(text);
-        recordText.setTextReq(textRequirement);
+        recordText.setTextRequirement(textRequirement);
         return recordText;
     }
 

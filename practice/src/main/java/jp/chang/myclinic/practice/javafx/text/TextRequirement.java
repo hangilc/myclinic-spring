@@ -1,10 +1,7 @@
 package jp.chang.myclinic.practice.javafx.text;
 
-import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenRequirement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -34,6 +31,34 @@ public class TextRequirement {
         this.restService = restService;
         this.mainPaneService = mainPaneService;
         this.shohousenRequirement = shohousenRequirement;
+    }
+
+    public TextRequirement copy(){
+        return new TextRequirement(restService, mainPaneService, shohousenRequirement);
+    }
+
+    public static class RestServiceDelegate implements TextRestService {
+
+        private TextRestService base;
+
+        public RestServiceDelegate(TextRestService base){
+            this.base = base;
+        }
+
+        @Override
+        public CompletableFuture<Integer> enterText(TextDTO text) {
+            return base.enterText(text);
+        }
+
+        @Override
+        public CompletableFuture<Boolean> updateText(TextDTO textDTO) {
+            return base.updateText(textDTO);
+        }
+
+        @Override
+        public CompletableFuture<Boolean> deleteText(int textId) {
+            return base.deleteText(textId);
+        }
     }
 
 }
