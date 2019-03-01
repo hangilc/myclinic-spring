@@ -7,6 +7,5 @@ import jp.chang.myclinic.practice.javafx.text.TextRequirement;
 public interface PracticeRestService extends
         TextRequirement.TextRestService,
         ShohousenRequirement.ShohousenRestService,
-        MainPaneRequirement.MainPaneRestService     {
-
+        MainPaneRequirement.MainPaneRestService {
 }
