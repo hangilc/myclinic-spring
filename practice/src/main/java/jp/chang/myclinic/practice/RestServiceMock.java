@@ -1,8 +1,6 @@
 package jp.chang.myclinic.practice;
 
 import jp.chang.myclinic.dto.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,7 +9,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-public class RestServiceMock implements RestService {
+public class RestServiceMock implements PracticeRestService {
 
     private int serialPatientId = 1;
     private int serialVisitId = 1;
@@ -25,20 +23,22 @@ public class RestServiceMock implements RestService {
     private Map<Integer, TextDTO> textRegistry = new HashMap<>();
     private Map<Integer, DrugDTO> drugRegistry = new HashMap<>();
 
+    private <T> CompletableFuture<T> future(T t){
+        return CompletableFuture.completedFuture(t);
+    }
+
+    @Override
     public CompletableFuture<Integer> enterPatient(PatientDTO patient){
         patient.patientId = serialPatientId++;
         patientRegistry.put(patient.patientId, patient);
         return future(patient.patientId);
     }
 
+    @Override
     public CompletableFuture<Integer> enterVisit(VisitDTO visit){
         visit.visitId = serialVisitId++;
         visitRegistry.put(visit.visitId, visit);
         return future(visit.visitId);
-    }
-
-    private <T> CompletableFuture<T> future(T t){
-        return CompletableFuture.completedFuture(t);
     }
 
     @Override

@@ -84,24 +84,40 @@ public class MainPane extends BorderPane implements CurrentExamLib {
 
     };
 
-    private MainPane() {
-        setTop(createMenu());
-        setCenter(createCenter());
-        addEventHandler(EventTypes.visitDeletedEventType, this::onVisitDeleted);
-    }
-
-    public void setMainPaneRequirement(MainPaneRequirement mainPaneRequirement) {
+    public MainPane(MainPaneRequirement mainPaneRequirement) {
+        if( mainPaneRequirement == null ) return;
         this.mainPaneRequirement = mainPaneRequirement;
         this.shohousenRequirement = new ShohousenRequirement(
                 mainPaneRequirement.restService,
                 mainPaneRequirement.configService
         );
+        setTop(createMenu());
+        setCenter(createCenter());
+        addEventHandler(EventTypes.visitDeletedEventType, this::onVisitDeleted);
         recordsPane.setRecordRequirement(new RecordRequirement(
                 mainPaneRequirement.restService,
                 mainPaneService,
                 shohousenRequirement
         ));
+        mainPaneRequirement.mainStageService.setTitle(createTitle(null));
     }
+
+    private MainPane(){
+        this(null);
+    }
+
+//    public void setMainPaneRequirement(MainPaneRequirement mainPaneRequirement) {
+//        this.mainPaneRequirement = mainPaneRequirement;
+//        this.shohousenRequirement = new ShohousenRequirement(
+//                mainPaneRequirement.restService,
+//                mainPaneRequirement.configService
+//        );
+//        recordsPane.setRecordRequirement(new RecordRequirement(
+//                mainPaneRequirement.restService,
+//                mainPaneService,
+//                shohousenRequirement
+//        ));
+//    }
 
     public void setCurrent(PatientDTO patient, int currentVisitId) {
         this.currentPatient = patient;

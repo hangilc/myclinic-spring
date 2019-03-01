@@ -1,6 +1,5 @@
 package jp.chang.myclinic.practice.javafx;
 
-import jp.chang.myclinic.practice.RestService;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenRequirement;
 import jp.chang.myclinic.practice.javafx.text.TextRequirement;
 

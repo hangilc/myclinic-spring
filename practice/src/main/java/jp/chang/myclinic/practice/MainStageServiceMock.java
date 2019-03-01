@@ -1,12 +1,8 @@
-package jp.chang.myclinic.practice.javafx;
-
-import jp.chang.myclinic.dto.PatientDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package jp.chang.myclinic.practice;
 
 public class MainStageServiceMock implements MainStageService {
 
-    private String title;
+    private String title = "";
 
     public String getTitle(){
         return title;

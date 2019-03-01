@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx;
+package jp.chang.myclinic.practice;
 
 public interface MainStageService {
 

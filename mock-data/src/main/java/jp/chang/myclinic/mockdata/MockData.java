@@ -83,7 +83,7 @@ public class MockData {
         }
     }
 
-    private <T> T pickFromList(List<T> list) {
+    public <T> T pickFromList(List<T> list) {
         int index = random.nextInt(list.size());
         return list.get(index);
     }

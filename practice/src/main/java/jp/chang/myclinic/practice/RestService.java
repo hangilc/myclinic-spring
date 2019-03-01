@@ -1,17 +1,15 @@
 package jp.chang.myclinic.practice;
 
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.practice.javafx.MainPaneRequirement;
-import jp.chang.myclinic.practice.javafx.shohousen.ShohousenRequirement;
-import jp.chang.myclinic.practice.javafx.text.TextRequirement;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-public interface RestService extends TextRequirement.TextRestService,
-        ShohousenRequirement.ShohousenRestService,
-        MainPaneRequirement.MainPaneRestService     {
+public interface RestService {
+    CompletableFuture<Integer> enterPatient(PatientDTO patient);
+
+    CompletableFuture<Integer> enterVisit(VisitDTO visit);
 
     CompletableFuture<PatientDTO> getPatient(int patientId);
 

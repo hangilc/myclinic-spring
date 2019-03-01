@@ -4,7 +4,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.mockdata.MockData;
-import jp.chang.myclinic.practice.PracticeConfigService;
+import jp.chang.myclinic.practice.MainStageServiceMock;
 import jp.chang.myclinic.practice.PracticeConfigServiceMock;
 import jp.chang.myclinic.practice.RestServiceMock;
 import jp.chang.myclinic.practice.testgui.TestGroup;
@@ -14,7 +14,7 @@ public class MainPaneTest extends TestGroup implements TestHelper {
 
     {
         addTestProc("disp", this::testDisp);
-//        addTestProc("disp-exam", this::testDispExam);
+        addTestProc("broadcast-new-text", this::testBroadcastNewText);
     }
 
     private Stage stage;
@@ -26,34 +26,35 @@ public class MainPaneTest extends TestGroup implements TestHelper {
         this.main = main;
     }
 
-    private void setUpdateMainStageTitle(Stage stage, PatientDTO patient){
-        if (patient == null) {
-            stage.setTitle("診察");
-        } else {
-            String title = String.format("診察 (%d) %s%s",
-                    patient.patientId,
-                    patient.lastName,
-                    patient.firstName);
-            stage.setTitle(title);
-        }
-    }
-
-    private MainPaneRequirement prepMainPaneRequirement(){
-        RestServiceMock restService = new RestServiceMock();
-        PracticeConfigService configService = new PracticeConfigServiceMock();
-        MainStageService stageService = new MainStageServiceMock();
-        return new MainPaneRequirement(restService, configService, stageService);
-    }
-
     private void testDisp(){
-        MainPane mainPane = MainPane.getInstance();
-        mainPane.setMainPaneRequirement(prepMainPaneRequirement());
+        RestServiceMock restService = new RestServiceMock();
+        PracticeConfigServiceMock configService = new PracticeConfigServiceMock();
+        MainStageServiceMock stageService = new MainStageServiceMock();
+        MainPaneRequirement req = new MainPaneRequirement(restService, configService, stageService);
+        MainPane mainPane = new MainPane(req);
         gui(() -> {
             mainPane.getStylesheets().addAll("css/Practice.css");
             main.getChildren().setAll(mainPane);
             mainPane.setCurrent(null, 0);
             stage.sizeToScene();
         });
+        confirm(stageService.getTitle().equals("診察"));
+    }
+
+    private void testBroadcastNewText(){
+        RestServiceMock restService = new RestServiceMock();
+        PracticeConfigServiceMock configService = new PracticeConfigServiceMock();
+        MainStageServiceMock stageService = new MainStageServiceMock();
+        MainPaneRequirement req = new MainPaneRequirement(restService, configService, stageService);
+        MainPane mainPane = new MainPane(req);
+
+        gui(() -> {
+            mainPane.getStylesheets().addAll("css/Practice.css");
+            main.getChildren().setAll(mainPane);
+            mainPane.setCurrent(null, 0);
+            stage.sizeToScene();
+        });
+
     }
 
 //    private void testDispExam(){
