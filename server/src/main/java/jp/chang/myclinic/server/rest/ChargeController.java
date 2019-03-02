@@ -1,16 +1,11 @@
 package jp.chang.myclinic.server.rest;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.transaction.annotation.Transactional;
-
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
+import jp.chang.myclinic.dto.ChargeDTO;
+import jp.chang.myclinic.dto.ChargeOptionalDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
-import jp.chang.myclinic.dto.*;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/json")
@@ -18,7 +13,7 @@ import jp.chang.myclinic.dto.*;
 public class ChargeController {
 
 	@Autowired
-	private DbGateway dbGateway;
+	private DbGatewayInterface dbGateway;
 
 	@RequestMapping(value="/enter-charge", method=RequestMethod.POST)
 	public boolean enterCharge(@RequestBody ChargeDTO chargeDTO){

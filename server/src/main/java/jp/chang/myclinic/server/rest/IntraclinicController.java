@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/json/intraclinic")
-//@Transactional("intraclinicTransactionManager")
 @Transactional
 class IntraclinicController {
 

@@ -1,6 +1,6 @@
 package jp.chang.myclinic.server;
 
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.KizaiMasterDTO;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
@@ -17,7 +17,7 @@ public class MasterMapUtil {
     @Autowired
     private MasterMap masterMap;
     @Autowired
-    private DbGateway dbGateway;
+    private DbGatewayInterface dbGateway;
 
     public ShinryouMasterDTO resolveShinryouMaster(int shinryoucode, LocalDate at){
         int newShinryoucode = masterMap.resolveShinryouCode(shinryoucode, at);

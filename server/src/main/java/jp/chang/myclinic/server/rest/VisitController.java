@@ -2,9 +2,12 @@ package jp.chang.myclinic.server.rest;
 
 import jp.chang.myclinic.consts.MeisaiSection;
 import jp.chang.myclinic.consts.MyclinicConsts;
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
-import jp.chang.myclinic.server.rcpt.*;
+import jp.chang.myclinic.server.rcpt.HoukatsuKensa;
+import jp.chang.myclinic.server.rcpt.Meisai;
+import jp.chang.myclinic.server.rcpt.RcptVisit;
+import jp.chang.myclinic.server.rcpt.SectionItem;
 import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.HokenUtil;
 import jp.chang.myclinic.util.RcptUtil;
@@ -24,7 +27,7 @@ import java.util.stream.Collectors;
 public class VisitController {
 
     @Autowired
-    private DbGateway dbGateway;
+    private DbGatewayInterface dbGateway;
     @Autowired
     private HoukatsuKensa houkatsuKensa;
 

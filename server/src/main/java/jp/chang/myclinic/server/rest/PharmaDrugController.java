@@ -1,6 +1,6 @@
 package jp.chang.myclinic.server.rest;
 
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.PharmaDrugDTO;
 import jp.chang.myclinic.dto.PharmaDrugNameDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.util.Optional;
 public class PharmaDrugController {
 
     @Autowired
-    private DbGateway dbGateway;
+    private DbGatewayInterface dbGateway;
 
     @RequestMapping(value="/get-pharma-drug")
     public PharmaDrugDTO getPharmaDrug(@RequestParam("iyakuhincode") int iyakuhincode){

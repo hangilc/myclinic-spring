@@ -2,11 +2,9 @@ package jp.chang.myclinic.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.*;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
-import jp.chang.myclinic.server.db.myclinic.PracticeLog;
-import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,7 +23,7 @@ public class PracticeLogger implements InitializingBean {
     private static Logger logger = LoggerFactory.getLogger(PracticeLogger.class);
     private static ObjectMapper mapper = new ObjectMapper();
     @Autowired
-    private DbGateway dbGateway;
+    private DbGatewayInterface dbGateway;
     @Autowired
     @Qualifier("practice-logger")
     private PublishingWebSocketHandler practiceLogHandler;
@@ -65,12 +63,7 @@ public class PracticeLogger implements InitializingBean {
     @Transactional
     private void saveLog(String kind, String body) {
         LocalDateTime at = LocalDateTime.now();
-        PracticeLog practiceLog = dbGateway.insertPracticeLog(at, kind, body);
-        PracticeLogDTO dto = new PracticeLogDTO();
-        dto.serialId = practiceLog.getPracticeLogId();
-        dto.createdAt = DateTimeUtil.toSqlDateTime(at);
-        dto.kind = kind;
-        dto.body = body;
+        PracticeLogDTO dto = dbGateway.insertPracticeLog(at, kind, body);
         try {
             practiceLogHandler.publish(mapper.writeValueAsString(dto));
         } catch (Exception ex) {

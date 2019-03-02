@@ -1,6 +1,6 @@
 package jp.chang.myclinic.server.rest;
 
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.PaymentDTO;
 import jp.chang.myclinic.dto.PaymentVisitPatientDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.util.List;
 public class PaymentController {
 
 	@Autowired
-	private DbGateway dbGateway;
+	private DbGatewayInterface dbGateway;
 
 	@RequestMapping(value="/enter-payment", method=RequestMethod.POST)
 	public boolean enterPayment(@RequestBody PaymentDTO paymentDTO){

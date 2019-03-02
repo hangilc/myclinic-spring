@@ -1,8 +1,8 @@
 package jp.chang.myclinic.server.rest;
 
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.HokenDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @Transactional
 public class HokenController {
     @Autowired
-    private DbGateway dbGateway;
+    private DbGatewayInterface dbGateway;
 
     @RequestMapping(value="/list-available-hoken", method= RequestMethod.GET)
     public HokenDTO listAvailableHoken(@RequestParam("patient-id") int patientId,

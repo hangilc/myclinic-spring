@@ -1,9 +1,9 @@
 package jp.chang.myclinic.server.rest;
 
 import jp.chang.myclinic.consts.ConductKind;
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.mastermap.MasterMap;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class ShinryouController {
 
 	@Autowired
-	private DbGateway dbGateway;
+	private DbGatewayInterface dbGateway;
 	@Autowired
 	private MasterMap masterMap;
 

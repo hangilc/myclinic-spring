@@ -1,11 +1,11 @@
 package jp.chang.myclinic.server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.logdto.hotline.HotlineBeep;
 import jp.chang.myclinic.logdto.hotline.HotlineCreated;
 import jp.chang.myclinic.logdto.hotline.HotlineLogDTO;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -20,7 +20,7 @@ public class HotlineLogger implements InitializingBean {
 
     private static ObjectMapper mapper = new ObjectMapper();
     @Autowired
-    private DbGateway dbGateway;
+    private DbGatewayInterface dbGateway;
     @Autowired
     @Qualifier("hotline-logger")
     private PublishingWebSocketHandler hotlineLogHandler;

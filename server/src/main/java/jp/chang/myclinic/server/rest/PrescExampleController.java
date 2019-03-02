@@ -1,8 +1,8 @@
 package jp.chang.myclinic.server.rest;
 
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.PrescExampleDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ import java.util.List;
 @Transactional
 class PrescExampleController {
     @Autowired
-    private DbGateway dbGateway;
+    private DbGatewayInterface dbGateway;
 
     @RequestMapping(value="/search-presc-example-full-by-name", method= RequestMethod.GET)
     public List<PrescExampleFullDTO> searchByName(@RequestParam("text") String text){

@@ -1,8 +1,8 @@
 package jp.chang.myclinic.server.rest;
 
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.server.HotlineLogger;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +17,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class HotlineController {
 
     @Autowired
-    private DbGateway dbGateway;
+    private DbGatewayInterface dbGateway;
     @Autowired
     private HotlineLogger hotlineLogger;
 

@@ -1,8 +1,8 @@
 package jp.chang.myclinic.server.rest;
 
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import jp.chang.myclinic.mastermap.MasterMap;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class ShinryouMasterController {
     private static Logger logger = LoggerFactory.getLogger(ShinryouMasterController.class);
 
     @Autowired
-    private DbGateway dbGateway;
+    private DbGatewayInterface dbGateway;
     @Autowired
     private MasterMap masterMap;
 

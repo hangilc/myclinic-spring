@@ -1,9 +1,9 @@
 package jp.chang.myclinic.server.rest;
 
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.HokenListDTO;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.PatientHokenListDTO;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 public class PatientController {
 
 	@Autowired
-	private DbGateway dbGateway;
+	private DbGatewayInterface dbGateway;
 
 	private static Pattern allDigitsPattern = Pattern.compile("^\\d+$");
 

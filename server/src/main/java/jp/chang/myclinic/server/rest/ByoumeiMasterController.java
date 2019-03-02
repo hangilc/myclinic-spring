@@ -1,7 +1,7 @@
 package jp.chang.myclinic.server.rest;
 
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.ByoumeiMasterDTO;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +19,7 @@ import java.util.Optional;
 class ByoumeiMasterController {
 
     @Autowired
-    private DbGateway dbGateway;
+    private DbGatewayInterface dbGateway;
 
     @RequestMapping(value="/search-byoumei-master", method= RequestMethod.GET)
     public List<ByoumeiMasterDTO> searchByoumeiMaster(@RequestParam("text") String text,

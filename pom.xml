@@ -113,6 +113,8 @@
     <module>practice-grpc</module>
     <module>mock-data</module>
     <module>grpc-common</module>
+    <module>db-mysql</module>
+    <module>db-gateway</module>
   </modules>
 
 </project>

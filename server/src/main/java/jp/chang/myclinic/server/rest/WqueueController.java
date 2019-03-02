@@ -1,9 +1,9 @@
 package jp.chang.myclinic.server.rest;
 
 import jp.chang.myclinic.consts.WqueueWaitState;
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.dto.WqueueFullDTO;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ import java.util.Set;
 public class WqueueController {
 
 	@Autowired
-	private DbGateway dbGateway;
+	private DbGatewayInterface dbGateway;
 
 	private static Set<WqueueWaitState> forExamStates = new HashSet<>();
 	static {

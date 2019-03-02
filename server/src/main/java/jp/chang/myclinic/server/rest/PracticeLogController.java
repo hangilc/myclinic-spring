@@ -1,7 +1,7 @@
 package jp.chang.myclinic.server.rest;
 
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,7 +16,7 @@ import java.util.List;
 public class PracticeLogController {
 
     @Autowired
-    private DbGateway dbGateway;
+    private DbGatewayInterface dbGateway;
 
     @RequestMapping(value = "/list-all-practice-log", method = RequestMethod.GET)
     public List<PracticeLogDTO> listAll(@RequestParam("date") String date) {

@@ -1,20 +1,14 @@
 package jp.chang.myclinic.server.rest;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.transaction.annotation.Transactional;
-
+import jp.chang.myclinic.dbgateway.DbGatewayInterface;
+import jp.chang.myclinic.dto.RoujinDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
-import jp.chang.myclinic.server.db.myclinic.DbGateway;
-import jp.chang.myclinic.dto.*;
-
-import java.util.List;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequestMapping("/json")
@@ -22,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 public class RoujinController {
 
 	@Autowired
-	private DbGateway dbGateway;
+	private DbGatewayInterface dbGateway;
 
 	@RequestMapping(value="/enter-roujin", method=RequestMethod.POST)
 	public int enterRoujin(@RequestBody RoujinDTO roujinDTO){
