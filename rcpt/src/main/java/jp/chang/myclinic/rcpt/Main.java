@@ -29,11 +29,11 @@ public class Main {
                 break;
             }
             case "create": {
-                if (args.length != 2) {
-                    System.err.println("Usage: newcreate DATA-XML-FILE");
+                if (args.length != 3) {
+                    System.err.println("Usage: newcreate Server-URL DATA-XML-FILE");
                     System.exit(1);
                 }
-                jp.chang.myclinic.rcpt.create.Create.run(args[1], System.out);
+                jp.chang.myclinic.rcpt.create.Create.run(args[1], args[2], System.out);
                 break;
             }
             case "test-resolve": {

@@ -111,6 +111,7 @@ class RcptDataDispatcher {
         map.put("seinengappi.hi", (drawer, arg) -> {
            drawer.putSeinengappiDay(toInt(arg));
         });
+        map.put("tokkijikou", RcptDrawer::putTokkijikou);
         map.put("shoubyoumei.1", (drawer, arg) -> {
            drawer.putShoubyoumei(1, arg);
         });

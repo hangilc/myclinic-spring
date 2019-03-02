@@ -73,6 +73,9 @@ class PatientBill {
         out.printStr("hokenshubetsu", hokenShubetsuSlug(seikyuu.hokenShubetsu));
         out.printStr("hokentandoku", hokenTandokuSlug(seikyuu.hokenTandoku));
         out.printStr("hokenfutan", hokenFutanSlug(seikyuu.hokenFutan));
+        if( seikyuu.tokkiJikou != null && !seikyuu.tokkiJikou.isEmpty() ){
+            out.printStr("tokkijikou", seikyuu.tokkiJikou);
+        }
         ifPositive(seikyuu.kouhiFutanshaBangou1, n -> {
             String value = String.format("%08d", n);
             out.printStr("kouhifutanshabangou1", value);

@@ -50,6 +50,8 @@ public class Seikyuu {
     @JacksonXmlElementWrapper(localName="受診", useWrapping=false)
     @JsonProperty("受診")
     public List<Visit> visits = new ArrayList<>();
+    @JsonProperty("特記事項")
+    public String tokkiJikou = "";
 
     // used to sort seikyuu
     public String getRankTag() {

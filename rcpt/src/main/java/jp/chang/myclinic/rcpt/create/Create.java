@@ -1,6 +1,7 @@
 package jp.chang.myclinic.rcpt.create;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.rcpt.Common;
 import jp.chang.myclinic.rcpt.create.bill.Bill;
 import jp.chang.myclinic.rcpt.create.bill.HoukatsuKensaRevision;
@@ -21,7 +22,8 @@ public class Create {
 
     private static Logger logger = LoggerFactory.getLogger(Create.class);
 
-    public static void run(String xmlDataFile, PrintStream printStream){
+    public static void run(String serverUrl, String xmlDataFile, PrintStream printStream){
+        Service.setServerUrl(serverUrl);
         try (FileInputStream ins = new FileInputStream(xmlDataFile)) {
             XmlMapper mapper = new XmlMapper();
             Rcpt rcpt = mapper.readValue(ins, Rcpt.class);
@@ -37,6 +39,8 @@ public class Create {
         } catch (Exception ex) {
             logger.error("Failed to run create.", ex);
             System.exit(1);
+        } finally {
+            Service.stop();
         }
     }
 

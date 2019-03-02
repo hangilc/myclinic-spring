@@ -4,9 +4,7 @@ import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.util.kanjidate.Gengou;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.util.DiseaseUtil;
 import jp.chang.myclinic.util.NumberUtil;
 import jp.chang.myclinic.util.RcptUtil;
@@ -18,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.LocalDate;
-import java.time.chrono.JapaneseEra;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -143,6 +140,12 @@ class Data {
             xml.element("保険単独", getTandoku(hoken));
             xml.element("保険負担", futan);
             xml.element("給付割合", getKyuufuWari(futan));
+            {
+                String tokki = tokkiJikou(patient, futan);
+                if( !tokki.isEmpty() ){
+                    xml.element("特記事項", tokki);
+                }
+            }
             outHokenDetail(hoken);
             xml.element("氏名", patient.lastName + patient.firstName);
             xml.element("性別",
@@ -152,6 +155,20 @@ class Data {
             diseases.forEach(this::outDisease);
             visits.forEach(this::outVisit);
         });
+    }
+
+    private String tokkiJikou(PatientDTO patient, String futan){
+        LocalDate birthday = LocalDate.parse(patient.birthday);
+        int age = RcptUtil.calcRcptAge(birthday.getYear(), birthday.getMonthValue(),
+                birthday.getDayOfMonth(), year, month);
+        if( age >= 70 ){
+            if( futan.equals("高齢７") ){
+                return "２６区ア";
+            } else {
+                return "２９区エ";
+            }
+        }
+        return "";
     }
 
     private String getShouki(List<Integer> visitIds){

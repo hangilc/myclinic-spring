@@ -926,7 +926,8 @@ public class RcptDrawer {
     }
 
     public void putTokkijikou(String text) {
-        compiler.setFont("Mincho2.5");
+        //compiler.setFont("Mincho2.5");
+        compiler.setFont("Gothic4");
         compiler.paragraph(text, tokkijikou.inset(1, 1), HAlign.Left, VAlign.Top, 0);
     }
 
