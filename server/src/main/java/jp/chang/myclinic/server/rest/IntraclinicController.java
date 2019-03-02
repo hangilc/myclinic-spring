@@ -1,11 +1,11 @@
 package jp.chang.myclinic.server.rest;
 
+import jp.chang.myclinic.dbmysql.intraclinic.Comment;
+import jp.chang.myclinic.dbmysql.intraclinic.CommentRepository;
+import jp.chang.myclinic.dbmysql.intraclinic.Post;
+import jp.chang.myclinic.dbmysql.intraclinic.PostRepository;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.server.UserRegistry;
-import jp.chang.myclinic.server.db.intraclinic.Comment;
-import jp.chang.myclinic.server.db.intraclinic.CommentRepository;
-import jp.chang.myclinic.server.db.intraclinic.Post;
-import jp.chang.myclinic.server.db.intraclinic.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

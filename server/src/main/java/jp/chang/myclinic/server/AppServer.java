@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import jp.chang.myclinic.dbgateway.DbGatewayInterface;
+import jp.chang.myclinic.dbmysql.DbGateway;
+import jp.chang.myclinic.dbmysql.DbMysqlConfig;
 import jp.chang.myclinic.drawer.JacksonOpSerializer;
 import jp.chang.myclinic.drawer.Op;
 import jp.chang.myclinic.mastermap.MasterMap;
@@ -19,6 +21,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import javax.sql.DataSource;
@@ -27,15 +30,15 @@ import java.io.IOException;
 import java.util.List;
 
 @SpringBootApplication()
-@ComponentScan(basePackages="jp.chang.myclinic.dbmysql")
-@EntityScan(basePackages="jp.chang.myclinic.dbmysql")
-@EnableJpaRepositories("jp.chang.myclinic.dbmysql")
+@Import(DbMysqlConfig.class)
 public class AppServer implements CommandLineRunner{
 
     private Logger logger = LoggerFactory.getLogger(AppServer.class);
 
     @Autowired
     private DataSource dataSource;
+    @Autowired
+    private jp.chang.myclinic.dbmysql.DbGateway dbGatewayMySql;
 
     public static void main( String[] args )
     {
@@ -44,7 +47,7 @@ public class AppServer implements CommandLineRunner{
 
     @Bean
     public DbGatewayInterface getDbGateway(){
-        return new jp.chang.myclinic.dbmysql.DbGateway();
+        return dbGatewayMySql;
     }
 
     @Bean

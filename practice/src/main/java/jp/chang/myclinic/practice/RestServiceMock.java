@@ -27,14 +27,14 @@ public class RestServiceMock implements PracticeRestService {
         return CompletableFuture.completedFuture(t);
     }
 
-    @Override
+    //@Override
     public CompletableFuture<Integer> enterPatient(PatientDTO patient){
         patient.patientId = serialPatientId++;
         patientRegistry.put(patient.patientId, patient);
         return future(patient.patientId);
     }
 
-    @Override
+    //@Override
     public CompletableFuture<Integer> enterVisit(VisitDTO visit){
         visit.visitId = serialVisitId++;
         visitRegistry.put(visit.visitId, visit);
