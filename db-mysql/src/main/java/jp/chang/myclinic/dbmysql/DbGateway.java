@@ -5,6 +5,7 @@ import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dbmysql.core.*;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,8 @@ public class DbGateway implements DbGatewayInterface {
     private DrugAttrRepository drugAttrRepository;
     @Autowired
     private ShoukiRepository shoukiRepository;
+    @Autowired
+    private PracticeLogger practiceLogger;
 
     private WqueueFullDTO composeWqueueFullDTO(Wqueue wqueue){
         WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
@@ -180,7 +183,7 @@ public class DbGateway implements DbGatewayInterface {
     public void enterWqueue(WqueueDTO wqueueDTO) {
         Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
         wqueueRepository.save(wqueue);
-        //practiceLogger.logWqueueCreated(wqueueDTO);
+        practiceLogger.logWqueueCreated(wqueueDTO);
     }
 
     @Override
@@ -192,7 +195,7 @@ public class DbGateway implements DbGatewayInterface {
     public void deleteWqueue(WqueueDTO wqueueDTO) {
         Wqueue wqueue = mapper.fromWqueueDTO(wqueueDTO);
         wqueueRepository.delete(wqueue);
-        //practiceLogger.logWqueueDeleted(wqueueDTO);
+        practiceLogger.logWqueueDeleted(wqueueDTO);
     }
 
     private void changeWqueueState(int visitId, int state) {
@@ -201,7 +204,7 @@ public class DbGateway implements DbGatewayInterface {
         wqueue.setWaitState(state);
         wqueue = wqueueRepository.save(wqueue);
         WqueueDTO updated = mapper.toWqueueDTO(wqueue);
-        //practiceLogger.logWqueueUpdated(prev, updated);
+        practiceLogger.logWqueueUpdated(prev, updated);
     }
 
     @Override
@@ -238,7 +241,7 @@ public class DbGateway implements DbGatewayInterface {
         pharmaQueueRepository.findByVisitId(visitId).ifPresent(pharmaQueue -> {
             PharmaQueueDTO deleted = mapper.toPharmaQueueDTO(pharmaQueue);
             pharmaQueueRepository.deleteByVisitId(visitId);
-            //practiceLogger.logPharmaQueueDeleted(deleted);
+            practiceLogger.logPharmaQueueDeleted(deleted);
         });
         if (isToday) {
             int unprescribed = drugRepository.countByVisitIdAndPrescribed(visitId, 0);
@@ -247,7 +250,7 @@ public class DbGateway implements DbGatewayInterface {
                 pharmaQueue.setVisitId(visitId);
                 pharmaQueue.setPharmaState(PharmaQueueState.WaitPack.getCode());
                 pharmaQueueRepository.save(pharmaQueue);
-                //practiceLogger.logPharmaQueueCreated(mapper.toPharmaQueueDTO(pharmaQueue));
+                practiceLogger.logPharmaQueueCreated(mapper.toPharmaQueueDTO(pharmaQueue));
             }
         }
     }
@@ -270,7 +273,7 @@ public class DbGateway implements DbGatewayInterface {
     public int enterPatient(PatientDTO patientDTO) {
         Patient patient = mapper.fromPatientDTO(patientDTO);
         patient = patientRepository.save(patient);
-        //practiceLogger.logPatientCreated(mapper.toPatientDTO(patient));
+        practiceLogger.logPatientCreated(mapper.toPatientDTO(patient));
         return patient.getPatientId();
     }
 
@@ -279,7 +282,7 @@ public class DbGateway implements DbGatewayInterface {
         PatientDTO prev = getPatient(patientDTO.patientId);
         Patient patient = mapper.fromPatientDTO(patientDTO);
         patient = patientRepository.save(patient);
-        //practiceLogger.logPatientUpdated(prev, mapper.toPatientDTO(patient));
+        practiceLogger.logPatientUpdated(prev, mapper.toPatientDTO(patient));
     }
 
     @Override
@@ -354,7 +357,7 @@ public class DbGateway implements DbGatewayInterface {
     public int enterShahokokuho(ShahokokuhoDTO shahokokuhoDTO) {
         Shahokokuho shahokokuho = mapper.fromShahokokuhoDTO(shahokokuhoDTO);
         shahokokuho = shahokokuhoRepository.save(shahokokuho);
-        //practiceLogger.logShahokokuhoCreated(mapper.toShahokokuhoDTO(shahokokuho));
+        practiceLogger.logShahokokuhoCreated(mapper.toShahokokuhoDTO(shahokokuho));
         return shahokokuho.getShahokokuhoId();
     }
 
@@ -363,7 +366,7 @@ public class DbGateway implements DbGatewayInterface {
         ShahokokuhoDTO prev = getShahokokuho(shahokokuhoDTO.shahokokuhoId);
         Shahokokuho shahokokuho = mapper.fromShahokokuhoDTO(shahokokuhoDTO);
         shahokokuhoRepository.save(shahokokuho);
-        //practiceLogger.logShahokokuhoUpdated(prev, shahokokuhoDTO);
+        practiceLogger.logShahokokuhoUpdated(prev, shahokokuhoDTO);
     }
 
     @Override
@@ -374,7 +377,7 @@ public class DbGateway implements DbGatewayInterface {
         }
         ShahokokuhoDTO deleted = mapper.toShahokokuhoDTO(shahokokuhoRepository.findById(shahokokuhoId));
         shahokokuhoRepository.deleteById(shahokokuhoId);
-        //practiceLogger.logShahokokuhoDeleted(deleted);
+        practiceLogger.logShahokokuhoDeleted(deleted);
     }
 
     @Override
@@ -400,7 +403,7 @@ public class DbGateway implements DbGatewayInterface {
     public int enterKoukikourei(KoukikoureiDTO koukikoureiDTO) {
         Koukikourei koukikourei = mapper.fromKoukikoureiDTO(koukikoureiDTO);
         koukikourei = koukikoureiRepository.save(koukikourei);
-        //practiceLogger.logKoukikoureiCreated(mapper.toKoukikoureiDTO(koukikourei));
+        practiceLogger.logKoukikoureiCreated(mapper.toKoukikoureiDTO(koukikourei));
         return koukikourei.getKoukikoureiId();
     }
 
@@ -409,7 +412,7 @@ public class DbGateway implements DbGatewayInterface {
         KoukikoureiDTO prev = getKoukikourei(koukikoureiDTO.koukikoureiId);
         Koukikourei koukikourei = mapper.fromKoukikoureiDTO(koukikoureiDTO);
         koukikoureiRepository.save(koukikourei);
-        //practiceLogger.logKoukikoureiUpdated(prev, koukikoureiDTO);
+        practiceLogger.logKoukikoureiUpdated(prev, koukikoureiDTO);
     }
 
     @Override
@@ -419,7 +422,7 @@ public class DbGateway implements DbGatewayInterface {
         }
         KoukikoureiDTO deleted = mapper.toKoukikoureiDTO(koukikoureiRepository.findById(koukikoureiId));
         koukikoureiRepository.deleteById(koukikoureiId);
-        //practiceLogger.logKoukikoureiDeleted(deleted);
+        practiceLogger.logKoukikoureiDeleted(deleted);
     }
 
     @Override
@@ -441,7 +444,7 @@ public class DbGateway implements DbGatewayInterface {
     public int enterRoujin(RoujinDTO roujinDTO) {
         Roujin roujin = mapper.fromRoujinDTO(roujinDTO);
         roujin = roujinRepository.save(roujin);
-        //practiceLogger.logRoujinCreated(mapper.toRoujinDTO(roujin));
+        practiceLogger.logRoujinCreated(mapper.toRoujinDTO(roujin));
         return roujin.getRoujinId();
     }
 
@@ -457,7 +460,7 @@ public class DbGateway implements DbGatewayInterface {
         }
         RoujinDTO deleted = mapper.toRoujinDTO(roujinRepository.findById(roujinId));
         roujinRepository.deleteById(roujinId);
-        //practiceLogger.logRoujinDeleted(deleted);
+        practiceLogger.logRoujinDeleted(deleted);
     }
 
     @Override
@@ -484,7 +487,7 @@ public class DbGateway implements DbGatewayInterface {
     public int enterKouhi(KouhiDTO kouhiDTO) {
         Kouhi kouhi = mapper.fromKouhiDTO(kouhiDTO);
         kouhi = kouhiRepository.save(kouhi);
-        //practiceLogger.logKouhiCreated(mapper.toKouhiDTO(kouhi));
+        practiceLogger.logKouhiCreated(mapper.toKouhiDTO(kouhi));
         return kouhi.getKouhiId();
     }
 
@@ -493,7 +496,7 @@ public class DbGateway implements DbGatewayInterface {
         KouhiDTO prev = getKouhi(kouhiDTO.kouhiId);
         Kouhi kouhi = mapper.fromKouhiDTO(kouhiDTO);
         kouhiRepository.save(kouhi);
-        //practiceLogger.logKouhiUpdated(prev, kouhiDTO);
+        practiceLogger.logKouhiUpdated(prev, kouhiDTO);
     }
 
     @Override
@@ -503,7 +506,7 @@ public class DbGateway implements DbGatewayInterface {
         }
         KouhiDTO deleted = mapper.toKouhiDTO(kouhiRepository.findById(kouhiId));
         kouhiRepository.deleteById(kouhiId);
-        //practiceLogger.logKouhiDeleted(deleted);
+        practiceLogger.logKouhiDeleted(deleted);
     }
 
     @Override
@@ -563,7 +566,7 @@ public class DbGateway implements DbGatewayInterface {
     public void enterCharge(ChargeDTO chargeDTO) {
         Charge charge = mapper.fromChargeDTO(chargeDTO);
         charge = chargeRepository.save(charge);
-        //practiceLogger.logChargeCreated(mapper.toChargeDTO(charge));
+        practiceLogger.logChargeCreated(mapper.toChargeDTO(charge));
     }
 
     @Override
@@ -586,7 +589,7 @@ public class DbGateway implements DbGatewayInterface {
             ChargeDTO prev = mapper.toChargeDTO(currentCharge);
             currentCharge.setCharge(charge);
             currentCharge = chargeRepository.save(currentCharge);
-            //practiceLogger.logChargeUpdated(prev, mapper.toChargeDTO(currentCharge));
+            practiceLogger.logChargeUpdated(prev, mapper.toChargeDTO(currentCharge));
         } else {
             ChargeDTO newCharge = new ChargeDTO();
             newCharge.visitId = visitId;
@@ -599,7 +602,7 @@ public class DbGateway implements DbGatewayInterface {
     public void enterPayment(PaymentDTO paymentDTO) {
         Payment payment = mapper.fromPaymentDTO(paymentDTO);
         payment = paymentRepository.save(payment);
-        //practiceLogger.logPaymentCreated(mapper.toPaymentDTO(payment));
+        practiceLogger.logPaymentCreated(mapper.toPaymentDTO(payment));
     }
 
     @Override
@@ -619,7 +622,7 @@ public class DbGateway implements DbGatewayInterface {
     public int enterVisit(VisitDTO visitDTO) {
         Visit visit = mapper.fromVisitDTO(visitDTO);
         visit = visitRepository.save(visit);
-        //practiceLogger.logVisitCreated(mapper.toVisitDTO(visit));
+        practiceLogger.logVisitCreated(mapper.toVisitDTO(visit));
         return visit.getVisitId();
     }
 
@@ -628,7 +631,7 @@ public class DbGateway implements DbGatewayInterface {
         VisitDTO prev = getVisit(visitDTO.visitId);
         Visit visit = mapper.fromVisitDTO(visitDTO);
         visit = visitRepository.save(visit);
-        //practiceLogger.logVisitUpdated(prev, mapper.toVisitDTO(visit));
+        practiceLogger.logVisitUpdated(prev, mapper.toVisitDTO(visit));
     }
 
     @Override
@@ -709,7 +712,7 @@ public class DbGateway implements DbGatewayInterface {
     public ShinryouDTO enterShinryou(ShinryouDTO shinryouDTO) {
         Shinryou shinryou = mapper.fromShinryouDTO(shinryouDTO);
         ShinryouDTO created = mapper.toShinryouDTO(shinryouRepository.save(shinryou));
-        //practiceLogger.logShinryouCreated(created);
+        practiceLogger.logShinryouCreated(created);
         return created;
     }
 
@@ -717,14 +720,14 @@ public class DbGateway implements DbGatewayInterface {
     public void updateShinryou(ShinryouDTO shinryouDTO) {
         ShinryouDTO prev = getShinryou(shinryouDTO.shinryouId);
         Shinryou updated = shinryouRepository.save(mapper.fromShinryouDTO(shinryouDTO));
-        //practiceLogger.logShinryouUpdated(prev, mapper.toShinryouDTO(updated));
+        practiceLogger.logShinryouUpdated(prev, mapper.toShinryouDTO(updated));
     }
 
     @Override
     public void deleteShinryou(int shinryouId) {
         ShinryouDTO deleted = getShinryou(shinryouId);
         shinryouRepository.deleteById(shinryouId);
-        //practiceLogger.logShinryouDeleted(deleted);
+        practiceLogger.logShinryouDeleted(deleted);
     }
 
     @Override
@@ -790,7 +793,7 @@ public class DbGateway implements DbGatewayInterface {
         Drug drug = mapper.fromDrugDTO(drugDTO);
         drug.setDrugId(null);
         drug = drugRepository.save(drug);
-        //practiceLogger.logDrugCreated(mapper.toDrugDTO(drug));
+        practiceLogger.logDrugCreated(mapper.toDrugDTO(drug));
         return drug.getDrugId();
     }
 
@@ -803,7 +806,7 @@ public class DbGateway implements DbGatewayInterface {
     public void deleteDrug(int drugId) {
         DrugDTO deleted = getDrug(drugId);
         drugRepository.deleteById(drugId);
-        //practiceLogger.logDrugDeleted(deleted);
+        practiceLogger.logDrugDeleted(deleted);
     }
 
     @Override
@@ -811,7 +814,7 @@ public class DbGateway implements DbGatewayInterface {
         DrugDTO prev = getDrug(drugDTO.drugId);
         Drug drug = mapper.fromDrugDTO(drugDTO);
         drug = drugRepository.save(drug);
-        //practiceLogger.logDrugUpdated(prev, mapper.toDrugDTO(drug));
+        practiceLogger.logDrugUpdated(prev, mapper.toDrugDTO(drug));
     }
 
     @Override
@@ -822,7 +825,7 @@ public class DbGateway implements DbGatewayInterface {
         for (int i = 0; i < prevDrugs.size(); i++) {
             DrugDTO prev = prevDrugs.get(i);
             if (prev.prescribed == 0) {
-                //practiceLogger.logDrugUpdated(prev, updatedDrugs.get(i));
+                practiceLogger.logDrugUpdated(prev, updatedDrugs.get(i));
             }
         }
     }
@@ -853,7 +856,7 @@ public class DbGateway implements DbGatewayInterface {
         for (int i = 0; i < prevDrugs.size(); i++) {
             DrugDTO prev = prevDrugs.get(i);
             if (prev.days != days) {
-                //practiceLogger.logDrugUpdated(prev, updatedDrugs.get(i));
+                practiceLogger.logDrugUpdated(prev, updatedDrugs.get(i));
             }
         }
     }
@@ -876,7 +879,7 @@ public class DbGateway implements DbGatewayInterface {
         text = textRepository.save(text);
         int textId = text.getTextId();
         textDTO.textId = textId;
-        //practiceLogger.logTextCreated(textDTO);
+        practiceLogger.logTextCreated(textDTO);
         return textId;
     }
 
@@ -885,14 +888,14 @@ public class DbGateway implements DbGatewayInterface {
         TextDTO prev = getText(textDTO.textId);
         Text text = mapper.fromTextDTO(textDTO);
         textRepository.save(text);
-        //practiceLogger.logTextUpdated(prev, textDTO);
+        practiceLogger.logTextUpdated(prev, textDTO);
     }
 
     @Override
     public void deleteText(int textId) {
         TextDTO textDTO = getText(textId);
         textRepository.deleteById(textId);
-        //practiceLogger.logTextDeleted(textDTO);
+        practiceLogger.logTextDeleted(textDTO);
     }
 
     @Override
@@ -1042,15 +1045,15 @@ public class DbGateway implements DbGatewayInterface {
         Optional<Wqueue> optWqueue = wqueueRepository.tryFindByVisitId(visitId);
         optWqueue.ifPresent(wqueue -> {
             wqueueRepository.delete(wqueue);
-            //practiceLogger.logWqueueDeleted(mapper.toWqueueDTO(wqueue));
+            practiceLogger.logWqueueDeleted(mapper.toWqueueDTO(wqueue));
         });
         Optional<PharmaQueue> optPharmaQueue = pharmaQueueRepository.findByVisitId(visitId);
         optPharmaQueue.ifPresent(pharmaQueue -> {
             pharmaQueueRepository.delete(pharmaQueue);
-            //practiceLogger.logPharmaQueueDeleted(mapper.toPharmaQueueDTO(pharmaQueue));
+            practiceLogger.logPharmaQueueDeleted(mapper.toPharmaQueueDTO(pharmaQueue));
         });
         visitRepository.deleteById(visitId);
-        //practiceLogger.logVisitDeleted(visit.visit);
+        practiceLogger.logVisitDeleted(visit.visit);
     }
 
     private ConductFullDTO extendConduct(ConductDTO conductDTO) {
@@ -1080,7 +1083,7 @@ public class DbGateway implements DbGatewayInterface {
     public void enterGazouLabel(GazouLabelDTO gazoulabelDTO) {
         GazouLabel gazouLabel = mapper.fromGazouLabelDTO(gazoulabelDTO);
         gazouLabel = gazouLabelRepository.save(gazouLabel);
-        //practiceLogger.logGazouLabelCreated(mapper.toGazouLabelDTO(gazouLabel));
+        practiceLogger.logGazouLabelCreated(mapper.toGazouLabelDTO(gazouLabel));
     }
 
     @Override
@@ -1089,26 +1092,26 @@ public class DbGateway implements DbGatewayInterface {
         optGazouLabel.ifPresent(gazouLabel -> {
             GazouLabelDTO deleted = mapper.toGazouLabelDTO(gazouLabel);
             gazouLabelRepository.delete(gazouLabel);
-            //practiceLogger.logGazouLabelDeleted(deleted);
+            practiceLogger.logGazouLabelDeleted(deleted);
         });
         conductShinryouRepository.findByConductId(conductId).forEach(conductShinryou -> {
             ConductShinryouDTO deleted = mapper.toConductShinryouDTO(conductShinryou);
             conductShinryouRepository.delete(conductShinryou);
-            //practiceLogger.logConductShinryouDeleted(deleted);
+            practiceLogger.logConductShinryouDeleted(deleted);
         });
         conductDrugRepository.findByConductId(conductId).forEach(conductDrug -> {
             ConductDrugDTO deleted = mapper.toConductDrugDTO(conductDrug);
             conductDrugRepository.delete(conductDrug);
-            //practiceLogger.logConductDrugDeleted(deleted);
+            practiceLogger.logConductDrugDeleted(deleted);
         });
         conductKizaiRepository.findByConductId(conductId).forEach(conductKizai -> {
             ConductKizaiDTO deleted = mapper.toConductKizaiDTO(conductKizai);
             conductKizaiRepository.delete(conductKizai);
-            //practiceLogger.logConductKizaiDeleted(deleted);
+            practiceLogger.logConductKizaiDeleted(deleted);
         });
         ConductDTO deletedConduct = mapper.toConductDTO(conductRepository.findById(conductId));
         conductRepository.deleteById(conductId);
-        //practiceLogger.logConductDeleted(deletedConduct);
+        practiceLogger.logConductDeleted(deletedConduct);
     }
 
     @Override
@@ -1119,7 +1122,7 @@ public class DbGateway implements DbGatewayInterface {
             GazouLabelDTO prev = mapper.toGazouLabelDTO(gazouLabel);
             gazouLabel.setLabel(label);
             gazouLabel = gazouLabelRepository.save(gazouLabel);
-            //practiceLogger.logGazouLabelUpdated(prev, mapper.toGazouLabelDTO(gazouLabel));
+            practiceLogger.logGazouLabelUpdated(prev, mapper.toGazouLabelDTO(gazouLabel));
         } else {
             GazouLabelDTO gazouLabel = new GazouLabelDTO();
             gazouLabel.conductId = conductId;
@@ -1138,7 +1141,7 @@ public class DbGateway implements DbGatewayInterface {
     public int enterConduct(ConductDTO conductDTO) {
         Conduct conduct = mapper.fromConductDTO(conductDTO);
         conduct = conductRepository.save(conduct);
-        //practiceLogger.logConductCreated(mapper.toConductDTO(conduct));
+        practiceLogger.logConductCreated(mapper.toConductDTO(conduct));
         return conduct.getConductId();
     }
 
@@ -1205,7 +1208,7 @@ public class DbGateway implements DbGatewayInterface {
     public int enterConductShinryou(ConductShinryouDTO conductShinryouDTO) {
         ConductShinryou conductShinryou = mapper.fromConductShinryouDTO(conductShinryouDTO);
         conductShinryou = conductShinryouRepository.save(conductShinryou);
-        //practiceLogger.logConductShinryouCreated(mapper.toConductShinryouDTO(conductShinryou));
+        practiceLogger.logConductShinryouCreated(mapper.toConductShinryouDTO(conductShinryou));
         return conductShinryou.getConductShinryouId();
     }
 
@@ -1213,7 +1216,7 @@ public class DbGateway implements DbGatewayInterface {
     public void deleteConductShinryou(int conductShinryouId) {
         ConductShinryouDTO deleted = mapper.toConductShinryouDTO(conductShinryouRepository.findById(conductShinryouId));
         conductShinryouRepository.deleteById(conductShinryouId);
-        //practiceLogger.logConductShinryouDeleted(deleted);
+        practiceLogger.logConductShinryouDeleted(deleted);
     }
 
     @Override
@@ -1232,7 +1235,7 @@ public class DbGateway implements DbGatewayInterface {
     public int enterConductDrug(ConductDrugDTO conductDrugDTO) {
         ConductDrug conductDrug = mapper.fromConductDrugDTO(conductDrugDTO);
         conductDrug = conductDrugRepository.save(conductDrug);
-        //practiceLogger.logConductDrugCreated(mapper.toConductDrugDTO(conductDrug));
+        practiceLogger.logConductDrugCreated(mapper.toConductDrugDTO(conductDrug));
         return conductDrug.getConductDrugId();
     }
 
@@ -1240,7 +1243,7 @@ public class DbGateway implements DbGatewayInterface {
     public void deleteConductDrug(int conductDrugId) {
         ConductDrugDTO deleted = mapper.toConductDrugDTO(conductDrugRepository.findById(conductDrugId));
         conductDrugRepository.deleteById(conductDrugId);
-        //practiceLogger.logConductDrugDeleted(deleted);
+        practiceLogger.logConductDrugDeleted(deleted);
     }
 
     @Override
@@ -1259,7 +1262,7 @@ public class DbGateway implements DbGatewayInterface {
     public int enterConductKizai(ConductKizaiDTO conductKizaiDTO) {
         ConductKizai conductKizai = mapper.fromConductKizaiDTO(conductKizaiDTO);
         conductKizai = conductKizaiRepository.save(conductKizai);
-        //practiceLogger.logConductKizaiCreated(mapper.toConductKizaiDTO(conductKizai));
+        practiceLogger.logConductKizaiCreated(mapper.toConductKizaiDTO(conductKizai));
         return conductKizai.getConductKizaiId();
     }
 
@@ -1267,7 +1270,7 @@ public class DbGateway implements DbGatewayInterface {
     public void deleteConductKizai(int conductKizaiId) {
         ConductKizaiDTO deleted = mapper.toConductKizaiDTO(conductKizaiRepository.findById(conductKizaiId));
         conductKizaiRepository.deleteById(conductKizaiId);
-        //practiceLogger.logConductKizaiDeleted(deleted);
+        practiceLogger.logConductKizaiDeleted(deleted);
     }
 
     @Override
@@ -1295,7 +1298,7 @@ public class DbGateway implements DbGatewayInterface {
         ConductDTO prev = mapper.toConductDTO(c);
         c.setKind(kind);
         c = conductRepository.save(c);
-        //practiceLogger.logConductUpdated(prev, mapper.toConductDTO(c));
+        practiceLogger.logConductUpdated(prev, mapper.toConductDTO(c));
     }
 
     @Override
@@ -1352,7 +1355,7 @@ public class DbGateway implements DbGatewayInterface {
     public void finishCashier(PaymentDTO paymentDTO) {
         Payment payment = mapper.fromPaymentDTO(paymentDTO);
         payment = paymentRepository.save(payment);
-        //practiceLogger.logPaymentCreated(mapper.toPaymentDTO(payment));
+        practiceLogger.logPaymentCreated(mapper.toPaymentDTO(payment));
         Optional<PharmaQueue> optPharmaQueue = pharmaQueueRepository.findByVisitId(paymentDTO.visitId);
         Optional<Wqueue> optWqueue = wqueueRepository.tryFindByVisitId(paymentDTO.visitId);
         if (optPharmaQueue.isPresent()) {
@@ -1429,7 +1432,7 @@ public class DbGateway implements DbGatewayInterface {
     public void deletePharmaQueue(PharmaQueueDTO pharmaQueueDTO) {
         PharmaQueue pharmaQueue = mapper.fromPharmaQueueDTO(pharmaQueueDTO);
         pharmaQueueRepository.delete(pharmaQueue);
-        //practiceLogger.logPharmaQueueDeleted(pharmaQueueDTO);
+        practiceLogger.logPharmaQueueDeleted(pharmaQueueDTO);
     }
 
     @Override
@@ -1457,7 +1460,7 @@ public class DbGateway implements DbGatewayInterface {
     public void enterPharmaDrug(PharmaDrugDTO pharmaDrugDTO) {
         PharmaDrug pharmaDrug = mapper.fromPharmaDrugDTO(pharmaDrugDTO);
         pharmaDrug = pharmaDrugRepository.save(pharmaDrug);
-        //practiceLogger.logPharmaDrugCreated(mapper.toPharmaDrugDTO(pharmaDrug));
+        practiceLogger.logPharmaDrugCreated(mapper.toPharmaDrugDTO(pharmaDrug));
     }
 
     @Override
@@ -1465,14 +1468,14 @@ public class DbGateway implements DbGatewayInterface {
         PharmaDrugDTO prev = mapper.toPharmaDrugDTO(pharmaDrugRepository.findById(pharmaDrugDTO.iyakuhincode));
         PharmaDrug pharmaDrug = mapper.fromPharmaDrugDTO(pharmaDrugDTO);
         pharmaDrug = pharmaDrugRepository.save(pharmaDrug);
-        //practiceLogger.logPharmaDrugUpdated(prev, mapper.toPharmaDrugDTO(pharmaDrug));
+        practiceLogger.logPharmaDrugUpdated(prev, mapper.toPharmaDrugDTO(pharmaDrug));
     }
 
     @Override
     public void deletePharmaDrug(int iyakuhincode) {
         PharmaDrugDTO deleted = mapper.toPharmaDrugDTO(pharmaDrugRepository.findById(iyakuhincode));
         pharmaDrugRepository.deleteById(iyakuhincode);
-        //practiceLogger.logPharmaDrugDeleted(deleted);
+        practiceLogger.logPharmaDrugDeleted(deleted);
     }
 
     @Override
@@ -1799,14 +1802,14 @@ public class DbGateway implements DbGatewayInterface {
         Disease disease = mapper.fromDiseaseDTO(diseaseDTO);
         disease.setDiseaseId(null);
         disease = diseaseRepository.save(disease);
-        //practiceLogger.logDiseaseCreated(mapper.toDiseaseDTO(disease));
+        practiceLogger.logDiseaseCreated(mapper.toDiseaseDTO(disease));
         int diseaseId = disease.getDiseaseId();
         adjDTOList.forEach(adjDTO -> {
             DiseaseAdj adj = mapper.fromDiseaseAdjDTO(adjDTO);
             adj.setDiseaseAdjId(null);
             adj.setDiseaseId(diseaseId);
             adj = diseaseAdjRepository.save(adj);
-            //practiceLogger.logDiseaseAdjCreated(mapper.toDiseaseAdjDTO(adj));
+            practiceLogger.logDiseaseAdjCreated(mapper.toDiseaseAdjDTO(adj));
         });
         return diseaseId;
     }
@@ -1818,7 +1821,7 @@ public class DbGateway implements DbGatewayInterface {
         d.setEndReason(reason);
         d.setEndDate(endDate.toString());
         d = diseaseRepository.save(d);
-        //practiceLogger.logDiseaseUpdated(prev, mapper.toDiseaseDTO(d));
+        practiceLogger.logDiseaseUpdated(prev, mapper.toDiseaseDTO(d));
     }
 
     @Override
@@ -1832,7 +1835,7 @@ public class DbGateway implements DbGatewayInterface {
             d.setEndDate(diseaseDTO.endDate);
             d.setEndReason(diseaseDTO.endReason);
             d = diseaseRepository.save(d);
-            //practiceLogger.logDiseaseUpdated(prevDisease, mapper.toDiseaseDTO(d));
+            practiceLogger.logDiseaseUpdated(prevDisease, mapper.toDiseaseDTO(d));
         }
         List<DiseaseAdj> adjList = diseaseAdjRepository.findByDiseaseId(diseaseDTO.diseaseId, Sort.by("diseaseAdjId"));
         List<Integer> prevAdjCodes = adjList.stream().map(DiseaseAdj::getShuushokugocode).collect(Collectors.toList());
@@ -1841,7 +1844,7 @@ public class DbGateway implements DbGatewayInterface {
                 adjList.forEach(adj -> {
                     DiseaseAdjDTO deleted = mapper.toDiseaseAdjDTO(adj);
                     diseaseAdjRepository.delete(adj);
-                    //practiceLogger.logDiseaseAdjDeleted(deleted);
+                    practiceLogger.logDiseaseAdjDeleted(deleted);
                 });
             }
             if (diseaseModifyDTO.shuushokugocodes != null) {
@@ -1850,7 +1853,7 @@ public class DbGateway implements DbGatewayInterface {
                     adj.setDiseaseId(diseaseDTO.diseaseId);
                     adj.setShuushokugocode(shuushokugocode);
                     adj = diseaseAdjRepository.save(adj);
-                    //practiceLogger.logDiseaseAdjCreated(mapper.toDiseaseAdjDTO(adj));
+                    practiceLogger.logDiseaseAdjCreated(mapper.toDiseaseAdjDTO(adj));
                 });
             }
         }
@@ -1862,12 +1865,12 @@ public class DbGateway implements DbGatewayInterface {
         adjList.forEach(adj -> {
             DiseaseAdjDTO prev = mapper.toDiseaseAdjDTO(adj);
             diseaseAdjRepository.delete(adj);
-            //practiceLogger.logDiseaseAdjDeleted(prev);
+            practiceLogger.logDiseaseAdjDeleted(prev);
         });
         Disease d = diseaseRepository.findById(diseaseId);
         DiseaseDTO prevDisease = mapper.toDiseaseDTO(d);
         diseaseRepository.delete(d);
-        //practiceLogger.logDiseaseDeleted(prevDisease);
+        practiceLogger.logDiseaseDeleted(prevDisease);
     }
 
     @Override
@@ -2136,17 +2139,17 @@ public class DbGateway implements DbGatewayInterface {
     }
 
     @Override
-    public PracticeLogDTO insertPracticeLog(LocalDateTime createdAt, String kind, String body) {
+    public PracticeLogDTO enterPracticeLog(PracticeLogDTO dto) {
         PracticeLog data = new PracticeLog();
-        data.setCreatedAt(createdAt);
-        data.setKind(kind);
-        data.setBody(body);
+        data.setCreatedAt(DateTimeUtil.parseSqlDateTime(dto.createdAt));
+        data.setKind(dto.kind);
+        data.setBody(dto.body);
         data = practiceLogRepository.save(data);
-        PracticeLogDTO dto = new PracticeLogDTO();
-        dto.serialId = data.getPracticeLogId();
-        dto.kind = data.getKind();
-        dto.createdAt = DateTimeUtil.toSqlDateTime(data.getCreatedAt());
-        dto.body = data.getBody();
+        PracticeLogDTO saved = new PracticeLogDTO();
+        saved.serialId = data.getPracticeLogId();
+        saved.kind = data.getKind();
+        saved.createdAt = DateTimeUtil.toSqlDateTime(data.getCreatedAt());
+        saved.body = data.getBody();
         return dto;
     }
 

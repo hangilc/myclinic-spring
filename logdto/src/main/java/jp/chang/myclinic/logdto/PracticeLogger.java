@@ -1,73 +1,44 @@
-package jp.chang.myclinic.server;
+package jp.chang.myclinic.logdto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.*;
+import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
-@Component
-public class PracticeLogger implements InitializingBean {
+public class PracticeLogger {
+
+    public interface PracticeLogSaver {
+        void save(PracticeLogDTO dto);
+    }
 
     private static Logger logger = LoggerFactory.getLogger(PracticeLogger.class);
     private static ObjectMapper mapper = new ObjectMapper();
-    @Autowired
-    private DbGatewayInterface dbGateway;
-    @Autowired
-    @Qualifier("practice-logger")
-    private PublishingWebSocketHandler practiceLogHandler;
+    private PracticeLogSaver saver = t -> {
+    };
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        sendLastLog();
+    public PracticeLogger() {
+
     }
 
-    private void sendLastLog() throws Exception {
-        PracticeLogDTO lastLog = dbGateway.findLastPracticeLog();
-        logger.info("last practice log: {}", lastLog);
-        if( lastLog == null ){
-            return;
-        }
-        try {
-            LocalDate date = LocalDate.parse(lastLog.createdAt.substring(0, 10));
-            if( Objects.equals(date, LocalDate.now() ) ){
-                logger.info("todays last practice log sent.");
-                practiceLogHandler.publish(mapper.writeValueAsString(lastLog));
-            }
-        } catch(Exception ex){
-            logger.error("Failed to get last log", ex);
-        }
+    public PracticeLogger(PracticeLogSaver saver) {
+        this.saver = saver;
     }
 
     private void logValue(String kind, PracticeLogBody obj) {
         try {
-            String body = mapper.writeValueAsString(obj);
-            saveLog(kind, body);
+            PracticeLogDTO dto = new PracticeLogDTO();
+            dto.kind = kind;
+            dto.createdAt = DateTimeUtil.toSqlDateTime(LocalDateTime.now());
+            dto.body = mapper.writeValueAsString(obj);
+            saver.save(dto);
         } catch (JsonProcessingException e) {
-            logger.error("Failed to save practice log.", e);
-            throw new RuntimeException("Failed to log practice.", e);
-        }
-    }
-
-    @Transactional
-    private void saveLog(String kind, String body) {
-        LocalDateTime at = LocalDateTime.now();
-        PracticeLogDTO dto = dbGateway.insertPracticeLog(at, kind, body);
-        try {
-            practiceLogHandler.publish(mapper.writeValueAsString(dto));
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

@@ -8,6 +8,7 @@ import jp.chang.myclinic.dbmysql.DbGateway;
 import jp.chang.myclinic.dbmysql.DbMysqlConfig;
 import jp.chang.myclinic.drawer.JacksonOpSerializer;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.mastermap.MasterMap;
 import jp.chang.myclinic.server.rcpt.HoukatsuKensa;
 import org.slf4j.Logger;
@@ -48,6 +49,12 @@ public class AppServer implements CommandLineRunner{
     @Bean
     public DbGatewayInterface getDbGateway(){
         return dbGatewayMySql;
+    }
+
+    @Bean
+    @Autowired
+    public PracticeLogger getPracticeLogger(PracticeLogSaver saver){
+        return new PracticeLogger(saver);
     }
 
     @Bean

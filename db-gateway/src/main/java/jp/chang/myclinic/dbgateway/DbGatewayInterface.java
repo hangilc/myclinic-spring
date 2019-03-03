@@ -390,7 +390,7 @@ public interface DbGatewayInterface {
 
     List<PracticeLogDTO> listPracticeLogInRange(LocalDate at, int afterId, int beforeId);
 
-    PracticeLogDTO insertPracticeLog(LocalDateTime createdAt, String kind, String body);
+    PracticeLogDTO enterPracticeLog(PracticeLogDTO practiceLogDTO);
 
     PracticeLogDTO findLastPracticeLog();
 
