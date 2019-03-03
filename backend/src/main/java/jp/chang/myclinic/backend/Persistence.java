@@ -13,5 +13,7 @@ public interface Persistence {
     RoujinPersistence getRoujinPersistence();
     KouhiPersistence getKouhiPersistence();
     WqueuePersistence getWqueuePersistence();
-
+    TextPersistence getTextPersistence();
+    ShinryouPersistence getShinryouPersistence();
+    DrugPersistence getDrugPersistence();
 }

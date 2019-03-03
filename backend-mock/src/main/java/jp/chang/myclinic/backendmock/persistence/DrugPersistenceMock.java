@@ -1,5 +1,6 @@
-package jp.chang.myclinic.clientmock.entity;
+package jp.chang.myclinic.backendmock.persistence;
 
+import jp.chang.myclinic.backend.persistence.DrugPersistence;
 import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
-public class DrugRepo implements DrugRepoInterface {
+public class DrugPersistenceMock implements DrugPersistence {
 
     private Map<Integer, DrugAttrDTO> attrs = new HashMap<>();
 

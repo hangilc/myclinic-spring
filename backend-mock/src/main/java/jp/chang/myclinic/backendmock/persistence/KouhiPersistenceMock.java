@@ -1,5 +1,6 @@
-package jp.chang.myclinic.clientmock.entity;
+package jp.chang.myclinic.backendmock.persistence;
 
+import jp.chang.myclinic.backend.persistence.KouhiPersistence;
 import jp.chang.myclinic.dto.KouhiDTO;
 
 import java.time.LocalDate;
@@ -9,7 +10,7 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-public class KouhiRepo implements KouhiRepoInterface {
+public class KouhiPersistenceMock implements KouhiPersistence {
 
     private Map<Integer, KouhiDTO> registry = new HashMap<>();
     private Helper helper = new Helper();
@@ -26,4 +27,5 @@ public class KouhiRepo implements KouhiRepoInterface {
     public KouhiDTO getKouhi(int kouhiId) {
         return registry.get(kouhiId);
     }
+
 }

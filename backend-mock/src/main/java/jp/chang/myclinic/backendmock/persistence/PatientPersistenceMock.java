@@ -1,5 +1,6 @@
-package jp.chang.myclinic.clientmock.entity;
+package jp.chang.myclinic.backendmock.persistence;
 
+import jp.chang.myclinic.backend.persistence.PatientPersistence;
 import jp.chang.myclinic.dto.PatientDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class PatientRepo implements PatientRepoInterface {
+public class PatientPersistenceMock implements PatientPersistence {
 
     private int serialId = 1;
     private Map<Integer, PatientDTO> registry = new HashMap<>();
@@ -37,4 +38,5 @@ public class PatientRepo implements PatientRepoInterface {
     public Optional<PatientDTO> findPatient(int patientId) {
         return Optional.ofNullable(registry.getOrDefault(patientId, null));
     }
+
 }

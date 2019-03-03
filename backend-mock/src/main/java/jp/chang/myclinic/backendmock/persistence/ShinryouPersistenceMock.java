@@ -1,6 +1,6 @@
-package jp.chang.myclinic.clientmock.entity;
+package jp.chang.myclinic.backendmock.persistence;
 
-import jp.chang.myclinic.dto.ShahokokuhoDTO;
+import jp.chang.myclinic.backend.persistence.ShinryouPersistence;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,7 @@ import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
-public class ShinryouRepo implements ShinryouRepoInterface {
+public class ShinryouPersistenceMock implements ShinryouPersistence {
 
     private Map<Integer, ShinryouAttrDTO> attrs = new HashMap<>();
 
@@ -21,5 +21,4 @@ public class ShinryouRepo implements ShinryouRepoInterface {
         return shinryouIds.stream().map(id -> attrs.getOrDefault(id, null))
                 .filter(Objects::nonNull).collect(toList());
     }
-
 }
