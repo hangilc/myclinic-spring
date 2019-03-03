@@ -27,17 +27,17 @@ class PracticeRestServiceMock implements PracticeRestService {
 
     @Override
     public CompletableFuture<List<ShinryouAttrDTO>> batchGetShinryouAttr(List<Integer> shinryouIds) {
-        throw new RuntimeException("not implemented");
+        return api.batchGetShinryouAttr(shinryouIds);
     }
 
     @Override
     public CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds) {
-        throw new RuntimeException("not implemented");
+        return api.batchGetDrugAttr(drugIds);
     }
 
     @Override
     public CompletionStage<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds) {
-        throw new RuntimeException("not implemented");
+        return api.batchGetShouki(visitIds);
     }
 
     @Override

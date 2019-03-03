@@ -15,6 +15,8 @@ public class DbGatewayMock {
     private KouhiRepoInterface kouhiRepo = new KouhiRepo();
     private VisitRepoInterface visitRepo = new VisitRepo();
     private WqueueRepoInterface wqueueRepo = new WqueueRepo();
+    private ShinryouRepoInterface shinryouRepo = new ShinryouRepo();
+    private DrugRepoInterface drugRepo = new DrugRepo();
 
     public int enterPatient(PatientDTO patient){
         return patientRepo.enterPatient(patient);
@@ -46,5 +48,17 @@ public class DbGatewayMock {
 
     public void enterWqueue(WqueueDTO wqueue){
         wqueueRepo.enterWqueue(wqueue);
+    }
+
+    public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds) {
+        return shinryouRepo.batchGetShinryouAttr(shinryouIds);
+    }
+
+    public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds) {
+        return drugRepo.batchGetDrugAttr(drugIds);
+    }
+
+    public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds) {
+        return visitRepo.batchGetShouki(visitIds);
     }
 }
