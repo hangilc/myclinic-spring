@@ -16,8 +16,14 @@ public class PracticeLogger {
         void save(PracticeLogDTO dto);
     }
 
+    public interface PracticeLogPublisher {
+        void publish(String message);
+    }
+
     private static ObjectMapper mapper = new ObjectMapper();
-    private PracticeLogSaver saver = t -> {
+    private PracticeLogSaver saver = dto -> {
+    };
+    private PracticeLogPublisher publisher = message -> {
     };
 
     public PracticeLogger() {
@@ -28,6 +34,19 @@ public class PracticeLogger {
         this.saver = saver;
     }
 
+    public PracticeLogger(PracticeLogSaver saver, PracticeLogPublisher publisher){
+        this.saver = saver;
+        this.publisher = publisher;
+    }
+
+    public void setSaver(PracticeLogSaver saver){
+        this.saver = saver;
+    }
+
+    public void setPublisher(PracticeLogPublisher publisher){
+        this.publisher = publisher;
+    }
+
     private void logValue(String kind, PracticeLogBody obj) {
         try {
             PracticeLogDTO dto = new PracticeLogDTO();
@@ -35,6 +54,8 @@ public class PracticeLogger {
             dto.createdAt = DateTimeUtil.toSqlDateTime(LocalDateTime.now());
             dto.body = mapper.writeValueAsString(obj);
             saver.save(dto);
+            String message = mapper.writeValueAsString(dto);
+            publisher.publish(message);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             throw new RuntimeException(e);

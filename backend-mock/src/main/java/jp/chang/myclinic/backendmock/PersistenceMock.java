@@ -67,4 +67,10 @@ public class PersistenceMock implements Persistence {
     public DrugPersistence getDrugPersistence() {
         return drugPersistence;
     }
+
+    private PracticeLogPersistence practiceLogPersistence;
+    @Override
+    public PracticeLogPersistence getPracticeLogPersistence() {
+        return practiceLogPersistence;
+    }
 }

@@ -8,6 +8,7 @@ import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.PracticeConfigServiceMock;
+import jp.chang.myclinic.practice.PracticeRestServiceMock;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenRequirement;
 import jp.chang.myclinic.practice.javafx.text.TextDisp;
@@ -30,7 +31,7 @@ public class TestText extends TestGroup implements TestHelper {
     private Stage stage;
     private Pane main;
     private MockData mock = new MockData();
-    private RestServiceMock restService = new RestServiceMock();
+    private PracticeRestServiceMock restService = new PracticeRestServiceMock();
     private PatientDTO patient;
 
     {

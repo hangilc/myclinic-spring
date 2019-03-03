@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.MainStageServiceMock;
 import jp.chang.myclinic.practice.PracticeConfigServiceMock;
+import jp.chang.myclinic.practice.PracticeRestServiceMock;
 import jp.chang.myclinic.practice.testgui.TestGroup;
 import jp.chang.myclinic.practice.testgui.TestHelper;
 
@@ -25,7 +26,7 @@ public class MainPaneTest extends TestGroup implements TestHelper {
     }
 
     private void testDisp(){
-        RestServiceMock restService = new RestServiceMock();
+        PracticeRestServiceMock restService = new PracticeRestServiceMock();
         PracticeConfigServiceMock configService = new PracticeConfigServiceMock();
         MainStageServiceMock stageService = new MainStageServiceMock();
         MainPaneRequirement req = new MainPaneRequirement(restService, configService, stageService);
@@ -40,7 +41,7 @@ public class MainPaneTest extends TestGroup implements TestHelper {
     }
 
     private void testBroadcastNewText(){
-        RestServiceMock restService = new RestServiceMock();
+        PracticeRestServiceMock restService = new PracticeRestServiceMock();
         PracticeConfigServiceMock configService = new PracticeConfigServiceMock();
         MainStageServiceMock stageService = new MainStageServiceMock();
         MainPaneRequirement req = new MainPaneRequirement(restService, configService, stageService);

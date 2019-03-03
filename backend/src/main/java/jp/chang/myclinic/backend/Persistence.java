@@ -16,4 +16,6 @@ public interface Persistence {
     TextPersistence getTextPersistence();
     ShinryouPersistence getShinryouPersistence();
     DrugPersistence getDrugPersistence();
+    PracticeLogPersistence getPracticeLogPersistence();
+
 }

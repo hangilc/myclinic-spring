@@ -1,5 +1,6 @@
 package jp.chang.myclinic.logdto;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jp.chang.myclinic.dto.HotlineDTO;
 import jp.chang.myclinic.logdto.hotline.HotlineBeep;
@@ -11,22 +12,10 @@ import org.slf4j.LoggerFactory;
 public class HotlineLogger {
 
     public interface HotlineLogPublisher {
-        void publishCreated(HotlineDTO hotlineDTO);
-        void publishBeep(String receiver);
+        void publish(String message);
     }
 
-    private static Logger logger = LoggerFactory.getLogger(HotlineLogger.class);
-    private HotlineLogPublisher publisher =new HotlineLogPublisher() {
-        @Override
-        public void publishCreated(HotlineDTO hotlineDTO) {
-            // nop
-        }
-
-        @Override
-        public void publishBeep(String receiver) {
-            // nop
-        }
-    };
+    private HotlineLogPublisher publisher = message -> {};
     private static ObjectMapper mapper = new ObjectMapper();
 
     public HotlineLogger() {
@@ -37,14 +26,28 @@ public class HotlineLogger {
         this.publisher = publisher;
     }
 
+    public void setHotlineLogPublisher(HotlineLogPublisher publisher){
+        this.publisher = publisher;
+    }
+
+    private void logValue(String kind, Object value){
+        HotlineLogDTO log = new HotlineLogDTO();
+        log.kind = kind;
+        try {
+            log.body = mapper.writeValueAsString(value);
+            publisher.publish(mapper.writeValueAsString(log));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
     public void logHotlineCreated(HotlineDTO hotline){
-        //logValue("hotline-created", new HotlineCreated(hotline));
-        publisher.publishCreated(hotline);
+        logValue("hotline-created", new HotlineCreated(hotline));
     }
 
     public void logBeep(String receiver){
-        //logValue("hotline-beep", new HotlineBeep(receiver));
-        publisher.publishBeep(receiver);
+        logValue("hotline-beep", new HotlineBeep(receiver));
     }
 
 }

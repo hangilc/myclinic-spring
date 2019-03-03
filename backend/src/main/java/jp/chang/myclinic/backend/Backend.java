@@ -2,6 +2,9 @@ package jp.chang.myclinic.backend;
 
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.logdto.HotlineLogger;
+import jp.chang.myclinic.logdto.PracticeLogger;
+import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,21 +12,43 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Backend {
 
     private Persistence db;
+    private PracticeLogger practiceLogger;
+    private HotlineLogger hotlineLogger;
 
     public Backend(Persistence db){
         this.db = db;
+        this.practiceLogger = new PracticeLogger();
+        practiceLogger.setSaver(this::enterPracticeLog);
+        this.hotlineLogger = new HotlineLogger();
+    }
+
+    public void setPracticeLogPublisher(Consumer<String> publisher){
+        practiceLogger.setPublisher(publisher::accept);
+    }
+
+    public void setHotlineLogPublisher(Consumer<String> publisher){
+        hotlineLogger.setHotlineLogPublisher(publisher::accept);
     }
 
     public int enterPatient(PatientDTO patient){
-        return db.getPatientPersistence().enterPatient(patient);
+        patient.patientId = db.getPatientPersistence().enterPatient(patient);
+        practiceLogger.logPatientCreated(patient);
+        return patient.patientId;
     }
 
     public PatientDTO getPatient(int patientId){
         return db.getPatientPersistence().getPatient(patientId);
+    }
+
+    public int enterVisit(VisitDTO visit){
+        visit.visitId = db.getVisitPersistence().enterVisit(visit);
+        practiceLogger.logVisitCreated(visit);
+        return visit.visitId;
     }
 
     public int startVisit(int patientId, LocalDateTime at){
@@ -71,13 +96,17 @@ public class Backend {
                 }
             }
         }
-        int visitId = db.getVisitPersistence().enterVisit(visitDTO);
-        visitDTO.visitId = visitId;
+        visitDTO.visitId = enterVisit(visitDTO);
         WqueueDTO wqueueDTO = new WqueueDTO();
-        wqueueDTO.visitId = visitId;
+        wqueueDTO.visitId = visitDTO.visitId;
         wqueueDTO.waitState = MyclinicConsts.WqueueStateWaitExam;
-        db.getWqueuePersistence().enterWqueue(wqueueDTO);
-        return visitId;
+        enterWqueue(wqueueDTO);
+        return visitDTO.visitId;
+    }
+
+    public void enterWqueue(WqueueDTO wqueue){
+        db.getWqueuePersistence().enterWqueue(wqueue);
+        practiceLogger.logWqueueCreated(wqueue);
     }
 
     public HokenDTO getHoken(int visitId) {
@@ -121,7 +150,9 @@ public class Backend {
     }
 
     public int enterText(TextDTO text){
-        return db.getTextPersistence().enterText(text);
+        text.textId = db.getTextPersistence().enterText(text);
+        practiceLogger.logTextCreated(text);
+        return text.textId;
     }
 
     public TextDTO getText(int textId){
@@ -129,12 +160,19 @@ public class Backend {
     }
 
     public void updateText(TextDTO text){
+        TextDTO prev = getText(text.textId);
         db.getTextPersistence().updateText(text);
+        practiceLogger.logTextUpdated(prev, text);
     }
 
     public void deleteText(int textId){
+        TextDTO text = getText(textId);
         db.getTextPersistence().deleteText(textId);
+        practiceLogger.logTextDeleted(text);
     }
 
+    public int enterPracticeLog(PracticeLogDTO practiceLog){
+        return db.getPracticeLogPersistence().enterPracticeLog(practiceLog);
+    }
 
 }

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-class PracticeRestServiceMock implements PracticeRestService {
+public class PracticeRestServiceMock implements PracticeRestService {
 
     private Backend api = new BackendMock();
 
@@ -19,6 +19,10 @@ class PracticeRestServiceMock implements PracticeRestService {
 
     public CompletableFuture<Integer> enterPatient(PatientDTO patient){
         return future(api.enterPatient(patient));
+    }
+
+    public CompletableFuture<Integer> enterVisit(VisitDTO visit){
+        return future(api.enterVisit(visit));
     }
 
     public CompletableFuture<Integer> startVisit(int patientId, LocalDateTime at){
