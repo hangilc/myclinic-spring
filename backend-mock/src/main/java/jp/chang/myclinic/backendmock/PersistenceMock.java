@@ -3,8 +3,6 @@ package jp.chang.myclinic.backendmock;
 import jp.chang.myclinic.backend.Persistence;
 import jp.chang.myclinic.backend.persistence.*;
 import jp.chang.myclinic.backendmock.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PersistenceMock implements Persistence {
 
@@ -68,7 +66,7 @@ public class PersistenceMock implements Persistence {
         return drugPersistence;
     }
 
-    private PracticeLogPersistence practiceLogPersistence;
+    private PracticeLogPersistence practiceLogPersistence = new PracticeLogPersistenceMock();
     @Override
     public PracticeLogPersistence getPracticeLogPersistence() {
         return practiceLogPersistence;

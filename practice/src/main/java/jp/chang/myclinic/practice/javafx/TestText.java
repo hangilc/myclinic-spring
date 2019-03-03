@@ -212,8 +212,8 @@ public class TestText extends TestGroup implements TestHelper {
     private void testRecordTextUpdate() {
         TextDTO textDTO = new TextDTO();
         textDTO.visitId = 1;
-        textDTO.textId = 10;
         textDTO.content = "昨日から、頭痛がある。";
+        textDTO.textId = req.restService.enterText(textDTO).join();
         RecordText recordText = new RecordText(textDTO);
         recordText.setTextRequirement(req);
         gui(() -> {

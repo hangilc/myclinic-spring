@@ -2,8 +2,6 @@ package jp.chang.myclinic.backendmock.persistence;
 
 import jp.chang.myclinic.backend.persistence.TextPersistence;
 import jp.chang.myclinic.dto.TextDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +29,7 @@ public class TextPersistenceMock implements TextPersistence {
         if( !registry.containsKey(text.textId) ){
             throw new RuntimeException("no such text");
         }
-        registry.remove(text.textId);
+        registry.put(text.textId, text);
     }
 
     @Override
