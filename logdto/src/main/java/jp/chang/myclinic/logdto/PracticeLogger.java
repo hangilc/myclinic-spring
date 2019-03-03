@@ -16,7 +16,6 @@ public class PracticeLogger {
         void save(PracticeLogDTO dto);
     }
 
-    private static Logger logger = LoggerFactory.getLogger(PracticeLogger.class);
     private static ObjectMapper mapper = new ObjectMapper();
     private PracticeLogSaver saver = t -> {
     };

@@ -9,15 +9,15 @@ import jp.chang.myclinic.logdto.hotline.HotlineLogDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import jp.chang.myclinic.logdto.HotlineLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HotlineLogger implements InitializingBean {
+class HotlineLogPublisher implements HotlineLogger.HotlineLogPublisher, InitializingBean {
 
-    private static Logger logger = LoggerFactory.getLogger(HotlineLogger.class);
-
+    private static Logger logger = LoggerFactory.getLogger(HotlineLogPublisher.class);
     private static ObjectMapper mapper = new ObjectMapper();
     @Autowired
     private DbGatewayInterface dbGateway;
@@ -26,19 +26,21 @@ public class HotlineLogger implements InitializingBean {
     private PublishingWebSocketHandler hotlineLogHandler;
 
     @Override
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws Exception {
         sendLastLog();
     }
 
-    private void sendLastLog() {
-        dbGateway.getTodaysLastHotline().ifPresent(dto -> {
-            logger.info("last hotline log: {}", dto);
-            logHotlineCreated(dto);
-
-        });
+    @Override
+    public void publishCreated(HotlineDTO hotlineDTO) {
+        publish("hotline-created", new HotlineCreated(hotlineDTO));
     }
 
-    private void logValue(String kind, Object value){
+    @Override
+    public void publishBeep(String receiver) {
+        publish("hotline-beep", new HotlineBeep(receiver));
+    }
+
+    private void publish(String kind, Object value){
         try {
             HotlineLogDTO log = new HotlineLogDTO();
             log.kind = kind;
@@ -49,12 +51,12 @@ public class HotlineLogger implements InitializingBean {
         }
     }
 
-    public void logHotlineCreated(HotlineDTO hotline){
-        logValue("hotline-created", new HotlineCreated(hotline));
+    private void sendLastLog() {
+        dbGateway.getTodaysLastHotline().ifPresent(dto -> {
+            logger.info("last hotline log: {}", dto);
+            publishCreated(dto);
+        });
     }
 
-    public void logBeep(String receiver){
-        logValue("hotline-beep", new HotlineBeep(receiver));
-    }
 
 }

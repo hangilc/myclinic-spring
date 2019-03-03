@@ -8,7 +8,6 @@ import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.PracticeConfigServiceMock;
-import jp.chang.myclinic.practice.RestServiceMock;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenRequirement;
 import jp.chang.myclinic.practice.javafx.text.TextDisp;

@@ -32,8 +32,14 @@ public class VisitController {
     private HoukatsuKensa houkatsuKensa;
 
     @RequestMapping(value = "/start-visit", method = RequestMethod.POST)
-    public int startVisit(@RequestParam("patient-id") int patientId) {
-        LocalDateTime at = LocalDateTime.now();
+    public int startVisit(@RequestParam("patient-id") int patientId,
+                          @RequestParam(name = "at", required = false) String atDateTime) {
+        LocalDateTime at;
+        if( atDateTime == null || atDateTime.isEmpty() ){
+            at = LocalDateTime.now();
+        } else {
+            at = DateTimeUtil.parseSqlDateTime(atDateTime);
+        }
         LocalDate atDate = at.toLocalDate();
         VisitDTO visitDTO = new VisitDTO();
         visitDTO.patientId = patientId;

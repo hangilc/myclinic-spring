@@ -2,11 +2,9 @@ package jp.chang.myclinic.practice.javafx;
 
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.MainStageServiceMock;
 import jp.chang.myclinic.practice.PracticeConfigServiceMock;
-import jp.chang.myclinic.practice.RestServiceMock;
 import jp.chang.myclinic.practice.testgui.TestGroup;
 import jp.chang.myclinic.practice.testgui.TestHelper;
 

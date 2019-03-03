@@ -18,6 +18,10 @@ public class PracticeRestServiceClient implements PracticeRestService {
 
     private Service.ServerAPI api;
 
+    public PracticeRestServiceClient(Service.ServerAPI api){
+        this.api = api;
+    }
+
     @GET("search-patient")
     public CompletableFuture<List<PatientDTO>> searchPatient(String text) {
         return api.searchPatient(text);

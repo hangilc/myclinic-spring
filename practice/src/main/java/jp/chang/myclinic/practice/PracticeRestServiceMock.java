@@ -1,12 +1,29 @@
 package jp.chang.myclinic.practice;
 
+import jp.chang.myclinic.clientmock.ServiceMock;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.util.DateTimeUtil;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-class PracticeRestServiceAdapter implements PracticeRestService {
+class PracticeRestServiceMock implements PracticeRestService {
+
+    private ServiceMock api;
+
+    PracticeRestServiceMock(ServiceMock api){
+        this.api = api;
+    }
+
+    public CompletableFuture<Integer> enterPatient(PatientDTO patient){
+        return api.enterPatient(patient);
+    }
+
+    public CompletableFuture<Integer> startVisit(int patientId, LocalDateTime at){
+        return api.startVisit(patientId, DateTimeUtil.toSqlDateTime(at));
+    }
 
     @Override
     public CompletableFuture<List<ShinryouAttrDTO>> batchGetShinryouAttr(List<Integer> shinryouIds) {
@@ -25,12 +42,12 @@ class PracticeRestServiceAdapter implements PracticeRestService {
 
     @Override
     public CompletableFuture<PatientDTO> getPatient(int patientId) {
-        throw new RuntimeException("not implemented");
+        return api.getPatient(patientId);
     }
 
     @Override
     public CompletableFuture<VisitDTO> getVisit(int visitId) {
-        throw new RuntimeException("not implemented");
+        return api.getVisit(visitId);
     }
 
     @Override

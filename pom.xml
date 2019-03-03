@@ -115,6 +115,7 @@
     <module>grpc-common</module>
     <module>db-mysql</module>
     <module>db-gateway</module>
+    <module>client-mock</module>
   </modules>
 
 </project>

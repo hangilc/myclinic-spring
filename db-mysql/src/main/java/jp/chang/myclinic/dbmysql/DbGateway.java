@@ -5,6 +5,7 @@ import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dbgateway.DbGatewayInterface;
 import jp.chang.myclinic.dbmysql.core.*;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.logdto.HotlineLogger;
 import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
@@ -93,6 +94,8 @@ public class DbGateway implements DbGatewayInterface {
     private ShoukiRepository shoukiRepository;
     @Autowired
     private PracticeLogger practiceLogger;
+    @Autowired
+    private HotlineLogger hotlineLogger;
 
     private WqueueFullDTO composeWqueueFullDTO(Wqueue wqueue){
         WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
@@ -1660,7 +1663,7 @@ public class DbGateway implements DbGatewayInterface {
     public int enterHotline(HotlineDTO hotlineDTO) {
         Hotline hotline = mapper.fromHotlineDTO(hotlineDTO);
         hotline = hotlineRepository.save(hotline);
-        //hotlineLogger.logHotlineCreated(mapper.toHotlineDTO(hotline));
+        hotlineLogger.logHotlineCreated(mapper.toHotlineDTO(hotline));
         return  hotline.getHotlineId();
     }
 

@@ -168,6 +168,10 @@ public class Service {
         @POST("start-visit")
         Call<Integer> startVisitCall(@Query("patient-id") int patientId);
 
+        @POST("start-visit")
+        CompletableFuture<Integer> startVisit(@Query("patient-id") int patientId,
+                                              @Query("at") String atDateTime);
+
         @POST("delete-visit")
         CompletableFuture<Boolean> deleteVisit(@Query("visit-id") int visitId);
 

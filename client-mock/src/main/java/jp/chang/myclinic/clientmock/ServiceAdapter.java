@@ -1,5 +1,6 @@
-package jp.chang.myclinic.client;
+package jp.chang.myclinic.clientmock;
 
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import okhttp3.ResponseBody;
@@ -244,6 +245,11 @@ public class ServiceAdapter implements Service.ServerAPI {
 
     @Override
     public Call<Integer> startVisitCall(int patientId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Integer> startVisit(int patientId, String atDateTime) {
         throw new RuntimeException("not implemented");
     }
 

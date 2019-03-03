@@ -8,6 +8,7 @@ import jp.chang.myclinic.dbmysql.DbGateway;
 import jp.chang.myclinic.dbmysql.DbMysqlConfig;
 import jp.chang.myclinic.drawer.JacksonOpSerializer;
 import jp.chang.myclinic.drawer.Op;
+import jp.chang.myclinic.logdto.HotlineLogger;
 import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.mastermap.MasterMap;
 import jp.chang.myclinic.server.rcpt.HoukatsuKensa;
@@ -55,6 +56,12 @@ public class AppServer implements CommandLineRunner{
     @Autowired
     public PracticeLogger getPracticeLogger(PracticeLogSaver saver){
         return new PracticeLogger(saver);
+    }
+
+    @Bean
+    @Autowired
+    public HotlineLogger getHotlineLogger(HotlineLogPublisher publisher){
+        return new HotlineLogger(publisher);
     }
 
     @Bean
