@@ -116,6 +116,7 @@
     <module>db-mysql</module>
     <module>db-gateway</module>
     <module>client-mock</module>
+    <module>backend</module>
   </modules>
 
 </project>
