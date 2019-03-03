@@ -52,7 +52,7 @@ class PracticeRestServiceMock implements PracticeRestService {
 
     @Override
     public CompletableFuture<HokenDTO> getHoken(int visitId) {
-        throw new RuntimeException("not implemented");
+        return api.getHoken(visitId);
     }
 
     @Override

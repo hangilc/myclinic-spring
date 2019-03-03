@@ -15,15 +15,20 @@ import static java.util.stream.Collectors.toList;
 
 public class KoukikoureiRepo implements KoukikoureiRepoInterface {
 
-    private Map<Integer, List<KoukikoureiDTO>> registry = new HashMap<>();
+    private Map<Integer, KoukikoureiDTO> registry = new HashMap<>();
     private Helper helper = new Helper();
 
     @Override
     public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
-        return registry.getOrDefault(patientId, Collections.emptyList()).stream()
-                .filter(dto -> helper.isValidAt(dto.validFrom, dto.validUpto, at.toString()))
-                .collect(toList());
+        return registry.values().stream().filter(
+                dto -> dto.patientId == patientId &&
+                        helper.isValidAt(dto.validFrom, dto.validUpto, at.toString())
+        ).collect(toList());
     }
 
+    @Override
+    public KoukikoureiDTO getKoukikourei(int koukikoureiId) {
+        return registry.get(koukikoureiId);
+    }
 
 }

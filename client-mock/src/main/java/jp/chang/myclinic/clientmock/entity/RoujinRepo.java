@@ -15,14 +15,20 @@ import static java.util.stream.Collectors.toList;
 
 public class RoujinRepo implements RoujinRepoInterface {
 
-    private Map<Integer, List<RoujinDTO>> registry = new HashMap<>();
+    private Map<Integer, RoujinDTO> registry = new HashMap<>();
     private Helper helper = new Helper();
 
     @Override
     public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
-        return registry.getOrDefault(patientId, Collections.emptyList()).stream()
-                .filter(dto -> helper.isValidAt(dto.validFrom, dto.validUpto, at.toString()))
-                .collect(toList());
+        return registry.values().stream().filter(
+                dto -> dto.patientId == patientId &&
+                        helper.isValidAt(dto.validFrom, dto.validUpto, at.toString())
+        ).collect(toList());
+    }
+
+    @Override
+    public RoujinDTO getRoujin(int roujinId) {
+        return registry.get(roujinId);
     }
 
 }

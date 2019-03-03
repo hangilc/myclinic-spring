@@ -61,4 +61,24 @@ public class DbGatewayMock {
     public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds) {
         return visitRepo.batchGetShouki(visitIds);
     }
+
+    public ShahokokuhoDTO getShahokokuho(int shahokokuhoId){
+        return shahokokuhoRepo.getShahokokuho(shahokokuhoId);
+    }
+
+    public KoukikoureiDTO getKoukikourei(int koukikoureiId){
+        return koukikoureiRepo.getKoukikourei(koukikoureiId);
+    }
+
+    public RoujinDTO getRoujin(int roujinId) {
+        return roujinRepo.getRoujin(roujinId);
+    }
+
+    public KouhiDTO getKouhi(int kouhiId) {
+        return kouhiRepo.getKouhi(kouhiId);
+    }
+
+    public VisitDTO getVisit(int visitId) {
+        return visitRepo.getVisit(visitId);
+    }
 }

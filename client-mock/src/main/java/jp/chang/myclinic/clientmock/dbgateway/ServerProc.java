@@ -70,4 +70,27 @@ public class ServerProc {
         return visitId;
     }
 
+    public HokenDTO getHokenForVisit(VisitDTO visitDTO) {
+        HokenDTO hokenDTO = new HokenDTO();
+        if (visitDTO.shahokokuhoId > 0) {
+            hokenDTO.shahokokuho = dbGateway.getShahokokuho(visitDTO.shahokokuhoId);
+        }
+        if (visitDTO.koukikoureiId > 0) {
+            hokenDTO.koukikourei = dbGateway.getKoukikourei(visitDTO.koukikoureiId);
+        }
+        if (visitDTO.roujinId > 0) {
+            hokenDTO.roujin = dbGateway.getRoujin(visitDTO.roujinId);
+        }
+        if (visitDTO.kouhi1Id > 0) {
+            hokenDTO.kouhi1 = dbGateway.getKouhi(visitDTO.kouhi1Id);
+        }
+        if (visitDTO.kouhi2Id > 0) {
+            hokenDTO.kouhi2 = dbGateway.getKouhi(visitDTO.kouhi2Id);
+        }
+        if (visitDTO.kouhi3Id > 0) {
+            hokenDTO.kouhi3 = dbGateway.getKouhi(visitDTO.kouhi3Id);
+        }
+        return hokenDTO;
+    }
+
 }

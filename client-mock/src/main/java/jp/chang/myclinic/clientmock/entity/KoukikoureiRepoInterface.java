@@ -8,4 +8,5 @@ import java.util.List;
 public interface KoukikoureiRepoInterface {
     List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at);
 
+    KoukikoureiDTO getKoukikourei(int koukikoureiId);
 }

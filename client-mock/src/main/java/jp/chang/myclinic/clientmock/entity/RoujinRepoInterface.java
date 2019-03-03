@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface RoujinRepoInterface {
     List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at);
+
+    RoujinDTO getRoujin(int roujinId);
 }

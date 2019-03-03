@@ -10,4 +10,6 @@ import java.util.List;
 public interface ShahokokuhoRepoInterface {
 
     List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at);
+    ShahokokuhoDTO getShahokokuho(int shahokokuhoId);
+
 }

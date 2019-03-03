@@ -9,4 +9,6 @@ public interface VisitRepoInterface {
     int enterVisit(VisitDTO visit);
 
     List<ShoukiDTO> batchGetShouki(List<Integer> visitIds);
+
+    VisitDTO getVisit(int visitId);
 }

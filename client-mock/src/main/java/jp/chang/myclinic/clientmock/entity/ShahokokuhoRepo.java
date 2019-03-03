@@ -12,14 +12,19 @@ import static java.util.stream.Collectors.toList;
 
 public class ShahokokuhoRepo implements ShahokokuhoRepoInterface {
 
-    private Map<Integer, List<ShahokokuhoDTO>> registry = new HashMap<>();
+    private Map<Integer, ShahokokuhoDTO> registry = new HashMap<>();
     private Helper helper = new Helper();
 
     @Override
     public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
-        return registry.getOrDefault(patientId, Collections.emptyList()).stream()
-                .filter(dto -> helper.isValidAt(dto.validFrom, dto.validUpto, at.toString()))
-                .collect(toList());
+        return registry.values().stream().filter(
+                dto -> dto.patientId == patientId &&
+                        helper.isValidAt(dto.validFrom, dto.validUpto, at.toString())
+        ).collect(toList());
     }
 
+    @Override
+    public ShahokokuhoDTO getShahokokuho(int shahokokuhoId) {
+        return registry.get(shahokokuhoId);
+    }
 }

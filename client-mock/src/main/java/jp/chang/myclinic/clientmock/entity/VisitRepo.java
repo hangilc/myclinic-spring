@@ -29,4 +29,9 @@ public class VisitRepo implements VisitRepoInterface {
         return visitIds.stream().map(id -> shoukiRegistry.getOrDefault(id, null))
                 .filter(Objects::nonNull).collect(toList());
     }
+
+    @Override
+    public VisitDTO getVisit(int visitId) {
+        return registry.get(visitId);
+    }
 }

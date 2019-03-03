@@ -2,10 +2,7 @@ package jp.chang.myclinic.clientmock;
 
 import jp.chang.myclinic.clientmock.dbgateway.DbGatewayMock;
 import jp.chang.myclinic.clientmock.dbgateway.ServerProc;
-import jp.chang.myclinic.dto.DrugAttrDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.ShinryouAttrDTO;
-import jp.chang.myclinic.dto.ShoukiDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDateTime;
@@ -50,5 +47,11 @@ public class ServiceMock extends ServiceAdapter {
     @Override
     public CompletableFuture<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds) {
         return future(dbGateway.batchGetShouki(visitIds));
+    }
+
+    @Override
+    public CompletableFuture<HokenDTO> getHoken(int visitId) {
+        VisitDTO visit = dbGateway.getVisit(visitId);
+        return future(serverProc.getHokenForVisit(visit));
     }
 }
