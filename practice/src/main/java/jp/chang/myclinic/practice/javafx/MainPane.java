@@ -61,13 +61,6 @@ public class MainPane extends BorderPane {
     private MainPaneService mainPaneService = new MainPaneService() {
 
         @Override
-        public void setCurrent(PatientDTO patient, int visitId) {
-            MainPane.this.currentPatient = patient;
-            MainPane.this.currentVisitId = visitId;
-            MainPane.this.tempVisitId = 0;
-        }
-
-        @Override
         public PatientDTO getCurrentPatient() {
             return currentPatient;
         }
@@ -103,6 +96,12 @@ public class MainPane extends BorderPane {
 
     private MainPane(){
         this(null);
+    }
+
+    public void setCurrent(PatientDTO patient, int visitId){
+        this.currentPatient = patient;
+        this.currentVisitId = visitId;
+        this.tempVisitId = 0;
     }
 
     public void simulateSelectVisitMenuChoice() {

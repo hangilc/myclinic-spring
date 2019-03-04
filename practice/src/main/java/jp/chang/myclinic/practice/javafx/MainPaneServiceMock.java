@@ -9,7 +9,6 @@ public class MainPaneServiceMock implements MainPaneService {
     private int currentVisitId;
     private int tempVisitId;
 
-    @Override
     public void setCurrent(PatientDTO patient, int visitId){
         this.currentPatient = patient;
         this.currentVisitId = visitId;
