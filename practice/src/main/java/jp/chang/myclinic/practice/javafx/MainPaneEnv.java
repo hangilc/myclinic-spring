@@ -4,17 +4,17 @@ import jp.chang.myclinic.backendasync.BackendAsync;
 import jp.chang.myclinic.practice.MainStageService;
 import jp.chang.myclinic.practice.PracticeConfigService;
 
-public class MainPaneRequirement {
+public class MainPaneEnv {
 
     public BackendAsync restService;
     public PracticeConfigService configService;
     public MainStageService mainStageService;
 
-    public MainPaneRequirement() {
+    public MainPaneEnv() {
     }
 
-    public MainPaneRequirement(BackendAsync restService, PracticeConfigService configService,
-                               MainStageService mainStageService) {
+    public MainPaneEnv(BackendAsync restService, PracticeConfigService configService,
+                       MainStageService mainStageService) {
         this.restService = restService;
         this.configService = configService;
         this.mainStageService = mainStageService;

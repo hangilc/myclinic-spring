@@ -3,27 +3,35 @@ package jp.chang.myclinic.practice.testgui;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import jp.chang.myclinic.practice.javafx.MainPaneTest;
+import jp.chang.myclinic.backend.Backend;
+import jp.chang.myclinic.backendasync.BackendAsyncBackend;
+import jp.chang.myclinic.backendmock.BackendMock;
+import jp.chang.myclinic.practice.PracticeConfigServiceMock;
 import jp.chang.myclinic.practice.javafx.TestText;
-import jp.chang.myclinic.practice.javafx.shohousen.TestShohousen;
 
 public class TestGui extends GuiTestBase {
 
-    private Stage stage;
     private StackPane main = new StackPane();
 
-    {
-        addTestGroup("text", () -> new TestText(stage, main));
-        addTestGroup("shohousen", TestShohousen::new);
-        addTestGroup("main", () -> new MainPaneTest(stage, main));
+    private void registerTests(TestEnv testEnv){
+        addTestGroup("text", () -> new TestText(testEnv));
+//        addTestGroup("shohousen", TestShohousen::new);
+//        addTestGroup("main", () -> new MainPaneTest(stage, main));
     }
 
     public TestGui(Stage stage) {
-        this.stage = stage;
+        StackPane main = new StackPane();
         main.setStyle("-fx-padding: 10");
         main.getStylesheets().add("css/Practice.css");
         stage.setScene(new Scene(main));
         stage.show();
+        TestEnv testEnv = new TestEnv();
+        Backend backend = new BackendMock();
+        testEnv.restService = new BackendAsyncBackend(backend);
+        testEnv.configService = new PracticeConfigServiceMock();
+        testEnv.stage = stage;
+        testEnv.main = main;
+        registerTests(testEnv);
     }
 
     @Override

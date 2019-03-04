@@ -52,7 +52,7 @@ public class MainPane extends BorderPane {
     private MenuItem selectVisitMenu;
     private RecordsPane recordsPane;
     private Supplier<Optional<PatientManip>> findPatientManipFun;
-    private MainPaneRequirement mainPaneRequirement;
+    private MainPaneEnv mainPaneRequirement;
     private PatientDTO currentPatient;
     private int currentVisitId;
     private int tempVisitId;
@@ -89,7 +89,7 @@ public class MainPane extends BorderPane {
 
     };
 
-    public MainPane(MainPaneRequirement mainPaneRequirement) {
+    public MainPane(MainPaneEnv mainPaneRequirement) {
         if( mainPaneRequirement == null ) return;
         this.mainPaneRequirement = mainPaneRequirement;
         this.execEnv = new ExecEnv(mainPaneRequirement.restService, mainPaneService,

@@ -12,5 +12,14 @@ public interface MainPaneService {
 
     int getTempVisitId();
 
+    default int getCurrentOrTempVisitId(){
+        int id = getCurrentVisitId();
+        if( id > 0 ){
+            return id;
+        } else {
+            return getTempVisitId();
+        }
+    }
+
     void broadcastNewText(TextDTO newText);
 }

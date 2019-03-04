@@ -1,21 +1,21 @@
 package jp.chang.myclinic.practice.testgui;
 
+import jp.chang.myclinic.backendasync.BackendAsync;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.dto.VisitFull2DTO;
 import jp.chang.myclinic.mockdata.MockData;
-import jp.chang.myclinic.practice.PracticeRestServiceMock;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class TestFramework {
 
-    private PracticeRestServiceMock restService;
+    private BackendAsync restService;
     private MockData mock = new MockData();
 
-    public TestFramework(PracticeRestServiceMock restService){
+    public TestFramework(BackendAsync restService){
         this.restService = restService;
     }
 
