@@ -25,7 +25,7 @@ public class PracticeRestServiceMock implements PracticeRestService {
         return future(api.enterVisit(visit));
     }
 
-    public CompletableFuture<Integer> startVisit(int patientId, LocalDateTime at){
+    public CompletableFuture<VisitDTO> startVisit(int patientId, LocalDateTime at){
         return future(api.startVisit(patientId, at));
     }
 

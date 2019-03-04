@@ -6,8 +6,6 @@ import jp.chang.myclinic.logdto.HotlineLogger;
 import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -51,7 +49,7 @@ public class Backend {
         return visit.visitId;
     }
 
-    public int startVisit(int patientId, LocalDateTime at){
+    public VisitDTO startVisit(int patientId, LocalDateTime at){
         LocalDate atDate = at.toLocalDate();
         VisitDTO visitDTO = new VisitDTO();
         visitDTO.patientId = patientId;
@@ -101,7 +99,7 @@ public class Backend {
         wqueueDTO.visitId = visitDTO.visitId;
         wqueueDTO.waitState = MyclinicConsts.WqueueStateWaitExam;
         enterWqueue(wqueueDTO);
-        return visitDTO.visitId;
+        return visitDTO;
     }
 
     public void enterWqueue(WqueueDTO wqueue){
