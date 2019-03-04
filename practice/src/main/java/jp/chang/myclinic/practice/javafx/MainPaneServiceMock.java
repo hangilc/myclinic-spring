@@ -2,15 +2,14 @@ package jp.chang.myclinic.practice.javafx;
 
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.TextDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class MainPaneServiceMock implements MainPaneService{
+public class MainPaneServiceMock implements MainPaneService {
 
     private PatientDTO currentPatient;
     private int currentVisitId;
     private int tempVisitId;
 
+    @Override
     public void setCurrent(PatientDTO patient, int visitId){
         this.currentPatient = patient;
         this.currentVisitId = visitId;

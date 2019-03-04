@@ -9,6 +9,6 @@ var stub = ReceptionMgmtGrpc.newBlockingStub(channel);
 
 stub.clickMainPaneNewPatientButton(null);
 var win = stub.findCreatedNewPatientWindow(null);
-var req = SetNewPatientWindowInputsRequest.newBuilder().setWindow(win).setInputs(SampleData.patientInputs1).build();
-stub.setNewPatientWindowInputs(req);
+var execEnv = SetNewPatientWindowInputsRequest.newBuilder().setWindow(win).setInputs(SampleData.patientInputs1).build();
+stub.setNewPatientWindowInputs(execEnv);
 stub.clickNewPatientWindowEnterButton(win);

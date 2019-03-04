@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 class RecordsPane extends VBox {
 
-    private RecordRequirement recordRequirement;
+    private ExecEnv execEnv;
 
     RecordsPane(){
         setFillWidth(true);
@@ -29,17 +29,17 @@ class RecordsPane extends VBox {
         PracticeEnv.INSTANCE.addShoukiFormChangeListener(this::onShoukiChanged);
     }
 
-    void setRecordRequirement(RecordRequirement lib){
-        this.recordRequirement = lib;
+    void setExecEnv(ExecEnv lib){
+        this.execEnv = lib;
     }
 
     void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
                           Map<Integer, DrugAttrDTO> drugAttrMap, Map<Integer, ShoukiDTO> shoukiMap){
         Record record = new Record(visit, shinryouAttrMap, drugAttrMap, shoukiMap.get(visit.visit.visitId),
-                recordRequirement);
-        if( recordRequirement.mainPaneService.getCurrentVisitId() == visit.visit.visitId ){
+                execEnv);
+        if( execEnv.mainPaneService.getCurrentVisitId() == visit.visit.visitId ){
             record.styleAsCurrentVisit();
-        } else if( recordRequirement.mainPaneService.getTempVisitId() == visit.visit.visitId ){
+        } else if( execEnv.mainPaneService.getTempVisitId() == visit.visit.visitId ){
             record.styleAsTempVisit();
         }
         getChildren().add(record);

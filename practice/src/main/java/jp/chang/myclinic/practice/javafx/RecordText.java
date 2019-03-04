@@ -5,7 +5,6 @@ import javafx.scene.layout.StackPane;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.javafx.text.TextDisp;
 import jp.chang.myclinic.practice.javafx.text.TextEditForm;
-import jp.chang.myclinic.practice.javafx.text.TextRequirement;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -14,7 +13,7 @@ public class RecordText extends StackPane {
 
     private int textId;
     private int visitId;
-    private TextRequirement textReq;
+    private ExecEnv execEnv;
     private Runnable onDeletedCallback;
     private Consumer<TextDTO> onCopiedCallback;
 
@@ -64,12 +63,12 @@ public class RecordText extends StackPane {
         return findInChildren(TextEditForm.class);
     }
 
-    void setTextRequirement(TextRequirement textReq) {
-        this.textReq = textReq;
+    void setExecEnv(ExecEnv textReq) {
+        this.execEnv = textReq;
     }
 
-    private TextRequirement getTextReq() {
-        return textReq;
+    private ExecEnv getExecEnv() {
+        return execEnv;
     }
 
     private void onDispClicked(TextDisp disp) {
@@ -77,7 +76,7 @@ public class RecordText extends StackPane {
         text.textId = textId;
         text.visitId = visitId;
         text.content = disp.getContent();
-        TextEditForm form = new TextEditForm(text, getTextReq());
+        TextEditForm form = new TextEditForm(text, getExecEnv());
         form.setOnUpdated(updatedText -> getChildren().setAll(createDisp(updatedText.content)));
         form.setOnCancel(() -> getChildren().setAll(disp));
         form.setOnDeleted(() -> {

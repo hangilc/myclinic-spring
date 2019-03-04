@@ -13,7 +13,7 @@ void start() throws Exception {
     Thread.sleep(1);
     var win = stub.findCreatedNewPatientWindow(null);
     var patientInputs = sample.pickPatientInputs();
-    var req = SetNewPatientWindowInputsRequest.newBuilder().setWindow(win).setInputs(patientInputs).build();
-    stub.setNewPatientWindowInputs(req);
+    var execEnv = SetNewPatientWindowInputsRequest.newBuilder().setWindow(win).setInputs(patientInputs).build();
+    stub.setNewPatientWindowInputs(execEnv);
     stub.clickNewPatientWindowEnterButton(win);
 }

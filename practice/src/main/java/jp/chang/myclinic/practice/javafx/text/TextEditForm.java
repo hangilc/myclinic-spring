@@ -7,6 +7,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.TextDTO;
+import jp.chang.myclinic.practice.javafx.ExecEnv;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenPreview;
 import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
@@ -24,23 +25,23 @@ public class TextEditForm extends VBox {
     private Hyperlink deleteLink = new Hyperlink("削除");
     private Hyperlink shohousenLink = new Hyperlink("処方箋発行");
     private Hyperlink copyLink = new Hyperlink("コピー");
-    private TextRequirement textRequirement;
+    private ExecEnv execEnv;
     private Runnable onDeletedCallback;
     private Runnable onDoneCallback;
     private Consumer<TextDTO> onCopiedCallback;
 
-    public TextEditForm(TextDTO text, TextRequirement textRequirement) {
+    public TextEditForm(TextDTO text, ExecEnv execEnv) {
         super(4);
         this.visitId = text.visitId;
         this.textId = text.textId;
-        this.textRequirement = textRequirement;
+        this.execEnv = execEnv;
         getStyleClass().addAll("record-text-form", "edit");
         setFillWidth(true);
         textArea.setWrapText(true);
         textArea.setText(text.content);
         deleteLink.setOnAction(event -> {
             if (ConfirmDialog.confirm("この文章を削除しますか？", this)) {
-                textRequirement.restService.deleteText(textId)
+                execEnv.restService.deleteText(textId)
                         .thenAcceptAsync(ok -> {
                             if( onDeletedCallback != null ){
                                 onDeletedCallback.run();
@@ -87,7 +88,7 @@ public class TextEditForm extends VBox {
             textDTO.visitId = visitId;
             textDTO.textId = textId;
             textDTO.content = textArea.getText().trim();
-            textRequirement.restService.updateText(textDTO)
+            execEnv.restService.updateText(textDTO)
                     .thenAcceptAsync(ok -> callback.accept(textDTO), Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
         });
@@ -131,12 +132,12 @@ public class TextEditForm extends VBox {
                     +"変更保存するか、変更をキャンセルしてから、処方箋を発行してください。", this);
             return;
         }
-        if( textRequirement.mainPaneService.getCurrentOrTempVisitId() != visitId ){
+        if( execEnv.mainPaneService.getCurrentOrTempVisitId() != visitId ){
             if( !ConfirmDialog.confirm("現在診察中ではないですか、この処方箋を発行しますか？", this) ){
                 return;
             }
         }
-        ShohousenPreview.create(textRequirement.shohousenRequirement, visitId, textDTO.content)
+        ShohousenPreview.create(execEnv, visitId, textDTO.content)
                 .thenAcceptAsync(preview -> {
                     preview.showAndWait();
                     done();
@@ -145,7 +146,7 @@ public class TextEditForm extends VBox {
     }
 
     private void doCopy(){
-        int targetVisitId = textRequirement.mainPaneService.getCurrentOrTempVisitId();
+        int targetVisitId = execEnv.mainPaneService.getCurrentOrTempVisitId();
         if( targetVisitId == 0 ){
             AlertDialog.alert("文章のコピー先をみつけられません。", this);
             return;
@@ -157,13 +158,13 @@ public class TextEditForm extends VBox {
         TextDTO newText = new TextDTO();
         newText.visitId = targetVisitId;
         newText.content = textArea.getText();
-        textRequirement.restService.enterText(newText)
+        execEnv.restService.enterText(newText)
                 .thenAcceptAsync(newTextId -> {
                     newText.textId = newTextId;
                     if( onCopiedCallback != null ){
                         onCopiedCallback.accept(newText);
                     }
-                    textRequirement.mainPaneService.broadcastNewText(newText);
+                    execEnv.mainPaneService.broadcastNewText(newText);
                     done();
                 }, Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);

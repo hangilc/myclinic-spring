@@ -23,7 +23,6 @@ import jp.chang.myclinic.practice.javafx.prescexample.EditPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.prescexample.NewPrescExampleDialog;
 import jp.chang.myclinic.practice.javafx.refer.ReferDialog;
 import jp.chang.myclinic.practice.javafx.shohousen.ShohousenDialog;
-import jp.chang.myclinic.practice.javafx.shohousen.ShohousenRequirement;
 import jp.chang.myclinic.practice.lib.PracticeLib;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -41,7 +40,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class MainPane extends BorderPane implements CurrentExamLib {
+public class MainPane extends BorderPane {
 
     private static MainPane INSTANCE = new MainPane();
 
@@ -54,13 +53,19 @@ public class MainPane extends BorderPane implements CurrentExamLib {
     private RecordsPane recordsPane;
     private Supplier<Optional<PatientManip>> findPatientManipFun;
     private MainPaneRequirement mainPaneRequirement;
-    private ShohousenRequirement shohousenRequirement;
     private PatientDTO currentPatient;
     private int currentVisitId;
     private int tempVisitId;
-
+    private ExecEnv execEnv;
 
     private MainPaneService mainPaneService = new MainPaneService() {
+
+        @Override
+        public void setCurrent(PatientDTO patient, int visitId) {
+            MainPane.this.currentPatient = patient;
+            MainPane.this.currentVisitId = visitId;
+            MainPane.this.tempVisitId = 0;
+        }
 
         @Override
         public PatientDTO getCurrentPatient() {
@@ -87,58 +92,17 @@ public class MainPane extends BorderPane implements CurrentExamLib {
     public MainPane(MainPaneRequirement mainPaneRequirement) {
         if( mainPaneRequirement == null ) return;
         this.mainPaneRequirement = mainPaneRequirement;
-        this.shohousenRequirement = new ShohousenRequirement(
-                mainPaneRequirement.restService,
-                mainPaneRequirement.configService
-        );
+        this.execEnv = new ExecEnv(mainPaneRequirement.restService, mainPaneService,
+                mainPaneRequirement.configService);
         setTop(createMenu());
         setCenter(createCenter());
         addEventHandler(EventTypes.visitDeletedEventType, this::onVisitDeleted);
-        recordsPane.setRecordRequirement(new RecordRequirement(
-                mainPaneRequirement.restService,
-                mainPaneService,
-                shohousenRequirement
-        ));
+        recordsPane.setExecEnv(execEnv);
         mainPaneRequirement.mainStageService.setTitle(createTitle(null));
     }
 
     private MainPane(){
         this(null);
-    }
-
-//    public void setMainPaneRequirement(MainPaneRequirement mainPaneRequirement) {
-//        this.mainPaneRequirement = mainPaneRequirement;
-//        this.shohousenRequirement = new ShohousenRequirement(
-//                mainPaneRequirement.restService,
-//                mainPaneRequirement.configService
-//        );
-//        recordsPane.setRecordRequirement(new RecordRequirement(
-//                mainPaneRequirement.restService,
-//                mainPaneService,
-//                shohousenRequirement
-//        ));
-//    }
-
-    public void setCurrent(PatientDTO patient, int currentVisitId) {
-        this.currentPatient = patient;
-        this.currentVisitId = currentVisitId;
-        this.tempVisitId = 0;
-        mainPaneRequirement.mainStageService.setTitle(createTitle(patient));
-    }
-
-    @Override
-    public PatientDTO getCurrentPatient() {
-        return currentPatient;
-    }
-
-    @Override
-    public int getCurrentVisitId() {
-        return currentVisitId;
-    }
-
-    @Override
-    public int getTempVisitId() {
-        return tempVisitId;
     }
 
     public void simulateSelectVisitMenuChoice() {
