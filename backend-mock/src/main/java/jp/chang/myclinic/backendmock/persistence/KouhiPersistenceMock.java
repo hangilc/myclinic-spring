@@ -1,6 +1,7 @@
 package jp.chang.myclinic.backendmock.persistence;
 
 import jp.chang.myclinic.backend.persistence.KouhiPersistence;
+import jp.chang.myclinic.backendmock.util.Helper;
 import jp.chang.myclinic.dto.KouhiDTO;
 
 import java.time.LocalDate;

@@ -169,6 +169,10 @@ public class Backend {
         practiceLogger.logTextDeleted(text);
     }
 
+    public List<TextDTO> listText(int visitId){
+        return db.getTextPersistence().listText(visitId);
+    }
+
     public int enterPracticeLog(PracticeLogDTO practiceLog){
         return db.getPracticeLogPersistence().enterPracticeLog(practiceLog);
     }

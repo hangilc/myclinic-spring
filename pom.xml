@@ -118,6 +118,7 @@
         <module>backend</module>
         <module>backend-mock</module>
     <module>backend-async</module>
+    <module>api-tool</module>
   </modules>
 
 </project>

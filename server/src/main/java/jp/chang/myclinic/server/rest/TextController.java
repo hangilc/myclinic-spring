@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/json")
 @Transactional
@@ -49,5 +51,10 @@ class TextController {
                                                       @RequestParam("page") int page){
         int itemsPerPage = 10;
         return dbGateway.searchTextGlobally(text, page, itemsPerPage);
+    }
+
+    @RequestMapping(value="/list-text", method=RequestMethod.GET)
+    public List<TextDTO> listText(@RequestParam("visit-id") int visitId){
+        return dbGateway.listText(visitId);
     }
 }

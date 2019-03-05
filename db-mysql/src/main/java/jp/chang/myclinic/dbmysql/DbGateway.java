@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -864,7 +863,8 @@ public class DbGateway implements DbGatewayInterface {
         }
     }
 
-    private List<TextDTO> listText(int visitId) {
+    @Override
+    public List<TextDTO> listText(int visitId) {
         List<Text> texts = textRepository.findByVisitId(visitId);
         return texts.stream().map(mapper::toTextDTO).collect(Collectors.toList());
     }

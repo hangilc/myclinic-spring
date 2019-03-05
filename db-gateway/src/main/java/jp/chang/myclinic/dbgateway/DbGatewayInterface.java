@@ -6,7 +6,6 @@ import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -183,6 +182,8 @@ public interface DbGatewayInterface {
     void updateText(TextDTO textDTO);
 
     void deleteText(int textId);
+
+    List<TextDTO> listText(int visitId);
 
     TextVisitPageDTO searchText(int patientId, String text, int page);
 

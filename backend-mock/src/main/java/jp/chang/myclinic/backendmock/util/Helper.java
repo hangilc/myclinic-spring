@@ -1,8 +1,8 @@
-package jp.chang.myclinic.backendmock.persistence;
+package jp.chang.myclinic.backendmock.util;
 
-class Helper {
+public class Helper {
 
-    boolean isValidAt(String validFrom, String validUpto, String at){
+    public boolean isValidAt(String validFrom, String validUpto, String at){
         if( at.length() > 10 ){
             at = at.substring(0, 10);
         }
