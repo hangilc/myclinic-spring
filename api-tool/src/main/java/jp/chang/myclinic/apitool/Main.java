@@ -11,6 +11,7 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -58,15 +59,18 @@ public class Main {
                 for (Signature sig : missingSigs) {
                     MethodDeclaration method = sigMap.get(sig);
                     MethodDeclaration m = mockClass.addMethod(method.getNameAsString(), Keyword.PUBLIC);
+                    m.setType(method.getType());
                     for(Parameter param: method.getParameters()){
                         m.addParameter(param);
                     }
                     m.addAnnotation("Override");
                     BlockStmt stmt = new BlockStmt();
-                    stmt.addStatement("throw new RuntimeException(\"not implemented\");");
+                    stmt.addStatement("throw new RuntimeException(\"not implemented (api-tool)\");");
                     m.setBody(stmt);
+                    System.out.printf("mock:+: %s: %s\n", mockName, m.getNameAsString());
                 }
-                System.out.println(mockUnit.toString());
+                Files.write(getPersistMockPath(mockName), mockUnit.toString().getBytes());
+                System.out.printf("mock:save:%s\n", getPersistMockPath(mockName).toString());
             }
         }
     }

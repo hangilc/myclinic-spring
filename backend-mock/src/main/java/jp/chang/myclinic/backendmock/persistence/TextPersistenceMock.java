@@ -4,11 +4,13 @@ import jp.chang.myclinic.backend.persistence.TextPersistence;
 import jp.chang.myclinic.dto.TextDTO;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TextPersistenceMock implements TextPersistence {
 
     private Map<Integer, TextDTO> registry = new HashMap<>();
+
     private int serialId = 1;
 
     @Override
@@ -26,7 +28,7 @@ public class TextPersistenceMock implements TextPersistence {
 
     @Override
     public void updateText(TextDTO text) {
-        if( !registry.containsKey(text.textId) ){
+        if (!registry.containsKey(text.textId)) {
             throw new RuntimeException("no such text");
         }
         registry.put(text.textId, text);
@@ -35,5 +37,10 @@ public class TextPersistenceMock implements TextPersistence {
     @Override
     public void deleteText(int textId) {
         registry.remove(textId);
+    }
+
+    @Override()
+    public List<TextDTO> listText(int visitId) {
+        throw new RuntimeException("not implemented (api-tool)");
     }
 }
