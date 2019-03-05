@@ -1,5 +1,7 @@
 package jp.chang.myclinic.backend;
 
+import jp.chang.myclinic.backend.annotation.BackendAsyncOption;
+import jp.chang.myclinic.backend.annotation.BackendPrivate;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.HotlineLogger;
@@ -25,10 +27,12 @@ public class Backend {
         this.hotlineLogger = new HotlineLogger();
     }
 
+    @BackendPrivate
     public void setPracticeLogPublisher(Consumer<String> publisher){
         practiceLogger.setPublisher(publisher::accept);
     }
 
+    @BackendPrivate
     public void setHotlineLogPublisher(Consumer<String> publisher){
         hotlineLogger.setHotlineLogPublisher(publisher::accept);
     }
@@ -43,7 +47,7 @@ public class Backend {
         return db.getPatientPersistence().getPatient(patientId);
     }
 
-    public int enterVisit(VisitDTO visit){
+    private int enterVisit(VisitDTO visit){
         visit.visitId = db.getVisitPersistence().enterVisit(visit);
         practiceLogger.logVisitCreated(visit);
         return visit.visitId;
@@ -102,7 +106,7 @@ public class Backend {
         return visitDTO;
     }
 
-    public void enterWqueue(WqueueDTO wqueue){
+    private void enterWqueue(WqueueDTO wqueue){
         db.getWqueuePersistence().enterWqueue(wqueue);
         practiceLogger.logWqueueCreated(wqueue);
     }
@@ -173,8 +177,8 @@ public class Backend {
         return db.getTextPersistence().listText(visitId);
     }
 
-    public int enterPracticeLog(PracticeLogDTO practiceLog){
-        return db.getPracticeLogPersistence().enterPracticeLog(practiceLog);
+    private void enterPracticeLog(PracticeLogDTO practiceLog){
+        db.getPracticeLogPersistence().enterPracticeLog(practiceLog);
     }
 
 }

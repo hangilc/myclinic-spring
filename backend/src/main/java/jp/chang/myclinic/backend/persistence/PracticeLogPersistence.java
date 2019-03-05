@@ -6,6 +6,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public interface PracticeLogPersistence {
-    int enterPracticeLog(PracticeLogDTO dto);
+    void enterPracticeLog(PracticeLogDTO dto);
     Optional<PracticeLogDTO> findLastPracticeLog(LocalDate at);
 }

@@ -228,39 +228,39 @@ public class TestText extends TestGroup implements TestHelper {
     }
 
     private void testRecordTextDelete() {
-        ExecEnv execEnv = new ExecEnv(restService, null, null);
-        TextDTO textDTO = new TextDTO();
-        textDTO.visitId = 1;
-        textDTO.content = "昨日から、頭痛がある。";
-        textDTO.textId = restService.enterText(textDTO).join();
-        RecordText recordText = new RecordText(textDTO);
-        tr.restService = new TextRequirement.RestServiceDelegate(tr.restService) {
-            @Override
-            public CompletableFuture<Boolean> deleteText(int textId) {
-                confirm(textId == textDTO.textId);
-                return super.deleteText(textId);
-            }
-        };
-        recordText.setExecEnv(tr);
-        gui(() -> {
-            recordText.setPrefWidth(329);
-            recordText.setPrefHeight(400);
-            main.getChildren().setAll(recordText);
-            stage.sizeToScene();
-        });
-        TextDisp disp = waitFor(3, recordText::findTextDisp);
-        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
-        TextEditForm editForm = waitFor(3, recordText::findTextEditForm);
-        class State {
-            private boolean deleted;
-        }
-        State state = new State();
-        editForm.setOnDeleted(() -> state.deleted = true);
-        gui(editForm::simulateClickDeleteButton);
-        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
-        gui(confirmDialog::simulateClickOkButton);
-        waitForWindowDisappear(confirmDialog);
-        waitForTrue(() -> state.deleted);
+//        ExecEnv execEnv = new ExecEnv(restService, null, null);
+//        TextDTO textDTO = new TextDTO();
+//        textDTO.visitId = 1;
+//        textDTO.content = "昨日から、頭痛がある。";
+//        textDTO.textId = restService.enterText(textDTO).join();
+//        RecordText recordText = new RecordText(textDTO);
+//        tr.restService = new TextRequirement.RestServiceDelegate(tr.restService) {
+//            @Override
+//            public CompletableFuture<Boolean> deleteText(int textId) {
+//                confirm(textId == textDTO.textId);
+//                return super.deleteText(textId);
+//            }
+//        };
+//        recordText.setExecEnv(tr);
+//        gui(() -> {
+//            recordText.setPrefWidth(329);
+//            recordText.setPrefHeight(400);
+//            main.getChildren().setAll(recordText);
+//            stage.sizeToScene();
+//        });
+//        TextDisp disp = waitFor(3, recordText::findTextDisp);
+//        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+//        TextEditForm editForm = waitFor(3, recordText::findTextEditForm);
+//        class State {
+//            private boolean deleted;
+//        }
+//        State state = new State();
+//        editForm.setOnDeleted(() -> state.deleted = true);
+//        gui(editForm::simulateClickDeleteButton);
+//        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
+//        gui(confirmDialog::simulateClickOkButton);
+//        waitForWindowDisappear(confirmDialog);
+//        waitForTrue(() -> state.deleted);
     }
 
 //    private void testRecordTextDeleteCancel() {

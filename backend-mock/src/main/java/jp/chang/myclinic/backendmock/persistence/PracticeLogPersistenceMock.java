@@ -15,10 +15,9 @@ public class PracticeLogPersistenceMock implements PracticeLogPersistence {
     private List<PracticeLogDTO> logs = new ArrayList<>();
 
     @Override
-    public int enterPracticeLog(PracticeLogDTO dto) {
+    public void enterPracticeLog(PracticeLogDTO dto) {
         dto.serialId = serialId++;
         logs.add(dto);
-        return dto.serialId;
     }
 
     @Override
