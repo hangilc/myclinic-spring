@@ -19,10 +19,13 @@ import jp.chang.myclinic.practice.testgui.ExtensionWaiter;
 import jp.chang.myclinic.practice.testgui.TestEnv;
 import jp.chang.myclinic.practice.testgui.TestGroup;
 import jp.chang.myclinic.practice.testgui.TestHelper;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class TestText extends TestGroup implements TestHelper {
@@ -45,11 +48,11 @@ public class TestText extends TestGroup implements TestHelper {
         addTestProc("record-text-delete", this::testRecordTextDelete);
         addTestProc("record-text-delete-cancel", this::testRecordTextDeleteCancel);
         addTestProc("record-text-shohousen", this::testRecordTextShohousen);
-//        addTestProc("record-text-shohousen-check-modified", this::testRecordTextShohousenCheckModified);
-//        addTestProc("record-text-shohousen-confirm-current-ok", this::testRecordTextShohousenConfirmCurrentOk);
-//        addTestProc("record-text-shohousen-confirm-current-no", this::testRecordTextShohousenConfirmCurrentNo);
-//        addTestProc("edit-form-copy", this::testEditFormCopy);
-//        addTestProc("pane-disp", this::testPaneDisp);
+        addTestProc("record-text-shohousen-check-modified", this::testRecordTextShohousenCheckModified);
+        addTestProc("record-text-shohousen-confirm-current-ok", this::testRecordTextShohousenConfirmCurrentOk);
+        addTestProc("record-text-shohousen-confirm-current-no", this::testRecordTextShohousenConfirmCurrentNo);
+        addTestProc("edit-form-copy", this::testEditFormCopy);
+        addTestProc("pane-disp", this::testPaneDisp);
     }
 
     public TestText(TestEnv env) {
@@ -328,140 +331,164 @@ public class TestText extends TestGroup implements TestHelper {
         waitForTrue(() -> state.done);
     }
 
-//    private void testRecordTextShohousenCheckModified() {
-//        TextDTO textDTO = new TextDTO();
-//        textDTO.visitId = 1;
-//        textDTO.textId = 10;
-//        textDTO.content = "昨日から、頭痛がある。";
-//        mainPaneService.setCurrent(patient, textDTO.visitId);
-//        RecordText recordText = new RecordText(textDTO);
-//        recordText.setExecEnv(execEnv);
-//        gui(() -> {
-//            recordText.setPrefWidth(329);
-//            recordText.setPrefHeight(400);
-//            main.getChildren().setAll(recordText);
-//            stage.sizeToScene();
-//        });
-//        TextDisp disp = waitFor(recordText::findTextDisp);
-//        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
-//        TextEditForm editForm = waitFor(recordText::findTextEditForm);
-//        gui(() -> editForm.simulateSetText(textDTO.content + " modified"));
-//        gui(editForm::simulateClickShohousenButton);
-//        AlertDialog alertDialog = waitForWindow(AlertDialog.class);
-//        gui(alertDialog::simulateClickOkButton);
-//        waitForWindowDisappear(alertDialog);
-//    }
-//
-//    private void testRecordTextShohousenConfirmCurrentOk() {
-//        TextDTO textDTO = new TextDTO();
-//        textDTO.visitId = 2;
-//        textDTO.textId = 10;
-//        textDTO.content = "昨日から、頭痛がある。";
-//        mainPaneService.setCurrent(patient, 0);
-//        RecordText recordText = new RecordText(textDTO);
-//        recordText.setExecEnv(execEnv);
-//        gui(() -> {
-//            recordText.setPrefWidth(329);
-//            recordText.setPrefHeight(400);
-//            main.getChildren().setAll(recordText);
-//            stage.sizeToScene();
-//        });
-//        TextDisp disp = waitFor(recordText::findTextDisp);
-//        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
-//        TextEditForm editForm = waitFor(recordText::findTextEditForm);
-//        gui(editForm::simulateClickShohousenButton);
-//        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
-//        gui(confirmDialog::simulateClickOkButton);
-//        waitForWindowDisappear(confirmDialog);
-//        DrawerPreviewDialog preview = waitForWindow(DrawerPreviewDialog.class);
-//        gui(preview::close);
-//        waitForWindowDisappear(preview);
-//    }
-//
-//    private void testRecordTextShohousenConfirmCurrentNo() {
-//        TextDTO textDTO = new TextDTO();
-//        textDTO.visitId = 2;
-//        textDTO.textId = 10;
-//        textDTO.content = "昨日から、頭痛がある。";
-//        mainPaneService.setCurrent(patient, 0);
-//        RecordText recordText = new RecordText(textDTO);
-//        recordText.setExecEnv(execEnv);
-//        gui(() -> {
-//            recordText.setPrefWidth(329);
-//            recordText.setPrefHeight(400);
-//            main.getChildren().setAll(recordText);
-//            stage.sizeToScene();
-//        });
-//        TextDisp disp = waitFor(recordText::findTextDisp);
-//        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
-//        TextEditForm editForm = waitFor(recordText::findTextEditForm);
-//        gui(editForm::simulateClickShohousenButton);
-//        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
-//        gui(confirmDialog::simulateClickNoButton);
-//        waitForWindowDisappear(confirmDialog);
-//    }
-//
-//    private void testEditFormCopy() {
-//        TextDTO textDTO = new TextDTO();
-//        textDTO.visitId = 3;
-//        textDTO.textId = 10;
-//        textDTO.content = "昨日から、頭痛がある。";
-//        class State {
-//            private boolean done;
-//            private boolean enterTextInvoked;
-//            private boolean broadcastNewTextInvoked;
-//        }
-//        State state = new State();
-//        TextRequirement tr = req.copy();
-//        tr.restService = new TextRequirement.RestServiceDelegate(req.restService) {
-//            @Override
-//            public CompletableFuture<Integer> enterText(TextDTO text) {
-//                confirm(text.visitId == 1);
-//                confirm(text.content.equals(textDTO.content));
-//                state.enterTextInvoked = true;
-//                return CompletableFuture.completedFuture(11);
-//            }
-//
-//
-//        };
-//        MainPaneServiceMock mainPaneService = new MainPaneServiceMock();
-//        mainPaneService.setCurrent(patient, 1);
-//        tr.mainPaneService = new TextRequirement.MainPaneServiceDelegate(
-//                mainPaneService
-//        ) {
-//            @Override
-//            public void broadcastNewText(TextDTO newText) {
-//                confirm(newText.visitId == 1);
-//                confirm(newText.content.equals(textDTO.content));
-//                state.broadcastNewTextInvoked = true;
-//            }
-//        };
-//        TextEditForm editForm = new TextEditForm(textDTO, tr);
-//        editForm.setOnDone(() -> state.done = true);
-//        gui(() -> {
-//            editForm.setPrefWidth(329);
-//            editForm.setPrefHeight(400);
-//            main.getChildren().setAll(editForm);
-//            stage.sizeToScene();
-//        });
-//        gui(editForm::simulateClickCopyButton);
-//        waitForTrue(() -> state.done);
-//        waitForTrue(() -> state.enterTextInvoked);
-//        waitForTrue(() -> state.broadcastNewTextInvoked);
-//    }
-//
-//    private void testPaneDisp() {
-//        TextDTO textDTO = new TextDTO();
-//        textDTO.visitId = 3;
-//        textDTO.textId = 10;
-//        textDTO.content = "昨日から、頭痛がある。";
-//        RecordTextsPane textsPane = new RecordTextsPane(List.of(textDTO), 1);
-//        gui(() -> {
-//            textsPane.setPrefWidth(329);
-//            textsPane.setPrefHeight(400);
-//            main.getChildren().setAll(textsPane);
-//            stage.sizeToScene();
-//        });
-//    }
+    private void testRecordTextShohousenCheckModified() {
+        MainPaneServiceMock mainPaneService = new MainPaneServiceMock();
+        ExecEnv execEnv = new ExecEnv(restService, mainPaneService, new PracticeConfigServiceMock());
+        MockData mock = new MockData();
+        PatientDTO patient = mock.pickPatient();
+        patient.patientId = restService.enterPatient(patient).join();
+        VisitDTO visit = restService.startVisit(patient.patientId, LocalDateTime.now()).join();
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = visit.visitId;
+        textDTO.content = "昨日から、頭痛がある。";
+        textDTO.textId = restService.enterText(textDTO).join();
+        RecordText recordText = new RecordText(textDTO);
+        mainPaneService.setCurrent(patient, visit.visitId);
+        recordText.setExecEnv(execEnv);
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
+        TextDisp disp = waitFor(recordText::findTextDisp);
+        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+        TextEditForm editForm = waitFor(recordText::findTextEditForm);
+        gui(() -> editForm.simulateSetText(textDTO.content + " modified"));
+        gui(editForm::simulateClickShohousenButton);
+        AlertDialog alertDialog = waitForWindow(AlertDialog.class);
+        gui(alertDialog::simulateClickOkButton);
+        waitForWindowDisappear(alertDialog);
+    }
+
+    private void testRecordTextShohousenConfirmCurrentOk() {
+        MainPaneServiceMock mainPaneService = new MainPaneServiceMock();
+        ExecEnv execEnv = new ExecEnv(restService, mainPaneService, new PracticeConfigServiceMock());
+        MockData mock = new MockData();
+        PatientDTO patient = mock.pickPatient();
+        patient.patientId = restService.enterPatient(patient).join();
+        VisitDTO visit = restService.startVisit(patient.patientId, LocalDateTime.now()).join();
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = visit.visitId;
+        textDTO.content = "昨日から、頭痛がある。";
+        textDTO.textId = restService.enterText(textDTO).join();
+        RecordText recordText = new RecordText(textDTO);
+        mainPaneService.setCurrent(patient, 0);
+        recordText.setExecEnv(execEnv);
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
+        TextDisp disp = waitFor(recordText::findTextDisp);
+        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+        TextEditForm editForm = waitFor(recordText::findTextEditForm);
+        gui(editForm::simulateClickShohousenButton);
+        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
+        gui(confirmDialog::simulateClickOkButton);
+        waitForWindowDisappear(confirmDialog);
+        DrawerPreviewDialog preview = waitForWindow(DrawerPreviewDialog.class);
+        gui(preview::close);
+        waitForWindowDisappear(preview);
+    }
+
+    private void testRecordTextShohousenConfirmCurrentNo() {
+        MainPaneServiceMock mainPaneService = new MainPaneServiceMock();
+        ExecEnv execEnv = new ExecEnv(restService, mainPaneService, new PracticeConfigServiceMock());
+        MockData mock = new MockData();
+        PatientDTO patient = mock.pickPatient();
+        patient.patientId = restService.enterPatient(patient).join();
+        VisitDTO visit = restService.startVisit(patient.patientId, LocalDateTime.now()).join();
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = visit.visitId;
+        textDTO.content = "昨日から、頭痛がある。";
+        textDTO.textId = restService.enterText(textDTO).join();
+        RecordText recordText = new RecordText(textDTO);
+        mainPaneService.setCurrent(patient, 0);
+        recordText.setExecEnv(execEnv);
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
+        TextDisp disp = waitFor(recordText::findTextDisp);
+        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+        TextEditForm editForm = waitFor(recordText::findTextEditForm);
+        gui(editForm::simulateClickShohousenButton);
+        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
+        gui(confirmDialog::simulateClickNoButton);
+        waitForWindowDisappear(confirmDialog);
+    }
+
+    private void testEditFormCopy() {
+        MainPaneServiceMock mainPaneService = new MainPaneServiceMock();
+        ExecEnv execEnv = new ExecEnv(restService, mainPaneService, new PracticeConfigServiceMock());
+        MockData mock = new MockData();
+        PatientDTO patient = mock.pickPatient();
+        patient.patientId = restService.enterPatient(patient).join();
+        VisitDTO visit = restService.startVisit(patient.patientId, LocalDateTime.now()).join();
+        VisitDTO prev = restService.startVisit(patient.patientId, LocalDateTime.now().minus(7, ChronoUnit.DAYS)).join();
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = prev.visitId;
+        textDTO.content = "昨日から、頭痛がある。";
+        textDTO.textId = restService.enterText(textDTO).join();
+        class State {
+            private boolean enterTextInvoked;
+            private boolean broadcastNewTextInvoked;
+        }
+        State state = new State();
+        execEnv.restService = new BackendAsyncDelegate(execEnv.restService){
+            @Override
+            public CompletableFuture<Integer> enterText(TextDTO text) {
+                confirm(text.visitId == visit.visitId);
+                confirm(text.content.equals(textDTO.content));
+                state.enterTextInvoked = true;
+                return super.enterText(text);
+            }
+        };
+        mainPaneService.setCurrent(patient, visit.visitId);
+        execEnv.mainPaneService = new MainPaneServiceDelegate(execEnv.mainPaneService){
+            @Override
+            public void broadcastNewText(TextDTO newText) {
+                confirm(newText.visitId == visit.visitId);
+                confirm(newText.content.equals(textDTO.content));
+                state.broadcastNewTextInvoked = true;
+                super.broadcastNewText(newText);
+            }
+        };
+        RecordText recordText = new RecordText(textDTO);
+        recordText.setExecEnv(execEnv);
+        gui(() -> {
+            recordText.setPrefWidth(329);
+            recordText.setPrefHeight(400);
+            main.getChildren().setAll(recordText);
+            stage.sizeToScene();
+        });
+        TextDisp disp = waitFor(recordText::findTextDisp);
+        gui(() -> disp.simulateMouseEvent(createMouseClickedEvent(disp)));
+        TextEditForm editForm = waitFor(recordText::findTextEditForm);
+        gui(editForm::simulateClickCopyButton);
+        waitForTrue(() -> state.enterTextInvoked);
+        waitForTrue(() -> state.broadcastNewTextInvoked);
+        waitForFail(recordText::findTextEditForm);
+        TextDisp dispAfter = waitFor(recordText::findTextDisp);
+        confirm(dispAfter.getContent().equals(textDTO.content));
+    }
+
+    private void testPaneDisp() {
+        TextDTO textDTO = new TextDTO();
+        textDTO.visitId = 3;
+        textDTO.textId = 10;
+        textDTO.content = "昨日から、頭痛がある。";
+        RecordTextsPane textsPane = new RecordTextsPane(List.of(textDTO), 1);
+        gui(() -> {
+            textsPane.setPrefWidth(329);
+            textsPane.setPrefHeight(400);
+            main.getChildren().setAll(textsPane);
+            stage.sizeToScene();
+        });
+    }
 
 }

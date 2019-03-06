@@ -84,12 +84,7 @@ public class RecordText extends StackPane {
                 onDeletedCallback.run();
             }
         });
-        form.setOnCopied(newText -> {
-            if( onCopiedCallback != null ){
-                onCopiedCallback.accept(newText);
-            }
-            getChildren().setAll(disp);
-        });
+        form.setOnDone(() -> getChildren().setAll(disp));
         getChildren().setAll(form);
     }
 

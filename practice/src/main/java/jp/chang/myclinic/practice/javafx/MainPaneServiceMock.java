@@ -32,7 +32,7 @@ public class MainPaneServiceMock implements MainPaneService {
 
     @Override
     public void broadcastNewText(TextDTO newText) {
-        throw new RuntimeException("not implemented");
+
     }
 
 }

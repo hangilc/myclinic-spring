@@ -55,6 +55,10 @@ public interface TestHelper {
         waitFor(n, () -> Optional.ofNullable(f.get() ? true : null));
     }
 
+    default void waitForFail(Supplier<Optional<?>> f){
+        waitForFail(5, f);
+    }
+
     default void waitForFail(int n, Supplier<Optional<?>> f) {
         waitFor(n, () -> {
             if (f.get().isPresent()) {
