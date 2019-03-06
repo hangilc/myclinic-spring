@@ -3,9 +3,12 @@ package jp.chang.myclinic.backendmock.persistence;
 import jp.chang.myclinic.backend.persistence.TextPersistence;
 import jp.chang.myclinic.dto.TextDTO;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.stream.Collectors.toList;
 
 public class TextPersistenceMock implements TextPersistence {
 
@@ -41,6 +44,9 @@ public class TextPersistenceMock implements TextPersistence {
 
     @Override()
     public List<TextDTO> listText(int visitId) {
-        throw new RuntimeException("not implemented (api-tool)");
+        return registry.values().stream()
+                .filter(t -> t.visitId == visitId)
+                .sorted(Comparator.comparing(t -> t.textId))
+                .collect(toList());
     }
 }

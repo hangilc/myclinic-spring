@@ -16,6 +16,7 @@ import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
 
 import java.io.File;
@@ -86,7 +87,7 @@ public class Main {
         }
         {
             Path asyncBackendSourcePath = asyncDir.resolve("BackendAsyncBackend.java");
-            CompilationUnit asyncBackendUnit = parseSource((asyncBackendSourcePath));
+            CompilationUnit asyncBackendUnit = parseSource(asyncBackendSourcePath);
             ClassOrInterfaceDeclaration asyncBackendClass = getClass(asyncBackendUnit, "BackendAsyncBackend");
             Map<Signature, MethodDeclaration> asyncBackendSigs = methodsToSigMap(
                     asyncBackendClass.getMethods().stream()
@@ -132,7 +133,7 @@ public class Main {
         }
         {
             Path asyncClientSourcePath = asyncDir.resolve("BackendAsyncClient.java");
-            CompilationUnit asyncClientUnit = parseSource((asyncClientSourcePath));
+            CompilationUnit asyncClientUnit = parseSource(asyncClientSourcePath);
             ClassOrInterfaceDeclaration asyncBackendClass = getClass(asyncClientUnit, "BackendAsyncClient");
             Map<Signature, MethodDeclaration> asyncClientSigs = methodsToSigMap(
                     asyncBackendClass.getMethods().stream()
@@ -196,6 +197,41 @@ public class Main {
                 saveFile("asyncClient", asyncClientSourcePath, asyncClientUnit);
             }
         }
+        {
+            Path asyncDelegateSourcePath = asyncDir.resolve("BackendAsyncDelegate.java");
+            CompilationUnit asyncDelegateUnit = parseSource(asyncDelegateSourcePath);
+            ClassOrInterfaceDeclaration asyncBackendClass = getClass(asyncDelegateUnit, "BackendAsyncDelegate");
+            Map<Signature, MethodDeclaration> asyncDelegateSigs = methodsToSigMap(
+                    asyncBackendClass.getMethods().stream()
+                            .filter(NodeWithPublicModifier::isPublic)
+                            .collect(toList())
+            );
+            Set<Signature> missing = findMissingSigs(asyncDelegateSigs.keySet(), backendSigs.keySet());
+            if (missing.size() > 0) {
+                for (Signature sig : missing) {
+                    MethodDeclaration backendMethod = backendSigs.get(sig);
+                    MethodDeclaration asyncDelegateMethod =
+                            asyncBackendClass.addMethod(backendMethod.getNameAsString(),
+                                    Keyword.PUBLIC);
+                    asyncDelegateMethod.addAnnotation(new MarkerAnnotationExpr("Override"));
+                    asyncDelegateMethod.setType(makeAsyncReturnType(backendMethod.getType()));
+                    for (Parameter param : backendMethod.getParameters()) {
+                        asyncDelegateMethod.addParameter(param);
+                    }
+                    BlockStmt body = new BlockStmt();
+                    List<Expression> backendCallArgs = backendMethod.getParameters().stream()
+                            .map(Parameter::getNameAsExpression)
+                            .collect(toList());
+                    MethodCallExpr delegateCall = new MethodCallExpr(new NameExpr("delegate"),
+                            backendMethod.getNameAsString(),
+                            NodeList.nodeList(backendCallArgs));
+                    ReturnStmt retStmt = new ReturnStmt(delegateCall);
+                    body.addStatement(retStmt);
+                    asyncDelegateMethod.setBody(body);
+                }
+                saveFile("asyncDelegate", asyncDelegateSourcePath, asyncDelegateUnit);
+            }
+        }
     }
 
     private Optional<Boolean> getBooleanAnnotationAttribute(MethodDeclaration method, String annotationName,
@@ -231,7 +267,10 @@ public class Main {
     private Type makeAsyncReturnType(Type type) {
         if (type.isVoidType()) {
             type = new ClassOrInterfaceType(null, "Boolean");
-            //type = PrimitiveType.booleanType();
+        }
+        if( type instanceof PrimitiveType ){
+            PrimitiveType primitiveType = (PrimitiveType)type;
+            type = primitiveType.toBoxedType();
         }
         return new ClassOrInterfaceType(null, new SimpleName("CompletableFuture"), new NodeList<>(type));
     }
