@@ -119,6 +119,7 @@
         <module>backend-mock</module>
     <module>backend-async</module>
     <module>api-tool</module>
+    <module>backend-mysql</module>
   </modules>
 
 </project>

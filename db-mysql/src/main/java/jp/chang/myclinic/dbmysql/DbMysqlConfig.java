@@ -14,5 +14,4 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories("jp.chang.myclinic.dbmysql")
 public class DbMysqlConfig {
 
-
 }
