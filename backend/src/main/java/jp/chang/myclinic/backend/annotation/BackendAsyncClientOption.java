@@ -7,8 +7,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
-public @interface BackendAsyncOption {
+public @interface BackendAsyncClientOption {
 
-    boolean exclude() default false;
+    boolean convertLocalDateTime() default false;
+    String composeResult() default "";
 
 }

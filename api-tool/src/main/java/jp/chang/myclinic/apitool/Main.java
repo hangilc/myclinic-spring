@@ -8,15 +8,14 @@ import com.github.javaparser.ast.body.CallableDeclaration.Signature;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.nodeTypes.modifiers.NodeWithPublicModifier;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
-import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
 
 import java.io.File;
@@ -101,7 +100,7 @@ public class Main {
                     MethodDeclaration asyncBackendMethod =
                             asyncBackendClass.addMethod(backendMethod.getNameAsString(),
                                     Keyword.PUBLIC);
-                    asyncBackendMethod.addAnnotation("Override");
+                    asyncBackendMethod.addAnnotation(new MarkerAnnotationExpr("Override"));
                     asyncBackendMethod.setType(makeAsyncReturnType(backendMethod.getType()));
                     for (Parameter param : backendMethod.getParameters()) {
                         asyncBackendMethod.addParameter(param);
@@ -131,6 +130,102 @@ public class Main {
                 saveFile("asyncBackend", asyncBackendSourcePath, asyncBackendUnit);
             }
         }
+        {
+            Path asyncClientSourcePath = asyncDir.resolve("BackendAsyncClient.java");
+            CompilationUnit asyncClientUnit = parseSource((asyncClientSourcePath));
+            ClassOrInterfaceDeclaration asyncBackendClass = getClass(asyncClientUnit, "BackendAsyncClient");
+            Map<Signature, MethodDeclaration> asyncClientSigs = methodsToSigMap(
+                    asyncBackendClass.getMethods().stream()
+                            .filter(NodeWithPublicModifier::isPublic)
+                            .collect(toList())
+            );
+            Set<Signature> missing = findMissingSigs(asyncClientSigs.keySet(), backendSigs.keySet());
+            if (missing.size() > 0) {
+                for (Signature sig : missing) {
+                    MethodDeclaration backendMethod = backendSigs.get(sig);
+                    MethodDeclaration asyncBackendMethod =
+                            asyncBackendClass.addMethod(backendMethod.getNameAsString(),
+                                    Keyword.PUBLIC);
+                    asyncBackendMethod.addAnnotation(new MarkerAnnotationExpr("Override"));
+                    asyncBackendMethod.setType(makeAsyncReturnType(backendMethod.getType()));
+                    for (Parameter param : backendMethod.getParameters()) {
+                        asyncBackendMethod.addParameter(param);
+                    }
+                    BlockStmt body = new BlockStmt();
+                    boolean convertLocalDateTime = getBooleanAnnotationAttribute(backendMethod,
+                            "BackendAsyncClientOption", "convertLocalDateTime").orElse(false);
+                    List<Expression> backendCallArgs = backendMethod.getParameters().stream()
+                            .map(para -> {
+                                if (convertLocalDateTime) {
+                                    if (para.getType().isClassOrInterfaceType() &&
+                                            para.getType().asClassOrInterfaceType().getNameAsString().equals("LocalDateTime")) {
+                                        VariableDeclarationExpr declExpr = new VariableDeclarationExpr(
+                                                new VariableDeclarator(
+                                                        new ClassOrInterfaceType(null, "String"),
+                                                        para.getNameAsString() + "_str",
+                                                        new MethodCallExpr(
+                                                                new NameExpr("DateTimeUtil"),
+                                                                "toSqlDateTime",
+                                                                NodeList.nodeList(new NameExpr(para.getNameAsString()))
+                                                        )
+                                                )
+                                        );
+                                        body.addStatement(new ExpressionStmt(declExpr));
+                                        return new NameExpr(para.getNameAsString() + "_str");
+                                    } else {
+                                        return para.getNameAsExpression();
+                                    }
+                                } else {
+                                    return para.getNameAsExpression();
+                                }
+                            })
+                            .collect(toList());
+                    MethodCallExpr apiCall = new MethodCallExpr(new NameExpr("api"),
+                            backendMethod.getNameAsString(),
+                            NodeList.nodeList(backendCallArgs));
+                    String compose = getStringAnnotationAttribute(backendMethod,
+                            "BackendAsyncClientOption", "composeResult").orElse("");
+                    if( !compose.isEmpty() ){
+                        Expression lambda = StaticJavaParser.parseExpression(compose);
+                        apiCall = new MethodCallExpr(apiCall, "thenCompose", NodeList.nodeList(lambda));
+                    }
+                    ReturnStmt retStmt = new ReturnStmt(apiCall);
+                    body.addStatement(retStmt);
+                    asyncBackendMethod.setBody(body);
+                }
+                saveFile("asyncClient", asyncClientSourcePath, asyncClientUnit);
+            }
+        }
+    }
+
+    private Optional<Boolean> getBooleanAnnotationAttribute(MethodDeclaration method, String annotationName,
+                                                            String attributeName){
+        return method.getAnnotationByName(annotationName)
+                .flatMap(AnnotationExpr::toNormalAnnotationExpr)
+                .flatMap(annot -> {
+                    for (MemberValuePair pair : annot.getPairs()) {
+                        String member = pair.getNameAsString();
+                        if (member.equals(attributeName)) {
+                            return Optional.of(pair.getValue().asBooleanLiteralExpr().getValue());
+                        }
+                    }
+                    return Optional.empty();
+                });
+    }
+
+    private Optional<String> getStringAnnotationAttribute(MethodDeclaration method, String annotationName,
+                                                            String attributeName){
+        return method.getAnnotationByName(annotationName)
+                .flatMap(AnnotationExpr::toNormalAnnotationExpr)
+                .flatMap(annot -> {
+                    for (MemberValuePair pair : annot.getPairs()) {
+                        String member = pair.getNameAsString();
+                        if (member.equals(attributeName)) {
+                            return Optional.of(pair.getValue().asStringLiteralExpr().getValue());
+                        }
+                    }
+                    return Optional.empty();
+                });
     }
 
     private Type makeAsyncReturnType(Type type) {
@@ -183,7 +278,7 @@ public class Main {
                     for (Parameter param : method.getParameters()) {
                         m.addParameter(param);
                     }
-                    m.addAnnotation("Override");
+                    m.addAnnotation(new MarkerAnnotationExpr("Override"));
                     BlockStmt stmt = new BlockStmt();
                     stmt.addStatement("throw new RuntimeException(\"not implemented (api-tool)\");");
                     m.setBody(stmt);
@@ -263,7 +358,7 @@ public class Main {
 
     private Set<String> listPersists(Path dir) {
         File[] persists = backendPersistDir.toFile().listFiles();
-        if( persists == null ){
+        if (persists == null) {
             persists = new File[]{};
         }
         return Arrays.stream(persists).map(f -> f.getName().replaceAll("\\.java$", "")).collect(toSet());

@@ -3,7 +3,6 @@ package jp.chang.myclinic.backendasync;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DateTimeUtil;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -29,8 +28,7 @@ public class BackendAsyncClient implements BackendAsync {
     @Override
     public CompletableFuture<VisitDTO> startVisit(int patientId, LocalDateTime at) {
         String atStr = DateTimeUtil.toSqlDateTime(at);
-        return api.startVisit(patientId, atStr)
-                .thenCompose(api::getVisit);
+        return api.startVisit(patientId, atStr).thenCompose(api::getVisit);
     }
 
     @Override
@@ -78,4 +76,8 @@ public class BackendAsyncClient implements BackendAsync {
         return api.deleteText(textId);
     }
 
+    @Override()
+    public CompletableFuture<List<TextDTO>> listText(int visitId) {
+        return api.listText(visitId);
+    }
 }

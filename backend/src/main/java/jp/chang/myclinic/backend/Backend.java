@@ -1,6 +1,6 @@
 package jp.chang.myclinic.backend;
 
-import jp.chang.myclinic.backend.annotation.BackendAsyncOption;
+import jp.chang.myclinic.backend.annotation.BackendAsyncClientOption;
 import jp.chang.myclinic.backend.annotation.BackendPrivate;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.dto.*;
@@ -53,6 +53,7 @@ public class Backend {
         return visit.visitId;
     }
 
+    @BackendAsyncClientOption(convertLocalDateTime = true, composeResult = "api::getVisit")
     public VisitDTO startVisit(int patientId, LocalDateTime at){
         LocalDate atDate = at.toLocalDate();
         VisitDTO visitDTO = new VisitDTO();
