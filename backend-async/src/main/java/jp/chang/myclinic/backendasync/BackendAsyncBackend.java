@@ -16,7 +16,7 @@ public class BackendAsyncBackend implements BackendAsync {
         this.backend = backend;
     }
 
-    private <T>CompletableFuture<T> future(T t){
+    private <T> CompletableFuture<T> future(T t) {
         return CompletableFuture.completedFuture(t);
     }
 
@@ -80,6 +80,11 @@ public class BackendAsyncBackend implements BackendAsync {
     public CompletableFuture<Boolean> deleteText(int textId) {
         backend.deleteText(textId);
         return future(true);
+    }
+
+    @Override()
+    public CompletableFuture<List<TextDTO>> listText(int visitId) {
+        return future(backend.listText(visitId));
     }
 
 }

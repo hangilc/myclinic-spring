@@ -8,19 +8,24 @@ import com.github.javaparser.ast.body.CallableDeclaration.Signature;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
+import com.github.javaparser.ast.nodeTypes.modifiers.NodeWithPublicModifier;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -33,7 +38,7 @@ public class Main {
     private Path asyncDir = Paths.get("backend-async/src/main/java/jp/chang/myclinic/backendasync");
     private Set<String> persists;
     private List<MethodDeclaration> backendMethods;
-    private boolean dryRun = false;
+    private CmdArgs cmdArgs;
 
     public static void main(String[] args) throws Exception {
         new Main().run(args);
@@ -41,52 +46,108 @@ public class Main {
 
     private void run(String[] args) throws Exception {
         this.persists = listPersists(backendPersistDir);
-        this.dryRun = true;
+        this.cmdArgs = CmdArgs.parse(args);
+        if (cmdArgs.help) {
+            cmdArgs.usage(System.out);
+            return;
+        }
         CompilationUnit backendUnit = StaticJavaParser.parse(backendDir.resolve("Backend.java"));
         ClassOrInterfaceDeclaration backendClass = backendUnit.getClassByName("Backend").orElseThrow(
                 () -> new RuntimeException("Cannot find Backend class")
         );
         backendMethods = backendClass.getMethods().stream()
                 .filter(m ->
-                    m.isPublic() && !m.isAnnotationPresent("BackendPrivate")
+                        m.isPublic() && !m.isAnnotationPresent("BackendPrivate")
                 )
                 .collect(toList());
-        //syncMock();
+        syncMock();
         syncAsync();
     }
 
     private void syncAsync() {
         Map<Signature, MethodDeclaration> backendSigs = methodsToSigMap(backendMethods);
-        CompilationUnit asyncUnit = parseSource(asyncDir.resolve("BackendAsync.java"));
-        ClassOrInterfaceDeclaration asyncInterface = getInterface(asyncUnit, "BackendAsync");
-        Map<Signature, MethodDeclaration> asyncSigs = methodsToSigMap(asyncInterface.getMethods());
-        Set<Signature> missing = findMissingSigs(asyncSigs.keySet(), backendSigs.keySet());
-        for(Signature sig: missing){
-            MethodDeclaration backendMethod = backendSigs.get(sig);
-            MethodDeclaration asyncMethod = asyncInterface.addMethod(backendMethod.getNameAsString());
-            asyncMethod.setType(makeAsyncReturnType(backendMethod.getType()));
-            asyncMethod.removeBody();
-            for(Parameter param: backendMethod.getParameters()){
-                asyncMethod.addParameter(param);
+        {
+            Path asyncSourcePath = asyncDir.resolve("BackendAsync.java");
+            CompilationUnit asyncUnit = parseSource(asyncSourcePath);
+            ClassOrInterfaceDeclaration asyncInterface = getInterface(asyncUnit, "BackendAsync");
+            Map<Signature, MethodDeclaration> asyncSigs = methodsToSigMap(asyncInterface.getMethods());
+            Set<Signature> missing = findMissingSigs(asyncSigs.keySet(), backendSigs.keySet());
+            if (missing.size() > 0) {
+                for (Signature sig : missing) {
+                    MethodDeclaration backendMethod = backendSigs.get(sig);
+                    MethodDeclaration asyncMethod = asyncInterface.addMethod(backendMethod.getNameAsString());
+                    asyncMethod.setType(makeAsyncReturnType(backendMethod.getType()));
+                    asyncMethod.removeBody();
+                    for (Parameter param : backendMethod.getParameters()) {
+                        asyncMethod.addParameter(param);
+                    }
+                }
+                saveFile("async", asyncSourcePath, asyncUnit);
             }
         }
-        System.out.println(asyncInterface);
+        {
+            Path asyncBackendSourcePath = asyncDir.resolve("BackendAsyncBackend.java");
+            CompilationUnit asyncBackendUnit = parseSource((asyncBackendSourcePath));
+            ClassOrInterfaceDeclaration asyncBackendClass = getClass(asyncBackendUnit, "BackendAsyncBackend");
+            Map<Signature, MethodDeclaration> asyncBackendSigs = methodsToSigMap(
+                    asyncBackendClass.getMethods().stream()
+                            .filter(NodeWithPublicModifier::isPublic)
+                            .collect(toList())
+            );
+            Set<Signature> missing = findMissingSigs(asyncBackendSigs.keySet(), backendSigs.keySet());
+            if (missing.size() > 0) {
+                for (Signature sig : missing) {
+                    MethodDeclaration backendMethod = backendSigs.get(sig);
+                    MethodDeclaration asyncBackendMethod =
+                            asyncBackendClass.addMethod(backendMethod.getNameAsString(),
+                                    Keyword.PUBLIC);
+                    asyncBackendMethod.addAnnotation("Override");
+                    asyncBackendMethod.setType(makeAsyncReturnType(backendMethod.getType()));
+                    for (Parameter param : backendMethod.getParameters()) {
+                        asyncBackendMethod.addParameter(param);
+                    }
+                    BlockStmt body = new BlockStmt();
+                    List<Expression> backendCallArgs = backendMethod.getParameters().stream()
+                            .map(NodeWithSimpleName::getNameAsExpression)
+                            .collect(toList());
+                    MethodCallExpr backendCall = new MethodCallExpr(new NameExpr("backend"),
+                            backendMethod.getNameAsString(),
+                            NodeList.nodeList(backendCallArgs));
+                    if (backendMethod.getType().isVoidType()) {
+                        body.addStatement(new ExpressionStmt(backendCall));
+                        ReturnStmt retStmt = new ReturnStmt(
+                                new MethodCallExpr("future", new BooleanLiteralExpr(true))
+                        );
+                        body.addStatement(retStmt);
+                    } else {
+                        ReturnStmt stmt = new ReturnStmt();
+                        MethodCallExpr futureCall = new MethodCallExpr(null, "future",
+                                NodeList.nodeList(backendCall));
+                        stmt.setExpression(futureCall);
+                        body.addStatement(stmt);
+                    }
+                    asyncBackendMethod.setBody(body);
+                }
+                saveFile("asyncBackend", asyncBackendSourcePath, asyncBackendUnit);
+            }
+        }
     }
 
-    private Type makeAsyncReturnType(Type type){
-        if( type.isVoidType() ){
-            type = PrimitiveType.booleanType();
+    private Type makeAsyncReturnType(Type type) {
+        if (type.isVoidType()) {
+            type = new ClassOrInterfaceType(null, "Boolean");
+            //type = PrimitiveType.booleanType();
         }
         return new ClassOrInterfaceType(null, new SimpleName("CompletableFuture"), new NodeList<>(type));
     }
 
-    private Set<Signature> findMissingSigs(Set<Signature> sigs, Set<Signature> expected){
+    private Set<Signature> findMissingSigs(Set<Signature> sigs, Set<Signature> expected) {
         expected = new HashSet<>(expected);
         expected.removeAll(sigs);
         return expected;
     }
 
-    private Map<Signature, MethodDeclaration> methodsToSigMap(List<MethodDeclaration> methods){
+    private Map<Signature, MethodDeclaration> methodsToSigMap(List<MethodDeclaration> methods) {
         return methods.stream()
                 .collect(toMap(
                         MethodDeclaration::getSignature,
@@ -128,13 +189,21 @@ public class Main {
                     m.setBody(stmt);
                     System.out.printf("mock:+: %s: %s\n", mockName, m.getNameAsString());
                 }
-                if (dryRun) {
-                    System.out.println(mockUnit);
-                } else {
-                    Files.write(getPersistMockPath(mockName), mockUnit.toString().getBytes());
-                    System.out.printf("mock:save:%s\n", getPersistMockPath(mockName).toString());
-                }
+                saveFile("mock", getPersistMockPath(mockName), mockUnit);
             }
+        }
+    }
+
+    private void saveFile(String kind, Path path, CompilationUnit unit) {
+        if (cmdArgs.dryRun) {
+            System.out.println(unit);
+        } else {
+            try {
+                Files.write(path, unit.toString().getBytes());
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+            System.out.printf("%s:save:%s\n", kind, path.toString());
         }
     }
 
@@ -194,6 +263,9 @@ public class Main {
 
     private Set<String> listPersists(Path dir) {
         File[] persists = backendPersistDir.toFile().listFiles();
+        if( persists == null ){
+            persists = new File[]{};
+        }
         return Arrays.stream(persists).map(f -> f.getName().replaceAll("\\.java$", "")).collect(toSet());
     }
 }
