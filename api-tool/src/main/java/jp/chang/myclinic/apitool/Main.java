@@ -5,10 +5,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier.Keyword;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.CallableDeclaration.Signature;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.nodeTypes.modifiers.NodeWithPublicModifier;
@@ -73,24 +70,24 @@ public class Main {
         syncMysql();
     }
 
-    private void syncMysql(){
+    private void syncMysql() {
         Path mysqlDir = Paths.get("./backend-mysql/src/main/java/jp/chang/myclinic/backendmysql");
         {
             Path mysqlPersistDir = mysqlDir.resolve("persistence");
-            for(String persist: persists){
+            for (String persist : persists) {
                 Path backendPersistPath = backendPersistDir.resolve(persist + ".java");
                 CompilationUnit backendUnit = parseSource(backendPersistPath);
                 List<MethodDeclaration> backendMethods = listInterfaceMethods(backendUnit, persist);
                 Map<Signature, MethodDeclaration> backendSigs = methodsToSigMap(backendMethods);
                 Path mysqlPersistPath = mysqlPersistDir.resolve(persist + "Mysql.java");
-                if( !mysqlPersistPath.toFile().exists() ){
+                if (!mysqlPersistPath.toFile().exists()) {
                     Template template = Velocity.getTemplate("PersistenceMysql.vm");
                     StringWriter sw = new StringWriter();
                     VelocityContext context = new VelocityContext();
                     context.put("name", persist);
                     template.merge(context, sw);
                     createFile("mysql", mysqlPersistPath, sw.toString());
-                    if( cmdArgs.dryRun ){
+                    if (cmdArgs.dryRun) {
                         backendMethods.forEach(m ->
                                 System.out.printf("mysql:+: %s: %s\n", persist + "Mysql", m.getNameAsString())
                         );
@@ -120,6 +117,48 @@ public class Main {
                 }
             }
         }
+        {
+            Path persistMysqlPath = mysqlDir.resolve("PersistenceMysql.java");
+            CompilationUnit mysqlPersistUnit = parseSource(persistMysqlPath);
+            ClassOrInterfaceDeclaration mysqlPersistClass = getClass(mysqlPersistUnit, "PersistenceMysql");
+            List<MethodDeclaration> mysqlPersistMethods = mysqlPersistClass.getMethods();
+            Map<Signature, MethodDeclaration> mysqlPersistSigs = methodsToSigMap((mysqlPersistMethods));
+            CompilationUnit backendPersistUnit = parseSource(backendDir.resolve("Persistence.java"));
+            List<MethodDeclaration> backendPersistMethods = listInterfaceMethods(backendPersistUnit, "Persistence");
+            Map<Signature, MethodDeclaration> backendPersistSigs = methodsToSigMap(backendPersistMethods);
+            Set<Signature> missing = findMissingSigs(mysqlPersistSigs.keySet(), backendPersistSigs.keySet());
+            if (missing.size() > 0) {
+                for (Signature sig : missing) {
+                    MethodDeclaration backendPersistMethod = backendPersistSigs.get(sig);
+                    String typeName = backendPersistMethod.getType().toString();
+                    String varName = toLowerFirst(typeName);
+                    FieldDeclaration fieldDecl = mysqlPersistClass.addPrivateField(backendPersistMethod.getType(), varName);
+                    fieldDecl.addAnnotation(new MarkerAnnotationExpr("Autowired"));
+                    MethodDeclaration m = addMethod(mysqlPersistClass, backendPersistMethod);
+                    m.addModifier(Keyword.PUBLIC);
+                    m.addAnnotation(new MarkerAnnotationExpr("Override"));
+                    BlockStmt block = new BlockStmt();
+                    ReturnStmt retStmt = new ReturnStmt(new NameExpr(varName));
+                    block.addStatement(retStmt);
+                    m.setBody(block);
+                    System.out.printf("mysql-persist:+:%s\n", m.toString());
+                }
+                saveFile("mysql-persist", persistMysqlPath, mysqlPersistUnit);
+            }
+        }
+    }
+
+    private String toLowerFirst(String s) {
+        return s.substring(0, 1).toLowerCase() + s.substring(1);
+    }
+
+    private MethodDeclaration addMethod(ClassOrInterfaceDeclaration dstClass, MethodDeclaration src) {
+        MethodDeclaration dst = dstClass.addMethod(src.getNameAsString());
+        dst.setType(src.getType());
+        for (Parameter para : src.getParameters()) {
+            dst.addParameter(para);
+        }
+        return dst;
     }
 
     private void syncAsync() {
@@ -244,7 +283,7 @@ public class Main {
                             NodeList.nodeList(backendCallArgs));
                     String compose = getStringAnnotationAttribute(backendMethod,
                             "BackendAsyncClientOption", "composeResult").orElse("");
-                    if( !compose.isEmpty() ){
+                    if (!compose.isEmpty()) {
                         Expression lambda = StaticJavaParser.parseExpression(compose);
                         apiCall = new MethodCallExpr(apiCall, "thenCompose", NodeList.nodeList(lambda));
                     }
@@ -293,7 +332,7 @@ public class Main {
     }
 
     private Optional<Boolean> getBooleanAnnotationAttribute(MethodDeclaration method, String annotationName,
-                                                            String attributeName){
+                                                            String attributeName) {
         return method.getAnnotationByName(annotationName)
                 .flatMap(AnnotationExpr::toNormalAnnotationExpr)
                 .flatMap(annot -> {
@@ -308,7 +347,7 @@ public class Main {
     }
 
     private Optional<String> getStringAnnotationAttribute(MethodDeclaration method, String annotationName,
-                                                            String attributeName){
+                                                          String attributeName) {
         return method.getAnnotationByName(annotationName)
                 .flatMap(AnnotationExpr::toNormalAnnotationExpr)
                 .flatMap(annot -> {
@@ -326,8 +365,8 @@ public class Main {
         if (type.isVoidType()) {
             type = new ClassOrInterfaceType(null, "Boolean");
         }
-        if( type instanceof PrimitiveType ){
-            PrimitiveType primitiveType = (PrimitiveType)type;
+        if (type instanceof PrimitiveType) {
+            PrimitiveType primitiveType = (PrimitiveType) type;
             type = primitiveType.toBoxedType();
         }
         return new ClassOrInterfaceType(null, new SimpleName("CompletableFuture"), new NodeList<>(type));
@@ -399,9 +438,9 @@ public class Main {
         }
     }
 
-    private void createFile(String kind, Path path, String content){
+    private void createFile(String kind, Path path, String content) {
         System.out.printf("%s:create:%s\n", kind, path.toString());
-        if( cmdArgs.dryRun ){
+        if (cmdArgs.dryRun) {
             System.out.println(content);
         } else {
             try {
