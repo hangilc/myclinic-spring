@@ -18,82 +18,82 @@ public class PersistenceMysql implements Persistence {
     }
 
     @Autowired
-    private PracticeLogPersistence practiceLogPersistence;
+    private PracticeLogPersistenceMysql practiceLogPersistenceMysql;
 
     @Override
     public PracticeLogPersistence getPracticeLogPersistence() {
-        return practiceLogPersistence;
+        return practiceLogPersistenceMysql;
     }
 
     @Autowired
-    private TextPersistence textPersistence;
+    private TextPersistenceMysql textPersistenceMysql;
 
     @Override
     public TextPersistence getTextPersistence() {
-        return textPersistence;
+        return textPersistenceMysql;
     }
 
     @Autowired
-    private KoukikoureiPersistence koukikoureiPersistence;
+    private KoukikoureiPersistenceMysql koukikoureiPersistenceMysql;
 
     @Override
     public KoukikoureiPersistence getKoukikoureiPersistence() {
-        return koukikoureiPersistence;
+        return koukikoureiPersistenceMysql;
     }
 
     @Autowired
-    private ShinryouPersistence shinryouPersistence;
+    private ShinryouPersistenceMysql shinryouPersistenceMysql;
 
     @Override
     public ShinryouPersistence getShinryouPersistence() {
-        return shinryouPersistence;
+        return shinryouPersistenceMysql;
     }
 
     @Autowired
-    private DrugPersistence drugPersistence;
+    private DrugPersistenceMysql drugPersistenceMysql;
 
     @Override
     public DrugPersistence getDrugPersistence() {
-        return drugPersistence;
+        return drugPersistenceMysql;
     }
 
     @Autowired
-    private ShahokokuhoPersistence shahokokuhoPersistence;
+    private ShahokokuhoPersistenceMysql shahokokuhoPersistenceMysql;
 
     @Override
     public ShahokokuhoPersistence getShahokokuhoPersistence() {
-        return shahokokuhoPersistence;
+        return shahokokuhoPersistenceMysql;
     }
 
     @Autowired
-    private WqueuePersistence wqueuePersistence;
+    private WqueuePersistenceMysql wqueuePersistenceMysql;
 
     @Override
     public WqueuePersistence getWqueuePersistence() {
-        return wqueuePersistence;
+        return wqueuePersistenceMysql;
     }
 
     @Autowired
-    private VisitPersistence visitPersistence;
+    private VisitPersistenceMysql visitPersistenceMysql;
 
     @Override
     public VisitPersistence getVisitPersistence() {
-        return visitPersistence;
+        return visitPersistenceMysql;
     }
 
     @Autowired
-    private KouhiPersistence kouhiPersistence;
+    private KouhiPersistenceMysql kouhiPersistenceMysql;
 
     @Override
     public KouhiPersistence getKouhiPersistence() {
-        return kouhiPersistence;
+        return kouhiPersistenceMysql;
     }
 
     @Autowired
-    private RoujinPersistence roujinPersistence;
+    private RoujinPersistenceMysql roujinPersistenceMysql;
 
     @Override
     public RoujinPersistence getRoujinPersistence() {
-        return roujinPersistence;
+        return roujinPersistenceMysql;
     }
 }

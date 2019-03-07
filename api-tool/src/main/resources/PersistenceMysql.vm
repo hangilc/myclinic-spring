@@ -1,12 +1,16 @@
 package jp.chang.myclinic.backendmysql.persistence;
 
-import jp.chang.myclinic.backend.persistence.${name};
+import jp.chang.myclinic.backend.persistence.${Name};
 import jp.chang.myclinic.dto.*;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class ${name}Mysql implements ${name} {
+public class ${Name}Mysql implements ${Name} {
 
+    @Autowired
+    private ${Entity}Repository ${entity}Repository;
+    @Autowired
+    private DTOMapper mapper;
 
 }

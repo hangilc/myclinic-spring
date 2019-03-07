@@ -84,7 +84,10 @@ public class Main {
                     Template template = Velocity.getTemplate("PersistenceMysql.vm");
                     StringWriter sw = new StringWriter();
                     VelocityContext context = new VelocityContext();
-                    context.put("name", persist);
+                    context.put("Name", persist);
+                    String entity = persist.replaceAll("Persistence$", "");
+                    context.put("Entity", entity);
+                    context.put("entity", toLowerFirst(entity));
                     template.merge(context, sw);
                     createFile("mysql", mysqlPersistPath, sw.toString());
                     if (cmdArgs.dryRun) {
@@ -130,9 +133,9 @@ public class Main {
             if (missing.size() > 0) {
                 for (Signature sig : missing) {
                     MethodDeclaration backendPersistMethod = backendPersistSigs.get(sig);
-                    String typeName = backendPersistMethod.getType().toString();
+                    String typeName = backendPersistMethod.getType().toString() + "Mysql";
                     String varName = toLowerFirst(typeName);
-                    FieldDeclaration fieldDecl = mysqlPersistClass.addPrivateField(backendPersistMethod.getType(), varName);
+                    FieldDeclaration fieldDecl = mysqlPersistClass.addPrivateField(typeName, varName);
                     fieldDecl.addAnnotation(new MarkerAnnotationExpr("Autowired"));
                     MethodDeclaration m = addMethod(mysqlPersistClass, backendPersistMethod);
                     m.addModifier(Keyword.PUBLIC);
