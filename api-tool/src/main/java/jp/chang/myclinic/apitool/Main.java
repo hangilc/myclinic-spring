@@ -18,9 +18,13 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,6 +49,10 @@ public class Main {
     }
 
     private void run(String[] args) throws Exception {
+        Properties props = new Properties();
+        props.put("resource.loader", "RESOURCE");
+        props.put("RESOURCE.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+        Velocity.init(props);
         this.persists = listPersists(backendPersistDir);
         this.cmdArgs = CmdArgs.parse(args);
         if (cmdArgs.help) {
@@ -60,8 +68,27 @@ public class Main {
                         m.isPublic() && !m.isAnnotationPresent("BackendPrivate")
                 )
                 .collect(toList());
-        syncMock();
-        syncAsync();
+        //syncMock();
+        //syncAsync();
+        syncMysql();
+    }
+
+    private void syncMysql(){
+        Map<Signature, MethodDeclaration> backendSigs = methodsToSigMap(backendMethods);
+        Path mysqlDir = Paths.get("./backend-mysql/src/main/java/jp/chang/myclinic/backendmysql");
+        {
+            Path mysqlPersistDir = mysqlDir.resolve("persistence");
+            for(String persist: persists){
+                Path mysqlPersistPath = mysqlPersistDir.resolve(persist + "Mysql.java");
+                if( !mysqlPersistPath.toFile().exists() ){
+                    Template template = Velocity.getTemplate("PersistenceMysql.vm");
+                    StringWriter sw = new StringWriter();
+                    VelocityContext context = new VelocityContext();
+                    template.merge(context, sw);
+                    createFile("backend-mysql", mysqlPersistPath, sw.toString());
+                }
+            }
+        }
     }
 
     private void syncAsync() {
@@ -338,6 +365,19 @@ public class Main {
                 throw new UncheckedIOException(e);
             }
             System.out.printf("%s:save:%s\n", kind, path.toString());
+        }
+    }
+
+    private void createFile(String kind, Path path, String content){
+        System.out.printf("%s:create:%s\n", kind, path.toString());
+        if( cmdArgs.dryRun ){
+            System.out.println(content);
+        } else {
+            try {
+                Files.write(path, content.getBytes());
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
         }
     }
 
