@@ -74,18 +74,49 @@ public class Main {
     }
 
     private void syncMysql(){
-        Map<Signature, MethodDeclaration> backendSigs = methodsToSigMap(backendMethods);
         Path mysqlDir = Paths.get("./backend-mysql/src/main/java/jp/chang/myclinic/backendmysql");
         {
             Path mysqlPersistDir = mysqlDir.resolve("persistence");
             for(String persist: persists){
+                Path backendPersistPath = backendPersistDir.resolve(persist + ".java");
+                CompilationUnit backendUnit = parseSource(backendPersistPath);
+                List<MethodDeclaration> backendMethods = listInterfaceMethods(backendUnit, persist);
+                Map<Signature, MethodDeclaration> backendSigs = methodsToSigMap(backendMethods);
                 Path mysqlPersistPath = mysqlPersistDir.resolve(persist + "Mysql.java");
                 if( !mysqlPersistPath.toFile().exists() ){
                     Template template = Velocity.getTemplate("PersistenceMysql.vm");
                     StringWriter sw = new StringWriter();
                     VelocityContext context = new VelocityContext();
+                    context.put("name", persist);
                     template.merge(context, sw);
-                    createFile("backend-mysql", mysqlPersistPath, sw.toString());
+                    createFile("mysql", mysqlPersistPath, sw.toString());
+                    if( cmdArgs.dryRun ){
+                        backendMethods.forEach(m ->
+                                System.out.printf("mysql:+: %s: %s\n", persist + "Mysql", m.getNameAsString())
+                        );
+                        continue;
+                    }
+                }
+                CompilationUnit mysqlUnit = parseSource(mysqlPersistPath);
+                List<MethodDeclaration> mysqlMethods = listClassMethods(mysqlUnit, persist + "Mysql");
+                Map<Signature, MethodDeclaration> mysqlSig = methodsToSigMap(mysqlMethods);
+                ClassOrInterfaceDeclaration mysqlClass = getClass(mysqlUnit, persist + "Mysql");
+                Set<Signature> missing = findMissingSigs(mysqlSig.keySet(), backendSigs.keySet());
+                if (missing.size() > 0) {
+                    for (Signature sig : missing) {
+                        MethodDeclaration method = backendSigs.get(sig);
+                        MethodDeclaration m = mysqlClass.addMethod(method.getNameAsString(), Keyword.PUBLIC);
+                        m.setType(method.getType());
+                        for (Parameter param : method.getParameters()) {
+                            m.addParameter(param);
+                        }
+                        m.addAnnotation(new MarkerAnnotationExpr("Override"));
+                        BlockStmt stmt = new BlockStmt();
+                        stmt.addStatement("throw new RuntimeException(\"not implemented (api-tool)\");");
+                        m.setBody(stmt);
+                        System.out.printf("mysql:+: %s: %s\n", persist + "Mysql", m.getNameAsString());
+                    }
+                    saveFile("mock", mysqlPersistPath, mysqlUnit);
                 }
             }
         }
@@ -356,6 +387,7 @@ public class Main {
     }
 
     private void saveFile(String kind, Path path, CompilationUnit unit) {
+        System.out.printf("%s:save:%s\n", kind, path.toString());
         if (cmdArgs.dryRun) {
             System.out.println(unit);
         } else {
@@ -364,7 +396,6 @@ public class Main {
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
-            System.out.printf("%s:save:%s\n", kind, path.toString());
         }
     }
 

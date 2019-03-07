@@ -1,30 +1,25 @@
 package jp.chang.myclinic.backendmysql.persistence;
 
-import jp.chang.myclinic.backend.persistence.PatientPersistence;
+import jp.chang.myclinic.backend.persistence.VisitPersistence;
 import jp.chang.myclinic.dto.*;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class PatientPersistenceMysql implements PatientPersistence {
+public class VisitPersistenceMysql implements VisitPersistence {
 
     @Override
-    public int enterPatient(PatientDTO patient) {
+    public int enterVisit(VisitDTO visit) {
         throw new RuntimeException("not implemented (api-tool)");
     }
 
     @Override
-    public PatientDTO getPatient(int patientId) {
+    public VisitDTO getVisit(int visitId) {
         throw new RuntimeException("not implemented (api-tool)");
     }
 
     @Override
-    public Optional<PatientDTO> findPatient(int patientId) {
-        throw new RuntimeException("not implemented (api-tool)");
-    }
-
-    @Override
-    public void updatePatient(PatientDTO patient) {
+    public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds) {
         throw new RuntimeException("not implemented (api-tool)");
     }
 }
