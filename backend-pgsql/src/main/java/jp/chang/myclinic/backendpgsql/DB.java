@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class DB {
@@ -34,27 +33,26 @@ public class DB {
         return ds.getConnection();
     }
 
-    public static <T>  T get(String sql, Query.SqlConsumer<PreparedStatement> statementSetter,
-                             Query.SqlMapper<T> mapper) {
+    public interface Proc<T> {
+        T call(Connection conn) throws SQLException;
+    }
+
+    public static <T> T get(Proc<T> proc){
         try (Connection conn = getConnection()){
-            return Query.get(conn, sql, statementSetter, mapper);
+            return proc.call(conn);
         } catch(SQLException e){
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    public interface TransactionProc {
-        void execute(Connection conn) throws SQLException;
-    }
-
-    public void tx(TransactionProc proc){
+    public <T> T tx(Proc<T> proc){
         Connection conn = null;
         try {
             conn = getConnection();
-            proc.execute(conn);
+            T value = proc.call(conn);
+            conn.commit();
+            return value;
         } catch(Exception ex){
-            ex.printStackTrace();
             if( conn != null ){
                 try {
                     conn.rollback();
@@ -62,6 +60,7 @@ public class DB {
                     e.printStackTrace();
                 }
             }
+            throw new RuntimeException(ex);
         } finally {
             if( conn != null ){
                 try {

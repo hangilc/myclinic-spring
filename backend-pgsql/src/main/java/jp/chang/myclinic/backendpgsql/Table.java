@@ -1,5 +1,6 @@
 package jp.chang.myclinic.backendpgsql;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,13 +10,17 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public interface Table<DTO> {
+public abstract class Table<DTO> {
 
-    String getTableName();
+    abstract String getTableName();
 
-    List<String> getColumnNames();
+    abstract List<String> getColumnNames();
 
-    default String cols(String prefix){
+    abstract DTO toDTO(ResultSet rs) throws SQLException;
+
+    abstract void setForInsert(PreparedStatement stmt, DTO dto) throws SQLException;
+
+    public String cols(String prefix){
         if( prefix == null || prefix.isEmpty() ){
             return String.join(",", getColumnNames());
         } else {
@@ -23,35 +28,31 @@ public interface Table<DTO> {
         }
     }
 
-    default String cols() {
+    public String cols() {
         return cols("");
     }
 
-    default String getPrimaryKey() {
+    public String getPrimaryKey() {
         return null;
     }
 
-    DTO toDTO(ResultSet rs) throws SQLException;
-
-    void setForInsert(PreparedStatement stmt, DTO dto) throws SQLException;
-
-    default DTO getById(int id) {
+    public  DTO getById(Connection conn, int id) {
         String primaryKey = getPrimaryKey();
         if (primaryKey == null) {
             throw new RuntimeException("Cannot find primary key.");
         }
         String sql = String.format("select %s from %s where %s = ?", cols(), getTableName(),
                 getPrimaryKey());
-        return DB.get(sql, stmt -> stmt.setInt(1, id), this::toDTO);
+        return Query.get(conn, sql, stmt -> stmt.setInt(1, id), this::toDTO);
     }
 
-    default List<String> copyListExcept(List<String> list, String item){
+    private List<String> copyListExcept(List<String> list, String item){
         List<String> copy = new ArrayList<>(list);
         copy.remove(item);
         return Collections.unmodifiableList(copy);
     }
 
-    default String sqlForInsert(){
+    private String sqlForInsert(){
         List<String> cs = copyListExcept(getColumnNames(), getPrimaryKey());
 
         return String.format("insert into %s (%s) values (%s) returning %s", getTableName(),
@@ -61,8 +62,8 @@ public interface Table<DTO> {
         );
     }
 
-    default int insert(DTO dto){
-        return DB.get(sqlForInsert(), stmt -> setForInsert(stmt, dto),  rs -> rs.getInt(1));
+    public int insert(Connection conn, DTO dto){
+        return Query.get(conn, sqlForInsert(), stmt -> setForInsert(stmt, dto),  rs -> rs.getInt(1));
     }
 
 }

@@ -62,12 +62,12 @@ public class Query {
         }
     }
 
-    public class Tuple<P, Q, R> {
+    public class Triple<P, Q, R> {
         public P first;
         public Q second;
         public R third;
 
-        public Tuple(P first, Q second, R third){
+        public Triple(P first, Q second, R third){
             this.first = first;
             this.second = second;
             this.third = third;
