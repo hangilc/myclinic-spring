@@ -120,6 +120,7 @@
     <module>backend-async</module>
     <module>api-tool</module>
     <module>backend-mysql</module>
+    <module>backend-pgsql</module>
   </modules>
 
 </project>
