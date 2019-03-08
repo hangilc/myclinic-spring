@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class PatientTable implements Table<PatientDTO> {
+public class PatientTable extends Table<PatientDTO> {
 
     private List<String> columnNames = List.of(
             "patient_id",

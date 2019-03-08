@@ -12,13 +12,17 @@ import static java.util.stream.Collectors.toList;
 
 public abstract class Table<DTO> {
 
-    abstract String getTableName();
+    public String getPrimaryKey() {
+        return null;
+    }
 
-    abstract List<String> getColumnNames();
+    abstract public String getTableName();
 
-    abstract DTO toDTO(ResultSet rs) throws SQLException;
+    abstract public List<String> getColumnNames();
 
-    abstract void setForInsert(PreparedStatement stmt, DTO dto) throws SQLException;
+    abstract public DTO toDTO(ResultSet rs) throws SQLException;
+
+    abstract public void setForInsert(PreparedStatement stmt, DTO dto) throws SQLException;
 
     public String cols(String prefix){
         if( prefix == null || prefix.isEmpty() ){
@@ -30,10 +34,6 @@ public abstract class Table<DTO> {
 
     public String cols() {
         return cols("");
-    }
-
-    public String getPrimaryKey() {
-        return null;
     }
 
     public  DTO getById(Connection conn, int id) {
