@@ -3,8 +3,6 @@ package jp.chang.myclinic.backendpgsql;
 import jp.chang.myclinic.backendpgsql.table.PatientTable;
 import jp.chang.myclinic.dto.PatientDTO;
 
-import java.util.Scanner;
-
 public class Main {
 
     public static void main(String[] args) throws Exception {
@@ -19,9 +17,20 @@ public class Main {
 
     private void run(String[] args) throws Exception {
         PatientTable patientTable = new PatientTable();
-        String sql = "select " + patientTable.cols() + " from patient where patient_id = ?";
-        PatientDTO patient = DB.get(sql, stmt -> stmt.setInt(1, 1), patientTable::toDTO);
-        System.out.println(patient);
+        PatientDTO p = new PatientDTO();
+        p.lastName = "田中";
+        p.firstName = "悦子";
+        p.lastNameYomi = "たなか";
+        p.firstNameYomi = "えつこ";
+        p.birthday = "1987-02-12";
+        p.sex = "F";
+        p.address = "addr";
+        p.phone = "03-1234-5678";
+        p.patientId = patientTable.insert(p);
+        PatientDTO q = patientTable.getById(p.patientId);
+        System.out.println(p);
+        System.out.println(q);
+        System.out.println(p.equals(q));
     }
 
 }

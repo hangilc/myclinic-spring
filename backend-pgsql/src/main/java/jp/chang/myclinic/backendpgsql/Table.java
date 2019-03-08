@@ -31,7 +31,7 @@ public interface Table<DTO> {
         return null;
     }
 
-    DTO toDTO(ResultSet rs);
+    DTO toDTO(ResultSet rs) throws SQLException;
 
     void setForInsert(PreparedStatement stmt, DTO dto) throws SQLException;
 
