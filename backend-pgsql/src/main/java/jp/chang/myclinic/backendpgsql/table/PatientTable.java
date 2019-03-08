@@ -1,5 +1,6 @@
 package jp.chang.myclinic.backendpgsql.table;
 
+import jp.chang.myclinic.backendpgsql.Table;
 import jp.chang.myclinic.dto.PatientDTO;
 
 import java.sql.Connection;
@@ -11,7 +12,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class PatientTable {
+public class PatientTable implements Table<PatientDTO> {
 
     private List<String> cols = List.of(
             "patient_id",
@@ -25,14 +26,17 @@ public class PatientTable {
             "phone"
     );
 
-    private String colsForInsert = String.join(",", cols.subList(1, cols.size()));
+    public String getPrimaryKey(){
+        return "patient_id";
+    }
+
+    private String colsForInsert = String.join(",", copyListExcept(cols, "patient_id"));
     private String paraForInsert = String.join(",", cols.subList(1, cols.size()).stream()
             .map(c -> "?").collect(toList()));
-    private String colsForQuery = String.join(",", cols);
-
-    public String cols() {
-        return cols("");
+    {
+        List<String> cs = copyListExcept(cols, "")
     }
+    private String colsForQuery = String.join(",", cols);
 
     public String cols(String prefix) {
         if (prefix == null || prefix.isEmpty()) {
