@@ -1,9 +1,11 @@
 package jp.chang.myclinic.backendpgsql.persistence;
 
 import jp.chang.myclinic.backend.persistence.PatientPersistence;
+import jp.chang.myclinic.backendpgsql.DB;
 import jp.chang.myclinic.backendpgsql.table.PatientTable;
 import jp.chang.myclinic.dto.PatientDTO;
 
+import java.sql.Connection;
 import java.util.Optional;
 
 public class PatientPersistencePgsql implements PatientPersistence {
@@ -12,12 +14,20 @@ public class PatientPersistencePgsql implements PatientPersistence {
 
     @Override
     public int enterPatient(PatientDTO patient) {
-        throw new RuntimeException("not implemented");
+        return DB.get(conn -> enterPatient(conn, patient));
+    }
+
+    public int enterPatient(Connection conn, PatientDTO patient) {
+        return table.insert(conn, patient);
     }
 
     @Override
     public PatientDTO getPatient(int patientId) {
-        throw new RuntimeException("not implemented");
+        return DB.get(conn -> getPatient(conn, patientId));
+    }
+
+    public PatientDTO getPatient(Connection conn, int patientId) {
+        return table.getById(conn, patientId);
     }
 
     @Override
@@ -27,6 +37,10 @@ public class PatientPersistencePgsql implements PatientPersistence {
 
     @Override
     public Optional<PatientDTO> findPatient(int patientId) {
-        throw new RuntimeException("not implemented");
+        return DB.get(conn -> findPatient(patientId));
+    }
+
+    public Optional<PatientDTO> findPatient(Connection conn, int patientId) {
+        return Optional.ofNullable(getPatient(conn, patientId));
     }
 }
