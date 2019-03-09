@@ -29,6 +29,16 @@ public class PatientTable extends Table<PatientDTO> {
     }
 
     @Override
+    public int extractPrimaryKeyFrom(PatientDTO patientDTO) {
+        return patientDTO.patientId;
+    }
+
+    @Override
+    public void putPrimaryKeyInto(PatientDTO patientDTO, int primaryKey) {
+        patientDTO.patientId = primaryKey;
+    }
+
+    @Override
     public String getTableName() {
         return "patient";
     }

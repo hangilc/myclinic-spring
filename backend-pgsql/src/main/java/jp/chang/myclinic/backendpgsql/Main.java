@@ -26,11 +26,10 @@ public class Main {
         p.sex = "F";
         p.address = "addr";
         p.phone = "03-1234-5678";
-        p.patientId = patientTable.insert(p);
-        PatientDTO q = patientTable.getById(p.patientId);
-        System.out.println(p);
-        System.out.println(q);
-        System.out.println(p.equals(q));
+        DB.get(conn -> {
+            patientTable.delete(conn, 4);
+            return null;
+        });
     }
 
 }

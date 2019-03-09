@@ -18,7 +18,8 @@ public class PatientPersistencePgsql implements PatientPersistence {
     }
 
     public int enterPatient(Connection conn, PatientDTO patient) {
-        return table.insert(conn, patient);
+        table.insert(conn, patient);
+        return patient.patientId;
     }
 
     @Override

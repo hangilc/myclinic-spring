@@ -17,6 +17,17 @@ public class Query {
         T toDTO(ResultSet rs) throws SQLException;
     }
 
+    public static void exec(Connection conn, String sql, SqlConsumer<PreparedStatement> paramSetter){
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            paramSetter.accept(stmt);
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static <T> T get(Connection conn, String sql, SqlConsumer<PreparedStatement> paramSetter,
                             SqlMapper<T> mapper) {
         try {
