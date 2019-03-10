@@ -5,10 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
-public abstract class TableBase<DTO> {
+public abstract class TableRoot<DTO> {
 
     abstract public String getTableName();
 
@@ -22,7 +23,7 @@ public abstract class TableBase<DTO> {
         if (prefix == null || prefix.isEmpty()) {
             return String.join(",", getColumnNames());
         } else {
-            return String.join(",", getColumnNames().stream().map(c -> prefix + c).collect(toList()));
+            return getColumnNames().stream().map(c -> prefix + c).collect(Collectors.joining(","));
         }
     }
 
@@ -36,7 +37,7 @@ public abstract class TableBase<DTO> {
         return String.format("insert into %s (%s) values (%s)",
                 getTableName(),
                 String.join(",", cs),
-                String.join(",", cs.stream().map(c -> "?").collect(toList()))
+                cs.stream().map(c -> "?").collect(Collectors.joining(","))
         );
     }
 

@@ -1,5 +1,6 @@
 package jp.chang.myclinic.backendpgsql.table;
 
+import jp.chang.myclinic.backendpgsql.Column;
 import jp.chang.myclinic.backendpgsql.Table;
 import jp.chang.myclinic.dto.PatientDTO;
 
@@ -11,68 +12,55 @@ import java.util.List;
 
 public class PatientTable extends Table<PatientDTO> {
 
-    private List<String> columnNames = List.of(
-            "patient_id",
-            "last_name",
-            "first_name",
-            "last_name_yomi",
-            "first_name_yomi",
-            "birthday",
-            "sex",
-            "address",
-            "phone"
-    );
-
     @Override
-    public String getPrimaryKey() {
-        return "patient_id";
-    }
-
-    @Override
-    public int extractPrimaryKeyFrom(PatientDTO patientDTO) {
-        return patientDTO.patientId;
-    }
-
-    @Override
-    public void putPrimaryKeyInto(PatientDTO patientDTO, int primaryKey) {
-        patientDTO.patientId = primaryKey;
-    }
-
-    @Override
-    public String getTableName() {
+    protected String getTableName() {
         return "patient";
     }
 
     @Override
-    public List<String> getColumnNames() {
-        return columnNames;
+    protected PatientDTO newInstanceDTO() {
+        return new PatientDTO();
     }
 
-    @Override
-    public PatientDTO toDTO(ResultSet rs) throws SQLException {
-        PatientDTO patient = new PatientDTO();
-        patient.patientId = rs.getInt(1);
-        patient.lastName = rs.getString(2);
-        patient.firstName = rs.getString(3);
-        patient.lastNameYomi = rs.getString(4);
-        patient.firstNameYomi = rs.getString(5);
-        patient.birthday = rs.getObject(6, LocalDate.class).toString();
-        patient.sex = rs.getString(7);
-        patient.address = rs.getString(8);
-        patient.phone = rs.getString(9);
-        return patient;
-    }
-
-    @Override
-    public void setForInsert(PreparedStatement stmt, PatientDTO patient) throws SQLException {
-        stmt.setString(1, patient.lastName);
-        stmt.setString(2, patient.firstName);
-        stmt.setString(3, patient.lastNameYomi);
-        stmt.setString(4, patient.firstNameYomi);
-        stmt.setObject(5, LocalDate.parse(patient.birthday));
-        stmt.setObject(6, patient.sex);
-        stmt.setString(7, patient.address);
-        stmt.setString(8, patient.phone);
+    public PatientTable(){
+        addColumn(new Column<PatientDTO>("patient_id")
+                .isPrimary(true)
+                .isAutoIncrement(true)
+                .putIntoDTO((o, dto) -> dto.patientId = (Integer)o)
+                .getFromDTO(dto -> dto.patientId)
+        );
+        addColumn(new Column<PatientDTO>("last_name")
+                .putIntoDTO((o, dto) -> dto.lastName = (String)o)
+                .getFromDTO(dto -> dto.lastName)
+        );
+        addColumn(new Column<PatientDTO>("first_name")
+                .putIntoDTO((o, dto) -> dto.firstName = (String)o)
+                .getFromDTO(dto -> dto.firstName)
+        );
+        addColumn(new Column<PatientDTO>("last_name_yomi")
+                .putIntoDTO((o, dto) -> dto.lastNameYomi = (String)o)
+                .getFromDTO(dto -> dto.lastNameYomi)
+        );
+        addColumn(new Column<PatientDTO>("first_name_yomi")
+                .putIntoDTO((o, dto) -> dto.firstNameYomi = (String)o)
+                .getFromDTO(dto -> dto.firstNameYomi)
+        );
+        addColumn(new Column<PatientDTO>("birthday")
+                .putIntoDTO((o, dto) -> dto.birthday = o.toString())
+                .getFromDTO(dto -> LocalDate.parse(dto.birthday))
+        );
+        addColumn(new Column<PatientDTO>("sex")
+                .putIntoDTO((o, dto) -> dto.sex = (String)o)
+                .getFromDTO(dto -> dto.sex)
+        );
+        addColumn(new Column<PatientDTO>("address")
+                .putIntoDTO((o, dto) -> dto.address = (String)o)
+                .getFromDTO(dto -> dto.address)
+        );
+        addColumn(new Column<PatientDTO>("phone")
+                .putIntoDTO((o, dto) -> dto.phone = (String)o)
+                .getFromDTO(dto -> dto.phone)
+        );
     }
 
 }

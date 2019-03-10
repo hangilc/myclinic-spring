@@ -28,7 +28,8 @@ public class PatientPersistencePgsql implements PatientPersistence {
     }
 
     public PatientDTO getPatient(Connection conn, int patientId) {
-        return table.getById(conn, patientId);
+        //return table.getById(conn, patientId);
+        throw new RuntimeException("not implemented");
     }
 
     @Override
