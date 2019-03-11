@@ -1,9 +1,11 @@
 package jp.chang.myclinic.backendmysql.persistence;
 
 import jp.chang.myclinic.backend.persistence.VisitPersistence;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.dto.ShoukiDTO;
+import jp.chang.myclinic.dto.VisitDTO;
 import org.springframework.stereotype.Component;
-import java.util.Optional;
+
+import java.util.List;
 
 @Component
 public class VisitPersistenceMysql implements VisitPersistence {

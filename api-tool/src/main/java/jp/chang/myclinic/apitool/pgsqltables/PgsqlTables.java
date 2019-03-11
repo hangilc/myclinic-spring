@@ -2,11 +2,17 @@ package jp.chang.myclinic.apitool.pgsqltables;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import jp.chang.myclinic.apitool.Main;
+import jp.chang.myclinic.apitool.lib.Helper;
 import picocli.CommandLine.Command;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Command(name = "pgsql-tables")
 public class PgsqlTables implements Runnable {
@@ -14,6 +20,8 @@ public class PgsqlTables implements Runnable {
     @Inject
     @Named("pgsql")
     private Connection conn;
+    @Inject
+    private Helper helper;
 
     private DatabaseMetaData meta;
 
@@ -23,18 +31,22 @@ public class PgsqlTables implements Runnable {
             this.meta = conn.getMetaData();
             Map<String, List<String>> typeMap = new HashMap<>();
             for (Table table : listTables()) {
-                String tableName = table.getName();
-                table.getColumns().forEach(c -> {
-                    String type = c.getType();
-                    String item = String.format("%s:%s", tableName, c.getName());
-                    if (typeMap.containsKey(type)) {
-                        typeMap.get(type).add(item);
-                    } else {
-                        List<String> value = new ArrayList<>();
-                        value.add(item);
-                        typeMap.put(type, value);
-                    }
-                });
+                System.out.printf("%s -> %s\n",
+                        table.getName(),
+                        helper.snakeToCapital(table.getName())
+                );
+//                String tableName = table.getName();
+//                table.getColumns().forEach(c -> {
+//                    String type = c.getType();
+//                    String item = String.format("%s:%s", tableName, c.getName());
+//                    if (typeMap.containsKey(type)) {
+//                        typeMap.get(type).add(item);
+//                    } else {
+//                        List<String> value = new ArrayList<>();
+//                        value.add(item);
+//                        typeMap.put(type, value);
+//                    }
+//                });
             }
             for (String type : typeMap.keySet()) {
                 System.out.println(type.toUpperCase());

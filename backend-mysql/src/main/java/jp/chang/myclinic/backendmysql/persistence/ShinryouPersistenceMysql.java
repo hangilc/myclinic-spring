@@ -1,9 +1,10 @@
 package jp.chang.myclinic.backendmysql.persistence;
 
 import jp.chang.myclinic.backend.persistence.ShinryouPersistence;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import org.springframework.stereotype.Component;
-import java.util.Optional;
+
+import java.util.List;
 
 @Component
 public class ShinryouPersistenceMysql implements ShinryouPersistence {

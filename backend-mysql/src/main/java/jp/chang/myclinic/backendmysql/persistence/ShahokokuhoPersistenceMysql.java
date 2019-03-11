@@ -1,9 +1,11 @@
 package jp.chang.myclinic.backendmysql.persistence;
 
 import jp.chang.myclinic.backend.persistence.ShahokokuhoPersistence;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import org.springframework.stereotype.Component;
-import java.util.Optional;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Component
 public class ShahokokuhoPersistenceMysql implements ShahokokuhoPersistence {

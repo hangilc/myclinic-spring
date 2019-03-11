@@ -1,10 +1,8 @@
 package jp.chang.myclinic.apitool;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Provider;
+import com.google.inject.*;
 import com.google.inject.name.Names;
+import jp.chang.myclinic.apitool.lib.Helper;
 import jp.chang.myclinic.apitool.pgsqltables.PgsqlTables;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -23,6 +21,7 @@ public class Main {
             protected void configure() {
                 bind(Connection.class).annotatedWith(Names.named("pgsql"))
                         .toProvider(PgsqlConnectionProvider.class);
+                bind(Helper.class).in(Singleton.class);
             }
         });
         CommandLine commandLine = new CommandLine(new Main());

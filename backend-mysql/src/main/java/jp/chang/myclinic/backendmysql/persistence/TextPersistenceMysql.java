@@ -1,9 +1,10 @@
 package jp.chang.myclinic.backendmysql.persistence;
 
 import jp.chang.myclinic.backend.persistence.TextPersistence;
-import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.dto.TextDTO;
 import org.springframework.stereotype.Component;
-import java.util.Optional;
+
+import java.util.List;
 
 @Component
 public class TextPersistenceMysql implements TextPersistence {
