@@ -1,21 +1,27 @@
 package jp.chang.myclinic.backendpgsql;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class Column<DTO> {
 
-    private String name;
-    private boolean isPrimary;
-    private boolean isAutoIncrement;
-    private BiConsumer<Object, DTO> putIntoDTO;
-    private Function<DTO, Object> getFromDTO;
+    private final String name;
+    private final boolean isPrimary;
+    private final boolean isAutoIncrement;
+    private final BiConsumer<Object, DTO> putIntoDTO;
+    private final Function<DTO, Object> getFromDTO;
 
-    public Column(String name){
+    public Column(String name, boolean isPrimary, boolean isAutoIncrement,
+                  BiConsumer<Object, DTO> putIntoDTO, Function<DTO, Object> getFromDTO) {
         this.name = name;
+        this.isPrimary = isPrimary;
+        this.isAutoIncrement = isAutoIncrement;
+        this.putIntoDTO = putIntoDTO;
+        this.getFromDTO = getFromDTO;
+    }
+
+    public Column(String name, BiConsumer<Object, DTO> putIntoDTO, Function<DTO, Object> getFromDTO){
+        this(name, false, false, putIntoDTO, getFromDTO);
     }
 
     public String getName() {
@@ -26,36 +32,16 @@ public class Column<DTO> {
         return isPrimary;
     }
 
-    public Column<DTO> isPrimary(Boolean isPrimary){
-        this.isPrimary = isPrimary;
-        return this;
-    }
-
     public boolean isAutoIncrement() {
         return isAutoIncrement;
-    }
-
-    public Column<DTO> isAutoIncrement(Boolean isAutoIncrement){
-        this.isAutoIncrement = isAutoIncrement;
-        return this;
     }
 
     public BiConsumer<Object, DTO> putIntoDTO() {
         return putIntoDTO;
     }
 
-    public Column<DTO> putIntoDTO(BiConsumer<Object, DTO> putter){
-        this.putIntoDTO = putter;
-        return this;
-    }
-
     public Function<DTO, Object> getFromDTO() {
         return getFromDTO;
-    }
-
-    public Column<DTO> getFromDTO(Function<DTO, Object> getter){
-        this.getFromDTO = getter;
-        return this;
     }
 
 }

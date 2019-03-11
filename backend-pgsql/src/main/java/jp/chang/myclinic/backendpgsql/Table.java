@@ -2,27 +2,41 @@ package jp.chang.myclinic.backendpgsql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.*;
-import static jp.chang.myclinic.backendpgsql.Query.*;
+import static jp.chang.myclinic.backendpgsql.Query.SqlConsumer;
+import static jp.chang.myclinic.backendpgsql.Query.SqlMapper;
 
 public abstract class Table<DTO> {
 
-    abstract protected String getTableName();
+    private final Connection conn;
 
-    abstract protected DTO newInstanceDTO();
-
-    private List<Column<DTO>> columns = new ArrayList<>();
-
-    protected void addColumn(Column<DTO> c) {
-        columns.add(c);
+    public Table(Connection conn) {
+        this.conn = conn;
     }
 
-    public void insert(Connection conn, DTO dto) {
-        Map<Boolean, List<Column<DTO>>> colmap = columns.stream().collect(groupingBy(Column::isAutoIncrement));
+    protected abstract String getTableName();
+
+    protected abstract Class<DTO> getClassDTO();
+
+    protected abstract List<Column<DTO>> getColumns();
+
+    public DTO newInstanceDTO() {
+        try {
+            return getClassDTO().getConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected Connection getConnection(){
+        return conn;
+    }
+
+    public void insert(DTO dto) {
+        Map<Boolean, List<Column<DTO>>> colmap = getColumns().stream().collect(groupingBy(Column::isAutoIncrement));
         if (colmap.get(true).size() == 0) {
             String sql = String.format("insert into %s (%s) values (%s)",
                     getTableName(),
@@ -61,14 +75,14 @@ public abstract class Table<DTO> {
         }
     }
 
-    public DTO getById(Connection conn, Object id) {
-        List<Column<DTO>> primaries = columns.stream().filter(Column::isPrimary).collect(toList());
+    public DTO getById(Object id) {
+        List<Column<DTO>> primaries = getColumns().stream().filter(Column::isPrimary).collect(toList());
         if (primaries.size() != 1) {
             throw new RuntimeException("Not table with single primary key.");
         }
         Column<DTO> primary = primaries.get(0);
         String sql = String.format("select %s from %s where %s = ?",
-                columns.stream().map(Column::getName).collect(joining(",")),
+                getColumns().stream().map(Column::getName).collect(joining(",")),
                 getTableName(),
                 primary.getName()
         );
@@ -77,8 +91,8 @@ public abstract class Table<DTO> {
         };
         SqlMapper<DTO> mapper = rs -> {
             DTO result = newInstanceDTO();
-            for (int i = 0; i < columns.size(); i++) {
-                Column<DTO> c = columns.get(i);
+            for (int i = 0; i < getColumns().size(); i++) {
+                Column<DTO> c = getColumns().get(i);
                 Object o = rs.getObject(i + 1);
                 c.putIntoDTO().accept(o, result);
             }
@@ -87,8 +101,8 @@ public abstract class Table<DTO> {
         return Query.get(conn, sql, setter, mapper);
     }
 
-    public void update(Connection conn, DTO dto) {
-        Map<Boolean, List<Column<DTO>>> colmap = columns.stream().collect(groupingBy(Column::isPrimary));
+    public void update(DTO dto) {
+        Map<Boolean, List<Column<DTO>>> colmap = getColumns().stream().collect(groupingBy(Column::isPrimary));
         List<Column<DTO>> primaries = colmap.get(true);
         List<Column<DTO>> nonPrimaries = colmap.get(false);
         if (primaries.size() == 0) {
@@ -113,8 +127,8 @@ public abstract class Table<DTO> {
         Query.exec(conn, sql, setter);
     }
 
-    public void delete(Connection conn, Object id) {
-        List<Column<DTO>> primaries = columns.stream().filter(Column::isPrimary).collect(toList());
+    public void delete(Object id) {
+        List<Column<DTO>> primaries = getColumns().stream().filter(Column::isPrimary).collect(toList());
         if (primaries.size() != 1) {
             throw new RuntimeException("Not table with single primary key.");
         }
