@@ -1,6 +1,5 @@
 package jp.chang.myclinic.apitool.pgsqltables;
 
-import jp.chang.myclinic.backend.dto.IntraclinicTagPostDTO;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 

@@ -1,5 +1,6 @@
 package jp.chang.myclinic.apitool.pgsqltables;
 
+import com.github.javaparser.ast.CompilationUnit;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import jp.chang.myclinic.apitool.lib.Helper;
@@ -30,28 +31,16 @@ public class PgsqlTables implements Runnable {
         try {
             this.meta = conn.getMetaData();
             Map<String, List<String>> typeMap = new HashMap<>();
-            for (Table table : listTables()) {
-                System.out.printf("%s -> %s\n",
-                        table.getName(),
-                        helper.snakeToCapital(table.getName())
-                );
-//                String tableName = table.getName();
-//                table.getColumns().forEach(c -> {
-//                    String type = c.getType();
-//                    String item = String.format("%s:%s", tableName, c.getName());
-//                    if (typeMap.containsKey(type)) {
-//                        typeMap.get(type).add(item);
-//                    } else {
-//                        List<String> value = new ArrayList<>();
-//                        value.add(item);
-//                        typeMap.put(type, value);
-//                    }
-//                });
-            }
-            for (String type : typeMap.keySet()) {
-                System.out.println(type.toUpperCase());
-                System.out.printf("  %s\n", typeMap.get(type).toString());
-            }
+            List<Table> tables = listTables();
+            tables.forEach(table -> {
+                if( !table.getName().equals("patient") ){
+                    return;
+                }
+                Class<?> classDTO = TableToDTOMap.mapToDTO(table.getName());
+                CompilationUnit unit = new SourceCodeCreator().create(table, classDTO);
+                System.out.println(unit);
+            });
+
 //            DATE
 //                    [byoumei_master:valid_from, byoumei_master:valid_upto, disease:start_date, disease:end_date, intraclinic_comment:created_at, intraclinic_post:created_at, iyakuhin_master:valid_from, iyakuhin_master:valid_upto, kizai_master:valid_from, kizai_master:valid_upto, kouhi:valid_from, kouhi:valid_upto, koukikourei:valid_from, koukikourei:valid_upto, patient:birthday, presc_example:master_valid_from, roujin:valid_from, roujin:valid_upto, shahokokuho:valid_from, shahokokuho:valid_upto, shinryou_master:valid_from, shinryou_master:valid_upto]
 //            JSONB

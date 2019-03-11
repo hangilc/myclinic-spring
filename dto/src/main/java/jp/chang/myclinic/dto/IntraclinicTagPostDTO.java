@@ -1,4 +1,4 @@
-package jp.chang.myclinic.backend.dto;
+package jp.chang.myclinic.dto;
 
 public class IntraclinicTagPostDTO {
 
