@@ -1,21 +1,18 @@
 package jp.chang.myclinic.apitool.pgsqltables;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.sql.Types;
-
 class Column {
 
     private String name;
     private boolean isPrimary;
     private boolean isAutoIncrement;
-    private String type;
+    private Class<?> jdbcType;
+    private String dtoField;
 
-    public Column(String name, boolean isAutoIncrement, String type) {
+    public Column(String name, boolean isAutoIncrement, Class<?> jdbcType, String dtoField) {
         this.name = name;
         this.isAutoIncrement = isAutoIncrement;
-        this.type = type;
+        this.jdbcType = jdbcType;
+        this.dtoField = dtoField;
     }
 
     public String getName() {
@@ -34,8 +31,12 @@ class Column {
         return isAutoIncrement;
     }
 
-    public String getType() {
-        return type;
+    public Class<?> getJdbcType() {
+        return jdbcType;
+    }
+
+    public String getDtoField() {
+        return dtoField;
     }
 
     @Override
@@ -44,7 +45,8 @@ class Column {
                 "name='" + name + '\'' +
                 ", isPrimary=" + isPrimary +
                 ", isAutoIncrement=" + isAutoIncrement +
-                ", type=" + type +
+                ", jdbcType=" + jdbcType +
+                ", dtoField='" + dtoField + '\'' +
                 '}';
     }
 }

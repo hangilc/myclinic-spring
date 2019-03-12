@@ -11,6 +11,12 @@ public class Main {
 
     private void run(String[] args) throws Exception {
         confirmMockPatient();
+        DB.get(conn -> {
+            PatientTable patientTable = new PatientTable(conn);
+            PatientDTO patient = patientTable.getById(1);
+            System.out.println(patient);
+            return null;
+        });
 //        PatientTable patientTable = new PatientTable();
 //        PatientDTO p = new PatientDTO();
 //        p.lastName = "田中";

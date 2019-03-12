@@ -2,7 +2,7 @@ package jp.chang.myclinic.apitool.lib;
 
 import java.util.Arrays;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.joining;
 
 public class Helper {
 
@@ -14,6 +14,11 @@ public class Helper {
         return Arrays.stream(s.split("_"))
                 .map(this::capitalize)
                 .collect(joining(""));
+    }
+
+    public String snakeToCamel(String s){
+        String capital = snakeToCapital(s);
+        return capital.substring(0, 1).toLowerCase() + capital.substring(1, capital.length());
     }
 
 }

@@ -2,6 +2,8 @@ package jp.chang.myclinic.backendpgsql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +33,7 @@ public abstract class Table<DTO> {
         }
     }
 
-    protected Connection getConnection(){
+    protected Connection getConnection() {
         return conn;
     }
 
@@ -67,7 +69,7 @@ public abstract class Table<DTO> {
                 List<Column<DTO>> autoCols = colmap.get(true);
                 for (int i = 0; i < autoCols.size(); i++) {
                     Object o = rs.getObject(i + 1);
-                    autoCols.get(i).putIntoDTO().accept(o, dto);
+                    autoCols.get(i).putIntoDTO().putIntoDTO(rs, dto);
                 }
                 return null;
             };
@@ -94,7 +96,7 @@ public abstract class Table<DTO> {
             for (int i = 0; i < getColumns().size(); i++) {
                 Column<DTO> c = getColumns().get(i);
                 Object o = rs.getObject(i + 1);
-                c.putIntoDTO().accept(o, result);
+                c.putIntoDTO().putIntoDTO(rs, result);
             }
             return result;
         };
@@ -141,6 +143,46 @@ public abstract class Table<DTO> {
             stmt.setObject(1, id);
         };
         Query.exec(conn, sql, setter);
+    }
+
+    private String colsCache;
+
+    public String cols() {
+        if( colsCache == null ){
+            this.colsCache = getColumns().stream().map(Column::getName).collect(joining(","));
+        }
+        return colsCache;
+    }
+
+    public DTO mapper(ResultSet rs) throws SQLException {
+        DTO result = newInstanceDTO();
+        for (Column<DTO> c : getColumns()) {
+            Object o = rs.getObject(c.getName());
+            c.putIntoDTO().putIntoDTO(rs, result);
+        }
+        return result;
+    }
+
+    public List<DTO> selectFromTable(String sqlWhere, SqlConsumer<PreparedStatement> setter) {
+        return Query.select(getConnection(), "select " + cols() + " " + sqlWhere,
+                setter, this::mapper);
+    }
+
+    public String cols(String prefix){
+        return getColumns().stream()
+                .map(c -> String.format("%s.%s as %s_%s", prefix, c.getName(), prefix, c.getName()))
+                .collect(joining(","));
+    }
+
+    public SqlMapper<DTO> makeMapper(String prefix){
+        return rs -> {
+            DTO result = newInstanceDTO();
+            for (Column<DTO> c : getColumns()) {
+                Object o = rs.getObject(prefix + "_" + c.getName());
+                c.putIntoDTO().putIntoDTO(rs, result);
+            }
+            return result;
+        };
     }
 
 }
