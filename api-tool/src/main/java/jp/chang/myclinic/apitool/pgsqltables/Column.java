@@ -35,7 +35,7 @@ class Column {
         return jdbcType;
     }
 
-    public String getDtoField() {
+    public String getDTOField() {
         return dtoField;
     }
 

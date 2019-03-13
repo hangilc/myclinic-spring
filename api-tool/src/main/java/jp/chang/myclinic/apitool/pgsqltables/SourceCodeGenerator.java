@@ -1,5 +1,6 @@
 package jp.chang.myclinic.apitool.pgsqltables;
 
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -83,10 +84,16 @@ public class SourceCodeGenerator {
         args.add(new StringLiteralExpr(column.getName()));
         args.add(new BooleanLiteralExpr(column.isPrimary()));
         args.add(new BooleanLiteralExpr(column.isAutoIncrement()));
-        args.add(new ColumnMapperGenerator(column.getDtoField(), column.getJdbcType(),
-                column.getName(), getDTOFieldClass(column.getDtoField()), tableName).generate());
+        args.add(new ColumnMapperGenerator(column.getDTOField(), column.getJdbcType(),
+                column.getName(), getDTOFieldClass(column.getDTOField()), tableName).generate());
+        args.add(createColumnGetter(column.getDTOField()));
         return new ObjectCreationExpr(null, createGenericType("Column", dtoClassName),
                 NodeList.nodeList(args));
+    }
+
+    private Expression createColumnGetter(String dtoFieldName){
+        String src = String.format("dto -> dto.%s", dtoFieldName);
+        return StaticJavaParser.parseExpression(src);
     }
 
     private Class<?> getDTOFieldClass(String name) {
@@ -110,8 +117,8 @@ public class SourceCodeGenerator {
 
     private Expression createSetterLambda(Column column) {
         Class<?> sqlType = column.getJdbcType();
-        Class<?> dtoFieldType = getDTOFieldClass(column.getDtoField());
-        Expression lefthandExpr = new FieldAccessExpr(new NameExpr("dto"), column.getDtoField());
+        Class<?> dtoFieldType = getDTOFieldClass(column.getDTOField());
+        Expression lefthandExpr = new FieldAccessExpr(new NameExpr("dto"), column.getDTOField());
         Expression value;
         System.out.println(sqlType);
         System.out.println(dtoFieldType);
