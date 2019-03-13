@@ -38,17 +38,17 @@ public class Backend {
     }
 
     public int enterPatient(PatientDTO patient){
-        patient.patientId = db.getPatientPersistence().enterPatient(patient);
+        patient.patientId = db.enterPatient(patient);
         practiceLogger.logPatientCreated(patient);
         return patient.patientId;
     }
 
     public PatientDTO getPatient(int patientId){
-        return db.getPatientPersistence().getPatient(patientId);
+        return db.getPatient(patientId);
     }
 
     private int enterVisit(VisitDTO visit){
-        visit.visitId = db.getVisitPersistence().enterVisit(visit);
+        visit.visitId = db.enterVisit(visit);
         practiceLogger.logVisitCreated(visit);
         return visit.visitId;
     }
@@ -60,7 +60,7 @@ public class Backend {
         visitDTO.patientId = patientId;
         visitDTO.visitedAt = DateTimeUtil.toSqlDateTime(at);
         {
-            List<ShahokokuhoDTO> list = db.getShahokokuhoPersistence().findAvailableShahokokuho(patientId, atDate);
+            List<ShahokokuhoDTO> list = db.findAvailableShahokokuho(patientId, atDate);
             if (list.size() == 0) {
                 visitDTO.shahokokuhoId = 0;
             } else {
@@ -68,7 +68,7 @@ public class Backend {
             }
         }
         {
-            List<KoukikoureiDTO> list = db.getKoukikoureiPersistence().findAvailableKoukikourei(patientId, atDate);
+            List<KoukikoureiDTO> list = db.findAvailableKoukikourei(patientId, atDate);
             if (list.size() == 0) {
                 visitDTO.koukikoureiId = 0;
             } else {
@@ -76,7 +76,7 @@ public class Backend {
             }
         }
         {
-            List<RoujinDTO> list = db.getRoujinPersistence().findAvailableRoujin(patientId, atDate);
+            List<RoujinDTO> list = db.findAvailableRoujin(patientId, atDate);
             if (list.size() == 0) {
                 visitDTO.roujinId = 0;
             } else {
@@ -87,7 +87,7 @@ public class Backend {
             visitDTO.kouhi1Id = 0;
             visitDTO.kouhi2Id = 0;
             visitDTO.kouhi3Id = 0;
-            List<KouhiDTO> list = db.getKouhiPersistence().findAvailableKouhi(patientId, atDate);
+            List<KouhiDTO> list = db.findAvailableKouhi(patientId, atDate);
             int n = list.size();
             if (n > 0) {
                 visitDTO.kouhi1Id = list.get(0).kouhiId;
@@ -108,78 +108,78 @@ public class Backend {
     }
 
     private void enterWqueue(WqueueDTO wqueue){
-        db.getWqueuePersistence().enterWqueue(wqueue);
+        db.enterWqueue(wqueue);
         practiceLogger.logWqueueCreated(wqueue);
     }
 
     public HokenDTO getHoken(int visitId) {
-        VisitDTO visitDTO = db.getVisitPersistence().getVisit(visitId);
+        VisitDTO visitDTO = db.getVisit(visitId);
         HokenDTO hokenDTO = new HokenDTO();
         if (visitDTO.shahokokuhoId > 0) {
-            hokenDTO.shahokokuho = db.getShahokokuhoPersistence().getShahokokuho(visitDTO.shahokokuhoId);
+            hokenDTO.shahokokuho = db.getShahokokuho(visitDTO.shahokokuhoId);
         }
         if (visitDTO.koukikoureiId > 0) {
-            hokenDTO.koukikourei = db.getKoukikoureiPersistence().getKoukikourei(visitDTO.koukikoureiId);
+            hokenDTO.koukikourei = db.getKoukikourei(visitDTO.koukikoureiId);
         }
         if (visitDTO.roujinId > 0) {
-            hokenDTO.roujin = db.getRoujinPersistence().getRoujin(visitDTO.roujinId);
+            hokenDTO.roujin = db.getRoujin(visitDTO.roujinId);
         }
         if (visitDTO.kouhi1Id > 0) {
-            hokenDTO.kouhi1 = db.getKouhiPersistence().getKouhi(visitDTO.kouhi1Id);
+            hokenDTO.kouhi1 = db.getKouhi(visitDTO.kouhi1Id);
         }
         if (visitDTO.kouhi2Id > 0) {
-            hokenDTO.kouhi2 = db.getKouhiPersistence().getKouhi(visitDTO.kouhi2Id);
+            hokenDTO.kouhi2 = db.getKouhi(visitDTO.kouhi2Id);
         }
         if (visitDTO.kouhi3Id > 0) {
-            hokenDTO.kouhi3 = db.getKouhiPersistence().getKouhi(visitDTO.kouhi3Id);
+            hokenDTO.kouhi3 = db.getKouhi(visitDTO.kouhi3Id);
         }
         return hokenDTO;
     }
 
     public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds){
-        return db.getShinryouPersistence().batchGetShinryouAttr(shinryouIds);
+        return db.batchGetShinryouAttr(shinryouIds);
     }
 
     public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds){
-        return db.getDrugPersistence().batchGetDrugAttr(drugIds);
+        return db.batchGetDrugAttr(drugIds);
     }
 
     public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds){
-        return db.getVisitPersistence().batchGetShouki(visitIds);
+        return db.batchGetShouki(visitIds);
     }
 
     public VisitDTO getVisit(int visitId){
-        return db.getVisitPersistence().getVisit(visitId);
+        return db.getVisit(visitId);
     }
 
     public int enterText(TextDTO text){
-        text.textId = db.getTextPersistence().enterText(text);
+        text.textId = db.enterText(text);
         practiceLogger.logTextCreated(text);
         return text.textId;
     }
 
     public TextDTO getText(int textId){
-        return db.getTextPersistence().getText(textId);
+        return db.getText(textId);
     }
 
     public void updateText(TextDTO text){
         TextDTO prev = getText(text.textId);
-        db.getTextPersistence().updateText(text);
+        db.updateText(text);
         practiceLogger.logTextUpdated(prev, text);
     }
 
     public void deleteText(int textId){
         TextDTO text = getText(textId);
-        db.getTextPersistence().deleteText(textId);
+        db.deleteText(textId);
         practiceLogger.logTextDeleted(text);
     }
 
     public List<TextDTO> listText(int visitId){
-        return db.getTextPersistence().listText(visitId);
+        return db.listText(visitId);
     }
 
     private void enterPracticeLog(PracticeLogDTO practiceLog){
-        db.getPracticeLogPersistence().enterPracticeLog(practiceLog);
+        db.enterPracticeLog(practiceLog);
     }
 
 }

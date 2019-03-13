@@ -1,6 +1,5 @@
 package jp.chang.myclinic.backendmock.persistence;
 
-import jp.chang.myclinic.backend.persistence.KoukikoureiPersistence;
 import jp.chang.myclinic.backendmock.util.Helper;
 import jp.chang.myclinic.dto.KoukikoureiDTO;
 
@@ -11,12 +10,11 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-public class KoukikoureiPersistenceMock implements KoukikoureiPersistence {
+public class KoukikoureiPersistenceMock {
 
     private Map<Integer, KoukikoureiDTO> registry = new HashMap<>();
     private Helper helper = new Helper();
 
-    @Override
     public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
         return registry.values().stream().filter(
                 dto -> dto.patientId == patientId &&
@@ -24,7 +22,6 @@ public class KoukikoureiPersistenceMock implements KoukikoureiPersistence {
         ).collect(toList());
     }
 
-    @Override
     public KoukikoureiDTO getKoukikourei(int koukikoureiId) {
         return registry.get(koukikoureiId);
     }

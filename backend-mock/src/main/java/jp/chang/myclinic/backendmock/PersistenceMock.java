@@ -1,74 +1,135 @@
 package jp.chang.myclinic.backendmock;
 
 import jp.chang.myclinic.backend.Persistence;
-import jp.chang.myclinic.backend.persistence.*;
 import jp.chang.myclinic.backendmock.persistence.*;
+import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+
+import java.time.LocalDate;
+import java.util.List;
 
 public class PersistenceMock implements Persistence {
 
-    private PatientPersistence patientPersistence = new PatientPersistenceMock();
+    private PatientPersistenceMock patientPersistence = new PatientPersistenceMock();
+    private VisitPersistenceMock visitPersistence = new VisitPersistenceMock();
+    private ShahokokuhoPersistenceMock shahokokuhoPersistence = new ShahokokuhoPersistenceMock();
+    private KoukikoureiPersistenceMock koukikoureiPersistence = new KoukikoureiPersistenceMock();
+    private RoujinPersistenceMock roujinPersistence = new RoujinPersistenceMock();
+    private KouhiPersistenceMock kouhiPersistence = new KouhiPersistenceMock();
+    private WqueuePersistenceMock wqueuePersistence = new WqueuePersistenceMock();
+    private TextPersistenceMock textPersistence = new TextPersistenceMock();
+    private ShinryouPersistenceMock shinryouPersistence = new ShinryouPersistenceMock();
+    private DrugPersistenceMock drugPersistence = new DrugPersistenceMock();
+    private PracticeLogPersistenceMock practiceLogPersistence = new PracticeLogPersistenceMock();
+
+
     @Override
-    public PatientPersistence getPatientPersistence() {
-        return patientPersistence;
+    public int enterPatient(PatientDTO patient) {
+        return patientPersistence.enterPatient(patient);
     }
 
-    private VisitPersistence visitPersistence = new VisitPersistenceMock();
     @Override
-    public VisitPersistence getVisitPersistence() {
-        return visitPersistence;
+    public PatientDTO getPatient(int patientId) {
+        return patientPersistence.getPatient(patientId);
     }
 
-    private ShahokokuhoPersistence shahokokuhoPersistence = new ShahokokuhoPersistenceMock();
     @Override
-    public ShahokokuhoPersistence getShahokokuhoPersistence() {
-        return shahokokuhoPersistence;
+    public int enterVisit(VisitDTO visit) {
+        return visitPersistence.enterVisit(visit);
     }
 
-    private KoukikoureiPersistence koukikoureiPersistence = new KoukikoureiPersistenceMock();
     @Override
-    public KoukikoureiPersistence getKoukikoureiPersistence() {
-        return koukikoureiPersistence;
+    public VisitDTO getVisit(int visitId) {
+        return visitPersistence.getVisit(visitId);
     }
 
-    private RoujinPersistence roujinPersistence = new RoujinPersistenceMock();
     @Override
-    public RoujinPersistence getRoujinPersistence() {
-        return roujinPersistence;
+    public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
+        return shahokokuhoPersistence.findAvailableShahokokuho(patientId, at);
     }
 
-    private KouhiPersistence kouhiPersistence = new KouhiPersistenceMock();
     @Override
-    public KouhiPersistence getKouhiPersistence() {
-        return kouhiPersistence;
+    public ShahokokuhoDTO getShahokokuho(int shahokokuhoId) {
+        return shahokokuhoPersistence.getShahokokuho(shahokokuhoId);
     }
 
-    private WqueuePersistence wqueuePersistence = new WqueuePersistenceMock();
     @Override
-    public WqueuePersistence getWqueuePersistence() {
-        return wqueuePersistence;
+    public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
+        return koukikoureiPersistence.findAvailableKoukikourei(patientId, at);
     }
 
-    private TextPersistence textPersistence = new TextPersistenceMock();
     @Override
-    public TextPersistence getTextPersistence() {
-        return textPersistence;
+    public KoukikoureiDTO getKoukikourei(int koukikoureiId) {
+        return koukikoureiPersistence.getKoukikourei(koukikoureiId);
     }
 
-    private ShinryouPersistence shinryouPersistence = new ShinryouPersistenceMock();
     @Override
-    public ShinryouPersistence getShinryouPersistence() {
-        return shinryouPersistence;
+    public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
+        return roujinPersistence.findAvailableRoujin(patientId, at);
     }
 
-    private DrugPersistence drugPersistence = new DrugPersistenceMock();
     @Override
-    public DrugPersistence getDrugPersistence() {
-        return drugPersistence;
+    public RoujinDTO getRoujin(int roujinId) {
+        return roujinPersistence.getRoujin(roujinId);
     }
 
-    private PracticeLogPersistence practiceLogPersistence = new PracticeLogPersistenceMock();
     @Override
-    public PracticeLogPersistence getPracticeLogPersistence() {
-        return practiceLogPersistence;
+    public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at) {
+        return kouhiPersistence.findAvailableKouhi(patientId, at);
+    }
+
+    @Override
+    public KouhiDTO getKouhi(int kouhiId) {
+        return kouhiPersistence.getKouhi(kouhiId);
+    }
+
+    @Override
+    public void enterWqueue(WqueueDTO wqueue) {
+        wqueuePersistence.enterWqueue(wqueue);
+    }
+
+    @Override
+    public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds) {
+        return shinryouPersistence.batchGetShinryouAttr(shinryouIds);
+    }
+
+    @Override
+    public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds) {
+        return drugPersistence.batchGetDrugAttr(drugIds);
+    }
+
+    @Override
+    public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds) {
+        return visitPersistence.batchGetShouki(visitIds);
+    }
+
+    @Override
+    public int enterText(TextDTO text) {
+        return textPersistence.enterText(text);
+    }
+
+    @Override
+    public TextDTO getText(int textId) {
+        return textPersistence.getText(textId);
+    }
+
+    @Override
+    public void updateText(TextDTO text) {
+        textPersistence.updateText(text);
+    }
+
+    @Override
+    public void deleteText(int textId) {
+        textPersistence.deleteText(textId);
+    }
+
+    @Override
+    public List<TextDTO> listText(int visitId) {
+        return textPersistence.listText(visitId);
+    }
+
+    @Override
+    public void enterPracticeLog(PracticeLogDTO practiceLog) {
+        practiceLogPersistence.enterPracticeLog(practiceLog);
     }
 }

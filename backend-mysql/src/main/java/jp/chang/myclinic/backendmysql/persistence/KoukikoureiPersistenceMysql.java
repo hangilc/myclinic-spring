@@ -1,6 +1,5 @@
 package jp.chang.myclinic.backendmysql.persistence;
 
-import jp.chang.myclinic.backend.persistence.KoukikoureiPersistence;
 import jp.chang.myclinic.backendmysql.entity.core.DTOMapper;
 import jp.chang.myclinic.backendmysql.entity.core.Koukikourei;
 import jp.chang.myclinic.backendmysql.entity.core.KoukikoureiRepository;
@@ -15,14 +14,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class KoukikoureiPersistenceMysql implements KoukikoureiPersistence {
+public class KoukikoureiPersistenceMysql {
 
     @Autowired
     private KoukikoureiRepository koukikoureiRepository;
     @Autowired
     private DTOMapper mapper;
 
-    @Override
     public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
         Sort sort = Sort.by(Sort.Direction.DESC, "koukikoureiId");
         String atDate = at.toString();
@@ -31,7 +29,6 @@ public class KoukikoureiPersistenceMysql implements KoukikoureiPersistence {
         }
     }
 
-    @Override
     public KoukikoureiDTO getKoukikourei(int koukikoureiId) {
         return mapper.toKoukikoureiDTO(koukikoureiRepository.findById(koukikoureiId));
     }

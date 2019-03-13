@@ -1,6 +1,5 @@
 package jp.chang.myclinic.backendmysql.persistence;
 
-import jp.chang.myclinic.backend.persistence.DrugPersistence;
 import jp.chang.myclinic.backendmysql.entity.core.DTOMapper;
 import jp.chang.myclinic.backendmysql.entity.core.DrugAttrRepository;
 import jp.chang.myclinic.dto.DrugAttrDTO;
@@ -12,14 +11,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class DrugPersistenceMysql implements DrugPersistence {
+public class DrugPersistenceMysql {
 
     @Autowired
     private DrugAttrRepository drugAttrRepository;
     @Autowired
     private DTOMapper mapper;
 
-    @Override
     public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds) {
         if( drugIds.size() == 0 ){
             return Collections.emptyList();

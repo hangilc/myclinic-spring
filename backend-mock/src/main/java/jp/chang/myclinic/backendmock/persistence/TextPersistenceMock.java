@@ -1,6 +1,5 @@
 package jp.chang.myclinic.backendmock.persistence;
 
-import jp.chang.myclinic.backend.persistence.TextPersistence;
 import jp.chang.myclinic.dto.TextDTO;
 
 import java.util.Comparator;
@@ -10,13 +9,12 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-public class TextPersistenceMock implements TextPersistence {
+public class TextPersistenceMock {
 
     private Map<Integer, TextDTO> registry = new HashMap<>();
 
     private int serialId = 1;
 
-    @Override
     public int enterText(TextDTO text) {
         int textId = serialId++;
         text.textId = textId;
@@ -24,12 +22,10 @@ public class TextPersistenceMock implements TextPersistence {
         return textId;
     }
 
-    @Override
     public TextDTO getText(int textId) {
         return registry.get(textId);
     }
 
-    @Override
     public void updateText(TextDTO text) {
         if (!registry.containsKey(text.textId)) {
             throw new RuntimeException("no such text");
@@ -37,12 +33,10 @@ public class TextPersistenceMock implements TextPersistence {
         registry.put(text.textId, text);
     }
 
-    @Override
     public void deleteText(int textId) {
         registry.remove(textId);
     }
 
-    @Override()
     public List<TextDTO> listText(int visitId) {
         return registry.values().stream()
                 .filter(t -> t.visitId == visitId)

@@ -1,6 +1,5 @@
 package jp.chang.myclinic.backendmock.persistence;
 
-import jp.chang.myclinic.backend.persistence.RoujinPersistence;
 import jp.chang.myclinic.backendmock.util.Helper;
 import jp.chang.myclinic.dto.RoujinDTO;
 
@@ -11,12 +10,11 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-public class RoujinPersistenceMock implements RoujinPersistence {
+public class RoujinPersistenceMock {
 
     private Map<Integer, RoujinDTO> registry = new HashMap<>();
     private Helper helper = new Helper();
 
-    @Override
     public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
         return registry.values().stream().filter(
                 dto -> dto.patientId == patientId &&
@@ -24,7 +22,6 @@ public class RoujinPersistenceMock implements RoujinPersistence {
         ).collect(toList());
     }
 
-    @Override
     public RoujinDTO getRoujin(int roujinId) {
         return registry.get(roujinId);
     }
