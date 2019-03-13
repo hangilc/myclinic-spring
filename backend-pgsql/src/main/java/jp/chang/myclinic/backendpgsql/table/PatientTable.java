@@ -53,10 +53,6 @@ public class PatientTable extends Table<PatientDTO> {
         );
     }
 
-    public PatientTable(Connection conn) {
-        super(conn);
-    }
-
     @Override
     protected String getTableName() {
         return "patient";

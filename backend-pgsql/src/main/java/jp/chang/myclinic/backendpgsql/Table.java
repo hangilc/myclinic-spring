@@ -13,10 +13,14 @@ import static jp.chang.myclinic.backendpgsql.Query.SqlMapper;
 
 public abstract class Table<DTO> {
 
-    private final Connection conn;
+    private static final ThreadLocal<Connection> threadLocalConnection = new ThreadLocal<>();
 
-    public Table(Connection conn) {
-        this.conn = conn;
+    public static void setConnection(Connection conn){
+        threadLocalConnection.set(conn);
+    }
+
+    public static Connection getConnection(){
+        return threadLocalConnection.get();
     }
 
     protected abstract String getTableName();
@@ -33,10 +37,6 @@ public abstract class Table<DTO> {
         }
     }
 
-    protected Connection getConnection() {
-        return conn;
-    }
-
     public void insert(DTO dto) {
         Map<Boolean, List<Column<DTO>>> colmap = getColumns().stream().collect(groupingBy(Column::isAutoIncrement));
         if (colmap.get(true).size() == 0) {
@@ -51,7 +51,7 @@ public abstract class Table<DTO> {
                     stmt.setObject(i++, c.getFromDTO().apply(dto));
                 }
             };
-            Query.exec(conn, sql, setter);
+            Query.exec(getConnection(), sql, setter);
         } else {
             String sql = String.format("insert into %s (%s) values (%s) returning %s",
                     getTableName(),
@@ -73,7 +73,7 @@ public abstract class Table<DTO> {
                 }
                 return null;
             };
-            Query.get(conn, sql, setter, mapper);
+            Query.get(getConnection(), sql, setter, mapper);
         }
     }
 
@@ -100,7 +100,7 @@ public abstract class Table<DTO> {
             }
             return result;
         };
-        return Query.get(conn, sql, setter, mapper);
+        return Query.get(getConnection(), sql, setter, mapper);
     }
 
     public void update(DTO dto) {
@@ -126,7 +126,7 @@ public abstract class Table<DTO> {
                 stmt.setObject(index++, o);
             }
         };
-        Query.exec(conn, sql, setter);
+        Query.exec(getConnection(), sql, setter);
     }
 
     public void delete(Object id) {
@@ -142,7 +142,7 @@ public abstract class Table<DTO> {
         SqlConsumer<PreparedStatement> setter = stmt -> {
             stmt.setObject(1, id);
         };
-        Query.exec(conn, sql, setter);
+        Query.exec(getConnection(), sql, setter);
     }
 
     private String colsCache;

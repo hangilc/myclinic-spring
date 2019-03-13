@@ -12,15 +12,16 @@ public class Main {
     private void run(String[] args) throws Exception {
         confirmMockPatient();
         DB.get(conn -> {
-            PatientTable patientTable = new PatientTable(conn);
+            Table.setConnection(conn);
+            PatientTable patientTable = new PatientTable();
             PatientDTO patient = patientTable.getById(1);
             System.out.println(patient);
             return null;
         });
 //        PatientTable patientTable = new PatientTable();
 //        PatientDTO p = new PatientDTO();
-//        p.lastName = "田中";
-//        p.firstName = "光一";
+//        p.lastName = "試験";
+//        p.firstName = "データ";
 //        p.lastNameYomi = "たなか";
 //        p.firstNameYomi = "こういち";
 //        p.birthday = "1987-02-12";
@@ -36,9 +37,10 @@ public class Main {
 
     private void confirmMockPatient(){
         DB.get(conn -> {
-            PatientTable patientTable = new PatientTable(conn);
+            Table.setConnection(conn);
+            PatientTable patientTable = new PatientTable();
             PatientDTO patient = patientTable.getById(1);
-            if( !(patient.lastName.equals("試験") && patient.firstName.equals("データ")) ){
+            if( !(patient != null && patient.lastName.equals("試験") && patient.firstName.equals("データ")) ){
                 throw new RuntimeException("Accessing database inappropriate for testing.");
             }
             return null;

@@ -1,20 +1,14 @@
 package jp.chang.myclinic.backendpgsql.persistence;
 
 import jp.chang.myclinic.backend.persistence.PatientPersistence;
-import jp.chang.myclinic.backendpgsql.PersistenceBase;
 import jp.chang.myclinic.backendpgsql.table.PatientTable;
 import jp.chang.myclinic.dto.PatientDTO;
 
-import java.sql.Connection;
 import java.util.Optional;
 
-public class PatientPersistencePgsql extends PersistenceBase implements PatientPersistence {
+public class PatientPersistencePgsql implements PatientPersistence {
 
-    private PatientTable table = new PatientTable(getConnection());
-
-    public PatientPersistencePgsql(Connection conn){
-        super(conn);
-    }
+    private PatientTable table = new PatientTable();
 
     @Override
     public int enterPatient(PatientDTO patient) {
