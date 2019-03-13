@@ -11,6 +11,10 @@ class DTOFieldNameResolver {
 
     static {
         fieldMap.put("pharma_drug:side_effect", "sideeffect");
+        fieldMap.put("intraclinic_comment:comment_id", "id");
+        fieldMap.put("intraclinic_post:post_id", "id");
+        fieldMap.put("practice_log:practice_log_id", "serialId");
+        fieldMap.put("shinryou_master:kensagroup", "kensaGroup");
     }
 
     private static Helper helper = new Helper();

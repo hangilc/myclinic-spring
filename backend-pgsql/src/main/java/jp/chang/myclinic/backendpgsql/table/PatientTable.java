@@ -4,7 +4,6 @@ import jp.chang.myclinic.backendpgsql.Column;
 import jp.chang.myclinic.backendpgsql.Table;
 import jp.chang.myclinic.dto.PatientDTO;
 
-import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.List;
 

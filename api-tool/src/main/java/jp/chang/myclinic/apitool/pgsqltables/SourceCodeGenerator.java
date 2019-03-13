@@ -36,14 +36,15 @@ public class SourceCodeGenerator {
                 "jp.chang.myclinic.dto.*",
                 "java.sql.Connection",
                 "java.time.*",
-                "java.util.*"
+                "java.util.*",
+                "jp.chang.myclinic.backendpgsql.tablebasehelper.TableBaseHelper"
         ).forEach(this::addImport);
         this.className = helper.snakeToCapital(table.getName()) + "TableBase";
         this.dtoClassName = dtoClass.getSimpleName();
         this.dtoClass = dtoClass;
         addClass(className);
         declareColumnField();
-        addColumnInitializer(table.getColumns());
+        addColumnInitializer(table.getColumns(), table.getName());
         return unit;
     }
 
@@ -65,9 +66,9 @@ public class SourceCodeGenerator {
         classDecl.addField(fieldType, "columns", Keyword.PRIVATE, Keyword.STATIC);
     }
 
-    private void addColumnInitializer(List<Column> columns) {
+    private void addColumnInitializer(List<Column> columns, String tableName) {
         List<Expression> args = columns.stream()
-                .map(this::columnCreator)
+                .map(c -> columnCreator(c, tableName))
                 .collect(toList());
         MethodCallExpr methodCall = new MethodCallExpr(new NameExpr("List"), "of",
                 NodeList.nodeList(args));
@@ -77,12 +78,13 @@ public class SourceCodeGenerator {
         block.addStatement(new ExpressionStmt(assignExpr));
     }
 
-    private Expression columnCreator(Column column) {
+    private Expression columnCreator(Column column, String tableName) {
         List<Expression> args = new ArrayList<>();
         args.add(new StringLiteralExpr(column.getName()));
         args.add(new BooleanLiteralExpr(column.isPrimary()));
         args.add(new BooleanLiteralExpr(column.isAutoIncrement()));
-        args.add(createSetterLambda(column));
+        args.add(new ColumnMapperGenerator(column.getDtoField(), column.getJdbcType(),
+                column.getName(), getDTOFieldClass(column.getDtoField()), tableName).generate());
         return new ObjectCreationExpr(null, createGenericType("Column", dtoClassName),
                 NodeList.nodeList(args));
     }
@@ -101,8 +103,8 @@ public class SourceCodeGenerator {
                 return c;
             }
         } catch (NoSuchFieldException e) {
-            System.err.println(name);
-            throw new RuntimeException(e);
+            String msg = String.format("Cannot find %s in %s", name, dtoClass.getSimpleName());
+            throw new RuntimeException(msg);
         }
     }
 

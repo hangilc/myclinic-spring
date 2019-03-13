@@ -1,5 +1,8 @@
 package jp.chang.myclinic.apitool.pgsqltables;
 
+import com.github.javaparser.ast.CompilationUnit;
+import com.google.googlejavaformat.java.FormatterException;
+import com.google.googlejavaformat.java.Formatter;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import jp.chang.myclinic.apitool.lib.Helper;
@@ -22,21 +25,29 @@ public class PgsqlTables implements Runnable {
 
     private DatabaseMetaData meta;
 
+    private String formatSource(Formatter formatter, String source){
+        try {
+            return formatter.formatSource(source);
+        } catch (FormatterException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void run() {
         try {
             this.meta = conn.getMetaData();
             Map<String, List<String>> typeMap = new HashMap<>();
             List<Table> tables = listTables();
-//            tables.forEach(table -> {
-//                if( !table.getName().equals("patient") ){
+            Formatter formatter = new Formatter();
+            tables.forEach(table -> {
+//                if (!table.getName().equals("patient")) {
 //                    return;
 //                }
-//                Class<?> classDTO = TableToDTOMap.mapToDTO(table.getName());
-//                CompilationUnit unit = new SourceCodeGenerator().create(table, classDTO);
-//                System.out.println(unit);
-//            });
-
+                Class<?> classDTO = TableToDTOMap.mapToDTO(table.getName());
+                CompilationUnit unit = new SourceCodeGenerator().create(table, classDTO);
+                System.out.println(formatSource(formatter, unit.toString()));
+            });
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
