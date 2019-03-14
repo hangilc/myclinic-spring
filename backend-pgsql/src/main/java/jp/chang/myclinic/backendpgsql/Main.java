@@ -11,11 +11,20 @@ public class Main {
 
     private void run(String[] args) {
         confirmMockPatient();
-        DB.get(conn -> {
+        DB.tx(conn -> {
             Table.setConnection(conn);
-            PersistencePgsql persistence = new PersistencePgsql();
-            PatientDTO p = persistence.getPatient(198);
-            System.out.println(p);
+            PatientDTO patient = new PatientDTO();
+            patient.lastName = "田中";
+            patient.firstName = "一郎";
+            patient.lastNameYomi = "たなか";
+            patient.firstNameYomi = "いちろう";
+            patient.sex = "M";
+            patient.birthday = "1950-04-12";
+            patient.address = "address";
+            patient.phone = "phone";
+            PatientTable patientTable = new PatientTable();
+            patientTable.insert(patient);
+            System.out.println(patient);
             return null;
         });
     }

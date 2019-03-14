@@ -39,16 +39,19 @@ public class DB {
 
     public static <T> T get(Proc<T> proc){
         try (Connection conn = getConnection()){
+            conn.setAutoCommit(true);
             return proc.call(conn);
         } catch(SQLException e){
             throw new RuntimeException(e);
         }
     }
 
-    public <T> T tx(Proc<T> proc){
+    public static <T> T tx(Proc<T> proc){
         Connection conn = null;
         try {
             conn = getConnection();
+            conn.setAutoCommit(false);
+            conn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
             T value = proc.call(conn);
             conn.commit();
             return value;
