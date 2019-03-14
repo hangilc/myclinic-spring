@@ -44,12 +44,14 @@ public class PgsqlTables implements Runnable {
             List<Table> tables = listTables();
             Formatter formatter = new Formatter();
             tables.forEach(table -> {
-                if (!table.getName().equals("patient")) {
-                    return;
-                }
+//                if (!table.getName().equals("patient")) {
+//                    return;
+//                }
                 Class<?> classDTO = TableToDTOMap.mapToDTO(table.getName());
-                CompilationUnit unit = new SourceCodeGenerator().create(table, classDTO);
-                System.out.println(formatSource(formatter, unit.toString()));
+                SourceCodeGenerator gen = new SourceCodeGenerator();
+                CompilationUnit unit = gen.create(table, classDTO);
+                String src = formatSource(formatter, unit.toString());
+                gen.save(src);
             });
         } catch (SQLException e) {
             throw new RuntimeException(e);
