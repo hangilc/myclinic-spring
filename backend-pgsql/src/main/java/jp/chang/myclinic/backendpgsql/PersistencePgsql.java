@@ -4,8 +4,6 @@ import jp.chang.myclinic.backend.Persistence;
 import jp.chang.myclinic.backendpgsql.table.PatientTable;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;

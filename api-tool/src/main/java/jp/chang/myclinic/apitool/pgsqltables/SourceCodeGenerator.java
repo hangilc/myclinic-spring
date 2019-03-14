@@ -35,7 +35,6 @@ public class SourceCodeGenerator {
     private String dtoClassName;
     private Class<?> dtoClass;
     private Helper helper = new Helper();
-    private static Path baseDir = Paths.get("backend-pgsql/src/main/java/jp/chang/myclinic/backendpgsql/tablebase");
 
     CompilationUnit create(Table table, Class<?> dtoClass) {
         this.unit = new CompilationUnit();
@@ -62,8 +61,8 @@ public class SourceCodeGenerator {
         return unit;
     }
 
-    void save(String src) {
-        Path path = baseDir.resolve(className + ".java");
+    void save(Path dir, String src) {
+        Path path = dir.resolve(className + ".java");
         System.out.println(path);
         try {
             Files.write(path, src.getBytes());

@@ -9,6 +9,7 @@ import jp.chang.myclinic.apitool.lib.Helper;
 import picocli.CommandLine.Command;
 
 import java.math.BigDecimal;
+import java.nio.file.Path;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +26,10 @@ public class PgsqlTables implements Runnable {
     private Connection conn;
     @Inject
     private Helper helper;
+    @Inject @Named("backend-pgsql-dir")
+    private Path backendPgsqlDir;
+    @Inject
+    private TableCodeGenerator tableGen;
 
     private DatabaseMetaData meta;
 
@@ -43,15 +48,21 @@ public class PgsqlTables implements Runnable {
             Map<String, List<String>> typeMap = new HashMap<>();
             List<Table> tables = listTables();
             Formatter formatter = new Formatter();
+            Path tableBaseDir = backendPgsqlDir.resolve("tablebase");
+            Path tableDir = backendPgsqlDir.resolve("table");
             tables.forEach(table -> {
-//                if (!table.getName().equals("patient")) {
-//                    return;
-//                }
+                if (!table.getName().equals("patient")) {
+                    return;
+                }
                 Class<?> classDTO = TableToDTOMap.mapToDTO(table.getName());
                 SourceCodeGenerator gen = new SourceCodeGenerator();
-                CompilationUnit unit = gen.create(table, classDTO);
-                String src = formatSource(formatter, unit.toString());
-                gen.save(src);
+//                CompilationUnit unit = gen.create(table, classDTO);
+//                String src = formatSource(formatter, unit.toString());
+//                gen.save(tableBaseDir, src);
+                {
+                    String src = formatSource(formatter, tableGen.generate(table).toString());
+                    System.out.println(src);
+                }
             });
         } catch (SQLException e) {
             throw new RuntimeException(e);

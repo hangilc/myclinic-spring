@@ -7,6 +7,8 @@ import jp.chang.myclinic.apitool.pgsqltables.PgsqlTables;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -22,6 +24,8 @@ public class Main {
                 bind(Connection.class).annotatedWith(Names.named("pgsql"))
                         .toProvider(PgsqlConnectionProvider.class);
                 bind(Helper.class).in(Singleton.class);
+                bind(Path.class).annotatedWith(Names.named("backend-pgsql-dir"))
+                        .toInstance(Paths.get("backend-pgsql/src/main/java/jp/chang/myclinic/backendpgsql"));
             }
         });
         CommandLine commandLine = new CommandLine(new Main());
