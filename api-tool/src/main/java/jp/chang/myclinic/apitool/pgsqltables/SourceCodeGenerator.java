@@ -4,20 +4,22 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.ast.type.WildcardType;
 import jp.chang.myclinic.apitool.lib.Helper;
 
 import java.lang.reflect.Field;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.github.javaparser.ast.Modifier.Keyword;
+import static com.github.javaparser.ast.NodeList.nodeList;
 import static java.util.stream.Collectors.toList;
 
 public class SourceCodeGenerator {
@@ -46,7 +48,37 @@ public class SourceCodeGenerator {
         addClass(className);
         declareColumnField();
         addColumnInitializer(table.getColumns(), table.getName());
+        addGetTableName(table.getName());
+        addGetClassDTO();
+        addGetColumns();
         return unit;
+    }
+
+    private void addGetColumns() {
+        MethodDeclaration method = classDecl.addMethod("getColumns", Keyword.PROTECTED);
+        method.setType(createGenericType("List", "Column", dtoClassName));
+        method.addAnnotation(new MarkerAnnotationExpr("Override"));
+        Statement stmt = StaticJavaParser.parseStatement("return columns;");
+        method.setBody(new BlockStmt(nodeList(stmt)));
+
+    }
+
+    private void addGetClassDTO(){
+        MethodDeclaration method = classDecl.addMethod("getClassDTO", Keyword.PROTECTED);
+        method.setType(createGenericType("Class", dtoClassName));
+        method.addAnnotation(new MarkerAnnotationExpr("Override"));
+        Statement stmt = StaticJavaParser.parseStatement(
+                String.format("return %s.class;", dtoClassName));
+        method.setBody(new BlockStmt(nodeList(stmt)));
+    }
+
+    private void addGetTableName(String tableName) {
+        MethodDeclaration method = classDecl.addMethod("getTableName", Keyword.PROTECTED);
+        method.setType(new ClassOrInterfaceType(null, "String"));
+        method.addAnnotation(new MarkerAnnotationExpr("Override"));
+        Statement stmt = StaticJavaParser.parseStatement(
+                String.format("return \"%s\";", tableName));
+        method.setBody(new BlockStmt(nodeList(stmt)));
     }
 
     private void setPackage(String packageName) {
@@ -115,29 +147,6 @@ public class SourceCodeGenerator {
         }
     }
 
-    private Expression createSetterLambda(Column column) {
-        Class<?> sqlType = column.getJdbcType();
-        Class<?> dtoFieldType = getDTOFieldClass(column.getDTOField());
-        Expression lefthandExpr = new FieldAccessExpr(new NameExpr("dto"), column.getDTOField());
-        Expression value;
-        System.out.println(sqlType);
-        System.out.println(dtoFieldType);
-        if (sqlType == dtoFieldType) {
-            value = new CastExpr(new ClassOrInterfaceType(null, dtoFieldType.getSimpleName()),
-                    new NameExpr("o"));
-        } else if( dtoFieldType == LocalDate.class ){
-            value = new BooleanLiteralExpr(true);
-        } else {
-            value = new BooleanLiteralExpr(true);
-        }
-        AssignExpr assignExpr = new AssignExpr(lefthandExpr, value, AssignExpr.Operator.ASSIGN);
-        ExpressionStmt assignStmt = new ExpressionStmt(assignExpr);
-        return new LambdaExpr(
-                NodeList.nodeList(new Parameter(new ClassOrInterfaceType(null, "Object"), "o"),
-                        new Parameter(new ClassOrInterfaceType(null, dtoClassName), "dto")),
-                new BlockStmt(NodeList.nodeList(assignStmt)));
-    }
-
     private ClassOrInterfaceType createGenericType(String name, String paramType) {
         return new ClassOrInterfaceType(null, new SimpleName(name),
                 NodeList.nodeList(new ClassOrInterfaceType(null, paramType)));
@@ -146,6 +155,10 @@ public class SourceCodeGenerator {
     private ClassOrInterfaceType createGenericType(String name, Type paramType) {
         return new ClassOrInterfaceType(null, new SimpleName(name),
                 NodeList.nodeList(paramType));
+    }
+
+    private ClassOrInterfaceType createGenericType(String name, String paramType1, String paramType2){
+        return createGenericType(name, createGenericType(paramType1, paramType2));
     }
 
 }

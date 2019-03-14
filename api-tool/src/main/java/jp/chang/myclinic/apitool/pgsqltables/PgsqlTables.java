@@ -1,8 +1,8 @@
 package jp.chang.myclinic.apitool.pgsqltables;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.google.googlejavaformat.java.FormatterException;
 import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import jp.chang.myclinic.apitool.lib.Helper;
@@ -12,7 +12,10 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Command(name = "pgsql-tables")
 public class PgsqlTables implements Runnable {
@@ -41,9 +44,9 @@ public class PgsqlTables implements Runnable {
             List<Table> tables = listTables();
             Formatter formatter = new Formatter();
             tables.forEach(table -> {
-//                if (!table.getName().equals("patient")) {
-//                    return;
-//                }
+                if (!table.getName().equals("patient")) {
+                    return;
+                }
                 Class<?> classDTO = TableToDTOMap.mapToDTO(table.getName());
                 CompilationUnit unit = new SourceCodeGenerator().create(table, classDTO);
                 System.out.println(formatSource(formatter, unit.toString()));
