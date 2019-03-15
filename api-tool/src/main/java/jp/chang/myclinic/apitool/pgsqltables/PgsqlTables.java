@@ -56,13 +56,14 @@ public class PgsqlTables implements Runnable {
                 }
                 Class<?> classDTO = TableToDTOMap.mapToDTO(table.getName());
                 SourceCodeGenerator gen = new SourceCodeGenerator();
-//                CompilationUnit unit = gen.create(table, classDTO);
-//                String src = formatSource(formatter, unit.toString());
-//                gen.save(tableBaseDir, src);
-                {
-                    String src = formatSource(formatter, tableGen.generate(table).toString());
-                    System.out.println(src);
-                }
+                CompilationUnit unit = gen.create(table, classDTO);
+                String src = formatSource(formatter, unit.toString());
+                System.out.println(src);
+                //gen.save(tableBaseDir, src);
+//                {
+//                    String src = formatSource(formatter, tableGen.generate(table).toString());
+//                    System.out.println(src);
+//                }
             });
         } catch (SQLException e) {
             throw new RuntimeException(e);

@@ -48,32 +48,54 @@ public abstract class Table<DTO> {
             SqlConsumer<PreparedStatement> setter = stmt -> {
                 int i = 1;
                 for (Column<DTO> c : colmap.get(false)) {
-                    stmt.setObject(i++, c.getFromDTO().apply(dto));
+                    c.getFromDTO().set(stmt, i++, dto);
                 }
             };
             Query.exec(getConnection(), sql, setter);
         } else {
-            String sql = String.format("insert into %s (%s) values (%s) returning %s",
+//            String sql = String.format("insert into %s (%s) values (%s) returning %s",
+//                    getTableName(),
+//                    colmap.get(false).stream().map(Column::getName).collect(joining(",")),
+//                    colmap.get(false).stream().map(c -> "?").collect(joining(",")),
+//                    colmap.get(true).stream().map(Column::getName).collect(joining(","))
+//            );
+//            SqlConsumer<PreparedStatement> setter = stmt -> {
+//                int i = 1;
+//                for (Column<DTO> c : colmap.get(false)) {
+//                    stmt.setObject(i++, c.getFromDTO().apply(dto));
+//                }
+//            };
+//            SqlMapper<DTO> mapper = rs -> {
+//                List<Column<DTO>> autoCols = colmap.get(true);
+//                for (int i = 0; i < autoCols.size(); i++) {
+//                    Object o = rs.getObject(i + 1);
+//                    autoCols.get(i).getFromResultSet().getFromResultSet(rs, dto);
+//                }
+//                return null;
+//            };
+//            Query.get(getConnection(), sql, setter, mapper);
+            String sql = String.format("insert into %s (%s) values (%s)",
                     getTableName(),
                     colmap.get(false).stream().map(Column::getName).collect(joining(",")),
-                    colmap.get(false).stream().map(c -> "?").collect(joining(",")),
-                    colmap.get(true).stream().map(Column::getName).collect(joining(","))
+                    colmap.get(false).stream().map(c -> "?").collect(joining(","))
             );
+            List<Column<DTO>> autoIncs = colmap.get(true);
             SqlConsumer<PreparedStatement> setter = stmt -> {
                 int i = 1;
                 for (Column<DTO> c : colmap.get(false)) {
-                    stmt.setObject(i++, c.getFromDTO().apply(dto));
+                    c.getFromDTO().set(stmt, i++, dto);
                 }
             };
-            SqlMapper<DTO> mapper = rs -> {
-                List<Column<DTO>> autoCols = colmap.get(true);
-                for (int i = 0; i < autoCols.size(); i++) {
-                    Object o = rs.getObject(i + 1);
-                    autoCols.get(i).putIntoDTO().putIntoDTO(rs, dto);
+            SqlConsumer<ResultSet> mapper = rs -> {
+                for(Column<DTO> c: autoIncs){
+                    c.putIntoDTO().getFromResultSet(rs, dto);
                 }
-                return null;
             };
-            Query.get(getConnection(), sql, setter, mapper);
+            int n = Query.update(getConnection(), sql, PreparedStatement.RETURN_GENERATED_KEYS,
+                    setter, mapper);
+            if( n != 1 ){
+                throw new RuntimeException("insert affected non-signle row: " + n);
+            }
         }
     }
 
@@ -95,15 +117,14 @@ public abstract class Table<DTO> {
             DTO result = newInstanceDTO();
             for (int i = 0; i < getColumns().size(); i++) {
                 Column<DTO> c = getColumns().get(i);
-                Object o = rs.getObject(i + 1);
-                c.putIntoDTO().putIntoDTO(rs, result);
+                c.putIntoDTO().getFromResultSet(rs, result);
             }
             return result;
         };
         return Query.get(getConnection(), sql, setter, mapper);
     }
 
-    public void update(DTO dto) {
+    public int update(DTO dto) {
         Map<Boolean, List<Column<DTO>>> colmap = getColumns().stream().collect(groupingBy(Column::isPrimary));
         List<Column<DTO>> primaries = colmap.get(true);
         List<Column<DTO>> nonPrimaries = colmap.get(false);
@@ -118,18 +139,16 @@ public abstract class Table<DTO> {
         SqlConsumer<PreparedStatement> setter = stmt -> {
             int index = 1;
             for (Column<DTO> c : nonPrimaries) {
-                Object o = c.getFromDTO().apply(dto);
-                stmt.setObject(index++, o);
+                c.getFromDTO().set(stmt, index++, dto);
             }
             for (Column<DTO> c : primaries) {
-                Object o = c.getFromDTO().apply(dto);
-                stmt.setObject(index++, o);
+                c.getFromDTO().set(stmt, index++, dto);
             }
         };
-        Query.exec(getConnection(), sql, setter);
+        return Query.update(getConnection(), sql, setter);
     }
 
-    public void delete(Object id) {
+    public int delete(Object id) {
         List<Column<DTO>> primaries = getColumns().stream().filter(Column::isPrimary).collect(toList());
         if (primaries.size() != 1) {
             throw new RuntimeException("Not table with single primary key.");
@@ -142,7 +161,7 @@ public abstract class Table<DTO> {
         SqlConsumer<PreparedStatement> setter = stmt -> {
             stmt.setObject(1, id);
         };
-        Query.exec(getConnection(), sql, setter);
+        return Query.update(getConnection(), sql, setter);
     }
 
     private String colsCache;
@@ -158,7 +177,7 @@ public abstract class Table<DTO> {
         DTO result = newInstanceDTO();
         for (Column<DTO> c : getColumns()) {
             Object o = rs.getObject(c.getName());
-            c.putIntoDTO().putIntoDTO(rs, result);
+            c.putIntoDTO().getFromResultSet(rs, result);
         }
         return result;
     }
@@ -179,7 +198,7 @@ public abstract class Table<DTO> {
             DTO result = newInstanceDTO();
             for (Column<DTO> c : getColumns()) {
                 Object o = rs.getObject(prefix + "_" + c.getName());
-                c.putIntoDTO().putIntoDTO(rs, result);
+                c.putIntoDTO().getFromResultSet(rs, result);
             }
             return result;
         };

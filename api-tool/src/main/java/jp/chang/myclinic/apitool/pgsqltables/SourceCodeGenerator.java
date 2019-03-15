@@ -5,12 +5,14 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.ast.type.UnknownType;
 import com.github.javaparser.ast.type.WildcardType;
 import jp.chang.myclinic.apitool.lib.Helper;
 
@@ -133,16 +135,26 @@ public class SourceCodeGenerator {
         args.add(new StringLiteralExpr(column.getName()));
         args.add(new BooleanLiteralExpr(column.isPrimary()));
         args.add(new BooleanLiteralExpr(column.isAutoIncrement()));
+        args.add(createColumnGetter(column));
         args.add(new ColumnMapperGenerator(column.getDTOField(), column.getJdbcType(),
                 column.getName(), getDTOFieldClass(column.getDTOField()), tableName).generate());
-        args.add(createColumnGetter(column.getDTOField()));
         return new ObjectCreationExpr(null, createGenericType("Column", dtoClassName),
                 NodeList.nodeList(args));
     }
 
-    private Expression createColumnGetter(String dtoFieldName) {
-        String src = String.format("dto -> dto.%s", dtoFieldName);
-        return StaticJavaParser.parseExpression(src);
+    private Expression createColumnGetter(Column column) {
+        Parameter param1 = new Parameter(new UnknownType(), "stmt");
+        Parameter param2 = new Parameter(new UnknownType(), "i");
+        Parameter param3 = new Parameter(new UnknownType(), "dto");
+        Expression expr = stmtSetterExpr(column.getJdbcType(), column.getDTOField());
+        return new LambdaExpr(nodeList(param1, param2, param3), expr);
+    }
+
+    private Expression stmtSetterExpr(Class<?> dbType, String dtoFieldName){
+        Class<?> dtoFieldType = getDTOFieldClass(dtoFieldName);
+        Expression index = new NameExpr("i");
+        FieldAccessExpr value = new FieldAccessExpr(new NameExpr("dto"), dtoFieldName);
+        return new MethodCallExpr(new NameExpr("stmt"), "setInt", nodeList(index, value));
     }
 
     private Class<?> getDTOFieldClass(String name) {

@@ -1,32 +1,33 @@
 package jp.chang.myclinic.backendpgsql;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Function;
 
 public class Column<DTO> {
 
-    public interface ResultSetPutter<T> {
-        void putIntoDTO(ResultSet source, T target) throws SQLException;
+    public interface StatementSetter<T> {
+        void set(PreparedStatement stmt, int index, T source) throws SQLException;
+    }
+
+    public interface ResultSetGetter<T> {
+        void getFromResultSet(ResultSet source, T target) throws SQLException;
     }
 
     private final String name;
     private final boolean isPrimary;
     private final boolean isAutoIncrement;
-    private final ResultSetPutter<DTO> putIntoDTO;
-    private final Function<DTO, Object> getFromDTO;
+    private final StatementSetter<DTO> getFromDTO;
+    private final ResultSetGetter<DTO> putIntoDTO;
 
     public Column(String name, boolean isPrimary, boolean isAutoIncrement,
-                  ResultSetPutter<DTO> putIntoDTO, Function<DTO, Object> getFromDTO) {
+                  StatementSetter<DTO> getFromDTO, ResultSetGetter<DTO> putIntoDTO) {
         this.name = name;
         this.isPrimary = isPrimary;
         this.isAutoIncrement = isAutoIncrement;
-        this.putIntoDTO = putIntoDTO;
         this.getFromDTO = getFromDTO;
-    }
-
-    public Column(String name, ResultSetPutter<DTO> putIntoDTO, Function<DTO, Object> getFromDTO){
-        this(name, false, false, putIntoDTO, getFromDTO);
+        this.putIntoDTO = putIntoDTO;
     }
 
     public String getName() {
@@ -41,11 +42,11 @@ public class Column<DTO> {
         return isAutoIncrement;
     }
 
-    public ResultSetPutter<DTO> putIntoDTO() {
+    public ResultSetGetter<DTO> putIntoDTO() {
         return putIntoDTO;
     }
 
-    public Function<DTO, Object> getFromDTO() {
+    public StatementSetter<DTO> getFromDTO() {
         return getFromDTO;
     }
 
