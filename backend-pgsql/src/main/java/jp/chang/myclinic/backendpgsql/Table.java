@@ -1,5 +1,7 @@
 package jp.chang.myclinic.backendpgsql;
 
+import jp.chang.myclinic.dto.PatientDTO;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -203,5 +205,15 @@ public abstract class Table<DTO> {
             return result;
         };
     }
+
+    public DTO project(ResultSet rs, Query.ResultSetContext ctx) throws SQLException {
+        DTO dto = newInstanceDTO();
+        for(Column<DTO> c: getColumns()){
+            c.putIntoDTO().getFromResultSet(rs, ctx.nextIndex(), dto);
+        }
+        return dto;
+    }
+
+
 
 }

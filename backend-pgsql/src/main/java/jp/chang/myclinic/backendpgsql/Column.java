@@ -12,7 +12,7 @@ public class Column<DTO> {
     }
 
     public interface ResultSetGetter<T> {
-        void getFromResultSet(ResultSet source, T target) throws SQLException;
+        void getFromResultSet(ResultSet source, int index, T target) throws SQLException;
     }
 
     private final String name;

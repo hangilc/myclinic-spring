@@ -74,6 +74,42 @@ public class Query {
         }
     }
 
+    public interface ResultSetContext {
+        int nextIndex();
+    }
+
+    public interface Projector<T> {
+        T project(ResultSet rs, ResultSetContext ctx) throws SQLException;
+    }
+
+    private static class ResultSetContextImpl implements ResultSetContext {
+        private int index = 1;
+
+        @Override
+        public int nextIndex() {
+            return index++;
+        }
+    }
+
+    public static <T> List<T> query(Connection conn, String sql, SqlConsumer<PreparedStatement> stmtSetter,
+                                    Projector<T> projector){
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmtSetter.accept(stmt);
+            ResultSet rs = stmt.executeQuery();
+            List<T> result = new ArrayList<>();
+            while (rs.next()) {
+                ResultSetContext ctx = new ResultSetContextImpl();
+                T t = projector.project(rs, ctx);
+                result.add(t);
+            }
+            stmt.close();
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static <T> List<T> select(Connection conn, String sql, SqlConsumer<PreparedStatement> paramSetter,
                                      SqlMapper<T> mapper) {
         try {
