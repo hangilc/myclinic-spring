@@ -103,61 +103,8 @@ public class TableBaseGenerator {
     }
 
     private Expression createParamSetter(Column column) {
-        return new LambdaExpr(helper.createParameters("stmt", "i", "dto"),
-                stmtSetterExpr(column.getDbType(), column.getDtoField()));
-    }
-
-    private Expression stmtSetterExpr(Class<?> dbType, String dtoFieldName) {
-        Class<?> dtoFieldType = getDTOFieldClass(dtoFieldName);
-        Expression index = new NameExpr("i");
-        FieldAccessExpr value = new FieldAccessExpr(new NameExpr("dto"), dtoFieldName);
-        if (dbType == Integer.class) {
-            if (dtoFieldType == Integer.class) {
-                return new MethodCallExpr(new NameExpr("stmt"), "setInt", nodeList(index, value));
-            } else if( dtoFieldType == String.class ){
-                // stmt.setInt(i, Integer.parseInt(dto.field))
-                Expression cvt = new MethodCallExpr(new NameExpr("Integer"), "parseInt", nodeList(value));
-                return new MethodCallExpr(new NameExpr("stmt"), "setInt", nodeList(index, cvt));
-            }
-        } else if(dbType == String.class){
-            if (dtoFieldType == String.class) {
-                return new MethodCallExpr(new NameExpr("stmt"), "setString", nodeList(index, value));
-            } else if( dtoFieldType == Character.class ){
-                // stmt.setString(i, String.valueOf(dto.field)
-                Expression cvt = new MethodCallExpr(new NameExpr("String"), "valueOf", nodeList(value));
-                return new MethodCallExpr(new NameExpr("stmt"), "setString", nodeList(index, cvt));
-            }
-        } else if( dbType == LocalDate.class ){
-            if( dtoFieldType == String.class ){
-                if( dtoFieldName.equals("validUpto") ) {
-                    // stmt.setObject(i, TableBaseHelper.validUptoFromStringToLocalDate(dto.field)
-                    Expression cvt = new MethodCallExpr(new NameExpr("TableBaseHelper"),
-                            "validUptoFromStringToLocalDate", nodeList(value));
-                    return new MethodCallExpr(new NameExpr("stmt"), "setObject", nodeList(index, cvt));
-                } else {
-                    // stmt.setObject(i, LocalDate.parse(dto.field)
-                    Expression cvt = new MethodCallExpr(new NameExpr("LocalDate"), "parse", nodeList(value));
-                    return new MethodCallExpr(new NameExpr("stmt"), "setObject", nodeList(index, cvt));
-                }
-            }
-        } else if( dbType == BigDecimal.class ) {
-            if( dtoFieldType == Double.class || dtoFieldType == String.class || dtoFieldType == Integer.class ){
-                // stmt.setBigDecimal(i, new BigDecimal(dto.field))
-                Expression cvt = new ObjectCreationExpr(
-                        null, new ClassOrInterfaceType(null, "BigDecimal"), nodeList(value));
-                return new MethodCallExpr(new NameExpr("stmt"), "setBigDecimal", nodeList(index, cvt));
-            }
-        } else if( dbType == LocalDateTime.class ){
-            if( dtoFieldType == String.class ){
-                // stmt.setObject(i, TableBaseHelper.stringToLocalDateTime(dto.field)
-                Expression cvt = new MethodCallExpr(new NameExpr("TableBaseHelper"),
-                        "stringToLocalDateTime", nodeList(value));
-                return new MethodCallExpr(new NameExpr("stmt"), "setObject", nodeList(index, cvt));
-            }
-        }
-        String msg = String.format("Cannot create parameter setter: %s, %s",
-                dbType.getSimpleName(), dtoFieldType.getSimpleName());
-        throw new RuntimeException(msg);
+        Class<?> dtoFieldType = getDTOFieldClass(column.getDtoField());
+        return StatementSetterGenerator.generate(column, dtoFieldType);
     }
 
     private Class<?> getDTOFieldClass(String name) {
