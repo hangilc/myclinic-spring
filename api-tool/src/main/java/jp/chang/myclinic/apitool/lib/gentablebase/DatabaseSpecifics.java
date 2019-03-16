@@ -1,10 +1,11 @@
 package jp.chang.myclinic.apitool.lib.gentablebase;
 
+import java.util.Map;
+
 public interface DatabaseSpecifics {
 
-    String projectPackage();
-    default String tableBasePackage(){
-        return projectPackage() + ".tablebase";
-    }
+    Class<?> mapDatabaseClass(int sqlType, String dbTypeName);
+    String resolveDtoFieldName(String table, String dbColumnName);
+    Class<?> mapTableNameToDtoClass(String tableName);
 
 }

@@ -2,7 +2,7 @@ package jp.chang.myclinic.apitool.lib.gentablebase;
 
 import java.util.List;
 
-class Table {
+public class Table {
 
     private String name;
     private List<Column> columns;

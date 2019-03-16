@@ -15,12 +15,24 @@ public class TableBaseHelper {
     private TableBaseHelper() { }
 
 
-    public static String getValidUpto(LocalDate dbValue){
+    public static String ValidUptoFromLocalDateToString(LocalDate dbValue){
         return dbValue == null ? "0000-00-00" : dbValue.toString();
+    }
+
+    public static LocalDate validUptoFromStringToLocalDate(String value){
+        if( value == null || value.equals("0000-00-00") ){
+            return null;
+        } else {
+            return LocalDate.parse(value);
+        }
     }
 
     public static String localDateTimeToString(LocalDateTime at){
         return at.format(sqlDateTimeFormatter);
+    }
+
+    public static LocalDateTime stringToLocalDateTime(String str){
+        return LocalDateTime.parse(str, sqlDateTimeFormatter);
     }
 
 }

@@ -174,4 +174,27 @@ public class Query {
         }
     }
 
+    public <T, U> List<Pair<T, U>> query(Connection conn, String sql, Projector<T> proj1, Projector<U> proj2,
+                                  Object... params){
+        try {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            int index = 1;
+            for (Object param : params) {
+                stmt.setObject(index++, param);
+            }
+            ResultSet rs = stmt.executeQuery();
+            List<Pair<T, U>> result = new ArrayList<>();
+            while (rs.next()) {
+                ResultSetContext ctx = new ResultSetContextImpl();
+                T t = proj1.project(rs, ctx);
+                U u = proj2.project(rs, ctx);
+                result.add(new Pair<>(t, u));
+            }
+            stmt.close();
+            return result;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

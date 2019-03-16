@@ -1,57 +1,20 @@
 package jp.chang.myclinic.apitool;
 
-import com.google.inject.*;
-import com.google.inject.name.Names;
-import jp.chang.myclinic.apitool.lib.Helper;
 import jp.chang.myclinic.apitool.pgsqltables.PgsqlTables;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.List;
+@Command(name = "api-tool",
+        subcommands = {PgsqlTables.class}
+)
+public class Main implements Runnable {
 
-@Command(name="api-tool")
-public class Main {
-
-    public static void main(String[] args){
-        Injector injector = Guice.createInjector(new AbstractModule(){
-            @Override
-            protected void configure() {
-                bind(Connection.class).annotatedWith(Names.named("pgsql"))
-                        .toProvider(PgsqlConnectionProvider.class);
-                bind(Helper.class).in(Singleton.class);
-                bind(Path.class).annotatedWith(Names.named("backend-pgsql-dir"))
-                        .toInstance(Paths.get("backend-pgsql/src/main/java/jp/chang/myclinic/backendpgsql"));
-            }
-        });
-        CommandLine commandLine = new CommandLine(new Main());
-        List<CommandLine> parsedResults = commandLine
-                .addSubcommand("pgsql-tables", new PgsqlTables())
-                .parse(args);
-        if( parsedResults.size() != 2 ){
-            commandLine.usage(System.out);
-            System.exit(1);
-        }
-        Runnable sub = parsedResults.get(1).getCommand();
-        injector.injectMembers(sub);
-        sub.run();
+    public static void main(String[] args) {
+        CommandLine.run(new Main(), args);
     }
 
-    public static class PgsqlConnectionProvider implements Provider<Connection> {
-
-        @Override
-        public Connection get() {
-            try {
-                return DriverManager.getConnection("jdbc:postgresql://localhost/myclinic",
-                        System.getenv("MYCLINIC_POSTGRES_USER"), System.getenv("MYCLINIC_POSTGRES_PASS"));
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
+    @Override
+    public void run() {
+        CommandLine.usage(this, System.out);
     }
-
 }

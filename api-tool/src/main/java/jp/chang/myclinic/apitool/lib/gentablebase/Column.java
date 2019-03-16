@@ -5,13 +5,13 @@ class Column {
     private String name;
     private boolean isPrimary;
     private boolean isAutoIncrement;
-    private Class<?> jdbcType;
+    private Class<?> dbType;
     private String dtoField;
 
-    public Column(String name, boolean isAutoIncrement, Class<?> jdbcType, String dtoField) {
+    public Column(String name, boolean isAutoIncrement, Class<?> dbType, String dtoField) {
         this.name = name;
         this.isAutoIncrement = isAutoIncrement;
-        this.jdbcType = jdbcType;
+        this.dbType = dbType;
         this.dtoField = dtoField;
     }
 
@@ -31,11 +31,11 @@ class Column {
         return isAutoIncrement;
     }
 
-    public Class<?> getJdbcType() {
-        return jdbcType;
+    public Class<?> getDbType() {
+        return dbType;
     }
 
-    public String getDTOField() {
+    public String getDtoField() {
         return dtoField;
     }
 
@@ -45,7 +45,7 @@ class Column {
                 "name='" + name + '\'' +
                 ", isPrimary=" + isPrimary +
                 ", isAutoIncrement=" + isAutoIncrement +
-                ", jdbcType=" + jdbcType +
+                ", dbType=" + dbType +
                 ", dtoField='" + dtoField + '\'' +
                 '}';
     }

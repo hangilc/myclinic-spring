@@ -6,21 +6,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.*;
 import static jp.chang.myclinic.backendpgsql.Query.SqlConsumer;
-import static jp.chang.myclinic.backendpgsql.Query.SqlMapper;
 
 public abstract class Table<DTO> implements Query.Projector<DTO> {
 
-    private static final ThreadLocal<Connection> threadLocalConnection = new ThreadLocal<>();
+    private static Connection theConnection;
 
     public static void setConnection(Connection conn){
-        threadLocalConnection.set(conn);
+        theConnection = conn;
     }
 
     public static Connection getConnection(){
-        return threadLocalConnection.get();
+        return theConnection;
     }
 
     protected abstract String getTableName();
