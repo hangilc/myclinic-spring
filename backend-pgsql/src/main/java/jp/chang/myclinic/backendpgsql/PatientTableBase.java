@@ -97,12 +97,4 @@ public class PatientTableBase extends Table<PatientDTO> {
         return columns;
     }
 
-    public List<PatientDTO> getPatient(Connection conn,int patientId){
-        return Query.query(conn, "select * from patient where patient_id = ?",
-                stmt -> {
-                    stmt.setInt(1, patientId);
-                },
-                this::project
-                );
-    }
 }
