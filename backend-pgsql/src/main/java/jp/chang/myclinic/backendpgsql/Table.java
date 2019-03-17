@@ -1,27 +1,15 @@
 package jp.chang.myclinic.backendpgsql;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.*;
 import static jp.chang.myclinic.backendpgsql.Query.SqlConsumer;
 
 public abstract class Table<DTO> implements Query.Projector<DTO> {
-
-    private static Connection theConnection;
-
-    public static void setConnection(Connection conn){
-        theConnection = conn;
-    }
-
-    public static Connection getConnection(){
-        return theConnection;
-    }
 
     protected abstract String getTableName();
 
@@ -51,7 +39,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO> {
                     c.getFromDTO().set(stmt, i++, dto);
                 }
             };
-            Query.exec(getConnection(), sql, setter);
+            Query.exec(sql, setter);
         } else {
             String sql = String.format("insert into %s (%s) values (%s)",
                     getTableName(),
@@ -71,7 +59,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO> {
                     c.putIntoDTO().getFromResultSet(rs, i++, dto);
                 }
             };
-            int n = Query.update(getConnection(), sql, PreparedStatement.RETURN_GENERATED_KEYS,
+            int n = Query.update(sql, PreparedStatement.RETURN_GENERATED_KEYS,
                     mapper, setter);
             if( n != 1 ){
                 throw new RuntimeException("insert affected non-signle row: " + n);
@@ -87,7 +75,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO> {
         Column<DTO> primary = primaries.get(0);
         String sql = String.format("select * from %s where %s = ?",
                 getTableName(), primary.getName());
-        return Query.get(getConnection(), sql, this, id);
+        return Query.get(sql, this, id);
     }
 
     public int update(DTO dto) {
@@ -111,7 +99,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO> {
                 c.getFromDTO().set(stmt, index++, dto);
             }
         };
-        return Query.update(getConnection(), sql, setter);
+        return Query.update(sql, setter);
     }
 
     public int delete(Object id) {
@@ -127,7 +115,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO> {
         SqlConsumer<PreparedStatement> setter = stmt -> {
             stmt.setObject(1, id);
         };
-        return Query.update(getConnection(), sql, setter);
+        return Query.update(sql, setter);
     }
 
     public DTO project(ResultSet rs, Query.ResultSetContext ctx) throws SQLException {

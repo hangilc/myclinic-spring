@@ -19,12 +19,12 @@ public class PatientTable extends PatientTableBase {
                 "  p.first_name_yomi like ?)";
         String last = "%" + textLastName + "%";
         String first = "%" + textFirstName + "%";
-        return Query.query(getConnection(), sql, this, last, last, first, first);
+        return Query.query(sql, this, last, last, first, first);
     }
 
     public List<PatientDTO> listRecentlyRegisteredPatient(int n){
         String sql = "select * from patient order by patient_id desc limit ?";
-        return Query.query(getConnection(), sql, this, n);
+        return Query.query(sql, this, n);
     }
 
 }

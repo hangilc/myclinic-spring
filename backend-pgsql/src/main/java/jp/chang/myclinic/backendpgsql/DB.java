@@ -3,56 +3,74 @@ package jp.chang.myclinic.backendpgsql;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DB {
 
-    private static HikariDataSource ds;
-
-    static {
-        HikariConfig config = new HikariConfig();
-        String host = System.getenv("MYCLINIC_POSTGRES_HOST");
-        String user = System.getenv("MYCLINIC_POSTGRES_USER");
-        String pass = System.getenv("MYCLINIC_POSTGRES_PASS");
-        config.setJdbcUrl("jdbc:postgresql://" + host + "/myclinic");
-        config.setUsername(user);
-        config.setPassword(pass);
-        DB.ds = new HikariDataSource(config);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("closing data souce");
-            DB.ds.close();
-        }));
-    }
-
     private DB() {
 
     }
 
-    private static Connection getConnection() throws SQLException {
-        return ds.getConnection();
+    private static DataSource ds;
+    private static ThreadLocal<Connection> threadLocalConnection = new ThreadLocal<>();
+
+    static {
+        Query.setConnectionProvider(threadLocalConnection::get);
+    }
+
+    private static Connection openConnection() throws SQLException {
+        Connection conn = ds.getConnection();
+        threadLocalConnection.set(conn);
+        return conn;
+    }
+
+    public static void setDataSource(DataSource ds){
+        DB.ds = ds;
+    }
+
+    private static Connection getConnection() {
+        return threadLocalConnection.get();
+    }
+
+    public interface ProcVoid {
+        void exec() throws SQLException;
     }
 
     public interface Proc<T> {
-        T call(Connection conn) throws SQLException;
+        T call() throws SQLException;
     }
 
-    public static <T> T get(Proc<T> proc){
-        try (Connection conn = getConnection()){
+    public static void proc(ProcVoid proc){
+        try (Connection conn = openConnection()){
             conn.setAutoCommit(true);
-            return proc.call(conn);
+            proc.exec();
         } catch(SQLException e){
             throw new RuntimeException(e);
+        } finally {
+            threadLocalConnection.set(null);
+        }
+    }
+
+    public static <T> T query(Proc<T> proc){
+        try (Connection conn = openConnection()){
+            conn.setAutoCommit(true);
+            return proc.call();
+        } catch(SQLException e){
+            throw new RuntimeException(e);
+        } finally {
+            threadLocalConnection.set(null);
         }
     }
 
     public static <T> T tx(Proc<T> proc){
         Connection conn = null;
         try {
-            conn = getConnection();
+            conn = openConnection();
             conn.setAutoCommit(false);
             conn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
-            T value = proc.call(conn);
+            T value = proc.call();
             conn.commit();
             return value;
         } catch(Exception ex){
@@ -72,6 +90,7 @@ public class DB {
                     e.printStackTrace();
                 }
             }
+            threadLocalConnection.set(null);
         }
     }
 

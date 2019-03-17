@@ -12,9 +12,10 @@ public class Main {
     }
 
     private void run(String[] args) {
-        confirmMockPatient();
-        DB.tx(conn -> {
-            Table.setConnection(conn);
+        DB.setDataSource(PgsqlDataSource.create());
+        DB.proc(this::confirmMockPatient);
+        DB.tx(() -> {
+            confirmMockPatient();
             PatientTable patientTable = new PatientTable();
             System.out.println(patientTable.searchPatient("田中", "うた"));
             System.out.println(patientTable.listRecentlyRegisteredPatient(3));
@@ -34,16 +35,12 @@ public class Main {
         });
     }
 
-    private void confirmMockPatient(){
-        DB.get(conn -> {
-            Table.setConnection(conn);
-            PatientTableBase patientTable = new PatientTableBase();
-            PatientDTO patient = patientTable.getById(1);
-            if( !(patient != null && patient.lastName.equals("試験") && patient.firstName.equals("データ")) ){
-                throw new RuntimeException("Accessing database inappropriate for testing.");
-            }
-            return null;
-        });
+    private void confirmMockPatient() {
+        PatientTableBase patientTable = new PatientTableBase();
+        PatientDTO patient = patientTable.getById(1);
+        if (!(patient != null && patient.lastName.equals("試験") && patient.firstName.equals("データ"))) {
+            throw new RuntimeException("Accessing database inappropriate for testing.");
+        }
     }
 
 }
