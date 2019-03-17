@@ -3,11 +3,13 @@ package jp.chang.myclinic.apitool;
 import jp.chang.myclinic.apitool.pgsqltablebases.PgsqlTableBases;
 import jp.chang.myclinic.apitool.pgsqltables.PgsqlTables;
 import jp.chang.myclinic.apitool.sqliteschema.SqliteSchema;
+import jp.chang.myclinic.apitool.sqlitetables.SqliteTables;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "api-tool",
-        subcommands = {PgsqlTableBases.class, PgsqlTables.class, SqliteSchema.class}
+        subcommands = {PgsqlTableBases.class, PgsqlTables.class, SqliteSchema.class,
+        SqliteTables.class}
 )
 public class Main implements Runnable {
 
