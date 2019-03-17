@@ -1,11 +1,12 @@
 package jp.chang.myclinic.apitool;
 
+import jp.chang.myclinic.apitool.pgsqltablebases.PgsqlTableBases;
 import jp.chang.myclinic.apitool.pgsqltables.PgsqlTables;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "api-tool",
-        subcommands = {PgsqlTables.class}
+        subcommands = {PgsqlTableBases.class, PgsqlTables.class}
 )
 public class Main implements Runnable {
 

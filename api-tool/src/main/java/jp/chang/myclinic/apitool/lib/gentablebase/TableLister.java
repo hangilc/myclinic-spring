@@ -1,5 +1,7 @@
 package jp.chang.myclinic.apitool.lib.gentablebase;
 
+import jp.chang.myclinic.apitool.databasespecifics.DatabaseSpecifics;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

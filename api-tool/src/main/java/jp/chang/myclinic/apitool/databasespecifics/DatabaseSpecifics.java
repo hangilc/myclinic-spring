@@ -1,4 +1,4 @@
-package jp.chang.myclinic.apitool.lib.gentablebase;
+package jp.chang.myclinic.apitool.databasespecifics;
 
 import java.util.Map;
 

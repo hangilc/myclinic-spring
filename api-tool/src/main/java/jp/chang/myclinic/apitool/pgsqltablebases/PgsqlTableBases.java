@@ -1,19 +1,17 @@
-package jp.chang.myclinic.apitool.pgsqltables;
+package jp.chang.myclinic.apitool.pgsqltablebases;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
 import jp.chang.myclinic.apitool.PgsqlConnectionProvider;
-import jp.chang.myclinic.apitool.databasespecifics.DatabaseSpecifics;
 import jp.chang.myclinic.apitool.databasespecifics.PgsqlSpecifics;
 import jp.chang.myclinic.apitool.lib.Helper;
+import jp.chang.myclinic.apitool.databasespecifics.DatabaseSpecifics;
 import jp.chang.myclinic.apitool.lib.gentablebase.Table;
 import jp.chang.myclinic.apitool.lib.gentablebase.TableBaseGenerator;
-import jp.chang.myclinic.apitool.lib.gentablebase.TableGenerator;
 import jp.chang.myclinic.apitool.lib.gentablebase.TableLister;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -24,8 +22,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-@CommandLine.Command(name = "pgsql-tables", description = "creates Table.java in backend-pgsql module")
-public class PgsqlTables implements Runnable {
+@Command(name = "pgsql-tablebases", description = "creates TableBase.java files in backend-pgsql")
+public class PgsqlTableBases implements Runnable {
 
     @CommandLine.Option(names = {"--dry-run"})
     private boolean dryRun;
@@ -38,14 +36,14 @@ public class PgsqlTables implements Runnable {
     @Override
     public void run(){
         Formatter formatter = new Formatter();
-        try(Connection conn = PgsqlConnectionProvider.get()){
+        try( Connection conn = PgsqlConnectionProvider.get() ){
             TableLister tableLister = new TableLister(dbSpecs);
             List<Table> tables = tableLister.listTables(conn);
             for(Table table: tables){
-//                if( !table.getName().equals("visit") ){
+//                if( !table.getName().equals("patient") ){
 //                    continue;
 //                }
-                TableGenerator gen = new TableGenerator(table, dbSpecs);
+                TableBaseGenerator gen = new TableBaseGenerator(table, dbSpecs);
                 gen.setBasePackage(basePackage);
                 CompilationUnit unit = gen.generate();
                 String src = formatter.formatSource(unit.toString());
@@ -57,18 +55,16 @@ public class PgsqlTables implements Runnable {
     }
 
     private void save(Table table, String src){
-        String file = helper.snakeToCapital(table.getName()) + "Table.java";
-        Path path = baseDir.resolve("table").resolve(file);
-        if( !Files.exists(path) ){
-            System.out.println("saving: " + path.toString());
-            if( dryRun ){
-                System.out.println(src);
-            } else {
-                try {
-                    Files.write(path, src.getBytes());
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
+        String file = helper.snakeToCapital(table.getName()) + "TableBase.java";
+        Path path = baseDir.resolve("tablebase").resolve(file);
+        System.out.println("saving: " + path.toString());
+        if( dryRun ){
+            System.out.println(src);
+        } else {
+            try {
+                Files.write(path, src.getBytes());
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
             }
         }
     }

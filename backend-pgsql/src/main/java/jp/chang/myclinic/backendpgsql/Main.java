@@ -36,7 +36,7 @@ public class Main {
     }
 
     private void confirmMockPatient() {
-        PatientTableBase patientTable = new PatientTableBase();
+        PatientTable patientTable = new PatientTable();
         PatientDTO patient = patientTable.getById(1);
         if (!(patient != null && patient.lastName.equals("試験") && patient.firstName.equals("データ"))) {
             throw new RuntimeException("Accessing database inappropriate for testing.");

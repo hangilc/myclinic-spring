@@ -1,7 +1,7 @@
-package jp.chang.myclinic.apitool.pgsqltables;
+package jp.chang.myclinic.apitool.databasespecifics;
 
 import jp.chang.myclinic.apitool.lib.Helper;
-import jp.chang.myclinic.apitool.lib.gentablebase.DatabaseSpecifics;
+import jp.chang.myclinic.apitool.databasespecifics.DatabaseSpecifics;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-class PgsqlSpecifics implements DatabaseSpecifics {
+public class PgsqlSpecifics implements DatabaseSpecifics {
 
     private Helper helper = Helper.getInstance();
 
