@@ -52,8 +52,7 @@ class DtoExtractorGenerator {
     }
 
     static {
-        addMap(LocalDate.class, String.class, obj -> new MethodCallExpr(
-                new NameExpr("TableBaseHelper"), "localDateTimeToString", NodeList.nodeList(obj)));
+        addMap(LocalDate.class, String.class, obj -> new MethodCallExpr(obj, "toString", NodeList.nodeList()));
         addMap(LocalDate.class, ValidUpto.class, obj -> new MethodCallExpr(
                 new NameExpr("TableBaseHelper"), "validUptoFromLocalDateToString", NodeList.nodeList(obj)));
         addMap(BigDecimal.class, Double.class, obj -> new MethodCallExpr(

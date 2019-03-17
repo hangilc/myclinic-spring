@@ -11,9 +11,11 @@ import com.github.javaparser.ast.NodeList;
 import static com.github.javaparser.ast.NodeList.nodeList;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnknownType;
@@ -63,6 +65,9 @@ public class TableBaseGenerator {
         ClassOrInterfaceDeclaration classDecl = addClass(unit, tableClassName);
         declareColumnField(classDecl);
         addColumnInitializer(classDecl, table.getColumns(), table.getName());
+        addGetTableNameMethod(classDecl, table.getName());
+        addGetClassDtoMethod(classDecl, dtoClassName);
+        addGetColumnsMethod(classDecl, dtoClassName);
         return unit;
     }
 
@@ -128,6 +133,33 @@ public class TableBaseGenerator {
             String msg = String.format("Cannot find %s in %s", name, dtoClass.getSimpleName());
             throw new RuntimeException(msg);
         }
+    }
+
+    private void addGetTableNameMethod(ClassOrInterfaceDeclaration classDecl, String tableName){
+        MethodDeclaration methodDecl = classDecl.addMethod("getTableName", Keyword.PROTECTED);
+        methodDecl.setType(new ClassOrInterfaceType(null, "String"));
+        methodDecl.addAnnotation("Override");
+        methodDecl.setBody(new BlockStmt(nodeList(
+                new ReturnStmt(new StringLiteralExpr(tableName))
+        )));
+    }
+
+    private void addGetClassDtoMethod(ClassOrInterfaceDeclaration classDecl, String dtoClassName){
+        MethodDeclaration methodDecl = classDecl.addMethod("getClassDTO", Keyword.PROTECTED);
+        methodDecl.setType(helper.createGenericType("Class", dtoClassName));
+        methodDecl.addAnnotation("Override");
+        methodDecl.setBody(new BlockStmt(nodeList(
+                new ReturnStmt(new FieldAccessExpr(new NameExpr(dtoClassName), "class"))
+        )));
+    }
+
+    private void addGetColumnsMethod(ClassOrInterfaceDeclaration classDecl, String dtoClassName){
+        MethodDeclaration methodDecl = classDecl.addMethod("getColumns", Keyword.PROTECTED);
+        methodDecl.setType(helper.createGenericType("List", "Column", dtoClassName));
+        methodDecl.addAnnotation("Override");
+        methodDecl.setBody(new BlockStmt(nodeList(
+                new ReturnStmt(new NameExpr("columns"))
+        )));
     }
 
 }
