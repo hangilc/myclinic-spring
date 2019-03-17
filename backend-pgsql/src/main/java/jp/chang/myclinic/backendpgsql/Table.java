@@ -31,7 +31,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO> {
             String sql = String.format("insert into %s (%s) values (%s)",
                     getTableName(),
                     colmap.get(false).stream().map(Column::getName).collect(joining(",")),
-                    colmap.get(false).stream().map(c -> "?").collect(joining(","))
+                    colmap.get(false).stream().map(Column::getPlaceHolder).collect(joining(","))
             );
             SqlConsumer<PreparedStatement> setter = stmt -> {
                 int i = 1;
@@ -44,7 +44,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO> {
             String sql = String.format("insert into %s (%s) values (%s)",
                     getTableName(),
                     colmap.get(false).stream().map(Column::getName).collect(joining(",")),
-                    colmap.get(false).stream().map(c -> "?").collect(joining(","))
+                    colmap.get(false).stream().map(Column::getPlaceHolder).collect(joining(","))
             );
             List<Column<DTO>> autoIncs = colmap.get(true);
             SqlConsumer<PreparedStatement> setter = stmt -> {
@@ -87,8 +87,8 @@ public abstract class Table<DTO> implements Query.Projector<DTO> {
         }
         String sql = String.format("update %s set %s where %s",
                 getTableName(),
-                nonPrimaries.stream().map(c -> c.getName() + "=?").collect(joining(",")),
-                primaries.stream().map(c -> c.getName() + "=?").collect(joining(" and "))
+                nonPrimaries.stream().map(c -> c.getName() + "=" + c.getPlaceHolder()).collect(joining(",")),
+                primaries.stream().map(c -> c.getName() + "=" + c.getPlaceHolder()).collect(joining(" and "))
         );
         SqlConsumer<PreparedStatement> setter = stmt -> {
             int index = 1;
@@ -124,6 +124,15 @@ public abstract class Table<DTO> implements Query.Projector<DTO> {
             c.putIntoDTO().getFromResultSet(rs, ctx.nextIndex(), dto);
         }
         return dto;
+    }
+
+    public Column<DTO> getColumnByDbColumnName(String dbColumnName){
+        for(Column<DTO> c: getColumns()){
+            if( c.getName().equals(dbColumnName) ){
+                return c;
+            }
+        }
+        return null;
     }
 
 }

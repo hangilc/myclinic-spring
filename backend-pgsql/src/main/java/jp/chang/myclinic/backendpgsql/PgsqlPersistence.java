@@ -1,18 +1,28 @@
 package jp.chang.myclinic.backendpgsql;
 
 import jp.chang.myclinic.backend.Persistence;
-import jp.chang.myclinic.backendpgsql.table.PatientTable;
+import jp.chang.myclinic.backendpgsql.table.*;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PgsqlPersistence implements Persistence {
 
     private PatientTable patientTable = new PatientTable();
+    private VisitTable visitTable = new VisitTable();
+    private ShahokokuhoTable shahokokuhoTable = new ShahokokuhoTable();
+    private KoukikoureiTable koukikoureiTable = new KoukikoureiTable();
+    private RoujinTable roujinTable = new RoujinTable();
+    private KouhiTable kouhiTable = new KouhiTable();
+    private WqueueTable wqueueTable = new WqueueTable();
+    private ShinryouAttrTable shinryouAttrTable = new ShinryouAttrTable();
+    private DrugAttrTable drugAttrTable = new DrugAttrTable();
+    private ShoukiTable shoukiTable = new ShoukiTable();
+    private TextTable textTable = new TextTable();
+    private PracticeLogTable practiceLogTable = new PracticeLogTable();
 
     @Override
     public int enterPatient(PatientDTO patient) {
@@ -27,102 +37,125 @@ public class PgsqlPersistence implements Persistence {
 
     @Override
     public int enterVisit(VisitDTO visit) {
-        throw new RuntimeException("not implemented");
+        visitTable.insert(visit);
+        return visit.visitId;
     }
 
     @Override
     public VisitDTO getVisit(int visitId) {
-        throw new RuntimeException("not implemented");
+        return visitTable.getById(visitId);
     }
 
     @Override
     public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
-        throw new RuntimeException("not implemented");
+        return shahokokuhoTable.findAvailable(patientId, at);
     }
 
     @Override
     public ShahokokuhoDTO getShahokokuho(int shahokokuhoId) {
-        throw new RuntimeException("not implemented");
+        return shahokokuhoTable.getById(shahokokuhoId);
     }
 
     @Override
     public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
-        throw new RuntimeException("not implemented");
+        return koukikoureiTable.findAvailable(patientId, at);
     }
 
     @Override
     public KoukikoureiDTO getKoukikourei(int koukikoureiId) {
-        throw new RuntimeException("not implemented");
+        return koukikoureiTable.getById(koukikoureiId);
     }
 
     @Override
     public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
-        throw new RuntimeException("not implemented");
+        return roujinTable.findAvailable(patientId, at);
     }
 
     @Override
     public RoujinDTO getRoujin(int roujinId) {
-        throw new RuntimeException("not implemented");
+        return roujinTable.getById(roujinId);
     }
 
     @Override
     public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at) {
-        throw new RuntimeException("not implemented");
+        return kouhiTable.findAvailable(patientId, at);
     }
 
     @Override
     public KouhiDTO getKouhi(int kouhiId) {
-        throw new RuntimeException("not implemented");
+        return kouhiTable.getById(kouhiId);
     }
 
     @Override
     public void enterWqueue(WqueueDTO wqueue) {
-        throw new RuntimeException("not implemented");
+        wqueueTable.insert(wqueue);
     }
 
     @Override
     public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds) {
-        throw new RuntimeException("not implemented");
+        List<ShinryouAttrDTO> result = new ArrayList<>();
+        for(Integer shinryouId: shinryouIds){
+            ShinryouAttrDTO dto = shinryouAttrTable.getById(shinryouId);
+            if( dto != null ){
+                result.add(dto);
+            }
+        }
+        return result;
     }
 
     @Override
     public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds) {
-        throw new RuntimeException("not implemented");
+        List<DrugAttrDTO> result = new ArrayList<>();
+        for(Integer drugId: drugIds){
+            DrugAttrDTO dto = drugAttrTable.getById(drugId);
+            if( dto != null ){
+                result.add(dto);
+            }
+        }
+        return result;
     }
 
     @Override
     public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds) {
-        throw new RuntimeException("not implemented");
+        List<ShoukiDTO> result = new ArrayList<>();
+        for(Integer visitId: visitIds){
+            ShoukiDTO dto = shoukiTable.getById(visitId);
+            if( dto != null ){
+                result.add(dto);
+            }
+        }
+        return result;
     }
 
     @Override
     public int enterText(TextDTO text) {
-        throw new RuntimeException("not implemented");
+        textTable.insert(text);
+        return text.textId;
     }
 
     @Override
     public TextDTO getText(int textId) {
-        throw new RuntimeException("not implemented");
+        return textTable.getById(textId);
     }
 
     @Override
     public void updateText(TextDTO text) {
-        throw new RuntimeException("not implemented");
+        textTable.update(text);
     }
 
     @Override
     public void deleteText(int textId) {
-        throw new RuntimeException("not implemented");
+        textTable.delete(textId);
     }
 
     @Override
     public List<TextDTO> listText(int visitId) {
-        throw new RuntimeException("not implemented");
+        return textTable.listText(visitId);
     }
 
     @Override
     public void enterPracticeLog(PracticeLogDTO practiceLog) {
-        throw new RuntimeException("not implemented");
+        practiceLogTable.insert(practiceLog);
     }
 
 }

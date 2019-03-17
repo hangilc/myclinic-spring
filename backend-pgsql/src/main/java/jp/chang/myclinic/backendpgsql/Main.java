@@ -1,7 +1,9 @@
 package jp.chang.myclinic.backendpgsql;
 
+import jp.chang.myclinic.backend.Backend;
 import jp.chang.myclinic.backendpgsql.table.PatientTable;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.mockdata.MockData;
 
 import java.util.List;
 
@@ -13,34 +15,27 @@ public class Main {
 
     private void run(String[] args) {
         DB.setDataSource(PgsqlDataSource.create());
+        confirmMockPatient();
         DB.proc(this::confirmMockPatient);
         DB.tx(() -> {
-            confirmMockPatient();
-            PatientTable patientTable = new PatientTable();
-            System.out.println(patientTable.searchPatient("田中", "うた"));
-            System.out.println(patientTable.listRecentlyRegisteredPatient(3));
-//            PatientDTO patient = new PatientDTO();
-//            patient.lastName = "田中";
-//            patient.firstName = "一郎太";
-//            patient.lastNameYomi = "たなか";
-//            patient.firstNameYomi = "いちろうた";
-//            patient.sex = "M";
-//            patient.birthday = "1950-04-12";
-//            patient.address = "address";
-//            patient.phone = "phone";
-//            PatientTableBase patientTable = new PatientTableBase();
-//            patientTable.insert(patient);
-//            System.out.println(patient);
+            Backend backend = new Backend(new PgsqlPersistence());
+            MockData mockData = new MockData();
+            System.out.println(backend.getPatient(1));
+            PatientDTO patient = mockData.pickPatient();
+            backend.enterPatient(patient);
+            System.out.println(patient);
             return null;
         });
     }
 
     private void confirmMockPatient() {
-        PatientTable patientTable = new PatientTable();
-        PatientDTO patient = patientTable.getById(1);
-        if (!(patient != null && patient.lastName.equals("試験") && patient.firstName.equals("データ"))) {
-            throw new RuntimeException("Accessing database inappropriate for testing.");
-        }
+        DB.proc(() -> {
+            PatientTable patientTable = new PatientTable();
+            PatientDTO patient = patientTable.getById(1);
+            if (!(patient != null && patient.lastName.equals("試験") && patient.firstName.equals("データ"))) {
+                throw new RuntimeException("Accessing database inappropriate for testing.");
+            }
+        });
     }
 
 }
