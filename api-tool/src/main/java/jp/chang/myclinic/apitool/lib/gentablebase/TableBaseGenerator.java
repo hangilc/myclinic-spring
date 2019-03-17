@@ -96,8 +96,7 @@ public class TableBaseGenerator {
         args.add(new BooleanLiteralExpr(column.isPrimary()));
         args.add(new BooleanLiteralExpr(column.isAutoIncrement()));
         args.add(createParamSetter(column));
-//        args.add(new ColumnMapperGenerator(column.getDtoField(), column.getDbType(),
-//                column.getName(), getDTOFieldClass(column.getDtoField()), tableName).generate());
+        args.add(createFieldExtractor(column));
         return new ObjectCreationExpr(null, helper.createGenericType("Column", new UnknownType()),
                 NodeList.nodeList(args));
     }
@@ -105,6 +104,11 @@ public class TableBaseGenerator {
     private Expression createParamSetter(Column column) {
         Class<?> dtoFieldType = getDTOFieldClass(column.getDtoField());
         return StatementSetterGenerator.generate(column, dtoFieldType);
+    }
+
+    private Expression createFieldExtractor(Column column){
+        Class<?> dtoFieldType = getDTOFieldClass(column.getDtoField());
+        return DtoExtractorGenerator.generate(column, dtoFieldType);
     }
 
     private Class<?> getDTOFieldClass(String name) {

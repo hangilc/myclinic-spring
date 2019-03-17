@@ -15,7 +15,7 @@ public class TableBaseHelper {
     private TableBaseHelper() { }
 
 
-    public static String ValidUptoFromLocalDateToString(LocalDate dbValue){
+    public static String validUptoFromLocalDateToString(LocalDate dbValue){
         return dbValue == null ? "0000-00-00" : dbValue.toString();
     }
 
