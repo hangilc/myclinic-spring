@@ -1,6 +1,6 @@
 package jp.chang.myclinic.apitool.lib.gentablebase;
 
-class Column {
+public class Column {
 
     private String name;
     private boolean isPrimary;

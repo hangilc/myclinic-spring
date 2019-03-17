@@ -1,7 +1,5 @@
 package jp.chang.myclinic.apitool.lib.gentablebase;
 
-import com.github.javaparser.ast.NodeList;
-import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import jp.chang.myclinic.apitool.lib.Helper;

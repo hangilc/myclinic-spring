@@ -121,6 +121,7 @@
     <module>api-tool</module>
     <module>backend-mysql</module>
     <module>backend-pgsql</module>
+    <module>backend-sqlite</module>
   </modules>
 
 </project>
