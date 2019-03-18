@@ -37,20 +37,18 @@ public class Backend {
         hotlineLogger.setHotlineLogPublisher(publisher::accept);
     }
 
-    public int enterPatient(PatientDTO patient){
-        patient.patientId = db.enterPatient(patient);
+    public void enterPatient(PatientDTO patient){
+        db.enterPatient(patient);
         practiceLogger.logPatientCreated(patient);
-        return patient.patientId;
     }
 
     public PatientDTO getPatient(int patientId){
         return db.getPatient(patientId);
     }
 
-    private int enterVisit(VisitDTO visit){
-        visit.visitId = db.enterVisit(visit);
+    private void enterVisit(VisitDTO visit){
+        db.enterVisit(visit);
         practiceLogger.logVisitCreated(visit);
-        return visit.visitId;
     }
 
     @BackendAsyncClientOption(convertLocalDateTime = true, composeResult = "api::getVisit")
@@ -99,7 +97,7 @@ public class Backend {
                 }
             }
         }
-        visitDTO.visitId = enterVisit(visitDTO);
+        enterVisit(visitDTO);
         WqueueDTO wqueueDTO = new WqueueDTO();
         wqueueDTO.visitId = visitDTO.visitId;
         wqueueDTO.waitState = MyclinicConsts.WqueueStateWaitExam;
@@ -152,10 +150,9 @@ public class Backend {
         return db.getVisit(visitId);
     }
 
-    public int enterText(TextDTO text){
-        text.textId = db.enterText(text);
+    public void enterText(TextDTO text){
+        db.enterText(text);
         practiceLogger.logTextCreated(text);
-        return text.textId;
     }
 
     public TextDTO getText(int textId){
