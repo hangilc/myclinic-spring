@@ -122,6 +122,7 @@
     <module>backend-mysql</module>
     <module>backend-pgsql</module>
     <module>backend-sqlite</module>
+    <module>backend-db</module>
   </modules>
 
 </project>

@@ -1,5 +1,6 @@
 package jp.chang.myclinic.apitool.databasespecifics;
 
+import jp.chang.myclinic.apitool.lib.Helper;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 public class SqliteSpecifics implements DatabaseSpecifics {
 
+    private Helper helper = Helper.getInstance();
 
     @Override
     public Class<?> mapDatabaseClass(int sqlType, String dbTypeName) {
@@ -25,7 +27,7 @@ public class SqliteSpecifics implements DatabaseSpecifics {
 
     @Override
     public String resolveDtoFieldName(String table, String dbColumnName) {
-        return dbColumnName;
+        return helper.snakeToCamel(dbColumnName);
     }
 
     private static Map<String, Class<?>> tableNameToDtoClassMap = new HashMap<>();

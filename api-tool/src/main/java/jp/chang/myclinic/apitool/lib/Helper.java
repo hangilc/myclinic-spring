@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.NumberFormat;
 import java.util.Arrays;
 
 import static java.util.stream.Collectors.joining;
@@ -52,6 +53,10 @@ public class Helper {
         }
         return sb.toString();
     }
+
+    private static NumberFormat numberFormat = NumberFormat.getNumberInstance();
+
+    public static String formatNumber(double number){ return numberFormat.format(number); }
 
     public void saveToFile(Path path, String src, boolean override) {
         if (Files.exists(path)) {

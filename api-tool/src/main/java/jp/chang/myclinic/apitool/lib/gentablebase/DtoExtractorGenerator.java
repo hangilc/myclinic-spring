@@ -63,10 +63,14 @@ class DtoExtractorGenerator {
                 obj, "toString", NodeList.nodeList()));
         addMap(String.class, Character.class, obj -> new MethodCallExpr(
                 obj, "charAt", NodeList.nodeList(new IntegerLiteralExpr(0))));
+        addMap(String.class, Integer.class, obj -> new MethodCallExpr(
+                new NameExpr("Integer"), "parseInt", NodeList.nodeList(obj)));
         addMap(LocalDateTime.class, String.class, obj -> new MethodCallExpr(
                 new NameExpr("TableBaseHelper"), "localDateTimeToString", NodeList.nodeList(obj)));
         addMap(Integer.class, String.class, obj -> new MethodCallExpr(
                 obj, "toString", NodeList.nodeList()));
+        addMap(String.class, Double.class, obj -> new MethodCallExpr(
+                new NameExpr("TableBaseHelper"), "formatNumber", NodeList.nodeList(obj)));
     }
 
     private static Helper helper = Helper.getInstance();

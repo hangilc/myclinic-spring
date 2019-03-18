@@ -1,11 +1,23 @@
 package jp.chang.myclinic.apitool.sqlitetables;
 
+import com.github.javaparser.ast.CompilationUnit;
+import com.google.googlejavaformat.java.Formatter;
 import jp.chang.myclinic.apitool.SqliteConnectionProvider;
+import jp.chang.myclinic.apitool.databasespecifics.SqliteSpecifics;
+import jp.chang.myclinic.apitool.lib.Helper;
+import jp.chang.myclinic.apitool.lib.gentablebase.Table;
+import jp.chang.myclinic.apitool.lib.gentablebase.TableBaseGenerator;
+import jp.chang.myclinic.apitool.lib.gentablebase.TableLister;
 import jp.chang.myclinic.apitool.lib.gentablebase.TableTypesLister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -16,6 +28,12 @@ import java.util.Set;
 public class SqliteTables implements Runnable {
     @CommandLine.Option(names = {"--show-types"})
     private boolean showTypes;
+    @CommandLine.Option(names = {"--dry-run"})
+    private boolean dryRun;
+
+    private String basePackage = "jp.chang.myclinic.backendsqlite";
+    private Path baseDir = Paths.get("backend-sqlite/src/main/java/jp/chang/myclinic/backendsqlite");
+    private Helper helper = Helper.getInstance();
 
     @Override
     public void run() {
@@ -23,8 +41,21 @@ public class SqliteTables implements Runnable {
             runShowTypes();
             return;
         }
+        runGenerateTableBases();
+    }
+
+    private void runGenerateTableBases(){
+        Formatter formatter = new Formatter();
         try(Connection conn = SqliteConnectionProvider.get()){
-            System.out.println(conn);
+            SqliteSpecifics dbSpecs = new SqliteSpecifics();
+            List<Table> tables = new TableLister(dbSpecs).listTables(conn);
+            for(Table table: tables){
+                TableBaseGenerator gen = new TableBaseGenerator(table, dbSpecs);
+                gen.setBasePackage(basePackage);
+                CompilationUnit unit = gen.generate();
+                String src = formatter.formatSource(unit.toString());
+                save(table, src);
+            }
         } catch(Exception e){
             throw new RuntimeException(e);
         }
@@ -50,4 +81,20 @@ public class SqliteTables implements Runnable {
             throw new RuntimeException(e);
         }
     }
+
+    private void save(Table table, String src){
+        String file = helper.snakeToCapital(table.getName()) + "TableBase.java";
+        Path path = baseDir.resolve("tablebase").resolve(file);
+        System.out.println("saving: " + path.toString());
+        if( dryRun ){
+            System.out.println(src);
+        } else {
+            try {
+                Files.write(path, src.getBytes());
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+    }
+
 }

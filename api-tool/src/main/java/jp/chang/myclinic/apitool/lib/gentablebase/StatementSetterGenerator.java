@@ -54,9 +54,13 @@ class StatementSetterGenerator {
                 fieldName -> genLambda("setInt", dtoFieldExpr(fieldName)));
         genMap.put(new Pair(Integer.class, String.class),
                 fieldName -> genLambda("setInt", funcallExpr("Integer", "parseInt", fieldName)));
+        genMap.put(new Pair(String.class, Double.class), fieldName ->
+                genLambda("setDouble", funcallExpr("Double", "parseDouble", fieldName)));
         genMap.put(new Pair(String.class, String.class),
                 fieldName -> genLambda("setString", dtoFieldExpr(fieldName)));
         genMap.put(new Pair(String.class, Character.class),
+                fieldName -> genLambda("setString", funcallExpr("String", "valueOf", fieldName)));
+        genMap.put(new Pair(String.class, Integer.class),
                 fieldName -> genLambda("setString", funcallExpr("String", "valueOf", fieldName)));
         genMap.put(new Pair(LocalDate.class, String.class),
                 fieldName -> genLambda("setObject", funcallExpr("LocalDate", "parse", fieldName)));
@@ -104,7 +108,8 @@ class StatementSetterGenerator {
         Pair key = new Pair(dbType, fieldClass);
         Generator gen = genMap.get(key);
         if( gen == null ){
-            String msg = String.format("Cannot generate statement setter: %s -> %s",
+            String msg = String.format("Cannot generate statement setter (%s): %s -> %s",
+                    column.getName(),
                     dbType.getSimpleName(),
                     fieldClass.getSimpleName());
             throw new RuntimeException(msg);
