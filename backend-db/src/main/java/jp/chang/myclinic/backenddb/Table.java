@@ -11,7 +11,7 @@ import static jp.chang.myclinic.backenddb.Query.*;
 
 public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface<DTO> {
 
-    protected abstract String getTableName();
+    public abstract String getTableName();
 
     protected abstract Class<DTO> getClassDTO();
 

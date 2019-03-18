@@ -8,11 +8,11 @@ import java.util.List;
 
 public interface Persistence {
 
-    int enterPatient(PatientDTO patient);
+    void enterPatient(PatientDTO patient);
 
     PatientDTO getPatient(int patientId);
 
-    int enterVisit(VisitDTO visit);
+    void enterVisit(VisitDTO visit);
 
     VisitDTO getVisit(int visitId);
 
@@ -40,7 +40,7 @@ public interface Persistence {
 
     List<ShoukiDTO> batchGetShouki(List<Integer> visitIds);
 
-    int enterText(TextDTO text);
+    void enterText(TextDTO text);
     TextDTO getText(int textId);
     void updateText(TextDTO text);
     void deleteText(int textId);

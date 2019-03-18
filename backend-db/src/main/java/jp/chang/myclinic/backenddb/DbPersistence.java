@@ -29,13 +29,13 @@ public class DbPersistence implements Persistence {
     }
 
     @Override
-    public int enterVisit(VisitDTO visit) {
+    public void enterVisit(VisitDTO visit) {
         ts.visitTable.insert(visit);
     }
 
     @Override
     public VisitDTO getVisit(int visitId) {
-        ts.visitTable.getById(visitId);
+        return ts.visitTable.getById(visitId);
     }
 
 
@@ -104,7 +104,7 @@ public class DbPersistence implements Persistence {
     }
 
     @Override
-    public int enterText(TextDTO text) {
+    public void enterText(TextDTO text) {
         throw new RuntimeException("not implemented");
     }
 
