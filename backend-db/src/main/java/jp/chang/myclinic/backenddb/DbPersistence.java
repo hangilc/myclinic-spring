@@ -8,6 +8,9 @@ import jp.chang.myclinic.backenddb.SqlTranslator.TableInfo;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+
+import static java.util.stream.Collectors.toList;
 
 public class DbPersistence implements Persistence {
 
@@ -50,100 +53,106 @@ public class DbPersistence implements Persistence {
 
     @Override
     public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
-        ShahokokuhoTableInterface h = ts.shahokokuhoTable;
-        String sql = "select * from " + h.getTableName() + " h " +
-                " where h." + h.patientId() + " = ? and " +
-                " h.valid_from <= date(?) and  (h.valid_upto is null or h.valid_upto >= date(?)) ";
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select * from Shahokokuho where patientId = ? and " +
+                " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
+                ts.shahokokuhoTable);
+        return Query.query(sql, ts.shahokokuhoTable, patientId, at, at);
     }
 
     @Override
     public ShahokokuhoDTO getShahokokuho(int shahokokuhoId) {
-        throw new RuntimeException("not implemented");
+        return ts.shahokokuhoTable.getById(shahokokuhoId);
     }
 
     @Override
     public List<KoukikoureiDTO> findAvailableKoukikourei(int patientId, LocalDate at) {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select * from Koukikourei where patientId = ? and " +
+                        " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
+                ts.koukikoureiTable);
+        return Query.query(sql, ts.koukikoureiTable, patientId, at, at);
     }
 
     @Override
     public KoukikoureiDTO getKoukikourei(int koukikoureiId) {
-        throw new RuntimeException("not implemented");
+        return ts.koukikoureiTable.getById(koukikoureiId);
     }
 
     @Override
     public List<RoujinDTO> findAvailableRoujin(int patientId, LocalDate at) {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select * from Roujin where patientId = ? and " +
+                        " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
+                ts.roujinTable);
+        return Query.query(sql, ts.roujinTable, patientId, at, at);
     }
 
     @Override
     public RoujinDTO getRoujin(int roujinId) {
-        throw new RuntimeException("not implemented");
+        return ts.roujinTable.getById(roujinId);
     }
 
     @Override
     public List<KouhiDTO> findAvailableKouhi(int patientId, LocalDate at) {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select * from Kouhi where patientId = ? and " +
+                        " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
+                ts.kouhiTable);
+        return Query.query(sql, ts.kouhiTable, patientId, at, at);
     }
 
     @Override
     public KouhiDTO getKouhi(int kouhiId) {
-        throw new RuntimeException("not implemented");
+        return ts.kouhiTable.getById(kouhiId);
     }
 
     @Override
     public void enterWqueue(WqueueDTO wqueue) {
-        throw new RuntimeException("not implemented");
+        ts.wqueueTable.insert(wqueue);
     }
 
     @Override
     public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds) {
-        throw new RuntimeException("not implemented");
+        return shinryouIds.stream().map(ts.shinryouAttrTable::getById).filter(Objects::nonNull).collect(toList());
     }
 
     @Override
     public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds) {
-        throw new RuntimeException("not implemented");
+        return drugIds.stream().map(ts.drugAttrTable::getById).filter(Objects::nonNull).collect(toList());
     }
 
     @Override
     public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds) {
-        throw new RuntimeException("not implemented");
+        return visitIds.stream().map(ts.shoukiTable::getById).filter(Objects::nonNull).collect(toList());
     }
 
     @Override
     public void enterText(TextDTO text) {
-        throw new RuntimeException("not implemented");
+        ts.textTable.insert(text);
     }
 
     @Override
     public TextDTO getText(int textId) {
-        throw new RuntimeException("not implemented");
+        return ts.textTable.getById(textId);
     }
 
     @Override
     public void updateText(TextDTO text) {
-        throw new RuntimeException("not implemented");
+        ts.textTable.update(text);
     }
 
     @Override
     public void deleteText(int textId) {
-        throw new RuntimeException("not implemented");
+        ts.textTable.delete(textId);
     }
 
     @Override
     public List<TextDTO> listText(int visitId) {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select * from Text where visitId = ? order by textId",
+                ts.textTable);
+        return Query.query(sql, ts.textTable, visitId);
     }
 
     @Override
     public void enterPracticeLog(PracticeLogDTO practiceLog) {
-        throw new RuntimeException("not implemented");
-    }
-
-    public void updatePatient(PatientDTO patient) {
-        ts.patientTable.update(patient);
+        ts.practiceLogTable.insert(practiceLog);
     }
 
 }

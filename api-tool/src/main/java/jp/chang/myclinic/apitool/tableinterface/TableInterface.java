@@ -3,6 +3,7 @@ package jp.chang.myclinic.apitool.tableinterface;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.google.googlejavaformat.java.Formatter;
 import com.google.googlejavaformat.java.FormatterException;
@@ -23,6 +24,8 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+
+import static com.github.javaparser.ast.NodeList.nodeList;
 
 @CommandLine.Command(name = "table-interface")
 public class TableInterface implements Runnable {
@@ -60,7 +63,7 @@ public class TableInterface implements Runnable {
         String dtoClassName = dtoClass.getSimpleName();
         CompilationUnit unit = new CompilationUnit();
         unit.setPackageDeclaration(basePackage);
-        unit.addImport("jp.chang.myclinic.backenddb.TableInterface");
+        unit.addImport("jp.chang.myclinic.backenddb.*");
         switch(dtoClassName){
             case "PracticeLogDTO":
                 unit.addImport("jp.chang.myclinic.logdto.practicelog.PracticeLogDTO");
@@ -75,16 +78,14 @@ public class TableInterface implements Runnable {
         String interfaceName = helper.snakeToCapital(table.getName()) + "TableInterface";
         ClassOrInterfaceDeclaration interfaceDecl = unit.addInterface(interfaceName);
         interfaceDecl.addExtendedType(helper.createGenericType("TableInterface", dtoClassName));
-        for(Column col: table.getColumns()){
-            addMethod(interfaceDecl, col.getDtoField());
-        }
+        interfaceDecl.addExtendedType(new ClassOrInterfaceType(
+                new ClassOrInterfaceType(null, "Query"), new SimpleName("Projector"),
+                nodeList(new ClassOrInterfaceType(null, dtoClassName))
+        ));
+        interfaceDecl.addExtendedType(new ClassOrInterfaceType(
+                new ClassOrInterfaceType(null, "SqlTranslator"), "TableInfo"
+        ));
         return unit;
-    }
-
-    private void addMethod(ClassOrInterfaceDeclaration decl, String fieldName){
-        MethodDeclaration method = decl.addMethod(fieldName);
-        method.removeBody();
-        method.setType(new ClassOrInterfaceType(null, "String"));
     }
 
     private void save(Table table, String src){
