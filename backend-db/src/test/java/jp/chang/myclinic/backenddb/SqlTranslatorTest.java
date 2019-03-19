@@ -51,5 +51,16 @@ public class SqlTranslatorTest {
         assertEquals("select * from patient where patient_id = ?", dst);
     }
 
+    @Test
+    public void simpleTest(){
+        SqlTranslator xlater = new SqlTranslator();
+        String src = "select p.* from Patient as p where p.patientId = ?";
+        String dst = xlater.translate(src, patientTable, "p");
+        System.out.println(src);
+        System.out.println(dst);
+        assertEquals("select p.* from patient as p where p.patient_id = ?", dst);
+
+    }
+
 
 }

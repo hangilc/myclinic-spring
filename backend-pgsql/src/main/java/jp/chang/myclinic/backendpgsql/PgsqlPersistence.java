@@ -25,9 +25,8 @@ public class PgsqlPersistence implements Persistence {
     private PracticeLogTable practiceLogTable = new PracticeLogTable();
 
     @Override
-    public int enterPatient(PatientDTO patient) {
+    public void enterPatient(PatientDTO patient) {
         patientTable.insert(patient);
-        return patient.patientId;
     }
 
     @Override
@@ -36,9 +35,8 @@ public class PgsqlPersistence implements Persistence {
     }
 
     @Override
-    public int enterVisit(VisitDTO visit) {
+    public void enterVisit(VisitDTO visit) {
         visitTable.insert(visit);
-        return visit.visitId;
     }
 
     @Override
@@ -128,9 +126,8 @@ public class PgsqlPersistence implements Persistence {
     }
 
     @Override
-    public int enterText(TextDTO text) {
+    public void enterText(TextDTO text) {
         textTable.insert(text);
-        return text.textId;
     }
 
     @Override

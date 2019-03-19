@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -15,6 +16,16 @@ public class SqlTranslator {
         String getDtoName();
         String getDbTableName();
         Map<String, String> getDtoFieldToDbColumnMap();
+    }
+
+    public class AliasedTable {
+        public TableInfo table;
+        public String alias;
+
+        public AliasedTable(TableInfo table, String alias) {
+            this.table = table;
+            this.alias = alias;
+        }
     }
 
     public String translate(String src, TableInfo table){
@@ -34,6 +45,33 @@ public class SqlTranslator {
                 g = dtoToDbMap.get(g);
             }
             matcher.appendReplacement(sb, g);
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    public String translate(String src, TableInfo table, String alias){
+        return translate(src, List.of(new AliasedTable(table, alias)));
+    }
+
+    public String translate(String src, List<AliasedTable> tables){
+        Map<String, String> rewriteMap = new HashMap<>();
+        for(AliasedTable at: tables){
+            TableInfo table = at.table;
+            String alias = at.alias;
+            rewriteMap.put(table.getDtoName(), table.getDbTableName());
+            for(Map.Entry<String, String> entry: table.getDtoFieldToDbColumnMap().entrySet()){
+                String key = alias + "." + entry.getKey();
+                String val = alias + "." + entry.getValue();
+                rewriteMap.put(key, val);
+            }
+        }
+        Pattern pat = Pattern.compile("\\b(" + String.join("|", rewriteMap.keySet()) + ")\\b");
+        StringBuilder sb = new StringBuilder();
+        Matcher matcher = pat.matcher(src);
+        while( matcher.find() ){
+            String g = matcher.group(1);
+            matcher.appendReplacement(sb, rewriteMap.get(g));
         }
         matcher.appendTail(sb);
         return sb.toString();

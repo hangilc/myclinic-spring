@@ -24,8 +24,8 @@ public class PersistenceMock implements Persistence {
 
 
     @Override
-    public int enterPatient(PatientDTO patient) {
-        return patientPersistence.enterPatient(patient);
+    public void enterPatient(PatientDTO patient) {
+        patientPersistence.enterPatient(patient);
     }
 
     @Override
@@ -34,8 +34,8 @@ public class PersistenceMock implements Persistence {
     }
 
     @Override
-    public int enterVisit(VisitDTO visit) {
-        return visitPersistence.enterVisit(visit);
+    public void enterVisit(VisitDTO visit) {
+        visitPersistence.enterVisit(visit);
     }
 
     @Override
@@ -104,8 +104,8 @@ public class PersistenceMock implements Persistence {
     }
 
     @Override
-    public int enterText(TextDTO text) {
-        return textPersistence.enterText(text);
+    public void enterText(TextDTO text) {
+        textPersistence.enterText(text);
     }
 
     @Override

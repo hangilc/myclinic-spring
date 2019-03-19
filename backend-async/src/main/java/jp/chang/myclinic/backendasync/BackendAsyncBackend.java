@@ -22,7 +22,8 @@ public class BackendAsyncBackend implements BackendAsync {
 
     @Override
     public CompletableFuture<Integer> enterPatient(PatientDTO patient) {
-        return future(backend.enterPatient(patient));
+        backend.enterPatient(patient);
+        return future(patient.patientId);
     }
 
     @Override
@@ -62,7 +63,8 @@ public class BackendAsyncBackend implements BackendAsync {
 
     @Override
     public CompletableFuture<Integer> enterText(TextDTO text) {
-        return future(backend.enterText(text));
+        backend.enterText(text);
+        return future(text.textId);
     }
 
     @Override
