@@ -4,8 +4,7 @@ import jp.chang.myclinic.backend.Persistence;
 import jp.chang.myclinic.backenddb.tableinterface.ShahokokuhoTableInterface;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.backenddb.SqlTranslator.TableInfo;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,18 +12,28 @@ import java.util.List;
 public class DbPersistence implements Persistence {
 
     private TableSet ts;
+    private SqlTranslator sqlTranslator = new SqlTranslator();
 
     public DbPersistence(TableSet ts) {
         this.ts = ts;
     }
 
+    protected String xlate(String sqlOrig, TableInfo tableInfo) {
+        return sqlTranslator.translate(sqlOrig, tableInfo);
+    }
+
+    protected String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
+                           TableInfo tableInfo2, String alias2) {
+        return sqlTranslator.translate(sqlOrig, tableInfo1, alias1, tableInfo2, alias2);
+    }
+
     @Override
-    public void enterPatient(PatientDTO patient){
+    public void enterPatient(PatientDTO patient) {
         ts.patientTable.insert(patient);
     }
 
     @Override
-    public PatientDTO getPatient(int patientId){
+    public PatientDTO getPatient(int patientId) {
         return ts.patientTable.getById(patientId);
     }
 
@@ -133,7 +142,7 @@ public class DbPersistence implements Persistence {
         throw new RuntimeException("not implemented");
     }
 
-    public void updatePatient(PatientDTO patient){
+    public void updatePatient(PatientDTO patient) {
         ts.patientTable.update(patient);
     }
 

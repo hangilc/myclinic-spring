@@ -29,29 +29,24 @@ public class SqlTranslator {
     }
 
     public String translate(String src, TableInfo table){
-        Map<String, String> dtoToDbMap = table.getDtoFieldToDbColumnMap();
-        StringBuilder sb = new StringBuilder();
-        List<String> needles = new ArrayList<>();
-        needles.add(table.getDtoName());
-        needles.addAll(dtoToDbMap.keySet());
-        Pattern pat = Pattern.compile(String.join("|", needles));
-        System.err.println(pat);
-        Matcher matcher = pat.matcher(src);
-        while( matcher.find() ){
-            String g = matcher.group();
-            if( table.getDtoName().equals(g) ){
-                g = table.getDbTableName();
-            } else {
-                g = dtoToDbMap.get(g);
-            }
-            matcher.appendReplacement(sb, g);
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
+        return translate(src, List.of(new AliasedTable(table, "")));
     }
 
     public String translate(String src, TableInfo table, String alias){
         return translate(src, List.of(new AliasedTable(table, alias)));
+    }
+
+    public String translate(String src, TableInfo table1, String alias1, TableInfo table2, String alias2){
+        return translate(src, List.of(new AliasedTable(table1, alias1), new AliasedTable(table2, alias2)));
+    }
+
+    public String translate(String src, TableInfo table1, String alias1, TableInfo table2, String alias2,
+                            TableInfo table3, String alias3){
+        return translate(src, List.of(
+                new AliasedTable(table1, alias1),
+                new AliasedTable(table2, alias2),
+                new AliasedTable(table3, alias3)
+        ));
     }
 
     public String translate(String src, List<AliasedTable> tables){
@@ -61,8 +56,12 @@ public class SqlTranslator {
             String alias = at.alias;
             rewriteMap.put(table.getDtoName(), table.getDbTableName());
             for(Map.Entry<String, String> entry: table.getDtoFieldToDbColumnMap().entrySet()){
-                String key = alias + "." + entry.getKey();
-                String val = alias + "." + entry.getValue();
+                String key = entry.getKey();
+                String val = entry.getValue();
+                if( alias != null && !alias.isEmpty() ){
+                    key = alias + "." + key;
+                    val = alias + "." + val;
+                }
                 rewriteMap.put(key, val);
             }
         }

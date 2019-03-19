@@ -3,13 +3,15 @@ package jp.chang.myclinic.backenddb;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.*;
 import static jp.chang.myclinic.backenddb.Query.*;
 
-public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface<DTO> {
+public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface<DTO>,
+        SqlTranslator.TableInfo {
 
     public abstract String getTableName();
 
@@ -30,7 +32,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
         if (colmap.get(true).size() == 0) {
             String sql = String.format("insert into %s (%s) values (%s)",
                     getTableName(),
-                    colmap.get(false).stream().map(Column::getName).collect(joining(",")),
+                    colmap.get(false).stream().map(Column::getDbColumnName).collect(joining(",")),
                     colmap.get(false).stream().map(Column::getPlaceHolder).collect(joining(","))
             );
             SqlConsumer<PreparedStatement> setter = stmt -> {
@@ -43,7 +45,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
         } else {
             String sql = String.format("insert into %s (%s) values (%s)",
                     getTableName(),
-                    colmap.get(false).stream().map(Column::getName).collect(joining(",")),
+                    colmap.get(false).stream().map(Column::getDbColumnName).collect(joining(",")),
                     colmap.get(false).stream().map(Column::getPlaceHolder).collect(joining(","))
             );
             List<Column<DTO>> autoIncs = colmap.get(true);
@@ -74,7 +76,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
         }
         Column<DTO> primary = primaries.get(0);
         String sql = String.format("select * from %s where %s = ?",
-                getTableName(), primary.getName());
+                getTableName(), primary.getDbColumnName());
         return Query.get(sql, this, id);
     }
 
@@ -87,8 +89,8 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
         }
         String sql = String.format("update %s set %s where %s",
                 getTableName(),
-                nonPrimaries.stream().map(c -> c.getName() + "=" + c.getPlaceHolder()).collect(joining(",")),
-                primaries.stream().map(c -> c.getName() + "=" + c.getPlaceHolder()).collect(joining(" and "))
+                nonPrimaries.stream().map(c -> c.getDbColumnName() + "=" + c.getPlaceHolder()).collect(joining(",")),
+                primaries.stream().map(c -> c.getDbColumnName() + "=" + c.getPlaceHolder()).collect(joining(" and "))
         );
         SqlConsumer<PreparedStatement> setter = stmt -> {
             int index = 1;
@@ -110,7 +112,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
         Column<DTO> primary = primaries.get(0);
         String sql = String.format("delete from %s where %s = ?",
                 getTableName(),
-                primary.getName()
+                primary.getDbColumnName()
         );
         SqlConsumer<PreparedStatement> setter = stmt -> {
             stmt.setObject(1, id);
@@ -128,11 +130,34 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
 
     public Column<DTO> getColumnByDbColumnName(String dbColumnName) {
         for (Column<DTO> c : getColumns()) {
-            if (c.getName().equals(dbColumnName)) {
+            if (c.getDbColumnName().equals(dbColumnName)) {
                 return c;
             }
         }
         return null;
     }
 
+    private final String dtoName = getClassDTO().getSimpleName().replaceAll("DTO$", "");
+
+    @Override
+    public String getDtoName() {
+        return dtoName;
+    }
+
+    @Override
+    public String getDbTableName() {
+        return getTableName();
+    }
+
+    private Map<String, String> dtoFieldToDbColumnMap = new HashMap<>();
+    {
+        for(Column c: getColumns()){
+            dtoFieldToDbColumnMap.put(c.getDtoFieldName(), c.getDbColumnName());
+        }
+    }
+
+    @Override
+    public Map<String, String> getDtoFieldToDbColumnMap() {
+        return dtoFieldToDbColumnMap;
+    }
 }

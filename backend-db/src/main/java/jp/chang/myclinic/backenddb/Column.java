@@ -14,24 +14,30 @@ public class Column<DTO> {
         void getFromResultSet(ResultSet source, int index, T target) throws SQLException;
     }
 
-    private final String name;
+    private final String dbColumnName;
+    private final String dtoFieldName;
     private final boolean isPrimary;
     private final boolean isAutoIncrement;
     private final StatementSetter<DTO> getFromDTO;
     private final ResultSetGetter<DTO> putIntoDTO;
     private String placeHolder = "?";
 
-    public Column(String name, boolean isPrimary, boolean isAutoIncrement,
+    public Column(String dbColumnName, String dtoFieldName, boolean isPrimary, boolean isAutoIncrement,
                   StatementSetter<DTO> getFromDTO, ResultSetGetter<DTO> putIntoDTO) {
-        this.name = name;
+        this.dbColumnName = dbColumnName;
+        this.dtoFieldName = dtoFieldName;
         this.isPrimary = isPrimary;
         this.isAutoIncrement = isAutoIncrement;
         this.getFromDTO = getFromDTO;
         this.putIntoDTO = putIntoDTO;
     }
 
-    public String getName() {
-        return name;
+    public String getDbColumnName() {
+        return dbColumnName;
+    }
+
+    public String getDtoFieldName() {
+        return dtoFieldName;
     }
 
     public boolean isPrimary() {
