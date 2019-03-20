@@ -24,11 +24,6 @@ public class SqliteConfig extends SqliteSpecifics implements Config {
     }
 
     @Override
-    public String getDtoFieldName(String table, String dbColumnName) {
-        return helper.snakeToCamel(dbColumnName);
-    }
-
-    @Override
     public Expression generateStatementSetter(Class<?> dbColumnClass, Class<?> dtoFieldClass,
                                               String dtoClassName, String dtoFieldName) {
         return statementSetterGenerator.generate(dbColumnClass, dtoFieldClass, dtoClassName, dtoFieldName);

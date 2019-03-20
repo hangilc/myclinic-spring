@@ -52,10 +52,10 @@ public class PgsqlSpecifics implements DatabaseSpecifics {
         dtoFieldMap.put("shinryou_master:kensagroup", "kensaGroup");
     }
 
-//    @Override
-//    public String resolveDtoFieldName(String table, String dbColumnName) {
-//        return dtoFieldMap.getOrDefault(table + ":" + dbColumnName, helper.snakeToCamel(dbColumnName));
-//    }
+    @Override
+    public String getDtoFieldName(String table, String dbColumnName) {
+        return dtoFieldMap.getOrDefault(table + ":" + dbColumnName, helper.snakeToCamel(dbColumnName));
+    }
 
     private static Map<Class<?>, String> dtoClassToTableNameMap = new HashMap<>();
 

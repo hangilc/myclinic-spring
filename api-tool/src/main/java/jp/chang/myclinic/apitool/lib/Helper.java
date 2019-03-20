@@ -9,6 +9,7 @@ import com.github.javaparser.ast.type.UnknownType;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.DatabaseMetaData;
@@ -112,9 +113,31 @@ public class Helper {
             ci.name = rs.getString("COLUMN_NAME");
             ci.sqlType = rs.getInt("DATA_TYPE");
             ci.dbTypeName = rs.getString("TYPE_NAME");
+            columns.add(ci);
         }
         rs.close();
         return columns;
     }
+
+    public Class<?> getDTOFieldClass(Class<?> dtoClass, String fieldName) {
+        try {
+            Field field = dtoClass.getField(fieldName);
+            Class<?> c = field.getType();
+            if (c == int.class) {
+                return Integer.class;
+            } else if (c == double.class) {
+                return Double.class;
+            } else if (c == char.class) {
+                return Character.class;
+            } else {
+                return c;
+            }
+        } catch (NoSuchFieldException e) {
+            String msg = String.format("Cannot find %s in %s", fieldName, dtoClass.getSimpleName());
+            throw new RuntimeException(msg);
+        }
+    }
+
+
 
 }

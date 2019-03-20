@@ -13,23 +13,6 @@ public class SqliteSpecifics implements DatabaseSpecifics {
 
     private Helper helper = Helper.getInstance();
 
-//    @Override
-//    public Class<?> mapDatabaseClass(int sqlType, String dbTypeName) {
-//        switch (dbTypeName) {
-//            case "INTEGER":
-//                return Integer.class;
-//            case "REAL":
-//                return Double.class;
-//            default:
-//                return String.class;
-//        }
-//    }
-//
-//    @Override
-//    public String resolveDtoFieldName(String table, String dbColumnName) {
-//        return helper.snakeToCamel(dbColumnName);
-//    }
-
     @Override
     public String dtoClassToDbTableName(Class<?> dtoClass) {
         String dtoBaseName = dtoClass.getSimpleName().replaceAll("DTO$", "");
@@ -48,8 +31,9 @@ public class SqliteSpecifics implements DatabaseSpecifics {
         }
     }
 
-//    @Override
-//    public Class<?> mapTableNameToDtoClass(String tableName) {
-//        return tableNameToDtoClassMap.get(tableName);
-//    }
+    @Override
+    public String getDtoFieldName(String table, String dbColumnName) {
+        return helper.snakeToCamel(dbColumnName);
+    }
+
 }

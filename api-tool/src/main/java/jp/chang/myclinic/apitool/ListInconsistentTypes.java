@@ -12,6 +12,7 @@ import picocli.CommandLine;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -32,7 +33,18 @@ public class ListInconsistentTypes implements Runnable{
                 List<Helper.ColumnInfo> columns = helper.listColumns(meta, tableName);
                 for(Helper.ColumnInfo ci: columns){
                     Class<?> dbColumnClass = dbSpecs.getDbColumnClass(tableName, ci.name, ci.sqlType, ci.dbTypeName);
-                    
+                    String dtoFieldName = dbSpecs.getDtoFieldName(tableName, ci.name);
+                    Class<?> dtoFieldClass = helper.getDTOFieldClass(dtoClass, dtoFieldName);
+                    List<String> outputs = new ArrayList<>();
+                    if( dbColumnClass != dtoFieldClass ){
+                        String s = String.format("  * %s (%s) --- %s (%s)\n", dtoFieldName, dtoFieldClass.getSimpleName(),
+                                ci.name, dbColumnClass.getSimpleName());
+                        outputs.add(s);
+                    }
+                    if( outputs.size() > 0 ){
+                        System.out.printf("%s - %s\n", dtoClass.getSimpleName(), tableName);
+                        outputs.forEach(System.out::println);
+                    }
                 }
             }
         } catch(Exception e){
