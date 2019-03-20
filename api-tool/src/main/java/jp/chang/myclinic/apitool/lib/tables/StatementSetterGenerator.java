@@ -1,8 +1,10 @@
 package jp.chang.myclinic.apitool.lib.tables;
 
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.type.UnknownType;
+import org.openjdk.tools.javac.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,20 +14,25 @@ import static com.github.javaparser.ast.NodeList.nodeList;
 
 public class StatementSetterGenerator {
 
-    public static Expression generate(Class<?> dbColumnClass, Class<?> dtoFieldClass, String dtoFieldName) {
-        return new LambdaExpr(
-                nodeList(
-                        new Parameter(new UnknownType(), "stmt"),
-                        new Parameter(new UnknownType(), "i"),
-                        new Parameter(new UnknownType(), "dto")
-                ),
-                generateSetter(dbColumnClass, dtoFieldClass, dtoFieldName)
+    public Expression generate(Class<?> dbColumnClass, Class<?> dtoFieldClass,
+                                      String dtoClassName, String dtoFieldName) {
+        return new LambdaExpr(generateParameters(),
+                generateSetter(dbColumnClass, dtoFieldClass, dtoClassName, dtoFieldName)
         );
     }
 
-    private static Expression generateSetter(Class<?> dbColumnClass, Class<?> dtoFieldClass, String dtoFieldName) {
+    private NodeList<Parameter> generateParameters(){
+        return nodeList(
+                new Parameter(new UnknownType(), "stmt"),
+                new Parameter(new UnknownType(), "i"),
+                new Parameter(new UnknownType(), "dto")
+        );
+    }
+
+    protected Expression generateSetter(Class<?> dbColumnClass, Class<?> dtoFieldClass,
+                                        String dtoClassName, String dtoFieldName) {
         String setterMethod = getSetterMethod(dbColumnClass);
-        Expression arg = generateArg(dbColumnClass, dtoFieldClass, dtoFieldName);
+        Expression arg = generateArg(dbColumnClass, dtoFieldClass, dtoClassName, dtoFieldName);
         return new MethodCallExpr(
                 new NameExpr("stmt"),
                 setterMethod,
@@ -33,13 +40,9 @@ public class StatementSetterGenerator {
         );
     }
 
-    private static Expression generateArg(Class<?> dbColumnClass, Class<?> dtoFieldClass, String dtoFieldName) {
+    protected Expression generateArg(Class<?> dbColumnClass, Class<?> dtoFieldClass,
+                                     String dtoClassName, String dtoFieldName) {
         Expression fieldExpr = new FieldAccessExpr(new NameExpr("dto"), dtoFieldName);
-        if( dtoFieldName.equals("validUpto") ){
-            if( dbColumnClass == LocalDate.class ){
-                return methodCall("TableBaseHelper", "validUptoFromStringToLocalDate", fieldExpr);
-            }
-        }
         if (dbColumnClass == dtoFieldClass) {
             return fieldExpr;
         } else if (dbColumnClass == Integer.class) {
@@ -56,11 +59,11 @@ public class StatementSetterGenerator {
         throw new RuntimeException(msg);
     }
 
-    private static Expression methodCall(String scope, String method, Expression arg) {
+    protected Expression methodCall(String scope, String method, Expression arg) {
         return new MethodCallExpr(new NameExpr(scope), new SimpleName(method), nodeList(arg));
     }
 
-    private static String getSetterMethod(Class<?> dbColumnClass) {
+    protected String getSetterMethod(Class<?> dbColumnClass) {
         if (dbColumnClass == Integer.class) {
             return "setInt";
         } else if (dbColumnClass == String.class) {

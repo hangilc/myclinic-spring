@@ -11,8 +11,14 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.DatabaseMetaData;
+import java.sql.JDBCType;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
@@ -92,5 +98,23 @@ public class Helper {
                 .collect(toList()));
     }
 
+    public static class ColumnInfo {
+        public String name;
+        public int sqlType;
+        public String dbTypeName;
+    }
+
+    public List<ColumnInfo> listColumns(DatabaseMetaData meta, String tableName) throws SQLException {
+        List<ColumnInfo> columns = new ArrayList<>();
+        ResultSet rs = meta.getColumns(null, "public", tableName, "%");
+        while (rs.next()) {
+            ColumnInfo ci = new ColumnInfo();
+            ci.name = rs.getString("COLUMN_NAME");
+            ci.sqlType = rs.getInt("DATA_TYPE");
+            ci.dbTypeName = rs.getString("TYPE_NAME");
+        }
+        rs.close();
+        return columns;
+    }
 
 }

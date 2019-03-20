@@ -24,22 +24,22 @@ public class SqliteSchema implements Runnable {
 
     @Override
     public void run() {
-        try(Connection conn = PgsqlConnectionProvider.get()){
-            List<Table> tables = new TableLister(new PgsqlSpecifics()).listTables(conn);
-            StringBuilder sb = new StringBuilder();
-            for(Table table: tables){
-                Create create = new Create(table);
-                sb.append(create.output());
-                sb.append("\n");
-            }
-            String src = sb.toString();
-            if( outputFile == null ){
-                System.out.println(src);
-            } else {
-                helper.saveToFile(Paths.get(outputFile), src, true);
-            }
-        } catch(SQLException ex){
-            throw new RuntimeException(ex);
-        }
+//        try(Connection conn = PgsqlConnectionProvider.get()){
+//            List<Table> tables = new TableLister(new PgsqlSpecifics()).listTables(conn);
+//            StringBuilder sb = new StringBuilder();
+//            for(Table table: tables){
+//                Create create = new Create(table);
+//                sb.append(create.output());
+//                sb.append("\n");
+//            }
+//            String src = sb.toString();
+//            if( outputFile == null ){
+//                System.out.println(src);
+//            } else {
+//                helper.saveToFile(Paths.get(outputFile), src, true);
+//            }
+//        } catch(SQLException ex){
+//            throw new RuntimeException(ex);
+//        }
     }
 }

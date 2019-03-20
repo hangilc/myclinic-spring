@@ -30,7 +30,7 @@ public class PgsqlSpecifics implements DatabaseSpecifics {
     }
 
     @Override
-    public Class<?> mapDatabaseClass(int sqlType, String dbTypeName) {
+    public Class<?> getDbColumnClass(String tableName, String columnName, int sqlType, String dbTypeName) {
         if( sqlType == Types.OTHER ){
             if( Objects.equals(dbTypeName, "jsonb") ){
                 return String.class;
@@ -52,54 +52,62 @@ public class PgsqlSpecifics implements DatabaseSpecifics {
         dtoFieldMap.put("shinryou_master:kensagroup", "kensaGroup");
     }
 
-    @Override
-    public String resolveDtoFieldName(String table, String dbColumnName) {
-        return dtoFieldMap.getOrDefault(table + ":" + dbColumnName, helper.snakeToCamel(dbColumnName));
-    }
+//    @Override
+//    public String resolveDtoFieldName(String table, String dbColumnName) {
+//        return dtoFieldMap.getOrDefault(table + ":" + dbColumnName, helper.snakeToCamel(dbColumnName));
+//    }
 
-    private static Map<String, Class<?>> tableNameToDtoClassMap = new HashMap<>();
+    private static Map<Class<?>, String> dtoClassToTableNameMap = new HashMap<>();
 
     static {
-        tableNameToDtoClassMap.put("byoumei_master", ByoumeiMasterDTO.class);
-        tableNameToDtoClassMap.put("charge", ChargeDTO.class);
-        tableNameToDtoClassMap.put("conduct", ConductDTO.class);
-        tableNameToDtoClassMap.put("conduct_drug", ConductDrugDTO.class);
-        tableNameToDtoClassMap.put("conduct_kizai", ConductKizaiDTO.class);
-        tableNameToDtoClassMap.put("conduct_shinryou", ConductShinryouDTO.class);
-        tableNameToDtoClassMap.put("disease", DiseaseDTO.class);
-        tableNameToDtoClassMap.put("disease_adj", DiseaseAdjDTO.class);
-        tableNameToDtoClassMap.put("drug", DrugDTO.class);
-        tableNameToDtoClassMap.put("drug_attr", DrugAttrDTO.class);
-        tableNameToDtoClassMap.put("gazou_label", GazouLabelDTO.class);
-        tableNameToDtoClassMap.put("hotline", HotlineDTO.class);
-        tableNameToDtoClassMap.put("intraclinic_comment", IntraclinicCommentDTO.class);
-        tableNameToDtoClassMap.put("intraclinic_post", IntraclinicPostDTO.class);
-        tableNameToDtoClassMap.put("intraclinic_tag", IntraclinicTagDTO.class);
-        tableNameToDtoClassMap.put("intraclinic_tag_post", IntraclinicTagPostDTO.class);
-        tableNameToDtoClassMap.put("iyakuhin_master", IyakuhinMasterDTO.class);
-        tableNameToDtoClassMap.put("kizai_master", KizaiMasterDTO.class);
-        tableNameToDtoClassMap.put("kouhi", KouhiDTO.class);
-        tableNameToDtoClassMap.put("koukikourei", KoukikoureiDTO.class);
-        tableNameToDtoClassMap.put("patient", PatientDTO.class);
-        tableNameToDtoClassMap.put("payment", PaymentDTO.class);
-        tableNameToDtoClassMap.put("pharma_drug", PharmaDrugDTO.class);
-        tableNameToDtoClassMap.put("pharma_queue", PharmaQueueDTO.class);
-        tableNameToDtoClassMap.put("practice_log", PracticeLogDTO.class);
-        tableNameToDtoClassMap.put("presc_example", PrescExampleDTO.class);
-        tableNameToDtoClassMap.put("roujin", RoujinDTO.class);
-        tableNameToDtoClassMap.put("shahokokuho", ShahokokuhoDTO.class);
-        tableNameToDtoClassMap.put("shinryou", ShinryouDTO.class);
-        tableNameToDtoClassMap.put("shinryou_attr", ShinryouAttrDTO.class);
-        tableNameToDtoClassMap.put("shinryou_master", ShinryouMasterDTO.class);
-        tableNameToDtoClassMap.put("shouki", ShoukiDTO.class);
-        tableNameToDtoClassMap.put("shuushokugo_master", ShuushokugoMasterDTO.class);
-        tableNameToDtoClassMap.put("text", TextDTO.class);
-        tableNameToDtoClassMap.put("visit", VisitDTO.class);
-        tableNameToDtoClassMap.put("wqueue", WqueueDTO.class);
+        dtoClassToTableNameMap.put(ByoumeiMasterDTO.class, "byoumei_master");
+        dtoClassToTableNameMap.put(ChargeDTO.class, "charge");
+        dtoClassToTableNameMap.put(ConductDTO.class, "conduct");
+        dtoClassToTableNameMap.put(ConductDrugDTO.class, "conduct_drug");
+        dtoClassToTableNameMap.put(ConductKizaiDTO.class, "conduct_kizai");
+        dtoClassToTableNameMap.put(ConductShinryouDTO.class, "conduct_shinryou");
+        dtoClassToTableNameMap.put(DiseaseDTO.class, "disease");
+        dtoClassToTableNameMap.put(DiseaseAdjDTO.class, "disease_adj");
+        dtoClassToTableNameMap.put(DrugDTO.class, "drug");
+        dtoClassToTableNameMap.put(DrugAttrDTO.class, "drug_attr");
+        dtoClassToTableNameMap.put(GazouLabelDTO.class, "gazou_label");
+        dtoClassToTableNameMap.put(HotlineDTO.class, "hotline");
+        dtoClassToTableNameMap.put(IntraclinicCommentDTO.class, "intraclinic_comment");
+        dtoClassToTableNameMap.put(IntraclinicPostDTO.class, "intraclinic_post");
+        dtoClassToTableNameMap.put(IntraclinicTagDTO.class, "intraclinic_tag");
+        dtoClassToTableNameMap.put(IntraclinicTagPostDTO.class, "intraclinic_tag_post");
+        dtoClassToTableNameMap.put(IyakuhinMasterDTO.class, "iyakuhin_master");
+        dtoClassToTableNameMap.put(KizaiMasterDTO.class, "kizai_master");
+        dtoClassToTableNameMap.put(KouhiDTO.class, "kouhi");
+        dtoClassToTableNameMap.put(KoukikoureiDTO.class, "koukikourei");
+        dtoClassToTableNameMap.put(PatientDTO.class, "patient");
+        dtoClassToTableNameMap.put(PaymentDTO.class, "payment");
+        dtoClassToTableNameMap.put(PharmaDrugDTO.class, "pharma_drug");
+        dtoClassToTableNameMap.put(PharmaQueueDTO.class, "pharma_queue");
+        dtoClassToTableNameMap.put(PracticeLogDTO.class, "practice_log");
+        dtoClassToTableNameMap.put(PrescExampleDTO.class, "presc_example");
+        dtoClassToTableNameMap.put(RoujinDTO.class, "roujin");
+        dtoClassToTableNameMap.put(ShahokokuhoDTO.class, "shahokokuho");
+        dtoClassToTableNameMap.put(ShinryouDTO.class, "shinryou");
+        dtoClassToTableNameMap.put(ShinryouAttrDTO.class, "shinryou_attr");
+        dtoClassToTableNameMap.put(ShinryouMasterDTO.class, "shinryou_master");
+        dtoClassToTableNameMap.put(ShoukiDTO.class, "shouki");
+        dtoClassToTableNameMap.put(ShuushokugoMasterDTO.class, "shuushokugo_master");
+        dtoClassToTableNameMap.put(TextDTO.class, "text");
+        dtoClassToTableNameMap.put(VisitDTO.class, "visit");
+        dtoClassToTableNameMap.put(WqueueDTO.class, "wqueue");
     }
 
     @Override
-    public Class<?> mapTableNameToDtoClass(String tableName) {
-        return tableNameToDtoClassMap.get(tableName);
+    public String dtoClassToDbTableName(Class<?> dtoClass) {
+        return dtoClassToTableNameMap.computeIfAbsent(dtoClass, key -> {
+            String msg = String.format("Cannot convert DTO type (%s) to table name.", dtoClass.getSimpleName());
+            throw new RuntimeException(msg);
+        });
     }
+
+//    @Override
+//    public Class<?> mapTableNameToDtoClass(String tableName) {
+//        return tableNameToDtoClassMap.get(tableName);
+//    }
 }

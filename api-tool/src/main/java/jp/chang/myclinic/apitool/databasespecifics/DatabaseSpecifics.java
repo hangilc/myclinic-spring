@@ -4,8 +4,7 @@ import java.util.Map;
 
 public interface DatabaseSpecifics {
 
-    Class<?> mapDatabaseClass(int sqlType, String dbTypeName);
-    String resolveDtoFieldName(String table, String dbColumnName);
-    Class<?> mapTableNameToDtoClass(String tableName);
+    String dtoClassToDbTableName(Class<?> dtoClass);
+    Class<?> getDbColumnClass(String tableName, String columnName, int sqlType, String dbTypeName);
 
 }

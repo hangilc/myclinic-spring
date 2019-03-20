@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -45,11 +46,10 @@ class Tables implements Runnable {
 
     @Override
     public void run() {
-        Config config = new SqliteConfig();
         List<Class<?>> dtoClasses;
-        if( singleTable != null ){
+        if (singleTable != null) {
             Class<?> cls = DtoClassList.getDtoClassByName(singleTable);
-            if( cls == null ){
+            if (cls == null) {
                 System.err.printf("Cannot find DTO table: %s\n", singleTable);
                 System.exit(1);
             }
@@ -57,101 +57,105 @@ class Tables implements Runnable {
         } else {
             dtoClasses = DtoClassList.getList();
         }
+        Config config = new SqliteConfig();
         Supplier<Connection> connSupplier = new SqliteConnectionProvider();
-        try(Connection conn = connSupplier.get()) {
+        try (Connection conn = connSupplier.get()) {
             outputTableBases(conn, dtoClasses, config);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+
     private void outputTableBases(Connection conn, List<Class<?>> dtoClasses, Config config) throws Exception {
-        for (Class<?> dtoClass : dtoClasses) {
-            String dtoClassName = dtoClass.getSimpleName();
-            String dtoBaseName = dtoClass.getSimpleName().replaceAll("DTO$", "");
-            String baseClassName = dtoBaseName + "TableBase";
-            CompilationUnit unit = new CompilationUnit();
-            unit.setPackageDeclaration(config.basePackage() + ".tablebase");
-            unit.addImport("jp.chang.myclinic.backenddb.Column");
-            unit.addImport("jp.chang.myclinic.backenddb.Table");
-            unit.addImport("jp.chang.myclinic.backenddb.TableBaseHelper");
-            unit.addImport("jp.chang.myclinic.backenddb.tableinterface." + dtoBaseName + "TableInterface");
-            unit.addImport("java.time.*");
-            unit.addImport("java.util.*");
-            unit.addImport("java.math.BigDecimal");
-            switch (dtoClassName) {
-                case "PracticeLogDTO": {
-                    unit.addImport("jp.chang.myclinic.logdto.practicelog.PracticeLogDTO");
-                    break;
-                }
-                case "HotlineLogDTO": {
-                    unit.addImport("jp.chang.myclinic.logdto.hotline.HotlineLogDTO");
-                    break;
-                }
-                default: {
-                    unit.addImport("jp.chang.myclinic.dto." + dtoClassName);
-                    break;
-                }
-            }
-            ClassOrInterfaceDeclaration classDecl = unit.addClass(baseClassName);
-            classDecl.addExtendedType(new ClassOrInterfaceType(null, new SimpleName("Table"),
-                    nodeList(new ClassOrInterfaceType(null, dtoClassName))));
-            classDecl.addImplementedType(dtoBaseName + "TableInterface");
-            {
-                Type fieldType = helper.createGenericType("List", "Column", dtoClassName);
-                classDecl.addField(fieldType, "columns", Keyword.PRIVATE, Keyword.STATIC);
-            }
-            DatabaseMetaData meta = conn.getMetaData();
-            Table table = new Table(meta, config, dtoClass);
-            {
-                BlockStmt block = classDecl.addStaticInitializer();
-                List<Expression> args = table.getColumns().stream().map(c -> generateColumnCreator(c, dtoClass))
-                        .collect(toList());
-                block.addStatement(new ExpressionStmt(new AssignExpr(
-                        new NameExpr("columns"),
-                        new MethodCallExpr(new NameExpr("List"), new SimpleName("of"), nodeList(args)),
-                        AssignExpr.Operator.ASSIGN
-                )));
-            }
-            {
-                MethodDeclaration methodDecl = classDecl.addMethod("getTableName", Keyword.PUBLIC);
-                methodDecl.setType(new ClassOrInterfaceType(null, "String"));
-                methodDecl.addAnnotation("Override");
-                methodDecl.setBody(new BlockStmt(nodeList(
-                        new ReturnStmt(new StringLiteralExpr(table.getTableName()))
-                )));
-            }
-            {
-                MethodDeclaration methodDecl = classDecl.addMethod("getClassDTO", Keyword.PROTECTED);
-                methodDecl.setType(helper.createGenericType("Class", dtoClassName));
-                methodDecl.addAnnotation("Override");
-                methodDecl.setBody(new BlockStmt(nodeList(
-                        new ReturnStmt(new FieldAccessExpr(new NameExpr(dtoClassName), "class"))
-                )));
-            }
-            {
-                MethodDeclaration methodDecl = classDecl.addMethod("getColumns", Keyword.PROTECTED);
-                methodDecl.setType(helper.createGenericType("List", "Column", dtoClassName));
-                methodDecl.addAnnotation("Override");
-                methodDecl.setBody(new BlockStmt(nodeList(
-                        new ReturnStmt(new NameExpr("columns"))
-                )));
-            }
-            String src = formatter.formatSource(unit.toString());
-            Path savePath = config.baseDir().resolve("tablebase").resolve(baseClassName + ".java");
-            save(savePath, src);
-        }
+//        for (Class<?> dtoClass : dtoClasses) {
+//            String dtoClassName = dtoClass.getSimpleName();
+//            String dtoBaseName = dtoClass.getSimpleName().replaceAll("DTO$", "");
+//            String baseClassName = dtoBaseName + "TableBase";
+//            CompilationUnit unit = new CompilationUnit();
+//            unit.setPackageDeclaration(config.basePackage() + ".tablebase");
+//            unit.addImport("jp.chang.myclinic.backenddb.Column");
+//            unit.addImport("jp.chang.myclinic.backenddb.Table");
+//            unit.addImport("jp.chang.myclinic.backenddb.TableBaseHelper");
+//            unit.addImport("jp.chang.myclinic.backenddb.tableinterface." + dtoBaseName + "TableInterface");
+//            unit.addImport("java.time.*");
+//            unit.addImport("java.util.*");
+//            unit.addImport("java.math.BigDecimal");
+//            switch (dtoClassName) {
+//                case "PracticeLogDTO": {
+//                    unit.addImport("jp.chang.myclinic.logdto.practicelog.PracticeLogDTO");
+//                    break;
+//                }
+//                case "HotlineLogDTO": {
+//                    unit.addImport("jp.chang.myclinic.logdto.hotline.HotlineLogDTO");
+//                    break;
+//                }
+//                default: {
+//                    unit.addImport("jp.chang.myclinic.dto." + dtoClassName);
+//                    break;
+//                }
+//            }
+//            ClassOrInterfaceDeclaration classDecl = unit.addClass(baseClassName);
+//            classDecl.addExtendedType(new ClassOrInterfaceType(null, new SimpleName("Table"),
+//                    nodeList(new ClassOrInterfaceType(null, dtoClassName))));
+//            classDecl.addImplementedType(dtoBaseName + "TableInterface");
+//            {
+//                Type fieldType = helper.createGenericType("List", "Column", dtoClassName);
+//                classDecl.addField(fieldType, "columns", Keyword.PRIVATE, Keyword.STATIC);
+//            }
+//            DatabaseMetaData meta = conn.getMetaData();
+//            Table table = new Table(meta, config, dtoClass);
+//            {
+//                BlockStmt block = classDecl.addStaticInitializer();
+//                List<Expression> args = table.getColumns().stream().map(c -> generateColumnCreator(c, dtoClass, config))
+//                        .collect(toList());
+//                block.addStatement(new ExpressionStmt(new AssignExpr(
+//                        new NameExpr("columns"),
+//                        new MethodCallExpr(new NameExpr("List"), new SimpleName("of"), nodeList(args)),
+//                        AssignExpr.Operator.ASSIGN
+//                )));
+//            }
+//            {
+//                MethodDeclaration methodDecl = classDecl.addMethod("getTableName", Keyword.PUBLIC);
+//                methodDecl.setType(new ClassOrInterfaceType(null, "String"));
+//                methodDecl.addAnnotation("Override");
+//                methodDecl.setBody(new BlockStmt(nodeList(
+//                        new ReturnStmt(new StringLiteralExpr(table.getTableName()))
+//                )));
+//            }
+//            {
+//                MethodDeclaration methodDecl = classDecl.addMethod("getClassDTO", Keyword.PROTECTED);
+//                methodDecl.setType(helper.createGenericType("Class", dtoClassName));
+//                methodDecl.addAnnotation("Override");
+//                methodDecl.setBody(new BlockStmt(nodeList(
+//                        new ReturnStmt(new FieldAccessExpr(new NameExpr(dtoClassName), "class"))
+//                )));
+//            }
+//            {
+//                MethodDeclaration methodDecl = classDecl.addMethod("getColumns", Keyword.PROTECTED);
+//                methodDecl.setType(helper.createGenericType("List", "Column", dtoClassName));
+//                methodDecl.addAnnotation("Override");
+//                methodDecl.setBody(new BlockStmt(nodeList(
+//                        new ReturnStmt(new NameExpr("columns"))
+//                )));
+//            }
+//            String src = formatter.formatSource(unit.toString());
+//            Path savePath = config.baseDir().resolve("tablebase").resolve(baseClassName + ".java");
+//            save(savePath, src);
+//        }
     }
 
-    private Expression generateColumnCreator(Column column, Class<?> dtoClass){
+    private Expression generateColumnCreator(Column column, Class<?> dtoClass, Config config) {
         List<Expression> args = new ArrayList<>();
         args.add(new StringLiteralExpr(column.getDbColumnName()));
         args.add(new StringLiteralExpr(column.getDtoFieldName()));
         args.add(new BooleanLiteralExpr(column.isPrimary()));
         args.add(new BooleanLiteralExpr(column.isAutoIncrement()));
         Class<?> dtoFieldClass = getDTOFieldClass(dtoClass, column.getDtoFieldName());
-        args.add(StatementSetterGenerator.generate(column.getDbColumnClass(), dtoFieldClass, column.getDtoFieldName()));
-        args.add(DtoFieldSetterGenerator.generate(column.getDbColumnClass(), dtoFieldClass, column.getDtoFieldName()));
+        args.add(config.generateStatementSetter(column.getDbColumnClass(), dtoFieldClass,
+                dtoClass.getSimpleName(), column.getDtoFieldName()));
+        args.add(config.generateDtoFieldSetter(column.getDbColumnClass(), dtoFieldClass,
+                dtoClass.getSimpleName(), column.getDtoFieldName()));
         return new ObjectCreationExpr(null,
                 new ClassOrInterfaceType(null, new SimpleName("Column"), nodeList(new UnknownType())),
                 nodeList(args));
@@ -176,9 +180,9 @@ class Tables implements Runnable {
         }
     }
 
-    private void save(Path path, String src){
+    private void save(Path path, String src) {
         System.out.println("saving: " + path.toString());
-        if( dryRun ){
+        if (dryRun) {
             System.out.println(src);
         } else {
             try {

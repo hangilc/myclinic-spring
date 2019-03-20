@@ -45,20 +45,20 @@ public class SqliteTables implements Runnable {
     }
 
     private void runGenerateTableBases(){
-        Formatter formatter = new Formatter();
-        try(Connection conn = new SqliteConnectionProvider().get()){
-            SqliteSpecifics dbSpecs = new SqliteSpecifics();
-            List<Table> tables = new TableLister(dbSpecs).listTables(conn);
-            for(Table table: tables){
-                TableBaseGenerator gen = new TableBaseGenerator(table, dbSpecs);
-                gen.setBasePackage(basePackage);
-                CompilationUnit unit = gen.generate();
-                String src = formatter.formatSource(unit.toString());
-                save(table, src);
-            }
-        } catch(Exception e){
-            throw new RuntimeException(e);
-        }
+//        Formatter formatter = new Formatter();
+//        try(Connection conn = new SqliteConnectionProvider().get()){
+//            SqliteSpecifics dbSpecs = new SqliteSpecifics();
+//            List<Table> tables = new TableLister(dbSpecs).listTables(conn);
+//            for(Table table: tables){
+//                TableBaseGenerator gen = new TableBaseGenerator(table, dbSpecs);
+//                gen.setBasePackage(basePackage);
+//                CompilationUnit unit = gen.generate();
+//                String src = formatter.formatSource(unit.toString());
+//                save(table, src);
+//            }
+//        } catch(Exception e){
+//            throw new RuntimeException(e);
+//        }
     }
 
     private void runShowTypes(){

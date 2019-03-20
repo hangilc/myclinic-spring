@@ -1,9 +1,9 @@
 package jp.chang.myclinic.apitool.lib.tables;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.sql.*;
+import java.sql.DatabaseMetaData;
+import java.sql.JDBCType;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class Table {
     private String tableName;
     private List<Column> columns = new ArrayList<>();
 
-    public Table(DatabaseMetaData meta, Config config, Class<?> dtoClass) throws SQLException {
+    public Table(String tableName, DatabaseMetaData meta, Config config, Class<?> dtoClass) throws SQLException {
         this.tableName = config.dtoClassToDbTableName(dtoClass);
         ResultSet rs = meta.getColumns(null, "public", tableName, "%");
         while (rs.next()) {
@@ -20,7 +20,7 @@ public class Table {
             boolean isAutoIncrement = rs.getString("IS_AUTOINCREMENT").equals("YES");
             String dbTypeName = rs.getString("TYPE_NAME");
             int sqlType = rs.getInt("DATA_TYPE");
-            Class<?> dbColumnClass = config.getDbColumnClass(sqlType, dbTypeName);
+            Class<?> dbColumnClass = config.getDbColumnClass(tableName, dbColumnName, sqlType, dbTypeName);
             if (dbColumnClass == null) {
                 String msg = String.format("Cannot handle sql type (%s:%s %s %d[%s]).",
                         tableName, dbColumnName,

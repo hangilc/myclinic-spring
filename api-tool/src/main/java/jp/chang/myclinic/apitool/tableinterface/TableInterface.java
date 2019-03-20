@@ -40,67 +40,67 @@ public class TableInterface implements Runnable {
 
     @Override
     public void run() {
-        Formatter formatter = new Formatter();
-        try( Connection conn = PgsqlConnectionProvider.get() ){
-            TableLister tableLister = new TableLister(dbSpecs);
-            List<Table> tables = tableLister.listTables(conn);
-            for(Table table: tables){
-//                if( !table.getName().equals("patient") ){
-//                    continue;
-//                }
-                CompilationUnit unit = generate(table);
-                String src = formatter.formatSource(unit.toString());
-                save(table, src);
-            }
-        } catch(SQLException | FormatterException e){
-            throw new RuntimeException(e);
-        }
+//        Formatter formatter = new Formatter();
+//        try( Connection conn = PgsqlConnectionProvider.get() ){
+//            TableLister tableLister = new TableLister(dbSpecs);
+//            List<Table> tables = tableLister.listTables(conn);
+//            for(Table table: tables){
+////                if( !table.getName().equals("patient") ){
+////                    continue;
+////                }
+//                CompilationUnit unit = generate(table);
+//                String src = formatter.formatSource(unit.toString());
+//                save(table, src);
+//            }
+//        } catch(SQLException | FormatterException e){
+//            throw new RuntimeException(e);
+//        }
 
     }
 
-    private CompilationUnit generate(Table table){
-        Class<?> dtoClass = dbSpecs.mapTableNameToDtoClass(table.getName());
-        String dtoClassName = dtoClass.getSimpleName();
-        CompilationUnit unit = new CompilationUnit();
-        unit.setPackageDeclaration(basePackage);
-        unit.addImport("jp.chang.myclinic.backenddb.*");
-        switch(dtoClassName){
-            case "PracticeLogDTO":
-                unit.addImport("jp.chang.myclinic.logdto.practicelog.PracticeLogDTO");
-                break;
-            case "HotlineLogDTO":
-                unit.addImport("jp.chang.myclinic.logdto.hotline.HotlineLogDTO");
-                break;
-            default:
-                unit.addImport("jp.chang.myclinic.dto." + dtoClassName);
-                break;
-        }
-        String interfaceName = helper.snakeToCapital(table.getName()) + "TableInterface";
-        ClassOrInterfaceDeclaration interfaceDecl = unit.addInterface(interfaceName);
-        interfaceDecl.addExtendedType(helper.createGenericType("TableInterface", dtoClassName));
-        interfaceDecl.addExtendedType(new ClassOrInterfaceType(
-                new ClassOrInterfaceType(null, "Query"), new SimpleName("Projector"),
-                nodeList(new ClassOrInterfaceType(null, dtoClassName))
-        ));
-        interfaceDecl.addExtendedType(new ClassOrInterfaceType(
-                new ClassOrInterfaceType(null, "SqlTranslator"), "TableInfo"
-        ));
-        return unit;
-    }
-
-    private void save(Table table, String src){
-        String file = helper.snakeToCapital(table.getName()) + "TableInterface.java";
-        Path path = baseDir.resolve(file);
-        System.out.println("saving: " + path.toString());
-        if( dryRun ){
-            System.out.println(src);
-        } else {
-            try {
-                Files.write(path, src.getBytes());
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        }
-    }
+//    private CompilationUnit generate(Table table){
+//        Class<?> dtoClass = dbSpecs.mapTableNameToDtoClass(table.getName());
+//        String dtoClassName = dtoClass.getSimpleName();
+//        CompilationUnit unit = new CompilationUnit();
+//        unit.setPackageDeclaration(basePackage);
+//        unit.addImport("jp.chang.myclinic.backenddb.*");
+//        switch(dtoClassName){
+//            case "PracticeLogDTO":
+//                unit.addImport("jp.chang.myclinic.logdto.practicelog.PracticeLogDTO");
+//                break;
+//            case "HotlineLogDTO":
+//                unit.addImport("jp.chang.myclinic.logdto.hotline.HotlineLogDTO");
+//                break;
+//            default:
+//                unit.addImport("jp.chang.myclinic.dto." + dtoClassName);
+//                break;
+//        }
+//        String interfaceName = helper.snakeToCapital(table.getName()) + "TableInterface";
+//        ClassOrInterfaceDeclaration interfaceDecl = unit.addInterface(interfaceName);
+//        interfaceDecl.addExtendedType(helper.createGenericType("TableInterface", dtoClassName));
+//        interfaceDecl.addExtendedType(new ClassOrInterfaceType(
+//                new ClassOrInterfaceType(null, "Query"), new SimpleName("Projector"),
+//                nodeList(new ClassOrInterfaceType(null, dtoClassName))
+//        ));
+//        interfaceDecl.addExtendedType(new ClassOrInterfaceType(
+//                new ClassOrInterfaceType(null, "SqlTranslator"), "TableInfo"
+//        ));
+//        return unit;
+//    }
+//
+//    private void save(Table table, String src){
+//        String file = helper.snakeToCapital(table.getName()) + "TableInterface.java";
+//        Path path = baseDir.resolve(file);
+//        System.out.println("saving: " + path.toString());
+//        if( dryRun ){
+//            System.out.println(src);
+//        } else {
+//            try {
+//                Files.write(path, src.getBytes());
+//            } catch (IOException e) {
+//                throw new UncheckedIOException(e);
+//            }
+//        }
+//    }
 
 }

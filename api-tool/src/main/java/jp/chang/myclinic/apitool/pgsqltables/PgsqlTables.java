@@ -37,23 +37,23 @@ public class PgsqlTables implements Runnable {
 
     @Override
     public void run(){
-        Formatter formatter = new Formatter();
-        try(Connection conn = PgsqlConnectionProvider.get()){
-            TableLister tableLister = new TableLister(dbSpecs);
-            List<Table> tables = tableLister.listTables(conn);
-            for(Table table: tables){
-//                if( !table.getName().equals("visit") ){
-//                    continue;
-//                }
-                TableGenerator gen = new TableGenerator(table, dbSpecs);
-                gen.setBasePackage(basePackage);
-                CompilationUnit unit = gen.generate();
-                String src = formatter.formatSource(unit.toString());
-                save(table, src);
-            }
-        } catch(SQLException | FormatterException e){
-            throw new RuntimeException(e);
-        }
+//        Formatter formatter = new Formatter();
+//        try(Connection conn = PgsqlConnectionProvider.get()){
+//            TableLister tableLister = new TableLister(dbSpecs);
+//            List<Table> tables = tableLister.listTables(conn);
+//            for(Table table: tables){
+////                if( !table.getName().equals("visit") ){
+////                    continue;
+////                }
+//                TableGenerator gen = new TableGenerator(table, dbSpecs);
+//                gen.setBasePackage(basePackage);
+//                CompilationUnit unit = gen.generate();
+//                String src = formatter.formatSource(unit.toString());
+//                save(table, src);
+//            }
+//        } catch(SQLException | FormatterException e){
+//            throw new RuntimeException(e);
+//        }
     }
 
     private void save(Table table, String src){

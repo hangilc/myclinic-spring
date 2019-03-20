@@ -3,17 +3,16 @@ package jp.chang.myclinic.apitool.lib.tables;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.type.UnknownType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
 
 public class DtoFieldSetterGenerator {
 
-    public static Expression generate(Class<?> dbColumnClass, Class<?> dtoFieldClass, String dtoFieldName){
+    public Expression generate(Class<?> dbColumnClass, Class<?> dtoFieldClass,
+                               String dtoClassName, String dtoFieldName) {
         AssignExpr assign = new AssignExpr(
                 new FieldAccessExpr(new NameExpr("dto"), dtoFieldName),
-                generateArg(dbColumnClass, dtoFieldClass, dtoFieldName),
+                generateArg(dbColumnClass, dtoFieldClass, dtoClassName, dtoFieldName),
                 AssignExpr.Operator.ASSIGN
         );
         return new LambdaExpr(
@@ -26,7 +25,8 @@ public class DtoFieldSetterGenerator {
         );
     }
 
-    private static Expression generateArg(Class<?> dbColumnClass, Class<?> dtoFieldClass, String dtoFieldName){
+    private Expression generateArg(Class<?> dbColumnClass, Class<?> dtoFieldClass,
+                                   String dtoClassName, String dtoFieldName) {
         Expression colValue = new MethodCallExpr(
                 new NameExpr("rs"),
                 new SimpleName("getObject"),
@@ -35,22 +35,22 @@ public class DtoFieldSetterGenerator {
                         new FieldAccessExpr(new NameExpr(dbColumnClass.getSimpleName()), "class")
                 )
         );
-        if( dtoFieldClass == dbColumnClass ){
+        if (dtoFieldClass == dbColumnClass) {
             return colValue;
-        } else if( dtoFieldClass == Double.class ){
-            if( dbColumnClass == String.class ){
+        } else if (dtoFieldClass == Double.class) {
+            if (dbColumnClass == String.class) {
                 return methodCall("Double", "valueOf", colValue);
             }
-        } else if( dtoFieldClass == Character.class ){
-            if( dbColumnClass == String.class ){
+        } else if (dtoFieldClass == Character.class) {
+            if (dbColumnClass == String.class) {
                 return methodCall(colValue, "charAt", new IntegerLiteralExpr(0));
             }
-        } else if( dtoFieldClass == String.class ){
-            if( dbColumnClass == Integer.class ){
+        } else if (dtoFieldClass == String.class) {
+            if (dbColumnClass == Integer.class) {
                 return methodCall("String", "valueOf", colValue);
             }
-        } else if( dtoFieldClass == Integer.class ){
-            if( dbColumnClass == String.class ){
+        } else if (dtoFieldClass == Integer.class) {
+            if (dbColumnClass == String.class) {
                 return methodCall("TableBaseHelper", "stringToInteger", colValue);
             }
         }
@@ -59,11 +59,11 @@ public class DtoFieldSetterGenerator {
         throw new RuntimeException(msg);
     }
 
-    private static Expression methodCall(String scope, String method, Expression arg) {
+    protected Expression methodCall(String scope, String method, Expression arg) {
         return new MethodCallExpr(new NameExpr(scope), new SimpleName(method), nodeList(arg));
     }
 
-    private static Expression methodCall(Expression scope, String method, Expression arg) {
+    protected Expression methodCall(Expression scope, String method, Expression arg) {
         return new MethodCallExpr(scope, new SimpleName(method), nodeList(arg));
     }
 
