@@ -1,6 +1,6 @@
 package jp.chang.myclinic.backendpgsql.table;
 
-import jp.chang.myclinic.backendpgsql.Query;
+import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backendpgsql.tablebase.PatientTableBase;
 import jp.chang.myclinic.dto.PatientDTO;
 

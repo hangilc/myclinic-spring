@@ -46,7 +46,7 @@ public class SqliteTables implements Runnable {
 
     private void runGenerateTableBases(){
         Formatter formatter = new Formatter();
-        try(Connection conn = SqliteConnectionProvider.get()){
+        try(Connection conn = new SqliteConnectionProvider().get()){
             SqliteSpecifics dbSpecs = new SqliteSpecifics();
             List<Table> tables = new TableLister(dbSpecs).listTables(conn);
             for(Table table: tables){
@@ -62,7 +62,7 @@ public class SqliteTables implements Runnable {
     }
 
     private void runShowTypes(){
-        try(Connection conn = SqliteConnectionProvider.get()){
+        try(Connection conn = new SqliteConnectionProvider().get()){
             Map<String, List<TableTypesLister.ColumnType>> map = new TableTypesLister().listTypes(conn);
             Set<String> sqlTypeNames = new LinkedHashSet<>();
             Set<String> dbTypeNames = new LinkedHashSet<>();

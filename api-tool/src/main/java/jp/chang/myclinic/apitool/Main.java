@@ -10,8 +10,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "api-tool",
-        subcommands = {PgsqlTableBases.class, PgsqlTables.class, SqliteSchema.class,
-        SqliteTables.class, TableInterface.class, ListDTO.class}
+        subcommands = {Tables.class}
 )
 public class Main implements Runnable {
 
