@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 public class SqliteConfig extends SqliteSpecifics implements Config {
 
     private Helper helper = Helper.getInstance();
-    private StatementSetterGenerator statementSetterGenerator = new StatementSetterGenerator();
     private DtoFieldSetterGenerator dtoFieldSetterGenerator = new DtoFieldSetterGenerator();
 
     @Override
@@ -24,9 +23,20 @@ public class SqliteConfig extends SqliteSpecifics implements Config {
     }
 
     @Override
-    public Expression generateStatementSetter(Class<?> dbColumnClass, Class<?> dtoFieldClass,
-                                              String dtoClassName, String dtoFieldName) {
-        return statementSetterGenerator.generate(dbColumnClass, dtoFieldClass, dtoClassName, dtoFieldName);
+    public Expression generateStatementSetterArg(String tableName, Class<?> dbColumnClass, String dbColumnName,
+                                                 Class<?> dtoClass, Class<?> dtoFieldClass, String dtoFieldName,
+                                                 Expression fieldAccess) {
+        if( dbColumnClass == String.class ){
+            if( dtoFieldClass == Double.class || dtoFieldClass == Character.class || dtoFieldClass == Integer.class ) {
+                return helper.methodCall("String", "valueOf", fieldAccess);
+            }
+        } else if( dbColumnClass == Integer.class ){
+            if( dtoFieldClass == String.class ){
+                return helper.methodCall("Integer", "parseInt", fieldAccess);
+            }
+        }
+        return Config.super.generateStatementSetterArg(tableName, dbColumnClass, dbColumnName, dtoClass,
+                dtoFieldClass, dtoFieldName, fieldAccess);
     }
 
     @Override

@@ -12,8 +12,8 @@ public class Table {
     private String tableName;
     private List<Column> columns = new ArrayList<>();
 
-    public Table(String tableName, DatabaseMetaData meta, Config config, Class<?> dtoClass) throws SQLException {
-        this.tableName = config.dtoClassToDbTableName(dtoClass);
+    public Table(String tableName, DatabaseMetaData meta, Config config) throws SQLException {
+        this.tableName = tableName;
         ResultSet rs = meta.getColumns(null, "public", tableName, "%");
         while (rs.next()) {
             String dbColumnName = rs.getString("COLUMN_NAME");

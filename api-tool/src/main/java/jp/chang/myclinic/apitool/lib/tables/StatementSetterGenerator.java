@@ -21,6 +21,21 @@ public class StatementSetterGenerator {
         );
     }
 
+    public Expression generate(String setterMethod, Expression arg){
+        return new LambdaExpr(
+                nodeList(
+                        new Parameter(new UnknownType(), "stmt"),
+                        new Parameter(new UnknownType(), "i"),
+                        new Parameter(new UnknownType(), "dto")
+                ),
+                new MethodCallExpr(
+                        new NameExpr("stmt"),
+                        setterMethod,
+                        nodeList(new NameExpr("i"), arg)
+                )
+        );
+    }
+
     private NodeList<Parameter> generateParameters(){
         return nodeList(
                 new Parameter(new UnknownType(), "stmt"),

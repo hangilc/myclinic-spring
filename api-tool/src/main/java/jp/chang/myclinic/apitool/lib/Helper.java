@@ -2,6 +2,9 @@ package jp.chang.myclinic.apitool.lib;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
@@ -21,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.github.javaparser.ast.NodeList.nodeList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
@@ -97,6 +101,14 @@ public class Helper {
         return NodeList.nodeList(Arrays.stream(paramNames)
                 .map(name -> new Parameter(new UnknownType(), name))
                 .collect(toList()));
+    }
+
+    public Expression methodCall(String scope, String method, Expression arg) {
+        return new MethodCallExpr(new NameExpr(scope), new SimpleName(method), nodeList(arg));
+    }
+
+    public Expression methodCall(Expression scope, String method, Expression arg) {
+        return new MethodCallExpr(scope, new SimpleName(method), nodeList(arg));
     }
 
     public static class ColumnInfo {
