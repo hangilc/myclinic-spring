@@ -13,13 +13,23 @@ import static jp.chang.myclinic.backenddb.Query.*;
 public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface<DTO>,
         SqlTranslator.TableInfo {
 
+    private Query query;
+
+    protected Table(Query query){
+        this.query = query;
+    }
+
+    protected Query getQuery(){
+        return query;
+    }
+
     public abstract String getTableName();
 
     protected abstract Class<DTO> getClassDTO();
 
     protected abstract List<Column<DTO>> getColumns();
 
-    public DTO newInstanceDTO() {
+    private DTO newInstanceDTO() {
         try {
             return getClassDTO().getConstructor().newInstance();
         } catch (Exception e) {
@@ -41,7 +51,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
                     c.getFromDTO().set(stmt, i++, dto);
                 }
             };
-            Query.exec(sql, setter);
+            getQuery().exec(sql, setter);
         } else {
             String sql = String.format("insert into %s (%s) values (%s)",
                     getTableName(),
@@ -61,7 +71,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
                     c.putIntoDTO().getFromResultSet(rs, i++, dto);
                 }
             };
-            int n = Query.update(sql, PreparedStatement.RETURN_GENERATED_KEYS,
+            int n = getQuery().update(sql, PreparedStatement.RETURN_GENERATED_KEYS,
                     mapper, setter);
             if (n != 1) {
                 throw new RuntimeException("insert affected non-signle row: " + n);
@@ -77,7 +87,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
         Column<DTO> primary = primaries.get(0);
         String sql = String.format("select * from %s where %s = ?",
                 getTableName(), primary.getDbColumnName());
-        return Query.get(sql, this, id);
+        return getQuery().get(sql, this, id);
     }
 
     public void update(DTO dto) {
@@ -101,7 +111,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
                 c.getFromDTO().set(stmt, index++, dto);
             }
         };
-        Query.update(sql, setter);
+        getQuery().update(sql, setter);
     }
 
     public void delete(Object id) {
@@ -117,7 +127,7 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
         SqlConsumer<PreparedStatement> setter = stmt -> {
             stmt.setObject(1, id);
         };
-        Query.update(sql, setter);
+        getQuery().update(sql, setter);
     }
 
     public DTO project(ResultSet rs, Query.ResultSetContext ctx) throws SQLException {
@@ -128,14 +138,14 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
         return dto;
     }
 
-    public Column<DTO> getColumnByDbColumnName(String dbColumnName) {
-        for (Column<DTO> c : getColumns()) {
-            if (c.getDbColumnName().equals(dbColumnName)) {
-                return c;
-            }
-        }
-        return null;
-    }
+//    public Column<DTO> getColumnByDbColumnName(String dbColumnName) {
+//        for (Column<DTO> c : getColumns()) {
+//            if (c.getDbColumnName().equals(dbColumnName)) {
+//                return c;
+//            }
+//        }
+//        return null;
+//    }
 
     private final String dtoName = getClassDTO().getSimpleName().replaceAll("DTO$", "");
 

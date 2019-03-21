@@ -15,10 +15,16 @@ import static java.util.stream.Collectors.toList;
 public class DbPersistence implements Persistence {
 
     private TableSet ts;
+    private Query query;
     private SqlTranslator sqlTranslator = new SqlTranslator();
 
-    public DbPersistence(TableSet ts) {
+    public DbPersistence(TableSet ts, Query query) {
         this.ts = ts;
+        this.query = query;
+    }
+
+    protected Query getQuery(){
+        return query;
     }
 
     protected String xlate(String sqlOrig, TableInfo tableInfo) {
@@ -56,7 +62,7 @@ public class DbPersistence implements Persistence {
         String sql = xlate("select * from Shahokokuho where patientId = ? and " +
                 " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
                 ts.shahokokuhoTable);
-        return Query.query(sql, ts.shahokokuhoTable, patientId, at, at);
+        return getQuery().query(sql, ts.shahokokuhoTable, patientId, at, at);
     }
 
     @Override
@@ -69,7 +75,7 @@ public class DbPersistence implements Persistence {
         String sql = xlate("select * from Koukikourei where patientId = ? and " +
                         " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
                 ts.koukikoureiTable);
-        return Query.query(sql, ts.koukikoureiTable, patientId, at, at);
+        return getQuery().query(sql, ts.koukikoureiTable, patientId, at, at);
     }
 
     @Override
@@ -82,7 +88,7 @@ public class DbPersistence implements Persistence {
         String sql = xlate("select * from Roujin where patientId = ? and " +
                         " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
                 ts.roujinTable);
-        return Query.query(sql, ts.roujinTable, patientId, at, at);
+        return getQuery().query(sql, ts.roujinTable, patientId, at, at);
     }
 
     @Override
@@ -95,7 +101,7 @@ public class DbPersistence implements Persistence {
         String sql = xlate("select * from Kouhi where patientId = ? and " +
                         " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
                 ts.kouhiTable);
-        return Query.query(sql, ts.kouhiTable, patientId, at, at);
+        return getQuery().query(sql, ts.kouhiTable, patientId, at, at);
     }
 
     @Override
@@ -147,7 +153,7 @@ public class DbPersistence implements Persistence {
     public List<TextDTO> listText(int visitId) {
         String sql = xlate("select * from Text where visitId = ? order by textId",
                 ts.textTable);
-        return Query.query(sql, ts.textTable, visitId);
+        return getQuery().query(sql, ts.textTable, visitId);
     }
 
     @Override

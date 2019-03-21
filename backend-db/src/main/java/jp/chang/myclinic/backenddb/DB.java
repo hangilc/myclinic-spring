@@ -3,25 +3,22 @@ package jp.chang.myclinic.backenddb;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.function.Supplier;
 
 public class DB {
 
-    private DB() {
+    private DataSource ds;
+    private ThreadLocal<Connection> threadLocalConnection = new ThreadLocal<>();
 
+    public DB(DataSource ds) {
+        this.ds = ds;
     }
 
-    private static DataSource ds;
-    private static ThreadLocal<Connection> threadLocalConnection = new ThreadLocal<>();
-
-    static {
-        Query.setConnectionProvider(threadLocalConnection::get);
+    public Supplier<Connection> getConnectionProvider(){
+        return () -> threadLocalConnection.get();
     }
 
-    public static void setDataSource(DataSource ds){
-        DB.ds = ds;
-    }
-
-    private static Connection openConnection() throws SQLException {
+    private Connection openConnection() throws SQLException {
         Connection conn = ds.getConnection();
         threadLocalConnection.set(conn);
         return conn;
@@ -35,7 +32,7 @@ public class DB {
         T call() throws SQLException;
     }
 
-    public static void proc(ProcVoid proc){
+    public void proc(ProcVoid proc){
         try (Connection conn = openConnection()){
             conn.setAutoCommit(true);
             proc.exec();
@@ -46,7 +43,7 @@ public class DB {
         }
     }
 
-    public static <T> T query(Proc<T> proc){
+    public <T> T query(Proc<T> proc){
         try (Connection conn = openConnection()){
             conn.setAutoCommit(true);
             return proc.call();
@@ -57,7 +54,7 @@ public class DB {
         }
     }
 
-    public static <T> T tx(Proc<T> proc){
+    public <T> T tx(Proc<T> proc){
         Connection conn = null;
         try {
             conn = openConnection();
