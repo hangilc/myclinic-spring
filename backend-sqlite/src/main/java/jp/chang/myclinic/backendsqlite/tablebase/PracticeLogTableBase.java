@@ -2,6 +2,7 @@ package jp.chang.myclinic.backendsqlite.tablebase;
 
 import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
+import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
 import jp.chang.myclinic.backenddb.tableinterface.PracticeLogTableInterface;
 import java.time.*;
@@ -11,6 +12,10 @@ import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 
 public class PracticeLogTableBase extends Table<PracticeLogDTO>
     implements PracticeLogTableInterface {
+
+  public PracticeLogTableBase(Query query) {
+    super(query);
+  }
 
   private static List<Column<PracticeLogDTO>> columns;
 

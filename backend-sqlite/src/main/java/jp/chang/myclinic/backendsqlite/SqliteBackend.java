@@ -1,55 +1,60 @@
 package jp.chang.myclinic.backendsqlite;
 
 import jp.chang.myclinic.backend.Backend;
+import jp.chang.myclinic.backenddb.DB;
 import jp.chang.myclinic.backenddb.DbPersistence;
+import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableSet;
 import jp.chang.myclinic.backendsqlite.table.*;
 
+import javax.sql.DataSource;
+
 public class SqliteBackend {
 
-    public static Backend create(){
-        DbPersistence persist = new DbPersistence(createTableSet());
+    public static Backend create(DB db){
+        Query query = new Query(db.getConnectionProvider());
+        DbPersistence persist = new DbPersistence(createTableSet(query), query);
         return new Backend(persist);
     }
 
-    public static TableSet createTableSet(){
+    public static TableSet createTableSet(Query query){
         TableSet ts = new TableSet();
-        ts.byoumeiMasterTable = new ByoumeiMasterTable();
-        ts.chargeTable = new ChargeTable();
-        ts.conductTable = new ConductTable();
-        ts.conductDrugTable = new ConductDrugTable();
-        ts.conductKizaiTable = new ConductKizaiTable();
-        ts.conductShinryouTable = new ConductShinryouTable();
-        ts.diseaseTable = new DiseaseTable();
-        ts.diseaseAdjTable = new DiseaseAdjTable();
-        ts.drugTable = new DrugTable();
-        ts.drugAttrTable = new DrugAttrTable();
-        ts.gazouLabelTable = new GazouLabelTable();
-        ts.hotlineTable = new HotlineTable();
-        ts.intraclinicCommentTable = new IntraclinicCommentTable();
-        ts.intraclinicPostTable = new IntraclinicPostTable();
-        ts.intraclinicTagTable = new IntraclinicTagTable();
-        ts.intraclinicTagPostTable = new IntraclinicTagPostTable();
-        ts.iyakuhinMasterTable = new IyakuhinMasterTable();
-        ts.kizaiMasterTable = new KizaiMasterTable();
-        ts.kouhiTable = new KouhiTable();
-        ts.koukikoureiTable = new KoukikoureiTable();
-        ts.patientTable = new PatientTable();
-        ts.paymentTable = new PaymentTable();
-        ts.pharmaDrugTable = new PharmaDrugTable();
-        ts.pharmaQueueTable = new PharmaQueueTable();
-        ts.practiceLogTable = new PracticeLogTable();
-        ts.prescExampleTable = new PrescExampleTable();
-        ts.roujinTable = new RoujinTable();
-        ts.shahokokuhoTable = new ShahokokuhoTable();
-        ts.shinryouTable = new ShinryouTable();
-        ts.shinryouAttrTable = new ShinryouAttrTable();
-        ts.shinryouMasterTable = new ShinryouMasterTable();
-        ts.shoukiTable = new ShoukiTable();
-        ts.shuushokugoMasterTable = new ShuushokugoMasterTable();
-        ts.textTable = new TextTable();
-        ts.visitTable = new VisitTable();
-        ts.wqueueTable = new WqueueTable();
+        ts.byoumeiMasterTable = new ByoumeiMasterTable(query);
+        ts.chargeTable = new ChargeTable(query);
+        ts.conductTable = new ConductTable(query);
+        ts.conductDrugTable = new ConductDrugTable(query);
+        ts.conductKizaiTable = new ConductKizaiTable(query);
+        ts.conductShinryouTable = new ConductShinryouTable(query);
+        ts.diseaseTable = new DiseaseTable(query);
+        ts.diseaseAdjTable = new DiseaseAdjTable(query);
+        ts.drugTable = new DrugTable(query);
+        ts.drugAttrTable = new DrugAttrTable(query);
+        ts.gazouLabelTable = new GazouLabelTable(query);
+        ts.hotlineTable = new HotlineTable(query);
+        ts.intraclinicCommentTable = new IntraclinicCommentTable(query);
+        ts.intraclinicPostTable = new IntraclinicPostTable(query);
+        ts.intraclinicTagTable = new IntraclinicTagTable(query);
+        ts.intraclinicTagPostTable = new IntraclinicTagPostTable(query);
+        ts.iyakuhinMasterTable = new IyakuhinMasterTable(query);
+        ts.kizaiMasterTable = new KizaiMasterTable(query);
+        ts.kouhiTable = new KouhiTable(query);
+        ts.koukikoureiTable = new KoukikoureiTable(query);
+        ts.patientTable = new PatientTable(query);
+        ts.paymentTable = new PaymentTable(query);
+        ts.pharmaDrugTable = new PharmaDrugTable(query);
+        ts.pharmaQueueTable = new PharmaQueueTable(query);
+        ts.practiceLogTable = new PracticeLogTable(query);
+        ts.prescExampleTable = new PrescExampleTable(query);
+        ts.roujinTable = new RoujinTable(query);
+        ts.shahokokuhoTable = new ShahokokuhoTable(query);
+        ts.shinryouTable = new ShinryouTable(query);
+        ts.shinryouAttrTable = new ShinryouAttrTable(query);
+        ts.shinryouMasterTable = new ShinryouMasterTable(query);
+        ts.shoukiTable = new ShoukiTable(query);
+        ts.shuushokugoMasterTable = new ShuushokugoMasterTable(query);
+        ts.textTable = new TextTable(query);
+        ts.visitTable = new VisitTable(query);
+        ts.wqueueTable = new WqueueTable(query);
         return ts;
     }
 

@@ -1,15 +1,21 @@
 package jp.chang.myclinic.apitool;
 
+import com.fasterxml.jackson.databind.jsontype.NamedType;
+import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnknownType;
+import com.github.javaparser.printer.YamlPrinter;
 import com.google.googlejavaformat.java.Formatter;
 import jp.chang.myclinic.apitool.lib.DtoClassList;
 import jp.chang.myclinic.apitool.lib.Helper;
@@ -81,8 +87,16 @@ class Tables implements Runnable {
                 CompilationUnit unit = new CompilationUnit();
                 unit.setPackageDeclaration(config.basePackage() + ".table");
                 unit.addImport(config.basePackage() + ".tablebase." + className + "Base");
+                unit.addImport("jp.chang.myclinic.backenddb.Query");
                 ClassOrInterfaceDeclaration classDecl = unit.addClass(className);
                 classDecl.addExtendedType(className + "Base");
+                {
+                    ConstructorDeclaration ctor = classDecl.addConstructor(Keyword.PUBLIC);
+                    ctor.addParameter(new Parameter(new ClassOrInterfaceType(null, "Query"), "query"));
+                    ctor.setBody(new BlockStmt(nodeList(
+                            new ExplicitConstructorInvocationStmt(false, null, nodeList(new NameExpr("query")))
+                    )));
+                }
                 String src = formatter.formatSource(unit.toString());
                 save(path, src);
             }
@@ -99,6 +113,7 @@ class Tables implements Runnable {
             unit.setPackageDeclaration(config.basePackage() + ".tablebase");
             unit.addImport("jp.chang.myclinic.backenddb.Column");
             unit.addImport("jp.chang.myclinic.backenddb.Table");
+            unit.addImport("jp.chang.myclinic.backenddb.Query");
             unit.addImport("jp.chang.myclinic.backenddb.TableBaseHelper");
             unit.addImport("jp.chang.myclinic.backenddb.tableinterface." + dtoBaseName + "TableInterface");
             unit.addImport("java.time.*");
@@ -122,6 +137,13 @@ class Tables implements Runnable {
             classDecl.addExtendedType(new ClassOrInterfaceType(null, new SimpleName("Table"),
                     nodeList(new ClassOrInterfaceType(null, dtoClassName))));
             classDecl.addImplementedType(dtoBaseName + "TableInterface");
+            {
+                ConstructorDeclaration ctor = classDecl.addConstructor(Keyword.PUBLIC);
+                ctor.addParameter(new Parameter(new ClassOrInterfaceType(null, "Query"), "query"));
+                ctor.setBody(new BlockStmt(nodeList(
+                        new ExplicitConstructorInvocationStmt(false, null, nodeList(new NameExpr("query")))
+                )));
+            }
             {
                 Type fieldType = helper.createGenericType("List", "Column", dtoClassName);
                 classDecl.addField(fieldType, "columns", Keyword.PRIVATE, Keyword.STATIC);

@@ -2,6 +2,7 @@ package jp.chang.myclinic.backendsqlite.tablebase;
 
 import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
+import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
 import jp.chang.myclinic.backenddb.tableinterface.ShoukiTableInterface;
 import java.time.*;
@@ -10,6 +11,10 @@ import java.math.BigDecimal;
 import jp.chang.myclinic.dto.ShoukiDTO;
 
 public class ShoukiTableBase extends Table<ShoukiDTO> implements ShoukiTableInterface {
+
+  public ShoukiTableBase(Query query) {
+    super(query);
+  }
 
   private static List<Column<ShoukiDTO>> columns;
 

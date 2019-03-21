@@ -2,6 +2,7 @@ package jp.chang.myclinic.backendsqlite.tablebase;
 
 import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
+import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
 import jp.chang.myclinic.backenddb.tableinterface.HotlineTableInterface;
 import java.time.*;
@@ -10,6 +11,10 @@ import java.math.BigDecimal;
 import jp.chang.myclinic.dto.HotlineDTO;
 
 public class HotlineTableBase extends Table<HotlineDTO> implements HotlineTableInterface {
+
+  public HotlineTableBase(Query query) {
+    super(query);
+  }
 
   private static List<Column<HotlineDTO>> columns;
 

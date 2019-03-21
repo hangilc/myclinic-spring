@@ -2,6 +2,7 @@ package jp.chang.myclinic.backendsqlite.tablebase;
 
 import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
+import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
 import jp.chang.myclinic.backenddb.tableinterface.ShinryouAttrTableInterface;
 import java.time.*;
@@ -11,6 +12,10 @@ import jp.chang.myclinic.dto.ShinryouAttrDTO;
 
 public class ShinryouAttrTableBase extends Table<ShinryouAttrDTO>
     implements ShinryouAttrTableInterface {
+
+  public ShinryouAttrTableBase(Query query) {
+    super(query);
+  }
 
   private static List<Column<ShinryouAttrDTO>> columns;
 

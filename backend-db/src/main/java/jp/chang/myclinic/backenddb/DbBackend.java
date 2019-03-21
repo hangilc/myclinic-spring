@@ -9,8 +9,7 @@ import java.util.function.Function;
 
 public class DbBackend {
 
-    public static Backend createBackend(DataSource ds, Function<Query, TableSet> tableSetCreator){
-        DB db = new DB(ds);
+    public static Backend createBackend(DB db, Function<Query, TableSet> tableSetCreator){
         Query query = new Query(db.getConnectionProvider());
         TableSet ts = tableSetCreator.apply(query);
         DbPersistence persist = new DbPersistence(ts, query);
