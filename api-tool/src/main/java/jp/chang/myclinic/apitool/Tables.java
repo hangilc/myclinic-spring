@@ -42,6 +42,9 @@ class Tables implements Runnable {
     @CommandLine.Option(names = {"--check-types"}, description = "Checks db-dto type inconsistencies.")
     private boolean checkTypes;
 
+    @CommandLine.Option(names = {"--tables-only"}, description = "Outputs only Table.java")
+    private boolean tablesOnly;
+
     private Formatter formatter = new Formatter();
     private Helper helper = Helper.getInstance();
 
@@ -61,12 +64,30 @@ class Tables implements Runnable {
         Config config = new SqliteConfig();
         Supplier<Connection> connSupplier = new SqliteConnectionProvider();
         try (Connection conn = connSupplier.get()) {
-            outputTableBases(conn, dtoClasses, config);
+            if( !tablesOnly ) {
+                outputTableBases(conn, dtoClasses, config);
+            }
+            outputTables(dtoClasses, config);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    private void outputTables(List<Class<?>> dtoClasses, Config config) throws Exception {
+        for(Class<?> dtoClass: dtoClasses){
+            String className = dtoClass.getSimpleName().replaceAll("DTO$", "") + "Table";
+            Path path = config.baseDir().resolve("table").resolve(className + ".java");
+            if( !Files.exists(path) ) {
+                CompilationUnit unit = new CompilationUnit();
+                unit.setPackageDeclaration(config.basePackage() + ".table");
+                unit.addImport(config.basePackage() + ".tablebase." + className + "Base");
+                ClassOrInterfaceDeclaration classDecl = unit.addClass(className);
+                classDecl.addExtendedType(className + "Base");
+                String src = formatter.formatSource(unit.toString());
+                save(path, src);
+            }
+        }
+    }
 
     private void outputTableBases(Connection conn, List<Class<?>> dtoClasses, Config config) throws Exception {
         List<String> errs = new ArrayList<>();
