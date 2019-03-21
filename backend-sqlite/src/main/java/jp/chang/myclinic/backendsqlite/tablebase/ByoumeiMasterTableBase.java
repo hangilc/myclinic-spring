@@ -34,7 +34,7 @@ public class ByoumeiMasterTableBase extends Table<ByoumeiMasterDTO>
             new Column<>(
                 "valid_from",
                 "validFrom",
-                false,
+                true,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.validFrom),
                 (rs, i, dto) -> dto.validFrom = rs.getObject(i, String.class)),

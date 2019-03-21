@@ -33,8 +33,8 @@ public class TableBaseHelper {
         return LocalDateTime.parse(str, sqlDateTimeFormatter);
     }
 
-    public static Integer stringToInteger(String s){
-        return new BigDecimal(s).intValue();
+    public static Integer tensuuToInteger(String tensuu){
+        return (int)(Double.parseDouble(tensuu));
     }
 
 }

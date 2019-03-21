@@ -42,8 +42,8 @@ public class DrugTableBase extends Table<DrugDTO> implements DrugTableInterface 
                 "amount",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.amount)),
-                (rs, i, dto) -> dto.amount = Double.valueOf(rs.getObject(i, String.class))),
+                (stmt, i, dto) -> stmt.setDouble(i, dto.amount),
+                (rs, i, dto) -> dto.amount = rs.getObject(i, Double.class)),
             new Column<>(
                 "usage",
                 "usage",

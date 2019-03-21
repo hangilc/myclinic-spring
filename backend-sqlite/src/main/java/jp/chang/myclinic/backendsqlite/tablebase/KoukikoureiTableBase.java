@@ -36,17 +36,15 @@ public class KoukikoureiTableBase extends Table<KoukikoureiDTO>
                 "hokenshaBangou",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setInt(i, Integer.parseInt(dto.hokenshaBangou)),
-                (rs, i, dto) ->
-                    dto.hokenshaBangou = String.valueOf(rs.getObject(i, Integer.class))),
+                (stmt, i, dto) -> stmt.setString(i, dto.hokenshaBangou),
+                (rs, i, dto) -> dto.hokenshaBangou = rs.getObject(i, String.class)),
             new Column<>(
                 "hihokensha_bangou",
                 "hihokenshaBangou",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setInt(i, Integer.parseInt(dto.hihokenshaBangou)),
-                (rs, i, dto) ->
-                    dto.hihokenshaBangou = String.valueOf(rs.getObject(i, Integer.class))),
+                (stmt, i, dto) -> stmt.setString(i, dto.hihokenshaBangou),
+                (rs, i, dto) -> dto.hihokenshaBangou = rs.getObject(i, String.class)),
             new Column<>(
                 "futan_wari",
                 "futanWari",

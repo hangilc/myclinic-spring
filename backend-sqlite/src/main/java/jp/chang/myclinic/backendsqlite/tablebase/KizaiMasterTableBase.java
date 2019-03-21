@@ -25,6 +25,13 @@ public class KizaiMasterTableBase extends Table<KizaiMasterDTO>
                 (stmt, i, dto) -> stmt.setInt(i, dto.kizaicode),
                 (rs, i, dto) -> dto.kizaicode = rs.getObject(i, Integer.class)),
             new Column<>(
+                "valid_from",
+                "validFrom",
+                true,
+                false,
+                (stmt, i, dto) -> stmt.setString(i, dto.validFrom),
+                (rs, i, dto) -> dto.validFrom = rs.getObject(i, String.class)),
+            new Column<>(
                 "name",
                 "name",
                 false,
@@ -50,15 +57,8 @@ public class KizaiMasterTableBase extends Table<KizaiMasterDTO>
                 "kingaku",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.kingaku)),
-                (rs, i, dto) -> dto.kingaku = Double.valueOf(rs.getObject(i, String.class))),
-            new Column<>(
-                "valid_from",
-                "validFrom",
-                false,
-                false,
-                (stmt, i, dto) -> stmt.setString(i, dto.validFrom),
-                (rs, i, dto) -> dto.validFrom = rs.getObject(i, String.class)),
+                (stmt, i, dto) -> stmt.setDouble(i, dto.kingaku),
+                (rs, i, dto) -> dto.kingaku = rs.getObject(i, Double.class)),
             new Column<>(
                 "valid_upto",
                 "validUpto",

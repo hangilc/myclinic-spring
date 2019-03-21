@@ -20,7 +20,7 @@ public class IntraclinicTagPostTableBase extends Table<IntraclinicTagPostDTO>
             new Column<>(
                 "tag_id",
                 "tagId",
-                false,
+                true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.tagId),
                 (rs, i, dto) -> dto.tagId = rs.getObject(i, Integer.class)),

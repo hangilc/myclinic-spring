@@ -14,16 +14,10 @@ public class SqliteConnectionProvider implements Supplier<Connection> {
         try {
             Class.forName("org.sqlite.JDBC");
             String url = "jdbc:sqlite::memory:";
-            String schemaSource = Files.readString(Paths.get("backend-sqlite/src/main/sql/sqlite-schema.sql"));
             Connection conn = DriverManager.getConnection(url);
+            String dbFile = "backend-sqlite/src/main/resources/schema-only.db";
             Statement stmt = conn.createStatement();
-            for(String sql: schemaSource.split(";")){
-                sql = sql.trim();
-                if( sql.isEmpty() ){
-                    continue;
-                }
-                stmt.execute(sql);
-            }
+            stmt.execute("restore from '" + dbFile + "'");
             stmt.close();
             return conn;
         } catch (Exception e) {

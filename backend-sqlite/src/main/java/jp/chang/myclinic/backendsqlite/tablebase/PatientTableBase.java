@@ -52,19 +52,19 @@ public class PatientTableBase extends Table<PatientDTO> implements PatientTableI
                 (stmt, i, dto) -> stmt.setString(i, dto.firstNameYomi),
                 (rs, i, dto) -> dto.firstNameYomi = rs.getObject(i, String.class)),
             new Column<>(
-                "sex",
-                "sex",
-                false,
-                false,
-                (stmt, i, dto) -> stmt.setString(i, dto.sex),
-                (rs, i, dto) -> dto.sex = rs.getObject(i, String.class)),
-            new Column<>(
                 "birthday",
                 "birthday",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.birthday),
                 (rs, i, dto) -> dto.birthday = rs.getObject(i, String.class)),
+            new Column<>(
+                "sex",
+                "sex",
+                false,
+                false,
+                (stmt, i, dto) -> stmt.setString(i, dto.sex),
+                (rs, i, dto) -> dto.sex = rs.getObject(i, String.class)),
             new Column<>(
                 "address",
                 "address",

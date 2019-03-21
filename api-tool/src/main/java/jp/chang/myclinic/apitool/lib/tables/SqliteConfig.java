@@ -1,6 +1,7 @@
 package jp.chang.myclinic.apitool.lib.tables;
 
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import jp.chang.myclinic.apitool.databasespecifics.SqliteSpecifics;
 import jp.chang.myclinic.apitool.lib.Helper;
 
@@ -31,7 +32,11 @@ public class SqliteConfig extends SqliteSpecifics implements Config {
             }
         } else if( dbColumnClass == Integer.class ){
             if( dtoFieldClass == String.class ){
-                return helper.methodCall("Integer", "parseInt", fieldAccess);
+                if( tableName.equals("shinryou_master") && dbColumnName.equals("tensuu") ){
+
+                } else {
+                    return helper.methodCall("Integer", "parseInt", fieldAccess);
+                }
             }
         }
         return Config.super.generateStatementSetterArg(tableName, dbColumnClass, dbColumnName, dtoClass,
@@ -42,6 +47,11 @@ public class SqliteConfig extends SqliteSpecifics implements Config {
     public Expression generateDtoFieldSetterArg(String tableName, Class<?> dbColumnClass, String dbColumnName,
                                                 Class<?> dtoClass, Class<?> dtoFieldClass, String dtoFieldName,
                                                 Expression colValue) {
+        if( dtoFieldClass == Character.class ){
+            if( dbColumnClass == String.class ){
+                return helper.methodCall(colValue, "charAt", new IntegerLiteralExpr(0));
+            }
+        }
         return Config.super.generateDtoFieldSetterArg(tableName, dbColumnClass, dbColumnName, dtoClass,
                 dtoFieldClass, dtoFieldName, colValue);
     }

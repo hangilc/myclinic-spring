@@ -45,19 +45,19 @@ public class VisitTableBase extends Table<VisitDTO> implements VisitTableInterfa
                 (stmt, i, dto) -> stmt.setInt(i, dto.shahokokuhoId),
                 (rs, i, dto) -> dto.shahokokuhoId = rs.getObject(i, Integer.class)),
             new Column<>(
-                "roujin_id",
-                "roujinId",
-                false,
-                false,
-                (stmt, i, dto) -> stmt.setInt(i, dto.roujinId),
-                (rs, i, dto) -> dto.roujinId = rs.getObject(i, Integer.class)),
-            new Column<>(
                 "koukikourei_id",
                 "koukikoureiId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.koukikoureiId),
                 (rs, i, dto) -> dto.koukikoureiId = rs.getObject(i, Integer.class)),
+            new Column<>(
+                "roujin_id",
+                "roujinId",
+                false,
+                false,
+                (stmt, i, dto) -> stmt.setInt(i, dto.roujinId),
+                (rs, i, dto) -> dto.roujinId = rs.getObject(i, Integer.class)),
             new Column<>(
                 "kouhi1_id",
                 "kouhi1Id",

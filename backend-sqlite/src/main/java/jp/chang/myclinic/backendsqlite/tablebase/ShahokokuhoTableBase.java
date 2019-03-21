@@ -60,6 +60,13 @@ public class ShahokokuhoTableBase extends Table<ShahokokuhoDTO>
                 (stmt, i, dto) -> stmt.setInt(i, dto.honnin),
                 (rs, i, dto) -> dto.honnin = rs.getObject(i, Integer.class)),
             new Column<>(
+                "kourei",
+                "kourei",
+                false,
+                false,
+                (stmt, i, dto) -> stmt.setInt(i, dto.kourei),
+                (rs, i, dto) -> dto.kourei = rs.getObject(i, Integer.class)),
+            new Column<>(
                 "valid_from",
                 "validFrom",
                 false,
@@ -72,14 +79,7 @@ public class ShahokokuhoTableBase extends Table<ShahokokuhoDTO>
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.validUpto),
-                (rs, i, dto) -> dto.validUpto = rs.getObject(i, String.class)),
-            new Column<>(
-                "kourei",
-                "kourei",
-                false,
-                false,
-                (stmt, i, dto) -> stmt.setInt(i, dto.kourei),
-                (rs, i, dto) -> dto.kourei = rs.getObject(i, Integer.class)));
+                (rs, i, dto) -> dto.validUpto = rs.getObject(i, String.class)));
   }
 
   @Override()

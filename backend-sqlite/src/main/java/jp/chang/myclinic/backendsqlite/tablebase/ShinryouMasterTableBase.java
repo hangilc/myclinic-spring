@@ -25,6 +25,13 @@ public class ShinryouMasterTableBase extends Table<ShinryouMasterDTO>
                 (stmt, i, dto) -> stmt.setInt(i, dto.shinryoucode),
                 (rs, i, dto) -> dto.shinryoucode = rs.getObject(i, Integer.class)),
             new Column<>(
+                "valid_from",
+                "validFrom",
+                true,
+                false,
+                (stmt, i, dto) -> stmt.setString(i, dto.validFrom),
+                (rs, i, dto) -> dto.validFrom = rs.getObject(i, String.class)),
+            new Column<>(
                 "name",
                 "name",
                 false,
@@ -36,15 +43,14 @@ public class ShinryouMasterTableBase extends Table<ShinryouMasterDTO>
                 "tensuu",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.tensuu)),
-                (rs, i, dto) ->
-                    dto.tensuu = TableBaseHelper.stringToInteger(rs.getObject(i, String.class))),
+                (stmt, i, dto) -> stmt.setInt(i, dto.tensuu),
+                (rs, i, dto) -> dto.tensuu = rs.getObject(i, Integer.class)),
             new Column<>(
                 "tensuu_shikibetsu",
                 "tensuuShikibetsu",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.tensuuShikibetsu)),
+                (stmt, i, dto) -> stmt.setObject(i, String.valueOf(dto.tensuuShikibetsu)),
                 (rs, i, dto) -> dto.tensuuShikibetsu = rs.getObject(i, String.class).charAt(0)),
             new Column<>(
                 "shuukeisaki",
@@ -61,19 +67,19 @@ public class ShinryouMasterTableBase extends Table<ShinryouMasterDTO>
                 (stmt, i, dto) -> stmt.setString(i, dto.houkatsukensa),
                 (rs, i, dto) -> dto.houkatsukensa = rs.getObject(i, String.class)),
             new Column<>(
+                "oushinkubun",
+                "oushinkubun",
+                false,
+                false,
+                (stmt, i, dto) -> stmt.setObject(i, String.valueOf(dto.oushinkubun)),
+                (rs, i, dto) -> dto.oushinkubun = rs.getObject(i, String.class).charAt(0)),
+            new Column<>(
                 "kensa_group",
                 "kensaGroup",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.kensaGroup),
                 (rs, i, dto) -> dto.kensaGroup = rs.getObject(i, String.class)),
-            new Column<>(
-                "valid_from",
-                "validFrom",
-                false,
-                false,
-                (stmt, i, dto) -> stmt.setString(i, dto.validFrom),
-                (rs, i, dto) -> dto.validFrom = rs.getObject(i, String.class)),
             new Column<>(
                 "valid_upto",
                 "validUpto",

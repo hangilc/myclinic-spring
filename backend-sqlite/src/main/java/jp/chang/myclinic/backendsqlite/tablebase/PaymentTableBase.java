@@ -19,7 +19,7 @@ public class PaymentTableBase extends Table<PaymentDTO> implements PaymentTableI
             new Column<>(
                 "visit_id",
                 "visitId",
-                false,
+                true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.visitId),
                 (rs, i, dto) -> dto.visitId = rs.getObject(i, Integer.class)),

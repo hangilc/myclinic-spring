@@ -56,7 +56,7 @@ public class DiseaseTableBase extends Table<DiseaseDTO> implements DiseaseTableI
                 "endReason",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.endReason)),
+                (stmt, i, dto) -> stmt.setObject(i, String.valueOf(dto.endReason)),
                 (rs, i, dto) -> dto.endReason = rs.getObject(i, String.class).charAt(0)));
   }
 
