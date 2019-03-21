@@ -28,21 +28,21 @@ public class ConductShinryouTableBase extends Table<ConductShinryouDTO>
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.conductShinryouId),
-                (rs, i, dto) -> dto.conductShinryouId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.conductShinryouId = rs.getInt(i)),
             new Column<>(
                 "conduct_id",
                 "conductId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.conductId),
-                (rs, i, dto) -> dto.conductId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.conductId = rs.getInt(i)),
             new Column<>(
                 "shinryoucode",
                 "shinryoucode",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.shinryoucode),
-                (rs, i, dto) -> dto.shinryoucode = rs.getObject(i, Integer.class)));
+                (rs, i, dto) -> dto.shinryoucode = rs.getInt(i)));
   }
 
   @Override()

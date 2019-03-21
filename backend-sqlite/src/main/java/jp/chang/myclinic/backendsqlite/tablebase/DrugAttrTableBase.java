@@ -27,14 +27,14 @@ public class DrugAttrTableBase extends Table<DrugAttrDTO> implements DrugAttrTab
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.drugId),
-                (rs, i, dto) -> dto.drugId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.drugId = rs.getInt(i)),
             new Column<>(
                 "tekiyou",
                 "tekiyou",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.tekiyou),
-                (rs, i, dto) -> dto.tekiyou = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.tekiyou = rs.getString(i)));
   }
 
   @Override()

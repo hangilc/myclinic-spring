@@ -28,14 +28,14 @@ public class ShinryouAttrTableBase extends Table<ShinryouAttrDTO>
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.shinryouId),
-                (rs, i, dto) -> dto.shinryouId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.shinryouId = rs.getInt(i)),
             new Column<>(
                 "tekiyou",
                 "tekiyou",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.tekiyou),
-                (rs, i, dto) -> dto.tekiyou = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.tekiyou = rs.getString(i)));
   }
 
   @Override()

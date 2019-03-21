@@ -28,49 +28,49 @@ public class KizaiMasterTableBase extends Table<KizaiMasterDTO>
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.kizaicode),
-                (rs, i, dto) -> dto.kizaicode = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.kizaicode = rs.getInt(i)),
             new Column<>(
                 "valid_from",
                 "validFrom",
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.validFrom),
-                (rs, i, dto) -> dto.validFrom = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.validFrom = rs.getString(i)),
             new Column<>(
                 "name",
                 "name",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.name),
-                (rs, i, dto) -> dto.name = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.name = rs.getString(i)),
             new Column<>(
                 "yomi",
                 "yomi",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.yomi),
-                (rs, i, dto) -> dto.yomi = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.yomi = rs.getString(i)),
             new Column<>(
                 "unit",
                 "unit",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.unit),
-                (rs, i, dto) -> dto.unit = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.unit = rs.getString(i)),
             new Column<>(
                 "kingaku",
                 "kingaku",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setDouble(i, dto.kingaku),
-                (rs, i, dto) -> dto.kingaku = rs.getObject(i, Double.class)),
+                (rs, i, dto) -> dto.kingaku = rs.getDouble(i)),
             new Column<>(
                 "valid_upto",
                 "validUpto",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.validUpto),
-                (rs, i, dto) -> dto.validUpto = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.validUpto = rs.getString(i)));
   }
 
   @Override()

@@ -27,21 +27,21 @@ public class TextTableBase extends Table<TextDTO> implements TextTableInterface 
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.textId),
-                (rs, i, dto) -> dto.textId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.textId = rs.getInt(i)),
             new Column<>(
                 "visit_id",
                 "visitId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.visitId),
-                (rs, i, dto) -> dto.visitId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.visitId = rs.getInt(i)),
             new Column<>(
                 "content",
                 "content",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.content),
-                (rs, i, dto) -> dto.content = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.content = rs.getString(i)));
   }
 
   @Override()

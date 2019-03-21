@@ -27,49 +27,49 @@ public class RoujinTableBase extends Table<RoujinDTO> implements RoujinTableInte
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.roujinId),
-                (rs, i, dto) -> dto.roujinId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.roujinId = rs.getInt(i)),
             new Column<>(
                 "patient_id",
                 "patientId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.patientId),
-                (rs, i, dto) -> dto.patientId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.patientId = rs.getInt(i)),
             new Column<>(
                 "shichouson",
                 "shichouson",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.shichouson),
-                (rs, i, dto) -> dto.shichouson = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.shichouson = rs.getInt(i)),
             new Column<>(
                 "jukyuusha",
                 "jukyuusha",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.jukyuusha),
-                (rs, i, dto) -> dto.jukyuusha = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.jukyuusha = rs.getInt(i)),
             new Column<>(
                 "futan_wari",
                 "futanWari",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.futanWari),
-                (rs, i, dto) -> dto.futanWari = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.futanWari = rs.getInt(i)),
             new Column<>(
                 "valid_from",
                 "validFrom",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.validFrom),
-                (rs, i, dto) -> dto.validFrom = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.validFrom = rs.getString(i)),
             new Column<>(
                 "valid_upto",
                 "validUpto",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.validUpto),
-                (rs, i, dto) -> dto.validUpto = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.validUpto = rs.getString(i)));
   }
 
   @Override()

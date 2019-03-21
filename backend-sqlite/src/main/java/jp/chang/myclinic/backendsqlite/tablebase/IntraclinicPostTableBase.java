@@ -28,21 +28,21 @@ public class IntraclinicPostTableBase extends Table<IntraclinicPostDTO>
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.id),
-                (rs, i, dto) -> dto.id = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.id = rs.getInt(i)),
             new Column<>(
                 "content",
                 "content",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.content),
-                (rs, i, dto) -> dto.content = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.content = rs.getString(i)),
             new Column<>(
                 "created_at",
                 "createdAt",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.createdAt),
-                (rs, i, dto) -> dto.createdAt = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.createdAt = rs.getString(i)));
   }
 
   @Override()

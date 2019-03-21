@@ -28,28 +28,28 @@ public class ConductDrugTableBase extends Table<ConductDrugDTO>
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.conductDrugId),
-                (rs, i, dto) -> dto.conductDrugId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.conductDrugId = rs.getInt(i)),
             new Column<>(
                 "conduct_id",
                 "conductId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.conductId),
-                (rs, i, dto) -> dto.conductId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.conductId = rs.getInt(i)),
             new Column<>(
                 "iyakuhincode",
                 "iyakuhincode",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.iyakuhincode),
-                (rs, i, dto) -> dto.iyakuhincode = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.iyakuhincode = rs.getInt(i)),
             new Column<>(
                 "amount",
                 "amount",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setDouble(i, dto.amount),
-                (rs, i, dto) -> dto.amount = rs.getObject(i, Double.class)));
+                (rs, i, dto) -> dto.amount = rs.getDouble(i)));
   }
 
   @Override()

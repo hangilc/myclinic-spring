@@ -28,14 +28,14 @@ public class ShuushokugoMasterTableBase extends Table<ShuushokugoMasterDTO>
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.shuushokugocode),
-                (rs, i, dto) -> dto.shuushokugocode = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.shuushokugocode = rs.getInt(i)),
             new Column<>(
                 "name",
                 "name",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.name),
-                (rs, i, dto) -> dto.name = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.name = rs.getString(i)));
   }
 
   @Override()

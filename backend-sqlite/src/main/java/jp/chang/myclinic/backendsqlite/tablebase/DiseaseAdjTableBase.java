@@ -27,21 +27,21 @@ public class DiseaseAdjTableBase extends Table<DiseaseAdjDTO> implements Disease
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.diseaseAdjId),
-                (rs, i, dto) -> dto.diseaseAdjId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.diseaseAdjId = rs.getInt(i)),
             new Column<>(
                 "disease_id",
                 "diseaseId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.diseaseId),
-                (rs, i, dto) -> dto.diseaseId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.diseaseId = rs.getInt(i)),
             new Column<>(
                 "shuushokugocode",
                 "shuushokugocode",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.shuushokugocode),
-                (rs, i, dto) -> dto.shuushokugocode = rs.getObject(i, Integer.class)));
+                (rs, i, dto) -> dto.shuushokugocode = rs.getInt(i)));
   }
 
   @Override()

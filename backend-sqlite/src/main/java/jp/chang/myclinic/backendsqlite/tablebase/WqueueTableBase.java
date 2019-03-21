@@ -27,14 +27,14 @@ public class WqueueTableBase extends Table<WqueueDTO> implements WqueueTableInte
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.visitId),
-                (rs, i, dto) -> dto.visitId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.visitId = rs.getInt(i)),
             new Column<>(
                 "wait_state",
                 "waitState",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.waitState),
-                (rs, i, dto) -> dto.waitState = rs.getObject(i, Integer.class)));
+                (rs, i, dto) -> dto.waitState = rs.getInt(i)));
   }
 
   @Override()

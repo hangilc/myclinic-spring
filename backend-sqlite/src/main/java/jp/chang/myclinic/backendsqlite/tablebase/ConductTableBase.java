@@ -27,21 +27,21 @@ public class ConductTableBase extends Table<ConductDTO> implements ConductTableI
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.conductId),
-                (rs, i, dto) -> dto.conductId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.conductId = rs.getInt(i)),
             new Column<>(
                 "visit_id",
                 "visitId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.visitId),
-                (rs, i, dto) -> dto.visitId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.visitId = rs.getInt(i)),
             new Column<>(
                 "kind",
                 "kind",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.kind),
-                (rs, i, dto) -> dto.kind = rs.getObject(i, Integer.class)));
+                (rs, i, dto) -> dto.kind = rs.getInt(i)));
   }
 
   @Override()

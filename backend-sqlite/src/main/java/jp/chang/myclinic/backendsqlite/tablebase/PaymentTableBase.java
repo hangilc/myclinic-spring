@@ -27,21 +27,21 @@ public class PaymentTableBase extends Table<PaymentDTO> implements PaymentTableI
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.visitId),
-                (rs, i, dto) -> dto.visitId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.visitId = rs.getInt(i)),
             new Column<>(
                 "amount",
                 "amount",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.amount),
-                (rs, i, dto) -> dto.amount = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.amount = rs.getInt(i)),
             new Column<>(
                 "paytime",
                 "paytime",
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.paytime),
-                (rs, i, dto) -> dto.paytime = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.paytime = rs.getString(i)));
   }
 
   @Override()

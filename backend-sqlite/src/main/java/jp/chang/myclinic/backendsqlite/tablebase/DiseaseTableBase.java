@@ -27,42 +27,42 @@ public class DiseaseTableBase extends Table<DiseaseDTO> implements DiseaseTableI
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.diseaseId),
-                (rs, i, dto) -> dto.diseaseId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.diseaseId = rs.getInt(i)),
             new Column<>(
                 "patient_id",
                 "patientId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.patientId),
-                (rs, i, dto) -> dto.patientId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.patientId = rs.getInt(i)),
             new Column<>(
                 "shoubyoumeicode",
                 "shoubyoumeicode",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.shoubyoumeicode),
-                (rs, i, dto) -> dto.shoubyoumeicode = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.shoubyoumeicode = rs.getInt(i)),
             new Column<>(
                 "start_date",
                 "startDate",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.startDate),
-                (rs, i, dto) -> dto.startDate = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.startDate = rs.getString(i)),
             new Column<>(
                 "end_date",
                 "endDate",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.endDate),
-                (rs, i, dto) -> dto.endDate = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.endDate = rs.getString(i)),
             new Column<>(
                 "end_reason",
                 "endReason",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setObject(i, String.valueOf(dto.endReason)),
-                (rs, i, dto) -> dto.endReason = rs.getObject(i, String.class).charAt(0)));
+                (rs, i, dto) -> dto.endReason = rs.getString(i).charAt(0)));
   }
 
   @Override()

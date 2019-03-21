@@ -28,35 +28,35 @@ public class IntraclinicCommentTableBase extends Table<IntraclinicCommentDTO>
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.id),
-                (rs, i, dto) -> dto.id = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.id = rs.getInt(i)),
             new Column<>(
                 "name",
                 "name",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.name),
-                (rs, i, dto) -> dto.name = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.name = rs.getString(i)),
             new Column<>(
                 "content",
                 "content",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.content),
-                (rs, i, dto) -> dto.content = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.content = rs.getString(i)),
             new Column<>(
                 "post_id",
                 "postId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.postId),
-                (rs, i, dto) -> dto.postId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.postId = rs.getInt(i)),
             new Column<>(
                 "created_at",
                 "createdAt",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.createdAt),
-                (rs, i, dto) -> dto.createdAt = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.createdAt = rs.getString(i)));
   }
 
   @Override()

@@ -26,13 +26,13 @@ public class SqliteConfig extends SqliteSpecifics implements Config {
     public Expression generateStatementSetterArg(String tableName, Class<?> dbColumnClass, String dbColumnName,
                                                  Class<?> dtoClass, Class<?> dtoFieldClass, String dtoFieldName,
                                                  Expression fieldAccess) {
-        if( dbColumnClass == String.class ){
-            if( dtoFieldClass == Double.class || dtoFieldClass == Character.class || dtoFieldClass == Integer.class ) {
+        if (dbColumnClass == String.class) {
+            if (dtoFieldClass == Double.class || dtoFieldClass == Character.class || dtoFieldClass == Integer.class) {
                 return helper.methodCall("String", "valueOf", fieldAccess);
             }
-        } else if( dbColumnClass == Integer.class ){
-            if( dtoFieldClass == String.class ){
-                if( tableName.equals("shinryou_master") && dbColumnName.equals("tensuu") ){
+        } else if (dbColumnClass == Integer.class) {
+            if (dtoFieldClass == String.class) {
+                if (tableName.equals("shinryou_master") && dbColumnName.equals("tensuu")) {
 
                 } else {
                     return helper.methodCall("Integer", "parseInt", fieldAccess);
@@ -44,15 +44,33 @@ public class SqliteConfig extends SqliteSpecifics implements Config {
     }
 
     @Override
-    public Expression generateDtoFieldSetterArg(String tableName, Class<?> dbColumnClass, String dbColumnName,
-                                                Class<?> dtoClass, Class<?> dtoFieldClass, String dtoFieldName,
-                                                Expression colValue) {
-        if( dtoFieldClass == Character.class ){
-            if( dbColumnClass == String.class ){
-                return helper.methodCall(colValue, "charAt", new IntegerLiteralExpr(0));
+    public DtoFieldSetterCreator getDtoFieldSetterCreator(String tableName, Class<?> dbColumnClass, String dbColumnName,
+                                                          Class<?> dtoClass, Class<?> dtoFieldClass, String dtoFieldName) {
+        if (dbColumnClass == dtoFieldClass) {
+            return new DtoFieldSetterCreator(
+                    getResultSetGetterMethod(dbColumnClass),
+                    colValue -> colValue
+            );
+        }
+        if( dbColumnClass == String.class ){
+            if( dtoFieldClass == Character.class || dtoFieldClass == char.class ) {
+                return new DtoFieldSetterCreator(
+                        "getString",
+                        colValue -> helper.methodCall(colValue, "charAt", new IntegerLiteralExpr(0))
+                );
             }
         }
-        return Config.super.generateDtoFieldSetterArg(tableName, dbColumnClass, dbColumnName, dtoClass,
-                dtoFieldClass, dtoFieldName, colValue);
+        return null;
     }
+
+    private String getResultSetGetterMethod(Class<?> dbColumnClass) {
+        if (dbColumnClass == Integer.class || dbColumnClass == int.class) {
+            return "getInt";
+        } else if (dbColumnClass == Double.class || dbColumnClass == double.class) {
+            return "getDouble";
+        } else {
+            return "getString";
+        }
+    }
+
 }

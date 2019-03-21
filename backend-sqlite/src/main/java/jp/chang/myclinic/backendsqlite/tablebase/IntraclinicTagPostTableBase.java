@@ -28,14 +28,14 @@ public class IntraclinicTagPostTableBase extends Table<IntraclinicTagPostDTO>
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.tagId),
-                (rs, i, dto) -> dto.tagId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.tagId = rs.getInt(i)),
             new Column<>(
                 "post_id",
                 "postId",
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.postId),
-                (rs, i, dto) -> dto.postId = rs.getObject(i, Integer.class)));
+                (rs, i, dto) -> dto.postId = rs.getInt(i)));
   }
 
   @Override()

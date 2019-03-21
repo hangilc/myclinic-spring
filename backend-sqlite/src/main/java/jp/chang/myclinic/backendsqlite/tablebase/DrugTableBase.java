@@ -27,56 +27,56 @@ public class DrugTableBase extends Table<DrugDTO> implements DrugTableInterface 
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.drugId),
-                (rs, i, dto) -> dto.drugId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.drugId = rs.getInt(i)),
             new Column<>(
                 "visit_id",
                 "visitId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.visitId),
-                (rs, i, dto) -> dto.visitId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.visitId = rs.getInt(i)),
             new Column<>(
                 "iyakuhincode",
                 "iyakuhincode",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.iyakuhincode),
-                (rs, i, dto) -> dto.iyakuhincode = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.iyakuhincode = rs.getInt(i)),
             new Column<>(
                 "amount",
                 "amount",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setDouble(i, dto.amount),
-                (rs, i, dto) -> dto.amount = rs.getObject(i, Double.class)),
+                (rs, i, dto) -> dto.amount = rs.getDouble(i)),
             new Column<>(
                 "usage",
                 "usage",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.usage),
-                (rs, i, dto) -> dto.usage = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.usage = rs.getString(i)),
             new Column<>(
                 "days",
                 "days",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.days),
-                (rs, i, dto) -> dto.days = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.days = rs.getInt(i)),
             new Column<>(
                 "category",
                 "category",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.category),
-                (rs, i, dto) -> dto.category = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.category = rs.getInt(i)),
             new Column<>(
                 "prescribed",
                 "prescribed",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.prescribed),
-                (rs, i, dto) -> dto.prescribed = rs.getObject(i, Integer.class)));
+                (rs, i, dto) -> dto.prescribed = rs.getInt(i)));
   }
 
   @Override()

@@ -28,28 +28,28 @@ public class PracticeLogTableBase extends Table<PracticeLogDTO>
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.serialId),
-                (rs, i, dto) -> dto.serialId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.serialId = rs.getInt(i)),
             new Column<>(
                 "created_at",
                 "createdAt",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.createdAt),
-                (rs, i, dto) -> dto.createdAt = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.createdAt = rs.getString(i)),
             new Column<>(
                 "kind",
                 "kind",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.kind),
-                (rs, i, dto) -> dto.kind = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.kind = rs.getString(i)),
             new Column<>(
                 "body",
                 "body",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.body),
-                (rs, i, dto) -> dto.body = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.body = rs.getString(i)));
   }
 
   @Override()

@@ -27,21 +27,21 @@ public class PharmaDrugTableBase extends Table<PharmaDrugDTO> implements PharmaD
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.iyakuhincode),
-                (rs, i, dto) -> dto.iyakuhincode = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.iyakuhincode = rs.getInt(i)),
             new Column<>(
                 "description",
                 "description",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.description),
-                (rs, i, dto) -> dto.description = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.description = rs.getString(i)),
             new Column<>(
                 "sideeffect",
                 "sideeffect",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.sideeffect),
-                (rs, i, dto) -> dto.sideeffect = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.sideeffect = rs.getString(i)));
   }
 
   @Override()

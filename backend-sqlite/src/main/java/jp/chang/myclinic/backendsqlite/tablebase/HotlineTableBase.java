@@ -27,35 +27,35 @@ public class HotlineTableBase extends Table<HotlineDTO> implements HotlineTableI
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.hotlineId),
-                (rs, i, dto) -> dto.hotlineId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.hotlineId = rs.getInt(i)),
             new Column<>(
                 "message",
                 "message",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.message),
-                (rs, i, dto) -> dto.message = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.message = rs.getString(i)),
             new Column<>(
                 "sender",
                 "sender",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.sender),
-                (rs, i, dto) -> dto.sender = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.sender = rs.getString(i)),
             new Column<>(
                 "recipient",
                 "recipient",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.recipient),
-                (rs, i, dto) -> dto.recipient = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.recipient = rs.getString(i)),
             new Column<>(
                 "posted_at",
                 "postedAt",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.postedAt),
-                (rs, i, dto) -> dto.postedAt = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.postedAt = rs.getString(i)));
   }
 
   @Override()

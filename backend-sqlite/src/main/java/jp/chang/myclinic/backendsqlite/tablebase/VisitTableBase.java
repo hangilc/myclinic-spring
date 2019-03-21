@@ -27,63 +27,63 @@ public class VisitTableBase extends Table<VisitDTO> implements VisitTableInterfa
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.visitId),
-                (rs, i, dto) -> dto.visitId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.visitId = rs.getInt(i)),
             new Column<>(
                 "patient_id",
                 "patientId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.patientId),
-                (rs, i, dto) -> dto.patientId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.patientId = rs.getInt(i)),
             new Column<>(
                 "visited_at",
                 "visitedAt",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.visitedAt),
-                (rs, i, dto) -> dto.visitedAt = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.visitedAt = rs.getString(i)),
             new Column<>(
                 "shahokokuho_id",
                 "shahokokuhoId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.shahokokuhoId),
-                (rs, i, dto) -> dto.shahokokuhoId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.shahokokuhoId = rs.getInt(i)),
             new Column<>(
                 "koukikourei_id",
                 "koukikoureiId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.koukikoureiId),
-                (rs, i, dto) -> dto.koukikoureiId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.koukikoureiId = rs.getInt(i)),
             new Column<>(
                 "roujin_id",
                 "roujinId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.roujinId),
-                (rs, i, dto) -> dto.roujinId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.roujinId = rs.getInt(i)),
             new Column<>(
                 "kouhi1_id",
                 "kouhi1Id",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.kouhi1Id),
-                (rs, i, dto) -> dto.kouhi1Id = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.kouhi1Id = rs.getInt(i)),
             new Column<>(
                 "kouhi2_id",
                 "kouhi2Id",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.kouhi2Id),
-                (rs, i, dto) -> dto.kouhi2Id = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.kouhi2Id = rs.getInt(i)),
             new Column<>(
                 "kouhi3_id",
                 "kouhi3Id",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.kouhi3Id),
-                (rs, i, dto) -> dto.kouhi3Id = rs.getObject(i, Integer.class)));
+                (rs, i, dto) -> dto.kouhi3Id = rs.getInt(i)));
   }
 
   @Override()

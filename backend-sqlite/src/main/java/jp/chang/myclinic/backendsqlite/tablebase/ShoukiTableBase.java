@@ -27,14 +27,14 @@ public class ShoukiTableBase extends Table<ShoukiDTO> implements ShoukiTableInte
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.visitId),
-                (rs, i, dto) -> dto.visitId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.visitId = rs.getInt(i)),
             new Column<>(
                 "shouki",
                 "shouki",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.shouki),
-                (rs, i, dto) -> dto.shouki = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.shouki = rs.getString(i)));
   }
 
   @Override()

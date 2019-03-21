@@ -2,10 +2,7 @@ package jp.chang.myclinic.apitool.lib;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.Parameter;
-import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.MethodCallExpr;
-import com.github.javaparser.ast.expr.NameExpr;
-import com.github.javaparser.ast.expr.SimpleName;
+import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnknownType;
@@ -109,6 +106,15 @@ public class Helper {
 
     public Expression methodCall(Expression scope, String method, Expression arg) {
         return new MethodCallExpr(scope, new SimpleName(method), nodeList(arg));
+    }
+
+    // Integer -> Integer.class
+    public Expression classLiteral(String className){
+        return new FieldAccessExpr(new NameExpr(className), "class");
+    }
+
+    public Expression classLiteral(Class<?> cls){
+        return classLiteral(cls.getSimpleName());
     }
 
     public static class ColumnInfo {

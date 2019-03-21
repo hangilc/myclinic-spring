@@ -27,14 +27,14 @@ public class ChargeTableBase extends Table<ChargeDTO> implements ChargeTableInte
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.visitId),
-                (rs, i, dto) -> dto.visitId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.visitId = rs.getInt(i)),
             new Column<>(
                 "charge",
                 "charge",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.charge),
-                (rs, i, dto) -> dto.charge = rs.getObject(i, Integer.class)));
+                (rs, i, dto) -> dto.charge = rs.getInt(i)));
   }
 
   @Override()

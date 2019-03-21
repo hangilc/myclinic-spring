@@ -27,42 +27,42 @@ public class KouhiTableBase extends Table<KouhiDTO> implements KouhiTableInterfa
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.kouhiId),
-                (rs, i, dto) -> dto.kouhiId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.kouhiId = rs.getInt(i)),
             new Column<>(
                 "patient_id",
                 "patientId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.patientId),
-                (rs, i, dto) -> dto.patientId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.patientId = rs.getInt(i)),
             new Column<>(
                 "futansha",
                 "futansha",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.futansha),
-                (rs, i, dto) -> dto.futansha = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.futansha = rs.getInt(i)),
             new Column<>(
                 "jukyuusha",
                 "jukyuusha",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.jukyuusha),
-                (rs, i, dto) -> dto.jukyuusha = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.jukyuusha = rs.getInt(i)),
             new Column<>(
                 "valid_from",
                 "validFrom",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.validFrom),
-                (rs, i, dto) -> dto.validFrom = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.validFrom = rs.getString(i)),
             new Column<>(
                 "valid_upto",
                 "validUpto",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.validUpto),
-                (rs, i, dto) -> dto.validUpto = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.validUpto = rs.getString(i)));
   }
 
   @Override()

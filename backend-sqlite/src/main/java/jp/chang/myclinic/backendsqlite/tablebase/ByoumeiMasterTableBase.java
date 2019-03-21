@@ -28,28 +28,28 @@ public class ByoumeiMasterTableBase extends Table<ByoumeiMasterDTO>
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.shoubyoumeicode),
-                (rs, i, dto) -> dto.shoubyoumeicode = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.shoubyoumeicode = rs.getInt(i)),
             new Column<>(
                 "name",
                 "name",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.name),
-                (rs, i, dto) -> dto.name = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.name = rs.getString(i)),
             new Column<>(
                 "valid_from",
                 "validFrom",
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.validFrom),
-                (rs, i, dto) -> dto.validFrom = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.validFrom = rs.getString(i)),
             new Column<>(
                 "valid_upto",
                 "validUpto",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.validUpto),
-                (rs, i, dto) -> dto.validUpto = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.validUpto = rs.getString(i)));
   }
 
   @Override()

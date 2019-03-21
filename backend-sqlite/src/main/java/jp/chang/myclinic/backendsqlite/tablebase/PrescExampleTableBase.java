@@ -28,56 +28,56 @@ public class PrescExampleTableBase extends Table<PrescExampleDTO>
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.prescExampleId),
-                (rs, i, dto) -> dto.prescExampleId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.prescExampleId = rs.getInt(i)),
             new Column<>(
                 "iyakuhincode",
                 "iyakuhincode",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.iyakuhincode),
-                (rs, i, dto) -> dto.iyakuhincode = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.iyakuhincode = rs.getInt(i)),
             new Column<>(
                 "master_valid_from",
                 "masterValidFrom",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.masterValidFrom),
-                (rs, i, dto) -> dto.masterValidFrom = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.masterValidFrom = rs.getString(i)),
             new Column<>(
                 "amount",
                 "amount",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.amount),
-                (rs, i, dto) -> dto.amount = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.amount = rs.getString(i)),
             new Column<>(
                 "usage",
                 "usage",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.usage),
-                (rs, i, dto) -> dto.usage = rs.getObject(i, String.class)),
+                (rs, i, dto) -> dto.usage = rs.getString(i)),
             new Column<>(
                 "days",
                 "days",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.days),
-                (rs, i, dto) -> dto.days = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.days = rs.getInt(i)),
             new Column<>(
                 "category",
                 "category",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.category),
-                (rs, i, dto) -> dto.category = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.category = rs.getInt(i)),
             new Column<>(
                 "comment",
                 "comment",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.comment),
-                (rs, i, dto) -> dto.comment = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.comment = rs.getString(i)));
   }
 
   @Override()

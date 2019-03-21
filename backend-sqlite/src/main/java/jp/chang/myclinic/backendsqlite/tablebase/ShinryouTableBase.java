@@ -27,21 +27,21 @@ public class ShinryouTableBase extends Table<ShinryouDTO> implements ShinryouTab
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.shinryouId),
-                (rs, i, dto) -> dto.shinryouId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.shinryouId = rs.getInt(i)),
             new Column<>(
                 "visit_id",
                 "visitId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.visitId),
-                (rs, i, dto) -> dto.visitId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.visitId = rs.getInt(i)),
             new Column<>(
                 "shinryoucode",
                 "shinryoucode",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.shinryoucode),
-                (rs, i, dto) -> dto.shinryoucode = rs.getObject(i, Integer.class)));
+                (rs, i, dto) -> dto.shinryoucode = rs.getInt(i)));
   }
 
   @Override()

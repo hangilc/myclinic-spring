@@ -28,14 +28,14 @@ public class PharmaQueueTableBase extends Table<PharmaQueueDTO>
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.visitId),
-                (rs, i, dto) -> dto.visitId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.visitId = rs.getInt(i)),
             new Column<>(
                 "pharma_state",
                 "pharmaState",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.pharmaState),
-                (rs, i, dto) -> dto.pharmaState = rs.getObject(i, Integer.class)));
+                (rs, i, dto) -> dto.pharmaState = rs.getInt(i)));
   }
 
   @Override()

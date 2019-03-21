@@ -28,28 +28,28 @@ public class ConductKizaiTableBase extends Table<ConductKizaiDTO>
                 true,
                 true,
                 (stmt, i, dto) -> stmt.setInt(i, dto.conductKizaiId),
-                (rs, i, dto) -> dto.conductKizaiId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.conductKizaiId = rs.getInt(i)),
             new Column<>(
                 "conduct_id",
                 "conductId",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.conductId),
-                (rs, i, dto) -> dto.conductId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.conductId = rs.getInt(i)),
             new Column<>(
                 "kizaicode",
                 "kizaicode",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.kizaicode),
-                (rs, i, dto) -> dto.kizaicode = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.kizaicode = rs.getInt(i)),
             new Column<>(
                 "amount",
                 "amount",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setDouble(i, dto.amount),
-                (rs, i, dto) -> dto.amount = rs.getObject(i, Double.class)));
+                (rs, i, dto) -> dto.amount = rs.getDouble(i)));
   }
 
   @Override()

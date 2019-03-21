@@ -27,14 +27,14 @@ public class GazouLabelTableBase extends Table<GazouLabelDTO> implements GazouLa
                 true,
                 false,
                 (stmt, i, dto) -> stmt.setInt(i, dto.conductId),
-                (rs, i, dto) -> dto.conductId = rs.getObject(i, Integer.class)),
+                (rs, i, dto) -> dto.conductId = rs.getInt(i)),
             new Column<>(
                 "label",
                 "label",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.label),
-                (rs, i, dto) -> dto.label = rs.getObject(i, String.class)));
+                (rs, i, dto) -> dto.label = rs.getString(i)));
   }
 
   @Override()
