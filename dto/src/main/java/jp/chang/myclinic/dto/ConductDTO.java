@@ -1,6 +1,10 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.AutoInc;
+import jp.chang.myclinic.dto.annotation.Primary;
+
 public class ConductDTO {
+	@Primary @AutoInc
 	public int conductId;
 	public int visitId;
 	public int kind;

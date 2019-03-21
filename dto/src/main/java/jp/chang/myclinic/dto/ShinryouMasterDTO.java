@@ -1,7 +1,11 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.Primary;
+
 public class ShinryouMasterDTO {
+	@Primary
 	public int shinryoucode;
+	@Primary
 	public String validFrom;
 	public String name;
 	public int tensuu;

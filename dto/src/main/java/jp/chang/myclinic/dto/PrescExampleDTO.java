@@ -1,6 +1,11 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.AutoInc;
+import jp.chang.myclinic.dto.annotation.Primary;
+
 public class PrescExampleDTO {
+    @Primary
+    @AutoInc
     public int prescExampleId;
     public int iyakuhincode;
     public String masterValidFrom;

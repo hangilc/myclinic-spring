@@ -1,6 +1,11 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.AutoInc;
+import jp.chang.myclinic.dto.annotation.Primary;
+
 public class ConductDrugDTO {
+	@Primary
+	@AutoInc
 	public int conductDrugId;
 	public int conductId;
 	public int iyakuhincode;

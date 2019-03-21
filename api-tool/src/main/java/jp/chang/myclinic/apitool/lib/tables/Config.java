@@ -41,7 +41,6 @@ public interface Config extends DatabaseSpecifics {
                         nodeList(new NameExpr("i"), arg)
                 )
         );
-
     }
 
     default String getStatementSetterMethod(Class<?> dbColumnClass) {
@@ -66,6 +65,48 @@ public interface Config extends DatabaseSpecifics {
         }
     }
 
-    Expression generateDtoFieldSetter(Class<?> dbColumnClass, Class<?> dtoFieldClass,
-                                      String dtoClassName, String dtoFieldName);
+    default Expression generateDtoFieldSetter(String tableName, Class<?> dbColumnClass, String dbColumnName,
+                                              Class<?> dtoClass, String dtoFieldName){
+        Class<?> dtoFieldClass = Helper.getInstance().getDTOFieldClass(dtoClass, dtoFieldName);
+        Expression colValue = new MethodCallExpr(
+                new NameExpr("rs"),
+                new SimpleName("getObject"),
+                nodeList(
+                        new NameExpr("i"),
+                        new FieldAccessExpr(new NameExpr(dbColumnClass.getSimpleName()), "class")
+                )
+        );
+        Expression arg = generateDtoFieldSetterArg(tableName, dbColumnClass, dbColumnName,
+                dtoClass, dtoFieldClass, dtoFieldName, colValue);
+        if( arg == null ){
+            String msg = String.format("Cannot convert db column %s (%s) to dto field %s (%s) in %s",
+                    dbColumnName, dbColumnClass.getSimpleName(),
+                    dtoFieldName, dtoFieldClass.getSimpleName(),
+                    dtoClass.getSimpleName());
+            throw new DtoFieldSetterException(msg);
+        }
+        AssignExpr assign = new AssignExpr(
+                new FieldAccessExpr(new NameExpr("dto"), dtoFieldName),
+                arg,
+                AssignExpr.Operator.ASSIGN
+        );
+        return new LambdaExpr(
+                nodeList(
+                        new Parameter(new UnknownType(), "rs"),
+                        new Parameter(new UnknownType(), "i"),
+                        new Parameter(new UnknownType(), "dto")
+                ),
+                assign
+        );
+    }
+
+    default Expression generateDtoFieldSetterArg(String tableName, Class<?> dbColumnClass, String dbColumnName,
+                                                 Class<?> dtoClass, Class<?> dtoFieldClass, String dtoFieldName,
+                                                 Expression colValue){
+
+        if( dbColumnClass == dtoFieldClass ){
+            return colValue;
+        }
+        return null;
+    }
 }

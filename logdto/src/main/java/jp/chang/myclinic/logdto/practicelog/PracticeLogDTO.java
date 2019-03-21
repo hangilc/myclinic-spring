@@ -1,7 +1,10 @@
 package jp.chang.myclinic.logdto.practicelog;
 
-public class PracticeLogDTO {
+import jp.chang.myclinic.dto.annotation.AutoInc;
+import jp.chang.myclinic.dto.annotation.Primary;
 
+public class PracticeLogDTO {
+    @Primary @AutoInc
     public int serialId;
     public String createdAt;
     public String kind;

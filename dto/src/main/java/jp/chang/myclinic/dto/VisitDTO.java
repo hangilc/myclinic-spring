@@ -1,8 +1,13 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.AutoInc;
+import jp.chang.myclinic.dto.annotation.Primary;
+
 import java.util.Objects;
 
 public class VisitDTO {
+	@Primary
+	@AutoInc
 	public int visitId;
 	public int patientId;
 	public String visitedAt;

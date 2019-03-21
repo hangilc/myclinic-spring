@@ -1,6 +1,9 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.Primary;
+
 public class ChargeDTO {
+	@Primary
 	public int visitId;
 	public int charge;
 

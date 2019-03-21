@@ -1,6 +1,11 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.AutoInc;
+import jp.chang.myclinic.dto.annotation.Primary;
+
 public class KouhiDTO {
+	@Primary
+	@AutoInc
 	public int kouhiId;
 	public int patientId;
 	public int futansha;

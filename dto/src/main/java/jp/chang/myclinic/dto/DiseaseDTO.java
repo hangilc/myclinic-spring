@@ -1,9 +1,14 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.AutoInc;
+import jp.chang.myclinic.dto.annotation.Primary;
+
 import java.util.Objects;
 
 public class DiseaseDTO {
 
+    @Primary
+    @AutoInc
     public int diseaseId;
     public int patientId;
     public int shoubyoumeicode;

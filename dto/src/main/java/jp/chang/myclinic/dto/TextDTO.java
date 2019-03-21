@@ -1,11 +1,16 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.AutoInc;
+import jp.chang.myclinic.dto.annotation.Primary;
+
 import java.util.Objects;
 
 /**
  * Created by hangil on 2017/06/07.
  */
 public class TextDTO {
+    @Primary
+    @AutoInc
     public int textId;
     public int visitId;
     public String content;

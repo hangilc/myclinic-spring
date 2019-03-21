@@ -1,9 +1,13 @@
 package jp.chang.myclinic.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jp.chang.myclinic.dto.annotation.AutoInc;
+import jp.chang.myclinic.dto.annotation.Primary;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DrugDTO {
+	@Primary
+	@AutoInc
 	public int drugId;
 	public int visitId;
 	public int iyakuhincode;

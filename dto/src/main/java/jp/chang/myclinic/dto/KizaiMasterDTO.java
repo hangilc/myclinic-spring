@@ -1,7 +1,11 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.Primary;
+
 public class KizaiMasterDTO {
+	@Primary
 	public int kizaicode;
+	@Primary
 	public String validFrom;
 	public String name;
 	public String yomi;

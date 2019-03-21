@@ -1,8 +1,13 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.AutoInc;
+import jp.chang.myclinic.dto.annotation.Primary;
+
 import java.util.Objects;
 
 public class PatientDTO {
+	@Primary
+	@AutoInc
 	public int patientId;
 	public String lastName;
 	public String firstName;

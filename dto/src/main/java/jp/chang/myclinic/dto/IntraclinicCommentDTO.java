@@ -1,6 +1,11 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.AutoInc;
+import jp.chang.myclinic.dto.annotation.Primary;
+
 public class IntraclinicCommentDTO {
+    @Primary
+    @AutoInc
     public int id;
     public String name;
     public String content;

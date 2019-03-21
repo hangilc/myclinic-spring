@@ -3,11 +3,11 @@ package jp.chang.myclinic.apitool.lib.tables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GenerateStatementSetterException extends RuntimeException {
+public class DtoFieldSetterException extends RuntimeException {
 
     private String rawMessage;
 
-    GenerateStatementSetterException(String msg) {
+    DtoFieldSetterException(String msg) {
         super(msg);
         this.rawMessage = msg;
     }

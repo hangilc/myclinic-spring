@@ -1,8 +1,11 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.Primary;
+
 import java.util.Objects;
 
 public class WqueueDTO {
+	@Primary
 	public int visitId;
 	public int waitState;
 

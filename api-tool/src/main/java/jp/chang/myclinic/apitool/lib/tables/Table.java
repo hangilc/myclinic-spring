@@ -1,5 +1,7 @@
 package jp.chang.myclinic.apitool.lib.tables;
 
+import jp.chang.myclinic.apitool.databasespecifics.DatabaseSpecifics;
+
 import java.sql.DatabaseMetaData;
 import java.sql.JDBCType;
 import java.sql.ResultSet;
@@ -12,7 +14,7 @@ public class Table {
     private String tableName;
     private List<Column> columns = new ArrayList<>();
 
-    public Table(String tableName, DatabaseMetaData meta, Config config) throws SQLException {
+    public Table(String tableName, DatabaseMetaData meta, DatabaseSpecifics config) throws SQLException {
         this.tableName = tableName;
         ResultSet rs = meta.getColumns(null, "public", tableName, "%");
         while (rs.next()) {
@@ -40,8 +42,8 @@ public class Table {
                     break;
                 }
             }
-            rs.close();
         }
+        rs.close();
     }
 
     public String getTableName() {

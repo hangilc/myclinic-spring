@@ -1,7 +1,9 @@
 package jp.chang.myclinic.dto;
 
-public class ShinryouAttrDTO {
+import jp.chang.myclinic.dto.annotation.Primary;
 
+public class ShinryouAttrDTO {
+    @Primary
     public int shinryouId;
     public String tekiyou;
 

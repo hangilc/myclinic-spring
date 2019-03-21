@@ -1,7 +1,9 @@
 package jp.chang.myclinic.dto;
 
-public class DrugAttrDTO {
+import jp.chang.myclinic.dto.annotation.Primary;
 
+public class DrugAttrDTO {
+    @Primary
     public int drugId;
     public String tekiyou;
 

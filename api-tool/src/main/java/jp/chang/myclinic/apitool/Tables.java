@@ -125,6 +125,12 @@ class Tables implements Runnable {
                     } else {
                         throw e;
                     }
+                } catch(DtoFieldSetterException e){
+                    if( checkTypes ){
+                        errs.add(e.getRawMessage());
+                    } else {
+                        throw e;
+                    }
                 }
             }
             {
@@ -169,15 +175,18 @@ class Tables implements Runnable {
         args.add(new StringLiteralExpr(column.getDtoFieldName()));
         args.add(new BooleanLiteralExpr(column.isPrimary()));
         args.add(new BooleanLiteralExpr(column.isAutoIncrement()));
-        Class<?> dtoFieldClass = helper.getDTOFieldClass(dtoClass, column.getDtoFieldName());
         args.add(config.generateStatementSetter(
                 tableName,
                 column.getDbColumnClass(),
                 column.getDbColumnName(),
                 dtoClass,
                 column.getDtoFieldName()));
-        args.add(config.generateDtoFieldSetter(column.getDbColumnClass(), dtoFieldClass,
-                dtoClass.getSimpleName(), column.getDtoFieldName()));
+        args.add(config.generateDtoFieldSetter(
+                tableName,
+                column.getDbColumnClass(),
+                column.getDbColumnName(),
+                dtoClass,
+                column.getDtoFieldName()));
         return new ObjectCreationExpr(null,
                 new ClassOrInterfaceType(null, new SimpleName("Column"), nodeList(new UnknownType())),
                 nodeList(args));

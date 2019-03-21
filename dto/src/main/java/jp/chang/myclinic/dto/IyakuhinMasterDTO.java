@@ -1,7 +1,11 @@
 package jp.chang.myclinic.dto;
 
+import jp.chang.myclinic.dto.annotation.Primary;
+
 public class IyakuhinMasterDTO {
+	@Primary
 	public int iyakuhincode;
+	@Primary
 	public String validFrom;
 	public String name;
 	public String yomi;

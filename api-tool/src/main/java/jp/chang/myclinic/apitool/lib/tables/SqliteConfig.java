@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 public class SqliteConfig extends SqliteSpecifics implements Config {
 
     private Helper helper = Helper.getInstance();
-    private DtoFieldSetterGenerator dtoFieldSetterGenerator = new DtoFieldSetterGenerator();
 
     @Override
     public String basePackage() {
@@ -40,9 +39,10 @@ public class SqliteConfig extends SqliteSpecifics implements Config {
     }
 
     @Override
-    public Expression generateDtoFieldSetter(Class<?> dbColumnClass, Class<?> dtoFieldClass,
-                                             String dtoClassName, String dtoFieldName) {
-        return dtoFieldSetterGenerator.generate(dbColumnClass, dtoFieldClass,
-                dtoClassName, dtoFieldName);
+    public Expression generateDtoFieldSetterArg(String tableName, Class<?> dbColumnClass, String dbColumnName,
+                                                Class<?> dtoClass, Class<?> dtoFieldClass, String dtoFieldName,
+                                                Expression colValue) {
+        return Config.super.generateDtoFieldSetterArg(tableName, dbColumnClass, dbColumnName, dtoClass,
+                dtoFieldClass, dtoFieldName, colValue);
     }
 }
