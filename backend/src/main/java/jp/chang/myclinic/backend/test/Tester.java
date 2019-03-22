@@ -1,8 +1,6 @@
-package jp.chang.myclinic.backenddb.test;
+package jp.chang.myclinic.backend.test;
 
 import jp.chang.myclinic.backend.Backend;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Tester {
 

@@ -1,17 +1,15 @@
-package jp.chang.myclinic.backenddb.test;
+package jp.chang.myclinic.backend.test;
 
 import jp.chang.myclinic.backend.Backend;
-import jp.chang.myclinic.backenddb.test.annotation.DbTest;
+import jp.chang.myclinic.backend.test.annotation.DbTest;
 import jp.chang.myclinic.mockdata.MockData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
 class TesterBase {
 
     Backend backend;
-    MockData mock = new MockData();
+    static MockData mock = new MockData();
 
     TesterBase(Backend backend) {
         this.backend = backend;

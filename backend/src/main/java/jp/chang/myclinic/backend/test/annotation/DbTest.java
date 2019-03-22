@@ -1,4 +1,4 @@
-package jp.chang.myclinic.backenddb.test.annotation;
+package jp.chang.myclinic.backend.test.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

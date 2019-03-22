@@ -47,6 +47,11 @@ public class DbPersistence implements Persistence {
     }
 
     @Override
+    public void updatePatient(PatientDTO patient) {
+        ts.patientTable.update(patient);
+    }
+
+    @Override
     public void enterVisit(VisitDTO visit) {
         ts.visitTable.insert(visit);
     }

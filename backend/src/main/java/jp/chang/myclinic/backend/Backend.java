@@ -46,6 +46,12 @@ public class Backend {
         return db.getPatient(patientId);
     }
 
+    public void updatePatient(PatientDTO patient){
+        PatientDTO prev = db.getPatient(patient.patientId);
+        db.updatePatient(patient);
+        practiceLogger.logPatientUpdated(prev, patient);
+    }
+
     private void enterVisit(VisitDTO visit){
         db.enterVisit(visit);
         practiceLogger.logVisitCreated(visit);

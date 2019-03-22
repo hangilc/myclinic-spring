@@ -10,6 +10,8 @@ public interface Persistence {
 
     void enterPatient(PatientDTO patient);
 
+    void updatePatient(PatientDTO patient);
+
     PatientDTO getPatient(int patientId);
 
     void enterVisit(VisitDTO visit);
