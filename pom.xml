@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>jp.chang.myclinic</groupId>
@@ -76,7 +77,6 @@
         <module>scanner</module>
         <module>scanner-backup</module>
         <module>reception</module>
-        <module>reception-grpc</module>
         <module>myclinic-util</module>
         <module>server</module>
         <module>dto</module>
@@ -110,19 +110,17 @@
         <module>dbxfer</module>
         <module>db</module>
         <module>integral-test</module>
-        <module>practice-grpc</module>
         <module>mock-data</module>
-        <module>grpc-common</module>
         <module>db-mysql</module>
         <module>db-gateway</module>
         <module>backend</module>
         <module>backend-mock</module>
-    <module>backend-async</module>
-    <module>api-tool</module>
-    <module>backend-mysql</module>
-    <module>backend-pgsql</module>
-    <module>backend-sqlite</module>
-    <module>backend-db</module>
-  </modules>
+        <module>backend-async</module>
+        <module>api-tool</module>
+        <module>backend-mysql</module>
+        <module>backend-pgsql</module>
+        <module>backend-sqlite</module>
+        <module>backend-db</module>
+    </modules>
 
 </project>
