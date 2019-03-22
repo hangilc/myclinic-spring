@@ -13,6 +13,6 @@ public class TextTester extends TesterBase {
 
     @DbTest
     public void testEnter(){
-        
+
     }
 }
