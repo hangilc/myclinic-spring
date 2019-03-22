@@ -29,6 +29,11 @@ public class PersistenceMock implements Persistence {
     }
 
     @Override
+    public void updatePatient(PatientDTO patient) {
+        patientPersistence.updatePatient(patient);
+    }
+
+    @Override
     public PatientDTO getPatient(int patientId) {
         return patientPersistence.getPatient(patientId);
     }

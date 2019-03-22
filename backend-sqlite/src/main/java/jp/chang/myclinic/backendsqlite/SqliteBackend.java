@@ -1,8 +1,7 @@
 package jp.chang.myclinic.backendsqlite;
 
-import jp.chang.myclinic.backend.Backend;
+import jp.chang.myclinic.backenddb.Backend;
 import jp.chang.myclinic.backenddb.DB;
-import jp.chang.myclinic.backenddb.DbPersistence;
 import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableSet;
 import jp.chang.myclinic.backendsqlite.table.*;
@@ -13,8 +12,7 @@ public class SqliteBackend {
 
     public static Backend create(DB db){
         Query query = new Query(db.getConnectionProvider());
-        DbPersistence persist = new DbPersistence(createTableSet(query), query);
-        return new Backend(persist);
+        return new Backend(createTableSet(query), query);
     }
 
     public static TableSet createTableSet(Query query){

@@ -1,7 +1,7 @@
 package jp.chang.myclinic.backendsqlite;
 
-import jp.chang.myclinic.backend.Backend;
-import jp.chang.myclinic.backend.test.Tester;
+import jp.chang.myclinic.backenddb.Backend;
+import jp.chang.myclinic.backenddb.test.Tester;
 import jp.chang.myclinic.backenddb.DB;
 import jp.chang.myclinic.dto.PatientDTO;
 

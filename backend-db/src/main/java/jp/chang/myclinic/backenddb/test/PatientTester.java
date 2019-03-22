@@ -1,7 +1,7 @@
-package jp.chang.myclinic.backend.test;
+package jp.chang.myclinic.backenddb.test;
 
-import jp.chang.myclinic.backend.Backend;
-import jp.chang.myclinic.backend.test.annotation.DbTest;
+import jp.chang.myclinic.backenddb.Backend;
+import jp.chang.myclinic.backenddb.test.annotation.DbTest;
 import jp.chang.myclinic.dto.PatientDTO;
 
 import java.time.LocalDate;
