@@ -108,6 +108,10 @@ public class Helper {
         return new MethodCallExpr(scope, new SimpleName(method), nodeList(arg));
     }
 
+    public Expression methodCall(Expression scope, String method) {
+        return new MethodCallExpr(scope, new SimpleName(method), nodeList());
+    }
+
     // Integer -> Integer.class
     public Expression classLiteral(String className){
         return new FieldAccessExpr(new NameExpr(className), "class");

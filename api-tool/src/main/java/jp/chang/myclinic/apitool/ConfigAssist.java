@@ -59,6 +59,30 @@ public class ConfigAssist implements Runnable {
                     dbSpecs.generateStatementSetter(tableName, colClass, colName, dtoClass, fieldName);
                 } catch (GenerateStatementSetterException e) {
                     System.out.printf("Cannot generate setter method: %s:%s (%s) -> %s:%s (%s)\n",
+                            dtoClass.getSimpleName(), fieldName,
+                            helper.getDTOFieldClass(dtoClass, fieldName).getSimpleName(),
+                            tableName, colName, colClass.getSimpleName()
+                    );
+                }
+            }
+            rs.close();
+        }
+        for (Class<?> dtoClass : dtoClasses) {
+            String tableName = dbSpecs.dtoClassToDbTableName(dtoClass);
+            ResultSet rs = meta.getColumns(null, "public", tableName, "%");
+            while (rs.next()) {
+                String colName = rs.getString("COLUMN_NAME");
+                String fieldName = dbSpecs.getDtoFieldName(tableName, colName);
+                if (fieldName == null) {
+                    continue;
+                }
+                String dbTypeName = rs.getString("TYPE_NAME");
+                int sqlType = rs.getInt("DATA_TYPE");
+                Class<?> colClass = dbSpecs.getDbColumnClass(tableName, colName, sqlType, dbTypeName);
+                try {
+                    dbSpecs.generateDtoFieldSetter(tableName, colClass, colName, dtoClass, fieldName);
+                } catch (DtoFieldSetterException e) {
+                    System.out.printf("Cannot generate field setter method: %s:%s (%s) -> %s:%s (%s)\n",
                             tableName, colName, colClass.getSimpleName(),
                             dtoClass.getSimpleName(), fieldName,
                             helper.getDTOFieldClass(dtoClass, fieldName).getSimpleName()
