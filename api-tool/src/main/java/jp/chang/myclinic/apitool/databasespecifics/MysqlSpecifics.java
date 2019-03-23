@@ -1,11 +1,15 @@
 package jp.chang.myclinic.apitool.databasespecifics;
 
 import jp.chang.myclinic.apitool.lib.Helper;
+import jp.chang.myclinic.apitool.types.ValidUptoDate;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -159,6 +163,22 @@ public class MysqlSpecifics implements DatabaseSpecifics {
 
     @Override
     public Class<?> getDbColumnClass(String tableName, String columnName, int sqlType, String dbTypeName) {
-        return null;
+        if( sqlType == Types.DATE ){
+            if( columnName.equals("valid_upto") ){
+                return ValidUptoDate.class;
+            } else {
+                return LocalDate.class;
+            }
+        }
+        switch(sqlType){
+            case Types.INTEGER: case Types.TINYINT:
+                return Integer.class;
+            case Types.DOUBLE: return Double.class;
+            case Types.VARCHAR: case Types.LONGVARCHAR:
+                return String.class;
+            case Types.CHAR: return Character.class;
+            case Types.TIMESTAMP: return LocalDateTime.class;
+            default: return null;
+        }
     }
 }
