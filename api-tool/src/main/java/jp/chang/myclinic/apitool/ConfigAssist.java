@@ -45,7 +45,7 @@ public class ConfigAssist implements Runnable {
         DatabaseMetaData meta = conn.getMetaData();
         for (Class<?> dtoClass : dtoClasses) {
             String tableName = dbSpecs.dtoClassToDbTableName(dtoClass);
-            ResultSet rs = meta.getColumns(null, "public", tableName, "%");
+            ResultSet rs = meta.getColumns(dbSpecs.getCatalog(), dbSpecs.getSchema(), tableName, "%");
             while (rs.next()) {
                 String colName = rs.getString("COLUMN_NAME");
                 String fieldName = dbSpecs.getDtoFieldName(tableName, colName);
@@ -69,7 +69,7 @@ public class ConfigAssist implements Runnable {
         }
         for (Class<?> dtoClass : dtoClasses) {
             String tableName = dbSpecs.dtoClassToDbTableName(dtoClass);
-            ResultSet rs = meta.getColumns(null, "public", tableName, "%");
+            ResultSet rs = meta.getColumns(dbSpecs.getCatalog(), dbSpecs.getSchema(), tableName, "%");
             while (rs.next()) {
                 String colName = rs.getString("COLUMN_NAME");
                 String fieldName = dbSpecs.getDtoFieldName(tableName, colName);
@@ -99,7 +99,7 @@ public class ConfigAssist implements Runnable {
         DatabaseMetaData meta = conn.getMetaData();
         for (Class<?> dtoClass : dtoClasses) {
             String tableName = dbSpecs.dtoClassToDbTableName(dtoClass);
-            ResultSet rs = meta.getColumns(null, "public", tableName, "%");
+            ResultSet rs = meta.getColumns(dbSpecs.getCatalog(), dbSpecs.getSchema(), tableName, "%");
             while (rs.next()) {
                 String colName = rs.getString("COLUMN_NAME");
                 String fieldName = dbSpecs.getDtoFieldName(tableName, colName);
@@ -139,7 +139,7 @@ public class ConfigAssist implements Runnable {
             String tableName = dbSpecs.dtoClassToDbTableName(dtoClass);
             List<ColumnNames> colNames = new ArrayList<>();
             List<String> fields = listDtoFields(dtoClass);
-            ResultSet rs = meta.getColumns(null, "public", tableName, "%");
+            ResultSet rs = meta.getColumns(dbSpecs.getCatalog(), dbSpecs.getSchema(), tableName, "%");
             while (rs.next()) {
                 String dbColumnName = rs.getString("COLUMN_NAME");
                 String name = dbSpecs.getDtoFieldName(tableName, dbColumnName);

@@ -40,7 +40,7 @@ public class Backend {
         hotlineLogger.setHotlineLogPublisher(publisher::accept);
     }
 
-    private Query getQuery(){
+    public Query getQuery(){
         return query;
     }
 

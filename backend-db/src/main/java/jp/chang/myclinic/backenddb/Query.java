@@ -16,10 +16,6 @@ public class Query {
         this.connectionProvider = connectionProvider;
     }
 
-    public void setConnectionProvider(Supplier<Connection> provider){
-        this.connectionProvider = provider;
-    }
-
     public Connection getConnection(){
         return connectionProvider.get();
     }

@@ -18,6 +18,16 @@ public class MysqlSpecifics implements DatabaseSpecifics {
 
     private Helper helper = Helper.getInstance();
 
+    @Override
+    public String getCatalog() {
+        return "myclinic";
+    }
+
+    @Override
+    public String getSchema() {
+        return null;
+    }
+
     private static final Map<Class<?>, String> dtoClassToTableNameMap = new HashMap<>();
 
     static {

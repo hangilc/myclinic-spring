@@ -13,9 +13,10 @@ public class Main {
         DataSource ds = SqliteDatabase.createTemporaryFromDbFile("backend-sqlite/src/main/resources/test.db");
         DB db = new DB(ds);
         Backend backend = SqliteBackend.create(db);
-        db.proc(() -> {
+        db.query(() -> {
             confirmMockData(backend);
             new Tester().test(backend);
+            return null;
         });
 
     }

@@ -90,16 +90,14 @@ public class MysqlConfig extends MysqlSpecifics implements Config {
         }
         if (dbColumnClass == Character.class && dtoFieldClass == Character.class) {
             return new DtoFieldSetterCreator(
-                    "getObject",
-                    List.of(helper.classLiteral(Character.class)),
-                    colValue -> colValue
+                    "getString",
+                    colValue -> helper.methodCall(colValue, "charAt", new IntegerLiteralExpr(0))
             );
         }
         if (dbColumnClass == Character.class && dtoFieldClass == String.class) {
             return new DtoFieldSetterCreator(
-                    "getObject",
-                    List.of(helper.classLiteral(Character.class)),
-                    colValue -> helper.methodCall("String", "valueOf", colValue)
+                    "getString",
+                    colValue -> colValue
             );
         }
         if (dbColumnClass == ShinryouTensuu.class && dtoFieldClass == Integer.class) {

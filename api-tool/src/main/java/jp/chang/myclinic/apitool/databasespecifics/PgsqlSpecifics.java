@@ -17,6 +17,16 @@ public class PgsqlSpecifics implements DatabaseSpecifics {
 
     private Helper helper = Helper.getInstance();
 
+    @Override
+    public String getCatalog() {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public String getSchema() {
+        throw new RuntimeException("not implemented");
+    }
+
     private static Map<Integer, Class<?>> sqlTypeMap = new HashMap<>();
 
     static {

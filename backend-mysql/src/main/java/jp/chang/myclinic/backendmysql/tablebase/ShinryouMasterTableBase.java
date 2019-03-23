@@ -49,7 +49,7 @@ public class ShinryouMasterTableBase extends Table<ShinryouMasterDTO>
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setObject(i, dto.tensuuShikibetsu),
-                (rs, i, dto) -> dto.tensuuShikibetsu = rs.getObject(i, Character.class)),
+                (rs, i, dto) -> dto.tensuuShikibetsu = rs.getString(i).charAt(0)),
             new Column<>(
                 "shuukeisaki",
                 "shuukeisaki",
@@ -70,7 +70,7 @@ public class ShinryouMasterTableBase extends Table<ShinryouMasterDTO>
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setObject(i, dto.oushinkubun),
-                (rs, i, dto) -> dto.oushinkubun = rs.getObject(i, Character.class)),
+                (rs, i, dto) -> dto.oushinkubun = rs.getString(i).charAt(0)),
             new Column<>(
                 "kensagroup",
                 "kensaGroup",

@@ -14,6 +14,16 @@ public class SqliteSpecifics implements DatabaseSpecifics {
     private Helper helper = Helper.getInstance();
 
     @Override
+    public String getCatalog() {
+        return null;
+    }
+
+    @Override
+    public String getSchema() {
+        return null;
+    }
+
+    @Override
     public String dtoClassToDbTableName(Class<?> dtoClass) {
         String dtoBaseName = dtoClass.getSimpleName().replaceAll("DTO$", "");
         return helper.toSnake(dtoBaseName);

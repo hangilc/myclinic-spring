@@ -24,23 +24,8 @@ public class DB {
         return conn;
     }
 
-    public interface ProcVoid {
-        void exec() throws SQLException;
-    }
-
     public interface Proc<T> {
         T call() throws SQLException;
-    }
-
-    public void proc(ProcVoid proc){
-        try (Connection conn = openConnection()){
-            conn.setAutoCommit(true);
-            proc.exec();
-        } catch(SQLException e){
-            throw new RuntimeException(e);
-        } finally {
-            threadLocalConnection.set(null);
-        }
     }
 
     public <T> T query(Proc<T> proc){
