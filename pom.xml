@@ -128,9 +128,6 @@
         <module>mock-data</module>
         <module>db-mysql</module>
         <module>db-gateway</module>
-        <module>backend</module>
-        <module>backend-mock</module>
-        <module>backend-async</module>
         <module>api-tool</module>
         <module>backend-mysql</module>
         <module>backend-pgsql</module>
