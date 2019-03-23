@@ -85,7 +85,7 @@ public class SqliteSchema implements Runnable {
         if( check ){
             Set<String> primaries = new HashSet<>();
             Set<String> autoIncs = new HashSet<>();
-            try(Connection conn = PgsqlConnectionProvider.get()){
+            try(Connection conn = new PgsqlConnectionProvider().get()){
                 PgsqlSpecifics pgsqlSpecs = new PgsqlSpecifics();
                 for(Class<?> dtoClass: dtoClasses){
                     String tableName = pgsqlSpecs.dtoClassToDbTableName(dtoClass);
