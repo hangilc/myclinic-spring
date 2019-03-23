@@ -51,6 +51,9 @@ class Tables implements Runnable {
     @CommandLine.Option(names = {"--tables-only"}, description = "Outputs only Table.java")
     private boolean tablesOnly;
 
+    @CommandLine.Parameters(paramLabel = "databse", arity = "1")
+    private String database;
+
     private Formatter formatter = new Formatter();
     private Helper helper = Helper.getInstance();
 
@@ -67,8 +70,8 @@ class Tables implements Runnable {
         } else {
             dtoClasses = DtoClassList.getList();
         }
-        Config config = new SqliteConfig();
-        Supplier<Connection> connSupplier = new SqliteConnectionProvider();
+        Config config = helper.getSpecifics(database);
+        Supplier<Connection> connSupplier = helper.getConnectionProvider(database);
         try (Connection conn = connSupplier.get()) {
             if( !tablesOnly ) {
                 outputTableBases(conn, dtoClasses, config);

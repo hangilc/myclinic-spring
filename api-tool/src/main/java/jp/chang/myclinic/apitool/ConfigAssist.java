@@ -29,8 +29,8 @@ public class ConfigAssist implements Runnable {
 
     @Override
     public void run() {
-        Config dbSpecs = getSpecifics();
-        try (Connection conn = getConnectionProvider().get()) {
+        Config dbSpecs = helper.getSpecifics(database);
+        try (Connection conn = helper.getConnectionProvider(database).get()) {
             checkTableExists(dbSpecs, conn);
             checkFieldColumnRelations(dbSpecs, conn);
             checkColumnTypes(dbSpecs, conn);
@@ -196,29 +196,4 @@ public class ConfigAssist implements Runnable {
         }
     }
 
-    private Config getSpecifics() {
-        switch (database) {
-            case "mysql":
-                return new MysqlConfig();
-            case "sqlite":
-                return new SqliteConfig();
-//            case "pgsql":
-//                return new PgsqlConfig();
-            default:
-                throw new RuntimeException("Cannot find database specifics: " + database);
-        }
-    }
-
-    private Supplier<Connection> getConnectionProvider() {
-        switch (database) {
-            case "mysql":
-                return new MysqlConnectionProvider();
-            case "sqlite":
-                return new SqliteConnectionProvider();
-            case "pgsql":
-                return new PgsqlConnectionProvider();
-            default:
-                throw new RuntimeException("Cannot find database specifics: " + database);
-        }
-    }
 }

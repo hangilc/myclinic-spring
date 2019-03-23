@@ -1,4 +1,4 @@
-package jp.chang.myclinic.backendsqlite.tablebase;
+package jp.chang.myclinic.backendmysql.tablebase;
 
 import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
@@ -30,13 +30,6 @@ public class ShinryouMasterTableBase extends Table<ShinryouMasterDTO>
                 (stmt, i, dto) -> stmt.setInt(i, dto.shinryoucode),
                 (rs, i, dto) -> dto.shinryoucode = rs.getInt(i)),
             new Column<>(
-                "valid_from",
-                "validFrom",
-                true,
-                false,
-                (stmt, i, dto) -> stmt.setString(i, dto.validFrom),
-                (rs, i, dto) -> dto.validFrom = rs.getString(i)),
-            new Column<>(
                 "name",
                 "name",
                 false,
@@ -48,15 +41,15 @@ public class ShinryouMasterTableBase extends Table<ShinryouMasterDTO>
                 "tensuu",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setInt(i, dto.tensuu),
-                (rs, i, dto) -> dto.tensuu = rs.getInt(i)),
+                (stmt, i, dto) -> stmt.setObject(i, String.valueOf(dto.tensuu)),
+                (rs, i, dto) -> dto.tensuu = TableBaseHelper.tensuuToInteger(rs.getString(i))),
             new Column<>(
                 "tensuu_shikibetsu",
                 "tensuuShikibetsu",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.tensuuShikibetsu)),
-                (rs, i, dto) -> dto.tensuuShikibetsu = rs.getString(i).charAt(0)),
+                (stmt, i, dto) -> stmt.setObject(i, dto.tensuuShikibetsu),
+                (rs, i, dto) -> dto.tensuuShikibetsu = rs.getObject(i, Character.class)),
             new Column<>(
                 "shuukeisaki",
                 "shuukeisaki",
@@ -76,27 +69,39 @@ public class ShinryouMasterTableBase extends Table<ShinryouMasterDTO>
                 "oushinkubun",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.oushinkubun)),
-                (rs, i, dto) -> dto.oushinkubun = rs.getString(i).charAt(0)),
+                (stmt, i, dto) -> stmt.setObject(i, dto.oushinkubun),
+                (rs, i, dto) -> dto.oushinkubun = rs.getObject(i, Character.class)),
             new Column<>(
-                "kensa_group",
+                "kensagroup",
                 "kensaGroup",
                 false,
                 false,
                 (stmt, i, dto) -> stmt.setString(i, dto.kensaGroup),
                 (rs, i, dto) -> dto.kensaGroup = rs.getString(i)),
             new Column<>(
+                "valid_from",
+                "validFrom",
+                true,
+                false,
+                (stmt, i, dto) -> stmt.setObject(i, LocalDate.parse(dto.validFrom)),
+                (rs, i, dto) -> dto.validFrom = rs.getObject(i, LocalDate.class).toString()),
+            new Column<>(
                 "valid_upto",
                 "validUpto",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, dto.validUpto),
-                (rs, i, dto) -> dto.validUpto = rs.getString(i)));
+                (stmt, i, dto) ->
+                    stmt.setObject(
+                        i, TableBaseHelper.validUptoFromStringToLocalDate(dto.validUpto)),
+                (rs, i, dto) ->
+                    dto.validUpto =
+                        TableBaseHelper.validUptoFromLocalDateToString(
+                            rs.getObject(i, LocalDate.class))));
   }
 
   @Override()
   public String getTableName() {
-    return "shinryou_master";
+    return "shinryoukoui_master_arch";
   }
 
   @Override()

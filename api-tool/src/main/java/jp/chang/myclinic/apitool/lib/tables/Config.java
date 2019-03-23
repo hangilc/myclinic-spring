@@ -42,7 +42,7 @@ public interface Config extends DatabaseSpecifics {
                 ),
                 new MethodCallExpr(
                         new NameExpr("stmt"),
-                        getStatementSetterMethod(dtoFieldClass),
+                        getStatementSetterMethod(dbColumnClass),
                         nodeList(new NameExpr("i"), arg)
                 )
         );

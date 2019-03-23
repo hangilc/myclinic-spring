@@ -1,4 +1,4 @@
-package jp.chang.myclinic.backendsqlite.tablebase;
+package jp.chang.myclinic.backendmysql.tablebase;
 
 import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
@@ -30,13 +30,6 @@ public class IyakuhinMasterTableBase extends Table<IyakuhinMasterDTO>
                 (stmt, i, dto) -> stmt.setInt(i, dto.iyakuhincode),
                 (rs, i, dto) -> dto.iyakuhincode = rs.getInt(i)),
             new Column<>(
-                "valid_from",
-                "validFrom",
-                true,
-                false,
-                (stmt, i, dto) -> stmt.setString(i, dto.validFrom),
-                (rs, i, dto) -> dto.validFrom = rs.getString(i)),
-            new Column<>(
                 "name",
                 "name",
                 false,
@@ -62,41 +55,53 @@ public class IyakuhinMasterTableBase extends Table<IyakuhinMasterDTO>
                 "yakka",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setDouble(i, dto.yakka),
-                (rs, i, dto) -> dto.yakka = rs.getDouble(i)),
+                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.yakka)),
+                (rs, i, dto) -> dto.yakka = Double.parseDouble(rs.getString(i))),
             new Column<>(
                 "madoku",
                 "madoku",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.madoku)),
-                (rs, i, dto) -> dto.madoku = rs.getString(i).charAt(0)),
+                (stmt, i, dto) -> stmt.setObject(i, dto.madoku),
+                (rs, i, dto) -> dto.madoku = rs.getObject(i, Character.class)),
             new Column<>(
                 "kouhatsu",
                 "kouhatsu",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.kouhatsu)),
-                (rs, i, dto) -> dto.kouhatsu = rs.getString(i).charAt(0)),
+                (stmt, i, dto) -> stmt.setObject(i, dto.kouhatsu),
+                (rs, i, dto) -> dto.kouhatsu = rs.getObject(i, Character.class)),
             new Column<>(
                 "zaikei",
                 "zaikei",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.zaikei)),
-                (rs, i, dto) -> dto.zaikei = rs.getString(i).charAt(0)),
+                (stmt, i, dto) -> stmt.setObject(i, dto.zaikei),
+                (rs, i, dto) -> dto.zaikei = rs.getObject(i, Character.class)),
+            new Column<>(
+                "valid_from",
+                "validFrom",
+                true,
+                false,
+                (stmt, i, dto) -> stmt.setObject(i, LocalDate.parse(dto.validFrom)),
+                (rs, i, dto) -> dto.validFrom = rs.getObject(i, LocalDate.class).toString()),
             new Column<>(
                 "valid_upto",
                 "validUpto",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, dto.validUpto),
-                (rs, i, dto) -> dto.validUpto = rs.getString(i)));
+                (stmt, i, dto) ->
+                    stmt.setObject(
+                        i, TableBaseHelper.validUptoFromStringToLocalDate(dto.validUpto)),
+                (rs, i, dto) ->
+                    dto.validUpto =
+                        TableBaseHelper.validUptoFromLocalDateToString(
+                            rs.getObject(i, LocalDate.class))));
   }
 
   @Override()
   public String getTableName() {
-    return "iyakuhin_master";
+    return "iyakuhin_master_arch";
   }
 
   @Override()

@@ -6,20 +6,25 @@ import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnknownType;
+import jp.chang.myclinic.apitool.MysqlConnectionProvider;
+import jp.chang.myclinic.apitool.PgsqlConnectionProvider;
+import jp.chang.myclinic.apitool.SqliteConnectionProvider;
+import jp.chang.myclinic.apitool.lib.tables.Config;
+import jp.chang.myclinic.apitool.lib.tables.MysqlConfig;
+import jp.chang.myclinic.apitool.lib.tables.PgsqlConfig;
+import jp.chang.myclinic.apitool.lib.tables.SqliteConfig;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.DatabaseMetaData;
-import java.sql.JDBCType;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
 import static java.util.stream.Collectors.joining;
@@ -160,6 +165,31 @@ public class Helper {
         }
     }
 
+    public Config getSpecifics(String database) {
+        switch (database) {
+            case "mysql":
+                return new MysqlConfig();
+            case "sqlite":
+                return new SqliteConfig();
+            case "pgsql":
+                return new PgsqlConfig();
+            default:
+                throw new RuntimeException("Cannot find database specifics: " + database);
+        }
+    }
+
+    public Supplier<Connection> getConnectionProvider(String database) {
+        switch (database) {
+            case "mysql":
+                return new MysqlConnectionProvider();
+            case "sqlite":
+                return new SqliteConnectionProvider();
+            case "pgsql":
+                return new PgsqlConnectionProvider();
+            default:
+                throw new RuntimeException("Cannot find database specifics: " + database);
+        }
+    }
 
 
 }

@@ -17,6 +17,8 @@ public class Table {
     public Table(String tableName, DatabaseMetaData meta, DatabaseSpecifics config) throws SQLException {
         this.tableName = tableName;
         ResultSet rs = meta.getColumns(null, "public", tableName, "%");
+        String catalog = null;
+        String schema = null;
         while (rs.next()) {
             String dbColumnName = rs.getString("COLUMN_NAME");
             boolean isAutoIncrement = rs.getString("IS_AUTOINCREMENT").equals("YES");
@@ -30,10 +32,14 @@ public class Table {
                 throw new RuntimeException(msg);
             }
             String dtoFieldName = config.getDtoFieldName(tableName, dbColumnName);
-            columns.add(new Column(dbColumnName, isAutoIncrement, dbColumnClass, dtoFieldName));
+            if( dtoFieldName != null ) {
+                columns.add(new Column(dbColumnName, isAutoIncrement, dbColumnClass, dtoFieldName));
+            }
+            catalog = rs.getString("TABLE_CAT");
+            schema = rs.getString("TABLE_SCHEM");
         }
         rs.close();
-        rs = meta.getPrimaryKeys(null, "public", tableName);
+        rs = meta.getPrimaryKeys(catalog, schema, tableName);
         while (rs.next()) {
             String name = rs.getString("COLUMN_NAME");
             for (Column c : columns) {

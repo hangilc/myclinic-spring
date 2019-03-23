@@ -1,0 +1,103 @@
+package jp.chang.myclinic.backendmysql.tablebase;
+
+import jp.chang.myclinic.backenddb.Column;
+import jp.chang.myclinic.backenddb.Table;
+import jp.chang.myclinic.backenddb.Query;
+import jp.chang.myclinic.backenddb.TableBaseHelper;
+import jp.chang.myclinic.backenddb.tableinterface.PatientTableInterface;
+import java.time.*;
+import java.util.*;
+import java.math.BigDecimal;
+import jp.chang.myclinic.dto.PatientDTO;
+
+public class PatientTableBase extends Table<PatientDTO> implements PatientTableInterface {
+
+  public PatientTableBase(Query query) {
+    super(query);
+  }
+
+  private static List<Column<PatientDTO>> columns;
+
+  static {
+    columns =
+        List.of(
+            new Column<>(
+                "patient_id",
+                "patientId",
+                true,
+                true,
+                (stmt, i, dto) -> stmt.setInt(i, dto.patientId),
+                (rs, i, dto) -> dto.patientId = rs.getInt(i)),
+            new Column<>(
+                "last_name",
+                "lastName",
+                false,
+                false,
+                (stmt, i, dto) -> stmt.setString(i, dto.lastName),
+                (rs, i, dto) -> dto.lastName = rs.getString(i)),
+            new Column<>(
+                "first_name",
+                "firstName",
+                false,
+                false,
+                (stmt, i, dto) -> stmt.setString(i, dto.firstName),
+                (rs, i, dto) -> dto.firstName = rs.getString(i)),
+            new Column<>(
+                "last_name_yomi",
+                "lastNameYomi",
+                false,
+                false,
+                (stmt, i, dto) -> stmt.setString(i, dto.lastNameYomi),
+                (rs, i, dto) -> dto.lastNameYomi = rs.getString(i)),
+            new Column<>(
+                "first_name_yomi",
+                "firstNameYomi",
+                false,
+                false,
+                (stmt, i, dto) -> stmt.setString(i, dto.firstNameYomi),
+                (rs, i, dto) -> dto.firstNameYomi = rs.getString(i)),
+            new Column<>(
+                "sex",
+                "sex",
+                false,
+                false,
+                (stmt, i, dto) -> stmt.setObject(i, dto.sex.charAt(0)),
+                (rs, i, dto) -> dto.sex = String.valueOf(rs.getObject(i, Character.class))),
+            new Column<>(
+                "birth_day",
+                "birthday",
+                false,
+                false,
+                (stmt, i, dto) -> stmt.setObject(i, LocalDate.parse(dto.birthday)),
+                (rs, i, dto) -> dto.birthday = rs.getObject(i, LocalDate.class).toString()),
+            new Column<>(
+                "address",
+                "address",
+                false,
+                false,
+                (stmt, i, dto) -> stmt.setString(i, dto.address),
+                (rs, i, dto) -> dto.address = rs.getString(i)),
+            new Column<>(
+                "phone",
+                "phone",
+                false,
+                false,
+                (stmt, i, dto) -> stmt.setString(i, dto.phone),
+                (rs, i, dto) -> dto.phone = rs.getString(i)));
+  }
+
+  @Override()
+  public String getTableName() {
+    return "patient";
+  }
+
+  @Override()
+  protected Class<PatientDTO> getClassDTO() {
+    return PatientDTO.class;
+  }
+
+  @Override()
+  protected List<Column<PatientDTO>> getColumns() {
+    return columns;
+  }
+}

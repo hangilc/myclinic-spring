@@ -1,4 +1,4 @@
-package jp.chang.myclinic.backendsqlite.tablebase;
+package jp.chang.myclinic.backendmysql.tablebase;
 
 import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
@@ -47,22 +47,22 @@ public class DiseaseTableBase extends Table<DiseaseDTO> implements DiseaseTableI
                 "startDate",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, dto.startDate),
-                (rs, i, dto) -> dto.startDate = rs.getString(i)),
+                (stmt, i, dto) -> stmt.setObject(i, LocalDate.parse(dto.startDate)),
+                (rs, i, dto) -> dto.startDate = rs.getObject(i, LocalDate.class).toString()),
             new Column<>(
                 "end_date",
                 "endDate",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, dto.endDate),
-                (rs, i, dto) -> dto.endDate = rs.getString(i)),
+                (stmt, i, dto) -> stmt.setObject(i, LocalDate.parse(dto.endDate)),
+                (rs, i, dto) -> dto.endDate = rs.getObject(i, LocalDate.class).toString()),
             new Column<>(
                 "end_reason",
                 "endReason",
                 false,
                 false,
-                (stmt, i, dto) -> stmt.setString(i, String.valueOf(dto.endReason)),
-                (rs, i, dto) -> dto.endReason = rs.getString(i).charAt(0)));
+                (stmt, i, dto) -> stmt.setObject(i, dto.endReason),
+                (rs, i, dto) -> dto.endReason = rs.getObject(i, Character.class)));
   }
 
   @Override()

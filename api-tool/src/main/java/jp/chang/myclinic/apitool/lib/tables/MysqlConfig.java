@@ -88,10 +88,18 @@ public class MysqlConfig extends MysqlSpecifics implements Config {
                     colValue -> helper.methodCall("TableBaseHelper", "localDateTimeToString", colValue)
             );
         }
+        if (dbColumnClass == Character.class && dtoFieldClass == Character.class) {
+            return new DtoFieldSetterCreator(
+                    "getObject",
+                    List.of(helper.classLiteral(Character.class)),
+                    colValue -> colValue
+            );
+        }
         if (dbColumnClass == Character.class && dtoFieldClass == String.class) {
             return new DtoFieldSetterCreator(
-                    "getString",
-                    colValue -> colValue
+                    "getObject",
+                    List.of(helper.classLiteral(Character.class)),
+                    colValue -> helper.methodCall("String", "valueOf", colValue)
             );
         }
         if (dbColumnClass == ShinryouTensuu.class && dtoFieldClass == Integer.class) {
