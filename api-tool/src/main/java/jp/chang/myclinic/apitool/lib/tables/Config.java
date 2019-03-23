@@ -60,7 +60,11 @@ public interface Config extends DatabaseSpecifics {
         }
     }
 
-    default Expression generateStatementSetterArg(String tableName, Class<?> dbColumnClass, String dbColumnName,
+    Expression generateStatementSetterArg(String tableName, Class<?> dbColumnClass, String dbColumnName,
+                                                 Class<?> dtoClass, Class<?> dtoFieldClass, String dtoFieldName,
+                                                 Expression fieldAccess);
+
+    default Expression generateStatementSetterArgDefault(String tableName, Class<?> dbColumnClass, String dbColumnName,
                                                   Class<?> dtoClass, Class<?> dtoFieldClass, String dtoFieldName,
                                                   Expression fieldAccess) {
         if (dbColumnClass == dtoFieldClass) {

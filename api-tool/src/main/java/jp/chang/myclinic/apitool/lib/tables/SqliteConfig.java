@@ -32,15 +32,14 @@ public class SqliteConfig extends SqliteSpecifics implements Config {
             }
         } else if (dbColumnClass == Integer.class) {
             if (dtoFieldClass == String.class) {
-                if (tableName.equals("shinryou_master") && dbColumnName.equals("tensuu")) {
-
-                } else {
-                    return helper.methodCall("Integer", "parseInt", fieldAccess);
-                }
+                return helper.methodCall("Integer", "parseInt", fieldAccess);
             }
         }
-        return Config.super.generateStatementSetterArg(tableName, dbColumnClass, dbColumnName, dtoClass,
-                dtoFieldClass, dtoFieldName, fieldAccess);
+        if (dbColumnClass == dtoFieldClass) {
+            return fieldAccess;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -52,8 +51,8 @@ public class SqliteConfig extends SqliteSpecifics implements Config {
                     colValue -> colValue
             );
         }
-        if( dbColumnClass == String.class ){
-            if( dtoFieldClass == Character.class || dtoFieldClass == char.class ) {
+        if (dbColumnClass == String.class) {
+            if (dtoFieldClass == Character.class || dtoFieldClass == char.class) {
                 return new DtoFieldSetterCreator(
                         "getString",
                         colValue -> helper.methodCall(colValue, "charAt", new IntegerLiteralExpr(0))

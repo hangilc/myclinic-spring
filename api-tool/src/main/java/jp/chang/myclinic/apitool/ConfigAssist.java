@@ -6,8 +6,7 @@ import jp.chang.myclinic.apitool.databasespecifics.PgsqlSpecifics;
 import jp.chang.myclinic.apitool.databasespecifics.SqliteSpecifics;
 import jp.chang.myclinic.apitool.lib.DtoClassList;
 import jp.chang.myclinic.apitool.lib.Helper;
-import jp.chang.myclinic.apitool.lib.tables.Config;
-import jp.chang.myclinic.apitool.lib.tables.Table;
+import jp.chang.myclinic.apitool.lib.tables.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -30,13 +29,43 @@ public class ConfigAssist implements Runnable {
 
     @Override
     public void run() {
-        DatabaseSpecifics dbSpecs = getSpecifics();
+        Config dbSpecs = getSpecifics();
         try (Connection conn = getConnectionProvider().get()) {
             checkTableExists(dbSpecs, conn);
             checkFieldColumnRelations(dbSpecs, conn);
             checkColumnTypes(dbSpecs, conn);
+            checkTypeConvert(dbSpecs, conn);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void checkTypeConvert(Config dbSpecs, Connection conn) throws SQLException {
+        List<Class<?>> dtoClasses = DtoClassList.getList();
+        DatabaseMetaData meta = conn.getMetaData();
+        for (Class<?> dtoClass : dtoClasses) {
+            String tableName = dbSpecs.dtoClassToDbTableName(dtoClass);
+            ResultSet rs = meta.getColumns(null, "public", tableName, "%");
+            while (rs.next()) {
+                String colName = rs.getString("COLUMN_NAME");
+                String fieldName = dbSpecs.getDtoFieldName(tableName, colName);
+                if (fieldName == null) {
+                    continue;
+                }
+                String dbTypeName = rs.getString("TYPE_NAME");
+                int sqlType = rs.getInt("DATA_TYPE");
+                Class<?> colClass = dbSpecs.getDbColumnClass(tableName, colName, sqlType, dbTypeName);
+                try {
+                    dbSpecs.generateStatementSetter(tableName, colClass, colName, dtoClass, fieldName);
+                } catch (GenerateStatementSetterException e) {
+                    System.out.printf("Cannot generate setter method: %s:%s (%s) -> %s:%s (%s)\n",
+                            tableName, colName, colClass.getSimpleName(),
+                            dtoClass.getSimpleName(), fieldName,
+                            helper.getDTOFieldClass(dtoClass, fieldName).getSimpleName()
+                    );
+                }
+            }
+            rs.close();
         }
     }
 
@@ -65,6 +94,7 @@ public class ConfigAssist implements Runnable {
                     );
                 }
             }
+            rs.close();
         }
     }
 
@@ -93,6 +123,7 @@ public class ConfigAssist implements Runnable {
                     colNames.add(new ColumnNames(dbColumnName, name));
                 }
             }
+            rs.close();
             for (String field : new ArrayList<>(fields)) {
                 ColumnNames match = null;
                 for (ColumnNames cn : colNames) {
@@ -137,17 +168,18 @@ public class ConfigAssist implements Runnable {
             if (!rs.next()) {
                 System.out.printf("Table %s is missing.\n", tableName);
             }
+            rs.close();
         }
     }
 
-    private DatabaseSpecifics getSpecifics() {
+    private Config getSpecifics() {
         switch (database) {
             case "mysql":
-                return new MysqlSpecifics();
+                return new MysqlConfig();
             case "sqlite":
-                return new SqliteSpecifics();
-            case "pgsql":
-                return new PgsqlSpecifics();
+                return new SqliteConfig();
+//            case "pgsql":
+//                return new PgsqlConfig();
             default:
                 throw new RuntimeException("Cannot find database specifics: " + database);
         }

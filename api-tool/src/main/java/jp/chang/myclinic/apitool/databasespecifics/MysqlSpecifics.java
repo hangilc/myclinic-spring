@@ -1,6 +1,7 @@
 package jp.chang.myclinic.apitool.databasespecifics;
 
 import jp.chang.myclinic.apitool.lib.Helper;
+import jp.chang.myclinic.apitool.types.ShinryouTensuu;
 import jp.chang.myclinic.apitool.types.ValidUptoDate;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
@@ -169,6 +170,9 @@ public class MysqlSpecifics implements DatabaseSpecifics {
             } else {
                 return LocalDate.class;
             }
+        }
+        if( tableName.equals("shinryoukoui_master_arch") && columnName.equals("tensuu") ){
+            return ShinryouTensuu.class;
         }
         switch(sqlType){
             case Types.INTEGER: case Types.TINYINT:
