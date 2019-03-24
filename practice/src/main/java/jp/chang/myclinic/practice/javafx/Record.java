@@ -9,6 +9,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
 import jp.chang.myclinic.practice.javafx.shinryou.AddRegularForm;
 import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
@@ -30,14 +31,12 @@ public class Record extends VBox {
     private RecordConductsPane conductsPane;
     private StackPane hokenArea = new StackPane();
     private ObjectProperty<ShoukiDTO> shouki;
-    private ExecEnv execEnv;
 
     Record(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
-                  Map<Integer, DrugAttrDTO> drugAttrMap, ShoukiDTO shouki, ExecEnv execEnv) {
+                  Map<Integer, DrugAttrDTO> drugAttrMap, ShoukiDTO shouki) {
         this.visitId = visit.visit.visitId;
         this.shouki = new SimpleObjectProperty<>(shouki);
         this.recordTitle = new RecordTitle(visit.visit, this.shouki);
-        this.execEnv = execEnv;
         getChildren().addAll(
                 recordTitle,
                 createBody(visit, shinryouAttrMap, drugAttrMap)
@@ -128,8 +127,7 @@ public class Record extends VBox {
         right.prefWidthProperty().bind(widthProperty().divide(2));
         right.setStyle("-fx-padding: 5");
         hbox.getChildren().addAll(left, right);
-        textPane = new RecordTextsPane(visit.texts, visit.visit.visitId);
-        textPane.setExecEnv(execEnv);
+        textPane = new RecordTextsPane(visit.visit.visitId, visit.texts);
         left.getChildren().add(textPane);
         drugsPane = new RecordDrugsPane(visit.drugs, visit.visit, drugAttrMap);
         shinryouPane = new RecordShinryouPane(visit.shinryouList, visit.visit, shinryouAttrMap);

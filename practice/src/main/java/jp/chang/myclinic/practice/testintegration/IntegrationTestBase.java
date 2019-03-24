@@ -2,7 +2,7 @@ package jp.chang.myclinic.practice.testintegration;
 
 import javafx.application.Platform;
 import javafx.stage.Window;
-import jp.chang.myclinic.practice.Globals;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.practice.javafx.Record;
 import org.jetbrains.annotations.Contract;
@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 class IntegrationTestBase {
 
     MainPane getMainPane() {
-        return Globals.getInstance().getMainPane();
+        return Context.getInstance().getMainPane();
     }
 
     void gui(Runnable runnable) {

@@ -8,7 +8,7 @@ import java.nio.file.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-class SqliteDatabase {
+class SqliteDataSource {
 
     static DataSource createFromDbFile(String dbFile) {
         try {

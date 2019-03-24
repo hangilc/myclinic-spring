@@ -1,12 +1,12 @@
 package jp.chang.myclinic.practice.javafx.shohousen;
 
 import javafx.application.Platform;
-import jp.chang.myclinic.backendasync.BackendAsync;
 import jp.chang.myclinic.drawer.PaperSize;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.frontend.Frontend;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.PracticeConfigService;
-import jp.chang.myclinic.practice.javafx.ExecEnv;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
 
 import java.time.LocalDate;
@@ -15,19 +15,17 @@ import java.util.concurrent.CompletableFuture;
 public class ShohousenPreview {
 
     public static CompletableFuture<DrawerPreviewDialog> create(
-            ExecEnv execEnv, int visitId, String text) {
-        return new ShohousenPreview(execEnv).makePreview(visitId, text);
+            int visitId, String text) {
+        return new ShohousenPreview().makePreview(visitId, text);
     }
 
-    private BackendAsync restService;
-    private PracticeConfigService configService;
+    private Frontend restService = Context.getInstance().getFrontend();
+    private PracticeConfigService configService = Context.getInstance().getPracticeConfigService();
     private VisitDTO visit;
     private PatientDTO patient;
     private ShohousenData data = new ShohousenData();
 
-    private ShohousenPreview(ExecEnv execEnv) {
-        this.restService = execEnv.restService;
-        this.configService = execEnv.configService;
+    private ShohousenPreview() {
     }
 
     private CompletableFuture<DrawerPreviewDialog> makePreview(int visitId, String text) {

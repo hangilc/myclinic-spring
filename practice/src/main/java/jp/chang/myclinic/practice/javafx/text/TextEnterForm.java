@@ -7,7 +7,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.practice.javafx.ExecEnv;
+import jp.chang.myclinic.frontend.Frontend;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.util.function.Consumer;
@@ -18,12 +19,11 @@ public class TextEnterForm extends VBox {
     private Hyperlink enterLink = new Hyperlink("入力");
     private Hyperlink cancelLink = new Hyperlink("キャンセル ");
     private int visitId;
-    private ExecEnv execEnv;
+    private Frontend frontend = Context.getInstance().getFrontend();
 
-    public TextEnterForm(int visitId, ExecEnv execEnv) {
+    public TextEnterForm(int visitId) {
         super(4);
         this.visitId = visitId;
-        this.execEnv = execEnv;
         getStyleClass().addAll("record-text-form", "enter");
         setFillWidth(true);
         textArea.setWrapText(true);
@@ -43,7 +43,7 @@ public class TextEnterForm extends VBox {
     public void setOnEntered(Consumer<TextDTO> handler){
         enterLink.setOnAction(event -> {
             TextDTO textDTO = getFormTextDTO();
-            execEnv.restService.enterText(getFormTextDTO())
+            frontend.enterText(textDTO)
                     .thenAcceptAsync(textId -> {
                         textDTO.textId = textId;
                         handler.accept(textDTO);

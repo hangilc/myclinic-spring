@@ -1,21 +1,14 @@
 package jp.chang.myclinic.backendsqlite;
 
-import jp.chang.myclinic.backenddb.Backend;
-import jp.chang.myclinic.backenddb.DB;
 import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableSet;
 import jp.chang.myclinic.backendsqlite.table.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
+public class SqliteTableSet {
 
-public class SqliteBackend {
-
-    public static Backend create(DB db){
-        Query query = new Query(db.getConnectionProvider());
-        return new Backend(createTableSet(query), query);
-    }
-
-    public static TableSet createTableSet(Query query){
+    public static TableSet create(Query query){
         TableSet ts = new TableSet();
         ts.byoumeiMasterTable = new ByoumeiMasterTable(query);
         ts.chargeTable = new ChargeTable(query);
@@ -55,5 +48,4 @@ public class SqliteBackend {
         ts.wqueueTable = new WqueueTable(query);
         return ts;
     }
-
 }

@@ -13,17 +13,12 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.concurrent.CompletableFuture;
 
-@SpringBootApplication
 public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
-    private static ConfigurableApplicationContext ctx;
     private static CmdArgs cmdArgs;
 
     public static void main(String[] args) {
@@ -34,24 +29,19 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) {
         if (cmdArgs.isTestGui() || cmdArgs.getTestGuiOne() != null) {
-            if( cmdArgs.isTestGui() ){
-                new TestGui(stage).runTest(null);
-            } else {
-                new TestGui(stage).runTest(cmdArgs.getTestGuiOne());
-            }
+//            if( cmdArgs.isTestGui() ){
+//                new TestGui(stage).runTest(null);
+//            } else {
+//                new TestGui(stage).runTest(cmdArgs.getTestGuiOne());
+//            }
         } else {
             Service.setServerUrl(cmdArgs.getServerUrl());
-            ctx = SpringApplication.run(Main.class, getParameters().getRaw().toArray(new String[]{}));
-            MainScope mainScope = ctx.getBean(MainScope.class);
-            if (mainScope.debugHttp) {
-                Service.setLogBody();
-            }
             setupPracticeEnv();
             stage.setTitle("診療");
             PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
                     updateTitle(stage, newValue));
-            MainPane root = ctx.getBean(MainPane.class);
-            Globals.getInstance().setMainPane(root);
+            MainPane root = new MainPane();
+            Context.getInstance().setMainPane(root);
             root.getStylesheets().addAll(
                     "css/Practice.css"
             );
@@ -92,7 +82,6 @@ public class Main extends Application {
             if (cache != null) {
                 cache.close();
             }
-            ctx.close();
         }
     }
 

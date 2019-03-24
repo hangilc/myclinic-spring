@@ -1,8 +1,8 @@
 package jp.chang.myclinic.backendsqlite;
 
 import jp.chang.myclinic.backenddb.Backend;
+import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.test.Tester;
-import jp.chang.myclinic.backenddb.DB;
 import jp.chang.myclinic.dto.PatientDTO;
 
 import javax.sql.DataSource;
@@ -10,13 +10,11 @@ import javax.sql.DataSource;
 public class Main {
 
     public static void main(String[] args) {
-        DataSource ds = SqliteDatabase.createTemporaryFromDbFile("backend-sqlite/src/main/resources/test.db");
-        DB db = new DB(ds);
-        Backend backend = SqliteBackend.create(db);
-        db.query(() -> {
+        DataSource ds = SqliteDataSource.createTemporaryFromDbFile("backend-sqlite/src/main/resources/test.db");
+        DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create);
+        dbBackend.proc(backend -> {
             confirmMockData(backend);
             new Tester().test(backend);
-            return null;
         });
 
     }

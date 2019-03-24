@@ -16,13 +16,12 @@ class RecordTextsPane extends VBox {
     private int visitId;
     private VBox textsArea = new VBox(4);
     private Hyperlink newTextLink;
-    private ExecEnv execEnv;
 
-    RecordTextsPane(List<TextDTO> texts, int visitId){
+    RecordTextsPane(int visitId, List<TextDTO> texts){
         super(4);
         this.visitId = visitId;
-        texts.forEach(this::addText);
         this.newTextLink = createNewTextLink();
+        texts.forEach(this::addText);
         getChildren().addAll(textsArea, newTextLink);
     }
 
@@ -64,9 +63,7 @@ class RecordTextsPane extends VBox {
     }
 
     private RecordText createRecordText(TextDTO text){
-        RecordText recordText = new RecordText(text);
-        recordText.setExecEnv(execEnv);
-        return recordText;
+        return new RecordText(text);
     }
 
     private void addText(TextDTO text){
@@ -75,18 +72,10 @@ class RecordTextsPane extends VBox {
         textsArea.getChildren().add(recordText);
     }
 
-    private ExecEnv getExecEnv(){
-        return execEnv;
-    }
-
-    void setExecEnv(ExecEnv execEnv){
-        this.execEnv = execEnv;
-    }
-
     private Hyperlink createNewTextLink(){
         Hyperlink link = new Hyperlink("[文章追加]");
         link.setOnAction(event -> {
-            TextEnterForm textEnterForm = new TextEnterForm(visitId, getExecEnv());
+            TextEnterForm textEnterForm = new TextEnterForm(visitId);
             textEnterForm.setOnEntered(entered -> {
                 getChildren().remove(textEnterForm);
                 addText(entered);

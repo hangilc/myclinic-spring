@@ -13,7 +13,6 @@ public class RecordText extends StackPane {
 
     private int textId;
     private int visitId;
-    private ExecEnv execEnv;
     private Runnable onDeletedCallback;
     private Consumer<TextDTO> onCopiedCallback;
 
@@ -63,20 +62,12 @@ public class RecordText extends StackPane {
         return findInChildren(TextEditForm.class);
     }
 
-    void setExecEnv(ExecEnv textReq) {
-        this.execEnv = textReq;
-    }
-
-    private ExecEnv getExecEnv() {
-        return execEnv;
-    }
-
     private void onDispClicked(TextDisp disp) {
         TextDTO text = new TextDTO();
         text.textId = textId;
         text.visitId = visitId;
         text.content = disp.getContent();
-        TextEditForm form = new TextEditForm(text, getExecEnv());
+        TextEditForm form = new TextEditForm(text);
         form.setOnUpdated(updatedText -> getChildren().setAll(createDisp(updatedText.content)));
         form.setOnCancel(() -> getChildren().setAll(disp));
         form.setOnDeleted(() -> {

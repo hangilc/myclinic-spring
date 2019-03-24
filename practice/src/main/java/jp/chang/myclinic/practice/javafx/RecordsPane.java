@@ -3,6 +3,8 @@ package jp.chang.myclinic.practice.javafx;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.Context;
+import jp.chang.myclinic.practice.CurrentPatientService;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.events.*;
 
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 
 class RecordsPane extends VBox {
 
-    private ExecEnv execEnv;
+    private CurrentPatientService currentPatientService = Context.getInstance().getCurrentPatientService();
 
     RecordsPane(){
         setFillWidth(true);
@@ -29,17 +31,12 @@ class RecordsPane extends VBox {
         PracticeEnv.INSTANCE.addShoukiFormChangeListener(this::onShoukiChanged);
     }
 
-    void setExecEnv(ExecEnv lib){
-        this.execEnv = lib;
-    }
-
     void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
                           Map<Integer, DrugAttrDTO> drugAttrMap, Map<Integer, ShoukiDTO> shoukiMap){
-        Record record = new Record(visit, shinryouAttrMap, drugAttrMap, shoukiMap.get(visit.visit.visitId),
-                execEnv);
-        if( execEnv.mainPaneService.getCurrentVisitId() == visit.visit.visitId ){
+        Record record = new Record(visit, shinryouAttrMap, drugAttrMap, shoukiMap.get(visit.visit.visitId));
+        if( currentPatientService.getCurrentVisitId() == visit.visit.visitId ){
             record.styleAsCurrentVisit();
-        } else if( execEnv.mainPaneService.getTempVisitId() == visit.visit.visitId ){
+        } else if( currentPatientService.getTempVisitId() == visit.visit.visitId ){
             record.styleAsTempVisit();
         }
         getChildren().add(record);

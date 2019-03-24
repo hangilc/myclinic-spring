@@ -1,7 +1,17 @@
 package jp.chang.myclinic.practice;
 
-public interface MainStageService {
+import java.util.function.Consumer;
 
-    void setTitle(String title);
+public class MainStageService {
+
+    private Consumer<String> onChangeHandler = s -> {};
+
+    public void setTitle(String title){
+        onChangeHandler.accept(title);
+    }
+
+    public void onTitleChanged(Consumer<String> handler){
+        this.onChangeHandler = handler;
+    }
 
 }

@@ -14,8 +14,8 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.PracticeFun;
+import jp.chang.myclinic.frontend.Frontend;
+import jp.chang.myclinic.practice.*;
 import jp.chang.myclinic.practice.javafx.events.EventTypes;
 import jp.chang.myclinic.practice.javafx.events.VisitDeletedEvent;
 import jp.chang.myclinic.practice.javafx.globalsearch.GlobalSearchDialog;
@@ -42,66 +42,23 @@ import java.util.stream.Collectors;
 
 public class MainPane extends BorderPane {
 
-    private static MainPane INSTANCE = new MainPane();
-
-    public static MainPane getInstance() {
-        return INSTANCE;
-    }
-
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
     private MenuItem selectVisitMenu;
-    private RecordsPane recordsPane;
     private Supplier<Optional<PatientManip>> findPatientManipFun;
-    private MainPaneEnv mainPaneRequirement;
-    private PatientDTO currentPatient;
-    private int currentVisitId;
-    private int tempVisitId;
-    private ExecEnv execEnv;
+    private Frontend frontend = Context.getInstance().getFrontend();
+    private CurrentPatientService currentPatientService = Context.getInstance().getCurrentPatientService();
+    private MainStageService mainStageService = Context.getInstance().getMainStageService();
+    private RecordsPane recordsPane = new RecordsPane();
 
-    private MainPaneService mainPaneService = new MainPaneService() {
-
-        @Override
-        public PatientDTO getCurrentPatient() {
-            return currentPatient;
-        }
-
-        @Override
-        public int getCurrentVisitId() {
-            return currentVisitId;
-        }
-
-        @Override
-        public int getTempVisitId() {
-            return tempVisitId;
-        }
-
-        @Override
-        public void broadcastNewText(TextDTO newText) {
-            throw new RuntimeException("not implemented yet");
-        }
-
-    };
-
-    public MainPane(MainPaneEnv mainPaneRequirement) {
-        if( mainPaneRequirement == null ) return;
-        this.mainPaneRequirement = mainPaneRequirement;
-        this.execEnv = new ExecEnv(mainPaneRequirement.restService, mainPaneService,
-                mainPaneRequirement.configService);
+    public MainPane() {
         setTop(createMenu());
         setCenter(createCenter());
         addEventHandler(EventTypes.visitDeletedEventType, this::onVisitDeleted);
-        recordsPane.setExecEnv(execEnv);
-        mainPaneRequirement.mainStageService.setTitle(createTitle(null));
+        mainStageService.setTitle(createTitle(null));
     }
 
-    private MainPane(){
-        this(null);
-    }
-
-    public void setCurrent(PatientDTO patient, int visitId){
-        this.currentPatient = patient;
-        this.currentVisitId = visitId;
-        this.tempVisitId = 0;
+    public void setCurrent(PatientDTO patient, int visitId) {
+        currentPatientService.setCurrentPatient(patient, visitId);
     }
 
     public void simulateSelectVisitMenuChoice() {
@@ -406,18 +363,18 @@ public class MainPane extends BorderPane {
             private Map<Integer, DrugAttrDTO> drugAttrMap;
         }
         Local local = new Local();
-        return mainPaneRequirement.restService.batchGetShinryouAttr(shinryouIds)
+        return frontend.batchGetShinryouAttr(shinryouIds)
                 .thenCompose(attrList -> {
                     Map<Integer, ShinryouAttrDTO> shinryouAttrMap = new HashMap<>();
                     attrList.forEach(attr -> shinryouAttrMap.put(attr.shinryouId, attr));
                     local.shinryouAttrMap = shinryouAttrMap;
-                    return mainPaneRequirement.restService.batchGetDrugAttr(drugIds);
+                    return frontend.batchGetDrugAttr(drugIds);
                 })
                 .thenCompose(attrList -> {
                     Map<Integer, DrugAttrDTO> drugAttrMap = new HashMap<>();
                     attrList.forEach(attr -> drugAttrMap.put(attr.drugId, attr));
                     local.drugAttrMap = drugAttrMap;
-                    return mainPaneRequirement.restService.batchGetShouki(visitIds);
+                    return frontend.batchGetShouki(visitIds);
                 })
                 .thenAccept(shoukiList -> {
                     Map<Integer, ShoukiDTO> shoukiMap = new HashMap<>();
@@ -432,7 +389,6 @@ public class MainPane extends BorderPane {
         ScrollPane sp = new ScrollPane();
         sp.setFitToWidth(true);
         VBox.setVgrow(sp, Priority.ALWAYS);
-        this.recordsPane = new RecordsPane();
         sp.setContent(recordsPane);
         return sp;
     }
