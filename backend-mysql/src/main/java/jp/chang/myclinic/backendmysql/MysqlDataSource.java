@@ -12,12 +12,12 @@ import java.sql.SQLException;
 public class MysqlDataSource {
 
     public static class MysqlDataSourceConfig {
-        private String host = "localhost";
+        private String host = System.getenv("MYCLINCI_DB_HOST");
         private int port = 3306;
         private String database = "myclinic";
         private boolean useSSL = false;
-        private String user = System.getenv("MYCLINIC_POSTGRES_USER");
-        private String password = System.getenv("MYCLINIC_POSTGRES_PASS");
+        private String user = System.getenv("MYCLINIC_DB_USER");
+        private String password = System.getenv("MYCLINIC_DB_PASS");
 
         public MysqlDataSourceConfig host(String host){
             this.host = host;
