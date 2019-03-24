@@ -83,14 +83,9 @@
                 <version>11-ea+19</version>
             </dependency>
             <dependency>
-                <groupId>com.google.inject</groupId>
-                <artifactId>guice</artifactId>
-                <version>${google.guice.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject.extensions</groupId>
-                <artifactId>guice-assistedinject</artifactId>
-                <version>${google.guice.version}</version>
+                <groupId>info.picocli</groupId>
+                <artifactId>picocli</artifactId>
+                <version>3.9.5</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

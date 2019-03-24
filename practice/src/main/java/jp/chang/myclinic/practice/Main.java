@@ -4,8 +4,10 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jp.chang.myclinic.client.Client;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PatientDTO;
+import jp.chang.myclinic.frontend.FrontendClient;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.practice.testgui.TestGui;
 import jp.chang.myclinic.practice.testintegration.TestIntegration;
@@ -13,6 +15,7 @@ import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -20,10 +23,20 @@ public class Main extends Application {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
     private static CmdArgs cmdArgs;
+    private Client client;
 
     public static void main(String[] args) {
-        cmdArgs = new CmdArgs(args);
-        Application.launch(Main.class, args);
+        CmdOpts cmdOpts = new CmdOpts();
+        CommandLine commandLine = new CommandLine(cmdOpts);
+        commandLine.parse(args);
+        if( commandLine.isUsageHelpRequested() ){
+            commandLine.usage(System.out);
+            return;
+        }
+        Context.getInstance().setCmdsOpts(cmdOpts);
+        System.out.println(cmdOpts.getServerUrl());
+//        cmdArgs = new CmdArgs(args);
+//        Application.launch(Main.class, args);
     }
 
     @Override
@@ -36,6 +49,10 @@ public class Main extends Application {
 //            }
         } else {
             Service.setServerUrl(cmdArgs.getServerUrl());
+            {
+                this.client = new Client(cmdArgs.getServerUrl());
+                Context.getInstance().setFrontend(new FrontendClient(client.getApi()));
+            }
             setupPracticeEnv();
             stage.setTitle("診療");
             PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
@@ -74,14 +91,19 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        OkHttpClient client = Service.client;
-        if( client != null ) {
-            client.dispatcher().executorService().shutdown();
-            client.connectionPool().evictAll();
-            Cache cache = client.cache();
-            if (cache != null) {
-                cache.close();
+        {
+            OkHttpClient client = Service.client;
+            if (client != null) {
+                client.dispatcher().executorService().shutdown();
+                client.connectionPool().evictAll();
+                Cache cache = client.cache();
+                if (cache != null) {
+                    cache.close();
+                }
             }
+        }
+        {
+            this.client.stop();
         }
     }
 

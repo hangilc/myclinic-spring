@@ -15,6 +15,16 @@ public class Context {
 
     private Context(){}
 
+    private CmdOpts cmdsOpts;
+
+    public CmdOpts getCmdsOpts() {
+        return cmdsOpts;
+    }
+
+    public void setCmdsOpts(CmdOpts cmdsOpts) {
+        this.cmdsOpts = cmdsOpts;
+    }
+
     private Frontend frontend;
 
     public Frontend getFrontend() {

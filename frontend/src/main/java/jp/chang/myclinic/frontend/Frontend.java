@@ -9,7 +9,7 @@ public interface Frontend {
 
     CompletableFuture<PatientDTO> getPatient(int patientId);
     CompletableFuture<List<ShinryouAttrDTO>> batchGetShinryouAttr(List<Integer> shinryouIds);
-    CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> shinryouIds);
+    CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds);
     CompletableFuture<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds);
     CompletableFuture<Integer> enterText(TextDTO text);
     CompletableFuture<Void> updateText(TextDTO text);
