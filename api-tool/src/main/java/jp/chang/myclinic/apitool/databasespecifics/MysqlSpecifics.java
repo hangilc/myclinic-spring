@@ -175,7 +175,8 @@ public class MysqlSpecifics implements DatabaseSpecifics {
     @Override
     public Class<?> getDbColumnClass(String tableName, String columnName, int sqlType, String dbTypeName) {
         if( sqlType == Types.DATE ){
-            if( columnName.equals("valid_upto") ){
+            if( columnName.equals("valid_upto") ||
+                    (tableName.equals("disease") && columnName.equals("end_date"))){
                 return ValidUptoDate.class;
             } else {
                 return LocalDate.class;
