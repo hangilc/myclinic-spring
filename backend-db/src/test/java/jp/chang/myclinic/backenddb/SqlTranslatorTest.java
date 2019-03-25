@@ -7,6 +7,7 @@ import jp.chang.myclinic.backenddb.SqlTranslator.TableInfo;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SqlTranslatorTest {
@@ -27,7 +28,14 @@ public class SqlTranslatorTest {
         public Map<String, String> getDtoFieldToDbColumnMap() {
             Map<String, String> map = new HashMap<>();
             map.put("patientId", "patient_id");
+            map.put("lastName", "last_name");
+            map.put("birthday", "birthday");
             return map;
+        }
+
+        @Override
+        public List<String> getColumnNames(){
+            return List.of("patient_id", "last_name", "birthday");
         }
     };
 
@@ -50,6 +58,11 @@ public class SqlTranslatorTest {
             map.put("patientId", "patient_id");
             return map;
         }
+
+        @Override
+        public List<String> getColumnNames() {
+            return List.of("visit_id", "patient_id");
+        }
     };
 
     @Test
@@ -59,7 +72,7 @@ public class SqlTranslatorTest {
         String dst = xlater.translate(src, patientTable);
         System.out.println(src);
         System.out.println(dst);
-        assertEquals("select * from patient", dst);
+        assertEquals("select patient_id,last_name,birthday from patient", dst);
     }
 
     @Test
@@ -69,7 +82,7 @@ public class SqlTranslatorTest {
         String dst = xlater.translate(src, patientTable);
         System.out.println(src);
         System.out.println(dst);
-        assertEquals("select * from patient where patient_id = ?", dst);
+        assertEquals("select patient_id,last_name,birthday from patient where patient_id = ?", dst);
     }
 
     @Test
@@ -79,7 +92,7 @@ public class SqlTranslatorTest {
         String dst = xlater.translate(src, patientTable, "p");
         System.out.println(src);
         System.out.println(dst);
-        assertEquals("select p.* from patient as p where p.patient_id = ?", dst);
+        assertEquals("select p.patient_id,p.last_name,p.birthday from patient as p where p.patient_id = ?", dst);
 
     }
 
@@ -90,7 +103,7 @@ public class SqlTranslatorTest {
         String dst = xlater.translate(src, patientTable, "p", visitTable, "v");
         System.out.println(src);
         System.out.println(dst);
-        assertEquals("select p.*, v.* from patient as p, visit as v where p.patient_id = v.visit_id and v.visit_id = ?", dst);
+        assertEquals("select p.patient_id,p.last_name,p.birthday, v.visit_id,v.patient_id from patient as p, visit as v where p.patient_id = v.visit_id and v.visit_id = ?", dst);
 
     }
 

@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.stream.Collectors.joining;
+
 public class SqlTranslator {
 
     public interface TableInfo {
@@ -52,22 +54,33 @@ public class SqlTranslator {
 
     public String translate(String src, List<AliasedTable> tables){
         Map<String, String> rewriteMap = new HashMap<>();
+        List<String> regexToks = new ArrayList<>();
         for(AliasedTable at: tables){
             TableInfo table = at.table;
             String alias = at.alias;
+            regexToks.add(table.getDtoName());
             rewriteMap.put(table.getDtoName(), table.getDbTableName());
-            //rewriteMap.put("(?!\\.)\\*", table.get)
+            if( alias == null || alias.isEmpty() ) {
+                regexToks.add("(?<!\\.)\\*");
+                rewriteMap.put("*", cols(table.getColumnNames()));
+            } else {
+                regexToks.add("\\b" + alias + "\\.\\*");
+                rewriteMap.put(alias + ".*", cols(table.getColumnNames(), alias));
+            }
             for(Map.Entry<String, String> entry: table.getDtoFieldToDbColumnMap().entrySet()){
-                String key = entry.getKey();
-                String val = entry.getValue();
-                if( alias != null && !alias.isEmpty() ){
-                    key = alias + "." + key;
-                    val = alias + "." + val;
+                String dtoField = entry.getKey();
+                String colName = entry.getValue();
+                if( alias == null || alias.isEmpty() ){
+                    regexToks.add("\\b" + dtoField + "\\b");
+                    rewriteMap.put(dtoField, colName);
+                } else {
+                    regexToks.add("\\b" + alias + "\\." + dtoField + "\\b");
+                    rewriteMap.put(alias + "." + dtoField, alias + "." + colName);
                 }
-                rewriteMap.put(key, val);
             }
         }
-        Pattern pat = Pattern.compile("\\b(" + String.join("|", rewriteMap.keySet()) + ")\\b");
+        String regex = "(" + String.join("|", regexToks) + ")";
+        Pattern pat = Pattern.compile(regex);
         StringBuilder sb = new StringBuilder();
         Matcher matcher = pat.matcher(src);
         while( matcher.find() ){
@@ -78,8 +91,15 @@ public class SqlTranslator {
         return sb.toString();
     }
 
-//    private String cols(List<Column<?>> columns){
-//
-//    }
+    private String cols(List<String> columns){
+        return columns.stream().collect(joining(","));
+    }
+
+    private String cols(List<String> columns, String alias){
+        if( alias == null || alias.isEmpty() ){
+            return cols(columns);
+        }
+        return columns.stream().map(c -> alias + "." + c).collect(joining(","));
+    }
 
 }
