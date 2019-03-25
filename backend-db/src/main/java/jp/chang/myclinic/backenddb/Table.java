@@ -10,8 +10,7 @@ import java.util.Map;
 import static java.util.stream.Collectors.*;
 import static jp.chang.myclinic.backenddb.Query.*;
 
-public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface<DTO>,
-        SqlTranslator.TableInfo {
+public abstract class Table<DTO> implements TableBaseInterface<DTO> {
 
     private Query query;
 
@@ -35,6 +34,11 @@ public abstract class Table<DTO> implements Query.Projector<DTO>, TableInterface
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<String> getColumnNames(){
+        return getColumns().stream().map(Column::getDbColumnName).collect(toList());
     }
 
     public void insert(DTO dto) {

@@ -4,14 +4,12 @@ import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
 import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
-import jp.chang.myclinic.backenddb.tableinterface.IntraclinicTagPostTableInterface;
 import java.time.*;
 import java.util.*;
 import java.math.BigDecimal;
 import jp.chang.myclinic.dto.IntraclinicTagPostDTO;
 
-public class IntraclinicTagPostTableBase extends Table<IntraclinicTagPostDTO>
-    implements IntraclinicTagPostTableInterface {
+public class IntraclinicTagPostTableBase extends Table<IntraclinicTagPostDTO> {
 
   public IntraclinicTagPostTableBase(Query query) {
     super(query);

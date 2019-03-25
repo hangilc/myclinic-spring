@@ -4,13 +4,12 @@ import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
 import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
-import jp.chang.myclinic.backenddb.tableinterface.KouhiTableInterface;
 import java.time.*;
 import java.util.*;
 import java.math.BigDecimal;
 import jp.chang.myclinic.dto.KouhiDTO;
 
-public class KouhiTableBase extends Table<KouhiDTO> implements KouhiTableInterface {
+public class KouhiTableBase extends Table<KouhiDTO> {
 
   public KouhiTableBase(Query query) {
     super(query);

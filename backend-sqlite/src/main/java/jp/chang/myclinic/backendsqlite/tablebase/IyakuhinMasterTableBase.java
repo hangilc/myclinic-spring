@@ -4,14 +4,12 @@ import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
 import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
-import jp.chang.myclinic.backenddb.tableinterface.IyakuhinMasterTableInterface;
 import java.time.*;
 import java.util.*;
 import java.math.BigDecimal;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 
-public class IyakuhinMasterTableBase extends Table<IyakuhinMasterDTO>
-    implements IyakuhinMasterTableInterface {
+public class IyakuhinMasterTableBase extends Table<IyakuhinMasterDTO> {
 
   public IyakuhinMasterTableBase(Query query) {
     super(query);

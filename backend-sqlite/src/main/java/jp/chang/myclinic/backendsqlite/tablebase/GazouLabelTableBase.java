@@ -4,13 +4,12 @@ import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
 import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
-import jp.chang.myclinic.backenddb.tableinterface.GazouLabelTableInterface;
 import java.time.*;
 import java.util.*;
 import java.math.BigDecimal;
 import jp.chang.myclinic.dto.GazouLabelDTO;
 
-public class GazouLabelTableBase extends Table<GazouLabelDTO> implements GazouLabelTableInterface {
+public class GazouLabelTableBase extends Table<GazouLabelDTO> {
 
   public GazouLabelTableBase(Query query) {
     super(query);

@@ -44,11 +44,11 @@ public class Backend {
         return query;
     }
 
-    private String xlate(String sqlOrig, TableInfo tableInfo) {
+    public String xlate(String sqlOrig, TableInfo tableInfo) {
         return sqlTranslator.translate(sqlOrig, tableInfo);
     }
 
-    private String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
+    public String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
                          TableInfo tableInfo2, String alias2) {
         return sqlTranslator.translate(sqlOrig, tableInfo1, alias1, tableInfo2, alias2);
     }

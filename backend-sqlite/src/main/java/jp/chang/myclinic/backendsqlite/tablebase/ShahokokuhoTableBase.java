@@ -4,14 +4,12 @@ import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
 import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
-import jp.chang.myclinic.backenddb.tableinterface.ShahokokuhoTableInterface;
 import java.time.*;
 import java.util.*;
 import java.math.BigDecimal;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 
-public class ShahokokuhoTableBase extends Table<ShahokokuhoDTO>
-    implements ShahokokuhoTableInterface {
+public class ShahokokuhoTableBase extends Table<ShahokokuhoDTO> {
 
   public ShahokokuhoTableBase(Query query) {
     super(query);

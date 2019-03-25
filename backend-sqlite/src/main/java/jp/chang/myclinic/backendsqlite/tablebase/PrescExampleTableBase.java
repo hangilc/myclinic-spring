@@ -4,14 +4,12 @@ import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
 import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
-import jp.chang.myclinic.backenddb.tableinterface.PrescExampleTableInterface;
 import java.time.*;
 import java.util.*;
 import java.math.BigDecimal;
 import jp.chang.myclinic.dto.PrescExampleDTO;
 
-public class PrescExampleTableBase extends Table<PrescExampleDTO>
-    implements PrescExampleTableInterface {
+public class PrescExampleTableBase extends Table<PrescExampleDTO> {
 
   public PrescExampleTableBase(Query query) {
     super(query);

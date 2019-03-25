@@ -16,6 +16,7 @@ public class SqlTranslator {
         String getDtoName();
         String getDbTableName();
         Map<String, String> getDtoFieldToDbColumnMap();
+        List<String> getColumnNames();
     }
 
     public class AliasedTable {
@@ -55,6 +56,7 @@ public class SqlTranslator {
             TableInfo table = at.table;
             String alias = at.alias;
             rewriteMap.put(table.getDtoName(), table.getDbTableName());
+            //rewriteMap.put("(?!\\.)\\*", table.get)
             for(Map.Entry<String, String> entry: table.getDtoFieldToDbColumnMap().entrySet()){
                 String key = entry.getKey();
                 String val = entry.getValue();
@@ -75,5 +77,9 @@ public class SqlTranslator {
         matcher.appendTail(sb);
         return sb.toString();
     }
+
+//    private String cols(List<Column<?>> columns){
+//
+//    }
 
 }

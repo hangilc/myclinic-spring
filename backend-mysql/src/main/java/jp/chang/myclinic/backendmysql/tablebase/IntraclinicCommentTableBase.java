@@ -4,14 +4,12 @@ import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
 import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
-import jp.chang.myclinic.backenddb.tableinterface.IntraclinicCommentTableInterface;
 import java.time.*;
 import java.util.*;
 import java.math.BigDecimal;
 import jp.chang.myclinic.dto.IntraclinicCommentDTO;
 
-public class IntraclinicCommentTableBase extends Table<IntraclinicCommentDTO>
-    implements IntraclinicCommentTableInterface {
+public class IntraclinicCommentTableBase extends Table<IntraclinicCommentDTO> {
 
   public IntraclinicCommentTableBase(Query query) {
     super(query);

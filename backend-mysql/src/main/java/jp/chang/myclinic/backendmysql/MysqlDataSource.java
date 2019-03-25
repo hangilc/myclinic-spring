@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class MysqlDataSource {
 
     public static class MysqlDataSourceConfig {
-        private String host = System.getenv("MYCLINCI_DB_HOST");
+        private String host = getenv("MYCLINCI_DB_HOST", "localhost");
         private int port = 3306;
         private String database = "myclinic";
         private boolean useSSL = false;
@@ -42,6 +42,15 @@ public class MysqlDataSource {
         public MysqlDataSourceConfig password(String password){
             this.password = password;
             return this;
+        }
+    }
+
+    private static String getenv(String envName, String defaultValue){
+        String value = System.getenv(envName);
+        if( value == null || value.isEmpty() ){
+            return defaultValue;
+        } else {
+            return value;
         }
     }
 

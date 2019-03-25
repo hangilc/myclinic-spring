@@ -4,13 +4,12 @@ import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
 import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
-import jp.chang.myclinic.backenddb.tableinterface.PatientTableInterface;
 import java.time.*;
 import java.util.*;
 import java.math.BigDecimal;
 import jp.chang.myclinic.dto.PatientDTO;
 
-public class PatientTableBase extends Table<PatientDTO> implements PatientTableInterface {
+public class PatientTableBase extends Table<PatientDTO> {
 
   public PatientTableBase(Query query) {
     super(query);

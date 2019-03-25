@@ -4,13 +4,12 @@ import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
 import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
-import jp.chang.myclinic.backenddb.tableinterface.DiseaseAdjTableInterface;
 import java.time.*;
 import java.util.*;
 import java.math.BigDecimal;
 import jp.chang.myclinic.dto.DiseaseAdjDTO;
 
-public class DiseaseAdjTableBase extends Table<DiseaseAdjDTO> implements DiseaseAdjTableInterface {
+public class DiseaseAdjTableBase extends Table<DiseaseAdjDTO> {
 
   public DiseaseAdjTableBase(Query query) {
     super(query);

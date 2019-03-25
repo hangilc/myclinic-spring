@@ -118,7 +118,7 @@ class Tables implements Runnable {
             unit.addImport("jp.chang.myclinic.backenddb.Table");
             unit.addImport("jp.chang.myclinic.backenddb.Query");
             unit.addImport("jp.chang.myclinic.backenddb.TableBaseHelper");
-            unit.addImport("jp.chang.myclinic.backenddb.tableinterface." + dtoBaseName + "TableInterface");
+            //unit.addImport("jp.chang.myclinic.backenddb.tableinterface." + dtoBaseName + "TableInterface");
             unit.addImport("java.time.*");
             unit.addImport("java.util.*");
             unit.addImport("java.math.BigDecimal");
@@ -139,7 +139,7 @@ class Tables implements Runnable {
             ClassOrInterfaceDeclaration classDecl = unit.addClass(baseClassName);
             classDecl.addExtendedType(new ClassOrInterfaceType(null, new SimpleName("Table"),
                     nodeList(new ClassOrInterfaceType(null, dtoClassName))));
-            classDecl.addImplementedType(dtoBaseName + "TableInterface");
+            //classDecl.addImplementedType(dtoBaseName + "TableInterface");
             {
                 ConstructorDeclaration ctor = classDecl.addConstructor(Keyword.PUBLIC);
                 ctor.addParameter(new Parameter(new ClassOrInterfaceType(null, "Query"), "query"));

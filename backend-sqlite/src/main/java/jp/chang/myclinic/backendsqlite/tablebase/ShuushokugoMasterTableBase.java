@@ -4,14 +4,12 @@ import jp.chang.myclinic.backenddb.Column;
 import jp.chang.myclinic.backenddb.Table;
 import jp.chang.myclinic.backenddb.Query;
 import jp.chang.myclinic.backenddb.TableBaseHelper;
-import jp.chang.myclinic.backenddb.tableinterface.ShuushokugoMasterTableInterface;
 import java.time.*;
 import java.util.*;
 import java.math.BigDecimal;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
 
-public class ShuushokugoMasterTableBase extends Table<ShuushokugoMasterDTO>
-    implements ShuushokugoMasterTableInterface {
+public class ShuushokugoMasterTableBase extends Table<ShuushokugoMasterDTO> {
 
   public ShuushokugoMasterTableBase(Query query) {
     super(query);
