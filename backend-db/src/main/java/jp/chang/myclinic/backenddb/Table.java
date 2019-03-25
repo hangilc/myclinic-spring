@@ -83,6 +83,25 @@ public abstract class Table<DTO> implements TableBaseInterface<DTO> {
         }
     }
 
+    public void batchCopy(List<DTO> items){
+        if( items.size() == 0 ){
+            return;
+        }
+        List<Column<DTO>> columns = getColumns();
+        String sql = String.format("insert into %s (%s) values (%s)",
+                getTableName(),
+                columns.stream().map(Column::getDbColumnName).collect(joining(",")),
+                columns.stream().map(Column::getPlaceHolder).collect(joining(","))
+        );
+        SqlBiConsumer<PreparedStatement, DTO> setter = (stmt, dto) -> {
+            int i = 1;
+            for (Column<DTO> c : columns) {
+                c.getFromDTO().set(stmt, i++, dto);
+            }
+        };
+        getQuery().batchCopy(sql, setter, items);
+    }
+
     public DTO getById(Object id) {
         List<Column<DTO>> primaries = getColumns().stream().filter(Column::isPrimary).collect(toList());
         if (primaries.size() != 1) {

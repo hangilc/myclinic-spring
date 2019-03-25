@@ -88,11 +88,8 @@ public class Main implements Runnable {
                                     DbBackend dbBackendDst, TableBaseInterface<DTO> tableInterfaceDst){
         dbBackendSrc.proc(backend -> {
             String sql = backend.xlate("select * from " + tableInterfaceSrc.getTableName(), tableInterfaceSrc);
-            System.out.println(sql);
             List<DTO> rows = backend.getQuery().query(sql, tableInterfaceSrc);
-            if( rows.size() > 0 ) {
-                System.out.println(rows.get(0));
-            }
+            
         });
     }
 

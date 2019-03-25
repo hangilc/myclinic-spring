@@ -24,6 +24,10 @@ public class Query {
         void accept(T t) throws SQLException;
     }
 
+    public interface SqlBiConsumer<T, U> {
+        void accept(T t, U u) throws SQLException;
+    }
+
     public void exec(String sql, SqlConsumer<PreparedStatement> paramSetter) {
         try {
             PreparedStatement stmt = getConnection().prepareStatement(sql);
@@ -59,6 +63,19 @@ public class Query {
             stmt.close();
             return retVal;
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public <T> void batchCopy(String sql, SqlBiConsumer<PreparedStatement, T> setter, List<T> items){
+        try {
+            PreparedStatement stmt = getConnection().prepareStatement(sql);
+            for(T item: items){
+                setter.accept(stmt, item);
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+        } catch(SQLException e){
             throw new RuntimeException(e);
         }
     }
