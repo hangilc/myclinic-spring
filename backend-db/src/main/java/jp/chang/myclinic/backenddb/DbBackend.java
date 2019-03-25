@@ -16,13 +16,22 @@ public class DbBackend {
 
     private DB db;
     private Query query;
+    private TableSet ts;
     private Backend backend;
 
     public DbBackend(DataSource ds, Function<Query, TableSet> tableSetCreator){
         this.db = new DB(ds);
         this.query = new Query(db.getConnectionProvider());
-        TableSet ts = tableSetCreator.apply(query);
+        this.ts = tableSetCreator.apply(query);
         this.backend = new Backend(ts, query);
+    }
+
+    public Query getQuery() {
+        return query;
+    }
+
+    public TableSet getTableSet() {
+        return ts;
     }
 
     public void proc(ProcStatement proc){

@@ -8,9 +8,9 @@ import java.nio.file.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-class SqliteDataSource {
+public class SqliteDataSource {
 
-    static DataSource createFromDbFile(String dbFile) {
+    public static DataSource createFromDbFile(String dbFile) {
         try {
             Class.forName("org.sqlite.JDBC");
             SQLiteDataSource ds = new SQLiteDataSource();
@@ -22,7 +22,7 @@ class SqliteDataSource {
         }
     }
 
-    static DataSource createTemporaryFromDbFile(String dbFile){
+    public static DataSource createTemporaryFromDbFile(String dbFile){
         try {
             Class.forName("org.sqlite.JDBC");
             Path temp = Files.createTempFile("sqlite", ".db");
