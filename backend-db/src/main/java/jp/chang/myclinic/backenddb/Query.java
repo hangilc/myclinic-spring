@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 public class Query {
 
     private Supplier<Connection> connectionProvider;
+    private int batchSize = 100;
 
     public Query(Supplier<Connection> connectionProvider){
         this.connectionProvider = connectionProvider;
@@ -70,11 +71,20 @@ public class Query {
     public <T> void batchCopy(String sql, SqlBiConsumer<PreparedStatement, T> setter, List<T> items){
         try {
             PreparedStatement stmt = getConnection().prepareStatement(sql);
+            int accum = 0;
             for(T item: items){
                 setter.accept(stmt, item);
                 stmt.addBatch();
+                accum += 1;
+                if( accum == batchSize ){
+                    stmt.executeBatch();
+                    accum = 0;
+                }
             }
-            stmt.executeBatch();
+            if( accum > 0 ) {
+                stmt.executeBatch();
+            }
+            stmt.close();
         } catch(SQLException e){
             throw new RuntimeException(e);
         }

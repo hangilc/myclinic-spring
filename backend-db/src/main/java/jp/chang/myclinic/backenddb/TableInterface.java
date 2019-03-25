@@ -8,6 +8,7 @@ public interface TableInterface<DTO> {
 
     String getTableName();
     void insert(DTO dto);
+    void batchCopy(List<DTO> items);
     DTO getById(Object id);
     void update(DTO dto);
     void delete(Object id);

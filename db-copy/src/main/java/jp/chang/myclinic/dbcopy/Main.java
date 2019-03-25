@@ -89,7 +89,9 @@ public class Main implements Runnable {
         dbBackendSrc.proc(backend -> {
             String sql = backend.xlate("select * from " + tableInterfaceSrc.getTableName(), tableInterfaceSrc);
             List<DTO> rows = backend.getQuery().query(sql, tableInterfaceSrc);
-            
+            dbBackendDst.txProc(backendDst -> {
+                tableInterfaceDst.batchCopy(rows);
+            });
         });
     }
 

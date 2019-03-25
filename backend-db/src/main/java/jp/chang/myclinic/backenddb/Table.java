@@ -83,6 +83,7 @@ public abstract class Table<DTO> implements TableBaseInterface<DTO> {
         }
     }
 
+    @Override
     public void batchCopy(List<DTO> items){
         if( items.size() == 0 ){
             return;
