@@ -44,7 +44,7 @@ public class DB {
         try {
             conn = openConnection();
             conn.setAutoCommit(false);
-            conn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+            conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             T value = proc.call();
             conn.commit();
             return value;

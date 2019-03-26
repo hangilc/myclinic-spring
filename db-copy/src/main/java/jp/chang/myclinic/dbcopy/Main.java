@@ -21,12 +21,14 @@ import java.util.function.Function;
 @CommandLine.Command(name = "db-copy", description = "Copies database data.")
 public class Main implements Runnable {
 
+    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "Prints help.")
+    private boolean help;
+    @CommandLine.Option(names = {"--statics-only"}, description = "Copies only masters and static data.")
+    private boolean staticsOnly;
     @CommandLine.Parameters(paramLabel = "source", index = "0", description = "Source database")
     private String dbSrc;
     @CommandLine.Parameters(paramLabel = "destination", index = "1", description = "Destination database")
     private String dbDst;
-    @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "Prints help.")
-    private boolean help;
 
     public static void main(String[] args) {
         CommandLine.run(new Main(), args);
@@ -52,43 +54,51 @@ public class Main implements Runnable {
         copyDatabase(dbBackendSrc, tsSrc.pharmaDrugTable, dbBackendDst, tsDst.pharmaDrugTable);
         copyDatabase(dbBackendSrc, tsSrc.prescExampleTable, dbBackendDst, tsDst.prescExampleTable);
 
-        // dynamics
-        copyDatabase(dbBackendSrc, tsSrc.patientTable, dbBackendDst, tsDst.patientTable);
-        copyDatabase(dbBackendSrc, tsSrc.shahokokuhoTable, dbBackendDst, tsDst.shahokokuhoTable);
-        copyDatabase(dbBackendSrc, tsSrc.koukikoureiTable, dbBackendDst, tsDst.koukikoureiTable);
-        copyDatabase(dbBackendSrc, tsSrc.roujinTable, dbBackendDst, tsDst.roujinTable);
-        copyDatabase(dbBackendSrc, tsSrc.kouhiTable, dbBackendDst, tsDst.kouhiTable);
-        copyDatabase(dbBackendSrc, tsSrc.visitTable, dbBackendDst, tsDst.visitTable);
-        copyDatabase(dbBackendSrc, tsSrc.textTable, dbBackendDst, tsDst.textTable);
-        copyDatabase(dbBackendSrc, tsSrc.drugTable, dbBackendDst, tsDst.drugTable);
-        copyDatabase(dbBackendSrc, tsSrc.drugAttrTable, dbBackendDst, tsDst.drugAttrTable);
-        copyDatabase(dbBackendSrc, tsSrc.shinryouTable, dbBackendDst, tsDst.shinryouTable);
-        copyDatabase(dbBackendSrc, tsSrc.shinryouAttrTable, dbBackendDst, tsDst.shinryouAttrTable);
-        copyDatabase(dbBackendSrc, tsSrc.shoukiTable, dbBackendDst, tsDst.shoukiTable);
-        copyDatabase(dbBackendSrc, tsSrc.wqueueTable, dbBackendDst, tsDst.wqueueTable);
-        copyDatabase(dbBackendSrc, tsSrc.chargeTable, dbBackendDst, tsDst.chargeTable);
-        copyDatabase(dbBackendSrc, tsSrc.conductTable, dbBackendDst, tsDst.conductTable);
-        copyDatabase(dbBackendSrc, tsSrc.conductDrugTable, dbBackendDst, tsDst.conductDrugTable);
-        copyDatabase(dbBackendSrc, tsSrc.conductKizaiTable, dbBackendDst, tsDst.conductKizaiTable);
-        copyDatabase(dbBackendSrc, tsSrc.conductShinryouTable, dbBackendDst, tsDst.conductShinryouTable);
-        copyDatabase(dbBackendSrc, tsSrc.gazouLabelTable, dbBackendDst, tsDst.gazouLabelTable);
-        copyDatabase(dbBackendSrc, tsSrc.diseaseTable, dbBackendDst, tsDst.diseaseTable);
-        copyDatabase(dbBackendSrc, tsSrc.diseaseAdjTable, dbBackendDst, tsDst.diseaseAdjTable);
-        copyDatabase(dbBackendSrc, tsSrc.paymentTable, dbBackendDst, tsDst.paymentTable);
-        copyDatabase(dbBackendSrc, tsSrc.pharmaQueueTable, dbBackendDst, tsDst.pharmaQueueTable);
-        copyDatabase(dbBackendSrc, tsSrc.practiceLogTable, dbBackendDst, tsDst.practiceLogTable);
-        copyDatabase(dbBackendSrc, tsSrc.hotlineTable, dbBackendDst, tsDst.hotlineTable);
-        copyDatabase(dbBackendSrc, tsSrc.intraclinicPostTable, dbBackendDst, tsDst.intraclinicPostTable);
-        copyDatabase(dbBackendSrc, tsSrc.intraclinicCommentTable, dbBackendDst, tsDst.intraclinicCommentTable);
-        copyDatabase(dbBackendSrc, tsSrc.intraclinicTagTable, dbBackendDst, tsDst.intraclinicTagTable);
-        copyDatabase(dbBackendSrc, tsSrc.intraclinicTagPostTable, dbBackendDst, tsDst.intraclinicTagPostTable);
+        if( !staticsOnly ) {
+            // dynamics
+            copyDatabase(dbBackendSrc, tsSrc.patientTable, dbBackendDst, tsDst.patientTable);
+            copyDatabase(dbBackendSrc, tsSrc.shahokokuhoTable, dbBackendDst, tsDst.shahokokuhoTable);
+            copyDatabase(dbBackendSrc, tsSrc.koukikoureiTable, dbBackendDst, tsDst.koukikoureiTable);
+            copyDatabase(dbBackendSrc, tsSrc.roujinTable, dbBackendDst, tsDst.roujinTable);
+            copyDatabase(dbBackendSrc, tsSrc.kouhiTable, dbBackendDst, tsDst.kouhiTable);
+            copyDatabase(dbBackendSrc, tsSrc.visitTable, dbBackendDst, tsDst.visitTable);
+            copyDatabase(dbBackendSrc, tsSrc.textTable, dbBackendDst, tsDst.textTable);
+            copyDatabase(dbBackendSrc, tsSrc.drugTable, dbBackendDst, tsDst.drugTable);
+            copyDatabase(dbBackendSrc, tsSrc.drugAttrTable, dbBackendDst, tsDst.drugAttrTable);
+            copyDatabase(dbBackendSrc, tsSrc.shinryouTable, dbBackendDst, tsDst.shinryouTable);
+            copyDatabase(dbBackendSrc, tsSrc.shinryouAttrTable, dbBackendDst, tsDst.shinryouAttrTable);
+            copyDatabase(dbBackendSrc, tsSrc.shoukiTable, dbBackendDst, tsDst.shoukiTable);
+            copyDatabase(dbBackendSrc, tsSrc.wqueueTable, dbBackendDst, tsDst.wqueueTable);
+            copyDatabase(dbBackendSrc, tsSrc.chargeTable, dbBackendDst, tsDst.chargeTable);
+            copyDatabase(dbBackendSrc, tsSrc.conductTable, dbBackendDst, tsDst.conductTable);
+            copyDatabase(dbBackendSrc, tsSrc.conductDrugTable, dbBackendDst, tsDst.conductDrugTable);
+            copyDatabase(dbBackendSrc, tsSrc.conductKizaiTable, dbBackendDst, tsDst.conductKizaiTable);
+            copyDatabase(dbBackendSrc, tsSrc.conductShinryouTable, dbBackendDst, tsDst.conductShinryouTable);
+            copyDatabase(dbBackendSrc, tsSrc.gazouLabelTable, dbBackendDst, tsDst.gazouLabelTable);
+            copyDatabase(dbBackendSrc, tsSrc.diseaseTable, dbBackendDst, tsDst.diseaseTable);
+            copyDatabase(dbBackendSrc, tsSrc.diseaseAdjTable, dbBackendDst, tsDst.diseaseAdjTable);
+            copyDatabase(dbBackendSrc, tsSrc.paymentTable, dbBackendDst, tsDst.paymentTable);
+            copyDatabase(dbBackendSrc, tsSrc.pharmaQueueTable, dbBackendDst, tsDst.pharmaQueueTable);
+            copyDatabase(dbBackendSrc, tsSrc.practiceLogTable, dbBackendDst, tsDst.practiceLogTable);
+            copyDatabase(dbBackendSrc, tsSrc.hotlineTable, dbBackendDst, tsDst.hotlineTable);
+            copyDatabase(dbBackendSrc, tsSrc.intraclinicPostTable, dbBackendDst, tsDst.intraclinicPostTable);
+            copyDatabase(dbBackendSrc, tsSrc.intraclinicCommentTable, dbBackendDst, tsDst.intraclinicCommentTable);
+            copyDatabase(dbBackendSrc, tsSrc.intraclinicTagTable, dbBackendDst, tsDst.intraclinicTagTable);
+            copyDatabase(dbBackendSrc, tsSrc.intraclinicTagPostTable, dbBackendDst, tsDst.intraclinicTagPostTable);
+        }
     }
 
     private <DTO> void copyDatabase(DbBackend dbBackendSrc, TableBaseInterface<DTO> tableInterfaceSrc,
                                     DbBackend dbBackendDst, TableBaseInterface<DTO> tableInterfaceDst){
         dbBackendSrc.proc(backend -> {
             String sql = backend.xlate("select * from " + tableInterfaceSrc.getTableName(), tableInterfaceSrc);
+            if( tableInterfaceSrc.getDtoName().equals("Payment") ){ // in order to workaround duplicate rows
+                sql = backend.xlate("select * from " + tableInterfaceSrc.getTableName() +
+                        " group by *", tableInterfaceSrc);
+            }
             List<DTO> rows = backend.getQuery().query(sql, tableInterfaceSrc);
+            System.out.println(sql);
+            System.out.printf("%s %d items\n", tableInterfaceSrc.getTableName(), rows.size());
             dbBackendDst.txProc(backendDst -> {
                 tableInterfaceDst.batchCopy(rows);
             });
