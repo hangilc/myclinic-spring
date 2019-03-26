@@ -15,5 +15,6 @@ public interface Frontend {
     CompletableFuture<Void> updateText(TextDTO text);
     CompletableFuture<Void> deleteText(int textId);
     CompletableFuture<VisitDTO> getVisit(int visitId);
+    CompletableFuture<List<VisitPatientDTO>> listRecentVisitWithPatient(int page, int itemsPerPage);
     CompletableFuture<HokenDTO> getHoken(int visitId);
 }

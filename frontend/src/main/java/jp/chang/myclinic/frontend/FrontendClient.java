@@ -56,6 +56,11 @@ public class FrontendClient implements Frontend{
     }
 
     @Override
+    public CompletableFuture<List<VisitPatientDTO>> listRecentVisitWithPatient(int page, int itemsPerPage) {
+        return api.listRecentVisits(page, itemsPerPage);
+    }
+
+    @Override
     public CompletableFuture<HokenDTO> getHoken(int visitId) {
         return api.getHoken(visitId);
     }

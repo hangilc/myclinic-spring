@@ -199,6 +199,21 @@ public class Backend {
         return ts.visitTable.getById(visitId);
     }
 
+    public List<VisitPatientDTO> listRecentVisitWithPatient(int page, int itemsPerPage){
+        String sql = "select v.*, p.* from Visit v, Patient p where v.patientId = p.patientId " +
+                " order by v.visitId desc limit ? offset ? ";
+        sql = xlate(sql, ts.visitTable, "v", ts.patientTable, "p");
+        return getQuery().query(sql,
+                (rs, ctx) -> {
+                    VisitPatientDTO vp = new VisitPatientDTO();
+                    vp.visit = ts.visitTable.project(rs, ctx);
+                    vp.patient = ts.patientTable.project(rs, ctx);
+                    return vp;
+                },
+                itemsPerPage,
+                page * itemsPerPage);
+    }
+
     public void enterText(TextDTO text){
         ts.textTable.insert(text);
         practiceLogger.logTextCreated(text);

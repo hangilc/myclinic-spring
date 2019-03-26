@@ -14,8 +14,16 @@ class CmdOpts {
     @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "Prints usage help.")
     private boolean help;
 
+    @CommandLine.Option(names = {"--mock-sqlite"}, description = "Uses temporay SQLite database. " +
+            "Database file is specified by server url parameter.")
+    private boolean mockSqlite;
+
     public String getServerUrl() {
         return serverUrl;
+    }
+
+    public boolean getMockSqlite() {
+        return mockSqlite;
     }
 
 }

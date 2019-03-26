@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.lib;
 import javafx.application.Platform;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ public class PracticeService {
     private static Logger logger = LoggerFactory.getLogger(PracticeService.class);
 
     public static void listRecentVisits(Consumer<List<VisitPatientDTO>> cb) {
-        Service.api.listRecentVisits()
+        Context.getInstance().getFrontend().listRecentVisitWithPatient(0, 30)
                 .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
                 .exceptionally(ex -> {
                     logger.error("Failed list recent visits.", ex);
