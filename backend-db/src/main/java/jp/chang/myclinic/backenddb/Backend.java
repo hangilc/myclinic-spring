@@ -1,6 +1,7 @@
 package jp.chang.myclinic.backenddb;
 
 import jp.chang.myclinic.consts.MyclinicConsts;
+import jp.chang.myclinic.consts.Shuushokugo;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.HotlineLogger;
 import jp.chang.myclinic.logdto.PracticeLogger;
@@ -66,6 +67,10 @@ public class Backend {
         PatientDTO prev = getPatient(patient.patientId);
         ts.patientTable.update(patient);
         practiceLogger.logPatientUpdated(prev, patient);
+    }
+
+    public List<PatientDTO> searchPatient(String text){
+        throw new RuntimeException("not implemented");
     }
 
     private void enterVisit(VisitDTO visit){
@@ -154,6 +159,18 @@ public class Backend {
         return visitDTO;
     }
 
+    public void startExam(int visitId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void suspendExam(int visitId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void endExam(int visitId, int charge){
+        throw new RuntimeException("not implemented");
+    }
+
     private void enterWqueue(WqueueDTO wqueue){
         ts.wqueueTable.insert(wqueue);
         practiceLogger.logWqueueCreated(wqueue);
@@ -183,20 +200,24 @@ public class Backend {
         return hokenDTO;
     }
 
-    public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds) {
-        return shinryouIds.stream().map(ts.shinryouAttrTable::getById).filter(Objects::nonNull).collect(toList());
+    public HokenDTO listAvailableHoken(int patientId, LocalDate visitedAt){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void updateHoken(VisitDTO visit){
+        throw new RuntimeException("not implemented");
     }
 
     public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds) {
         return drugIds.stream().map(ts.drugAttrTable::getById).filter(Objects::nonNull).collect(toList());
     }
 
-    public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds) {
-        return visitIds.stream().map(ts.shoukiTable::getById).filter(Objects::nonNull).collect(toList());
-    }
-
     public VisitDTO getVisit(int visitId){
         return ts.visitTable.getById(visitId);
+    }
+
+    public void deleteVisit(int visitId){
+        throw new RuntimeException("not implemented");
     }
 
     public List<VisitPatientDTO> listRecentVisitWithPatient(int page, int itemsPerPage){
@@ -212,6 +233,26 @@ public class Backend {
                 },
                 itemsPerPage,
                 page * itemsPerPage);
+    }
+
+    public List<VisitPatientDTO> listTodaysVisit(){
+        throw new RuntimeException("not implemented");
+    }
+
+    public VisitFull2PageDTO listVisitFull2(int patientId, int page){
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds) {
+        return visitIds.stream().map(ts.shoukiTable::getById).filter(Objects::nonNull).collect(toList());
+    }
+
+    public void updateShouki(ShoukiDTO shouki){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void deleteShouki(int visitId){
+        throw new RuntimeException("not implemented");
     }
 
     public void enterText(TextDTO text){
@@ -241,6 +282,102 @@ public class Backend {
         return getQuery().query(sql, ts.textTable, visitId);
     }
 
+    public TextVisitPageDTO searchTextByPage(int patientId, String text, int page){
+        throw new RuntimeException("not implemented");
+    }
+
+    public TextVisitPatientPageDTO searchTextGlobally(String text, int page){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void enterDrug(DrugDTO drug){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void updateDrug(DrugDTO drug){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void batchUpdateDrugDays(List<Integer> drugIds, int days){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void deleteDrug(int drugId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void batchDeleteDrugs(List<Integer> drugIds){
+        throw new RuntimeException("not implemented");
+    }
+
+    public DrugFullDTO getDrugFull(int drugId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<DrugFullDTO> listDrugFull(int visitId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void enterShinryou(ShinryouDTO shinryou){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void deleteShinryou(int shinryouId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public ShinryouFullDTO getShinryouFull(int shinryouId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public BatchEnterResultDTO batchEnterShinryouByName(List<String> names, int visitId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds){
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds) {
+        return shinryouIds.stream().map(ts.shinryouAttrTable::getById).filter(Objects::nonNull).collect(toList());
+    }
+
+    public ShinryouAttrDTO getShinryouAttr(int shinryouId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void enterShinryouAttr(ShinryouAttrDTO shinryou){
+        throw new RuntimeException("not implemented");
+    }
+
+    public ConductFullDTO enterConductFull(ConductEnterRequestDTO req){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void delteConduct(int conductId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void modifyConductKind(int conductId, int conductKind){
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<ConductFullDTO> listConductFullByIds(List<Integer> conductIds){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void deleteConductShinryou(int conductShinryouId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void deleteConductDrug(int conductDrugId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public void deleteConductKizai(int conductKizaiId){
+        throw new RuntimeException("not implemented");
+    }
+
     public ShahokokuhoDTO getShahokokuho(int shahokokuhoId){
         return ts.shahokokuhoTable.getById(shahokokuhoId);
     }
@@ -255,6 +392,38 @@ public class Backend {
 
     public KouhiDTO getKouhi(int kouhiId){
         return ts.kouhiTable.getById(kouhiId);
+    }
+
+    public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<DiseaseFullDTO> listDiseaseFull(int patientId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public MeisaiDTO getMeisai(int visitId){
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<ShinryouMasterDTO> searchShinryouMaster(String text, LocalDate at){
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<IyakuhinMasterDTO> searchIyakuhinMaster(String text, LocalDate at){
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<KizaiMasterDTO> searchKizaiMaster(String text, LocalDate at){
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at){
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<ShuushokugoMasterDTO> searchShuushokugoMaster(String text, LocalDate at){
+        throw new RuntimeException("not implemented");
     }
 
     private void enterPracticeLog(PracticeLogDTO practiceLog){
