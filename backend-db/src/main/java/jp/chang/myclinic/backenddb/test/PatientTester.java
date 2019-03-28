@@ -6,6 +6,7 @@ import jp.chang.myclinic.dto.PatientDTO;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 public class PatientTester extends TesterBase {
 
@@ -39,6 +40,11 @@ public class PatientTester extends TesterBase {
         backend.updatePatient(p);
         PatientDTO pp = backend.getPatient(p.patientId);
         confirm(p.equals(pp));
+    }
+
+    @DbTest
+    public void testSeachPatient(){
+        List<PatientDTO> result = backend.searchPatient("%鈴木%", "%子");
     }
 
 }

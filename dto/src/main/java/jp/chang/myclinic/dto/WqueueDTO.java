@@ -9,6 +9,13 @@ public class WqueueDTO {
 	public int visitId;
 	public int waitState;
 
+	public static WqueueDTO copy(WqueueDTO src){
+		WqueueDTO dst = new WqueueDTO();
+		dst.visitId = src.visitId;
+		dst.waitState = src.waitState;
+		return dst;
+	}
+
 	@Override
 	public String toString() {
 		return "WqueueDTO{" +

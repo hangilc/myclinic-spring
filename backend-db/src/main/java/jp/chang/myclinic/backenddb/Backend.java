@@ -2,6 +2,7 @@ package jp.chang.myclinic.backenddb;
 
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.consts.Shuushokugo;
+import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.HotlineLogger;
 import jp.chang.myclinic.logdto.PracticeLogger;
@@ -69,8 +70,13 @@ public class Backend {
         practiceLogger.logPatientUpdated(prev, patient);
     }
 
-    public List<PatientDTO> searchPatient(String text){
-        throw new RuntimeException("not implemented");
+    public List<PatientDTO> searchPatient(String lastNameSearch, String firstNameSearch){
+        String sql = xlate("select * from Patient where " +
+                " (lastName like ? or lastNameYomi like ?) and " +
+                " (firstName like ? or firstNameYomi like ?)",
+                ts.patientTable);
+        return getQuery().query(sql, ts.patientTable,
+                lastNameSearch, lastNameSearch, firstNameSearch, firstNameSearch);
     }
 
     private void enterVisit(VisitDTO visit){
@@ -160,7 +166,7 @@ public class Backend {
     }
 
     public void startExam(int visitId){
-        throw new RuntimeException("not implemented");
+        changeWqueueState(visitId, WqueueWaitState.InExam.getCode());
     }
 
     public void suspendExam(int visitId){
@@ -171,10 +177,22 @@ public class Backend {
         throw new RuntimeException("not implemented");
     }
 
+    // Wqueue /////////////////////////////////////////////////////////////////////////////
+
     private void enterWqueue(WqueueDTO wqueue){
         ts.wqueueTable.insert(wqueue);
         practiceLogger.logWqueueCreated(wqueue);
     }
+
+    private void changeWqueueState(int visitId, int state) {
+        WqueueDTO prev = ts.wqueueTable.getById(visitId);
+        WqueueDTO updated = WqueueDTO.copy(prev);
+        updated.waitState = state;
+        ts.wqueueTable.update(updated);
+        practiceLogger.logWqueueUpdated(prev, updated);
+    }
+
+    // Hoken //////////////////////////////////////////////////////////////////////////////
 
     public HokenDTO getHoken(int visitId) {
         VisitDTO visitDTO = getVisit(visitId);
@@ -486,8 +504,27 @@ public class Backend {
         throw new RuntimeException("not implemented");
     }
 
+    // PracticeLog ///////////////////////////////////////////////////////////////////////
+
     private void enterPracticeLog(PracticeLogDTO practiceLog){
         ts.practiceLogTable.insert(practiceLog);
+    }
+
+    public PracticeLogDTO getLastPracticeLog(){
+        String sql = xlate("select * from PracticeLog order by serialId desc limit 1",
+                ts.practiceLogTable);
+        return getQuery().get(sql, ts.practiceLogTable);
+    }
+
+    public int getLastPracticeLogId(){
+        PracticeLogDTO plog = getLastPracticeLog();
+        return plog == null ? 0 : plog.serialId;
+    }
+
+    public List<PracticeLogDTO> listPracticeLogSince(int afterThisId){
+        String sql = xlate("select * from PracticeLog where serialId > ? ",
+                ts.practiceLogTable);
+        return getQuery().query(sql, ts.practiceLogTable, afterThisId);
     }
 
 }

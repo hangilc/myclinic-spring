@@ -43,7 +43,7 @@ public abstract class Table<DTO> implements TableBaseInterface<DTO> {
 
     public void insert(DTO dto) {
         Map<Boolean, List<Column<DTO>>> colmap = getColumns().stream().collect(groupingBy(Column::isAutoIncrement));
-        if (colmap.get(true).size() == 0) {
+        if (colmap.get(true) == null || colmap.get(true).size() == 0) {
             String sql = String.format("insert into %s (%s) values (%s)",
                     getTableName(),
                     colmap.get(false).stream().map(Column::getDbColumnName).collect(joining(",")),

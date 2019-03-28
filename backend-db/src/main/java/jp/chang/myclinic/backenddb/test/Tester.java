@@ -6,6 +6,7 @@ public class Tester {
 
     public void test(Backend backend){
         new PatientTester(backend).test();
+        new VisitTester(backend).test();
     }
 
 }
