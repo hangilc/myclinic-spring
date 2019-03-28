@@ -44,7 +44,11 @@ public class PatientTester extends TesterBase {
 
     @DbTest
     public void testSeachPatient(){
-        List<PatientDTO> result = backend.searchPatient("%鈴木%", "%子");
+        List<PatientDTO> patients;
+        patients = backend.searchPatient("鈴木");
+        System.out.println(patients.size());
+        patients = backend.searchPatient("鈴木 子");
+        System.out.println(patients.size());
     }
 
 }

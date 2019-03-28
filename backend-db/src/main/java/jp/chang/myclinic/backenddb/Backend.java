@@ -11,6 +11,7 @@ import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -70,13 +71,38 @@ public class Backend {
         practiceLogger.logPatientUpdated(prev, patient);
     }
 
-    public List<PatientDTO> searchPatient(String lastNameSearch, String firstNameSearch){
+    public List<PatientDTO> searchPatientByKeyword(String lastNameKeyword, String firstNameKeyword){
         String sql = xlate("select * from Patient where " +
-                " (lastName like ? or lastNameYomi like ?) and " +
-                " (firstName like ? or firstNameYomi like ?)",
+                        " (lastName like ? or lastNameYomi like ?) and " +
+                        " (firstName like ? or firstNameYomi like ?) ",
                 ts.patientTable);
         return getQuery().query(sql, ts.patientTable,
-                lastNameSearch, lastNameSearch, firstNameSearch, firstNameSearch);
+                lastNameKeyword, lastNameKeyword, firstNameKeyword, firstNameKeyword);
+    }
+
+    public List<PatientDTO> searchPatientByKeyword(String keyword){
+        String sql = xlate("select * from Patient where " +
+                        " (lastName like ? or lastNameYomi like ?) or " +
+                        " (firstName like ? or firstNameYomi like ?) ",
+                ts.patientTable);
+        return getQuery().query(sql, ts.patientTable,
+                keyword, keyword, keyword, keyword);
+    }
+
+    public List<PatientDTO> searchPatient(String text){
+        text = text.trim();
+        if( text.isEmpty() ){
+            return Collections.emptyList();
+        }
+        String[] parts = text.split("\\s+", 2);
+        if( parts.length == 1 ){
+            String s = "%" + text + "%";
+            return searchPatientByKeyword(s);
+        } else {
+            String last = "%" + parts[0] + "%";
+            String first = "%"+ parts[1] + "%";
+            return searchPatientByKeyword(last, first);
+        }
     }
 
     private void enterVisit(VisitDTO visit){
