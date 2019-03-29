@@ -9,13 +9,17 @@ import jp.chang.myclinic.logdto.HotlineLogger;
 import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
+import static jp.chang.myclinic.backenddb.Query.Projector;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -36,6 +40,14 @@ public class Backend {
         this.practiceLogger = new PracticeLogger();
         practiceLogger.setSaver(this::enterPracticeLog);
         this.hotlineLogger = new HotlineLogger();
+    }
+
+    private static <S,T,U> Projector<U> biProjector(Projector<S> p1, Projector<T> p2, BiFunction<S,T,U> f){
+        return (rs, ctx) -> {
+            S s = p1.project(rs, ctx);
+            T t = p2.project(rs, ctx);
+            return f.apply(s, t);
+        };
     }
 
     public void setPracticeLogPublisher(Consumer<String> publisher){
@@ -569,10 +581,12 @@ public class Backend {
     public List<DrugFullDTO> listDrugFull(int visitId){
         String sql = xlate(
                 "select d.*, m.* from Drug d, IyakuhinMaster m, Visit v " +
-                        " where d.visitId = v.visitId and d.iyakuhincode = m.iyakuhincode " +
-                        " and " + ts.dialect.isValidAt("m.validFromz", "m.validUpto", "v.visitedAt"),
+                        " where d.visitId = ? and d.visitId = v.visitId and d.iyakuhincode = m.iyakuhincode " +
+                        " and " + ts.dialect.isValidAt("m.validFromz", "m.validUpto", "v.visitedAt") +
+                        " order by d.drugId",
                 ts.drugTable, "d", ts.iyakuhinMasterTable, "m", ts.visitTable, "v");
-        return query(sql, )
+        return getQuery().query(sql, biProjector(ts.drugTable, ts.iyakuhinMasterTable, DrugFullDTO::create),
+                visitId);
     }
 
     public List<DrugFullDTO> searchPrevDrug(String text, int patientId){

@@ -128,24 +128,24 @@ public class Query {
         }
     }
 
-    public <T> List<T> query(String sql, Projector<T> projector,
-                                    SqlConsumer<PreparedStatement> stmtSetter) {
-        try {
-            PreparedStatement stmt = getConnection().prepareStatement(sql);
-            stmtSetter.accept(stmt);
-            ResultSet rs = stmt.executeQuery();
-            List<T> result = new ArrayList<>();
-            while (rs.next()) {
-                ResultSetContext ctx = new ResultSetContextImpl();
-                T t = projector.project(rs, ctx);
-                result.add(t);
-            }
-            stmt.close();
-            return result;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public <T> List<T> query(String sql, Projector<T> projector,
+//                                    SqlConsumer<PreparedStatement> stmtSetter) {
+//        try {
+//            PreparedStatement stmt = getConnection().prepareStatement(sql);
+//            stmtSetter.accept(stmt);
+//            ResultSet rs = stmt.executeQuery();
+//            List<T> result = new ArrayList<>();
+//            while (rs.next()) {
+//                ResultSetContext ctx = new ResultSetContextImpl();
+//                T t = projector.project(rs, ctx);
+//                result.add(t);
+//            }
+//            stmt.close();
+//            return result;
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public <T> List<T> query(String sql, Projector<T> projector, Object... params) {
         try {

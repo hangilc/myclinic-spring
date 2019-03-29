@@ -10,4 +10,11 @@ public class DrugFullDTO {
 		dst.master = src.master;
 		return dst;
 	}
+
+	public static DrugFullDTO create(DrugDTO drug, IyakuhinMasterDTO master){
+		DrugFullDTO result = new DrugFullDTO();
+		result.drug = drug;
+		result.master = master;
+		return result;
+	}
 }
