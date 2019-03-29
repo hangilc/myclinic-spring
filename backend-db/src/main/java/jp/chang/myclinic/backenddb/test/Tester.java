@@ -1,12 +1,13 @@
 package jp.chang.myclinic.backenddb.test;
 
 import jp.chang.myclinic.backenddb.Backend;
+import jp.chang.myclinic.backenddb.DbBackend;
 
 public class Tester {
 
-    public void test(Backend backend){
-        new PatientTester(backend).test();
-        new VisitTester(backend).test();
+    public void test(DbBackend dbBackend){
+        new PatientTester(dbBackend).test();
+        new VisitTester(dbBackend).test();
     }
 
 }

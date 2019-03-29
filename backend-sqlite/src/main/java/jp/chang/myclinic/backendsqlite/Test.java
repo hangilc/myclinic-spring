@@ -17,10 +17,7 @@ public class Test {
         String dbFile = args[0];
         DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
         DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create);
-        dbBackend.proc(backend -> {
-            new Tester().test(backend);
-        });
-
+        new Tester().test(dbBackend);
     }
 
 }

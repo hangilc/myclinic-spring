@@ -1,6 +1,7 @@
 package jp.chang.myclinic.backenddb.test;
 
 import jp.chang.myclinic.backenddb.Backend;
+import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.test.annotation.DbTest;
 import jp.chang.myclinic.dto.PatientDTO;
 
@@ -8,14 +9,14 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-public class PatientTester extends TesterBase {
+class PatientTester extends TesterBase {
 
-    public PatientTester(Backend backend) {
-        super(backend);
+    PatientTester(DbBackend dbBackend) {
+        super(dbBackend);
     }
 
     @DbTest
-    public void testEnter(){
+    public void testEnter(Backend backend){
         System.out.println("patient:testEnter");
         PatientDTO p = mock.pickPatient();
         backend.enterPatient(p);
@@ -24,7 +25,7 @@ public class PatientTester extends TesterBase {
     }
 
     @DbTest
-    public void testUpdate(){
+    public void testUpdate(Backend backend){
         System.out.println("patient:testUpdate");
         PatientDTO p = mock.pickPatient();
         p.sex = "M";
@@ -43,7 +44,7 @@ public class PatientTester extends TesterBase {
     }
 
     @DbTest
-    public void testSeachPatient(){
+    public void testSeachPatient(Backend backend){
         List<PatientDTO> patients;
         patients = backend.searchPatient("鈴木");
         System.out.println(patients.size());

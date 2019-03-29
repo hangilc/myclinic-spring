@@ -52,18 +52,27 @@ public class SqlTranslator {
         ));
     }
 
+    private static Pattern selectFromPattern = Pattern.compile("^\\s*select\\s+\\*\\s+from\\b",
+            Pattern.CASE_INSENSITIVE);
+
     public String translate(String src, List<AliasedTable> tables){
         Map<String, String> rewriteMap = new HashMap<>();
         List<String> regexToks = new ArrayList<>();
+        if( tables.size() == 1 ){
+            AliasedTable table = tables.get(0);
+            if( table.alias == null || table.alias.isEmpty() ) {
+                Matcher matcher = selectFromPattern.matcher(src);
+                src = matcher.replaceFirst("select * from");
+                regexToks.add("^select \\* from\\b");
+                rewriteMap.put("select * from",  "select " + cols(table.table.getColumnNames()) + " from");
+            }
+        }
         for(AliasedTable at: tables){
             TableInfo table = at.table;
             String alias = at.alias;
-            regexToks.add(table.getDtoName());
+            regexToks.add("\\b" + table.getDtoName() + "\\b");
             rewriteMap.put(table.getDtoName(), table.getDbTableName());
-            if( alias == null || alias.isEmpty() ) {
-                regexToks.add("(?<!\\.)\\*");
-                rewriteMap.put("*", cols(table.getColumnNames()));
-            } else {
+            if( alias != null && !alias.isEmpty() ) {
                 regexToks.add("\\b" + alias + "\\.\\*");
                 rewriteMap.put(alias + ".*", cols(table.getColumnNames(), alias));
             }

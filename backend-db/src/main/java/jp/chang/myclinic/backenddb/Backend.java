@@ -1,6 +1,7 @@
 package jp.chang.myclinic.backenddb;
 
 import jp.chang.myclinic.consts.MyclinicConsts;
+import jp.chang.myclinic.consts.PharmaQueueState;
 import jp.chang.myclinic.consts.Shuushokugo;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.toList;
@@ -105,11 +107,6 @@ public class Backend {
         }
     }
 
-    private void enterVisit(VisitDTO visit){
-        ts.visitTable.insert(visit);
-        practiceLogger.logVisitCreated(visit);
-    }
-
     public List<ShahokokuhoDTO> findAvailableShahokokuho(int patientId, LocalDate at) {
         String sql = xlate("select * from Shahokokuho where patientId = ? and " +
                         " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
@@ -136,6 +133,13 @@ public class Backend {
                         " validFrom <= date(?) and (validUpto is null or validUpto >= date(?))",
                 ts.kouhiTable);
         return getQuery().query(sql, ts.kouhiTable, patientId, at, at);
+    }
+
+    // Visit ////////////////////////////////////////////////////////////////////////
+
+    private void enterVisit(VisitDTO visit){
+        ts.visitTable.insert(visit);
+        practiceLogger.logVisitCreated(visit);
     }
 
     public VisitDTO startVisit(int patientId, LocalDateTime at){
@@ -196,11 +200,71 @@ public class Backend {
     }
 
     public void suspendExam(int visitId){
-        throw new RuntimeException("not implemented");
+        changeWqueueState(visitId, WqueueWaitState.WaitReExam.getCode());
+    }
+
+    private boolean isTodaysVisit(VisitDTO visit){
+        return visit.visitedAt.substring(0, 10).equals(LocalDate.now().toString());
     }
 
     public void endExam(int visitId, int charge){
-        throw new RuntimeException("not implemented");
+        VisitDTO visit = ts.visitTable.getById(visitId);
+        if( visit == null ){
+            throw new RuntimeException("No such visit: " + visitId);
+        }
+        boolean isToday = isTodaysVisit(visit);
+        setChargeOfVisit(visitId, charge);
+        WqueueDTO wqueue = ts.wqueueTable.getById(visitId);
+        if (wqueue != null && isToday) {
+            changeWqueueState(visitId, WqueueWaitState.WaitCashier.getCode());
+        } else {
+            if(wqueue != null ){ // it not today
+                deleteWqueue(visitId);
+            }
+            WqueueDTO newWqueue = new WqueueDTO();
+            newWqueue.visitId = visitId;
+            newWqueue.waitState = WqueueWaitState.WaitCashier.getCode();
+            enterWqueue(newWqueue);
+        }
+        PharmaQueueDTO pharmaQueue = getPharmaQueue(visitId);
+        if( pharmaQueue != null ){
+            deletePharmaQueue(visitId);
+        }
+        if (isToday) {
+            int unprescribed = countUnprescribedDrug(visitId);
+            if (unprescribed > 0) {
+                PharmaQueueDTO newPharmaQueue = new PharmaQueueDTO();
+                newPharmaQueue.visitId = visitId;
+                newPharmaQueue.pharmaState = PharmaQueueState.WaitPack.getCode();
+                ts.pharmaQueueTable.insert(newPharmaQueue);
+                practiceLogger.logPharmaQueueCreated(newPharmaQueue);
+            }
+        }
+    }
+
+    // Charge /////////////////////////////////////////////////////////////////////////////
+
+    public void enterCharge(ChargeDTO charge){
+        ts.chargeTable.insert(charge);
+        practiceLogger.logChargeCreated(charge);
+    }
+
+    public void setChargeOfVisit(int visitId, int charge) {
+        ChargeDTO prev = ts.chargeTable.getById(visitId);
+        if ( prev != null ) {
+            ChargeDTO updated = ChargeDTO.copy(prev);
+            ts.chargeTable.update(updated);
+            practiceLogger.logChargeUpdated(prev, updated);
+        } else {
+            ChargeDTO newCharge = new ChargeDTO();
+            newCharge.visitId = visitId;
+            newCharge.charge = charge;
+            enterCharge(newCharge);
+        }
+    }
+
+    public ChargeDTO getCharge(int visitId){
+        return ts.chargeTable.getById(visitId);
     }
 
     // Wqueue /////////////////////////////////////////////////////////////////////////////
@@ -210,6 +274,10 @@ public class Backend {
         practiceLogger.logWqueueCreated(wqueue);
     }
 
+    public WqueueDTO getWqueue(int visitId){
+        return ts.wqueueTable.getById(visitId);
+    }
+
     private void changeWqueueState(int visitId, int state) {
         WqueueDTO prev = ts.wqueueTable.getById(visitId);
         WqueueDTO updated = WqueueDTO.copy(prev);
@@ -217,6 +285,33 @@ public class Backend {
         ts.wqueueTable.update(updated);
         practiceLogger.logWqueueUpdated(prev, updated);
     }
+
+    public void deleteWqueue(int visitId) {
+        WqueueDTO wqueue = ts.wqueueTable.getById(visitId);
+        if( wqueue == null ){
+            return;
+        }
+        ts.wqueueTable.delete(visitId);
+        practiceLogger.logWqueueDeleted(wqueue);
+    }
+
+    public List<WqueueDTO> listWqueue(){
+        String sql = xlate("select * from Wqueue order by visitId", ts.wqueueTable);
+        return getQuery().query(sql, ts.wqueueTable);
+    }
+
+    private WqueueFullDTO composeWqueueFullDTO(WqueueDTO wqueue){
+        WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
+        wqueueFullDTO.wqueue = wqueue;
+        wqueueFullDTO.visit = getVisit(wqueue.visitId);
+        wqueueFullDTO.patient = getPatient(wqueueFullDTO.visit.patientId);
+        return wqueueFullDTO;
+    }
+
+    public List<WqueueFullDTO> listWqueueFull(){
+        return listWqueue().stream().map(this::composeWqueueFullDTO).collect(toList());
+    }
+
 
     // Hoken //////////////////////////////////////////////////////////////////////////////
 
@@ -252,9 +347,7 @@ public class Backend {
         throw new RuntimeException("not implemented");
     }
 
-    public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds) {
-        return drugIds.stream().map(ts.drugAttrTable::getById).filter(Objects::nonNull).collect(toList());
-    }
+    // Drug ///////////////////////////////////////////////////////////////////////////
 
     public DrugAttrDTO getDrugAttr(int drugId){
         throw new RuntimeException("not implemented");
@@ -264,6 +357,10 @@ public class Backend {
         throw new RuntimeException("not implemented");
     }
 
+    public List<DrugAttrDTO> batchGetDrugAttr(List<Integer> drugIds) {
+        return drugIds.stream().map(ts.drugAttrTable::getById).filter(Objects::nonNull).collect(toList());
+    }
+
     public DrugAttrDTO setDrugTekiyou(int drugId, String tekiyou){
         throw new RuntimeException("not implemented");
     }
@@ -271,6 +368,14 @@ public class Backend {
     public void deleteDrugTekiyou(int drugId){
         throw new RuntimeException("not implemented");
     }
+
+    public int countUnprescribedDrug(int visitId){
+        String sql = xlate("select count(*) from Drug where visitId = ? and prescribed = 0",
+                ts.drugTable);
+        return getQuery().get(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), visitId);
+    }
+
+    // Visit ////////////////////////////////////////////////////////////////////////////
 
     public VisitDTO getVisit(int visitId){
         return ts.visitTable.getById(visitId);
@@ -528,6 +633,20 @@ public class Backend {
 
     public List<PrescExampleFullDTO> listAllPrescExample(){
         throw new RuntimeException("not implemented");
+    }
+
+    // PharmaQueue ///////////////////////////////////////////////////////////////////////
+
+    public PharmaQueueDTO getPharmaQueue(int visitId){
+        return ts.pharmaQueueTable.getById(visitId);
+    }
+
+    public void deletePharmaQueue(int visitId){
+        PharmaQueueDTO pharmaQueue = getPharmaQueue(visitId);
+        if( pharmaQueue == null ){
+            return;
+        }
+        practiceLogger.logPharmaQueueDeleted(pharmaQueue);
     }
 
     // PracticeLog ///////////////////////////////////////////////////////////////////////
