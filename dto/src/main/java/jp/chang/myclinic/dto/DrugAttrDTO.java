@@ -14,6 +14,10 @@ public class DrugAttrDTO {
         return dst;
     }
 
+    public static boolean isEmpty(DrugAttrDTO attr){
+        return attr.tekiyou == null || attr.tekiyou.isEmpty();
+    }
+
     @Override
     public String toString() {
         return "DrugAttrDTO{" +

@@ -42,4 +42,5 @@ public class TableSet {
     public TableBaseInterface<VisitDTO> visitTable;
     public TableBaseInterface<WqueueDTO> wqueueTable;
 
+    public Dialect dialect;
 }
