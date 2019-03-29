@@ -59,6 +59,12 @@ public class Backend {
         return sqlTranslator.translate(sqlOrig, tableInfo1, alias1, tableInfo2, alias2);
     }
 
+    public String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
+                         TableInfo tableInfo2, String alias2, TableInfo tableInfo3, String alias3) {
+        return sqlTranslator.translate(sqlOrig, tableInfo1, alias1, tableInfo2, alias2,
+                tableInfo3, alias3);
+    }
+
     public void enterPatient(PatientDTO patient){
         ts.patientTable.insert(patient);
         practiceLogger.logPatientCreated(patient);
@@ -561,7 +567,12 @@ public class Backend {
     }
 
     public List<DrugFullDTO> listDrugFull(int visitId){
-        throw new RuntimeException("not implemented");
+        String sql = xlate(
+                "select d.*, m.* from Drug d, IyakuhinMaster m, Visit v " +
+                        " where d.visitId = v.visitId and d.iyakuhincode = m.iyakuhincode " +
+                        " and " + ts.dialect.isValidAt("m.validFromz", "m.validUpto", "v.visitedAt"),
+                ts.drugTable, "d", ts.iyakuhinMasterTable, "m", ts.visitTable, "v");
+        return query(sql, )
     }
 
     public List<DrugFullDTO> searchPrevDrug(String text, int patientId){
