@@ -46,6 +46,8 @@ public class SqliteTableSet {
         ts.textTable = new TextTable(query);
         ts.visitTable = new VisitTable(query);
         ts.wqueueTable = new WqueueTable(query);
+
+        ts.dialect = SqliteDialect.getInstance();
         return ts;
     }
 }

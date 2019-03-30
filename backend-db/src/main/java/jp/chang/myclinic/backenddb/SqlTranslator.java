@@ -52,6 +52,16 @@ public class SqlTranslator {
         ));
     }
 
+    public String translate(String src, TableInfo table1, String alias1, TableInfo table2, String alias2,
+                            TableInfo table3, String alias3, TableInfo table4, String alias4){
+        return translate(src, List.of(
+                new AliasedTable(table1, alias1),
+                new AliasedTable(table2, alias2),
+                new AliasedTable(table3, alias3),
+                new AliasedTable(table4, alias4)
+        ));
+    }
+
     private static Pattern selectFromPattern = Pattern.compile("^\\s*select\\s+\\*\\s+from\\b",
             Pattern.CASE_INSENSITIVE);
 

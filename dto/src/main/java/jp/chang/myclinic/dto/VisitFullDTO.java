@@ -8,4 +8,15 @@ public class VisitFullDTO {
 	public List<ShinryouFullDTO> shinryouList;
 	public List<DrugFullDTO> drugs;
 	public List<ConductFullDTO> conducts;
+
+	@Override
+	public String toString() {
+		return "VisitFullDTO{" +
+				"visit=" + visit +
+				", texts=" + texts +
+				", shinryouList=" + shinryouList +
+				", drugs=" + drugs +
+				", conducts=" + conducts +
+				'}';
+	}
 }

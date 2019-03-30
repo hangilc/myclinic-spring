@@ -10,4 +10,12 @@ public class ConductShinryouFullDTO {
 		dst.master = src.master; // master is considered to be immutable
 		return dst;
 	}
+
+	public static ConductShinryouFullDTO create(ConductShinryouDTO conductShinryou,
+												ShinryouMasterDTO master){
+		ConductShinryouFullDTO result = new ConductShinryouFullDTO();
+		result.conductShinryou = conductShinryou;
+		result.master = master;
+		return result;
+	}
 }

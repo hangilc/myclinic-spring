@@ -8,6 +8,7 @@ import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.ChargeDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.dto.VisitFullDTO;
 import jp.chang.myclinic.dto.WqueueDTO;
 import jp.chang.myclinic.logdto.practicelog.*;
 
@@ -88,5 +89,12 @@ public class VisitTester extends TesterBase {
             confirm(body.prev.visitId == visit.visitId && body.prev.waitState == WqueueStateInExam);
             confirm(body.updated.visitId == visit.visitId && body.updated.waitState == WqueueStateWaitCashier);
         }
+    }
+
+    @DbTest
+    public void testGetVisitFull(Backend backend){
+        System.out.println("visit:getVisitFull");
+        VisitFullDTO visitFull = backend.getVisitFull(19888);
+        System.out.println(visitFull);
     }
 }

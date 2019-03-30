@@ -9,6 +9,7 @@ import jp.chang.myclinic.logdto.HotlineLogger;
 import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
+
 import static jp.chang.myclinic.backenddb.Query.Projector;
 
 import java.sql.ResultSet;
@@ -34,7 +35,7 @@ public class Backend {
     private PracticeLogger practiceLogger;
     private HotlineLogger hotlineLogger;
 
-    public Backend(TableSet ts, Query query){
+    public Backend(TableSet ts, Query query) {
         this.ts = ts;
         this.query = query;
         this.practiceLogger = new PracticeLogger();
@@ -42,7 +43,7 @@ public class Backend {
         this.hotlineLogger = new HotlineLogger();
     }
 
-    private static <S,T,U> Projector<U> biProjector(Projector<S> p1, Projector<T> p2, BiFunction<S,T,U> f){
+    private static <S, T, U> Projector<U> biProjector(Projector<S> p1, Projector<T> p2, BiFunction<S, T, U> f) {
         return (rs, ctx) -> {
             S s = p1.project(rs, ctx);
             T t = p2.project(rs, ctx);
@@ -50,15 +51,15 @@ public class Backend {
         };
     }
 
-    public void setPracticeLogPublisher(Consumer<String> publisher){
+    public void setPracticeLogPublisher(Consumer<String> publisher) {
         practiceLogger.setPublisher(publisher::accept);
     }
 
-    public void setHotlineLogPublisher(Consumer<String> publisher){
+    public void setHotlineLogPublisher(Consumer<String> publisher) {
         hotlineLogger.setHotlineLogPublisher(publisher::accept);
     }
 
-    public Query getQuery(){
+    public Query getQuery() {
         return query;
     }
 
@@ -67,32 +68,39 @@ public class Backend {
     }
 
     public String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
-                         TableInfo tableInfo2, String alias2) {
+                        TableInfo tableInfo2, String alias2) {
         return sqlTranslator.translate(sqlOrig, tableInfo1, alias1, tableInfo2, alias2);
     }
 
     public String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
-                         TableInfo tableInfo2, String alias2, TableInfo tableInfo3, String alias3) {
+                        TableInfo tableInfo2, String alias2, TableInfo tableInfo3, String alias3) {
         return sqlTranslator.translate(sqlOrig, tableInfo1, alias1, tableInfo2, alias2,
                 tableInfo3, alias3);
     }
 
-    public void enterPatient(PatientDTO patient){
+    public String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
+                        TableInfo tableInfo2, String alias2, TableInfo tableInfo3, String alias3,
+                        TableInfo tableInfo4, String alias4) {
+        return sqlTranslator.translate(sqlOrig, tableInfo1, alias1, tableInfo2, alias2,
+                tableInfo3, alias3, tableInfo4, alias4);
+    }
+
+    public void enterPatient(PatientDTO patient) {
         ts.patientTable.insert(patient);
         practiceLogger.logPatientCreated(patient);
     }
 
-    public PatientDTO getPatient(int patientId){
+    public PatientDTO getPatient(int patientId) {
         return ts.patientTable.getById(patientId);
     }
 
-    public void updatePatient(PatientDTO patient){
+    public void updatePatient(PatientDTO patient) {
         PatientDTO prev = getPatient(patient.patientId);
         ts.patientTable.update(patient);
         practiceLogger.logPatientUpdated(prev, patient);
     }
 
-    public List<PatientDTO> searchPatientByKeyword(String lastNameKeyword, String firstNameKeyword){
+    public List<PatientDTO> searchPatientByKeyword(String lastNameKeyword, String firstNameKeyword) {
         String sql = xlate("select * from Patient where " +
                         " (lastName like ? or lastNameYomi like ?) and " +
                         " (firstName like ? or firstNameYomi like ?) ",
@@ -101,7 +109,7 @@ public class Backend {
                 lastNameKeyword, lastNameKeyword, firstNameKeyword, firstNameKeyword);
     }
 
-    public List<PatientDTO> searchPatientByKeyword(String keyword){
+    public List<PatientDTO> searchPatientByKeyword(String keyword) {
         String sql = xlate("select * from Patient where " +
                         " (lastName like ? or lastNameYomi like ?) or " +
                         " (firstName like ? or firstNameYomi like ?) ",
@@ -110,18 +118,18 @@ public class Backend {
                 keyword, keyword, keyword, keyword);
     }
 
-    public List<PatientDTO> searchPatient(String text){
+    public List<PatientDTO> searchPatient(String text) {
         text = text.trim();
-        if( text.isEmpty() ){
+        if (text.isEmpty()) {
             return Collections.emptyList();
         }
         String[] parts = text.split("\\s+", 2);
-        if( parts.length == 1 ){
+        if (parts.length == 1) {
             String s = "%" + text + "%";
             return searchPatientByKeyword(s);
         } else {
             String last = "%" + parts[0] + "%";
-            String first = "%"+ parts[1] + "%";
+            String first = "%" + parts[1] + "%";
             return searchPatientByKeyword(last, first);
         }
     }
@@ -156,12 +164,12 @@ public class Backend {
 
     // Visit ////////////////////////////////////////////////////////////////////////
 
-    private void enterVisit(VisitDTO visit){
+    private void enterVisit(VisitDTO visit) {
         ts.visitTable.insert(visit);
         practiceLogger.logVisitCreated(visit);
     }
 
-    public VisitDTO startVisit(int patientId, LocalDateTime at){
+    public VisitDTO startVisit(int patientId, LocalDateTime at) {
         LocalDate atDate = at.toLocalDate();
         VisitDTO visitDTO = new VisitDTO();
         visitDTO.patientId = patientId;
@@ -214,21 +222,21 @@ public class Backend {
         return visitDTO;
     }
 
-    public void startExam(int visitId){
+    public void startExam(int visitId) {
         changeWqueueState(visitId, WqueueWaitState.InExam.getCode());
     }
 
-    public void suspendExam(int visitId){
+    public void suspendExam(int visitId) {
         changeWqueueState(visitId, WqueueWaitState.WaitReExam.getCode());
     }
 
-    private boolean isTodaysVisit(VisitDTO visit){
+    private boolean isTodaysVisit(VisitDTO visit) {
         return visit.visitedAt.substring(0, 10).equals(LocalDate.now().toString());
     }
 
-    public void endExam(int visitId, int charge){
+    public void endExam(int visitId, int charge) {
         VisitDTO visit = ts.visitTable.getById(visitId);
-        if( visit == null ){
+        if (visit == null) {
             throw new RuntimeException("No such visit: " + visitId);
         }
         boolean isToday = isTodaysVisit(visit);
@@ -237,7 +245,7 @@ public class Backend {
         if (wqueue != null && isToday) {
             changeWqueueState(visitId, WqueueWaitState.WaitCashier.getCode());
         } else {
-            if(wqueue != null ){ // it not today
+            if (wqueue != null) { // it not today
                 deleteWqueue(visitId);
             }
             WqueueDTO newWqueue = new WqueueDTO();
@@ -246,7 +254,7 @@ public class Backend {
             enterWqueue(newWqueue);
         }
         PharmaQueueDTO pharmaQueue = getPharmaQueue(visitId);
-        if( pharmaQueue != null ){
+        if (pharmaQueue != null) {
             deletePharmaQueue(visitId);
         }
         if (isToday) {
@@ -263,14 +271,14 @@ public class Backend {
 
     // Charge /////////////////////////////////////////////////////////////////////////////
 
-    public void enterCharge(ChargeDTO charge){
+    public void enterCharge(ChargeDTO charge) {
         ts.chargeTable.insert(charge);
         practiceLogger.logChargeCreated(charge);
     }
 
     public void setChargeOfVisit(int visitId, int charge) {
         ChargeDTO prev = ts.chargeTable.getById(visitId);
-        if ( prev != null ) {
+        if (prev != null) {
             ChargeDTO updated = ChargeDTO.copy(prev);
             ts.chargeTable.update(updated);
             practiceLogger.logChargeUpdated(prev, updated);
@@ -282,18 +290,18 @@ public class Backend {
         }
     }
 
-    public ChargeDTO getCharge(int visitId){
+    public ChargeDTO getCharge(int visitId) {
         return ts.chargeTable.getById(visitId);
     }
 
     // Wqueue /////////////////////////////////////////////////////////////////////////////
 
-    private void enterWqueue(WqueueDTO wqueue){
+    private void enterWqueue(WqueueDTO wqueue) {
         ts.wqueueTable.insert(wqueue);
         practiceLogger.logWqueueCreated(wqueue);
     }
 
-    public WqueueDTO getWqueue(int visitId){
+    public WqueueDTO getWqueue(int visitId) {
         return ts.wqueueTable.getById(visitId);
     }
 
@@ -307,19 +315,19 @@ public class Backend {
 
     public void deleteWqueue(int visitId) {
         WqueueDTO wqueue = ts.wqueueTable.getById(visitId);
-        if( wqueue == null ){
+        if (wqueue == null) {
             return;
         }
         ts.wqueueTable.delete(visitId);
         practiceLogger.logWqueueDeleted(wqueue);
     }
 
-    public List<WqueueDTO> listWqueue(){
+    public List<WqueueDTO> listWqueue() {
         String sql = xlate("select * from Wqueue order by visitId", ts.wqueueTable);
         return getQuery().query(sql, ts.wqueueTable);
     }
 
-    private WqueueFullDTO composeWqueueFullDTO(WqueueDTO wqueue){
+    private WqueueFullDTO composeWqueueFullDTO(WqueueDTO wqueue) {
         WqueueFullDTO wqueueFullDTO = new WqueueFullDTO();
         wqueueFullDTO.wqueue = wqueue;
         wqueueFullDTO.visit = getVisit(wqueue.visitId);
@@ -327,7 +335,7 @@ public class Backend {
         return wqueueFullDTO;
     }
 
-    public List<WqueueFullDTO> listWqueueFull(){
+    public List<WqueueFullDTO> listWqueueFull() {
         return listWqueue().stream().map(this::composeWqueueFullDTO).collect(toList());
     }
 
@@ -358,7 +366,7 @@ public class Backend {
         return hokenDTO;
     }
 
-    public HokenDTO listAvailableHoken(int patientId, LocalDate visitedAt){
+    public HokenDTO listAvailableHoken(int patientId, LocalDate visitedAt) {
         HokenDTO hokenDTO = new HokenDTO();
         hokenDTO.shahokokuho = findAvailableShahokokuho(patientId, visitedAt).stream().findFirst().orElse(null);
         hokenDTO.koukikourei = findAvailableKoukikourei(patientId, visitedAt).stream().findFirst().orElse(null);
@@ -376,7 +384,7 @@ public class Backend {
         return hokenDTO;
     }
 
-    public void updateHoken(VisitDTO visit){
+    public void updateHoken(VisitDTO visit) {
         VisitDTO origVisit = ts.visitTable.getById(visit.visitId);
         origVisit.shahokokuhoId = visit.shahokokuhoId;
         origVisit.koukikoureiId = visit.koukikoureiId;
@@ -389,19 +397,19 @@ public class Backend {
 
     // Drug ///////////////////////////////////////////////////////////////////////////
 
-    public DrugAttrDTO getDrugAttr(int drugId){
+    public DrugAttrDTO getDrugAttr(int drugId) {
         return ts.drugAttrTable.getById(drugId);
     }
 
-    public void enterDrugAttr(DrugAttrDTO drugAttr){
+    public void enterDrugAttr(DrugAttrDTO drugAttr) {
         ts.drugAttrTable.insert(drugAttr);
     }
 
-    private void updateDrugAttr(DrugAttrDTO drugAttr){
+    private void updateDrugAttr(DrugAttrDTO drugAttr) {
         ts.drugAttrTable.update(drugAttr);
     }
 
-    private void deleteDrugAttr(int drugId){
+    private void deleteDrugAttr(int drugId) {
         ts.drugAttrTable.delete(drugId);
     }
 
@@ -409,9 +417,9 @@ public class Backend {
         return drugIds.stream().map(ts.drugAttrTable::getById).filter(Objects::nonNull).collect(toList());
     }
 
-    public DrugAttrDTO setDrugTekiyou(int drugId, String tekiyou){
+    public DrugAttrDTO setDrugTekiyou(int drugId, String tekiyou) {
         DrugAttrDTO attr = ts.drugAttrTable.getById(drugId);
-        if( attr != null ){
+        if (attr != null) {
             attr.tekiyou = tekiyou;
             updateDrugAttr(attr);
             return attr;
@@ -424,9 +432,9 @@ public class Backend {
         }
     }
 
-    public void deleteDrugTekiyou(int drugId){
+    public void deleteDrugTekiyou(int drugId) {
         DrugAttrDTO attr = ts.drugAttrTable.getById(drugId);
-        if( attr == null ){
+        if (attr == null) {
             return;
         }
         attr.tekiyou = null;
@@ -437,7 +445,7 @@ public class Backend {
         }
     }
 
-    public int countUnprescribedDrug(int visitId){
+    public int countUnprescribedDrug(int visitId) {
         String sql = xlate("select count(*) from Drug where visitId = ? and prescribed = 0",
                 ts.drugTable);
         return getQuery().get(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), visitId);
@@ -445,27 +453,27 @@ public class Backend {
 
     // Visit ////////////////////////////////////////////////////////////////////////////
 
-    public VisitDTO getVisit(int visitId){
+    public VisitDTO getVisit(int visitId) {
         return ts.visitTable.getById(visitId);
     }
 
-    private void updateVisit(VisitDTO visit){
+    private void updateVisit(VisitDTO visit) {
         VisitDTO prev = getVisit(visit.visitId);
         ts.visitTable.update(visit);
-        practiceLogger.logVisitUpdated(prev,visit);
+        practiceLogger.logVisitUpdated(prev, visit);
     }
 
-    public void deleteVisitSafely(){
+    public void deleteVisitSafely() {
         throw new RuntimeException("not implemented");
     }
 
-    private void deleteVisit(int visitId){
+    private void deleteVisit(int visitId) {
         VisitDTO visit = ts.visitTable.getById(visitId);
         ts.visitTable.delete(visitId);
         practiceLogger.logVisitDeleted(visit);
     }
 
-    public List<VisitPatientDTO> listRecentVisitWithPatient(int page, int itemsPerPage){
+    public List<VisitPatientDTO> listRecentVisitWithPatient(int page, int itemsPerPage) {
         String sql = "select v.*, p.* from Visit v, Patient p where v.patientId = p.patientId " +
                 " order by v.visitId desc limit ? offset ? ";
         sql = xlate(sql, ts.visitTable, "v", ts.patientTable, "p");
@@ -480,11 +488,11 @@ public class Backend {
                 page * itemsPerPage);
     }
 
-    public List<VisitPatientDTO> listTodaysVisit(){
+    public List<VisitPatientDTO> listTodaysVisit() {
         throw new RuntimeException("not implemented");
     }
 
-    public VisitFull2PageDTO listVisitFull2(int patientId, int page){
+    public VisitFull2PageDTO listVisitFull2(int patientId, int page) {
         throw new RuntimeException("not implemented");
     }
 
@@ -492,45 +500,49 @@ public class Backend {
         return visitIds.stream().map(ts.shoukiTable::getById).filter(Objects::nonNull).collect(toList());
     }
 
-    public void updateShouki(ShoukiDTO shouki){
+    public void updateShouki(ShoukiDTO shouki) {
         throw new RuntimeException("not implemented");
     }
 
-    public void deleteShouki(int visitId){
+    public void deleteShouki(int visitId) {
         throw new RuntimeException("not implemented");
+    }
+
+    public VisitFullDTO getVisitFull(int visitId){
+        VisitDTO visit = getVisit(visitId);
+        System.out.println("visit:" + visit);
+        return getVisitFull(visit);
     }
 
     private VisitFullDTO getVisitFull(VisitDTO visitDTO) {
-        throw new RuntimeException("not implemented");
-//        int visitId = visitDTO.visitId;
-//        VisitFullDTO visitFullDTO = new VisitFullDTO();
-//        visitFullDTO.visit = visitDTO;
-//        visitFullDTO.texts = listText(visitId);
-//        visitFullDTO.shinryouList = listShinryouFull(visitId);
-//        visitFullDTO.drugs = listDrugFull(visitId);
-//        visitFullDTO.conducts = listConducts(visitId).stream()
-//                .map(this::extendConduct).collect(Collectors.toList());
-//        return visitFullDTO;
+        int visitId = visitDTO.visitId;
+        VisitFullDTO visitFullDTO = new VisitFullDTO();
+        visitFullDTO.visit = visitDTO;
+        visitFullDTO.texts = listText(visitId);
+        visitFullDTO.shinryouList = listShinryouFull(visitId);
+        visitFullDTO.drugs = listDrugFull(visitId);
+        visitFullDTO.conducts = listConductFull(visitId);
+        return visitFullDTO;
     }
 
     // Text ////////////////////////////////////////////////////////////////////////////
 
-    public void enterText(TextDTO text){
+    public void enterText(TextDTO text) {
         ts.textTable.insert(text);
         practiceLogger.logTextCreated(text);
     }
 
-    public TextDTO getText(int textId){
+    public TextDTO getText(int textId) {
         return ts.textTable.getById(textId);
     }
 
-    public void updateText(TextDTO text){
+    public void updateText(TextDTO text) {
         TextDTO prev = getText(text.textId);
         ts.textTable.update(text);
         practiceLogger.logTextUpdated(prev, text);
     }
 
-    public void deleteText(int textId){
+    public void deleteText(int textId) {
         TextDTO text = getText(textId);
         ts.textTable.delete(textId);
         practiceLogger.logTextDeleted(text);
@@ -542,219 +554,292 @@ public class Backend {
         return getQuery().query(sql, ts.textTable, visitId);
     }
 
-    public TextVisitPageDTO searchTextByPage(int patientId, String text, int page){
+    public TextVisitPageDTO searchTextByPage(int patientId, String text, int page) {
         throw new RuntimeException("not implemented");
     }
 
-    public TextVisitPatientPageDTO searchTextGlobally(String text, int page){
+    public TextVisitPatientPageDTO searchTextGlobally(String text, int page) {
         throw new RuntimeException("not implemented");
     }
 
-    public DrugDTO getDrug(int drugId){
+    public DrugDTO getDrug(int drugId) {
         throw new RuntimeException("not implemented");
     }
 
-    public void enterDrug(DrugDTO drug){
+    public void enterDrug(DrugDTO drug) {
         throw new RuntimeException("not implemented");
     }
 
-    public void updateDrug(DrugDTO drug){
+    public void updateDrug(DrugDTO drug) {
         throw new RuntimeException("not implemented");
     }
 
-    public void batchUpdateDrugDays(List<Integer> drugIds, int days){
+    public void batchUpdateDrugDays(List<Integer> drugIds, int days) {
         throw new RuntimeException("not implemented");
     }
 
-    public void deleteDrug(int drugId){
+    public void deleteDrug(int drugId) {
         throw new RuntimeException("not implemented");
     }
 
-    public void batchDeleteDrugs(List<Integer> drugIds){
+    public void batchDeleteDrugs(List<Integer> drugIds) {
         throw new RuntimeException("not implemented");
     }
 
-    public DrugFullDTO getDrugFull(int drugId){
+    public DrugFullDTO getDrugFull(int drugId) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<DrugFullDTO> listDrugFull(int visitId){
+    public List<DrugFullDTO> listDrugFull(int visitId) {
         String sql = xlate(
                 "select d.*, m.* from Drug d, IyakuhinMaster m, Visit v " +
                         " where d.visitId = ? and d.visitId = v.visitId and d.iyakuhincode = m.iyakuhincode " +
-                        " and " + ts.dialect.isValidAt("m.validFromz", "m.validUpto", "v.visitedAt") +
+                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
                         " order by d.drugId",
                 ts.drugTable, "d", ts.iyakuhinMasterTable, "m", ts.visitTable, "v");
         return getQuery().query(sql, biProjector(ts.drugTable, ts.iyakuhinMasterTable, DrugFullDTO::create),
                 visitId);
     }
 
-    public List<DrugFullDTO> searchPrevDrug(String text, int patientId){
+    public List<DrugFullDTO> searchPrevDrug(String text, int patientId) {
         throw new RuntimeException("not implemented");
     }
 
     // Shinryou ////////////////////////////////////////////////////////////////////////////
 
-    public void enterShinryou(ShinryouDTO shinryou){
+    public void enterShinryou(ShinryouDTO shinryou) {
         throw new RuntimeException("not implemented");
     }
 
-    public void deleteShinryou(int shinryouId){
+    public void deleteShinryou(int shinryouId) {
         throw new RuntimeException("not implemented");
     }
 
-    public ShinryouFullDTO getShinryouFull(int shinryouId){
+    public ShinryouFullDTO getShinryouFull(int shinryouId) {
         throw new RuntimeException("not implemented");
     }
 
-    public BatchEnterResultDTO batchEnterShinryouByName(List<String> names, int visitId){
+    public BatchEnterResultDTO batchEnterShinryouByName(List<String> names, int visitId) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds){
+    public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<ShinryouFullDTO> listShinryouFull(int visitId){
-        throw new RuntimeException("not implemented");
+    public List<ShinryouFullDTO> listShinryouFull(int visitId) {
+        String sql = xlate("select s.*, m.* from Shinryou s, ShinryouMaster m, Visit v " +
+                        " where s.visitId = ? and s.visitId = v.visitId and s.shinryoucode = m.shinryoucode " +
+                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
+                        " order by s.shinryouId",
+                ts.shinryouTable, "s", ts.shinryouMasterTable, "m", ts.visitTable, "v");
+        return getQuery().query(sql,
+                biProjector(ts.shinryouTable, ts.shinryouMasterTable, ShinryouFullDTO::create),
+                visitId);
     }
 
     public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds) {
         return shinryouIds.stream().map(ts.shinryouAttrTable::getById).filter(Objects::nonNull).collect(toList());
     }
 
-    public ShinryouAttrDTO getShinryouAttr(int shinryouId){
+    public ShinryouAttrDTO getShinryouAttr(int shinryouId) {
         throw new RuntimeException("not implemented");
     }
 
-    public void enterShinryouAttr(ShinryouAttrDTO shinryou){
+    public void enterShinryouAttr(ShinryouAttrDTO shinryou) {
         throw new RuntimeException("not implemented");
     }
 
 
     // Conduct ///////////////////////////////////////////////////////////////////////////////
 
-    public ConductFullDTO enterConductFull(ConductEnterRequestDTO req){
+    public ConductFullDTO enterConductFull(ConductEnterRequestDTO req) {
         throw new RuntimeException("not implemented");
     }
 
-    public void delteConduct(int conductId){
+    public void delteConduct(int conductId) {
         throw new RuntimeException("not implemented");
     }
 
-    public void modifyConductKind(int conductId, int conductKind){
+    public void modifyConductKind(int conductId, int conductKind) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<ConductFullDTO> listConductFullByIds(List<Integer> conductIds){
+    public List<ConductDTO> listConduct(int visitId) {
+        String sql = xlate("select * from Conduct where visitId = ?", ts.conductTable);
+        return getQuery().query(sql, ts.conductTable, visitId);
+    }
+
+    public List<ConductFullDTO> listConductFullByIds(List<Integer> conductIds) {
         throw new RuntimeException("not implemented");
     }
 
-    public void deleteConductShinryou(int conductShinryouId){
+    private ConductFullDTO extendConduct(ConductDTO conduct) {
+        int conductId = conduct.conductId;
+        ConductFullDTO conductFullDTO = new ConductFullDTO();
+        conductFullDTO.conduct = conduct;
+        conductFullDTO.gazouLabel = ts.gazouLabelTable.getById(conductId);
+        conductFullDTO.conductShinryouList = listConductShinryouFull(conductId);
+        conductFullDTO.conductDrugs = listConductDrugFull(conductId);
+        conductFullDTO.conductKizaiList = listConductKizaiFull(conductId);
+        return conductFullDTO;
+    }
+
+    public List<ConductFullDTO> listConductFull(int visitId) {
+        return listConduct(visitId).stream().map(this::extendConduct).collect(toList());
+    }
+
+    // ConductShinryou //////////////////////////////////////////////////////////////////////
+
+    public void deleteConductShinryou(int conductShinryouId) {
         throw new RuntimeException("not implemented");
     }
 
-    public void deleteConductDrug(int conductDrugId){
+    public List<ConductShinryouFullDTO> listConductShinryouFull(int conductId) {
+        String sql = xlate("select s.*, m.* from ConductShinryou s, Conduct c, ShinryouMaster m, Visit v " +
+                        " where s.conductId = ? and s.conductId = c.conductId and c.visitId = v.visitId " +
+                        " and s.shinryoucode = m.shinryoucode and " +
+                        ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
+                        " order by s.conductShinryouId",
+                ts.conductShinryouTable, "s", ts.conductTable, "c", ts.shinryouMasterTable, "m",
+                ts.visitTable, "v");
+        return getQuery().query(sql,
+                biProjector(ts.conductShinryouTable, ts.shinryouMasterTable, ConductShinryouFullDTO::create),
+                conductId);
+    }
+
+    // ConductDrug ///////////////////////////////////////////////////////////////////////////
+    public void deleteConductDrug(int conductDrugId) {
         throw new RuntimeException("not implemented");
     }
 
-    public void deleteConductKizai(int conductKizaiId){
+    public List<ConductDrugFullDTO> listConductDrugFull(int conductId) {
+        String sql = xlate("select d.*, m.* from ConductDrug d, Conduct c, IyakuhinMaster m, Visit v " +
+                        " where d.conductId = ? and d.conductId = c.conductId and c.visitId = v.visitId " +
+                        " and d.iyakuhincode = m.iyakuhincode and " +
+                        ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
+                        " order by d.conductDrugId",
+                ts.conductDrugTable, "d", ts.conductTable, "c", ts.iyakuhinMasterTable, "m",
+                ts.visitTable, "v");
+        return getQuery().query(sql,
+                biProjector(ts.conductDrugTable, ts.iyakuhinMasterTable, ConductDrugFullDTO::create),
+                conductId);
+    }
+
+    // ConductKizai //////////////////////////////////////////////////////////////////////////
+
+    public void deleteConductKizai(int conductKizaiId) {
         throw new RuntimeException("not implemented");
     }
 
-    public ShahokokuhoDTO getShahokokuho(int shahokokuhoId){
+    public List<ConductKizaiFullDTO> listConductKizaiFull(int conductId) {
+        String sql = xlate("select k.*, m.* from ConductKizai k, Conduct c, IyakuhinMaster m, Visit v " +
+                        " where k.conductId = ? and k.conductId = c.conductId and c.visitId = v.visitId " +
+                        " and k.kizaicode = m.kizaicode and " +
+                        ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
+                        " order by k.conductKizaiId",
+                ts.conductKizaiTable, "k", ts.conductTable, "c", ts.kizaiMasterTable, "m",
+                ts.visitTable, "v");
+        return getQuery().query(sql,
+                biProjector(ts.conductKizaiTable, ts.kizaiMasterTable, ConductKizaiFullDTO::create),
+                conductId);
+    }
+
+    // Shahokokuho //////////////////////////////////////////////////////////////////////////////
+
+    public ShahokokuhoDTO getShahokokuho(int shahokokuhoId) {
         return ts.shahokokuhoTable.getById(shahokokuhoId);
     }
 
-    public KoukikoureiDTO getKoukikourei(int koukikoureiId){
+    public KoukikoureiDTO getKoukikourei(int koukikoureiId) {
         return ts.koukikoureiTable.getById(koukikoureiId);
     }
 
-    public RoujinDTO getRoujin(int roujinId){
+    public RoujinDTO getRoujin(int roujinId) {
         return ts.roujinTable.getById(roujinId);
     }
 
-    public KouhiDTO getKouhi(int kouhiId){
+    public KouhiDTO getKouhi(int kouhiId) {
         return ts.kouhiTable.getById(kouhiId);
     }
 
-    public void enterDisease(DiseaseDTO disease){
+    public void enterDisease(DiseaseDTO disease) {
         throw new RuntimeException("not implemented");
     }
 
-    public void modifyDisease(DiseaseDTO disease){
+    public void modifyDisease(DiseaseDTO disease) {
         throw new RuntimeException("not implemented");
     }
 
-    public void deleteDisease(int diseaseId){
+    public void deleteDisease(int diseaseId) {
         throw new RuntimeException("not implemented");
     }
 
-    public DiseaseFullDTO getDiseaseFull(int diseaseId){
+    public DiseaseFullDTO getDiseaseFull(int diseaseId) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId){
+    public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<DiseaseFullDTO> listDiseaseFull(int patientId){
+    public List<DiseaseFullDTO> listDiseaseFull(int patientId) {
         throw new RuntimeException("not implemented");
     }
 
-    public void batchUpdateDiseaseEndReason(List<DiseaseModifyEndReasonDTO> modifications){
+    public void batchUpdateDiseaseEndReason(List<DiseaseModifyEndReasonDTO> modifications) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<DiseaseExampleDTO> listDiseaseExample(){
+    public List<DiseaseExampleDTO> listDiseaseExample() {
         throw new RuntimeException("not implemented");
     }
 
-    public MeisaiDTO getMeisai(int visitId){
+    public MeisaiDTO getMeisai(int visitId) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<ShinryouMasterDTO> searchShinryouMaster(String text, LocalDate at){
+    public List<ShinryouMasterDTO> searchShinryouMaster(String text, LocalDate at) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<IyakuhinMasterDTO> searchIyakuhinMaster(String text, LocalDate at){
+    public List<IyakuhinMasterDTO> searchIyakuhinMaster(String text, LocalDate at) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<KizaiMasterDTO> searchKizaiMaster(String text, LocalDate at){
+    public List<KizaiMasterDTO> searchKizaiMaster(String text, LocalDate at) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at){
+    public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<ShuushokugoMasterDTO> searchShuushokugoMaster(String text, LocalDate at){
+    public List<ShuushokugoMasterDTO> searchShuushokugoMaster(String text, LocalDate at) {
         throw new RuntimeException("not implemented");
     }
 
-    public void enterPrescExample(PrescExampleDTO prescExample){
+    public void enterPrescExample(PrescExampleDTO prescExample) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<PrescExampleFullDTO> searchPrescExample(String text){
+    public List<PrescExampleFullDTO> searchPrescExample(String text) {
         throw new RuntimeException("not implemented");
     }
 
-    public List<PrescExampleFullDTO> listAllPrescExample(){
+    public List<PrescExampleFullDTO> listAllPrescExample() {
         throw new RuntimeException("not implemented");
     }
 
     // PharmaQueue ///////////////////////////////////////////////////////////////////////
 
-    public PharmaQueueDTO getPharmaQueue(int visitId){
+    public PharmaQueueDTO getPharmaQueue(int visitId) {
         return ts.pharmaQueueTable.getById(visitId);
     }
 
-    public void deletePharmaQueue(int visitId){
+    public void deletePharmaQueue(int visitId) {
         PharmaQueueDTO pharmaQueue = getPharmaQueue(visitId);
-        if( pharmaQueue == null ){
+        if (pharmaQueue == null) {
             return;
         }
         practiceLogger.logPharmaQueueDeleted(pharmaQueue);
@@ -762,22 +847,22 @@ public class Backend {
 
     // PracticeLog ///////////////////////////////////////////////////////////////////////
 
-    private void enterPracticeLog(PracticeLogDTO practiceLog){
+    private void enterPracticeLog(PracticeLogDTO practiceLog) {
         ts.practiceLogTable.insert(practiceLog);
     }
 
-    public PracticeLogDTO getLastPracticeLog(){
+    public PracticeLogDTO getLastPracticeLog() {
         String sql = xlate("select * from PracticeLog order by serialId desc limit 1",
                 ts.practiceLogTable);
         return getQuery().get(sql, ts.practiceLogTable);
     }
 
-    public int getLastPracticeLogId(){
+    public int getLastPracticeLogId() {
         PracticeLogDTO plog = getLastPracticeLog();
         return plog == null ? 0 : plog.serialId;
     }
 
-    public List<PracticeLogDTO> listPracticeLogSince(int afterThisId){
+    public List<PracticeLogDTO> listPracticeLogSince(int afterThisId) {
         String sql = xlate("select * from PracticeLog where serialId > ? ",
                 ts.practiceLogTable);
         return getQuery().query(sql, ts.practiceLogTable, afterThisId);
