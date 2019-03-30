@@ -96,6 +96,12 @@ public class VisitTester extends TesterBase {
     }
 
     @DbTest
+    public void testGetVisitFull2(Backend backend){
+        System.out.println("visit:getVisitFull2");
+        backend.listVisitFull2(19888, 0);
+    }
+
+    @DbTest
     public void testDeleteVisit(Backend backend){
         System.out.println("visit:deleteVisit");
         VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());

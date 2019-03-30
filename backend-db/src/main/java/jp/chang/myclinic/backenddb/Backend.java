@@ -85,6 +85,13 @@ public class Backend {
                 tableInfo3, alias3, tableInfo4, alias4);
     }
 
+    private int numberOfPages(int totalItems, int itemsPerPage){
+        if( totalItems == 0 ){
+            return 0;
+        }
+        return (totalItems + itemsPerPage - 1) / itemsPerPage;
+    }
+
     public void enterPatient(PatientDTO patient) {
         ts.patientTable.insert(patient);
         practiceLogger.logPatientCreated(patient);
@@ -351,25 +358,29 @@ public class Backend {
     // Hoken //////////////////////////////////////////////////////////////////////////////
 
     public HokenDTO getHoken(int visitId) {
-        VisitDTO visitDTO = getVisit(visitId);
+        VisitDTO visit = getVisit(visitId);
+        return getHoken(visit);
+    }
+
+    public HokenDTO getHoken(VisitDTO visit){
         HokenDTO hokenDTO = new HokenDTO();
-        if (visitDTO.shahokokuhoId > 0) {
-            hokenDTO.shahokokuho = getShahokokuho(visitDTO.shahokokuhoId);
+        if (visit.shahokokuhoId > 0) {
+            hokenDTO.shahokokuho = getShahokokuho(visit.shahokokuhoId);
         }
-        if (visitDTO.koukikoureiId > 0) {
-            hokenDTO.koukikourei = getKoukikourei(visitDTO.koukikoureiId);
+        if (visit.koukikoureiId > 0) {
+            hokenDTO.koukikourei = getKoukikourei(visit.koukikoureiId);
         }
-        if (visitDTO.roujinId > 0) {
-            hokenDTO.roujin = getRoujin(visitDTO.roujinId);
+        if (visit.roujinId > 0) {
+            hokenDTO.roujin = getRoujin(visit.roujinId);
         }
-        if (visitDTO.kouhi1Id > 0) {
-            hokenDTO.kouhi1 = getKouhi(visitDTO.kouhi1Id);
+        if (visit.kouhi1Id > 0) {
+            hokenDTO.kouhi1 = getKouhi(visit.kouhi1Id);
         }
-        if (visitDTO.kouhi2Id > 0) {
-            hokenDTO.kouhi2 = getKouhi(visitDTO.kouhi2Id);
+        if (visit.kouhi2Id > 0) {
+            hokenDTO.kouhi2 = getKouhi(visit.kouhi2Id);
         }
-        if (visitDTO.kouhi3Id > 0) {
-            hokenDTO.kouhi3 = getKouhi(visitDTO.kouhi3Id);
+        if (visit.kouhi3Id > 0) {
+            hokenDTO.kouhi3 = getKouhi(visit.kouhi3Id);
         }
         return hokenDTO;
     }
@@ -534,8 +545,28 @@ public class Backend {
                 LocalDate.now().toString());
     }
 
+    private int countVisitByPatient(int patientId){
+        String sql = xlate("select count(*) from Visit where patientId = ?",
+                ts.patientTable);
+        return getQuery().get(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), patientId);
+    }
+
     public VisitFull2PageDTO listVisitFull2(int patientId, int page) {
-        throw new RuntimeException("not implemented");
+        int itemsPerPage = 10;
+        int nVisit = countVisitByPatient(patientId);
+        List<VisitDTO> visits = Collections.emptyList();
+        if( nVisit > 0 ){
+            String sql = xlate("select * from Visit where patientId = ? " +
+                    " order by visitId desc limit ? offset ?",
+                    ts.visitTable);
+            visits = getQuery().query(sql, ts.visitTable, patientId,
+                    itemsPerPage, itemsPerPage * page);
+        }
+        VisitFull2PageDTO visitFull2PageDTO = new VisitFull2PageDTO();
+        visitFull2PageDTO.totalPages = numberOfPages(nVisit, itemsPerPage);
+        visitFull2PageDTO.page = page;
+        visitFull2PageDTO.visits = visits.stream().map(this::getVisitFull2).collect(toList());
+        return visitFull2PageDTO;
     }
 
     public VisitFullDTO getVisitFull(int visitId){
@@ -555,6 +586,19 @@ public class Backend {
         return visitFullDTO;
     }
 
+    private VisitFull2DTO getVisitFull2(VisitDTO visit){
+        int visitId = visit.visitId;
+        VisitFull2DTO visitFull2DTO = new VisitFull2DTO();
+        visitFull2DTO.visit = visit;
+        visitFull2DTO.texts = listText(visitId);
+        visitFull2DTO.shinryouList = listShinryouFull(visitId);
+        visitFull2DTO.drugs = listDrugFull(visitId);
+        visitFull2DTO.conducts = listConductFull(visitId);
+        visitFull2DTO.hoken = getHoken(visit);
+        visitFull2DTO.charge = getCharge(visitId);
+        return visitFull2DTO;
+    }
+
     // Shouki //////////////////////////////////////////////////////////////////////////
 
     public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds) {
@@ -562,11 +606,11 @@ public class Backend {
     }
 
     public void updateShouki(ShoukiDTO shouki) {
-        throw new RuntimeException("not implemented");
+        ts.shoukiTable.update(shouki);
     }
 
     public void deleteShouki(int visitId) {
-        throw new RuntimeException("not implemented");
+        ts.shoukiTable.delete(visitId);
     }
 
     // Text ////////////////////////////////////////////////////////////////////////////
@@ -598,7 +642,7 @@ public class Backend {
         return getQuery().query(sql, ts.textTable, visitId);
     }
 
-    public TextVisitPageDTO searchTextByPage(int patientId, String text, int page) {
+    public TextVisitPageDTO searchText(int patientId, String text, int page) {
         throw new RuntimeException("not implemented");
     }
 
