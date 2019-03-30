@@ -5,6 +5,7 @@ import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.rcpt.create.Gendogaku;
 import jp.chang.myclinic.util.DiseaseUtil;
 import jp.chang.myclinic.util.NumberUtil;
 import jp.chang.myclinic.util.RcptUtil;
@@ -162,10 +163,15 @@ class Data {
         int age = RcptUtil.calcRcptAge(birthday.getYear(), birthday.getMonthValue(),
                 birthday.getDayOfMonth(), year, month);
         if( age >= 70 ){
-            if( futan.equals("高齢７") ){
-                return "２６区ア";
+            String tokkijikou = Gendogaku.getTokijikou(patient.patientId);
+            if( tokkijikou != null ){
+                return tokkijikou;
             } else {
-                return "２９区エ";
+                if (futan.equals("高齢７")) {
+                    return "26区ア";
+                } else {
+                    return "29区エ";
+                }
             }
         }
         return "";

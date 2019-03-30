@@ -14,11 +14,13 @@ class CmdArgs {
     int year;
     int month;
     List<Integer> patientIds;
+    String gendogakuFile;
 
     private static void usage(){
         System.err.println("Usage: java -jar rcpt.jar data [options] server-url year month");
         System.err.println("options:");
         System.err.println("  -p123,2211,...    patientIds");
+        System.err.println("  -g gendogaku-file");
         System.err.println("  -h                output help");
     }
 
@@ -38,6 +40,10 @@ class CmdArgs {
             switch(c){
                 case 'p': {
                     cmdArgs.patientIds = parsePatientIds(arg.substring(2));
+                    break;
+                }
+                case 'g': {
+                    cmdArgs.gendogakuFile = args[++i];
                     break;
                 }
                 case 'h': {

@@ -29,7 +29,12 @@ public class Main {
                 break;
             }
             case "create": {
-                if (args.length != 3) {
+                String serverUrl = null;
+                String dataXml = null;
+                if( args.length == 3 ){
+                    serverUrl = args[1];
+                    dataXml = args[2];
+                }else  {
                     System.err.println("Usage: newcreate Server-URL DATA-XML-FILE");
                     System.exit(1);
                 }

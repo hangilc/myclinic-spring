@@ -1,6 +1,7 @@
 package jp.chang.myclinic.rcpt.data;
 
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.rcpt.create.Gendogaku;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,11 @@ public class BatchData {
         int year = cmdArgs.year;
         int month = cmdArgs.month;
         Service.setServerUrl(serverUrl);
+        if( cmdArgs.gendogakuFile != null ){
+            Gendogaku.readFromFile(cmdArgs.gendogakuFile);
+        } else {
+            System.err.println("Is it ok without -g option?");
+        }
         Data data = new Data(year, month, cmdArgs.patientIds);
         data.run();
         Service.stop();
