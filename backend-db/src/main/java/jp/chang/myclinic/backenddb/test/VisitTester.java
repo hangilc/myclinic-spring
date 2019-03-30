@@ -1,15 +1,13 @@
 package jp.chang.myclinic.backenddb.test;
 
 import jp.chang.myclinic.backenddb.Backend;
+import jp.chang.myclinic.backenddb.CannotDeleteVisitSafelyException;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.test.annotation.DbTest;
 import static jp.chang.myclinic.consts.MyclinicConsts.*;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.consts.WqueueWaitState;
-import jp.chang.myclinic.dto.ChargeDTO;
-import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.dto.VisitFullDTO;
-import jp.chang.myclinic.dto.WqueueDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.*;
 
 import java.time.LocalDateTime;
@@ -94,7 +92,66 @@ public class VisitTester extends TesterBase {
     @DbTest
     public void testGetVisitFull(Backend backend){
         System.out.println("visit:getVisitFull");
-        VisitFullDTO visitFull = backend.getVisitFull(19888);
-        System.out.println(visitFull);
+        backend.getVisitFull(19888);
+    }
+
+    @DbTest
+    public void testDeleteVisit(Backend backend){
+        System.out.println("visit:deleteVisit");
+        VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
+        int visitId = visit.visitId;
+        int serialId = backend.getLastPracticeLogId();
+        backend.deleteVisitSafely(visitId);
+        confirm(backend.getVisit(visitId) == null);
+        confirm(backend.getWqueue(visitId) == null);
+        confirm(backend.getPharmaQueue(visitId) == null);
+        List<PracticeLogDTO> logs = backend.listPracticeLogSince(serialId);
+        confirm(logs.size() == 2);
+        {
+            PracticeLogDTO log = logs.get(0);
+            confirm(log.isWqueueDeleted());
+            WqueueDeleted body = log.asWqueueDeleted();
+            confirm(body.deleted.visitId == visitId);
+        }
+        {
+            PracticeLogDTO log = logs.get(1);
+            confirm(log.isVisitDeleted());
+            VisitDeleted body = log.asVisitDeleted();
+            confirm(body.deleted.visitId == visitId);
+        }
+    }
+
+    @DbTest
+    public void testDeleteVisitFails(Backend backend){
+        System.out.println("visit:deleteVisitFails");
+        VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
+        TextDTO text = new TextDTO();
+        text.visitId = visit.visitId;
+        text.content = "Not to be deleted.";
+        backend.enterText(text);
+        boolean catched = false;
+        try {
+            backend.deleteVisitSafely(visit.visitId);
+        } catch(CannotDeleteVisitSafelyException e){
+            catched = true;
+        }
+        confirm(catched);
+        confirm(backend.getVisit(visit.visitId) != null);
+        confirm(backend.getText(text.textId) != null);
+    }
+
+    @DbTest
+    public void testTodaysVisit(Backend backend){
+        System.out.println("visit:todaysVisit");
+        VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
+        List<VisitPatientDTO> visits = backend.listTodaysVisit();
+        boolean found = false;
+        for(VisitPatientDTO vp: visits){
+            if( vp.visit.visitId == visit.visitId && vp.patient.patientId == patient1.patientId ){
+                found = true;
+                break;
+            }
+        }
+        confirm(found);
     }
 }

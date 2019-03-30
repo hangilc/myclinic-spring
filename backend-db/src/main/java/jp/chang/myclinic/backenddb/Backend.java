@@ -294,6 +294,14 @@ public class Backend {
         return ts.chargeTable.getById(visitId);
     }
 
+    // Payment ////////////////////////////////////////////////////////////////////////////
+
+    public List<PaymentDTO> listPayment(int visitId){
+        String sql = xlate("select * from Payment where visit_id = ? order by paytime",
+                ts.paymentTable);
+        return getQuery().query(sql, ts.paymentTable, visitId);
+    }
+
     // Wqueue /////////////////////////////////////////////////////////////////////////////
 
     private void enterWqueue(WqueueDTO wqueue) {
@@ -463,8 +471,37 @@ public class Backend {
         practiceLogger.logVisitUpdated(prev, visit);
     }
 
-    public void deleteVisitSafely() {
-        throw new RuntimeException("not implemented");
+    public void deleteVisitSafely(int visitId) {
+        VisitFullDTO visit = getVisitFull(visitId);
+        if (visit.texts.size() > 0) {
+            throw new CannotDeleteVisitSafelyException("文章があるので、診察を削除できません。");
+        }
+        if (visit.drugs.size() > 0) {
+            throw new CannotDeleteVisitSafelyException("投薬があるので、診察を削除できません。");
+        }
+        if (visit.shinryouList.size() > 0) {
+            throw new CannotDeleteVisitSafelyException("診療行為があるので、診察を削除できません。");
+        }
+        if (visit.conducts.size() > 0) {
+            throw new CannotDeleteVisitSafelyException("処置があるので、診察を削除できません。");
+        }
+        ChargeDTO charge = getCharge(visitId);
+        if (charge != null) {
+            throw new CannotDeleteVisitSafelyException("請求があるので、診察を削除できません。");
+        }
+        List<PaymentDTO> payments = listPayment(visitId);
+        if (payments.size() > 0) {
+            throw new CannotDeleteVisitSafelyException("支払い記録があるので、診察を削除できません。");
+        }
+        WqueueDTO wqueue = getWqueue(visitId);
+        if( wqueue != null ){
+            deleteWqueue(visitId);
+        }
+        PharmaQueueDTO pharmaQueue = getPharmaQueue(visitId);
+        if( pharmaQueue != null ){
+            deletePharmaQueue(visitId);
+        }
+        deleteVisit(visitId);
     }
 
     private void deleteVisit(int visitId) {
@@ -489,22 +526,15 @@ public class Backend {
     }
 
     public List<VisitPatientDTO> listTodaysVisit() {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select v.*, p.* from Visit v, Patient p where date(v.visitedAt) = ? " +
+                " and v.patientId = p.patientId order by v.visitId",
+                ts.visitTable, "v", ts.patientTable, "p");
+        return getQuery().query(sql,
+                biProjector(ts.visitTable, ts.patientTable, VisitPatientDTO::create),
+                LocalDate.now().toString());
     }
 
     public VisitFull2PageDTO listVisitFull2(int patientId, int page) {
-        throw new RuntimeException("not implemented");
-    }
-
-    public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds) {
-        return visitIds.stream().map(ts.shoukiTable::getById).filter(Objects::nonNull).collect(toList());
-    }
-
-    public void updateShouki(ShoukiDTO shouki) {
-        throw new RuntimeException("not implemented");
-    }
-
-    public void deleteShouki(int visitId) {
         throw new RuntimeException("not implemented");
     }
 
@@ -523,6 +553,20 @@ public class Backend {
         visitFullDTO.drugs = listDrugFull(visitId);
         visitFullDTO.conducts = listConductFull(visitId);
         return visitFullDTO;
+    }
+
+    // Shouki //////////////////////////////////////////////////////////////////////////
+
+    public List<ShoukiDTO> batchGetShouki(List<Integer> visitIds) {
+        return visitIds.stream().map(ts.shoukiTable::getById).filter(Objects::nonNull).collect(toList());
+    }
+
+    public void updateShouki(ShoukiDTO shouki) {
+        throw new RuntimeException("not implemented");
+    }
+
+    public void deleteShouki(int visitId) {
+        throw new RuntimeException("not implemented");
     }
 
     // Text ////////////////////////////////////////////////////////////////////////////

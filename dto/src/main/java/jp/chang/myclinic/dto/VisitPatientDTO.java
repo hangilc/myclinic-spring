@@ -11,4 +11,11 @@ public class VisitPatientDTO {
 				", patient=" + patient +
 				'}';
 	}
+
+	public static VisitPatientDTO create(VisitDTO visit, PatientDTO patient){
+		VisitPatientDTO result = new VisitPatientDTO();
+		result.visit = visit;
+		result.patient = patient;
+		return result;
+	}
 }
