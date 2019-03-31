@@ -1248,26 +1248,6 @@ public class Backend {
         }
     }
 
-    public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    public List<ShuushokugoMasterDTO> searchShuushokugoMaster(String text, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    public void enterPrescExample(PrescExampleDTO prescExample) {
-        throw new RuntimeException("not implemented");
-    }
-
-    public List<PrescExampleFullDTO> searchPrescExample(String text) {
-        throw new RuntimeException("not implemented");
-    }
-
-    public List<PrescExampleFullDTO> listAllPrescExample() {
-        throw new RuntimeException("not implemented");
-    }
-
     // PharmaQueue ///////////////////////////////////////////////////////////////////////
 
     public PharmaQueueDTO getPharmaQueue(int visitId) {
@@ -1399,6 +1379,32 @@ public class Backend {
         String searchText = "%" + text + "%";
         String atString = at.toString();
         return getQuery().query(sql, ts.kizaiMasterTable, searchText, atString, atString);
+    }
+
+    // ByoumeiMaster /////////////////////////////////////////////////////////////////////
+
+    public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at) {
+        throw new RuntimeException("not implemented");
+    }
+
+    // ShuushokugoMaster /////////////////////////////////////////////////////////////////
+
+    public List<ShuushokugoMasterDTO> searchShuushokugoMaster(String text, LocalDate at) {
+        throw new RuntimeException("not implemented");
+    }
+
+    // PrescExample //////////////////////////////////////////////////////////////////////
+
+    public void enterPrescExample(PrescExampleDTO prescExample) {
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<PrescExampleFullDTO> searchPrescExample(String text) {
+        throw new RuntimeException("not implemented");
+    }
+
+    public List<PrescExampleFullDTO> listAllPrescExample() {
+        throw new RuntimeException("not implemented");
     }
 
     // PracticeLog ///////////////////////////////////////////////////////////////////////
