@@ -10,6 +10,7 @@ public class Tester {
         new VisitTester(dbBackend).test();
         new DrugTester(dbBackend).test();
         new ShinryouTester(dbBackend).test();
+        new ConductTester(dbBackend).test();
     }
 
 }

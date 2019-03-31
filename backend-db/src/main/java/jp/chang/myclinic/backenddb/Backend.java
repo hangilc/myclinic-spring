@@ -864,7 +864,7 @@ public class Backend {
     }
 
     public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds) {
-        throw new RuntimeException("not implemented");
+        return shinryouIds.stream().map(this::getShinryouFull).collect(toList());
     }
 
     public List<ShinryouFullDTO> listShinryouFull(int visitId) {
@@ -883,11 +883,11 @@ public class Backend {
     }
 
     public ShinryouAttrDTO getShinryouAttr(int shinryouId) {
-        throw new RuntimeException("not implemented");
+        return ts.shinryouAttrTable.getById(shinryouId);
     }
 
-    public void enterShinryouAttr(ShinryouAttrDTO shinryou) {
-        throw new RuntimeException("not implemented");
+    public void enterShinryouAttr(ShinryouAttrDTO shinryouAttr) {
+        ts.shinryouAttrTable.insert(shinryouAttr);
     }
 
 
@@ -940,8 +940,25 @@ public class Backend {
         return result;
     }
 
-    public void delteConduct(int conductId) {
-        throw new RuntimeException("not implemented");
+    public ConductDTO getConduct(int conductId){
+        return ts.conductTable.getById(conductId);
+    }
+
+    private void deleteConduct(int conductId) {
+        ConductDTO conduct = getConduct(conductId);
+        ts.conductTable.delete(conductId);
+        practiceLogger.logConductDeleted(conduct);
+    }
+
+    public void deleteConductCascading(int conductId){
+        GazouLabelDTO gazouLabel = getGazouLabel(conductId);
+        if( gazouLabel != null ){
+            deleteGazouLabel(conductId);
+        }
+        listConductShinryou(conductId).forEach(s -> deleteConductShinryou(s.conductShinryouId));
+        listConductDrug(conductId).forEach(s -> deleteConductDrug(s.conductDrugId));
+        listConductKizai(conductId).forEach(s -> deleteConductKizai(s.conductKizaiId));
+        deleteConduct(conductId);
     }
 
     public void modifyConductKind(int conductId, int conductKind) {
@@ -984,6 +1001,16 @@ public class Backend {
         practiceLogger.logGazouLabelCreated(gazouLabel);
     }
 
+    public GazouLabelDTO getGazouLabel(int conductId){
+        return ts.gazouLabelTable.getById(conductId);
+    }
+
+    public void deleteGazouLabel(int conductId){
+        GazouLabelDTO deleted = getGazouLabel(conductId);
+        ts.gazouLabelTable.delete(conductId);
+        practiceLogger.logGazouLabelDeleted(deleted);
+    }
+
     // ConductShinryou //////////////////////////////////////////////////////////////////////
 
     public void enterConductShinryou(ConductShinryouDTO shinryou){
@@ -991,8 +1018,20 @@ public class Backend {
         practiceLogger.logConductShinryouCreated(shinryou);
     }
 
+    public ConductShinryouDTO getConductShinryou(int conductShinryouId){
+        return ts.conductShinryouTable.getById(conductShinryouId);
+    }
+
     public void deleteConductShinryou(int conductShinryouId) {
-        throw new RuntimeException("not implemented");
+        ConductShinryouDTO deleted = getConductShinryou(conductShinryouId);
+        ts.conductShinryouTable.delete(conductShinryouId);
+        practiceLogger.logConductShinryouDeleted(deleted);
+    }
+
+    public List<ConductShinryouDTO> listConductShinryou(int conductId){
+        String sql = xlate("select * from ConductShinryou where conductId = ? order by conductShinryouId",
+                ts.conductShinryouTable);
+        return getQuery().query(sql, ts.conductShinryouTable, conductId);
     }
 
     public ConductShinryouFullDTO getConductShinryouFull(int conductShinryouId){
@@ -1027,8 +1066,20 @@ public class Backend {
         practiceLogger.logConductDrugCreated(drug);
     }
 
+    public ConductDrugDTO getConductDrug(int conductDrugId){
+        return ts.conductDrugTable.getById(conductDrugId);
+    }
+
     public void deleteConductDrug(int conductDrugId) {
-        throw new RuntimeException("not implemented");
+        ConductDrugDTO deleted = getConductDrug(conductDrugId);
+        ts.conductDrugTable.delete(conductDrugId);
+        practiceLogger.logConductDrugDeleted(deleted);
+    }
+
+    public List<ConductDrugDTO> listConductDrug(int conductId){
+        String sql = xlate("select * from ConductDrug where conductId = ? order by conductDrugId",
+                ts.conductDrugTable);
+        return getQuery().query(sql, ts.conductDrugTable, conductId);
     }
 
     public ConductDrugFullDTO getConductDrugFull(int conductDrugId){
@@ -1063,8 +1114,20 @@ public class Backend {
         practiceLogger.logConductKizaiCreated(kizai);
     }
 
+    public ConductKizaiDTO getConductKizai(int conductKizaiId){
+        return ts.conductKizaiTable.getById(conductKizaiId);
+    }
+
     public void deleteConductKizai(int conductKizaiId) {
-        throw new RuntimeException("not implemented");
+        ConductKizaiDTO deleted = getConductKizai(conductKizaiId);
+        ts.conductKizaiTable.delete(conductKizaiId);
+        practiceLogger.logConductKizaiDeleted(deleted);
+    }
+
+    public List<ConductKizaiDTO> listConductKizai(int conductId){
+        String sql = xlate("select * from ConductKizai where conductId = ? order by conductKizaiId",
+                ts.conductKizaiTable);
+        return getQuery().query(sql, ts.conductKizaiTable, conductId);
     }
 
     public ConductKizaiFullDTO getConductKizaiFull(int conductKizaiId){
