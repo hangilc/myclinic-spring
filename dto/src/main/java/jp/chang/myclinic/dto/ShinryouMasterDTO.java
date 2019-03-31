@@ -28,11 +28,6 @@ public class ShinryouMasterDTO {
 			"houkatsukensa=" + houkatsukensa + "," +
 			"oushinkubun=" + oushinkubun + "," +
 			"kensaGroup=" + kensaGroup + "," +
-			//"roujinTekiyou=" + roujinTekiyou + "," +
-//			"codeShou=" + codeShou + "," +
-//			"codeBu=" + codeBu + "," +
-//			"codeAlpha=" + codeAlpha + "," +
-//			"codeKubun=" + codeKubun + "," +
 			"validUpto=" + validUpto +
 		"]";
 	}

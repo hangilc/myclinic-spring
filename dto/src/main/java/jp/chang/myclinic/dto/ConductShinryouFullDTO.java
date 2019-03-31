@@ -18,4 +18,12 @@ public class ConductShinryouFullDTO {
 		result.master = master;
 		return result;
 	}
+
+	@Override
+	public String toString() {
+		return "ConductShinryouFullDTO{" +
+				"conductShinryou=" + conductShinryou +
+				", master=" + master +
+				'}';
+	}
 }

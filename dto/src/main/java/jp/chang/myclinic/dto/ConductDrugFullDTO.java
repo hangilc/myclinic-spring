@@ -20,4 +20,11 @@ public class ConductDrugFullDTO {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "ConductDrugFullDTO{" +
+                "conductDrug=" + conductDrug +
+                ", master=" + master +
+                '}';
+    }
 }

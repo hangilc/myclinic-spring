@@ -10,4 +10,12 @@ public class BatchEnterResultDTO {
         dst.shinryouIds = src.shinryouIds;
         dst.conductIds = src.conductIds;
     }
+
+    @Override
+    public String toString() {
+        return "BatchEnterResultDTO{" +
+                "shinryouIds=" + shinryouIds +
+                ", conductIds=" + conductIds +
+                '}';
+    }
 }

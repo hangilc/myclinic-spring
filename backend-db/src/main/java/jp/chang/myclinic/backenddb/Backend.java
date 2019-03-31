@@ -840,31 +840,6 @@ public class Backend {
                 biProjector(ts.shinryouTable, ts.shinryouMasterTable, ShinryouFullDTO::create));
     }
 
-    public Map<String, Integer> batchResolveShinryouNames(List<List<String>> args, LocalDate at) {
-        Map<String, Integer> result = new LinkedHashMap<>();
-        for (List<String> arg : args) {
-            if (arg.size() < 1) {
-                continue;
-            }
-            String key = arg.get(0);
-            if (arg.size() == 1) {
-                ShinryouMasterDTO m = findShinryouMasterByName(key, at);
-                if (m != null) {
-                    result.put(key, m.shinryoucode);
-                }
-            } else {
-                for (String opt : arg.subList(1, arg.size())) {
-                    ShinryouMasterDTO m = findShinryouMasterByName(opt, at);
-                    if (m != null) {
-                        result.put(key, m.shinryoucode);
-                        break;
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
     public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {
         shinryouList.forEach(this::enterShinryou);
     }
@@ -993,6 +968,11 @@ public class Backend {
         return conductFullDTO;
     }
 
+    public ConductFullDTO getConductFull(int conductId){
+        ConductDTO conduct = ts.conductTable.getById(conductId);
+        return extendConduct(conduct);
+    }
+
     public List<ConductFullDTO> listConductFull(int visitId) {
         return listConduct(visitId).stream().map(this::extendConduct).collect(toList());
     }
@@ -1088,8 +1068,8 @@ public class Backend {
     }
 
     public ConductKizaiFullDTO getConductKizaiFull(int conductKizaiId){
-        String sql = xlate("select k.*, m.* from ConductKizai k, Conduct c, IyakuhinMaster m, Visit v " +
-                        " where k.conductKiaiId = ? and k.conductId = c.conductId and c.visitId = v.visitId " +
+        String sql = xlate("select k.*, m.* from ConductKizai k, Conduct c, KizaiMaster m, Visit v " +
+                        " where k.conductKizaiId = ? and k.conductId = c.conductId and c.visitId = v.visitId " +
                         " and k.kizaicode = m.kizaicode and " +
                         ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt"),
                 ts.conductKizaiTable, "k", ts.conductTable, "c", ts.kizaiMasterTable, "m",
@@ -1100,7 +1080,7 @@ public class Backend {
     }
 
     public List<ConductKizaiFullDTO> listConductKizaiFull(int conductId) {
-        String sql = xlate("select k.*, m.* from ConductKizai k, Conduct c, IyakuhinMaster m, Visit v " +
+        String sql = xlate("select k.*, m.* from ConductKizai k, Conduct c, KizaiMaster m, Visit v " +
                         " where k.conductId = ? and k.conductId = c.conductId and c.visitId = v.visitId " +
                         " and k.kizaicode = m.kizaicode and " +
                         ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
@@ -1223,6 +1203,83 @@ public class Backend {
         List<ShinryouMasterDTO> matches = getQuery().query(sql,
                 ts.shinryouMasterTable, name, atString, atString);
         return matches.size() == 0 ? null : matches.get(0);
+    }
+
+    public ShinryouMasterDTO resolveShinryouMasterByName(List<String> nameCandidates, LocalDate at){
+        for(String name: nameCandidates){
+            ShinryouMasterDTO m = findShinryouMasterByName(name, at);
+            if( m != null ){
+                return m;
+            }
+        }
+        return null;
+    }
+
+    public Map<String, Integer> batchResolveShinryouNames(List<List<String>> args, LocalDate at) {
+        Map<String, Integer> result = new LinkedHashMap<>();
+        for (List<String> arg : args) {
+            if (arg.size() < 1) {
+                continue;
+            }
+            String key = arg.get(0);
+            if (arg.size() == 1) {
+                ShinryouMasterDTO m = findShinryouMasterByName(key, at);
+                if (m != null) {
+                    result.put(key, m.shinryoucode);
+                }
+            } else {
+                ShinryouMasterDTO m = resolveShinryouMasterByName(arg.subList(1, arg.size()), at);
+                if (m != null) {
+                    result.put(key, m.shinryoucode);
+                }
+            }
+        }
+        return result;
+    }
+
+    // KizaiMaster ///////////////////////////////////////////////////////////////////////
+
+    public KizaiMasterDTO findKizaiMasterByName(String name, LocalDate at) {
+        String sql = xlate("select * from KizaiMaster where name = ? " +
+                        " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?") +
+                        " limit 1",
+                ts.kizaiMasterTable);
+        String atString = at.toString();
+        List<KizaiMasterDTO> matches = getQuery().query(sql,
+                ts.kizaiMasterTable, name, atString, atString);
+        return matches.size() == 0 ? null : matches.get(0);
+    }
+
+    public KizaiMasterDTO resolveKizaiMasterByName(List<String> nameCandidates, LocalDate at){
+        for(String name: nameCandidates){
+            KizaiMasterDTO m = findKizaiMasterByName(name, at);
+            if( m != null ){
+                return m;
+            }
+        }
+        return null;
+    }
+
+    public Map<String, Integer> batchResolveKizaiNames(List<List<String>> args, LocalDate at) {
+        Map<String, Integer> result = new LinkedHashMap<>();
+        for (List<String> arg : args) {
+            if (arg.size() < 1) {
+                continue;
+            }
+            String key = arg.get(0);
+            if (arg.size() == 1) {
+                KizaiMasterDTO m = findKizaiMasterByName(key, at);
+                if (m != null) {
+                    result.put(key, m.kizaicode);
+                }
+            } else {
+                KizaiMasterDTO m = resolveKizaiMasterByName(arg.subList(1, arg.size()), at);
+                if (m != null) {
+                    result.put(key, m.kizaicode);
+                }
+            }
+        }
+        return result;
     }
 
     // PracticeLog ///////////////////////////////////////////////////////////////////////

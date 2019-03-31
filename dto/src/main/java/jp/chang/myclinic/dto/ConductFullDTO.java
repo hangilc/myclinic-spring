@@ -21,4 +21,15 @@ public class ConductFullDTO {
 		dst.conductKizaiList = src.conductKizaiList.stream().map(ConductKizaiFullDTO::copy).collect(Collectors.toList());
 		return dst;
 	}
+
+	@Override
+	public String toString() {
+		return "ConductFullDTO{" +
+				"conduct=" + conduct +
+				", gazouLabel=" + gazouLabel +
+				", conductShinryouList=" + conductShinryouList +
+				", conductDrugs=" + conductDrugs +
+				", conductKizaiList=" + conductKizaiList +
+				'}';
+	}
 }

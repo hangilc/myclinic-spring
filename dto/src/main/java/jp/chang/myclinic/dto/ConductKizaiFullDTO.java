@@ -19,4 +19,11 @@ public class ConductKizaiFullDTO {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "ConductKizaiFullDTO{" +
+                "conductKizai=" + conductKizai +
+                ", master=" + master +
+                '}';
+    }
 }

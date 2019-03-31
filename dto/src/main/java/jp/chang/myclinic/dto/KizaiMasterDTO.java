@@ -14,15 +14,15 @@ public class KizaiMasterDTO {
 	public String validUpto;
 
 	@Override
-	public String toString(){
-		return "KizaiMasterDTO[" +
-			"kizaicode" + kizaicode + "," +
-			"validFrom" + validFrom + "," +
-			"name" + name + "," +
-			"yomi" + yomi + "," +
-			"unit" + unit + "," +
-			"kingaku" + kingaku + "," +
-			"validUpto" + validUpto + //"," +
-		"]";		
+	public String toString() {
+		return "KizaiMasterDTO{" +
+				"kizaicode=" + kizaicode +
+				", validFrom='" + validFrom + '\'' +
+				", name='" + name + '\'' +
+				", yomi='" + yomi + '\'' +
+				", unit='" + unit + '\'' +
+				", kingaku=" + kingaku +
+				", validUpto='" + validUpto + '\'' +
+				'}';
 	}
 }
