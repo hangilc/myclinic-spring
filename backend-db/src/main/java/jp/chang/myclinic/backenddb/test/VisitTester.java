@@ -21,7 +21,6 @@ public class VisitTester extends TesterBase {
 
     @DbTest
     public void testStartVisit(Backend backend){
-        System.out.println("visit:startVisit");
         int serialId = backend.getLastPracticeLogId();
         VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
         WqueueDTO wqueue = backend.listWqueue().stream().filter(wq -> wq.visitId == visit.visitId).findFirst()
@@ -91,19 +90,16 @@ public class VisitTester extends TesterBase {
 
     @DbTest
     public void testGetVisitFull(Backend backend){
-        System.out.println("visit:getVisitFull");
         backend.getVisitFull(19888);
     }
 
     @DbTest
     public void testGetVisitFull2(Backend backend){
-        System.out.println("visit:getVisitFull2");
         backend.listVisitFull2(19888, 0);
     }
 
     @DbTest
     public void testDeleteVisit(Backend backend){
-        System.out.println("visit:deleteVisit");
         VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
         int visitId = visit.visitId;
         int serialId = backend.getLastPracticeLogId();
@@ -129,7 +125,6 @@ public class VisitTester extends TesterBase {
 
     @DbTest
     public void testDeleteVisitFails(Backend backend){
-        System.out.println("visit:deleteVisitFails");
         VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
         TextDTO text = new TextDTO();
         text.visitId = visit.visitId;
@@ -148,7 +143,6 @@ public class VisitTester extends TesterBase {
 
     @DbTest
     public void testTodaysVisit(Backend backend){
-        System.out.println("visit:todaysVisit");
         VisitDTO visit = backend.startVisit(patient1.patientId, LocalDateTime.now());
         List<VisitPatientDTO> visits = backend.listTodaysVisit();
         boolean found = false;
@@ -163,14 +157,12 @@ public class VisitTester extends TesterBase {
 
     @DbTest
     public void testSearchText(Backend backend){
-        System.out.println("visit:searchText");
         TextVisitPageDTO result = backend.searchText(198, "血圧", 0);
         //System.out.println(result);
     }
 
     @DbTest
     public void testSearchTextGlobally(Backend backend){
-        System.out.println("visit:searchTextGlobally");
         TextVisitPatientPageDTO result = backend.searchTextGlobally("調子", 0);
         //System.out.println(result);
     }

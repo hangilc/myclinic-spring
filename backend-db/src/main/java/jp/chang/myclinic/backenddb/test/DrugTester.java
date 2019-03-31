@@ -17,22 +17,19 @@ class DrugTester extends TesterBase {
 
     @DbTest
     public void testGetDrugFull(Backend backend){
-        System.out.println("drug:getDrugFull");
         DrugFullDTO result = backend.getDrugFull(1000);
         //System.out.println(result);
     }
 
     @DbTest
     public void testSearchPrevDrug(Backend backend){
-        System.out.println("drug:testSearchPrevDrug");
         List<DrugFullDTO> drugs = backend.searchPrevDrug(198);
         //System.out.println(drugs);
     }
 
     @DbTest
     public void testSearchPrevDrugText(Backend backend){
-        System.out.println("drug:testSearchPrevDrugText");
         List<DrugFullDTO> drugs = backend.searchPrevDrug("ア", 198);
-        System.out.println(drugs);
+        //System.out.println(drugs);
     }
 }

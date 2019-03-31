@@ -21,11 +21,13 @@ class TesterBase {
     }
 
     public void test(){
+        String clsName = getClass().getSimpleName();
         try {
             for (Method method : this.getClass().getMethods()) {
                 if (method.isAnnotationPresent(DbTest.class)) {
                     dbBackend.txProc(backend -> {
                         try {
+                            System.out.printf("%s:%s\n", clsName, method.getName());
                             method.invoke(this, backend);
                         } catch(Exception e){
                             throw new RuntimeException(e);

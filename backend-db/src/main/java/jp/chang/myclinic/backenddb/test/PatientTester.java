@@ -17,7 +17,6 @@ class PatientTester extends TesterBase {
 
     @DbTest
     public void testEnter(Backend backend){
-        System.out.println("patient:testEnter");
         PatientDTO p = mock.pickPatient();
         backend.enterPatient(p);
         PatientDTO pp = backend.getPatient(p.patientId);
@@ -26,7 +25,6 @@ class PatientTester extends TesterBase {
 
     @DbTest
     public void testUpdate(Backend backend){
-        System.out.println("patient:testUpdate");
         PatientDTO p = mock.pickPatient();
         p.sex = "M";
         backend.enterPatient(p);

@@ -56,7 +56,7 @@ public class ShinryouMasterController {
             shinryoucode = masterMap.resolveShinryouCode(shinryoucode, atDate);
             return dbGateway.getShinryouMaster(shinryoucode, atDate);
         } catch(Exception ex){
-            logger.error("Failed to resolve shinryou master. {}", ex);
+            logger.error("Failed to resolve shinryou master. ", ex);
             throw new RuntimeException("診療行為マスターを見つけられませんでした。[" + shinryoucode + "]: " + ex);
         }
     }

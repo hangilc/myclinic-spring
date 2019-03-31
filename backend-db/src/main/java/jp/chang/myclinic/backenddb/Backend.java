@@ -16,10 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -819,20 +816,76 @@ public class Backend {
 
     // Shinryou ////////////////////////////////////////////////////////////////////////////
 
+    public ShinryouDTO getShinryou(int shinryouId) {
+        return ts.shinryouTable.getById(shinryouId);
+    }
+
     public void enterShinryou(ShinryouDTO shinryou) {
-        throw new RuntimeException("not implemented");
+        ts.shinryouTable.insert(shinryou);
+        practiceLogger.logShinryouCreated(shinryou);
     }
 
     public void deleteShinryou(int shinryouId) {
-        throw new RuntimeException("not implemented");
+        ShinryouDTO shinryou = getShinryou(shinryouId);
+        ts.shinryouTable.delete(shinryouId);
+        practiceLogger.logShinryouDeleted(shinryou);
     }
 
     public ShinryouFullDTO getShinryouFull(int shinryouId) {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select s.*, m.* from Shinryou s, ShinryouMaster m, Visit v " +
+                        " where s.visitId = v.visitId and s.shinryoucode = m.shinryoucode " +
+                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt"),
+                ts.shinryouTable, "s", ts.shinryouMasterTable, "m", ts.visitTable, "v");
+        return getQuery().get(sql,
+                biProjector(ts.shinryouTable, ts.shinryouMasterTable, ShinryouFullDTO::create));
     }
 
-    public BatchEnterResultDTO batchEnterShinryouByName(List<String> names, int visitId) {
-        throw new RuntimeException("not implemented");
+    public Map<String, Integer> batchResolveShinryouNames(List<List<String>> args, LocalDate at) {
+        Map<String, Integer> result = new LinkedHashMap<>();
+        for (List<String> arg : args) {
+            if (arg.size() < 1) {
+                continue;
+            }
+            String key = arg.get(0);
+            if (arg.size() == 1) {
+                ShinryouMasterDTO m = findShinryouMasterByName(key, at);
+                if (m != null) {
+                    result.put(key, m.shinryoucode);
+                }
+            } else {
+                for (String opt : arg.subList(1, arg.size())) {
+                    ShinryouMasterDTO m = findShinryouMasterByName(opt, at);
+                    if (m != null) {
+                        result.put(key, m.shinryoucode);
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {
+        shinryouList.forEach(this::enterShinryou);
+    }
+
+    public BatchEnterResultDTO batchEnter(BatchEnterRequestDTO req) {
+        BatchEnterResultDTO result = new BatchEnterResultDTO();
+        result.shinryouIds = new ArrayList<>();
+        result.conductIds = new ArrayList<>();
+        if (req.shinryouList != null) {
+            req.shinryouList.forEach(shinryou -> {
+                enterShinryou(shinryou);
+                result.shinryouIds.add(shinryou.shinryouId);
+            });
+        }
+        if (req.conducts != null) {
+            req.conducts.forEach(conductReq -> {
+                ConductFullDTO c = enterConductFull(conductReq);
+                result.conductIds.add(c.conduct.conductId);
+            });
+        }
+        return result;
     }
 
     public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds) {
@@ -865,8 +918,51 @@ public class Backend {
 
     // Conduct ///////////////////////////////////////////////////////////////////////////////
 
+    public void enterConduct(ConductDTO conduct) {
+        ts.conductTable.insert(conduct);
+        practiceLogger.logConductCreated(conduct);
+    }
+
     public ConductFullDTO enterConductFull(ConductEnterRequestDTO req) {
-        throw new RuntimeException("not implemented");
+        ConductFullDTO result = new ConductFullDTO();
+        ConductDTO conduct = new ConductDTO();
+        conduct.visitId = req.visitId;
+        conduct.kind = req.kind;
+        enterConduct(conduct);
+        result.conduct = conduct;
+        int conductId = conduct.conductId;
+        if (req.gazouLabel != null) {
+            GazouLabelDTO gazouLabel = new GazouLabelDTO();
+            gazouLabel.conductId = conductId;
+            gazouLabel.label = req.gazouLabel;
+            enterGazouLabel(gazouLabel);
+            result.gazouLabel = gazouLabel;
+        }
+        if (req.shinryouList != null) {
+            result.conductShinryouList = new ArrayList<>();
+            req.shinryouList.forEach(shinryou -> {
+                shinryou.conductId = conductId;
+                enterConductShinryou(shinryou);
+                result.conductShinryouList.add(getConductShinryouFull(shinryou.conductShinryouId));
+            });
+        }
+        if (req.drugs != null) {
+            result.conductDrugs = new ArrayList<>();
+            req.drugs.forEach(drug -> {
+                drug.conductId = conductId;
+                enterConductDrug(drug);
+                result.conductDrugs.add(getConductDrugFull(drug.conductDrugId));
+            });
+        }
+        if (req.kizaiList != null) {
+            result.conductKizaiList = new ArrayList<>();
+            req.kizaiList.forEach(kizai -> {
+                kizai.conductId = conductId;
+                enterConductKizai(kizai);
+                result.conductKizaiList.add(getConductKizaiFull(kizai.conductKizaiId));
+            });
+        }
+        return result;
     }
 
     public void delteConduct(int conductId) {
@@ -901,10 +997,34 @@ public class Backend {
         return listConduct(visitId).stream().map(this::extendConduct).collect(toList());
     }
 
+    // GazouLabel ///////////////////////////////////////////////////////////////////////////
+
+    public void enterGazouLabel(GazouLabelDTO gazouLabel){
+        ts.gazouLabelTable.insert(gazouLabel);
+        practiceLogger.logGazouLabelCreated(gazouLabel);
+    }
+
     // ConductShinryou //////////////////////////////////////////////////////////////////////
+
+    public void enterConductShinryou(ConductShinryouDTO shinryou){
+        ts.conductShinryouTable.insert(shinryou);
+        practiceLogger.logConductShinryouCreated(shinryou);
+    }
 
     public void deleteConductShinryou(int conductShinryouId) {
         throw new RuntimeException("not implemented");
+    }
+
+    public ConductShinryouFullDTO getConductShinryouFull(int conductShinryouId){
+        String sql = xlate("select s.*, m.* from ConductShinryou s, Conduct c, ShinryouMaster m, Visit v " +
+                        " where s.conductShinryouId = ? and s.conductId = c.conductId and c.visitId = v.visitId " +
+                        " and s.shinryoucode = m.shinryoucode and " +
+                        ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt"),
+                ts.conductShinryouTable, "s", ts.conductTable, "c", ts.shinryouMasterTable, "m",
+                ts.visitTable, "v");
+        return getQuery().get(sql,
+                biProjector(ts.conductShinryouTable, ts.shinryouMasterTable, ConductShinryouFullDTO::create),
+                conductShinryouId);
     }
 
     public List<ConductShinryouFullDTO> listConductShinryouFull(int conductId) {
@@ -921,8 +1041,26 @@ public class Backend {
     }
 
     // ConductDrug ///////////////////////////////////////////////////////////////////////////
+
+    public void enterConductDrug(ConductDrugDTO drug){
+        ts.conductDrugTable.insert(drug);
+        practiceLogger.logConductDrugCreated(drug);
+    }
+
     public void deleteConductDrug(int conductDrugId) {
         throw new RuntimeException("not implemented");
+    }
+
+    public ConductDrugFullDTO getConductDrugFull(int conductDrugId){
+        String sql = xlate("select d.*, m.* from ConductDrug d, Conduct c, IyakuhinMaster m, Visit v " +
+                        " where d.conductDrugId = ? and d.conductId = c.conductId and c.visitId = v.visitId " +
+                        " and d.iyakuhincode = m.iyakuhincode and " +
+                        ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt"),
+                ts.conductDrugTable, "d", ts.conductTable, "c", ts.iyakuhinMasterTable, "m",
+                ts.visitTable, "v");
+        return getQuery().get(sql,
+                biProjector(ts.conductDrugTable, ts.iyakuhinMasterTable, ConductDrugFullDTO::create),
+                conductDrugId);
     }
 
     public List<ConductDrugFullDTO> listConductDrugFull(int conductId) {
@@ -940,8 +1078,25 @@ public class Backend {
 
     // ConductKizai //////////////////////////////////////////////////////////////////////////
 
+    public void enterConductKizai(ConductKizaiDTO kizai){
+        ts.conductKizaiTable.insert(kizai);
+        practiceLogger.logConductKizaiCreated(kizai);
+    }
+
     public void deleteConductKizai(int conductKizaiId) {
         throw new RuntimeException("not implemented");
+    }
+
+    public ConductKizaiFullDTO getConductKizaiFull(int conductKizaiId){
+        String sql = xlate("select k.*, m.* from ConductKizai k, Conduct c, IyakuhinMaster m, Visit v " +
+                        " where k.conductKiaiId = ? and k.conductId = c.conductId and c.visitId = v.visitId " +
+                        " and k.kizaicode = m.kizaicode and " +
+                        ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt"),
+                ts.conductKizaiTable, "k", ts.conductTable, "c", ts.kizaiMasterTable, "m",
+                ts.visitTable, "v");
+        return getQuery().get(sql,
+                biProjector(ts.conductKizaiTable, ts.kizaiMasterTable, ConductKizaiFullDTO::create),
+                conductKizaiId);
     }
 
     public List<ConductKizaiFullDTO> listConductKizaiFull(int conductId) {
@@ -1055,6 +1210,19 @@ public class Backend {
             return;
         }
         practiceLogger.logPharmaQueueDeleted(pharmaQueue);
+    }
+
+    // ShinryouMaster ////////////////////////////////////////////////////////////////////
+
+    public ShinryouMasterDTO findShinryouMasterByName(String name, LocalDate at) {
+        String sql = xlate("select * from ShinryouMaster where name = ? " +
+                        " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?") +
+                        " limit 1",
+                ts.shinryouMasterTable);
+        String atString = at.toString();
+        List<ShinryouMasterDTO> matches = getQuery().query(sql,
+                ts.shinryouMasterTable, name, atString, atString);
+        return matches.size() == 0 ? null : matches.get(0);
     }
 
     // PracticeLog ///////////////////////////////////////////////////////////////////////
