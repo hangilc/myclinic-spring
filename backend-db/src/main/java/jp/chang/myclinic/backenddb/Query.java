@@ -111,6 +111,10 @@ public class Query {
         }
     }
 
+    public int getInt(String sql, Object... params){
+        return get(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), params);
+    }
+
     public interface ResultSetContext {
         int nextIndex();
     }

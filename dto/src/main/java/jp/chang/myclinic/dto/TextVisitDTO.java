@@ -12,4 +12,11 @@ public class TextVisitDTO {
                 ", visit=" + visit +
                 '}';
     }
+
+    public static TextVisitDTO create(TextDTO text, VisitDTO visit){
+        TextVisitDTO result = new TextVisitDTO();
+        result.text = text;
+        result.visit = visit;
+        return result;
+    }
 }

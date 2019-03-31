@@ -160,4 +160,11 @@ public class VisitTester extends TesterBase {
         }
         confirm(found);
     }
+
+    @DbTest
+    public void testSearchText(Backend backend){
+        System.out.println("visit:searchText");
+        TextVisitPageDTO result = backend.searchText(198, "血圧", 0);
+        //System.out.println(result);
+    }
 }

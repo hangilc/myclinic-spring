@@ -85,8 +85,8 @@ public class Backend {
                 tableInfo3, alias3, tableInfo4, alias4);
     }
 
-    private int numberOfPages(int totalItems, int itemsPerPage){
-        if( totalItems == 0 ){
+    private int numberOfPages(int totalItems, int itemsPerPage) {
+        if (totalItems == 0) {
             return 0;
         }
         return (totalItems + itemsPerPage - 1) / itemsPerPage;
@@ -303,7 +303,7 @@ public class Backend {
 
     // Payment ////////////////////////////////////////////////////////////////////////////
 
-    public List<PaymentDTO> listPayment(int visitId){
+    public List<PaymentDTO> listPayment(int visitId) {
         String sql = xlate("select * from Payment where visit_id = ? order by paytime",
                 ts.paymentTable);
         return getQuery().query(sql, ts.paymentTable, visitId);
@@ -362,7 +362,7 @@ public class Backend {
         return getHoken(visit);
     }
 
-    public HokenDTO getHoken(VisitDTO visit){
+    public HokenDTO getHoken(VisitDTO visit) {
         HokenDTO hokenDTO = new HokenDTO();
         if (visit.shahokokuhoId > 0) {
             hokenDTO.shahokokuho = getShahokokuho(visit.shahokokuhoId);
@@ -505,11 +505,11 @@ public class Backend {
             throw new CannotDeleteVisitSafelyException("支払い記録があるので、診察を削除できません。");
         }
         WqueueDTO wqueue = getWqueue(visitId);
-        if( wqueue != null ){
+        if (wqueue != null) {
             deleteWqueue(visitId);
         }
         PharmaQueueDTO pharmaQueue = getPharmaQueue(visitId);
-        if( pharmaQueue != null ){
+        if (pharmaQueue != null) {
             deletePharmaQueue(visitId);
         }
         deleteVisit(visitId);
@@ -538,14 +538,14 @@ public class Backend {
 
     public List<VisitPatientDTO> listTodaysVisit() {
         String sql = xlate("select v.*, p.* from Visit v, Patient p where date(v.visitedAt) = ? " +
-                " and v.patientId = p.patientId order by v.visitId",
+                        " and v.patientId = p.patientId order by v.visitId",
                 ts.visitTable, "v", ts.patientTable, "p");
         return getQuery().query(sql,
                 biProjector(ts.visitTable, ts.patientTable, VisitPatientDTO::create),
                 LocalDate.now().toString());
     }
 
-    private int countVisitByPatient(int patientId){
+    private int countVisitByPatient(int patientId) {
         String sql = xlate("select count(*) from Visit where patientId = ?",
                 ts.patientTable);
         return getQuery().get(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), patientId);
@@ -555,9 +555,9 @@ public class Backend {
         int itemsPerPage = 10;
         int nVisit = countVisitByPatient(patientId);
         List<VisitDTO> visits = Collections.emptyList();
-        if( nVisit > 0 ){
+        if (nVisit > 0) {
             String sql = xlate("select * from Visit where patientId = ? " +
-                    " order by visitId desc limit ? offset ?",
+                            " order by visitId desc limit ? offset ?",
                     ts.visitTable);
             visits = getQuery().query(sql, ts.visitTable, patientId,
                     itemsPerPage, itemsPerPage * page);
@@ -569,7 +569,7 @@ public class Backend {
         return visitFull2PageDTO;
     }
 
-    public VisitFullDTO getVisitFull(int visitId){
+    public VisitFullDTO getVisitFull(int visitId) {
         VisitDTO visit = getVisit(visitId);
         System.out.println("visit:" + visit);
         return getVisitFull(visit);
@@ -586,7 +586,7 @@ public class Backend {
         return visitFullDTO;
     }
 
-    private VisitFull2DTO getVisitFull2(VisitDTO visit){
+    private VisitFull2DTO getVisitFull2(VisitDTO visit) {
         int visitId = visit.visitId;
         VisitFull2DTO visitFull2DTO = new VisitFull2DTO();
         visitFull2DTO.visit = visit;
@@ -643,7 +643,25 @@ public class Backend {
     }
 
     public TextVisitPageDTO searchText(int patientId, String text, int page) {
-        throw new RuntimeException("not implemented");
+        int itemsPerPage = 20;
+        String searchText = "%" + text + "%";
+        String countSql = xlate("select count(*) from Text t, Visit v " +
+                        " where t.visitId = v.visitId and v.patientId = ? " +
+                        " and t.content like ? ",
+                ts.textTable, "t", ts.visitTable, "v");
+        int totalItems = getQuery().getInt(countSql, patientId, searchText);
+        String sql = xlate("select t.*, v.* from Text t, Visit v " +
+                        " where t.visitId = v.visitId and v.patientId = ? " +
+                        " and t.content like ? order by t.textId limit ? offset ?",
+                ts.textTable, "t", ts.visitTable, "v");
+        List<TextVisitDTO> textVisits = getQuery().query(sql,
+                biProjector(ts.textTable, ts.visitTable, TextVisitDTO::create),
+                patientId, searchText, itemsPerPage, itemsPerPage * page);
+        TextVisitPageDTO result = new TextVisitPageDTO();
+        result.page = page;
+        result.totalPages = numberOfPages(totalItems, itemsPerPage);
+        result.textVisits = textVisits;
+        return result;
     }
 
     public TextVisitPatientPageDTO searchTextGlobally(String text, int page) {
