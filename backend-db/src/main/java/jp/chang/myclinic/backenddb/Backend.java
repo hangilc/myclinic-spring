@@ -962,7 +962,11 @@ public class Backend {
     }
 
     public void modifyConductKind(int conductId, int conductKind) {
-        throw new RuntimeException("not implemented");
+        ConductDTO prev = getConduct(conductId);
+        ConductDTO updated = ConductDTO.copy(prev);
+        updated.kind = conductKind;
+        ts.conductTable.update(updated);
+        practiceLogger.logConductUpdated(prev, updated);
     }
 
     public List<ConductDTO> listConduct(int visitId) {
@@ -971,7 +975,7 @@ public class Backend {
     }
 
     public List<ConductFullDTO> listConductFullByIds(List<Integer> conductIds) {
-        throw new RuntimeException("not implemented");
+        return conductIds.stream().map(this::getConductFull).collect(toList());
     }
 
     private ConductFullDTO extendConduct(ConductDTO conduct) {
@@ -1161,28 +1165,45 @@ public class Backend {
         return ts.shahokokuhoTable.getById(shahokokuhoId);
     }
 
+    // Koukikourei //////////////////////////////////////////////////////////////////////////////
+
     public KoukikoureiDTO getKoukikourei(int koukikoureiId) {
         return ts.koukikoureiTable.getById(koukikoureiId);
     }
+
+    // Roujin ////////////////////////////////////////////////////////////////////////////////////
 
     public RoujinDTO getRoujin(int roujinId) {
         return ts.roujinTable.getById(roujinId);
     }
 
+    // Kouhi //////////////////////////////////////////////////////////////////////////////////////
+
     public KouhiDTO getKouhi(int kouhiId) {
         return ts.kouhiTable.getById(kouhiId);
     }
 
+    // Disease ////////////////////////////////////////////////////////////////////////////////////
+
     public void enterDisease(DiseaseDTO disease) {
-        throw new RuntimeException("not implemented");
+        ts.diseaseTable.insert(disease);
+        practiceLogger.logDiseaseCreated(disease);
+    }
+
+    public DiseaseDTO getDisease(int diseaseId){
+        return ts.diseaseTable.getById(diseaseId);
     }
 
     public void modifyDisease(DiseaseDTO disease) {
-        throw new RuntimeException("not implemented");
+        DiseaseDTO prev = getDisease(disease.diseaseId);
+        ts.diseaseTable.update(disease);
+        practiceLogger.logDiseaseUpdated(prev, disease);
     }
 
     public void deleteDisease(int diseaseId) {
-        throw new RuntimeException("not implemented");
+        DiseaseDTO deleted = getDisease(diseaseId);
+        ts.diseaseTable.delete(diseaseId);
+        practiceLogger.logDiseaseDeleted(deleted);
     }
 
     public DiseaseFullDTO getDiseaseFull(int diseaseId) {
@@ -1204,7 +1225,7 @@ public class Backend {
     public List<DiseaseExampleDTO> listDiseaseExample() {
         throw new RuntimeException("not implemented");
     }
-
+    
     public MeisaiDTO getMeisai(int visitId) {
         throw new RuntimeException("not implemented");
     }
