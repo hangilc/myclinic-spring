@@ -1,5 +1,6 @@
 package jp.chang.myclinic.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DiseaseFullDTO {
@@ -14,5 +15,13 @@ public class DiseaseFullDTO {
                 ", master=" + master +
                 ", adjList=" + adjList +
                 '}';
+    }
+
+    public static DiseaseFullDTO create(DiseaseDTO disease, ByoumeiMasterDTO master){
+        DiseaseFullDTO result = new DiseaseFullDTO();
+        result.disease = disease;
+        result.master = master;
+        result.adjList = new ArrayList<>();
+        return result;
     }
 }

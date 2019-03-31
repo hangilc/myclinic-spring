@@ -1194,7 +1194,7 @@ public class Backend {
         return ts.diseaseTable.getById(diseaseId);
     }
 
-    public void modifyDisease(DiseaseDTO disease) {
+    public void updateDisease(DiseaseDTO disease) {
         DiseaseDTO prev = getDisease(disease.diseaseId);
         ts.diseaseTable.update(disease);
         practiceLogger.logDiseaseUpdated(prev, disease);
@@ -1207,16 +1207,13 @@ public class Backend {
     }
 
     public DiseaseFullDTO getDiseaseFull(int diseaseId) {
-        DiseaseFullDTO result = new DiseaseFullDTO();
         String diseaseSql = xlate("select d.*, m.* from Disease d, ByoumeiMaster m " +
                         " where d.diseaseId = ? and d.shoubyoumeicode = m.shoubyoumeicode " +
                         " and " + ts.dialect.isValidAt("m.valid_from", "m.validUpto", "d.startDate"),
                 ts.diseaseTable, "d", ts.byoumeiMasterTable, "m");
-        getQuery().get(diseaseSql, (rs, ctx) -> {
-            result.disease = ts.diseaseTable.project(rs, ctx);
-            result.master = ts.byoumeiMasterTable.project(rs, ctx);
-            return null;
-        }, diseaseId);
+        DiseaseFullDTO result = getQuery().get(diseaseSql,
+                biProjector(ts.diseaseTable, ts.byoumeiMasterTable, DiseaseFullDTO::create),
+                diseaseId);
         String adjSql = xlate("select a.*, m.* from DiseaseAdj a, ShuushokugoMaster m " +
                         " where a.diseaseId = ? and a.shuushokugocode = m.shuushokugocode ",
                 ts.diseaseAdjTable, "a", ts.shuushokugoMasterTable, "m");
@@ -1227,35 +1224,28 @@ public class Backend {
     }
 
     public List<DiseaseFullDTO> listCurrentDiseaseFull(int patientId) {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select diseaseId from Disease where patientId = ? " +
+                        " and " + ts.dialect.isValidUptoUnbound("endDate") +
+                        " order by diseaseId ",
+                ts.diseaseTable);
+        List<Integer> diseaseIds = getQuery().query(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), patientId);
+        return diseaseIds.stream().map(this::getDiseaseFull).collect(toList());
     }
 
     public List<DiseaseFullDTO> listDiseaseFull(int patientId) {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select diseaseId from Disease where patientId = ? order by diseaseId ",
+                ts.diseaseTable);
+        List<Integer> diseaseIds = getQuery().query(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), patientId);
+        return diseaseIds.stream().map(this::getDiseaseFull).collect(toList());
     }
 
     public void batchUpdateDiseaseEndReason(List<DiseaseModifyEndReasonDTO> modifications) {
-        throw new RuntimeException("not implemented");
-    }
-
-    public List<DiseaseExampleDTO> listDiseaseExample() {
-        throw new RuntimeException("not implemented");
-    }
-
-    public MeisaiDTO getMeisai(int visitId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    public List<ShinryouMasterDTO> searchShinryouMaster(String text, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    public List<IyakuhinMasterDTO> searchIyakuhinMaster(String text, LocalDate at) {
-        throw new RuntimeException("not implemented");
-    }
-
-    public List<KizaiMasterDTO> searchKizaiMaster(String text, LocalDate at) {
-        throw new RuntimeException("not implemented");
+        for(DiseaseModifyEndReasonDTO modify: modifications){
+            DiseaseDTO d = getDisease(modify.diseaseId);
+            d.endDate = modify.endDate;
+            d.endReason = modify.endReason;
+            updateDisease(d);
+        }
     }
 
     public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at) {
@@ -1337,6 +1327,26 @@ public class Backend {
         return result;
     }
 
+    public List<ShinryouMasterDTO> searchShinryouMaster(String text, LocalDate at) {
+        String sql = xlate("select * from ShinryouMaster where name like ? " +
+                " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                ts.shinryouMasterTable);
+        String searchText = "%" + text + "%";
+        String atString = at.toString();
+        return getQuery().query(sql, ts.shinryouMasterTable, searchText, atString, atString);
+    }
+
+    // IyakuhinMaster /////////////////////////////////////////////////////////////////////
+
+    public List<IyakuhinMasterDTO> searchIyakuhinMaster(String text, LocalDate at) {
+        String sql = xlate("select * from IyakuhinMaster where name like ? " +
+                        " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                ts.iyakuhinMasterTable);
+        String searchText = "%" + text + "%";
+        String atString = at.toString();
+        return getQuery().query(sql, ts.iyakuhinMasterTable, searchText, atString, atString);
+    }
+
     // KizaiMaster ///////////////////////////////////////////////////////////////////////
 
     public KizaiMasterDTO findKizaiMasterByName(String name, LocalDate at) {
@@ -1380,6 +1390,15 @@ public class Backend {
             }
         }
         return result;
+    }
+
+    public List<KizaiMasterDTO> searchKizaiMaster(String text, LocalDate at) {
+        String sql = xlate("select * from KizaiMaster where name like ? " +
+                        " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                ts.kizaiMasterTable);
+        String searchText = "%" + text + "%";
+        String atString = at.toString();
+        return getQuery().query(sql, ts.kizaiMasterTable, searchText, atString, atString);
     }
 
     // PracticeLog ///////////////////////////////////////////////////////////////////////

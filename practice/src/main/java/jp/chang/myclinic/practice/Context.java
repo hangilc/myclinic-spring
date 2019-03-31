@@ -65,7 +65,31 @@ public class Context {
 
     private PracticeConfigService practiceConfigService;
 
+    public void setPracticeConfigService(PracticeConfigService practiceConfigService) {
+        this.practiceConfigService = practiceConfigService;
+    }
+
     public PracticeConfigService getPracticeConfigService() {
         return practiceConfigService;
+    }
+
+    private DiseaseExampleService diseaseExampleService;
+
+    public DiseaseExampleService getDiseaseExampleService() {
+        return diseaseExampleService;
+    }
+
+    public void setDiseaseExampleService(DiseaseExampleService diseaseExampleService) {
+        this.diseaseExampleService = diseaseExampleService;
+    }
+
+    private RcptService rcptService;
+
+    public RcptService getRcptService() {
+        return rcptService;
+    }
+
+    public void setRcptService(RcptService rcptService) {
+        this.rcptService = rcptService;
     }
 }

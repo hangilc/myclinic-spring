@@ -7,6 +7,8 @@ import jp.chang.myclinic.dto.DiseaseFullDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 class DiseaseTester extends TesterBase {
 
 
@@ -17,6 +19,18 @@ class DiseaseTester extends TesterBase {
     @DbTest
     public void testGetDiseaseFull(Backend backend){
         DiseaseFullDTO result = backend.getDiseaseFull(1000);
-        System.out.println(result);
+        //System.out.println(result);
+    }
+
+    @DbTest
+    public void testListCurrentDiseasse(Backend backend){
+        List<DiseaseFullDTO> result = backend.listCurrentDiseaseFull(200);
+        //System.out.println(result);
+    }
+
+    @DbTest
+    public void testListAllDiseasse(Backend backend){
+        List<DiseaseFullDTO> result = backend.listDiseaseFull(200);
+        //System.out.println(result);
     }
 }
