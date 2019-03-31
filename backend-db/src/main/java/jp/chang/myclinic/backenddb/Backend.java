@@ -17,12 +17,14 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static jp.chang.myclinic.backenddb.SqlTranslator.TableInfo;
@@ -690,31 +692,46 @@ public class Backend {
     }
 
     public DrugDTO getDrug(int drugId) {
-        throw new RuntimeException("not implemented");
+        return ts.drugTable.getById(drugId);
     }
 
     public void enterDrug(DrugDTO drug) {
-        throw new RuntimeException("not implemented");
+        ts.drugTable.insert(drug);
+        practiceLogger.logDrugCreated(drug);
     }
 
     public void updateDrug(DrugDTO drug) {
-        throw new RuntimeException("not implemented");
+        DrugDTO prev = getDrug(drug.drugId);
+        ts.drugTable.update(drug);
+        practiceLogger.logDrugUpdated(prev, drug);
     }
 
     public void batchUpdateDrugDays(List<Integer> drugIds, int days) {
-        throw new RuntimeException("not implemented");
+        drugIds.forEach(drugId -> {
+            DrugDTO drug = getDrug(drugId);
+            drug.days = days;
+            updateDrug(drug);
+        });
     }
 
     public void deleteDrug(int drugId) {
-        throw new RuntimeException("not implemented");
+        DrugDTO drug = ts.drugTable.getById(drugId);
+        ts.drugTable.delete(drugId);
+        practiceLogger.logDrugDeleted(drug);
     }
 
     public void batchDeleteDrugs(List<Integer> drugIds) {
-        throw new RuntimeException("not implemented");
+        drugIds.forEach(this::deleteDrug);
     }
 
     public DrugFullDTO getDrugFull(int drugId) {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select d.*, m.* from Drug d, IyakuhinMaster m, Visit v " +
+                        " where d.drugId = ? and d.visitId = v.visitId and d.iyakuhincode = m.iyakuhincode " +
+                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt"),
+                ts.drugTable, "d", ts.iyakuhinMasterTable, "m", ts.visitTable, "v");
+        return getQuery().get(sql,
+                biProjector(ts.drugTable, ts.iyakuhinMasterTable, DrugFullDTO::create),
+                drugId);
     }
 
     public List<DrugFullDTO> listDrugFull(int visitId) {
@@ -728,8 +745,76 @@ public class Backend {
                 visitId);
     }
 
+    private List<Integer> listRepresentativeNaifukuTonpukuDrugId(int patientId) {
+        String sql = xlate("select MAX(d.drugId) from Drug d, Visit v where d.visitId = v.visitId " +
+                        " and v.patientId = ? " +
+                        " and d.category in (0, 1) " +
+                        " group by d.iyakuhincode, d.amount, d.usage, d.days ",
+                ts.drugTable, "d", ts.visitTable, "v");
+        return getQuery().query(sql,
+                (rs, ctx) -> rs.getInt(ctx.nextIndex()),
+                patientId);
+    }
+
+    private List<Integer> listRepresentativeNaifukuTonpukuDrugId(String text, int patientId) {
+        String searchText = "%" + text + "%";
+        String sql = xlate("select MAX(d.drugId) from Drug d, Visit v, IyakuhinMaster m " +
+                        " where d.visitId = v.visitId " +
+                        " and v.patientId = ? " +
+                        " and d.category in (0, 1) " +
+                        " and d.iyakuhincode = m.iyakuhincode " +
+                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
+                        " and m.name like ? " +
+                        " group by d.iyakuhincode, d.amount, d.usage, d.days ",
+                ts.drugTable, "d", ts.visitTable, "v", ts.iyakuhinMasterTable, "m");
+        return getQuery().query(sql,
+                (rs, ctx) -> rs.getInt(ctx.nextIndex()),
+                patientId, searchText);
+    }
+
+    private List<Integer> listRepresentativeGaiyouDrugId(int patientId) {
+        String sql = xlate("select MAX(d.drugId) from Drug d, Visit v where d.visitId = v.visitId " +
+                        " and v.patientId = ? " +
+                        " and d.category = 2 " +
+                        " group by d.iyakuhincode, d.amount, d.usage ",
+                ts.drugTable, "d", ts.visitTable, "v");
+        return getQuery().query(sql,
+                (rs, ctx) -> rs.getInt(ctx.nextIndex()),
+                patientId);
+    }
+
+    public List<Integer> listRepresentativeGaiyouDrugId(String text, int patientId) {
+        String searchText = "%" + text + "%";
+        String sql = xlate("select MAX(d.drugId) from Drug d, Visit v, IyakuhinMaster m " +
+                        " where d.visitId = v.visitId " +
+                        " and v.patientId = ? " +
+                        " and d.category = 2 " +
+                        " and d.iyakuhincode = m.iyakuhincode " +
+                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
+                        " and m.name like ? " +
+                        " group by d.iyakuhincode, d.amount, d.usage ",
+                ts.drugTable, "d", ts.visitTable, "v", ts.iyakuhinMasterTable, "m");
+        return getQuery().query(sql,
+                (rs, ctx) -> rs.getInt(ctx.nextIndex()),
+                patientId, searchText);
+    }
+
+    public List<DrugFullDTO> searchPrevDrug(int patientId) {
+        return Stream.concat(
+                listRepresentativeNaifukuTonpukuDrugId(patientId).stream(),
+                listRepresentativeGaiyouDrugId(patientId).stream()
+        ).sorted(Comparator.<Integer>naturalOrder().reversed())
+                .map(this::getDrugFull)
+                .collect(toList());
+    }
+
     public List<DrugFullDTO> searchPrevDrug(String text, int patientId) {
-        throw new RuntimeException("not implemented");
+        return Stream.concat(
+                listRepresentativeNaifukuTonpukuDrugId(text, patientId).stream(),
+                listRepresentativeGaiyouDrugId(text, patientId).stream()
+        ).sorted(Comparator.<Integer>naturalOrder().reversed())
+                .map(this::getDrugFull)
+                .collect(toList());
     }
 
     // Shinryou ////////////////////////////////////////////////////////////////////////////

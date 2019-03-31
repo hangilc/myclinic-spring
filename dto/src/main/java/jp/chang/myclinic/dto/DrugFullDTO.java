@@ -17,4 +17,12 @@ public class DrugFullDTO {
 		result.master = master;
 		return result;
 	}
+
+	@Override
+	public String toString() {
+		return "DrugFullDTO{" +
+				"drug=" + drug +
+				", master=" + master +
+				'}';
+	}
 }

@@ -172,6 +172,6 @@ public class VisitTester extends TesterBase {
     public void testSearchTextGlobally(Backend backend){
         System.out.println("visit:searchTextGlobally");
         TextVisitPatientPageDTO result = backend.searchTextGlobally("調子", 0);
-        System.out.println(result);
+        //System.out.println(result);
     }
 }
