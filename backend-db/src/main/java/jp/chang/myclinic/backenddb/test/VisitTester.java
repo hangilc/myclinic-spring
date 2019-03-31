@@ -167,4 +167,11 @@ public class VisitTester extends TesterBase {
         TextVisitPageDTO result = backend.searchText(198, "血圧", 0);
         //System.out.println(result);
     }
+
+    @DbTest
+    public void testSearchTextGlobally(Backend backend){
+        System.out.println("visit:searchTextGlobally");
+        TextVisitPatientPageDTO result = backend.searchTextGlobally("調子", 0);
+        System.out.println(result);
+    }
 }

@@ -665,7 +665,28 @@ public class Backend {
     }
 
     public TextVisitPatientPageDTO searchTextGlobally(String text, int page) {
-        throw new RuntimeException("not implemented");
+        int itemsPerPage = 20;
+        String searchText = "%" + text + "%";
+        String countSql = xlate("select count(*) from Text where content like ?", ts.textTable);
+        int totalItems = getQuery().getInt(countSql, searchText);
+        String sql = xlate("select t.*, v.*, p.* from Text t, Visit v, Patient p " +
+                        " where t.visitId = v.visitId and v.patientId = p.patientId " +
+                        " and t.content like ? order by t.textId limit ? offset ?",
+                ts.textTable, "t", ts.visitTable, "v", ts.patientTable, "p");
+        List<TextVisitPatientDTO> textVisits = getQuery().query(sql,
+                (rs, ctx) -> {
+                    TextVisitPatientDTO row = new TextVisitPatientDTO();
+                    row.text = ts.textTable.project(rs, ctx);
+                    row.visit = ts.visitTable.project(rs, ctx);
+                    row.patient = ts.patientTable.project(rs, ctx);
+                    return row;
+                },
+                searchText, itemsPerPage, itemsPerPage * page);
+        TextVisitPatientPageDTO result = new TextVisitPatientPageDTO();
+        result.page = page;
+        result.totalPages = numberOfPages(totalItems, itemsPerPage);
+        result.textVisitPatients = textVisits;
+        return result;
     }
 
     public DrugDTO getDrug(int drugId) {
