@@ -15,6 +15,9 @@ public class Tester {
         new ShinryouMasterTester(dbBackend).test();
         new IyakuhinMasterTester(dbBackend).test();
         new KizaiMasterTester(dbBackend).test();
+        new ByoumeiMasterTester(dbBackend).test();
+        new ShuushokugoMasterTester(dbBackend).test();
+        new PrescExampleTester(dbBackend).test();
     }
 
 }

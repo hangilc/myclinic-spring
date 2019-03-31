@@ -10,4 +10,19 @@ public class PrescExampleFullDTO {
         dst.master = src.master;
         return dst;
     }
+
+    public static PrescExampleFullDTO create(PrescExampleDTO example, IyakuhinMasterDTO master){
+        PrescExampleFullDTO result = new PrescExampleFullDTO();
+        result.prescExample = example;
+        result.master = master;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "PrescExampleFullDTO{" +
+                "prescExample=" + prescExample +
+                ", master=" + master +
+                '}';
+    }
 }

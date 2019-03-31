@@ -2,7 +2,6 @@ package jp.chang.myclinic.backenddb;
 
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.consts.PharmaQueueState;
-import jp.chang.myclinic.consts.Shuushokugo;
 import jp.chang.myclinic.consts.WqueueWaitState;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.HotlineLogger;
@@ -10,20 +9,15 @@ import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 
-import static jp.chang.myclinic.backenddb.Query.Projector;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
+import static jp.chang.myclinic.backenddb.Query.Projector;
 import static jp.chang.myclinic.backenddb.SqlTranslator.TableInfo;
 
 public class Backend {
@@ -1240,7 +1234,7 @@ public class Backend {
     }
 
     public void batchUpdateDiseaseEndReason(List<DiseaseModifyEndReasonDTO> modifications) {
-        for(DiseaseModifyEndReasonDTO modify: modifications){
+        for (DiseaseModifyEndReasonDTO modify : modifications) {
             DiseaseDTO d = getDisease(modify.diseaseId);
             d.endDate = modify.endDate;
             d.endReason = modify.endReason;
@@ -1309,7 +1303,7 @@ public class Backend {
 
     public List<ShinryouMasterDTO> searchShinryouMaster(String text, LocalDate at) {
         String sql = xlate("select * from ShinryouMaster where name like ? " +
-                " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                        " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
                 ts.shinryouMasterTable);
         String searchText = "%" + text + "%";
         String atString = at.toString();
@@ -1384,27 +1378,46 @@ public class Backend {
     // ByoumeiMaster /////////////////////////////////////////////////////////////////////
 
     public List<ByoumeiMasterDTO> searchByoumeiMaster(String text, LocalDate at) {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select * from ByoumeiMaster where name like ? " +
+                        " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                ts.byoumeiMasterTable);
+        String searchText = "%" + text + "%";
+        String atString = at.toString();
+        return getQuery().query(sql, ts.byoumeiMasterTable, searchText, atString, atString);
     }
 
     // ShuushokugoMaster /////////////////////////////////////////////////////////////////
 
     public List<ShuushokugoMasterDTO> searchShuushokugoMaster(String text, LocalDate at) {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select * from ShuushokugoMaster where name like ?",
+                ts.shuushokugoMasterTable);
+        String searchText = "%" + text + "%";
+        return getQuery().query(sql, ts.shuushokugoMasterTable, searchText);
     }
 
     // PrescExample //////////////////////////////////////////////////////////////////////
 
     public void enterPrescExample(PrescExampleDTO prescExample) {
-        throw new RuntimeException("not implemented");
+        ts.prescExampleTable.insert(prescExample);
     }
 
     public List<PrescExampleFullDTO> searchPrescExample(String text) {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select p.*, m.* from PrescExample p, IyakuhinMaster m where " +
+                        " m.iyakuhincode = p.iyakuhincode and m.validFrom = p.masterValidFrom " +
+                        " and m.name like ? ",
+                ts.prescExampleTable, "p", ts.iyakuhinMasterTable, "m");
+        String searchText = "%" + text + "%";
+        return getQuery().query(sql,
+                biProjector(ts.prescExampleTable, ts.iyakuhinMasterTable, PrescExampleFullDTO::create),
+                searchText);
     }
 
     public List<PrescExampleFullDTO> listAllPrescExample() {
-        throw new RuntimeException("not implemented");
+        String sql = xlate("select p.*, m.* from PrescExample p, IyakuhinMaster m where " +
+                        " m.iyakuhincode = p.iyakuhincode and m.validFrom = p.masterValidFrom ",
+                ts.prescExampleTable, "p", ts.iyakuhinMasterTable, "m");
+        return getQuery().query(sql,
+                biProjector(ts.prescExampleTable, ts.iyakuhinMasterTable, PrescExampleFullDTO::create));
     }
 
     // PracticeLog ///////////////////////////////////////////////////////////////////////
