@@ -72,10 +72,10 @@ class ShinryouTester extends TesterBase {
             conductReq.kizaiList.add(kizai);
         }
         BatchEnterResultDTO result = backend.batchEnter(req);
-        System.out.println(result);
+        //System.out.println(result);
         int conductId = result.conductIds.get(0);
         ConductFullDTO entered = backend.getConductFull(conductId);
-        System.out.println(entered);
+        //System.out.println(entered);
     }
 
 }

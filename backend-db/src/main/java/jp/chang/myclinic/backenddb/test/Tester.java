@@ -11,6 +11,7 @@ public class Tester {
         new DrugTester(dbBackend).test();
         new ShinryouTester(dbBackend).test();
         new ConductTester(dbBackend).test();
+        new DiseaseTester(dbBackend).test();
     }
 
 }
