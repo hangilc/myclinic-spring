@@ -6,6 +6,7 @@ import com.github.javaparser.ast.body.CallableDeclaration.Signature;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
@@ -23,6 +24,7 @@ import picocli.CommandLine;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +35,9 @@ import static java.util.stream.Collectors.toList;
 
 @CommandLine.Command(name = "populate-frontendbackend", description = "Extends FrontendBackend.java")
 class PopulateFrontendBackend implements Runnable {
+
+    @CommandLine.Option(names = {"--save"}, description = "Saves output to FrontendBackend.java")
+    private boolean save;
 
     private String frontendSourceFile = "frontend/src/main/java/jp/chang/myclinic/frontend/Frontend.java";
     private String targetSourceFile = "frontend/src/main/java/jp/chang/myclinic/frontend/FrontendBackend.java";
@@ -60,42 +65,55 @@ class PopulateFrontendBackend implements Runnable {
                     String paramType = frontendMethod.getParameter(0).getTypeAsString();
                     Class<?> dtoClass = nameDtoClassMap.get(paramType);
                     List<Field> autoIncs = Collections.emptyList();
-                    if( dtoClass != null ){
+                    if (dtoClass != null) {
                         autoIncs = helper.getAutoIncs(dtoClass);
                     }
-                    if( autoIncs.size() == 1 ){
+                    if (autoIncs.size() == 1) {
+                        Field autoInc = autoIncs.get(0);
                         Type retTypeArg = unwrapCompletableFuture(frontendMethod.getType());
-                        Class<?> autoIncClass = primitiveToBoxedClass(autoIncs.get(0).getType());
-                        if( !autoIncClass.getSimpleName().equals(retTypeArg.asString()) ){
+                        Class<?> autoIncClass = primitiveToBoxedClass(autoInc.getType());
+                        if (!autoIncClass.getSimpleName().equals(retTypeArg.asString())) {
                             throw new RuntimeException("Inconsisten types with AutoInc field>");
                         }
                         frontendMethod.setBody(makeEnterWithAutoIncBody(
                                 frontendMethod.getNameAsString(),
-                                frontendMethod.getParameter(0).getNameAsString()
+                                frontendMethod.getParameter(0).getNameAsString(),
+                                autoInc.getName()
                         ));
                         targetDecl.addMember(frontendMethod);
-                        System.out.println(frontendMethod);
                     } else {
-
+                        frontendMethod.setBody(makeTxBody(frontendMethod));
+                        targetDecl.addMember(frontendMethod);
                     }
                 } else if (name.startsWith("get") || name.startsWith("list") ||
                         name.startsWith("search") || name.startsWith("find") ||
-                        name.startsWith("count") || name.startsWith("resolve")){
+                        name.startsWith("count") || name.startsWith("resolve") ||
+                        name.startsWith("batchResolve")) {
+                    frontendMethod.setBody(makeBody("query", frontendMethod));
+                    targetDecl.addMember(frontendMethod);
                 } else {
-
+                    frontendMethod.setBody(makeTxBody(frontendMethod));
+                    targetDecl.addMember(frontendMethod);
                 }
             }
-            //System.out.println(targetUnit);
+            if( save ){
+                saveToFile(targetSourceFile, targetUnit.toString());
+            } else {
+                System.out.println(targetUnit);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private BlockStmt makeEnterWithAutoIncBody(String methodName, String argName){
+    private BlockStmt makeEnterWithAutoIncBody(String methodName, String argName, String autoIncField) {
         BlockStmt blockStmt = new BlockStmt();
         BlockStmt lambdaBody = new BlockStmt(nodeList(
                 new ExpressionStmt(
                         new MethodCallExpr(new NameExpr("backend"), methodName, nodeList(new NameExpr(argName)))
+                ),
+                new ReturnStmt(
+                        new FieldAccessExpr(new NameExpr(argName), autoIncField)
                 )
         ));
         LambdaExpr lambdaExpr = new LambdaExpr(
@@ -107,17 +125,26 @@ class PopulateFrontendBackend implements Runnable {
         return blockStmt;
     }
 
-    private BlockStmt composeGetMethodBody(MethodDeclaration methodDecl) {
+    private BlockStmt makeTxBody(MethodDeclaration methodDecl) {
+        Type retArgType = unwrapCompletableFuture(methodDecl.getType());
+        String txName = retArgType.asString().equals("Void") ? "txProc" : "tx";
+        return makeBody(txName, methodDecl);
+    }
+
+    private BlockStmt makeBody(String dbMethod, MethodDeclaration methodDecl) {
         BlockStmt blockStmt = new BlockStmt();
-        MethodCallExpr lambdaBody = new MethodCallExpr(new NameExpr("backend"),
-                methodDecl.getName(),
-                nodeList(
-                        getMethodParameterNames(methodDecl).stream().map(NameExpr::new).collect(toList())
-                ));
         LambdaExpr lambdaExpr = new LambdaExpr(
-                new Parameter(new UnknownType(), "backend"), lambdaBody);
-        MethodCallExpr queryCall = new MethodCallExpr(null, "query", nodeList(lambdaExpr));
-        blockStmt.addStatement(new ReturnStmt(queryCall));
+                new Parameter(new UnknownType(), "backend"),
+                new MethodCallExpr(new NameExpr("backend"),
+                        methodDecl.getNameAsString(),
+                        nodeList(
+                                getMethodParameterNames(methodDecl).stream().map(NameExpr::new).collect(toList())
+                        )
+                )
+        );
+        blockStmt.addStatement(
+                new ReturnStmt(new MethodCallExpr(null, dbMethod, nodeList(lambdaExpr)))
+        );
         return blockStmt;
     }
 
@@ -125,27 +152,39 @@ class PopulateFrontendBackend implements Runnable {
         return method.getParameters().stream().map(NodeWithSimpleName::getNameAsString).collect(toList());
     }
 
-    private Class<?> primitiveToBoxedClass(Class<?> prim){
-        if( prim == int.class ){
+    private Class<?> primitiveToBoxedClass(Class<?> prim) {
+        if (prim == int.class) {
             return Integer.class;
-        } else if( prim == double.class ){
+        } else if (prim == double.class) {
             return Double.class;
         } else {
             return prim;
         }
     }
 
-    private Type unwrapCompletableFuture(Type type){
-        if( !type.isClassOrInterfaceType() ){
+    private Type unwrapCompletableFuture(Type type) {
+        if (!type.isClassOrInterfaceType()) {
             throw new RuntimeException("Cannot unwrap CompletableFuture");
         }
         ClassOrInterfaceType classType = type.asClassOrInterfaceType();
-        if( !classType.getNameAsString().equals("CompletableFuture") ){
+        if (!classType.getNameAsString().equals("CompletableFuture")) {
             throw new RuntimeException("Cannot unwrap CompletableFuture");
         }
         return classType.getTypeArguments()
                 .orElseThrow(() -> new RuntimeException("Cannot get type arguments."))
                 .get(0);
+    }
+
+    private void saveToFile(String file, String src){
+        if( file == null ){
+            System.out.println(src);
+        } else {
+            try {
+                Files.write(Paths.get(file), src.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 }
