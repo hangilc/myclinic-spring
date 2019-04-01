@@ -3,7 +3,9 @@ package jp.chang.myclinic.apitool.lib;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DtoClassList {
 
@@ -57,5 +59,13 @@ public class DtoClassList {
             }
         }
         return null;
+    }
+
+    public static Map<String, Class<?>> getNameDtoClassMap(){
+        Map<String, Class<?>> map = new HashMap<>();
+        for(Class<?> cls: getList()){
+            map.put(cls.getSimpleName(), cls);
+        }
+        return map;
     }
 }

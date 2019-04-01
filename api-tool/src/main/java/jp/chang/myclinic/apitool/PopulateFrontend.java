@@ -7,19 +7,22 @@ import com.github.javaparser.ast.body.CallableDeclaration;
 import com.github.javaparser.ast.body.CallableDeclaration.Signature;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
-import com.github.javaparser.ast.type.VoidType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.apitool.lib.DtoClassList;
+import jp.chang.myclinic.dto.annotation.AutoInc;
 import picocli.CommandLine;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.github.javaparser.ast.NodeList.nodeList;
 
@@ -31,6 +34,7 @@ class PopulateFrontend implements Runnable {
 
     private String frontendSourceFile = "frontend/src/main/java/jp/chang/myclinic/frontend/Frontend.java";
     private String backendSourceFile = "backend-db/src/main/java/jp/chang/myclinic/backenddb/Backend.java";
+    private static Map<String, Class<?>> nameToDtoClassMap = DtoClassList.getNameDtoClassMap();
 
     @Override
     public void run() {
@@ -43,6 +47,7 @@ class PopulateFrontend implements Runnable {
                     .orElseThrow(() -> new RuntimeException("Cannot find class: Frontend"));
             List<String> excludes = List.of("setPracticeLogPublisher",
                     "setHotlineLogPublisher", "getQuery", "xlate");
+            backendDecl.getOrphanComments().forEach(backendDecl::removeOrphanComment);
             for(MethodDeclaration backendMethod: backendDecl.getMethods()){
                 if( !backendMethod.isPublic() ){
                     continue;
@@ -56,16 +61,22 @@ class PopulateFrontend implements Runnable {
                     continue;
                 }
                 backendMethod.removeBody();
-                Type type = backendMethod.getType();
-                if (type.isVoidType()) {
-                    type = new ClassOrInterfaceType(null, "Void");
-                } else if (type.isPrimitiveType()) {
-                    PrimitiveType primType = type.asPrimitiveType();
-                    type = primType.toBoxedType();
+                String methodName = backendMethod.getNameAsString();
+                Type retType = backendMethod.getType();
+                if( methodName.startsWith("enter") ){
+                    if( retType.isVoidType() ){
+                        Parameter param = backendMethod.getParameter(0);
+                        Type paramType = param.getType();
+                        Class<?> dtoClass = nameToDtoClassMap.get(paramType.asString());
+                        List<Field> autoIncs = getAutoIncs(dtoClass);
+                        if( autoIncs.size() == 1 ){
+                            Field autoInc = autoIncs.get(0);
+                            Class<?> autoIncClass = primitiveToBoxedClass(autoInc.getType());
+                            retType = new ClassOrInterfaceType(null, autoIncClass.getSimpleName());
+                        }
+                    }
                 }
-                type = new ClassOrInterfaceType(null, new SimpleName("CompletableFuture"), nodeList(type));
-                backendMethod.setType(type);
-                backendMethod.removeModifier(Keyword.PUBLIC);
+                backendMethod.setType(wrapWithCompletableFuture(retType));
                 frontendDecl.addMember(backendMethod);
             }
             if( save ){
@@ -76,6 +87,35 @@ class PopulateFrontend implements Runnable {
         } catch(Exception e){
             throw new RuntimeException(e);
         }
+    }
+
+    private Class<?> primitiveToBoxedClass(Class<?> prim){
+        if( prim == int.class ){
+            return Integer.class;
+        } else if( prim == double.class ){
+            return Double.class;
+        } else {
+            return prim;
+        }
+    }
+
+    private Type wrapWithCompletableFuture(Type type){
+        if( type.isVoidType() ){
+            type = new ClassOrInterfaceType(null, "Void");
+        } else if( type.isPrimitiveType() ){
+            type = type.asPrimitiveType().toBoxedType();
+        }
+        return new ClassOrInterfaceType(null, new SimpleName("CompletableFuture"), nodeList(type));
+    }
+
+    private List<Field> getAutoIncs(Class<?> dtoClass){
+        List<Field> autoIncs = new ArrayList<>();
+        for(Field field: dtoClass.getFields()){
+            if( field.isAnnotationPresent(AutoInc.class)){
+                autoIncs.add(field);
+            }
+        }
+        return autoIncs;
     }
 
     private void saveToFile(String file, String src){
