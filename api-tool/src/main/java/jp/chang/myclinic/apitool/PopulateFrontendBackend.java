@@ -13,6 +13,7 @@ import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.UnknownType;
@@ -21,8 +22,9 @@ import jp.chang.myclinic.apitool.lib.Helper;
 import picocli.CommandLine;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -36,13 +38,7 @@ class PopulateFrontendBackend implements Runnable {
     private String targetSourceFile = "frontend/src/main/java/jp/chang/myclinic/frontend/FrontendBackend.java";
     private Helper helper = Helper.getInstance();
 
-    private Map<String, Class<?>> nameDtoClassMap = new HashMap<>();
-
-    {
-        for(Class<?> cls: DtoClassList.getList()){
-            nameDtoClassMap.put(cls.getSimpleName(), cls);
-        }
-    }
+    private Map<String, Class<?>> nameDtoClassMap = DtoClassList.getNameDtoClassMap();
 
     @Override
     public void run() {
@@ -61,22 +57,30 @@ class PopulateFrontendBackend implements Runnable {
                 String name = frontendMethod.getNameAsString();
                 frontendMethod.addMarkerAnnotation("Override");
                 if (name.startsWith("enter")) {
-                    ClassOrInterfaceType methodType = (ClassOrInterfaceType)frontendMethod.getType();
-                    System.out.println(methodType);
-//                    if( frontendMethod.getType().isVoidType() ){
-//                        System.out.println(frontendMethod);
-//                    } else {
-//                        Parameter param = frontendMethod.getParameter(0);
-//                        String dtoName = param.getTypeAsString();
-//                        Class<?> dtoClass = nameDtoClassMap.get(dtoName);
-//                        System.out.println(frontendMethod);
-//                        System.out.println(dtoClass);
-//                    }
+                    String paramType = frontendMethod.getParameter(0).getTypeAsString();
+                    Class<?> dtoClass = nameDtoClassMap.get(paramType);
+                    List<Field> autoIncs = Collections.emptyList();
+                    if( dtoClass != null ){
+                        autoIncs = helper.getAutoIncs(dtoClass);
+                    }
+                    if( autoIncs.size() == 1 ){
+                        Type retTypeArg = unwrapCompletableFuture(frontendMethod.getType());
+                        Class<?> autoIncClass = primitiveToBoxedClass(autoIncs.get(0).getType());
+                        if( !autoIncClass.getSimpleName().equals(retTypeArg.asString()) ){
+                            throw new RuntimeException("Inconsisten types with AutoInc field>");
+                        }
+                        frontendMethod.setBody(makeEnterWithAutoIncBody(
+                                frontendMethod.getNameAsString(),
+                                frontendMethod.getParameter(0).getNameAsString()
+                        ));
+                        targetDecl.addMember(frontendMethod);
+                        System.out.println(frontendMethod);
+                    } else {
+
+                    }
                 } else if (name.startsWith("get") || name.startsWith("list") ||
                         name.startsWith("search") || name.startsWith("find") ||
                         name.startsWith("count") || name.startsWith("resolve")){
-                    frontendMethod.setBody(composeGetMethodBody(frontendMethod));
-                    targetDecl.addMember(frontendMethod);
                 } else {
 
                 }
@@ -85,6 +89,22 @@ class PopulateFrontendBackend implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private BlockStmt makeEnterWithAutoIncBody(String methodName, String argName){
+        BlockStmt blockStmt = new BlockStmt();
+        BlockStmt lambdaBody = new BlockStmt(nodeList(
+                new ExpressionStmt(
+                        new MethodCallExpr(new NameExpr("backend"), methodName, nodeList(new NameExpr(argName)))
+                )
+        ));
+        LambdaExpr lambdaExpr = new LambdaExpr(
+                new Parameter(new UnknownType(), "backend"),
+                lambdaBody
+        );
+        MethodCallExpr txCall = new MethodCallExpr(null, "tx", nodeList(lambdaExpr));
+        blockStmt.addStatement(new ReturnStmt(txCall));
+        return blockStmt;
     }
 
     private BlockStmt composeGetMethodBody(MethodDeclaration methodDecl) {
@@ -104,4 +124,28 @@ class PopulateFrontendBackend implements Runnable {
     private List<String> getMethodParameterNames(MethodDeclaration method) {
         return method.getParameters().stream().map(NodeWithSimpleName::getNameAsString).collect(toList());
     }
+
+    private Class<?> primitiveToBoxedClass(Class<?> prim){
+        if( prim == int.class ){
+            return Integer.class;
+        } else if( prim == double.class ){
+            return Double.class;
+        } else {
+            return prim;
+        }
+    }
+
+    private Type unwrapCompletableFuture(Type type){
+        if( !type.isClassOrInterfaceType() ){
+            throw new RuntimeException("Cannot unwrap CompletableFuture");
+        }
+        ClassOrInterfaceType classType = type.asClassOrInterfaceType();
+        if( !classType.getNameAsString().equals("CompletableFuture") ){
+            throw new RuntimeException("Cannot unwrap CompletableFuture");
+        }
+        return classType.getTypeArguments()
+                .orElseThrow(() -> new RuntimeException("Cannot get type arguments."))
+                .get(0);
+    }
+
 }

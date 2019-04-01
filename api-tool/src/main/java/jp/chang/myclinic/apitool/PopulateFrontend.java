@@ -13,6 +13,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.Type;
 import jp.chang.myclinic.apitool.lib.DtoClassList;
+import jp.chang.myclinic.apitool.lib.Helper;
 import jp.chang.myclinic.dto.annotation.AutoInc;
 import picocli.CommandLine;
 
@@ -35,6 +36,7 @@ class PopulateFrontend implements Runnable {
     private String frontendSourceFile = "frontend/src/main/java/jp/chang/myclinic/frontend/Frontend.java";
     private String backendSourceFile = "backend-db/src/main/java/jp/chang/myclinic/backenddb/Backend.java";
     private static Map<String, Class<?>> nameToDtoClassMap = DtoClassList.getNameDtoClassMap();
+    private Helper helper = Helper.getInstance();
 
     @Override
     public void run() {
@@ -68,7 +70,7 @@ class PopulateFrontend implements Runnable {
                         Parameter param = backendMethod.getParameter(0);
                         Type paramType = param.getType();
                         Class<?> dtoClass = nameToDtoClassMap.get(paramType.asString());
-                        List<Field> autoIncs = getAutoIncs(dtoClass);
+                        List<Field> autoIncs = helper.getAutoIncs(dtoClass);
                         if( autoIncs.size() == 1 ){
                             Field autoInc = autoIncs.get(0);
                             Class<?> autoIncClass = primitiveToBoxedClass(autoInc.getType());
@@ -106,16 +108,6 @@ class PopulateFrontend implements Runnable {
             type = type.asPrimitiveType().toBoxedType();
         }
         return new ClassOrInterfaceType(null, new SimpleName("CompletableFuture"), nodeList(type));
-    }
-
-    private List<Field> getAutoIncs(Class<?> dtoClass){
-        List<Field> autoIncs = new ArrayList<>();
-        for(Field field: dtoClass.getFields()){
-            if( field.isAnnotationPresent(AutoInc.class)){
-                autoIncs.add(field);
-            }
-        }
-        return autoIncs;
     }
 
     private void saveToFile(String file, String src){

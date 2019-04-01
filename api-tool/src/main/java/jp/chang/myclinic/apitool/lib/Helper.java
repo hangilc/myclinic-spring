@@ -13,6 +13,7 @@ import jp.chang.myclinic.apitool.lib.tables.Config;
 import jp.chang.myclinic.apitool.lib.tables.MysqlConfig;
 import jp.chang.myclinic.apitool.lib.tables.PgsqlConfig;
 import jp.chang.myclinic.apitool.lib.tables.SqliteConfig;
+import jp.chang.myclinic.dto.annotation.AutoInc;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -163,6 +164,16 @@ public class Helper {
             String msg = String.format("Cannot find %s in %s", fieldName, dtoClass.getSimpleName());
             throw new RuntimeException(msg);
         }
+    }
+
+    public List<Field> getAutoIncs(Class<?> dtoClass){
+        List<Field> autoIncs = new ArrayList<>();
+        for(Field field: dtoClass.getFields()){
+            if( field.isAnnotationPresent(AutoInc.class)){
+                autoIncs.add(field);
+            }
+        }
+        return autoIncs;
     }
 
     public Config getSpecifics(String database) {
