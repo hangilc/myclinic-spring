@@ -145,6 +145,7 @@
         <module>backend-db</module>
     <module>frontend</module>
     <module>db-copy</module>
+    <module>support</module>
   </modules>
 
 </project>
