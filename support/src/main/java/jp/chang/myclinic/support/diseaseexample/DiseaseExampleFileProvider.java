@@ -19,37 +19,32 @@ import java.util.concurrent.CompletableFuture;
 
 public class DiseaseExampleFileProvider implements DiseaseExampleProvider {
 
-    private Path filePath;
-
-    public DiseaseExampleFileProvider(Path filePath) {
-        this.filePath = filePath;
-    }
-
     public static class DiseaseExampleMixin {
         @JsonProperty("adj-list")
         public List<String> adjList;
     }
 
-    private static ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    private List<DiseaseExampleDTO> diseaseExamples;
 
-    static {
+    public DiseaseExampleFileProvider(Path filePath) {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         mapper.addMixIn(DiseaseExampleDTO.class, DiseaseExampleMixin.class);
-    }
-
-    @Override
-    public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
         try {
-            List<DiseaseExampleDTO> info = mapper.readValue(filePath.toFile(),
+            this.diseaseExamples = mapper.readValue(filePath.toFile(),
                     new TypeReference<List<DiseaseExampleDTO>>(){});
-            return CompletableFuture.completedFuture(info);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
+    public List<DiseaseExampleDTO> listDiseaseExample() {
+        return diseaseExamples;
+    }
+
     public static void main(String[] args){
         DiseaseExampleProvider provider = new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml"));
-        System.out.println(provider.listDiseaseExample().join());
+        System.out.println(provider.listDiseaseExample());
     }
 
 }

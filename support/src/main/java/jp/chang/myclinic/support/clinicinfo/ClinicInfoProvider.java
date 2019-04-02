@@ -8,6 +8,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface ClinicInfoProvider {
 
-    CompletableFuture<ClinicInfoDTO> getClinicInfo();
+    ClinicInfoDTO getClinicInfo();
 
 }

@@ -8,15 +8,8 @@ import jp.chang.myclinic.dto.ClinicInfoDTO;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.CompletableFuture;
 
 public class ClinicInfoFileProvider implements ClinicInfoProvider {
-
-    private Path filePath;
-
-    public ClinicInfoFileProvider(Path filePath){
-        this.filePath = filePath;
-    }
 
     public static class ClinicInfoMixin {
         @JsonProperty("postal-code")
@@ -25,24 +18,25 @@ public class ClinicInfoFileProvider implements ClinicInfoProvider {
         public String doctorName;
     }
 
-    private static ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    private ClinicInfoDTO clinicInfo;
 
-    static {
-        mapper.addMixIn(ClinicInfoDTO.class, ClinicInfoMixin.class);
-    }
-
-    @Override
-    public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
+    public ClinicInfoFileProvider(Path filePath){
         try {
-            ClinicInfoDTO info = mapper.readValue(filePath.toFile(), ClinicInfoDTO.class);
-            return CompletableFuture.completedFuture(info);
+            ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+            mapper.addMixIn(ClinicInfoDTO.class, ClinicInfoMixin.class);
+            this.clinicInfo = mapper.readValue(filePath.toFile(), ClinicInfoDTO.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
+    public ClinicInfoDTO getClinicInfo() {
+        return clinicInfo;
+    }
+
     public static void main(String[] args){
         ClinicInfoProvider provider = new ClinicInfoFileProvider(Paths.get("config/clinic-info.yml"));
-        System.out.println(provider.getClinicInfo().join());
+        System.out.println(provider.getClinicInfo());
     }
 }
