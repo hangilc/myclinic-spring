@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -1259,6 +1260,46 @@ public class Backend {
             d.endReason = modify.endReason;
             updateDisease(d);
         }
+    }
+
+    public void modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
+        DiseaseDTO disease = diseaseModifyDTO.disease;
+        DiseaseDTO prevDisease = getDisease(disease.diseaseId);
+        if (!disease.equals(prevDisease)) {
+            updateDisease(disease);
+        }
+        List<DiseaseAdjDTO> prevAdjList = listDiseaseAdj(disease.diseaseId);
+        List<Integer> prevAdjCodes =prevAdjList.stream().map(adj -> adj.shuushokugocode).collect(toList());
+        if (!prevAdjCodes.equals(diseaseModifyDTO.shuushokugocodes)) {
+            prevAdjList.forEach(adj -> deleteDiseaseAdj(adj.diseaseAdjId));
+            if (diseaseModifyDTO.shuushokugocodes != null) {
+                diseaseModifyDTO.shuushokugocodes.forEach(shuushokugocode -> {
+                    DiseaseAdjDTO adj = new DiseaseAdjDTO();
+                    adj.diseaseId = disease.diseaseId;
+                    adj.shuushokugocode = shuushokugocode;
+                    enterDiseaseAdj(adj);
+                });
+            }
+        }
+    }
+
+    // DiseaseAdj ////////////////////////////////////////////////////////////////////////
+
+    private void enterDiseaseAdj(DiseaseAdjDTO adj){
+        ts.diseaseAdjTable.insert(adj);
+        practiceLogger.logDiseaseAdjCreated(adj);
+    }
+
+    private void deleteDiseaseAdj(int diseaseAdjId){
+        DiseaseAdjDTO deleted = ts.diseaseAdjTable.getById(diseaseAdjId);
+        ts.diseaseAdjTable.delete(diseaseAdjId);
+        practiceLogger.logDiseaseAdjDeleted(deleted);
+    }
+
+    private List<DiseaseAdjDTO> listDiseaseAdj(int diseaseId){
+        String sql = xlate("select * from DiseaseAdj where diseaseId = ? order by diseaseAdjId",
+                ts.diseaseAdjTable);
+        return getQuery().query(sql, ts.diseaseAdjTable, diseaseId);
     }
 
     // PharmaQueue ///////////////////////////////////////////////////////////////////////
