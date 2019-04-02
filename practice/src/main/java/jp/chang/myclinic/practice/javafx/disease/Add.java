@@ -85,8 +85,8 @@ public class Add extends VBox {
                         return adj;
                     })
                     .collect(Collectors.toList());
-            Service.api.enterDisease(newDisease)
-                    .thenCompose(Service.api::getDiseaseFull)
+            Context.getInstance().getFrontend().enterDisease(newDisease)
+                    .thenCompose(Context.getInstance().getFrontend()::getDiseaseFull)
                     .thenAccept(entered -> Platform.runLater(() -> {
                         onEntered(entered);
                         diseaseInput.clear();
@@ -118,7 +118,7 @@ public class Add extends VBox {
             searchBox.setList(examples);
         } else {
             Supplier<Result<LocalDate, List<String>>> dateSupplier = () -> diseaseInput.getStartDate();
-            Service.api.listDiseaseExample()
+            Context.getInstance().getFrontend().listDiseaseExample()
                     .thenAccept(examples -> Platform.runLater(() -> {
                         List<DiseaseSearchResultModel> models = examples.stream()
                                 .map(ex -> new ExampleSearchResult(ex, dateSupplier))

@@ -25,11 +25,11 @@ class ShinryouEnterForm extends ShinryouForm {
             private ShinryouFullDTO entered;
         }
         Local local = new Local();
-        Service.api.enterShinryou(shinryou)
-                .thenCompose(Service.api::getShinryouFull)
+        Context.getInstance().getFrontend().enterShinryou(shinryou)
+                .thenCompose(Context.getInstance().getFrontend()::getShinryouFull)
                 .thenCompose(entered -> {
                     local.entered = entered;
-                    return Service.api.findShinryouAttr(entered.shinryou.shinryouId);
+                    return Context.getInstance().getFrontend().findShinryouAttr(entered.shinryou.shinryouId);
                 })
                 .thenAccept(attr -> {
                     Platform.runLater(() -> {

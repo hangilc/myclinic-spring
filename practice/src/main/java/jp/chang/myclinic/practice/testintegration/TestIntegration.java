@@ -49,7 +49,7 @@ public class TestIntegration extends IntegrationTestBase{
     }
 
     private void confirmMockPatient() {
-        Service.api.getPatient(1)
+        Context.getInstance().getFrontend().getPatient(1)
                 .thenAccept(patient -> {
                     if (!("試験".equals(patient.lastName) && "データ".equals(patient.firstName))) {
                         System.err.println("Invalid mock patient.");

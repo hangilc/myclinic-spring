@@ -1386,6 +1386,14 @@ public class Backend {
         return getQuery().query(sql, ts.byoumeiMasterTable, searchText, atString, atString);
     }
 
+    public ByoumeiMasterDTO getByoumeiMasterByName(String name, LocalDate at){
+        String sql = xlate("select * from ByoumeiMaster where name = ? " +
+                " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                ts.byoumeiMasterTable);
+        String atString = at.toString();
+        return getQuery().get(sql, ts.byoumeiMasterTable, name, atString, atString);
+    }
+
     // ShuushokugoMaster /////////////////////////////////////////////////////////////////
 
     public List<ShuushokugoMasterDTO> searchShuushokugoMaster(String text, LocalDate at) {
@@ -1395,10 +1403,24 @@ public class Backend {
         return getQuery().query(sql, ts.shuushokugoMasterTable, searchText);
     }
 
+    public ShuushokugoMasterDTO getShuushokugoMasterByName(String name){
+        String sql = xlate("select * from ShuushokugoMaster where name = ?",
+                ts.shuushokugoMasterTable);
+        return getQuery().get(sql, ts.shuushokugoMasterTable, name);
+    }
+
     // PrescExample //////////////////////////////////////////////////////////////////////
 
     public void enterPrescExample(PrescExampleDTO prescExample) {
         ts.prescExampleTable.insert(prescExample);
+    }
+
+    public void deletePrescExample(int prescExampleId){
+        ts.prescExampleTable.delete(prescExampleId);
+    }
+
+    public void updatePrescExample(PrescExampleDTO prescExample){
+        ts.prescExampleTable.update(prescExample);
     }
 
     public List<PrescExampleFullDTO> searchPrescExample(String text) {

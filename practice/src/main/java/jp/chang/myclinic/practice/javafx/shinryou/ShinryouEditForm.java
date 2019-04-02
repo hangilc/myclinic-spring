@@ -59,7 +59,7 @@ public class ShinryouEditForm extends WorkForm {
 
     private void doDeleteTekiyou(){
         if( GuiUtil.confirm("この摘要を削除していいですか？") ){
-            Service.api.deleteShinryouTekiyou(shinryouId)
+            Context.getInstance().getFrontend().deleteShinryouTekiyou(shinryouId)
                     .thenAccept(attr -> Platform.runLater(() -> {
                         shinryouInput.deleteTekiyou();
                         setupCommandBox(attr);
@@ -72,7 +72,7 @@ public class ShinryouEditForm extends WorkForm {
     private void doModifyTekiyou(String orig){
         GuiUtil.askForString("摘要の内容", orig)
                 .ifPresent(tekiyou -> {
-                    Service.api.setShinryouTekiyou(shinryouId, tekiyou)
+                    Context.getInstance().getFrontend().setShinryouTekiyou(shinryouId, tekiyou)
                             .thenAccept(modified -> Platform.runLater(() -> {
                                 shinryouInput.setTekiyou(modified.tekiyou);
                                 setupCommandBox(modified);

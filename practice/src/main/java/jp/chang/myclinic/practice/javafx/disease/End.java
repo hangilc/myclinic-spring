@@ -214,8 +214,8 @@ public class End extends VBox {
                 .map(d -> PracticeUtil.createDiseaseModifyEndReason(d, endReason, endDate))
                 .collect(Collectors.toList());
         if (modifies.size() > 0) {
-            Service.api.batchUpdateDiseaseEndReason(modifies)
-                    .thenCompose(result -> Service.api.listCurrentDiseaseFull(patientId))
+            Context.getInstance().getFrontend().batchUpdateDiseaseEndReason(modifies)
+                    .thenCompose(result -> Context.getInstance().getFrontend().listCurrentDiseaseFull(patientId))
                     .thenAccept(newDiseases -> Platform.runLater(() -> {
                         resetDiseases(newDiseases);
                         onModified(newDiseases);

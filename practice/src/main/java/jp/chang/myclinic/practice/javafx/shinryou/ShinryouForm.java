@@ -48,7 +48,7 @@ public class ShinryouForm extends WorkForm {
         SearchInputBox box = new SearchInputBox();
         box.setOnTextCallback(text -> {
             if( !text.isEmpty() ) {
-                Service.api.searchShinryouMaster(text, at)
+                Context.getInstance().getFrontend().searchShinryouMaster(text, at)
                         .thenAccept(result -> Platform.runLater(() -> searchResult.setList(result)))
                         .exceptionally(ex -> {
                             FunJavaFX.createErrorHandler().accept(ex);

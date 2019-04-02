@@ -8,6 +8,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PrescExampleDTO;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchMode;
 import jp.chang.myclinic.practice.javafx.drug.lib.SearchModeChooser;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearcher;
@@ -67,7 +68,7 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
         if( !GuiUtil.confirm("この処方例を削除しますか？") ){
             return;
         }
-        Service.api.deletePrescExample(prescExampleId)
+        Context.getInstance().getFrontend().deletePrescExample(prescExampleId)
                 .thenAcceptAsync(result -> doClear(), Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);
     }
@@ -79,10 +80,10 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
             return;
         }
         if( ex != null ){
-            Service.api.resolveIyakuhinMaster(ex.iyakuhincode, getLocalDate().toString())
+            Context.getInstance().getFrontend().resolveIyakuhinMaster(ex.iyakuhincode, getLocalDate().toString())
                     .thenCompose(master -> {
                         ex.masterValidFrom = master.validFrom;
-                        return Service.api.updatePrescExample(ex);
+                        return Context.getInstance().getFrontend().updatePrescExample(ex);
                     })
                     .thenAccept(prescExampleId -> Platform.runLater(this::doClear))
                     .exceptionally(HandlerFX::exceptionally);

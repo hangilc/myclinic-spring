@@ -172,7 +172,7 @@ public class ShinryouMenu extends VBox {
     private void doCopyAll() {
         int targetVisitId = PracticeUtil.findCopyTarget(visitId);
         if (targetVisitId != 0) {
-            Service.api.listShinryouFull(visitId)
+            Context.getInstance().getFrontend().listShinryouFull(visitId)
                     .thenAccept(srcList -> {
                         FunJavaFX.batchCopyShinryou(targetVisitId, srcList,
                                 (entered, attr) -> {
@@ -188,7 +188,7 @@ public class ShinryouMenu extends VBox {
         if (isWorkareaEmpty()) {
             int targetVisitId = PracticeUtil.findCopyTarget(visitId);
             if (targetVisitId != 0) {
-                Service.api.listShinryouFull(visitId)
+                Context.getInstance().getFrontend().listShinryouFull(visitId)
                         .thenAccept(shinryouList -> {
                             CopySelectedForm form = new CopySelectedForm(shinryouList) {
                                 @Override
@@ -216,11 +216,11 @@ public class ShinryouMenu extends VBox {
     private void doDeleteSelected() {
         if (isWorkareaEmpty()) {
             if (PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を削除しますか？")) {
-                Service.api.listShinryouFull(visitId)
+                Context.getInstance().getFrontend().listShinryouFull(visitId)
                         .thenAccept(shinryouList -> {
                             DeleteSelectedForm form = new DeleteSelectedForm(shinryouList) {
                                 private CompletableFuture<Void> deleteShinryou(ShinryouFullDTO shinryou) {
-                                    return Service.api.deleteShinryou(shinryou.shinryou.shinryouId)
+                                    return Context.getInstance().getFrontend().deleteShinryou(shinryou.shinryou.shinryouId)
                                             .thenAccept(result -> Platform.runLater(() ->
                                                     fireShinryouDeletedEvent(shinryou.shinryou)));
                                 }
@@ -245,7 +245,7 @@ public class ShinryouMenu extends VBox {
     }
 
     private void doDeleteDuplicate() {
-        Service.api.deleteDuplicateShinryou(visitId)
+        Context.getInstance().getFrontend().deleteDuplicateShinryou(visitId)
                 .thenAccept(shinryouIds -> Platform.runLater(() -> {
                     shinryouIds.forEach(shinryouId -> {
                         ShinryouDeletedEvent e = new ShinryouDeletedEvent(visitId, shinryouId);

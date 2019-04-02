@@ -15,12 +15,12 @@ public class DiseaseSearchers {
     }
 
     public static DiseaseSearcher byoumeiSearcher = (t, at) ->
-            Service.api.searchByoumei(t, at)
+            Context.getInstance().getFrontend().searchByoumei(t, at)
                     .thenApply(result -> result.stream().map(m -> (DiseaseSearchResultModel) new ByoumeiSearchResult(m))
                             .collect(Collectors.toList()));
 
     public static DiseaseSearcher shuushokugoSearcher = (t, at) ->
-            Service.api.searchShuushokugo(t)
+            Context.getInstance().getFrontend().searchShuushokugo(t)
                     .thenApply(result -> result.stream().map(m -> (DiseaseSearchResultModel) new ShuushokugoSearchResult(m))
                             .collect(Collectors.toList()));
 

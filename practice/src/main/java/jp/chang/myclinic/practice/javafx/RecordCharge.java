@@ -27,12 +27,12 @@ class RecordCharge extends StackPane {
 
     private void onMouseClick(Node disp){
         if( chargeDTO != null ){
-            Service.api.getMeisai(chargeDTO.visitId)
+            Context.getInstance().getFrontend().getMeisai(chargeDTO.visitId)
                     .thenAccept(meisai -> Platform.runLater(() -> {
                         ChargeForm form = new ChargeForm(meisai, chargeDTO) {
                             @Override
                             protected void onEnter(int chargeValue) {
-                                Service.api.endExam(chargeDTO.visitId, chargeValue)
+                                Context.getInstance().getFrontend().endExam(chargeDTO.visitId, chargeValue)
                                         .thenAccept(result -> Platform.runLater(() -> {
                                             chargeDTO = ChargeDTO.copy(chargeDTO);
                                             chargeDTO.charge = chargeValue;

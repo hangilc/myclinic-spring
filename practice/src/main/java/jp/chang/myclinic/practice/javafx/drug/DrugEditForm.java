@@ -97,7 +97,7 @@ public class DrugEditForm extends DrugForm {
             }
         }
         GuiUtil.askForString("摘要の内容", curr).ifPresent(str -> {
-            Service.api.setDrugTekiyou(input.getDrugId(), str)
+            Context.getInstance().getFrontend().setDrugTekiyou(input.getDrugId(), str)
                     .thenAccept(ok -> {
                         Platform.runLater(() -> {
                             input.tekiyouProperty().setValue(str);
@@ -110,7 +110,7 @@ public class DrugEditForm extends DrugForm {
 
     private void doDeleteTekiyou() {
         if (GuiUtil.confirm("現在の摘要を削除しますか？")) {
-            Service.api.deleteDrugTekiyou(input.getDrugId())
+            Context.getInstance().getFrontend().deleteDrugTekiyou(input.getDrugId())
                     .thenAccept(ok -> {
                         Platform.runLater(() -> {
                             input.tekiyouProperty().setValue(null);
@@ -132,7 +132,7 @@ public class DrugEditForm extends DrugForm {
     }
 
     private void doAddToPrescExample(){
-        Service.api.getDrugFull(input.getDrugId())
+        Context.getInstance().getFrontend().getDrugFull(input.getDrugId())
                 .thenAcceptAsync(drugFull -> {
                     ConvertToPrescExampleDialog dialog = new ConvertToPrescExampleDialog(drugFull);
                     dialog.initOwner(getScene().getWindow());
@@ -151,8 +151,8 @@ public class DrugEditForm extends DrugForm {
             throw new RuntimeException("drugId is null.");
         }
         drug.prescribed = 0;
-        Service.api.updateDrug(drug)
-                .thenCompose(ok -> Service.api.getDrugFull(drug.drugId))
+        Context.getInstance().getFrontend().updateDrug(drug)
+                .thenCompose(ok -> Context.getInstance().getFrontend().getDrugFull(drug.drugId))
                 .thenAcceptAsync(this::onUpdated, Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);
     }
@@ -163,10 +163,10 @@ public class DrugEditForm extends DrugForm {
                 private DrugDTO drug;
             }
             Local local = new Local();
-            Service.api.getDrug(input.getDrugId())
+            Context.getInstance().getFrontend().getDrug(input.getDrugId())
                     .thenCompose(drugDTO -> {
                         local.drug = drugDTO;
-                        return Service.api.deleteDrug(drugDTO.drugId);
+                        return Context.getInstance().getFrontend().deleteDrug(drugDTO.drugId);
                     })
                     .thenAccept(ok -> {
                         DrugDeletedEvent event = new DrugDeletedEvent(local.drug);

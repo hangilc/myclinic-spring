@@ -183,7 +183,7 @@ public class Record extends VBox {
     private RecordHoken createRecordHoken(HokenDTO hoken, VisitDTO visit) {
         RecordHoken recordHoken = new RecordHoken(hoken);
         recordHoken.setOnMouseClicked(event -> {
-            Service.api.listAvailableHoken(visit.patientId, visit.visitedAt.substring(0, 10))
+            Context.getInstance().getFrontend().listAvailableHoken(visit.patientId, visit.visitedAt.substring(0, 10))
                     .thenAcceptAsync(availHoken -> {
                         HokenSelectForm form = new HokenSelectForm(availHoken, hoken);
                         form.setCallback(new HokenSelectForm.Callback() {
@@ -194,8 +194,8 @@ public class Record extends VBox {
                             @Override
                             public void onEnter(VisitDTO newVisit) {
                                 newVisit.visitId = visitId;
-                                Service.api.updateHoken(newVisit)
-                                        .thenCompose(ok -> Service.api.getHoken(visitId))
+                                Context.getInstance().getFrontend().updateHoken(newVisit)
+                                        .thenCompose(ok -> Context.getInstance().getFrontend().getHoken(visitId))
                                         .thenAcceptAsync(newHoken -> {
                                             replaceWith(createRecordHoken(newHoken, visit));
                                         }, Platform::runLater)

@@ -47,19 +47,19 @@ public class FunJavaFX {
             private List<ConductFullDTO> conducts;
         }
         Local local = new Local();
-        Service.api.batchEnterShinryouByName(names, visitId)
+        Context.getInstance().getFrontend().batchEnterShinryouByName(names, visitId)
                 .thenCompose(result -> {
                     local.enterResult = result;
-                    return Service.api.listShinryouFullByIds(local.enterResult.shinryouIds);
+                    return Context.getInstance().getFrontend().listShinryouFullByIds(local.enterResult.shinryouIds);
                 })
                 .thenCompose(result -> {
                     local.shinryouList = result;
-                    return Service.api.listConductFullByIds(local.enterResult.conductIds);
+                    return Context.getInstance().getFrontend().listConductFullByIds(local.enterResult.conductIds);
                 })
                 .thenCompose(result -> {
                     local.conducts = result;
                     List<Integer> shinryouIds = local.enterResult.shinryouIds;
-                    return Service.api.batchGetShinryouAttr(shinryouIds);
+                    return Context.getInstance().getFrontend().batchGetShinryouAttr(shinryouIds);
                 })
                 .thenAccept(attrList -> {
                     Map<Integer, ShinryouAttrDTO> attrMap = new HashMap<>();

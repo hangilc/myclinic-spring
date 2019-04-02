@@ -25,7 +25,7 @@ public class ConductDrugForm extends WorkForm {
         commands.setEnterCallback(() -> doEnter(drugInput));
         commands.setCancelCallback(this::onCancel);
         SearchBoxOld<IyakuhinMasterDTO> searchBox = new SearchBoxOld<>(
-                t -> Service.api.searchIyakuhinMaster(t, at),
+                t -> Context.getInstance().getFrontend().searchIyakuhinMaster(t, at),
                 m -> m.name
         );
         searchBox.setOnSelectCallback(drugInput::setMaster);

@@ -94,7 +94,7 @@ public class Edit extends VBox {
         modify.disease = disease;
         modify.shuushokugocodes = form.getShuushokugoMasters().stream()
                 .map(m -> m.shuushokugocode).collect(Collectors.toList());
-        Service.api.modifyDisease(modify)
+        Context.getInstance().getFrontend().modifyDisease(modify)
                 .thenAccept(result -> onComplete())
                 .exceptionally(HandlerFX::exceptionally);
     }
@@ -104,7 +104,7 @@ public class Edit extends VBox {
             return;
         }
         int diseaseId = origDisease.diseaseId;
-        Service.api.deleteDisease(diseaseId)
+        Context.getInstance().getFrontend().deleteDisease(diseaseId)
                 .thenAccept(result -> Platform.runLater(this::onComplete))
                 .exceptionally(HandlerFX::exceptionally);
     }

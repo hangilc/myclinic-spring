@@ -31,12 +31,12 @@ public class PracticeLib {
                     if( visitId == 0 ){
                         return CompletableFuture.completedFuture(null);
                     } else {
-                        return Service.api.startExam(visitId);
+                        return Context.getInstance().getFrontend().startExam(visitId);
                     }
                 })
                 .thenAccept(result -> {
-                    CompletableFuture<VisitFull2PageDTO> visitsFuture = Service.api.listVisitFull2(patient.patientId, 0);
-//                    CompletableFuture<List<DiseaseFullDTO>> diseasesFuture = Service.api.listCurrentDiseaseFull(patient.patientId);
+                    CompletableFuture<VisitFull2PageDTO> visitsFuture = Context.getInstance().getFrontend().listVisitFull2(patient.patientId, 0);
+//                    CompletableFuture<List<DiseaseFullDTO>> diseasesFuture = Context.getInstance().getFrontend().listCurrentDiseaseFull(patient.patientId);
                     try {
                         VisitFull2PageDTO visits = visitsFuture.join();
 //                        List<DiseaseFullDTO> diseases = diseasesFuture.join();
@@ -72,7 +72,7 @@ public class PracticeLib {
         if( env.getCurrentPatient() != null ){
             int visitId = env.getCurrentVisitId();
             if( visitId > 0 ){
-                return Service.api.suspendExam(visitId)
+                return Context.getInstance().getFrontend().suspendExam(visitId)
                         .thenAccept(result -> Platform.runLater(PracticeLib::clearCurrentPatient));
             } else {
                 clearCurrentPatient();
@@ -95,7 +95,7 @@ public class PracticeLib {
     }
 
     public static void endExam(int visitId, int charge, Runnable cb){
-        Service.api.endExam(visitId, charge)
+        Context.getInstance().getFrontend().endExam(visitId, charge)
                 .thenAccept(result -> Platform.runLater(() -> {
                     clearCurrentPatient();
                     cb.run();
@@ -177,7 +177,7 @@ public class PracticeLib {
         TextDTO text = new TextDTO();
         text.visitId = visitId;
         text.content = content;
-        Service.api.enterText(text)
+        Context.getInstance().getFrontend().enterText(text)
                 .thenAccept(textId -> getText(textId, cb))
                 .exceptionally(ex -> {
                     logger.error("Failed enter text.", ex);
@@ -187,7 +187,7 @@ public class PracticeLib {
     }
 
     public static void getText(int textId, Consumer<TextDTO> cb) {
-        Service.api.getText(textId)
+        Context.getInstance().getFrontend().getText(textId)
                 .thenAccept(text -> Platform.runLater(() -> cb.accept(text)))
                 .exceptionally(ex -> {
                     logger.error("Failed get text.", ex);
@@ -197,7 +197,7 @@ public class PracticeLib {
     }
 
     public static void updateText(TextDTO newText, Runnable cb) {
-        Service.api.updateText(newText)
+        Context.getInstance().getFrontend().updateText(newText)
                 .thenAccept(result -> Platform.runLater(cb))
                 .exceptionally(ex -> {
                     logger.error("Failed update text.", ex);
@@ -207,7 +207,7 @@ public class PracticeLib {
     }
 
     public static void deleteText(TextDTO text, Runnable cb) {
-        Service.api.deleteText(text.textId)
+        Context.getInstance().getFrontend().deleteText(text.textId)
                 .thenAccept(result -> Platform.runLater(cb))
                 .exceptionally(ex -> {
                     logger.error("Failed delete text.", ex);
@@ -217,7 +217,7 @@ public class PracticeLib {
     }
 
 //    public static void listWqueue(Consumer<List<WqueueFullDTO>> cb) {
-//        Service.api.listWqueueFullForExam()
+//        Context.getInstance().getFrontend().listWqueueFullForExam()
 //                .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
 //                .exceptionally(ex -> {
 //                    logger.error("Failed list wqueue for exam.", ex);
@@ -227,7 +227,7 @@ public class PracticeLib {
 //    }
 
     public static void listAvailableHoken(int patientId, String visitedAt, Consumer<HokenDTO> cb) {
-        Service.api.listAvailableHoken(patientId, visitedAt)
+        Context.getInstance().getFrontend().listAvailableHoken(patientId, visitedAt)
                 .thenAccept(hoken -> Platform.runLater(() -> cb.accept(hoken)))
                 .exceptionally(ex -> {
                     logger.error("Failed list available hoken.", ex);
@@ -243,7 +243,7 @@ public class PracticeLib {
     }
 
     private static CompletableFuture<Boolean> apiUpdateHoken(VisitDTO visit) {
-        return Service.api.updateHoken(visit)
+        return Context.getInstance().getFrontend().updateHoken(visit)
                 .whenComplete((v, ex) -> {
                     if (ex != null) {
                         logger.error("Failed to update hoken.", ex);
@@ -253,7 +253,7 @@ public class PracticeLib {
     }
 
     private static CompletableFuture<HokenDTO> apiGetHoken(int visitId) {
-        return Service.api.getHoken(visitId)
+        return Context.getInstance().getFrontend().getHoken(visitId)
                 .whenComplete((v, ex) -> {
                     if (ex != null) {
                         logger.error("Failed to get hoken.", ex);

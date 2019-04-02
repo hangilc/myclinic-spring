@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +68,7 @@ public class GlobalSearchDialog extends Stage {
     private void doSearch(int page) {
         String text = searchTextInput.getText();
         if (!text.isEmpty()) {
-            Service.api.searchTextGlobally(text, page)
+            Context.getInstance().getFrontend().searchTextGlobally(text, page)
                     .thenAccept(result -> Platform.runLater(() ->{
                         resultBox.set(result.textVisitPatients, text);
                         nav.set(result.page, result.totalPages);

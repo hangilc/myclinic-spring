@@ -42,7 +42,7 @@ public class DrugSearcher {
 
     public static CompletableFuture<List<DrugSearchResultItem>> searchMaster(String text, LocalDate at,
                                                                              Consumer<IyakuhinMasterDTO> onSelectHandler) {
-        return Service.api.searchIyakuhinMaster(text, at.toString())
+        return Context.getInstance().getFrontend().searchIyakuhinMaster(text, at.toString())
                 .thenApply(result -> result.stream().map(m -> new MasterItem(m, onSelectHandler)).collect(Collectors.toList()));
     }
 
@@ -82,12 +82,12 @@ public class DrugSearcher {
 
     public static CompletableFuture<List<DrugSearchResultItem>> searchExample(String text,
                                                                               Consumer<PrescExampleFullDTO> onSelectHandler){
-        return Service.api.searchPrescExample(text)
+        return Context.getInstance().getFrontend().searchPrescExample(text)
                 .thenApply(result -> result.stream().map(e -> new ExampleItem(e, onSelectHandler)).collect(Collectors.toList()));
     }
 
     public static CompletableFuture<List<DrugSearchResultItem>> listAllExamples(Consumer<PrescExampleFullDTO> onSelectHandler){
-        return Service.api.listAllPrescExample()
+        return Context.getInstance().getFrontend().listAllPrescExample()
                 .thenApply(result -> result.stream().map(e -> new ExampleItem(e, onSelectHandler)).collect(Collectors.toList()));
     }
 
@@ -120,7 +120,7 @@ public class DrugSearcher {
 
     static CompletableFuture<List<DrugSearchResultItem>> searchDrug(String text, int patientId,
                                                                            Consumer<DrugFullDTO> onSelectHandler){
-        return Service.api.searchPrevDrug(text, patientId)
+        return Context.getInstance().getFrontend().searchPrevDrug(text, patientId)
                 .thenApply(result -> result.stream().map(d -> new DrugItem(d, onSelectHandler)).collect(Collectors.toList()));
     }
 

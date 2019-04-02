@@ -6,6 +6,7 @@ import jp.chang.myclinic.dto.ByoumeiMasterDTO;
 import jp.chang.myclinic.dto.DiseaseExampleDTO;
 import jp.chang.myclinic.dto.ShuushokugoMasterDTO;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.SelectableList;
@@ -97,7 +98,7 @@ public class SearchBox extends VBox {
         Result<LocalDate, List<String>> dateResult = dateSupplier.get();
         if( dateResult.hasValue() ){
             if( example.byoumei != null ){
-                Service.api.findByoumeiMasterByName(example.byoumei, dateResult.getValue().toString())
+                Context.getInstance().getFrontend().getByoumeiMasterByName(example.byoumei, dateResult.getValue())
                         .thenAccept(byoumeiMaster -> Platform.runLater(() -> triggerByoumeiSelect(byoumeiMaster)))
                         .exceptionally(HandlerFX::exceptionally);
             }
@@ -109,7 +110,7 @@ public class SearchBox extends VBox {
    }
 
     private CompletableFuture<Void> handleAdj(String name){
-        return Service.api.findShuushokugoMasterByName(name)
+        return Context.getInstance().getFrontend().getShuushokugoMasterByName(name)
                 .thenAccept(m -> Platform.runLater(() -> triggerShuushokugoSelect(m)));
     }
 

@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.javafx.parts;
 
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.parts.searchbox.SimpleSearchBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ public class PatientSearchBox extends SimpleSearchBox<PatientDTO> {
     }
 
     private static CompletableFuture<List<PatientDTO>> search(String text){
-        return Service.api.searchPatient(text);
+        return Context.getInstance().getFrontend().searchPatient(text);
     }
 
     private static String convert(PatientDTO patient){

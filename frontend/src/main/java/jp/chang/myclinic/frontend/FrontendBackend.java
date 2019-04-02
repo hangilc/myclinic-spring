@@ -681,8 +681,18 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
+    public CompletableFuture<ByoumeiMasterDTO> getByoumeiMasterByName(String name, LocalDate at){
+        return query(backend -> backend.getByoumeiMasterByName(name, at));
+    }
+
+    @Override
     public CompletableFuture<List<ShuushokugoMasterDTO>> searchShuushokugoMaster(String text, LocalDate at) {
         return query(backend -> backend.searchShuushokugoMaster(text, at));
+    }
+
+    @Override
+    public CompletableFuture<ShuushokugoMasterDTO> getShuushokugoMasterByName(String name) {
+        return query(backend -> backend.getShuushokugoMasterByName(name));
     }
 
     @Override
@@ -691,6 +701,16 @@ public class FrontendBackend implements Frontend {
             backend.enterPrescExample(prescExample);
             return prescExample.prescExampleId;
         });
+    }
+
+    @Override
+    public CompletableFuture<Void> deletePrescExample(int prescExampleId) {
+        return txProc(backend -> backend.deletePrescExample(prescExampleId));
+    }
+
+    @Override
+    public CompletableFuture<Void>updatePrescExample(PrescExampleDTO prescExample) {
+        return txProc(backend -> backend.updatePrescExample(prescExample));
     }
 
     @Override

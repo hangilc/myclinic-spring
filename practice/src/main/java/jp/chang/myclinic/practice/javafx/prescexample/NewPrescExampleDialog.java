@@ -8,6 +8,7 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.PrescExampleDTO;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchMode;
 import jp.chang.myclinic.practice.javafx.drug.lib.SearchModeChooser;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -51,7 +52,7 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
             GuiUtil.alertError("医薬品が選択されていません。");
             return;
         }
-        Service.api.resolveIyakuhinMaster(iyakuhincode, LocalDate.now().toString())
+        Context.getInstance().getFrontend().resolveIyakuhinMaster(iyakuhincode, LocalDate.now().toString())
                 .thenAcceptAsync(master -> {
                     getInput().setMaster(master);
                 }, Platform::runLater)
@@ -62,7 +63,7 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
         PrescExampleDTO ex = createPrescExample();
         if (ex != null) {
             ex.prescExampleId = 0;
-            Service.api.enterPrescExample(ex)
+            Context.getInstance().getFrontend().enterPrescExample(ex)
                     .thenAccept(prescExampleId -> Platform.runLater(this::doClear))
                     .exceptionally(HandlerFX::exceptionally);
         }

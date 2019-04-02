@@ -73,7 +73,7 @@ public class ShoukiForm extends Stage {
             ShoukiDTO shoukiDTO = new ShoukiDTO();
             shoukiDTO.visitId = visitId;
             shoukiDTO.shouki = textArea.getText();
-            Service.api.updateShouki(shoukiDTO)
+            Context.getInstance().getFrontend().updateShouki(shoukiDTO)
                     .thenAcceptAsync(result -> {
                         callback.accept(visitId, shoukiDTO);
                         close();
@@ -82,7 +82,7 @@ public class ShoukiForm extends Stage {
         } else {
             ShoukiDTO edited = ShoukiDTO.copy(orig);
             edited.shouki = textArea.getText();
-            Service.api.updateShouki(edited)
+            Context.getInstance().getFrontend().updateShouki(edited)
                     .thenAcceptAsync(result -> {
                         callback.accept(visitId, edited);
                         close();
@@ -93,7 +93,7 @@ public class ShoukiForm extends Stage {
 
     private void doDelete() {
         if (GuiUtil.confirm("この症状詳記を削除していいですか？")) {
-            Service.api.deleteShouki(visitId)
+            Context.getInstance().getFrontend().deleteShouki(visitId)
                     .thenAcceptAsync(result -> {
                         callback.accept(visitId, null);
                         close();

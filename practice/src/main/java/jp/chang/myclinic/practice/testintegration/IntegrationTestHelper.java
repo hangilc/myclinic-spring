@@ -17,19 +17,19 @@ class IntegrationTestHelper {
 
     PatientDTO enterPatient(){
         PatientDTO patient = mock.pickPatient();
-        patient.patientId = Service.api.enterPatient(patient).join();
+        patient.patientId = Context.getInstance().getFrontend().enterPatient(patient).join();
         return patient;
     }
 
     ShahokokuhoDTO enterShahokokuho(int patientId){
         ShahokokuhoDTO shahokokuho = mock.pickShahokokuho(patientId);
-        shahokokuho.shahokokuhoId = Service.api.enterShahokokuho(shahokokuho).join();
+        shahokokuho.shahokokuhoId = Context.getInstance().getFrontend().enterShahokokuho(shahokokuho).join();
         return shahokokuho;
     }
 
     VisitDTO startVisit(int patientId){
-        int visitId = Service.api.startVisit(patientId).join();
-        return Service.api.getVisit(visitId).join();
+        int visitId = Context.getInstance().getFrontend().startVisit(patientId).join();
+        return Context.getInstance().getFrontend().getVisit(visitId).join();
     }
 
 }

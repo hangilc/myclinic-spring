@@ -15,6 +15,7 @@ import javafx.util.StringConverter;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.events.ConductDeletedEvent;
 import jp.chang.myclinic.practice.javafx.parts.OptionalWrapper;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
@@ -91,7 +92,7 @@ public class ConductEditForm extends WorkForm {
     }
 
     private void onKindChange(ConductKind value) {
-        Service.api.modifyConductKind(getConductId(), value.getCode())
+        Context.getInstance().getFrontend().modifyConductKind(getConductId(), value.getCode())
                 .thenAccept(result -> {
                     conduct.conduct.kind = value.getCode();
                 })
@@ -133,7 +134,7 @@ public class ConductEditForm extends WorkForm {
 
     private void doDeleteShinryou(ConductShinryouFullDTO shinryou, Node disp){
         if( GuiUtil.confirm("この診療行為を削除しますか？") ){
-            Service.api.deleteConductShinryou(shinryou.conductShinryou.conductShinryouId)
+            Context.getInstance().getFrontend().deleteConductShinryou(shinryou.conductShinryou.conductShinryouId)
                     .thenAccept(result -> Platform.runLater(() -> {
                         shinryouBox.getChildren().remove(disp);
                         conduct.conductShinryouList.remove(shinryou);
@@ -157,7 +158,7 @@ public class ConductEditForm extends WorkForm {
 
     private void doDeleteDrug(ConductDrugFullDTO drug, TextFlow disp) {
         if( GuiUtil.confirm("この薬剤を削除しますか？") ){
-            Service.api.deleteConductDrug(drug.conductDrug.conductDrugId)
+            Context.getInstance().getFrontend().deleteConductDrug(drug.conductDrug.conductDrugId)
                     .thenAccept(result -> Platform.runLater(() -> {
                         drugBox.getChildren().remove(disp);
                         conduct.conductDrugs.remove(drug);
@@ -181,7 +182,7 @@ public class ConductEditForm extends WorkForm {
 
     private void doDeleteKizai(ConductKizaiFullDTO kizai, TextFlow disp) {
         if( GuiUtil.confirm("この薬剤を削除しますか？") ){
-            Service.api.deleteConductKizai(kizai.conductKizai.conductKizaiId)
+            Context.getInstance().getFrontend().deleteConductKizai(kizai.conductKizai.conductKizaiId)
                     .thenAccept(result -> Platform.runLater(() -> {
                         kizaiBox.getChildren().remove(disp);
                         conduct.conductKizaiList.remove(kizai);
@@ -202,7 +203,7 @@ public class ConductEditForm extends WorkForm {
 
     private void doDelete() {
         if( GuiUtil.confirm("この処置を削除しますか？") ) {
-            Service.api.deleteConduct(getConductId())
+            Context.getInstance().getFrontend().deleteConduct(getConductId())
                     .thenAccept(result -> Platform.runLater(() -> {
                         ConductEditForm.this.fireEvent(new ConductDeletedEvent(conduct.conduct));
                     }))
@@ -221,8 +222,8 @@ public class ConductEditForm extends WorkForm {
         ConductShinryouForm form = new ConductShinryouForm(at, getConductId()) {
             @Override
             protected void onEnter(ConductShinryouDTO shinryou) {
-                Service.api.enterConductShinryou(shinryou)
-                        .thenCompose(Service.api::getConductShinryouFull)
+                Context.getInstance().getFrontend().enterConductShinryou(shinryou)
+                        .thenCompose(Context.getInstance().getFrontend()::getConductShinryouFull)
                         .thenAccept(entered -> Platform.runLater(() -> {
                             workarea.hide();
                             conduct.conductShinryouList.add(entered);
@@ -246,8 +247,8 @@ public class ConductEditForm extends WorkForm {
         ConductDrugForm form = new ConductDrugForm(at, getConductId()) {
             @Override
             protected void onEnter(ConductDrugDTO drug) {
-                Service.api.enterConductDrug(drug)
-                        .thenCompose(Service.api::getConductDrugFull)
+                Context.getInstance().getFrontend().enterConductDrug(drug)
+                        .thenCompose(Context.getInstance().getFrontend()::getConductDrugFull)
                         .thenAccept(entered -> Platform.runLater(() -> {
                             workarea.hide();
                             conduct.conductDrugs.add(entered);
@@ -271,8 +272,8 @@ public class ConductEditForm extends WorkForm {
         ConductKizaiForm form = new ConductKizaiForm(at, getConductId()){
             @Override
             protected void onEnter(ConductKizaiDTO kizai) {
-                Service.api.enterConductKizai(kizai)
-                        .thenCompose(Service.api::getConductKizaiFull)
+                Context.getInstance().getFrontend().enterConductKizai(kizai)
+                        .thenCompose(Context.getInstance().getFrontend()::getConductKizaiFull)
                         .thenAccept(entered -> Platform.runLater(() -> {
                             workarea.hide();
                             conduct.conductKizaiList.add(entered);

@@ -98,9 +98,9 @@ public class Main extends Application {
 
     private static void setupPracticeEnv() {
 //        CompletableFuture.allOf(
-//                Service.api.getClinicInfo().thenAccept(PracticeEnv.INSTANCE::setClinicInfo),
-//                Service.api.getReferList().thenAccept(PracticeEnv.INSTANCE::setReferList),
-//                Service.api.getPracticeConfig().thenAccept(c -> PracticeEnv.INSTANCE.setKouhatsuKasan(c.kouhatsuKasan))
+//                Context.getInstance().getFrontend().getClinicInfo().thenAccept(PracticeEnv.INSTANCE::setClinicInfo),
+//                Context.getInstance().getFrontend().getReferList().thenAccept(PracticeEnv.INSTANCE::setReferList),
+//                Context.getInstance().getFrontend().getPracticeConfig().thenAccept(c -> PracticeEnv.INSTANCE.setKouhatsuKasan(c.kouhatsuKasan))
 //        ).exceptionally(t -> {
 //            logger.error("setupPracticeEnv failed. {}", t);
 //            System.exit(1);

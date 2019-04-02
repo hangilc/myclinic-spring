@@ -132,7 +132,7 @@ public class RecordTitle extends TextFlow {
     }
 
     private void doRcptDetail() {
-        Service.api.getMeisai(visitId)
+        Context.getInstance().getFrontend().getMeisai(visitId)
                 .thenAccept(meisai -> Platform.runLater(() -> {
                     RcptDetailDialog dialog = new RcptDetailDialog(meisai);
                     dialog.showAndWait();

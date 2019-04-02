@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.GazouLabelDTO;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class GazouLabel extends StackPane {
         GazouLabelForm form = new GazouLabelForm(label) {
             @Override
             protected void onEnter(String value) {
-                Service.api.modifyGazouLabel(conductId, value)
+                Context.getInstance().getFrontend().modifyGazouLabel(conductId, value)
                         .thenAccept(result -> Platform.runLater(() -> {
                             GazouLabel.this.label = value;
                             GazouLabel.this.getChildren().setAll(createDisp());
@@ -53,7 +54,7 @@ public class GazouLabel extends StackPane {
             @Override
             protected void onDelete() {
                 if( GuiUtil.confirm("この画像ラベルを消去していいですか？") ){
-                    Service.api.deleteGazouLabel(conductId)
+                    Context.getInstance().getFrontend().deleteGazouLabel(conductId)
                             .thenAcceptAsync(result -> {
                                 GazouLabel.this.label = "";
                                 GazouLabel.this.getChildren().setAll(createDisp());

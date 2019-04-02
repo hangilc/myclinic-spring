@@ -73,8 +73,8 @@ public class ConductMenu extends VBox {
             EnterXpForm form = new EnterXpForm() {
                 @Override
                 protected void onEnter(EnterXpForm form, String label, String film) {
-                    Service.api.enterXp(visitId, label, film)
-                            .thenCompose(Service.api::getConductFull)
+                    Context.getInstance().getFrontend().enterXp(visitId, label, film)
+                            .thenCompose(Context.getInstance().getFrontend()::getConductFull)
                             .thenAccept(entered -> Platform.runLater(() -> {
                                 fireConductEntered(entered);
                                 hideWorkarea();
@@ -116,8 +116,8 @@ public class ConductMenu extends VBox {
     private void doCopyAll(){
         int targetVisitId = PracticeUtil.findCopyTarget(visitId);
         if( targetVisitId > 0 ){
-            Service.api.copyAllConducts(targetVisitId, visitId)
-                    .thenCompose(Service.api::listConductFullByIds)
+            Context.getInstance().getFrontend().copyAllConducts(targetVisitId, visitId)
+                    .thenCompose(Context.getInstance().getFrontend()::listConductFullByIds)
                     .thenAccept(entered -> Platform.runLater(() -> {
                         entered.forEach(this::fireConductEntered);
                     }))

@@ -11,265 +11,273 @@ import java.util.function.Consumer;
 
 public interface Frontend {
 
-    public CompletableFuture<Integer> enterPatient(PatientDTO patient);
+    CompletableFuture<Integer> enterPatient(PatientDTO patient);
 
-    public CompletableFuture<PatientDTO> getPatient(int patientId);
+    CompletableFuture<PatientDTO> getPatient(int patientId);
 
-    public CompletableFuture<Void> updatePatient(PatientDTO patient);
+    CompletableFuture<Void> updatePatient(PatientDTO patient);
 
-    public CompletableFuture<List<PatientDTO>> searchPatientByKeyword(String lastNameKeyword, String firstNameKeyword);
+    CompletableFuture<List<PatientDTO>> searchPatientByKeyword(String lastNameKeyword, String firstNameKeyword);
 
-    public CompletableFuture<List<PatientDTO>> searchPatientByKeyword(String keyword);
+    CompletableFuture<List<PatientDTO>> searchPatientByKeyword(String keyword);
 
-    public CompletableFuture<List<PatientDTO>> searchPatient(String text);
+    CompletableFuture<List<PatientDTO>> searchPatient(String text);
 
-    public CompletableFuture<List<ShahokokuhoDTO>> findAvailableShahokokuho(int patientId, LocalDate at);
+    CompletableFuture<List<ShahokokuhoDTO>> findAvailableShahokokuho(int patientId, LocalDate at);
 
-    public CompletableFuture<List<KoukikoureiDTO>> findAvailableKoukikourei(int patientId, LocalDate at);
+    CompletableFuture<List<KoukikoureiDTO>> findAvailableKoukikourei(int patientId, LocalDate at);
 
-    public CompletableFuture<List<RoujinDTO>> findAvailableRoujin(int patientId, LocalDate at);
+    CompletableFuture<List<RoujinDTO>> findAvailableRoujin(int patientId, LocalDate at);
 
-    public CompletableFuture<List<KouhiDTO>> findAvailableKouhi(int patientId, LocalDate at);
+    CompletableFuture<List<KouhiDTO>> findAvailableKouhi(int patientId, LocalDate at);
 
-    public CompletableFuture<VisitDTO> startVisit(int patientId, LocalDateTime at);
+    CompletableFuture<VisitDTO> startVisit(int patientId, LocalDateTime at);
 
-    public CompletableFuture<Void> startExam(int visitId);
+    CompletableFuture<Void> startExam(int visitId);
 
-    public CompletableFuture<Void> suspendExam(int visitId);
+    CompletableFuture<Void> suspendExam(int visitId);
 
-    public CompletableFuture<Void> endExam(int visitId, int charge);
+    CompletableFuture<Void> endExam(int visitId, int charge);
 
-    public CompletableFuture<Void> enterCharge(ChargeDTO charge);
+    CompletableFuture<Void> enterCharge(ChargeDTO charge);
 
-    public CompletableFuture<Void> setChargeOfVisit(int visitId, int charge);
+    CompletableFuture<Void> setChargeOfVisit(int visitId, int charge);
 
-    public CompletableFuture<ChargeDTO> getCharge(int visitId);
+    CompletableFuture<ChargeDTO> getCharge(int visitId);
 
-    public CompletableFuture<List<PaymentDTO>> listPayment(int visitId);
+    CompletableFuture<List<PaymentDTO>> listPayment(int visitId);
 
-    public CompletableFuture<WqueueDTO> getWqueue(int visitId);
+    CompletableFuture<WqueueDTO> getWqueue(int visitId);
 
-    public CompletableFuture<Void> deleteWqueue(int visitId);
+    CompletableFuture<Void> deleteWqueue(int visitId);
 
-    public CompletableFuture<List<WqueueDTO>> listWqueue();
+    CompletableFuture<List<WqueueDTO>> listWqueue();
 
-    public CompletableFuture<List<WqueueFullDTO>> listWqueueFull();
+    CompletableFuture<List<WqueueFullDTO>> listWqueueFull();
 
-    public CompletableFuture<HokenDTO> getHoken(int visitId);
+    CompletableFuture<HokenDTO> getHoken(int visitId);
 
-    public CompletableFuture<HokenDTO> getHoken(VisitDTO visit);
+    CompletableFuture<HokenDTO> getHoken(VisitDTO visit);
 
-    public CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt);
+    CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt);
 
-    public CompletableFuture<Void> updateHoken(VisitDTO visit);
+    CompletableFuture<Void> updateHoken(VisitDTO visit);
 
-    public CompletableFuture<DrugAttrDTO> getDrugAttr(int drugId);
+    CompletableFuture<DrugAttrDTO> getDrugAttr(int drugId);
 
-    public CompletableFuture<Void> enterDrugAttr(DrugAttrDTO drugAttr);
+    CompletableFuture<Void> enterDrugAttr(DrugAttrDTO drugAttr);
 
-    public CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds);
+    CompletableFuture<List<DrugAttrDTO>> batchGetDrugAttr(List<Integer> drugIds);
 
-    public CompletableFuture<DrugAttrDTO> setDrugTekiyou(int drugId, String tekiyou);
+    CompletableFuture<DrugAttrDTO> setDrugTekiyou(int drugId, String tekiyou);
 
-    public CompletableFuture<Void> deleteDrugTekiyou(int drugId);
+    CompletableFuture<Void> deleteDrugTekiyou(int drugId);
 
-    public CompletableFuture<Integer> countUnprescribedDrug(int visitId);
+    CompletableFuture<Integer> countUnprescribedDrug(int visitId);
 
-    public CompletableFuture<VisitDTO> getVisit(int visitId);
+    CompletableFuture<VisitDTO> getVisit(int visitId);
 
-    public CompletableFuture<Void> deleteVisitSafely(int visitId);
+    CompletableFuture<Void> deleteVisitSafely(int visitId);
 
-    public CompletableFuture<List<VisitPatientDTO>> listRecentVisitWithPatient(int page, int itemsPerPage);
+    CompletableFuture<List<VisitPatientDTO>> listRecentVisitWithPatient(int page, int itemsPerPage);
 
-    public CompletableFuture<List<VisitPatientDTO>> listTodaysVisit();
+    CompletableFuture<List<VisitPatientDTO>> listTodaysVisit();
 
-    public CompletableFuture<VisitFull2PageDTO> listVisitFull2(int patientId, int page);
+    CompletableFuture<VisitFull2PageDTO> listVisitFull2(int patientId, int page);
 
-    public CompletableFuture<VisitFullDTO> getVisitFull(int visitId);
+    CompletableFuture<VisitFullDTO> getVisitFull(int visitId);
 
-    public CompletableFuture<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds);
+    CompletableFuture<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds);
 
-    public CompletableFuture<Void> updateShouki(ShoukiDTO shouki);
+    CompletableFuture<Void> updateShouki(ShoukiDTO shouki);
 
-    public CompletableFuture<Void> deleteShouki(int visitId);
+    CompletableFuture<Void> deleteShouki(int visitId);
 
-    public CompletableFuture<Integer> enterText(TextDTO text);
+    CompletableFuture<Integer> enterText(TextDTO text);
 
-    public CompletableFuture<TextDTO> getText(int textId);
+    CompletableFuture<TextDTO> getText(int textId);
 
-    public CompletableFuture<Void> updateText(TextDTO text);
+    CompletableFuture<Void> updateText(TextDTO text);
 
-    public CompletableFuture<Void> deleteText(int textId);
+    CompletableFuture<Void> deleteText(int textId);
 
-    public CompletableFuture<List<TextDTO>> listText(int visitId);
+    CompletableFuture<List<TextDTO>> listText(int visitId);
 
-    public CompletableFuture<TextVisitPageDTO> searchText(int patientId, String text, int page);
+    CompletableFuture<TextVisitPageDTO> searchText(int patientId, String text, int page);
 
-    public CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(String text, int page);
+    CompletableFuture<TextVisitPatientPageDTO> searchTextGlobally(String text, int page);
 
-    public CompletableFuture<DrugDTO> getDrug(int drugId);
+    CompletableFuture<DrugDTO> getDrug(int drugId);
 
-    public CompletableFuture<Integer> enterDrug(DrugDTO drug);
+    CompletableFuture<Integer> enterDrug(DrugDTO drug);
 
-    public CompletableFuture<Void> updateDrug(DrugDTO drug);
+    CompletableFuture<Void> updateDrug(DrugDTO drug);
 
-    public CompletableFuture<Void> batchUpdateDrugDays(List<Integer> drugIds, int days);
+    CompletableFuture<Void> batchUpdateDrugDays(List<Integer> drugIds, int days);
 
-    public CompletableFuture<Void> deleteDrug(int drugId);
+    CompletableFuture<Void> deleteDrug(int drugId);
 
-    public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds);
+    CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds);
 
-    public CompletableFuture<DrugFullDTO> getDrugFull(int drugId);
+    CompletableFuture<DrugFullDTO> getDrugFull(int drugId);
 
-    public CompletableFuture<List<DrugFullDTO>> listDrugFull(int visitId);
+    CompletableFuture<List<DrugFullDTO>> listDrugFull(int visitId);
 
-    public CompletableFuture<List<Integer>> listRepresentativeGaiyouDrugId(String text, int patientId);
+    CompletableFuture<List<Integer>> listRepresentativeGaiyouDrugId(String text, int patientId);
 
-    public CompletableFuture<List<DrugFullDTO>> searchPrevDrug(int patientId);
+    CompletableFuture<List<DrugFullDTO>> searchPrevDrug(int patientId);
 
-    public CompletableFuture<List<DrugFullDTO>> searchPrevDrug(String text, int patientId);
+    CompletableFuture<List<DrugFullDTO>> searchPrevDrug(String text, int patientId);
 
-    public CompletableFuture<ShinryouDTO> getShinryou(int shinryouId);
+    CompletableFuture<ShinryouDTO> getShinryou(int shinryouId);
 
-    public CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou);
+    CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou);
 
-    public CompletableFuture<Void> deleteShinryou(int shinryouId);
+    CompletableFuture<Void> deleteShinryou(int shinryouId);
 
-    public CompletableFuture<ShinryouFullDTO> getShinryouFull(int shinryouId);
+    CompletableFuture<ShinryouFullDTO> getShinryouFull(int shinryouId);
 
-    public CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList);
+    CompletableFuture<Void> batchEnterShinryou(List<ShinryouDTO> shinryouList);
 
-    public CompletableFuture<BatchEnterResultDTO> batchEnter(BatchEnterRequestDTO req);
+    CompletableFuture<BatchEnterResultDTO> batchEnter(BatchEnterRequestDTO req);
 
-    public CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(List<Integer> shinryouIds);
+    CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(List<Integer> shinryouIds);
 
-    public CompletableFuture<List<ShinryouFullDTO>> listShinryouFull(int visitId);
+    CompletableFuture<List<ShinryouFullDTO>> listShinryouFull(int visitId);
 
-    public CompletableFuture<List<ShinryouAttrDTO>> batchGetShinryouAttr(List<Integer> shinryouIds);
+    CompletableFuture<List<ShinryouAttrDTO>> batchGetShinryouAttr(List<Integer> shinryouIds);
 
-    public CompletableFuture<ShinryouAttrDTO> getShinryouAttr(int shinryouId);
+    CompletableFuture<ShinryouAttrDTO> getShinryouAttr(int shinryouId);
 
-    public CompletableFuture<Void> enterShinryouAttr(ShinryouAttrDTO shinryouAttr);
+    CompletableFuture<Void> enterShinryouAttr(ShinryouAttrDTO shinryouAttr);
 
-    public CompletableFuture<Integer> enterConduct(ConductDTO conduct);
+    CompletableFuture<Integer> enterConduct(ConductDTO conduct);
 
-    public CompletableFuture<ConductFullDTO> enterConductFull(ConductEnterRequestDTO req);
+    CompletableFuture<ConductFullDTO> enterConductFull(ConductEnterRequestDTO req);
 
-    public CompletableFuture<ConductDTO> getConduct(int conductId);
+    CompletableFuture<ConductDTO> getConduct(int conductId);
 
-    public CompletableFuture<Void> deleteConductCascading(int conductId);
+    CompletableFuture<Void> deleteConductCascading(int conductId);
 
-    public CompletableFuture<Void> modifyConductKind(int conductId, int conductKind);
+    CompletableFuture<Void> modifyConductKind(int conductId, int conductKind);
 
-    public CompletableFuture<List<ConductDTO>> listConduct(int visitId);
+    CompletableFuture<List<ConductDTO>> listConduct(int visitId);
 
-    public CompletableFuture<List<ConductFullDTO>> listConductFullByIds(List<Integer> conductIds);
+    CompletableFuture<List<ConductFullDTO>> listConductFullByIds(List<Integer> conductIds);
 
-    public CompletableFuture<ConductFullDTO> getConductFull(int conductId);
+    CompletableFuture<ConductFullDTO> getConductFull(int conductId);
 
-    public CompletableFuture<List<ConductFullDTO>> listConductFull(int visitId);
+    CompletableFuture<List<ConductFullDTO>> listConductFull(int visitId);
 
-    public CompletableFuture<Void> enterGazouLabel(GazouLabelDTO gazouLabel);
+    CompletableFuture<Void> enterGazouLabel(GazouLabelDTO gazouLabel);
 
-    public CompletableFuture<GazouLabelDTO> getGazouLabel(int conductId);
+    CompletableFuture<GazouLabelDTO> getGazouLabel(int conductId);
 
-    public CompletableFuture<Void> deleteGazouLabel(int conductId);
+    CompletableFuture<Void> deleteGazouLabel(int conductId);
 
-    public CompletableFuture<Integer> enterConductShinryou(ConductShinryouDTO shinryou);
+    CompletableFuture<Integer> enterConductShinryou(ConductShinryouDTO shinryou);
 
-    public CompletableFuture<ConductShinryouDTO> getConductShinryou(int conductShinryouId);
+    CompletableFuture<ConductShinryouDTO> getConductShinryou(int conductShinryouId);
 
-    public CompletableFuture<Void> deleteConductShinryou(int conductShinryouId);
+    CompletableFuture<Void> deleteConductShinryou(int conductShinryouId);
 
-    public CompletableFuture<List<ConductShinryouDTO>> listConductShinryou(int conductId);
+    CompletableFuture<List<ConductShinryouDTO>> listConductShinryou(int conductId);
 
-    public CompletableFuture<ConductShinryouFullDTO> getConductShinryouFull(int conductShinryouId);
+    CompletableFuture<ConductShinryouFullDTO> getConductShinryouFull(int conductShinryouId);
 
-    public CompletableFuture<List<ConductShinryouFullDTO>> listConductShinryouFull(int conductId);
+    CompletableFuture<List<ConductShinryouFullDTO>> listConductShinryouFull(int conductId);
 
-    public CompletableFuture<Integer> enterConductDrug(ConductDrugDTO drug);
+    CompletableFuture<Integer> enterConductDrug(ConductDrugDTO drug);
 
-    public CompletableFuture<ConductDrugDTO> getConductDrug(int conductDrugId);
+    CompletableFuture<ConductDrugDTO> getConductDrug(int conductDrugId);
 
-    public CompletableFuture<Void> deleteConductDrug(int conductDrugId);
+    CompletableFuture<Void> deleteConductDrug(int conductDrugId);
 
-    public CompletableFuture<List<ConductDrugDTO>> listConductDrug(int conductId);
+    CompletableFuture<List<ConductDrugDTO>> listConductDrug(int conductId);
 
-    public CompletableFuture<ConductDrugFullDTO> getConductDrugFull(int conductDrugId);
+    CompletableFuture<ConductDrugFullDTO> getConductDrugFull(int conductDrugId);
 
-    public CompletableFuture<List<ConductDrugFullDTO>> listConductDrugFull(int conductId);
+    CompletableFuture<List<ConductDrugFullDTO>> listConductDrugFull(int conductId);
 
-    public CompletableFuture<Integer> enterConductKizai(ConductKizaiDTO kizai);
+    CompletableFuture<Integer> enterConductKizai(ConductKizaiDTO kizai);
 
-    public CompletableFuture<ConductKizaiDTO> getConductKizai(int conductKizaiId);
+    CompletableFuture<ConductKizaiDTO> getConductKizai(int conductKizaiId);
 
-    public CompletableFuture<Void> deleteConductKizai(int conductKizaiId);
+    CompletableFuture<Void> deleteConductKizai(int conductKizaiId);
 
-    public CompletableFuture<List<ConductKizaiDTO>> listConductKizai(int conductId);
+    CompletableFuture<List<ConductKizaiDTO>> listConductKizai(int conductId);
 
-    public CompletableFuture<ConductKizaiFullDTO> getConductKizaiFull(int conductKizaiId);
+    CompletableFuture<ConductKizaiFullDTO> getConductKizaiFull(int conductKizaiId);
 
-    public CompletableFuture<List<ConductKizaiFullDTO>> listConductKizaiFull(int conductId);
+    CompletableFuture<List<ConductKizaiFullDTO>> listConductKizaiFull(int conductId);
 
-    public CompletableFuture<ShahokokuhoDTO> getShahokokuho(int shahokokuhoId);
+    CompletableFuture<ShahokokuhoDTO> getShahokokuho(int shahokokuhoId);
 
-    public CompletableFuture<KoukikoureiDTO> getKoukikourei(int koukikoureiId);
+    CompletableFuture<KoukikoureiDTO> getKoukikourei(int koukikoureiId);
 
-    public CompletableFuture<RoujinDTO> getRoujin(int roujinId);
+    CompletableFuture<RoujinDTO> getRoujin(int roujinId);
 
-    public CompletableFuture<KouhiDTO> getKouhi(int kouhiId);
+    CompletableFuture<KouhiDTO> getKouhi(int kouhiId);
 
-    public CompletableFuture<Integer> enterDisease(DiseaseDTO disease);
+    CompletableFuture<Integer> enterDisease(DiseaseDTO disease);
 
-    public CompletableFuture<DiseaseDTO> getDisease(int diseaseId);
+    CompletableFuture<DiseaseDTO> getDisease(int diseaseId);
 
-    public CompletableFuture<Void> updateDisease(DiseaseDTO disease);
+    CompletableFuture<Void> updateDisease(DiseaseDTO disease);
 
-    public CompletableFuture<Void> deleteDisease(int diseaseId);
+    CompletableFuture<Void> deleteDisease(int diseaseId);
 
-    public CompletableFuture<DiseaseFullDTO> getDiseaseFull(int diseaseId);
+    CompletableFuture<DiseaseFullDTO> getDiseaseFull(int diseaseId);
 
-    public CompletableFuture<List<DiseaseFullDTO>> listCurrentDiseaseFull(int patientId);
+    CompletableFuture<List<DiseaseFullDTO>> listCurrentDiseaseFull(int patientId);
 
-    public CompletableFuture<List<DiseaseFullDTO>> listDiseaseFull(int patientId);
+    CompletableFuture<List<DiseaseFullDTO>> listDiseaseFull(int patientId);
 
-    public CompletableFuture<Void> batchUpdateDiseaseEndReason(List<DiseaseModifyEndReasonDTO> modifications);
+    CompletableFuture<Void> batchUpdateDiseaseEndReason(List<DiseaseModifyEndReasonDTO> modifications);
 
-    public CompletableFuture<PharmaQueueDTO> getPharmaQueue(int visitId);
+    CompletableFuture<PharmaQueueDTO> getPharmaQueue(int visitId);
 
-    public CompletableFuture<Void> deletePharmaQueue(int visitId);
+    CompletableFuture<Void> deletePharmaQueue(int visitId);
 
-    public CompletableFuture<ShinryouMasterDTO> findShinryouMasterByName(String name, LocalDate at);
+    CompletableFuture<ShinryouMasterDTO> findShinryouMasterByName(String name, LocalDate at);
 
-    public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByName(List<String> nameCandidates, LocalDate at);
+    CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByName(List<String> nameCandidates, LocalDate at);
 
-    public CompletableFuture<Map<String, Integer>> batchResolveShinryouNames(List<List<String>> args, LocalDate at);
+    CompletableFuture<Map<String, Integer>> batchResolveShinryouNames(List<List<String>> args, LocalDate at);
 
-    public CompletableFuture<List<ShinryouMasterDTO>> searchShinryouMaster(String text, LocalDate at);
+    CompletableFuture<List<ShinryouMasterDTO>> searchShinryouMaster(String text, LocalDate at);
 
-    public CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMaster(String text, LocalDate at);
+    CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMaster(String text, LocalDate at);
 
-    public CompletableFuture<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at);
+    CompletableFuture<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at);
 
-    public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByName(List<String> nameCandidates, LocalDate at);
+    CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByName(List<String> nameCandidates, LocalDate at);
 
-    public CompletableFuture<Map<String, Integer>> batchResolveKizaiNames(List<List<String>> args, LocalDate at);
+    CompletableFuture<Map<String, Integer>> batchResolveKizaiNames(List<List<String>> args, LocalDate at);
 
-    public CompletableFuture<List<KizaiMasterDTO>> searchKizaiMaster(String text, LocalDate at);
+    CompletableFuture<List<KizaiMasterDTO>> searchKizaiMaster(String text, LocalDate at);
 
-    public CompletableFuture<List<ByoumeiMasterDTO>> searchByoumeiMaster(String text, LocalDate at);
+    CompletableFuture<List<ByoumeiMasterDTO>> searchByoumeiMaster(String text, LocalDate at);
 
-    public CompletableFuture<List<ShuushokugoMasterDTO>> searchShuushokugoMaster(String text, LocalDate at);
+    CompletableFuture<ByoumeiMasterDTO> getByoumeiMasterByName(String name, LocalDate at);
 
-    public CompletableFuture<Integer> enterPrescExample(PrescExampleDTO prescExample);
+    CompletableFuture<List<ShuushokugoMasterDTO>> searchShuushokugoMaster(String text, LocalDate at);
 
-    public CompletableFuture<List<PrescExampleFullDTO>> searchPrescExample(String text);
+    CompletableFuture<ShuushokugoMasterDTO> getShuushokugoMasterByName(String name);
 
-    public CompletableFuture<List<PrescExampleFullDTO>> listAllPrescExample();
+    CompletableFuture<Integer> enterPrescExample(PrescExampleDTO prescExample);
 
-    public CompletableFuture<PracticeLogDTO> getLastPracticeLog();
+    CompletableFuture<Void> deletePrescExample(int prescExampleId);
 
-    public CompletableFuture<Integer> getLastPracticeLogId();
+    CompletableFuture<Void> updatePrescExample(PrescExampleDTO prescExample);
 
-    public CompletableFuture<List<PracticeLogDTO>> listPracticeLogSince(int afterThisId);
+    CompletableFuture<List<PrescExampleFullDTO>> searchPrescExample(String text);
+
+    CompletableFuture<List<PrescExampleFullDTO>> listAllPrescExample();
+
+    CompletableFuture<PracticeLogDTO> getLastPracticeLog();
+
+    CompletableFuture<Integer> getLastPracticeLogId();
+
+    CompletableFuture<List<PracticeLogDTO>> listPracticeLogSince(int afterThisId);
 }

@@ -163,7 +163,7 @@ public class MainPane extends BorderPane {
     }
 
     private void doTodaysVisits() {
-        Service.api.listTodaysVisits()
+        Context.getInstance().getFrontend().listTodaysVisits()
                 .thenAccept(list -> Platform.runLater(() -> {
                     TodaysVisitsDialog dialog = new TodaysVisitsDialog(list);
                     dialog.show();
@@ -182,7 +182,7 @@ public class MainPane extends BorderPane {
             String confirmText = String.format("(%d) %s%s様を再受付しますか？", patient.patientId,
                     patient.lastName, patient.firstName);
             if (GuiUtil.confirm(confirmText)) {
-                Service.api.startVisit(patient.patientId)
+                Context.getInstance().getFrontend().startVisit(patient.patientId)
                         .exceptionally(HandlerFX::exceptionally);
             }
         }
@@ -290,7 +290,7 @@ public class MainPane extends BorderPane {
         }
         int visitId = PracticeEnv.INSTANCE.getCurrentVisitId();
         if (visitId > 0) {
-            Service.api.getMeisai(visitId)
+            Context.getInstance().getFrontend().getMeisai(visitId)
                     .thenAccept(meisai -> Platform.runLater(() -> {
                         CashierDialog dialog = new CashierDialog(meisai, visitId);
                         dialog.showAndWait();
