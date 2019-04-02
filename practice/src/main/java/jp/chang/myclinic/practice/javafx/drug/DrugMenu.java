@@ -13,6 +13,7 @@ import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;

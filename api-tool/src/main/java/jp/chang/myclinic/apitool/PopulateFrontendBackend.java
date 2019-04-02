@@ -88,7 +88,7 @@ class PopulateFrontendBackend implements Runnable {
                 } else if (name.startsWith("get") || name.startsWith("list") ||
                         name.startsWith("search") || name.startsWith("find") ||
                         name.startsWith("count") || name.startsWith("resolve") ||
-                        name.startsWith("batchResolve")) {
+                        name.startsWith("batchResolve") || name.startsWith("modify")) {
                     frontendMethod.setBody(makeBody("query", frontendMethod));
                     targetDecl.addMember(frontendMethod);
                 } else {

@@ -449,6 +449,16 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Void> updateGazouLabel(GazouLabelDTO gazouLabel) {
+        return txProc(backend -> backend.updateGazouLabel(gazouLabel));
+    }
+
+    @Override
+    public CompletableFuture<Void> modifyGazouLabel(int conductId, String label) {
+        return txProc(backend -> backend.modifyGazouLabel(conductId, label));
+    }
+
+    @Override
     public CompletableFuture<GazouLabelDTO> getGazouLabel(int conductId) {
         return query(backend -> backend.getGazouLabel(conductId));
     }

@@ -8,6 +8,7 @@ import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.events.ShinryouDeletedEvent;
 import jp.chang.myclinic.practice.javafx.shinryou.ShinryouEditForm;
 import jp.chang.myclinic.practice.lib.PracticeUtil;

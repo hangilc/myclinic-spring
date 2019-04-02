@@ -1009,6 +1009,25 @@ public class Backend {
         practiceLogger.logGazouLabelDeleted(deleted);
     }
 
+    public void updateGazouLabel(GazouLabelDTO gazouLabel){
+        GazouLabelDTO prev = getGazouLabel(gazouLabel.conductId);
+        ts.gazouLabelTable.update(gazouLabel);
+        practiceLogger.logGazouLabelUpdated(prev, gazouLabel);
+    }
+
+    public void modifyGazouLabel(int conductId, String label){
+        GazouLabelDTO gazouLabel = getGazouLabel(conductId);
+        if( gazouLabel == null ){
+            gazouLabel = new GazouLabelDTO();
+            gazouLabel.conductId = conductId;
+            gazouLabel.label = label;
+            enterGazouLabel(gazouLabel);
+        } else {
+            gazouLabel.label = label;
+            updateGazouLabel(gazouLabel);
+        }
+    }
+
     // ConductShinryou //////////////////////////////////////////////////////////////////////
 
     public void enterConductShinryou(ConductShinryouDTO shinryou) {

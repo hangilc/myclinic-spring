@@ -203,7 +203,7 @@ public class ConductEditForm extends WorkForm {
 
     private void doDelete() {
         if( GuiUtil.confirm("この処置を削除しますか？") ) {
-            Context.getInstance().getFrontend().deleteConduct(getConductId())
+            Context.getInstance().getFrontend().deleteConductCascading(getConductId())
                     .thenAccept(result -> Platform.runLater(() -> {
                         ConductEditForm.this.fireEvent(new ConductDeletedEvent(conduct.conduct));
                     }))

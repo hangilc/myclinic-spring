@@ -6,6 +6,7 @@ import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.practice.Context;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -66,7 +67,7 @@ public class ShinryouCopier {
                                 private int enteredShinryouId;
                             }
                             Local local = new Local();
-                            Context.getInstance().getFrontend().findShinryouAttr(src.shinryou.shinryouId)
+                            Context.getInstance().getFrontend().getShinryouAttr(src.shinryou.shinryouId)
                                     .thenCompose(srcAttr -> {
                                         local.srcAttr = srcAttr;
                                         return Context.getInstance().getFrontend().enterShinryou(dst);

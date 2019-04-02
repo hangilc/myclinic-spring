@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,7 +164,7 @@ public class MainPane extends BorderPane {
     }
 
     private void doTodaysVisits() {
-        Context.getInstance().getFrontend().listTodaysVisits()
+        Context.getInstance().getFrontend().listTodaysVisit()
                 .thenAccept(list -> Platform.runLater(() -> {
                     TodaysVisitsDialog dialog = new TodaysVisitsDialog(list);
                     dialog.show();
@@ -182,7 +183,7 @@ public class MainPane extends BorderPane {
             String confirmText = String.format("(%d) %s%s様を再受付しますか？", patient.patientId,
                     patient.lastName, patient.firstName);
             if (GuiUtil.confirm(confirmText)) {
-                Context.getInstance().getFrontend().startVisit(patient.patientId)
+                Context.getInstance().getFrontend().startVisit(patient.patientId, LocalDateTime.now())
                         .exceptionally(HandlerFX::exceptionally);
             }
         }

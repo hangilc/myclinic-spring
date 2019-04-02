@@ -171,6 +171,10 @@ public interface Frontend {
 
     CompletableFuture<Void> enterGazouLabel(GazouLabelDTO gazouLabel);
 
+    CompletableFuture<Void> updateGazouLabel(GazouLabelDTO gazouLabel);
+
+    CompletableFuture<Void> modifyGazouLabel(int conductId, String label);
+
     CompletableFuture<GazouLabelDTO> getGazouLabel(int conductId);
 
     CompletableFuture<Void> deleteGazouLabel(int conductId);
