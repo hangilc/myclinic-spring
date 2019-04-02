@@ -11,6 +11,8 @@ import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+
 public class ConductDrugForm extends WorkForm {
 
     private static Logger logger = LoggerFactory.getLogger(ConductDrugForm.class);
@@ -26,7 +28,7 @@ public class ConductDrugForm extends WorkForm {
         commands.setEnterCallback(() -> doEnter(drugInput));
         commands.setCancelCallback(this::onCancel);
         SearchBoxOld<IyakuhinMasterDTO> searchBox = new SearchBoxOld<>(
-                t -> Context.getInstance().getFrontend().searchIyakuhinMaster(t, at),
+                t -> Context.getInstance().getFrontend().searchIyakuhinMaster(t, LocalDate.parse(at)),
                 m -> m.name
         );
         searchBox.setOnSelectCallback(drugInput::setMaster);

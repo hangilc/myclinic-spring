@@ -410,6 +410,14 @@ public class Backend {
 
     // Drug ///////////////////////////////////////////////////////////////////////////
 
+    public int countUnprescribedDrug(int visitId) {
+        String sql = xlate("select count(*) from Drug where visitId = ? and prescribed = 0",
+                ts.drugTable);
+        return getQuery().get(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), visitId);
+    }
+
+    // DrugAttr /////////////////////////////////////////////////////////////////////////
+
     public DrugAttrDTO getDrugAttr(int drugId) {
         return ts.drugAttrTable.getById(drugId);
     }
@@ -456,12 +464,6 @@ public class Backend {
         } else {
             updateDrugAttr(attr);
         }
-    }
-
-    public int countUnprescribedDrug(int visitId) {
-        String sql = xlate("select count(*) from Drug where visitId = ? and prescribed = 0",
-                ts.drugTable);
-        return getQuery().get(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), visitId);
     }
 
     // Visit ////////////////////////////////////////////////////////////////////////////
@@ -873,6 +875,8 @@ public class Backend {
                 visitId);
     }
 
+    // ShinryouAttr /////////////////////////////////////////////////////////////////////////////
+
     public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds) {
         return shinryouIds.stream().map(ts.shinryouAttrTable::getById).filter(Objects::nonNull).collect(toList());
     }
@@ -885,6 +889,36 @@ public class Backend {
         ts.shinryouAttrTable.insert(shinryouAttr);
     }
 
+    private void deleteShinryouAttr(int shinryouId){
+        ts.shinryouAttrTable.delete(shinryouId);
+    }
+
+    private void updateShinryouAttr(ShinryouAttrDTO shinryouAttr){
+        ts.shinryouAttrTable.update(shinryouAttr);
+    }
+
+    public void deleteShinryouTekiyou(int shinryouId){
+        ShinryouAttrDTO shinryouAttr = getShinryouAttr(shinryouId);
+        shinryouAttr.tekiyou = null;
+        if( ShinryouAttrDTO.isEmpty(shinryouAttr) ){
+            deleteShinryouAttr(shinryouId);
+        } else {
+            updateShinryouAttr(shinryouAttr);
+        }
+    }
+
+    public void setShinryouTekiyou(int shinryouId, String tekiyou){
+        ShinryouAttrDTO attr = ts.shinryouAttrTable.getById(shinryouId);
+        if (attr != null) {
+            attr.tekiyou = tekiyou;
+            updateShinryouAttr(attr);
+        } else {
+            ShinryouAttrDTO newShinryouAttr = new ShinryouAttrDTO();
+            newShinryouAttr.shinryouId = shinryouId;
+            newShinryouAttr.tekiyou = tekiyou;
+            enterShinryouAttr(newShinryouAttr);
+        }
+    }
 
     // Conduct ///////////////////////////////////////////////////////////////////////////////
 

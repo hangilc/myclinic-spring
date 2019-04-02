@@ -5,7 +5,6 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -691,7 +690,7 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<ByoumeiMasterDTO> getByoumeiMasterByName(String name, LocalDate at){
+    public CompletableFuture<ByoumeiMasterDTO> getByoumeiMasterByName(String name, LocalDate at) {
         return query(backend -> backend.getByoumeiMasterByName(name, at));
     }
 
@@ -719,7 +718,7 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void>updatePrescExample(PrescExampleDTO prescExample) {
+    public CompletableFuture<Void> updatePrescExample(PrescExampleDTO prescExample) {
         return txProc(backend -> backend.updatePrescExample(prescExample));
     }
 
@@ -746,5 +745,20 @@ public class FrontendBackend implements Frontend {
     @Override
     public CompletableFuture<List<PracticeLogDTO>> listPracticeLogSince(int afterThisId) {
         return query(backend -> backend.listPracticeLogSince(afterThisId));
+    }
+
+    @Override
+    public CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO) {
+        return txProc(backend -> backend.modifyDisease(diseaseModifyDTO));
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteShinryouTekiyou(int shinryouId) {
+        return txProc(backend -> backend.deleteShinryouTekiyou(shinryouId));
+    }
+
+    @Override
+    public CompletableFuture<Void> setShinryouTekiyou(int shinryouId, String tekiyou) {
+        return txProc(backend -> backend.setShinryouTekiyou(shinryouId, tekiyou));
     }
 }

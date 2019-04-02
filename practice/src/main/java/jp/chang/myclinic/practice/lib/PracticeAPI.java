@@ -58,7 +58,7 @@ public class PracticeAPI {
         List<ConductShinryouDTO> shinryouList = new ArrayList<>();
         return Context.getInstance().getFrontend().getVisit(visitId)
                 .thenCompose(result -> {
-                    LocalDate at = LocalDateTime.parse(result.visitedAt).toLocalDate()
+                    LocalDate at = LocalDateTime.parse(result.visitedAt).toLocalDate();
                     if( kind == ConductKind.HikaChuusha ){
                         return Context.getInstance().getFrontend().resolveShinryouMasterByName(List.of("皮下筋注"), at);
                     } else if( kind == ConductKind.JoumyakuChuusha ){

@@ -34,7 +34,7 @@ import java.util.Map;
 import static com.github.javaparser.ast.NodeList.nodeList;
 import static java.util.stream.Collectors.toList;
 
-@CommandLine.Command(name = "populate-frontend", description = "Adds to Frontend.java according to Backend")
+@CommandLine.Command(name = "update-frontend", description = "Adds to Frontend.java according to Backend")
 class UpdateFrontend implements Runnable {
 
     @CommandLine.Option(names = {"--save"}, description = "Saves result to Frontend.java")
@@ -50,6 +50,7 @@ class UpdateFrontend implements Runnable {
     @Override
     public void run() {
         updateFrontend();
+        updateFrontendBackend();
     }
 
     private void updateFrontend(){
@@ -146,7 +147,7 @@ class UpdateFrontend implements Runnable {
                 } else if (name.startsWith("get") || name.startsWith("list") ||
                         name.startsWith("search") || name.startsWith("find") ||
                         name.startsWith("count") || name.startsWith("resolve") ||
-                        name.startsWith("batchResolve") || name.startsWith("modify")) {
+                        name.startsWith("batchResolve")) {
                     frontendMethod.setBody(makeBody("query", frontendMethod));
                     targetDecl.addMember(frontendMethod);
                 } else {

@@ -8,6 +8,8 @@ import javafx.scene.layout.HBox;
 import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
+import jp.chang.myclinic.frontend.Frontend;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -59,7 +61,9 @@ public class ShinryouEditForm extends WorkForm {
 
     private void doDeleteTekiyou(){
         if( GuiUtil.confirm("この摘要を削除していいですか？") ){
-            Context.getInstance().getFrontend().deleteShinryouTekiyou(shinryouId)
+            Frontend frontend = Context.getInstance().getFrontend();
+            frontend.deleteShinryouTekiyou(shinryouId)
+                    .thenCompose(v -> frontend.getShinryouAttr(shinryouId))
                     .thenAccept(attr -> Platform.runLater(() -> {
                         shinryouInput.deleteTekiyou();
                         setupCommandBox(attr);
@@ -70,9 +74,11 @@ public class ShinryouEditForm extends WorkForm {
     }
 
     private void doModifyTekiyou(String orig){
+        Frontend frontend = Context.getInstance().getFrontend();
         GuiUtil.askForString("摘要の内容", orig)
                 .ifPresent(tekiyou -> {
-                    Context.getInstance().getFrontend().setShinryouTekiyou(shinryouId, tekiyou)
+                    frontend.setShinryouTekiyou(shinryouId, tekiyou)
+                            .thenCompose(v -> frontend.getShinryouAttr(shinryouId))
                             .thenAccept(modified -> Platform.runLater(() -> {
                                 shinryouInput.setTekiyou(modified.tekiyou);
                                 setupCommandBox(modified);

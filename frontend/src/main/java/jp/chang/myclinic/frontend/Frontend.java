@@ -284,4 +284,10 @@ public interface Frontend {
     CompletableFuture<Integer> getLastPracticeLogId();
 
     CompletableFuture<List<PracticeLogDTO>> listPracticeLogSince(int afterThisId);
+
+    public CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO);
+
+    public CompletableFuture<Void> deleteShinryouTekiyou(int shinryouId);
+
+    public CompletableFuture<Void> setShinryouTekiyou(int shinryouId, String tekiyou);
 }

@@ -15,6 +15,7 @@ import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
 import jp.chang.myclinic.practice.javafx.shinryou.AddRegularForm;
 import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -184,7 +185,8 @@ public class Record extends VBox {
     private RecordHoken createRecordHoken(HokenDTO hoken, VisitDTO visit) {
         RecordHoken recordHoken = new RecordHoken(hoken);
         recordHoken.setOnMouseClicked(event -> {
-            Context.getInstance().getFrontend().listAvailableHoken(visit.patientId, visit.visitedAt.substring(0, 10))
+            Context.getInstance().getFrontend().listAvailableHoken(visit.patientId,
+                    LocalDateTime.parse(visit.visitedAt).toLocalDate())
                     .thenAcceptAsync(availHoken -> {
                         HokenSelectForm form = new HokenSelectForm(availHoken, hoken);
                         form.setCallback(new HokenSelectForm.Callback() {

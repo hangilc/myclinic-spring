@@ -14,6 +14,10 @@ public class ShinryouAttrDTO {
         return dst;
     }
 
+    public static boolean isEmpty(ShinryouAttrDTO attr){
+        return attr.tekiyou == null || attr.tekiyou.isEmpty();
+    }
+
     @Override
     public String toString() {
         return "ShinryouAttrDTO{" +

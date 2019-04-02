@@ -11,6 +11,8 @@ import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+
 public class ConductKizaiForm extends WorkForm {
 
     private static Logger logger = LoggerFactory.getLogger(ConductKizaiForm.class);
@@ -23,7 +25,7 @@ public class ConductKizaiForm extends WorkForm {
         this.conductId = conductId;
         KizaiInput kizaiInput = new KizaiInput();
         SearchBoxOld<KizaiMasterDTO> searchBox = new SearchBoxOld<>(
-                t -> Context.getInstance().getFrontend().searchKizaiMaster(t, at),
+                t -> Context.getInstance().getFrontend().searchKizaiMaster(t, LocalDate.parse(at)),
                 m -> m.name
         );
         searchBox.setOnSelectCallback(kizaiInput::setMaster);
