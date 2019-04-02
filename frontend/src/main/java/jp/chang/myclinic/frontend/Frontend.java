@@ -253,6 +253,8 @@ public interface Frontend {
 
     CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMaster(String text, LocalDate at);
 
+    CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at);
+
     CompletableFuture<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at);
 
     CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByName(List<String> nameCandidates, LocalDate at);
@@ -285,9 +287,13 @@ public interface Frontend {
 
     CompletableFuture<List<PracticeLogDTO>> listPracticeLogSince(int afterThisId);
 
-    public CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO);
+    CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO);
 
-    public CompletableFuture<Void> deleteShinryouTekiyou(int shinryouId);
+    CompletableFuture<Void> deleteShinryouTekiyou(int shinryouId);
 
-    public CompletableFuture<Void> setShinryouTekiyou(int shinryouId, String tekiyou);
+    CompletableFuture<Void> setShinryouTekiyou(int shinryouId, String tekiyou);
+
+    CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho);
+
+    CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at);
 }

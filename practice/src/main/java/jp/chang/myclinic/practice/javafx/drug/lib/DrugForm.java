@@ -5,7 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
@@ -98,7 +98,7 @@ public class DrugForm extends VBox {
     }
 
     private void resolveMaster(int iyakuhincode, Consumer<IyakuhinMasterDTO> handler) {
-        Context.getInstance().getFrontend().resolveIyakuhinMaster(iyakuhincode, at.toString())
+        Context.getInstance().getFrontend().resolveStockDrug(iyakuhincode, at)
                 .thenAcceptAsync(master -> {
                     if (master == null) {
                         GuiUtil.alertError("使用できない薬剤です。");

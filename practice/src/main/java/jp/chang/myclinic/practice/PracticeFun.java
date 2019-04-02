@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice;
 
 import javafx.application.Platform;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.WqueueFullDTO;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;

@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice.lib.shinryou;
 
 import javafx.application.Platform;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;

@@ -10,7 +10,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;

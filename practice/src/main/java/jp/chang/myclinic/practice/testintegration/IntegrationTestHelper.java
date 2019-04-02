@@ -1,6 +1,6 @@
 package jp.chang.myclinic.practice.testintegration;
 
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
 import jp.chang.myclinic.dto.VisitDTO;
@@ -9,6 +9,7 @@ import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchResultItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 class IntegrationTestHelper {
@@ -28,8 +29,7 @@ class IntegrationTestHelper {
     }
 
     VisitDTO startVisit(int patientId){
-        int visitId = Context.getInstance().getFrontend().startVisit(patientId).join();
-        return Context.getInstance().getFrontend().getVisit(visitId).join();
+        return Context.getInstance().getFrontend().startVisit(patientId, LocalDateTime.now()).join();
     }
 
 }

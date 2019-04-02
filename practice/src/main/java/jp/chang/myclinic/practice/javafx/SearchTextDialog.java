@@ -9,7 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.TextVisitDTO;
 import jp.chang.myclinic.dto.TextVisitPageDTO;
 import jp.chang.myclinic.practice.javafx.parts.PageNav;

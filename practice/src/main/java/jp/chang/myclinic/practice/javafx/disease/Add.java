@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.disease.add.CommandBox;

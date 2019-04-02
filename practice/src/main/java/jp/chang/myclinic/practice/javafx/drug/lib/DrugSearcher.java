@@ -1,6 +1,6 @@
 package jp.chang.myclinic.practice.javafx.drug.lib;
 
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.util.DrugUtil;

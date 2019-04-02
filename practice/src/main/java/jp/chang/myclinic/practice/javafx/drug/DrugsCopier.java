@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice.javafx.drug;
 
 import javafx.application.Platform;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;

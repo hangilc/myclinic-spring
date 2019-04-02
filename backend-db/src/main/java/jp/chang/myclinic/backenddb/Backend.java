@@ -1213,6 +1213,11 @@ public class Backend {
         return ts.shahokokuhoTable.getById(shahokokuhoId);
     }
 
+    public void enterShahokokuho(ShahokokuhoDTO shahokokuho){
+        ts.shahokokuhoTable.insert(shahokokuho);
+        practiceLogger.logShahokokuhoCreated(shahokokuho);
+    }
+
     // Koukikourei //////////////////////////////////////////////////////////////////////////////
 
     public KoukikoureiDTO getKoukikourei(int koukikoureiId) {
@@ -1405,6 +1410,14 @@ public class Backend {
     }
 
     // IyakuhinMaster /////////////////////////////////////////////////////////////////////
+
+    public IyakuhinMasterDTO getIyakuhinMaster(int iyakuhincode, LocalDate at){
+        String sql = xlate("select * from IyakuhinMaster where iyakuhincode = ? " +
+                " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                ts.iyakuhinMasterTable);
+        String atString = at.toString();
+        return getQuery().get(sql, ts.iyakuhinMasterTable, iyakuhincode, atString, atString);
+    }
 
     public List<IyakuhinMasterDTO> searchIyakuhinMaster(String text, LocalDate at) {
         String sql = xlate("select * from IyakuhinMaster where name like ? " +

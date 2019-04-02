@@ -3,6 +3,7 @@ package jp.chang.myclinic.frontend;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.support.stockdrug.StockDrugService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
@@ -15,8 +16,11 @@ public class FrontendBackend implements Frontend {
 
     private DbBackend dbBackend;
 
-    public FrontendBackend(DbBackend dbBackend) {
+    private StockDrugService stockDrugService;
+
+    public FrontendBackend(DbBackend dbBackend, StockDrugService stockDrugService) {
         this.dbBackend = dbBackend;
+        this.stockDrugService = stockDrugService;
     }
 
     private <T> CompletableFuture<T> query(DbBackend.QueryStatement<T> q) {
@@ -665,6 +669,12 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
+    public CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at) {
+        iyakuhincode = stockDrugService.resolve(iyakuhincode, at);
+        return getIyakuhinMaster(iyakuhincode, at);
+    }
+
+    @Override
     public CompletableFuture<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at) {
         return query(backend -> backend.findKizaiMasterByName(name, at));
     }
@@ -760,5 +770,18 @@ public class FrontendBackend implements Frontend {
     @Override
     public CompletableFuture<Void> setShinryouTekiyou(int shinryouId, String tekiyou) {
         return txProc(backend -> backend.setShinryouTekiyou(shinryouId, tekiyou));
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
+        return tx(backend -> {
+            backend.enterShahokokuho(shahokokuho);
+            return shahokokuho.shahokokuhoId;
+        });
+    }
+
+    @Override
+    public CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at) {
+        return query(backend -> backend.getIyakuhinMaster(iyakuhincode, at));
     }
 }

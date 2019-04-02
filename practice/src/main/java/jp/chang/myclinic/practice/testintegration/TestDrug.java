@@ -1,6 +1,6 @@
 package jp.chang.myclinic.practice.testintegration;
 
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.practice.javafx.Record;
 import jp.chang.myclinic.practice.javafx.RecordDrug;

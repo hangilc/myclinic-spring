@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice.javafx.shinryou;
 
 import javafx.application.Platform;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
@@ -29,7 +29,7 @@ class ShinryouEnterForm extends ShinryouForm {
                 .thenCompose(Context.getInstance().getFrontend()::getShinryouFull)
                 .thenCompose(entered -> {
                     local.entered = entered;
-                    return Context.getInstance().getFrontend().findShinryouAttr(entered.shinryou.shinryouId);
+                    return Context.getInstance().getFrontend().getShinryouAttr(entered.shinryou.shinryouId);
                 })
                 .thenAccept(attr -> {
                     Platform.runLater(() -> {

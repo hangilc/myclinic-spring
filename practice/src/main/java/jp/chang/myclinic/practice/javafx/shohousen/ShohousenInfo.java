@@ -2,7 +2,7 @@ package jp.chang.myclinic.practice.javafx.shohousen;
 
 import jp.chang.myclinic.dto.HokenDTO;
 import jp.chang.myclinic.dto.VisitDTO;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

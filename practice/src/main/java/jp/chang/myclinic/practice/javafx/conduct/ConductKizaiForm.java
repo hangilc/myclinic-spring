@@ -2,7 +2,7 @@ package jp.chang.myclinic.practice.javafx.conduct;
 
 import jp.chang.myclinic.dto.ConductKizaiDTO;
 import jp.chang.myclinic.dto.KizaiMasterDTO;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.parts.EnterCancelBox;

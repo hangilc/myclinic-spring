@@ -7,7 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.parts.PatientDisp;
 import jp.chang.myclinic.practice.javafx.parts.PatientSearchBox;
 import jp.chang.myclinic.utilfx.GuiUtil;

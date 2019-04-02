@@ -1,7 +1,7 @@
 package jp.chang.myclinic.practice.javafx;
 
 import javafx.application.Platform;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.BatchEnterResultDTO;
 import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;

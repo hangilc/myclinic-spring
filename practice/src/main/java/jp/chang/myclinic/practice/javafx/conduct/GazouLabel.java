@@ -3,7 +3,7 @@ package jp.chang.myclinic.practice.javafx.conduct;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.GazouLabelDTO;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.utilfx.GuiUtil;

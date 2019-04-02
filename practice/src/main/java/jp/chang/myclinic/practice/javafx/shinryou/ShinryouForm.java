@@ -5,11 +5,13 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
-import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.parts.SearchInputBox;
 import jp.chang.myclinic.practice.javafx.parts.SearchResult;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
+
+import java.time.LocalDate;
 
 public class ShinryouForm extends WorkForm {
 
@@ -48,7 +50,7 @@ public class ShinryouForm extends WorkForm {
         SearchInputBox box = new SearchInputBox();
         box.setOnTextCallback(text -> {
             if( !text.isEmpty() ) {
-                Context.getInstance().getFrontend().searchShinryouMaster(text, at)
+                Context.getInstance().getFrontend().searchShinryouMaster(text, LocalDate.parse(at))
                         .thenAccept(result -> Platform.runLater(() -> searchResult.setList(result)))
                         .exceptionally(ex -> {
                             FunJavaFX.createErrorHandler().accept(ex);
