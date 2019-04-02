@@ -1,5 +1,6 @@
 package jp.chang.myclinic.support.clinicinfo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import jp.chang.myclinic.dto.ClinicInfoDTO;
@@ -17,12 +18,23 @@ public class ClinicInfoFileProvider implements ClinicInfoProvider {
         this.filePath = filePath;
     }
 
+    public static class ClinicInfoMixin {
+        @JsonProperty("postal-code")
+        public String postalCode;
+        @JsonProperty("doctor-name")
+        public String doctorName;
+    }
+
+    private static ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+
+    static {
+        mapper.addMixIn(ClinicInfoDTO.class, ClinicInfoMixin.class);
+    }
+
     @Override
     public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
         try {
             ClinicInfoDTO info = mapper.readValue(filePath.toFile(), ClinicInfoDTO.class);
-            System.out.println(info);
             return CompletableFuture.completedFuture(info);
         } catch (IOException e) {
             throw new RuntimeException(e);
