@@ -8,6 +8,7 @@ import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backendsqlite.SqliteDataSource;
 import jp.chang.myclinic.backendsqlite.SqliteTableSet;
 import jp.chang.myclinic.client.Client;
+import jp.chang.myclinic.client.Service;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.frontend.FrontendBackend;
@@ -15,6 +16,7 @@ import jp.chang.myclinic.frontend.FrontendClient;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.practice.testgui.TestGui;
 import jp.chang.myclinic.practice.testintegration.TestIntegration;
+import jp.chang.myclinic.support.stockdrug.StockDrugFile;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 import javax.sql.DataSource;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -49,7 +52,8 @@ public class Main extends Application {
             String dbFile = opts.getServerUrl();
             DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
             DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create);
-            Context.getInstance().setFrontend(new FrontendBackend(dbBackend));
+            Context.getInstance().setFrontend(new FrontendBackend(dbBackend,
+                    new StockDrugFile(Paths.get("config/stock-drug.txt"))));
         } else {
 //            Service.setServerUrl(opts.getServerUrl());
 //            {
@@ -78,17 +82,17 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        {
-            OkHttpClient client = Service.client;
-            if (client != null) {
-                client.dispatcher().executorService().shutdown();
-                client.connectionPool().evictAll();
-                Cache cache = client.cache();
-                if (cache != null) {
-                    cache.close();
-                }
-            }
-        }
+//        {
+//            OkHttpClient client = Service.client;
+//            if (client != null) {
+//                client.dispatcher().executorService().shutdown();
+//                client.connectionPool().evictAll();
+//                Cache cache = client.cache();
+//                if (cache != null) {
+//                    cache.close();
+//                }
+//            }
+//        }
         {
             if (client != null) {
                 this.client.stop();

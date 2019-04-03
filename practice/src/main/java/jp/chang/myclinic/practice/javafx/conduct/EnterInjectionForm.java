@@ -16,6 +16,8 @@ import jp.chang.myclinic.utilfx.RadioButtonGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+
 public class EnterInjectionForm extends WorkForm {
 
     private static Logger logger = LoggerFactory.getLogger(EnterInjectionForm.class);
@@ -65,7 +67,7 @@ public class EnterInjectionForm extends WorkForm {
         return new SearchTextBox(){
             @Override
             protected void onEnter(String text) {
-                Context.getInstance().getFrontend().searchIyakuhinMaster(text, at)
+                Context.getInstance().getFrontend().searchIyakuhinMaster(text, LocalDate.parse(at))
                         .thenAccept(result -> Platform.runLater(() -> {
                             searchResult.setList(result);
                         }))

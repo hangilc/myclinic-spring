@@ -80,7 +80,7 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
             return;
         }
         if( ex != null ){
-            Context.getInstance().getFrontend().resolveIyakuhinMaster(ex.iyakuhincode, getLocalDate().toString())
+            Context.getInstance().getFrontend().resolveStockDrug(ex.iyakuhincode, getLocalDate())
                     .thenCompose(master -> {
                         ex.masterValidFrom = master.validFrom;
                         return Context.getInstance().getFrontend().updatePrescExample(ex);
