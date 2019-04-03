@@ -314,4 +314,6 @@ public interface Frontend {
     CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode, LocalDate at);
 
     CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease);
+
+    CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample();
 }

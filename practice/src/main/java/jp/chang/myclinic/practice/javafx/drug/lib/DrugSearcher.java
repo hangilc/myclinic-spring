@@ -42,7 +42,7 @@ public class DrugSearcher {
 
     public static CompletableFuture<List<DrugSearchResultItem>> searchMaster(String text, LocalDate at,
                                                                              Consumer<IyakuhinMasterDTO> onSelectHandler) {
-        return Context.getInstance().getFrontend().searchIyakuhinMaster(text, at.toString())
+        return Context.getInstance().getFrontend().searchIyakuhinMaster(text, at)
                 .thenApply(result -> result.stream().map(m -> new MasterItem(m, onSelectHandler)).collect(Collectors.toList()));
     }
 

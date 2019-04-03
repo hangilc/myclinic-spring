@@ -52,7 +52,7 @@ public class DrugsCopier {
                     })
                     .thenCompose(enteredDrugId -> {
                         local.enteredDrugId = enteredDrugId;
-                        return Context.getInstance().getFrontend().findDrugAttr(srcDrug.drug.drugId);
+                        return Context.getInstance().getFrontend().getDrugAttr(srcDrug.drug.drugId);
                     })
                     .thenCompose(srcAttr -> {
                         if( srcAttr != null ) {
@@ -61,10 +61,10 @@ public class DrugsCopier {
                             local.dstAttr = dstAttr;
                             return Context.getInstance().getFrontend().enterDrugAttr(dstAttr);
                         } else {
-                            return CompletableFuture.completedFuture(true);
+                            return CompletableFuture.completedFuture(null);
                         }
                     })
-                    .thenCompose(ok -> PracticeService.getDrugFull(local.enteredDrugId))
+                    .thenCompose(v -> PracticeService.getDrugFull(local.enteredDrugId))
                     .thenAccept(newDrugFull -> {
                         Platform.runLater(() -> drugEnteredCallback.accept(newDrugFull, local.dstAttr));
                         doCopy(drugs.subList(1, drugs.size()));

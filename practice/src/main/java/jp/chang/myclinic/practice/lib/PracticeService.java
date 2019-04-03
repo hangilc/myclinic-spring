@@ -8,6 +8,7 @@ import jp.chang.myclinic.utilfx.GuiUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -70,7 +71,7 @@ public class PracticeService {
             at = at.substring(0, 10);
         }
         return addExceptionHandler(
-                Context.getInstance().getFrontend().resolveIyakuhinMaster(iyakuhincode, at),
+                Context.getInstance().getFrontend().resolveStockDrug(iyakuhincode, LocalDate.parse(at)),
                 "Failed to resolve iyakuhin master.",
                 "医薬品マスターの特定に失敗しました。"
         );
@@ -81,7 +82,7 @@ public class PracticeService {
             at = at.substring(0, 10);
         }
         return addExceptionHandler(
-                Context.getInstance().getFrontend().resolveIyakuhinMaster(drug.drug.iyakuhincode, at),
+                Context.getInstance().getFrontend().resolveStockDrug(drug.drug.iyakuhincode, LocalDate.parse(at)),
                 "Failed to resolve iyakuhin master.",
                 String.format("医薬品マスターの特定に失敗しました：%s", drug.master.name)
         );
@@ -158,13 +159,13 @@ public class PracticeService {
         );
     }
 
-    public static CompletableFuture<BatchEnterResultDTO> batchEnterShinryouByName(List<String> names, int visitId) {
-        return addExceptionHandler(
-                Context.getInstance().getFrontend().batchEnterShinryouByName(names, visitId),
-                "Failed to batch enter shinryou",
-                "診療行為の入力に失敗しました。"
-        );
-    }
+//    public static CompletableFuture<BatchEnterResultDTO> batchEnterShinryouByName(List<String> names, int visitId) {
+//        return addExceptionHandler(
+//                Context.getInstance().getFrontend().batchEnterShinryouByName(names, visitId),
+//                "Failed to batch enter shinryou",
+//                "診療行為の入力に失敗しました。"
+//        );
+//    }
 
     public static CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(List<Integer> shinryouIds){
         return addExceptionHandler(
@@ -184,7 +185,7 @@ public class PracticeService {
 
     public static CompletableFuture<List<ShinryouMasterDTO>> searchShinryouMaster(String text, String at){
         return addExceptionHandler(
-                Context.getInstance().getFrontend().searchShinryouMaster(text, at),
+                Context.getInstance().getFrontend().searchShinryouMaster(text, LocalDate.parse(at)),
                 "Failed to search shinryou master.",
                 "診療行為マスターの検索に失敗しました。"
         );

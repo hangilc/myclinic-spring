@@ -15,6 +15,8 @@ import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+
 class NewVisitDialog extends Stage {
 
     private static Logger logger = LoggerFactory.getLogger(NewVisitDialog.class);
@@ -60,7 +62,7 @@ class NewVisitDialog extends Stage {
         if( patientId == 0 ){
             GuiUtil.alertError("患者が選択されていません。");
         } else {
-            Context.getInstance().getFrontend().startVisit(patientId)
+            Context.getInstance().getFrontend().startVisit(patientId, LocalDateTime.now())
                     .thenAccept(visitId -> Platform.runLater(this::close))
                     .exceptionally(HandlerFX::exceptionally);
         }

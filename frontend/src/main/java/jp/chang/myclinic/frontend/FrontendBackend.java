@@ -3,6 +3,7 @@ package jp.chang.myclinic.frontend;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.support.diseaseexample.DiseaseExampleProvider;
 import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensa;
 import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaService;
 import jp.chang.myclinic.support.meisai.MeisaiService;
@@ -25,11 +26,16 @@ public class FrontendBackend implements Frontend {
 
     private MeisaiService meisaiService;
 
-    public FrontendBackend(DbBackend dbBackend, StockDrugService stockDrugService, HoukatsuKensaService houkatsuKensaService, MeisaiService meisaiService) {
+    private DiseaseExampleProvider diseaseExampleProvider;
+
+    public FrontendBackend(DbBackend dbBackend, StockDrugService stockDrugService,
+                           HoukatsuKensaService houkatsuKensaService, MeisaiService meisaiService,
+                           DiseaseExampleProvider diseaseExampleProvider) {
         this.dbBackend = dbBackend;
         this.stockDrugService = stockDrugService;
         this.houkatsuKensaService = houkatsuKensaService;
         this.meisaiService = meisaiService;
+        this.diseaseExampleProvider = diseaseExampleProvider;
     }
 
     private <T> CompletableFuture<T> query(DbBackend.QueryStatement<T> q) {
@@ -844,5 +850,10 @@ public class FrontendBackend implements Frontend {
             backend.enterNewDisease(disease);
             return disease.disease.diseaseId;
         });
+    }
+
+    @Override
+    public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
+        return CompletableFuture.completedFuture(diseaseExampleProvider.listDiseaseExample());
     }
 }

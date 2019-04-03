@@ -19,6 +19,8 @@ import jp.chang.myclinic.practice.lib.PracticeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.CompletableFuture;
+
 public class ConductMenu extends VBox {
 
     private static Logger logger = LoggerFactory.getLogger(ConductMenu.class);
@@ -66,6 +68,10 @@ public class ConductMenu extends VBox {
 
     private void fireConductEntered(ConductFullDTO entered){
         fireEvent(new ConductEnteredEvent(entered));
+    }
+
+    private CompletableFuture<Integer> enterXp(int visitId, String label, String film){ // returns conductId
+
     }
 
     private void doEnterXp(){

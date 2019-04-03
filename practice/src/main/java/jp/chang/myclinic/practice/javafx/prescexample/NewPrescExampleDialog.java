@@ -52,7 +52,7 @@ public class NewPrescExampleDialog extends PrescExampleBaseDialog {
             GuiUtil.alertError("医薬品が選択されていません。");
             return;
         }
-        Context.getInstance().getFrontend().resolveIyakuhinMaster(iyakuhincode, LocalDate.now().toString())
+        Context.getInstance().getFrontend().resolveStockDrug(iyakuhincode, LocalDate.now())
                 .thenAcceptAsync(master -> {
                     getInput().setMaster(master);
                 }, Platform::runLater)
