@@ -1,4 +1,4 @@
-package jp.chang.myclinic.server.rcpt;
+package jp.chang.myclinic.support.houkatsukensa;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,6 +13,7 @@ import jp.chang.myclinic.consts.HoukatsuKensaKind;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -117,6 +118,13 @@ public class HoukatsuKensa {
 			return Optional.empty();
 		}
 
+		@Override
+		public String toString() {
+			return "Revision{" +
+					"validFrom=" + validFrom +
+					", mapWrapper=" + mapWrapper +
+					'}';
+		}
 	}
 
 	public static class KensaMapWrapper {
@@ -132,6 +140,13 @@ public class HoukatsuKensa {
 
 		public Map<HoukatsuKensaKind, List<Step>> getMap(){
 			return map;
+		}
+
+		@Override
+		public String toString() {
+			return "KensaMapWrapper{" +
+					"map=" + map +
+					'}';
 		}
 	}
 
@@ -204,9 +219,9 @@ public class HoukatsuKensa {
 		}
 	}
 
-	public static HoukatsuKensa load() throws IOException {
+	public static HoukatsuKensa load(Path path) throws IOException {
 		XmlMapper xmlMapper = new XmlMapper();
-		return xmlMapper.readValue(new File("./config/houkatsu-kensa.xml"), HoukatsuKensa.class);
+		return xmlMapper.readValue(path.toFile(), HoukatsuKensa.class);
 	}
 
 }
