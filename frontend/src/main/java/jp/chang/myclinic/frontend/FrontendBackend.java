@@ -6,7 +6,9 @@ import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.support.diseaseexample.DiseaseExampleProvider;
 import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensa;
 import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaService;
+import jp.chang.myclinic.support.kizainames.KizaiNamesService;
 import jp.chang.myclinic.support.meisai.MeisaiService;
+import jp.chang.myclinic.support.shinryounames.ShinryouNamesService;
 import jp.chang.myclinic.support.stockdrug.StockDrugService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,14 +30,22 @@ public class FrontendBackend implements Frontend {
 
     private DiseaseExampleProvider diseaseExampleProvider;
 
+    private ShinryouNamesService shinryouNamesService;
+
+    private KizaiNamesService kizaiNamesService;
+
     public FrontendBackend(DbBackend dbBackend, StockDrugService stockDrugService,
                            HoukatsuKensaService houkatsuKensaService, MeisaiService meisaiService,
-                           DiseaseExampleProvider diseaseExampleProvider) {
+                           DiseaseExampleProvider diseaseExampleProvider,
+                           ShinryouNamesService shinryouNamesService,
+                           KizaiNamesService kizaiNamesService) {
         this.dbBackend = dbBackend;
         this.stockDrugService = stockDrugService;
         this.houkatsuKensaService = houkatsuKensaService;
         this.meisaiService = meisaiService;
         this.diseaseExampleProvider = diseaseExampleProvider;
+        this.shinryouNamesService = shinryouNamesService;
+        this.kizaiNamesService = kizaiNamesService;
     }
 
     private <T> CompletableFuture<T> query(DbBackend.QueryStatement<T> q) {
@@ -855,5 +865,33 @@ public class FrontendBackend implements Frontend {
     @Override
     public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
         return CompletableFuture.completedFuture(diseaseExampleProvider.listDiseaseExample());
+    }
+
+    @Override
+    public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String name, LocalDate at) {
+        return query(backend -> {
+            List<String> candidates = shinryouNamesService.getCandidateNames(name);
+            for(String key: candidates){
+                ShinryouMasterDTO master = backend.findShinryouMasterByName(key, at);
+                if( master != null ){
+                    return master;
+                }
+            }
+            return null;
+        });
+    }
+
+    @Override
+    public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String name, LocalDate at) {
+        return query(backend -> {
+            List<String> candidates = kizaiNamesService.getCandidateNames(name);
+            for(String key: candidates){
+                KizaiMasterDTO master = backend.findKizaiMasterByName(key, at);
+                if( master != null ){
+                    return master;
+                }
+            }
+            return null;
+        });
     }
 }

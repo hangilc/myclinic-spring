@@ -316,4 +316,9 @@ public interface Frontend {
     CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease);
 
     CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample();
+
+    CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String name, LocalDate at);
+
+    CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String name, LocalDate at);
+
 }

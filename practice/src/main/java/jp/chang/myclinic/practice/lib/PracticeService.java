@@ -62,7 +62,7 @@ public class PracticeService {
         );
     }
 
-    public static void doDeleteVisit(int visitId, Consumer<Boolean> cb) {
+    public static void doDeleteVisit(int visitId, Consumer<Void> cb) {
         withCallback(deleteVisit(visitId), cb);
     }
 

@@ -16,8 +16,11 @@ import jp.chang.myclinic.frontend.FrontendClient;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.practice.testgui.TestGui;
 import jp.chang.myclinic.practice.testintegration.TestIntegration;
+import jp.chang.myclinic.support.diseaseexample.DiseaseExampleFileProvider;
 import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaFile;
+import jp.chang.myclinic.support.kizainames.KizaiNamesFile;
 import jp.chang.myclinic.support.meisai.MeisaiServiceImpl;
+import jp.chang.myclinic.support.shinryounames.ShinryouNamesFile;
 import jp.chang.myclinic.support.stockdrug.StockDrugFile;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -57,7 +60,10 @@ public class Main extends Application {
             Context.getInstance().setFrontend(new FrontendBackend(dbBackend,
                     new StockDrugFile(Paths.get("config/stock-drug.txt")),
                     new HoukatsuKensaFile(Paths.get("config/houkatsu-kensa.xml")),
-                    new MeisaiServiceImpl()));
+                    new MeisaiServiceImpl(),
+                    new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml")),
+                    new ShinryouNamesFile(Paths.get("config/shinryou-names.yml")),
+                    new KizaiNamesFile(Paths.get("config/kizai-names.yml"))));
         } else {
 //            Service.setServerUrl(opts.getServerUrl());
 //            {

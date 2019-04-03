@@ -9,8 +9,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.consts.ConductKind;
-import jp.chang.myclinic.dto.ConductDrugDTO;
-import jp.chang.myclinic.dto.ConductFullDTO;
+import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
@@ -19,7 +19,12 @@ import jp.chang.myclinic.practice.lib.PracticeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 public class ConductMenu extends VBox {
 
@@ -70,8 +75,51 @@ public class ConductMenu extends VBox {
         fireEvent(new ConductEnteredEvent(entered));
     }
 
-    private CompletableFuture<Integer> enterXp(int visitId, String label, String film){ // returns conductId
-
+    private CompletableFuture<ConductFullDTO> enterXp(int visitId, String label, String film){ // returns conductId
+        class Store {
+            private LocalDate at;
+            private int shinryoucode1;
+            private int shinryoucode2;
+            private int kizaicode;
+        }
+        Store store = new Store();
+        Frontend frontend = Context.getInstance().getFrontend();
+        return frontend.getVisit(visitId)
+                .thenCompose(visit -> {
+                    store.at = LocalDateTime.parse(visit.visitedAt).toLocalDate();
+                    return frontend.resolveShinryouMasterByKey("単純撮影", store.at);
+                })
+                .thenCompose(m -> {
+                    store.shinryoucode1 = m.shinryoucode;
+                    return frontend.resolveShinryouMasterByKey("単純撮影診断", store.at);
+                })
+                .thenCompose(m -> {
+                    store.shinryoucode2 = m.shinryoucode;
+                    return frontend.resolveKizaiMasterByKey(film, store.at);
+                })
+                .thenCompose(m -> {
+                    store.kizaicode = m.kizaicode;
+                    ConductEnterRequestDTO req = new ConductEnterRequestDTO();
+                    req.visitId = visitId;
+                    req.kind = ConductKind.Gazou.getCode();
+                    req.gazouLabel = label;
+                    req.shinryouList = Stream.of(store.shinryoucode1, store.shinryoucode2)
+                            .map(shinryoucode -> {
+                                ConductShinryouDTO shinryou = new ConductShinryouDTO();
+                                shinryou.shinryoucode = shinryoucode;
+                                return shinryou;
+                            })
+                            .collect(toList());
+                    req.kizaiList = Stream.of(store.kizaicode)
+                            .map(kizaicode -> {
+                                ConductKizaiDTO kizai = new ConductKizaiDTO();
+                                kizai.kizaicode = kizaicode;
+                                kizai.amount = 1.0;
+                                return kizai;
+                            })
+                            .collect(toList());
+                    return frontend.enterConductFull(req);
+                });
     }
 
     private void doEnterXp(){
@@ -79,8 +127,7 @@ public class ConductMenu extends VBox {
             EnterXpForm form = new EnterXpForm() {
                 @Override
                 protected void onEnter(EnterXpForm form, String label, String film) {
-                    Context.getInstance().getFrontend().enterXp(visitId, label, film)
-                            .thenCompose(Context.getInstance().getFrontend()::getConductFull)
+                    enterXp(visitId, label, film)
                             .thenAccept(entered -> Platform.runLater(() -> {
                                 fireConductEntered(entered);
                                 hideWorkarea();
