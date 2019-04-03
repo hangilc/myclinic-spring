@@ -8,6 +8,7 @@ import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.Context;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
@@ -26,7 +27,7 @@ public class ShinryouCopier {
 
     public ShinryouCopier(int targetVisitId, List<ShinryouFullDTO> srcList,
                           BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> cb,
-                          Consumer<Throwable> errorHandler, Runnable finishedCallback){
+                          Consumer<Throwable> errorHandler, Runnable finishedCallback) {
         this.targetVisitId = targetVisitId;
         this.srcList = srcList;
         this.onEnterCallback = cb;
@@ -34,7 +35,7 @@ public class ShinryouCopier {
         this.finishedCallback = finishedCallback;
     }
 
-    public void start(){
+    public void start() {
         Context.getInstance().getFrontend().getVisit(targetVisitId)
                 .thenAccept(targetVisit -> {
                     setTargetVisit(targetVisit);
@@ -46,18 +47,20 @@ public class ShinryouCopier {
                 });
     }
 
-    private void setTargetVisit(VisitDTO visit){
+    private void setTargetVisit(VisitDTO visit) {
         this.targetVisit = visit;
     }
 
-    private void iterate(){
-        if( srcList.size() == 0 ){
+    private void iterate() {
+        if (srcList.size() == 0) {
             finishedCallback.run();
         } else {
             ShinryouFullDTO src = srcList.remove(0);
-            Context.getInstance().getFrontend().resolveShinryoucode(src.shinryou.shinryoucode, targetVisit.visitedAt)
+            Context.getInstance().getFrontend().getShinryouMaster(src.shinryou.shinryoucode,
+                    LocalDateTime.parse(targetVisit.visitedAt).toLocalDate())
+                    .thenApply(master -> master == null ? 0 : master.shinryoucode)
                     .thenAccept(shinryoucode -> {
-                        if( shinryoucode == 0 ){
+                        if (shinryoucode == 0) {
                             iterate();
                         } else {
                             ShinryouDTO dst = composeShinryou(src.shinryou, shinryoucode);
@@ -74,7 +77,7 @@ public class ShinryouCopier {
                                     })
                                     .thenCompose(enteredShinryouId -> {
                                         local.enteredShinryouId = enteredShinryouId;
-                                        if( local.srcAttr != null ){
+                                        if (local.srcAttr != null) {
                                             ShinryouAttrDTO dstAttr = ShinryouAttrDTO.copy(local.srcAttr);
                                             dstAttr.shinryouId = local.enteredShinryouId;
                                             local.dstAttr = dstAttr;
@@ -102,7 +105,7 @@ public class ShinryouCopier {
         }
     }
 
-    private ShinryouDTO composeShinryou(ShinryouDTO src, int shinryoucode){
+    private ShinryouDTO composeShinryou(ShinryouDTO src, int shinryoucode) {
         ShinryouDTO dst = ShinryouDTO.copy(src);
         dst.visitId = targetVisitId;
         dst.shinryoucode = shinryoucode;

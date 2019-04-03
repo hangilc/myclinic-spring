@@ -85,7 +85,7 @@ public class Add extends VBox {
                         return adj;
                     })
                     .collect(Collectors.toList());
-            Context.getInstance().getFrontend().enterDisease(newDisease)
+            Context.getInstance().getFrontend().enterNewDisease(newDisease)
                     .thenCompose(Context.getInstance().getFrontend()::getDiseaseFull)
                     .thenAccept(entered -> Platform.runLater(() -> {
                         onEntered(entered);

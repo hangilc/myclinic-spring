@@ -304,6 +304,11 @@ public class Backend {
         return getQuery().query(sql, ts.paymentTable, visitId);
     }
 
+    private void enterPayment(PaymentDTO payment) {
+        ts.paymentTable.insert(payment);
+        practiceLogger.logPaymentCreated(payment);
+    }
+
     // Wqueue /////////////////////////////////////////////////////////////////////////////
 
     private void enterWqueue(WqueueDTO wqueue) {
@@ -347,6 +352,16 @@ public class Backend {
 
     public List<WqueueFullDTO> listWqueueFull() {
         return listWqueue().stream().map(this::composeWqueueFullDTO).collect(toList());
+    }
+
+    public List<WqueueFullDTO> listWqueueFullForExam() {
+        List<Integer> examStates = List.of(
+                WqueueWaitState.WaitExam.getCode(),
+                WqueueWaitState.InExam.getCode(),
+                WqueueWaitState.WaitReExam.getCode()
+        );
+        return listWqueue().stream().filter(wq -> examStates.contains(wq.waitState))
+                .map(this::composeWqueueFullDTO).collect(toList());
     }
 
 
@@ -415,6 +430,14 @@ public class Backend {
         String sql = xlate("select count(*) from Drug where visitId = ? and prescribed = 0",
                 ts.drugTable);
         return getQuery().get(sql, (rs, ctx) -> rs.getInt(ctx.nextIndex()), visitId);
+    }
+
+    public void markDrugsAsPrescribed(int visitId) {
+        String sql = xlate("update Drug set prescribed = 1 where visitId = ?",
+                ts.drugTable);
+        getQuery().update(sql, stmt -> {
+            stmt.setInt(1, visitId);
+        });
     }
 
     // DrugAttr /////////////////////////////////////////////////////////////////////////
@@ -1226,6 +1249,23 @@ public class Backend {
                 conductId);
     }
 
+    // Cashier //////////////////////////////////////////////////////////////////////////////////
+
+    public void finishCashier(PaymentDTO payment) {
+        enterPayment(payment);
+        PharmaQueueDTO pharmaQueue = getPharmaQueue(payment.visitId);
+        WqueueDTO wqueue = getWqueue(payment.visitId);
+        if (pharmaQueue != null) {
+            if (wqueue != null) {
+                changeWqueueState(payment.visitId, WqueueWaitState.WaitDrug.getCode());
+            }
+        } else {
+            if (wqueue != null) {
+                deleteWqueue(wqueue.visitId);
+            }
+        }
+    }
+
     // Shahokokuho //////////////////////////////////////////////////////////////////////////////
 
     public ShahokokuhoDTO getShahokokuho(int shahokokuhoId) {
@@ -1260,6 +1300,17 @@ public class Backend {
     public void enterDisease(DiseaseDTO disease) {
         ts.diseaseTable.insert(disease);
         practiceLogger.logDiseaseCreated(disease);
+    }
+
+    public void enterNewDisease(DiseaseNewDTO disease){
+        enterDisease(disease.disease);
+        int diseaseId = disease.disease.diseaseId;
+        if( disease.adjList != null ){
+            disease.adjList.forEach(adj -> {
+                adj.diseaseId = diseaseId;
+                enterDiseaseAdj(adj);
+            });
+        }
     }
 
     public DiseaseDTO getDisease(int diseaseId) {
@@ -1428,6 +1479,15 @@ public class Backend {
         return getQuery().query(sql, ts.shinryouMasterTable, searchText, atString, atString);
     }
 
+    public ShinryouMasterDTO getShinryouMaster(int shinryoucode, LocalDate at){
+        String sql = xlate("select * from ShinryouMaster " +
+                " where shinryoucode = ? " +
+                " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                ts.shinryouMasterTable);
+        String atString = at.toString();
+        return getQuery().get(sql, ts.shinryouMasterTable, shinryoucode, atString, atString);
+    }
+
     // IyakuhinMaster /////////////////////////////////////////////////////////////////////
 
     public IyakuhinMasterDTO getIyakuhinMaster(int iyakuhincode, LocalDate at) {
@@ -1566,6 +1626,20 @@ public class Backend {
                 ts.prescExampleTable, "p", ts.iyakuhinMasterTable, "m");
         return getQuery().query(sql,
                 biProjector(ts.prescExampleTable, ts.iyakuhinMasterTable, PrescExampleFullDTO::create));
+    }
+
+    // Pharma ////////////////////////////////////////////////////////////////////////////
+
+    public void prescDone(int visitId) {
+        markDrugsAsPrescribed(visitId);
+        PharmaQueueDTO pharmaQueue = getPharmaQueue(visitId);
+        if (pharmaQueue != null) {
+            deletePharmaQueue(visitId);
+        }
+        WqueueDTO wqueue = getWqueue(visitId);
+        if (wqueue != null) {
+            deleteWqueue(visitId);
+        }
     }
 
     // PracticeLog ///////////////////////////////////////////////////////////////////////

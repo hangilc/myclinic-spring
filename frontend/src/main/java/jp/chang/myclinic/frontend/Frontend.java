@@ -297,7 +297,21 @@ public interface Frontend {
 
     CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at);
 
-    public CompletableFuture<List<Integer>> deleteDuplicateShinryou(int visitId);
+    CompletableFuture<List<Integer>> deleteDuplicateShinryou(int visitId);
 
-    public CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId);
+    CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId);
+
+    CompletableFuture<MeisaiDTO> getMeisai(int visitId);
+
+    CompletableFuture<Void> finishCashier(PaymentDTO payment);
+
+    CompletableFuture<Void> markDrugsAsPrescribed(int visitId);
+
+    CompletableFuture<Void> prescDone(int visitId);
+
+    CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam();
+
+    CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode, LocalDate at);
+
+    CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease);
 }

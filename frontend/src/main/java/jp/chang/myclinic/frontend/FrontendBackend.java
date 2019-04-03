@@ -3,6 +3,9 @@ package jp.chang.myclinic.frontend;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensa;
+import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaService;
+import jp.chang.myclinic.support.meisai.MeisaiService;
 import jp.chang.myclinic.support.stockdrug.StockDrugService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +21,15 @@ public class FrontendBackend implements Frontend {
 
     private StockDrugService stockDrugService;
 
-    public FrontendBackend(DbBackend dbBackend, StockDrugService stockDrugService) {
+    private HoukatsuKensaService houkatsuKensaService;
+
+    private MeisaiService meisaiService;
+
+    public FrontendBackend(DbBackend dbBackend, StockDrugService stockDrugService, HoukatsuKensaService houkatsuKensaService, MeisaiService meisaiService) {
         this.dbBackend = dbBackend;
         this.stockDrugService = stockDrugService;
+        this.houkatsuKensaService = houkatsuKensaService;
+        this.meisaiService = meisaiService;
     }
 
     private <T> CompletableFuture<T> query(DbBackend.QueryStatement<T> q) {
@@ -793,5 +802,47 @@ public class FrontendBackend implements Frontend {
     @Override
     public CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId) {
         return query(backend -> backend.listShinryou(visitId));
+    }
+
+    @Override
+    public CompletableFuture<MeisaiDTO> getMeisai(int visitId) {
+        return tx(backend -> {
+            VisitDTO visit = backend.getVisit(visitId);
+            LocalDate at = LocalDateTime.parse(visit.visitedAt).toLocalDate();
+            return meisaiService.getMeisai(backend.getPatient(visit.patientId), backend.getHoken(visit), at, backend.listShinryouFull(visitId), houkatsuKensaService.getRevision(at), backend.listDrugFull(visitId), backend.listConductFull(visitId));
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> finishCashier(PaymentDTO payment) {
+        return txProc(backend -> backend.finishCashier(payment));
+    }
+
+    @Override
+    public CompletableFuture<Void> markDrugsAsPrescribed(int visitId) {
+        return txProc(backend -> backend.markDrugsAsPrescribed(visitId));
+    }
+
+    @Override
+    public CompletableFuture<Void> prescDone(int visitId) {
+        return txProc(backend -> backend.prescDone(visitId));
+    }
+
+    @Override
+    public CompletableFuture<List<WqueueFullDTO>> listWqueueFullForExam() {
+        return query(backend -> backend.listWqueueFullForExam());
+    }
+
+    @Override
+    public CompletableFuture<ShinryouMasterDTO> getShinryouMaster(int shinryoucode, LocalDate at) {
+        return query(backend -> backend.getShinryouMaster(shinryoucode, at));
+    }
+
+    @Override
+    public CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease) {
+        return tx(backend -> {
+            backend.enterNewDisease(disease);
+            return disease.disease.diseaseId;
+        });
     }
 }

@@ -84,21 +84,25 @@ class UpdateFrontend implements Runnable {
                         Parameter param = backendMethod.getParameter(0);
                         Type paramType = param.getType();
                         Class<?> dtoClass = nameToDtoClassMap.get(paramType.asString());
-                        List<Field> autoIncs = helper.getAutoIncs(dtoClass);
-                        if( autoIncs.size() == 1 ){
-                            Field autoInc = autoIncs.get(0);
-                            Class<?> autoIncClass = primitiveToBoxedClass(autoInc.getType());
-                            retType = new ClassOrInterfaceType(null, autoIncClass.getSimpleName());
+                        if( dtoClass != null ) {
+                            List<Field> autoIncs = helper.getAutoIncs(dtoClass);
+                            if (autoIncs.size() == 1) {
+                                Field autoInc = autoIncs.get(0);
+                                Class<?> autoIncClass = primitiveToBoxedClass(autoInc.getType());
+                                retType = new ClassOrInterfaceType(null, autoIncClass.getSimpleName());
+                            }
                         }
                     }
                 }
                 backendMethod.setType(wrapWithCompletableFuture(retType));
+                backendMethod.removeModifier(Keyword.PUBLIC);
                 frontendDecl.addMember(backendMethod);
+                if( !save ){
+                    System.out.println(backendMethod);
+                }
             }
             if( save ){
                 saveToFile(frontendSourceFile, frontendUnit.toString());
-            } else {
-                System.out.println(frontendUnit);
             }
         } catch(Exception e){
             throw new RuntimeException(e);
@@ -120,6 +124,7 @@ class UpdateFrontend implements Runnable {
                 }
                 String name = frontendMethod.getNameAsString();
                 frontendMethod.addMarkerAnnotation("Override");
+                frontendMethod.setModifiers(Keyword.PUBLIC);
                 if (name.startsWith("enter")) {
                     String paramType = frontendMethod.getParameter(0).getTypeAsString();
                     Class<?> dtoClass = nameToDtoClassMap.get(paramType);
@@ -158,7 +163,7 @@ class UpdateFrontend implements Runnable {
             if( save ){
                 saveToFile(frontendBackendSourceFile, targetUnit.toString());
             } else {
-                System.out.println(targetUnit);
+                //System.out.println(targetUnit);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
