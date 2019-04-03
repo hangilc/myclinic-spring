@@ -3,15 +3,6 @@ package jp.chang.myclinic.frontend;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
-import jp.chang.myclinic.support.diseaseexample.DiseaseExampleProvider;
-import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensa;
-import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaService;
-import jp.chang.myclinic.support.kizainames.KizaiNamesService;
-import jp.chang.myclinic.support.meisai.MeisaiService;
-import jp.chang.myclinic.support.shinryounames.ShinryouNamesService;
-import jp.chang.myclinic.support.stockdrug.StockDrugService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,30 +13,8 @@ public class FrontendBackend implements Frontend {
 
     private DbBackend dbBackend;
 
-    private StockDrugService stockDrugService;
-
-    private HoukatsuKensaService houkatsuKensaService;
-
-    private MeisaiService meisaiService;
-
-    private DiseaseExampleProvider diseaseExampleProvider;
-
-    private ShinryouNamesService shinryouNamesService;
-
-    private KizaiNamesService kizaiNamesService;
-
-    public FrontendBackend(DbBackend dbBackend, StockDrugService stockDrugService,
-                           HoukatsuKensaService houkatsuKensaService, MeisaiService meisaiService,
-                           DiseaseExampleProvider diseaseExampleProvider,
-                           ShinryouNamesService shinryouNamesService,
-                           KizaiNamesService kizaiNamesService) {
+    public FrontendBackend(DbBackend dbBackend) {
         this.dbBackend = dbBackend;
-        this.stockDrugService = stockDrugService;
-        this.houkatsuKensaService = houkatsuKensaService;
-        this.meisaiService = meisaiService;
-        this.diseaseExampleProvider = diseaseExampleProvider;
-        this.shinryouNamesService = shinryouNamesService;
-        this.kizaiNamesService = kizaiNamesService;
     }
 
     private <T> CompletableFuture<T> query(DbBackend.QueryStatement<T> q) {
@@ -694,12 +663,6 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at) {
-        iyakuhincode = stockDrugService.resolve(iyakuhincode, at);
-        return getIyakuhinMaster(iyakuhincode, at);
-    }
-
-    @Override
     public CompletableFuture<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at) {
         return query(backend -> backend.findKizaiMasterByName(name, at));
     }
@@ -821,15 +784,6 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<MeisaiDTO> getMeisai(int visitId) {
-        return tx(backend -> {
-            VisitDTO visit = backend.getVisit(visitId);
-            LocalDate at = LocalDateTime.parse(visit.visitedAt).toLocalDate();
-            return meisaiService.getMeisai(backend.getPatient(visit.patientId), backend.getHoken(visit), at, backend.listShinryouFull(visitId), houkatsuKensaService.getRevision(at), backend.listDrugFull(visitId), backend.listConductFull(visitId));
-        });
-    }
-
-    @Override
     public CompletableFuture<Void> finishCashier(PaymentDTO payment) {
         return txProc(backend -> backend.finishCashier(payment));
     }
@@ -863,35 +817,42 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
+    public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at) {
+        return query(backend -> backend.resolveShinryouMasterByKey(key, at));
+    }
+
+    @Override
+    public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at) {
+        return query(backend -> backend.resolveKizaiMasterByKey(key, at));
+    }
+
+    @Override
     public CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample() {
-        return CompletableFuture.completedFuture(diseaseExampleProvider.listDiseaseExample());
+        return query(backend -> backend.listDiseaseExample());
     }
 
     @Override
-    public CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String name, LocalDate at) {
-        return query(backend -> {
-            List<String> candidates = shinryouNamesService.getCandidateNames(name);
-            for(String key: candidates){
-                ShinryouMasterDTO master = backend.findShinryouMasterByName(key, at);
-                if( master != null ){
-                    return master;
-                }
-            }
-            return null;
-        });
+    public CompletableFuture<MeisaiDTO> getMeisai(int visitId) {
+        return query(backend -> backend.getMeisai(visitId));
     }
 
     @Override
-    public CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String name, LocalDate at) {
-        return query(backend -> {
-            List<String> candidates = kizaiNamesService.getCandidateNames(name);
-            for(String key: candidates){
-                KizaiMasterDTO master = backend.findKizaiMasterByName(key, at);
-                if( master != null ){
-                    return master;
-                }
-            }
-            return null;
-        });
+    public CompletableFuture<BatchEnterResultDTO> batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req) {
+        return tx(backend -> backend.batchEnterByNames(visitId, req));
+    }
+
+    @Override
+    public CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at) {
+        return query(backend -> backend.resolveStockDrug(iyakuhincode, at));
+    }
+
+    @Override
+    public CompletableFuture<List<Integer>> copyAllConducts(int targetVisitId, int sourceVisitId) {
+        return tx(backend -> backend.copyAllConducts(targetVisitId, sourceVisitId));
+    }
+
+    @Override
+    public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
+        return query(backend -> backend.getKizaiMaster(kizaicode, at));
     }
 }

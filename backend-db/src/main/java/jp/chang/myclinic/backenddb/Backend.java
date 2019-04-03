@@ -7,11 +7,19 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.HotlineLogger;
 import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
+import jp.chang.myclinic.support.diseaseexample.DiseaseExampleProvider;
+import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaService;
+import jp.chang.myclinic.support.kizainames.KizaiNamesService;
+import jp.chang.myclinic.support.meisai.MeisaiService;
+import jp.chang.myclinic.support.shinryounames.ShinryouNamesService;
+import jp.chang.myclinic.support.stockdrug.StockDrugService;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -29,13 +37,29 @@ public class Backend {
     private SqlTranslator sqlTranslator = new SqlTranslator();
     private PracticeLogger practiceLogger;
     private HotlineLogger hotlineLogger;
+    private StockDrugService stockDrugService;
+    private HoukatsuKensaService houkatsuKensaService;
+    private MeisaiService meisaiService;
+    private DiseaseExampleProvider diseaseExampleProvider;
+    private ShinryouNamesService shinryouNamesService;
+    private KizaiNamesService kizaiNamesService;
 
-    public Backend(TableSet ts, Query query) {
+    public Backend(TableSet ts, Query query, StockDrugService stockDrugService,
+                   HoukatsuKensaService houkatsuKensaService, MeisaiService meisaiService,
+                   DiseaseExampleProvider diseaseExampleProvider,
+                   ShinryouNamesService shinryouNamesService,
+                   KizaiNamesService kizaiNamesService) {
         this.ts = ts;
         this.query = query;
         this.practiceLogger = new PracticeLogger();
         practiceLogger.setSaver(this::enterPracticeLog);
         this.hotlineLogger = new HotlineLogger();
+        this.stockDrugService = stockDrugService;
+        this.houkatsuKensaService = houkatsuKensaService;
+        this.meisaiService = meisaiService;
+        this.diseaseExampleProvider = diseaseExampleProvider;
+        this.shinryouNamesService = shinryouNamesService;
+        this.kizaiNamesService = kizaiNamesService;
     }
 
     private static <S, T, U> Projector<U> biProjector(Projector<S> p1, Projector<T> p2, BiFunction<S, T, U> f) {
@@ -1069,6 +1093,72 @@ public class Backend {
         return listConduct(visitId).stream().map(this::extendConduct).collect(toList());
     }
 
+    public List<Integer> copyAllConducts(int targetVisitId, int sourceVisitId){
+        List<Integer> copiedConductIds = new ArrayList<>();
+        List<ConductDTO> sourceConducts = listConduct(sourceVisitId);
+        VisitDTO targetVisit = getVisit(targetVisitId);
+        LocalDate at = LocalDateTime.parse(targetVisit.visitedAt).toLocalDate();
+        for(ConductDTO source: sourceConducts){
+            ConductDTO newConduct = ConductDTO.copy(source);
+            newConduct.conductId = 0;
+            newConduct.visitId = targetVisitId;
+            enterConduct(newConduct);
+            int conductId = newConduct.conductId;
+            copiedConductIds.add(conductId);
+            GazouLabelDTO gazouLabel = getGazouLabel(source.conductId);
+            if( gazouLabel != null ){
+                gazouLabel.conductId = conductId;
+                enterGazouLabel(gazouLabel);
+            }
+            listConductShinryou(source.conductId)
+                    .forEach(shinryou -> {
+                        ConductShinryouDTO newShinryou = ConductShinryouDTO.copy(shinryou);
+                        newShinryou.conductShinryouId = 0;
+                        newShinryou.conductId = conductId;
+                        ShinryouMasterDTO master = getShinryouMaster(shinryou.shinryoucode, at);
+                        if( master == null ){
+                            VisitDTO sourceVisit = getVisit(sourceVisitId);
+                            ShinryouMasterDTO sourceMaster = getShinryouMaster(shinryou.shinryoucode,
+                                    LocalDateTime.parse(sourceVisit.visitedAt).toLocalDate());
+                            throw new RuntimeException("Cannot find effective shinryou master: " + sourceMaster.name);
+                        }
+                        newShinryou.shinryoucode = master.shinryoucode;
+                        enterConductShinryou(newShinryou);
+                    });
+            listConductDrug(source.conductId)
+                    .forEach(drug -> {
+                        ConductDrugDTO newDrug = ConductDrugDTO.copy(drug);
+                        newDrug.conductDrugId = 0;
+                        newDrug.conductId = conductId;
+                        IyakuhinMasterDTO master = resolveStockDrug(drug.iyakuhincode, at);
+                        if( master == null ){
+                            VisitDTO sourceVisit = getVisit(sourceVisitId);
+                            IyakuhinMasterDTO sourceMaster = getIyakuhinMaster(drug.iyakuhincode,
+                                    LocalDateTime.parse(sourceVisit.visitedAt).toLocalDate());
+                            throw new RuntimeException("Cannot find effective iyakuhin master: " + sourceMaster.name);
+                        }
+                        newDrug.iyakuhincode = master.iyakuhincode;
+                        enterConductDrug(newDrug);
+                    });
+            listConductKizai(source.conductId)
+                    .forEach(kizai -> {
+                        ConductKizaiDTO newKizai = ConductKizaiDTO.copy(kizai);
+                        newKizai.conductKizaiId = 0;
+                        newKizai.conductId = conductId;
+                        KizaiMasterDTO master = getKizaiMaster(kizai.kizaicode, at);
+                        if( master == null ){
+                            VisitDTO sourceVisit = getVisit(sourceVisitId);
+                            KizaiMasterDTO sourceMaster = getKizaiMaster(kizai.kizaicode,
+                                    LocalDateTime.parse(sourceVisit.visitedAt).toLocalDate());
+                            throw new RuntimeException("Cannot find effective kizai master: " + sourceMaster.name);
+                        }
+                        newKizai.kizaicode = master.kizaicode;
+                        enterConductKizai(newKizai);
+                    });
+        }
+        return copiedConductIds;
+    }
+
     // GazouLabel ///////////////////////////////////////////////////////////////////////////
 
     public void enterGazouLabel(GazouLabelDTO gazouLabel) {
@@ -1448,6 +1538,11 @@ public class Backend {
         return null;
     }
 
+    public ShinryouMasterDTO resolveShinryouMasterByKey(String key, LocalDate at){
+        List<String> candidates = shinryouNamesService.getCandidateNames(key);
+        return resolveShinryouMasterByName(candidates, at);
+    }
+
     public Map<String, Integer> batchResolveShinryouNames(List<List<String>> args, LocalDate at) {
         Map<String, Integer> result = new LinkedHashMap<>();
         for (List<String> arg : args) {
@@ -1509,6 +1604,14 @@ public class Backend {
 
     // KizaiMaster ///////////////////////////////////////////////////////////////////////
 
+    public KizaiMasterDTO getKizaiMaster(int kizaicode, LocalDate at){
+        String sql = xlate("select * from KizaiMaster where kizaicode = ? " +
+                " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                ts.kizaiMasterTable);
+        String atString = at.toString();
+        return getQuery().get(sql, ts.kizaiMasterTable, kizaicode, atString, atString);
+    }
+
     public KizaiMasterDTO findKizaiMasterByName(String name, LocalDate at) {
         String sql = xlate("select * from KizaiMaster where name = ? " +
                         " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?") +
@@ -1528,6 +1631,10 @@ public class Backend {
             }
         }
         return null;
+    }
+
+    public KizaiMasterDTO resolveKizaiMasterByKey(String key, LocalDate at){
+        return resolveKizaiMasterByName(kizaiNamesService.getCandidateNames(key), at);
     }
 
     public Map<String, Integer> batchResolveKizaiNames(List<List<String>> args, LocalDate at) {
@@ -1640,6 +1747,100 @@ public class Backend {
         if (wqueue != null) {
             deleteWqueue(visitId);
         }
+    }
+
+    // DiseaseExample ////////////////////////////////////////////////////////////////////
+
+    public List<DiseaseExampleDTO> listDiseaseExample() {
+        return diseaseExampleProvider.listDiseaseExample();
+    }
+
+    // Meisai ////////////////////////////////////////////////////////////////////////////
+
+    public MeisaiDTO getMeisai(int visitId){
+        VisitDTO visit = getVisit(visitId);
+        LocalDate at = LocalDateTime.parse(visit.visitedAt).toLocalDate();
+        return meisaiService.getMeisai(
+                getPatient(visit.patientId),
+                getHoken(visit),
+                at,
+                listShinryouFull(visitId),
+                houkatsuKensaService.getRevision(at),
+                listDrugFull(visitId),
+                listConductFull(visitId)
+        );
+    }
+
+    // StockDrug /////////////////////////////////////////////////////////////////////////
+
+    public IyakuhinMasterDTO resolveStockDrug(int iyakuhincode, LocalDate at){
+        iyakuhincode = stockDrugService.resolve(iyakuhincode, at);
+        return getIyakuhinMaster(iyakuhincode, at);
+    }
+
+    // BatchEnterByNames /////////////////////////////////////////////////////////////////
+
+    public BatchEnterResultDTO batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req){
+        VisitDTO visit = getVisit(visitId);
+        LocalDate at = LocalDateTime.parse(visit.visitedAt).toLocalDate();
+        BatchEnterResultDTO result = new BatchEnterResultDTO();
+        result.shinryouIds = new ArrayList<>();
+        result.conductIds = new ArrayList<>();
+        if( req.shinryouNames != null ){
+            req.shinryouNames.forEach(key -> {
+                ShinryouMasterDTO m = resolveShinryouMasterByKey(key, at);
+                if( m == null ){
+                    throw new RuntimeException("Cannot find shinryou master: " + key);
+                }
+                ShinryouDTO shinryou = new ShinryouDTO();
+                shinryou.visitId = visitId;
+                shinryou.shinryoucode = m.shinryoucode;
+                enterShinryou(shinryou);
+                result.shinryouIds.add(shinryou.shinryouId);
+            });
+        }
+        if( req.conducts != null ){
+            req.conducts.forEach(conductReq -> {
+                ConductDTO conduct = new ConductDTO();
+                conduct.visitId = visitId;
+                conduct.kind = conductReq.kind;
+                enterConduct(conduct);
+                int conductId = conduct.conductId;
+                if( conductReq.gazouLabel != null ) {
+                    GazouLabelDTO gazouLabel = new GazouLabelDTO();
+                    gazouLabel.conductId = conductId;
+                    gazouLabel.label = conductReq.gazouLabel;
+                    enterGazouLabel(gazouLabel);
+                }
+                if( conductReq.shinryouNames != null ){
+                    conductReq.shinryouNames.forEach(key -> {
+                        ShinryouMasterDTO master = resolveShinryouMasterByKey(key, at);
+                        if( master == null ){
+                            throw new RuntimeException("Cannot find shinryou master: " + key);
+                        }
+                        ConductShinryouDTO shinryou = new ConductShinryouDTO();
+                        shinryou.conductId = conductId;
+                        shinryou.shinryoucode = master.shinryoucode;
+                        enterConductShinryou(shinryou);
+                    });
+                }
+                if( conductReq.kizaiList != null ){
+                    conductReq.kizaiList.forEach(kizaiReq -> {
+                        KizaiMasterDTO master = resolveKizaiMasterByKey(kizaiReq.name, at);
+                        if( master == null ){
+                            throw new RuntimeException("Cannot find kizai master: " + kizaiReq.name);
+                        }
+                        ConductKizaiDTO kizai = new ConductKizaiDTO();
+                        kizai.conductId = conductId;
+                        kizai.kizaicode = master.kizaicode;
+                        kizai.amount = kizaiReq.amount;
+                        enterConductKizai(kizai);
+                    });
+                }
+                result.conductIds.add(conductId);
+            });
+        }
+        return result;
     }
 
     // PracticeLog ///////////////////////////////////////////////////////////////////////

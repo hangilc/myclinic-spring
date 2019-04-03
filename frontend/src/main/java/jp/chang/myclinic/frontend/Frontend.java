@@ -253,8 +253,6 @@ public interface Frontend {
 
     CompletableFuture<List<IyakuhinMasterDTO>> searchIyakuhinMaster(String text, LocalDate at);
 
-    CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at);
-
     CompletableFuture<KizaiMasterDTO> findKizaiMasterByName(String name, LocalDate at);
 
     CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByName(List<String> nameCandidates, LocalDate at);
@@ -301,8 +299,6 @@ public interface Frontend {
 
     CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId);
 
-    CompletableFuture<MeisaiDTO> getMeisai(int visitId);
-
     CompletableFuture<Void> finishCashier(PaymentDTO payment);
 
     CompletableFuture<Void> markDrugsAsPrescribed(int visitId);
@@ -315,10 +311,19 @@ public interface Frontend {
 
     CompletableFuture<Integer> enterNewDisease(DiseaseNewDTO disease);
 
+    CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String key, LocalDate at);
+
+    CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String key, LocalDate at);
+
     CompletableFuture<List<DiseaseExampleDTO>> listDiseaseExample();
 
-    CompletableFuture<ShinryouMasterDTO> resolveShinryouMasterByKey(String name, LocalDate at);
+    CompletableFuture<MeisaiDTO> getMeisai(int visitId);
 
-    CompletableFuture<KizaiMasterDTO> resolveKizaiMasterByKey(String name, LocalDate at);
+    CompletableFuture<BatchEnterResultDTO> batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req);
 
+    CompletableFuture<IyakuhinMasterDTO> resolveStockDrug(int iyakuhincode, LocalDate at);
+
+    CompletableFuture<List<Integer>> copyAllConducts(int targetVisitId, int sourceVisitId);
+
+    CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at);
 }

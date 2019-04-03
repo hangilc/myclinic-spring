@@ -56,14 +56,14 @@ public class Main extends Application {
         if (opts.getMockSqlite()) {
             String dbFile = opts.getServerUrl();
             DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
-            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create);
-            Context.getInstance().setFrontend(new FrontendBackend(dbBackend,
+            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create,
                     new StockDrugFile(Paths.get("config/stock-drug.txt")),
                     new HoukatsuKensaFile(Paths.get("config/houkatsu-kensa.xml")),
                     new MeisaiServiceImpl(),
                     new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml")),
                     new ShinryouNamesFile(Paths.get("config/shinryou-names.yml")),
-                    new KizaiNamesFile(Paths.get("config/kizai-names.yml"))));
+                    new KizaiNamesFile(Paths.get("config/kizai-names.yml")));
+            Context.getInstance().setFrontend(new FrontendBackend(dbBackend));
         } else {
 //            Service.setServerUrl(opts.getServerUrl());
 //            {

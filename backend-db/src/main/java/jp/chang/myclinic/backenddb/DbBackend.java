@@ -1,5 +1,12 @@
 package jp.chang.myclinic.backenddb;
 
+import jp.chang.myclinic.support.diseaseexample.DiseaseExampleProvider;
+import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaService;
+import jp.chang.myclinic.support.kizainames.KizaiNamesService;
+import jp.chang.myclinic.support.meisai.MeisaiService;
+import jp.chang.myclinic.support.shinryounames.ShinryouNamesService;
+import jp.chang.myclinic.support.stockdrug.StockDrugService;
+
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.function.Function;
@@ -19,11 +26,16 @@ public class DbBackend {
     private TableSet ts;
     private Backend backend;
 
-    public DbBackend(DataSource ds, Function<Query, TableSet> tableSetCreator){
+    public DbBackend(DataSource ds, Function<Query, TableSet> tableSetCreator, StockDrugService stockDrugService,
+                     HoukatsuKensaService houkatsuKensaService, MeisaiService meisaiService,
+                     DiseaseExampleProvider diseaseExampleProvider,
+                     ShinryouNamesService shinryouNamesService,
+                     KizaiNamesService kizaiNamesService){
         this.db = new DB(ds);
         this.query = new Query(db.getConnectionProvider());
         this.ts = tableSetCreator.apply(query);
-        this.backend = new Backend(ts, query);
+        this.backend = new Backend(ts, query, stockDrugService, houkatsuKensaService, meisaiService,
+                diseaseExampleProvider, shinryouNamesService, kizaiNamesService);
     }
 
     public Query getQuery() {

@@ -1,15 +1,14 @@
 package jp.chang.myclinic.practice.javafx;
 
 import javafx.application.Platform;
+import jp.chang.myclinic.consts.ConductKind;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.dto.BatchEnterResultDTO;
-import jp.chang.myclinic.dto.ConductFullDTO;
-import jp.chang.myclinic.dto.ShinryouAttrDTO;
-import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.practice.lib.ErrorMessageExtractor;
 import jp.chang.myclinic.practice.lib.shinryou.ShinryouCopier;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,17 @@ public class FunJavaFX {
             private List<ConductFullDTO> conducts;
         }
         Local local = new Local();
-        Context.getInstance().getFrontend().batchEnterShinryouByName(names, visitId)
+        BatchEnterByNamesRequestDTO req = new BatchEnterByNamesRequestDTO();
+        req.shinryouNames = new ArrayList<>();
+        req.conducts = new ArrayList<>();
+        names.forEach(name -> {
+            if( "骨塩定量".equals(name) ){
+                addKotsuenTeiryou(req);
+            } else {
+                req.shinryouNames.add(name);
+            }
+        });
+        Context.getInstance().getFrontend().batchEnterByNames(visitId, req)
                 .thenCompose(result -> {
                     local.enterResult = result;
                     return Context.getInstance().getFrontend().listShinryouFullByIds(local.enterResult.shinryouIds);
@@ -74,6 +83,18 @@ public class FunJavaFX {
                     FunJavaFX.createErrorHandler().accept(ex);
                     return null;
                 });
+    }
+
+    private static void addKotsuenTeiryou(BatchEnterByNamesRequestDTO req){
+        EnterConductByNamesRequestDTO conductReq = new EnterConductByNamesRequestDTO();
+        conductReq.kind = ConductKind.Gazou.getCode();
+        conductReq.gazouLabel = "骨塩定量に使用";
+        conductReq.shinryouNames = List.of("骨塩定量ＭＤ法");
+        EnterConductKizaiByNamesRequestDTO kizai = new EnterConductKizaiByNamesRequestDTO();
+        kizai.name = "四ツ切";
+        kizai.amount = 1.0;
+        conductReq.kizaiList = List.of(kizai);
+        req.conducts.add(conductReq);
     }
 
 }
