@@ -784,4 +784,14 @@ public class FrontendBackend implements Frontend {
     public CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at) {
         return query(backend -> backend.getIyakuhinMaster(iyakuhincode, at));
     }
+
+    @Override
+    public CompletableFuture<List<Integer>> deleteDuplicateShinryou(int visitId) {
+        return query(backend -> backend.deleteDuplicateShinryou(visitId));
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId) {
+        return query(backend -> backend.listShinryou(visitId));
+    }
 }

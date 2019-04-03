@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static jp.chang.myclinic.backenddb.Query.Projector;
 import static jp.chang.myclinic.backenddb.SqlTranslator.TableInfo;
@@ -864,6 +865,12 @@ public class Backend {
         return shinryouIds.stream().map(this::getShinryouFull).collect(toList());
     }
 
+    public List<ShinryouDTO> listShinryou(int visitId) {
+        String sql = xlate("select * from Shinryou where visitId = ? order by shinryouId",
+                ts.shinryouTable);
+        return getQuery().query(sql, ts.shinryouTable, visitId);
+    }
+
     public List<ShinryouFullDTO> listShinryouFull(int visitId) {
         String sql = xlate("select s.*, m.* from Shinryou s, ShinryouMaster m, Visit v " +
                         " where s.visitId = ? and s.visitId = v.visitId and s.shinryoucode = m.shinryoucode " +
@@ -873,6 +880,18 @@ public class Backend {
         return getQuery().query(sql,
                 biProjector(ts.shinryouTable, ts.shinryouMasterTable, ShinryouFullDTO::create),
                 visitId);
+    }
+
+    public List<Integer> deleteDuplicateShinryou(int visitId) {
+        return listShinryou(visitId).stream()
+                .collect(groupingBy(s -> s.shinryoucode))
+                .values().stream()
+                .flatMap(g -> g.subList(1, g.size()).stream())
+                .map(s -> {
+                    deleteShinryou(s.shinryouId);
+                    return s.shinryouId;
+                })
+                .collect(toList());
     }
 
     // ShinryouAttr /////////////////////////////////////////////////////////////////////////////
@@ -889,25 +908,25 @@ public class Backend {
         ts.shinryouAttrTable.insert(shinryouAttr);
     }
 
-    private void deleteShinryouAttr(int shinryouId){
+    private void deleteShinryouAttr(int shinryouId) {
         ts.shinryouAttrTable.delete(shinryouId);
     }
 
-    private void updateShinryouAttr(ShinryouAttrDTO shinryouAttr){
+    private void updateShinryouAttr(ShinryouAttrDTO shinryouAttr) {
         ts.shinryouAttrTable.update(shinryouAttr);
     }
 
-    public void deleteShinryouTekiyou(int shinryouId){
+    public void deleteShinryouTekiyou(int shinryouId) {
         ShinryouAttrDTO shinryouAttr = getShinryouAttr(shinryouId);
         shinryouAttr.tekiyou = null;
-        if( ShinryouAttrDTO.isEmpty(shinryouAttr) ){
+        if (ShinryouAttrDTO.isEmpty(shinryouAttr)) {
             deleteShinryouAttr(shinryouId);
         } else {
             updateShinryouAttr(shinryouAttr);
         }
     }
 
-    public void setShinryouTekiyou(int shinryouId, String tekiyou){
+    public void setShinryouTekiyou(int shinryouId, String tekiyou) {
         ShinryouAttrDTO attr = ts.shinryouAttrTable.getById(shinryouId);
         if (attr != null) {
             attr.tekiyou = tekiyou;
@@ -1044,15 +1063,15 @@ public class Backend {
         practiceLogger.logGazouLabelDeleted(deleted);
     }
 
-    public void updateGazouLabel(GazouLabelDTO gazouLabel){
+    public void updateGazouLabel(GazouLabelDTO gazouLabel) {
         GazouLabelDTO prev = getGazouLabel(gazouLabel.conductId);
         ts.gazouLabelTable.update(gazouLabel);
         practiceLogger.logGazouLabelUpdated(prev, gazouLabel);
     }
 
-    public void modifyGazouLabel(int conductId, String label){
+    public void modifyGazouLabel(int conductId, String label) {
         GazouLabelDTO gazouLabel = getGazouLabel(conductId);
-        if( gazouLabel == null ){
+        if (gazouLabel == null) {
             gazouLabel = new GazouLabelDTO();
             gazouLabel.conductId = conductId;
             gazouLabel.label = label;
@@ -1213,7 +1232,7 @@ public class Backend {
         return ts.shahokokuhoTable.getById(shahokokuhoId);
     }
 
-    public void enterShahokokuho(ShahokokuhoDTO shahokokuho){
+    public void enterShahokokuho(ShahokokuhoDTO shahokokuho) {
         ts.shahokokuhoTable.insert(shahokokuho);
         practiceLogger.logShahokokuhoCreated(shahokokuho);
     }
@@ -1308,7 +1327,7 @@ public class Backend {
             updateDisease(disease);
         }
         List<DiseaseAdjDTO> prevAdjList = listDiseaseAdj(disease.diseaseId);
-        List<Integer> prevAdjCodes =prevAdjList.stream().map(adj -> adj.shuushokugocode).collect(toList());
+        List<Integer> prevAdjCodes = prevAdjList.stream().map(adj -> adj.shuushokugocode).collect(toList());
         if (!prevAdjCodes.equals(diseaseModifyDTO.shuushokugocodes)) {
             prevAdjList.forEach(adj -> deleteDiseaseAdj(adj.diseaseAdjId));
             if (diseaseModifyDTO.shuushokugocodes != null) {
@@ -1324,18 +1343,18 @@ public class Backend {
 
     // DiseaseAdj ////////////////////////////////////////////////////////////////////////
 
-    private void enterDiseaseAdj(DiseaseAdjDTO adj){
+    private void enterDiseaseAdj(DiseaseAdjDTO adj) {
         ts.diseaseAdjTable.insert(adj);
         practiceLogger.logDiseaseAdjCreated(adj);
     }
 
-    private void deleteDiseaseAdj(int diseaseAdjId){
+    private void deleteDiseaseAdj(int diseaseAdjId) {
         DiseaseAdjDTO deleted = ts.diseaseAdjTable.getById(diseaseAdjId);
         ts.diseaseAdjTable.delete(diseaseAdjId);
         practiceLogger.logDiseaseAdjDeleted(deleted);
     }
 
-    private List<DiseaseAdjDTO> listDiseaseAdj(int diseaseId){
+    private List<DiseaseAdjDTO> listDiseaseAdj(int diseaseId) {
         String sql = xlate("select * from DiseaseAdj where diseaseId = ? order by diseaseAdjId",
                 ts.diseaseAdjTable);
         return getQuery().query(sql, ts.diseaseAdjTable, diseaseId);
@@ -1411,9 +1430,9 @@ public class Backend {
 
     // IyakuhinMaster /////////////////////////////////////////////////////////////////////
 
-    public IyakuhinMasterDTO getIyakuhinMaster(int iyakuhincode, LocalDate at){
+    public IyakuhinMasterDTO getIyakuhinMaster(int iyakuhincode, LocalDate at) {
         String sql = xlate("select * from IyakuhinMaster where iyakuhincode = ? " +
-                " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                        " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
                 ts.iyakuhinMasterTable);
         String atString = at.toString();
         return getQuery().get(sql, ts.iyakuhinMasterTable, iyakuhincode, atString, atString);
@@ -1493,9 +1512,9 @@ public class Backend {
         return getQuery().query(sql, ts.byoumeiMasterTable, searchText, atString, atString);
     }
 
-    public ByoumeiMasterDTO getByoumeiMasterByName(String name, LocalDate at){
+    public ByoumeiMasterDTO getByoumeiMasterByName(String name, LocalDate at) {
         String sql = xlate("select * from ByoumeiMaster where name = ? " +
-                " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                        " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
                 ts.byoumeiMasterTable);
         String atString = at.toString();
         return getQuery().get(sql, ts.byoumeiMasterTable, name, atString, atString);
@@ -1510,7 +1529,7 @@ public class Backend {
         return getQuery().query(sql, ts.shuushokugoMasterTable, searchText);
     }
 
-    public ShuushokugoMasterDTO getShuushokugoMasterByName(String name){
+    public ShuushokugoMasterDTO getShuushokugoMasterByName(String name) {
         String sql = xlate("select * from ShuushokugoMaster where name = ?",
                 ts.shuushokugoMasterTable);
         return getQuery().get(sql, ts.shuushokugoMasterTable, name);
@@ -1522,11 +1541,11 @@ public class Backend {
         ts.prescExampleTable.insert(prescExample);
     }
 
-    public void deletePrescExample(int prescExampleId){
+    public void deletePrescExample(int prescExampleId) {
         ts.prescExampleTable.delete(prescExampleId);
     }
 
-    public void updatePrescExample(PrescExampleDTO prescExample){
+    public void updatePrescExample(PrescExampleDTO prescExample) {
         ts.prescExampleTable.update(prescExample);
     }
 

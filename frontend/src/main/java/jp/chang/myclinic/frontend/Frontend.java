@@ -296,4 +296,8 @@ public interface Frontend {
     CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho);
 
     CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at);
+
+    public CompletableFuture<List<Integer>> deleteDuplicateShinryou(int visitId);
+
+    public CompletableFuture<List<ShinryouDTO>> listShinryou(int visitId);
 }
