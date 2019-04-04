@@ -20,4 +20,7 @@ class CmdOpts {
     @Option(names = "--component-test", description = "Runs component test. Requires no frontend.")
     boolean componentTest;
 
+    @Option(names = {"--component-test-one", "--c1"}, description = "Runs single component test.")
+    String componentTestOne;
+
 }

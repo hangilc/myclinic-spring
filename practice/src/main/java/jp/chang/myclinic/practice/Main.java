@@ -55,8 +55,9 @@ public class Main extends Application {
     public void start(Stage stage) {
         CmdOpts opts = Context.cmdOpts;
         if (opts.componentTest) {
-            new ComponentTest(stage).run();
-            return;
+            new ComponentTest(stage).runAll();
+        } else if( opts.componentTestOne != null ){
+            new ComponentTest(stage).runOne(opts.componentTestOne);
         } else if (opts.sqliteTemp != null) {
             String dbFile = opts.sqliteTemp;
             DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
@@ -74,23 +75,23 @@ public class Main extends Application {
 //                this.client = new Client(cmdArgs.getServerUrl());
 //                Context.getInstance().setFrontend(new FrontendClient(client.getApi()));
 //            }
+            setupPracticeEnv();
+            stage.setTitle("診療");
+            PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
+                    updateTitle(stage, newValue));
+            MainPane root = new MainPane();
+            Context.mainPane = root;
+            root.getStylesheets().addAll(
+                    "css/Practice.css"
+            );
+            stage.setScene(new Scene(root));
+            stage.showingProperty().addListener((obs, oldVaue, newValue) -> {
+                if (!newValue) {
+                    PracticeEnv.INSTANCE.closeRemainingWindows();
+                }
+            });
+            stage.show();
         }
-        setupPracticeEnv();
-        stage.setTitle("診療");
-        PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
-                updateTitle(stage, newValue));
-        MainPane root = new MainPane();
-        Context.mainPane = root;
-        root.getStylesheets().addAll(
-                "css/Practice.css"
-        );
-        stage.setScene(new Scene(root));
-        stage.showingProperty().addListener((obs, oldVaue, newValue) -> {
-            if (!newValue) {
-                PracticeEnv.INSTANCE.closeRemainingWindows();
-            }
-        });
-        stage.show();
     }
 
     @Override

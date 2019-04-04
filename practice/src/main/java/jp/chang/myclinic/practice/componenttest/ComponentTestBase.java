@@ -21,6 +21,10 @@ public class ComponentTestBase implements ComponentTestMixin {
         try {
             for (Method method : getClass().getMethods()) {
                 if (method.isAnnotationPresent(CompTest.class)) {
+                    CompTest compTest = method.getAnnotation(CompTest.class);
+                    if( compTest.excludeFromBatch() ){
+                        continue;
+                    }
                     stage.setTitle(getClass().getSimpleName() + ":" + method.getName());
                     method.invoke(this);
                 }
@@ -30,11 +34,22 @@ public class ComponentTestBase implements ComponentTestMixin {
         }
     }
 
-    public void confirm(boolean cond){
-        if( !cond ){
-            throw new RuntimeException("confirmation failuer");
+    public boolean testOne(String testName){
+        try {
+            for (Method method : getClass().getMethods()) {
+                if (method.isAnnotationPresent(CompTest.class)) {
+                    CompTest compTest = method.getAnnotation(CompTest.class);
+                    if( testName.equals(compTest.name()) ){
+                        stage.setTitle(getClass().getSimpleName() + ":" + method.getName());
+                        method.invoke(this);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } catch(Exception e){
+            throw new RuntimeException(e);
         }
     }
-
 
 }
