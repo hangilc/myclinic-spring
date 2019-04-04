@@ -121,7 +121,7 @@ public class SearchTextDialog extends Stage {
             dto.totalPages = 0;
             return CompletableFuture.completedFuture(dto);
         } else {
-            return Context.getInstance().getFrontend().searchText(patientId, searchText, page);
+            return Context.frontend.searchText(patientId, searchText, page);
         }
     }
 

@@ -68,7 +68,7 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
         if( !GuiUtil.confirm("この処方例を削除しますか？") ){
             return;
         }
-        Context.getInstance().getFrontend().deletePrescExample(prescExampleId)
+        Context.frontend.deletePrescExample(prescExampleId)
                 .thenAcceptAsync(result -> doClear(), Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);
     }
@@ -80,10 +80,10 @@ public class EditPrescExampleDialog extends PrescExampleBaseDialog {
             return;
         }
         if( ex != null ){
-            Context.getInstance().getFrontend().resolveStockDrug(ex.iyakuhincode, getLocalDate())
+            Context.frontend.resolveStockDrug(ex.iyakuhincode, getLocalDate())
                     .thenCompose(master -> {
                         ex.masterValidFrom = master.validFrom;
-                        return Context.getInstance().getFrontend().updatePrescExample(ex);
+                        return Context.frontend.updatePrescExample(ex);
                     })
                     .thenAccept(prescExampleId -> Platform.runLater(this::doClear))
                     .exceptionally(HandlerFX::exceptionally);

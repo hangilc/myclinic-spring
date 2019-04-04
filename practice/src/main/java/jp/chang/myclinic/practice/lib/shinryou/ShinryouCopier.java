@@ -36,7 +36,7 @@ public class ShinryouCopier {
     }
 
     public void start() {
-        Context.getInstance().getFrontend().getVisit(targetVisitId)
+        Context.frontend.getVisit(targetVisitId)
                 .thenAccept(targetVisit -> {
                     setTargetVisit(targetVisit);
                     iterate();
@@ -56,7 +56,7 @@ public class ShinryouCopier {
             finishedCallback.run();
         } else {
             ShinryouFullDTO src = srcList.remove(0);
-            Context.getInstance().getFrontend().getShinryouMaster(src.shinryou.shinryoucode,
+            Context.frontend.getShinryouMaster(src.shinryou.shinryoucode,
                     LocalDateTime.parse(targetVisit.visitedAt).toLocalDate())
                     .thenApply(master -> master == null ? 0 : master.shinryoucode)
                     .thenAccept(shinryoucode -> {
@@ -70,10 +70,10 @@ public class ShinryouCopier {
                                 private int enteredShinryouId;
                             }
                             Local local = new Local();
-                            Context.getInstance().getFrontend().getShinryouAttr(src.shinryou.shinryouId)
+                            Context.frontend.getShinryouAttr(src.shinryou.shinryouId)
                                     .thenCompose(srcAttr -> {
                                         local.srcAttr = srcAttr;
-                                        return Context.getInstance().getFrontend().enterShinryou(dst);
+                                        return Context.frontend.enterShinryou(dst);
                                     })
                                     .thenCompose(enteredShinryouId -> {
                                         local.enteredShinryouId = enteredShinryouId;
@@ -81,13 +81,13 @@ public class ShinryouCopier {
                                             ShinryouAttrDTO dstAttr = ShinryouAttrDTO.copy(local.srcAttr);
                                             dstAttr.shinryouId = local.enteredShinryouId;
                                             local.dstAttr = dstAttr;
-                                            return Context.getInstance().getFrontend().enterShinryouAttr(dstAttr);
+                                            return Context.frontend.enterShinryouAttr(dstAttr);
                                         } else {
                                             local.dstAttr = null;
                                             return CompletableFuture.completedFuture(null);
                                         }
                                     })
-                                    .thenCompose(ok -> Context.getInstance().getFrontend().getShinryouFull(local.enteredShinryouId))
+                                    .thenCompose(ok -> Context.frontend.getShinryouFull(local.enteredShinryouId))
                                     .thenAccept(entered -> {
                                         Platform.runLater(() -> onEnterCallback.accept(entered, local.dstAttr));
                                         iterate();

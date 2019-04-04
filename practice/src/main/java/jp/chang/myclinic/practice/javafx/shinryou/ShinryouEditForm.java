@@ -61,7 +61,7 @@ public class ShinryouEditForm extends WorkForm {
 
     private void doDeleteTekiyou(){
         if( GuiUtil.confirm("この摘要を削除していいですか？") ){
-            Frontend frontend = Context.getInstance().getFrontend();
+            Frontend frontend = Context.frontend;
             frontend.deleteShinryouTekiyou(shinryouId)
                     .thenCompose(v -> frontend.getShinryouAttr(shinryouId))
                     .thenAccept(attr -> Platform.runLater(() -> {
@@ -74,7 +74,7 @@ public class ShinryouEditForm extends WorkForm {
     }
 
     private void doModifyTekiyou(String orig){
-        Frontend frontend = Context.getInstance().getFrontend();
+        Frontend frontend = Context.frontend;
         GuiUtil.askForString("摘要の内容", orig)
                 .ifPresent(tekiyou -> {
                     frontend.setShinryouTekiyou(shinryouId, tekiyou)

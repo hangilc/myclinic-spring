@@ -62,7 +62,7 @@ class NewVisitDialog extends Stage {
         if( patientId == 0 ){
             GuiUtil.alertError("患者が選択されていません。");
         } else {
-            Context.getInstance().getFrontend().startVisit(patientId, LocalDateTime.now())
+            Context.frontend.startVisit(patientId, LocalDateTime.now())
                     .thenAccept(visitId -> Platform.runLater(this::close))
                     .exceptionally(HandlerFX::exceptionally);
         }

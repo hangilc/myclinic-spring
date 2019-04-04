@@ -98,7 +98,7 @@ public class DrugForm extends VBox {
     }
 
     private void resolveMaster(int iyakuhincode, Consumer<IyakuhinMasterDTO> handler) {
-        Context.getInstance().getFrontend().resolveStockDrug(iyakuhincode, at)
+        Context.frontend.resolveStockDrug(iyakuhincode, at)
                 .thenAcceptAsync(master -> {
                     if (master == null) {
                         GuiUtil.alertError("使用できない薬剤です。");

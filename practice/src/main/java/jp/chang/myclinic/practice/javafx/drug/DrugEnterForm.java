@@ -93,8 +93,8 @@ public class DrugEnterForm extends DrugForm {
         if( drug == null ){
             return;
         }
-        Context.getInstance().getFrontend().enterDrug(drug)
-                .thenCompose(Context.getInstance().getFrontend()::getDrugFull)
+        Context.frontend.enterDrug(drug)
+                .thenCompose(Context.frontend::getDrugFull)
                 .thenAccept(enteredDrug -> Platform.runLater(() -> {
                     DrugEnterForm.this.fireEvent(new DrugEnteredEvent(enteredDrug, null));
                     input.clear();

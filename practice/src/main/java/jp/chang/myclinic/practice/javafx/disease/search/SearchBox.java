@@ -98,7 +98,7 @@ public class SearchBox extends VBox {
         Result<LocalDate, List<String>> dateResult = dateSupplier.get();
         if( dateResult.hasValue() ){
             if( example.byoumei != null ){
-                Context.getInstance().getFrontend().getByoumeiMasterByName(example.byoumei, dateResult.getValue())
+                Context.frontend.getByoumeiMasterByName(example.byoumei, dateResult.getValue())
                         .thenAccept(byoumeiMaster -> Platform.runLater(() -> triggerByoumeiSelect(byoumeiMaster)))
                         .exceptionally(HandlerFX::exceptionally);
             }
@@ -110,7 +110,7 @@ public class SearchBox extends VBox {
    }
 
     private CompletableFuture<Void> handleAdj(String name){
-        return Context.getInstance().getFrontend().getShuushokugoMasterByName(name)
+        return Context.frontend.getShuushokugoMasterByName(name)
                 .thenAccept(m -> Platform.runLater(() -> triggerShuushokugoSelect(m)));
     }
 

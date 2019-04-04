@@ -51,7 +51,7 @@ class ConvertToPrescExampleDialog extends Stage {
             return;
         }
         example.prescExampleId = 0;
-        Context.getInstance().getFrontend().enterPrescExample(example)
+        Context.frontend.enterPrescExample(example)
                 .thenAcceptAsync(result -> {
                     close();
                 }, Platform::runLater)

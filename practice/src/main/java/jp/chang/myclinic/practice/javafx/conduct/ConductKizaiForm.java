@@ -25,7 +25,7 @@ public class ConductKizaiForm extends WorkForm {
         this.conductId = conductId;
         KizaiInput kizaiInput = new KizaiInput();
         SearchBoxOld<KizaiMasterDTO> searchBox = new SearchBoxOld<>(
-                t -> Context.getInstance().getFrontend().searchKizaiMaster(t, LocalDate.parse(at)),
+                t -> Context.frontend.searchKizaiMaster(t, LocalDate.parse(at)),
                 m -> m.name
         );
         searchBox.setOnSelectCallback(kizaiInput::setMaster);

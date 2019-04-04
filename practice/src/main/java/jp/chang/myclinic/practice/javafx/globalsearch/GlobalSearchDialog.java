@@ -68,7 +68,7 @@ public class GlobalSearchDialog extends Stage {
     private void doSearch(int page) {
         String text = searchTextInput.getText();
         if (!text.isEmpty()) {
-            Context.getInstance().getFrontend().searchTextGlobally(text, page)
+            Context.frontend.searchTextGlobally(text, page)
                     .thenAccept(result -> Platform.runLater(() ->{
                         resultBox.set(result.textVisitPatients, text);
                         nav.set(result.page, result.totalPages);

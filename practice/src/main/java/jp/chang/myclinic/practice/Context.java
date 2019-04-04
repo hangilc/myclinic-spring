@@ -7,89 +7,11 @@ import org.slf4j.LoggerFactory;
 
 public class Context {
 
-    public static Context instance = new Context();
-
-    public static Context getInstance(){
-        return instance;
-    }
-
-    private Context(){}
-
-    private CmdOpts cmdsOpts;
-
-    public CmdOpts getCmdsOpts() {
-        return cmdsOpts;
-    }
-
-    public void setCmdsOpts(CmdOpts cmdsOpts) {
-        this.cmdsOpts = cmdsOpts;
-    }
-
-    private Frontend frontend;
-
-    public Frontend getFrontend() {
-        return frontend;
-    }
-
-    public void setFrontend(Frontend frontend) {
-        this.frontend = frontend;
-    }
-
-    private MainPane mainPane;
-
-    public MainPane getMainPane() {
-        return mainPane;
-    }
-
-    public void setMainPane(MainPane mainPane) {
-        this.mainPane = mainPane;
-    }
-
-    private CurrentPatientService currentPatientService = new CurrentPatientService();
-
-    public CurrentPatientService getCurrentPatientService() {
-        return currentPatientService;
-    }
-
-    private MainStageService mainStageService = new MainStageService();
-
-    public MainStageService getMainStageService() {
-        return mainStageService;
-    }
-
-    private IntegrationService integrationService = new IntegrationService();
-
-    public IntegrationService getIntegrationService() {
-        return integrationService;
-    }
-
-    private PracticeConfigService practiceConfigService;
-
-    public void setPracticeConfigService(PracticeConfigService practiceConfigService) {
-        this.practiceConfigService = practiceConfigService;
-    }
-
-    public PracticeConfigService getPracticeConfigService() {
-        return practiceConfigService;
-    }
-
-    private DiseaseExampleService diseaseExampleService;
-
-    public DiseaseExampleService getDiseaseExampleService() {
-        return diseaseExampleService;
-    }
-
-    public void setDiseaseExampleService(DiseaseExampleService diseaseExampleService) {
-        this.diseaseExampleService = diseaseExampleService;
-    }
-
-    private RcptService rcptService;
-
-    public RcptService getRcptService() {
-        return rcptService;
-    }
-
-    public void setRcptService(RcptService rcptService) {
-        this.rcptService = rcptService;
-    }
+    public static CmdOpts cmdOpts;
+    public static Frontend frontend;
+    public static MainPane mainPane;
+    public static CurrentPatientService currentPatientService;
+    public static MainStageService mainStageService;
+    public static PracticeConfigService practiceConfigService;
+    public static IntegrationService integrationService;
 }

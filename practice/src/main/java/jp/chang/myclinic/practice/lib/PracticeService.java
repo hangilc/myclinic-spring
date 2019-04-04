@@ -20,7 +20,7 @@ public class PracticeService {
     private static Logger logger = LoggerFactory.getLogger(PracticeService.class);
 
     public static void listRecentVisits(Consumer<List<VisitPatientDTO>> cb) {
-        Context.getInstance().getFrontend().listRecentVisitWithPatient(0, 30)
+        Context.frontend.listRecentVisitWithPatient(0, 30)
                 .thenAccept(result -> Platform.runLater(() -> cb.accept(result)))
                 .exceptionally(ex -> {
                     logger.error("Failed list recent visits.", ex);
@@ -30,7 +30,7 @@ public class PracticeService {
     }
 
     public static void listVisits(int patientId, int page, Consumer<List<VisitFull2DTO>> cb) {
-        Context.getInstance().getFrontend().listVisitFull2(patientId, page)
+        Context.frontend.listVisitFull2(patientId, page)
                 .thenAccept(result -> {
                     Platform.runLater(() -> cb.accept(result.visits));
                 })
@@ -56,7 +56,7 @@ public class PracticeService {
 
     public static CompletableFuture<Void> deleteVisit(int visitId) {
         return addExceptionHandler(
-                Context.getInstance().getFrontend().deleteVisitSafely(visitId),
+                Context.frontend.deleteVisitSafely(visitId),
                 "Failed to delete visit.",
                 "診察の削除に失敗しました。"
         );
@@ -71,7 +71,7 @@ public class PracticeService {
             at = at.substring(0, 10);
         }
         return addExceptionHandler(
-                Context.getInstance().getFrontend().resolveStockDrug(iyakuhincode, LocalDate.parse(at)),
+                Context.frontend.resolveStockDrug(iyakuhincode, LocalDate.parse(at)),
                 "Failed to resolve iyakuhin master.",
                 "医薬品マスターの特定に失敗しました。"
         );
@@ -82,7 +82,7 @@ public class PracticeService {
             at = at.substring(0, 10);
         }
         return addExceptionHandler(
-                Context.getInstance().getFrontend().resolveStockDrug(drug.drug.iyakuhincode, LocalDate.parse(at)),
+                Context.frontend.resolveStockDrug(drug.drug.iyakuhincode, LocalDate.parse(at)),
                 "Failed to resolve iyakuhin master.",
                 String.format("医薬品マスターの特定に失敗しました：%s", drug.master.name)
         );
@@ -94,7 +94,7 @@ public class PracticeService {
 
     public static CompletableFuture<List<DrugFullDTO>> listDrugFull(int visitId) {
         return addExceptionHandler(
-                Context.getInstance().getFrontend().listDrugFull(visitId),
+                Context.frontend.listDrugFull(visitId),
                 "Failed to list drugs.",
                 "薬剤リストの取得に失敗しました。"
         );
@@ -102,7 +102,7 @@ public class PracticeService {
 
     public static CompletableFuture<Integer> enterDrug(DrugDTO drug) {
         return addExceptionHandler(
-                Context.getInstance().getFrontend().enterDrug(drug),
+                Context.frontend.enterDrug(drug),
                 "Failed to enter drug.",
                 "新規処方の入力に失敗しました。"
         );
@@ -110,7 +110,7 @@ public class PracticeService {
 
     public static CompletableFuture<Void> updateDrug(DrugDTO drug) {
         return addExceptionHandler(
-                Context.getInstance().getFrontend().updateDrug(drug),
+                Context.frontend.updateDrug(drug),
                 "Failed to update drug.",
                 "処方内容の変更に失敗しました。"
         );
@@ -118,7 +118,7 @@ public class PracticeService {
 
     public static CompletableFuture<Void> deleteDrug(DrugDTO drug) {
         return addExceptionHandler(
-                Context.getInstance().getFrontend().deleteDrug(drug.drugId),
+                Context.frontend.deleteDrug(drug.drugId),
                 "Failed to delete drug.",
                 "処方の削除に失敗しました。"
         );
@@ -126,7 +126,7 @@ public class PracticeService {
 
     public static CompletableFuture<DrugFullDTO> getDrugFull(int drugId) {
         return addExceptionHandler(
-                Context.getInstance().getFrontend().getDrugFull(drugId),
+                Context.frontend.getDrugFull(drugId),
                 "Failed to get drug full.",
                 "薬剤情報の取得に失敗しました。"
         );
@@ -134,7 +134,7 @@ public class PracticeService {
 
     public static CompletableFuture<VisitDTO> getVisit(int visitId) {
         return addExceptionHandler(
-                Context.getInstance().getFrontend().getVisit(visitId),
+                Context.frontend.getVisit(visitId),
                 "Failed to get visit.",
                 "診察情報の取得に失敗しました。"
         );
@@ -143,7 +143,7 @@ public class PracticeService {
     public static CompletableFuture<Void> modifyDrugDays(List<DrugDTO> drugs, int days) {
         List<Integer> drugIds = drugs.stream().map(drug -> drug.drugId).collect(Collectors.toList());
         return addExceptionHandler(
-                Context.getInstance().getFrontend().batchUpdateDrugDays(drugIds, days),
+                Context.frontend.batchUpdateDrugDays(drugIds, days),
                 "Failed to modify drug days.",
                 "処方日数の変更に失敗しました。"
         );
@@ -153,7 +153,7 @@ public class PracticeService {
     public static CompletionStage<Void> batchDeleteDrugs(List<DrugDTO> drugs) {
         List<Integer> drugIds = drugs.stream().map(drug -> drug.drugId).collect(Collectors.toList());
         return addExceptionHandler(
-                Context.getInstance().getFrontend().batchDeleteDrugs(drugIds),
+                Context.frontend.batchDeleteDrugs(drugIds),
                 "Failed to delete drugs.",
                 "薬剤の複数削除に失敗しました。"
         );
@@ -161,7 +161,7 @@ public class PracticeService {
 
 //    public static CompletableFuture<BatchEnterResultDTO> batchEnterShinryouByName(List<String> names, int visitId) {
 //        return addExceptionHandler(
-//                Context.getInstance().getFrontend().batchEnterShinryouByName(names, visitId),
+//                Context.frontend.batchEnterShinryouByName(names, visitId),
 //                "Failed to batch enter shinryou",
 //                "診療行為の入力に失敗しました。"
 //        );
@@ -169,7 +169,7 @@ public class PracticeService {
 
     public static CompletableFuture<List<ShinryouFullDTO>> listShinryouFullByIds(List<Integer> shinryouIds){
         return addExceptionHandler(
-                Context.getInstance().getFrontend().listShinryouFullByIds(shinryouIds),
+                Context.frontend.listShinryouFullByIds(shinryouIds),
                 "Failed to list shinryou",
                 "診療行為情報の取得に失敗しました。"
         );
@@ -177,7 +177,7 @@ public class PracticeService {
 
     public static CompletableFuture<List<ConductFullDTO>> listConductFullByIds(List<Integer> conductIds){
         return addExceptionHandler(
-                Context.getInstance().getFrontend().listConductFullByIds(conductIds),
+                Context.frontend.listConductFullByIds(conductIds),
                 "Failed to list conducts.",
                 "処置情報の取得に失敗しました。"
         );
@@ -185,7 +185,7 @@ public class PracticeService {
 
     public static CompletableFuture<List<ShinryouMasterDTO>> searchShinryouMaster(String text, String at){
         return addExceptionHandler(
-                Context.getInstance().getFrontend().searchShinryouMaster(text, LocalDate.parse(at)),
+                Context.frontend.searchShinryouMaster(text, LocalDate.parse(at)),
                 "Failed to search shinryou master.",
                 "診療行為マスターの検索に失敗しました。"
         );
@@ -193,7 +193,7 @@ public class PracticeService {
 
     public static CompletableFuture<Integer> enterShinryou(ShinryouDTO shinryou){
         return addExceptionHandler(
-                Context.getInstance().getFrontend().enterShinryou(shinryou),
+                Context.frontend.enterShinryou(shinryou),
                 "Failed to enter shinryou.",
                 "診療行為の入力に失敗しました。"
         );
@@ -201,7 +201,7 @@ public class PracticeService {
 
     public static CompletableFuture<ShinryouFullDTO> getShinryouFull(int shinryouId){
         return addExceptionHandler(
-                Context.getInstance().getFrontend().getShinryouFull(shinryouId),
+                Context.frontend.getShinryouFull(shinryouId),
                 "Failed to get shinryou.",
                 "診療行為の取得に失敗しました。"
         );

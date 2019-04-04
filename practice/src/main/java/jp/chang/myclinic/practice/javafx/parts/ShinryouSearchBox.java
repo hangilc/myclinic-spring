@@ -13,7 +13,7 @@ public class ShinryouSearchBox extends SearchBoxOld<ShinryouMasterDTO> {
     private static Logger logger = LoggerFactory.getLogger(ShinryouSearchBox.class);
 
     public ShinryouSearchBox(String at) {
-        super(t -> Context.getInstance().getFrontend().searchShinryouMaster(t, LocalDate.parse(at)), m -> m.name);
+        super(t -> Context.frontend.searchShinryouMaster(t, LocalDate.parse(at)), m -> m.name);
     }
 
 }

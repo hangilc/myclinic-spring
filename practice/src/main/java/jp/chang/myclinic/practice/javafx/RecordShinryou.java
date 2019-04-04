@@ -64,7 +64,7 @@ class RecordShinryou extends StackPane {
             ShinryouEditForm form = new ShinryouEditForm(shinryou, attr){
                 @Override
                 protected void onDelete(ShinryouEditForm form) {
-                    Context.getInstance().getFrontend().deleteShinryou(shinryou.shinryou.shinryouId)
+                    Context.frontend.deleteShinryou(shinryou.shinryou.shinryouId)
                             .thenAccept(result -> Platform.runLater(() -> {
                                 ShinryouDeletedEvent e = new ShinryouDeletedEvent(shinryou.shinryou);
                                 RecordShinryou.this.fireEvent(e);

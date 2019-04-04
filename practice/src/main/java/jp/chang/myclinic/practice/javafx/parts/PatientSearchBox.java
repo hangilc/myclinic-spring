@@ -19,7 +19,7 @@ public class PatientSearchBox extends SimpleSearchBox<PatientDTO> {
     }
 
     private static CompletableFuture<List<PatientDTO>> search(String text){
-        return Context.getInstance().getFrontend().searchPatient(text);
+        return Context.frontend.searchPatient(text);
     }
 
     private static String convert(PatientDTO patient){

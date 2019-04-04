@@ -52,14 +52,14 @@ public class DrugsCopier {
                     })
                     .thenCompose(enteredDrugId -> {
                         local.enteredDrugId = enteredDrugId;
-                        return Context.getInstance().getFrontend().getDrugAttr(srcDrug.drug.drugId);
+                        return Context.frontend.getDrugAttr(srcDrug.drug.drugId);
                     })
                     .thenCompose(srcAttr -> {
                         if( srcAttr != null ) {
                             DrugAttrDTO dstAttr = DrugAttrDTO.copy(srcAttr);
                             dstAttr.drugId = local.enteredDrugId;
                             local.dstAttr = dstAttr;
-                            return Context.getInstance().getFrontend().enterDrugAttr(dstAttr);
+                            return Context.frontend.enterDrugAttr(dstAttr);
                         } else {
                             return CompletableFuture.completedFuture(null);
                         }

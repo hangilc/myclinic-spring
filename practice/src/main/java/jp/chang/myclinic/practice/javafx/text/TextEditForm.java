@@ -30,9 +30,9 @@ public class TextEditForm extends VBox {
     private Runnable onDeletedCallback;
     private Runnable onDoneCallback;
     private Consumer<TextDTO> onCopiedCallback;
-    private Frontend frontend = Context.getInstance().getFrontend();
-    private CurrentPatientService currentPatientService = Context.getInstance().getCurrentPatientService();
-    private IntegrationService integrationService = Context.getInstance().getIntegrationService();
+    private Frontend frontend = Context.frontend;
+    private CurrentPatientService currentPatientService = Context.currentPatientService;
+    private IntegrationService integrationService = Context.integrationService;
 
     public TextEditForm(TextDTO text) {
         super(4);

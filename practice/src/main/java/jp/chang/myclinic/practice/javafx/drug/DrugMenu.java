@@ -120,11 +120,11 @@ public class DrugMenu extends VBox {
             if (targetVisitId == 0) {
                 return;
             }
-            Context.getInstance().getFrontend().listDrugFull(visitId)
+            Context.frontend.listDrugFull(visitId)
                     .thenCompose(drugs -> {
                         local.fullDrugs = drugs;
                         List<Integer> drugIds = drugs.stream().map(d -> d.drug.drugId).collect(Collectors.toList());
-                        return Context.getInstance().getFrontend().batchGetDrugAttr(drugIds);
+                        return Context.frontend.batchGetDrugAttr(drugIds);
                     })
                     .thenAccept(attrList -> {
                         Map<Integer, DrugAttrDTO> attrMap = attrList.stream().collect(Collectors.toMap(
@@ -231,7 +231,7 @@ public class DrugMenu extends VBox {
     private MenuItem createDrugTextMenuItem(int visitId) {
         MenuItem menuItem = new MenuItem("処方内容を文章コピー");
         menuItem.setOnAction(evt -> {
-            Context.getInstance().getFrontend().listDrugFull(visitId)
+            Context.frontend.listDrugFull(visitId)
                     .thenAccept(drugs -> {
                         List<String> reps = drugs.stream().map(DrugUtil::drugRep).collect(Collectors.toList());
                         List<String> lines = new ArrayList<>();

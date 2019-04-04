@@ -19,7 +19,7 @@ public class TextEnterForm extends VBox {
     private Hyperlink enterLink = new Hyperlink("入力");
     private Hyperlink cancelLink = new Hyperlink("キャンセル ");
     private int visitId;
-    private Frontend frontend = Context.getInstance().getFrontend();
+    private Frontend frontend = Context.frontend;
 
     public TextEnterForm(int visitId) {
         super(4);

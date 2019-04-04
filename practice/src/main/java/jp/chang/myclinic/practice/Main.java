@@ -13,6 +13,7 @@ import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.frontend.FrontendBackend;
 import jp.chang.myclinic.frontend.FrontendClient;
+import jp.chang.myclinic.practice.componenttest.ComponentTest;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.practice.testgui.TestGui;
 import jp.chang.myclinic.practice.testintegration.TestIntegration;
@@ -46,15 +47,18 @@ public class Main extends Application {
             commandLine.usage(System.out);
             return;
         }
-        Context.getInstance().setCmdsOpts(cmdOpts);
+        Context.cmdOpts = cmdOpts;
         Application.launch(Main.class, args);
     }
 
     @Override
     public void start(Stage stage) {
-        CmdOpts opts = Context.getInstance().getCmdsOpts();
-        if (opts.getMockSqlite()) {
-            String dbFile = opts.getServerUrl();
+        CmdOpts opts = Context.cmdOpts;
+        if (opts.componentTest) {
+            new ComponentTest(stage).run();
+            return;
+        } else if (opts.sqliteTemp != null) {
+            String dbFile = opts.sqliteTemp;
             DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
             DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create,
                     new StockDrugFile(Paths.get("config/stock-drug.txt")),
@@ -63,7 +67,7 @@ public class Main extends Application {
                     new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml")),
                     new ShinryouNamesFile(Paths.get("config/shinryou-names.yml")),
                     new KizaiNamesFile(Paths.get("config/kizai-names.yml")));
-            Context.getInstance().setFrontend(new FrontendBackend(dbBackend));
+            Context.frontend = new FrontendBackend(dbBackend);
         } else {
 //            Service.setServerUrl(opts.getServerUrl());
 //            {
@@ -76,7 +80,7 @@ public class Main extends Application {
         PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
                 updateTitle(stage, newValue));
         MainPane root = new MainPane();
-        Context.getInstance().setMainPane(root);
+        Context.mainPane = root;
         root.getStylesheets().addAll(
                 "css/Practice.css"
         );
@@ -112,9 +116,9 @@ public class Main extends Application {
 
     private static void setupPracticeEnv() {
 //        CompletableFuture.allOf(
-//                Context.getInstance().getFrontend().getClinicInfo().thenAccept(PracticeEnv.INSTANCE::setClinicInfo),
-//                Context.getInstance().getFrontend().getReferList().thenAccept(PracticeEnv.INSTANCE::setReferList),
-//                Context.getInstance().getFrontend().getPracticeConfig().thenAccept(c -> PracticeEnv.INSTANCE.setKouhatsuKasan(c.kouhatsuKasan))
+//                Context.frontend.getClinicInfo().thenAccept(PracticeEnv.INSTANCE::setClinicInfo),
+//                Context.frontend.getReferList().thenAccept(PracticeEnv.INSTANCE::setReferList),
+//                Context.frontend.getPracticeConfig().thenAccept(c -> PracticeEnv.INSTANCE.setKouhatsuKasan(c.kouhatsuKasan))
 //        ).exceptionally(t -> {
 //            logger.error("setupPracticeEnv failed. {}", t);
 //            System.exit(1);

@@ -46,9 +46,9 @@ public class MainPane extends BorderPane {
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
     private MenuItem selectVisitMenu;
     private Supplier<Optional<PatientManip>> findPatientManipFun;
-    private Frontend frontend = Context.getInstance().getFrontend();
-    private CurrentPatientService currentPatientService = Context.getInstance().getCurrentPatientService();
-    private MainStageService mainStageService = Context.getInstance().getMainStageService();
+    private Frontend frontend = Context.frontend;
+    private CurrentPatientService currentPatientService = Context.currentPatientService;
+    private MainStageService mainStageService = Context.mainStageService;
     private RecordsPane recordsPane = new RecordsPane();
 
     public MainPane() {
@@ -164,7 +164,7 @@ public class MainPane extends BorderPane {
     }
 
     private void doTodaysVisits() {
-        Context.getInstance().getFrontend().listTodaysVisit()
+        Context.frontend.listTodaysVisit()
                 .thenAccept(list -> Platform.runLater(() -> {
                     TodaysVisitsDialog dialog = new TodaysVisitsDialog(list);
                     dialog.show();
@@ -183,7 +183,7 @@ public class MainPane extends BorderPane {
             String confirmText = String.format("(%d) %s%s様を再受付しますか？", patient.patientId,
                     patient.lastName, patient.firstName);
             if (GuiUtil.confirm(confirmText)) {
-                Context.getInstance().getFrontend().startVisit(patient.patientId, LocalDateTime.now())
+                Context.frontend.startVisit(patient.patientId, LocalDateTime.now())
                         .exceptionally(HandlerFX::exceptionally);
             }
         }
@@ -291,7 +291,7 @@ public class MainPane extends BorderPane {
         }
         int visitId = PracticeEnv.INSTANCE.getCurrentVisitId();
         if (visitId > 0) {
-            Context.getInstance().getFrontend().getMeisai(visitId)
+            Context.frontend.getMeisai(visitId)
                     .thenAccept(meisai -> Platform.runLater(() -> {
                         CashierDialog dialog = new CashierDialog(meisai, visitId);
                         dialog.showAndWait();

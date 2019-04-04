@@ -19,8 +19,8 @@ public class ShohousenPreview {
         return new ShohousenPreview().makePreview(visitId, text);
     }
 
-    private Frontend restService = Context.getInstance().getFrontend();
-    private PracticeConfigService configService = Context.getInstance().getPracticeConfigService();
+    private Frontend restService = Context.frontend;
+    private PracticeConfigService configService = Context.practiceConfigService;
     private VisitDTO visit;
     private PatientDTO patient;
     private ShohousenData data = new ShohousenData();

@@ -14,18 +14,18 @@ import java.util.List;
 class TestCleanupWqueue {
 
     void run(){
-        List<WqueueFullDTO> wqlist =  Context.getInstance().getFrontend().listWqueueFull().join();
+        List<WqueueFullDTO> wqlist =  Context.frontend.listWqueueFull().join();
         for(WqueueFullDTO wq: wqlist){
             int visitId = wq.visit.visitId;
-            MeisaiDTO meisai = Context.getInstance().getFrontend().getMeisai(visitId).join();
-            Context.getInstance().getFrontend().endExam(visitId, meisai.charge).join();
+            MeisaiDTO meisai = Context.frontend.getMeisai(visitId).join();
+            Context.frontend.endExam(visitId, meisai.charge).join();
             PaymentDTO payment = new PaymentDTO();
             payment.visitId = visitId;
             payment.amount = meisai.charge;
             payment.paytime = DateTimeUtil.toSqlDateTime(LocalDateTime.now());
-            Context.getInstance().getFrontend().finishCashier(payment).join();
-            if( Context.getInstance().getFrontend().listDrugFull(visitId).join().size() > 0 ){
-                Context.getInstance().getFrontend().prescDone(visitId);
+            Context.frontend.finishCashier(payment).join();
+            if( Context.frontend.listDrugFull(visitId).join().size() > 0 ){
+                Context.frontend.prescDone(visitId);
             }
         }
     }

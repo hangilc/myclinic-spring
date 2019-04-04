@@ -56,19 +56,19 @@ public class FunJavaFX {
                 req.shinryouNames.add(name);
             }
         });
-        Context.getInstance().getFrontend().batchEnterByNames(visitId, req)
+        Context.frontend.batchEnterByNames(visitId, req)
                 .thenCompose(result -> {
                     local.enterResult = result;
-                    return Context.getInstance().getFrontend().listShinryouFullByIds(local.enterResult.shinryouIds);
+                    return Context.frontend.listShinryouFullByIds(local.enterResult.shinryouIds);
                 })
                 .thenCompose(result -> {
                     local.shinryouList = result;
-                    return Context.getInstance().getFrontend().listConductFullByIds(local.enterResult.conductIds);
+                    return Context.frontend.listConductFullByIds(local.enterResult.conductIds);
                 })
                 .thenCompose(result -> {
                     local.conducts = result;
                     List<Integer> shinryouIds = local.enterResult.shinryouIds;
-                    return Context.getInstance().getFrontend().batchGetShinryouAttr(shinryouIds);
+                    return Context.frontend.batchGetShinryouAttr(shinryouIds);
                 })
                 .thenAccept(attrList -> {
                     Map<Integer, ShinryouAttrDTO> attrMap = new HashMap<>();

@@ -83,7 +83,7 @@ public class ConductMenu extends VBox {
             private int kizaicode;
         }
         Store store = new Store();
-        Frontend frontend = Context.getInstance().getFrontend();
+        Frontend frontend = Context.frontend;
         return frontend.getVisit(visitId)
                 .thenCompose(visit -> {
                     store.at = LocalDateTime.parse(visit.visitedAt).toLocalDate();
@@ -169,8 +169,8 @@ public class ConductMenu extends VBox {
     private void doCopyAll(){
         int targetVisitId = PracticeUtil.findCopyTarget(visitId);
         if( targetVisitId > 0 ){
-            Context.getInstance().getFrontend().copyAllConducts(targetVisitId, visitId)
-                    .thenCompose(Context.getInstance().getFrontend()::listConductFullByIds)
+            Context.frontend.copyAllConducts(targetVisitId, visitId)
+                    .thenCompose(Context.frontend::listConductFullByIds)
                     .thenAccept(entered -> Platform.runLater(() -> {
                         entered.forEach(this::fireConductEntered);
                     }))

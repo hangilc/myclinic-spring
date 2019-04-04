@@ -37,7 +37,7 @@ public class GazouLabel extends StackPane {
         GazouLabelForm form = new GazouLabelForm(label) {
             @Override
             protected void onEnter(String value) {
-                Context.getInstance().getFrontend().modifyGazouLabel(conductId, value)
+                Context.frontend.modifyGazouLabel(conductId, value)
                         .thenAccept(result -> Platform.runLater(() -> {
                             GazouLabel.this.label = value;
                             GazouLabel.this.getChildren().setAll(createDisp());
@@ -54,7 +54,7 @@ public class GazouLabel extends StackPane {
             @Override
             protected void onDelete() {
                 if( GuiUtil.confirm("この画像ラベルを消去していいですか？") ){
-                    Context.getInstance().getFrontend().deleteGazouLabel(conductId)
+                    Context.frontend.deleteGazouLabel(conductId)
                             .thenAcceptAsync(result -> {
                                 GazouLabel.this.label = "";
                                 GazouLabel.this.getChildren().setAll(createDisp());

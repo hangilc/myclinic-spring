@@ -16,12 +16,12 @@ public class DiseaseSearchers {
     }
 
     public static DiseaseSearcher byoumeiSearcher = (t, at) ->
-            Context.getInstance().getFrontend().searchByoumeiMaster(t, LocalDate.parse(at))
+            Context.frontend.searchByoumeiMaster(t, LocalDate.parse(at))
                     .thenApply(result -> result.stream().map(m -> (DiseaseSearchResultModel) new ByoumeiSearchResult(m))
                             .collect(Collectors.toList()));
 
     public static DiseaseSearcher shuushokugoSearcher = (t, at) ->
-            Context.getInstance().getFrontend().searchShuushokugoMaster(t, LocalDate.parse(at))
+            Context.frontend.searchShuushokugoMaster(t, LocalDate.parse(at))
                     .thenApply(result -> result.stream().map(m -> (DiseaseSearchResultModel) new ShuushokugoSearchResult(m))
                             .collect(Collectors.toList()));
 

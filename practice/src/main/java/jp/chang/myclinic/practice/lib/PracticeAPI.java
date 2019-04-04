@@ -21,7 +21,7 @@ public class PracticeAPI {
 //    }
 
 //    public static CompletableFuture<ShinryouFullDTO> copyShinryou(VisitDTO target, ShinryouFullDTO src){
-//        return Context.getInstance().getFrontend().resolveShinryoucode(src.shinryou.shinryoucode, target.visitedAt)
+//        return Context.frontend.resolveShinryoucode(src.shinryou.shinryoucode, target.visitedAt)
 //                .thenCompose(shinryoucode -> {
 //                    if( shinryoucode == 0 ){
 //                        throw new IgnoreException();
@@ -30,10 +30,10 @@ public class PracticeAPI {
 //                        shinryou.shinryouId = 0;
 //                        shinryou.visitId = target.visitId;
 //                        shinryou.shinryoucode = shinryoucode;
-//                        return Context.getInstance().getFrontend().enterShinryou(shinryou);
+//                        return Context.frontend.enterShinryou(shinryou);
 //                    }
 //                })
-//                .thenCompose(Context.getInstance().getFrontend()::getShinryouFull)
+//                .thenCompose(Context.frontend::getShinryouFull)
 //                .exceptionally(ex -> {
 //                    if( ex instanceof CompletionException ){
 //                        CompletionException ce = (CompletionException)ex;
@@ -49,20 +49,20 @@ public class PracticeAPI {
 //    }
 
 //    public static CompletableFuture<List<ShinryouFullDTO>> batchCopyShinryou(int visitId, List<ShinryouFullDTO> srcList){
-//        return Context.getInstance().getFrontend().getVisit(visitId)
+//        return Context.frontend.getVisit(visitId)
 //                .thenCompose(visit -> CFUtil.map(srcList, s -> copyShinryou(visit, s)))
 //                .thenApply(entered -> entered.stream().filter(Objects::nonNull).collect(Collectors.toList()));
 //    }
 
     public static CompletableFuture<ConductFullDTO> enterInjection(int visitId, ConductKind kind, ConductDrugDTO drug){
         List<ConductShinryouDTO> shinryouList = new ArrayList<>();
-        return Context.getInstance().getFrontend().getVisit(visitId)
+        return Context.frontend.getVisit(visitId)
                 .thenCompose(result -> {
                     LocalDate at = LocalDateTime.parse(result.visitedAt).toLocalDate();
                     if( kind == ConductKind.HikaChuusha ){
-                        return Context.getInstance().getFrontend().resolveShinryouMasterByName(List.of("皮下筋注"), at);
+                        return Context.frontend.resolveShinryouMasterByName(List.of("皮下筋注"), at);
                     } else if( kind == ConductKind.JoumyakuChuusha ){
-                        return Context.getInstance().getFrontend().resolveShinryouMasterByName(List.of("静注"), at);
+                        return Context.frontend.resolveShinryouMasterByName(List.of("静注"), at);
                     } else {
                         return CompletableFuture.completedFuture(null);
                     }
@@ -78,12 +78,12 @@ public class PracticeAPI {
                     req.kind = kind.getCode();
                     req.shinryouList = shinryouList;
                     req.drugs = Collections.singletonList(drug);
-                    return Context.getInstance().getFrontend().enterConductFull(req);
+                    return Context.frontend.enterConductFull(req);
                 });
     }
 
     public static CompletableFuture<ShuushokugoMasterDTO> findDiseaseSusp(){
-        return Context.getInstance().getFrontend().getShuushokugoMasterByName("の疑い");
+        return Context.frontend.getShuushokugoMasterByName("の疑い");
 
     }
 

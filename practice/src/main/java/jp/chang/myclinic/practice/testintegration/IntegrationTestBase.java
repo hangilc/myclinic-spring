@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 class IntegrationTestBase {
 
     MainPane getMainPane() {
-        return Context.getInstance().getMainPane();
+        return Context.mainPane;
     }
 
     void gui(Runnable runnable) {

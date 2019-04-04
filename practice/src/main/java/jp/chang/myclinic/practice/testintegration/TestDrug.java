@@ -36,7 +36,7 @@ class TestDrug extends IntegrationTestBase {
         gui(drugEnterForm::simulateClickEnterButton);
         recordDrugWaiter.waitForIncrement(10);
         RecordDrug enteredRecordDrug = getLast(record.listDrug());
-        DrugFullDTO enteredDrug = Context.getInstance().getFrontend().getDrugFull(enteredRecordDrug.getDrugId()).join();
+        DrugFullDTO enteredDrug = Context.frontend.getDrugFull(enteredRecordDrug.getDrugId()).join();
         String rep = DrugUtil.drugRep(enteredDrug);
         confirm(enteredRecordDrug.isDisplaying() && enteredRecordDrug.getDisplayingText().contains(rep));
         gui(drugEnterForm::simulateClickCloseButton);

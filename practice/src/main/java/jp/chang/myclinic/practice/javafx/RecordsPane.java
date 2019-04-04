@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 class RecordsPane extends VBox {
 
-    private CurrentPatientService currentPatientService = Context.getInstance().getCurrentPatientService();
+    private CurrentPatientService currentPatientService = Context.currentPatientService;
 
     RecordsPane(){
         setFillWidth(true);

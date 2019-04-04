@@ -20,10 +20,10 @@ public class ShohousenInfo {
 
     public static CompletableFuture<ShohousenInfo> load(int visitId){
         ShohousenInfo info = new ShohousenInfo();
-        return Context.getInstance().getFrontend().getVisit(visitId)
+        return Context.frontend.getVisit(visitId)
                 .thenCompose(visit -> {
                     info.visit = visit;
-                    return Context.getInstance().getFrontend().getHoken(visitId);
+                    return Context.frontend.getHoken(visitId);
                 })
                 .thenApply(hoken -> {
                     info.hoken = hoken;

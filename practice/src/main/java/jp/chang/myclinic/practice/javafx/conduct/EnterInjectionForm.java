@@ -67,7 +67,7 @@ public class EnterInjectionForm extends WorkForm {
         return new SearchTextBox(){
             @Override
             protected void onEnter(String text) {
-                Context.getInstance().getFrontend().searchIyakuhinMaster(text, LocalDate.parse(at))
+                Context.frontend.searchIyakuhinMaster(text, LocalDate.parse(at))
                         .thenAccept(result -> Platform.runLater(() -> {
                             searchResult.setList(result);
                         }))

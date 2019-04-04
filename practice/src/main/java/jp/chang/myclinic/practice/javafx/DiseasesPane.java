@@ -42,7 +42,7 @@ public class DiseasesPane extends VBox {
                 this.patientId = 0;
             } else {
                 this.patientId = newValue.patientId;
-                Context.getInstance().getFrontend().listCurrentDiseaseFull(patientId)
+                Context.frontend.listCurrentDiseaseFull(patientId)
                         .thenAccept(result -> Platform.runLater(() -> {
                             this.currentDiseases = result;
                             showCurrent();
@@ -106,7 +106,7 @@ public class DiseasesPane extends VBox {
 
     private void showSelect(){
         assert patientId != 0;
-        Context.getInstance().getFrontend().listDiseaseFull(patientId)
+        Context.frontend.listDiseaseFull(patientId)
                 .thenAccept(list -> Platform.runLater(() ->{
                     Select selector = new Select(list);
                     selector.setOnSelectCallback(this::showEdit);
@@ -119,7 +119,7 @@ public class DiseasesPane extends VBox {
         Edit edit = new Edit(disease){
             @Override
             protected void onComplete() {
-                Context.getInstance().getFrontend().listCurrentDiseaseFull(patientId)
+                Context.frontend.listCurrentDiseaseFull(patientId)
                         .thenAccept(list -> Platform.runLater(() ->{
                             DiseasesPane.this.currentDiseases = list;
                             showCurrent();

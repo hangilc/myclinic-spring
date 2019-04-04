@@ -18,18 +18,18 @@ class IntegrationTestHelper {
 
     PatientDTO enterPatient(){
         PatientDTO patient = mock.pickPatient();
-        patient.patientId = Context.getInstance().getFrontend().enterPatient(patient).join();
+        patient.patientId = Context.frontend.enterPatient(patient).join();
         return patient;
     }
 
     ShahokokuhoDTO enterShahokokuho(int patientId){
         ShahokokuhoDTO shahokokuho = mock.pickShahokokuho(patientId);
-        shahokokuho.shahokokuhoId = Context.getInstance().getFrontend().enterShahokokuho(shahokokuho).join();
+        shahokokuho.shahokokuhoId = Context.frontend.enterShahokokuho(shahokokuho).join();
         return shahokokuho;
     }
 
     VisitDTO startVisit(int patientId){
-        return Context.getInstance().getFrontend().startVisit(patientId, LocalDateTime.now()).join();
+        return Context.frontend.startVisit(patientId, LocalDateTime.now()).join();
     }
 
 }

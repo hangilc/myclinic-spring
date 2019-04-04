@@ -20,7 +20,7 @@ public class PracticeFun {
     }
 
     public static CompletableFuture<List<WqueueFullDTO>> listWqueue(){
-        return Context.getInstance().getFrontend().listWqueueFullForExam();
+        return Context.frontend.listWqueueFullForExam();
     }
 
 }
