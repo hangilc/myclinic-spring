@@ -25,8 +25,10 @@ public class ComponentTestBase implements ComponentTestMixin {
                     if( compTest.excludeFromBatch() ){
                         continue;
                     }
-                    stage.setTitle(getClass().getSimpleName() + ":" + method.getName());
+                    String title = getClass().getSimpleName() + ":" + method.getName();
+                    stage.setTitle(title);
                     method.invoke(this);
+                    System.out.println(title);
                 }
             }
         } catch(Exception e){

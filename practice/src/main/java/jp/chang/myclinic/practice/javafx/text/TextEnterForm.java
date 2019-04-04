@@ -20,6 +20,8 @@ public class TextEnterForm extends VBox {
     private Hyperlink cancelLink = new Hyperlink("キャンセル ");
     private int visitId;
     private Frontend frontend = Context.frontend;
+    private Consumer<TextDTO> onEnterCallback = t -> {};
+    private Runnable onCancelCallback = () -> {};
 
     public TextEnterForm(int visitId) {
         super(4);
@@ -27,6 +29,16 @@ public class TextEnterForm extends VBox {
         getStyleClass().addAll("record-text-form", "enter");
         setFillWidth(true);
         textArea.setWrapText(true);
+        enterLink.setOnAction(event -> {
+            TextDTO textDTO = getFormTextDTO();
+            frontend.enterText(textDTO)
+                    .thenAcceptAsync(textId -> {
+                        textDTO.textId = textId;
+                        onEnterCallback.accept(textDTO);
+                    }, Platform::runLater)
+                    .exceptionally(HandlerFX::exceptionally);
+        });
+        cancelLink.setOnAction(evt -> onCancelCallback.run());
         getChildren().addAll(
                 textArea,
                 createButtons()
@@ -41,19 +53,11 @@ public class TextEnterForm extends VBox {
     }
 
     public void setOnEntered(Consumer<TextDTO> handler){
-        enterLink.setOnAction(event -> {
-            TextDTO textDTO = getFormTextDTO();
-            frontend.enterText(textDTO)
-                    .thenAcceptAsync(textId -> {
-                        textDTO.textId = textId;
-                        handler.accept(textDTO);
-                    }, Platform::runLater)
-                    .exceptionally(HandlerFX::exceptionally);
-        });
+        this.onEnterCallback = handler;
     }
 
     public void setOnCancel(Runnable handler){
-        cancelLink.setOnAction(event -> handler.run());
+        this.onCancelCallback = handler;
     }
 
     public void simulateClickCancelButton(){

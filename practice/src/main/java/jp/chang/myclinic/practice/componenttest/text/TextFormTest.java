@@ -50,7 +50,6 @@ public class TextFormTest extends ComponentTestBase {
         Context.frontend = new FrontendAdapter(){
             @Override
             public CompletableFuture<Integer> enterText(TextDTO entered) {
-                System.out.println("entering text");
                 entered.textId = 1;
                 local.textConfirmed = text.equals(entered.content);
                 return CompletableFuture.completedFuture(entered.textId);
@@ -59,7 +58,7 @@ public class TextFormTest extends ComponentTestBase {
         TextEnterForm form = prepareForm(1);
         form.simulateSetText(text);
         form.simulateClickEnterButton();
-        //gui(() -> confirm(local.textConfirmed));
+        waitForTrue(4, () -> local.textConfirmed);
     }
 
 
