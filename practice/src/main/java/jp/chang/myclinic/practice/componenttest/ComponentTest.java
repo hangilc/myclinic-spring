@@ -3,10 +3,7 @@ package jp.chang.myclinic.practice.componenttest;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import jp.chang.myclinic.practice.PracticeConfigServiceMock;
-import jp.chang.myclinic.practice.testgui.TestEnv;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.practice.componenttest.text.TextFormTest;
 
 public class ComponentTest implements Runnable {
 
@@ -24,6 +21,6 @@ public class ComponentTest implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("component test");
+        new TextFormTest(stage, main).testAll();
     }
 }
