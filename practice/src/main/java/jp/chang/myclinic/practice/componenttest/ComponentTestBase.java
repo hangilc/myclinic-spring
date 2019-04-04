@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ComponentTestBase implements ComponentTestMixin {
@@ -25,10 +26,7 @@ public class ComponentTestBase implements ComponentTestMixin {
                     if( compTest.excludeFromBatch() ){
                         continue;
                     }
-                    String title = getClass().getSimpleName() + ":" + method.getName();
-                    stage.setTitle(title);
-                    method.invoke(this);
-                    System.out.println(title);
+                    invokeTest(method);
                 }
             }
         } catch(Exception e){
@@ -36,14 +34,12 @@ public class ComponentTestBase implements ComponentTestMixin {
         }
     }
 
-    public boolean testOne(String testName){
+    public boolean testOne(String methodName){
         try {
             for (Method method : getClass().getMethods()) {
                 if (method.isAnnotationPresent(CompTest.class)) {
-                    CompTest compTest = method.getAnnotation(CompTest.class);
-                    if( testName.equals(compTest.name()) ){
-                        stage.setTitle(getClass().getSimpleName() + ":" + method.getName());
-                        method.invoke(this);
+                    if( method.getName().equals(methodName) ){
+                        invokeTest(method);
                         return true;
                     }
                 }
@@ -52,6 +48,13 @@ public class ComponentTestBase implements ComponentTestMixin {
         } catch(Exception e){
             throw new RuntimeException(e);
         }
+    }
+
+    private void invokeTest(Method method) throws InvocationTargetException, IllegalAccessException {
+        String title = getClass().getSimpleName() + ":" + method.getName();
+        stage.setTitle(title);
+        method.invoke(this);
+        System.out.println(title);
     }
 
 }

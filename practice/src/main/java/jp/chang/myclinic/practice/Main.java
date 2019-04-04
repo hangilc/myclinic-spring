@@ -57,7 +57,11 @@ public class Main extends Application {
         if (opts.componentTest) {
             new ComponentTest(stage).runAll();
         } else if( opts.componentTestOne != null ){
-            new ComponentTest(stage).runOne(opts.componentTestOne);
+            if( opts.componentTestOne.length != 2 ){
+                System.err.println("CLASSNAME:METHODNAME expected");
+                System.exit(1);
+            }
+            new ComponentTest(stage).runOne(opts.componentTestOne[0], opts.componentTestOne[1]);
         } else if (opts.sqliteTemp != null) {
             String dbFile = opts.sqliteTemp;
             DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);

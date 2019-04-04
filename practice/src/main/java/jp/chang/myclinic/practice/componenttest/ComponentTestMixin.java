@@ -30,13 +30,15 @@ public interface ComponentTestMixin {
     }
 
     default <T> T waitFor(int n, Supplier<Optional<T>> f) {
+        int timeout = 50;
         for (int i = 0; i < n; i++) {
             Optional<T> t = f.get();
             if (t.isPresent()) {
                 return t.get();
             }
             try {
-                Thread.sleep(500);
+                Thread.sleep(timeout);
+                timeout *= 1.5;
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 throw new RuntimeException("Thread.sleep failed.");

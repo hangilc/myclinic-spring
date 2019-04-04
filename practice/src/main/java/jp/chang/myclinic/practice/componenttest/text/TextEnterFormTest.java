@@ -11,9 +11,9 @@ import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
 
 import java.util.concurrent.CompletableFuture;
 
-public class TextFormTest extends ComponentTestBase {
+public class TextEnterFormTest extends ComponentTestBase {
 
-    public TextFormTest(Stage stage, Pane pane) {
+    public TextEnterFormTest(Stage stage, Pane pane) {
         super(stage, pane);
     }
 
@@ -26,7 +26,7 @@ public class TextFormTest extends ComponentTestBase {
         return form;
     }
 
-    @CompTest(name = "disp-text-enter-form", excludeFromBatch = true)
+    @CompTest(excludeFromBatch = true)
     public void testEnterTextFormDisp() {
         Context.frontend = new FrontendAdapter(){
             @Override
@@ -59,6 +59,18 @@ public class TextFormTest extends ComponentTestBase {
         form.simulateSetText(text);
         form.simulateClickEnterButton();
         waitForTrue(4, () -> local.textConfirmed);
+    }
+
+    @CompTest
+    public void testEnterTextFormCancel(){
+        class Local {
+            private boolean cancelCalled;
+        }
+        Local local = new Local();
+        TextEnterForm form = prepareForm(1);
+        form.setOnCancel(() -> { local.cancelCalled = true; });
+        form.simulateClickCancelButton();
+        waitForTrue(4, () -> local.cancelCalled);
     }
 
 
