@@ -72,6 +72,24 @@ public class TextEditFormTest extends ComponentTestBase {
     }
 
     @CompTest
+    public void testTextEditFormCancel(){
+        TextDTO text = new TextDTO();
+        text.visitId = 1;
+        text.textId = 100;
+        text.content = "キャンセルテスト";
+        class Local {
+            private boolean confirmCallback;
+        }
+        Local local = new Local();
+        TextEditForm form = prepareForm(text);
+        form.setOnCancel(() -> {
+            local.confirmCallback = true;
+        });
+        gui(form::simulateClickCancelButton);
+        waitForTrue(10, () -> local.confirmCallback);
+    }
+
+    @CompTest
     public void testTextEditFormDelete() {
         TextDTO text = new TextDTO();
         text.visitId = 1;

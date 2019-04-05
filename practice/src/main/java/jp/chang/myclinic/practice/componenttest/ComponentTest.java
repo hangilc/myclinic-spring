@@ -25,9 +25,9 @@ public class ComponentTest {
     public ComponentTest(Stage stage) {
         Pane main  = new StackPane();
         this.tests = createTests(stage, main);
-        main.setStyle("-fx-padding: 10");
-        main.getStylesheets().add("css/Practice.css");
         Platform.runLater(() -> {
+            main.setStyle("-fx-padding: 10");
+            main.getStylesheets().add("css/Practice.css");
             stage.setScene(new Scene(main));
             stage.show();
         });
