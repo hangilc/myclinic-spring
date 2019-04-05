@@ -30,7 +30,7 @@ public interface ComponentTestMixin {
     }
 
     default <T> T waitFor(int n, Supplier<Optional<T>> f) {
-        int timeout = 50;
+        int timeout = 100;
         for (int i = 0; i < n; i++) {
             Optional<T> t = f.get();
             if (t.isPresent()) {

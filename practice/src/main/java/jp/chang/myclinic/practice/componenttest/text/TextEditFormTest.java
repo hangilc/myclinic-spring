@@ -9,6 +9,7 @@ import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
 import jp.chang.myclinic.practice.javafx.text.TextEditForm;
 import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
+import jp.chang.myclinic.utilfx.ConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,19 +21,19 @@ public class TextEditFormTest extends ComponentTestBase {
         super(stage, main);
     }
 
-    private TextEditForm prepareForm(TextDTO text){
+    private TextEditForm prepareForm(TextDTO text) {
         TextEditForm form = new TextEditForm(text);
-         gui(() -> {
-             form.setPrefWidth(329);
-             form.setPrefHeight(300);
-             main.getChildren().setAll(form);
+        gui(() -> {
+            form.setPrefWidth(329);
+            form.setPrefHeight(300);
+            main.getChildren().setAll(form);
             stage.sizeToScene();
         });
         return form;
     }
 
     @CompTest(excludeFromBatch = true)
-    public void testTextEditFormDisp(){
+    public void testTextEditFormDisp() {
         TextDTO text = new TextDTO();
         text.visitId = 1;
         text.content = "体調いい。";
@@ -40,7 +41,7 @@ public class TextEditFormTest extends ComponentTestBase {
     }
 
     @CompTest
-    public void testTextEditFormEnter(){
+    public void testTextEditFormEnter() {
         TextDTO text = new TextDTO();
         text.visitId = 1;
         text.content = "体調いい。";
@@ -50,9 +51,9 @@ public class TextEditFormTest extends ComponentTestBase {
             private boolean confirmCallback;
         }
         Local local = new Local();
-        Context.frontend = new FrontendAdapter(){
+        Context.frontend = new FrontendAdapter() {
             @Override
-            public CompletableFuture<Void> updateText(TextDTO modified){
+            public CompletableFuture<Void> updateText(TextDTO modified) {
                 local.confirmUpdateText = modified.visitId == text.visitId &&
                         modified.content.equals(modifiedContent);
                 return CompletableFuture.completedFuture(null);
@@ -68,6 +69,36 @@ public class TextEditFormTest extends ComponentTestBase {
             form.simulateClickEnterButton();
         });
         waitForTrue(8, () -> local.confirmUpdateText && local.confirmCallback);
+    }
+
+    @CompTest
+    public void testTextEditFormDelete() {
+        TextDTO text = new TextDTO();
+        text.visitId = 1;
+        text.textId = 100;
+        text.content = "削除テスト";
+        class Local {
+            private boolean confirmDeleteText;
+            private boolean confirmCallback;
+        }
+        Local local = new Local();
+        Context.frontend = new FrontendAdapter() {
+            @Override
+            public CompletableFuture<Void> deleteText(int textId) {
+                confirm(textId == text.textId);
+                local.confirmDeleteText = true;
+                return CompletableFuture.completedFuture(null);
+            }
+        };
+        TextEditForm form = prepareForm(text);
+        form.setOnDeleted(() -> {
+            local.confirmCallback = true;
+        });
+        gui(form::simulateClickDeleteButton);
+        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
+        gui(confirmDialog::simulateClickOkButton);
+        waitForTrue(10, () -> local.confirmDeleteText);
+        waitForTrue(10, () -> local.confirmCallback);
     }
 
 }
