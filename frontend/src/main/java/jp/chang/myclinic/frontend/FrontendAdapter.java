@@ -806,4 +806,9 @@ public class FrontendAdapter implements Frontend {
     public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
         throw new RuntimeException("not implemented");
     }
+
+    @Override
+    public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
+        throw new RuntimeException("not implemented");
+    }
 }

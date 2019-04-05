@@ -3,6 +3,8 @@ package jp.chang.myclinic.practice;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.backenddb.DbBackend;
 import jp.chang.myclinic.backenddb.SupportSet;
@@ -10,12 +12,14 @@ import jp.chang.myclinic.backendsqlite.SqliteDataSource;
 import jp.chang.myclinic.backendsqlite.SqliteTableSet;
 import jp.chang.myclinic.client.Client;
 import jp.chang.myclinic.client.Service;
+import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.frontend.FrontendBackend;
 import jp.chang.myclinic.frontend.FrontendClient;
 import jp.chang.myclinic.practice.componenttest.ComponentTest;
 import jp.chang.myclinic.practice.javafx.MainPane;
+import jp.chang.myclinic.practice.javafx.text.TextEditForm;
 import jp.chang.myclinic.practice.testgui.TestGui;
 import jp.chang.myclinic.practice.testintegration.TestIntegration;
 import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
@@ -65,13 +69,16 @@ public class Main extends Application {
     public void start(Stage stage) {
         CmdOpts opts = Context.cmdOpts;
         if (opts.componentTest) {
-            new Thread(() -> new ComponentTest(stage).runAll()).start();
+            Pane main = setupStageForComponentTest(stage);
+            new Thread(() -> new ComponentTest(stage, main).runAll()).start();
         } else if (opts.componentTestOne != null) {
             if (opts.componentTestOne.length != 2) {
                 System.err.println("CLASSNAME:METHODNAME expected");
                 System.exit(1);
             }
-            new Thread(() -> new ComponentTest(stage).runOne(opts.componentTestOne[0], opts.componentTestOne[1]))
+            Pane main = setupStageForComponentTest(stage);
+            new Thread(() -> new ComponentTest(stage, main)
+                    .runOne(opts.componentTestOne[0], opts.componentTestOne[1]))
                     .start();
         } else if (opts.sqliteTemp != null) {
             String dbFile = opts.sqliteTemp;
@@ -113,6 +120,15 @@ public class Main extends Application {
             });
             stage.show();
         }
+    }
+
+    private Pane setupStageForComponentTest(Stage stage) {
+        Pane main = new StackPane();
+        main.setStyle("-fx-padding: 10");
+        main.getStylesheets().add("css/Practice.css");
+        stage.setScene(new Scene(main));
+        stage.show();
+        return main;
     }
 
     @Override

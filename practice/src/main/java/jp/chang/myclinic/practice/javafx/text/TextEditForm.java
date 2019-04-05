@@ -32,9 +32,6 @@ public class TextEditForm extends VBox {
     private Runnable onDeletedCallback = () -> {};
     private Runnable onDoneCallback = () -> {};
     private Consumer<TextDTO> onCopiedCallback = t -> {};
-//    private Frontend frontend = Context.frontend;
-//    private CurrentPatientService currentPatientService = Context.currentPatientService;
-//    private IntegrationService integrationService = Context.integrationService;
 
     public TextEditForm(TextDTO text) {
         super(4);

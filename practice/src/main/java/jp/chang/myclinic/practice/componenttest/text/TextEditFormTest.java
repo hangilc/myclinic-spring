@@ -2,21 +2,23 @@ package jp.chang.myclinic.practice.componenttest.text;
 
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import jp.chang.myclinic.dto.HokenDTO;
-import jp.chang.myclinic.dto.PatientDTO;
-import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.frontend.FrontendAdapter;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
+import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenPreview;
 import jp.chang.myclinic.practice.javafx.text.TextEditForm;
 import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
+import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
+import jp.chang.myclinic.support.config.ConfigTemp;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 
@@ -77,7 +79,7 @@ public class TextEditFormTest extends ComponentTestBase {
     }
 
     @CompTest
-    public void testTextEditFormCancel(){
+    public void testTextEditFormCancel() {
         TextDTO text = new TextDTO();
         text.visitId = 1;
         text.textId = 100;
@@ -125,11 +127,15 @@ public class TextEditFormTest extends ComponentTestBase {
     }
 
     @CompTest
-    public void testTextEditFormShohousen(){
+    public void testTextEditFormShohousen() {
         MockData mock = new MockData();
         PatientDTO patient = mock.pickPatientWithPatientId();
         VisitDTO visit = mock.pickVisitWithVisitId(patient.patientId, LocalDateTime.now());
-        Context.frontend = new FrontendAdapter(){
+        TextDTO text = new TextDTO();
+        text.textId = 1;
+        text.visitId = visit.visitId;
+        text.content = "テスト";
+        Context.frontend = new FrontendAdapter() {
             @Override
             public CompletableFuture<PatientDTO> getPatient(int patientId) {
                 confirm(patientId == patient.patientId);
@@ -148,7 +154,19 @@ public class TextEditFormTest extends ComponentTestBase {
                 HokenDTO hoken = new HokenDTO();
                 return value(hoken);
             }
-        }
-    }
 
+            @Override
+            public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
+                ClinicInfoDTO info =
+                        new ClinicInfoFileProvider(Paths.get("config/clinic-info.yml")).getClinicInfo();
+                return value(info);
+            }
+        };
+        Context.configService = new ConfigTemp();
+        TextEditForm form = prepareForm(text);
+        gui(form::simulateClickShohousenButton);
+        ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
+        gui(confirmDialog::simulateClickOkButton);
+        waitForWindow(DrawerPreviewDialog.class);
+    }
 }

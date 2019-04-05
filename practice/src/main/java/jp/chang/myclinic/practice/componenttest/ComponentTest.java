@@ -13,6 +13,8 @@ import java.util.List;
 
 public class ComponentTest {
 
+    private Stage stage;
+    private Pane main;
     private List<ComponentTestBase> tests;
 
     private List<ComponentTestBase> createTests(Stage stage, Pane main) {
@@ -22,15 +24,10 @@ public class ComponentTest {
         return tests;
     }
 
-    public ComponentTest(Stage stage) {
-        Pane main  = new StackPane();
+    public ComponentTest(Stage stage, Pane main) {
+        this.stage = stage;
+        this.main = main;
         this.tests = createTests(stage, main);
-        Platform.runLater(() -> {
-            main.setStyle("-fx-padding: 10");
-            main.getStylesheets().add("css/Practice.css");
-            stage.setScene(new Scene(main));
-            stage.show();
-        });
     }
 
     public void runAll() {

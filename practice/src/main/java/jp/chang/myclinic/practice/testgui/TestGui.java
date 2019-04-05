@@ -1,12 +1,5 @@
 package jp.chang.myclinic.practice.testgui;
 
-import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
-import jp.chang.myclinic.backenddb.Backend;
-import jp.chang.myclinic.practice.PracticeConfigServiceMock;
-import jp.chang.myclinic.practice.javafx.TestText;
-
 public class TestGui extends GuiTestBase {
 
 //    private StackPane main = new StackPane();

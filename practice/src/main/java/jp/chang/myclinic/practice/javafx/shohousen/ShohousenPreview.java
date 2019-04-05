@@ -8,6 +8,7 @@ import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.PracticeConfigService;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
+import jp.chang.myclinic.support.config.ConfigService;
 
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +20,6 @@ public class ShohousenPreview {
         return new ShohousenPreview().makePreview(visitId, text);
     }
 
-    private PracticeConfigService configService = Context.practiceConfigService;
     private VisitDTO visit;
     private PatientDTO patient;
     private ShohousenData data = new ShohousenData();
@@ -34,7 +34,7 @@ public class ShohousenPreview {
                     this.visit = visit;
                     return frontend.getPatient(visit.patientId);
                 })
-                .thenApply(patient -> {
+                .thenCompose(patient -> {
                     this.patient = patient;
                     data.setPatient(patient);
                     return frontend.getClinicInfo();
@@ -57,11 +57,11 @@ public class ShohousenPreview {
                     DrawerPreviewDialog previewDialog = new DrawerPreviewDialog() {
                         @Override
                         protected void onDefaultSettingChange(String newSettingName) {
-                            configService.setShohousenPrinterSetting(newSettingName);
+                            Context.setShohousenPrinterSetting(newSettingName);
                         }
                     };
-                    previewDialog.setPrinterEnv(configService.getPrinterEnv());
-                    previewDialog.setDefaultPrinterSetting(configService.getShohousenPrinterSetting());
+                    previewDialog.setPrinterEnv(Context.printerEnv);
+                    previewDialog.setDefaultPrinterSetting(Context.getShohousenPrinterSetting());
                     previewDialog.setScaleFactor(0.8);
                     previewDialog.setContentSize(PaperSize.A5);
                     previewDialog.setOps(drawer.getOps());
