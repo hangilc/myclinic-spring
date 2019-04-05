@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import jp.chang.myclinic.backenddb.DbBackend;
+import jp.chang.myclinic.backenddb.SupportSet;
 import jp.chang.myclinic.backendsqlite.SqliteDataSource;
 import jp.chang.myclinic.backendsqlite.SqliteTableSet;
 import jp.chang.myclinic.client.Client;
@@ -17,12 +18,21 @@ import jp.chang.myclinic.practice.componenttest.ComponentTest;
 import jp.chang.myclinic.practice.javafx.MainPane;
 import jp.chang.myclinic.practice.testgui.TestGui;
 import jp.chang.myclinic.practice.testintegration.TestIntegration;
+import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
+import jp.chang.myclinic.support.clinicinfo.ClinicInfoProvider;
+import jp.chang.myclinic.support.config.ConfigPropertyFile;
 import jp.chang.myclinic.support.diseaseexample.DiseaseExampleFileProvider;
+import jp.chang.myclinic.support.diseaseexample.DiseaseExampleProvider;
 import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaFile;
+import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaService;
 import jp.chang.myclinic.support.kizainames.KizaiNamesFile;
+import jp.chang.myclinic.support.kizainames.KizaiNamesService;
+import jp.chang.myclinic.support.meisai.MeisaiService;
 import jp.chang.myclinic.support.meisai.MeisaiServiceImpl;
 import jp.chang.myclinic.support.shinryounames.ShinryouNamesFile;
+import jp.chang.myclinic.support.shinryounames.ShinryouNamesService;
 import jp.chang.myclinic.support.stockdrug.StockDrugFile;
+import jp.chang.myclinic.support.stockdrug.StockDrugService;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -66,14 +76,20 @@ public class Main extends Application {
         } else if (opts.sqliteTemp != null) {
             String dbFile = opts.sqliteTemp;
             DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
-            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create,
-                    new StockDrugFile(Paths.get("config/stock-drug.txt")),
-                    new HoukatsuKensaFile(Paths.get("config/houkatsu-kensa.xml")),
-                    new MeisaiServiceImpl(),
-                    new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml")),
-                    new ShinryouNamesFile(Paths.get("config/shinryou-names.yml")),
-                    new KizaiNamesFile(Paths.get("config/kizai-names.yml")));
+            SupportSet ss = new SupportSet();
+            ss.stockDrugService = new StockDrugFile(Paths.get("config/stock-drug.txt"));
+            ss.houkatsuKensaService = new HoukatsuKensaFile(Paths.get("config/houkatsu-kensa.xml"));
+            ss.meisaiService = new MeisaiServiceImpl();
+            ss.diseaseExampleProvider = new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml"));
+            ss.shinryouNamesService = new ShinryouNamesFile(Paths.get("config/shinryou-names.yml"));
+            ss.kizaiNamesService = new KizaiNamesFile(Paths.get("config/kizai-names.yml"));
+            ss.clinicInfoProvider = new ClinicInfoFileProvider(Paths.get("config/clinic-info-yml"));
+            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
             Context.frontend = new FrontendBackend(dbBackend);
+            Context.configService = new ConfigPropertyFile(Paths.get(
+                    System.getenv("user.home"),
+                    "practice.properties"
+            ));
         } else {
 //            Service.setServerUrl(opts.getServerUrl());
 //            {

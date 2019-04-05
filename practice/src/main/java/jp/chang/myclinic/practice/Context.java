@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice;
 
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.javafx.MainPane;
+import jp.chang.myclinic.support.config.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,4 +15,36 @@ public class Context {
     public static MainStageService mainStageService;
     public static PracticeConfigService practiceConfigService;
     public static IntegrationService integrationService;
+    public static ConfigService configService;
+
+    private static String shohousenPrinterSettingKey = "shohousen-printer-setting";
+
+    public static String getShohousenPrinterSetting(){
+        return configService.getValue(shohousenPrinterSettingKey);
+    }
+
+    public static void setShohousenPrinterSetting(String settingName){
+        configService.setValue(shohousenPrinterSettingKey, settingName);
+    }
+
+    private static String defaultPrinterSettingKey = "default-printer-setting";
+
+    public static String getDefaultPrinterSetting(){
+        return configService.getValue(defaultPrinterSettingKey);
+    }
+
+    public static void setDefaultPrinterSetting(String settingName){
+        configService.setValue(defaultPrinterSettingKey, settingName);
+    }
+
+    private static String referPrinterSettingKey = "refer-printer-setting";
+
+    public static String getReferPrinterSetting(){
+        return configService.getValue(referPrinterSettingKey);
+    }
+
+    public static void setReferPrinterSetting(String settingName){
+        configService.setValue(referPrinterSettingKey, settingName);
+    }
+
 }
