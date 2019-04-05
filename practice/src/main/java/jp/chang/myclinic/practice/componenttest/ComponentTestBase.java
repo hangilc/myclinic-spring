@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.componenttest;
 
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.mockdata.MockData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ public class ComponentTestBase implements ComponentTestMixin {
                 }
             }
             return false;
-        } catch(Exception e){
+        } catch(Exception e) {
             throw new RuntimeException(e);
         }
     }

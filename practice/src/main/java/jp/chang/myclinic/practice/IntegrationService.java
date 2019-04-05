@@ -6,16 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 
-public class IntegrationService {
+public interface IntegrationService {
 
-    private Consumer<TextDTO> onNewTextHandler = t -> {};
-
-    public void broadcastNewText(TextDTO text){
-        onNewTextHandler.accept(text);
-    }
-
-    public void onNewText(Consumer<TextDTO> handler){
-        this.onNewTextHandler = handler;
-    }
+    void broadcastNewText(TextDTO text);
+    void setOnNewText(Consumer<TextDTO> handler);
 
 }

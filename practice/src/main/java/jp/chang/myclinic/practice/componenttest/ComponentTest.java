@@ -39,9 +39,10 @@ public class ComponentTest {
         boolean match = false;
         for(ComponentTestBase test: tests){
             if( test.getClass().getSimpleName().equals(className) ){
-                test.testOne(methodName);
-                match = true;
-                break;
+                if( test.testOne(methodName) ) {
+                    match = true;
+                    break;
+                }
             }
         }
         if( !match ){

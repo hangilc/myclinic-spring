@@ -2,10 +2,12 @@ package jp.chang.myclinic.practice.componenttest.text;
 
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.backenddb.test.annotation.DbTest;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.frontend.FrontendAdapter;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Context;
+import jp.chang.myclinic.practice.IntegrationServiceImpl;
 import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
 import jp.chang.myclinic.practice.javafx.parts.drawerpreview.DrawerPreviewDialog;
@@ -168,5 +170,49 @@ public class TextEditFormTest extends ComponentTestBase {
         ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
         gui(confirmDialog::simulateClickOkButton);
         waitForWindow(DrawerPreviewDialog.class);
+    }
+
+    @CompTest
+    public void testTextEditFormCopy(){
+        TextDTO text = new TextDTO();
+        text.textId = 1;
+        text.visitId = 2;
+        text.content = "テスト";
+        MockData mock = new MockData();
+        PatientDTO patient = mock.pickPatientWithPatientId();
+        class Local {
+            private boolean confirmFrontend;
+            private boolean confirmCallback;
+            private boolean confirmBroadcast;
+        }
+        Local local = new Local();
+        Context.currentPatientService.setCurrentPatient(patient, 1);
+        Context.frontend = new FrontendAdapter(){
+            @Override
+            public CompletableFuture<Integer> enterText(TextDTO copied) {
+                confirm(copied.visitId == 1);
+                confirm(copied.content.equals(text.content));
+                local.confirmFrontend = true;
+                return value(2);
+            }
+        };
+        Context.integrationService = new IntegrationServiceImpl(){
+            @Override
+            public void broadcastNewText(TextDTO copied) {
+                confirm(copied.visitId == 1);
+                confirm(copied.content.equals(text.content));
+                local.confirmBroadcast = true;
+            }
+        };
+        TextEditForm form = prepareForm(text);
+        form.setOnCopied(t -> {
+            confirm(t.visitId == 1);
+            confirm(t.content.equals(text.content));
+            local.confirmCallback = true;
+        });
+        gui(form::simulateClickCopyButton);
+        waitForTrue(() -> local.confirmFrontend);
+        waitForTrue(() -> local.confirmCallback);
+        waitForTrue(() -> local.confirmBroadcast);
     }
 }
