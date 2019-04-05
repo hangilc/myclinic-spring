@@ -7,22 +7,13 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.HotlineLogger;
 import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
-import jp.chang.myclinic.support.diseaseexample.DiseaseExampleProvider;
-import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaService;
-import jp.chang.myclinic.support.kizainames.KizaiNamesService;
-import jp.chang.myclinic.support.meisai.MeisaiService;
-import jp.chang.myclinic.support.shinryounames.ShinryouNamesService;
-import jp.chang.myclinic.support.stockdrug.StockDrugService;
 import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -37,29 +28,15 @@ public class Backend {
     private SqlTranslator sqlTranslator = new SqlTranslator();
     private PracticeLogger practiceLogger;
     private HotlineLogger hotlineLogger;
-    private StockDrugService stockDrugService;
-    private HoukatsuKensaService houkatsuKensaService;
-    private MeisaiService meisaiService;
-    private DiseaseExampleProvider diseaseExampleProvider;
-    private ShinryouNamesService shinryouNamesService;
-    private KizaiNamesService kizaiNamesService;
+    private SupportSet ss;
 
-    public Backend(TableSet ts, Query query, StockDrugService stockDrugService,
-                   HoukatsuKensaService houkatsuKensaService, MeisaiService meisaiService,
-                   DiseaseExampleProvider diseaseExampleProvider,
-                   ShinryouNamesService shinryouNamesService,
-                   KizaiNamesService kizaiNamesService) {
+    public Backend(TableSet ts, Query query, SupportSet ss) {
         this.ts = ts;
         this.query = query;
         this.practiceLogger = new PracticeLogger();
         practiceLogger.setSaver(this::enterPracticeLog);
         this.hotlineLogger = new HotlineLogger();
-        this.stockDrugService = stockDrugService;
-        this.houkatsuKensaService = houkatsuKensaService;
-        this.meisaiService = meisaiService;
-        this.diseaseExampleProvider = diseaseExampleProvider;
-        this.shinryouNamesService = shinryouNamesService;
-        this.kizaiNamesService = kizaiNamesService;
+        this.ss = ss;
     }
 
     private static <S, T, U> Projector<U> biProjector(Projector<S> p1, Projector<T> p2, BiFunction<S, T, U> f) {
@@ -1539,7 +1516,7 @@ public class Backend {
     }
 
     public ShinryouMasterDTO resolveShinryouMasterByKey(String key, LocalDate at){
-        List<String> candidates = shinryouNamesService.getCandidateNames(key);
+        List<String> candidates = ss.shinryouNamesService.getCandidateNames(key);
         return resolveShinryouMasterByName(candidates, at);
     }
 
@@ -1634,7 +1611,7 @@ public class Backend {
     }
 
     public KizaiMasterDTO resolveKizaiMasterByKey(String key, LocalDate at){
-        return resolveKizaiMasterByName(kizaiNamesService.getCandidateNames(key), at);
+        return resolveKizaiMasterByName(ss.kizaiNamesService.getCandidateNames(key), at);
     }
 
     public Map<String, Integer> batchResolveKizaiNames(List<List<String>> args, LocalDate at) {
@@ -1735,49 +1712,6 @@ public class Backend {
                 biProjector(ts.prescExampleTable, ts.iyakuhinMasterTable, PrescExampleFullDTO::create));
     }
 
-    // Pharma ////////////////////////////////////////////////////////////////////////////
-
-    public void prescDone(int visitId) {
-        markDrugsAsPrescribed(visitId);
-        PharmaQueueDTO pharmaQueue = getPharmaQueue(visitId);
-        if (pharmaQueue != null) {
-            deletePharmaQueue(visitId);
-        }
-        WqueueDTO wqueue = getWqueue(visitId);
-        if (wqueue != null) {
-            deleteWqueue(visitId);
-        }
-    }
-
-    // DiseaseExample ////////////////////////////////////////////////////////////////////
-
-    public List<DiseaseExampleDTO> listDiseaseExample() {
-        return diseaseExampleProvider.listDiseaseExample();
-    }
-
-    // Meisai ////////////////////////////////////////////////////////////////////////////
-
-    public MeisaiDTO getMeisai(int visitId){
-        VisitDTO visit = getVisit(visitId);
-        LocalDate at = LocalDateTime.parse(visit.visitedAt).toLocalDate();
-        return meisaiService.getMeisai(
-                getPatient(visit.patientId),
-                getHoken(visit),
-                at,
-                listShinryouFull(visitId),
-                houkatsuKensaService.getRevision(at),
-                listDrugFull(visitId),
-                listConductFull(visitId)
-        );
-    }
-
-    // StockDrug /////////////////////////////////////////////////////////////////////////
-
-    public IyakuhinMasterDTO resolveStockDrug(int iyakuhincode, LocalDate at){
-        iyakuhincode = stockDrugService.resolve(iyakuhincode, at);
-        return getIyakuhinMaster(iyakuhincode, at);
-    }
-
     // BatchEnterByNames /////////////////////////////////////////////////////////////////
 
     public BatchEnterResultDTO batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req){
@@ -1841,6 +1775,55 @@ public class Backend {
             });
         }
         return result;
+    }
+
+    // Pharma ////////////////////////////////////////////////////////////////////////////
+
+    public void prescDone(int visitId) {
+        markDrugsAsPrescribed(visitId);
+        PharmaQueueDTO pharmaQueue = getPharmaQueue(visitId);
+        if (pharmaQueue != null) {
+            deletePharmaQueue(visitId);
+        }
+        WqueueDTO wqueue = getWqueue(visitId);
+        if (wqueue != null) {
+            deleteWqueue(visitId);
+        }
+    }
+
+    // DiseaseExample ////////////////////////////////////////////////////////////////////
+
+    public List<DiseaseExampleDTO> listDiseaseExample() {
+        return ss.diseaseExampleProvider.listDiseaseExample();
+    }
+
+    // Meisai ////////////////////////////////////////////////////////////////////////////
+
+    public MeisaiDTO getMeisai(int visitId){
+        VisitDTO visit = getVisit(visitId);
+        LocalDate at = LocalDateTime.parse(visit.visitedAt).toLocalDate();
+        return ss.meisaiService.getMeisai(
+                getPatient(visit.patientId),
+                getHoken(visit),
+                at,
+                listShinryouFull(visitId),
+                ss.houkatsuKensaService.getRevision(at),
+                listDrugFull(visitId),
+                listConductFull(visitId)
+        );
+    }
+
+    // StockDrug /////////////////////////////////////////////////////////////////////////
+
+    public IyakuhinMasterDTO resolveStockDrug(int iyakuhincode, LocalDate at){
+        iyakuhincode = ss.stockDrugService.resolve(iyakuhincode, at);
+        return getIyakuhinMaster(iyakuhincode, at);
+    }
+
+    // ClinicInfo ////////////////////////////////////////////////////////////////////////
+
+    public ClinicInfoDTO getClinicInfo(){
+        return ss.clinicInfoProvider.getClinicInfo();
     }
 
     // PracticeLog ///////////////////////////////////////////////////////////////////////

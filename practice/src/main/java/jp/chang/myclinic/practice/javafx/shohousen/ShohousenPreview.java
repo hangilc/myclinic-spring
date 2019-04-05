@@ -19,7 +19,6 @@ public class ShohousenPreview {
         return new ShohousenPreview().makePreview(visitId, text);
     }
 
-    private Frontend restService = Context.frontend;
     private PracticeConfigService configService = Context.practiceConfigService;
     private VisitDTO visit;
     private PatientDTO patient;
@@ -29,19 +28,20 @@ public class ShohousenPreview {
     }
 
     private CompletableFuture<DrawerPreviewDialog> makePreview(int visitId, String text) {
-        return restService.getVisit(visitId)
+        Frontend frontend = Context.frontend;
+        return frontend.getVisit(visitId)
                 .thenCompose(visit -> {
                     this.visit = visit;
-                    return restService.getPatient(visit.patientId);
+                    return frontend.getPatient(visit.patientId);
                 })
                 .thenApply(patient -> {
                     this.patient = patient;
                     data.setPatient(patient);
-                    return configService.getClinicInfo();
+                    return frontend.getClinicInfo();
                 })
                 .thenCompose(clinicInfo -> {
                     data.setClinicInfo(clinicInfo);
-                    return restService.getHoken(visitId);
+                    return frontend.getHoken(visitId);
                 })
                 .thenApply(hoken -> {
                     ShohousenDrawer drawer = new ShohousenDrawer();

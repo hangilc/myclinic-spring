@@ -326,4 +326,6 @@ public interface Frontend {
     CompletableFuture<List<Integer>> copyAllConducts(int targetVisitId, int sourceVisitId);
 
     CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at);
+
+    CompletableFuture<ClinicInfoDTO> getClinicInfo();
 }

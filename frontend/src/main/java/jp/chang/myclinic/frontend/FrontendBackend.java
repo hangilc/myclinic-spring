@@ -855,4 +855,9 @@ public class FrontendBackend implements Frontend {
     public CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at) {
         return query(backend -> backend.getKizaiMaster(kizaicode, at));
     }
+
+    @Override
+    public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
+        return query(backend -> backend.getClinicInfo());
+    }
 }

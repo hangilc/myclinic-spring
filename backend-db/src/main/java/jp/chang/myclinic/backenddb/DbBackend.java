@@ -26,16 +26,11 @@ public class DbBackend {
     private TableSet ts;
     private Backend backend;
 
-    public DbBackend(DataSource ds, Function<Query, TableSet> tableSetCreator, StockDrugService stockDrugService,
-                     HoukatsuKensaService houkatsuKensaService, MeisaiService meisaiService,
-                     DiseaseExampleProvider diseaseExampleProvider,
-                     ShinryouNamesService shinryouNamesService,
-                     KizaiNamesService kizaiNamesService){
+    public DbBackend(DataSource ds, Function<Query, TableSet> tableSetCreator, SupportSet ss){
         this.db = new DB(ds);
         this.query = new Query(db.getConnectionProvider());
         this.ts = tableSetCreator.apply(query);
-        this.backend = new Backend(ts, query, stockDrugService, houkatsuKensaService, meisaiService,
-                diseaseExampleProvider, shinryouNamesService, kizaiNamesService);
+        this.backend = new Backend(ts, query, ss);
     }
 
     public Query getQuery() {

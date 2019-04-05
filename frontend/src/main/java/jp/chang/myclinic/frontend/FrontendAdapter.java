@@ -13,6 +13,10 @@ import java.util.concurrent.CompletableFuture;
 
 public class FrontendAdapter implements Frontend {
 
+    public <T> CompletableFuture<T> value(T value){
+        return CompletableFuture.completedFuture(value);
+    }
+
     @Override
     public CompletableFuture<Integer> enterPatient(PatientDTO patient) {
         throw new RuntimeException("not implemented");

@@ -2,8 +2,12 @@ package jp.chang.myclinic.practice.componenttest.text;
 
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.dto.HokenDTO;
+import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.dto.TextDTO;
+import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.frontend.FrontendAdapter;
+import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
@@ -13,6 +17,7 @@ import jp.chang.myclinic.utilfx.ConfirmDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 
 public class TextEditFormTest extends ComponentTestBase {
@@ -117,6 +122,33 @@ public class TextEditFormTest extends ComponentTestBase {
         gui(confirmDialog::simulateClickOkButton);
         waitForTrue(10, () -> local.confirmDeleteText);
         waitForTrue(10, () -> local.confirmCallback);
+    }
+
+    @CompTest
+    public void testTextEditFormShohousen(){
+        MockData mock = new MockData();
+        PatientDTO patient = mock.pickPatientWithPatientId();
+        VisitDTO visit = mock.pickVisitWithVisitId(patient.patientId, LocalDateTime.now());
+        Context.frontend = new FrontendAdapter(){
+            @Override
+            public CompletableFuture<PatientDTO> getPatient(int patientId) {
+                confirm(patientId == patient.patientId);
+                return value(patient);
+            }
+
+            @Override
+            public CompletableFuture<VisitDTO> getVisit(int visitId) {
+                confirm(visitId == visit.visitId);
+                return value(visit);
+            }
+
+            @Override
+            public CompletableFuture<HokenDTO> getHoken(int visitId) {
+                confirm(visitId == visit.visitId);
+                HokenDTO hoken = new HokenDTO();
+                return value(hoken);
+            }
+        }
     }
 
 }

@@ -11,6 +11,7 @@ import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.CurrentPatientService;
 import jp.chang.myclinic.practice.IntegrationService;
+import jp.chang.myclinic.practice.javafx.shohousen.ShohousenPreview;
 import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.ConfirmDialog;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -142,12 +143,12 @@ public class TextEditForm extends VBox {
                 return;
             }
         }
-//        ShohousenPreview.create(execEnv, visitId, textDTO.content)
-//                .thenAcceptAsync(preview -> {
-//                    preview.showAndWait();
-//                    done();
-//                }, Platform::runLater)
-//                .exceptionally(HandlerFX::exceptionally);
+        ShohousenPreview.create(visitId, textDTO.content)
+                .thenAcceptAsync(preview -> {
+                    preview.showAndWait();
+                    done();
+                }, Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
     }
 
     private void doCopy(){
