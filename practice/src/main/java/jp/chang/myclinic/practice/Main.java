@@ -55,13 +55,14 @@ public class Main extends Application {
     public void start(Stage stage) {
         CmdOpts opts = Context.cmdOpts;
         if (opts.componentTest) {
-            new ComponentTest(stage).runAll();
-        } else if( opts.componentTestOne != null ){
-            if( opts.componentTestOne.length != 2 ){
+            new Thread(() -> new ComponentTest(stage).runAll()).start();
+        } else if (opts.componentTestOne != null) {
+            if (opts.componentTestOne.length != 2) {
                 System.err.println("CLASSNAME:METHODNAME expected");
                 System.exit(1);
             }
-            new ComponentTest(stage).runOne(opts.componentTestOne[0], opts.componentTestOne[1]);
+            new Thread(() -> new ComponentTest(stage).runOne(opts.componentTestOne[0], opts.componentTestOne[1]))
+                    .start();
         } else if (opts.sqliteTemp != null) {
             String dbFile = opts.sqliteTemp;
             DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);

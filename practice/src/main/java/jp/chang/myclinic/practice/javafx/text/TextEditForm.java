@@ -27,12 +27,13 @@ public class TextEditForm extends VBox {
     private Hyperlink deleteLink = new Hyperlink("削除");
     private Hyperlink shohousenLink = new Hyperlink("処方箋発行");
     private Hyperlink copyLink = new Hyperlink("コピー");
-    private Runnable onDeletedCallback;
-    private Runnable onDoneCallback;
-    private Consumer<TextDTO> onCopiedCallback;
-    private Frontend frontend = Context.frontend;
-    private CurrentPatientService currentPatientService = Context.currentPatientService;
-    private IntegrationService integrationService = Context.integrationService;
+    private Consumer<TextDTO> onUpdateCallback = t -> {};
+    private Runnable onDeletedCallback = () -> {};
+    private Runnable onDoneCallback = () -> {};
+    private Consumer<TextDTO> onCopiedCallback = t -> {};
+//    private Frontend frontend = Context.frontend;
+//    private CurrentPatientService currentPatientService = Context.currentPatientService;
+//    private IntegrationService integrationService = Context.integrationService;
 
     public TextEditForm(TextDTO text) {
         super(4);
@@ -42,9 +43,18 @@ public class TextEditForm extends VBox {
         setFillWidth(true);
         textArea.setWrapText(true);
         textArea.setText(text.content);
+        enterLink.setOnAction(event -> {
+            TextDTO textDTO = new TextDTO();
+            textDTO.visitId = visitId;
+            textDTO.textId = textId;
+            textDTO.content = textArea.getText().trim();
+            Context.frontend.updateText(textDTO)
+                    .thenAcceptAsync(ok -> onUpdateCallback.accept(textDTO), Platform::runLater)
+                    .exceptionally(HandlerFX::exceptionally);
+        });
         deleteLink.setOnAction(event -> {
             if (ConfirmDialog.confirm("この文章を削除しますか？", this)) {
-                frontend.deleteText(textId)
+                Context.frontend.deleteText(textId)
                         .thenAcceptAsync(ok -> {
                             if( onDeletedCallback != null ){
                                 onDeletedCallback.run();
@@ -86,15 +96,7 @@ public class TextEditForm extends VBox {
     }
 
     public void setOnUpdated(Consumer<TextDTO> callback){
-        enterLink.setOnAction(event -> {
-            TextDTO textDTO = new TextDTO();
-            textDTO.visitId = visitId;
-            textDTO.textId = textId;
-            textDTO.content = textArea.getText().trim();
-            frontend.updateText(textDTO)
-                    .thenAcceptAsync(ok -> callback.accept(textDTO), Platform::runLater)
-                    .exceptionally(HandlerFX::exceptionally);
-        });
+        this.onUpdateCallback = callback;
     }
 
     public void setOnCancel(Runnable handler){
@@ -135,7 +137,7 @@ public class TextEditForm extends VBox {
                     +"変更保存するか、変更をキャンセルしてから、処方箋を発行してください。", this);
             return;
         }
-        if( currentPatientService.getCurrentOrTempVisitId() != visitId ){
+        if( Context.currentPatientService.getCurrentOrTempVisitId() != visitId ){
             if( !ConfirmDialog.confirm("現在診察中ではないですか、この処方箋を発行しますか？", this) ){
                 return;
             }
@@ -149,7 +151,7 @@ public class TextEditForm extends VBox {
     }
 
     private void doCopy(){
-        int targetVisitId = currentPatientService.getCurrentOrTempVisitId();
+        int targetVisitId = Context.currentPatientService.getCurrentOrTempVisitId();
         if( targetVisitId == 0 ){
             AlertDialog.alert("文章のコピー先をみつけられません。", this);
             return;
@@ -161,13 +163,13 @@ public class TextEditForm extends VBox {
         TextDTO newText = new TextDTO();
         newText.visitId = targetVisitId;
         newText.content = textArea.getText();
-        frontend.enterText(newText)
+        Context.frontend.enterText(newText)
                 .thenAcceptAsync(newTextId -> {
                     newText.textId = newTextId;
                     if( onCopiedCallback != null ){
                         onCopiedCallback.accept(newText);
                     }
-                    integrationService.broadcastNewText(newText);
+                    Context.integrationService.broadcastNewText(newText);
                     done();
                 }, Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);

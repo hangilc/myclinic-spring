@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.componenttest;
 
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -26,8 +27,10 @@ public class ComponentTest {
         this.tests = createTests(stage, main);
         main.setStyle("-fx-padding: 10");
         main.getStylesheets().add("css/Practice.css");
-        stage.setScene(new Scene(main));
-        stage.show();
+        Platform.runLater(() -> {
+            stage.setScene(new Scene(main));
+            stage.show();
+        });
     }
 
     public void runAll() {

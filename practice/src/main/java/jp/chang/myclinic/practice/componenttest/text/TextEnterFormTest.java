@@ -19,10 +19,12 @@ public class TextEnterFormTest extends ComponentTestBase {
 
     private TextEnterForm prepareForm(int visitId){
         TextEnterForm form = new TextEnterForm(visitId);
-        form.setPrefWidth(329);
-        form.setPrefHeight(300);
-        main.getChildren().setAll(form);
-        stage.sizeToScene();
+        gui(() -> {
+            form.setPrefWidth(329);
+            form.setPrefHeight(300);
+            main.getChildren().setAll(form);
+            stage.sizeToScene();
+        });
         return form;
     }
 
@@ -56,9 +58,11 @@ public class TextEnterFormTest extends ComponentTestBase {
             }
         };
         TextEnterForm form = prepareForm(1);
-        form.simulateSetText(text);
-        form.simulateClickEnterButton();
-        waitForTrue(4, () -> local.textConfirmed);
+        gui(() -> {
+            form.simulateSetText(text);
+            form.simulateClickEnterButton();
+        });
+        waitForTrue(10, () -> local.textConfirmed);
     }
 
     @CompTest
@@ -69,8 +73,10 @@ public class TextEnterFormTest extends ComponentTestBase {
         Local local = new Local();
         TextEnterForm form = prepareForm(1);
         form.setOnCancel(() -> { local.cancelCalled = true; });
-        form.simulateClickCancelButton();
-        waitForTrue(4, () -> local.cancelCalled);
+        gui(() -> {
+            form.simulateClickCancelButton();
+        });
+        waitForTrue(10, () -> local.cancelCalled);
     }
 
 

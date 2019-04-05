@@ -52,7 +52,9 @@ public class ComponentTestBase implements ComponentTestMixin {
 
     private void invokeTest(Method method) throws InvocationTargetException, IllegalAccessException {
         String title = getClass().getSimpleName() + ":" + method.getName();
-        stage.setTitle(title);
+        gui(() -> {
+            stage.setTitle(title);
+        });
         method.invoke(this);
         System.out.println(title);
     }
