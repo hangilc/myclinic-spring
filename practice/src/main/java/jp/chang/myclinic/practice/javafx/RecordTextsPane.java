@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-class RecordTextsPane extends VBox {
+public class RecordTextsPane extends VBox {
 
     private int visitId;
     private VBox textsArea = new VBox(4);
     private Hyperlink newTextLink;
 
-    RecordTextsPane(int visitId, List<TextDTO> texts){
+    public RecordTextsPane(int visitId, List<TextDTO> texts){
         super(4);
         this.visitId = visitId;
         this.newTextLink = createNewTextLink();
@@ -25,11 +25,11 @@ class RecordTextsPane extends VBox {
         getChildren().addAll(textsArea, newTextLink);
     }
 
-    void simulateNewTextButtonClick(){
+    public void simulateNewTextButtonClick(){
         newTextLink.fire();
     }
 
-    Optional<TextEnterForm> findTextEnterForm(){
+    public Optional<TextEnterForm> findTextEnterForm(){
         for(Node node: getChildren()){
             if( node instanceof TextEnterForm ){
                 return Optional.of((TextEnterForm)node);
@@ -38,7 +38,7 @@ class RecordTextsPane extends VBox {
         return Optional.empty();
     }
 
-    Optional<RecordText> findRecordText(int textId){
+    public Optional<RecordText> findRecordText(int textId){
         for(Node node: textsArea.getChildren()){
             if( node instanceof  RecordText ){
                 RecordText t = (RecordText)node;
@@ -50,7 +50,7 @@ class RecordTextsPane extends VBox {
         return Optional.empty();
     }
 
-    List<Integer> listTextId(){
+    public List<Integer> listTextId(){
         List<Integer> result = new ArrayList<>();
         for(Node node: textsArea.getChildren()){
             if( node instanceof  RecordText ){

@@ -19,7 +19,8 @@ public class TextTest extends GroupTestBase {
                 new TextEnterFormTest(stage, main),
                 new TextEditFormTest(stage, main),
                 new TextDispTest(stage, main),
-                new RecordTextTest(stage, main)
+                new RecordTextTest(stage, main),
+                new TextsPaneTest(stage, main)
         );
     }
 

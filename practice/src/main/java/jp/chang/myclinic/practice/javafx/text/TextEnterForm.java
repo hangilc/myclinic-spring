@@ -19,7 +19,6 @@ public class TextEnterForm extends VBox {
     private Hyperlink enterLink = new Hyperlink("入力");
     private Hyperlink cancelLink = new Hyperlink("キャンセル ");
     private int visitId;
-    private Frontend frontend = Context.frontend;
     private Consumer<TextDTO> onEnterCallback = t -> {};
     private Runnable onCancelCallback = () -> {};
 
@@ -31,7 +30,7 @@ public class TextEnterForm extends VBox {
         textArea.setWrapText(true);
         enterLink.setOnAction(event -> {
             TextDTO textDTO = getFormTextDTO();
-            frontend.enterText(textDTO)
+            Context.frontend.enterText(textDTO)
                     .thenAcceptAsync(textId -> {
                         textDTO.textId = textId;
                         onEnterCallback.accept(textDTO);
@@ -50,6 +49,10 @@ public class TextEnterForm extends VBox {
         textDTO.visitId = visitId;
         textDTO.content = textArea.getText().trim();
         return textDTO;
+    }
+
+    public int getVisitId() {
+        return visitId;
     }
 
     public void setOnEntered(Consumer<TextDTO> handler){
