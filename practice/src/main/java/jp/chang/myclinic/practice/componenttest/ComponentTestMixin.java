@@ -26,7 +26,7 @@ public interface ComponentTestMixin {
     }
 
     default <T> T waitFor(Supplier<Optional<T>> f) {
-        return waitFor(5, f);
+        return waitFor(8, f);
     }
 
     default <T> T waitFor(int n, Supplier<Optional<T>> f) {
@@ -48,7 +48,7 @@ public interface ComponentTestMixin {
     }
 
     default void waitForTrue(Supplier<Boolean> f){
-        waitForTrue(5, f);
+        waitForTrue(8, f);
     }
 
     default void waitForTrue(int n, Supplier<Boolean> f) {
@@ -85,7 +85,7 @@ public interface ComponentTestMixin {
     }
 
     default void waitForWindowDisappear(Window window) {
-        waitFor(5, () -> {
+        waitFor(8, () -> {
             for (Window w : Window.getWindows()) {
                 if (w == window) {
                     return Optional.empty();

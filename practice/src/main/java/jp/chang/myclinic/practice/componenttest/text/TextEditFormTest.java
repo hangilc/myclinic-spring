@@ -7,6 +7,7 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.frontend.FrontendAdapter;
 import jp.chang.myclinic.mockdata.MockData;
 import jp.chang.myclinic.practice.Context;
+import jp.chang.myclinic.practice.CurrentPatientService;
 import jp.chang.myclinic.practice.IntegrationServiceImpl;
 import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
@@ -165,6 +166,7 @@ public class TextEditFormTest extends ComponentTestBase {
             }
         };
         Context.configService = new ConfigTemp();
+        Context.currentPatientService = new CurrentPatientService();
         TextEditForm form = prepareForm(text);
         gui(form::simulateClickShohousenButton);
         ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
@@ -186,6 +188,7 @@ public class TextEditFormTest extends ComponentTestBase {
             private boolean confirmBroadcast;
         }
         Local local = new Local();
+        Context.currentPatientService = new CurrentPatientService();
         Context.currentPatientService.setCurrentPatient(patient, 1);
         Context.frontend = new FrontendAdapter(){
             @Override

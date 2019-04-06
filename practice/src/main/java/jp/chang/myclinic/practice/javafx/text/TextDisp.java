@@ -8,11 +8,13 @@ public class TextDisp extends TextFlow {
 
     private String content;
     private String rep;
+    private Runnable onClickHandler = () -> {};
 
     public TextDisp(String content) {
         this.content = content;
         this.rep = contentToRep(content);
         getChildren().add(new Text(rep));
+        setOnMouseClicked(evt -> onClickHandler.run());
     }
 
     public String getContent(){
@@ -25,6 +27,10 @@ public class TextDisp extends TextFlow {
 
     public void simulateMouseEvent(MouseEvent event){
         this.fireEvent(event);
+    }
+
+    public void setOnClickHandler(Runnable handler){
+        this.onClickHandler = handler;
     }
 
     private String contentToRep(String content){

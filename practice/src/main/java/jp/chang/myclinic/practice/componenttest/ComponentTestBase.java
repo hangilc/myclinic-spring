@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class ComponentTestBase implements ComponentTestMixin {
+public class ComponentTestBase implements TestInterface, ComponentTestMixin {
 
     protected Stage stage;
     protected Pane main;
@@ -35,19 +35,23 @@ public class ComponentTestBase implements ComponentTestMixin {
         }
     }
 
-    public boolean testOne(String methodName){
-        try {
-            for (Method method : getClass().getMethods()) {
-                if (method.isAnnotationPresent(CompTest.class)) {
-                    if( method.getName().equals(methodName) ){
-                        invokeTest(method);
-                        return true;
+    public boolean testOne(String className, String methodName){
+        if( getClass().getSimpleName().equals(className) ) {
+            try {
+                for (Method method : getClass().getMethods()) {
+                    if (method.isAnnotationPresent(CompTest.class)) {
+                        if (method.getName().equals(methodName)) {
+                            invokeTest(method);
+                            return true;
+                        }
                     }
                 }
+                return false;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
+        } else {
             return false;
-        } catch(Exception e) {
-            throw new RuntimeException(e);
         }
     }
 

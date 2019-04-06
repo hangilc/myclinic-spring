@@ -70,16 +70,26 @@ public class Main extends Application {
         CmdOpts opts = Context.cmdOpts;
         if (opts.componentTest) {
             Pane main = setupStageForComponentTest(stage);
-            new Thread(() -> new ComponentTest(stage, main).runAll()).start();
+            new Thread(() -> {
+                new ComponentTest(stage, main).testAll();
+                System.out.println("done");
+            }).start();
         } else if (opts.componentTestOne != null) {
             if (opts.componentTestOne.length != 2) {
                 System.err.println("CLASSNAME:METHODNAME expected");
                 System.exit(1);
             }
             Pane main = setupStageForComponentTest(stage);
-            new Thread(() -> new ComponentTest(stage, main)
-                    .runOne(opts.componentTestOne[0], opts.componentTestOne[1]))
-                    .start();
+            new Thread(() -> {
+                boolean ok = new ComponentTest(stage, main)
+                        .testOne(opts.componentTestOne[0], opts.componentTestOne[1]);
+                if( ok ){
+                    System.out.println("done");
+                } else {
+                    System.out.printf("Cannot run test: %s:%s\n",
+                            opts.componentTestOne[0], opts.componentTestOne[1]);
+                }
+            }).start();
         } else if (opts.sqliteTemp != null) {
             String dbFile = opts.sqliteTemp;
             DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);

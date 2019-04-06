@@ -7,48 +7,22 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.practice.componenttest.text.TextEditFormTest;
 import jp.chang.myclinic.practice.componenttest.text.TextEnterFormTest;
+import jp.chang.myclinic.practice.componenttest.text.TextTest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComponentTest {
+public class ComponentTest extends GroupTestBase {
 
-    private Stage stage;
-    private Pane main;
-    private List<ComponentTestBase> tests;
-
-    private List<ComponentTestBase> createTests(Stage stage, Pane main) {
-        List<ComponentTestBase> tests = new ArrayList<>();
-        tests.add(new TextEnterFormTest(stage, main));
-        tests.add(new TextEditFormTest(stage, main));
-        return tests;
+    @Override
+    protected List<TestInterface> getTests() {
+        return List.of(
+                new TextTest(stage, main)
+        );
     }
 
     public ComponentTest(Stage stage, Pane main) {
-        this.stage = stage;
-        this.main = main;
-        this.tests = createTests(stage, main);
+        super(stage, main);
     }
 
-    public void runAll() {
-        tests.forEach(ComponentTestBase::testAll);
-        System.out.println("done");
-    }
-
-    public void runOne(String className, String methodName){
-        boolean match = false;
-        for(ComponentTestBase test: tests){
-            if( test.getClass().getSimpleName().equals(className) ){
-                if( test.testOne(methodName) ) {
-                    match = true;
-                    break;
-                }
-            }
-        }
-        if( !match ){
-            System.err.printf("Cannot find test (%s:%s)\n", className, methodName);
-        } else {
-            System.out.println("done");
-        }
-    }
 }

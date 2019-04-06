@@ -14,7 +14,7 @@ public class Context {
     public static CmdOpts cmdOpts;
     public static Frontend frontend;
     public static MainPane mainPane;
-    public static CurrentPatientService currentPatientService = new CurrentPatientService();
+    public static CurrentPatientService currentPatientService;
     public static MainStageService mainStageService;
     public static IntegrationService integrationService;
     public static ConfigService configService;
