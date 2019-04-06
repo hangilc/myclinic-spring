@@ -109,17 +109,13 @@ public class Main extends Application {
                     "practice.properties"
             ));
         } else {
-//            Service.setServerUrl(opts.getServerUrl());
-//            {
-//                this.client = new Client(cmdArgs.getServerUrl());
-//                Context.getInstance().setFrontend(new FrontendClient(client.getApi()));
-//            }
             setupPracticeEnv();
             stage.setTitle("診療");
             PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
                     updateTitle(stage, newValue));
             MainPane root = new MainPane();
             Context.mainPane = root;
+            Context.mainStageService = new MainStageServiceImpl(stage);
             root.getStylesheets().addAll(
                     "css/Practice.css"
             );

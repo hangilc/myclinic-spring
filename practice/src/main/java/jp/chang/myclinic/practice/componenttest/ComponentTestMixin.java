@@ -6,8 +6,14 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Window;
+import jp.chang.myclinic.dto.HokenDTO;
+import jp.chang.myclinic.dto.VisitDTO;
+import jp.chang.myclinic.dto.VisitFull2DTO;
+import jp.chang.myclinic.util.DateTimeUtil;
 import org.jetbrains.annotations.Contract;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -123,6 +129,20 @@ public interface ComponentTestMixin {
                 false, // stillSincePress
                 null   // PickResult
         );
+    }
 
+    default VisitFull2DTO createBlankVisitFull2(int visitId, int patientId, LocalDateTime visitedAt){
+        VisitFull2DTO result = new VisitFull2DTO();
+        VisitDTO visit = new VisitDTO();
+        visit.visitId = visitId;
+        visit.patientId = patientId;
+        visit.visitedAt = DateTimeUtil.toSqlDateTime(visitedAt);
+        result.visit = visit;
+        result.texts = new ArrayList<>();
+        result.hoken = new HokenDTO();
+        result.drugs = new ArrayList<>();
+        result.shinryouList = new ArrayList<>();
+        result.conducts = new ArrayList<>();
+        return result;
     }
 }

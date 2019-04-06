@@ -56,6 +56,7 @@ public class MainPane extends BorderPane {
         setCenter(createCenter());
         addEventHandler(EventTypes.visitDeletedEventType, this::onVisitDeleted);
         mainStageService.setTitle(createTitle(null));
+        Context.integrationService.setOnNewText(this::onNewText);
     }
 
     public void setCurrent(PatientDTO patient, int visitId) {
@@ -436,5 +437,9 @@ public class MainPane extends BorderPane {
         }
     }
 
+    private void onNewText(TextDTO entered){
+        findRecord(entered.visitId)
+                .ifPresent(record -> record.appendText(entered));
+    }
 
 }

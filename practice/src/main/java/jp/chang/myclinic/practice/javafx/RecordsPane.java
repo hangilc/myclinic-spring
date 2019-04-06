@@ -27,7 +27,7 @@ class RecordsPane extends VBox {
         addEventHandler(ShinryouDeletedEvent.eventType, this::onShinryouDeleted);
         addEventHandler(ConductEnteredEvent.eventType, this::onConductEntered);
         addEventHandler(ConductDeletedEvent.eventType, this::onConductDeleted);
-        addEventHandler(TextEnteredEvent.eventType, this::onTextEntered);
+        //addEventHandler(TextEnteredEvent.eventType, this::onTextEntered);
         PracticeEnv.INSTANCE.addShoukiFormChangeListener(this::onShoukiChanged);
     }
 
@@ -100,11 +100,11 @@ class RecordsPane extends VBox {
                 record.deleteConduct(event.getConductId()));
     }
 
-    private void onTextEntered(TextEnteredEvent event){
-        findRecord(event.getEnteredText().visitId).ifPresent(record ->
-                record.appendText(event.getEnteredText()));
-    }
-
+//    private void onTextEntered(TextEnteredEvent event){
+//        findRecord(event.getEnteredText().visitId).ifPresent(record ->
+//                record.appendText(event.getEnteredText()));
+//    }
+//
     private void onShoukiChanged(int visitId, ShoukiDTO shoukiDTO){
         findRecord(visitId).ifPresent(record ->
                 record.setShouki(shoukiDTO));
