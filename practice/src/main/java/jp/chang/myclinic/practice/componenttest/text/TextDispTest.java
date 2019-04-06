@@ -1,15 +1,10 @@
 package jp.chang.myclinic.practice.componenttest.text;
 
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
 import jp.chang.myclinic.practice.javafx.text.TextDisp;
-import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TextDispTest extends ComponentTestBase {
 

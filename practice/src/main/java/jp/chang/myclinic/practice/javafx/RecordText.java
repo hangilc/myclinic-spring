@@ -14,9 +14,8 @@ public class RecordText extends StackPane {
     private int textId;
     private int visitId;
     private Runnable onDeletedCallback;
-    private Consumer<TextDTO> onCopiedCallback;
 
-    RecordText(TextDTO text) {
+    public RecordText(TextDTO text) {
         this.textId = text.textId;
         this.visitId = text.visitId;
         TextDisp disp = createDisp(text.content);
@@ -25,7 +24,7 @@ public class RecordText extends StackPane {
 
     private TextDisp createDisp(String content) {
         TextDisp disp = new TextDisp(content);
-        disp.setOnMouseClicked(event -> onDispClicked(disp));
+        disp.setOnClickHandler(() -> onDispClicked(disp));
         return disp;
     }
 
@@ -41,10 +40,6 @@ public class RecordText extends StackPane {
         this.onDeletedCallback = callback;
     }
 
-    void setOnCopiedCallback(Consumer<TextDTO> callback){
-        this.onCopiedCallback = callback;
-    }
-
     private <T> Optional<T> findInChildren(Class<T> childClass){
         for (Node n : getChildren()) {
             if (childClass.isInstance(n)) {
@@ -58,7 +53,7 @@ public class RecordText extends StackPane {
         return findInChildren(TextDisp.class);
     }
 
-    Optional<TextEditForm> findTextEditForm(){
+    public Optional<TextEditForm> findTextEditForm(){
         return findInChildren(TextEditForm.class);
     }
 
@@ -69,13 +64,14 @@ public class RecordText extends StackPane {
         text.content = disp.getContent();
         TextEditForm form = new TextEditForm(text);
         form.setOnUpdated(updatedText -> getChildren().setAll(createDisp(updatedText.content)));
-        form.setOnCancel(() -> getChildren().setAll(disp));
+        Runnable doneHandler = () -> getChildren().setAll(disp);
+        form.setOnCancel(doneHandler);
         form.setOnDeleted(() -> {
             if( onDeletedCallback != null ){
                 onDeletedCallback.run();
             }
         });
-        form.setOnDone(() -> getChildren().setAll(disp));
+        form.setOnDone(doneHandler);
         getChildren().setAll(form);
     }
 

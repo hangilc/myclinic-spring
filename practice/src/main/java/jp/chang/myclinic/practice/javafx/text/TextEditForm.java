@@ -42,10 +42,7 @@ public class TextEditForm extends VBox {
         textArea.setWrapText(true);
         textArea.setText(text.content);
         enterLink.setOnAction(event -> {
-            TextDTO textDTO = new TextDTO();
-            textDTO.visitId = visitId;
-            textDTO.textId = textId;
-            textDTO.content = textArea.getText().trim();
+            TextDTO textDTO = deriveTextDTO();
             Context.frontend.updateText(textDTO)
                     .thenAcceptAsync(ok -> onUpdateCallback.accept(textDTO), Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
@@ -67,6 +64,14 @@ public class TextEditForm extends VBox {
                 textArea,
                 createButtons()
         );
+    }
+
+    public TextDTO deriveTextDTO(){
+        TextDTO text = new TextDTO();
+        text.visitId = visitId;
+        text.textId = textId;
+        text.content = textArea.getText().trim();
+        return text;
     }
 
     public void simulateClickEnterButton(){

@@ -75,19 +75,20 @@ public class Main extends Application {
                 System.out.println("done");
             }).start();
         } else if (opts.componentTestOne != null) {
-            if (opts.componentTestOne.length != 2) {
-                System.err.println("CLASSNAME:METHODNAME expected");
+            if (opts.componentTestOne.length == 0 || opts.componentTestOne.length >= 3) {
+                System.err.println("CLASSNAME[:METHODNAME] expected");
                 System.exit(1);
             }
+            String className = opts.componentTestOne[0];
+            String methodName = opts.componentTestOne.length == 2 ? opts.componentTestOne[1] : "";
             Pane main = setupStageForComponentTest(stage);
             new Thread(() -> {
-                boolean ok = new ComponentTest(stage, main)
-                        .testOne(opts.componentTestOne[0], opts.componentTestOne[1]);
+                boolean ok = new ComponentTest(stage, main).testOne(className, methodName);
                 if( ok ){
                     System.out.println("done");
                 } else {
-                    System.out.printf("Cannot run test: %s:%s\n",
-                            opts.componentTestOne[0], opts.componentTestOne[1]);
+                    System.out.printf("Cannot run test: %s:%s\n", className, methodName);
+                    Platform.exit();
                 }
             }).start();
         } else if (opts.sqliteTemp != null) {

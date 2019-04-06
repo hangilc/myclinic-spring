@@ -37,6 +37,10 @@ public class ComponentTestBase implements TestInterface, ComponentTestMixin {
 
     public boolean testOne(String className, String methodName){
         if( getClass().getSimpleName().equals(className) ) {
+            if( methodName == null || methodName.isEmpty() ){
+                testAll();
+                return true;
+            }
             try {
                 for (Method method : getClass().getMethods()) {
                     if (method.isAnnotationPresent(CompTest.class)) {

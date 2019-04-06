@@ -18,7 +18,8 @@ public class TextTest extends GroupTestBase {
         return List.of(
                 new TextEnterFormTest(stage, main),
                 new TextEditFormTest(stage, main),
-                new TextDispTest(stage, main)
+                new TextDispTest(stage, main),
+                new RecordTextTest(stage, main)
         );
     }
 
