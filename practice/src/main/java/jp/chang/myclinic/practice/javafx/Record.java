@@ -9,9 +9,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.*;
-import jp.chang.myclinic.frontend.Frontend;
-import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
+import jp.chang.myclinic.practice.javafx.hoken.HokenSelectForm;
 import jp.chang.myclinic.practice.javafx.shinryou.AddRegularForm;
 import jp.chang.myclinic.practice.javafx.text.TextEnterForm;
 

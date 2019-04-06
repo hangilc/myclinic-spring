@@ -46,21 +46,18 @@ public class MainPane extends BorderPane {
     private static Logger logger = LoggerFactory.getLogger(MainPane.class);
     private MenuItem selectVisitMenu;
     private Supplier<Optional<PatientManip>> findPatientManipFun;
-    private Frontend frontend = Context.frontend;
-    private CurrentPatientService currentPatientService = Context.currentPatientService;
-    private MainStageService mainStageService = Context.mainStageService;
     private RecordsPane recordsPane = new RecordsPane();
 
     public MainPane() {
         setTop(createMenu());
         setCenter(createCenter());
         addEventHandler(EventTypes.visitDeletedEventType, this::onVisitDeleted);
-        mainStageService.setTitle(createTitle(null));
+        Context.mainStageService.setTitle(createTitle(null));
         Context.integrationService.setOnNewText(this::onNewText);
     }
 
     public void setCurrent(PatientDTO patient, int visitId) {
-        currentPatientService.setCurrentPatient(patient, visitId);
+        Context.currentPatientService.setCurrentPatient(patient, visitId);
     }
 
     public void simulateSelectVisitMenuChoice() {
@@ -365,6 +362,7 @@ public class MainPane extends BorderPane {
             private Map<Integer, DrugAttrDTO> drugAttrMap;
         }
         Local local = new Local();
+        Frontend frontend = Context.frontend;
         return frontend.batchGetShinryouAttr(shinryouIds)
                 .thenCompose(attrList -> {
                     Map<Integer, ShinryouAttrDTO> shinryouAttrMap = new HashMap<>();

@@ -200,7 +200,7 @@ public class MockData {
 
     public int pickKoukikoureiHokenshaBangou(){
         int housei = 39;
-        return addCheckingDigit(39 * 100000 + pickDigits(5));
+        return addCheckingDigit(housei * 100000 + pickDigits(5));
     }
 
     public KoukikoureiDTO pickKoukikourei(int patientId){

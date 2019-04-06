@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx;
+package jp.chang.myclinic.practice.javafx.hoken;
 
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;

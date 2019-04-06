@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.practice.componenttest.hoken.HokenTest;
 import jp.chang.myclinic.practice.componenttest.mainpane.MainPaneTest;
 import jp.chang.myclinic.practice.componenttest.text.TextEditFormTest;
 import jp.chang.myclinic.practice.componenttest.text.TextEnterFormTest;
@@ -19,7 +20,8 @@ public class ComponentTest extends GroupTestBase {
     protected List<TestInterface> getTests() {
         return List.of(
                 new TextTest(stage, main),
-                new MainPaneTest(stage, main)
+                new MainPaneTest(stage, main),
+                new HokenTest(stage, main)
         );
     }
 
