@@ -8,6 +8,17 @@ public class HokenDTO {
 	public KouhiDTO kouhi2;
 	public KouhiDTO kouhi3;
 
+	public static HokenDTO copy(HokenDTO src){
+		HokenDTO dst = new HokenDTO();
+		dst.shahokokuho = src.shahokokuho;
+		dst.koukikourei = src.koukikourei;
+		dst.roujin = src.roujin;
+		dst.kouhi1 = src.kouhi1;
+		dst.kouhi2 = src.kouhi2;
+		dst.kouhi3 = src.kouhi3;
+		return dst;
+	}
+
 	@Override
 	public String toString() {
 		return "HokenDTO{" +

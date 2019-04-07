@@ -34,6 +34,8 @@ public class MockData {
     private int serialPatientId = 1;
     private int serialVisitId = 1;
     private int serialShahokokuhoId = 1;
+    private int serialKoukikoureiId = 1;
+    private int serialKouhiId = 1;
 
     public MockData() {
         this.lastNames = loadNames("/last-names.txt");
@@ -225,6 +227,12 @@ public class MockData {
         return dto;
     }
 
+    public KoukikoureiDTO pickKoukikoureiWithKoukikoureiId(int patientId){
+        KoukikoureiDTO result = pickKoukikourei(patientId);
+        result.koukikoureiId = serialKoukikoureiId++;
+        return result;
+    }
+
     public KouhiDTO pickKouhi(int patientId){
         LocalDate validFrom = LocalDate.now().minus(random.nextInt(30*6), ChronoUnit.DAYS);
         LocalDate validUpto = validFrom.plus(1, ChronoUnit.YEARS).minus(1, ChronoUnit.DAYS);
@@ -235,6 +243,12 @@ public class MockData {
         dto.validFrom = validFrom.toString();
         dto.validUpto = validUpto.toString();
         return dto;
+    }
+
+    public KouhiDTO pickKouhiWithKouhiId(int patientId){
+        KouhiDTO result = pickKouhi(patientId);
+        result.kouhiId = serialKouhiId++;
+        return result;
     }
 
     public VisitDTO pickVisit(int patientId, LocalDateTime at){
