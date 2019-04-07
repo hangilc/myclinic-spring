@@ -373,7 +373,7 @@ public class Backend {
         return getHoken(visit);
     }
 
-    public HokenDTO getHoken(VisitDTO visit) {
+    private HokenDTO getHoken(VisitDTO visit) {
         HokenDTO hokenDTO = new HokenDTO();
         if (visit.shahokokuhoId > 0) {
             hokenDTO.shahokokuho = getShahokokuho(visit.shahokokuhoId);
@@ -1074,7 +1074,7 @@ public class Backend {
         List<Integer> copiedConductIds = new ArrayList<>();
         List<ConductDTO> sourceConducts = listConduct(sourceVisitId);
         VisitDTO targetVisit = getVisit(targetVisitId);
-        LocalDate at = LocalDateTime.parse(targetVisit.visitedAt).toLocalDate();
+        LocalDate at = DateTimeUtil.parseSqlDateTime(targetVisit.visitedAt).toLocalDate();
         for(ConductDTO source: sourceConducts){
             ConductDTO newConduct = ConductDTO.copy(source);
             newConduct.conductId = 0;
@@ -1096,7 +1096,7 @@ public class Backend {
                         if( master == null ){
                             VisitDTO sourceVisit = getVisit(sourceVisitId);
                             ShinryouMasterDTO sourceMaster = getShinryouMaster(shinryou.shinryoucode,
-                                    LocalDateTime.parse(sourceVisit.visitedAt).toLocalDate());
+                                    DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
                             throw new RuntimeException("Cannot find effective shinryou master: " + sourceMaster.name);
                         }
                         newShinryou.shinryoucode = master.shinryoucode;
@@ -1111,7 +1111,7 @@ public class Backend {
                         if( master == null ){
                             VisitDTO sourceVisit = getVisit(sourceVisitId);
                             IyakuhinMasterDTO sourceMaster = getIyakuhinMaster(drug.iyakuhincode,
-                                    LocalDateTime.parse(sourceVisit.visitedAt).toLocalDate());
+                                    DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
                             throw new RuntimeException("Cannot find effective iyakuhin master: " + sourceMaster.name);
                         }
                         newDrug.iyakuhincode = master.iyakuhincode;
@@ -1126,7 +1126,7 @@ public class Backend {
                         if( master == null ){
                             VisitDTO sourceVisit = getVisit(sourceVisitId);
                             KizaiMasterDTO sourceMaster = getKizaiMaster(kizai.kizaicode,
-                                    LocalDateTime.parse(sourceVisit.visitedAt).toLocalDate());
+                                    DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
                             throw new RuntimeException("Cannot find effective kizai master: " + sourceMaster.name);
                         }
                         newKizai.kizaicode = master.kizaicode;
@@ -1716,7 +1716,7 @@ public class Backend {
 
     public BatchEnterResultDTO batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req){
         VisitDTO visit = getVisit(visitId);
-        LocalDate at = LocalDateTime.parse(visit.visitedAt).toLocalDate();
+        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
         BatchEnterResultDTO result = new BatchEnterResultDTO();
         result.shinryouIds = new ArrayList<>();
         result.conductIds = new ArrayList<>();
@@ -1801,7 +1801,7 @@ public class Backend {
 
     public MeisaiDTO getMeisai(int visitId){
         VisitDTO visit = getVisit(visitId);
-        LocalDate at = LocalDateTime.parse(visit.visitedAt).toLocalDate();
+        LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
         return ss.meisaiService.getMeisai(
                 getPatient(visit.patientId),
                 getHoken(visit),

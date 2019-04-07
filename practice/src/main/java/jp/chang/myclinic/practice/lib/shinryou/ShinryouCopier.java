@@ -1,14 +1,13 @@
 package jp.chang.myclinic.practice.lib.shinryou;
 
 import javafx.application.Platform;
-import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.Context;
+import jp.chang.myclinic.util.DateTimeUtil;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
@@ -57,7 +56,7 @@ public class ShinryouCopier {
         } else {
             ShinryouFullDTO src = srcList.remove(0);
             Context.frontend.getShinryouMaster(src.shinryou.shinryoucode,
-                    LocalDateTime.parse(targetVisit.visitedAt).toLocalDate())
+                    DateTimeUtil.parseSqlDateTime(targetVisit.visitedAt).toLocalDate())
                     .thenApply(master -> master == null ? 0 : master.shinryoucode)
                     .thenAccept(shinryoucode -> {
                         if (shinryoucode == 0) {

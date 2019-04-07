@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.componenttest.text;
 
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.frontend.FrontendAdapter;
@@ -23,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class TextsPaneTest extends ComponentTestBase {
 
-    public TextsPaneTest(Stage stage, Pane main) {
+    public TextsPaneTest(Stage stage, StackPane main) {
         super(stage, main);
     }
 

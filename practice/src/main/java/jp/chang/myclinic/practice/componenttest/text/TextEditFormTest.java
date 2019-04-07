@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.componenttest.text;
 
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.backenddb.test.annotation.DbTest;
 import jp.chang.myclinic.dto.*;
@@ -27,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class TextEditFormTest extends ComponentTestBase {
 
-    public TextEditFormTest(Stage stage, Pane main) {
+    public TextEditFormTest(Stage stage, StackPane main) {
         super(stage, main);
     }
 

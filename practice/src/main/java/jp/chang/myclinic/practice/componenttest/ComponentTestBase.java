@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.componenttest;
 
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.mockdata.MockData;
 import org.slf4j.Logger;
@@ -12,9 +13,9 @@ import java.lang.reflect.Method;
 public class ComponentTestBase implements TestInterface, ComponentTestMixin {
 
     protected Stage stage;
-    protected Pane main;
+    protected StackPane main;
 
-    public ComponentTestBase(Stage stage, Pane main) {
+    public ComponentTestBase(Stage stage, StackPane main) {
         this.stage = stage;
         this.main = main;
     }

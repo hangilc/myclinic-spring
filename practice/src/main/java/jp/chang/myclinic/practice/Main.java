@@ -2,8 +2,8 @@ package jp.chang.myclinic.practice;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.backenddb.DbBackend;
@@ -11,42 +11,24 @@ import jp.chang.myclinic.backenddb.SupportSet;
 import jp.chang.myclinic.backendsqlite.SqliteDataSource;
 import jp.chang.myclinic.backendsqlite.SqliteTableSet;
 import jp.chang.myclinic.client.Client;
-import jp.chang.myclinic.client.Service;
-import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.frontend.FrontendBackend;
-import jp.chang.myclinic.frontend.FrontendClient;
 import jp.chang.myclinic.practice.componenttest.ComponentTest;
 import jp.chang.myclinic.practice.javafx.MainPane;
-import jp.chang.myclinic.practice.javafx.text.TextEditForm;
-import jp.chang.myclinic.practice.testgui.TestGui;
-import jp.chang.myclinic.practice.testintegration.TestIntegration;
 import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
-import jp.chang.myclinic.support.clinicinfo.ClinicInfoProvider;
 import jp.chang.myclinic.support.config.ConfigPropertyFile;
 import jp.chang.myclinic.support.diseaseexample.DiseaseExampleFileProvider;
-import jp.chang.myclinic.support.diseaseexample.DiseaseExampleProvider;
 import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaFile;
-import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaService;
 import jp.chang.myclinic.support.kizainames.KizaiNamesFile;
-import jp.chang.myclinic.support.kizainames.KizaiNamesService;
-import jp.chang.myclinic.support.meisai.MeisaiService;
 import jp.chang.myclinic.support.meisai.MeisaiServiceImpl;
 import jp.chang.myclinic.support.shinryounames.ShinryouNamesFile;
-import jp.chang.myclinic.support.shinryounames.ShinryouNamesService;
 import jp.chang.myclinic.support.stockdrug.StockDrugFile;
-import jp.chang.myclinic.support.stockdrug.StockDrugService;
-import okhttp3.Cache;
-import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 import javax.sql.DataSource;
 import java.nio.file.Paths;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 public class Main extends Application {
 
@@ -69,7 +51,7 @@ public class Main extends Application {
     public void start(Stage stage) {
         CmdOpts opts = Context.cmdOpts;
         if (opts.componentTest) {
-            Pane main = setupStageForComponentTest(stage);
+            StackPane main = setupStageForComponentTest(stage);
             new Thread(() -> {
                 new ComponentTest(stage, main).testAll();
                 System.out.println("done");
@@ -81,7 +63,7 @@ public class Main extends Application {
             }
             String className = opts.componentTestOne[0];
             String methodName = opts.componentTestOne.length == 2 ? opts.componentTestOne[1] : "";
-            Pane main = setupStageForComponentTest(stage);
+            StackPane main = setupStageForComponentTest(stage);
             new Thread(() -> {
                 boolean ok = new ComponentTest(stage, main).testOne(className, methodName);
                 if( ok ){
@@ -129,10 +111,11 @@ public class Main extends Application {
         }
     }
 
-    private Pane setupStageForComponentTest(Stage stage) {
-        Pane main = new StackPane();
+    private StackPane setupStageForComponentTest(Stage stage) {
+        StackPane main = new StackPane();
         main.setStyle("-fx-padding: 10");
         main.getStylesheets().add("css/Practice.css");
+        main.setAlignment(Pos.TOP_LEFT);
         stage.setScene(new Scene(main));
         stage.show();
         return main;

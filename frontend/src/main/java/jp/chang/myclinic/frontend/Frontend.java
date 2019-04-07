@@ -57,8 +57,6 @@ public interface Frontend {
 
     CompletableFuture<HokenDTO> getHoken(int visitId);
 
-    CompletableFuture<HokenDTO> getHoken(VisitDTO visit);
-
     CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt);
 
     CompletableFuture<Void> updateHoken(VisitDTO visit);

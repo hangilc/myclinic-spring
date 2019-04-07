@@ -11,9 +11,12 @@ public class HokenDisp extends TextFlow {
 
     private String dispText;
     private Runnable onClickHandler = () -> {};
+    private final HokenDTO hoken;
 
     public HokenDisp(HokenDTO hoken){
+        this.hoken = hoken;
         this.dispText = makeDispText(hoken);
+        getStyleClass().add("hoken-disp");
         getChildren().add(new Text(dispText));
         setOnMouseClicked(evt -> onClickHandler.run());
     }
@@ -24,6 +27,10 @@ public class HokenDisp extends TextFlow {
 
     public void setOnClickHandler(Runnable onClickHandler) {
         this.onClickHandler = onClickHandler;
+    }
+
+    public HokenDTO getHoken(){
+        return hoken;
     }
 
     private String makeDispText(HokenDTO hoken) {

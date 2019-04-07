@@ -1,17 +1,17 @@
 package jp.chang.myclinic.practice.lib;
 
 import javafx.application.Platform;
-import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.drawer.printer.PrinterEnv;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.PracticeEnv;
+import jp.chang.myclinic.practice.javafx.parts.drawerpreview.ListSettingDialog;
+import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
-import jp.chang.myclinic.practice.javafx.parts.drawerpreview.ListSettingDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -228,7 +228,7 @@ public class PracticeLib {
 //    }
 
     public static void listAvailableHoken(int patientId, String visitedAt, Consumer<HokenDTO> cb) {
-        Context.frontend.listAvailableHoken(patientId, LocalDateTime.parse(visitedAt).toLocalDate())
+        Context.frontend.listAvailableHoken(patientId, DateTimeUtil.parseSqlDateTime(visitedAt).toLocalDate())
                 .thenAccept(hoken -> Platform.runLater(() -> cb.accept(hoken)))
                 .exceptionally(ex -> {
                     logger.error("Failed list available hoken.", ex);

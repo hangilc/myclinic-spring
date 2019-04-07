@@ -133,11 +133,6 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<HokenDTO> getHoken(VisitDTO visit) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
     public CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt) {
         throw new RuntimeException("not implemented");
     }

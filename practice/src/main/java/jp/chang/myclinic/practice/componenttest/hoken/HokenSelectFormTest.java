@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.componenttest.hoken;
 
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.HokenDTO;
 import jp.chang.myclinic.dto.ShahokokuhoDTO;
@@ -19,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class HokenSelectFormTest extends ComponentTestBase {
 
-    public HokenSelectFormTest(Stage stage, Pane main) {
+    public HokenSelectFormTest(Stage stage, StackPane main) {
         super(stage, main);
     }
 

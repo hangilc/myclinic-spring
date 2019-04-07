@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.componenttest.hoken;
 
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.HokenDTO;
 import jp.chang.myclinic.mockdata.MockData;
@@ -13,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class HokenDispTest extends ComponentTestBase {
 
-    public HokenDispTest(Stage stage, Pane main) {
+    public HokenDispTest(Stage stage, StackPane main) {
         super(stage, main);
     }
 

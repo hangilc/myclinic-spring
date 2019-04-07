@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.componenttest.text;
 
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
@@ -8,7 +9,7 @@ import jp.chang.myclinic.practice.javafx.text.TextDisp;
 
 public class TextDispTest extends ComponentTestBase {
 
-    public TextDispTest(Stage stage, Pane main) {
+    public TextDispTest(Stage stage, StackPane main) {
         super(stage, main);
     }
 

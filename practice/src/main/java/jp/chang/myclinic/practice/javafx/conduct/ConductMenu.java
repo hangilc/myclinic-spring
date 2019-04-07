@@ -12,15 +12,15 @@ import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeAPI;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
+import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
@@ -86,7 +86,7 @@ public class ConductMenu extends VBox {
         Frontend frontend = Context.frontend;
         return frontend.getVisit(visitId)
                 .thenCompose(visit -> {
-                    store.at = LocalDateTime.parse(visit.visitedAt).toLocalDate();
+                    store.at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
                     return frontend.resolveShinryouMasterByKey("単純撮影", store.at);
                 })
                 .thenCompose(m -> {

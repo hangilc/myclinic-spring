@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.componenttest.mainpane;
 
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.MainStageService;
@@ -16,7 +17,7 @@ import java.util.function.Consumer;
 
 public class MainPaneTest extends GroupTestBase {
 
-    public MainPaneTest(Stage stage, Pane main) {
+    public MainPaneTest(Stage stage, StackPane main) {
         super(stage, main);
     }
 

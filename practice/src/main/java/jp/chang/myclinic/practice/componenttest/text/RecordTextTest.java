@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.componenttest.text;
 
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.componenttest.CompTest;
@@ -13,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class RecordTextTest extends ComponentTestBase {
 
-    public RecordTextTest(Stage stage, Pane main) {
+    public RecordTextTest(Stage stage, StackPane main) {
         super(stage, main);
     }
 

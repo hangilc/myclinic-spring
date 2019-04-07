@@ -25,7 +25,7 @@ public class ComponentTest extends GroupTestBase {
         );
     }
 
-    public ComponentTest(Stage stage, Pane main) {
+    public ComponentTest(Stage stage, StackPane main) {
         super(stage, main);
     }
 

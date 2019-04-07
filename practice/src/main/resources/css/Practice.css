@@ -67,7 +67,7 @@
     -fx-padding: 2;
 }
 
-.drug-disp, .shinryou-disp {
+.drug-disp, .shinryou-disp, .hoken-disp {
     -fx-cursor: hand;
 }
 

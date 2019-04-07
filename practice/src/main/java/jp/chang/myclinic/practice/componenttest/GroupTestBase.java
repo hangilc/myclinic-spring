@@ -1,6 +1,7 @@
 package jp.chang.myclinic.practice.componenttest;
 
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +12,9 @@ public abstract class GroupTestBase implements TestInterface{
 
     protected abstract List<TestInterface> getTests();
     protected Stage stage;
-    protected Pane main;
+    protected StackPane main;
 
-    public GroupTestBase(Stage stage, Pane main){
+    public GroupTestBase(Stage stage, StackPane main){
         this.stage = stage;
         this.main = main;
     }

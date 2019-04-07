@@ -192,11 +192,6 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<HokenDTO> getHoken(VisitDTO visit) {
-        return query(backend -> backend.getHoken(visit));
-    }
-
-    @Override
     public CompletableFuture<HokenDTO> listAvailableHoken(int patientId, LocalDate visitedAt) {
         return query(backend -> backend.listAvailableHoken(patientId, visitedAt));
     }

@@ -1,12 +1,11 @@
 package jp.chang.myclinic.practice.lib;
 
-import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
+import jp.chang.myclinic.util.DateTimeUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,7 +57,7 @@ public class PracticeAPI {
         List<ConductShinryouDTO> shinryouList = new ArrayList<>();
         return Context.frontend.getVisit(visitId)
                 .thenCompose(result -> {
-                    LocalDate at = LocalDateTime.parse(result.visitedAt).toLocalDate();
+                    LocalDate at = DateTimeUtil.parseSqlDateTime(result.visitedAt).toLocalDate();
                     if( kind == ConductKind.HikaChuusha ){
                         return Context.frontend.resolveShinryouMasterByName(List.of("皮下筋注"), at);
                     } else if( kind == ConductKind.JoumyakuChuusha ){
