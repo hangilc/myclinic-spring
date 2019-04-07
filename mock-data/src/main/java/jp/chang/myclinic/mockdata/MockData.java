@@ -33,6 +33,7 @@ public class MockData {
     private List<TodoufukenCode> todoufukenCodes = Arrays.asList(TodoufukenCode.values());
     private int serialPatientId = 1;
     private int serialVisitId = 1;
+    private int serialShahokokuhoId = 1;
 
     public MockData() {
         this.lastNames = loadNames("/last-names.txt");
@@ -196,6 +197,12 @@ public class MockData {
         dto.validUpto = validUptoRep;
         dto.kourei = pickInt(0, 3);
         return dto;
+    }
+
+    public ShahokokuhoDTO pickShahokokuhoWithShahokokuhoId(int patientId){
+        ShahokokuhoDTO result = pickShahokokuho(patientId);
+        result.shahokokuhoId = serialShahokokuhoId++;
+        return result;
     }
 
     public int pickKoukikoureiHokenshaBangou(){

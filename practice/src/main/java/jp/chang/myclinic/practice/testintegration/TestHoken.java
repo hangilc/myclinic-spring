@@ -7,11 +7,11 @@ import jp.chang.myclinic.util.ShahokokuhoUtil;
 
 class TestHoken extends IntegrationTestBase {
 
-    void confirmHokenShahokokuho(Record record,  ShahokokuhoDTO shahokokuho){
-        RecordHoken recordHoken = record.findRecordHoken().orElseThrow(() ->
-                new RuntimeException("cannot find hoken recoord"));
-        String rep = ShahokokuhoUtil.rep(shahokokuho);
-        confirm(recordHoken.getDispText().equals(rep));
-    }
+//    void confirmHokenShahokokuho(Record record,  ShahokokuhoDTO shahokokuho){
+//        RecordHoken recordHoken = record.findRecordHoken().orElseThrow(() ->
+//                new RuntimeException("cannot find hoken recoord"));
+//        String rep = ShahokokuhoUtil.rep(shahokokuho);
+//        confirm(recordHoken.getDispText().equals(rep));
+//    }
 
 }

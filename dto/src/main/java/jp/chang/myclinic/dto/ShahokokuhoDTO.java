@@ -3,6 +3,8 @@ package jp.chang.myclinic.dto;
 import jp.chang.myclinic.dto.annotation.AutoInc;
 import jp.chang.myclinic.dto.annotation.Primary;
 
+import java.util.Objects;
+
 public class ShahokokuhoDTO {
 	@Primary
 	@AutoInc
@@ -28,6 +30,28 @@ public class ShahokokuhoDTO {
 		dst.validFrom = src.validFrom;
 		dst.validUpto = src.validUpto;
 		return dst;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ShahokokuhoDTO that = (ShahokokuhoDTO) o;
+		return shahokokuhoId == that.shahokokuhoId &&
+				patientId == that.patientId &&
+				hokenshaBangou == that.hokenshaBangou &&
+				honnin == that.honnin &&
+				kourei == that.kourei &&
+				Objects.equals(hihokenshaKigou, that.hihokenshaKigou) &&
+				Objects.equals(hihokenshaBangou, that.hihokenshaBangou) &&
+				Objects.equals(validFrom, that.validFrom) &&
+				Objects.equals(validUpto, that.validUpto);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(shahokokuhoId, patientId, hokenshaBangou, hihokenshaKigou,
+				hihokenshaBangou, honnin, kourei, validFrom, validUpto);
 	}
 
 	@Override

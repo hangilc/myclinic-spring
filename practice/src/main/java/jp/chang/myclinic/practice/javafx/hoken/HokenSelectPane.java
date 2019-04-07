@@ -182,6 +182,27 @@ public class HokenSelectPane extends VBox {
         PracticeUtil.storeKouhiList(visit, selectedKouhi);
     }
 
+    public void simulateShahokokuhoSelect(boolean selected){
+        if( shahokokuhoCheck != null ){
+            shahokokuhoCheck.setSelected(selected);
+        }
+    }
+
+    public void simulateKoukikoureiSelect(boolean selected){
+        if( koukikoureiCheck != null ){
+            koukikoureiCheck.setSelected(selected);
+        }
+    }
+
+    public void simulateKouhiSelect(int kouhiId, boolean selected){
+        for(HokenCheckBox<KouhiDTO> check: kouhiChecks){
+            if( check.getHoken().getDTO().kouhiId == kouhiId ){
+                check.setSelected(selected);
+                return;
+            }
+        }
+    }
+
     private boolean isCurrentShahokokuho(ShahokokuhoDTO shahokokuho) {
         return current.shahokokuho != null && shahokokuho != null &&
                 current.shahokokuho.shahokokuhoId == shahokokuho.shahokokuhoId;

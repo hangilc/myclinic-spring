@@ -18,7 +18,8 @@ public class HokenTest extends GroupTestBase {
     @Override
     protected List<TestInterface> getTests() {
         return List.of(
-                new HokenDispTest(stage, main)
+                new HokenDispTest(stage, main),
+                new HokenSelectFormTest(stage, main)
         );
     }
 }

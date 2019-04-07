@@ -133,7 +133,7 @@ public class Record extends VBox {
         drugsPane = new RecordDrugsPane(visit.drugs, visit.visit, drugAttrMap);
         shinryouPane = new RecordShinryouPane(visit.shinryouList, visit.visit, shinryouAttrMap);
         conductsPane = new RecordConductsPane(visit.conducts, visit.visit.visitId, visit.visit.visitedAt);
-        hokenArea.getChildren().add(createRecordHoken(visit.hoken, visit.visit));
+        hokenArea.getChildren().add(new RecordHoken(visit.hoken, visit.visit));
         right.getChildren().addAll(
                 hokenArea,
                 drugsPane,
@@ -179,41 +179,6 @@ public class Record extends VBox {
 
     void setShouki(ShoukiDTO shoukiDTO) {
         this.shouki.setValue(shoukiDTO);
-    }
-
-    private RecordHoken createRecordHoken(HokenDTO hoken, VisitDTO visit) {
-        RecordHoken recordHoken = new RecordHoken(hoken);
-        recordHoken.setOnMouseClicked(event -> {
-            Context.frontend.listAvailableHoken(visit.patientId,
-                    LocalDateTime.parse(visit.visitedAt).toLocalDate())
-                    .thenAcceptAsync(availHoken -> {
-                        HokenSelectForm form = new HokenSelectForm(availHoken, hoken);
-                        form.setCallback(new HokenSelectForm.Callback() {
-                            private void replaceWith(Node node) {
-                                hokenArea.getChildren().setAll(node);
-                            }
-
-                            @Override
-                            public void onEnter(VisitDTO newVisit) {
-                                newVisit.visitId = visitId;
-                                Context.frontend.updateHoken(newVisit)
-                                        .thenCompose(ok -> Context.frontend.getHoken(visitId))
-                                        .thenAcceptAsync(newHoken -> {
-                                            replaceWith(createRecordHoken(newHoken, visit));
-                                        }, Platform::runLater)
-                                        .exceptionally(alertExceptionGui("保険の選択変更に失敗しました。"));
-                            }
-
-                            @Override
-                            public void onCancel() {
-                                replaceWith(recordHoken);
-                            }
-                        });
-                        hokenArea.getChildren().setAll(form);
-                    }, Platform::runLater)
-                    .exceptionally(alertExceptionGui("保険情報の取得に失敗しました。"));
-            });
-        return recordHoken;
     }
 
 }
