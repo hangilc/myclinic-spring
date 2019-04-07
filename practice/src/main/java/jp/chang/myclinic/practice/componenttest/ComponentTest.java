@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.practice.componenttest.drug.DrugTest;
 import jp.chang.myclinic.practice.componenttest.hoken.HokenTest;
 import jp.chang.myclinic.practice.componenttest.mainpane.MainPaneTest;
 import jp.chang.myclinic.practice.componenttest.text.TextEditFormTest;
@@ -21,7 +22,8 @@ public class ComponentTest extends GroupTestBase {
         return List.of(
                 new TextTest(stage, main),
                 new MainPaneTest(stage, main),
-                new HokenTest(stage, main)
+                new HokenTest(stage, main),
+                new DrugTest(stage, main)
         );
     }
 
