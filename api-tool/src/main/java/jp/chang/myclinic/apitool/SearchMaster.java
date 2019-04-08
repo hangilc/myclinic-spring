@@ -60,21 +60,45 @@ class SearchMaster implements Runnable {
             master.zaikei = rs.getString("zaikei").charAt(0);
             master.validFrom = rs.getString("valid_from");
             master.validUpto = rs.getString("valid_upto");
-            String name = rs.getString("name");
             int rowIndex = index++;
             if( selectIndex != null && selectIndex != rowIndex ){
                 continue;
             }
-            if( output.equals("data") ) {
-                System.out.println(master);
-            } else if( output.equals("name") ){
-                System.out.printf("%2d: %s\n", rowIndex, master.name);
-            } else {
-                System.err.println("Unknown output format: " + output);
-                System.exit(1);
+            switch(output){
+                case "data": {
+                    System.out.println(master);
+                    break;
+                }
+                case "code": {
+                    outputIyakuhinMasterAsCode(master);
+                    break;
+                }
+                case "name": {
+                    System.out.printf("%2d: %s\n", rowIndex, master.name);
+                    break;
+                }
+                default: {
+                    System.err.println("Unknown output format: " + output);
+                    System.exit(1);
+                }
             }
         }
         stmt.close();
+    }
+
+    private void outputIyakuhinMasterAsCode(IyakuhinMasterDTO master){
+        String varName = "master";
+        System.out.printf("IyakuhinMasterDTO %s = new IyakuhinMasterDTO();\n", varName);
+        System.out.printf("%s.iyakuhincode = %d;\n", varName, master.iyakuhincode);
+        System.out.printf("%s.name = \"%s\";\n", varName, master.name);
+        System.out.printf("%s.yomi = \"%s\";\n", varName, master.yomi);
+        System.out.printf("%s.yakka = %f;\n", varName, master.yakka);
+        System.out.printf("%s.unit = \"%s\";\n", varName, master.unit);
+        System.out.printf("%s.kouhatsu = '%c';\n", varName, master.kouhatsu);
+        System.out.printf("%s.madoku = '%c';\n", varName, master.madoku);
+        System.out.printf("%s.zaikei = '%c';\n", varName, master.zaikei);
+        System.out.printf("%s.validFrom = \"%s\";\n", varName, master.validFrom);
+        System.out.printf("%s.validUpto = \"%s\";\n", varName, master.validUpto);
     }
 
     private Connection getConnection(){

@@ -16,7 +16,7 @@ public class DrugDisp extends TextFlow {
     public DrugDisp(int index, DrugFullDTO drug, DrugAttrDTO attr){
         this.drug = drug;
         String text = String.format("%d)%s", index, DrugUtil.drugRep(drug));
-        if( attr.tekiyou != null && !attr.tekiyou.isEmpty() ){
+        if( attr != null && attr.tekiyou != null && !attr.tekiyou.isEmpty() ){
             text += " [摘要：" + attr.tekiyou + "]";
         }
         getChildren().add(new Text(text));
