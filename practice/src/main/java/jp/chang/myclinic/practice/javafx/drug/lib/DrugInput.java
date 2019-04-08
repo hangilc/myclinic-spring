@@ -19,7 +19,7 @@ public class DrugInput extends InputBase {
     private Label tekiyouLabel = new Label();
     private HBox tekiyouRow;
 
-    DrugInput() {
+    public DrugInput() {
         this.commentRow = addRowBeforeCategory(new Label("注釈："), commentLabel);
         adaptComment();
         commentLabel.textProperty().addListener((obs, oldValue, newValue) -> adaptComment());

@@ -86,15 +86,11 @@ class InputBase extends VBox {
     void getStateTo(DrugInputBaseState state) {
         state.setIyakuhincode(iyakuhincode);
         state.setDrugName(drugNameLabel.getText());
-        state.setAmountLabel(amountLabel.getText());
         state.setAmount(amountInput.getText());
         state.setAmountUnit(amountUnitLabel.getText());
         state.setUsage(usageInput.getText());
-        state.setDaysLabel(daysLabel.getText());
         state.setDays(daysInput.getText());
-        state.setDaysUnit(daysUnit.getText());
         state.setCategory(category.getValue());
-        state.setDaysVisible(isDaysVisible());
     }
 
     void simulateSelectCategory(DrugCategory newCategory) {

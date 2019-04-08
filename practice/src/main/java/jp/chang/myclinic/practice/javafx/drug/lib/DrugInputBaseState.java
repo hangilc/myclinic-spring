@@ -10,15 +10,11 @@ public class DrugInputBaseState {
 
     private int iyakuhincode;
     private String drugName = "";
-    private String amountLabel = "";
     private String amount = "";
     private String amountUnit = "";
     private String usage = "";
-    private String daysLabel = "";
     private String days = "";
-    private String daysUnit = "";
     private DrugCategory category = DrugCategory.Naifuku;
-    private boolean daysVisible = true;
 
     public DrugInputBaseState() {
         adaptToCategory();
@@ -41,11 +37,11 @@ public class DrugInputBaseState {
     }
 
     public String getAmountLabel() {
-        return amountLabel;
-    }
-
-    public void setAmountLabel(String amountLabel) {
-        this.amountLabel = amountLabel;
+        switch(category){
+            case Naifuku: case Gaiyou: return "用量：";
+            case Tonpuku: return "一回：";
+            default: return "????：";
+        }
     }
 
     public String getAmount() {
@@ -73,11 +69,11 @@ public class DrugInputBaseState {
     }
 
     public String getDaysLabel() {
-        return daysLabel;
-    }
-
-    public void setDaysLabel(String daysLabel) {
-        this.daysLabel = daysLabel;
+        switch(category){
+            case Naifuku: return "日数：";
+            case Tonpuku: return "回数：";
+            default: return "????：";
+        }
     }
 
     public String getDays() {
@@ -89,11 +85,11 @@ public class DrugInputBaseState {
     }
 
     public String getDaysUnit() {
-        return daysUnit;
-    }
-
-    public void setDaysUnit(String daysUnit) {
-        this.daysUnit = daysUnit;
+        switch(category){
+            case Naifuku: return "日分";
+            case Tonpuku: return "回分";
+            default: return "????";
+        }
     }
 
     public DrugCategory getCategory() {
@@ -105,25 +101,20 @@ public class DrugInputBaseState {
     }
 
     public boolean isDaysVisible() {
-        return daysVisible;
-    }
-
-    public void setDaysVisible(boolean daysVisible) {
-        this.daysVisible = daysVisible;
+        switch(category){
+            case Naifuku: case Tonpuku: return true;
+            default: return false;
+        }
     }
 
     public void assignTo(DrugInputBaseState dst){
         dst.setIyakuhincode(getIyakuhincode());
         dst.setDrugName(getDrugName());
-        dst.setAmountLabel(getAmountLabel());
         dst.setAmount(getAmount());
         dst.setAmountUnit(getAmountUnit());
         dst.setUsage(getUsage());
-        dst.setDaysLabel(getDaysLabel());
         dst.setDays(getDays());
-        dst.setDaysUnit(getDaysUnit());
         dst.setCategory(getCategory());
-        dst.setDaysVisible(isDaysVisible());
     }
 
     void clear(){
@@ -140,29 +131,6 @@ public class DrugInputBaseState {
     }
 
     void adaptToCategory(){
-        if (category != null) {
-            switch (category) {
-                case Naifuku: {
-                    setAmountLabel("用量：");
-                    setDaysLabel("日数：");
-                    setDaysUnit("日分");
-                    setDaysVisible(true);
-                    break;
-                }
-                case Tonpuku: {
-                    setAmountLabel("一回：");
-                    setDaysLabel("回数：");
-                    setDaysUnit("回分");
-                    setDaysVisible(true);
-                    break;
-                }
-                case Gaiyou: {
-                    setAmountLabel("用量：");
-                    setDaysVisible(false);
-                    break;
-                }
-            }
-        }
     }
 
     void setMaster(IyakuhinMasterDTO master){
@@ -209,21 +177,18 @@ public class DrugInputBaseState {
         if (!(o instanceof DrugInputBaseState)) return false;
         DrugInputBaseState that = (DrugInputBaseState) o;
         return iyakuhincode == that.iyakuhincode &&
-                daysVisible == that.daysVisible &&
                 Objects.equals(drugName, that.drugName) &&
-                Objects.equals(amountLabel, that.amountLabel) &&
                 Objects.equals(amount, that.amount) &&
                 Objects.equals(amountUnit, that.amountUnit) &&
                 Objects.equals(usage, that.usage) &&
-                Objects.equals(daysLabel, that.daysLabel) &&
                 Objects.equals(days, that.days) &&
-                Objects.equals(daysUnit, that.daysUnit) &&
                 category == that.category;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(iyakuhincode, drugName, amountLabel, amount, amountUnit, usage, daysLabel, days, daysUnit, category, daysVisible);
+        return Objects.hash(iyakuhincode, drugName, amount, amountUnit, usage,
+                days, category);
     }
 
     @Override
@@ -231,15 +196,11 @@ public class DrugInputBaseState {
         return "DrugInputBaseState{" +
                 "iyakuhincode=" + iyakuhincode +
                 ", drugName='" + drugName + '\'' +
-                ", amountLabel='" + amountLabel + '\'' +
                 ", amount='" + amount + '\'' +
                 ", amountUnit='" + amountUnit + '\'' +
                 ", usage='" + usage + '\'' +
-                ", daysLabel='" + daysLabel + '\'' +
                 ", days='" + days + '\'' +
-                ", daysUnit='" + daysUnit + '\'' +
                 ", category=" + category +
-                ", daysVisible=" + daysVisible +
                 '}';
     }
 }

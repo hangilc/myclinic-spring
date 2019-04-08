@@ -13,15 +13,15 @@ public class DrugInputState extends DrugInputBaseState {
     private String tekiyou = "";
     private boolean tekiyouVisible = false;
 
-    DrugInputState(){
+    public DrugInputState(){
         this(new DrugInputBaseState());
     }
 
-    DrugInputState(DrugInputBaseState baseState){
+    public DrugInputState(DrugInputBaseState baseState){
         baseState.assignTo(this);
     }
 
-    void assignTo(DrugInputState dst){
+    public void assignTo(DrugInputState dst){
         super.assignTo(dst);
         assignProperTo(dst);
     }
@@ -52,14 +52,14 @@ public class DrugInputState extends DrugInputBaseState {
     }
 
     @Override
-    void setMaster(IyakuhinMasterDTO master){
+    public void setMaster(IyakuhinMasterDTO master){
         super.setMaster(master);
         setComment("");
         setTekiyou("");
         adapt();
     }
 
-    void setPrescExample(PrescExampleFullDTO example){
+    public void setPrescExample(PrescExampleFullDTO example){
         super.setPrescExample(example);
         String comment = example.prescExample.comment;
         setComment(comment == null ? "" : comment);
@@ -67,7 +67,7 @@ public class DrugInputState extends DrugInputBaseState {
         adapt();
     }
 
-    void setDrugAttr(DrugAttrDTO attr){
+    public void setDrugAttr(DrugAttrDTO attr){
         String tekiyou = null;
         if( attr != null ){
             tekiyou = attr.tekiyou;

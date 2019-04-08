@@ -17,7 +17,6 @@ import java.util.List;
 
 public class DrugEnterForm extends DrugForm {
 
-    //private static Logger logger = LoggerFactory.getLogger(EnterForm.class);
     private DrugEnterInput input = new DrugEnterInput();
     private SearchTextInput searchTextInput;
     private SearchResult searchResult;

@@ -18,7 +18,8 @@ public class DrugTest extends GroupTestBase {
     @Override
     protected List<TestInterface> getTests() {
         return List.of(
-                new DrugDispTest(stage, main)
+                new DrugDispTest(stage, main),
+                new DrugInputTest(stage, main)
         );
     }
 

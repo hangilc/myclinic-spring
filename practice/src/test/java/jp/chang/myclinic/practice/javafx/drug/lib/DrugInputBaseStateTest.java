@@ -58,12 +58,7 @@ public class DrugInputBaseStateTest {
     @Test
     public void testAdaptToCategoryNaifuku() {
         DrugInputBaseState state = new DrugInputBaseState();
-        state.setAmountLabel("一回：");
-        state.setDaysLabel("回数：");
-        state.setDaysUnit("回分");
-        state.setDaysVisible(false);
         state.setCategory(DrugCategory.Naifuku);
-        state.adaptToCategory();
         assertTrue(
                 state.getAmountLabel().equals("用量：") &&
                         state.getDaysLabel().equals("日数：") &&
@@ -75,12 +70,7 @@ public class DrugInputBaseStateTest {
     @Test
     public void testAdaptToCategoryTonpuku() {
         DrugInputBaseState state = new DrugInputBaseState();
-        state.setAmountLabel("用量：");
-        state.setDaysLabel("日数：");
-        state.setDaysUnit("日分");
-        state.setDaysVisible(false);
         state.setCategory(DrugCategory.Tonpuku);
-        state.adaptToCategory();
         assertTrue(
                 state.getAmountLabel().equals("一回：") &&
                         state.getDaysLabel().equals("回数：") &&
@@ -92,12 +82,7 @@ public class DrugInputBaseStateTest {
     @Test
     public void testAdaptToCategoryGaiyou() {
         DrugInputBaseState state = new DrugInputBaseState();
-        state.setAmountLabel("一回：");
-        state.setDaysLabel("回数：");
-        state.setDaysUnit("回分");
-        state.setDaysVisible(true);
         state.setCategory(DrugCategory.Gaiyou);
-        state.adaptToCategory();
         assertTrue(
                 state.getAmountLabel().equals("用量：") &&
                         !state.isDaysVisible()

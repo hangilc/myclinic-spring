@@ -56,13 +56,13 @@ class DrugEnterInputState extends DrugInputState {
     }
 
     @Override
-    void setMaster(IyakuhinMasterDTO master){
+    public void setMaster(IyakuhinMasterDTO master){
         super.setMaster(master);
         adjustDays();
     }
 
     @Override
-    void setPrescExample(PrescExampleFullDTO example) {
+    public void setPrescExample(PrescExampleFullDTO example) {
         super.setPrescExample(example);
         adjustDays();
     }
