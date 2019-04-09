@@ -10,15 +10,19 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.dto.DrugDTO;
+import jp.chang.myclinic.consts.Zaikei;
+import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 
 import java.text.DecimalFormat;
 
+import static jp.chang.myclinic.consts.DrugCategory.Naifuku;
+
 public class DrugEnterInput extends VBox {
 
-    private Text drugNameLabel = new Text("");
+    private int iyakuhincode;
+    private Text drugName = new Text("");
     private Label amountLabel = new Label("");
     private TextField amountInput = new TextField();
     private Label amountUnitLabel = new Label("");
@@ -43,21 +47,21 @@ public class DrugEnterInput extends VBox {
     private Label tekiyouLabel = new Label();
     private HBox tekiyouRow;
     private CheckBox daysFixedCheck = new CheckBox("固定");
-    private FixedDaysService fixedDaysService = new FixedDaysService();
+    private String naifukuDaysBackup = "";
 
     public DrugEnterInput() {
         super(4);
         getStyleClass().add("drug-input");
         amountInput.getStyleClass().add("amount-input");
         daysInput.getStyleClass().add("days-input");
-        addRow(new Label("名称："), new TextFlow(drugNameLabel));
+        addRow(new Label("名称："), new TextFlow(drugName));
         addRow(amountLabel, createAmountContent());
         addRow(new Label("用法："), createUsageContent());
         daysRow = addRow(daysLabel, createDaysContent());
         this.categoryRow = addRow(createCategoryContent());
-        category.addListener((obs, oldValue, newValue) -> onCategoryChange(newValue));
+        category.addListener((obs, oldValue, newValue) -> onCategoryChange(oldValue, newValue));
         category.setValue(null);
-        category.setValue(DrugCategory.Naifuku);
+        category.setValue(Naifuku);
         addLabelContextMenu();
         this.commentRow = addRowBeforeCategory(new Label("注釈："), commentLabel);
         adaptComment();
@@ -67,13 +71,6 @@ public class DrugEnterInput extends VBox {
         tekiyouLabel.textProperty().addListener((obs, oldValue, newValue) -> adaptTekiyou());
         daysFixedCheck.setSelected(true);
         addToDaysRow(daysFixedCheck);
-        daysFixedCheck.selectedProperty().addListener((obs, oldValue, newValue) ->
-                adaptToDaysFixedChange(newValue)
-        );
-    }
-
-    public void onDrugEntered(DrugDTO drug){
-        fixedDaysService.onDaysSubmitted("" + drug.days, DrugCategory.fromCode(drug.category));
     }
 
     private HBox addRow(Label label, Node content) {
@@ -135,11 +132,11 @@ public class DrugEnterInput extends VBox {
     private Node createCategoryContent() {
         HBox hbox = new HBox(4);
         RadioButtonGroup<DrugCategory> categoryButtons = new RadioButtonGroup<>();
-        categoryButtons.createRadioButton("内服", DrugCategory.Naifuku);
+        categoryButtons.createRadioButton("内服", Naifuku);
         categoryButtons.createRadioButton("屯服", DrugCategory.Tonpuku);
         categoryButtons.createRadioButton("外用", DrugCategory.Gaiyou);
         hbox.getChildren().addAll(categoryButtons.getButtons());
-        categoryButtons.setValue(DrugCategory.Naifuku);
+        categoryButtons.setValue(Naifuku);
         category = categoryButtons.valueProperty();
         return hbox;
     }
@@ -158,9 +155,9 @@ public class DrugEnterInput extends VBox {
     }
 
     private void addLabelContextMenu() {
-        drugNameLabel.setOnContextMenuRequested(event -> {
+        drugName.setOnContextMenuRequested(event -> {
             ContextMenu menu = createDrugNameContextMenu();
-            menu.show(drugNameLabel, event.getScreenX(), event.getScreenY());
+            menu.show(drugName, event.getScreenX(), event.getScreenY());
         });
     }
 
@@ -169,12 +166,28 @@ public class DrugEnterInput extends VBox {
         {
             MenuItem item = new MenuItem("コピー");
             item.setOnAction(evt -> {
-                String text = drugNameLabel.getText();
+                String text = drugName.getText();
                 GuiUtil.copyToClipboard(text);
             });
             menu.getItems().add(item);
         }
         return menu;
+    }
+
+    private int getIyakuhincode() {
+        return iyakuhincode;
+    }
+
+    private void setIyakuhincode(int iyakuhincode) {
+        this.iyakuhincode = iyakuhincode;
+    }
+
+    private String getDrugName() {
+        return drugName.getText();
+    }
+
+    private void setDrugName(String drugName) {
+        this.drugName.setText(drugName);
     }
 
     public String getAmountLabel() {
@@ -190,11 +203,19 @@ public class DrugEnterInput extends VBox {
     }
 
     void setAmount(double value) {
-        amountInput.setText(amountFormatter.format(value));
+        setAmount(amountFormatter.format(value));
+    }
+
+    void setAmount(String input){
+        amountInput.setText(input);
     }
 
     void clearAmount() {
         amountInput.setText("");
+    }
+
+    private void setAmountUnit(String unit){
+        this.amountUnitLabel.setText(unit);
     }
 
     String getUsage() {
@@ -209,7 +230,7 @@ public class DrugEnterInput extends VBox {
         usageInput.setText("");
     }
 
-    DrugCategory getCategory() {
+    public DrugCategory getCategory() {
         return category.getValue();
     }
 
@@ -226,7 +247,11 @@ public class DrugEnterInput extends VBox {
     }
 
     void setDays(int days) {
-        daysInput.setText("" + days);
+        setDays("" + days);
+    }
+
+    void setDays(String input) {
+        daysInput.setText(input);
     }
 
     boolean isDaysEmpty() {
@@ -245,9 +270,9 @@ public class DrugEnterInput extends VBox {
         daysInput.setText("");
     }
 
-    private void onCategoryChange(DrugCategory category) {
-        if (category != null) {
-            switch (category) {
+    private void onCategoryChange(DrugCategory prevCategory, DrugCategory newCategory) {
+        if (newCategory != null) {
+            switch (newCategory) {
                 case Naifuku: {
                     setAmountLabel("用量：");
                     setDaysLabel("日数：");
@@ -269,6 +294,10 @@ public class DrugEnterInput extends VBox {
                 }
             }
         }
+        if (prevCategory == Naifuku) {
+            naifukuDaysBackup = getDays();
+        }
+        setDays(newCategory == Naifuku ? naifukuDaysBackup : "");
     }
 
     private boolean isNotEmptyString(String s) {
@@ -287,7 +316,18 @@ public class DrugEnterInput extends VBox {
         tekiyouRow.setVisible(visible);
     }
 
-    private void adaptToDaysFixedChange(boolean selected){
-
+    public void setMaster(IyakuhinMasterDTO master){
+        DrugCategory category = DrugCategory.Naifuku;
+        if( Zaikei.fromCode(master.zaikei) == Zaikei.Gaiyou ){
+            category = DrugCategory.Gaiyou;
+        }
+        setIyakuhincode(master.iyakuhincode);
+        setDrugName(master.name);
+        setAmount("");
+        setAmountUnit(master.unit);
+        setUsage("");
+        setDays("");
+        setCategory(category);
     }
+
 }

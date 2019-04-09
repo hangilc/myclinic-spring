@@ -10,10 +10,7 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.mockdata.IyakuhinMasterData;
 import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
-import jp.chang.myclinic.practice.javafx.RecordHoken;
 import jp.chang.myclinic.practice.javafx.drug.DrugDisp;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DrugDispTest extends ComponentTestBase {
 
