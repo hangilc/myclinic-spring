@@ -19,7 +19,7 @@ public class DrugTest extends GroupTestBase {
     protected List<TestInterface> getTests() {
         return List.of(
                 new DrugDispTest(stage, main),
-                new DrugInputTest(stage, main)
+                new DrugEnterInputTest(stage, main)
         );
     }
 
