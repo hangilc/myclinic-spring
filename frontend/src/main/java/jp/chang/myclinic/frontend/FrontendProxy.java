@@ -280,6 +280,11 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Void> deleteDrugCascading(int drugId) {
+        return delegate.deleteDrugCascading(drugId);
+    }
+
+    @Override
     public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds) {
         return delegate.batchDeleteDrugs(drugIds);
     }

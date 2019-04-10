@@ -305,6 +305,11 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Void> deleteDrugCascading(int drugId) {
+        return txProc(backend -> backend.deleteDrugCascading(drugId));
+    }
+
+    @Override
     public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds) {
         return txProc(backend -> backend.batchDeleteDrugs(drugIds));
     }

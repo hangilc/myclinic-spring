@@ -10,6 +10,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
+import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.*;
@@ -17,26 +18,24 @@ import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.drug.lib2.DrugEditInput;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugForm;
 import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
+import jp.chang.myclinic.util.validator.Validated;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
-public class DrugEditForm extends DrugForm {
+abstract public class DrugEditForm extends DrugForm {
 
     //private static Logger logger = LoggerFactory.getLogger(EditForm.class);
     private DrugEditInput input;
     private HBox tekiyouBox = new HBox(4);
-    private boolean isGaiyou;
+    private int visitId;
 
     public DrugEditForm(DrugFullDTO drug, DrugAttrDTO attr, VisitDTO visit) {
         super(visit);
-        this.isGaiyou = Zaikei.fromCode(drug.master.zaikei) == Zaikei.Gaiyou;
+        this.visitId = drug.drug.visitId;
         this.input = new DrugEditInput(drug, attr);
-//        input.setDrug(drug);
-//        input.setTekiyou(drugTekiyou);
         tekiyouBox.setAlignment(Pos.CENTER_LEFT);
         adaptTekiyouBox((attr != null) ? attr.tekiyou : null);
-        input.setOnTekiyouChangedHandler(this::adaptTekiyouBox);
-        //input.tekiyouProperty().addListener((obs, oldValue, newValue) -> adaptTekiyouBox(newValue));
         getChildren().addAll(
                 createTitle("処方の編集"),
                 input,
@@ -69,6 +68,10 @@ public class DrugEditForm extends DrugForm {
         return hbox;
     }
 
+    private boolean isGaiyou(){
+        return input.getCategory() == DrugCategory.Gaiyou;
+    }
+
     private void doAux(MouseEvent event, Node node){
         ContextMenu contextMenu = createAuxContextMenu();
         contextMenu.show(node, event.getScreenX(), event.getScreenY());
@@ -92,7 +95,7 @@ public class DrugEditForm extends DrugForm {
     private void doEnterTekiyou(String tekiyouText) {
         String curr = tekiyouText;
         if (curr == null) {
-            if( isGaiyou ){
+            if( isGaiyou() ){
                 curr = "１日２枚";
             } else {
                 curr = "";
@@ -102,7 +105,8 @@ public class DrugEditForm extends DrugForm {
             Context.frontend.setDrugTekiyou(input.getDrugId(), str)
                     .thenAccept(ok -> {
                         Platform.runLater(() -> {
-                            input.tekiyouProperty().setValue(str);
+                            input.setTekiyou(str);
+                            adaptTekiyouBox(str);
                             onTekiyouModified(str);
                         });
                     })
@@ -115,7 +119,8 @@ public class DrugEditForm extends DrugForm {
             Context.frontend.deleteDrugTekiyou(input.getDrugId())
                     .thenAccept(ok -> {
                         Platform.runLater(() -> {
-                            input.tekiyouProperty().setValue(null);
+                            input.setTekiyou(null);
+                            adaptTekiyouBox(null);
                             onTekiyouModified(null);
                         });
                     })
@@ -145,7 +150,12 @@ public class DrugEditForm extends DrugForm {
     }
 
     private void doEnter() {
-        DrugDTO drug = input.createDrug();
+        Validated<DrugDTO> validatedDrug = input.getDrug(visitId);
+        if( validatedDrug.isFailure() ){
+            AlertDialog.alert(validatedDrug.getErrorsAsString(), DrugEditForm.this);
+            return;
+        }
+        DrugDTO drug = validatedDrug.getValue();
         if( drug == null ){
             return;
         }
@@ -168,7 +178,7 @@ public class DrugEditForm extends DrugForm {
             Context.frontend.getDrug(input.getDrugId())
                     .thenCompose(drugDTO -> {
                         local.drug = drugDTO;
-                        return Context.frontend.deleteDrug(drugDTO.drugId);
+                        return Context.frontend.deleteDrugCascading(drugDTO.drugId);
                     })
                     .thenAccept(ok -> {
                         DrugDeletedEvent event = new DrugDeletedEvent(local.drug);
@@ -185,7 +195,7 @@ public class DrugEditForm extends DrugForm {
 
     @Override
     protected void onPrescExampleSelected(PrescExampleFullDTO example) {
-        input.setExample(example);
+        input.setPrescExample(example);
     }
 
     @Override
@@ -199,7 +209,6 @@ public class DrugEditForm extends DrugForm {
     protected void onClose() {
     }
 
-    protected void onTekiyouModified(String newTekiyou) {
-    }
+    abstract protected void onTekiyouModified(String newTekiyou);
 
 }

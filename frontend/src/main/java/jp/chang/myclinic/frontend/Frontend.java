@@ -115,6 +115,8 @@ public interface Frontend {
 
     CompletableFuture<Void> deleteDrug(int drugId);
 
+    CompletableFuture<Void> deleteDrugCascading(int drugId);
+
     CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds);
 
     CompletableFuture<DrugFullDTO> getDrugFull(int drugId);

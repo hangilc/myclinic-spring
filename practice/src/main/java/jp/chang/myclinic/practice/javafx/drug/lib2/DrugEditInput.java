@@ -5,7 +5,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.DrugAttrDTO;
+import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
+import jp.chang.myclinic.util.validator.Validated;
+import jp.chang.myclinic.util.validator.dto.DrugValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,10 +19,11 @@ public class DrugEditInput extends DrugInputBase {
     private Label tekiyouLabel = new Label();
     private HBox tekiyouRow;
     private CheckBox allFixedCheck = new CheckBox("用量・用法・日数をそのままに");
-    private Consumer<String> onTekiyouChangedHandler = s -> {};
+    private int drugId;
 
     public DrugEditInput(DrugFullDTO drug, DrugAttrDTO attr) {
         super();
+        this.drugId = drug.drug.drugId;
         addRow(allFixedCheck);
         this.tekiyouRow = addRowBeforeCategory(new Label("摘要："), tekiyouLabel);
         setDrug(drug);
@@ -42,15 +46,28 @@ public class DrugEditInput extends DrugInputBase {
         }
     }
 
-    private void setTekiyou(String tekiyou){
+    public void setTekiyou(String tekiyou){
         this.tekiyouLabel.setText(tekiyou);
         boolean visible = tekiyou != null && !tekiyou.isEmpty();
         tekiyouRow.setManaged(visible);
         tekiyouRow.setVisible(visible);
-        onTekiyouChangedHandler.accept(tekiyou);
     }
 
-    public void setOnTekiyouChangedHandler(Consumer<String>handler){
-        this.onTekiyouChangedHandler = handler;
+    public int getDrugId(){
+        return drugId;
     }
+
+    public Validated<DrugDTO> getDrug(int visitId){
+        DrugValidator validator = new DrugValidator();
+        validator.validateDrugId(getDrugId());
+        validator.validateVisitId(visitId);
+        validator.validateIyakuhincode(getIyakuhincode());
+        validator.validateAmount(getAmount());
+        validator.validateUsage(getUsage());
+        validator.validateCategory(getCategory().getCode());
+        validator.validateDays(getDays());
+        validator.validatePrescribed(0);
+        return validator.validate();
+    }
+
 }

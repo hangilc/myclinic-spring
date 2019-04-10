@@ -278,6 +278,11 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Void> deleteDrugCascading(int drugId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
     public CompletableFuture<Void> batchDeleteDrugs(List<Integer> drugIds) {
         throw new RuntimeException("not implemented");
     }

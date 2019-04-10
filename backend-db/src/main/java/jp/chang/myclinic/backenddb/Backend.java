@@ -427,6 +427,137 @@ public class Backend {
 
     // Drug ///////////////////////////////////////////////////////////////////////////
 
+    public DrugDTO getDrug(int drugId) {
+        return ts.drugTable.getById(drugId);
+    }
+
+    public void enterDrug(DrugDTO drug) {
+        ts.drugTable.insert(drug);
+        practiceLogger.logDrugCreated(drug);
+    }
+
+    public void updateDrug(DrugDTO drug) {
+        DrugDTO prev = getDrug(drug.drugId);
+        ts.drugTable.update(drug);
+        practiceLogger.logDrugUpdated(prev, drug);
+    }
+
+    public void batchUpdateDrugDays(List<Integer> drugIds, int days) {
+        drugIds.forEach(drugId -> {
+            DrugDTO drug = getDrug(drugId);
+            drug.days = days;
+            updateDrug(drug);
+        });
+    }
+
+    public void deleteDrug(int drugId) {
+        DrugDTO drug = ts.drugTable.getById(drugId);
+        ts.drugTable.delete(drugId);
+        practiceLogger.logDrugDeleted(drug);
+    }
+
+    public void deleteDrugCascading(int drugId){
+        deleteDrugAttr(drugId);
+        deleteDrug(drugId);
+    }
+
+    public void batchDeleteDrugs(List<Integer> drugIds) {
+        drugIds.forEach(this::deleteDrug);
+    }
+
+    public DrugFullDTO getDrugFull(int drugId) {
+        String sql = xlate("select d.*, m.* from Drug d, IyakuhinMaster m, Visit v " +
+                        " where d.drugId = ? and d.visitId = v.visitId and d.iyakuhincode = m.iyakuhincode " +
+                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt"),
+                ts.drugTable, "d", ts.iyakuhinMasterTable, "m", ts.visitTable, "v");
+        return getQuery().get(sql,
+                biProjector(ts.drugTable, ts.iyakuhinMasterTable, DrugFullDTO::create),
+                drugId);
+    }
+
+    public List<DrugFullDTO> listDrugFull(int visitId) {
+        String sql = xlate(
+                "select d.*, m.* from Drug d, IyakuhinMaster m, Visit v " +
+                        " where d.visitId = ? and d.visitId = v.visitId and d.iyakuhincode = m.iyakuhincode " +
+                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
+                        " order by d.drugId",
+                ts.drugTable, "d", ts.iyakuhinMasterTable, "m", ts.visitTable, "v");
+        return getQuery().query(sql, biProjector(ts.drugTable, ts.iyakuhinMasterTable, DrugFullDTO::create),
+                visitId);
+    }
+
+    private List<Integer> listRepresentativeNaifukuTonpukuDrugId(int patientId) {
+        String sql = xlate("select MAX(d.drugId) from Drug d, Visit v where d.visitId = v.visitId " +
+                        " and v.patientId = ? " +
+                        " and d.category in (0, 1) " +
+                        " group by d.iyakuhincode, d.amount, d.usage, d.days ",
+                ts.drugTable, "d", ts.visitTable, "v");
+        return getQuery().query(sql,
+                (rs, ctx) -> rs.getInt(ctx.nextIndex()),
+                patientId);
+    }
+
+    private List<Integer> listRepresentativeNaifukuTonpukuDrugId(String text, int patientId) {
+        String searchText = "%" + text + "%";
+        String sql = xlate("select MAX(d.drugId) from Drug d, Visit v, IyakuhinMaster m " +
+                        " where d.visitId = v.visitId " +
+                        " and v.patientId = ? " +
+                        " and d.category in (0, 1) " +
+                        " and d.iyakuhincode = m.iyakuhincode " +
+                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
+                        " and m.name like ? " +
+                        " group by d.iyakuhincode, d.amount, d.usage, d.days ",
+                ts.drugTable, "d", ts.visitTable, "v", ts.iyakuhinMasterTable, "m");
+        return getQuery().query(sql,
+                (rs, ctx) -> rs.getInt(ctx.nextIndex()),
+                patientId, searchText);
+    }
+
+    private List<Integer> listRepresentativeGaiyouDrugId(int patientId) {
+        String sql = xlate("select MAX(d.drugId) from Drug d, Visit v where d.visitId = v.visitId " +
+                        " and v.patientId = ? " +
+                        " and d.category = 2 " +
+                        " group by d.iyakuhincode, d.amount, d.usage ",
+                ts.drugTable, "d", ts.visitTable, "v");
+        return getQuery().query(sql,
+                (rs, ctx) -> rs.getInt(ctx.nextIndex()),
+                patientId);
+    }
+
+    public List<Integer> listRepresentativeGaiyouDrugId(String text, int patientId) {
+        String searchText = "%" + text + "%";
+        String sql = xlate("select MAX(d.drugId) from Drug d, Visit v, IyakuhinMaster m " +
+                        " where d.visitId = v.visitId " +
+                        " and v.patientId = ? " +
+                        " and d.category = 2 " +
+                        " and d.iyakuhincode = m.iyakuhincode " +
+                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
+                        " and m.name like ? " +
+                        " group by d.iyakuhincode, d.amount, d.usage ",
+                ts.drugTable, "d", ts.visitTable, "v", ts.iyakuhinMasterTable, "m");
+        return getQuery().query(sql,
+                (rs, ctx) -> rs.getInt(ctx.nextIndex()),
+                patientId, searchText);
+    }
+
+    public List<DrugFullDTO> searchPrevDrug(int patientId) {
+        return Stream.concat(
+                listRepresentativeNaifukuTonpukuDrugId(patientId).stream(),
+                listRepresentativeGaiyouDrugId(patientId).stream()
+        ).sorted(Comparator.<Integer>naturalOrder().reversed())
+                .map(this::getDrugFull)
+                .collect(toList());
+    }
+
+    public List<DrugFullDTO> searchPrevDrug(String text, int patientId) {
+        return Stream.concat(
+                listRepresentativeNaifukuTonpukuDrugId(text, patientId).stream(),
+                listRepresentativeGaiyouDrugId(text, patientId).stream()
+        ).sorted(Comparator.<Integer>naturalOrder().reversed())
+                .map(this::getDrugFull)
+                .collect(toList());
+    }
+
     public int countUnprescribedDrug(int visitId) {
         String sql = xlate("select count(*) from Drug where visitId = ? and prescribed = 0",
                 ts.drugTable);
@@ -708,132 +839,6 @@ public class Backend {
         result.totalPages = numberOfPages(totalItems, itemsPerPage);
         result.textVisitPatients = textVisits;
         return result;
-    }
-
-    public DrugDTO getDrug(int drugId) {
-        return ts.drugTable.getById(drugId);
-    }
-
-    public void enterDrug(DrugDTO drug) {
-        ts.drugTable.insert(drug);
-        practiceLogger.logDrugCreated(drug);
-    }
-
-    public void updateDrug(DrugDTO drug) {
-        DrugDTO prev = getDrug(drug.drugId);
-        ts.drugTable.update(drug);
-        practiceLogger.logDrugUpdated(prev, drug);
-    }
-
-    public void batchUpdateDrugDays(List<Integer> drugIds, int days) {
-        drugIds.forEach(drugId -> {
-            DrugDTO drug = getDrug(drugId);
-            drug.days = days;
-            updateDrug(drug);
-        });
-    }
-
-    public void deleteDrug(int drugId) {
-        DrugDTO drug = ts.drugTable.getById(drugId);
-        ts.drugTable.delete(drugId);
-        practiceLogger.logDrugDeleted(drug);
-    }
-
-    public void batchDeleteDrugs(List<Integer> drugIds) {
-        drugIds.forEach(this::deleteDrug);
-    }
-
-    public DrugFullDTO getDrugFull(int drugId) {
-        String sql = xlate("select d.*, m.* from Drug d, IyakuhinMaster m, Visit v " +
-                        " where d.drugId = ? and d.visitId = v.visitId and d.iyakuhincode = m.iyakuhincode " +
-                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt"),
-                ts.drugTable, "d", ts.iyakuhinMasterTable, "m", ts.visitTable, "v");
-        return getQuery().get(sql,
-                biProjector(ts.drugTable, ts.iyakuhinMasterTable, DrugFullDTO::create),
-                drugId);
-    }
-
-    public List<DrugFullDTO> listDrugFull(int visitId) {
-        String sql = xlate(
-                "select d.*, m.* from Drug d, IyakuhinMaster m, Visit v " +
-                        " where d.visitId = ? and d.visitId = v.visitId and d.iyakuhincode = m.iyakuhincode " +
-                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
-                        " order by d.drugId",
-                ts.drugTable, "d", ts.iyakuhinMasterTable, "m", ts.visitTable, "v");
-        return getQuery().query(sql, biProjector(ts.drugTable, ts.iyakuhinMasterTable, DrugFullDTO::create),
-                visitId);
-    }
-
-    private List<Integer> listRepresentativeNaifukuTonpukuDrugId(int patientId) {
-        String sql = xlate("select MAX(d.drugId) from Drug d, Visit v where d.visitId = v.visitId " +
-                        " and v.patientId = ? " +
-                        " and d.category in (0, 1) " +
-                        " group by d.iyakuhincode, d.amount, d.usage, d.days ",
-                ts.drugTable, "d", ts.visitTable, "v");
-        return getQuery().query(sql,
-                (rs, ctx) -> rs.getInt(ctx.nextIndex()),
-                patientId);
-    }
-
-    private List<Integer> listRepresentativeNaifukuTonpukuDrugId(String text, int patientId) {
-        String searchText = "%" + text + "%";
-        String sql = xlate("select MAX(d.drugId) from Drug d, Visit v, IyakuhinMaster m " +
-                        " where d.visitId = v.visitId " +
-                        " and v.patientId = ? " +
-                        " and d.category in (0, 1) " +
-                        " and d.iyakuhincode = m.iyakuhincode " +
-                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
-                        " and m.name like ? " +
-                        " group by d.iyakuhincode, d.amount, d.usage, d.days ",
-                ts.drugTable, "d", ts.visitTable, "v", ts.iyakuhinMasterTable, "m");
-        return getQuery().query(sql,
-                (rs, ctx) -> rs.getInt(ctx.nextIndex()),
-                patientId, searchText);
-    }
-
-    private List<Integer> listRepresentativeGaiyouDrugId(int patientId) {
-        String sql = xlate("select MAX(d.drugId) from Drug d, Visit v where d.visitId = v.visitId " +
-                        " and v.patientId = ? " +
-                        " and d.category = 2 " +
-                        " group by d.iyakuhincode, d.amount, d.usage ",
-                ts.drugTable, "d", ts.visitTable, "v");
-        return getQuery().query(sql,
-                (rs, ctx) -> rs.getInt(ctx.nextIndex()),
-                patientId);
-    }
-
-    public List<Integer> listRepresentativeGaiyouDrugId(String text, int patientId) {
-        String searchText = "%" + text + "%";
-        String sql = xlate("select MAX(d.drugId) from Drug d, Visit v, IyakuhinMaster m " +
-                        " where d.visitId = v.visitId " +
-                        " and v.patientId = ? " +
-                        " and d.category = 2 " +
-                        " and d.iyakuhincode = m.iyakuhincode " +
-                        " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt") +
-                        " and m.name like ? " +
-                        " group by d.iyakuhincode, d.amount, d.usage ",
-                ts.drugTable, "d", ts.visitTable, "v", ts.iyakuhinMasterTable, "m");
-        return getQuery().query(sql,
-                (rs, ctx) -> rs.getInt(ctx.nextIndex()),
-                patientId, searchText);
-    }
-
-    public List<DrugFullDTO> searchPrevDrug(int patientId) {
-        return Stream.concat(
-                listRepresentativeNaifukuTonpukuDrugId(patientId).stream(),
-                listRepresentativeGaiyouDrugId(patientId).stream()
-        ).sorted(Comparator.<Integer>naturalOrder().reversed())
-                .map(this::getDrugFull)
-                .collect(toList());
-    }
-
-    public List<DrugFullDTO> searchPrevDrug(String text, int patientId) {
-        return Stream.concat(
-                listRepresentativeNaifukuTonpukuDrugId(text, patientId).stream(),
-                listRepresentativeGaiyouDrugId(text, patientId).stream()
-        ).sorted(Comparator.<Integer>naturalOrder().reversed())
-                .map(this::getDrugFull)
-                .collect(toList());
     }
 
     // Shinryou ////////////////////////////////////////////////////////////////////////////
