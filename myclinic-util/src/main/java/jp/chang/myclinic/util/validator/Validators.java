@@ -56,6 +56,16 @@ public class Validators {
         };
     }
 
+    public static Function<String, Validated<Double>> toDouble() {
+        return (String input) -> {
+            try {
+                return Validated.success(Double.parseDouble(input));
+            } catch (NumberFormatException e) {
+                return Validated.fail("数に変換できません。");
+            }
+        };
+    }
+
     public static Function<Validated<String>, Validated<Integer>> validateToPositiveInt() {
         return src -> src.confirm(isNotNull())
                 .confirm(isNotEmpty())

@@ -85,7 +85,7 @@ public class SampleData {
         calonalPrescExample.amount = "3";
         calonalPrescExample.usage = "分３　毎食後";
         calonalPrescExample.days = 5;
-        calonalPrescExample.comment = "";
+        calonalPrescExample.comment = "コメントのテスト";
     }
 
     public static PrescExampleFullDTO calonalPrescExampleFull = new PrescExampleFullDTO();
@@ -103,7 +103,7 @@ public class SampleData {
         loxoninTonpukuPrescExample.amount = "1";
         loxoninTonpukuPrescExample.usage = "疼痛時";
         loxoninTonpukuPrescExample.days = 10;
-        loxoninTonpukuPrescExample.comment = "１日３回まで";
+        loxoninTonpukuPrescExample.comment = "";
     }
 
     public static PrescExampleFullDTO loxoninTonpukuPrescExampleFull = new PrescExampleFullDTO();
@@ -121,7 +121,7 @@ public class SampleData {
         loxoninGaiyouPrescExample.amount = "28";
         loxoninGaiyouPrescExample.usage = "１日１回、患部に貼付";
         loxoninGaiyouPrescExample.days = 1;
-        loxoninGaiyouPrescExample.comment = "１回１枚";
+        loxoninGaiyouPrescExample.comment = "";
     }
 
     public static PrescExampleFullDTO loxoninGaiyouPrescExampleFull = new PrescExampleFullDTO();

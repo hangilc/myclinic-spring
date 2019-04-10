@@ -21,50 +21,65 @@ public class DrugValidator {
     private Validated<Integer> validatedCategory;
     private Validated<Integer> validatedPrescribed;
 
-    public void validateDrugId(int drugId){
+    public void validateDrugId(int drugId) {
         this.validatedDrugId = success(drugId)
                 .confirm(isPositive());
     }
 
-    public void validateVisitId(int visitId){
+    public void setValidatedDrugId(Validated<Integer> validatedDrugId) {
+        this.validatedDrugId = validatedDrugId;
+    }
+
+    public void validateVisitId(int visitId) {
         this.validatedVisitId = success(visitId)
                 .confirm(isPositive());
     }
 
-    public void validateIyakuhincode(int iyakuhincode){
+    public void validateIyakuhincode(int iyakuhincode) {
         this.validatedIyakuhincode = success(iyakuhincode)
                 .confirm(isPositive());
     }
 
-    public void validateAmount(double amount){
-        this.validatedAmount = success(amount)
-                .confirm(isPositiveDouble());
+    private void validateAmount(Validated<Double> validated) {
+        this.validatedAmount = validated.confirm(isPositiveDouble());
     }
 
-    public void validateUsage(String usage){
+    public void validateAmount(double amount) {
+        validateAmount(success(amount));
+    }
+
+    public void validateAmount(String input) {
+        validateAmount(success(input)
+                .confirm(isNotNull())
+                .confirm(isNotEmpty())
+                .convert(toDouble())
+        );
+    }
+
+    public void validateUsage(String usage) {
         this.validatedUsage = success(usage)
                 .confirm(isNotNull())
                 .confirm(isNotEmpty());
     }
 
-    public void validateDays(String input){
+    public void validateDays(String input) {
         this.validatedDays = success(input)
                 .apply(validateToPositiveInt());
     }
 
-    public void validateCategory(int category){
+    public void validateCategory(int category) {
         this.validatedCategory = success(category)
                 .confirm(isOneOf(
-                    Arrays.stream(DrugCategory.values()).map(DrugCategory::getCode).collect(toList())
+                        Arrays.stream(DrugCategory.values()).map(DrugCategory::getCode).collect(toList())
                 ));
     }
 
-    public void validatePrescribed(int prescribed){
+    public void validatePrescribed(int prescribed) {
         this.validatedPrescribed = success(prescribed)
                 .confirm(isOneOf(0, 1));
     }
 
-    public Validated<DrugDTO> validate(){
+    public Validated<DrugDTO> validate() {
         return success(new DrugDTO())
                 .extend("drugId", validatedDrugId, (d, drugId) -> d.drugId = drugId)
                 .extend("visitId", validatedVisitId, (d, visitId) -> d.visitId = visitId)
