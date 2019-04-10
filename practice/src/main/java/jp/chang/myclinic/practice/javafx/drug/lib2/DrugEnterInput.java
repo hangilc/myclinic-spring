@@ -11,9 +11,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Zaikei;
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.dto.PrescExampleDTO;
-import jp.chang.myclinic.dto.PrescExampleFullDTO;
+import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 
@@ -330,6 +328,21 @@ public class DrugEnterInput extends VBox {
         tekiyouRow.setVisible(visible);
     }
 
+    void setDrugData(String amount,
+                     String usage,
+                     String days,
+                     String comment){
+        setAmount(amount);
+        setUsage(usage);
+        if (getCategory() == Naifuku && isFixedDays() && !getDays().isEmpty()) {
+            ; // nop
+        } else {
+            setDays(days);
+        }
+        setComment(comment);
+        setCommentVisible(isNotEmptyString(comment));
+    }
+
     private void setData(IyakuhinMasterDTO master,
                          DrugCategory category,
                          String amount,
@@ -340,15 +353,7 @@ public class DrugEnterInput extends VBox {
         setDrugName(master.name);
         setAmountUnit(master.unit);
         setCategory(category);
-        setAmount(amount);
-        setUsage(usage);
-        if (category == Naifuku && isFixedDays() && !getDays().isEmpty()) {
-            ; // nop
-        } else {
-            setDays(days);
-        }
-        setComment(comment);
-        setCommentVisible(isNotEmptyString(comment));
+        setDrugData(amount, usage, days, comment);
     }
 
     public void setMaster(IyakuhinMasterDTO master) {
@@ -364,6 +369,17 @@ public class DrugEnterInput extends VBox {
         DrugCategory exampleCategory = DrugCategory.fromCode(example.category);
         setData(exampleFull.master, exampleCategory, example.amount, example.usage, example.days + "",
                 example.comment);
+    }
+
+    public void setDrug(DrugFullDTO drugFull){
+        DrugDTO drug = drugFull.drug;
+        DrugCategory drugCategory = DrugCategory.fromCode(drug.category);
+        setData(drugFull.master, drugCategory, formatAmount(drug.amount), drug.usage, drug.days + "", "");
+    }
+
+    private String formatAmount(double amountValue){
+        DecimalFormat amountFormatter = new DecimalFormat("###.##");
+        return amountFormatter.format(amountValue);
     }
 
 }

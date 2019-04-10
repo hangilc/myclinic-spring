@@ -1,10 +1,7 @@
 package jp.chang.myclinic.mockdata;
 
 import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.dto.ClinicInfoDTO;
-import jp.chang.myclinic.dto.IyakuhinMasterDTO;
-import jp.chang.myclinic.dto.PrescExampleDTO;
-import jp.chang.myclinic.dto.PrescExampleFullDTO;
+import jp.chang.myclinic.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,6 +128,60 @@ public class SampleData {
     static {
         loxoninGaiyouPrescExampleFull.master = loxoninPap;
         loxoninGaiyouPrescExampleFull.prescExample = loxoninGaiyouPrescExample;
+    }
+
+    public static DrugDTO calonalDrug = new DrugDTO();
+    static {
+        calonalDrug.drugId = 1;
+        calonalDrug.visitId = 1;
+        calonalDrug.iyakuhincode = calonal.iyakuhincode;
+        calonalDrug.amount = 3.0;
+        calonalDrug.usage = "分３　毎食後";
+        calonalDrug.category = DrugCategory.Naifuku.getCode();
+        calonalDrug.days = 7;
+        calonalDrug.prescribed = 0;
+    }
+
+    public static DrugFullDTO calonalDrugFull = new DrugFullDTO();
+    static {
+        calonalDrugFull.master = calonal;
+        calonalDrugFull.drug = calonalDrug;
+    }
+
+    public static DrugDTO loxoninTonpukuDrug = new DrugDTO();
+    public static DrugFullDTO loxoninTonpukuDrugFull = new DrugFullDTO();
+    static {
+        DrugDTO drug = loxoninTonpukuDrug;
+        DrugFullDTO drugFull = loxoninTonpukuDrugFull;
+        IyakuhinMasterDTO master = loxonin;
+        drug.drugId = 2;
+        drug.visitId = 1;
+        drug.iyakuhincode = master.iyakuhincode;
+        drug.amount = 1;
+        drug.usage = "頭痛時";
+        drug.category = DrugCategory.Tonpuku.getCode();
+        drug.days = 10;
+        drug.prescribed = 0;
+        drugFull.master = master;
+        drugFull.drug = drug;
+    }
+
+    public static DrugDTO loxoninGaiyouDrug = new DrugDTO();
+    public static DrugFullDTO loxoninGaiyouDrugFull = new DrugFullDTO();
+    static {
+        DrugDTO drug = loxoninGaiyouDrug;
+        DrugFullDTO drugFull = loxoninGaiyouDrugFull;
+        IyakuhinMasterDTO master = loxoninPap;
+        drug.drugId = 3;
+        drug.visitId = 1;
+        drug.iyakuhincode = master.iyakuhincode;
+        drug.amount = 28;
+        drug.usage = "１日１回、右膝に貼付";
+        drug.category = DrugCategory.Gaiyou.getCode();
+        drug.days = 1;
+        drug.prescribed = 0;
+        drugFull.master = master;
+        drugFull.drug = drug;
     }
 
 

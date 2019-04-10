@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.componenttest.drug;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
 import jp.chang.myclinic.dto.PrescExampleFullDTO;
 import jp.chang.myclinic.mockdata.SampleData;
@@ -74,6 +75,30 @@ public class DrugEnterInputTest extends ComponentTestBase {
         DrugEnterInput input = createInput();
         PrescExampleFullDTO data = SampleData.loxoninGaiyouPrescExampleFull;
         gui(() -> input.setPrescExample(data));
+        waitForTrue(() -> input.getCategory() == Gaiyou);
+    }
+
+    @CompTest
+    public void setDrugNaifuku(){
+        DrugEnterInput input = createInput();
+        DrugFullDTO data = SampleData.calonalDrugFull;
+        gui(() -> input.setDrug(data));
+        waitForTrue(() -> input.getCategory() == Naifuku);
+    }
+
+    @CompTest
+    public void setDrugTonpuku(){
+        DrugEnterInput input = createInput();
+        DrugFullDTO data = SampleData.loxoninTonpukuDrugFull;
+        gui(() -> input.setDrug(data));
+        waitForTrue(() -> input.getCategory() == Tonpuku);
+    }
+
+    @CompTest
+    public void setDrugGaiyou(){
+        DrugEnterInput input = createInput();
+        DrugFullDTO data = SampleData.loxoninGaiyouDrugFull;
+        gui(() -> input.setDrug(data));
         waitForTrue(() -> input.getCategory() == Gaiyou);
     }
 }
