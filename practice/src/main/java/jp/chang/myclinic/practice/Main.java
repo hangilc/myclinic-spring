@@ -14,7 +14,8 @@ import jp.chang.myclinic.client.Client;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.frontend.FrontendBackend;
 import jp.chang.myclinic.practice.componenttest.ComponentTest;
-import jp.chang.myclinic.practice.javafx.MainPane;
+import jp.chang.myclinic.practice.guitest.GuiTest;
+import jp.chang.myclinic.practice.guitest.GuiTestRunner;
 import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
 import jp.chang.myclinic.support.config.ConfigPropertyFile;
 import jp.chang.myclinic.support.diseaseexample.DiseaseExampleFileProvider;
@@ -66,16 +67,14 @@ public class Main extends Application {
             StackPane main = setupStageForComponentTest(stage);
             new Thread(() -> {
                 boolean ok = new ComponentTest(stage, main).testOne(className, methodName);
-                if( ok ){
+                if (ok) {
                     System.out.println("done");
                 } else {
                     System.out.printf("Cannot run test: %s:%s\n", className, methodName);
                     Platform.exit();
                 }
             }).start();
-        } else if (opts.sqliteTemp != null) {
-            String dbFile = opts.sqliteTemp;
-            DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
+        } else {
             SupportSet ss = new SupportSet();
             ss.stockDrugService = new StockDrugFile(Paths.get("config/stock-drug.txt"));
             ss.houkatsuKensaService = new HoukatsuKensaFile(Paths.get("config/houkatsu-kensa.xml"));
@@ -83,31 +82,88 @@ public class Main extends Application {
             ss.diseaseExampleProvider = new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml"));
             ss.shinryouNamesService = new ShinryouNamesFile(Paths.get("config/shinryou-names.yml"));
             ss.kizaiNamesService = new KizaiNamesFile(Paths.get("config/kizai-names.yml"));
-            ss.clinicInfoProvider = new ClinicInfoFileProvider(Paths.get("config/clinic-info-yml"));
-            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
-            Context.frontend = new FrontendBackend(dbBackend);
+            ss.clinicInfoProvider = new ClinicInfoFileProvider(Paths.get("config/clinic-info.yml"));
+            setupFrontend(ss);
             Context.configService = new ConfigPropertyFile(Paths.get(
-                    System.getenv("user.home"),
+                    System.getProperty("user.home"),
                     "practice.properties"
             ));
-        } else {
-            setupPracticeEnv();
-            stage.setTitle("診療");
-            PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
-                    updateTitle(stage, newValue));
-            MainPane root = new MainPane();
-            Context.mainPane = root;
-            Context.mainStageService = new MainStageServiceImpl(stage);
-            root.getStylesheets().addAll(
-                    "css/Practice.css"
-            );
-            stage.setScene(new Scene(root));
-            stage.showingProperty().addListener((obs, oldVaue, newValue) -> {
-                if (!newValue) {
-                    PracticeEnv.INSTANCE.closeRemainingWindows();
+            if( opts.guiTest ) {
+                StackPane main = setupStageForComponentTest(stage);
+                new Thread(() -> {
+                    new GuiTestRunner(stage, main).testAll();
+                    System.out.println("done");
+                }).start();
+            } else if( opts.guiTestOne != null ){
+                if (opts.guiTestOne.length == 0 || opts.guiTestOne.length >= 3) {
+                    System.err.println("CLASSNAME[:METHODNAME] expected");
+                    System.exit(1);
                 }
-            });
-            stage.show();
+                String className = opts.guiTestOne[0];
+                String methodName = opts.guiTestOne.length == 2 ? opts.guiTestOne[1] : "";
+                StackPane main = setupStageForComponentTest(stage);
+                new Thread(() -> {
+                    boolean ok = new GuiTestRunner(stage, main).testOne(className, methodName);
+                    if (ok) {
+                        System.out.println("done");
+                    } else {
+                        System.out.printf("Cannot run test: %s:%s\n", className, methodName);
+                        Platform.exit();
+                    }
+                }).start();
+            } else {
+                Platform.exit();
+            }
+        }
+
+//            if (opts.sqliteTemp != null) {
+//            String dbFile = opts.sqliteTemp;
+//            DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
+//            SupportSet ss = new SupportSet();
+//            ss.stockDrugService = new StockDrugFile(Paths.get("config/stock-drug.txt"));
+//            ss.houkatsuKensaService = new HoukatsuKensaFile(Paths.get("config/houkatsu-kensa.xml"));
+//            ss.meisaiService = new MeisaiServiceImpl();
+//            ss.diseaseExampleProvider = new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml"));
+//            ss.shinryouNamesService = new ShinryouNamesFile(Paths.get("config/shinryou-names.yml"));
+//            ss.kizaiNamesService = new KizaiNamesFile(Paths.get("config/kizai-names.yml"));
+//            ss.clinicInfoProvider = new ClinicInfoFileProvider(Paths.get("config/clinic-info-yml"));
+//            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
+//            Context.frontend = new FrontendBackend(dbBackend);
+//            Context.configService = new ConfigPropertyFile(Paths.get(
+//                    System.getenv("user.home"),
+//                    "practice.properties"
+//            ));
+//        } else {
+//            setupPracticeEnv();
+//            stage.setTitle("診療");
+//            PracticeEnv.INSTANCE.currentPatientProperty().addListener((obs, oldValue, newValue) ->
+//                    updateTitle(stage, newValue));
+//            MainPane root = new MainPane();
+//            Context.mainPane = root;
+//            Context.mainStageService = new MainStageServiceImpl(stage);
+//            root.getStylesheets().addAll(
+//                    "css/Practice.css"
+//            );
+//            stage.setScene(new Scene(root));
+//            stage.showingProperty().addListener((obs, oldVaue, newValue) -> {
+//                if (!newValue) {
+//                    PracticeEnv.INSTANCE.closeRemainingWindows();
+//                }
+//            });
+//            stage.show();
+//        }
+    }
+
+    private void setupFrontend(SupportSet ss) {
+        CmdOpts opts = Context.cmdOpts;
+        String param = opts.serverUrl;
+        if (param != null && param.startsWith("sqlite-temp:")) {
+            String dbFile = param.split(":", 2)[1];
+            DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
+            DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
+            Context.frontend = new FrontendBackend(dbBackend);
+        } else {
+            throw new RuntimeException("Access to REST server is not implemented.");
         }
     }
 

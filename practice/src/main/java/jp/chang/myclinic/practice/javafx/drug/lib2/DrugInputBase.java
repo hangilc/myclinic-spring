@@ -66,6 +66,17 @@ abstract class DrugInputBase extends VBox {
         setCommentVisible(false);
     }
 
+    public void clear(){
+        iyakuhincode = 0;
+        drugName.setText("");
+        amountInput.setText("");
+        amountUnitLabel.setText("");
+        usageInput.setText("");
+        clearDays();
+        commentLabel.setText("");
+        setCommentVisible(false);
+    }
+
     private HBox addRow(Label label, Node content) {
         return addRowBefore(label, content, null);
     }

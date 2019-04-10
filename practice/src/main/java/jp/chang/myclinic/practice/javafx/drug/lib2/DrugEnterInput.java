@@ -32,6 +32,15 @@ public class DrugEnterInput extends DrugInputBase {
     }
 
     @Override
+    void clearDays(){
+        if( getCategory() == Naifuku && isFixedDays() ){
+            // nop
+        } else {
+            super.clearDays();
+        }
+    }
+
+    @Override
     void setDrugData(String amount,
                      String usage,
                      String days){

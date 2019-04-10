@@ -6,11 +6,16 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
-import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.javafx.drug.lib.*;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugForm;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchResultItem;
+import jp.chang.myclinic.practice.javafx.drug.lib.SearchResult;
+import jp.chang.myclinic.practice.javafx.drug.lib.SearchTextInput;
+import jp.chang.myclinic.practice.javafx.drug.lib2.DrugEnterInput;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
+import jp.chang.myclinic.util.validator.Validated;
+import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.util.List;
@@ -23,7 +28,7 @@ public class DrugEnterForm extends DrugForm {
     private Button enterButton;
     private Button closeButton;
 
-    DrugEnterForm(VisitDTO visit){
+    public DrugEnterForm(VisitDTO visit){
         super(visit);
         this.searchTextInput = getSearchTextInput();
         this.searchResult = getSearchResult();
@@ -88,7 +93,12 @@ public class DrugEnterForm extends DrugForm {
     }
 
     private void doEnter(){
-        DrugDTO drug = input.createDrug(0, getVisitId(), 0);
+        Validated<DrugDTO> validatedDrug = input.getDrug(getVisitId());
+        if( validatedDrug.isFailure() ){
+            AlertDialog.alert(validatedDrug.getErrorsAsString(), DrugEnterForm.this);
+            return;
+        }
+        DrugDTO drug = validatedDrug.getValue();
         if( drug == null ){
             return;
         }
@@ -110,7 +120,7 @@ public class DrugEnterForm extends DrugForm {
 
     @Override
     protected void onPrescExampleSelected(PrescExampleFullDTO example) {
-        input.setExample(example);
+        input.setPrescExample(example);
     }
 
     @Override
