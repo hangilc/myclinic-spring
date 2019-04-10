@@ -48,6 +48,10 @@ public class DrugEnterForm extends DrugForm {
         this.onDrugEnteredHandler = handler;
     }
 
+    public int getIyakuhincode(){
+        return input.getIyakuhincode();
+    }
+
     public void setOnCloseHandler(Runnable handler){
         this.onCloseHandler = handler;
     }

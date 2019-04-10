@@ -178,7 +178,7 @@ abstract class DrugInputBase extends VBox {
         return menu;
     }
 
-    int getIyakuhincode() {
+    public int getIyakuhincode() {
         return iyakuhincode;
     }
 

@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.function.Consumer;
 
-public class DrugForm extends VBox {
+abstract public class DrugForm extends VBox {
 
     private static Logger logger = LoggerFactory.getLogger(DrugForm.class);
     private SearchModeChooser modeChooser = new SearchModeChooser(
@@ -57,19 +57,7 @@ public class DrugForm extends VBox {
 
     private void onSearchResultSelected(DrugSearchResultItem item){
         if( item != null ){
-            if( item instanceof DrugSearcher.MasterItem ){
-                DrugSearcher.MasterItem masterItem = (DrugSearcher.MasterItem)item;
-                onMasterSelected(masterItem.getMaster());
-            } else if( item instanceof DrugSearcher.ExampleItem ){
-                DrugSearcher.ExampleItem exampleItem = (DrugSearcher.ExampleItem)item;
-                onPrescExampleSelected(exampleItem.getExample());
-            } else if( item instanceof DrugSearcher.DrugItem ){
-                DrugSearcher.DrugItem drugItem = (DrugSearcher.DrugItem)item;
-                onDrugSelected(drugItem.getDrug());
-            } else {
-                logger.error("Unknown drug search item. {}", item);
-                return;
-            }
+            item.onSelect();
             this.currentInputItem = item;
         }
     }
@@ -100,6 +88,7 @@ public class DrugForm extends VBox {
     private void resolveMaster(int iyakuhincode, Consumer<IyakuhinMasterDTO> handler) {
         Context.frontend.resolveStockDrug(iyakuhincode, at)
                 .thenAcceptAsync(master -> {
+                    System.out.println("resolveStockDrug: " + master);
                     if (master == null) {
                         GuiUtil.alertError("使用できない薬剤です。");
                     } else {
@@ -109,23 +98,16 @@ public class DrugForm extends VBox {
                 .exceptionally(HandlerFX::exceptionally);
     }
 
-    protected void onMasterSelected(IyakuhinMasterDTO master) {
-
-    }
-
-    protected void onPrescExampleSelected(PrescExampleFullDTO example) {
-
-    }
-
-    protected void onDrugSelected(DrugFullDTO drug) {
-
-    }
+    abstract protected void onMasterSelected(IyakuhinMasterDTO master);
+    abstract protected void onPrescExampleSelected(PrescExampleFullDTO example);
+    abstract protected void onDrugSelected(DrugFullDTO drug);
 
     private void setMaster(IyakuhinMasterDTO origMaster) {
         resolveMaster(origMaster.iyakuhincode, this::onMasterSelected);
     }
 
     private void setExample(PrescExampleFullDTO example) {
+        System.out.println("setExample: " + example);
         resolveMaster(example.master.iyakuhincode, master -> {
             example.master = master;
             onPrescExampleSelected(example);

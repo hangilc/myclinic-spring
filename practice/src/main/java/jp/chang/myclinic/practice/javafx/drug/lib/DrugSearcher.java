@@ -38,6 +38,11 @@ public class DrugSearcher {
             return master.name;
         }
 
+        @Override
+        public void onSelect(){
+            onSelectHandler.accept(master);
+        }
+
     }
 
     public static CompletableFuture<List<DrugSearchResultItem>> searchMaster(String text, LocalDate at,
@@ -78,6 +83,10 @@ public class DrugSearcher {
             return DrugUtil.drugRep(category, master.name, amount, master.unit, example.usage, example.days);
         }
 
+        @Override
+        public void onSelect() {
+            onSelectHandler.accept(exampleFull);
+        }
     }
 
     public static CompletableFuture<List<DrugSearchResultItem>> searchExample(String text,
@@ -116,6 +125,10 @@ public class DrugSearcher {
             return DrugUtil.drugRep(category, master.name, drug.amount, master.unit, drug.usage, drug.days);
         }
 
+        @Override
+        public void onSelect() {
+            onSelectHandler.accept(drugFull);
+        }
     }
 
     static CompletableFuture<List<DrugSearchResultItem>> searchDrug(String text, int patientId,
