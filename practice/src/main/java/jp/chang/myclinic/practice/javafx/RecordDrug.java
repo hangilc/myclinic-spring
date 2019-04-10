@@ -19,16 +19,18 @@ import jp.chang.myclinic.utilfx.GuiUtil;
 public class RecordDrug extends StackPane {
 
     private DrugFullDTO drug;
-    private String tekiyou;
+    private DrugAttrDTO attr;
+    //private String tekiyou;
     private VisitDTO visit;
     private int index;
     private TextFlow disp = new TextFlow();
 
-    RecordDrug(DrugFullDTO drug, VisitDTO visit, int index, DrugAttrDTO attr){
+    RecordDrug(DrugFullDTO drug, VisitDTO visit, int index, DrugAttrDTO attr) {
         this.drug = drug;
-        if( attr != null ){
-            this.tekiyou = attr.tekiyou;
-        }
+        this.attr = attr;
+//        if( attr != null ){
+//            this.tekiyou = attr.tekiyou;
+//        }
         this.visit = visit;
         this.index = index;
         disp.getStyleClass().add("drug-disp");
@@ -41,36 +43,37 @@ public class RecordDrug extends StackPane {
         return drug.drug.drugId;
     }
 
-    public boolean isDisplaying(){
-        for(Node node: getChildren()){
-            if( node == disp ){
+    public boolean isDisplaying() {
+        for (Node node : getChildren()) {
+            if (node == disp) {
                 return true;
             }
         }
         return false;
     }
 
-    public String getDisplayingText(){
+    public String getDisplayingText() {
         StringBuilder sb = new StringBuilder();
-        for(Node node: disp.getChildren()){
-            if( node instanceof Text ){
-                Text t = (Text)node;
+        for (Node node : disp.getChildren()) {
+            if (node instanceof Text) {
+                Text t = (Text) node;
                 sb.append(t.getText());
             }
         }
         return sb.toString();
     }
 
-    private void updateDisp(){
+    private void updateDisp() {
         String text = String.format("%d)%s", index, DrugUtil.drugRep(drug));
-        if( tekiyou != null ){
+        String tekiyou = (attr != null) ? attr.tekiyou : null;
+        if (tekiyou != null) {
             text += " [摘要：" + tekiyou + "]";
         }
         disp.getChildren().clear();
         disp.getChildren().add(new Text(text));
     }
 
-   void modifyDays(int days){
+    void modifyDays(int days) {
         DrugFullDTO newDrugFull = DrugFullDTO.copy(drug);
         DrugDTO newDrug = DrugDTO.copy(drug.drug);
         newDrug.days = days;
@@ -79,21 +82,21 @@ public class RecordDrug extends StackPane {
         updateDisp();
     }
 
-    void setIndex(int index){
+    void setIndex(int index) {
         this.index = index;
         updateDisp();
     }
 
-    private void onDispClick(MouseEvent event){
-        if( event.isPopupTrigger() ){
+    private void onDispClick(MouseEvent event) {
+        if (event.isPopupTrigger()) {
             doContextMenu(event);
-        } else  {
-            if( !PracticeEnv.INSTANCE.isCurrentOrTempVisitId(visit.visitId) ){
-                if( !GuiUtil.confirm("現在診察中でありませんが、この薬剤を編集しますか？") ){
+        } else {
+            if (!PracticeEnv.INSTANCE.isCurrentOrTempVisitId(visit.visitId)) {
+                if (!GuiUtil.confirm("現在診察中でありませんが、この薬剤を編集しますか？")) {
                     return;
                 }
             }
-            DrugEditForm form = new DrugEditForm(drug, tekiyou, visit){
+            DrugEditForm form = new DrugEditForm(drug, attr, visit) {
                 @Override
                 protected void onUpdated(DrugFullDTO updated) {
                     RecordDrug.this.drug = updated;
@@ -108,7 +111,10 @@ public class RecordDrug extends StackPane {
 
                 @Override
                 protected void onTekiyouModified(String newTekiyou) {
-                    RecordDrug.this.tekiyou = newTekiyou;
+                    if (RecordDrug.this.attr == null) {
+                        RecordDrug.this.attr = new DrugAttrDTO();
+                    }
+                    RecordDrug.this.attr.tekiyou = newTekiyou;
                     updateDisp();
                 }
             };
@@ -130,7 +136,7 @@ public class RecordDrug extends StackPane {
         contextMenu.show(disp, event.getScreenX(), event.getScreenY());
     }
 
-    private void showDisp(){
+    private void showDisp() {
         getChildren().clear();
         getChildren().add(disp);
     }

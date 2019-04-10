@@ -9,11 +9,14 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.Consumer;
+
 public class DrugEditInput extends DrugInputBase {
 
     private Label tekiyouLabel = new Label();
     private HBox tekiyouRow;
     private CheckBox allFixedCheck = new CheckBox("用量・用法・日数をそのままに");
+    private Consumer<String> onTekiyouChangedHandler = s -> {};
 
     public DrugEditInput(DrugFullDTO drug, DrugAttrDTO attr) {
         super();
@@ -44,5 +47,10 @@ public class DrugEditInput extends DrugInputBase {
         boolean visible = tekiyou != null && !tekiyou.isEmpty();
         tekiyouRow.setManaged(visible);
         tekiyouRow.setVisible(visible);
+        onTekiyouChangedHandler.accept(tekiyou);
+    }
+
+    public void setOnTekiyouChangedHandler(Consumer<String>handler){
+        this.onTekiyouChangedHandler = handler;
     }
 }

@@ -14,7 +14,7 @@ import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.javafx.drug.lib.DrugEditInput;
+import jp.chang.myclinic.practice.javafx.drug.lib2.DrugEditInput;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugForm;
 import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.utilfx.GuiUtil;
@@ -27,15 +27,16 @@ public class DrugEditForm extends DrugForm {
     private HBox tekiyouBox = new HBox(4);
     private boolean isGaiyou;
 
-    public DrugEditForm(DrugFullDTO drug, String drugTekiyou, VisitDTO visit) {
+    public DrugEditForm(DrugFullDTO drug, DrugAttrDTO attr, VisitDTO visit) {
         super(visit);
         this.isGaiyou = Zaikei.fromCode(drug.master.zaikei) == Zaikei.Gaiyou;
-        this.input = new DrugEditInput(drug);
-        //input.setDrug(drug);
-        input.setTekiyou(drugTekiyou);
+        this.input = new DrugEditInput(drug, attr);
+//        input.setDrug(drug);
+//        input.setTekiyou(drugTekiyou);
         tekiyouBox.setAlignment(Pos.CENTER_LEFT);
-        adaptTekiyouBox(drugTekiyou);
-        input.tekiyouProperty().addListener((obs, oldValue, newValue) -> adaptTekiyouBox(newValue));
+        adaptTekiyouBox((attr != null) ? attr.tekiyou : null);
+        input.setOnTekiyouChangedHandler(this::adaptTekiyouBox);
+        //input.tekiyouProperty().addListener((obs, oldValue, newValue) -> adaptTekiyouBox(newValue));
         getChildren().addAll(
                 createTitle("処方の編集"),
                 input,
