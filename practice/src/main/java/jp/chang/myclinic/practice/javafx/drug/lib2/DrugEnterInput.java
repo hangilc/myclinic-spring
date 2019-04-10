@@ -12,6 +12,8 @@ import javafx.scene.text.TextFlow;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.IyakuhinMasterDTO;
+import jp.chang.myclinic.dto.PrescExampleDTO;
+import jp.chang.myclinic.dto.PrescExampleFullDTO;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.RadioButtonGroup;
 
@@ -194,7 +196,7 @@ public class DrugEnterInput extends VBox {
         return amountLabel.getText();
     }
 
-    public void setAmountLabel(String amountLabel) {
+    private void setAmountLabel(String amountLabel) {
         this.amountLabel.setText(amountLabel);
     }
 
@@ -206,7 +208,7 @@ public class DrugEnterInput extends VBox {
         setAmount(amountFormatter.format(value));
     }
 
-    void setAmount(String input){
+    void setAmount(String input) {
         amountInput.setText(input);
     }
 
@@ -214,7 +216,7 @@ public class DrugEnterInput extends VBox {
         amountInput.setText("");
     }
 
-    private void setAmountUnit(String unit){
+    private void setAmountUnit(String unit) {
         this.amountUnitLabel.setText(unit);
     }
 
@@ -270,6 +272,18 @@ public class DrugEnterInput extends VBox {
         daysInput.setText("");
     }
 
+    boolean isFixedDays() {
+        return daysFixedCheck.isSelected();
+    }
+
+    void setComment(String comment){
+        this.commentLabel.setText(comment);
+    }
+
+    void setCommentVisible(boolean visible){
+        setNodeVisible(this.commentLabel, visible);
+    }
+
     private void onCategoryChange(DrugCategory prevCategory, DrugCategory newCategory) {
         if (newCategory != null) {
             switch (newCategory) {
@@ -316,18 +330,40 @@ public class DrugEnterInput extends VBox {
         tekiyouRow.setVisible(visible);
     }
 
-    public void setMaster(IyakuhinMasterDTO master){
-        DrugCategory category = DrugCategory.Naifuku;
-        if( Zaikei.fromCode(master.zaikei) == Zaikei.Gaiyou ){
-            category = DrugCategory.Gaiyou;
-        }
+    private void setData(IyakuhinMasterDTO master,
+                         DrugCategory category,
+                         String amount,
+                         String usage,
+                         String days,
+                         String comment) {
         setIyakuhincode(master.iyakuhincode);
         setDrugName(master.name);
-        setAmount("");
         setAmountUnit(master.unit);
-        setUsage("");
-        setDays("");
         setCategory(category);
+        setAmount(amount);
+        setUsage(usage);
+        if (category == Naifuku && isFixedDays() && !getDays().isEmpty()) {
+            ; // nop
+        } else {
+            setDays(days);
+        }
+        setComment(comment);
+        setCommentVisible(isNotEmptyString(comment));
+    }
+
+    public void setMaster(IyakuhinMasterDTO master) {
+        DrugCategory category = DrugCategory.Naifuku;
+        if (Zaikei.fromCode(master.zaikei) == Zaikei.Gaiyou) {
+            category = DrugCategory.Gaiyou;
+        }
+        setData(master, category, "", "", "", "");
+    }
+
+    public void setPrescExample(PrescExampleFullDTO exampleFull) {
+        PrescExampleDTO example = exampleFull.prescExample;
+        DrugCategory exampleCategory = DrugCategory.fromCode(example.category);
+        setData(exampleFull.master, exampleCategory, example.amount, example.usage, example.days + "",
+                example.comment);
     }
 
 }

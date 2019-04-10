@@ -7,7 +7,7 @@ import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.mockdata.IyakuhinMasterData;
+import jp.chang.myclinic.mockdata.SampleData;
 import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
 import jp.chang.myclinic.practice.javafx.drug.DrugDisp;
@@ -33,7 +33,7 @@ public class DrugDispTest extends ComponentTestBase {
 
     private DrugFullDTO calonal(int visitId){
         DrugFullDTO calonal = new DrugFullDTO();
-        calonal.master = IyakuhinMasterData.calonal;
+        calonal.master = SampleData.calonal;
         DrugDTO drug = new DrugDTO();
         drug.iyakuhincode = calonal.master.iyakuhincode;
         drug.visitId = visitId;
