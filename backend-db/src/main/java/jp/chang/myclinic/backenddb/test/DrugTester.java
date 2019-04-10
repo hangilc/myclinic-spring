@@ -32,4 +32,5 @@ class DrugTester extends TesterBase {
         List<DrugFullDTO> drugs = backend.searchPrevDrug("ア", 198);
         //System.out.println(drugs);
     }
+
 }

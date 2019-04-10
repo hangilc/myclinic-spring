@@ -27,12 +27,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class DrugMenu extends VBox {
 
     private StackPane workarea = new StackPane();
     private Hyperlink mainMenu;
+    private BiConsumer<DrugFullDTO, DrugAttrDTO> onDrugEnteredHandler = (drug, attr) -> {};
 
     public DrugMenu(VisitDTO visit) {
         super(4);
@@ -42,6 +44,10 @@ public class DrugMenu extends VBox {
                 createMenu(visit),
                 workarea
         );
+    }
+
+    public void setOnDrugEnteredHandler(BiConsumer<DrugFullDTO, DrugAttrDTO> handler){
+        this.onDrugEnteredHandler = handler;
     }
 
     public void simulateNewDrugButtonClick(){
@@ -57,12 +63,9 @@ public class DrugMenu extends VBox {
                 if (!PracticeUtil.confirmCurrentVisitAction(visit.visitId, "処方を追加しますか？")) {
                     return;
                 }
-                DrugEnterForm form = new DrugEnterForm(visit) {
-                    @Override
-                    protected void onClose() {
-                        hideWorkarea();
-                    }
-                };
+                DrugEnterForm form = new DrugEnterForm(visit);
+                form.setOnCloseHandler(this::hideWorkarea);
+                form.setOnDrugEnteredHandler(onDrugEnteredHandler);
                 showWorkarea(form);
             }
         });

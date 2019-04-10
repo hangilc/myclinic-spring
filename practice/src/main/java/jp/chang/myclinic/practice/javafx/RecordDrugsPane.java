@@ -24,6 +24,7 @@ class RecordDrugsPane extends VBox {
         this.visit = visit;
         setAlignment(Pos.TOP_LEFT);
         this.menu = new DrugMenu(visit);
+        menu.setOnDrugEnteredHandler(this::addDrug);
         getChildren().add(menu);
         drugs.forEach(drug -> addDrug(drug, drugAttrMap.get(drug.drug.drugId)));
     }

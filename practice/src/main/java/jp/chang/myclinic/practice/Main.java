@@ -89,6 +89,7 @@ public class Main extends Application {
                     "practice.properties"
             ));
             if( opts.guiTest ) {
+                confirmTestDatabase();
                 StackPane main = setupStageForComponentTest(stage);
                 new Thread(() -> {
                     new GuiTestRunner(stage, main).testAll();
@@ -101,6 +102,7 @@ public class Main extends Application {
                 }
                 String className = opts.guiTestOne[0];
                 String methodName = opts.guiTestOne.length == 2 ? opts.guiTestOne[1] : "";
+                confirmTestDatabase();
                 StackPane main = setupStageForComponentTest(stage);
                 new Thread(() -> {
                     boolean ok = new GuiTestRunner(stage, main).testOne(className, methodName);
@@ -164,6 +166,16 @@ public class Main extends Application {
             Context.frontend = new FrontendBackend(dbBackend);
         } else {
             throw new RuntimeException("Access to REST server is not implemented.");
+        }
+    }
+
+    private void confirmTestDatabase(){
+        PatientDTO patient = Context.frontend.getPatient(1).join();
+        if( patient != null && patient.lastName.equals("試験") && patient.firstName.equals("データ") ){
+            // nop
+        } else {
+            System.err.println("Test database is required for testing.");
+            Platform.exit();
         }
     }
 
