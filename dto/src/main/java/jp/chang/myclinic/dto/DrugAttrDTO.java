@@ -18,6 +18,18 @@ public class DrugAttrDTO {
         return attr.tekiyou == null || attr.tekiyou.isEmpty();
     }
 
+    public static String getTekiyou(DrugAttrDTO attr, String tekiyou){
+        return attr == null ? null : attr.tekiyou;
+    }
+
+    public static DrugAttrDTO setTekiyou(DrugAttrDTO attr, String tekiyou){
+        if( attr == null ){
+            attr = new DrugAttrDTO();
+        }
+        attr.tekiyou = tekiyou;
+        return attr;
+    }
+
     @Override
     public String toString() {
         return "DrugAttrDTO{" +
