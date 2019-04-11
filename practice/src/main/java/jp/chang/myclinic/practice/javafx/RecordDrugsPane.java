@@ -25,6 +25,7 @@ class RecordDrugsPane extends VBox {
         setAlignment(Pos.TOP_LEFT);
         this.menu = new DrugMenu(visit);
         menu.setOnDrugEnteredHandler(this::addDrug);
+        menu.setOnDrugDeletedHandler(this::onDrugDeleted);
         getChildren().add(menu);
         drugs.forEach(drug -> addDrug(drug, drugAttrMap.get(drug.drug.drugId)));
     }
@@ -53,7 +54,12 @@ class RecordDrugsPane extends VBox {
             throw new RuntimeException("Inconsisitent visitId in drug.");
         }
         RecordDrug recordDrug = new RecordDrug(drug, visit, index++, attr);
+        recordDrug.setOnDeletedHandler(() -> onDrugDeleted(List.of(drug.drug.drugId)));
         getChildren().add(recordDrug);
+    }
+
+    void onDrugDeleted(List<Integer> drugIds){
+        remove drugs
     }
 
     void modifyDrugDays(int drugId, int days) {

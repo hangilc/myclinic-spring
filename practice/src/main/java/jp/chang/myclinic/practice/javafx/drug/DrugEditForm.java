@@ -11,31 +11,32 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import jp.chang.myclinic.consts.DrugCategory;
-import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.consts.Zaikei;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.javafx.drug.lib2.DrugEditInput;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugForm;
-import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
+import jp.chang.myclinic.practice.javafx.drug.lib2.DrugEditInput;
 import jp.chang.myclinic.util.validator.Validated;
 import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
-abstract public class DrugEditForm extends DrugForm {
+import java.util.function.BiConsumer;
 
-    //private static Logger logger = LoggerFactory.getLogger(EditForm.class);
+public class DrugEditForm extends DrugForm {
+
     private DrugEditInput input;
     private HBox tekiyouBox = new HBox(4);
     private int visitId;
+    private BiConsumer<DrugFullDTO, DrugAttrDTO> onCloseHandler = (d, a) -> {};
+    private Runnable onDeletedHandler = () -> {};
 
     public DrugEditForm(DrugFullDTO drug, DrugAttrDTO attr, VisitDTO visit) {
         super(visit);
         this.visitId = drug.drug.visitId;
         this.input = new DrugEditInput(drug, attr);
         tekiyouBox.setAlignment(Pos.CENTER_LEFT);
-        adaptTekiyouBox((attr != null) ? attr.tekiyou : null);
+        adaptTekiyouBox(extractTekiyou(attr));
         getChildren().addAll(
                 createTitle("処方の編集"),
                 input,
@@ -44,6 +45,33 @@ abstract public class DrugEditForm extends DrugForm {
                 getSearchModeChooserBox(),
                 getSearchResult()
         );
+    }
+
+    public void setOnCloseHandler(BiConsumer<DrugFullDTO, DrugAttrDTO> handler){
+        this.onCloseHandler = handler;
+    }
+
+    public void setOnDeletedHandler(Runnable handler){
+        this.onDeletedHandler = handler;
+    }
+
+    private String extractTekiyou(DrugAttrDTO attr){
+        return attr == null ? null : attr.tekiyou;
+    }
+
+    private DrugFullDTO copyDrug(DrugFullDTO src){
+        DrugFullDTO dst = new DrugFullDTO();
+        dst.drug = DrugDTO.copy(src.drug);
+        dst.master = src.master;
+        return dst;
+    }
+
+    private DrugAttrDTO copyAttr(DrugAttrDTO src){
+        if( src == null ){
+            return null;
+        } else {
+            return DrugAttrDTO.copy(src);
+        }
     }
 
     private Node createCommands() {
@@ -55,7 +83,7 @@ abstract public class DrugEditForm extends DrugForm {
         Hyperlink deleteLink = new Hyperlink("削除");
         Hyperlink auxLink = new Hyperlink("他");
         enterButton.setOnAction(evt -> doEnter());
-        closeButton.setOnAction(evt -> onClose());
+        closeButton.setOnAction(evt -> closeForm());
         deleteLink.setOnAction(evt -> doDelete());
         auxLink.setOnMouseClicked(evt -> doAux(evt, auxLink));
         hbox.getChildren().addAll(
@@ -102,12 +130,13 @@ abstract public class DrugEditForm extends DrugForm {
             }
         }
         GuiUtil.askForString("摘要の内容", curr).ifPresent(str -> {
-            Context.frontend.setDrugTekiyou(input.getDrugId(), str)
+            Frontend frontend = Context.frontend;
+            int drugId = input.getDrugId();
+            frontend.setDrugTekiyou(drugId, str)
                     .thenAccept(ok -> {
                         Platform.runLater(() -> {
                             input.setTekiyou(str);
                             adaptTekiyouBox(str);
-                            onTekiyouModified(str);
                         });
                     })
                     .exceptionally(HandlerFX::exceptionally);
@@ -121,7 +150,6 @@ abstract public class DrugEditForm extends DrugForm {
                         Platform.runLater(() -> {
                             input.setTekiyou(null);
                             adaptTekiyouBox(null);
-                            onTekiyouModified(null);
                         });
                     })
                     .exceptionally(HandlerFX::exceptionally);
@@ -164,8 +192,7 @@ abstract public class DrugEditForm extends DrugForm {
         }
         drug.prescribed = 0;
         Context.frontend.updateDrug(drug)
-                .thenCompose(ok -> Context.frontend.getDrugFull(drug.drugId))
-                .thenAcceptAsync(this::onUpdated, Platform::runLater)
+                .thenAccept(ok -> closeForm())
                 .exceptionally(HandlerFX::exceptionally);
     }
 
@@ -180,10 +207,9 @@ abstract public class DrugEditForm extends DrugForm {
                         local.drug = drugDTO;
                         return Context.frontend.deleteDrugCascading(drugDTO.drugId);
                     })
-                    .thenAccept(ok -> {
-                        DrugDeletedEvent event = new DrugDeletedEvent(local.drug);
-                        Platform.runLater(() -> DrugEditForm.this.fireEvent(event));
-                    })
+                    .thenAcceptAsync(ok -> {
+                        onDeletedHandler.run();
+                    }, Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
         }
     }
@@ -203,12 +229,22 @@ abstract public class DrugEditForm extends DrugForm {
         input.setDrug(drug);
     }
 
-    protected void onUpdated(DrugFullDTO updated) {
+    private void closeForm(){
+        class Local {
+            private DrugFullDTO drugFull;
+        }
+        Local local = new Local();
+        Frontend frontend = Context.frontend;
+        int drugId = input.getDrugId();
+        frontend.getDrugFull(drugId)
+                .thenCompose(drugFull -> {
+                    local.drugFull = drugFull;
+                    return frontend.getDrugAttr(drugId);
+                })
+                .thenAcceptAsync(attr -> {
+                    onCloseHandler.accept(local.drugFull, attr);
+                }, Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
+
     }
-
-    protected void onClose() {
-    }
-
-    abstract protected void onTekiyouModified(String newTekiyou);
-
 }

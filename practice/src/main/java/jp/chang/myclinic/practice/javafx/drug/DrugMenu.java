@@ -15,7 +15,6 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
-import jp.chang.myclinic.practice.javafx.events.DrugDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
@@ -28,13 +27,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 public class DrugMenu extends VBox {
 
     private StackPane workarea = new StackPane();
     private Hyperlink mainMenu;
     private BiConsumer<DrugFullDTO, DrugAttrDTO> onDrugEnteredHandler = (drug, attr) -> {};
+    private Consumer<List<Integer>> onDrugDeletedHandler = drugIds -> {};
 
     public DrugMenu(VisitDTO visit) {
         super(4);
@@ -48,6 +51,10 @@ public class DrugMenu extends VBox {
 
     public void setOnDrugEnteredHandler(BiConsumer<DrugFullDTO, DrugAttrDTO> handler){
         this.onDrugEnteredHandler = handler;
+    }
+
+    public void setOnDrugDeletedHandler(Consumer<List<Integer>> handler){
+        this.onDrugDeletedHandler = handler;
     }
 
     public void simulateNewDrugButtonClick(){
@@ -126,7 +133,7 @@ public class DrugMenu extends VBox {
             Context.frontend.listDrugFull(visitId)
                     .thenCompose(drugs -> {
                         local.fullDrugs = drugs;
-                        List<Integer> drugIds = drugs.stream().map(d -> d.drug.drugId).collect(Collectors.toList());
+                        List<Integer> drugIds = drugs.stream().map(d -> d.drug.drugId).collect(toList());
                         return Context.frontend.batchGetDrugAttr(drugIds);
                     })
                     .thenAccept(attrList -> {
@@ -211,10 +218,9 @@ public class DrugMenu extends VBox {
                                 protected void onDelete(List<DrugDTO> drugs) {
                                     PracticeService.batchDeleteDrugs(drugs)
                                             .thenAccept(result -> Platform.runLater(() -> {
-                                                drugs.forEach(drug -> {
-                                                    DrugDeletedEvent e = new DrugDeletedEvent(drug);
-                                                    DrugMenu.this.fireEvent(e);
-                                                });
+                                                List<Integer> drugIds = drugs.stream()
+                                                        .map(drug -> drug.drugId).collect(toList());
+                                                onDrugDeletedHandler.accept(drugIds);
                                                 hideWorkarea();
                                             }));
                                 }
@@ -236,7 +242,7 @@ public class DrugMenu extends VBox {
         menuItem.setOnAction(evt -> {
             Context.frontend.listDrugFull(visitId)
                     .thenAccept(drugs -> {
-                        List<String> reps = drugs.stream().map(DrugUtil::drugRep).collect(Collectors.toList());
+                        List<String> reps = drugs.stream().map(DrugUtil::drugRep).collect(toList());
                         List<String> lines = new ArrayList<>();
                         int i = 1;
                         for (String rep : reps) {

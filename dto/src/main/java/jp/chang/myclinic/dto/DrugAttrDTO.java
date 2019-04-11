@@ -7,14 +7,14 @@ public class DrugAttrDTO {
     public int drugId;
     public String tekiyou;
 
-    public static DrugAttrDTO copy(DrugAttrDTO src){
+    public static DrugAttrDTO copy(DrugAttrDTO src) {
         DrugAttrDTO dst = new DrugAttrDTO();
         dst.drugId = src.drugId;
         dst.tekiyou = src.tekiyou;
         return dst;
     }
 
-    public static boolean isEmpty(DrugAttrDTO attr){
+    public static boolean isEmpty(DrugAttrDTO attr) {
         return attr.tekiyou == null || attr.tekiyou.isEmpty();
     }
 

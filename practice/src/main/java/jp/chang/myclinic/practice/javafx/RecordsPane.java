@@ -72,11 +72,6 @@ class RecordsPane extends VBox {
                 record.modifyDrugDays(event.getDrugId(), event.getDays()));
     }
 
-    private void drugDeleted(DrugDeletedEvent event){
-        findRecord(event.getVisitId()).ifPresent(record ->
-                record.deleteDrug(event.getDrugId()));
-    }
-
     private void onShinryouEntered(ShinryouEnteredEvent event){
         ShinryouFullDTO shinryou = event.getShinryou();
         findRecord(shinryou.shinryou.visitId).ifPresent(record ->

@@ -20,23 +20,24 @@ public class RecordDrug extends StackPane {
 
     private DrugFullDTO drug;
     private DrugAttrDTO attr;
-    //private String tekiyou;
     private VisitDTO visit;
     private int index;
     private TextFlow disp = new TextFlow();
+    private Runnable onDeletedHandler = () -> {};
 
     RecordDrug(DrugFullDTO drug, VisitDTO visit, int index, DrugAttrDTO attr) {
         this.drug = drug;
         this.attr = attr;
-//        if( attr != null ){
-//            this.tekiyou = attr.tekiyou;
-//        }
         this.visit = visit;
         this.index = index;
         disp.getStyleClass().add("drug-disp");
         updateDisp();
         disp.setOnMouseClicked(this::onDispClick);
         getChildren().add(disp);
+    }
+
+    public void setOnDeletedHandler(Runnable handler){
+        this.onDeletedHandler = handler;
     }
 
     public int getDrugId() {
@@ -96,28 +97,14 @@ public class RecordDrug extends StackPane {
                     return;
                 }
             }
-            DrugEditForm form = new DrugEditForm(drug, attr, visit) {
-                @Override
-                protected void onUpdated(DrugFullDTO updated) {
-                    RecordDrug.this.drug = updated;
-                    updateDisp();
-                    showDisp();
-                }
-
-                @Override
-                protected void onClose() {
-                    showDisp();
-                }
-
-                @Override
-                protected void onTekiyouModified(String newTekiyou) {
-                    if (RecordDrug.this.attr == null) {
-                        RecordDrug.this.attr = new DrugAttrDTO();
-                    }
-                    RecordDrug.this.attr.tekiyou = newTekiyou;
-                    updateDisp();
-                }
-            };
+            DrugEditForm form = new DrugEditForm(drug, attr, visit);
+            form.setOnCloseHandler((drug, attr) -> {
+                RecordDrug.this.drug = drug;
+                RecordDrug.this.attr = attr;
+                updateDisp();
+                showDisp();
+            });
+            form.setOnDeletedHandler(onDeletedHandler);
             getChildren().remove(disp);
             getChildren().add(form);
         }
