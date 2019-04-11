@@ -191,6 +191,7 @@ public class DrugEditForm extends DrugForm {
             throw new RuntimeException("drugId is null.");
         }
         drug.prescribed = 0;
+        System.out.println("updated drug: " + drug);
         Context.frontend.updateDrug(drug)
                 .thenAccept(ok -> closeForm())
                 .exceptionally(HandlerFX::exceptionally);

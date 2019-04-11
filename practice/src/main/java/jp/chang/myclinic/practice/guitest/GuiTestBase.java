@@ -1,5 +1,8 @@
 package jp.chang.myclinic.practice.guitest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -7,6 +10,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class GuiTestBase implements TestInterface, GuiTestMixin {
+
+    private static ObjectMapper mapper = new ObjectMapper();
+    static {
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    }
 
     protected Stage stage;
     protected StackPane main;
@@ -59,6 +67,15 @@ public class GuiTestBase implements TestInterface, GuiTestMixin {
         });
         method.invoke(this);
         System.out.println(title);
+    }
+
+    protected <T> void printJson(T obj){
+        try {
+            String json = mapper.writeValueAsString(obj);
+            System.out.println(json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
