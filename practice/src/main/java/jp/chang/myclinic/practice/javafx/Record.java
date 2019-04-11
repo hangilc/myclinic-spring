@@ -153,10 +153,6 @@ public class Record extends VBox {
         drugsPane.modifyDrugDays(drugId, days);
     }
 
-    void deleteDrug(int drugId) {
-        drugsPane.deleteDrug(drugId);
-    }
-
     void insertShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
         shinryouPane.insertShinryou(shinryou, attr);
     }

@@ -59,7 +59,15 @@ class RecordDrugsPane extends VBox {
     }
 
     void onDrugDeleted(List<Integer> drugIds){
-        remove drugs
+        getChildren().removeIf(node -> {
+            if( node instanceof RecordDrug ){
+                RecordDrug recordDrug = (RecordDrug)node;
+                return drugIds.contains(recordDrug.getDrugId());
+            } else {
+                return false;
+            }
+        });
+        reIndex();
     }
 
     void modifyDrugDays(int drugId, int days) {
@@ -70,11 +78,7 @@ class RecordDrugsPane extends VBox {
     }
 
     void deleteDrug(int drugId) {
-        RecordDrug recordDrug = findRecordDrug(drugId);
-        if (recordDrug != null) {
-            getChildren().remove(recordDrug);
-            reIndex();
-        }
+        onDrugDeleted(List.of(drugId));
     }
 
     private RecordDrug findRecordDrug(int drugId) {
