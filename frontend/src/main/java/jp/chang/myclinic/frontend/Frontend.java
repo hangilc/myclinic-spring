@@ -85,6 +85,8 @@ public interface Frontend {
 
     CompletableFuture<VisitFullDTO> getVisitFull(int visitId);
 
+    CompletableFuture<VisitFull2DTO> getVisitFull2(int visitId);
+
     CompletableFuture<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds);
 
     CompletableFuture<Void> updateShouki(ShoukiDTO shouki);

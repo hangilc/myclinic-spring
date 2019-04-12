@@ -13,11 +13,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-class RecordsPane extends VBox {
+public class RecordsPane extends VBox {
 
     private CurrentPatientService currentPatientService = Context.currentPatientService;
 
-    RecordsPane(){
+    public RecordsPane(){
         setFillWidth(true);
         addEventHandler(EventTypes.visitDeletedEventType, event -> deleteRecord(event.getVisitId()));
         addEventHandler(EventTypes.drugEnteredEventType, event -> addDrug(event.getEnteredDrug(), event.getAttr()));
@@ -29,7 +29,7 @@ class RecordsPane extends VBox {
         PracticeEnv.INSTANCE.addShoukiFormChangeListener(this::onShoukiChanged);
     }
 
-    void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
+    public void addRecord(VisitFull2DTO visit, Map<Integer, ShinryouAttrDTO> shinryouAttrMap,
                           Map<Integer, DrugAttrDTO> drugAttrMap, Map<Integer, ShoukiDTO> shoukiMap){
         Record record = new Record(visit, shinryouAttrMap, drugAttrMap, shoukiMap.get(visit.visit.visitId));
         if( currentPatientService.getCurrentVisitId() == visit.visit.visitId ){

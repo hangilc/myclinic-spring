@@ -205,6 +205,11 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
+    public CompletableFuture<VisitFull2DTO> getVisitFull2(int visitId) {
+        return delegate.getVisitFull2(visitId);
+    }
+
+    @Override
     public CompletableFuture<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds) {
         return delegate.batchGetShouki(visitIds);
     }

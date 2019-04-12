@@ -203,6 +203,11 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
+    public CompletableFuture<VisitFull2DTO> getVisitFull2(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
     public CompletableFuture<List<ShoukiDTO>> batchGetShouki(List<Integer> visitIds) {
         throw new RuntimeException("not implemented");
     }

@@ -723,8 +723,12 @@ public class Backend {
 
     public VisitFullDTO getVisitFull(int visitId) {
         VisitDTO visit = getVisit(visitId);
-        System.out.println("visit:" + visit);
         return getVisitFull(visit);
+    }
+
+    public VisitFull2DTO getVisitFull2(int visitId) {
+        VisitDTO visit = getVisit(visitId);
+        return getVisitFull2(visit);
     }
 
     private VisitFullDTO getVisitFull(VisitDTO visitDTO) {

@@ -247,6 +247,11 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
+    public CompletableFuture<VisitFull2DTO> getVisitFull2(int visitId) {
+        return query(backend -> backend.getVisitFull2(visitId));
+    }
+
+    @Override
     public CompletableFuture<Void> updateShouki(ShoukiDTO shouki) {
         return txProc(backend -> backend.updateShouki(shouki));
     }
