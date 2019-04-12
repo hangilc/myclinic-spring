@@ -8,14 +8,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.DrugAttrDTO;
 import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.Context;
-import jp.chang.myclinic.practice.javafx.events.DrugDaysModifiedEvent;
-import jp.chang.myclinic.practice.javafx.events.DrugEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeService;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 import jp.chang.myclinic.util.DrugUtil;
@@ -36,8 +33,11 @@ public class DrugMenu extends VBox {
 
     private StackPane workarea = new StackPane();
     private Hyperlink mainMenu;
-    private BiConsumer<DrugFullDTO, DrugAttrDTO> onDrugEnteredHandler = (drug, attr) -> {};
-    private Consumer<List<Integer>> onDrugDeletedHandler = drugIds -> {};
+    private BiConsumer<DrugFullDTO, DrugAttrDTO> onDrugEnteredHandler = (drug, attr) -> {
+    };
+    private Consumer<List<Integer>> onDrugDeletedHandler = drugIds -> {
+    };
+    private BiConsumer<DrugDTO, Integer> onDrugDaysModifiedHandler = (drug, days) -> {};
 
     public DrugMenu(VisitDTO visit) {
         super(4);
@@ -49,15 +49,19 @@ public class DrugMenu extends VBox {
         );
     }
 
-    public void setOnDrugEnteredHandler(BiConsumer<DrugFullDTO, DrugAttrDTO> handler){
+    public void setOnDrugEnteredHandler(BiConsumer<DrugFullDTO, DrugAttrDTO> handler) {
         this.onDrugEnteredHandler = handler;
     }
 
-    public void setOnDrugDeletedHandler(Consumer<List<Integer>> handler){
+    public void setOnDrugDeletedHandler(Consumer<List<Integer>> handler) {
         this.onDrugDeletedHandler = handler;
     }
 
-    public void simulateNewDrugButtonClick(){
+    public void setOnDrugDaysModifiedHandler(BiConsumer<DrugDTO, Integer> handler){
+        this.onDrugDaysModifiedHandler = handler;
+    }
+
+    public void simulateNewDrugButtonClick() {
         mainMenu.fire();
     }
 
@@ -108,8 +112,10 @@ public class DrugMenu extends VBox {
             PracticeService.listDrugFull(visitId)
                     .thenAccept(drugs -> {
                         new DrugsCopier(targetVisitId, drugs,
-                                (enteredDrug, attr) -> fireEvent(new DrugEnteredEvent(enteredDrug, attr)),
-                                () -> { }
+                                Context.integrationService::broadcastNewDrug,
+                                //(enteredDrug, attr) -> fireEvent(new DrugEnteredEvent(enteredDrug, attr)),
+                                () -> {
+                                }
                         );
                     });
         });
@@ -144,12 +150,13 @@ public class DrugMenu extends VBox {
                             @Override
                             protected void onEnter(List<DrugFullDTO> selected, boolean keepOpen) {
                                 new DrugsCopier(targetVisitId, selected,
-                                        (enteredDrug, attr) ->
-                                                fireEvent(new DrugEnteredEvent(enteredDrug, attr)),
+                                        Context.integrationService::broadcastNewDrug,
+//                                        (enteredDrug, attr) ->
+//                                                fireEvent(new DrugEnteredEvent(enteredDrug, attr)),
                                         () -> {
                                             if (keepOpen) {
                                                 int remain = cleanUpForKeepOpen();
-                                                if( remain == 0 ){
+                                                if (remain == 0) {
                                                     hideWorkarea();
                                                 }
                                             } else {
@@ -186,7 +193,8 @@ public class DrugMenu extends VBox {
                                     PracticeService.modifyDrugDays(drugs, days)
                                             .thenAccept(result -> Platform.runLater(() -> {
                                                 drugs.forEach(drug -> {
-                                                    fireEvent(new DrugDaysModifiedEvent(drug, days));
+                                                    onDrugDaysModifiedHandler.accept(drug, days);
+                                                    //fireEvent(new DrugDaysModifiedEvent(drug, days));
                                                 });
                                                 hideWorkarea();
                                             }));
@@ -274,9 +282,9 @@ public class DrugMenu extends VBox {
     }
 
     public Optional<DrugEnterForm> findDrugEnterForm() {
-        for(Node node: workarea.getChildren()){
-            if( node instanceof DrugEnterForm ){
-                return Optional.of((DrugEnterForm)node);
+        for (Node node : workarea.getChildren()) {
+            if (node instanceof DrugEnterForm) {
+                return Optional.of((DrugEnterForm) node);
             }
         }
         return Optional.empty();

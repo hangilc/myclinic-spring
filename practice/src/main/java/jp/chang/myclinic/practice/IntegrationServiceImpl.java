@@ -1,10 +1,13 @@
 package jp.chang.myclinic.practice;
 
+import jp.chang.myclinic.dto.DrugAttrDTO;
+import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.TextDTO;
 import jp.chang.myclinic.practice.IntegrationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class IntegrationServiceImpl implements IntegrationService {
@@ -19,5 +22,17 @@ public class IntegrationServiceImpl implements IntegrationService {
     @Override
     public void setOnNewText(Consumer<TextDTO> handler) {
         this.onNewTextHandler = handler;
+    }
+
+    private BiConsumer<DrugFullDTO, DrugAttrDTO> onNewDrugHandler = (drug, attr) -> {};
+
+    @Override
+    public void broadcastNewDrug(DrugFullDTO drug, DrugAttrDTO attr) {
+        onNewDrugHandler.accept(drug, attr);
+    }
+
+    @Override
+    public void setOnNewDrug(BiConsumer<DrugFullDTO, DrugAttrDTO> handler) {
+        this.onNewDrugHandler = handler;
     }
 }

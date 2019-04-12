@@ -21,7 +21,6 @@ public class RecordsPane extends VBox {
         setFillWidth(true);
         addEventHandler(EventTypes.visitDeletedEventType, event -> deleteRecord(event.getVisitId()));
         addEventHandler(EventTypes.drugEnteredEventType, event -> addDrug(event.getEnteredDrug(), event.getAttr()));
-        addEventHandler(EventTypes.drugDaysModifiedEventType, this::drugDaysModified);
         addEventHandler(ShinryouEnteredEvent.eventType, this::onShinryouEntered);
         addEventHandler(ShinryouDeletedEvent.eventType, this::onShinryouDeleted);
         addEventHandler(ConductEnteredEvent.eventType, this::onConductEntered);
@@ -63,11 +62,6 @@ public class RecordsPane extends VBox {
 
     private void addDrug(DrugFullDTO drug, DrugAttrDTO attr){
         findRecord(drug.drug.visitId).ifPresent(record -> record.addDrug(drug, attr));
-    }
-
-    private void drugDaysModified(DrugDaysModifiedEvent event){
-        findRecord(event.getVisitId()).ifPresent(record ->
-                record.modifyDrugDays(event.getDrugId(), event.getDays()));
     }
 
     private void onShinryouEntered(ShinryouEnteredEvent event){

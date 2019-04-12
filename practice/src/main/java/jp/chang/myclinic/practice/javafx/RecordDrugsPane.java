@@ -4,6 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.DrugAttrDTO;
+import jp.chang.myclinic.dto.DrugDTO;
 import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
 import jp.chang.myclinic.practice.javafx.drug.DrugEnterForm;
@@ -25,6 +26,7 @@ public class RecordDrugsPane extends VBox {
         setAlignment(Pos.TOP_LEFT);
         this.menu = new DrugMenu(visit);
         menu.setOnDrugEnteredHandler(this::addDrug);
+        menu.setOnDrugDaysModifiedHandler(this::onDrugDaysModified);
         menu.setOnDrugDeletedHandler(this::onDrugDeleted);
         getChildren().add(menu);
         drugs.forEach(drug -> addDrug(drug, drugAttrMap.get(drug.drug.drugId)));
@@ -68,6 +70,10 @@ public class RecordDrugsPane extends VBox {
             }
         });
         reIndex();
+    }
+
+    private void onDrugDaysModified(DrugDTO drug, int days){
+        modifyDrugDays(drug.drugId, days);
     }
 
     void modifyDrugDays(int drugId, int days) {
