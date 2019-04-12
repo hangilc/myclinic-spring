@@ -25,14 +25,21 @@ import java.util.function.BiConsumer;
 
 public class DrugEditForm extends DrugForm {
 
+    // form state variables
+    private DrugAttrDTO attr; // cache
+
     private DrugEditInput input;
     private HBox tekiyouBox = new HBox(4);
+    private int drugId;
     private int visitId;
-    private BiConsumer<DrugFullDTO, DrugAttrDTO> onCloseHandler = (d, a) -> {};
+    private BiConsumer<DrugFullDTO, DrugAttrDTO> onEnteredHandler = (d, a) -> {};
+    private Runnable onCancelHandler = () -> {};
     private Runnable onDeletedHandler = () -> {};
 
     public DrugEditForm(DrugFullDTO drug, DrugAttrDTO attr, VisitDTO visit) {
         super(visit);
+        this.attr = copyAttr(attr);
+        this.drugId = drug.drug.drugId;
         this.visitId = drug.drug.visitId;
         this.input = new DrugEditInput(drug, attr);
         tekiyouBox.setAlignment(Pos.CENTER_LEFT);
@@ -47,8 +54,16 @@ public class DrugEditForm extends DrugForm {
         );
     }
 
-    public void setOnCloseHandler(BiConsumer<DrugFullDTO, DrugAttrDTO> handler){
-        this.onCloseHandler = handler;
+    private int getDrugId(){
+        return drugId;
+    }
+
+    public void setOnEnteredHandler(BiConsumer<DrugFullDTO, DrugAttrDTO> handler){
+        this.onEnteredHandler = handler;
+    }
+
+    public void setOnCancelHandler(Runnable handler){
+        this.onCancelHandler = handler;
     }
 
     public void setOnDeletedHandler(Runnable handler){
@@ -57,13 +72,6 @@ public class DrugEditForm extends DrugForm {
 
     private String extractTekiyou(DrugAttrDTO attr){
         return attr == null ? null : attr.tekiyou;
-    }
-
-    private DrugFullDTO copyDrug(DrugFullDTO src){
-        DrugFullDTO dst = new DrugFullDTO();
-        dst.drug = DrugDTO.copy(src.drug);
-        dst.master = src.master;
-        return dst;
     }
 
     private DrugAttrDTO copyAttr(DrugAttrDTO src){
@@ -79,16 +87,16 @@ public class DrugEditForm extends DrugForm {
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.getStyleClass().add("commands");
         Button enterButton = new Button("入力");
-        Button closeButton = new Button("閉じる");
+        Button cancelButton = new Button("キャンセル");
         Hyperlink deleteLink = new Hyperlink("削除");
         Hyperlink auxLink = new Hyperlink("他");
         enterButton.setOnAction(evt -> doEnter());
-        closeButton.setOnAction(evt -> closeForm());
+        cancelButton.setOnAction(evt -> onCancelHandler.run());
         deleteLink.setOnAction(evt -> doDelete());
         auxLink.setOnMouseClicked(evt -> doAux(evt, auxLink));
         hbox.getChildren().addAll(
                 enterButton,
-                closeButton,
+                cancelButton,
                 deleteLink,
                 tekiyouBox,
                 auxLink
@@ -109,50 +117,39 @@ public class DrugEditForm extends DrugForm {
         boolean exists = tekiyouText != null && !tekiyouText.isEmpty();
         if (!exists) {
             Hyperlink tekiyouLink = new Hyperlink("摘要入力");
-            tekiyouLink.setOnAction(evt -> doEnterTekiyou(tekiyouText));
+            tekiyouLink.setOnAction(evt -> doEnterTekiyou());
             tekiyouBox.getChildren().setAll(tekiyouLink);
         } else {
             Hyperlink editTekiyouLink = new Hyperlink("摘要編集");
             Hyperlink deleteTekiyouLink = new Hyperlink("摘要削除");
-            editTekiyouLink.setOnAction(evt -> doEnterTekiyou(tekiyouText));
+            editTekiyouLink.setOnAction(evt -> doEditTekiyou(tekiyouText));
             deleteTekiyouLink.setOnAction(evt -> doDeleteTekiyou());
             tekiyouBox.getChildren().setAll(editTekiyouLink, deleteTekiyouLink);
         }
     }
 
-    private void doEnterTekiyou(String tekiyouText) {
-        String curr = tekiyouText;
-        if (curr == null) {
-            if( isGaiyou() ){
-                curr = "１日２枚";
-            } else {
-                curr = "";
-            }
-        }
-        GuiUtil.askForString("摘要の内容", curr).ifPresent(str -> {
-            Frontend frontend = Context.frontend;
-            int drugId = input.getDrugId();
-            frontend.setDrugTekiyou(drugId, str)
-                    .thenAccept(ok -> {
-                        Platform.runLater(() -> {
-                            input.setTekiyou(str);
-                            adaptTekiyouBox(str);
-                        });
-                    })
-                    .exceptionally(HandlerFX::exceptionally);
+    private void doEnterTekiyou(){
+        GuiUtil.askForString("摘要の内容", "").ifPresent(str -> {
+            this.attr = DrugAttrDTO.setTekiyou(drugId, attr, str);
+            input.setTekiyou(str);
+            adaptTekiyouBox(str);
         });
+    }
+
+    private void doEditTekiyou(String current){
+        GuiUtil.askForString("摘要の内容", current).ifPresent(str -> {
+            this.attr = DrugAttrDTO.setTekiyou(drugId, attr, str);
+            input.setTekiyou(str);
+            adaptTekiyouBox(str);
+        });
+
     }
 
     private void doDeleteTekiyou() {
         if (GuiUtil.confirm("現在の摘要を削除しますか？")) {
-            Context.frontend.deleteDrugTekiyou(input.getDrugId())
-                    .thenAccept(ok -> {
-                        Platform.runLater(() -> {
-                            input.setTekiyou(null);
-                            adaptTekiyouBox(null);
-                        });
-                    })
-                    .exceptionally(HandlerFX::exceptionally);
+            this.attr = DrugAttrDTO.deleteTekiyou(drugId, attr);
+            input.setTekiyou(null);
+            adaptTekiyouBox(null);
         }
     }
 
@@ -184,33 +181,16 @@ public class DrugEditForm extends DrugForm {
             return;
         }
         DrugDTO drug = validatedDrug.getValue();
-        if( drug == null ){
-            return;
-        }
-        if (drug.drugId == 0) {
-            throw new RuntimeException("drugId is null.");
-        }
         drug.prescribed = 0;
-        System.out.println("updated drug: " + drug);
-        Context.frontend.updateDrug(drug)
+        Context.frontend.updateDrugWithAttr(drug, attr)
                 .thenAccept(ok -> closeForm())
                 .exceptionally(HandlerFX::exceptionally);
     }
 
     private void doDelete() {
         if (GuiUtil.confirm("この処方を削除していいですか？")) {
-            class Local {
-                private DrugDTO drug;
-            }
-            Local local = new Local();
-            Context.frontend.getDrug(input.getDrugId())
-                    .thenCompose(drugDTO -> {
-                        local.drug = drugDTO;
-                        return Context.frontend.deleteDrugCascading(drugDTO.drugId);
-                    })
-                    .thenAcceptAsync(ok -> {
-                        onDeletedHandler.run();
-                    }, Platform::runLater)
+            Context.frontend.deleteDrugCascading(getDrugId())
+                    .thenAcceptAsync(ok -> onDeletedHandler.run(), Platform::runLater)
                     .exceptionally(HandlerFX::exceptionally);
         }
     }
@@ -236,14 +216,13 @@ public class DrugEditForm extends DrugForm {
         }
         Local local = new Local();
         Frontend frontend = Context.frontend;
-        int drugId = input.getDrugId();
         frontend.getDrugFull(drugId)
                 .thenCompose(drugFull -> {
                     local.drugFull = drugFull;
                     return frontend.getDrugAttr(drugId);
                 })
                 .thenAcceptAsync(attr -> {
-                    onCloseHandler.accept(local.drugFull, attr);
+                    onEnteredHandler.accept(local.drugFull, attr);
                 }, Platform::runLater)
                 .exceptionally(HandlerFX::exceptionally);
 

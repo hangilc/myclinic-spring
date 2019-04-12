@@ -582,11 +582,11 @@ public class Backend {
         ts.drugAttrTable.insert(drugAttr);
     }
 
-    private void updateDrugAttr(DrugAttrDTO drugAttr) {
+    public void updateDrugAttr(DrugAttrDTO drugAttr) {
         ts.drugAttrTable.update(drugAttr);
     }
 
-    private void deleteDrugAttr(int drugId) {
+    public void deleteDrugAttr(int drugId) {
         ts.drugAttrTable.delete(drugId);
     }
 

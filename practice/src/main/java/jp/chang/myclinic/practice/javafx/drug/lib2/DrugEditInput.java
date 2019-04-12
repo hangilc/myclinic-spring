@@ -20,10 +20,12 @@ public class DrugEditInput extends DrugInputBase {
     private HBox tekiyouRow;
     private CheckBox allFixedCheck = new CheckBox("用量・用法・日数をそのままに");
     private int drugId;
+    private int prescribed;
 
     public DrugEditInput(DrugFullDTO drug, DrugAttrDTO attr) {
         super();
         this.drugId = drug.drug.drugId;
+        this.prescribed = drug.drug.prescribed;
         addRow(allFixedCheck);
         this.tekiyouRow = addRowBeforeCategory(new Label("摘要："), tekiyouLabel);
         setDrug(drug);
@@ -66,7 +68,7 @@ public class DrugEditInput extends DrugInputBase {
         validator.validateUsage(getUsage());
         validator.validateCategory(getCategory().getCode());
         validator.validateDays(getDays());
-        validator.validatePrescribed(0);
+        validator.validatePrescribed(prescribed);
         return validator.validate();
     }
 

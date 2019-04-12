@@ -45,15 +45,17 @@ public class DrugEditFormTest extends GuiTestBase {
         VisitDTO visit = frontend.startVisit(patient.patientId, LocalDateTime.now()).join();
         DrugFullDTO drug = SampleData.calonalDrugFull;
         drug.drug = DrugDTO.copy(drug.drug);
+        drug.drug.drugId = 0;
         drug.drug.visitId = visit.visitId;
-        frontend.enterDrug(drug.drug);
-        DrugAttrDTO attr = new DrugAttrDTO();
-        DrugEditForm form = createForm(drug, attr, visit);
-        form.setOnCloseHandler((argDrug, argAttr) -> {
+        drug.drug.drugId = frontend.enterDrug(drug.drug).join();
+        DrugEditForm form = createForm(drug, null, visit);
+        form.setOnEnteredHandler((argDrug, argAttr) -> {
             System.out.print("drug: ");
             printJson(argDrug);
             System.out.print("attr: ");
             printJson(argAttr);
         });
+        form.setOnCancelHandler(() -> System.out.println("cancel"));
+        form.setOnDeletedHandler(() -> System.out.println("deleted"));
     }
 }

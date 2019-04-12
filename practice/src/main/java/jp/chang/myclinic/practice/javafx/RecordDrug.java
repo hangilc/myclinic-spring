@@ -98,12 +98,13 @@ public class RecordDrug extends StackPane {
                 }
             }
             DrugEditForm form = new DrugEditForm(drug, attr, visit);
-            form.setOnCloseHandler((drug, attr) -> {
+            form.setOnEnteredHandler((drug, attr) -> {
                 RecordDrug.this.drug = drug;
                 RecordDrug.this.attr = attr;
                 updateDisp();
                 showDisp();
             });
+            form.setOnCancelHandler(() -> showDisp());
             form.setOnDeletedHandler(onDeletedHandler);
             getChildren().remove(disp);
             getChildren().add(form);

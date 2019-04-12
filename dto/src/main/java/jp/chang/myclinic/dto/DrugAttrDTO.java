@@ -22,12 +22,20 @@ public class DrugAttrDTO {
         return attr == null ? null : attr.tekiyou;
     }
 
-    public static DrugAttrDTO setTekiyou(DrugAttrDTO attr, String tekiyou){
+    public static DrugAttrDTO setTekiyou(int drugId, DrugAttrDTO attr, String tekiyou){
         if( attr == null ){
             attr = new DrugAttrDTO();
+            attr.drugId = drugId;
         }
         attr.tekiyou = tekiyou;
+        if( isEmpty(attr) ){
+            attr = null;
+        }
         return attr;
+    }
+
+    public static DrugAttrDTO deleteTekiyou(int drugId, DrugAttrDTO attr){
+        return setTekiyou(drugId, attr, null);
     }
 
     @Override
