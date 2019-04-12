@@ -32,9 +32,12 @@ public class DrugEditForm extends DrugForm {
     private HBox tekiyouBox = new HBox(4);
     private int drugId;
     private int visitId;
-    private BiConsumer<DrugFullDTO, DrugAttrDTO> onEnteredHandler = (d, a) -> {};
-    private Runnable onCancelHandler = () -> {};
-    private Runnable onDeletedHandler = () -> {};
+    private BiConsumer<DrugFullDTO, DrugAttrDTO> onEnteredHandler = (d, a) -> {
+    };
+    private Runnable onCancelHandler = () -> {
+    };
+    private Runnable onDeletedHandler = () -> {
+    };
 
     public DrugEditForm(DrugFullDTO drug, DrugAttrDTO attr, VisitDTO visit) {
         super(visit);
@@ -54,28 +57,28 @@ public class DrugEditForm extends DrugForm {
         );
     }
 
-    private int getDrugId(){
+    private int getDrugId() {
         return drugId;
     }
 
-    public void setOnEnteredHandler(BiConsumer<DrugFullDTO, DrugAttrDTO> handler){
+    public void setOnEnteredHandler(BiConsumer<DrugFullDTO, DrugAttrDTO> handler) {
         this.onEnteredHandler = handler;
     }
 
-    public void setOnCancelHandler(Runnable handler){
+    public void setOnCancelHandler(Runnable handler) {
         this.onCancelHandler = handler;
     }
 
-    public void setOnDeletedHandler(Runnable handler){
+    public void setOnDeletedHandler(Runnable handler) {
         this.onDeletedHandler = handler;
     }
 
-    private String extractTekiyou(DrugAttrDTO attr){
+    private String extractTekiyou(DrugAttrDTO attr) {
         return attr == null ? null : attr.tekiyou;
     }
 
-    private DrugAttrDTO copyAttr(DrugAttrDTO src){
-        if( src == null ){
+    private DrugAttrDTO copyAttr(DrugAttrDTO src) {
+        if (src == null) {
             return null;
         } else {
             return DrugAttrDTO.copy(src);
@@ -104,11 +107,11 @@ public class DrugEditForm extends DrugForm {
         return hbox;
     }
 
-    private boolean isGaiyou(){
+    private boolean isGaiyou() {
         return input.getCategory() == DrugCategory.Gaiyou;
     }
 
-    private void doAux(MouseEvent event, Node node){
+    private void doAux(MouseEvent event, Node node) {
         ContextMenu contextMenu = createAuxContextMenu();
         contextMenu.show(node, event.getScreenX(), event.getScreenY());
     }
@@ -128,15 +131,19 @@ public class DrugEditForm extends DrugForm {
         }
     }
 
-    private void doEnterTekiyou(){
-        GuiUtil.askForString("摘要の内容", "").ifPresent(str -> {
+    private void doEnterTekiyou() {
+        String curr = "";
+        if (isGaiyou()) {
+            curr = "１日２枚";
+        }
+        GuiUtil.askForString("摘要の内容", curr).ifPresent(str -> {
             this.attr = DrugAttrDTO.setTekiyou(drugId, attr, str);
             input.setTekiyou(str);
             adaptTekiyouBox(str);
         });
     }
 
-    private void doEditTekiyou(String current){
+    private void doEditTekiyou(String current) {
         GuiUtil.askForString("摘要の内容", current).ifPresent(str -> {
             this.attr = DrugAttrDTO.setTekiyou(drugId, attr, str);
             input.setTekiyou(str);
@@ -153,7 +160,7 @@ public class DrugEditForm extends DrugForm {
         }
     }
 
-    private ContextMenu createAuxContextMenu(){
+    private ContextMenu createAuxContextMenu() {
         ContextMenu menu = new ContextMenu();
         {
             MenuItem item = new MenuItem("処方例に追加");
@@ -163,7 +170,7 @@ public class DrugEditForm extends DrugForm {
         return menu;
     }
 
-    private void doAddToPrescExample(){
+    private void doAddToPrescExample() {
         Context.frontend.getDrugFull(input.getDrugId())
                 .thenAcceptAsync(drugFull -> {
                     ConvertToPrescExampleDialog dialog = new ConvertToPrescExampleDialog(drugFull);
@@ -176,7 +183,7 @@ public class DrugEditForm extends DrugForm {
 
     private void doEnter() {
         Validated<DrugDTO> validatedDrug = input.getDrug(visitId);
-        if( validatedDrug.isFailure() ){
+        if (validatedDrug.isFailure()) {
             AlertDialog.alert(validatedDrug.getErrorsAsString(), DrugEditForm.this);
             return;
         }
@@ -210,7 +217,7 @@ public class DrugEditForm extends DrugForm {
         input.setDrug(drug);
     }
 
-    private void closeForm(){
+    private void closeForm() {
         class Local {
             private DrugFullDTO drugFull;
         }

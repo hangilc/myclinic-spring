@@ -106,7 +106,6 @@ abstract public class DrugForm extends VBox {
     }
 
     private void setExample(PrescExampleFullDTO example) {
-        System.out.println("setExample: " + example);
         resolveMaster(example.master.iyakuhincode, master -> {
             example.master = master;
             onPrescExampleSelected(example);

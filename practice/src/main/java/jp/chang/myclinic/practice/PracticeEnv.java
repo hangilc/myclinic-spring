@@ -134,7 +134,7 @@ public class PracticeEnv {
     }
 
     public boolean isCurrentOrTempVisitId(int visitId) {
-        return getCurrentVisitId() == visitId || getTempVisitId() == visitId;
+        return visitId == Context.currentPatientService.getCurrentOrTempVisitId();
     }
 
     public MyclinicEnv getMyclinicEnv() {

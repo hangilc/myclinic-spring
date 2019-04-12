@@ -6,6 +6,8 @@ import jp.chang.myclinic.consts.DiseaseEndReason;
 import jp.chang.myclinic.consts.DrugCategory;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.dto.*;
+import jp.chang.myclinic.frontend.Frontend;
+import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
@@ -70,9 +72,11 @@ public class PracticeUtil {
     }
 
     public static boolean confirmCurrentVisitAction(int visitId, String message) {
-        PracticeEnv env = PracticeEnv.INSTANCE;
-        return visitId == env.getCurrentVisitId() || visitId == env.getTempVisitId() ||
-                GuiUtil.confirm("現在診察中あるいは暫定診察でありませんが、" + message);
+        if( visitId == Context.currentPatientService.getCurrentOrTempVisitId() ){
+            return true;
+        } else {
+            return GuiUtil.confirm("現在診察中あるいは暫定診察でありませんが、" + message);
+        }
     }
 
     public static String[] gazouLabelExamples = new String[]{ "胸部単純Ｘ線", "腹部単純Ｘ線" };

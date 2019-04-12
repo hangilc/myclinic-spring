@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-class RecordDrugsPane extends VBox {
+public class RecordDrugsPane extends VBox {
 
     private int index = 1;
     private VisitDTO visit;
     private DrugMenu menu;
 
-    RecordDrugsPane(List<DrugFullDTO> drugs, VisitDTO visit, Map<Integer, DrugAttrDTO> drugAttrMap) {
+    public RecordDrugsPane(List<DrugFullDTO> drugs, VisitDTO visit, Map<Integer, DrugAttrDTO> drugAttrMap) {
         this.visit = visit;
         setAlignment(Pos.TOP_LEFT);
         this.menu = new DrugMenu(visit);
