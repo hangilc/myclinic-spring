@@ -40,17 +40,7 @@ public class PracticeUtil {
     }
 
     public static int findCopyTarget(int srcVisitId){
-        int targetVisitId = 0;
-        PracticeEnv env = PracticeEnv.INSTANCE;
-        int currentVisitId = env.getCurrentVisitId();
-        if( currentVisitId > 0 ){
-            targetVisitId = currentVisitId;
-        } else {
-            int tempVisitId = env.getTempVisitId();
-            if( tempVisitId > 0 ){
-                targetVisitId = tempVisitId;
-            }
-        }
+        int targetVisitId = Context.currentPatientService.getCurrentOrTempVisitId();
         if( targetVisitId == 0 ){
             GuiUtil.alertError("コピー先を見つけられませんでした。");
         } else if( targetVisitId == srcVisitId ){

@@ -1,5 +1,7 @@
 package jp.chang.myclinic.practice.guitest.records;
 
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -28,11 +30,13 @@ public class RecordsPaneDrugTest extends GuiTestBase {
     private RecordsPane createPane(){
         RecordsPane pane = new RecordsPane();
         gui(() -> {
+            pane.setPrefWidth(680);
             pane.setPrefHeight(Region.USE_COMPUTED_SIZE);
             pane.setMaxHeight(Region.USE_PREF_SIZE);
-            main.setPrefWidth(680);
-            main.setPrefHeight(600);
-            main.getChildren().setAll(pane);
+            ScrollPane scroll = new ScrollPane(pane);
+            scroll.setPrefWidth(700);
+            scroll.setPrefHeight(600);
+            main.getChildren().setAll(scroll);
             stage.sizeToScene();
         });
         return pane;
