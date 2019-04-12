@@ -1,7 +1,5 @@
 package jp.chang.myclinic.apitool;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -16,7 +14,6 @@ public class SqliteConnectionProvider implements Supplier<Connection> {
     }
 
     public SqliteConnectionProvider(String dbFile) {
-        System.out.println("dbFile: " + dbFile);
         this.dbFile = dbFile;
     }
 

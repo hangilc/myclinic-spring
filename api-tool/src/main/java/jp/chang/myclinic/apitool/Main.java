@@ -4,7 +4,8 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "api-tool",
-        subcommands = {Tables.class, SqliteSchema.class, UpdateFrontend.class, SearchMaster.class}
+        subcommands = {Tables.class, SqliteSchema.class, UpdateFrontend.class, SearchMaster.class,
+                ListPrescExample.class}
 )
 public class Main implements Runnable {
 
