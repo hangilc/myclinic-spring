@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.componenttest.text;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import jp.chang.myclinic.backenddb.test.annotation.DbTest;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.frontend.FrontendAdapter;
@@ -172,7 +173,8 @@ public class TextEditFormTest extends ComponentTestBase {
         gui(form::simulateClickShohousenButton);
         ConfirmDialog confirmDialog = waitForWindow(ConfirmDialog.class);
         gui(confirmDialog::simulateClickOkButton);
-        waitForWindow(DrawerPreviewDialog.class);
+        Stage dialog = waitForWindow(DrawerPreviewDialog.class);
+        gui(dialog::close);
     }
 
     @CompTest

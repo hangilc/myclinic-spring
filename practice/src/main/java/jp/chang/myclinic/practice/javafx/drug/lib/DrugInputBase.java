@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.javafx.drug.lib2;
+package jp.chang.myclinic.practice.javafx.drug.lib;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.geometry.Pos;

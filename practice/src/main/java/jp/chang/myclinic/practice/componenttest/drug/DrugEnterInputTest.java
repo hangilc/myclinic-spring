@@ -9,7 +9,7 @@ import jp.chang.myclinic.dto.PrescExampleFullDTO;
 import jp.chang.myclinic.mockdata.SampleData;
 import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
-import jp.chang.myclinic.practice.javafx.drug.lib2.DrugEnterInput;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugEnterInput;
 
 import static jp.chang.myclinic.consts.DrugCategory.*;
 

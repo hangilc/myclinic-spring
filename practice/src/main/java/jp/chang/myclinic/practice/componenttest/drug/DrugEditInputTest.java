@@ -8,7 +8,7 @@ import jp.chang.myclinic.dto.DrugFullDTO;
 import jp.chang.myclinic.mockdata.SampleData;
 import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
-import jp.chang.myclinic.practice.javafx.drug.lib2.DrugEditInput;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugEditInput;
 
 public class DrugEditInputTest extends ComponentTestBase {
 

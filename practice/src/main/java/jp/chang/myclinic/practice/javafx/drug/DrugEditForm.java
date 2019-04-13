@@ -15,7 +15,7 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugForm;
-import jp.chang.myclinic.practice.javafx.drug.lib2.DrugEditInput;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugEditInput;
 import jp.chang.myclinic.util.validator.Validated;
 import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.GuiUtil;

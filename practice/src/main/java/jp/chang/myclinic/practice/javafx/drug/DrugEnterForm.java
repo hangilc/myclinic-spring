@@ -12,7 +12,7 @@ import jp.chang.myclinic.practice.javafx.drug.lib.DrugForm;
 import jp.chang.myclinic.practice.javafx.drug.lib.DrugSearchResultItem;
 import jp.chang.myclinic.practice.javafx.drug.lib.SearchResult;
 import jp.chang.myclinic.practice.javafx.drug.lib.SearchTextInput;
-import jp.chang.myclinic.practice.javafx.drug.lib2.DrugEnterInput;
+import jp.chang.myclinic.practice.javafx.drug.lib.DrugEnterInput;
 import jp.chang.myclinic.util.validator.Validated;
 import jp.chang.myclinic.utilfx.AlertDialog;
 import jp.chang.myclinic.utilfx.HandlerFX;
