@@ -15,6 +15,13 @@ public class TextDTO {
     public int visitId;
     public String content;
 
+    public static TextDTO create(int visitId, String content){
+        TextDTO text = new TextDTO();
+        text.visitId = visitId;
+        text.content = content;
+        return text;
+    }
+
     public TextDTO copy(){
         TextDTO textDTO = new TextDTO();
         textDTO.textId = textId;

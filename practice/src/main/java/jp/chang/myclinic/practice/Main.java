@@ -88,6 +88,7 @@ public class Main extends Application {
                     System.getProperty("user.home"),
                     "practice.properties"
             ));
+            Context.integrationService = new IntegrationServiceImpl();
             if( opts.guiTest ) {
                 confirmTestDatabase();
                 StackPane main = setupStageForComponentTest(stage);
@@ -161,6 +162,10 @@ public class Main extends Application {
         String param = opts.serverUrl;
         if (param != null && param.startsWith("sqlite-temp:")) {
             String dbFile = param.split(":", 2)[1];
+            if( dbFile.isEmpty() ){
+                dbFile = Paths.get(System.getProperty("user.home"),
+                        "sqlite-data", "myclinic-test-sqlite.db").toString();
+            }
             DataSource ds = SqliteDataSource.createTemporaryFromDbFile(dbFile);
             DbBackend dbBackend = new DbBackend(ds, SqliteTableSet::create, ss);
             Context.frontend = new FrontendBackend(dbBackend);

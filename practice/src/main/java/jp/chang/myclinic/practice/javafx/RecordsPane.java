@@ -5,8 +5,12 @@ import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.CurrentPatientService;
+import jp.chang.myclinic.practice.IntegrationService;
 import jp.chang.myclinic.practice.PracticeEnv;
-import jp.chang.myclinic.practice.javafx.events.*;
+import jp.chang.myclinic.practice.javafx.events.ConductDeletedEvent;
+import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
+import jp.chang.myclinic.practice.javafx.events.ShinryouDeletedEvent;
+import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -19,8 +23,9 @@ public class RecordsPane extends VBox {
 
     public RecordsPane(){
         setFillWidth(true);
-        addEventHandler(EventTypes.visitDeletedEventType, event -> deleteRecord(event.getVisitId()));
-        addEventHandler(EventTypes.drugEnteredEventType, event -> addDrug(event.getEnteredDrug(), event.getAttr()));
+        IntegrationService integ = Context.integrationService;
+        integ.setOnNewText(this::onNewText);
+        integ.setOnNewDrug(this::onNewDrug);
         addEventHandler(ShinryouEnteredEvent.eventType, this::onShinryouEntered);
         addEventHandler(ShinryouDeletedEvent.eventType, this::onShinryouDeleted);
         addEventHandler(ConductEnteredEvent.eventType, this::onConductEntered);
@@ -39,11 +44,7 @@ public class RecordsPane extends VBox {
         getChildren().add(record);
     }
 
-    private void deleteRecord(int visitId){
-        findRecord(visitId).ifPresent(record -> getChildren().remove(record));
-    }
-
-    Optional<Record> findRecord(int visitId){
+    public Optional<Record> findRecord(int visitId){
         for(Node node :getChildren()){
             if( node instanceof Record ){
                 Record r = (Record)node;
@@ -60,14 +61,20 @@ public class RecordsPane extends VBox {
                 .map(n -> (Record)n).collect(Collectors.toList());
     }
 
-    private void addDrug(DrugFullDTO drug, DrugAttrDTO attr){
+    private void onNewText(TextDTO text){
+        findRecord(text.visitId)
+                .ifPresent(record -> record.addText(text));
+
+    }
+
+    private void onNewDrug(DrugFullDTO drug, DrugAttrDTO attr){
         findRecord(drug.drug.visitId).ifPresent(record -> record.addDrug(drug, attr));
     }
 
     private void onShinryouEntered(ShinryouEnteredEvent event){
         ShinryouFullDTO shinryou = event.getShinryou();
         findRecord(shinryou.shinryou.visitId).ifPresent(record ->
-                record.insertShinryou(shinryou, event.getAttr()));
+                record.addShinryou(shinryou, event.getAttr()));
     }
 
     private void onShinryouDeleted(ShinryouDeletedEvent event) {

@@ -18,6 +18,7 @@ public class RecordsPaneTest extends GroupTestBase {
     @Override
     protected List<TestInterface> getTests() {
         return List.of(
+                new RecordsPaneTextTest(stage, main),
                 new RecordsPaneDrugTest(stage, main)
         );
     }

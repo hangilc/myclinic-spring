@@ -53,10 +53,6 @@ public class Record extends VBox {
         recordTitle.styleAsTempVisit();
     }
 
-    void styleAsRegulstVisit(){
-        recordTitle.styleAsCurrentVisit();
-    }
-
     public int getVisitId() {
         return visitId;
     }
@@ -145,15 +141,15 @@ public class Record extends VBox {
         return hbox;
     }
 
+    void addText(TextDTO text){
+        textPane.appendText(text);
+    }
+
     void addDrug(DrugFullDTO drug, DrugAttrDTO attr) {
         drugsPane.addDrug(drug, attr);
     }
 
-    void modifyDrugDays(int drugId, int days) {
-        drugsPane.modifyDrugDays(drugId, days);
-    }
-
-    void insertShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
+    void addShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
         shinryouPane.insertShinryou(shinryou, attr);
     }
 
