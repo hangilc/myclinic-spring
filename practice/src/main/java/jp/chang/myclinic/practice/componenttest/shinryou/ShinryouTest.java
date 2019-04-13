@@ -18,7 +18,8 @@ public class ShinryouTest extends GroupTestBase {
     @Override
     protected List<TestInterface> getTests() {
         return List.of(
-                new ShinryouDispTest(stage, main)
+                new ShinryouDispTest(stage, main),
+                new ShinryouInputTest(stage, main)
         );
     }
 }

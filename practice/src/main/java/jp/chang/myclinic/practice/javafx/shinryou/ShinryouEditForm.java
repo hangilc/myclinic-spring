@@ -26,7 +26,12 @@ public class ShinryouEditForm extends WorkForm {
         super("診療行為編集");
         this.shinryouId = shinryou.shinryou.shinryouId;
         this.attr = ShinryouAttrDTO.copy(attr);
-        this.shinryouInput = new ShinryouInput(shinryou.master, attr);
+        this.shinryouInput = new ShinryouInput();
+        shinryouInput.setMaster(shinryou.master);
+        String tekiyou = ShinryouAttrDTO.extractTekiyou(attr);
+        if( tekiyou != null ){
+            shinryouInput.setTekiyou(tekiyou);
+        }
         setupCommandBox(attr);
         getChildren().addAll(
                 shinryouInput,

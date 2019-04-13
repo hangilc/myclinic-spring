@@ -11,19 +11,16 @@ public class ShinryouInput extends GridPane {
 
     private int shinryoucode = 0;
     private Text nameText = new Text();
-    private Text tekiyouText;
+    private Text tekiyouText = null;
     private Text shoujouShoukiText = null;
 
-    public ShinryouInput(ShinryouMasterDTO master, ShinryouAttrDTO attr) {
+    public ShinryouInput() {
         setHgap(4);
-        this.tekiyouText = new Text(ShinryouAttrDTO.extractTekiyou(attr));
         Label label = new Label("名称：");
         label.setMinWidth(USE_PREF_SIZE);
         TextFlow textFlow = new TextFlow();
         textFlow.getChildren().add(nameText);
         addRow(0, label, textFlow);
-        setMaster(master);
-        updateAttrAndShouki();
     }
 
     public void setMaster(ShinryouMasterDTO master) {
@@ -43,29 +40,35 @@ public class ShinryouInput extends GridPane {
     }
 
     public void setTekiyou(String tekiyou) {
-        if (tekiyouText == null) {
-            tekiyouText = new Text();
+        if( tekiyou == null || tekiyou.isEmpty() ){
+            tekiyouText = null;
+        } else {
+            if (tekiyouText == null) {
+                tekiyouText = new Text();
+            }
+            tekiyouText.setText(tekiyou);
         }
-        tekiyouText.setText(tekiyou);
         updateAttrAndShouki();
     }
 
     public void setShoujouShouki(String shoujouShouki){
-        if( shoujouShoukiText == null ){
-            shoujouShoukiText = new Text();
+        if( shoujouShouki == null || shoujouShouki.isEmpty() ){
+            shoujouShoukiText = null;
+        } else {
+            if (shoujouShoukiText == null) {
+                shoujouShoukiText = new Text();
+            }
+            shoujouShoukiText.setText(shoujouShouki);
         }
-        shoujouShoukiText.setText(shoujouShouki);
         updateAttrAndShouki();
     }
 
     public void deleteTekiyou() {
-        this.tekiyouText = null;
-        updateAttrAndShouki();
+        setTekiyou(null);
     }
 
     public void deleteShoujouShouki(){
-        this.shoujouShoukiText = null;
-        updateAttrAndShouki();
+        setShoujouShouki(null);
     }
 
     public int getShinryoucode() {
