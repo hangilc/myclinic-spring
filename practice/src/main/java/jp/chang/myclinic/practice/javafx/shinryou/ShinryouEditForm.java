@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.HBox;
+import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
@@ -16,20 +17,16 @@ import jp.chang.myclinic.utilfx.HandlerFX;
 
 public class ShinryouEditForm extends WorkForm {
 
-    //private static Logger logger = LoggerFactory.getLogger(ShinryouEditForm.class);
     private int shinryouId;
-    private ShinryouInput shinryouInput = new ShinryouInput();
+    private ShinryouAttrDTO attr;
+    private ShinryouInput shinryouInput;
     private HBox commandBox = new HBox(4);
 
     public ShinryouEditForm(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
         super("診療行為編集");
         this.shinryouId = shinryou.shinryou.shinryouId;
-        shinryouInput.setMaster(shinryou.master);
-        if( attr != null ){
-            if( attr.tekiyou != null ){
-                shinryouInput.setTekiyou(attr.tekiyou);
-            }
-        }
+        this.attr = ShinryouAttrDTO.copy(attr);
+        this.shinryouInput = new ShinryouInput(shinryou.master, attr);
         setupCommandBox(attr);
         getChildren().addAll(
                 shinryouInput,

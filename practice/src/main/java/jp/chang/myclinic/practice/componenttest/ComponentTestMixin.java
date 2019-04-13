@@ -131,6 +131,10 @@ public interface ComponentTestMixin {
         );
     }
 
+    default void click(Node node){
+        node.fireEvent(createMouseClickedEvent(node));
+    }
+
     default VisitFull2DTO createBlankVisitFull2(int visitId, int patientId, LocalDateTime visitedAt){
         VisitFull2DTO result = new VisitFull2DTO();
         VisitDTO visit = new VisitDTO();

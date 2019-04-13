@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import jp.chang.myclinic.practice.componenttest.drug.DrugTest;
 import jp.chang.myclinic.practice.componenttest.hoken.HokenTest;
 import jp.chang.myclinic.practice.componenttest.mainpane.MainPaneTest;
+import jp.chang.myclinic.practice.componenttest.shinryou.ShinryouTest;
 import jp.chang.myclinic.practice.componenttest.text.TextEditFormTest;
 import jp.chang.myclinic.practice.componenttest.text.TextEnterFormTest;
 import jp.chang.myclinic.practice.componenttest.text.TextTest;
@@ -23,7 +24,8 @@ public class ComponentTest extends GroupTestBase {
                 new TextTest(stage, main),
                 new MainPaneTest(stage, main),
                 new HokenTest(stage, main),
-                new DrugTest(stage, main)
+                new DrugTest(stage, main),
+                new ShinryouTest(stage, main)
         );
     }
 

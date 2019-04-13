@@ -18,6 +18,10 @@ public class ShinryouAttrDTO {
         return attr.tekiyou == null || attr.tekiyou.isEmpty();
     }
 
+    public static String extractTekiyou(ShinryouAttrDTO attr){
+        return attr == null ? null : attr.tekiyou;
+    }
+
     @Override
     public String toString() {
         return "ShinryouAttrDTO{" +
