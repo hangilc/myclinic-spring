@@ -72,7 +72,7 @@ class RecordShinryouPane extends VBox {
                 insertShinryou(shinryou, attrMap.get(shinryou.shinryou.shinryouId));
             }
         });
-        menu.setOnConductsEnteredHandler(onConductsEnteredHandler);
+        menu.setOnConductsEnteredHandler(cc -> onConductsEnteredHandler.accept(cc));
         return menu;
     }
 

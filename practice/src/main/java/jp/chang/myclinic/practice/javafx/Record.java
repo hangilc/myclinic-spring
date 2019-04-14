@@ -128,7 +128,9 @@ public class Record extends VBox {
         left.getChildren().add(textPane);
         drugsPane = new RecordDrugsPane(visit.drugs, visit.visit, drugAttrMap);
         shinryouPane = new RecordShinryouPane(visit.shinryouList, visit.visit, shinryouAttrMap);
-        shinryouPane.setOnConductsEnteredHandler(newConducts -> newConducts.forEach(this::addConduct));
+        shinryouPane.setOnConductsEnteredHandler(newConducts -> {
+            newConducts.forEach(this::addConduct);
+        });
         conductsPane = new RecordConductsPane(visit.conducts, visit.visit.visitId, visit.visit.visitedAt);
         hokenArea.getChildren().add(new RecordHoken(visit.hoken, visit.visit));
         right.getChildren().addAll(
