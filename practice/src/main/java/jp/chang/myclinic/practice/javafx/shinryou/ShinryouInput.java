@@ -4,7 +4,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
 
 public class ShinryouInput extends GridPane {
@@ -12,7 +11,6 @@ public class ShinryouInput extends GridPane {
     private int shinryoucode = 0;
     private Text nameText = new Text();
     private Text tekiyouText = null;
-    private Text shoujouShoukiText = null;
 
     public ShinryouInput() {
         setHgap(4);
@@ -28,47 +26,24 @@ public class ShinryouInput extends GridPane {
         this.nameText.setText(master.name);
     }
 
-    private void updateAttrAndShouki() {
+    private void updateAttr() {
         getChildren().removeIf(node -> GridPane.getRowIndex(node) >= 1);
-        int index = 1;
         if (tekiyouText != null) {
-            addRow(index++, new Label("摘要："), tekiyouText);
-        }
-        if (shoujouShoukiText != null) {
-            addRow(index, new Label("症状詳記："), shoujouShoukiText);
+            addRow(1, new Label("摘要："), tekiyouText);
         }
     }
 
     public void setTekiyou(String tekiyou) {
-        if( tekiyou == null || tekiyou.isEmpty() ){
-            tekiyouText = null;
-        } else {
-            if (tekiyouText == null) {
-                tekiyouText = new Text();
-            }
-            tekiyouText.setText(tekiyou);
+        if (tekiyouText == null) {
+            tekiyouText = new Text();
         }
-        updateAttrAndShouki();
-    }
-
-    public void setShoujouShouki(String shoujouShouki){
-        if( shoujouShouki == null || shoujouShouki.isEmpty() ){
-            shoujouShoukiText = null;
-        } else {
-            if (shoujouShoukiText == null) {
-                shoujouShoukiText = new Text();
-            }
-            shoujouShoukiText.setText(shoujouShouki);
-        }
-        updateAttrAndShouki();
+        tekiyouText.setText(tekiyou);
+        updateAttr();
     }
 
     public void deleteTekiyou() {
-        setTekiyou(null);
-    }
-
-    public void deleteShoujouShouki(){
-        setShoujouShouki(null);
+        this.tekiyouText = null;
+        updateAttr();
     }
 
     public int getShinryoucode() {

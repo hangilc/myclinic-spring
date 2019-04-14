@@ -151,18 +151,22 @@ public class Helper {
         try {
             Field field = dtoClass.getField(fieldName);
             Class<?> c = field.getType();
-            if (c == int.class) {
-                return Integer.class;
-            } else if (c == double.class) {
-                return Double.class;
-            } else if (c == char.class) {
-                return Character.class;
-            } else {
-                return c;
-            }
+            return getBoxedClass(c);
         } catch (NoSuchFieldException e) {
             String msg = String.format("Cannot find %s in %s", fieldName, dtoClass.getSimpleName());
             throw new RuntimeException(msg);
+        }
+    }
+
+    public Class<?> getBoxedClass(Class<?> c){
+        if (c == int.class) {
+            return Integer.class;
+        } else if (c == double.class) {
+            return Double.class;
+        } else if (c == char.class) {
+            return Character.class;
+        } else {
+            return c;
         }
     }
 

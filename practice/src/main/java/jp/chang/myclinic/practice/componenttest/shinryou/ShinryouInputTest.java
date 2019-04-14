@@ -3,12 +3,9 @@ package jp.chang.myclinic.practice.componenttest.shinryou;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import jp.chang.myclinic.dto.ShinryouAttrDTO;
-import jp.chang.myclinic.dto.ShinryouMasterDTO;
 import jp.chang.myclinic.mockdata.SampleShinryouMaster;
 import jp.chang.myclinic.practice.componenttest.CompTest;
 import jp.chang.myclinic.practice.componenttest.ComponentTestBase;
-import jp.chang.myclinic.practice.javafx.shinryou.ShinryouDisp;
 import jp.chang.myclinic.practice.javafx.shinryou.ShinryouInput;
 
 public class ShinryouInputTest extends ComponentTestBase {
@@ -36,7 +33,6 @@ public class ShinryouInputTest extends ComponentTestBase {
         gui(() -> {
             input.setMaster(SampleShinryouMaster.初診);
             input.setTekiyou("摘要のテスト");
-            input.setShoujouShouki("症状詳記のテスト");
         });
     }
 }
