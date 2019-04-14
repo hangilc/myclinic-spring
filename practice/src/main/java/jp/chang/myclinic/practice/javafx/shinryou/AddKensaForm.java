@@ -1,5 +1,6 @@
 package jp.chang.myclinic.practice.javafx.shinryou;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -8,9 +9,9 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.parts.TwoColumn;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
-import jp.chang.myclinic.practice.lib.shinryou.KensaEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +19,27 @@ import java.util.stream.Collectors;
 
 class AddKensaForm extends WorkForm {
 
+    private int visitId;
     private List<CheckBox> checks = new ArrayList<>();
+    private OnEnteredCallback onEnteredCallback = (s, m, c) -> { };
+    private Runnable onCancelHandler = () -> {};
 
-    AddKensaForm(){
+    AddKensaForm(int visitId){
         super("検査の入力");
+        this.visitId = visitId;
         getChildren().addAll(
                 createInputs(),
                 createSelectors(),
                 createCommands()
         );
+    }
+
+    public void setOnEnteredCallback(OnEnteredCallback onEnteredCallback) {
+        this.onEnteredCallback = onEnteredCallback;
+    }
+
+    public void setOnCancelHandler(Runnable onCancelHandler) {
+        this.onCancelHandler = onCancelHandler;
     }
 
     private Node createInputs(){
@@ -73,7 +86,7 @@ class AddKensaForm extends WorkForm {
         Button enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル ");
         enterButton.setOnAction(event -> doEnter());
-        cancelButton.setOnAction(event -> onCancel(AddKensaForm.this));
+        cancelButton.setOnAction(event -> onCancelHandler.run());
         hbox.getChildren().addAll(enterButton, cancelButton);
         return hbox;
     }
@@ -82,15 +95,9 @@ class AddKensaForm extends WorkForm {
         List<String> selected = checks.stream().filter(CheckBox::isSelected)
                 .map(ch -> ((KensaEntry)ch.getUserData()).getValue())
                 .collect(Collectors.toList());
-        onEnter(selected);
-    }
-
-    protected void onEnter(List<String> selected){
-
-    }
-
-    protected void onCancel(AddKensaForm form){
-
+        FunJavaFX.batchEnterShinryouByNames(visitId, selected, result -> {
+            Platform.runLater(() -> onEnteredCallback.accept(result.shinryouList, result.attrMap, result.conducts));
+        });
     }
 
 }

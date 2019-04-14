@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.lib.shinryou;
+package jp.chang.myclinic.practice.javafx.shinryou;
 
 import javafx.application.Platform;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;

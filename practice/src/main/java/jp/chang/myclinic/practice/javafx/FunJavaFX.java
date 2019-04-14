@@ -5,7 +5,7 @@ import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.lib.ErrorMessageExtractor;
-import jp.chang.myclinic.practice.lib.shinryou.ShinryouCopier;
+import jp.chang.myclinic.practice.javafx.shinryou.ShinryouCopier;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.util.ArrayList;

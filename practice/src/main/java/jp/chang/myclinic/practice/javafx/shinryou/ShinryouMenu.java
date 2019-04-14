@@ -147,24 +147,12 @@ public class ShinryouMenu extends VBox {
 
     private void doKensa() {
         if (PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？")) {
-            AddKensaForm form = new AddKensaForm() {
-                @Override
-                protected void onEnter(List<String> selected) {
-                    FunJavaFX.batchEnterShinryouByNames(visitId, selected, result -> {
-                        Platform.runLater(() -> {
-                            result.shinryouList.forEach(shinryou ->
-                                    fireShinryouEnteredEvent(shinryou, result.attrMap.get(shinryou.shinryou.shinryouId)));
-                            result.conducts.forEach(conduct -> fireConductEnteredEvent(conduct));
-                            hideWorkarea();
-                        });
-                    });
-                }
-
-                @Override
-                protected void onCancel(AddKensaForm form) {
-                    hideWorkarea();
-                }
-            };
+            AddKensaForm form = new AddKensaForm(visitId);
+            form.setOnEnteredCallback((shinryouList, attrMap, conducts) -> {
+                onShinryouEnteredHandler.accept(shinryouList, attrMap);
+                onConductsEnteredHandler.accept(conducts);
+                hideWorkarea();
+            });
             showWorkarea(form);
         }
     }

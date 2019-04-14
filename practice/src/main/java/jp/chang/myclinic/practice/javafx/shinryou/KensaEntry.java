@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.lib.shinryou;
+package jp.chang.myclinic.practice.javafx.shinryou;
 
 public class KensaEntry {
     String name;
@@ -58,8 +58,8 @@ public class KensaEntry {
             new KensaEntry("クレアチニン", true),
             new KensaEntry("尿酸", true),
             new KensaEntry("カリウム"),
-            new KensaEntry("ＬＤＬ－Ｃｈ", "ＬＤＬ－コレステロール", true),
-            new KensaEntry("ＨＤＬ－Ｃｈ", "ＨＤＬ－コレステロール", true),
+            new KensaEntry("ＬＤＬ－Ｃｈ", "ＬＤＬコレステロール", true),
+            new KensaEntry("ＨＤＬ－Ｃｈ", "ＨＤＬコレステロール", true),
             new KensaEntry("ＴＧ", true),
             new KensaEntry("グルコース"),
     };
@@ -72,8 +72,8 @@ public class KensaEntry {
             new KensaEntry("ＦＴ３"),
             new KensaEntry("ＰＳＡ"),
             KensaEntry.sep,
-            new KensaEntry("蛋白定量（尿）"),
-            new KensaEntry("クレアチニン（尿）"),
+            new KensaEntry("蛋白定量（尿）", "蛋白定量尿"),
+            new KensaEntry("クレアチニン（尿）", "クレアチニン尿"),
     };
 
 

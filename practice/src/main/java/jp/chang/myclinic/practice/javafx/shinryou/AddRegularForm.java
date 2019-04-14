@@ -11,19 +11,12 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.dto.ConductFullDTO;
-import jp.chang.myclinic.dto.ConductShinryouFullDTO;
-import jp.chang.myclinic.dto.ShinryouAttrDTO;
-import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
-import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
-import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AddRegularForm extends VBox {
@@ -33,11 +26,6 @@ public class AddRegularForm extends VBox {
     private CheckBox shohouryouCheckBox;
     private CheckBox kouhatsuKasanCheckBox;
     private Button enterButton;
-
-    public interface OnEnteredCallback {
-        void accept(List<ShinryouFullDTO> shinryouList, Map<Integer, ShinryouAttrDTO> attrMap,
-                    List<ConductFullDTO> conducts);
-    }
 
     private OnEnteredCallback onEnteredCallback = (s, m, c) -> {
     };
