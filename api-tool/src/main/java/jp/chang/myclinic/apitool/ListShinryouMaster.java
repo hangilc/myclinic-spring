@@ -1,7 +1,6 @@
 package jp.chang.myclinic.apitool;
 
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
-import picocli.CommandLine;
 import picocli.CommandLine.*;
 
 import java.nio.file.Path;
