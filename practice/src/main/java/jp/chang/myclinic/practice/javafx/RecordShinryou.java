@@ -48,7 +48,7 @@ class RecordShinryou extends StackPane {
                 getChildren().setAll(createDisp(shinryou, updatedAttr));
             });
             form.setOnCancelHandler(() -> getChildren().setAll(disp));
-            form.setOnDeletedHandler(onDeletedHandler);
+            form.setOnDeletedHandler(() -> onDeletedHandler.run());
             getChildren().setAll(form);
         }
     }

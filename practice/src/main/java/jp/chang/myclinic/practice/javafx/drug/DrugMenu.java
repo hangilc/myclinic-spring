@@ -76,7 +76,7 @@ public class DrugMenu extends VBox {
                 }
                 DrugEnterForm form = new DrugEnterForm(visit);
                 form.setOnCloseHandler(this::hideWorkarea);
-                form.setOnDrugEnteredHandler(onDrugEnteredHandler);
+                form.setOnDrugEnteredHandler((drug, attr) -> onDrugEnteredHandler.accept(drug, attr));
                 showWorkarea(form);
             }
         });

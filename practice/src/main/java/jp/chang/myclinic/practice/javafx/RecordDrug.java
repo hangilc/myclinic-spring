@@ -105,7 +105,7 @@ public class RecordDrug extends StackPane {
                 showDisp();
             });
             form.setOnCancelHandler(this::showDisp);
-            form.setOnDeletedHandler(onDeletedHandler);
+            form.setOnDeletedHandler(() -> onDeletedHandler.run());
             getChildren().remove(disp);
             getChildren().add(form);
         }
