@@ -32,11 +32,11 @@ public class Test {
     private static SupportSet createSupportSet(){
         SupportSet ss = new SupportSet();
         ss.stockDrugService = new StockDrugFile(Paths.get("config/stock-drug.txt"));
-        ss.houkatsuKensaService = new HoukatsuKensaFile(Paths.get("conifg/houkatsu-kensa.xml"));
+        ss.houkatsuKensaService = new HoukatsuKensaFile(Paths.get("config/houkatsu-kensa.xml"));
         ss.meisaiService = new MeisaiServiceImpl();
         ss.diseaseExampleProvider = new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml"));
         ss.shinryoucodeResolver = new ShinryoucodeFileResolver(new File("config/shinryoucodes.yml"));
-        ss.kizaicodeResolver = new KizaicodeFileResolver(new File("config/kizai-names.yml"));
+        ss.kizaicodeResolver = new KizaicodeFileResolver(new File("config/kizaicodes.yml"));
         ss.clinicInfoProvider = new ClinicInfoFileProvider(Paths.get("config/clinic-info.yml"));
         return ss;
     }

@@ -869,11 +869,12 @@ public class Backend {
 
     public ShinryouFullDTO getShinryouFull(int shinryouId) {
         String sql = xlate("select s.*, m.* from Shinryou s, ShinryouMaster m, Visit v " +
-                        " where s.visitId = v.visitId and s.shinryoucode = m.shinryoucode " +
+                        " where s.shinryouId = ? and s.visitId = v.visitId and s.shinryoucode = m.shinryoucode " +
                         " and " + ts.dialect.isValidAt("m.validFrom", "m.validUpto", "v.visitedAt"),
                 ts.shinryouTable, "s", ts.shinryouMasterTable, "m", ts.visitTable, "v");
         return getQuery().get(sql,
-                biProjector(ts.shinryouTable, ts.shinryouMasterTable, ShinryouFullDTO::create));
+                biProjector(ts.shinryouTable, ts.shinryouMasterTable, ShinryouFullDTO::create),
+                shinryouId);
     }
 
     public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {

@@ -88,6 +88,7 @@ public class ShinryouMenu extends VBox {
                 form.setOnEnteredCallback((shinryouList, attrMap, conducts) -> {
                     onShinryouEnteredHandler.accept(shinryouList, attrMap);
                     onConductsEnteredHandler.accept(conducts);
+                    hideWorkarea();
                 });
                 form.setOnCancelHandler(this::hideWorkarea);
                 showWorkarea(form);
