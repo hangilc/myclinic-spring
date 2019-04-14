@@ -12,12 +12,15 @@ import jp.chang.myclinic.practice.lib.PracticeUtil;
 class RecordShinryou extends StackPane {
 
     private ShinryouDTO shinryou;
-    private ShinryouAttrDTO attr;
+    private Runnable onDeletedHandler = () -> {};
 
     RecordShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
         this.shinryou = shinryou.shinryou;
-        this.attr = ShinryouAttrDTO.copy(attr);
         getChildren().add(createDisp(shinryou, attr));
+    }
+
+    public void setOnDeletedHandler(Runnable onDeletedHandler) {
+        this.onDeletedHandler = onDeletedHandler;
     }
 
     private Node createDisp(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
@@ -41,28 +44,11 @@ class RecordShinryou extends StackPane {
     private void doMouseClick(ShinryouDisp disp, ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
         if( PracticeUtil.confirmCurrentVisitAction(shinryou.shinryou.visitId, "診療行為を編集しますか？") ){
             ShinryouEditForm form = new ShinryouEditForm(shinryou, attr);
-//            {
-//                @Override
-//                protected void onDelete(ShinryouEditForm form) {
-//                    Context.frontend.deleteShinryou(shinryou.shinryou.shinryouId)
-//                            .thenAccept(result -> Platform.runLater(() -> {
-//                                ShinryouDeletedEvent e = new ShinryouDeletedEvent(shinryou.shinryou);
-//                                RecordShinryou.this.fireEvent(e);
-//                            }))
-//                            .exceptionally(HandlerFX::exceptionally);
-//                }
-//
-//                @Override
-//                protected void onCancel(ShinryouEditForm form) {
-//                    getChildren().setAll(disp);
-//                }
-//
-//                @Override
-//                protected void onAttrModified(ShinryouAttrDTO modified) {
-//                    RecordShinryou.this.attr = modified;
-//                    getChildren().setAll(createDisp(shinryou, attr));
-//                }
-//            };
+            form.setOnEnteredHandler(updatedAttr -> {
+                getChildren().setAll(createDisp(shinryou, updatedAttr));
+            });
+            form.setOnCancelHandler(() -> getChildren().setAll(disp));
+            form.setOnDeletedHandler(onDeletedHandler);
             getChildren().setAll(form);
         }
     }

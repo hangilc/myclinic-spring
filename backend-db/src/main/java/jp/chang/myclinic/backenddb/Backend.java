@@ -862,6 +862,11 @@ public class Backend {
         practiceLogger.logShinryouDeleted(shinryou);
     }
 
+    public void deleteShinryouCascading(int shinryouId){
+        deleteShinryouAttr(shinryouId);
+        deleteShinryou(shinryouId);
+    }
+
     public ShinryouFullDTO getShinryouFull(int shinryouId) {
         String sql = xlate("select s.*, m.* from Shinryou s, ShinryouMaster m, Visit v " +
                         " where s.visitId = v.visitId and s.shinryoucode = m.shinryoucode " +
@@ -949,26 +954,16 @@ public class Backend {
         ts.shinryouAttrTable.update(shinryouAttr);
     }
 
-    public void deleteShinryouTekiyou(int shinryouId) {
-        ShinryouAttrDTO shinryouAttr = getShinryouAttr(shinryouId);
-        shinryouAttr.tekiyou = null;
-        if (ShinryouAttrDTO.isEmpty(shinryouAttr)) {
+    public void setShinryouAttr(int shinryouId, ShinryouAttrDTO attr){
+        if( attr == null || ShinryouAttrDTO.isEmpty(attr) ){
             deleteShinryouAttr(shinryouId);
         } else {
-            updateShinryouAttr(shinryouAttr);
-        }
-    }
-
-    public void setShinryouTekiyou(int shinryouId, String tekiyou) {
-        ShinryouAttrDTO attr = ts.shinryouAttrTable.getById(shinryouId);
-        if (attr != null) {
-            attr.tekiyou = tekiyou;
-            updateShinryouAttr(attr);
-        } else {
-            ShinryouAttrDTO newShinryouAttr = new ShinryouAttrDTO();
-            newShinryouAttr.shinryouId = shinryouId;
-            newShinryouAttr.tekiyou = tekiyou;
-            enterShinryouAttr(newShinryouAttr);
+            ShinryouAttrDTO curr = ts.shinryouAttrTable.getById(shinryouId);
+            if( curr != null ){
+                updateShinryouAttr(attr);
+            } else {
+                enterShinryouAttr(attr);
+            }
         }
     }
 

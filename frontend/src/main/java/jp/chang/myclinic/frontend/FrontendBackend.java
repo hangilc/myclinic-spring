@@ -298,7 +298,7 @@ public class FrontendBackend implements Frontend {
     public CompletableFuture<Integer> enterDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
         return tx(backend -> {
             backend.enterDrug(drug);
-            if( attr != null ) {
+            if (attr != null) {
                 backend.enterDrugAttr(attr);
             }
             return drug.drugId;
@@ -309,11 +309,11 @@ public class FrontendBackend implements Frontend {
     public CompletableFuture<Void> updateDrugWithAttr(DrugDTO drug, DrugAttrDTO attr) {
         return txProc(backend -> {
             backend.updateDrug(drug);
-            if( attr == null ){
+            if (attr == null) {
                 backend.deleteDrugAttr(drug.drugId);
             } else {
                 DrugAttrDTO curr = backend.getDrugAttr(attr.drugId);
-                if( curr != null ){
+                if (curr != null) {
                     backend.updateDrugAttr(attr);
                 } else {
                     backend.enterDrugAttr(attr);
@@ -423,6 +423,11 @@ public class FrontendBackend implements Frontend {
     @Override
     public CompletableFuture<Void> enterShinryouAttr(ShinryouAttrDTO shinryouAttr) {
         return txProc(backend -> backend.enterShinryouAttr(shinryouAttr));
+    }
+
+    @Override
+    public CompletableFuture<Void> setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
+        return txProc(backend -> backend.setShinryouAttr(shinryouId, attr));
     }
 
     @Override
@@ -784,16 +789,6 @@ public class FrontendBackend implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> deleteShinryouTekiyou(int shinryouId) {
-        return txProc(backend -> backend.deleteShinryouTekiyou(shinryouId));
-    }
-
-    @Override
-    public CompletableFuture<Void> setShinryouTekiyou(int shinryouId, String tekiyou) {
-        return txProc(backend -> backend.setShinryouTekiyou(shinryouId, tekiyou));
-    }
-
-    @Override
     public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
         return tx(backend -> {
             backend.enterShahokokuho(shahokokuho);
@@ -892,5 +887,20 @@ public class FrontendBackend implements Frontend {
     @Override
     public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
         return query(backend -> backend.getClinicInfo());
+    }
+
+    @Override
+    public CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr) {
+        return txProc(backend -> backend.updateDrugAttr(drugAttr));
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteDrugAttr(int drugId) {
+        return txProc(backend -> backend.deleteDrugAttr(drugId));
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteShinryouCascading(int shinryouId) {
+        return txProc(backend -> backend.deleteShinryouCascading(shinryouId));
     }
 }

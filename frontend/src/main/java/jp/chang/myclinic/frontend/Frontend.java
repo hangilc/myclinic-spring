@@ -157,6 +157,8 @@ public interface Frontend {
 
     CompletableFuture<Void> enterShinryouAttr(ShinryouAttrDTO shinryouAttr);
 
+    CompletableFuture<Void> setShinryouAttr(int shinryouId, ShinryouAttrDTO attr);
+
     CompletableFuture<Integer> enterConduct(ConductDTO conduct);
 
     CompletableFuture<ConductFullDTO> enterConductFull(ConductEnterRequestDTO req);
@@ -293,10 +295,6 @@ public interface Frontend {
 
     CompletableFuture<Void> modifyDisease(DiseaseModifyDTO diseaseModifyDTO);
 
-    CompletableFuture<Void> deleteShinryouTekiyou(int shinryouId);
-
-    CompletableFuture<Void> setShinryouTekiyou(int shinryouId, String tekiyou);
-
     CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho);
 
     CompletableFuture<IyakuhinMasterDTO> getIyakuhinMaster(int iyakuhincode, LocalDate at);
@@ -334,4 +332,10 @@ public interface Frontend {
     CompletableFuture<KizaiMasterDTO> getKizaiMaster(int kizaicode, LocalDate at);
 
     CompletableFuture<ClinicInfoDTO> getClinicInfo();
+
+    CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr);
+
+    CompletableFuture<Void> deleteDrugAttr(int drugId);
+
+    CompletableFuture<Void> deleteShinryouCascading(int shinryouId);
 }

@@ -1,12 +1,5 @@
 package jp.chang.myclinic.backenddb;
 
-import jp.chang.myclinic.support.diseaseexample.DiseaseExampleProvider;
-import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaService;
-import jp.chang.myclinic.support.kizainames.KizaiNamesService;
-import jp.chang.myclinic.support.meisai.MeisaiService;
-import jp.chang.myclinic.support.shinryounames.ShinryouNamesService;
-import jp.chang.myclinic.support.stockdrug.StockDrugService;
-
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.function.Function;

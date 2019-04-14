@@ -12,8 +12,11 @@ import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.parts.WorkForm;
+import jp.chang.myclinic.utilfx.ConfirmDialog;
 import jp.chang.myclinic.utilfx.GuiUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
+
+import java.util.function.Consumer;
 
 public class ShinryouEditForm extends WorkForm {
 
@@ -21,6 +24,10 @@ public class ShinryouEditForm extends WorkForm {
     private ShinryouAttrDTO attr;
     private ShinryouInput shinryouInput;
     private HBox commandBox = new HBox(4);
+    private HBox tekiyouBox = new HBox(4);
+    private Consumer<ShinryouAttrDTO> onEnteredHandler = attr -> {};
+    private Runnable onCancelHandler = () -> {};
+    private Runnable onDeletedHandler = () -> {};
 
     public ShinryouEditForm(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
         super("診療行為編集");
@@ -39,67 +46,77 @@ public class ShinryouEditForm extends WorkForm {
         );
     }
 
+    public void setOnEnteredHandler(Consumer<ShinryouAttrDTO> handler){
+        this.onEnteredHandler = handler;
+    }
+
+    public void setOnCancelHandler(Runnable onCancelHandler) {
+        this.onCancelHandler = onCancelHandler;
+    }
+
+    public void setOnDeletedHandler(Runnable onDeletedHandler) {
+        this.onDeletedHandler = onDeletedHandler;
+    }
+
     private void setupCommandBox(ShinryouAttrDTO attr){
         HBox hbox = commandBox;
         hbox.getChildren().clear();
         hbox.setAlignment(Pos.CENTER_LEFT);
+        Button enterButton = new Button("入力");
+        Button cancelButton = new Button("キャンセル");
         Button deleteButton = new Button("削除");
-        Button cancelButton = new Button("閉じる");
-        deleteButton.setOnAction(event -> onDelete(this));
-        cancelButton.setOnAction(event -> onCancel(this));
-        hbox.getChildren().addAll(deleteButton, cancelButton);
+        enterButton.setOnAction(event -> onEnter());
+        cancelButton.setOnAction(event ->onCancelHandler.run());
+        deleteButton.setOnAction(event -> onDelete());
+        hbox.getChildren().addAll(enterButton, cancelButton, deleteButton, tekiyouBox);
+        tekiyouBox.setAlignment(Pos.CENTER_LEFT);
+        adaptTekiyouBox();
+    }
+
+    private void adaptTekiyouBox(){
         if( attr != null ){
             Hyperlink editTekiyou = new Hyperlink("摘要編集");
             Hyperlink deleteTekiyou = new Hyperlink("摘要削除");
             editTekiyou.setOnAction(evt -> doModifyTekiyou(attr.tekiyou));
             deleteTekiyou.setOnAction(evt -> doDeleteTekiyou());
-            hbox.getChildren().addAll(editTekiyou, deleteTekiyou);
+            tekiyouBox.getChildren().setAll(editTekiyou, deleteTekiyou);
         } else {
             Hyperlink addTekiyouLink = new Hyperlink("摘要追加");
             addTekiyouLink.setOnAction(evt -> doModifyTekiyou(""));
-            hbox.getChildren().add(addTekiyouLink);
+            tekiyouBox.getChildren().setAll(addTekiyouLink);
         }
     }
 
     private void doDeleteTekiyou(){
         if( GuiUtil.confirm("この摘要を削除していいですか？") ){
-            Frontend frontend = Context.frontend;
-            frontend.deleteShinryouTekiyou(shinryouId)
-                    .thenCompose(v -> frontend.getShinryouAttr(shinryouId))
-                    .thenAccept(attr -> Platform.runLater(() -> {
-                        shinryouInput.deleteTekiyou();
-                        setupCommandBox(attr);
-                        onAttrModified(attr);
-                    }))
-                    .exceptionally(HandlerFX::exceptionally);
+            this.attr = ShinryouAttrDTO.setTekiyou(shinryouId, attr, null);
+            shinryouInput.deleteTekiyou();
+            adaptTekiyouBox();
         }
     }
 
     private void doModifyTekiyou(String orig){
-        Frontend frontend = Context.frontend;
         GuiUtil.askForString("摘要の内容", orig)
                 .ifPresent(tekiyou -> {
-                    frontend.setShinryouTekiyou(shinryouId, tekiyou)
-                            .thenCompose(v -> frontend.getShinryouAttr(shinryouId))
-                            .thenAccept(modified -> Platform.runLater(() -> {
-                                shinryouInput.setTekiyou(modified.tekiyou);
-                                setupCommandBox(modified);
-                                onAttrModified(modified);
-                            }))
-                            .exceptionally(HandlerFX::exceptionally);
+                    this.attr = ShinryouAttrDTO.setTekiyou(shinryouId, attr, tekiyou);
+                    shinryouInput.setTekiyou(tekiyou);
+                    adaptTekiyouBox();
                 });
     }
 
-    protected void onAttrModified(ShinryouAttrDTO modified){
-
+    private void onEnter(){
+        Context.frontend.setShinryouAttr(shinryouId, attr)
+                .thenAcceptAsync(v -> {
+                    onEnteredHandler.accept(attr);
+                }, Platform::runLater)
+                .exceptionally(HandlerFX::exceptionally);
     }
 
-    protected void onDelete(ShinryouEditForm form){
-
+    private void onDelete(){
+        if( ConfirmDialog.confirm("この摘要を削除しますか？", ShinryouEditForm.this) ) {
+            Context.frontend.deleteShinryouCascading(shinryouId)
+                    .thenAccept(v -> onDeletedHandler.run())
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
-
-    protected void onCancel(ShinryouEditForm form){
-
-    }
-
 }

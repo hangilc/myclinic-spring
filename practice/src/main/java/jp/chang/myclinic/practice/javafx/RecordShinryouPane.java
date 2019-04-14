@@ -31,14 +31,20 @@ class RecordShinryouPane extends VBox {
         menu.simulateEnterRegularChoice();
     }
 
+    private RecordShinryou createRecordShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
+        RecordShinryou recordShinryou = new RecordShinryou(shinryou, attr);
+        recordShinryou.setOnDeletedHandler(() -> deleteShinryou(shinryou.shinryou.shinryouId));
+        return recordShinryou;
+    }
+
     private void addShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
-        shinryouList.getChildren().add(new RecordShinryou(shinryou, attr));
+        shinryouList.getChildren().add(createRecordShinryou(shinryou, attr));
     }
 
     void insertShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
         int i = 0;
         int shinryoucode = shinryou.shinryou.shinryoucode;
-        RecordShinryou newRecordShinryou = new RecordShinryou(shinryou, attr);
+        RecordShinryou newRecordShinryou = createRecordShinryou(shinryou, attr);
         for(Node node: shinryouList.getChildren()){
             if( node instanceof RecordShinryou ){
                 RecordShinryou r = (RecordShinryou)node;

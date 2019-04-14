@@ -1,4 +1,4 @@
-package jp.chang.myclinic.practice.guitest.records;
+package jp.chang.myclinic.practice.guitest.shinryou;
 
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -9,18 +9,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class RecordsPaneTest extends GroupTestBase {
+public class ShinryouTest extends GroupTestBase {
 
-    public RecordsPaneTest(Stage stage, StackPane main) {
+    public ShinryouTest(Stage stage, StackPane main) {
         super(stage, main);
     }
 
     @Override
     protected List<TestInterface> getTests() {
-        return List.of(
-                new RecordsPaneTextTest(stage, main),
-                new RecordsPaneDrugTest(stage, main),
-                new RecordsPaneShinryouTest(stage, main)
-        );
+        return List.of();
     }
+
 }

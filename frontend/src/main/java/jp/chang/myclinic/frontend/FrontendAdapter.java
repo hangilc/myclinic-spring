@@ -338,6 +338,11 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Void> setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
     public CompletableFuture<Void> deleteShinryou(int shinryouId) {
         throw new RuntimeException("not implemented");
     }
@@ -723,16 +728,6 @@ public class FrontendAdapter implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> deleteShinryouTekiyou(int shinryouId) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
-    public CompletableFuture<Void> setShinryouTekiyou(int shinryouId, String tekiyou) {
-        throw new RuntimeException("not implemented");
-    }
-
-    @Override
     public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
         throw new RuntimeException("not implemented");
     }
@@ -824,6 +819,21 @@ public class FrontendAdapter implements Frontend {
 
     @Override
     public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteDrugAttr(int drugId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteShinryouCascading(int shinryouId) {
         throw new RuntimeException("not implemented");
     }
 }

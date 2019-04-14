@@ -37,6 +37,7 @@ public class Validator implements Runnable {
     public void run() {
         CompilationUnit unit = new CompilationUnit();
         unit.addImport(new ImportDeclaration("jp.chang.myclinic.util.validator.Validated.success", true, false));
+        unit.addImport(new ImportDeclaration("jp.chang.myclinic.util.validator.Validators", true, true));
         Class<?> dtoClass = DtoClassList.getDtoClassByName(dtoClassName);
         String validatorClassName = dtoClassName.replaceAll("DTO$", "") + "Validator";
         ClassOrInterfaceDeclaration classDecl = unit.addClass(validatorClassName);

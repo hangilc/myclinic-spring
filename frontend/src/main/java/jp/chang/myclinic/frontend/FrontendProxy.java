@@ -385,6 +385,11 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
+    public CompletableFuture<Void> setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
+        return delegate.setShinryouAttr(shinryouId, attr);
+    }
+
+    @Override
     public CompletableFuture<Integer> enterConduct(ConductDTO conduct) {
         return delegate.enterConduct(conduct);
     }
@@ -725,16 +730,6 @@ public class FrontendProxy implements Frontend {
     }
 
     @Override
-    public CompletableFuture<Void> deleteShinryouTekiyou(int shinryouId) {
-        return delegate.deleteShinryouTekiyou(shinryouId);
-    }
-
-    @Override
-    public CompletableFuture<Void> setShinryouTekiyou(int shinryouId, String tekiyou) {
-        return delegate.setShinryouTekiyou(shinryouId, tekiyou);
-    }
-
-    @Override
     public CompletableFuture<Integer> enterShahokokuho(ShahokokuhoDTO shahokokuho) {
         return delegate.enterShahokokuho(shahokokuho);
     }
@@ -827,5 +822,20 @@ public class FrontendProxy implements Frontend {
     @Override
     public CompletableFuture<ClinicInfoDTO> getClinicInfo() {
         return delegate.getClinicInfo();
+    }
+
+    @Override
+    public CompletableFuture<Void> updateDrugAttr(DrugAttrDTO drugAttr) {
+        return delegate.updateDrugAttr(drugAttr);
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteDrugAttr(int drugId) {
+        return delegate.deleteDrugAttr(drugId);
+    }
+
+    @Override
+    public CompletableFuture<Void> deleteShinryouCascading(int shinryouId) {
+        return delegate.deleteShinryouCascading(shinryouId);
     }
 }
