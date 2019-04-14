@@ -19,10 +19,10 @@ public class ShinryouForm extends WorkForm {
     private ShinryouInput shinryouInput;
     private SearchResult<ShinryouMasterDTO> searchResult;
 
-    public ShinryouForm(String title, String at){
+    public ShinryouForm(String title, LocalDate atDate){
         super(title);
         getStyleClass().add("shinryou-form");
-        this.at = at;
+        this.at = atDate.toString();
         getChildren().addAll(
                 createInput(),
                 createCommands(),

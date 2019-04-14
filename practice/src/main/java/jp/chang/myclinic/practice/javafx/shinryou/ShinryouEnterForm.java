@@ -7,11 +7,13 @@ import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 
+import java.time.LocalDate;
+
 class ShinryouEnterForm extends ShinryouForm {
 
     private int visitId;
 
-    ShinryouEnterForm(String at, int visitId) {
+    ShinryouEnterForm(int visitId, LocalDate at) {
         super("診療行為検索", at);
         this.visitId = visitId;
     }

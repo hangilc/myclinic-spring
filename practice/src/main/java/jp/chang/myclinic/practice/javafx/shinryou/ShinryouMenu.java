@@ -13,6 +13,7 @@ import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
+import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouDeletedEvent;
@@ -20,6 +21,7 @@ import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.lib.CFUtil;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,7 +32,7 @@ import java.util.function.Consumer;
 public class ShinryouMenu extends VBox {
 
     private int visitId;
-    private String visitedAt;
+    private LocalDate visitDate;
     private StackPane workarea = new StackPane();
     private Hyperlink mainLink;
     private BiConsumer<List<ShinryouFullDTO>, Map<Integer, ShinryouAttrDTO>> onShinryouEnteredHandler = (s, a) -> {
@@ -41,7 +43,7 @@ public class ShinryouMenu extends VBox {
     public ShinryouMenu(VisitDTO visit) {
         super(4);
         this.visitId = visit.visitId;
-        this.visitedAt = visit.visitedAt;
+        this.visitDate = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
         getChildren().addAll(
                 createMenu()
         );
@@ -159,7 +161,7 @@ public class ShinryouMenu extends VBox {
 
     private void doSearch() {
         if (PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？")) {
-            ShinryouEnterForm form = new ShinryouEnterForm(visitedAt, visitId) {
+            ShinryouEnterForm form = new ShinryouEnterForm(visitId, visitDate) {
 
                 @Override
                 protected void onClose(ShinryouForm form) {
