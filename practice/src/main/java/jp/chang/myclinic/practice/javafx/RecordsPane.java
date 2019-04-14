@@ -26,10 +26,6 @@ public class RecordsPane extends VBox {
         IntegrationService integ = Context.integrationService;
         integ.setOnNewText(this::onNewText);
         integ.setOnNewDrug(this::onNewDrug);
-        addEventHandler(ShinryouEnteredEvent.eventType, this::onShinryouEntered);
-        addEventHandler(ShinryouDeletedEvent.eventType, this::onShinryouDeleted);
-        addEventHandler(ConductEnteredEvent.eventType, this::onConductEntered);
-        addEventHandler(ConductDeletedEvent.eventType, this::onConductDeleted);
         PracticeEnv.INSTANCE.addShoukiFormChangeListener(this::onShoukiChanged);
     }
 

@@ -6,13 +6,12 @@ import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
 import jp.chang.myclinic.support.diseaseexample.DiseaseExampleFileProvider;
 import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaFile;
-import jp.chang.myclinic.support.kizainames.KizaiNamesFile;
+import jp.chang.myclinic.support.kizaicodes.KizaicodeFileResolver;
 import jp.chang.myclinic.support.meisai.MeisaiServiceImpl;
-import jp.chang.myclinic.support.shinryounames.ShinryouNamesFile;
+import jp.chang.myclinic.support.shinryoucodes.ShinryoucodeFileResolver;
 import jp.chang.myclinic.support.stockdrug.StockDrugFile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.nio.file.Paths;
 
 public class Main {
@@ -31,8 +30,8 @@ public class Main {
         ss.houkatsuKensaService = new HoukatsuKensaFile(Paths.get("conifg/houkatsu-kensa.xml"));
         ss.meisaiService = new MeisaiServiceImpl();
         ss.diseaseExampleProvider = new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml"));
-        ss.shinryouNamesService = new ShinryouNamesFile(Paths.get("config/shinryou-names.yml"));
-        ss.kizaiNamesService = new KizaiNamesFile(Paths.get("config/kizai-names.yml"));
+        ss.shinryoucodeResolver = new ShinryoucodeFileResolver(new File("config/shinryou-names.yml"));
+        ss.kizaicodeResolver = new KizaicodeFileResolver(new File("config/kizai-names.yml"));
         ss.clinicInfoProvider = new ClinicInfoFileProvider(Paths.get("config/clinic-info.yml"));
         return ss;
     }

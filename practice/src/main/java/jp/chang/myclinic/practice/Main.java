@@ -14,21 +14,21 @@ import jp.chang.myclinic.client.Client;
 import jp.chang.myclinic.dto.PatientDTO;
 import jp.chang.myclinic.frontend.FrontendBackend;
 import jp.chang.myclinic.practice.componenttest.ComponentTest;
-import jp.chang.myclinic.practice.guitest.GuiTest;
 import jp.chang.myclinic.practice.guitest.GuiTestRunner;
 import jp.chang.myclinic.support.clinicinfo.ClinicInfoFileProvider;
 import jp.chang.myclinic.support.config.ConfigPropertyFile;
 import jp.chang.myclinic.support.diseaseexample.DiseaseExampleFileProvider;
 import jp.chang.myclinic.support.houkatsukensa.HoukatsuKensaFile;
-import jp.chang.myclinic.support.kizainames.KizaiNamesFile;
+import jp.chang.myclinic.support.kizaicodes.KizaicodeFileResolver;
 import jp.chang.myclinic.support.meisai.MeisaiServiceImpl;
-import jp.chang.myclinic.support.shinryounames.ShinryouNamesFile;
+import jp.chang.myclinic.support.shinryoucodes.ShinryoucodeFileResolver;
 import jp.chang.myclinic.support.stockdrug.StockDrugFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 import javax.sql.DataSource;
+import java.io.File;
 import java.nio.file.Paths;
 
 public class Main extends Application {
@@ -80,8 +80,8 @@ public class Main extends Application {
             ss.houkatsuKensaService = new HoukatsuKensaFile(Paths.get("config/houkatsu-kensa.xml"));
             ss.meisaiService = new MeisaiServiceImpl();
             ss.diseaseExampleProvider = new DiseaseExampleFileProvider(Paths.get("config/disease-example.yml"));
-            ss.shinryouNamesService = new ShinryouNamesFile(Paths.get("config/shinryou-names.yml"));
-            ss.kizaiNamesService = new KizaiNamesFile(Paths.get("config/kizai-names.yml"));
+            ss.shinryoucodeResolver = new ShinryoucodeFileResolver(new File("config/shinryoucodes.yml"));
+            ss.kizaicodeResolver = new KizaicodeFileResolver(new File("config/kizaicodes.yml"));
             ss.clinicInfoProvider = new ClinicInfoFileProvider(Paths.get("config/clinic-info.yml"));
             setupFrontend(ss);
             Context.configService = new ConfigPropertyFile(Paths.get(

@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.javafx;
 
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;
+import jp.chang.myclinic.dto.ConductFullDTO;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.dto.VisitDTO;
@@ -11,12 +12,14 @@ import jp.chang.myclinic.practice.javafx.shinryou.ShinryouMenu;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 class RecordShinryouPane extends VBox {
 
     private VBox shinryouList;
     private ShinryouMenu menu;
+    private Consumer<List<ConductFullDTO>> onConductsEnteredHandler = cc -> {};
 
     RecordShinryouPane(List<ShinryouFullDTO> shinryouList, VisitDTO visit,
                        Map<Integer, ShinryouAttrDTO> shinryouAttrMap){
@@ -25,6 +28,10 @@ class RecordShinryouPane extends VBox {
                 createShinryouList()
         );
         shinryouList.forEach(s -> addShinryou(s, shinryouAttrMap.get(s.shinryou.shinryouId)));
+    }
+
+    public void setOnConductsEnteredHandler(Consumer<List<ConductFullDTO>> onConductsEnteredHandler) {
+        this.onConductsEnteredHandler = onConductsEnteredHandler;
     }
 
     void simulateEnterRegularShinryouClick() {
@@ -60,6 +67,12 @@ class RecordShinryouPane extends VBox {
 
     private Node createMenu(VisitDTO visit){
         this.menu = new ShinryouMenu(visit);
+        menu.setOnShinryouEnteredHandler((shinryouList, attrMap) -> {
+            for(ShinryouFullDTO shinryou: shinryouList){
+                insertShinryou(shinryou, attrMap.get(shinryou.shinryou.shinryouId));
+            }
+        });
+        menu.setOnConductsEnteredHandler(onConductsEnteredHandler);
         return menu;
     }
 

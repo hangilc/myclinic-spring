@@ -1520,8 +1520,12 @@ public class Backend {
     }
 
     public ShinryouMasterDTO resolveShinryouMasterByKey(String key, LocalDate at){
-        List<String> candidates = ss.shinryouNamesService.getCandidateNames(key);
-        return resolveShinryouMasterByName(candidates, at);
+        int shinryoucode = ss.shinryoucodeResolver.resolveShinryoucodeByKey(key);
+        if( shinryoucode == 0 ){
+            return null;
+        } else {
+            return getShinryouMaster(shinryoucode, at);
+        }
     }
 
     public Map<String, Integer> batchResolveShinryouNames(List<List<String>> args, LocalDate at) {
@@ -1615,7 +1619,12 @@ public class Backend {
     }
 
     public KizaiMasterDTO resolveKizaiMasterByKey(String key, LocalDate at){
-        return resolveKizaiMasterByName(ss.kizaiNamesService.getCandidateNames(key), at);
+        int kizaicode = ss.kizaicodeResolver.resolveKizaicodeByKey(key);
+        if( kizaicode == 0 ){
+            return null;
+        } else {
+            return getKizaiMaster(kizaicode, at);
+        }
     }
 
     public Map<String, Integer> batchResolveKizaiNames(List<List<String>> args, LocalDate at) {

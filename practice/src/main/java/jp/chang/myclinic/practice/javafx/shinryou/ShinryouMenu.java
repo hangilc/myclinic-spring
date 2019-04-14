@@ -21,8 +21,11 @@ import jp.chang.myclinic.practice.lib.CFUtil;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class ShinryouMenu extends VBox {
 
@@ -30,6 +33,10 @@ public class ShinryouMenu extends VBox {
     private String visitedAt;
     private StackPane workarea = new StackPane();
     private Hyperlink mainLink;
+    private BiConsumer<List<ShinryouFullDTO>, Map<Integer, ShinryouAttrDTO>> onShinryouEnteredHandler = (s, a) -> {
+    };
+    private Consumer<List<ConductFullDTO>> onConductsEnteredHandler = cc -> {
+    };
 
     public ShinryouMenu(VisitDTO visit) {
         super(4);
@@ -38,6 +45,15 @@ public class ShinryouMenu extends VBox {
         getChildren().addAll(
                 createMenu()
         );
+    }
+
+    public void setOnShinryouEnteredHandler(BiConsumer<List<ShinryouFullDTO>,
+            Map<Integer, ShinryouAttrDTO>> onShinryouEnteredHandler) {
+        this.onShinryouEnteredHandler = onShinryouEnteredHandler;
+    }
+
+    public void setOnConductsEnteredHandler(Consumer<List<ConductFullDTO>> onConductsEnteredHandler) {
+        this.onConductsEnteredHandler = onConductsEnteredHandler;
     }
 
     public void simulateEnterRegularChoice() {
@@ -68,17 +84,12 @@ public class ShinryouMenu extends VBox {
     private void doMainMenu() {
         if (isWorkareaEmpty()) {
             if (PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？")) {
-                AddRegularForm form = new AddRegularForm(visitId) {
-                    @Override
-                    void onEntered(AddRegularForm form) {
-                        hideWorkarea();
-                    }
-
-                    @Override
-                    void onCancel() {
-                        hideWorkarea();
-                    }
-                };
+                AddRegularForm form = new AddRegularForm(visitId);
+                form.setOnEnteredCallback((shinryouList, attrMap, conducts) -> {
+                    onShinryouEnteredHandler.accept(shinryouList, attrMap);
+                    onConductsEnteredHandler.accept(conducts);
+                });
+                form.setOnCancelHandler(this::hideWorkarea);
                 showWorkarea(form);
             }
         }
@@ -272,9 +283,9 @@ public class ShinryouMenu extends VBox {
     }
 
     public Optional<AddRegularForm> findAddRegularForm() {
-        for(Node node: workarea.getChildren()){
-            if( node instanceof AddRegularForm ){
-                return Optional.of((AddRegularForm)node);
+        for (Node node : workarea.getChildren()) {
+            if (node instanceof AddRegularForm) {
+                return Optional.of((AddRegularForm) node);
             }
         }
         return Optional.empty();

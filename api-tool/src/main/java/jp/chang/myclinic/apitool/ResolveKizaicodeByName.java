@@ -3,6 +3,8 @@ package jp.chang.myclinic.apitool;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.*;
 
 import java.nio.file.Path;
@@ -15,19 +17,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Command(name = "resolve-shinryoucode-by-name")
-public class ResolveShinryoucodeByName implements Runnable {
+@Command(name = "resolve-kizaicode-by-name")
+public class ResolveKizaicodeByName implements Runnable {
 
-    @Option(names = {"--at"}, description = "Search shinryoumaster which is valid at.")
     private String at = LocalDate.now().toString();
 
     @Override
     public void run() {
         ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        Path mapFile = Paths.get("config", "shinryou-names.yml");
+        Path mapFile = Paths.get("config", "kizai-names.yml");
         Path dbFile = Paths.get(System.getProperty("user.home"), "sqlite-data", "myclinic-test-sqlite.db");
         try(Connection conn = new SqliteConnectionProvider(dbFile.toString()).get()) {
-            PreparedStatement stmt = conn.prepareStatement("select shinryoucode from shinryou_master" +
+            PreparedStatement stmt = conn.prepareStatement("select kizaicode from kizai_master" +
                     " where name = ? and valid_from <= ? and (valid_upto = '0000-00-00' or ? <= valid_upto)");
             Map<String, List<String>> nameCadidates = mapper.readValue(mapFile.toFile(),
                     new TypeReference<LinkedHashMap<String, List<String>>>() {
@@ -51,7 +52,4 @@ public class ResolveShinryoucodeByName implements Runnable {
             throw new RuntimeException(e);
         }
     }
-
-
-
 }

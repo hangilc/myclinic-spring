@@ -12,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import jp.chang.myclinic.dto.ConductFullDTO;
+import jp.chang.myclinic.dto.ConductShinryouFullDTO;
 import jp.chang.myclinic.dto.ShinryouAttrDTO;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
 import jp.chang.myclinic.practice.PracticeEnv;
@@ -19,10 +20,10 @@ import jp.chang.myclinic.practice.javafx.FunJavaFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
-import jp.chang.myclinic.practice.lib.shinryou.RegularShinryou;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AddRegularForm extends VBox {
@@ -32,6 +33,15 @@ public class AddRegularForm extends VBox {
     private CheckBox shohouryouCheckBox;
     private CheckBox kouhatsuKasanCheckBox;
     private Button enterButton;
+
+    public interface OnEnteredCallback {
+        void accept(List<ShinryouFullDTO> shinryouList, Map<Integer, ShinryouAttrDTO> attrMap,
+                    List<ConductFullDTO> conducts);
+    }
+
+    private OnEnteredCallback onEnteredCallback = (s, m, c) -> {
+    };
+    private Runnable onCancelHandler = () -> {};
 
     AddRegularForm(int visitId) {
         super(4);
@@ -51,10 +61,18 @@ public class AddRegularForm extends VBox {
         }
     }
 
-    public void simulateSelectItem(String itemLabel){
-        for(CheckBox c: checks){
+    public void setOnEnteredCallback(OnEnteredCallback onEnteredCallback) {
+        this.onEnteredCallback = onEnteredCallback;
+    }
+
+    public void setOnCancelHandler(Runnable onCancelHandler) {
+        this.onCancelHandler = onCancelHandler;
+    }
+
+    public void simulateSelectItem(String itemLabel) {
+        for (CheckBox c : checks) {
             String label = c.getText();
-            if( label.equals(itemLabel) ){
+            if (label.equals(itemLabel)) {
                 c.setSelected(true);
                 return;
             }
@@ -62,7 +80,7 @@ public class AddRegularForm extends VBox {
         throw new RuntimeException("cannot find item: " + itemLabel);
     }
 
-    public void simulateClickEnterButton(){
+    public void simulateClickEnterButton() {
         enterButton.fire();
     }
 
@@ -135,37 +153,21 @@ public class AddRegularForm extends VBox {
         this.enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
         enterButton.setOnAction(event -> doEnter());
-        cancelButton.setOnAction(event -> onCancel());
+        cancelButton.setOnAction(event -> onCancelHandler.run());
         hbox.getChildren().addAll(enterButton, cancelButton);
         return hbox;
-    }
-
-    void onEntered(AddRegularForm form) {
-
     }
 
     private void doEnter() {
         List<String> selected = checks.stream().filter(CheckBox::isSelected).map(CheckBox::getText)
                 .collect(Collectors.toList());
-        FunJavaFX.batchEnterShinryouByNames(visitId, selected, result-> {
-            Platform.runLater(() -> {
-                result.shinryouList.forEach(s -> fireShinryouEnteredEvent(s, result.attrMap.get(s.shinryou.shinryouId)));
-                result.conducts.forEach(this::fireConductEnteredEvent);
-                onEntered(AddRegularForm.this);
-            });
-        });
-    }
-
-    private void fireShinryouEnteredEvent(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
-        fireEvent(new ShinryouEnteredEvent(shinryou, attr));
-    }
-
-    private void fireConductEnteredEvent(ConductFullDTO conduct) {
-        fireEvent(new ConductEnteredEvent(conduct));
-    }
-
-    void onCancel() {
-
+        FunJavaFX.batchEnterShinryouByNames(visitId, selected, result ->
+                        Platform.runLater(() ->
+                                onEnteredCallback.accept(result.shinryouList, result.attrMap, result.conducts))
+//                result.shinryouList.forEach(s -> fireShinryouEnteredEvent(s, result.attrMap.get(s.shinryou.shinryouId)));
+//                result.conducts.forEach(this::fireConductEnteredEvent);
+//                onEntered(AddRegularForm.this);
+        );
     }
 
 }
