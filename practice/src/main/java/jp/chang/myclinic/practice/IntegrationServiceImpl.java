@@ -1,11 +1,6 @@
 package jp.chang.myclinic.practice;
 
-import jp.chang.myclinic.dto.DrugAttrDTO;
-import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.dto.TextDTO;
-import jp.chang.myclinic.practice.IntegrationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jp.chang.myclinic.dto.*;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -34,5 +29,29 @@ public class IntegrationServiceImpl implements IntegrationService {
     @Override
     public void setOnNewDrug(BiConsumer<DrugFullDTO, DrugAttrDTO> handler) {
         this.onNewDrugHandler = handler;
+    }
+
+    private BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> onNewShinryouHandler = (s, a) -> {};
+
+    @Override
+    public void broadcastNewShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr) {
+        onNewShinryouHandler.accept(shinryou, attr);
+    }
+
+    @Override
+    public void setOnNewShinryou(BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> handler) {
+        this.onNewShinryouHandler = handler;
+    }
+
+    private Consumer<ConductFullDTO> onNewConductHandler = c -> {};
+
+    @Override
+    public void broadcastNewConduct(ConductFullDTO entered) {
+        onNewConductHandler.accept(entered);
+    }
+
+    @Override
+    public void setOnNewConduct(Consumer<ConductFullDTO> handler) {
+        this.onNewConductHandler = handler;
     }
 }

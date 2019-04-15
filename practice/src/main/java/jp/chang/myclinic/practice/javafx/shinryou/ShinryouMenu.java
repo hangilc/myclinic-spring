@@ -176,7 +176,8 @@ public class ShinryouMenu extends VBox {
                     .thenAccept(srcList -> {
                         FunJavaFX.batchCopyShinryou(targetVisitId, srcList,
                                 (entered, attr) -> {
-                                    Platform.runLater(() -> fireShinryouEnteredEvent(entered, attr));
+                                    Platform.runLater(() ->
+                                            Context.integrationService.broadcastNewShinryou(entered, attr));
                                 },
                                 () -> {
                                 });

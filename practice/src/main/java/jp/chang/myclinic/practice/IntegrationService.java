@@ -1,8 +1,6 @@
 package jp.chang.myclinic.practice;
 
-import jp.chang.myclinic.dto.DrugAttrDTO;
-import jp.chang.myclinic.dto.DrugFullDTO;
-import jp.chang.myclinic.dto.TextDTO;
+import jp.chang.myclinic.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,5 +13,9 @@ public interface IntegrationService {
     void setOnNewText(Consumer<TextDTO> handler);
     void broadcastNewDrug(DrugFullDTO drug, DrugAttrDTO attr);
     void setOnNewDrug(BiConsumer<DrugFullDTO, DrugAttrDTO> handler);
+    void broadcastNewShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr);
+    void setOnNewShinryou(BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> handler);
+    void broadcastNewConduct(ConductFullDTO entered);
+    void setOnNewConduct(Consumer<ConductFullDTO> handler);
 
 }

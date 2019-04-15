@@ -26,6 +26,7 @@ public class RecordsPane extends VBox {
         IntegrationService integ = Context.integrationService;
         integ.setOnNewText(this::onNewText);
         integ.setOnNewDrug(this::onNewDrug);
+        integ.setOnNewShinryou(this::onNewShinryou);
         PracticeEnv.INSTANCE.addShoukiFormChangeListener(this::onShoukiChanged);
     }
 
@@ -67,10 +68,10 @@ public class RecordsPane extends VBox {
         findRecord(drug.drug.visitId).ifPresent(record -> record.addDrug(drug, attr));
     }
 
-    private void onShinryouEntered(ShinryouEnteredEvent event){
-        ShinryouFullDTO shinryou = event.getShinryou();
+    private void onNewShinryou(ShinryouFullDTO shinryou, ShinryouAttrDTO attr){
         findRecord(shinryou.shinryou.visitId).ifPresent(record ->
-                record.addShinryou(shinryou, event.getAttr()));
+                record.addShinryou(shinryou, attr));
+
     }
 
     private void onShinryouDeleted(ShinryouDeletedEvent event) {
