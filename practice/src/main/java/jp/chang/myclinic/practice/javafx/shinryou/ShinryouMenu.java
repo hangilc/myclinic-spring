@@ -21,6 +21,7 @@ import jp.chang.myclinic.util.DateTimeUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -160,13 +161,10 @@ public class ShinryouMenu extends VBox {
 
     private void doSearch() {
         if (PracticeUtil.confirmCurrentVisitAction(visitId, "診療行為を追加しますか？")) {
-            ShinryouEnterForm form = new ShinryouEnterForm(visitId, visitDate) {
-
-                @Override
-                protected void onClose(ShinryouEnterForm form) {
-                    hideWorkarea();
-                }
-            };
+            ShinryouEnterForm form = new ShinryouEnterForm(visitId, visitDate);
+            form.setOnEnteredHandler(entered ->
+                    onShinryouEnteredHandler.accept(List.of(entered), Collections.emptyMap()));
+            form.setOnCloseHandler(this::hideWorkarea);
             showWorkarea(form);
         }
     }

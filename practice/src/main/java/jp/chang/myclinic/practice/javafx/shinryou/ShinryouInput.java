@@ -37,6 +37,13 @@ public class ShinryouInput extends GridPane {
         }
     }
 
+    public void clear(){
+        this.shinryoucode = 0;
+        this.nameText.setText("");
+        this.tekiyouText = null;
+        updateAttr();
+    }
+
     public void setTekiyou(String tekiyou) {
         if (tekiyouText == null) {
             tekiyouText = new Text();
@@ -57,6 +64,7 @@ public class ShinryouInput extends GridPane {
     public Validated<ShinryouDTO> getShinryouToEnter(int visitId) {
         return new ShinryouValidator()
                 .setValidatedShinryouId(0)
+                .validateVisitId(visitId)
                 .validateShinryoucode(shinryoucode)
                 .validate();
     }
