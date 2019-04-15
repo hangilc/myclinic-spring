@@ -1,5 +1,6 @@
 package jp.chang.myclinic.backenddb;
 
+import jp.chang.myclinic.backenddb.annotation.ExcludeFromFrontend;
 import jp.chang.myclinic.consts.MyclinicConsts;
 import jp.chang.myclinic.consts.PharmaQueueState;
 import jp.chang.myclinic.consts.WqueueWaitState;
@@ -47,33 +48,40 @@ public class Backend {
         };
     }
 
+    @ExcludeFromFrontend
     public void setPracticeLogPublisher(Consumer<String> publisher) {
         practiceLogger.setPublisher(publisher::accept);
     }
 
+    @ExcludeFromFrontend
     public void setHotlineLogPublisher(Consumer<String> publisher) {
         hotlineLogger.setHotlineLogPublisher(publisher::accept);
     }
 
+    @ExcludeFromFrontend
     public Query getQuery() {
         return query;
     }
 
+    @ExcludeFromFrontend
     public String xlate(String sqlOrig, TableInfo tableInfo) {
         return sqlTranslator.translate(sqlOrig, tableInfo);
     }
 
+    @ExcludeFromFrontend
     public String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
                         TableInfo tableInfo2, String alias2) {
         return sqlTranslator.translate(sqlOrig, tableInfo1, alias1, tableInfo2, alias2);
     }
 
+    @ExcludeFromFrontend
     public String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
                         TableInfo tableInfo2, String alias2, TableInfo tableInfo3, String alias3) {
         return sqlTranslator.translate(sqlOrig, tableInfo1, alias1, tableInfo2, alias2,
                 tableInfo3, alias3);
     }
 
+    @ExcludeFromFrontend
     public String xlate(String sqlOrig, TableInfo tableInfo1, String alias1,
                         TableInfo tableInfo2, String alias2, TableInfo tableInfo3, String alias3,
                         TableInfo tableInfo4, String alias4) {
@@ -865,6 +873,10 @@ public class Backend {
     public void deleteShinryouCascading(int shinryouId){
         deleteShinryouAttr(shinryouId);
         deleteShinryou(shinryouId);
+    }
+
+    public void batchDeleteShinryouCascading(List<Integer> shinryouIds){
+        shinryouIds.forEach(this::deleteShinryouCascading);
     }
 
     public ShinryouFullDTO getShinryouFull(int shinryouId) {
