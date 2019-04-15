@@ -10,9 +10,10 @@ import jp.chang.myclinic.practice.javafx.parts.WorkForm;
 
 import java.util.List;
 
-public class HandleSelectedForm extends WorkForm {
+abstract public class HandleSelectedForm extends WorkForm {
 
     private CheckBoxList<ShinryouFullDTO> checkInputs;
+    private Runnable onCancelHandler = () -> {};
 
     public HandleSelectedForm(String title, List<ShinryouFullDTO> shinryouList){
         super(title);
@@ -21,6 +22,10 @@ public class HandleSelectedForm extends WorkForm {
                 createSelectionLinks(),
                 createCommands()
         );
+    }
+
+    public void setOnCancelHandler(Runnable onCancelHandler) {
+        this.onCancelHandler = onCancelHandler;
     }
 
     private Node createChecks(List<ShinryouFullDTO> shinryouList){
@@ -47,16 +52,11 @@ public class HandleSelectedForm extends WorkForm {
         Button enterButton = new Button("入力");
         Button cancelButton = new Button("キャンセル");
         enterButton.setOnAction(event -> onEnter(this, checkInputs.getSelected()));
-        cancelButton.setOnAction(event -> onCancel(this));
+        cancelButton.setOnAction(event -> onCancelHandler.run());
         hbox.getChildren().addAll(enterButton, cancelButton);
         return hbox;
     }
 
-    protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection){
+    abstract protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection);
 
-    }
-
-    protected void onCancel(HandleSelectedForm form){
-
-    }
 }

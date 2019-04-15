@@ -191,25 +191,15 @@ public class ShinryouMenu extends VBox {
             if (targetVisitId != 0) {
                 Context.frontend.listShinryouFull(visitId)
                         .thenAccept(shinryouList -> {
-                            CopySelectedForm form = new CopySelectedForm(shinryouList) {
-                                @Override
-                                protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection) {
-                                    FunJavaFX.batchCopyShinryou(targetVisitId, selection,
-                                            (entered, attr) -> {
-                                                Platform.runLater(() ->
-                                                        Context.integrationService
-                                                                .broadcastNewShinryou(entered, attr));
-                                            }, () -> hideWorkarea());
-                                }
-
-                                @Override
-                                protected void onCancel(HandleSelectedForm form) {
-                                    hideWorkarea();
-                                }
-                            };
-                            Platform.runLater(() ->
-
-                                    showWorkarea(form));
+                            CopySelectedForm form = new CopySelectedForm(targetVisitId, shinryouList);
+                            form.setOnEnteredHandler((enteredList, attrMap) -> Platform.runLater(() -> {
+                                enteredList.forEach(entered -> Context.integrationService.broadcastNewShinryou(
+                                        entered, attrMap.get(entered.shinryou.shinryouId)
+                                ));
+                                hideWorkarea();
+                            }));
+                            form.setOnCancelHandler(this::hideWorkarea);
+                            Platform.runLater(() -> showWorkarea(form));
                         })
                         .exceptionally(HandlerFX::exceptionally);
             }
@@ -222,11 +212,6 @@ public class ShinryouMenu extends VBox {
                 Context.frontend.listShinryouFull(visitId)
                         .thenAccept(shinryouList -> {
                             DeleteSelectedForm form = new DeleteSelectedForm(shinryouList) {
-                                private CompletableFuture<Void> deleteShinryou(ShinryouFullDTO shinryou) {
-                                    return Context.frontend.deleteShinryou(shinryou.shinryou.shinryouId)
-                                            .thenAccept(result -> Platform.runLater(() ->
-                                                    fireShinryouDeletedEvent(shinryou.shinryou)));
-                                }
 
                                 @Override
                                 protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection) {
@@ -234,12 +219,8 @@ public class ShinryouMenu extends VBox {
                                             .thenAccept(result -> Platform.runLater(() -> hideWorkarea()))
                                             .exceptionally(HandlerFX::exceptionally);
                                 }
-
-                                @Override
-                                protected void onCancel(HandleSelectedForm form) {
-                                    hideWorkarea();
-                                }
                             };
+                            form.setOnCancelHandler(this::hideWorkarea);
                             Platform.runLater(() -> showWorkarea(form));
                         })
                         .exceptionally(HandlerFX::exceptionally);
