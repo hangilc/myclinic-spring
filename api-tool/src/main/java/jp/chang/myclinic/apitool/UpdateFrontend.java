@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,21 +37,21 @@ class UpdateFrontend implements Runnable {
     @CommandLine.Option(names = {"--save"}, description = "Saves result to Frontend.java")
     private boolean save;
 
+    private String backendSourceFile = "backend-db/src/main/java/jp/chang/myclinic/backenddb/Backend.java";
     private String frontendDir = "frontend/src/main/java/jp/chang/myclinic/frontend";
     private String frontendSourceFile = "frontend/src/main/java/jp/chang/myclinic/frontend/Frontend.java";
     private String frontendBackendSourceFile =
             "frontend/src/main/java/jp/chang/myclinic/frontend/FrontendBackend.java";
-    private String backendSourceFile = "backend-db/src/main/java/jp/chang/myclinic/backenddb/Backend.java";
     private static Map<String, Class<?>> nameToDtoClassMap = DtoClassList.getNameDtoClassMap();
     private Helper helper = Helper.getInstance();
 
     @Override
     public void run() {
         try {
-            //updateFrontend();
+            updateFrontend();
             //updateFrontendBackend();
-            updateFrontendAdapter();
-            updateFrontendProxy();
+            //updateFrontendAdapter();
+            //updateFrontendProxy();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -58,51 +59,58 @@ class UpdateFrontend implements Runnable {
 
     private void updateFrontend() throws Exception {
         CompilationUnit backendUnit = StaticJavaParser.parse(Paths.get(backendSourceFile));
-        CompilationUnit frontendUnit = StaticJavaParser.parse(Paths.get(frontendSourceFile));
+        CompilationUnit frontendUnit = StaticJavaParser.parse(Paths.get(
+                frontendDir, "Frontend.java"
+        ));
         ClassOrInterfaceDeclaration backendDecl = backendUnit.getClassByName("Backend")
                 .orElseThrow(() -> new RuntimeException("Cannot find class: Backend"));
         ClassOrInterfaceDeclaration frontendDecl = frontendUnit.getInterfaceByName("Frontend")
                 .orElseThrow(() -> new RuntimeException("Cannot find class: Frontend"));
-//        List<String> excludes = List.of("setPracticeLogPublisher",
-//                "setHotlineLogPublisher", "getQuery", "xlate");
+        List<MethodDeclaration> unimplementedBackendMethods = listUnimplementedMethods(backendDecl, frontendDecl);
         backendDecl.getOrphanComments().forEach(backendDecl::removeOrphanComment);
-        for (MethodDeclaration backendMethod : backendDecl.getMethods()) {
-            if (!backendMethod.isPublic() || backendMethod.isAnnotationPresent("ExcludeFromFrontend")) {
-                continue;
-            }
-            Signature sig = backendMethod.getSignature();
-            List<CallableDeclaration<?>> callables = frontendDecl.getCallablesWithSignature(sig);
-            if (callables.size() > 0) {
-                continue;
-            }
-//            if (excludes.contains(backendMethod.getNameAsString())) {
-//                continue;
-//            }
+        for(MethodDeclaration backendMethod: unimplementedBackendMethods){
             backendMethod.removeBody();
-            String methodName = backendMethod.getNameAsString();
-            Type retType = backendMethod.getType();
-            if (methodName.startsWith("enter")) {
-                if (retType.isVoidType()) {
-                    Parameter param = backendMethod.getParameter(0);
-                    Type paramType = param.getType();
-                    Class<?> dtoClass = nameToDtoClassMap.get(paramType.asString());
-                    if (dtoClass != null) {
-                        List<Field> autoIncs = helper.getAutoIncs(dtoClass);
-                        if (autoIncs.size() == 1) {
-                            Field autoInc = autoIncs.get(0);
-                            Class<?> autoIncClass = primitiveToBoxedClass(autoInc.getType());
-                            retType = new ClassOrInterfaceType(null, autoIncClass.getSimpleName());
-                        }
-                    }
-                }
-            }
-            backendMethod.setType(wrapWithCompletableFuture(retType));
+            backendMethod.setType(makeFrontendReturnType(backendMethod));
             backendMethod.removeModifier(Keyword.PUBLIC);
-            frontendDecl.addMember(backendMethod);
-            if (!save) {
+            if( !save ) {
+                System.out.println("*** Frontend");
                 System.out.println(backendMethod);
             }
         }
+//        for (MethodDeclaration backendMethod : backendDecl.getMethods()) {
+//            if (!backendMethod.isPublic() || backendMethod.isAnnotationPresent("ExcludeFromFrontend")) {
+//                continue;
+//            }
+//            Signature sig = backendMethod.getSignature();
+//            List<CallableDeclaration<?>> callables = frontendDecl.getCallablesWithSignature(sig);
+//            if (callables.size() > 0) {
+//                continue;
+//            }
+//            backendMethod.removeBody();
+//            String methodName = backendMethod.getNameAsString();
+//            Type retType = backendMethod.getType();
+//            if (methodName.startsWith("enter")) {
+//                if (retType.isVoidType()) {
+//                    Parameter param = backendMethod.getParameter(0);
+//                    Type paramType = param.getType();
+//                    Class<?> dtoClass = nameToDtoClassMap.get(paramType.asString());
+//                    if (dtoClass != null) {
+//                        List<Field> autoIncs = helper.getAutoIncs(dtoClass);
+//                        if (autoIncs.size() == 1) {
+//                            Field autoInc = autoIncs.get(0);
+//                            Class<?> autoIncClass = primitiveToBoxedClass(autoInc.getType());
+//                            retType = new ClassOrInterfaceType(null, autoIncClass.getSimpleName());
+//                        }
+//                    }
+//                }
+//            }
+//            backendMethod.setType(wrapWithCompletableFuture(retType));
+//            backendMethod.removeModifier(Keyword.PUBLIC);
+//            frontendDecl.addMember(backendMethod);
+//            if (!save) {
+//                System.out.println(backendMethod);
+//            }
+//        }
         if (save) {
             saveToFile(frontendSourceFile, frontendUnit.toString());
         }
@@ -229,6 +237,41 @@ class UpdateFrontend implements Runnable {
                 }
             }
         }
+    }
+
+    private List<MethodDeclaration> listUnimplementedMethods(ClassOrInterfaceDeclaration backend,
+                                                             ClassOrInterfaceDeclaration target){
+        List<MethodDeclaration> result = new ArrayList<>();
+        for (MethodDeclaration backendMethod : backend.getMethods()) {
+            if (!backendMethod.isPublic() || backendMethod.isAnnotationPresent("ExcludeFromFrontend")) {
+                continue;
+            }
+            Signature backendSig = backendMethod.getSignature();
+            if (target.getCallablesWithSignature(backendSig).size() == 0) {
+                result.add(backendMethod);
+            }
+        }
+        return result;
+    }
+
+    private Type makeFrontendReturnType(MethodDeclaration backendMethod){
+        if (backendMethod.getNameAsString().startsWith("enter")) {
+            if (backendMethod.getType().isVoidType()) {
+                Parameter param = backendMethod.getParameter(0);
+                Type paramType = param.getType();
+                Class<?> dtoClass = nameToDtoClassMap.get(paramType.asString());
+                if (dtoClass != null) {
+                    List<Field> autoIncs = helper.getAutoIncs(dtoClass);
+                    if (autoIncs.size() == 1) {
+                        Field autoInc = autoIncs.get(0);
+                        Class<?> autoIncClass = primitiveToBoxedClass(autoInc.getType());
+                        Type retType = new ClassOrInterfaceType(null, autoIncClass.getSimpleName());
+                        return wrapWithCompletableFuture(retType);
+                    }
+                }
+            }
+        }
+        return wrapWithCompletableFuture(backendMethod.getType());
     }
 
     private BlockStmt makeEnterWithAutoIncBody(String methodName, String argName, String autoIncField) {
