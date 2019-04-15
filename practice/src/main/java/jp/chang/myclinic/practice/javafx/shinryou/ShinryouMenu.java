@@ -196,7 +196,9 @@ public class ShinryouMenu extends VBox {
                                 protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection) {
                                     FunJavaFX.batchCopyShinryou(targetVisitId, selection,
                                             (entered, attr) -> {
-                                                Platform.runLater(() -> fireShinryouEnteredEvent(entered, attr));
+                                                Platform.runLater(() ->
+                                                        Context.integrationService
+                                                                .broadcastNewShinryou(entered, attr));
                                             }, () -> hideWorkarea());
                                 }
 
