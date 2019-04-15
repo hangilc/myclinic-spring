@@ -4,7 +4,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import jp.chang.myclinic.dto.ShinryouDTO;
 import jp.chang.myclinic.dto.ShinryouMasterDTO;
+import jp.chang.myclinic.util.validator.Validated;
+import jp.chang.myclinic.util.validator.Validators;
+import jp.chang.myclinic.util.validator.dto.ShinryouValidator;
 
 public class ShinryouInput extends GridPane {
 
@@ -50,4 +54,10 @@ public class ShinryouInput extends GridPane {
         return shinryoucode;
     }
 
+    public Validated<ShinryouDTO> getShinryouToEnter(int visitId) {
+        return new ShinryouValidator()
+                .setValidatedShinryouId(0)
+                .validateShinryoucode(shinryoucode)
+                .validate();
+    }
 }

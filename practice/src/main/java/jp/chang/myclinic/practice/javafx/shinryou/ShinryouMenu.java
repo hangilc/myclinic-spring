@@ -9,17 +9,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.javafx.FunJavaFX;
-import jp.chang.myclinic.util.DateTimeUtil;
-import jp.chang.myclinic.utilfx.HandlerFX;
 import jp.chang.myclinic.practice.javafx.events.ConductEnteredEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouDeletedEvent;
 import jp.chang.myclinic.practice.javafx.events.ShinryouEnteredEvent;
 import jp.chang.myclinic.practice.lib.CFUtil;
 import jp.chang.myclinic.practice.lib.PracticeUtil;
+import jp.chang.myclinic.util.DateTimeUtil;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -164,7 +163,7 @@ public class ShinryouMenu extends VBox {
             ShinryouEnterForm form = new ShinryouEnterForm(visitId, visitDate) {
 
                 @Override
-                protected void onClose(ShinryouForm form) {
+                protected void onClose(ShinryouEnterForm form) {
                     hideWorkarea();
                 }
             };

@@ -47,7 +47,7 @@ public class Validator implements Runnable {
         for (Field field : dtoClass.getFields()) {
             validatorMethod(classDecl, field);
         }
-        validteMethod(classDecl, dtoClass);
+        validateMethod(classDecl, dtoClass);
         Formatter formatter = new Formatter();
         try {
             System.out.println(formatter.formatSource(unit.toString()));
@@ -66,6 +66,7 @@ public class Validator implements Runnable {
     private void validatorMethod(ClassOrInterfaceDeclaration classDecl, Field field) {
         String methodName = "validate" + helper.snakeToCapital(field.getName());
         MethodDeclaration methodDecl = classDecl.addMethod(methodName, Keyword.PUBLIC);
+        methodDecl.setType(classDecl.getNameAsString());
         methodDecl.addParameter(field.getType().getSimpleName(), field.getName());
         String fieldName = "validated" + helper.capitalize(field.getName());
         Expression successCall = new MethodCallExpr(null, "success",
@@ -73,10 +74,11 @@ public class Validator implements Runnable {
         Expression assignExpr = new AssignExpr(new FieldAccessExpr(new NameExpr("this"), fieldName),
                 successCall, Operator.ASSIGN);
         Statement stmt = new ExpressionStmt(assignExpr);
-        methodDecl.setBody(new BlockStmt(nodeList(stmt)));
+        Statement returnThis = new ReturnStmt(new NameExpr("this"));
+        methodDecl.setBody(new BlockStmt(nodeList(stmt, returnThis)));
     }
 
-    private void validteMethod(ClassOrInterfaceDeclaration classDecl, Class<?> dtoClass){
+    private void validateMethod(ClassOrInterfaceDeclaration classDecl, Class<?> dtoClass){
         MethodDeclaration methodDecl = classDecl.addMethod("validate", Keyword.PUBLIC);
         methodDecl.setType(helper.createGenericType("Validated", dtoClass.getSimpleName()));
         Expression newInstanceExpr = new ObjectCreationExpr(null,
@@ -89,7 +91,8 @@ public class Validator implements Runnable {
                             new NameExpr(field.getName()),
                             Operator.ASSIGN
                     ));
-            call = new MethodCallExpr(call, "extend", nodeList(new StringLiteralExpr(""),
+            Statement returnThis = new ReturnStmt(new NameExpr("this"));
+            call = new MethodCallExpr(call, "extend", nodeList(new StringLiteralExpr(field.getName()),
                     new NameExpr("validated" + helper.capitalize(field.getName())),
                     assignLambda));
         }

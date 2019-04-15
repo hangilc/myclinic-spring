@@ -14,19 +14,27 @@ public class ShinryouValidator {
 
     private Validated<Integer> validatedShinryoucode;
 
-    public void validateShinryouId(int shinryouId) {
+    public ShinryouValidator validateShinryouId(int shinryouId) {
         this.validatedShinryouId = success(shinryouId)
                 .confirm(isPositive());
+        return this;
     }
 
-    public void validateVisitId(int visitId) {
+    public ShinryouValidator setValidatedShinryouId(int shinryouId){
+        this.validatedShinryouId = success(shinryouId);
+        return this;
+    }
+
+    public ShinryouValidator validateVisitId(int visitId) {
         this.validatedVisitId = success(visitId)
                 .confirm(isPositive());
+        return this;
     }
 
-    public void validateShinryoucode(int shinryoucode) {
+    public ShinryouValidator validateShinryoucode(int shinryoucode) {
         this.validatedShinryoucode = success(shinryoucode)
                 .confirm(isPositive());
+        return this;
     }
 
     public Validated<ShinryouDTO> validate() {
