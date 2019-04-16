@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
-import static jp.chang.myclinic.backenddb.Query.Projector;
+import static jp.chang.myclinic.backenddb.Query.*;
 import static jp.chang.myclinic.backenddb.SqlTranslator.TableInfo;
 
 public class Backend {
@@ -499,6 +499,15 @@ public class Backend {
         return result;
     }
 
+    public List<DrugWithAttrDTO> listDrugWithAttr(int visitId){
+        String sql = xlate("select d.*, a.* from Drug d left join DrugAttr a " +
+                " on d.drugId = a.drugId where d.visitId = ? order by d.drugId",
+                ts.drugTable, "d", ts.drugAttrTable, "a");
+        return getQuery().query(sql,
+                biProjector(ts.drugTable, nullableDrugAttrProjector, DrugWithAttrDTO::create),
+                visitId);
+    }
+
     public List<DrugFullDTO> listDrugFull(int visitId) {
         String sql = xlate(
                 "select d.*, m.* from Drug d, IyakuhinMaster m, Visit v " +
@@ -598,15 +607,19 @@ public class Backend {
 
     // DrugAttr /////////////////////////////////////////////////////////////////////////
 
-    private Projector<DrugAttrDTO> nullableDrugAttrProjector = new Projector<>(){
-
-        @Override
-        public DrugAttrDTO project(ResultSet rs, Query.ResultSetContext ctx) throws SQLException {
-            DrugAttrDTO attr = ts.drugAttrTable.project(rs, ctx);
-            return attr.drugId == 0 ? null : attr;
-        }
-
-    };
+    private Projector<DrugAttrDTO> nullableDrugAttrProjector = new NullableProjector<>(
+        ts.drugAttrTable,
+        attr -> attr.drugId == 0
+    );
+//    private Projector<DrugAttrDTO> nullableDrugAttrProjector = new Projector<>() {
+//
+//        @Override
+//        public DrugAttrDTO project(ResultSet rs, Query.ResultSetContext ctx) throws SQLException {
+//            DrugAttrDTO attr = ts.drugAttrTable.project(rs, ctx);
+//            return attr.drugId == 0 ? null : attr;
+//        }
+//
+//    };
 
     public DrugAttrDTO getDrugAttr(int drugId) {
         return ts.drugAttrTable.getById(drugId);
@@ -937,6 +950,10 @@ public class Backend {
         return shinryouIds.stream().map(this::getShinryouFull).collect(toList());
     }
 
+    public List<ShinryouFullWithAttrDTO> listShinryouFullWithAttrByIds(List<Integer> shinryouIds){
+        return shinryouIds.stream().map(this::getShinryouFullWithAttr).collect(toList());
+    }
+
     public List<ShinryouDTO> listShinryou(int visitId) {
         String sql = xlate("select * from Shinryou where visitId = ? order by shinryouId",
                 ts.shinryouTable);
@@ -949,11 +966,7 @@ public class Backend {
                         " where s.visitId = ? order by s.shinryouId",
                 ts.shinryouTable, "s", ts.shinryouAttrTable, "a");
         return getQuery().query(sql,
-                (rs, context) -> {
-                    ShinryouDTO shinryou = ts.shinryouTable.project(rs, context);
-                    ShinryouAttrDTO attr = nullableShinryouAttrProjector.project(rs, context);
-                    return ShinryouWithAttrDTO.create(shinryou, attr);
-                },
+                biProjector(ts.shinryouTable, nullableShinryouAttrProjector, ShinryouWithAttrDTO::create),
                 visitId);
     }
 
@@ -982,15 +995,20 @@ public class Backend {
 
     // ShinryouAttr /////////////////////////////////////////////////////////////////////////////
 
-    private Projector<ShinryouAttrDTO> nullableShinryouAttrProjector = new Projector<>(){
+    private Projector<ShinryouAttrDTO> nullableShinryouAttrProjector = new NullableProjector<>(
+            ts.shinryouAttrTable,
+            attr -> attr.shinryouId == 0
+    );
 
-        @Override
-        public ShinryouAttrDTO project(ResultSet rs, Query.ResultSetContext ctx) throws SQLException {
-            ShinryouAttrDTO attr = ts.shinryouAttrTable.project(rs, ctx);
-            return attr.shinryouId == 0 ? null : attr;
-        }
-
-    };
+//    private Projector<ShinryouAttrDTO> nullableShinryouAttrProjector = new Projector<>(){
+//
+//        @Override
+//        public ShinryouAttrDTO project(ResultSet rs, Query.ResultSetContext ctx) throws SQLException {
+//            ShinryouAttrDTO attr = ts.shinryouAttrTable.project(rs, ctx);
+//            return attr.shinryouId == 0 ? null : attr;
+//        }
+//
+//    };
 
     public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds) {
         return shinryouIds.stream().map(ts.shinryouAttrTable::getById).filter(Objects::nonNull).collect(toList());

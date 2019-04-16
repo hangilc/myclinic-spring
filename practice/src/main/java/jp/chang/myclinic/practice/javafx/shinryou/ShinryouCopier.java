@@ -3,6 +3,7 @@ package jp.chang.myclinic.practice.javafx.shinryou;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.frontend.Frontend;
 import jp.chang.myclinic.practice.Context;
+import jp.chang.myclinic.utilfx.HandlerFX;
 
 import java.util.List;
 import java.util.Map;
@@ -11,11 +12,6 @@ import java.util.concurrent.CompletableFuture;
 import static java.util.stream.Collectors.toList;
 
 class ShinryouCopier {
-
-    static class Result {
-        List<ShinryouFullDTO> shinryouList;
-        Map<Integer, ShinryouAttrDTO> attrMap;
-    }
 
     private int srcVisitId;
     private int dstVisitId;
@@ -26,25 +22,29 @@ class ShinryouCopier {
         this.dstVisitId = dstVisitId;
     }
 
-    public CompletableFuture<Result> copy() {
-        return null;
-//        Frontend frontend = Context.frontend;
-//        BatchEnterRequestDTO request = new BatchEnterRequestDTO();
-//        return frontend.listShinryou(srcVisitId)
-//                .thenCompose(srcShinryouList -> {
-//                    this.dstShinryouList = srcShinryouList.stream()
-//                            .map(this::copyShinryou).collect(toList());
-//                    List<Integer> shinryouIds = srcShinryouList.stream()
-//                            .map(s -> s.shinryouId).collect(toList());
-//                    return frontend.batchGetShinryouAttr(shinryouIds);
-//                });
+    public CompletableFuture<List<DrugFullWithAttrDTO>> copy() {
+        Frontend frontend = Context.frontend;
+        frontend.listShinryouWithAttr(srcVisitId)
+                .thenCompose(srcList -> {
+                    BatchEnterRequestDTO request = new BatchEnterRequestDTO();
+                    request.shinryouList = srcList.stream().map(this::copyShinryou).collect(toList());
+                    return frontend.batchEnter(request);
+                })
+                .thenApply(result -> {
+                    return frontend.listShinryouFullWithAttrByIds(result.shinryouIds);
+                })
+                .exceptionally(HandlerFX::exceptionally);
     }
 
-    private ShinryouWithAttrDTO copyShinryou(ShinryouDTO src) {
+    private ShinryouWithAttrDTO copyShinryou(ShinryouWithAttrDTO src) {
         ShinryouWithAttrDTO dst = new ShinryouWithAttrDTO();
-        dst.shinryou = ShinryouDTO.copy(src);
+        dst.shinryou = ShinryouDTO.copy(src.shinryou);
         dst.shinryou.shinryouId = 0;
         dst.shinryou.visitId = dstVisitId;
+        if( src.attr != null ){
+            dst.attr = ShinryouAttrDTO.copy(src.attr);
+            dst.attr.shinryouId = 0;
+        }
         return dst;
     }
 

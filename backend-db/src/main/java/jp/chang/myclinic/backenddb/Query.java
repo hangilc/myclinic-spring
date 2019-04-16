@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Query {
@@ -122,6 +123,23 @@ public class Query {
 
     public interface Projector<T> {
         T project(ResultSet rs, ResultSetContext ctx) throws SQLException;
+    }
+
+    public static class NullableProjector<T> implements Projector<T> {
+
+        private Projector<T> orig;
+        private Function<T, Boolean> isNullTester;
+
+        public NullableProjector(Projector<T> orig, Function<T, Boolean> isNullTester){
+            this.orig = orig;
+            this.isNullTester = isNullTester;
+        }
+
+        @Override
+        public T project(ResultSet rs, ResultSetContext ctx) throws SQLException {
+            T t = orig.project(rs, ctx);
+            return isNullTester.apply(t) ? null : t;
+        }
     }
 
     private static class ResultSetContextImpl implements ResultSetContext {
