@@ -4,7 +4,6 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class FrontendAdapter implements Frontend {
 
-    public <T> CompletableFuture<T> value(T value){
+    public <T> CompletableFuture<T> value(T value) {
         return CompletableFuture.completedFuture(value);
     }
 
@@ -834,6 +833,11 @@ public class FrontendAdapter implements Frontend {
 
     @Override
     public CompletableFuture<Void> deleteShinryouCascading(int shinryouId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds) {
         throw new RuntimeException("not implemented");
     }
 }

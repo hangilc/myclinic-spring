@@ -903,4 +903,9 @@ public class FrontendBackend implements Frontend {
     public CompletableFuture<Void> deleteShinryouCascading(int shinryouId) {
         return txProc(backend -> backend.deleteShinryouCascading(shinryouId));
     }
+
+    @Override
+    public CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds) {
+        return txProc(backend -> backend.batchDeleteShinryouCascading(shinryouIds));
+    }
 }

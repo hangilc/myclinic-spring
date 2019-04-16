@@ -4,7 +4,6 @@ import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -837,5 +836,10 @@ public class FrontendProxy implements Frontend {
     @Override
     public CompletableFuture<Void> deleteShinryouCascading(int shinryouId) {
         return delegate.deleteShinryouCascading(shinryouId);
+    }
+
+    @Override
+    public CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds) {
+        return delegate.batchDeleteShinryouCascading(shinryouIds);
     }
 }

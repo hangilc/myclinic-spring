@@ -338,4 +338,6 @@ public interface Frontend {
     CompletableFuture<Void> deleteDrugAttr(int drugId);
 
     CompletableFuture<Void> deleteShinryouCascading(int shinryouId);
+
+    CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds);
 }
