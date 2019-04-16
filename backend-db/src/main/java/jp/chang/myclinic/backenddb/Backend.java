@@ -893,25 +893,6 @@ public class Backend {
         shinryouList.forEach(this::enterShinryou);
     }
 
-    public BatchEnterResultDTO batchEnter(BatchEnterRequestDTO req) {
-        BatchEnterResultDTO result = new BatchEnterResultDTO();
-        result.shinryouIds = new ArrayList<>();
-        result.conductIds = new ArrayList<>();
-        if (req.shinryouList != null) {
-            req.shinryouList.forEach(shinryou -> {
-                enterShinryou(shinryou);
-                result.shinryouIds.add(shinryou.shinryouId);
-            });
-        }
-        if (req.conducts != null) {
-            req.conducts.forEach(conductReq -> {
-                ConductFullDTO c = enterConductFull(conductReq);
-                result.conductIds.add(c.conduct.conductId);
-            });
-        }
-        return result;
-    }
-
     public List<ShinryouFullDTO> listShinryouFullByIds(List<Integer> shinryouIds) {
         return shinryouIds.stream().map(this::getShinryouFull).collect(toList());
     }
@@ -1736,6 +1717,40 @@ public class Backend {
                 ts.prescExampleTable, "p", ts.iyakuhinMasterTable, "m");
         return getQuery().query(sql,
                 biProjector(ts.prescExampleTable, ts.iyakuhinMasterTable, PrescExampleFullDTO::create));
+    }
+
+    // BatchEnter ////////////////////////////////////////////////////////////////////////
+
+    public BatchEnterResultDTO batchEnter(BatchEnterRequestDTO req) {
+        BatchEnterResultDTO result = new BatchEnterResultDTO();
+        result.drugIds = new ArrayList<>();
+        result.shinryouIds = new ArrayList<>();
+        result.conductIds = new ArrayList<>();
+        if( req.drugs != null ){
+            req.drugs.forEach(drug -> {
+                enterDrug(drug);
+                result.drugIds.add(drug.drugId);
+            });
+        }
+        if( req.drugAttrs != null ){
+            req.drugAttrs.forEach(this::enterDrugAttr);
+        }
+        if (req.shinryouList != null) {
+            req.shinryouList.forEach(shinryou -> {
+                enterShinryou(shinryou);
+                result.shinryouIds.add(shinryou.shinryouId);
+            });
+        }
+        if( req.shinryouAttrs != null ){
+            req.shinryouAttrs.forEach(this::enterShinryouAttr);
+        }
+        if (req.conducts != null) {
+            req.conducts.forEach(conductReq -> {
+                ConductFullDTO c = enterConductFull(conductReq);
+                result.conductIds.add(c.conduct.conductId);
+            });
+        }
+        return result;
     }
 
     // BatchEnterByNames /////////////////////////////////////////////////////////////////

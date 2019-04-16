@@ -15,7 +15,8 @@ import java.util.function.Consumer;
 
 public class ShinryouCopier {
 
-    //private static Logger logger = LoggerFactory.getLogger(ShinryouCopier.class);
+
+
 
     private int targetVisitId;
     private List<ShinryouFullDTO> srcList;
