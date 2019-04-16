@@ -68,4 +68,5 @@ public class RecordsPaneShinryouTest extends GuiTestBase {
                     Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
         });
     }
+
 }

@@ -117,6 +117,7 @@ public class Query {
 
     public interface ResultSetContext {
         int nextIndex();
+        int probeIndex();
     }
 
     public interface Projector<T> {
@@ -129,6 +130,11 @@ public class Query {
         @Override
         public int nextIndex() {
             return index++;
+        }
+
+        @Override
+        public int probeIndex() {
+            return index;
         }
     }
 

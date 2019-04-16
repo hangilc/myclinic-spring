@@ -840,4 +840,29 @@ public class FrontendAdapter implements Frontend {
     public CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds) {
         throw new RuntimeException("not implemented");
     }
+
+    @Override
+    public CompletableFuture<DrugWithAttrDTO> getDrugWithAttr(int drugId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<DrugFullWithAttrDTO> getDrugFullWithAttr(int drugId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<ShinryouWithAttrDTO> getShinryouWithAttr(int shinryouId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<ShinryouFullWithAttrDTO> getShinryouFullWithAttr(int shinryouId) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouWithAttrDTO>> listShinryouWithAttr(int visitId) {
+        throw new RuntimeException("not implemented");
+    }
 }

@@ -5,7 +5,7 @@ import jp.chang.myclinic.consts.ConductKind;
 import jp.chang.myclinic.dto.*;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.lib.ErrorMessageExtractor;
-import jp.chang.myclinic.practice.javafx.shinryou.ShinryouCopier;
+import jp.chang.myclinic.practice.javafx.shinryou.ShinryouCopierOld;
 import jp.chang.myclinic.utilfx.GuiUtil;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class FunJavaFX {
     public static void batchCopyShinryou(int targetVisitId, List<ShinryouFullDTO> srcList,
                                          BiConsumer<ShinryouFullDTO, ShinryouAttrDTO> onEntered,
                                          Runnable onEnd) {
-        ShinryouCopier copier = new ShinryouCopier(targetVisitId, srcList, onEntered, createErrorHandler(),
+        ShinryouCopierOld copier = new ShinryouCopierOld(targetVisitId, srcList, onEntered, createErrorHandler(),
                 () -> Platform.runLater(onEnd));
         copier.start();
     }

@@ -340,4 +340,14 @@ public interface Frontend {
     CompletableFuture<Void> deleteShinryouCascading(int shinryouId);
 
     CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds);
+
+    CompletableFuture<DrugWithAttrDTO> getDrugWithAttr(int drugId);
+
+    CompletableFuture<DrugFullWithAttrDTO> getDrugFullWithAttr(int drugId);
+
+    CompletableFuture<ShinryouWithAttrDTO> getShinryouWithAttr(int shinryouId);
+
+    CompletableFuture<ShinryouFullWithAttrDTO> getShinryouFullWithAttr(int shinryouId);
+
+    CompletableFuture<List<ShinryouWithAttrDTO>> listShinryouWithAttr(int visitId);
 }

@@ -908,4 +908,29 @@ public class FrontendBackend implements Frontend {
     public CompletableFuture<Void> batchDeleteShinryouCascading(List<Integer> shinryouIds) {
         return txProc(backend -> backend.batchDeleteShinryouCascading(shinryouIds));
     }
+
+    @Override
+    public CompletableFuture<DrugWithAttrDTO> getDrugWithAttr(int drugId) {
+        return query(backend -> backend.getDrugWithAttr(drugId));
+    }
+
+    @Override
+    public CompletableFuture<DrugFullWithAttrDTO> getDrugFullWithAttr(int drugId) {
+        return query(backend -> backend.getDrugFullWithAttr(drugId));
+    }
+
+    @Override
+    public CompletableFuture<ShinryouWithAttrDTO> getShinryouWithAttr(int shinryouId) {
+        return query(backend -> backend.getShinryouWithAttr(shinryouId));
+    }
+
+    @Override
+    public CompletableFuture<ShinryouFullWithAttrDTO> getShinryouFullWithAttr(int shinryouId) {
+        return query(backend -> backend.getShinryouFullWithAttr(shinryouId));
+    }
+
+    @Override
+    public CompletableFuture<List<ShinryouWithAttrDTO>> listShinryouWithAttr(int visitId) {
+        return query(backend -> backend.listShinryouWithAttr(visitId));
+    }
 }

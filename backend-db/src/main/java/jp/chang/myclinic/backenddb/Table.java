@@ -162,15 +162,6 @@ public abstract class Table<DTO> implements TableBaseInterface<DTO> {
         return dto;
     }
 
-//    public Column<DTO> getColumnByDbColumnName(String dbColumnName) {
-//        for (Column<DTO> c : getColumns()) {
-//            if (c.getDbColumnName().equals(dbColumnName)) {
-//                return c;
-//            }
-//        }
-//        return null;
-//    }
-
     private final String dtoName = getClassDTO().getSimpleName().replaceAll("DTO$", "");
 
     @Override

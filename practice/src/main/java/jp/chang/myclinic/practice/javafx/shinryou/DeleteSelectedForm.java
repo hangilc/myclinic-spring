@@ -20,16 +20,17 @@ public class DeleteSelectedForm extends HandleSelectedForm {
 
     @Override
     protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection) {
-        List<Integer> deletedShinryouIds = new ArrayList<>();
-        CFUtil.forEach(selection, this::deleteShinryou)
-                .thenAccept(result -> Platform.runLater(() -> hideWorkarea()))
-                .exceptionally(HandlerFX::exceptionally);
+//        List<Integer> deletedShinryouIds = new ArrayList<>();
+//        CFUtil.forEach(selection, this::deleteShinryou)
+//                .thenAccept(result -> Platform.runLater(() -> hideWorkarea()))
+//                .exceptionally(HandlerFX::exceptionally);
     }
 
     private CompletableFuture<Void> deleteShinryou(ShinryouFullDTO shinryou) {
-        return Context.frontend.deleteShinryou(shinryou.shinryou.shinryouId)
-                .thenAccept(result -> Platform.runLater(() ->
-                        fireShinryouDeletedEvent(shinryou.shinryou)));
+        return null;
+//        return Context.frontend.deleteShinryou(shinryou.shinryou.shinryouId)
+//                .thenAccept(result -> Platform.runLater(() ->
+//                        fireShinryouDeletedEvent(shinryou.shinryou)));
     }
 
 }

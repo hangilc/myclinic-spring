@@ -10,6 +10,8 @@ import jp.chang.myclinic.logdto.PracticeLogger;
 import jp.chang.myclinic.logdto.practicelog.PracticeLogDTO;
 import jp.chang.myclinic.util.DateTimeUtil;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -439,6 +441,13 @@ public class Backend {
         return ts.drugTable.getById(drugId);
     }
 
+    public DrugWithAttrDTO getDrugWithAttr(int drugId) {
+        DrugWithAttrDTO result = new DrugWithAttrDTO();
+        result.drug = getDrug(drugId);
+        result.attr = getDrugAttr(drugId);
+        return result;
+    }
+
     public void enterDrug(DrugDTO drug) {
         ts.drugTable.insert(drug);
         practiceLogger.logDrugCreated(drug);
@@ -464,7 +473,7 @@ public class Backend {
         practiceLogger.logDrugDeleted(drug);
     }
 
-    public void deleteDrugCascading(int drugId){
+    public void deleteDrugCascading(int drugId) {
         deleteDrugAttr(drugId);
         deleteDrug(drugId);
     }
@@ -481,6 +490,13 @@ public class Backend {
         return getQuery().get(sql,
                 biProjector(ts.drugTable, ts.iyakuhinMasterTable, DrugFullDTO::create),
                 drugId);
+    }
+
+    public DrugFullWithAttrDTO getDrugFullWithAttr(int drugId) {
+        DrugFullWithAttrDTO result = new DrugFullWithAttrDTO();
+        result.drug = getDrugFull(drugId);
+        result.attr = getDrugAttr(drugId);
+        return result;
     }
 
     public List<DrugFullDTO> listDrugFull(int visitId) {
@@ -581,6 +597,16 @@ public class Backend {
     }
 
     // DrugAttr /////////////////////////////////////////////////////////////////////////
+
+    private Projector<DrugAttrDTO> nullableDrugAttrProjector = new Projector<>(){
+
+        @Override
+        public DrugAttrDTO project(ResultSet rs, Query.ResultSetContext ctx) throws SQLException {
+            DrugAttrDTO attr = ts.drugAttrTable.project(rs, ctx);
+            return attr.drugId == 0 ? null : attr;
+        }
+
+    };
 
     public DrugAttrDTO getDrugAttr(int drugId) {
         return ts.drugAttrTable.getById(drugId);
@@ -859,6 +885,13 @@ public class Backend {
         return ts.shinryouTable.getById(shinryouId);
     }
 
+    public ShinryouWithAttrDTO getShinryouWithAttr(int shinryouId) {
+        ShinryouWithAttrDTO result = new ShinryouWithAttrDTO();
+        result.shinryou = getShinryou(shinryouId);
+        result.attr = getShinryouAttr(shinryouId);
+        return result;
+    }
+
     public void enterShinryou(ShinryouDTO shinryou) {
         ts.shinryouTable.insert(shinryou);
         practiceLogger.logShinryouCreated(shinryou);
@@ -870,12 +903,12 @@ public class Backend {
         practiceLogger.logShinryouDeleted(shinryou);
     }
 
-    public void deleteShinryouCascading(int shinryouId){
+    public void deleteShinryouCascading(int shinryouId) {
         deleteShinryouAttr(shinryouId);
         deleteShinryou(shinryouId);
     }
 
-    public void batchDeleteShinryouCascading(List<Integer> shinryouIds){
+    public void batchDeleteShinryouCascading(List<Integer> shinryouIds) {
         shinryouIds.forEach(this::deleteShinryouCascading);
     }
 
@@ -887,6 +920,13 @@ public class Backend {
         return getQuery().get(sql,
                 biProjector(ts.shinryouTable, ts.shinryouMasterTable, ShinryouFullDTO::create),
                 shinryouId);
+    }
+
+    public ShinryouFullWithAttrDTO getShinryouFullWithAttr(int shinryouId) {
+        ShinryouFullWithAttrDTO result = new ShinryouFullWithAttrDTO();
+        result.shinryou = getShinryouFull(shinryouId);
+        result.attr = getShinryouAttr(shinryouId);
+        return result;
     }
 
     public void batchEnterShinryou(List<ShinryouDTO> shinryouList) {
@@ -901,6 +941,20 @@ public class Backend {
         String sql = xlate("select * from Shinryou where visitId = ? order by shinryouId",
                 ts.shinryouTable);
         return getQuery().query(sql, ts.shinryouTable, visitId);
+    }
+
+    public List<ShinryouWithAttrDTO> listShinryouWithAttr(int visitId) {
+        String sql = xlate("select s.*, a.* from Shinryou s left join ShinryouAttr a " +
+                        " on s.shinryouId = a.shinryouId" +
+                        " where s.visitId = ? order by s.shinryouId",
+                ts.shinryouTable, "s", ts.shinryouAttrTable, "a");
+        return getQuery().query(sql,
+                (rs, context) -> {
+                    ShinryouDTO shinryou = ts.shinryouTable.project(rs, context);
+                    ShinryouAttrDTO attr = nullableShinryouAttrProjector.project(rs, context);
+                    return ShinryouWithAttrDTO.create(shinryou, attr);
+                },
+                visitId);
     }
 
     public List<ShinryouFullDTO> listShinryouFull(int visitId) {
@@ -928,6 +982,16 @@ public class Backend {
 
     // ShinryouAttr /////////////////////////////////////////////////////////////////////////////
 
+    private Projector<ShinryouAttrDTO> nullableShinryouAttrProjector = new Projector<>(){
+
+        @Override
+        public ShinryouAttrDTO project(ResultSet rs, Query.ResultSetContext ctx) throws SQLException {
+            ShinryouAttrDTO attr = ts.shinryouAttrTable.project(rs, ctx);
+            return attr.shinryouId == 0 ? null : attr;
+        }
+
+    };
+
     public List<ShinryouAttrDTO> batchGetShinryouAttr(List<Integer> shinryouIds) {
         return shinryouIds.stream().map(ts.shinryouAttrTable::getById).filter(Objects::nonNull).collect(toList());
     }
@@ -948,12 +1012,12 @@ public class Backend {
         ts.shinryouAttrTable.update(shinryouAttr);
     }
 
-    public void setShinryouAttr(int shinryouId, ShinryouAttrDTO attr){
-        if( attr == null || ShinryouAttrDTO.isEmpty(attr) ){
+    public void setShinryouAttr(int shinryouId, ShinryouAttrDTO attr) {
+        if (attr == null || ShinryouAttrDTO.isEmpty(attr)) {
             deleteShinryouAttr(shinryouId);
         } else {
             ShinryouAttrDTO curr = ts.shinryouAttrTable.getById(shinryouId);
-            if( curr != null ){
+            if (curr != null) {
                 updateShinryouAttr(attr);
             } else {
                 enterShinryouAttr(attr);
@@ -1068,12 +1132,12 @@ public class Backend {
         return listConduct(visitId).stream().map(this::extendConduct).collect(toList());
     }
 
-    public List<Integer> copyAllConducts(int targetVisitId, int sourceVisitId){
+    public List<Integer> copyAllConducts(int targetVisitId, int sourceVisitId) {
         List<Integer> copiedConductIds = new ArrayList<>();
         List<ConductDTO> sourceConducts = listConduct(sourceVisitId);
         VisitDTO targetVisit = getVisit(targetVisitId);
         LocalDate at = DateTimeUtil.parseSqlDateTime(targetVisit.visitedAt).toLocalDate();
-        for(ConductDTO source: sourceConducts){
+        for (ConductDTO source : sourceConducts) {
             ConductDTO newConduct = ConductDTO.copy(source);
             newConduct.conductId = 0;
             newConduct.visitId = targetVisitId;
@@ -1081,7 +1145,7 @@ public class Backend {
             int conductId = newConduct.conductId;
             copiedConductIds.add(conductId);
             GazouLabelDTO gazouLabel = getGazouLabel(source.conductId);
-            if( gazouLabel != null ){
+            if (gazouLabel != null) {
                 gazouLabel.conductId = conductId;
                 enterGazouLabel(gazouLabel);
             }
@@ -1091,7 +1155,7 @@ public class Backend {
                         newShinryou.conductShinryouId = 0;
                         newShinryou.conductId = conductId;
                         ShinryouMasterDTO master = getShinryouMaster(shinryou.shinryoucode, at);
-                        if( master == null ){
+                        if (master == null) {
                             VisitDTO sourceVisit = getVisit(sourceVisitId);
                             ShinryouMasterDTO sourceMaster = getShinryouMaster(shinryou.shinryoucode,
                                     DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
@@ -1106,7 +1170,7 @@ public class Backend {
                         newDrug.conductDrugId = 0;
                         newDrug.conductId = conductId;
                         IyakuhinMasterDTO master = resolveStockDrug(drug.iyakuhincode, at);
-                        if( master == null ){
+                        if (master == null) {
                             VisitDTO sourceVisit = getVisit(sourceVisitId);
                             IyakuhinMasterDTO sourceMaster = getIyakuhinMaster(drug.iyakuhincode,
                                     DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
@@ -1121,7 +1185,7 @@ public class Backend {
                         newKizai.conductKizaiId = 0;
                         newKizai.conductId = conductId;
                         KizaiMasterDTO master = getKizaiMaster(kizai.kizaicode, at);
-                        if( master == null ){
+                        if (master == null) {
                             VisitDTO sourceVisit = getVisit(sourceVisitId);
                             KizaiMasterDTO sourceMaster = getKizaiMaster(kizai.kizaicode,
                                     DateTimeUtil.parseSqlDateTime(sourceVisit.visitedAt).toLocalDate());
@@ -1367,10 +1431,10 @@ public class Backend {
         practiceLogger.logDiseaseCreated(disease);
     }
 
-    public void enterNewDisease(DiseaseNewDTO disease){
+    public void enterNewDisease(DiseaseNewDTO disease) {
         enterDisease(disease.disease);
         int diseaseId = disease.disease.diseaseId;
-        if( disease.adjList != null ){
+        if (disease.adjList != null) {
             disease.adjList.forEach(adj -> {
                 adj.diseaseId = diseaseId;
                 enterDiseaseAdj(adj);
@@ -1513,9 +1577,9 @@ public class Backend {
         return null;
     }
 
-    public ShinryouMasterDTO resolveShinryouMasterByKey(String key, LocalDate at){
+    public ShinryouMasterDTO resolveShinryouMasterByKey(String key, LocalDate at) {
         int shinryoucode = ss.shinryoucodeResolver.resolveShinryoucodeByKey(key);
-        if( shinryoucode == 0 ){
+        if (shinryoucode == 0) {
             return null;
         } else {
             return getShinryouMaster(shinryoucode, at);
@@ -1553,10 +1617,10 @@ public class Backend {
         return getQuery().query(sql, ts.shinryouMasterTable, searchText, atString, atString);
     }
 
-    public ShinryouMasterDTO getShinryouMaster(int shinryoucode, LocalDate at){
+    public ShinryouMasterDTO getShinryouMaster(int shinryoucode, LocalDate at) {
         String sql = xlate("select * from ShinryouMaster " +
-                " where shinryoucode = ? " +
-                " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                        " where shinryoucode = ? " +
+                        " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
                 ts.shinryouMasterTable);
         String atString = at.toString();
         return getQuery().get(sql, ts.shinryouMasterTable, shinryoucode, atString, atString);
@@ -1583,9 +1647,9 @@ public class Backend {
 
     // KizaiMaster ///////////////////////////////////////////////////////////////////////
 
-    public KizaiMasterDTO getKizaiMaster(int kizaicode, LocalDate at){
+    public KizaiMasterDTO getKizaiMaster(int kizaicode, LocalDate at) {
         String sql = xlate("select * from KizaiMaster where kizaicode = ? " +
-                " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
+                        " and " + ts.dialect.isValidAt("validFrom", "validUpto", "?"),
                 ts.kizaiMasterTable);
         String atString = at.toString();
         return getQuery().get(sql, ts.kizaiMasterTable, kizaicode, atString, atString);
@@ -1612,9 +1676,9 @@ public class Backend {
         return null;
     }
 
-    public KizaiMasterDTO resolveKizaiMasterByKey(String key, LocalDate at){
+    public KizaiMasterDTO resolveKizaiMasterByKey(String key, LocalDate at) {
         int kizaicode = ss.kizaicodeResolver.resolveKizaicodeByKey(key);
-        if( kizaicode == 0 ){
+        if (kizaicode == 0) {
             return null;
         } else {
             return getKizaiMaster(kizaicode, at);
@@ -1726,23 +1790,29 @@ public class Backend {
         result.drugIds = new ArrayList<>();
         result.shinryouIds = new ArrayList<>();
         result.conductIds = new ArrayList<>();
-        if( req.drugs != null ){
-            req.drugs.forEach(drug -> {
+        if (req.drugs != null) {
+            req.drugs.forEach(drugWithAttr -> {
+                DrugDTO drug = drugWithAttr.drug;
+                DrugAttrDTO attr = drugWithAttr.attr;
                 enterDrug(drug);
+                if (attr != null) {
+                    attr.drugId = drug.drugId;
+                    enterDrugAttr(attr);
+                }
                 result.drugIds.add(drug.drugId);
             });
         }
-        if( req.drugAttrs != null ){
-            req.drugAttrs.forEach(this::enterDrugAttr);
-        }
         if (req.shinryouList != null) {
-            req.shinryouList.forEach(shinryou -> {
+            req.shinryouList.forEach(shinryouWithAttr -> {
+                ShinryouDTO shinryou = shinryouWithAttr.shinryou;
+                ShinryouAttrDTO attr = shinryouWithAttr.attr;
                 enterShinryou(shinryou);
+                if (attr != null) {
+                    attr.shinryouId = shinryou.shinryouId;
+                    enterShinryouAttr(attr);
+                }
                 result.shinryouIds.add(shinryou.shinryouId);
             });
-        }
-        if( req.shinryouAttrs != null ){
-            req.shinryouAttrs.forEach(this::enterShinryouAttr);
         }
         if (req.conducts != null) {
             req.conducts.forEach(conductReq -> {
@@ -1755,16 +1825,16 @@ public class Backend {
 
     // BatchEnterByNames /////////////////////////////////////////////////////////////////
 
-    public BatchEnterResultDTO batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req){
+    public BatchEnterResultDTO batchEnterByNames(int visitId, BatchEnterByNamesRequestDTO req) {
         VisitDTO visit = getVisit(visitId);
         LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
         BatchEnterResultDTO result = new BatchEnterResultDTO();
         result.shinryouIds = new ArrayList<>();
         result.conductIds = new ArrayList<>();
-        if( req.shinryouNames != null ){
+        if (req.shinryouNames != null) {
             req.shinryouNames.forEach(key -> {
                 ShinryouMasterDTO m = resolveShinryouMasterByKey(key, at);
-                if( m == null ){
+                if (m == null) {
                     throw new RuntimeException("Cannot find shinryou master: " + key);
                 }
                 ShinryouDTO shinryou = new ShinryouDTO();
@@ -1774,23 +1844,23 @@ public class Backend {
                 result.shinryouIds.add(shinryou.shinryouId);
             });
         }
-        if( req.conducts != null ){
+        if (req.conducts != null) {
             req.conducts.forEach(conductReq -> {
                 ConductDTO conduct = new ConductDTO();
                 conduct.visitId = visitId;
                 conduct.kind = conductReq.kind;
                 enterConduct(conduct);
                 int conductId = conduct.conductId;
-                if( conductReq.gazouLabel != null ) {
+                if (conductReq.gazouLabel != null) {
                     GazouLabelDTO gazouLabel = new GazouLabelDTO();
                     gazouLabel.conductId = conductId;
                     gazouLabel.label = conductReq.gazouLabel;
                     enterGazouLabel(gazouLabel);
                 }
-                if( conductReq.shinryouNames != null ){
+                if (conductReq.shinryouNames != null) {
                     conductReq.shinryouNames.forEach(key -> {
                         ShinryouMasterDTO master = resolveShinryouMasterByKey(key, at);
-                        if( master == null ){
+                        if (master == null) {
                             throw new RuntimeException("Cannot find shinryou master: " + key);
                         }
                         ConductShinryouDTO shinryou = new ConductShinryouDTO();
@@ -1799,10 +1869,10 @@ public class Backend {
                         enterConductShinryou(shinryou);
                     });
                 }
-                if( conductReq.kizaiList != null ){
+                if (conductReq.kizaiList != null) {
                     conductReq.kizaiList.forEach(kizaiReq -> {
                         KizaiMasterDTO master = resolveKizaiMasterByKey(kizaiReq.name, at);
-                        if( master == null ){
+                        if (master == null) {
                             throw new RuntimeException("Cannot find kizai master: " + kizaiReq.name);
                         }
                         ConductKizaiDTO kizai = new ConductKizaiDTO();
@@ -1840,7 +1910,7 @@ public class Backend {
 
     // Meisai ////////////////////////////////////////////////////////////////////////////
 
-    public MeisaiDTO getMeisai(int visitId){
+    public MeisaiDTO getMeisai(int visitId) {
         VisitDTO visit = getVisit(visitId);
         LocalDate at = DateTimeUtil.parseSqlDateTime(visit.visitedAt).toLocalDate();
         return ss.meisaiService.getMeisai(
@@ -1856,14 +1926,14 @@ public class Backend {
 
     // StockDrug /////////////////////////////////////////////////////////////////////////
 
-    public IyakuhinMasterDTO resolveStockDrug(int iyakuhincode, LocalDate at){
+    public IyakuhinMasterDTO resolveStockDrug(int iyakuhincode, LocalDate at) {
         iyakuhincode = ss.stockDrugService.resolve(iyakuhincode, at);
         return getIyakuhinMaster(iyakuhincode, at);
     }
 
     // ClinicInfo ////////////////////////////////////////////////////////////////////////
 
-    public ClinicInfoDTO getClinicInfo(){
+    public ClinicInfoDTO getClinicInfo() {
         return ss.clinicInfoProvider.getClinicInfo();
     }
 
