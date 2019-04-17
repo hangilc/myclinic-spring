@@ -877,4 +877,9 @@ public class FrontendProxy implements Frontend {
     public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttrByIds(List<Integer> shinryouIds) {
         return delegate.listShinryouFullWithAttrByIds(shinryouIds);
     }
+
+    @Override
+    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
+        return delegate.listShinryouFullWithAttr(visitId);
+    }
 }

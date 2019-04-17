@@ -943,4 +943,9 @@ public class FrontendBackend implements Frontend {
     public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttrByIds(List<Integer> shinryouIds) {
         return query(backend -> backend.listShinryouFullWithAttrByIds(shinryouIds));
     }
+
+    @Override
+    public CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId) {
+        return query(backend -> backend.listShinryouFullWithAttr(visitId));
+    }
 }

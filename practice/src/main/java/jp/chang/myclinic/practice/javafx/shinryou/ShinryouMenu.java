@@ -170,37 +170,30 @@ public class ShinryouMenu extends VBox {
     }
 
     private void doCopyAll() {
-        Context.frontend.listShinryouWithAttr(visitId)
-                .thenAccept(System.out::println)
-                .exceptionally(HandlerFX::exceptionally);
-//        int targetVisitId = PracticeUtil.findCopyTarget(visitId);
-//        if (targetVisitId != 0) {
-//            Context.frontend.listShinryouFull(visitId)
-//                    .thenAccept(srcList -> {
-//                        FunJavaFX.batchCopyShinryou(targetVisitId, srcList,
-//                                (entered, attr) -> {
-//                                    Platform.runLater(() ->
-//                                            Context.integrationService.broadcastNewShinryou(entered, attr));
-//                                },
-//                                () -> {
-//                                });
-//                    });
-//        }
+        int targetVisitId = PracticeUtil.findCopyTarget(visitId);
+        if (targetVisitId != 0) {
+            ShinryouCopier copier = new ShinryouCopier(targetVisitId);
+            copier.copyFromVisit(visitId)
+                    .thenAccept(enteredList ->
+                        enteredList.forEach(e ->
+                                Context.integrationService.broadcastNewShinryou(e.shinryou, e.attr))
+                    )
+                    .exceptionally(HandlerFX::exceptionally);
+        }
     }
 
     private void doCopySelected() {
         if (isWorkareaEmpty()) {
             int targetVisitId = PracticeUtil.findCopyTarget(visitId);
             if (targetVisitId != 0) {
-                Context.frontend.listShinryouFull(visitId)
+                Context.frontend.listShinryouFullWithAttr(visitId)
                         .thenAccept(shinryouList -> {
                             CopySelectedForm form = new CopySelectedForm(targetVisitId, shinryouList);
-                            form.setOnEnteredHandler((enteredList, attrMap) -> Platform.runLater(() -> {
-                                enteredList.forEach(entered -> Context.integrationService.broadcastNewShinryou(
-                                        entered, attrMap.get(entered.shinryou.shinryouId)
-                                ));
+                            form.setOnEnteredHandler(enteredList -> {
+                                enteredList.forEach(e ->
+                                        Context.integrationService.broadcastNewShinryou(e.shinryou, e.attr));
                                 hideWorkarea();
-                            }));
+                            });
                             form.setOnCancelHandler(this::hideWorkarea);
                             Platform.runLater(() -> showWorkarea(form));
                         })

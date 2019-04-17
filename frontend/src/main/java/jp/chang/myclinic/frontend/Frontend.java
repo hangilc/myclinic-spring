@@ -354,4 +354,6 @@ public interface Frontend {
     CompletableFuture<List<DrugWithAttrDTO>> listDrugWithAttr(int visitId);
 
     CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttrByIds(List<Integer> shinryouIds);
+
+    CompletableFuture<List<ShinryouFullWithAttrDTO>> listShinryouFullWithAttr(int visitId);
 }

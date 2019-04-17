@@ -2,6 +2,7 @@ package jp.chang.myclinic.practice.javafx.shinryou;
 
 import javafx.application.Platform;
 import jp.chang.myclinic.dto.ShinryouFullDTO;
+import jp.chang.myclinic.dto.ShinryouFullWithAttrDTO;
 import jp.chang.myclinic.practice.Context;
 import jp.chang.myclinic.practice.lib.CFUtil;
 import jp.chang.myclinic.utilfx.HandlerFX;
@@ -14,12 +15,12 @@ import java.util.concurrent.CompletableFuture;
 
 public class DeleteSelectedForm extends HandleSelectedForm {
 
-    DeleteSelectedForm(List<ShinryouFullDTO> shinryouList) {
+    DeleteSelectedForm(List<ShinryouFullWithAttrDTO> shinryouList) {
         super("複数診療削除", shinryouList);
     }
 
     @Override
-    protected void onEnter(HandleSelectedForm form, List<ShinryouFullDTO> selection) {
+    protected void onEnter(List<ShinryouFullWithAttrDTO> selection) {
 //        List<Integer> deletedShinryouIds = new ArrayList<>();
 //        CFUtil.forEach(selection, this::deleteShinryou)
 //                .thenAccept(result -> Platform.runLater(() -> hideWorkarea()))

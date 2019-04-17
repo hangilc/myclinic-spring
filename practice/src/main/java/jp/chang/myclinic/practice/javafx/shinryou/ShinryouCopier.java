@@ -13,27 +13,28 @@ import static java.util.stream.Collectors.toList;
 
 class ShinryouCopier {
 
-    private int srcVisitId;
     private int dstVisitId;
-    private List<ShinryouWithAttrDTO> dstShinryouList;
 
-    public ShinryouCopier(int srcVisitId, int dstVisitId) {
-        this.srcVisitId = srcVisitId;
+    ShinryouCopier(int dstVisitId) {
         this.dstVisitId = dstVisitId;
     }
 
-    public CompletableFuture<List<DrugFullWithAttrDTO>> copy() {
+    CompletableFuture<List<ShinryouFullWithAttrDTO>> copyFromVisit(int srcVisitId) {
         Frontend frontend = Context.frontend;
-        frontend.listShinryouWithAttr(srcVisitId)
-                .thenCompose(srcList -> {
-                    BatchEnterRequestDTO request = new BatchEnterRequestDTO();
-                    request.shinryouList = srcList.stream().map(this::copyShinryou).collect(toList());
-                    return frontend.batchEnter(request);
-                })
-                .thenApply(result -> {
-                    return frontend.listShinryouFullWithAttrByIds(result.shinryouIds);
-                })
-                .exceptionally(HandlerFX::exceptionally);
+        return frontend.listShinryouWithAttr(srcVisitId)
+                .thenCompose(this::copy);
+    }
+
+    CompletableFuture<List<ShinryouFullWithAttrDTO>> copy(List<ShinryouWithAttrDTO> srcList){
+        Frontend frontend = Context.frontend;
+        return frontend.batchEnter(convertToRequest(srcList))
+                .thenCompose(result -> frontend.listShinryouFullWithAttrByIds(result.shinryouIds));
+    }
+
+    private BatchEnterRequestDTO convertToRequest(List<ShinryouWithAttrDTO> srcList){
+        BatchEnterRequestDTO request = new BatchEnterRequestDTO();
+        request.shinryouList = srcList.stream().map(this::copyShinryou).collect(toList());
+        return request;
     }
 
     private ShinryouWithAttrDTO copyShinryou(ShinryouWithAttrDTO src) {
@@ -48,7 +49,4 @@ class ShinryouCopier {
         return dst;
     }
 
-    private void extendAttr(ShinryouAttrDTO attr) {
-
-    }
 }
